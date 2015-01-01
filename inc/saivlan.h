@@ -80,73 +80,18 @@ typedef enum _sai_vlan_stat_counter_t
 {
     SAI_VLAN_STAT_IN_OCTETS,
     SAI_VLAN_STAT_IN_UCAST_PKTS,
-    SAI_VLAN_STAT_IF_IN_NON_UCAST_PKTS,
-    SAI_VLAN_STAT_IF_IN_DISCARDS,
-    SAI_VLAN_STAT_IF_IN_ERRORS,
-    SAI_VLAN_STAT_IF_IN_UNKNOWN_PROTOS,
-    SAI_VLAN_STAT_IF_OUT_OCTETS,
-    SAI_VLAN_STAT_IF_OUT_UCAST_PKTS,
-    SAI_VLAN_STAT_IF_OUT_NON_UCAST_PKTS,
-    SAI_VLAN_STAT_IF_OUT_DISCARDS,
-    SAI_VLAN_STAT_IF_OUT_ERRORS,
-    SAI_VLAN_STAT_IF_OUT_QLEN
+    SAI_VLAN_STAT_IN_NON_UCAST_PKTS,
+    SAI_VLAN_STAT_IN_DISCARDS,
+    SAI_VLAN_STAT_IN_ERRORS,
+    SAI_VLAN_STAT_IN_UNKNOWN_PROTOS,
+    SAI_VLAN_STAT_OUT_OCTETS,
+    SAI_VLAN_STAT_OUT_UCAST_PKTS,
+    SAI_VLAN_STAT_OUT_NON_UCAST_PKTS,
+    SAI_VLAN_STAT_OUT_DISCARDS,
+    SAI_VLAN_STAT_OUT_ERRORS,
+    SAI_VLAN_STAT_OUT_QLEN
 
 } sai_vlan_stat_counter_t;
-
-
-/*
-* Routine Description:
-*    Set VLAN attribute Value
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*    [in] attribute - VLAN attribute
-*    [in] value - VLAN attribute value
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_set_vlan_attribute_fn)(
-    _In_ sai_vlan_id_t vlan_id, 
-    _In_ sai_vlan_attr_t attribute, 
-    _In_ uint64_t value
-    );
-
-/*
-* Routine Description:
-*    Get VLAN attribute Value
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*    [in] attribute - VLAN attribute
-*    [out] value - VLAN attribute value
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_get_vlan_attribute_fn)(
-    _In_ sai_vlan_id_t vlan_id, 
-    _In_ sai_vlan_attr_t attribute, 
-    _Out_ uint64_t* value
-    );
-
-/*
-* Routine Description:
-*    Delete VLAN configuration (delete all VLANs).
-*
-* Arguments:
-*    None
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_delete_all_vlans_fn)(
-    void
-    );
-
 
 /*
 * Routine Description:
@@ -165,7 +110,7 @@ typedef sai_status_t (*sai_create_vlan_fn)(
 
 /*
 * Routine Description:
-*    Delete a VLAN
+*    Remove a VLAN
 *
 * Arguments:
 *    [in] vlan_id - VLAN id
@@ -174,8 +119,59 @@ typedef sai_status_t (*sai_create_vlan_fn)(
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_delete_vlan_fn)(
+typedef sai_status_t (*sai_remove_vlan_fn)(
     _In_ sai_vlan_id_t vlan_id
+    );
+
+/*
+* Routine Description:
+*    Set VLAN attribute Value
+*
+* Arguments:
+*    [in] vlan_id - VLAN id
+*    [in] attr - attribute
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+typedef sai_status_t (*sai_set_vlan_attribute_fn)(
+    _In_ sai_vlan_id_t vlan_id, 
+    _In_ const sai_attribute_t *attr
+    );
+
+/*
+* Routine Description:
+*    Get VLAN attribute Value
+*
+* Arguments:
+*    [in] vlan_id - VLAN id
+*    [in] attr_count - number of attributes
+*    [inout] attr_list - array of attributes
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+typedef sai_status_t (*sai_get_vlan_attribute_fn)(
+    _In_ sai_vlan_id_t vlan_id, 
+    _In_ int attr_count,
+    _Inout_ sai_attribute_t *attr_list
+    );
+
+/*
+* Routine Description:
+*    Remove VLAN configuration (remove all VLANs).
+*
+* Arguments:
+*    None
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+typedef sai_status_t (*sai_remove_all_vlans_fn)(
+    void
     );
 
 /*
@@ -186,7 +182,6 @@ typedef sai_status_t (*sai_delete_vlan_fn)(
 *    [in] vlan_id - VLAN id
 *    [in] port_count - number of ports
 *    [in] port_list - pointer to membership structures
-*    [in] tagging_mode - tagging mode for egress packets
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
@@ -195,7 +190,7 @@ typedef sai_status_t (*sai_delete_vlan_fn)(
 typedef sai_status_t (*sai_add_ports_to_vlan_fn)(
     _In_ sai_vlan_id_t vlan_id, 
     _In_ uint32_t port_count,
-    _In_ sai_vlan_port_t* port_list
+    _In_ const sai_vlan_port_t* port_list
     );
 
 /*
@@ -214,7 +209,7 @@ typedef sai_status_t (*sai_add_ports_to_vlan_fn)(
 typedef sai_status_t (*sai_remove_ports_from_vlan_fn)(
     _In_ sai_vlan_id_t vlan_id, 
     _In_ uint32_t port_count,
-    _In_ sai_vlan_port_t* port_list
+    _In_ const sai_vlan_port_t* port_list
     );
 
 /*
@@ -242,7 +237,7 @@ typedef sai_status_t (*sai_ctl_vlan_stats_fn)(
 *
 * Arguments:
 *    [in] vlan_id - VLAN id
-*    [in] counter_set_id - specifies the counter set
+*    [in] counter_ids - specifies the array of counter ids
 *    [in] number_of_counters - number of counters in the array
 *    [out] counters - array of resulting counter values.
 *
@@ -252,7 +247,7 @@ typedef sai_status_t (*sai_ctl_vlan_stats_fn)(
 */ 
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
     _In_ sai_vlan_id_t vlan_id, 
-    _In_ uint32_t counter_set_id,
+    _In_ const sai_vlan_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
     );
@@ -263,14 +258,15 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
 typedef struct _sai_vlan_api_t
 {
     sai_create_vlan_fn              create_vlan;
-    sai_delete_vlan_fn              delete_vlan;
-    sai_set_vlan_attribute_fn       set_attribute;
-    sai_get_vlan_attribute_fn       get_attribute;
+    sai_remove_vlan_fn              remove_vlan;
+    sai_set_vlan_attribute_fn       set_vlan_attribute;
+    sai_get_vlan_attribute_fn       get_vlan_attribute;
     sai_add_ports_to_vlan_fn        add_ports_to_vlan;
     sai_remove_ports_from_vlan_fn   remove_ports_from_vlan;
-    sai_delete_all_vlans_fn         delete_all_vlans;
-    sai_ctl_vlan_stats_fn           ctl_stats;
-    sai_get_vlan_stats_fn           get_stats;
+    sai_remove_all_vlans_fn         remove_all_vlans;
+    sai_ctl_vlan_stats_fn           ctl_vlan_stats;
+    sai_get_vlan_stats_fn           get_vlan_stats;
+    
 } sai_vlan_api_t;
 
 #endif // __SAIVLAN_H_

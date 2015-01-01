@@ -108,14 +108,14 @@
 #define SAI_STATUS_UNINITIALIZED            SAI_STATUS_CODE(0x0000000CL)
 
 /*  
-*   Table is full
+*  Table is full
 */
 #define SAI_STATUS_TABLE_FULL               SAI_STATUS_CODE(0x0000000DL)
 
-/*  
-*  Attribute is invalid 
+/*
+*  Mandatory attribute is missing 
 */
-#define SAI_STATUS_INVALID_ATTRIBUTE        SAI_STATUS_CODE(0x0000000EL)
+#define SAI_MANDATORY_ATTRIBUTE_MISSING     SAI_STATUS_CODE(0x0000000EL)
 
 /*  
 *  Invalid interface id 
@@ -123,34 +123,77 @@
 #define SAI_STATUS_INVALID_INTERFACE        SAI_STATUS_CODE(0x0000000FL)
 
 /*  
-*   Port is in use 
+*  Port is in use 
 */
 #define SAI_STATUS_PORT_IN_USE              SAI_STATUS_CODE(0x00000010L)
 
 /*  
-*   Invalid switch ID 
+*  Invalid switch ID 
 */
 #define SAI_STATUS_INVALID_SWITCH_ID        SAI_STATUS_CODE(0x00000011L)
 
 /*  
-*   Function is not implemented
+*  Function is not implemented
 */
 #define SAI_STATUS_NOT_IMPLEMENTED          SAI_STATUS_CODE(0x00000012L)
 
 /*  
-*   Address not found 
+*  Address not found 
 */
 #define SAI_STATUS_ADDR_NOT_FOUND           SAI_STATUS_CODE(0x00000013L)
 
 /*  
-*   Invalid virtual router ID 
+*  Invalid virtual router ID 
 */
 #define SAI_STATUS_INVALID_VRID             SAI_STATUS_CODE(0x00000014L)
 
 /*  
-*   Invalid attribute value 
+*  Invalid ACL table ID
 */
-#define SAI_STATUS_INVALID_ATTR_VALUE       SAI_STATUS_CODE(0x00000015L)
+#define SAI_STATUS_INVALID_ACL_TABLE_ID     SAI_STATUS_CODE(0x00000015L)
+
+/*  
+*  Invalid ACL entry ID
+*/
+#define SAI_STATUS_INVALID_ACL_ENTRY_ID     SAI_STATUS_CODE(0x00000016L)
+
+/*  
+*  Invalid ACL counter ID
+*/
+#define SAI_STATUS_INVALID_ACL_COUNTER_ID   SAI_STATUS_CODE(0x00000017L)
+
+/*  
+*  Attribute is invalid (range from 0x00010000L to 0x0001FFFFL). 
+*  The offset from SAI_STATUS_INVLAID_ATTRIBUTE_0 is the array index of
+*  the attribute list passed to the SAI API call.
+*/
+#define SAI_STATUS_INVALID_ATTRIBUTE_0      SAI_STATUS_CODE(0x00010000L)
+#define SAI_STATUS_INVALID_ATTRIBUTE_MAX    SAI_STATUS_CODE(0x0001FFFFL)
+
+/*  
+*  Invalid attribute value (range from 0x00020000L to 0x0002FFFFL)
+*/
+#define SAI_STATUS_INVALID_ATTR_VALUE_0     SAI_STATUS_CODE(0x00020000L)
+#define SAI_STATUS_INVALID_ATTR_VALUE_MAX   SAI_STATUS_CODE(0x0002FFFFL)
+
+/*  
+*  Attribute is not implmented (range from 0x00030000L to 0x003FFFFL)
+*/
+#define SAI_STATUS_ATTR_NOT_IMPLEMENTED_0   SAI_STATUS_CODE(0x00030000L)
+#define SAI_STATUS_ATTR_NOT_IMPLEMENTED_MAX SAI_STATUS_CODE(0x0003FFFFL)
+
+/*  
+*  Attribute is unknown (range from 0x00040000L to 0x004FFFFL)
+*/
+#define SAI_STATUS_UNKNOWN_ATTRIBUTE_0      SAI_STATUS_CODE(0x00040000L)
+#define SAI_STATUS_UNKNOWN_ATTRIBUTE_MAX    SAI_STATUS_CODE(0x0004FFFFL)
+
+/*
+*  Macros to check if attribute related error is within the specified range
+*/
+#define SAI_STATUS_IS_INVALID_ATTRIBUTE(x)      ((x) & ~0xFFFF == SAI_STATUS_INVALID_ATTRIBUTE_0)
+#define SAI_STATUS_IS_INVALID_ATTR_VALUE(x)     ((x) & ~0xFFFF == SAI_STATUS_INVALID_ATTR_VALUE_0)
+#define SAI_STATUS_IS_ATTR_NOT_IMPLEMENTED(x)   ((x) & ~0xFFFF == SAI_STATUS_ATTR_NOT_IMPLEMENTED_0)
+#define SAI_STATUS_IS_UNKNOWN_ATTRIBUTE(x)      ((x) & ~0xFFFF == SAI_STATUS_INVALID_ATTRIBUTE_0)
 
 #endif // __SAISTATUS_H_
-

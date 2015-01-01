@@ -38,6 +38,7 @@ typedef UINT8  uint8_t;
 typedef UINT16 uint16_t;
 typedef UINT32 uint32_t;
 typedef INT32  int32_t;
+typedef INT64  int64_t;
 typedef UINT64 uint64_t;
 
 typedef  INT32  sai_status_t;  
@@ -45,13 +46,18 @@ typedef UINT32  sai_switch_profile_id_t;
 typedef UINT32  sai_switch_id_t;
 typedef UINT32  sai_port_id_t;
 typedef UINT16  sai_vlan_id_t;
-typedef UINT32  sai_vr_id_t;
+typedef UINT32  sai_virtual_router_id_t;
 typedef UINT32  sai_router_interface_id_t;
-typedef UINT32  sai_route_id_t;
+typedef UINT32  sai_next_hop_id_t;
 typedef UINT32  sai_next_hop_group_id_t;
-typedef UINT64  sai_mac_t;
+typedef UINT32  sai_acl_table_id_t;
+typedef UINT32  sai_acl_entry_id_t;
+typedef UINT32  sai_acl_counter_id_t;
+typedef UINT32  sai_attr_id_t;
 typedef UINT8   sai_cos_t;
-typedef UINT32  sai_acl_id_t;
+typedef UINT8   sai_mac_t[6];
+typedef UINT32  sai_ip4_t;
+typedef UINT8   sai_ip6_t[16];
 
 #include <ws2def.h>
 #include <ws2ipdef.h>
@@ -67,16 +73,6 @@ typedef enum {
 
 #endif  // __BOOL_DEFINED
 
-#if !defined(_NETIOAPI_H_)
-
-typedef struct _IP_ADDRESS_PREFIX {
-  SOCKADDR_INET Prefix;
-  UINT8         PrefixLength;
-} IP_ADDRESS_PREFIX, *PIP_ADDRESS_PREFIX;
-
-
-#endif // _NETIOAPI_H_
-
 //
 // N.B. Equal to 260 on Windows
 //
@@ -86,38 +82,32 @@ typedef struct _IP_ADDRESS_PREFIX {
 
 #else  // #if defined(_WIN32)
 
+#include <stdint.h>
+#include <stdbool.h>
 
-typedef sint32_t sai_status_t;  
+typedef int32_t  sai_status_t;  
 typedef uint32_t sai_switch_profile_id_t;
 typedef uint32_t sai_switch_id_t;
 typedef uint32_t sai_port_id_t;
 typedef uint16_t sai_vlan_id_t;
-typedef uint32_t sai_vr_id_t;
+typedef uint32_t sai_virtual_router_id_t;
 typedef uint32_t sai_router_interface_id_t;
-typedef uint32_t sai_route_id_t;
+typedef uint32_t sai_next_hop_id_t;
 typedef uint32_t sai_next_hop_group_id_t;
-typedef uint64_t sai_mac_t;
+typedef uint32_t sai_acl_table_id_t;
+typedef uint32_t sai_acl_entry_id_t;
+typedef uint32_t sai_acl_counter_id_t;
+typedef uint32_t sai_attr_id_t;
 typedef uint8_t  sai_cos_t;
-typedef uint32_t sai_acl_id_t;
+typedef uint8_t  sai_mac_t[6];
+typedef uint32_t sai_ip4_t;
+typedef uint8_t  sai_ip6_t[16];
 
 #define _In_
 #define _Out_
+#define _Inout_
 #define _In_reads_z_(_LEN_)
 #define _In_reads_opt_z_(_LEN_)
-
-#include <sys/socket.h>
-#include <netinet/in.h> 
-
-typedef union _SOCKADDR_INET {
-    struct sockaddr_in  Ipv4;
-    struct sockaddr_in6 Ipv6;
-    sa_family_t         si_family;
-} sockaddr_inet;
-
-typedef struct _IP_ADDRESS_PREFIX {
-  sockaddr_inet Prefix;
-  uint8_t       PrefixLength;
-} ip_address_prefix;
 
 
 #endif // _WIN32
@@ -125,8 +115,114 @@ typedef struct _IP_ADDRESS_PREFIX {
 //
 // New common definitions
 //
+typedef uint64_t sai_uint64_t;
+typedef int64_t sai_int64_t;
 
-typedef union _SOCKADDR_INET sockaddr_inet;
-typedef struct _IP_ADDRESS_PREFIX ip_address_prefix;
+typedef struct _sai_port_list_list_t {
+    int port_count;
+    sai_port_id_t *port_list;
+} sai_port_list_t;
+
+typedef struct _sai_next_hop_list_t {
+    int next_hop_count;
+    sai_next_hop_id_t *next_hop_list;
+} sai_next_hop_list_t;
+
+typedef enum _sai_ip_addr_family_t {
+    SAI_IP_ADDR_FAMILY_IPV4,
+
+    SAI_IP_ADDR_FAMILY_IPV6
+} sai_ip_addr_family_t;
+
+typedef struct _sai_ip_address_t {
+    sai_ip_addr_family_t addr_family;
+    union {
+        sai_ip4_t ip4;
+        sai_ip6_t ip6;
+    } addr;
+} sai_ip_address_t;
+
+typedef struct _sai_ip_prefix_t {
+    sai_ip_addr_family_t addr_family;
+    union {
+        sai_ip4_t ip4;
+        sai_ip6_t ip6;
+    } addr;
+    union {
+        sai_ip4_t ip4;
+        sai_ip6_t ip6;
+    } mask;
+} sai_ip_prefix_t;
+
+typedef enum _sai_acl_match_mode_t 
+{
+    /* Field match is disbled. 
+     * Used for disable a match field in an installed acl entry */
+    SAI_ACL_MATCH_DISABLE, 
+
+    /* Field mode is determined by the field type */
+    SAI_ACL_MATCH_AUTO,
+
+    /* Field mode is AND with mask (<data> & <mask> == <field>) */
+    SAI_ACL_MATCH_MASK
+
+} sai_acl_match_mode_t;
+
+/*
+ * Defines a single ACL filter
+ */
+typedef struct _sai_acl_field_data_t
+{
+    /*
+     * Field match mode
+     */
+    sai_acl_match_mode_t mode;
+
+    /*
+     * Field match mask
+     */
+    uint64_t match_mask[2];
+
+    /*
+     * Expected AND result using match mask above with packet field value.
+     */
+    uint64_t match_data[2];
+
+} sai_acl_field_data_t;
+
+/*
+ * Defines a single ACL action
+ */
+typedef struct _sai_acl_action_data_t
+{
+    /*
+     * action enable/disable
+     */ 
+    bool enable;
+
+    /*
+     * Action parameter
+     */
+    uint64_t parameter[2];
+
+} sai_acl_action_data_t;
+
+typedef union {
+    sai_uint64_t u64;
+    sai_int64_t s64;
+    sai_mac_t mac;
+    sai_ip4_t ip4;
+    sai_ip6_t ip6;
+    sai_ip_address_t ipaddr;
+    sai_port_list_t portlist;
+    sai_next_hop_list_t nhlist;
+    sai_acl_field_data_t aclfield;
+    sai_acl_action_data_t acldata;
+} sai_attribute_value_t;
+
+typedef struct _sai_attribute_t {
+    sai_attr_id_t id;
+    sai_attribute_value_t value;
+} sai_attribute_t;
 
 #endif // __SAITYPES_H_

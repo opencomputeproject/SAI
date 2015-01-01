@@ -38,8 +38,7 @@
 */
 typedef enum _sai_next_hop_type_t
 {
-    SAI_NEXT_HOP_UNSPECIFIED,
-    SAI_NEXT_HOP_IP
+    SAI_NEXT_HOP_IP,
 
     /* 
     Tunneling to be added later
@@ -47,169 +46,114 @@ typedef enum _sai_next_hop_type_t
 
 } sai_next_hop_type_t;
 
-
 /*
-*  Next hop group type
+*  Attribute id for next hop
 */
-typedef enum _sai_next_hop_group_type_t
+typedef enum _sai_next_hop_attr_t
 {
-    SAI_NEXT_HOP_GROUP_UNSPECIFIED,
+    /* READ-ONLY */
 
-    /* Next hop group contains single next hop */
-    SAI_NEXT_HOP_GROUP_SIMPLE,
+    /* READ-WRITE */
 
-    /* Next hop group is ECMP */
-    SAI_NEXT_HOP_GROUP_ECMP,
+    /* Next hop entry type [sai_next_hop_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_NEXT_HOP_ATTR_TYPE,
 
-    /* Next hop group is WCMP */
-    SAI_NEXT_HOP_GROUP_WCMP
+    /* Next hop entry ipv4 address [sai_ip_address_t]
+     * (MANDATORY_ON_CREATE when SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_IP)
+     * (CREATE_ONLY) */
+    SAI_NEXT_HOP_ATTR_IP,
 
-} sai_next_hop_group_type_t;
+    /* Next hop entry router interface id [sai_router_interface_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 
-/*
-*  Next Hop
-*/
-typedef struct _sai_next_hop_t
-{
-    sai_next_hop_type_t next_hop_type;
+    /* -- */
 
-    union _data
-    {
-        /*
-        *  IP address next nop
-        */
-        struct _ip
-        {
-            sockaddr_inet address;
-            sai_router_interface_id_t interface_id;
-        } ip;
+    /* Custom range base value */
+    SAI_NEXT_HOP_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
-    } data;
-
-    uint32_t weight;
-
-} sai_next_hop_t;
-
+} sai_next_hop_attr_t;
 
 /*
 * Routine Description:
-*    Create next hop group 
+*    Create next hop
 *
 * Arguments:
-*    [in,out] next_hop_group_id - next hop group id
-*    [in] next_hop_group_type - next hop group type
+*    [out] next_hop_id - next hop id
+*    [in] attr_count - number of attributes
+*    [in] attr_list - array of attributes
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_create_next_hop_group_fn)(
-    _Inout_ sai_next_hop_group_id_t* next_hop_group_id,
-    _In_ sai_next_hop_group_type_t next_hop_group_type
+typedef sai_status_t (*sai_create_next_hop_fn)(
+    _In_ sai_next_hop_id_t* next_hop_id,
+    _In_ int attr_count,
+    _In_ const sai_attribute_t *attr_list
     );
-
 
 /*
 * Routine Description:
-*    Delete next hop group 
+*    Remove next hop
 *
 * Arguments:
-*    [in] next_hop_group_id - next hop group id
+*    [in] next_hop_id - next hop id
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_delete_next_hop_group_fn)(
-    _In_ sai_next_hop_group_id_t next_hop_group_id
+typedef sai_status_t (*sai_remove_next_hop_fn)(
+    _In_ sai_next_hop_id_t next_hop_id
     );
 
 /*
 * Routine Description:
-*    Set Next Hop Group attribute
+*    Set Next Hop attribute
 *
 * Arguments:
-     [in] sai_next_hop_group_id_t - next_hop_group_id
-*    [in] attribute - FDB attribute
-*    [in] value - FDB attribute value
+*    [in] sai_next_hop_id_t - next_hop_id
+*    [in] attr - attribute
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_set_next_hop_group_attribute_fn)(
-    _In_ sai_next_hop_group_id_t next_hop_group_id,
-    _In_ sai_fdb_attr_t attribute, 
-    _In_ uint64_t value
+typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
+    _In_ sai_next_hop_id_t next_hop_id,
+    _In_ const sai_attribute_t *attr
     );
 
 
 /*
 * Routine Description:
-*    Get Next Hop Group attribute
+*    Get Next Hop attribute
 *
 * Arguments:
-     [in] sai_next_hop_group_id_t - next_hop_group_id
-*    [in] attribute - FDB attribute
-*    [out] value - FDB attribute value
+*    [in] sai_next_hop_id_t - next_hop_id
+*    [in] attr_count - number of attributes
+*    [inout] attr_list - array of attributes
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_get_next_hop_group_attribute_fn)(
-    _In_ sai_next_hop_group_id_t next_hop_group_id,
-    _In_ sai_fdb_attr_t attribute, 
-    _Out_ uint64_t* value
+typedef sai_status_t (*sai_get_next_hop_attribute_fn)(
+    _In_ sai_next_hop_id_t next_hop_id,
+    _In_ int attr_count,
+    _Inout_ sai_attribute_t *attr_list
     );
-
-/*
-* Routine Description:
-*    Add next hop to a group 
-*
-* Arguments:
-*    [in] next_hop_group_id - next hop group id
-*    [in] next_hop - next hop to add
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_add_next_hop_to_group_fn)(
-    _In_ sai_next_hop_group_id_t next_hop_group_id,
-    _In_ sai_next_hop_t* next_hop
-    );
-
-
-/*
-* Routine Description:
-*    Remove next hop from a group 
-*
-* Arguments:
-*    [in] next_hop_group_id - next hop group id
-*    [in] next_hop - next hop to remove
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_remove_next_hop_from_group_fn)(
-    _In_ sai_next_hop_group_id_t next_hop_group_id,
-    _In_ sai_next_hop_t* next_hop
-    );
-
 
 /*
 *  Next Hop methods table retrieved with sai_api_query()
 */
 typedef struct _sai_next_hop_api_t
 {
-    sai_create_next_hop_group_fn        create_next_hop_group;
-    sai_delete_next_hop_group_fn        delete_next_hop_group;
-    sai_add_next_hop_to_group_fn        add_next_hop_to_group;
-    sai_remove_next_hop_from_group_fn   remove_next_hop_from_group;
+    sai_create_next_hop_fn        create_next_hop;
+    sai_remove_next_hop_fn        remove_next_hop;
+    sai_set_next_hop_attribute_fn set_next_hop_attribute;
+    sai_get_next_hop_attribute_fn get_next_hop_attribute;
 
 } sai_next_hop_api_t;
 
 #endif // __SAINEXTHOP_H_
-

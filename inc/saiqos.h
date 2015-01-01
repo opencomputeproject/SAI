@@ -115,8 +115,7 @@ typedef enum _sai_qos_map_t {
 * Arguments:
 *    [in] port_id - port id
 *    [in] cos_value - "class of service" value
-*    [in] attribute - cos attribute.
-*    [in] value - cos attribute value.
+*    [in] attr - cos attribute.
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
@@ -125,8 +124,7 @@ typedef enum _sai_qos_map_t {
 typedef sai_status_t (*sai_set_cos_attribute_fn)(
     _In_ sai_port_id_t port_id, 
     _In_ sai_cos_t cos_value, 
-    _In_ sai_cos_attr_t attribute,
-    _In_ uint64_t value
+    _In_ const sai_attribute_t *attr
     );
 
 /*
@@ -136,8 +134,8 @@ typedef sai_status_t (*sai_set_cos_attribute_fn)(
 * Arguments:
 *    [in] port_id - port id
 *    [in] cos_value - "class of service" value
-*    [in] attribute - cos attribute.
-*    [out] value - cos attribute value.
+*    [in] attr_count - number of attributes
+*    [inout] attr_list - array of attributes
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
@@ -146,8 +144,8 @@ typedef sai_status_t (*sai_set_cos_attribute_fn)(
 typedef sai_status_t (*sai_get_cos_attribute_fn)(
     _In_ sai_port_id_t port_id, 
     _In_ sai_cos_t cos_value, 
-    _In_ sai_cos_attr_t attribute,
-    _Out_ uint64_t* value
+    _In_ int attr_count,
+    _Inout_ sai_attribute_t *attr_list
     );
 
 /*
@@ -199,10 +197,10 @@ typedef sai_status_t (*sai_get_cos_mapping_fn)(
 */
 typedef struct _sai_qos_api_t
 {
-    sai_set_cos_attribute_fn        set_attribute;
-    sai_get_cos_attribute_fn        get_attribute;
-    sai_set_cos_mapping_fn          set_mapping;
-    sai_get_cos_mapping_fn          get_mapping;
+    sai_set_cos_attribute_fn        set_cos_attribute;
+    sai_get_cos_attribute_fn        get_cos_attribute;
+    sai_set_cos_mapping_fn          set_cos_mapping;
+    sai_get_cos_mapping_fn          get_cos_mapping;
 
 } sai_qos_api_t;
 

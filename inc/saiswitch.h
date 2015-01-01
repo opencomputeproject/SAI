@@ -36,9 +36,7 @@
 
 
 #define SAI_MAX_HARDWARE_ID_LEN         255
-#define SAI_MAX_MICROCODE_NAME_LEN      PATH_MAX
-
-#define SWITCH_COUNTER_SET_DEFAULT      0
+#define SAI_MAX_FIRMWARE_PATH_NAME_LEN  PATH_MAX
 
 /*
 *  Attribute data for SAI_SWITCH_ATTR_OPER_STATUS
@@ -78,6 +76,35 @@ typedef enum _sai_switch_fdb_miss_action_t
 
 } sai_switch_fdb_miss_action_t;
 
+/*
+*  Attribute data for packet action
+*/
+typedef enum _sai_packet_action_t
+{
+    /* Drop Packet */
+    SAI_PACKET_ACTION_DROP,
+
+    /* Forward Packet */
+    SAI_PACKET_ACTION_FORWARD,
+
+    /* Trap Packet to CPU */
+    SAI_PACKET_ACTION_TRAP,
+
+    /* Log (Trap + Forward) Packet */
+    SAI_PACKET_ACTION_LOG
+
+} sai_packet_action_t;
+
+
+/*
+* Attribute data for SAI_SWITCH_ECMP_HASH_TYPE
+*/
+typedef enum _sai_switch_ecmp_hash_type_t
+{
+    SAI_SWITCH_ECMP_HASH_TYPE_XOR,
+
+    SAI_SWITCH_ECMP_HASH_TYPE_CRC,
+} sai_switch_ecmp_hash_type_t;
 
 typedef enum _sai_switch_ecmp_hash_fields_t
 {
@@ -89,18 +116,17 @@ typedef enum _sai_switch_ecmp_hash_fields_t
 } sai_switch_ecmp_hash_fields_t;
 
 /*
-*  Switch counter IDs in sai_get_switch_stat_counters() call
+* Attribute data for SAI_SWITCH_SWITCHING_MODE
 */
-typedef enum _sai_switch_stat_counter_t
-{
-    SAI_SWITCH_STAT_GLOBAL_LOW_DROP_PKTS,
-    SAI_SWITCH_STAT_GLOBAL_HIGH_DROP_PKTS,
-    SAI_SWITCH_STAT_GLOBAL_PRIVILEGE_DROP_PKTS,
-    SAI_SWITCH_STAT_DROP_COUNT_TX,
-    SAI_SWITCH_STAT_DROP_COUNT_RX
+typedef enum _sai_switch_switching_mode_t 
+{ 
+    /* cut-through switching mode */
+    SAI_SWITCHING_MODE_CUT_THROUGH,
 
-} sai_switch_stat_counter_t;
+    /* store-and-forward switching mode */
+    SAI_SWITCHING_MODE_STORE_AND_FORWARD
 
+} sai_switch_switching_mode_t;
 
 /*
 *  Attribute Id in sai_set_switch_attribute() and 
@@ -116,6 +142,9 @@ typedef enum _sai_switch_attr_t
     /* Max number of virtual routers supported [uint32_t] */
     SAI_SWITCH_ATTR_MAX_VIRTUAL_ROUTERS,
 
+    /* The size of the FDB Table in bytes [uint32_t] */
+    SAI_SWITCH_ATTR_FDB_TABLE_SIZE,
+
     /* 
     *   Local subnet routing supported [bool]
     *   Routes with next hop set to "on-link"
@@ -125,14 +154,14 @@ typedef enum _sai_switch_attr_t
     /* Oper state [sai_switch_oper_status_t] */
     SAI_SWITCH_ATTR_OPER_STATUS,
 
+    /* The current value of the maximum temperature 
+     * retrieved from the switch sensors, in Celsius [int32_t] */
+    SAI_SWITCH_ATTR_MAX_TEMP,
 
     /* READ-WRITE */
 
-    /* Hardware generation counter [uint64_t] */
-    SAI_SWITCH_ATTR_HW_SEQUENCE_ID,
-
-    /* Admin state [bool] */
-    SAI_SWITCH_ATTR_ADMIN_STATE,
+    /* Switching mode [sai_switch_switching_mode_t] */
+    SAI_SWITCH_ATTR_SWITCHING_MODE,
 
     /* L2 broadcast flood control to CPU port [bool] */
     SAI_SWITCH_ATTR_BCAST_CPU_FLOOD_ENABLE,
@@ -140,11 +169,22 @@ typedef enum _sai_switch_attr_t
     /* L2 multicast flood control to CPU port [bool] */
     SAI_SWITCH_ATTR_MCAST_CPU_FLOOD_ENABLE,
 
-    /* Default VlanID for ports that are not members of any vlans [uint16] */
+    /* Action for Packets with TTL 0 or 1 [sai_packet_action_t] */
+    SAI_SWITCH_ATTR_VIOLATION_TTL1_ACTION,
+
+   /* Default VlanID for ports that are not members of any vlans [uint16] */
     SAI_SWITCH_ATTR_DEFAULT_PORT_VLAN_ID,
+
+    /* Default switch MAC Address [sai_mac_t] */
+    SAI_SWITCH_ATTR_SRC_MAC_ADDRESS,
 
     /* Maximum number of learned MAC addresses [uint32_t] */
     SAI_SWITCH_ATTR_MAX_LEARNED_ADDRESSES,
+
+    /* Dynamic FDB entry aging time in seconds [uint32_t] 
+    *   Zero means aging is disabled.
+    */
+    SAI_SWITCH_ATTR_FDB_AGING_TIME,
 
     /* Flood control for packets with unknown destination address.
     *   [sai_switch_fdb_miss_action_t]
@@ -155,11 +195,17 @@ typedef enum _sai_switch_attr_t
 
     SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_ACTION,
 
+    /* ECMP hashing type  [uint32_t] */
+    SAI_SWITCH_ATTR_ECMP_HASH_SEED,
+
     /* ECMP hashing type  [sai_switch_ecmp_hash_type_t] */
     SAI_SWITCH_ATTR_ECMP_HASH_TYPE,
 
     /* ECMP hashing fields [sai_switch_ecmp_hash_fields_t] */
     SAI_SWITCH_ATTR_ECMP_HASH_FIELDS,
+
+    /* ECMP max number of paths per group [uint32_t] */
+    SAI_SWITCH_ATTR_ECMP_MAX_PATHS,
 
     /* -- */
     
@@ -167,7 +213,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
 } sai_switch_attr_t;
-
 
 /*
 * Routine Description:
@@ -212,7 +257,6 @@ typedef struct _sai_switch_notification_t
     sai_switch_shutdown_request_fn          on_switch_shutdown_request;
 } sai_switch_notification_t;
   
-
 /*
 * Routine Description:
 *   SDK initialization. After the call the capability attributes should be 
@@ -221,8 +265,8 @@ typedef struct _sai_switch_notification_t
 * Arguments:
 *   [in] profile_id - Handle for the switch profile.
 *   [in] switch_hardware_id - Switch hardware ID to open
-*   [in/opt] microcode_module_name - Vendor specific name of the microcode 
-*                                     module to load
+*   [in/opt] firmware_path_name - Vendor specific path name of the firmware
+*                                     to load
 *   [in] switch_notifications - switch notification table
 * Return Values:
 *   SAI_STATUS_SUCCESS on success
@@ -231,7 +275,7 @@ typedef struct _sai_switch_notification_t
 typedef sai_status_t (*sai_initialize_switch_fn)(
     _In_ sai_switch_profile_id_t profile_id,
     _In_reads_z_(SAI_MAX_HARDWARE_ID_LEN) char* switch_hardware_id,
-    _In_reads_opt_z_(SAI_MAX_MICROCODE_NAME_LEN) char* microcode_module_name,
+    _In_reads_opt_z_(SAI_MAX_FIRMWARE_PATH_NAME_LEN) char* firmware_path_name,
     _In_ sai_switch_notification_t* switch_notifications
     );
 
@@ -252,22 +296,53 @@ typedef void (*sai_shutdown_switch_fn)(
     _In_ bool warm_restart_hint
     );
 
+/*
+* Routine Description:
+*   SDK connect. This API connects library to the initialized SDK. 
+*   After the call the capability attributes should be ready for retrieval 
+*   via sai_get_switch_attribute().
+*
+* Arguments:
+*   [in] profile_id - Handle for the switch profile.
+*   [in] switch_hardware_id - Switch hardware ID to open
+*   [in] switch_notifications - switch notification table
+* Return Values:
+*   SAI_STATUS_SUCCESS on success
+*   Failure status code on error
+*/
+typedef sai_status_t (*sai_connect_switch_fn)(
+    _In_ sai_switch_profile_id_t profile_id,
+    _In_reads_z_(SAI_MAX_HARDWARE_ID_LEN) char* switch_hardware_id,
+    _In_ sai_switch_notification_t* switch_notifications
+    );
+
+/*
+* Routine Description:
+*   Disconnect this SAI library from the SDK.
+*
+* Arguments:
+*   None
+* Return Values:
+*   None
+*/
+typedef void (*sai_disconnect_switch_fn)(
+    void
+    );
+
 
 /*
 * Routine Description:
 *    Set switch attribute value
 *
 * Arguments:
-*    [in] attribute - switch attribute
-*    [in] value - switch attribute value
+*    [in] attr - switch attribute
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_switch_attribute_fn)(
-    _In_ sai_switch_attr_t attribute, 
-    _In_ uint64_t value
+    _In_ const sai_attribute_t *attr
     );
 
 
@@ -276,53 +351,16 @@ typedef sai_status_t (*sai_set_switch_attribute_fn)(
 *    Get switch attribute value
 *
 * Arguments:
-*    [in] attribute - switch attribute
-*    [out] value - switch attribute value
+*    [in] attr_count - number of switch attributes
+*    [inout] attr_list - array of switch attributes
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_switch_attribute_fn)(
-    _In_ sai_switch_attr_t attribute, 
-    _Out_ uint64_t* value
-    );
-
-
-/*
-* Routine Description:
-*   Enable/disable statistics counters for switch.
-*
-* Arguments:
-*    [in] counter_set_id - specifies the counter set
-*    [in] enable - TRUE to enable, FALSE to disable
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/ 
-typedef sai_status_t (*sai_ctl_switch_stats_fn)(
-    _In_ uint32_t counter_set_id,
-    _In_ bool enable
-    );
-
-/*
-* Routine Description:
-*   Get switch statistics counters.
-*
-* Arguments:
-*    [in] counter_set_id - specifies the counter set
-*    [in] number_of_counters - number of counters in the array
-*    [out] counters - array of resulting counter values.
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/ 
-typedef sai_status_t (*sai_get_switch_stats_fn)(
-    _In_ uint32_t counter_set_id,
-    _In_ uint32_t number_of_counters,
-    _Out_ uint64_t* counters
+    _In_ int attr_count,
+    _Inout_ sai_attribute_t *attr_list
     );
 
 /*
@@ -332,12 +370,11 @@ typedef struct _sai_switch_api_t
 {
     sai_initialize_switch_fn        initialize_switch;
     sai_shutdown_switch_fn          shutdown_switch;
-    sai_set_switch_attribute_fn     set_attribute;
-    sai_get_switch_attribute_fn     get_attribute;
-    sai_ctl_switch_stats_fn         ctl_stats;
-    sai_get_switch_stats_fn         get_stats;
+    sai_connect_switch_fn           connect_switch;
+    sai_disconnect_switch_fn        disconnect_switch;
+    sai_set_switch_attribute_fn     set_switch_attribute;
+    sai_get_switch_attribute_fn     get_switch_attribute;
 
 } sai_switch_api_t;
 
 #endif  // __SAISWITCH_H_
-

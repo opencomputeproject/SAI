@@ -39,6 +39,7 @@
 #include <sairouterintf.h>
 #include <saineighbor.h>
 #include <sainexthop.h>
+#include <sainexthopgroup.h>
 #include <sairoute.h>
 #include <saiqos.h>
 #include <saiacl.h>
@@ -58,14 +59,24 @@ typedef enum _sai_api_t
     SAI_API_PORT             =  2,  /* sai_port_api_t */
     SAI_API_FDB              =  3,  /* sai_fdb_api_t */
     SAI_API_VLAN             =  4,  /* sai_vlan_api_t */
-    SAI_API_VR               =  5,  /* sai_vr_api_t */
+    SAI_API_VIRTUAL_ROUTER   =  5,  /* sai_virtual_router_api_t */
     SAI_API_ROUTE            =  6,  /* sai_route_api_t */
     SAI_API_NEXT_HOP         =  7,  /* sai_next_hop_api_t */
-    SAI_API_ROUTER_INTERFACE =  8,  /* sai_router_interface_api_t */
-    SAI_API_NEIGHBOR         =  9,  /* sai_neighbor_api_t */
-    SAI_API_QOS              = 10,  /* sai_qos_api_t */
-    SAI_API_ACL              = 11,  /* sai_acl_api_t */
+    SAI_API_NEXT_HOP_GROUP   =  8,  /* sai_next_hop_group_api_t */
+    SAI_API_ROUTER_INTERFACE =  9,  /* sai_router_interface_api_t */
+    SAI_API_NEIGHBOR         = 10,  /* sai_neighbor_api_t */
+    SAI_API_QOS              = 11,  /* sai_qos_api_t */
+    SAI_API_ACL              = 12,  /* sai_acl_api_t */
 } sai_api_t;
+
+typedef enum _sai_log_level_t
+{
+    SAI_LOG_DEBUG            = 1,
+    SAI_LOG_INFO             = 2,
+    SAI_LOG_WARN             = 3,
+    SAI_LOG_ERROR            = 4,
+    SAI_LOG_CRITICAL         = 5
+} sai_log_level_t;
 
 /*
 *   Method table that contains function pointers for services exposed by adapter
@@ -116,7 +127,7 @@ sai_api_initialize(
 * Arguments:
 *     [in] sai_api_id - SAI api ID
 *     [out] api_method_table - Caller allocated method table
-*           The table must remain valid until the sai_api_shutdown() is called 
+*           The table must remain valid until the sai_api_uninitialize() is called 
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
@@ -142,8 +153,25 @@ sai_api_query(
 *   Failure status code on error
 */
 sai_status_t
-sai_api_unitialize(
+sai_api_uninitialize(
     void
     );
 
+/*
+* Routine Description:
+*     Set log level for sai api module. The default log level is SAI_LOG_WARN.
+*
+* Arguments:
+*     [in] sai_api_id - SAI api ID
+*     [in] log_level - log level
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+sai_status_t 
+sai_log_set(
+    _In_ sai_api_t sai_api_id,
+    _In_ sai_log_level_t log_level
+    );
 #endif  // __SAI_H_

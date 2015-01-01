@@ -31,44 +31,25 @@
 #define __SAIROUTE_H_
 
 #include <saitypes.h>
-/*
-*  Attribute data for route packet action
-*/
-typedef enum _sai_route_packet_action_t
-{
-    /* Route Packet */
-    SAI_ROUTE_PACKET_ACTION_ROUTE,
-
-    /* Trap Packet to CPU */
-    SAI_ROUTE_PACKET_ACTION_TRAP,
-
-    /* Log (Trap + Forward) Packet */
-    SAI_ROUTE_PACKET_ACTION_LOG,
-
-    /* Drop Packet */
-    SAI_ROUTE_PACKET_ACTION_DROP
-
-} sai_route_packet_action_t;
-
 
 /*
-*  Attribute Id in sai_set_route_attribute() and 
-*  sai_get_route_attribute() calls
+*  Attribute Id for sai route object
 */
 typedef enum _sai_route_attr_t
 {
     /* READ-WRITE */
 
-    /* Admin state [bool] */
-    SAI_ROUTE_ATTR_ADMIN_STATE,
-
-    /* Packet action [sai_route_packet_action_t] */
+    /* Packet action [sai_packet_action_t] */
     SAI_ROUTE_ATTR_PACKET_ACTION,
 
     /* Packet priority for trap/log actions [uint8] */
     SAI_ROUTE_ATTR_TRAP_PRIORITY,
 
-    /* -- */
+    /* Next hop group id for the packet [sai_next_hop_id_t] */
+    SAI_ROUTE_ATTR_NEXT_HOP_ID,
+
+    /* Next hop group id for the packet [sai_next_hop_group_id_t] */
+    SAI_ROUTE_ATTR_NEXT_HOP_GROUP_ID,
 
     /* Custom range base value */
     SAI_ROUTE_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
@@ -81,30 +62,60 @@ typedef enum _sai_route_attr_t
 */
 typedef struct _sai_unicast_route_entry_t
 {
-    sai_vr_id_t vr_id;
-    ip_address_prefix destination;
-    sai_next_hop_group_id_t next_hop_group_id;
+    sai_virtual_router_id_t vr_id;
+    sai_ip_prefix_t destination;
 
 } sai_unicast_route_entry_t;
 
- 
+/*
+* Routine Description:
+*    Create Route
+*
+* Arguments:
+*    [in] unicast_route_entry - route entry
+*    [in] attr_count - number of attributes
+*    [in] attr_list - array of attributes
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+typedef sai_status_t (*sai_create_route_fn)(
+    _In_ const sai_unicast_route_entry_t* unicast_route_entry,
+    _In_ int attr_count,
+    _In_ const sai_attribute_t *attr_list
+    );
+
+/*
+* Routine Description:
+*    Remove Route
+*
+* Arguments:
+*    [in] unicast_route_entry - route entry
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+typedef sai_status_t (*sai_remove_route_fn)(
+    _In_ const sai_unicast_route_entry_t* unicast_route_entry
+    );
+
 /*
 * Routine Description:
 *    Set route attribute value
 *
 * Arguments:
 *    [in] unicast_route_entry - route entry
-*    [in] attribute - route attribute
-*    [in] value - route attribute value
+*    [in] attr - attribute
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_route_attribute_fn)(
-    _In_ sai_unicast_route_entry_t* unicast_route_entry,
-    _In_ sai_route_attr_t attribute, 
-    _In_ uint64_t value
+    _In_ const sai_unicast_route_entry_t* unicast_route_entry,
+    _In_ const sai_attribute_t *attr
     );
 
 /*
@@ -113,48 +124,19 @@ typedef sai_status_t (*sai_set_route_attribute_fn)(
 *
 * Arguments:
 *    [in] unicast_route_entry - route entry
-*    [in] attribute - route attribute
-*    [out] value - route attribute value
+*    [in] attr_count - number of attributes
+*    [inout] attr_list - array of attributes
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_route_attribute_fn)(
-    _In_ sai_unicast_route_entry_t* unicast_route_entry,
-    _In_ sai_route_attr_t attribute, 
-    _Out_ uint64_t* value
+    _In_ const sai_unicast_route_entry_t* unicast_route_entry,
+    _In_ int attr_count,
+    _Inout_ sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*    Create Route
-*
-* Arguments:
-*    [in] unicast_route_entry - route entry
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_create_route_fn)(
-    _In_ sai_unicast_route_entry_t* unicast_route_entry
-    );
-
-/*
-* Routine Description:
-*    Delete Route
-*
-* Arguments:
-*    [in] unicast_route_entry - route entry
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_delete_route_fn)(
-    _In_ sai_unicast_route_entry_t* unicast_route_entry
-    );
 
 /*
 *  Router entry methods table retrieved with sai_api_query()
@@ -162,9 +144,9 @@ typedef sai_status_t (*sai_delete_route_fn)(
 typedef struct _sai_route_api_t
 {
     sai_create_route_fn         create_route;
-    sai_delete_route_fn         delete_route;
-    sai_set_route_attribute_fn  set_attribute;
-    sai_get_route_attribute_fn  get_attribute;
+    sai_remove_route_fn         remove_route;
+    sai_set_route_attribute_fn  set_route_attribute;
+    sai_get_route_attribute_fn  get_route_attribute;
 
 } sai_route_api_t;
 

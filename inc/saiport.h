@@ -32,17 +32,11 @@
 
 #include <saitypes.h>
 
-#define PORT_COUNTER_SET_DEFAULT    0
-
-
 /*
 *  Attribute data for SAI_PORT_ATTR_TYPE
 */
 typedef enum _sai_port_type_t
 {
-    /* Undefined */
-    SAI_PORT_TYPE_UNDEFINED,
-
     /* Actual port. N.B. Different from the physical port. */
     SAI_PORT_TYPE_LOGICAL,
 
@@ -76,28 +70,10 @@ typedef enum _sai_port_oper_status_t
 
 } sai_port_oper_status_t;
 
-
-/*
-*  Attribute data for SAI_PORT_STP_MODE
-*/
-typedef enum _sai_port_stp_mode_t 
-{
-    /* Spanning-Tree Disabled */
-    SAI_PORT_STP_MODE_DISABLED,
-
-    /* Spanning-Tree */
-    SAI_PORT_STP_MODE_STP,
-
-    /* Rapid Spanning-Tree */
-    SAI_PORT_STP_MODE_RSTP,
-
-} sai_port_stp_mode_t;
-
-
 /*
 *  Attribute data for SAI_PORT_STP_STATE
 */
-typedef enum _sai_port_stp_port_state_t 
+typedef enum _sai_port_stp_state_t 
 {
     /* Port is Disabled  */
     SAI_PORT_STP_STATE_DISABLED,
@@ -117,8 +93,55 @@ typedef enum _sai_port_stp_port_state_t
     /* Port is Discarding */
     SAI_PORT_STP_STATE_DISCARDING,
 
-} sai_port_stp_port_state_t;
+} sai_port_stp_state_t;
 
+/*
+* Attribute data for SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL
+*/
+typedef enum _sai_port_flow_control_mode_t
+{
+    /* disable flow control for both tx and rx */
+    SAI_PORT_FLOW_CONTROL_DISABLE,
+
+    /* enable flow control for tx only */
+    SAI_PORT_FLOW_CONTROL_TX_ONLY,
+
+    /* enable flow control for rx only */
+    SAI_PORT_FLOW_CONTROL_RX_ONLY,
+
+    /* enable flow control for both tx and rx */
+    SAI_PORT_FLOW_CONTROL_BOTH_ENABLE,
+
+} sai_port_flow_contorl_mode_t;
+
+/*
+* Attribute data for SAI_PORT_ATTR_INTERNAL_LOOPBACK
+*/
+typedef enum _sai_port_internal_loopback_mode_t
+{
+    /* disable internal loopback */
+    SAI_PORT_INTERNAL_LOOPBACK_NONE,
+
+    /* port internal loopback at phy module */
+    SAI_PORT_INTERNAL_LOOPBACK_PHY,
+
+    /* port internal loopback at mac module */
+    SAI_PORT_INTERNAL_LOOPBACK_MAC
+
+} sai_port_internal_loopback_mode;
+
+/*
+* Attribute data for SAI_PORT_ATTR_FDB_LEARNING
+*/
+typedef enum _sai_port_fdb_learning_mode_t 
+{
+    /* Learning diaable. Do not learn new mac address */
+    SAI_PORT_LEARN_MODE_DISABLE,
+
+    /* Hardware learning */
+    SAI_PORT_LEARN_MODE_HW,
+
+} sai_port_fdb_learning_mode_t;
 
 /*
 *  Attribute Id in sai_set_port_attribute() and 
@@ -131,14 +154,13 @@ typedef enum _sai_port_attr_t
     /* Admin Mode [sai_port_type_t] */
     SAI_PORT_ATTR_TYPE,
 
-    /* Speed in Mbps [uint_t] */
-    SAI_PORT_ATTR_SPEED,
-
     /* Operational Status [sai_port_oper_status_t] */
     SAI_PORT_ATTR_OPER_STATUS,
 
 
     /* READ-WRITE */
+    /* Speed in Mbps [uint_t] */
+    SAI_PORT_ATTR_SPEED,
 
     /* Admin Mode [bool] */
     SAI_PORT_ATTR_ADMIN_STATE,
@@ -160,17 +182,11 @@ typedef enum _sai_port_attr_t
     /* Dropping of tagged frames on ingress [bool] */
     SAI_PORT_ATTR_DROP_TAGGED, 
 
-    /* Internal loopback control [bool] */
+    /* Internal loopback control [sai_port_loopback_mode_t] */
     SAI_PORT_ATTR_INTERNAL_LOOPBACK,
 
-    /* Max frame size [uint32_t] */
-    SAI_PORT_ATTR_MAX_FRAME_SIZE,
-
-    /* FDB Learning [bool] */
+    /* FDB Learning mode [sai_port_fdb_learning_mode_t] */
     SAI_PORT_ATTR_FDB_LEARNING,
-
-    /* Stp mode [sai_port_stp_mode_t] */
-    SAI_PORT_ATTR_STP_MODE,
 
     /* Stp mode [sai_port_stp_state_t] */
     SAI_PORT_ATTR_STP_STATE,
@@ -178,7 +194,7 @@ typedef enum _sai_port_attr_t
     /* Update DSCP of outgoing packets [bool] */
     SAI_PORT_ATTR_UPDATE_DSCP,
 
-    /* MTU [int] */
+    /* MTU [uint32_t] */
     SAI_PORT_ATTR_MTU,
 
     /* Sflow control */
@@ -188,16 +204,21 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_FLOOD_STORM_CONTROL,
 
     /* [bool] */
-    SAI_PORT_ATTR_BOADCAST_STORM_CONTROL,
+    SAI_PORT_ATTR_BROADCAST_STORM_CONTROL,
 
     /* [bool] */
     SAI_PORT_ATTR_MULTICAST_STORM_CONTROL,
 
-    /* [bool] */
-    SAI_PORT_ATTR_GLOBOL_FLOW_CONTROL,
+    /* [sai_port_flow_contorl_mode_t] */
+    SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL,
 
     /* Maximum number of learned MAC addresses [uint32_t] */
     SAI_PORT_ATTR_MAX_LEARNED_ADDRESSES,
+
+    /* Action for packets with unknown source mac address
+     * when FDB learning limit is reached.
+     * [sai_packet_action_t] */
+    SAI_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION,
 
     /* -- */
 
@@ -278,8 +299,7 @@ typedef enum _sai_port_stat_counter_t
 *
 * Arguments:
 *    [in] port_id - port id
-*    [in] attribute - port attribute.
-*    [in] value - port attribute value.
+*    [in] attr - attribute
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
@@ -287,8 +307,7 @@ typedef enum _sai_port_stat_counter_t
 */
 typedef sai_status_t (*sai_set_port_attribute_fn)(
     _In_ sai_port_id_t port_id, 
-    _In_ sai_port_attr_t attribute,
-    _In_ uint64_t value
+    _In_ const sai_attribute_t *attr
     );
 
 
@@ -298,8 +317,8 @@ typedef sai_status_t (*sai_set_port_attribute_fn)(
 *
 * Arguments:
 *    [in] port_id - port id
-*    [in] attribute - port attribute.
-*    [out] value - port attribute value.
+*    [in] attr_count - number of attributes
+*    [inout] attr_list - array of attributes
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
@@ -307,27 +326,8 @@ typedef sai_status_t (*sai_set_port_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_port_attribute_fn)(
     _In_ sai_port_id_t port_id,
-    _In_ sai_port_attr_t attribute,
-    _Out_ uint64_t* value
-    );
-
-/*
-* Routine Description:
-*   Enable/disable statistics counters for port.
-*
-* Arguments:
-*    [in] port_id - port id
-*    [in] counter_set_id - specifies the counter set
-*    [in] enable - TRUE to enable, FALSE to disable
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS        on success
-*    Failure status code on error
-*/ 
-typedef sai_status_t (*sai_ctl_port_stats_fn)(
-    _In_ sai_port_id_t port_id,
-    _In_ uint32_t port_counter_set_id,
-    _In_ bool enable
+    _In_ int attr_count,
+    _Inout_ sai_attribute_t *attr_list
     );
 
 /*
@@ -336,7 +336,7 @@ typedef sai_status_t (*sai_ctl_port_stats_fn)(
 *
 * Arguments:
 *    [in] port_id - port id
-*    [in] counter_set_id - specifies the counter set
+*    [in] counter_ids - specifies the array of counter ids
 *    [in] number_of_counters - number of counters in the array
 *    [out] counters - array of resulting counter values.
 *
@@ -346,7 +346,7 @@ typedef sai_status_t (*sai_ctl_port_stats_fn)(
 */ 
 typedef sai_status_t (*sai_get_port_stats_fn)(
     _In_ sai_port_id_t port_id,
-    _In_ uint32_t counter_set_id,
+    _In_ const sai_port_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
     );
@@ -354,7 +354,7 @@ typedef sai_status_t (*sai_get_port_stats_fn)(
 /*
 * Routine Description:
 *   Port state change notification
-*   Passed as a parameter into sai_open_switch()
+*   Passed as a parameter into sai_initialize_switch()
 *
 * Arguments:
 *   [in] port_id - port id
@@ -373,10 +373,10 @@ typedef void (*sai_port_state_change_notification_fn)(
 */
 typedef struct _sai_port_api_t
 {
-    sai_set_port_attribute_fn       set_attribute;
-    sai_get_port_attribute_fn       get_attribute;
-    sai_ctl_port_stats_fn           ctl_stats;
-    sai_get_port_stats_fn           get_stats;
+    sai_set_port_attribute_fn       set_port_attribute;
+    sai_get_port_attribute_fn       get_port_attribute;
+    sai_get_port_stats_fn           get_port_stats;
+
 } sai_port_api_t;
 
 #endif // __SAIPORT_H_

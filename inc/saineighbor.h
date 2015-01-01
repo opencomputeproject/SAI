@@ -34,14 +34,34 @@
 #include <saitypes.h>
 
 /*
+*  Attribute Id for sai neighbor object
+*/
+typedef enum _sai_neighbor_attr_t
+{
+    /* READ-WRITE */
+
+    /* Router interface id for the neighbor [sai_router_interface_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_NEIGHBOR_ATTR_ROUTER_INTERFACE_ID,
+
+    /* Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
+    SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS, 
+
+    /* L3 forwarding action for this neighbor [sai_packet_action_t]
+    *    (default to SAI_PACKET_ACTION_FORWARD) */
+    SAI_NEIGHBOR_ATTR_PACKET_ACTION,
+
+    /* Custom range base value */
+    SAI_NEIGHBOR_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+
+} sai_neighbor_attr_t;
+
+/*
 *  neighbor entry 
 */
 typedef struct _sai_neighbor_entry_t
 {
-    sai_vr_id_t vr_id;
-    sai_router_interface_id_t router_interface_id;
-    sockaddr_inet ip_address;
-    sai_mac_t mac_address;
+    sai_virtual_router_id_t vr_id;
+    sai_ip_address_t ip_address;
 
 } sai_neighbor_entry_t;
 
@@ -52,18 +72,22 @@ typedef struct _sai_neighbor_entry_t
 *
 * Arguments:
 *    [in] neighbor_entry - neighbor entry 
+*    [in] attr_count - number of attributes
+*    [in] attrs - array of attributes
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_create_neighbor_entry_fn)(
-    _In_ sai_neighbor_entry_t* neighbor_entry
+    _In_ const sai_neighbor_entry_t* neighbor_entry,
+    _In_ int attr_count,
+    _In_ const sai_attribute_t *attr_list
     );
 
 /*
 * Routine Description:
-*    Delete neighbor entry 
+*    Remove neighbor entry 
 *
 * Arguments:
 *    [in] neighbor_entry - neighbor entry 
@@ -72,14 +96,49 @@ typedef sai_status_t (*sai_create_neighbor_entry_fn)(
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_delete_neighbor_entry_fn)(
-    _In_ sai_neighbor_entry_t* neighbor_entry
+typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
+    _In_ const sai_neighbor_entry_t* neighbor_entry
     );
-
 
 /*
 * Routine Description:
-*    Delete all neighbor entries
+*    Set neighbor attribute value
+*
+* Arguments:
+*    [in] neighbor_entry - neighbor entry
+*    [in] attr - attribute
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
+    _In_ const sai_neighbor_entry_t* neighbor_entry,
+    _In_ const sai_attribute_t *attr
+    );
+
+/*
+* Routine Description:
+*    Get neighbor attribute value
+*
+* Arguments:
+*    [in] neighbor_entry - neighbor entry
+*    [in] attr_count - number of attributes
+*    [inout] attrs - array of attributes
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+typedef sai_status_t (*sai_get_neighbor_attribute_fn)(
+    _In_ const sai_neighbor_entry_t* neighbor_entry,
+    _In_ int attr_count,
+    _Inout_ sai_attribute_t *attr_list
+    );
+
+/*
+* Routine Description:
+*    Remove all neighbor entries
 *
 * Arguments:
 *    None
@@ -88,27 +147,7 @@ typedef sai_status_t (*sai_delete_neighbor_entry_fn)(
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_delete_all_neighbor_entries_fn)(void);
-
-
-/*
-* Routine Description:
-*    Check if neighbor entry was used
-*
-* Arguments:
-*    [in] neighbor_entry - neighbor entry 
-*    [in] reset_used_flag - reset the used flag after reading 
-*    [out] is_used - true if neighbor entry was used 
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_query_neighbor_entry_fn)(
-    _In_ sai_neighbor_entry_t* neighbor_entry,
-    _In_ bool reset_used_flag,
-    _Out_ bool* is_used
-    );
+typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(void);
 
 /*
 *  neighbor table methods, retrieved via sai_api_query()
@@ -116,9 +155,10 @@ typedef sai_status_t (*sai_query_neighbor_entry_fn)(
 typedef struct _sai_neighbor_api_t
 {
     sai_create_neighbor_entry_fn        create_neighbor_entry;
-    sai_delete_neighbor_entry_fn        delete_neighbor_entry;
-    sai_delete_all_neighbor_entries_fn  delete_all_neighbor_entries;
-    sai_query_neighbor_entry_fn         query_neighbor_entry;
+    sai_remove_neighbor_entry_fn        remove_neighbor_entry;
+    sai_set_neighbor_attribute_fn       set_neighbor_attribute;
+    sai_get_neighbor_attribute_fn       get_neighbor_attribute;
+    sai_remove_all_neighbor_entries_fn  remove_all_neighbor_entries;
 
 } sai_neighbor_api_t;
 

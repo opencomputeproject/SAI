@@ -35,61 +35,68 @@
 #include <saitypes.h>
 
 /*
-*  Attribute data for route action attributes
+*  Attribute Id in sai_set_virtual_router_attribute() and 
+*  sai_get_virtual_router_attribute() calls
 */
-typedef enum _sai_vr_action_t
-{
-    /* Drop Packet */
-    SAI_VR_TTL_ACTION_DROP,
-
-    /* Forward Packet */
-    SAI_VR_TTL_ACTION_FORWARD,
-
-    /* Trap Packet to CPU */
-    SAI_VR_TTL_ACTION_TRAP,
-
-    /* Log (Trap + Forward) Packet */
-    SAI_VR_TTL_ACTION_LOG
-
-} sai_vr_action_t;
-
-
-/*
-*  Attribute Id in sai_set_vr_attribute() and 
-*  sai_get_vr_attribute() calls
-*/
-typedef enum _sai_vr_attr_t
+typedef enum _sai_virtual_router_attr_t
 {
     /* READ-WRITE */
 
     /* Admin V4 state [bool] */
-    SAI_VR_ATTR_ADMIN_V4_STATE,
+    SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V4_STATE,
 
     /* Admin V6 state [bool] */
-    SAI_VR_ATTR_ADMIN_V6_STATE,
+    SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE,
 
     /* MAC Address [sai_mac_t] */
-    SAI_VR_ATTR_MAC_ADDRESS,
+    SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS,
 
-    /* Action for Packets with TTL 0 or 1 [sai_vr_action_t] */
-    SAI_VR_ATTR_VIOLATION_TTL1_ACTION,
+    /* Action for Packets with TTL 0 or 1 [sai_packet_action_t] */
+    SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_TTL1_ACTION,
 
-    /* Action for Packets with TTL 2 (drop early) [sai_vr_action_t] */
-    SAI_VR_ATTR_VIOLATION_TTL2_ACTION,
-
-    /* Action for Packets with IP options [route_packet_action_e] */
-    SAI_VR_ATTR_VIOLATION_IP_OPTIONS,
-
-    /* Minumum MTU of all router interfaces */
-    SAI_VR_ATTR_MIN_MTU,
+    /* Action for Packets with IP options [sai_packet_action_t] */
+    SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_IP_OPTIONS,
 
     /* -- */
 
     /* Custom range base value */
-    SAI_VR_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_VIRTUAL_ROUTER_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
-} sai_vr_attr_t;
+} sai_virtual_router_attr_t;
 
+/*
+* Routine Description:
+*    Create virtual router
+*
+* Arguments:
+*    [in] vr_id - virtual router id
+*    [in] attr_count - number of attributes
+*    [in] attr_list - array of attributes
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+typedef sai_status_t (*sai_create_virtual_router_fn)(
+    _Out_ sai_virtual_router_id_t vr_id,
+    _In_ int attr_count,
+    _In_ const sai_attribute_t *attr_list
+    );
+
+/*
+* Routine Description:
+*    Remove virtual router
+*
+* Arguments:
+*    [in] vr_id - virtual router id
+*
+* Return Values:
+*    SAI_STATUS_SUCCESS on success
+*    Failure status code on error
+*/
+typedef sai_status_t (*sai_remove_virtual_router_fn)(
+    _In_ sai_virtual_router_id_t vr_id
+    );
 
 /*
 * Routine Description:
@@ -97,17 +104,15 @@ typedef enum _sai_vr_attr_t
 *
 * Arguments:
 *    [in] vr_id - virtual router id
-*    [in] attribute - virtual router attribute
-*    [in] value - virtual router attribute value
+*    [in] attr - attribute
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_set_vr_attribute_fn)(
-    _In_ sai_vr_id_t vr_id, 
-    _In_ sai_vr_attr_t attribute, 
-    _In_ uint64_t value
+typedef sai_status_t (*sai_set_virtual_router_attribute_fn)(
+    _In_ sai_virtual_router_id_t vr_id, 
+    _In_ const sai_attribute_t *attr
     );
 
 /*
@@ -116,60 +121,29 @@ typedef sai_status_t (*sai_set_vr_attribute_fn)(
 *
 * Arguments:
 *    [in] vr_id - virtual router id
-*    [in] attribute - virtual router attribute
-*    [out] value - virtual router attribute value
+*    [in] attr_count - number of attributes
+*    [in] attr_list - array of attributes
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_get_vr_attribute_fn)(
-    _In_ sai_vr_id_t vr_id, 
-    _In_ sai_vr_attr_t attribute, 
-    _In_ uint64_t* value
-    );
-
-/*
-* Routine Description:
-*    Create virtual router
-*
-* Arguments:
-*    [in] vr_id - virtual router id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_create_vr_fn)(
-    _In_ sai_vr_id_t vr_id
-    );
-
-
-/*
-* Routine Description:
-*    Delete virtual router
-*
-* Arguments:
-*    [in] vr_id - virtual router id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_delete_vr_fn)(
-    _In_ sai_vr_id_t vr_id
+typedef sai_status_t (*sai_get_virtual_router_attribute_fn)(
+    _In_ sai_virtual_router_id_t vr_id, 
+    _In_ int attr_count,
+    _Inout_ sai_attribute_t *attr_list
     );
 
 /*
 *  Virtual router methods table retrieved with sai_api_query()
 */
-typedef struct _sai_vr_api_t
+typedef struct _sai_virtual_router_api_t
 {
-    sai_create_vr_fn           create_router;
-    sai_delete_vr_fn           delete_router;
-    sai_set_vr_attribute_fn    set_attribute;
-    sai_get_vr_attribute_fn    get_attribute;
+    sai_create_virtual_router_fn        create_virtual_router;
+    sai_remove_virtual_router_fn        remove_virtual_router;
+    sai_set_virtual_router_attribute_fn set_virtual_router_attribute;
+    sai_get_virtual_router_attribute_fn get_virtual_router_attribute;
 
-} sai_vr_api_t;
+} sai_virtual_router_api_t;
 
 #endif // __SAIROUTER_H_
