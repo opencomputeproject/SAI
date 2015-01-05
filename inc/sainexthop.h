@@ -87,7 +87,7 @@ typedef enum _sai_next_hop_attr_t
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_create_next_hop_fn)(
-    _In_ sai_next_hop_id_t* next_hop_id,
+    _Out_ sai_next_hop_id_t* next_hop_id,
     _In_ int attr_count,
     _In_ const sai_attribute_t *attr_list
     );
