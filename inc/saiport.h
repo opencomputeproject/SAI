@@ -112,7 +112,7 @@ typedef enum _sai_port_flow_control_mode_t
     /* enable flow control for both tx and rx */
     SAI_PORT_FLOW_CONTROL_BOTH_ENABLE,
 
-} sai_port_flow_contorl_mode_t;
+} sai_port_flow_control_mode_t;
 
 /*
 * Attribute data for SAI_PORT_ATTR_INTERNAL_LOOPBACK
@@ -209,7 +209,7 @@ typedef enum _sai_port_attr_t
     /* [bool] */
     SAI_PORT_ATTR_MULTICAST_STORM_CONTROL,
 
-    /* [sai_port_flow_contorl_mode_t] */
+    /* [sai_port_flow_control_mode_t] */
     SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL,
 
     /* Maximum number of learned MAC addresses [uint32_t] */
