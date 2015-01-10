@@ -85,7 +85,7 @@ typedef enum _sai_next_hop_group_attr_t
 */
 typedef sai_status_t (*sai_create_next_hop_group_fn)(
     _Out_ sai_next_hop_group_id_t* next_hop_group_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
@@ -137,7 +137,7 @@ typedef sai_status_t (*sai_set_next_hop_group_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_next_hop_group_attribute_fn)(
     _In_ sai_next_hop_group_id_t next_hop_group_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 
@@ -156,7 +156,7 @@ typedef sai_status_t (*sai_get_next_hop_group_attribute_fn)(
 */
 typedef sai_status_t (*sai_add_next_hop_to_group_fn)(
     _In_ sai_next_hop_group_id_t next_hop_group_id,
-    _In_ int next_hop_count,
+    _In_ uint32_t next_hop_count,
     _In_ const sai_next_hop_id_t* nexthops
     );
 
@@ -176,7 +176,7 @@ typedef sai_status_t (*sai_add_next_hop_to_group_fn)(
 */
 typedef sai_status_t (*sai_remove_next_hop_from_group_fn)(
     _In_ sai_next_hop_group_id_t next_hop_group_id,
-    _In_ int next_hop_count,
+    _In_ uint32_t next_hop_count,
     _In_ const sai_next_hop_id_t* nexthops
     );
 

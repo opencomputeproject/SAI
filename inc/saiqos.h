@@ -144,7 +144,7 @@ typedef sai_status_t (*sai_set_cos_attribute_fn)(
 typedef sai_status_t (*sai_get_cos_attribute_fn)(
     _In_ sai_port_id_t port_id, 
     _In_ sai_cos_t cos_value, 
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 

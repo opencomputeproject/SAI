@@ -119,12 +119,12 @@ typedef uint64_t sai_uint64_t;
 typedef int64_t sai_int64_t;
 
 typedef struct _sai_port_list_list_t {
-    int port_count;
+    uint32_t port_count;
     sai_port_id_t *port_list;
 } sai_port_list_t;
 
 typedef struct _sai_next_hop_list_t {
-    int next_hop_count;
+    uint32_t next_hop_count;
     sai_next_hop_id_t *next_hop_list;
 } sai_next_hop_list_t;
 

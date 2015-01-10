@@ -114,7 +114,7 @@ typedef enum _sai_fdb_entry_attr_t
 */
 typedef sai_status_t (*sai_create_fdb_entry_fn)(
     _In_ const sai_fdb_entry_t* fdb_entry,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
@@ -165,7 +165,7 @@ typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
     _In_ const sai_fdb_entry_t* fdb_entry,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 
@@ -246,7 +246,7 @@ typedef sai_status_t (*sai_flush_all_fdb_entries_by_port_vlan_fn)(
 typedef void (*sai_fdb_event_notification_fn)(
     _In_ sai_fdb_event_t event_type,
     _In_ sai_fdb_entry_t* fdb_entry,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ sai_attribute_t *attr
     );
 

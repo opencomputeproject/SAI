@@ -81,7 +81,7 @@ typedef struct _sai_neighbor_entry_t
 */
 typedef sai_status_t (*sai_create_neighbor_entry_fn)(
     _In_ const sai_neighbor_entry_t* neighbor_entry,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
@@ -132,7 +132,7 @@ typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_neighbor_attribute_fn)(
     _In_ const sai_neighbor_entry_t* neighbor_entry,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 

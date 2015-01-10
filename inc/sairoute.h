@@ -82,7 +82,7 @@ typedef struct _sai_unicast_route_entry_t
 */
 typedef sai_status_t (*sai_create_route_fn)(
     _In_ const sai_unicast_route_entry_t* unicast_route_entry,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
@@ -133,7 +133,7 @@ typedef sai_status_t (*sai_set_route_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_route_attribute_fn)(
     _In_ const sai_unicast_route_entry_t* unicast_route_entry,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 

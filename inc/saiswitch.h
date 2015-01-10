@@ -359,7 +359,7 @@ typedef sai_status_t (*sai_set_switch_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_switch_attribute_fn)(
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 

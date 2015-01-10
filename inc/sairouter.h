@@ -78,8 +78,8 @@ typedef enum _sai_virtual_router_attr_t
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_create_virtual_router_fn)(
-    _Out_ sai_virtual_router_id_t vr_id,
-    _In_ int attr_count,
+    _Out_ sai_virtual_router_id_t *vr_id,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
@@ -130,7 +130,7 @@ typedef sai_status_t (*sai_set_virtual_router_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_virtual_router_attribute_fn)(
     _In_ sai_virtual_router_id_t vr_id, 
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 

@@ -435,7 +435,7 @@ typedef enum _sai_acl_counter_attr_t
 */
 typedef sai_status_t (*sai_create_acl_table_fn)(
     _Out_ sai_acl_table_id_t* acl_table_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 /*
@@ -485,7 +485,7 @@ typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
     _In_ sai_acl_table_id_t acl_table_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Out_ sai_attribute_t *attr_list
     );
 
@@ -504,7 +504,7 @@ typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
 */
 typedef sai_status_t (*sai_create_acl_entry_fn)(
     _Out_ sai_acl_entry_id_t *acl_entry_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
@@ -555,7 +555,7 @@ typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
     _In_ sai_acl_entry_id_t acl_entry_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Out_ sai_attribute_t *attr_list
     );
 
@@ -574,7 +574,7 @@ typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
 */
 typedef sai_status_t (*sai_create_acl_counter_fn)(
     _Out_ sai_acl_counter_id_t *acl_counter_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
@@ -625,7 +625,7 @@ typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
     _In_ sai_acl_counter_id_t acl_counter_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Out_ sai_attribute_t *attr_list
     );
 

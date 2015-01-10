@@ -88,7 +88,7 @@ typedef enum _sai_next_hop_attr_t
 */
 typedef sai_status_t (*sai_create_next_hop_fn)(
     _Out_ sai_next_hop_id_t* next_hop_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
@@ -140,7 +140,7 @@ typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
 */
 typedef sai_status_t (*sai_get_next_hop_attribute_fn)(
     _In_ sai_next_hop_id_t next_hop_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 
