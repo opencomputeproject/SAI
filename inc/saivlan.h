@@ -214,25 +214,6 @@ typedef sai_status_t (*sai_remove_ports_from_vlan_fn)(
 
 /*
 * Routine Description:
-*   Enable/disable statistics counters for vlan.
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*    [in] counter_set_id - specifies the counter set
-*    [in] enable - TRUE to enable, FALSE to disable
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/ 
-typedef sai_status_t (*sai_ctl_vlan_stats_fn)(
-    _In_ sai_vlan_id_t vlan_id, 
-    _In_ uint32_t counter_set_id,
-    _In_ bool enable
-    );
-
-/*
-* Routine Description:
 *   Get vlan statistics counters.
 *
 * Arguments:
@@ -264,7 +245,6 @@ typedef struct _sai_vlan_api_t
     sai_add_ports_to_vlan_fn        add_ports_to_vlan;
     sai_remove_ports_from_vlan_fn   remove_ports_from_vlan;
     sai_remove_all_vlans_fn         remove_all_vlans;
-    sai_ctl_vlan_stats_fn           ctl_vlan_stats;
     sai_get_vlan_stats_fn           get_vlan_stats;
     
 } sai_vlan_api_t;
