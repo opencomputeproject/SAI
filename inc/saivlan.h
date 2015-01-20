@@ -233,7 +233,7 @@ typedef sai_status_t (*sai_ctl_vlan_stats_fn)(
 
 /*
 * Routine Description:
-*   Get port statistics counters.
+*   Get vlan statistics counters.
 *
 * Arguments:
 *    [in] vlan_id - VLAN id

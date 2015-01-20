@@ -151,7 +151,7 @@ typedef enum _sai_port_attr_t
 {
     /* READ-ONLY */
 
-    /* Admin Mode [sai_port_type_t] */
+    /* Port Type [sai_port_type_t] */
     SAI_PORT_ATTR_TYPE,
 
     /* Operational Status [sai_port_oper_status_t] */
