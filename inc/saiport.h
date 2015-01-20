@@ -128,7 +128,7 @@ typedef enum _sai_port_internal_loopback_mode_t
     /* port internal loopback at mac module */
     SAI_PORT_INTERNAL_LOOPBACK_MAC
 
-} sai_port_internal_loopback_mode;
+} sai_port_internal_loopback_mode_t;
 
 /*
 * Attribute data for SAI_PORT_ATTR_FDB_LEARNING
@@ -182,7 +182,7 @@ typedef enum _sai_port_attr_t
     /* Dropping of tagged frames on ingress [bool] */
     SAI_PORT_ATTR_DROP_TAGGED, 
 
-    /* Internal loopback control [sai_port_loopback_mode_t] */
+    /* Internal loopback control [sai_port_internal_loopback_mode_t] */
     SAI_PORT_ATTR_INTERNAL_LOOPBACK,
 
     /* FDB Learning mode [sai_port_fdb_learning_mode_t] */
