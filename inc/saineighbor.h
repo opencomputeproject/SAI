@@ -40,9 +40,6 @@ typedef enum _sai_neighbor_attr_t
 {
     /* READ-WRITE */
 
-    /* Router interface id for the neighbor [sai_router_interface_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_NEIGHBOR_ATTR_ROUTER_INTERFACE_ID,
-
     /* Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS, 
 
@@ -60,7 +57,7 @@ typedef enum _sai_neighbor_attr_t
 */
 typedef struct _sai_neighbor_entry_t
 {
-    sai_virtual_router_id_t vr_id;
+    sai_router_interface_id_t rif_id; 
     sai_ip_address_t ip_address;
 
 } sai_neighbor_entry_t;
