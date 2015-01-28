@@ -117,6 +117,8 @@ typedef uint8_t  sai_ip6_t[16];
 //
 typedef uint64_t sai_uint64_t;
 typedef int64_t sai_int64_t;
+typedef uint32_t sai_uint32_t;
+typedef int32_t sai_int32_t;
 
 typedef struct _sai_port_list_list_t {
     uint32_t port_count;
@@ -208,6 +210,8 @@ typedef struct _sai_acl_action_data_t
 } sai_acl_action_data_t;
 
 typedef union {
+    sai_uint32_t u32;
+    sai_int32_t s32;
     sai_uint64_t u64;
     sai_int64_t s64;
     sai_mac_t mac;
