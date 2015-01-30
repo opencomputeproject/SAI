@@ -119,6 +119,10 @@ typedef uint64_t sai_uint64_t;
 typedef int64_t sai_int64_t;
 typedef uint32_t sai_uint32_t;
 typedef int32_t sai_int32_t;
+typedef uint16_t sai_uint16_t;
+typedef int16_t sai_int16_t;
+typedef uint8_t sai_uint8_t;
+typedef int8_t sai_int8_t;
 
 typedef struct _sai_port_list_list_t {
     uint32_t port_count;
@@ -210,6 +214,11 @@ typedef struct _sai_acl_action_data_t
 } sai_acl_action_data_t;
 
 typedef union {
+    bool booldata;
+    sai_uint8_t u8;
+    sai_int8_t s8;
+    sai_uint16_t u16;
+    sai_int16_t s16;
     sai_uint32_t u32;
     sai_int32_t s32;
     sai_uint64_t u64;
