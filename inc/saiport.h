@@ -159,7 +159,7 @@ typedef enum _sai_port_attr_t
 
 
     /* READ-WRITE */
-    /* Speed in Mbps [uint_t] */
+    /* Speed in Mbps [uint32_t] */
     SAI_PORT_ATTR_SPEED,
 
     /* Admin Mode [bool] */
