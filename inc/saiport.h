@@ -170,7 +170,7 @@ typedef enum _sai_port_attr_t
     */
     SAI_PORT_ATTR_DEFAULT_VLAN,
 
-    /* Default VLAN Priority [int] */
+    /* Default VLAN Priority [int32_t] */
     SAI_PORT_ATTR_DEFAULT_VLAN_PRIORITY,
 
     /* Ingress Filtering (Drop Frames with Unknown VLANs) [bool] */

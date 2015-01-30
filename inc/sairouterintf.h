@@ -83,7 +83,7 @@ typedef enum _sai_router_interface_attr_t
     /* Admin State [bool] */
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_V6_STATE,
 
-    /* MTU [int] */
+    /* MTU [uint32_t] */
     SAI_ROUTER_INTERFACE_ATTR_MTU,
 
     /* -- */
