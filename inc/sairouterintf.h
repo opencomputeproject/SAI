@@ -55,7 +55,7 @@ typedef enum _sai_router_interface_attr_t
 
     /* Virtual router id [sai_virtual_router_id_t]
      *  (mandatory for create) */
-    SAI_ROUTE_VIRTUAL_ROUTER_ID,
+    SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID,
 
     /* Type [sai_router_interface_type_t]
      *  (mandatory for create) */
