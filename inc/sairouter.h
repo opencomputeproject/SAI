@@ -69,7 +69,7 @@ typedef enum _sai_virtual_router_attr_t
 *    Create virtual router
 *
 * Arguments:
-*    [in] vr_id - virtual router id
+*    [out] vr_id - virtual router id
 *    [in] attr_count - number of attributes
 *    [in] attr_list - array of attributes
 *
