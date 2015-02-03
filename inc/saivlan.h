@@ -64,7 +64,11 @@ typedef struct _sai_vlan_port_t
 */
 typedef enum _sai_vlan_attr_t 
 {
-    /* Maximum number of learned MAC addresses [uint32_t] */
+    /* READ-WRITE */
+    
+    /* Maximum number of learned MAC addresses [uint32_t]
+     * zero means learning limit disable. (default to zero).
+     */
     SAI_VLAN_ATTR_MAX_LEARNED_ADDRESSES,
 
     /* Custom range base value */

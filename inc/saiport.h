@@ -135,7 +135,7 @@ typedef enum _sai_port_internal_loopback_mode_t
 */
 typedef enum _sai_port_fdb_learning_mode_t 
 {
-    /* Learning diaable. Do not learn new mac address */
+    /* Learning disable. Do not learn new mac address */
     SAI_PORT_LEARN_MODE_DISABLE,
 
     /* Hardware learning */
@@ -157,59 +157,68 @@ typedef enum _sai_port_attr_t
     /* Operational Status [sai_port_oper_status_t] */
     SAI_PORT_ATTR_OPER_STATUS,
 
-
     /* READ-WRITE */
     /* Speed in Mbps [uint32_t] */
     SAI_PORT_ATTR_SPEED,
 
-    /* Admin Mode [bool] */
+    /* Admin Mode [bool], (default to FALSE)*/
     SAI_PORT_ATTR_ADMIN_STATE,
 
-    /* Default VLAN [uint32_t] 
+    /* Default VLAN [sai_vlan_id_t] 
     *   Untagged ingress frames are tagged with default VLAN 
     */
     SAI_PORT_ATTR_DEFAULT_VLAN,
 
-    /* Default VLAN Priority [int32_t] */
+    /* Default VLAN Priority [uint8_t]
+       (default to 0) */
     SAI_PORT_ATTR_DEFAULT_VLAN_PRIORITY,
 
-    /* Ingress Filtering (Drop Frames with Unknown VLANs) [bool] */
+    /* Ingress Filtering (Drop Frames with Unknown VLANs) [bool]
+       (default to FALSE) */
     SAI_PORT_ATTR_INGRESS_FILTERING,
 
-    /* Dropping of untagged frames on ingress [bool] */
+    /* Dropping of untagged frames on ingress [bool]
+       (default to FALSE) */
     SAI_PORT_ATTR_DROP_UNTAGGED, 
 
-    /* Dropping of tagged frames on ingress [bool] */
+    /* Dropping of tagged frames on ingress [bool]
+       (default to FALSE) */
     SAI_PORT_ATTR_DROP_TAGGED, 
 
-    /* Internal loopback control [sai_port_internal_loopback_mode_t] */
+    /* Internal loopback control [sai_port_internal_loopback_mode_t]
+       (default to SAI_PORT_INTERNAL_LOOPBACK_NONE) */
     SAI_PORT_ATTR_INTERNAL_LOOPBACK,
 
-    /* FDB Learning mode [sai_port_fdb_learning_mode_t] */
+    /* FDB Learning mode [sai_port_fdb_learning_mode_t]
+       (default to SAI_PORT_LEARN_MODE_HW) */
     SAI_PORT_ATTR_FDB_LEARNING,
 
-    /* Stp mode [sai_port_stp_state_t] */
+    /* Stp mode [sai_port_stp_state_t]
+       (default to SAI_PORT_STP_STATE_FORWARDING) */
     SAI_PORT_ATTR_STP_STATE,
 
-    /* Update DSCP of outgoing packets [bool] */
+    /* Update DSCP of outgoing packets [bool]
+       (default to FALSE) */
     SAI_PORT_ATTR_UPDATE_DSCP,
 
-    /* MTU [uint32_t] */
+    /* MTU [uint32_t]
+       (default to 1514 bytes*/
     SAI_PORT_ATTR_MTU,
 
     /* Sflow control */
     SAI_PORT_ATTR_SFLOW,
 
-    /* [bool] */
+    /* [bool] (default to FALSE) */
     SAI_PORT_ATTR_FLOOD_STORM_CONTROL,
 
-    /* [bool] */
+    /* [bool] (default to FALSE) */
     SAI_PORT_ATTR_BROADCAST_STORM_CONTROL,
 
-    /* [bool] */
+    /* [bool] (default to FALSE) */
     SAI_PORT_ATTR_MULTICAST_STORM_CONTROL,
 
-    /* [sai_port_flow_control_mode_t] */
+    /* [sai_port_flow_control_mode_t]
+       (default to SAI_PORT_FLOW_CONTROL_DISABLE) */
     SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL,
 
     /* Maximum number of learned MAC addresses [uint32_t] */
@@ -217,7 +226,7 @@ typedef enum _sai_port_attr_t
 
     /* Action for packets with unknown source mac address
      * when FDB learning limit is reached.
-     * [sai_packet_action_t] */
+     * [sai_packet_action_t] (default to SAI_PACKET_ACTION_DROP) */
     SAI_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION,
 
     /* -- */
@@ -254,7 +263,7 @@ typedef enum _sai_port_stat_counter_t
     SAI_PORT_STAT_ETHER_STATS_BROADCAST_PKTS,
     SAI_PORT_STAT_ETHER_STATS_UNDERSIZE_PKTS,
     SAI_PORT_STAT_ETHER_STATS_FRAGMENTS,
-    SAI_PORT_STAT_ETHER_STATS_PKTS_64O_CTETS,
+    SAI_PORT_STAT_ETHER_STATS_PKTS_64_OCTETS,
     SAI_PORT_STAT_ETHER_STATS_PKTS_65_TO_127_OCTETS,
     SAI_PORT_STAT_ETHER_STATS_PKTS_128_TO_255_OCTETS,
     SAI_PORT_STAT_ETHER_STATS_PKTS_256_TO_511_OCTETS,

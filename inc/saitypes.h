@@ -213,6 +213,10 @@ typedef struct _sai_acl_action_data_t
 
 } sai_acl_action_data_t;
 
+/* 
+ * Data Type to use enum's as attribute value is sai_int32_t s32
+ *
+ */
 typedef union {
     bool booldata;
     sai_uint8_t u8;

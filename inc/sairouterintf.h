@@ -77,13 +77,13 @@ typedef enum _sai_router_interface_attr_t
         (equal to the SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS by default) */
     SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS,
 
-    /* Admin State [bool] */
+    /* Admin V4 state [bool] (default to TRUE) */
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_V4_STATE,
 
-    /* Admin State [bool] */
+    /* Admin V6 state [bool] (default to TRUE) */
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_V6_STATE,
 
-    /* MTU [uint32_t] */
+    /* MTU [uint32_t], (default to  1514 bytes) */
     SAI_ROUTER_INTERFACE_ATTR_MTU,
 
     /* -- */

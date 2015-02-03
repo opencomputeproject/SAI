@@ -75,6 +75,8 @@ typedef struct _sai_neighbor_entry_t
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
+*
+* Note: IP address expected in Network Byte Order.
 */
 typedef sai_status_t (*sai_create_neighbor_entry_fn)(
     _In_ const sai_neighbor_entry_t* neighbor_entry,
@@ -92,6 +94,8 @@ typedef sai_status_t (*sai_create_neighbor_entry_fn)(
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
+*
+* Note: IP address expected in Network Byte Order.
 */
 typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
     _In_ const sai_neighbor_entry_t* neighbor_entry

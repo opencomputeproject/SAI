@@ -85,6 +85,8 @@ typedef enum _sai_next_hop_attr_t
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
+*
+* Note: IP address expected in Network Byte Order.
 */
 typedef sai_status_t (*sai_create_next_hop_fn)(
     _Out_ sai_next_hop_id_t* next_hop_id,

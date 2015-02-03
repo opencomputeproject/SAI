@@ -42,19 +42,22 @@ typedef enum _sai_virtual_router_attr_t
 {
     /* READ-WRITE */
 
-    /* Admin V4 state [bool] */
+    /* Admin V4 state [bool] (default to TRUE) */
     SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V4_STATE,
 
-    /* Admin V6 state [bool] */
+    /* Admin V6 state [bool] (default to TRUE) */
     SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE,
 
-    /* MAC Address [sai_mac_t] */
+    /* MAC Address [sai_mac_t]  
+      (equal to the SAI_SWITCH_ATTR_ATTR_SRC_MAC_ADDRESS by default) */
     SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS,
 
-    /* Action for Packets with TTL 0 or 1 [sai_packet_action_t] */
+    /* Action for Packets with TTL 0 or 1 [sai_packet_action_t]
+      (default to SAI_PACKET_ACTION_TRAP) */
     SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_TTL1_ACTION,
 
-    /* Action for Packets with IP options [sai_packet_action_t] */
+    /* Action for Packets with IP options [sai_packet_action_t] 
+     * (default to SAI_PACKET_ACTION_TRAP) */
     SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_IP_OPTIONS,
 
     /* -- */
@@ -67,15 +70,16 @@ typedef enum _sai_virtual_router_attr_t
 /*
 * Routine Description:
 *    Create virtual router
-*
+*    
 * Arguments:
 *    [out] vr_id - virtual router id
 *    [in] attr_count - number of attributes
 *    [in] attr_list - array of attributes
-*
+* 
 * Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
+*  - SAI_STATUS_SUCCESS on success
+*  - SAI_STATUS_ADDR_NOT_FOUND if neither SAI_SWITCH_ATTR_SRC_MAC_ADDRESS nor 
+*    SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS is set.
 */
 typedef sai_status_t (*sai_create_virtual_router_fn)(
     _Out_ sai_virtual_router_id_t *vr_id,

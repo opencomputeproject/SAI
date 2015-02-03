@@ -57,25 +57,6 @@ typedef enum _sai_switch_oper_status_t
 
 } sai_switch_oper_status_t;
 
-
-/*  
-*  Attribute data for SAI_SWITCH_ATTR_FDB_MISS_ACTION
-*/ 
-typedef enum _sai_switch_fdb_miss_action_t
-{
-    SAI_SWITCH_FDB_MISS_DISCARD,
-
-    /* Flood on VLAN, except to CPU port **/
-    SAI_SWITCH_FDB_MISS_FORWARD,
-
-    /* Trap to CPU port **/
-    SAI_SWITCH_FDB_MISS_TRAP,
-
-    /* Forward + Trap **/
-    SAI_SWITCH_FDB_MISS_LOG
-
-} sai_switch_fdb_miss_action_t;
-
 /*
 *  Attribute data for packet action
 */
@@ -160,34 +141,39 @@ typedef enum _sai_switch_attr_t
 
     /* READ-WRITE */
 
-    /* Switching mode [sai_switch_switching_mode_t] */
+    /* Switching mode [sai_switch_switching_mode_t]
+       (default to SAI_SWITCHING_MODE_STORE_AND_FORWARD) */
     SAI_SWITCH_ATTR_SWITCHING_MODE,
 
     /* L2 broadcast flood control to CPU port [bool] */
     SAI_SWITCH_ATTR_BCAST_CPU_FLOOD_ENABLE,
 
-    /* L2 multicast flood control to CPU port [bool] */
+    /* L2 multicast flood control to CPU port [bool] */ 
     SAI_SWITCH_ATTR_MCAST_CPU_FLOOD_ENABLE,
 
-    /* Action for Packets with TTL 0 or 1 [sai_packet_action_t] */
+    /* Action for Packets with TTL 0 or 1 [sai_packet_action_t] 
+       (default to SAI_PACKET_ACTION_TRAP) */
     SAI_SWITCH_ATTR_VIOLATION_TTL1_ACTION,
 
-   /* Default VlanID for ports that are not members of any vlans [uint16] */
+    /* Default VlanID for ports that are not members of 
+       any vlans [sai_vlan_id_t]  (default to vlan 1)*/
     SAI_SWITCH_ATTR_DEFAULT_PORT_VLAN_ID,
 
     /* Default switch MAC Address [sai_mac_t] */
     SAI_SWITCH_ATTR_SRC_MAC_ADDRESS,
 
-    /* Maximum number of learned MAC addresses [uint32_t] */
+    /* Maximum number of learned MAC addresses [uint32_t]
+     * zero means learning limit disable. (default to zero) */
     SAI_SWITCH_ATTR_MAX_LEARNED_ADDRESSES,
 
     /* Dynamic FDB entry aging time in seconds [uint32_t] 
     *   Zero means aging is disabled.
+    *  (default to zero)
     */
     SAI_SWITCH_ATTR_FDB_AGING_TIME,
 
     /* Flood control for packets with unknown destination address.
-    *   [sai_switch_fdb_miss_action_t]
+    *   [sai_packet_action_t] (default to SAI_PACKET_ACTION_FORWARD)
     */
     SAI_SWITCH_ATTR_FDB_UNICAST_MISS_ACTION,
 
@@ -204,7 +190,8 @@ typedef enum _sai_switch_attr_t
     /* ECMP hashing fields [sai_switch_ecmp_hash_fields_t] */
     SAI_SWITCH_ATTR_ECMP_HASH_FIELDS,
 
-    /* ECMP max number of paths per group [uint32_t] */
+    /* ECMP max number of paths per group [uint32_t]
+       (default to 64) */
     SAI_SWITCH_ATTR_ECMP_MAX_PATHS,
 
     /* -- */

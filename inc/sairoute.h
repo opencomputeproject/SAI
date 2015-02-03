@@ -39,10 +39,12 @@ typedef enum _sai_route_attr_t
 {
     /* READ-WRITE */
 
-    /* Packet action [sai_packet_action_t] */
+    /* Packet action [sai_packet_action_t] 
+       (default to SAI_PACKET_ACTION_FORWARD) */
     SAI_ROUTE_ATTR_PACKET_ACTION,
 
-    /* Packet priority for trap/log actions [uint8] */
+    /* Packet priority for trap/log actions [uint8_t] 
+       (default to 0) */
     SAI_ROUTE_ATTR_TRAP_PRIORITY,
 
     /* Next hop group id for the packet [sai_next_hop_id_t] */
@@ -79,6 +81,9 @@ typedef struct _sai_unicast_route_entry_t
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
+* 
+* Note: IP prefix/mask expected in Network Byte Order.
+*   
 */
 typedef sai_status_t (*sai_create_route_fn)(
     _In_ const sai_unicast_route_entry_t* unicast_route_entry,
@@ -96,6 +101,8 @@ typedef sai_status_t (*sai_create_route_fn)(
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
+*
+* Note: IP prefix/mask expected in Network Byte Order.
 */
 typedef sai_status_t (*sai_remove_route_fn)(
     _In_ const sai_unicast_route_entry_t* unicast_route_entry
