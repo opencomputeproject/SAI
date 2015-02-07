@@ -181,7 +181,7 @@ typedef enum _sai_switch_attr_t
 
     SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_ACTION,
 
-    /* ECMP hashing type  [uint32_t] */
+    /* ECMP hashing seed  [uint32_t] */
     SAI_SWITCH_ATTR_ECMP_HASH_SEED,
 
     /* ECMP hashing type  [sai_switch_ecmp_hash_type_t] */
