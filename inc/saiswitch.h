@@ -120,6 +120,9 @@ typedef enum _sai_switch_attr_t
     /* The number of ports on the switch [uint32_t] */
     SAI_SWITCH_ATTR_PORT_NUMBER,
 
+    /* Get the CPU Port [sai_port_id_t] */
+    SAI_SWITCH_ATTR_CPU_PORT,
+
     /* Max number of virtual routers supported [uint32_t] */
     SAI_SWITCH_ATTR_MAX_VIRTUAL_ROUTERS,
 
