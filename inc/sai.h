@@ -43,6 +43,7 @@
 #include <sairoute.h>
 #include <saiqos.h>
 #include <saiacl.h>
+#include <saihostintf.h>
 
 /*
 *
@@ -67,6 +68,7 @@ typedef enum _sai_api_t
     SAI_API_NEIGHBOR         = 10,  /* sai_neighbor_api_t */
     SAI_API_QOS              = 11,  /* sai_qos_api_t */
     SAI_API_ACL              = 12,  /* sai_acl_api_t */
+    SAI_API_HOST_INTERFACE   = 13,  /* sai_host_interface_api_t */
 } sai_api_t;
 
 typedef enum _sai_log_level_t

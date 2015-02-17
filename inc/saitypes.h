@@ -48,6 +48,7 @@ typedef UINT32  sai_port_id_t;
 typedef UINT16  sai_vlan_id_t;
 typedef UINT32  sai_virtual_router_id_t;
 typedef UINT32  sai_router_interface_id_t;
+typedef UINT32  sai_host_interface_id_t;
 typedef UINT32  sai_next_hop_id_t;
 typedef UINT32  sai_next_hop_group_id_t;
 typedef UINT32  sai_acl_table_id_t;
@@ -92,6 +93,7 @@ typedef uint32_t sai_port_id_t;
 typedef uint16_t sai_vlan_id_t;
 typedef uint32_t sai_virtual_router_id_t;
 typedef uint32_t sai_router_interface_id_t;
+typedef uint32_t sai_host_interface_id_t;
 typedef uint32_t sai_next_hop_id_t;
 typedef uint32_t sai_next_hop_group_id_t;
 typedef uint32_t sai_acl_table_id_t;
@@ -219,6 +221,7 @@ typedef struct _sai_acl_action_data_t
  */
 typedef union {
     bool booldata;
+    char chardata[32];
     sai_uint8_t u8;
     sai_int8_t s8;
     sai_uint16_t u16;
