@@ -115,7 +115,7 @@ typedef struct _service_method_table_t
 sai_status_t
 sai_api_initialize(
     _In_ uint64_t flags,
-    _In_ service_method_table_t* services
+    _In_ const service_method_table_t* services
     );
 
 
