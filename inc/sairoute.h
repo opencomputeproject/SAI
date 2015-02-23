@@ -47,7 +47,7 @@ typedef enum _sai_route_attr_t
        (default to 0) */
     SAI_ROUTE_ATTR_TRAP_PRIORITY,
 
-    /* Next hop group id for the packet [sai_next_hop_id_t] */
+    /* Next hop id for the packet [sai_next_hop_id_t] */
     SAI_ROUTE_ATTR_NEXT_HOP_ID,
 
     /* Next hop group id for the packet [sai_next_hop_group_id_t] */
