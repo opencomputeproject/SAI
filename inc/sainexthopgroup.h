@@ -56,7 +56,7 @@ typedef enum _sai_next_hop_group_attr_t
 
     /* READ-WRITE */
 
-    /* Next hop entry type [sai_next_hop_group_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /* Next hop group type [sai_next_hop_group_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_NEXT_HOP_GROUP_ATTR_TYPE,
 
     /* Next hop list [sai_next_hop_list_t] (MAXDATORY_ON_CREATE) 
