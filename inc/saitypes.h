@@ -126,7 +126,25 @@ typedef int16_t sai_int16_t;
 typedef uint8_t sai_uint8_t;
 typedef int8_t sai_int8_t;
 
-typedef struct _sai_port_list_list_t {
+/* 
+ * Defines a list of sai port ids used as sai attribute value.
+ * 
+ * - In set attribute function call, the port_count defines the number of
+ * ports. 
+ *
+ * - In get attribute function call, the function call returns a list of ports
+ * to the caller in port_list. The caller is responsible for allocating the
+ * buffer for port_list and set the port_count to the size of allocated port
+ * list. If the size is large enough to accomodate the list of port id, the
+ * callee will then fill the port_list and set the port_count to the actual
+ * number of ports.  If the list size is not large enough, the callee will set the
+ * port_count to the actual number of port id and return
+ * SAI_STATUS_BUFFER_OVERFLOW. Once the caller gets such return code, it should
+ * use the returned port count to re-allocate list and retry.
+ *
+ * - The above behavior also applies to sai_next_hop_list_t.
+ */
+typedef struct _sai_port_list_t {
     uint32_t port_count;
     sai_port_id_t *port_list;
 } sai_port_list_t;
