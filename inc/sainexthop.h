@@ -63,7 +63,7 @@ typedef enum _sai_next_hop_attr_t
      * (CREATE_ONLY) */
     SAI_NEXT_HOP_ATTR_IP,
 
-    /* Next hop entry router interface id [sai_router_interface_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /* Next hop entry router interface id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 
     /* -- */
@@ -89,7 +89,7 @@ typedef enum _sai_next_hop_attr_t
 * Note: IP address expected in Network Byte Order.
 */
 typedef sai_status_t (*sai_create_next_hop_fn)(
-    _Out_ sai_next_hop_id_t* next_hop_id,
+    _Out_ sai_object_id_t* next_hop_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
@@ -106,7 +106,7 @@ typedef sai_status_t (*sai_create_next_hop_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_remove_next_hop_fn)(
-    _In_ sai_next_hop_id_t next_hop_id
+    _In_ sai_object_id_t next_hop_id
     );
 
 /*
@@ -114,7 +114,7 @@ typedef sai_status_t (*sai_remove_next_hop_fn)(
 *    Set Next Hop attribute
 *
 * Arguments:
-*    [in] sai_next_hop_id_t - next_hop_id
+*    [in] next_hop_id - next hop id
 *    [in] attr - attribute
 *
 * Return Values:
@@ -122,7 +122,7 @@ typedef sai_status_t (*sai_remove_next_hop_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
-    _In_ sai_next_hop_id_t next_hop_id,
+    _In_ sai_object_id_t next_hop_id,
     _In_ const sai_attribute_t *attr
     );
 
@@ -132,7 +132,7 @@ typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
 *    Get Next Hop attribute
 *
 * Arguments:
-*    [in] sai_next_hop_id_t - next_hop_id
+*    [in] next_hop_id - next hop id
 *    [in] attr_count - number of attributes
 *    [inout] attr_list - array of attributes
 *
@@ -141,7 +141,7 @@ typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_next_hop_attribute_fn)(
-    _In_ sai_next_hop_id_t next_hop_id,
+    _In_ sai_object_id_t next_hop_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );

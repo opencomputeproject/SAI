@@ -47,11 +47,10 @@ typedef enum _sai_route_attr_t
        (default to 0) */
     SAI_ROUTE_ATTR_TRAP_PRIORITY,
 
-    /* Next hop id for the packet [sai_next_hop_id_t] */
+    /* Next hop or next hop group id for the packet [sai_object_id_t]
+     * The next hop id can be a generic next hop object, such as next hop, 
+     * next hop group. */
     SAI_ROUTE_ATTR_NEXT_HOP_ID,
-
-    /* Next hop group id for the packet [sai_next_hop_group_id_t] */
-    SAI_ROUTE_ATTR_NEXT_HOP_GROUP_ID,
 
     /* Custom range base value */
     SAI_ROUTE_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
@@ -64,7 +63,7 @@ typedef enum _sai_route_attr_t
 */
 typedef struct _sai_unicast_route_entry_t
 {
-    sai_virtual_router_id_t vr_id;
+    sai_object_id_t vr_id;
     sai_ip_prefix_t destination;
 
 } sai_unicast_route_entry_t;

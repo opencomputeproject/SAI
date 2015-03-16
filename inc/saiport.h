@@ -315,7 +315,7 @@ typedef enum _sai_port_stat_counter_t
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_port_attribute_fn)(
-    _In_ sai_port_id_t port_id, 
+    _In_ sai_object_id_t port_id, 
     _In_ const sai_attribute_t *attr
     );
 
@@ -334,7 +334,7 @@ typedef sai_status_t (*sai_set_port_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_port_attribute_fn)(
-    _In_ sai_port_id_t port_id,
+    _In_ sai_object_id_t port_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
@@ -354,7 +354,7 @@ typedef sai_status_t (*sai_get_port_attribute_fn)(
 *    Failure status code on error
 */ 
 typedef sai_status_t (*sai_get_port_stats_fn)(
-    _In_ sai_port_id_t port_id,
+    _In_ sai_object_id_t port_id,
     _In_ const sai_port_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
@@ -373,7 +373,7 @@ typedef sai_status_t (*sai_get_port_stats_fn)(
 *    None
 */
 typedef void (*sai_port_state_change_notification_fn)(
-    _In_ sai_port_id_t port_id,
+    _In_ sai_object_id_t port_id,
     _In_ sai_port_oper_status_t port_state
     );
 

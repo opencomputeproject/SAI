@@ -122,7 +122,7 @@ typedef enum _sai_qos_map_t {
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_cos_attribute_fn)(
-    _In_ sai_port_id_t port_id, 
+    _In_ sai_object_id_t port_id, 
     _In_ sai_cos_t cos_value, 
     _In_ const sai_attribute_t *attr
     );
@@ -142,7 +142,7 @@ typedef sai_status_t (*sai_set_cos_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_cos_attribute_fn)(
-    _In_ sai_port_id_t port_id, 
+    _In_ sai_object_id_t port_id, 
     _In_ sai_cos_t cos_value, 
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
@@ -164,7 +164,7 @@ typedef sai_status_t (*sai_get_cos_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_cos_mapping_fn)(
-    _In_ sai_port_id_t port_id, 
+    _In_ sai_object_id_t port_id, 
     _In_ sai_qos_map_t qos_map_selector,
     _In_ uint32_t value_to_map,
     _In_ sai_cos_t cos_value
@@ -186,7 +186,7 @@ typedef sai_status_t (*sai_set_cos_mapping_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_cos_mapping_fn)(
-    _In_ sai_port_id_t port_id, 
+    _In_ sai_object_id_t port_id, 
     _In_ sai_qos_map_t qos_map_selector,
     _In_ uint32_t value_to_map,
     _Out_ sai_cos_t* cos_value

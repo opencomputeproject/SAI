@@ -52,7 +52,7 @@ typedef enum _sai_vlan_tagging_mode_t
 */
 typedef struct _sai_vlan_port_t
 {
-    sai_port_id_t port_id;
+    sai_object_id_t port_id;
 
     sai_vlan_tagging_mode_t tagging_mode;
 

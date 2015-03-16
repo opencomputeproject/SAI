@@ -82,7 +82,7 @@ typedef enum _sai_virtual_router_attr_t
 *    SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS is set.
 */
 typedef sai_status_t (*sai_create_virtual_router_fn)(
-    _Out_ sai_virtual_router_id_t *vr_id,
+    _Out_ sai_object_id_t *vr_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
@@ -99,7 +99,7 @@ typedef sai_status_t (*sai_create_virtual_router_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_remove_virtual_router_fn)(
-    _In_ sai_virtual_router_id_t vr_id
+    _In_ sai_object_id_t vr_id
     );
 
 /*
@@ -115,7 +115,7 @@ typedef sai_status_t (*sai_remove_virtual_router_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_virtual_router_attribute_fn)(
-    _In_ sai_virtual_router_id_t vr_id, 
+    _In_ sai_object_id_t vr_id, 
     _In_ const sai_attribute_t *attr
     );
 
@@ -133,7 +133,7 @@ typedef sai_status_t (*sai_set_virtual_router_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_virtual_router_attribute_fn)(
-    _In_ sai_virtual_router_id_t vr_id, 
+    _In_ sai_object_id_t vr_id, 
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );

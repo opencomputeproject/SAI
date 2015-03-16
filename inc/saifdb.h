@@ -86,7 +86,9 @@ typedef enum _sai_fdb_entry_attr_t
     /* FDB entry type [sai_fdb_entry_type_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_FDB_ENTRY_ATTR_TYPE,
 
-    /* FDB entry port id [sai_port_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)*/
+    /* FDB entry port id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) 
+     * The port id here can refer to a generic port object such as SAI port object id, 
+     * SAI LAG object id and etc. on. */
     SAI_FDB_ENTRY_ATTR_PORT_ID,
 
     /* FDB entry packet action [sai_packet_action_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
@@ -195,7 +197,7 @@ typedef sai_status_t (*sai_flush_all_fdb_entries_fn)(void);
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_flush_all_fdb_entries_by_port_fn)(
-    _In_ sai_port_id_t port_id
+    _In_ sai_object_id_t port_id
     );
 
 /*
@@ -226,7 +228,7 @@ typedef sai_status_t (*sai_flush_all_fdb_entries_by_vlan_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_flush_all_fdb_entries_by_port_vlan_fn)(
-    _In_ sai_port_id_t port_id,
+    _In_ sai_object_id_t port_id,
     _In_ sai_vlan_id_t vlan_id
     );
 

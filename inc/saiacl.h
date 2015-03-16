@@ -213,7 +213,7 @@ typedef enum _sai_acl_entry_attr_t
 {
     /* READ-ONLY */
 
-    /* Priority [sal_acl_table_id_t]
+    /* Priority [sal_object_id_t]
      * (mandatory for create) */
     SAI_ACL_ENTRY_ATTR_TABLE_ID,
 
@@ -246,16 +246,16 @@ typedef enum _sai_acl_entry_attr_t
     /* Dst IPv4 Address */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IP,
 
-    /* In-Ports [sai_port_list_t] */
+    /* In-Ports [sai_object_list_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS,
 
-    /* Out-Ports [sai_port_list_t] */
+    /* Out-Ports [sai_object_list_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS,
 
-    /* In-Port [sai_port_id_t] */
+    /* In-Port [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
 
-    /* Out-Port [sai_port_id_t] */
+    /* Out-Port [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
     /* Outer Vlan-Id */
@@ -345,7 +345,7 @@ typedef enum _sai_acl_entry_attr_t
     /* Egress Mirror */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS,
 
-    /* Assosiate with policer [sai_policer_id_t] */
+    /* Assosiate with policer [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER,
 
     /* Decrement TTL */
@@ -434,7 +434,7 @@ typedef enum _sai_acl_counter_attr_t
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_create_acl_table_fn)(
-    _Out_ sai_acl_table_id_t* acl_table_id,
+    _Out_ sai_object_id_t* acl_table_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
@@ -450,7 +450,7 @@ typedef sai_status_t (*sai_create_acl_table_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_delete_acl_table_fn)(
-    _In_ sai_acl_table_id_t acl_table_id
+    _In_ sai_object_id_t acl_table_id
     );
 
 /*
@@ -466,7 +466,7 @@ typedef sai_status_t (*sai_delete_acl_table_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
-    _In_ sai_acl_table_id_t acl_table_id,
+    _In_ sai_object_id_t acl_table_id,
     _In_ const sai_attribute_t *attr
     );
 
@@ -484,7 +484,7 @@ typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
-    _In_ sai_acl_table_id_t acl_table_id,
+    _In_ sai_object_id_t acl_table_id,
     _In_ uint32_t attr_count,
     _Out_ sai_attribute_t *attr_list
     );
@@ -503,7 +503,7 @@ typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_create_acl_entry_fn)(
-    _Out_ sai_acl_entry_id_t *acl_entry_id,
+    _Out_ sai_object_id_t *acl_entry_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
@@ -520,7 +520,7 @@ typedef sai_status_t (*sai_create_acl_entry_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_delete_acl_entry_fn)(
-    _In_ sai_acl_entry_id_t acl_entry_id
+    _In_ sai_object_id_t acl_entry_id
     );
 
 /*
@@ -536,7 +536,7 @@ typedef sai_status_t (*sai_delete_acl_entry_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
-    _In_ sai_acl_entry_id_t acl_entry_id,
+    _In_ sai_object_id_t acl_entry_id,
     _In_ const sai_attribute_t *attr
     );
 
@@ -554,7 +554,7 @@ typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
-    _In_ sai_acl_entry_id_t acl_entry_id,
+    _In_ sai_object_id_t acl_entry_id,
     _In_ uint32_t attr_count,
     _Out_ sai_attribute_t *attr_list
     );
@@ -573,7 +573,7 @@ typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_create_acl_counter_fn)(
-    _Out_ sai_acl_counter_id_t *acl_counter_id,
+    _Out_ sai_object_id_t *acl_counter_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
@@ -590,7 +590,7 @@ typedef sai_status_t (*sai_create_acl_counter_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_delete_acl_counter_fn)(
-    _In_ sai_acl_counter_id_t acl_counter_id
+    _In_ sai_object_id_t acl_counter_id
     );
 
 /*
@@ -606,7 +606,7 @@ typedef sai_status_t (*sai_delete_acl_counter_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
-    _In_ sai_acl_counter_id_t acl_counter_id,
+    _In_ sai_object_id_t acl_counter_id,
     _In_ const sai_attribute_t *attr
     );
 
@@ -624,7 +624,7 @@ typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
-    _In_ sai_acl_counter_id_t acl_counter_id,
+    _In_ sai_object_id_t acl_counter_id,
     _In_ uint32_t attr_count,
     _Out_ sai_attribute_t *attr_list
     );

@@ -53,7 +53,7 @@ typedef enum _sai_router_interface_attr_t
 {
     /* READ-ONLY */
 
-    /* Virtual router id [sai_virtual_router_id_t]
+    /* Virtual router id [sai_object_id_t]
      *  (mandatory for create) */
     SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID,
 
@@ -61,7 +61,7 @@ typedef enum _sai_router_interface_attr_t
      *  (mandatory for create) */
     SAI_ROUTER_INTERFACE_ATTR_TYPE,
 
-    /* Assosiated Port [sai_port_id_t] 
+    /* Assosiated Port [sai_object_id_t] 
     *   (mandatory for create when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT) 
     */
     SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
@@ -107,7 +107,7 @@ typedef enum _sai_router_interface_attr_t
 *    Failure status code on error
 */
 typedef sai_status_t(*sai_create_router_interface_fn)(
-    _Out_ sai_router_interface_id_t* rif_id,
+    _Out_ sai_object_id_t* rif_id,
     _In_ uint32_t attr_count,
     _In_ sai_attribute_t *attr_list
     );
@@ -124,7 +124,7 @@ typedef sai_status_t(*sai_create_router_interface_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t(*sai_remove_router_interface_fn)(
-    _In_ sai_router_interface_id_t rif_id
+    _In_ sai_object_id_t rif_id
     );
 
 /*
@@ -132,7 +132,7 @@ typedef sai_status_t(*sai_remove_router_interface_fn)(
 *    Set router interface attribute
 *
 * Arguments:
-*    [in] sai_router_interface_id_t - router_interface_id
+*    [in] rif_id - router interface id
 *    [in] attr - attribute
 *
 * Return Values:
@@ -140,7 +140,7 @@ typedef sai_status_t(*sai_remove_router_interface_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
-    _In_ sai_router_interface_id_t rif_id,
+    _In_ sai_object_id_t rif_id,
     _In_ const sai_attribute_t *attr
     );
 
@@ -150,7 +150,7 @@ typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
 *    Get router interface attribute
 *
 * Arguments:
-*    [in] sai_router_interface_id_t - router_interface_id
+*    [in] rif_id - router interface id
 *    [in] attr_count - number of attributes
 *    [inout] attr_list - array of attributes
 *
@@ -159,7 +159,7 @@ typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_router_interface_attribute_fn)(
-    _In_ sai_router_interface_id_t rif_id,
+    _In_ sai_object_id_t rif_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );

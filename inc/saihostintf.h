@@ -38,19 +38,6 @@
 #define HOST_INTERFACE_NAME_SIZE    16
 
 /*
-*  Attribute data for SAI_HOST_INTERFACE_ATTR_TYPE
-*/
-typedef enum _sai_host_interface_type_t 
-{
-    /* Port-based Host Interface Type */
-    SAI_HOST_INTERFACE_TYPE_PORT,
-
-    /* Router Interface based Host Interface Type */
-    SAI_HOST_INTERFACE_TYPE_RIF
-
-} sai_host_interface_type_t;
-
-/*
 *  Host interface attribute IDs 
 */
 typedef enum _sai_host_interface_attr_t
@@ -59,18 +46,9 @@ typedef enum _sai_host_interface_attr_t
 
     /* READ-WRITE */
 
-    /* Type [sai_host_interface_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_HOST_INTERFACE_ATTR_TYPE,
-
-    /* Assosiated Port [sai_port_id_t] 
-       (MACDATORY_ON_CREATE|CREATE_ONLY) when SAI_HOST_INTERFACE_ATTR_TYPE == SAI_HOST_INTERFACE_TYPE_PORT 
-    */
-    SAI_HOST_INTERFACE_ATTR_PORT_ID,
-
-    /* Assosiated Router interface [sai_router_interface_id_t] 
-    *  (MACDATORY_ON_CREATE|CREATE_ONLY) when SAI_HOST_INTERFACE_ATTR_TYPE == SAI_HOST_INTERFACE_TYPE_RIF) 
-    */
-    SAI_HOST_INTERFACE_ATTR_RIF_ID,
+    /* Assosiated port or router interface [sai_object_id_t] 
+     * (MACDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_HOST_INTERFACE_ATTR_PORT_RIF_ID,
 
     /* Name [char[HOST_INTERFACE_NAME_SIZE]] (MANDATORY_ON_CREATE) 
      * The maximum number of charactars for the name is HOST_INTERFACE_NAME_SIZE - 1 since
@@ -96,7 +74,7 @@ typedef enum _sai_host_interface_attr_t
 *    Failure status code on error
 */
 typedef sai_status_t(*sai_create_host_interface_fn)(
-    _Out_ sai_host_interface_id_t* hif_id,
+    _Out_ sai_object_id_t* hif_id,
     _In_ uint32_t attr_count,
     _In_ sai_attribute_t *attr_list
     );
@@ -113,7 +91,7 @@ typedef sai_status_t(*sai_create_host_interface_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t(*sai_remove_host_interface_fn)(
-    _In_ sai_host_interface_id_t hif_id
+    _In_ sai_object_id_t hif_id
     );
 
 /*
@@ -129,7 +107,7 @@ typedef sai_status_t(*sai_remove_host_interface_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_host_interface_attribute_fn)(
-    _In_ sai_host_interface_id_t hif_id,
+    _In_ sai_object_id_t hif_id,
     _In_ const sai_attribute_t *attr
     );
 
@@ -148,7 +126,7 @@ typedef sai_status_t (*sai_set_host_interface_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_host_interface_attribute_fn)(
-    _In_ sai_host_interface_id_t hif_id,
+    _In_ sai_object_id_t hif_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
