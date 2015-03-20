@@ -37,7 +37,7 @@
 */
 typedef enum _sai_router_interface_type_t 
 {
-    /* Port Router Interface Type */
+    /* Port or Lag Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_PORT,
 
     /* VLAN Router Interface Type */
@@ -53,37 +53,35 @@ typedef enum _sai_router_interface_attr_t
 {
     /* READ-ONLY */
 
-    /* Virtual router id [sai_object_id_t]
-     *  (mandatory for create) */
+    /* Virtual router id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID,
 
-    /* Type [sai_router_interface_type_t]
-     *  (mandatory for create) */
+    /* Type [sai_router_interface_type_t]  (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ROUTER_INTERFACE_ATTR_TYPE,
 
-    /* Assosiated Port [sai_object_id_t] 
-    *   (mandatory for create when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT) 
+    /* Assosiated Port or Lag object id [sai_object_id_t] 
+    *  (MANDATORY_ON_CREATE when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT | CREATE_ONLY) 
     */
     SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
 
     /* Assosiated Vlan [sai_vlan_id_t] 
-    *   (mandatory for create when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN) 
+    *  (MANDATORY_ON_CREATE when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN | CREATE_ONLY)
     */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
 
     /* READ-WRITE */
 
-    /* MAC Address [sai_mac_t] 
-        (equal to the SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS by default) */
+    /* MAC Address [sai_mac_t] (CREATE_AND_SET)
+        (default to SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create) */
     SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS,
 
-    /* Admin V4 state [bool] (default to TRUE) */
+    /* Admin V4 state [bool] (CREATE_AND_SET) (default to TRUE) */
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_V4_STATE,
 
-    /* Admin V6 state [bool] (default to TRUE) */
+    /* Admin V6 state [bool] (CREATE_AND_SET) (default to TRUE) */
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_V6_STATE,
 
-    /* MTU [uint32_t], (default to  1514 bytes) */
+    /* MTU [uint32_t] (CREATE_AND_SET) (default to 1514 bytes) */
     SAI_ROUTER_INTERFACE_ATTR_MTU,
 
     /* -- */
