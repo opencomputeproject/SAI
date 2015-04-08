@@ -128,6 +128,16 @@ typedef struct _sai_object_list_t {
     sai_object_id_t *object_list;
 } sai_object_list_t;
 
+typedef struct _sai_u32_list_t {
+    uint32_t count;
+    uint32_t *list;
+} sai_u32_list_t;
+
+typedef struct _sai_s32_list_t {
+    uint32_t count;
+    int32_t  *list;
+} sai_s32_list_t;
+
 typedef enum _sai_ip_addr_family_t {
     SAI_IP_ADDR_FAMILY_IPV4,
 
@@ -226,7 +236,10 @@ typedef union {
     sai_ip4_t ip4;
     sai_ip6_t ip6;
     sai_ip_address_t ipaddr;
+    sai_object_id_t oid;
     sai_object_list_t objlist;
+    sai_u32_list_t u32list;
+    sai_s32_list_t s32list;
     sai_acl_field_data_t aclfield;
     sai_acl_action_data_t acldata;
 } sai_attribute_value_t;
