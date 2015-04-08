@@ -142,6 +142,18 @@ typedef enum _sai_switch_attr_t
      * retrieved from the switch sensors, in Celsius [int32_t] */
     SAI_SWITCH_ATTR_MAX_TEMP,
 
+    /* minimum priority for ACL table */ 
+    SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY, 
+
+    /* maximum priority for ACL table */
+    SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY,
+
+    /* minimum priority for ACL entry */
+    SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY,
+
+    /* maximum priority for ACL entry */
+    SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY,
+
     /* READ-WRITE */
 
     /* Switching mode [sai_switch_switching_mode_t]

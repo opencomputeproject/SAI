@@ -109,7 +109,10 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_STAGE,
 
     /* Priority [uint32_t] 
-     * (default = 0) */
+     * Value must be in the range defined in
+     * [SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY, 
+     *  SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY]
+     * (default = SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY) */
     SAI_ACL_TABLE_ATTR_PRIORITY,
 
     /* Match fields [bool] 
@@ -220,7 +223,10 @@ typedef enum _sai_acl_entry_attr_t
     /* READ-WRITE */
 
     /* Priority [uint32_t] 
-     * (default = 0) */
+     * Value must be in the range defined in
+     * [SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY, 
+     *  SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY]
+     * (default = SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY) */
     SAI_ACL_ENTRY_ATTR_PRIORITY,
 
     /* Enabled / Disabled [bool] */
