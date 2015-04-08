@@ -57,7 +57,7 @@ typedef enum _sai_neighbor_attr_t
 */
 typedef struct _sai_neighbor_entry_t
 {
-    sai_router_interface_id_t rif_id; 
+    sai_object_id_t rif_id; 
     sai_ip_address_t ip_address;
 
 } sai_neighbor_entry_t;
