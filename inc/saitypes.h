@@ -110,22 +110,22 @@ typedef uint64_t sai_object_id_t;
 /* 
  * Defines a list of sai object ids used as sai attribute value.
  * 
- * - In set attribute function call, the object_count defines the number of
+ * - In set attribute function call, the count member defines the number of
  * objects.
  *
  * - In get attribute function call, the function call returns a list of objects
- * to the caller in object_list. The caller is responsible for allocating the
- * buffer for object_list and set the object_count to the size of allocated object
+ * to the caller in the list member. The caller is responsible for allocating the
+ * buffer for the list member and set the count member to the size of allocated object
  * list. If the size is large enough to accomodate the list of object id, the
- * callee will then fill the object_list and set the object_count to the actual
+ * callee will then fill the list member and set the count member to the actual
  * number of objects.  If the list size is not large enough, the callee will set the
- * object_count to the actual number of object id and return
+ * count member to the actual number of object id and return
  * SAI_STATUS_BUFFER_OVERFLOW. Once the caller gets such return code, it should
- * use the returned object count to re-allocate list and retry.
+ * use the returned count member to re-allocate list and retry.
  */
 typedef struct _sai_object_list_t {
-    uint32_t object_count;
-    sai_object_id_t *object_list;
+    uint32_t count;
+    sai_object_id_t *list;
 } sai_object_list_t;
 
 typedef struct _sai_u32_list_t {
