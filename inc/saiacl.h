@@ -108,18 +108,22 @@ typedef enum _sai_acl_table_attr_t
      * (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ACL_TABLE_ATTR_STAGE,
 
-    /* Priority [uint32_t] 
+    /* Priority [sai_uint32_t] 
+     * (MANDATORY_ON_CREATE|CREATE_ONLY) 
      * Value must be in the range defined in
      * [SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY, 
-     *  SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY]
-     * (default = SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY) */
+     *  SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY] */
     SAI_ACL_TABLE_ATTR_PRIORITY,
 
     /* Match fields [bool] 
-     * (CREATE_ONLY, match fields canot be changed after the table is created) */
+     * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Table Creation)
+     * (CREATE_ONLY, match fields cannot be changed after the table is created) */
+
+    /* Start of Table Match Field */
+    SAI_ACL_TABLE_ATTR_FIELD_START = 0x00001000,
 
     /* Src IPv6 Address */
-    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPv6 = 0x00001000,
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPv6 = SAI_ACL_TABLE_ATTR_FIELD_START,
 
     /* Dst IPv6 Address */
     SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6,
@@ -199,8 +203,14 @@ typedef enum _sai_acl_table_attr_t
     /* Ip Frag */
     SAI_ACL_TABLE_ATTR_FIELD_IP_FRAG,
 
+    /* IPv6 Flow Label */
+    SAI_ACL_TABLE_ATTR_FIELD_IPv6_FLOW_LABEL,
+
     /* Class-of-Service (Traffic Class) */
     SAI_ACL_TABLE_ATTR_FIELD_COS,
+
+    /* End of Table Match Field */
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_COS,
 
     /* -- */
 
@@ -222,20 +232,25 @@ typedef enum _sai_acl_entry_attr_t
 
     /* READ-WRITE */
 
-    /* Priority [uint32_t] 
+    /* Priority [sai_uint32_t] 
      * Value must be in the range defined in
      * [SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY, 
      *  SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY]
      * (default = SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY) */
     SAI_ACL_ENTRY_ATTR_PRIORITY,
 
-    /* Enabled / Disabled [bool] */
+    /* Enabled / Disabled [bool] 
+     * (default = enabled) */
     SAI_ACL_ENTRY_ATTR_ADMIN_STATE,
 
-    /* Match fields [pointer to sai_acl_field_data_t] */
+    /* Match fields [pointer to sai_acl_field_data_t] 
+     * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Rule Creation) */
+
+    /* Start of Rule Match Fields */
+    SAI_ACL_ENTRY_ATTR_FIELD_START = 0x00001000,
 
     /* Src IPv6 Address */
-    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPv6 = 0x00001000,
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPv6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
 
     /* Dst IPv6 Address */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6,
@@ -315,16 +330,25 @@ typedef enum _sai_acl_entry_attr_t
     /* Ip Frag [sai_acl_ip_frag_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_FRAG,
 
+    /* IPv6 Flow Label [sai_uint32_t] */
+    SAI_ACL_ENTRY_ATTR_FIELD_IPv6_FLOW_LABEL,
+
     /* Class-of-Service (Traffic Class) */
     SAI_ACL_ENTRY_ATTR_FIELD_COS,
 
- 
-    /* Actions [pointer to sai_acl_action_data_t] */
- 
-    /* Forward Normally */
-    SAI_ACL_ENTRY_ATTR_ACTION_FORWARD = 0x00002000,
+    /* End of Rule Match Fields */ 
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_COS,
 
-    /* Redirect Packet */
+    /* Actions [pointer to sai_acl_action_data_t] */
+
+    /* Start of Rule Actions */
+    SAI_ACL_ENTRY_ATTR_ACTION_START = 0x00002000,
+
+    /* Forward Normally */
+    SAI_ACL_ENTRY_ATTR_ACTION_FORWARD = SAI_ACL_ENTRY_ATTR_ACTION_START,
+
+    /* Redirect Packet to a destination which can be a port,
+     * lag, nexthop, nexthopgroup. [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT,
 
     /* Drop Packet */
@@ -397,7 +421,10 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_SRC_PORT,
 
     /* Set Packet L4 Src Port */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT,
+
+    /* End of Rule Actions */
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT
   
 } sai_acl_entry_attr_t;
 
@@ -411,6 +438,14 @@ typedef enum _sai_acl_counter_attr_t
     /* Priority [sal_acl_table_id_t]
      * (mandatory for create) */
     SAI_ACL_COUNTER_ATTR_TABLE_ID,
+
+    /* 
+     * By default Byte Counter would be created and following
+     * use of the below attributes would result in an error.
+     *
+     * - Both packet count and byte count set to disable 
+     * - Only Byte count used which is set to disable
+     */
 
     /* enable/disable packet count [bool] */
     SAI_ACL_COUNTER_ATTR_ENABLE_PACKET_COUNT,
