@@ -49,6 +49,7 @@ typedef UINT8   sai_cos_t;
 typedef UINT8   sai_mac_t[6];
 typedef UINT32  sai_ip4_t;
 typedef UINT8   sai_ip6_t[16];
+typedef UINT32  sai_switch_hash_seed_t;
 
 #include <ws2def.h>
 #include <ws2ipdef.h>
@@ -84,6 +85,7 @@ typedef uint8_t  sai_cos_t;
 typedef uint8_t  sai_mac_t[6];
 typedef uint32_t sai_ip4_t;
 typedef uint8_t  sai_ip6_t[16];
+typedef uint32_t sai_switch_hash_seed_t;
 
 #define _In_
 #define _Out_
@@ -106,6 +108,8 @@ typedef int16_t sai_int16_t;
 typedef uint8_t sai_uint8_t;
 typedef int8_t sai_int8_t;
 typedef uint64_t sai_object_id_t;
+
+#define SAI_NULL_OBJECT_ID 0L
 
 /* 
  * Defines a list of sai object ids used as sai attribute value.
@@ -137,6 +141,19 @@ typedef struct _sai_s32_list_t {
     uint32_t count;
     int32_t  *list;
 } sai_s32_list_t;
+
+/*
+ * Defines a vlan list datastructure
+ */
+typedef struct _sai_vlan_list_t {
+
+    /* Number of Vlans*/
+    uint32_t vlan_count;
+
+    /* List of Vlans*/
+    sai_vlan_id_t *vlan_list;
+
+} sai_vlan_list_t;
 
 typedef enum _sai_ip_addr_family_t {
     SAI_IP_ADDR_FAMILY_IPV4,
@@ -217,6 +234,42 @@ typedef struct _sai_acl_action_data_t
 
 } sai_acl_action_data_t;
 
+/*
+ * Breakout Mode types based on number
+ * of SerDes lanes used in a port
+ */
+typedef enum _sai_port_breakout_mode_type_t
+{
+    /* 1 lane breakout Mode */
+    SAI_PORT_BREAKOUT_MODE_1_LANE = 1,
+
+    /* 2 lanes breakout Mode */
+    SAI_PORT_BREAKOUT_MODE_2_LANE = 2,
+
+    /* 4 lanes breakout Mode */
+    SAI_PORT_BREAKOUT_MODE_4_LANE = 4,
+
+    /* Breakout mode max count */
+    SAI_PORT_BREAKOUT_MODE_MAX
+} sai_port_breakout_mode_type_t;
+
+/*
+ * Defines breakout mode on a switch port(s)
+ */
+typedef struct _sai_port_breakout_t
+{
+    /*
+     * Breakout mode type
+     */
+    sai_port_breakout_mode_type_t breakout_mode;
+
+    /*
+     * List of ports to be breakout
+     * Break out - typically 1 port; Break in - set of ports
+     */
+    sai_object_list_t  port_list;
+} sai_port_breakout_t;
+
 /* 
  * Data Type to use enum's as attribute value is sai_int32_t s32
  *
@@ -240,8 +293,10 @@ typedef union {
     sai_object_list_t objlist;
     sai_u32_list_t u32list;
     sai_s32_list_t s32list;
+    sai_vlan_list_t vlanlist;
     sai_acl_field_data_t aclfield;
     sai_acl_action_data_t acldata;
+    sai_port_breakout_t portbreakout;
 } sai_attribute_value_t;
 
 typedef struct _sai_attribute_t {

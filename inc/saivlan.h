@@ -71,6 +71,10 @@ typedef enum _sai_vlan_attr_t
      */
     SAI_VLAN_ATTR_MAX_LEARNED_ADDRESSES,
 
+    /* STP Instance that the VLAN is associated to [sai_object_id_t] 
+     * (default to default stp instance id)*/
+    SAI_VLAN_ATTR_STP_INSTANCE,
+
     /* Custom range base value */
     SAI_VLAN_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 

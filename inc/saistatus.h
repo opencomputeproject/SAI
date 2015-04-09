@@ -163,9 +163,14 @@
 #define SAI_STATUS_INVALID_ACL_COUNTER_ID   SAI_STATUS_CODE(0x00000017L)
 
 /*
+*  Invalid STP Instance ID
+*/
+#define SAI_STATUS_INVALID_STP_INSTANCE     SAI_STATUS_CODE(0x00000018L)
+
+/*
 *  SAI Object is in use
 */
-#define SAI_STATUS_OBJECT_IN_USE            SAI_STATUS_CODE(0x00000018L)
+#define SAI_STATUS_OBJECT_IN_USE            SAI_STATUS_CODE(0x00000019L)
 
 /*  
 *  Attribute is invalid (range from 0x00010000L to 0x0001FFFFL). 

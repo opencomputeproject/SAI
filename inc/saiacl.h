@@ -423,9 +423,15 @@ typedef enum _sai_acl_entry_attr_t
     /* Set Packet L4 Src Port */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT,
 
+    /* Set ingress packet sampling */
+    SAI_ACL_ENTRY_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
+
+    /* Set egress packet sampling */
+    SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
+
     /* End of Rule Actions */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT
-  
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE
+
 } sai_acl_entry_attr_t;
 
 /*
