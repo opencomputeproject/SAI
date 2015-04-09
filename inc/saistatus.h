@@ -162,6 +162,11 @@
 */
 #define SAI_STATUS_INVALID_ACL_COUNTER_ID   SAI_STATUS_CODE(0x00000017L)
 
+/*
+*  SAI Object is in use
+*/
+#define SAI_STATUS_OBJECT_IN_USE            SAI_STATUS_CODE(0x00000018L)
+
 /*  
 *  Attribute is invalid (range from 0x00010000L to 0x0001FFFFL). 
 *  Return this when the property attached to the attribute does not match
