@@ -110,13 +110,16 @@ typedef enum _sai_port_internal_loopback_mode_t
 */
 typedef enum _sai_port_fdb_learning_mode_t 
 {
-    /* Learning disable. Do not learn new mac address */
+    /* Drop packets with unknown source MAC. Do not learn. Do not forward */
+    SAI_PORT_LEARN_MODE_DROP,
+
+    /* Do not learn unknown source MAC. Forwarding will occur based on destination MAC */
     SAI_PORT_LEARN_MODE_DISABLE,
 
-    /* Hardware learning */
+    /* Hardware learning. Learn source MAC. Forward based on destination MAC */
     SAI_PORT_LEARN_MODE_HW,
 
-    /* Trap the unknown source MAC to CPU. Do not learn */
+    /* Trap packets with unknown source MAC to CPU. Do not learn. Do not forward */
     SAI_PORT_LEARN_MODE_CPU,
 
 } sai_port_fdb_learning_mode_t;
