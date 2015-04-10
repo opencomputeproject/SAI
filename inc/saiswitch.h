@@ -242,6 +242,26 @@ typedef enum _sai_switch_attr_t
        (default to 64) */
     SAI_SWITCH_ATTR_ECMP_MAX_PATHS,
 
+    /* The SDK can 
+     * 1 - Read the counters directly from HW (or)
+     * 2 - Cache the counters in SW. Caching is typically done if
+     * retrieval of counters directly from HW for each counter 
+     * read is CPU intensive
+     * This setting can be used to 
+     * 1 - Move from HW based to SW based or Vice versa
+     * 2 - Configure the SW counter cache refresh rate
+     * Setting a value of 0 enables direct HW based counter read. A
+     * non zero value enables the SW cache based and the counter
+     * refresh rate. 
+     * A NPU may support both or one of the option. It would return 
+     * error for unsupported options
+     *
+     * Default - 1 sec (SW counter cache)
+     *
+     * [uint32_t]
+     */
+    SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL,
+
     /* WRITE-ONLY */
 
     /* Port Breakout mode [sai_port_breakout_t] */
