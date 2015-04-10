@@ -132,6 +132,27 @@ typedef struct _sai_object_list_t {
     sai_object_id_t *list;
 } sai_object_list_t;
 
+/* 
+ * sai object type
+ */
+typedef enum _sai_object_type_t {
+    SAI_OBJECT_TYPE_NULL             =  0,
+    SAI_OBJECT_TYPE_PORT             =  1, 
+    SAI_OBJECT_TYPE_LAG              =  2, 
+    SAI_OBJECT_TYPE_VIRTUAL_ROUTER   =  3,
+    SAI_OBJECT_TYPE_NEXT_HOP         =  4,
+    SAI_OBJECT_TYPE_NEXT_HOP_GROUP   =  5,
+    SAI_OBJECT_TYPE_ROUTER_INTERFACE =  6,
+    SAI_OBJECT_TYPE_ACL_TABLE        =  7,
+    SAI_OBJECT_TYPE_ACL_ENTRY        =  8,
+    SAI_OBJECT_TYPE_ACL_COUNTER      =  9,
+    SAI_OBJECT_TYPE_HOST_INTERFACE   = 10,
+    SAI_OBJECT_TYPE_MIRROR           = 11,
+    SAI_OBJECT_TYPE_SAMPLEPACKET     = 12,
+    SAI_OBJECT_TYPE_STP_INSTANCE     = 13,
+    SAI_OBJECT_TYPE_MAX              = 14
+} sai_object_type_t;
+
 typedef struct _sai_u32_list_t {
     uint32_t count;
     uint32_t *list;

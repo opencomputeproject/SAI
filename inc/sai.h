@@ -184,4 +184,22 @@ sai_log_set(
     _In_ sai_api_t sai_api_id,
     _In_ sai_log_level_t log_level
     );
+
+/*
+* Routine Description:
+*     Query sai object type.
+*
+* Arguments:
+*     [in] sai_object_id_t
+*
+* Return Values:
+*    Return SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
+*    Otherwise, return a valid sai object type SAI_OBJECT_TYPE_XXX
+*/
+sai_object_type_t 
+sai_object_type_query(
+    _In_ sai_object_id_t sai_object_id
+    );
+
+
 #endif  // __SAI_H_
