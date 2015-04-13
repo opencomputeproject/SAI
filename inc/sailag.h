@@ -25,9 +25,7 @@ typedef enum _sai_lag_attr_t {
 
     /** READ_WRITE */
 
-    /* SAI port list [sai_object_list_t] (MAXDATORY_ON_CREATE|CREATE_AND_SET)
-     * The LAG must have at least one SAI port member at the creation time 
-     */
+    /* SAI port list [sai_object_list_t] (CREATE_AND_SET) */
     SAI_LAG_ATTR_PORT_LIST,
 } sai_lag_attr_t;
 

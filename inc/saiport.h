@@ -43,9 +43,6 @@ typedef enum _sai_port_type_t
     /* CPU Port */
     SAI_PORT_TYPE_CPU,
 
-    /* Link-Aggregation Port */
-    SAI_PORT_TYPE_LAG,
-
 } sai_port_type_t;
 
 /*
