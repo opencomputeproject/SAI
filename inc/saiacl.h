@@ -207,10 +207,10 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_IPv6_FLOW_LABEL,
 
     /* Class-of-Service (Traffic Class) */
-    SAI_ACL_TABLE_ATTR_FIELD_COS,
+    SAI_ACL_TABLE_ATTR_FIELD_TC,
 
     /* End of Table Match Field */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_COS,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_TC,
 
     /* -- */
 
@@ -243,103 +243,112 @@ typedef enum _sai_acl_entry_attr_t
      * (default = enabled) */
     SAI_ACL_ENTRY_ATTR_ADMIN_STATE,
 
-    /* Match fields [pointer to sai_acl_field_data_t] 
-     * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Rule Creation) */
+    /* Match fields [sai_acl_field_data_t]
+     * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Rule Creation)
+     * - Unless noted specificially, both data and mask are required.
+     * - When bitfield is used the comment, only those least significent bits 
+     *   are valid for matching.
+     */
 
     /* Start of Rule Match Fields */
     SAI_ACL_ENTRY_ATTR_FIELD_START = 0x00001000,
 
-    /* Src IPv6 Address */
+    /* Src IPv6 Address [sai_ip6_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPv6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
 
-    /* Dst IPv6 Address */
+    /* Dst IPv6 Address [sai_ip6_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6,
 
-    /* Src MAC Address */
+    /* Src MAC Address [sai_mac_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC,
 
-    /* Dst MAC Address */
+    /* Dst MAC Address [sai_mac_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_MAC,
 
-    /* Src IPv4 Address */
+    /* Src IPv4 Address [sai_ip4_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_IP,
 
-    /* Dst IPv4 Address */
+    /* Dst IPv4 Address [sai_ip4_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IP,
 
-    /* In-Ports [sai_object_list_t] */
+    /* In-Ports [sai_object_list_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS,
 
-    /* Out-Ports [sai_object_list_t] */
+    /* Out-Ports [sai_object_list_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS,
 
-    /* In-Port [sai_object_id_t] */
+    /* In-Port [sai_object_id_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
 
-    /* Out-Port [sai_object_id_t] */
+    /* Out-Port [sai_object_id_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
-    /* Outer Vlan-Id */
+    /* Outer Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID,
 
-    /* Outer Vlan-Priority */
+    /* Outer Vlan-Priority [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_PRI,
 
-    /* Outer Vlan-CFI */
+    /* Outer Vlan-CFI [sai_uint8_t : 1] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_CFI,
 
-    /* Inner Vlan-Id */
+    /* Inner Vlan-Id [sai_uint16_t: 12] */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_ID,
 
-    /* Inner Vlan-Priority */
+    /* Inner Vlan-Priority [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_PRI,
 
-    /* Inner Vlan-CFI */
+    /* Inner Vlan-CFI [sai_uint8_t : 1] */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_CFI,
 
-    /* L4 Src Port */
+    /* L4 Src Port [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT,
 
-    /* L4 Dst Port */
+    /* L4 Dst Port [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
 
-    /* EtherType */
+    /* EtherType [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_ETHER_TYPE,
 
-    /* IP Protocol */
+    /* IP Protocol [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL,
 
-    /* Ip Dscp */
+    /* Ip Dscp [sai_uint8_t : 6] */
     SAI_ACL_ENTRY_ATTR_FIELD_DSCP,
 
-    /* Ip Ttl */
+    /* Ip Ecn [sai_uint8_t : 2] */
+    SAI_ACL_ENTRY_ATTR_FIELD_DSCP,
+
+    /* Ip Ttl [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_TTL,
 
-    /* Ip Tos */
+    /* Ip Tos [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_TOS,
 
-    /* Ip Flags */
+    /* Ip Flags [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_FLAGS,
 
-    /* Tcp Flags */
+    /* Tcp Flags [sai_uint8_t : 6] */
     SAI_ACL_ENTRY_ATTR_FIELD_TCP_FLAGS,
 
-    /* Ip Type [sai_acl_ip_type_t] */
+    /* Ip Type [sai_acl_ip_type_t] (field mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_TYPE,
 
-    /* Ip Frag [sai_acl_ip_frag_t] */
+    /* Ip Frag [sai_acl_ip_frag_t] (field mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_FRAG,
 
-    /* IPv6 Flow Label [sai_uint32_t] */
+    /* IPv6 Flow Label [sai_uint32_t : 20] */
     SAI_ACL_ENTRY_ATTR_FIELD_IPv6_FLOW_LABEL,
 
-    /* Class-of-Service (Traffic Class) */
-    SAI_ACL_ENTRY_ATTR_FIELD_COS,
+    /* Class-of-Service (Traffic Class) [sai_cos_t] */
+    SAI_ACL_ENTRY_ATTR_FIELD_TC,
 
     /* End of Rule Match Fields */ 
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_COS,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_TC,
 
-    /* Actions [pointer to sai_acl_action_data_t] */
+    /* Actions [sai_acl_action_data_t]
+     * - To enable an action, parameter is needed unless noted specifically.
+     * - To disable an action, parameter is not needed. */
 
     /* Start of Rule Actions */
     SAI_ACL_ENTRY_ATTR_ACTION_START = 0x00002000,
@@ -351,82 +360,73 @@ typedef enum _sai_acl_entry_attr_t
      * lag, nexthop, nexthopgroup. [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT,
 
-    /* Drop Packet */
-    SAI_ACL_ENTRY_ATTR_ACTION_DROP,
+    /* Drop Packet [sai_packet_action_t] */
+    SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
 
-    /* Allow Packet (overwrites drop action) */
-    SAI_ACL_ENTRY_ATTR_ACTION_ALLOW,
-
-    /* Flood Packet on Vlan domain */
+    /* Flood Packet on Vlan domain (parameter is not needed) */
     SAI_ACL_ENTRY_ATTR_ACTION_FLOOD,
 
-    /* Copy Packet to CPU */
-    SAI_ACL_ENTRY_ATTR_ACTION_COPY_TO_CPU,
-
-    /* Trap Packet to CPU */
-    SAI_ACL_ENTRY_ATTR_ACTION_TRAP_TO_CPU,
-
-    /* Attach/detach counter id to the entry [sal_acl_counter_id_t] */
+    /* Attach/detach counter id to the entry [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_COUNTER,
 
-    /* Ingress Mirror */
+    /* Ingress Mirror (mirror session id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS,
 
-    /* Egress Mirror */
+    /* Egress Mirror (mirror session id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS,
 
-    /* Assosiate with policer [sai_object_id_t] */
+    /* Assosiate with policer (policer id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER,
 
-    /* Decrement TTL */
+    /* Decrement TTL (enable/disable) (parameter is not needed) */
     SAI_ACL_ENTRY_ATTR_ACTION_DECREMENT_TTL,
 
-    /* Set Class-of-Service (Traffic Class) */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_COS,
+    /* Set Class-of-Service (Traffic Class) [sai_cos_t] */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_TC,
 
-    /* Set Packet Inner Vlan-Id */
+    /* Set Packet Inner Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_VLAN_ID,
 
-    /* Set Packet Inner Vlan-Priority */
+    /* Set Packet Inner Vlan-Priority [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_VLAN_PRI,
 
-    /* Set Packet Outer Vlan-Id */
+    /* Set Packet Outer Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_ID,
 
-    /* Set Packet Outer Vlan-Priority */
+    /* Set Packet Outer Vlan-Priority [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_PRI,
 
-    /* Set Packet Src MAC Address */
+    /* Set Packet Src MAC Address [sai_mac_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_MAC,
 
-    /* Set Packet Dst MAC Address */
+    /* Set Packet Dst MAC Address [sai_mac_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_MAC,
 
-    /* Set Packet Src IPv4 Address */
+    /* Set Packet Src IPv4 Address [sai_ip4_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IP,
 
-    /* Set Packet Src IPv4 Address */
+    /* Set Packet Src IPv4 Address [sai_ip4_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IP,
 
-    /* Set Packet Src IPv6 Address */
+    /* Set Packet Src IPv6 Address [sai_ip6_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IPv6,
 
-    /* Set Packet Src IPv6 Address */
+    /* Set Packet Src IPv6 Address [sai_ip6_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IPv6,
 
-    /* Set Packet DSCP */
+    /* Set Packet DSCP [sai_uint8_t : 6] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DSCP,
 
-    /* Set Packet L4 Src Port */
+    /* Set Packet L4 Src Port [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_SRC_PORT,
 
-    /* Set Packet L4 Src Port */
+    /* Set Packet L4 Src Port [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT,
 
-    /* Set ingress packet sampling */
+    /* Set ingress packet sampling (samplepacket session id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
 
-    /* Set egress packet sampling */
+    /* Set egress packet sampling (samplepacket session id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
 
     /* End of Rule Actions */

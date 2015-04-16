@@ -211,6 +211,7 @@ typedef struct _sai_acl_field_data_t
      * match enable/disable
      */ 
     bool enable;
+
     /*
      * Field match mask
      */
@@ -322,7 +323,7 @@ typedef union {
     sai_s32_list_t s32list;
     sai_vlan_list_t vlanlist;
     sai_acl_field_data_t aclfield;
-    sai_acl_action_data_t acldata;
+    sai_acl_action_data_t aclaction;
     sai_port_breakout_t portbreakout;
 } sai_attribute_value_t;
 
