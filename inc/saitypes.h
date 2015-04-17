@@ -202,40 +202,40 @@ typedef struct _sai_ip_prefix_t {
     } mask;
 } sai_ip_prefix_t;
 
-typedef enum _sai_acl_match_mode_t 
-{
-    /* Field match is disbled. 
-     * Used for disable a match field in an installed acl entry */
-    SAI_ACL_MATCH_DISABLE, 
-
-    /* Field mode is determined by the field type */
-    SAI_ACL_MATCH_AUTO,
-
-    /* Field mode is AND with mask (<data> & <mask> == <field>) */
-    SAI_ACL_MATCH_MASK
-
-} sai_acl_match_mode_t;
-
 /*
  * Defines a single ACL filter
  */
 typedef struct _sai_acl_field_data_t
 {
     /*
-     * Field match mode
-     */
-    sai_acl_match_mode_t mode;
-
+     * match enable/disable
+     */ 
+    bool enable;
     /*
      * Field match mask
      */
-    uint64_t match_mask[2];
+    union {
+        sai_uint8_t u8;
+        sai_uint16_t u16;
+        sai_uint32_t u32;
+        sai_mac_t mac;
+        sai_ip4_t ip4;
+        sai_ip6_t ip6;
+    } mask;
 
     /*
-     * Expected AND result using match mask above with packet field value.
+     * Expected AND result using match mask above with packet field value where applicable.
      */
-    uint64_t match_data[2];
-
+    union {
+        sai_uint8_t u8;
+        sai_uint16_t u16;
+        sai_uint32_t u32;
+        sai_mac_t mac;
+        sai_ip4_t ip4;
+        sai_ip6_t ip6;
+        sai_object_id_t oid;
+        sai_object_list_t objlist;
+    } data;
 } sai_acl_field_data_t;
 
 /*
@@ -247,12 +247,18 @@ typedef struct _sai_acl_action_data_t
      * action enable/disable
      */ 
     bool enable;
-
     /*
      * Action parameter
      */
-    uint64_t parameter[2];
-
+    union {
+      sai_uint8_t u8;
+      sai_uint16_t u16;
+      sai_uint32_t u32;
+      sai_mac_t mac;
+      sai_ip4_t ip4;
+      sai_ip6_t ip6;
+      sai_object_id_t oid;
+    } parameter;
 } sai_acl_action_data_t;
 
 /*
