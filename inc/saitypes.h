@@ -76,6 +76,7 @@ typedef enum {
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <sys/types.h>
 
 typedef int32_t  sai_status_t;  
 typedef uint32_t sai_switch_profile_id_t;
@@ -107,6 +108,7 @@ typedef uint16_t sai_uint16_t;
 typedef int16_t sai_int16_t;
 typedef uint8_t sai_uint8_t;
 typedef int8_t sai_int8_t;
+typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 
 #define SAI_NULL_OBJECT_ID 0L

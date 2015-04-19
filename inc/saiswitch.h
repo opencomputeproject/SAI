@@ -33,6 +33,7 @@
 #include <saitypes.h>
 #include "saiport.h"
 #include "saifdb.h"
+#include "saihostintf.h"
 
 
 #define SAI_MAX_HARDWARE_ID_LEN         255
@@ -182,10 +183,6 @@ typedef enum _sai_switch_attr_t
     /* L2 multicast flood control to CPU port [bool] */ 
     SAI_SWITCH_ATTR_MCAST_CPU_FLOOD_ENABLE,
 
-    /* Action for Packets with TTL 0 or 1 [sai_packet_action_t] 
-       (default to SAI_PACKET_ACTION_TRAP) */
-    SAI_SWITCH_ATTR_VIOLATION_TTL1_ACTION,
-
     /* Default VlanID for ports that are not members of 
        any vlans [sai_vlan_id_t]  (default to vlan 1)*/
     SAI_SWITCH_ATTR_DEFAULT_PORT_VLAN_ID,
@@ -316,6 +313,7 @@ typedef struct _sai_switch_notification_t
     sai_port_state_change_notification_fn   on_port_state_change;
     sai_port_event_notification_fn          on_port_event;
     sai_switch_shutdown_request_fn          on_switch_shutdown_request;
+	sai_packet_event_notification_fn        on_packet_event;
 } sai_switch_notification_t;
   
 /*
@@ -439,3 +437,4 @@ typedef struct _sai_switch_api_t
 } sai_switch_api_t;
 
 #endif  // __SAISWITCH_H_
+
