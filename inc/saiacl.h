@@ -185,6 +185,9 @@ typedef enum _sai_acl_table_attr_t
     /* Ip Dscp */
     SAI_ACL_TABLE_ATTR_FIELD_DSCP,
 
+    /* Ip Ecn */
+    SAI_ACL_TABLE_ATTR_FIELD_ECN,
+
     /* Ip Ttl */
     SAI_ACL_TABLE_ATTR_FIELD_TTL,
 
@@ -317,7 +320,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_DSCP,
 
     /* Ip Ecn [sai_uint8_t : 2] */
-    SAI_ACL_ENTRY_ATTR_FIELD_DSCP,
+    SAI_ACL_ENTRY_ATTR_FIELD_ECN,
 
     /* Ip Ttl [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_TTL,
