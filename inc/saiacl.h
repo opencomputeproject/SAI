@@ -104,7 +104,7 @@ typedef enum _sai_acl_table_attr_t
 
     /* READ-WRITE */
 
-    /* Priority [sai_acl_stage_t]
+    /* ACL stage [sai_acl_stage_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ACL_TABLE_ATTR_STAGE,
 
@@ -229,8 +229,8 @@ typedef enum _sai_acl_entry_attr_t
 {
     /* READ-ONLY */
 
-    /* Priority [sal_object_id_t]
-     * (mandatory for create) */
+    /* SAI acl table object id [sai_object_id_t]
+     * (MANDATORY_ON_CREATE) */
     SAI_ACL_ENTRY_ATTR_TABLE_ID,
 
     /* READ-WRITE */
@@ -444,8 +444,8 @@ typedef enum _sai_acl_counter_attr_t
 {
     /* READ-ONLY */
 
-    /* Priority [sal_acl_table_id_t]
-     * (mandatory for create) */
+    /* SAI acl table object id [sai_object_id_t]
+     * (MANDATORY_ON_CREATE) */
     SAI_ACL_COUNTER_ATTR_TABLE_ID,
 
     /* 
