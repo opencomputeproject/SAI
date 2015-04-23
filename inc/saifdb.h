@@ -102,6 +102,47 @@ typedef enum _sai_fdb_entry_attr_t
 } sai_fdb_entry_attr_t;
 
 /*
+*  FDB Flush entry type.
+*/
+typedef enum _sai_fdb_flush_entry_type_t
+{
+    /* Flush dynamic FDB entries */
+    SAI_FDB_FLUSH_ENTRY_DYNAMIC,
+
+    /* Flush static FDB entries */
+    SAI_FDB_FLUSH_ENTRY_STATIC,
+
+    /* Flush all types of FDB entries */
+    SAI_FDB_FLUSH_ENTRY_ALL,
+
+} sai_fdb_flush_entry_type_t;
+
+/*
+* Attribute for FDB delete. These can be used in the following combinations
+* in the flush API
+* 1) Flush all entries in fdb table - Set SAI_FDB_FLUSH_ATTR_ENTRY_TYPE with
+*    value of SAI_FDB_FLUSH_ENTRY_ALL
+* 2) Flush all entries by port - SAI_FDB_FLUSH_ATTR_PORT_ID
+* 3) Flush all entries by VLAN - SAI_FDB_FLUSH_ATTR_VLAN_ID
+* 4) Flush all entries by port VLAN - SAI_FDB_FLUSH_ATTR_PORT_ID,
+*    SAI_FDB_FLUSH_ATTR_VLAN_ID
+* Additionally the type of entry needs to be flushed can be specified
+* using SAI_FDB_FLUSH_ATTR_ENTRY_TYPE which can be static or dynamic or all
+*/
+typedef enum _sai_fdb_flush_attr {
+
+   /*Flush based on port [sai_object_id_t]*/
+   SAI_FDB_FLUSH_ATTR_PORT_ID,
+
+   /*Flush based on VLAN [sai_vlan_id_t]*/
+   SAI_FDB_FLUSH_ATTR_VLAN_ID,
+
+   /*Flush based on entry type [sai_fdb_flush_entry_type_t]*/
+   SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
+
+}sai_fdb_flush_attr;
+
+/*
 * Routine Description:
 *    Create FDB entry
 *
@@ -173,63 +214,19 @@ typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
 
 /*
 * Routine Description:
-*    Initiate deletion of all FDB entries
+*    Remove all FDB entries by attribute set in sai_fdb_flush_attr
 *
 * Arguments:
-*    None
+*    [in] attr_count - number of attributes
+*    [in] attr_list - array of attributes
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
 */
-typedef sai_status_t (*sai_flush_all_fdb_entries_fn)(void);
-
-
-/*
-* Routine Description:
-*    Remove all FDB entries by port
-*
-* Arguments:
-*    [in] port_id - port id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_flush_all_fdb_entries_by_port_fn)(
-    _In_ sai_object_id_t port_id
-    );
-
-/*
-* Routine Description:
-*    Remove all FDB entries by vlan
-*
-* Arguments:
-*    [in] vlan_id - vlan id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_flush_all_fdb_entries_by_vlan_fn)(
-    _In_ sai_vlan_id_t vlan_id
-    );
-
-/*
-* Routine Description:
-*    Remove all FDB entries by port + vlan combination
-*
-* Arguments:
-*    [in] port_id - port id
-*    [in] vlan_id - vlan id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_flush_all_fdb_entries_by_port_vlan_fn)(
-    _In_ sai_object_id_t port_id,
-    _In_ sai_vlan_id_t vlan_id
+typedef sai_status_t (*sai_flush_fdb_entries_fn)(
+    _In_ uint32_t attr_cout,
+    _In_ const sai_attribute_t *attr_list
     );
 
 /*
@@ -261,10 +258,7 @@ typedef struct _sai_fdb_api_t
     sai_remove_fdb_entry_fn                     remove_fdb_entry;
     sai_set_fdb_entry_attribute_fn              set_fdb_entry_attribute;
     sai_get_fdb_entry_attribute_fn              get_fdb_entry_attribute;
-    sai_flush_all_fdb_entries_fn                flush_all_fdb_entries;
-    sai_flush_all_fdb_entries_by_port_fn        flush_all_fdb_entries_by_port;
-    sai_flush_all_fdb_entries_by_vlan_fn        flush_all_fdb_entries_by_vlan;
-    sai_flush_all_fdb_entries_by_port_vlan_fn   flush_all_fdb_entries_by_port_vlan;
+    sai_flush_fdb_entries_fn                    flush_fdb_entries;
 
 } sai_fdb_api_t;
 
