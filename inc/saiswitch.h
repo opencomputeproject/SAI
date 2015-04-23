@@ -92,8 +92,7 @@ typedef enum _sai_switch_hash_field_types_t
     SAI_HASH_L4_DEST_PORT = 6,
     SAI_HASH_SOURCE_MAC = 7,
     SAI_HASH_DEST_MAC = 8,
-    SAI_HASH_DEST_PORT = 9,
-    SAI_HASH_SOURCE_PORT = 10,
+    SAI_HASH_IN_PORT = 9,
 } sai_switch_hash_field_types_t;
 
 /*
