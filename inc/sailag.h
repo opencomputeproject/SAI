@@ -20,6 +20,11 @@
 * \brief   This module defines SAI LAG interface
 */
 
+#if !defined (__SAILAG_H_)
+#define __SAILAG_H_
+
+#include <saitypes.h>
+
 /*Lag attribute: List of attributes for LAG module*/
 typedef enum _sai_lag_attr_t {
 
@@ -62,8 +67,8 @@ typedef sai_status_t(*sai_remove_lag_fn)(
             Failure: Failure status code on error
 */
 typedef sai_status_t (*sai_add_ports_to_lag_fn)(
-    _In_ sai_object_id_t lag_id, 
-    _In_ const sai_object_list_t *port_list 
+    _In_ sai_object_id_t lag_id,
+    _In_ const sai_object_list_t *port_list
     );
 
 /*
@@ -75,8 +80,8 @@ typedef sai_status_t (*sai_add_ports_to_lag_fn)(
             Failure: Failure status code on error
 */
 typedef sai_status_t (*sai_remove_ports_from_lag_fn)(
-    _In_ sai_object_id_t lag_id, 
-    _In_ const sai_object_list_t *port_list 
+    _In_ sai_object_id_t lag_id,
+    _In_ const sai_object_list_t *port_list
     );
 
 /*
@@ -119,3 +124,4 @@ typedef struct _sai_lag_api_t
    sai_remove_ports_from_lag_fn    remove_ports_from_lag;
 }sai_lag_api_t;
 
+#endif
