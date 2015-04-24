@@ -1,22 +1,22 @@
 /*
-* Copyright (c) 2014 Microsoft Open Technologies, Inc. 
-*   
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may 
-*    not use this file except in compliance with the License. You may obtain 
+* Copyright (c) 2014 Microsoft Open Technologies, Inc.
+*
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
 *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 *
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
+*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
 *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 *
-*    See the Apache Version 2.0 License for specific language governing 
-*    permissions and limitations under the License. 
+*    See the Apache Version 2.0 License for specific language governing
+*    permissions and limitations under the License.
 *
 *    Microsoft would like to thank the following companies for their review and
 *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 *    Dell Products, L.P., Facebook, Inc
-*   
+*
 * Module Name:
 *
 *    saiacl.h
@@ -32,7 +32,7 @@
 
 #include <saitypes.h>
 
-typedef enum _sai_acl_stage_t 
+typedef enum _sai_acl_stage_t
 {
     /* Ingress Stage */
     SAI_ACL_STAGE_INGRESS,
@@ -40,9 +40,9 @@ typedef enum _sai_acl_stage_t
     /* Egress Stage */
     SAI_ACL_STAGE_EGRESS,
 
-} sai_acl_stage_t; 
+} sai_acl_stage_t;
 
-typedef enum _sai_acl_ip_type_t 
+typedef enum _sai_acl_ip_type_t
 {
     /* Don't care */
     SAI_ACL_IP_TYPE_ANY,
@@ -76,7 +76,7 @@ typedef enum _sai_acl_ip_type_t
 
 } sai_acl_ip_type_t;
 
-typedef enum _sai_acl_ip_frag_t 
+typedef enum _sai_acl_ip_frag_t
 {
     /* Any Fragment of Fragmented Packet */
     SAI_ACL_IP_FRAG_ANY,
@@ -98,7 +98,7 @@ typedef enum _sai_acl_ip_frag_t
 /*
 *  Attribute Id for sai_acl_table
 */
-typedef enum _sai_acl_table_attr_t 
+typedef enum _sai_acl_table_attr_t
 {
     /* READ-ONLY */
 
@@ -108,14 +108,35 @@ typedef enum _sai_acl_table_attr_t
      * (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ACL_TABLE_ATTR_STAGE,
 
-    /* Priority [sai_uint32_t] 
-     * (MANDATORY_ON_CREATE|CREATE_ONLY) 
+    /* Priority [sai_uint32_t]
+     * (MANDATORY_ON_CREATE|CREATE_ONLY)
      * Value must be in the range defined in
-     * [SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY, 
+     * [SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
      *  SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY] */
     SAI_ACL_TABLE_ATTR_PRIORITY,
 
-    /* Match fields [bool] 
+    /* Table size [sai_uint32_t], CREATE_ONLY
+     * (default = 0) - Grow dynamically till MAX ACL TCAM Size
+     * By default table can grow upto maximum ACL TCAM space.
+     * Supported only during Table Create for now until NPU
+     * supports Dynamic adjustment of Table size post Table creation
+     *
+     * The table size refers to the number of ACL entries. The number
+     * of entries that get's allocated when we create a table with a
+     * specific size would depend on the ACL CAM Arch of the NPU. Some
+     * NPU supports different blocks, each may have same or different
+     * size and what gets allocated can depend on the block size or other
+     * factors. So internally what gets allocated when we do a table
+     * create would be based on the NPU CAM Arch and size may be more
+     * than what is requested. As an example the NPU may support blocks of
+     * 128 entries. When a user creates a table of size 100, the actual
+     * size that gets allocated is 128. Hence its recommended that the user
+     * does a get_attribute(SAI_ACL_TABLE_ATTR_SIZE) to query the actual
+     * table size on table create so the user knows the ACL CAM space
+     * allocated and able to do ACL CAM Carving accurately */
+    SAI_ACL_TABLE_ATTR_SIZE,
+
+    /* Match fields [bool]
      * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Table Creation)
      * (CREATE_ONLY, match fields cannot be changed after the table is created) */
 
@@ -235,21 +256,21 @@ typedef enum _sai_acl_entry_attr_t
 
     /* READ-WRITE */
 
-    /* Priority [sai_uint32_t] 
+    /* Priority [sai_uint32_t]
      * Value must be in the range defined in
-     * [SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY, 
+     * [SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY,
      *  SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY]
      * (default = SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY) */
     SAI_ACL_ENTRY_ATTR_PRIORITY,
 
-    /* Enabled / Disabled [bool] 
+    /* Enabled / Disabled [bool]
      * (default = enabled) */
     SAI_ACL_ENTRY_ATTR_ADMIN_STATE,
 
     /* Match fields [sai_acl_field_data_t]
      * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Rule Creation)
      * - Unless noted specificially, both data and mask are required.
-     * - When bitfield is used the comment, only those least significent bits 
+     * - When bitfield is used the comment, only those least significent bits
      *   are valid for matching.
      */
 
@@ -346,7 +367,7 @@ typedef enum _sai_acl_entry_attr_t
     /* Class-of-Service (Traffic Class) [sai_cos_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_TC,
 
-    /* End of Rule Match Fields */ 
+    /* End of Rule Match Fields */
     SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_TC,
 
     /* Actions [sai_acl_action_data_t]
@@ -448,11 +469,11 @@ typedef enum _sai_acl_counter_attr_t
      * (MANDATORY_ON_CREATE) */
     SAI_ACL_COUNTER_ATTR_TABLE_ID,
 
-    /* 
+    /*
      * By default Byte Counter would be created and following
      * use of the below attributes would result in an error.
      *
-     * - Both packet count and byte count set to disable 
+     * - Both packet count and byte count set to disable
      * - Only Byte count used which is set to disable
      */
 
@@ -461,13 +482,13 @@ typedef enum _sai_acl_counter_attr_t
 
     /* enable/disable byte count [bool] */
     SAI_ACL_COUNTER_ATTR_ENABLE_BYTE_COUNT,
- 
+
     /* get/set packet count [uint64_t] */
     SAI_ACL_COUNTER_ATTR_PACKETS,
 
     /* get/set byte count [uint64_t] */
     SAI_ACL_COUNTER_ATTR_BYTES
-   
+
 } sai_acl_counter_attr_t;
 
 /*
@@ -505,7 +526,7 @@ typedef sai_status_t (*sai_delete_acl_table_fn)(
 
 /*
 * Routine Description:
-*   Set ACL table attribute 
+*   Set ACL table attribute
 *
 * Arguments:
 *    [in] acl_table_id - the acl table id
@@ -522,7 +543,7 @@ typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
 
 /*
 * Routine Description:
-*   Get ACL table attribute 
+*   Get ACL table attribute
 *
 * Arguments:
 *    [in] acl_table_id - acl table id
@@ -575,7 +596,7 @@ typedef sai_status_t (*sai_delete_acl_entry_fn)(
 
 /*
 * Routine Description:
-*   Set ACL entry attribute 
+*   Set ACL entry attribute
 *
 * Arguments:
 *    [in] acl_entry_id - the acl entry id
@@ -592,7 +613,7 @@ typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
 
 /*
 * Routine Description:
-*   Get ACL entry attribute 
+*   Get ACL entry attribute
 *
 * Arguments:
 *    [in] acl_entry_id - acl entry id
@@ -645,7 +666,7 @@ typedef sai_status_t (*sai_delete_acl_counter_fn)(
 
 /*
 * Routine Description:
-*   Set ACL counter attribute 
+*   Set ACL counter attribute
 *
 * Arguments:
 *    [in] acl_counter_id - the acl counter id
@@ -662,7 +683,7 @@ typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
 
 /*
 * Routine Description:
-*   Get ACL counter attribute 
+*   Get ACL counter attribute
 *
 * Arguments:
 *    [in] acl_counter_id - acl counter id
