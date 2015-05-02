@@ -37,7 +37,7 @@
 */
 typedef enum _sai_router_interface_type_t 
 {
-    /* Port Router Interface Type */
+    /* Port or Lag Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_PORT,
 
     /* VLAN Router Interface Type */
@@ -53,37 +53,35 @@ typedef enum _sai_router_interface_attr_t
 {
     /* READ-ONLY */
 
-    /* Virtual router id [sai_virtual_router_id_t]
-     *  (mandatory for create) */
+    /* Virtual router id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID,
 
-    /* Type [sai_router_interface_type_t]
-     *  (mandatory for create) */
+    /* Type [sai_router_interface_type_t]  (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ROUTER_INTERFACE_ATTR_TYPE,
 
-    /* Assosiated Port [sai_port_id_t] 
-    *   (mandatory for create when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT) 
+    /* Assosiated Port or Lag object id [sai_object_id_t] 
+    *  (MANDATORY_ON_CREATE when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT | CREATE_ONLY) 
     */
     SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
 
     /* Assosiated Vlan [sai_vlan_id_t] 
-    *   (mandatory for create when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN) 
+    *  (MANDATORY_ON_CREATE when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN | CREATE_ONLY)
     */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
 
     /* READ-WRITE */
 
-    /* MAC Address [sai_mac_t] 
-        (equal to the SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS by default) */
+    /* MAC Address [sai_mac_t] (CREATE_AND_SET)
+        (default to SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create) */
     SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS,
 
-    /* Admin V4 state [bool] (default to TRUE) */
+    /* Admin V4 state [bool] (CREATE_AND_SET) (default to TRUE) */
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_V4_STATE,
 
-    /* Admin V6 state [bool] (default to TRUE) */
+    /* Admin V6 state [bool] (CREATE_AND_SET) (default to TRUE) */
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_V6_STATE,
 
-    /* MTU [uint32_t], (default to  1514 bytes) */
+    /* MTU [uint32_t] (CREATE_AND_SET) (default to 1514 bytes) */
     SAI_ROUTER_INTERFACE_ATTR_MTU,
 
     /* -- */
@@ -107,7 +105,7 @@ typedef enum _sai_router_interface_attr_t
 *    Failure status code on error
 */
 typedef sai_status_t(*sai_create_router_interface_fn)(
-    _Out_ sai_router_interface_id_t* rif_id,
+    _Out_ sai_object_id_t* rif_id,
     _In_ uint32_t attr_count,
     _In_ sai_attribute_t *attr_list
     );
@@ -124,7 +122,7 @@ typedef sai_status_t(*sai_create_router_interface_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t(*sai_remove_router_interface_fn)(
-    _In_ sai_router_interface_id_t rif_id
+    _In_ sai_object_id_t rif_id
     );
 
 /*
@@ -132,7 +130,7 @@ typedef sai_status_t(*sai_remove_router_interface_fn)(
 *    Set router interface attribute
 *
 * Arguments:
-*    [in] sai_router_interface_id_t - router_interface_id
+*    [in] rif_id - router interface id
 *    [in] attr - attribute
 *
 * Return Values:
@@ -140,7 +138,7 @@ typedef sai_status_t(*sai_remove_router_interface_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
-    _In_ sai_router_interface_id_t rif_id,
+    _In_ sai_object_id_t rif_id,
     _In_ const sai_attribute_t *attr
     );
 
@@ -150,7 +148,7 @@ typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
 *    Get router interface attribute
 *
 * Arguments:
-*    [in] sai_router_interface_id_t - router_interface_id
+*    [in] rif_id - router interface id
 *    [in] attr_count - number of attributes
 *    [inout] attr_list - array of attributes
 *
@@ -159,7 +157,7 @@ typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_router_interface_attribute_fn)(
-    _In_ sai_router_interface_id_t rif_id,
+    _In_ sai_object_id_t rif_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );

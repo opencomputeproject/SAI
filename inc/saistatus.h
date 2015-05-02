@@ -162,10 +162,32 @@
 */
 #define SAI_STATUS_INVALID_ACL_COUNTER_ID   SAI_STATUS_CODE(0x00000017L)
 
+/*
+*  Invalid STP Instance ID
+*/
+#define SAI_STATUS_INVALID_STP_INSTANCE     SAI_STATUS_CODE(0x00000018L)
+
+/*
+*  SAI Object is in use
+*/
+#define SAI_STATUS_OBJECT_IN_USE            SAI_STATUS_CODE(0x00000019L)
+
+/*
+* Invalid SAI Object type passed to a function. If the object id
+* is passed as an attribute value in list, then 
+* SAI_STATUS_INVALID_ATTR_VALUE_0 status code should be used
+*/
+#define SAI_STATUS_INVALID_OBJECT_TYPE      SAI_STATUS_CODE(0x0000001AL)
+ 
 /*  
 *  Attribute is invalid (range from 0x00010000L to 0x0001FFFFL). 
+*  Return this when the property attached to the attribute does not match
+*  the API call. For example:
+*    - When a READ_ONLY attribute is passed set_attribute or create call
+*    - When a CREATE_ONLY attribute is passed to set_attribute call
+*
 *  The offset from SAI_STATUS_INVLAID_ATTRIBUTE_0 is the array index of
-*  the attribute list passed to the SAI API call.
+*  the attribute list passed to the SAI API call. 
 */
 #define SAI_STATUS_INVALID_ATTRIBUTE_0      SAI_STATUS_CODE(0x00010000L)
 #define SAI_STATUS_INVALID_ATTRIBUTE_MAX    SAI_STATUS_CODE(0x0001FFFFL)
@@ -178,18 +200,24 @@
 
 /*  
 *  Attribute is not implmented (range from 0x00030000L to 0x003FFFFL)
+*  Return this when the attribute is supported but not implemented on 
+*  the platform.
 */
 #define SAI_STATUS_ATTR_NOT_IMPLEMENTED_0   SAI_STATUS_CODE(0x00030000L)
 #define SAI_STATUS_ATTR_NOT_IMPLEMENTED_MAX SAI_STATUS_CODE(0x0003FFFFL)
 
 /*  
 *  Attribute is unknown (range from 0x00040000L to 0x004FFFFL)
+*  Return this when the attribute is undefined, e.g., the attribute id 
+*  is out of range.
 */
 #define SAI_STATUS_UNKNOWN_ATTRIBUTE_0      SAI_STATUS_CODE(0x00040000L)
 #define SAI_STATUS_UNKNOWN_ATTRIBUTE_MAX    SAI_STATUS_CODE(0x0004FFFFL)
 
 /*
 *  Attribute is not supported (range from 0x00050000L to 0x005FFFFL)
+*  Return this when the platform does not has the capability to support
+*  this attribute.
 */
 #define SAI_STATUS_ATTR_NOT_SUPPORTED_0   SAI_STATUS_CODE(0x00050000L)
 #define SAI_STATUS_ATTR_NOT_SUPPORTED_MAX SAI_STATUS_CODE(0x0005FFFFL)

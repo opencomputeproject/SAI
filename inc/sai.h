@@ -44,6 +44,10 @@
 #include <saiqos.h>
 #include <saiacl.h>
 #include <saihostintf.h>
+#include <saimirror.h>
+#include <saistp.h>
+#include <saisamplepacket.h>
+#include <sailag.h>
 
 /*
 *
@@ -69,6 +73,10 @@ typedef enum _sai_api_t
     SAI_API_QOS              = 11,  /* sai_qos_api_t */
     SAI_API_ACL              = 12,  /* sai_acl_api_t */
     SAI_API_HOST_INTERFACE   = 13,  /* sai_host_interface_api_t */
+    SAI_API_MIRROR           = 14,  /* sai_mirror_api_t */
+    SAI_API_SAMPLEPACKET     = 15,  /* sai_samplepacket_api_t */
+    SAI_API_STP              = 16,  /* sai_stp_api_t */
+    SAI_API_LAG              = 17,  /* sai_lag_api_t */
 } sai_api_t;
 
 typedef enum _sai_log_level_t
@@ -176,4 +184,22 @@ sai_log_set(
     _In_ sai_api_t sai_api_id,
     _In_ sai_log_level_t log_level
     );
+
+/*
+* Routine Description:
+*     Query sai object type.
+*
+* Arguments:
+*     [in] sai_object_id_t
+*
+* Return Values:
+*    Return SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
+*    Otherwise, return a valid sai object type SAI_OBJECT_TYPE_XXX
+*/
+sai_object_type_t 
+sai_object_type_query(
+    _In_ sai_object_id_t sai_object_id
+    );
+
+
 #endif  // __SAI_H_

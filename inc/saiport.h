@@ -43,9 +43,6 @@ typedef enum _sai_port_type_t
     /* CPU Port */
     SAI_PORT_TYPE_CPU,
 
-    /* Link-Aggregation Port */
-    SAI_PORT_TYPE_LAG,
-
 } sai_port_type_t;
 
 /*
@@ -69,31 +66,6 @@ typedef enum _sai_port_oper_status_t
     SAI_PORT_OPER_STATUS_NOT_PRESENT
 
 } sai_port_oper_status_t;
-
-/*
-*  Attribute data for SAI_PORT_STP_STATE
-*/
-typedef enum _sai_port_stp_state_t 
-{
-    /* Port is Disabled  */
-    SAI_PORT_STP_STATE_DISABLED,
-
-    /* Port is Listening */
-    SAI_PORT_STP_STATE_LISTENING,
-
-    /* Port is Learning */
-    SAI_PORT_STP_STATE_LEARNING,
-
-    /* Port is Forwarding */
-    SAI_PORT_STP_STATE_FORWARDING,
-
-    /* Port is Blocking */
-    SAI_PORT_STP_STATE_BLOCKING,
-
-    /* Port is Discarding */
-    SAI_PORT_STP_STATE_DISCARDING,
-
-} sai_port_stp_state_t;
 
 /*
 * Attribute data for SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL
@@ -135,13 +107,59 @@ typedef enum _sai_port_internal_loopback_mode_t
 */
 typedef enum _sai_port_fdb_learning_mode_t 
 {
-    /* Learning disable. Do not learn new mac address */
+    /* Drop packets with unknown source MAC. Do not learn. Do not forward */
+    SAI_PORT_LEARN_MODE_DROP,
+
+    /* Do not learn unknown source MAC. Forward based on destination MAC */
     SAI_PORT_LEARN_MODE_DISABLE,
 
-    /* Hardware learning */
+    /* Hardware learning. Learn source MAC. Forward based on destination MAC */
     SAI_PORT_LEARN_MODE_HW,
 
+    /* Trap packets with unknown source MAC to CPU. Do not learn. Do not forward */
+    SAI_PORT_LEARN_MODE_CPU_TRAP,
+
+    /* Trap packets with unknown source MAC to CPU. Do not learn. Forward based on destination MAC */
+    SAI_PORT_LEARN_MODE_CPU_LOG,
+
 } sai_port_fdb_learning_mode_t;
+
+/*
+ * Port Add/Delete Event
+ */
+typedef enum _sai_port_event_t
+{
+    /* Create a new active port */
+    SAI_PORT_EVENT_ADD,
+
+    /* Delete/Invalidate an existing port */
+    SAI_PORT_EVENT_DELETE,
+
+} sai_port_event_t;
+
+/*
+ * Attribute data for SAI_PORT_ATTR_MEDIA_TYPE
+ */
+typedef enum _sai_port_media_type_t
+{
+    /* Media not present */
+    SAI_PORT_MEDIA_TYPE_NOT_PRESENT,
+
+    /* Media type not known */
+    SAI_PORT_MEDIA_TYPE_UNKNONWN,
+
+    /* Media type QSFP fiber optic */
+    SAI_PORT_MEDIA_TYPE_QSFP_FIBER,
+
+    /* Media type QSFP copper optic */
+    SAI_PORT_MEDIA_TYPE_QSFP_COPPER,
+
+    /* Media type SFP fiber optic */
+    SAI_PORT_MEDIA_TYPE_SFP_FIBER,
+
+    /* Media type SFP copper optic */
+    SAI_PORT_MEDIA_TYPE_SFP_COPPER,
+} sai_port_media_type_t;
 
 /*
 *  Attribute Id in sai_set_port_attribute() and 
@@ -157,12 +175,25 @@ typedef enum _sai_port_attr_t
     /* Operational Status [sai_port_oper_status_t] */
     SAI_PORT_ATTR_OPER_STATUS,
 
+    /* Hardware Lane list [sai_u32_list_t] */
+    SAI_PORT_ATTR_HW_LANE_LIST,
+
+    /* Breakout mode(s) supported [sai_s32_list_t] */
+    SAI_PORT_ATTR_SUPPORTED_BREAKOUT_MODE,
+
+    /* Current breakout mode [sai_port_breakout_mode_type_t] */
+    SAI_PORT_ATTR_CURRENT_BREAKOUT_MODE,
+
     /* READ-WRITE */
     /* Speed in Mbps [uint32_t] */
     SAI_PORT_ATTR_SPEED,
 
     /* Admin Mode [bool], (default to FALSE)*/
     SAI_PORT_ATTR_ADMIN_STATE,
+
+    /* Media Type [sai_port_media_type_t], 
+     * (default to SAI_PORT_MEDIA_TYPE_NOT_PRESENT) */
+    SAI_PORT_ATTR_MEDIA_TYPE,
 
     /* Default VLAN [sai_vlan_id_t] 
     *   Untagged ingress frames are tagged with default VLAN 
@@ -193,10 +224,6 @@ typedef enum _sai_port_attr_t
        (default to SAI_PORT_LEARN_MODE_HW) */
     SAI_PORT_ATTR_FDB_LEARNING,
 
-    /* Stp mode [sai_port_stp_state_t]
-       (default to SAI_PORT_STP_STATE_FORWARDING) */
-    SAI_PORT_ATTR_STP_STATE,
-
     /* Update DSCP of outgoing packets [bool]
        (default to FALSE) */
     SAI_PORT_ATTR_UPDATE_DSCP,
@@ -204,9 +231,6 @@ typedef enum _sai_port_attr_t
     /* MTU [uint32_t]
        (default to 1514 bytes*/
     SAI_PORT_ATTR_MTU,
-
-    /* Sflow control */
-    SAI_PORT_ATTR_SFLOW,
 
     /* [bool] (default to FALSE) */
     SAI_PORT_ATTR_FLOOD_STORM_CONTROL,
@@ -228,6 +252,30 @@ typedef enum _sai_port_attr_t
      * when FDB learning limit is reached.
      * [sai_packet_action_t] (default to SAI_PACKET_ACTION_DROP) */
     SAI_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION,
+
+    /* Enable/Disable Mirror session [sai_object_list_t]. 
+     * Enable ingress mirroring by assigning list of mirror session 
+     * object id as attribute value
+     * Disable ingress mirroring by assigning object_count as 0 in objlist */
+    SAI_PORT_ATTR_INGRESS_MIRROR_SESSION,
+
+    /* Enable/Disable Mirror session [sai_object_list_t]. 
+     * Enable egress mirroring by assigning list of mirror session 
+     * object id as attribute value
+     * Disable egress mirroring by assigning object_count as 0 in objlist */
+    SAI_PORT_ATTR_EGRESS_MIRROR_SESSION,
+
+    /* Enable/Disable Samplepacket session [sai_object_id_t]. 
+     * Enable ingress sampling by assigning samplepacket object id 
+     * Disable ingress sampling by assigning SAI_NULL_OBJECT_ID as
+     * attribute value */
+    SAI_PORT_ATTR_INGRESS_SAMPLEPACKET_ENABLE,
+
+    /* Enable/Disable Samplepacket session [sai_object_id_t]. 
+     * Enable egress sampling by assigning samplepacket object id 
+     * Disable egress sampling by assigning SAI_NULL_OBJECT_ID as
+     * attribute value */
+    SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE,
 
     /* -- */
 
@@ -315,7 +363,7 @@ typedef enum _sai_port_stat_counter_t
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_port_attribute_fn)(
-    _In_ sai_port_id_t port_id, 
+    _In_ sai_object_id_t port_id, 
     _In_ const sai_attribute_t *attr
     );
 
@@ -334,7 +382,7 @@ typedef sai_status_t (*sai_set_port_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_port_attribute_fn)(
-    _In_ sai_port_id_t port_id,
+    _In_ sai_object_id_t port_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
@@ -354,7 +402,7 @@ typedef sai_status_t (*sai_get_port_attribute_fn)(
 *    Failure status code on error
 */ 
 typedef sai_status_t (*sai_get_port_stats_fn)(
-    _In_ sai_port_id_t port_id,
+    _In_ sai_object_id_t port_id,
     _In_ const sai_port_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
@@ -373,10 +421,25 @@ typedef sai_status_t (*sai_get_port_stats_fn)(
 *    None
 */
 typedef void (*sai_port_state_change_notification_fn)(
-    _In_ sai_port_id_t port_id,
+    _In_ sai_object_id_t port_id,
     _In_ sai_port_oper_status_t port_state
     );
 
+/*
+ * Routine Description:
+ *   Port event notification
+ *
+ * Arguments:
+ *    [in] port_id - port id
+ *    [in] port_event - new event associated with this port
+ *
+ * Return Values:
+ *     None
+ */
+typedef void (*sai_port_event_notification_fn)(
+    _In_ sai_object_id_t port_id,
+    _In_ sai_port_event_t port_event
+    );
 /*
 * Port methods table retrieved with sai_api_query()
 */

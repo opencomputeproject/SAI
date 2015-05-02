@@ -43,22 +43,13 @@ typedef UINT64 uint64_t;
 
 typedef  INT32  sai_status_t;  
 typedef UINT32  sai_switch_profile_id_t;
-typedef UINT32  sai_switch_id_t;
-typedef UINT32  sai_port_id_t;
 typedef UINT16  sai_vlan_id_t;
-typedef UINT32  sai_virtual_router_id_t;
-typedef UINT32  sai_router_interface_id_t;
-typedef UINT32  sai_host_interface_id_t;
-typedef UINT32  sai_next_hop_id_t;
-typedef UINT32  sai_next_hop_group_id_t;
-typedef UINT32  sai_acl_table_id_t;
-typedef UINT32  sai_acl_entry_id_t;
-typedef UINT32  sai_acl_counter_id_t;
 typedef UINT32  sai_attr_id_t;
 typedef UINT8   sai_cos_t;
 typedef UINT8   sai_mac_t[6];
 typedef UINT32  sai_ip4_t;
 typedef UINT8   sai_ip6_t[16];
+typedef UINT32  sai_switch_hash_seed_t;
 
 #include <ws2def.h>
 #include <ws2ipdef.h>
@@ -85,25 +76,17 @@ typedef enum {
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <sys/types.h>
 
 typedef int32_t  sai_status_t;  
 typedef uint32_t sai_switch_profile_id_t;
-typedef uint32_t sai_switch_id_t;
-typedef uint32_t sai_port_id_t;
 typedef uint16_t sai_vlan_id_t;
-typedef uint32_t sai_virtual_router_id_t;
-typedef uint32_t sai_router_interface_id_t;
-typedef uint32_t sai_host_interface_id_t;
-typedef uint32_t sai_next_hop_id_t;
-typedef uint32_t sai_next_hop_group_id_t;
-typedef uint32_t sai_acl_table_id_t;
-typedef uint32_t sai_acl_entry_id_t;
-typedef uint32_t sai_acl_counter_id_t;
 typedef uint32_t sai_attr_id_t;
 typedef uint8_t  sai_cos_t;
 typedef uint8_t  sai_mac_t[6];
 typedef uint32_t sai_ip4_t;
 typedef uint8_t  sai_ip6_t[16];
+typedef uint32_t sai_switch_hash_seed_t;
 
 #define _In_
 #define _Out_
@@ -125,34 +108,75 @@ typedef uint16_t sai_uint16_t;
 typedef int16_t sai_int16_t;
 typedef uint8_t sai_uint8_t;
 typedef int8_t sai_int8_t;
+typedef size_t sai_size_t;
+typedef uint64_t sai_object_id_t;
+
+#define SAI_NULL_OBJECT_ID 0L
 
 /* 
- * Defines a list of sai port ids used as sai attribute value.
+ * Defines a list of sai object ids used as sai attribute value.
  * 
- * - In set attribute function call, the port_count defines the number of
- * ports. 
+ * - In set attribute function call, the count member defines the number of
+ * objects.
  *
- * - In get attribute function call, the function call returns a list of ports
- * to the caller in port_list. The caller is responsible for allocating the
- * buffer for port_list and set the port_count to the size of allocated port
- * list. If the size is large enough to accomodate the list of port id, the
- * callee will then fill the port_list and set the port_count to the actual
- * number of ports.  If the list size is not large enough, the callee will set the
- * port_count to the actual number of port id and return
+ * - In get attribute function call, the function call returns a list of objects
+ * to the caller in the list member. The caller is responsible for allocating the
+ * buffer for the list member and set the count member to the size of allocated object
+ * list. If the size is large enough to accomodate the list of object id, the
+ * callee will then fill the list member and set the count member to the actual
+ * number of objects.  If the list size is not large enough, the callee will set the
+ * count member to the actual number of object id and return
  * SAI_STATUS_BUFFER_OVERFLOW. Once the caller gets such return code, it should
- * use the returned port count to re-allocate list and retry.
- *
- * - The above behavior also applies to sai_next_hop_list_t.
+ * use the returned count member to re-allocate list and retry.
  */
-typedef struct _sai_port_list_t {
-    uint32_t port_count;
-    sai_port_id_t *port_list;
-} sai_port_list_t;
+typedef struct _sai_object_list_t {
+    uint32_t count;
+    sai_object_id_t *list;
+} sai_object_list_t;
 
-typedef struct _sai_next_hop_list_t {
-    uint32_t next_hop_count;
-    sai_next_hop_id_t *next_hop_list;
-} sai_next_hop_list_t;
+/* 
+ * sai object type
+ */
+typedef enum _sai_object_type_t {
+    SAI_OBJECT_TYPE_NULL             =  0,
+    SAI_OBJECT_TYPE_PORT             =  1, 
+    SAI_OBJECT_TYPE_LAG              =  2, 
+    SAI_OBJECT_TYPE_VIRTUAL_ROUTER   =  3,
+    SAI_OBJECT_TYPE_NEXT_HOP         =  4,
+    SAI_OBJECT_TYPE_NEXT_HOP_GROUP   =  5,
+    SAI_OBJECT_TYPE_ROUTER_INTERFACE =  6,
+    SAI_OBJECT_TYPE_ACL_TABLE        =  7,
+    SAI_OBJECT_TYPE_ACL_ENTRY        =  8,
+    SAI_OBJECT_TYPE_ACL_COUNTER      =  9,
+    SAI_OBJECT_TYPE_HOST_INTERFACE   = 10,
+    SAI_OBJECT_TYPE_MIRROR           = 11,
+    SAI_OBJECT_TYPE_SAMPLEPACKET     = 12,
+    SAI_OBJECT_TYPE_STP_INSTANCE     = 13,
+    SAI_OBJECT_TYPE_MAX              = 14
+} sai_object_type_t;
+
+typedef struct _sai_u32_list_t {
+    uint32_t count;
+    uint32_t *list;
+} sai_u32_list_t;
+
+typedef struct _sai_s32_list_t {
+    uint32_t count;
+    int32_t  *list;
+} sai_s32_list_t;
+
+/*
+ * Defines a vlan list datastructure
+ */
+typedef struct _sai_vlan_list_t {
+
+    /* Number of Vlans*/
+    uint32_t vlan_count;
+
+    /* List of Vlans*/
+    sai_vlan_id_t *vlan_list;
+
+} sai_vlan_list_t;
 
 typedef enum _sai_ip_addr_family_t {
     SAI_IP_ADDR_FAMILY_IPV4,
@@ -180,40 +204,41 @@ typedef struct _sai_ip_prefix_t {
     } mask;
 } sai_ip_prefix_t;
 
-typedef enum _sai_acl_match_mode_t 
-{
-    /* Field match is disbled. 
-     * Used for disable a match field in an installed acl entry */
-    SAI_ACL_MATCH_DISABLE, 
-
-    /* Field mode is determined by the field type */
-    SAI_ACL_MATCH_AUTO,
-
-    /* Field mode is AND with mask (<data> & <mask> == <field>) */
-    SAI_ACL_MATCH_MASK
-
-} sai_acl_match_mode_t;
-
 /*
  * Defines a single ACL filter
  */
 typedef struct _sai_acl_field_data_t
 {
     /*
-     * Field match mode
-     */
-    sai_acl_match_mode_t mode;
+     * match enable/disable
+     */ 
+    bool enable;
 
     /*
      * Field match mask
      */
-    uint64_t match_mask[2];
+    union {
+        sai_uint8_t u8;
+        sai_uint16_t u16;
+        sai_uint32_t u32;
+        sai_mac_t mac;
+        sai_ip4_t ip4;
+        sai_ip6_t ip6;
+    } mask;
 
     /*
-     * Expected AND result using match mask above with packet field value.
+     * Expected AND result using match mask above with packet field value where applicable.
      */
-    uint64_t match_data[2];
-
+    union {
+        sai_uint8_t u8;
+        sai_uint16_t u16;
+        sai_uint32_t u32;
+        sai_mac_t mac;
+        sai_ip4_t ip4;
+        sai_ip6_t ip6;
+        sai_object_id_t oid;
+        sai_object_list_t objlist;
+    } data;
 } sai_acl_field_data_t;
 
 /*
@@ -225,13 +250,55 @@ typedef struct _sai_acl_action_data_t
      * action enable/disable
      */ 
     bool enable;
-
     /*
      * Action parameter
      */
-    uint64_t parameter[2];
-
+    union {
+      sai_uint8_t u8;
+      sai_uint16_t u16;
+      sai_uint32_t u32;
+      sai_mac_t mac;
+      sai_ip4_t ip4;
+      sai_ip6_t ip6;
+      sai_object_id_t oid;
+    } parameter;
 } sai_acl_action_data_t;
+
+/*
+ * Breakout Mode types based on number
+ * of SerDes lanes used in a port
+ */
+typedef enum _sai_port_breakout_mode_type_t
+{
+    /* 1 lane breakout Mode */
+    SAI_PORT_BREAKOUT_MODE_1_LANE = 1,
+
+    /* 2 lanes breakout Mode */
+    SAI_PORT_BREAKOUT_MODE_2_LANE = 2,
+
+    /* 4 lanes breakout Mode */
+    SAI_PORT_BREAKOUT_MODE_4_LANE = 4,
+
+    /* Breakout mode max count */
+    SAI_PORT_BREAKOUT_MODE_MAX
+} sai_port_breakout_mode_type_t;
+
+/*
+ * Defines breakout mode on a switch port(s)
+ */
+typedef struct _sai_port_breakout_t
+{
+    /*
+     * Breakout mode type
+     */
+    sai_port_breakout_mode_type_t breakout_mode;
+
+    /*
+     * List of ports to be breakout
+     * Break out - typically 1 port; Break in - set of ports
+     */
+    sai_object_list_t  port_list;
+} sai_port_breakout_t;
 
 /* 
  * Data Type to use enum's as attribute value is sai_int32_t s32
@@ -252,10 +319,14 @@ typedef union {
     sai_ip4_t ip4;
     sai_ip6_t ip6;
     sai_ip_address_t ipaddr;
-    sai_port_list_t portlist;
-    sai_next_hop_list_t nhlist;
+    sai_object_id_t oid;
+    sai_object_list_t objlist;
+    sai_u32_list_t u32list;
+    sai_s32_list_t s32list;
+    sai_vlan_list_t vlanlist;
     sai_acl_field_data_t aclfield;
-    sai_acl_action_data_t acldata;
+    sai_acl_action_data_t aclaction;
+    sai_port_breakout_t portbreakout;
 } sai_attribute_value_t;
 
 typedef struct _sai_attribute_t {

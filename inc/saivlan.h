@@ -52,7 +52,7 @@ typedef enum _sai_vlan_tagging_mode_t
 */
 typedef struct _sai_vlan_port_t
 {
-    sai_port_id_t port_id;
+    sai_object_id_t port_id;
 
     sai_vlan_tagging_mode_t tagging_mode;
 
@@ -70,6 +70,10 @@ typedef enum _sai_vlan_attr_t
      * zero means learning limit disable. (default to zero).
      */
     SAI_VLAN_ATTR_MAX_LEARNED_ADDRESSES,
+
+    /* STP Instance that the VLAN is associated to [sai_object_id_t] 
+     * (default to default stp instance id)*/
+    SAI_VLAN_ATTR_STP_INSTANCE,
 
     /* Custom range base value */
     SAI_VLAN_ATTR_CUSTOM_RANGE_BASE  = 0x10000000

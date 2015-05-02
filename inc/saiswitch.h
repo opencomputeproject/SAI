@@ -33,6 +33,7 @@
 #include <saitypes.h>
 #include "saiport.h"
 #include "saifdb.h"
+#include "saihostintf.h"
 
 
 #define SAI_MAX_HARDWARE_ID_LEN         255
@@ -76,25 +77,34 @@ typedef enum _sai_packet_action_t
 
 } sai_packet_action_t;
 
+/*
+ * Attribute data for SAI_SWITCH_ ATTR_LAG_HASH_FIELDS
+ * and SAI_SWITCH_ ATTR_ECMP_HASH_FIELDS
+ */
+typedef enum _sai_switch_hash_field_types_t
+{
+    SAI_HASH_SRC_IP = 0,
+    SAI_HASH_DST_IP = 1,
+    SAI_HASH_VLAN_ID = 2,
+    SAI_HASH_IP_PROTOCOL = 3,
+    SAI_HASH_ETHERTYPE = 4,
+    SAI_HASH_L4_SOURCE_PORT = 5,
+    SAI_HASH_L4_DEST_PORT = 6,
+    SAI_HASH_SOURCE_MAC = 7,
+    SAI_HASH_DEST_MAC = 8,
+    SAI_HASH_IN_PORT = 9,
+} sai_switch_hash_field_types_t;
 
 /*
-* Attribute data for SAI_SWITCH_ECMP_HASH_TYPE
-*/
-typedef enum _sai_switch_ecmp_hash_type_t
+ * Attribute data for SAI_SWITCH_ATTR_LAG_HASH_ALGO
+ * and SAI_SWITCH_ATTR_ECMP_HASH_ALGO
+ */
+typedef enum _sai_switch_hash_algo_t
 {
-    SAI_SWITCH_ECMP_HASH_TYPE_XOR,
-
-    SAI_SWITCH_ECMP_HASH_TYPE_CRC,
-} sai_switch_ecmp_hash_type_t;
-
-typedef enum _sai_switch_ecmp_hash_fields_t
-{
-    SAI_SWITCH_ECMP_HASH_SRC_IP         = (1 << 0),
-    SAI_SWITCH_ECMP_HASH_DST_IP         = (1 << 1),
-    SAI_SWITCH_ECMP_HASH_L4_SRC_PORT    = (1 << 2),
-    SAI_SWITCH_ECMP_HASH_L4_DST_PORT    = (1 << 3),
-    
-} sai_switch_ecmp_hash_fields_t;
+    SAI_HASH_XOR = 1,
+    SAI_HASH_CRC = 2,
+    SAI_HASH_RANDOM = 3,
+} sai_switch_hash_algo_t;
 
 /*
 * Attribute data for SAI_SWITCH_SWITCHING_MODE
@@ -120,7 +130,10 @@ typedef enum _sai_switch_attr_t
     /* The number of ports on the switch [uint32_t] */
     SAI_SWITCH_ATTR_PORT_NUMBER,
 
-    /* Get the CPU Port [sai_port_id_t] */
+    /* Get the port list [sai_object_list_t] */
+    SAI_SWITCH_ATTR_PORT_LIST,
+
+    /* Get the CPU Port [sai_object_id_t] */
     SAI_SWITCH_ATTR_CPU_PORT,
 
     /* Max number of virtual routers supported [uint32_t] */
@@ -142,6 +155,21 @@ typedef enum _sai_switch_attr_t
      * retrieved from the switch sensors, in Celsius [int32_t] */
     SAI_SWITCH_ATTR_MAX_TEMP,
 
+    /* minimum priority for ACL table [sai_uint32_t] */ 
+    SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY, 
+
+    /* maximum priority for ACL table [sai_uint32_t] */
+    SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY,
+
+    /* minimum priority for ACL entry [sai_uint32_t] */
+    SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY,
+
+    /* maximum priority for ACL entry [sai_uint32_t] */
+    SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY,
+
+    /* Default SAI STP instance ID [sai_object_id_t] */
+    SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
+
     /* READ-WRITE */
 
     /* Switching mode [sai_switch_switching_mode_t]
@@ -153,10 +181,6 @@ typedef enum _sai_switch_attr_t
 
     /* L2 multicast flood control to CPU port [bool] */ 
     SAI_SWITCH_ATTR_MCAST_CPU_FLOOD_ENABLE,
-
-    /* Action for Packets with TTL 0 or 1 [sai_packet_action_t] 
-       (default to SAI_PACKET_ACTION_TRAP) */
-    SAI_SWITCH_ATTR_VIOLATION_TTL1_ACTION,
 
     /* Default VlanID for ports that are not members of 
        any vlans [sai_vlan_id_t]  (default to vlan 1)*/
@@ -184,18 +208,78 @@ typedef enum _sai_switch_attr_t
 
     SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_ACTION,
 
-    /* ECMP hashing seed  [uint32_t] */
+    /* Hash algorithm for all LAG in the switch[sai_switch_hash_algo_t]
+     * (default to SAI_HASH_CRC)
+     */
+    SAI_SWITCH_ATTR_LAG_HASH_ALGO,
+
+    /* Hash seed for all LAG in the switch[sai_switch_hash_seed_t]*/
+    SAI_SWITCH_ATTR_LAG_HASH_SEED,
+
+    /* Hash fields for all LAG in the switch[sai_s32_list_t]
+     * (default all fields in sai_switch_hash_field_types_t are enabled)
+     */
+    SAI_SWITCH_ATTR_LAG_HASH_FIELDS,
+
+    /* Hash algorithm for all ECMP in the switch[sai_switch_hash_algo_t]
+     * (default to SAI_HASH_CRC)
+     */
+    SAI_SWITCH_ATTR_ECMP_HASH_ALGO,
+
+    /* Hash seed for all ECMP in the switch[sai_switch_hash_seed_t]*/
     SAI_SWITCH_ATTR_ECMP_HASH_SEED,
 
-    /* ECMP hashing type  [sai_switch_ecmp_hash_type_t] */
-    SAI_SWITCH_ATTR_ECMP_HASH_TYPE,
-
-    /* ECMP hashing fields [sai_switch_ecmp_hash_fields_t] */
+    /* Hash fields for all ECMP in the switch[sai_s32_list_t]
+     * (default all fields in sai_switch_hash_field_types_t are enabled)
+     */
     SAI_SWITCH_ATTR_ECMP_HASH_FIELDS,
 
     /* ECMP max number of paths per group [uint32_t]
        (default to 64) */
     SAI_SWITCH_ATTR_ECMP_MAX_PATHS,
+
+    /* The SDK can 
+     * 1 - Read the counters directly from HW (or)
+     * 2 - Cache the counters in SW. Caching is typically done if
+     * retrieval of counters directly from HW for each counter 
+     * read is CPU intensive
+     * This setting can be used to 
+     * 1 - Move from HW based to SW based or Vice versa
+     * 2 - Configure the SW counter cache refresh rate
+     * Setting a value of 0 enables direct HW based counter read. A
+     * non zero value enables the SW cache based and the counter
+     * refresh rate. 
+     * A NPU may support both or one of the option. It would return 
+     * error for unsupported options
+     *
+     * Default - 1 sec (SW counter cache)
+     *
+     * [uint32_t]
+     */
+    SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL,
+
+    /* Default trap channel [sai_hostif_trap_channel_t]
+     * (default to SAI_HOSTIF_TRAP_CHANNEL_CB) */
+    SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL,
+
+    /* Default file descriptor for SAI_HOSTIF_TRAP_CHANNEL_FD [sai_object_id_t]
+     * Must be set before set SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL to SAI_HOSTIF_TRAP_CHANNEL_FD 
+     * (default to SAI_NULL_OBJECT_ID) */
+    SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL_FD,
+
+    /* Default trap group [sai_object_id_t]
+     * (default value after switch initialization
+     *    SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE = true
+     *    SAI_HOSTIF_TRAP_GROUP_ATTR_PRIO = SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
+     *    SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE = 0,
+     *    SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER = SAI_NULL_OBJECT_ID)
+     */
+    SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP,
+
+    /* WRITE-ONLY */
+
+    /* Port Breakout mode [sai_port_breakout_t] */
+    SAI_SWITCH_ATTR_PORT_BREAKOUT,
 
     /* -- */
     
@@ -244,7 +328,9 @@ typedef struct _sai_switch_notification_t
     sai_switch_state_change_notification_fn on_switch_state_change;
     sai_fdb_event_notification_fn           on_fdb_event;
     sai_port_state_change_notification_fn   on_port_state_change;
+    sai_port_event_notification_fn          on_port_event;
     sai_switch_shutdown_request_fn          on_switch_shutdown_request;
+	sai_packet_event_notification_fn        on_packet_event;
 } sai_switch_notification_t;
   
 /*
@@ -368,3 +454,4 @@ typedef struct _sai_switch_api_t
 } sai_switch_api_t;
 
 #endif  // __SAISWITCH_H_
+
