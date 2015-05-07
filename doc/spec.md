@@ -39,7 +39,7 @@ THE FOLLOWING IS A LIST OF MERELY REFERENCED TECHNOLOGY: Microprocessor technolo
 drives, SRAM, embedded DRAM, ferro-electric memory, and polymer memory)) and/or health-related and medical technology. IMPLEMENTATION OF THESE TECHNOLOGIES MAY BE SUBJECT TO THEIR OWN LEGAL TERMS.
 
 # Introduction
-This specification defines a Switch Abstraction Interface (SAI) for forwarding elements, such as switching ASICs, NPU and software switch. The SAI API is designed to provide a vendor-independent way of controlling forwarding elements like hardware ASIC or NPU in a uniform manner. This specification also allows exposing vendor-specific functionality and extensions to existing features.
+This specification defines a Switch Abstraction Interface (SAI) for a forwarding elements, such as a switching ASIC, an NPU or a software switch. The SAI API is designed to provide a vendor-independent way of controlling forwarding elements in a uniform manner. This specification also allows exposure of vendor-specific functionality and extensions to existing features.
 
 # Intended audience
 This document is intended primarily for the programmers who plan to use, develop or extend the SAI.
@@ -47,7 +47,7 @@ This document is intended primarily for the programmers who plan to use, develop
 # Definitions
 **Adapter** is a pluggable code module that implements SAI for a given forwarding element.
 
-**Control stack** is a set of software components that represents the host and callers of SAI, and provides higher level programming support to network control applications.
+**Control stack** is a set of software components that represents the host and callers of SAI, and provides higher level programming support to network control applications. This is also sometimes referred to as the "application" or "user".
 
 **Adapter host** is a software component that loads the adapter and exposes its functionality to the other part of the Control stack.
  
@@ -56,16 +56,16 @@ This document is intended primarily for the programmers who plan to use, develop
 # High-Level design notes
 An Adapter is a driver that implements the SAI service layer for a given forwarding element, and is typically (though not necessarily) provided with that element. This Adapter is responsible for discovery and binding to the underlying forwarding element, including loading or attaching to whatever other sub-modules it requires.
 
-Adapters are intended to be as simple as possible, holding no configuration, and only the state received from the Control stack and the forwarding element required to accomplish it's task. Our design strives to push the bookkeeping complexity from Adapter into the Control stack wherever possible.
+Adapters are intended to be as simple as possible, holding no persistent configuration, and keeping only the state received from the Control stack and the forwarding element required to accomplish it's task. The design strives to push the bookkeeping complexity from Adapter into the Control stack wherever possible.
 
-The Adapter module is loaded into a hosting process ("Adapter Host") and then initialized. During initialization the Adapter initiates discovery process of the specified instance of a switching entity. A switching entity is a top-level object in this API.
+The Adapter module is loaded into a hosting process ("Adapter Host") and then initialized. During initialization the Adapter initiates discovery process of the specified instance of the forwarding element.
 
-There could be multiple Adapter Hosts running at the same time. Each Adapter Host is responsible for managing a portion of functions within the forwarding element. For example, an IP routing Adapter Host is responsible for syncing IP routes to the forwarding element, while a counter Adapter Host is responsible for reading counters from the forwarding element.
+There could be multiple Adapter Hosts running at the same time. Each Adapter Host may be responsible for managing a portion of functions within the forwarding element. For example, an IP routing Adapter Host may be responsible for syncing IP routes to the forwarding element, while another Adapter Host might be responsible for reading counters from the forwarding element.
 
 Key assumptions, design decisions and API semantic clarifications:
 - CRUD (Create/Read/Update/Delete) based API to manage the SAI objects.
-- Adapter is not the source of the critical persisted state. It can crash or be shut down and the Control stack will be able to recover from such an event.
-- If specific attributes are required for SAI object, but not specified as part of the create function, then the Adapter should choose an appropriate default if it can, or fail if it cannot.
+- Adapter is not the source of the critical persisted state. It can crash or be shut down and the Control stack will be able to survive such an event, restart the Adaptor, and then bring it back to a correct operational state.
+- If specific attributes are required for a SAI object, but are not specified as part of the create function, then the Adapter should choose an appropriate default if it can, or fail if it cannot.
 - Deletion of an object that is referenced should fail (e.g. removal of router when interface exist). 
 
 ![A switch system with SAI](figures/sai_switch_system_architecture.png "Figure 1: A switch system with SAI")
@@ -89,38 +89,40 @@ The API is a collection of C-style interfaces exposed from the Adapter. These in
 
 APIs are discovered by querying for method tables through the mechanism described in "Functionality query" section.
 
+SAI is a managed API, with versioning support to allow for a level of backward compatibility. If the signature or sematics of a function needs to change then a new function (with unique ID) should be created, leaving the prior version unchanged. The new ID is an enumeration name that encodes the version (e.g. SAI_API_VLAN2). The Adapter host starts inquiry with the latest version that it knows about, and then works back until it finds an available function in the Adapter. If none are found then the function is deemed to be not supported, and the Adapter host reacts accordingly.
+
 # Adapter startup/shutdown sequence
 
 The Adapter host is configured with the information required to load and initialize the Adapter during startup.
 
-After the Adapter is loaded, the Adapter host acquires addresses of the three well-known functions: `sai_api_initialize()`, `sai_api_query()` and `sai_api_uninitialize()`.
+After the Adapter is loaded, the Adapter host acquires pointers to three well-known functions: `sai_api_initialize()`, `sai_api_query()` and `sai_api_uninitialize()`.
 
 The Adapter is first initialized with a call to `sai_api_initialize()`. Through this the Adapter is passed a method table of services provided by the Adapter host. Forwarding element initialization is not performed in this function - the purpose is software initialization of the driver. After this, the Adapter can be queried for the SAI operational method tables."
 
 After initialization, `sai_api_query()` can be used for retrieval of various methods tables for SAI functionalities.
 
-SAI is a managed API, with versioning support to allow for a level of backward compatibility. If the signature or sematics of a function needs to change then a new function (with unique ID) should be created, leaving the prior version unchanged. The new ID is an enumeration name that encodes the version (e.g. SAI_API_VLAN2). The Adapter host starts inquiry with the latest version that it knows about, and then works back until it finds an available function in the Adapter. If none are found then the function is deemed to be not supported, and the Adapter host reacts accordingly.
-
 Once all mandatory functionalities are successfully queried, optional functionalities are requested. Failure to discover optional functionality does not necessarily (though may) lead to a failure of the system startup.
 
-After all the functionalities being retrieved, Adapter Host proceeds to use the Adapter operations.
+After all the functionalities are retrieved, Adapter Host proceeds to use the Adapter operations.
 
-For example, first method that Adapter Host calls is `sai_initialize_switch()` that performs full forwarding element initialization. In a system where there are multiple Adapter Hosts, only one of them calls the above function. Others will call `sai_connect_switch()` to connect to the Adapter once the Adapter has been initialized. The call to `sai_connect_switch()` will fail if the forwarding element hasn't been initialized. The `sai_intialize_switch()` function takes the following parameters:
+For example, the first method that Adapter Host calls is `sai_initialize_switch()` to perform full forwarding element initialization. In a system where there are multiple Adapter Hosts, only one of them should call the above function. Others will call `sai_connect_switch()` to connect to the Adapter once the Adapter has been initialized. The call to `sai_connect_switch()` will fail if the forwarding element hasn't been initialized. The `sai_intialize_switch()` function takes the following parameters:
 
 - handle to a switch entity profile
 - hardware id of that switch entity
 - name of corresponding microcode
 - callbacks table
 
-The `profile_id` is used by the Adapter to retrieve a profile which is a list of key-value string pairs that contain vendor-defined settings. Once the Adapter has the profile id, it can use the function `profile_get_value()` and `profile_get_next_value()` from `service_method_table_t` to get the key-value string pairs, such as the `SDK_LIBRARY_PATH`, `NPU_CONFIG_FILE_PATH`. The `service_method_table_t` is provided by the Adapter host during `sai_api_intialize()`.
+The `profile_id` is used by the Adapter to retrieve a profile. This is a list of key-value string pairs that contain vendor-defined settings. Once the Adapter has the profile id, it can use the function `profile_get_value()` and `profile_get_next_value()` from `service_method_table_t` to get the key-value string pairs, such as the `SDK_LIBRARY_PATH` or `NPU_CONFIG_FILE_PATH`. The `service_method_table_t` is provided by the Adapter host during `sai_api_intialize()`.
 
-Format and contents of the "hardware id" string is defined by the vendor and contains enough information to identify and access the device. For example it can contain PCIe location.
+The format and content of the 'hardware id' string is defined by the vendor and contains enough information to identify and access the device. For example, it could contain a PCIe location.
 
-Some Adapters may need to load a further different code object according to the details of the system and forwarding element. The microcode parameter allows such an object to be identified. Its format and meaning are Adapter dependent.
+Some Adapters may need to load a further different code object according to the details of the system and forwarding element. The 'microcode' parameter allows such an object to be identified. Its format and meaning are Adapter dependent.
 
-The function needs to discover the instance of the forwarding element using "hardware id" string, map devices registers, query information to determine specific silicon revision, and given the microcode and the profile settings, initialize the forwarding element.
+The 'callbacks' table contains the list of Control stack callbacks to be used for notifications.
 
-After this, driver enters normal operations and starts to handle calls from Adapter Host to various methods of different functionality tables. It is important to note that during shutdown, Adapter Host will invoke `sai_switch_shutdown()`. This function should return the forwarding element to the externally-visible state that it was in before the `sai_switch_initialize()` call. That is, externally visible links should go down and no forwarding should occur. For Adapter Hosts which uses `sai_connect_switch()`, they will use `sai_disconnect_switch()` to disconnect from the Adapter.
+Typically the `sai_api_intialize()` function will discover the instance of the forwarding element using the 'hardware id' string, map devices registers, query information to determine specific silicon revision, and given the microcode and the profile settings, initialize the forwarding element.
+
+After this, SAI enters normal operation and starts to handle calls from the Adapter Host to the various methods of different functionality tables. For SAI shutdown, the Adapter Host will invoke `sai_switch_shutdown()`. This function should return the forwarding element to the externally-visible state that it was in before the `sai_switch_initialize()` call. That is, externally visible links should go down and no forwarding should occur. For Adapter Hosts which uses `sai_connect_switch()`, they will use `sai_disconnect_switch()` to disconnect from the Adapter.
 
 `sai_api_uninitialize()` does the cleanup of anything that was done in `sai_api_initialize()` and is a last call to the Adapter before it's unloading.
 
@@ -128,7 +130,7 @@ Finally, Adapter Host unloads the Adapter module.
 
 # Specification contents and timeline
 
-For the list of accepted features please see the History section at the end of the specification. Summary of supported functionalities is given in the table below:
+For the list of accepted features please see the History section at the end of the specification. A summary of supported functionalities is given in the table below:
 
 SAI API                   | Description                 | Category  | Version 
 --------------------------|-----------------------------|-----------|--------
