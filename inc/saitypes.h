@@ -255,13 +255,16 @@ typedef struct _sai_acl_action_data_t
      * Action parameter
      */
     union {
-      sai_uint8_t u8;
-      sai_uint16_t u16;
-      sai_uint32_t u32;
-      sai_mac_t mac;
-      sai_ip4_t ip4;
-      sai_ip6_t ip6;
-      sai_object_id_t oid;
+        sai_uint8_t u8;
+        sai_int8_t s8;
+        sai_uint16_t u16;
+        sai_int16_t s16;
+        sai_uint32_t u32;
+        sai_int32_t s32;
+        sai_mac_t mac;
+        sai_ip4_t ip4;
+        sai_ip6_t ip6;
+        sai_object_id_t oid;
     } parameter;
 } sai_acl_action_data_t;
 
