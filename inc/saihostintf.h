@@ -168,6 +168,9 @@ typedef enum _sai_hostif_trap_id_t
     /* default action is forward */
     SAI_HOSTIF_TRAP_ID_IGMP_TYPE_V3_REPORT = 0x00000000a,
 
+    /* default action is trap */
+    SAI_HOSTIF_TRAP_ID_SAMPLEPACKET = 0x00000000b,
+
     SAI_HOSTIF_TRAP_ID_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
 
     /*
@@ -601,8 +604,8 @@ typedef sai_status_t(*sai_recv_hostif_packet_fn)(
 */
 typedef sai_status_t(*sai_send_hostif_packet_fn)(
     _In_ sai_object_id_t  hif_id,
-    _Inout_ void *buffer,
-    _Inout_ sai_size_t *buffer_size,
+    _In_ void *buffer,
+    _In_ sai_size_t buffer_size,
     _In_ uint32_t attr_count,
     _In_ sai_attribute_t *attr_list
     );
