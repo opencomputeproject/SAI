@@ -152,7 +152,8 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_MIRROR           = 11,
     SAI_OBJECT_TYPE_SAMPLEPACKET     = 12,
     SAI_OBJECT_TYPE_STP_INSTANCE     = 13,
-    SAI_OBJECT_TYPE_MAX              = 14
+    SAI_OBJECT_TYPE_TRAP_GROUP       = 14,
+    SAI_OBJECT_TYPE_MAX              = 15
 } sai_object_type_t;
 
 typedef struct _sai_u32_list_t {
