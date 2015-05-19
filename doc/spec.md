@@ -2,7 +2,7 @@ Switch Abstraction Interface v0.9.2
 
 **Authors**
 - **Microsoft**: Dmitry Malloy, Dave Maltz, CJ Williams
-- **Dell**: Mike Lazar, Shree Murthy, Sanjay Sane
+- **Dell**: Arun Subash Manickam, Ashok Daparthi, Clifford Wichmann, Mike Lazar, Sanjay Sane
 - **Facebook**: Omar Baldonado, Tian Fang, Adam Simpkins
 - **Broadcom**: Ben Gale
 - **Intel**: Uri Cummings, Dan Daly, and Miles Penner
