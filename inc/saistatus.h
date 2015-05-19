@@ -73,12 +73,14 @@
 #define SAI_STATUS_INVALID_PARAMETER        SAI_STATUS_CODE(0x00000005L)
 
 /*  
-*  An item already exists 
+*  An item already exists. For example, create a route which already
+*  exists.
 */
 #define SAI_STATUS_ITEM_ALREADY_EXISTS      SAI_STATUS_CODE(0x00000006L)
 
 /*  
-*  An item was not found 
+*  An item was not found. For example, remove a route which does not
+*  exist.
 */
 #define SAI_STATUS_ITEM_NOT_FOUND           SAI_STATUS_CODE(0x00000007L)
 
@@ -118,21 +120,6 @@
 #define SAI_MANDATORY_ATTRIBUTE_MISSING     SAI_STATUS_CODE(0x0000000EL)
 
 /*  
-*  Invalid interface id 
-*/
-#define SAI_STATUS_INVALID_INTERFACE        SAI_STATUS_CODE(0x0000000FL)
-
-/*  
-*  Port is in use 
-*/
-#define SAI_STATUS_PORT_IN_USE              SAI_STATUS_CODE(0x00000010L)
-
-/*  
-*  Invalid switch ID 
-*/
-#define SAI_STATUS_INVALID_SWITCH_ID        SAI_STATUS_CODE(0x00000011L)
-
-/*  
 *  Function is not implemented
 */
 #define SAI_STATUS_NOT_IMPLEMENTED          SAI_STATUS_CODE(0x00000012L)
@@ -141,31 +128,6 @@
 *  Address not found 
 */
 #define SAI_STATUS_ADDR_NOT_FOUND           SAI_STATUS_CODE(0x00000013L)
-
-/*  
-*  Invalid virtual router ID 
-*/
-#define SAI_STATUS_INVALID_VRID             SAI_STATUS_CODE(0x00000014L)
-
-/*  
-*  Invalid ACL table ID
-*/
-#define SAI_STATUS_INVALID_ACL_TABLE_ID     SAI_STATUS_CODE(0x00000015L)
-
-/*  
-*  Invalid ACL entry ID
-*/
-#define SAI_STATUS_INVALID_ACL_ENTRY_ID     SAI_STATUS_CODE(0x00000016L)
-
-/*  
-*  Invalid ACL counter ID
-*/
-#define SAI_STATUS_INVALID_ACL_COUNTER_ID   SAI_STATUS_CODE(0x00000017L)
-
-/*
-*  Invalid STP Instance ID
-*/
-#define SAI_STATUS_INVALID_STP_INSTANCE     SAI_STATUS_CODE(0x00000018L)
 
 /*
 *  SAI Object is in use
@@ -178,6 +140,14 @@
 * SAI_STATUS_INVALID_ATTR_VALUE_0 status code should be used
 */
 #define SAI_STATUS_INVALID_OBJECT_TYPE      SAI_STATUS_CODE(0x0000001AL)
+
+
+/*
+* Invalid SAI Object ID passed to a function. Return SAI_STATUS_INVALID_OBJECT_TYPE
+* when the object type is invalid, otherwise return this SAI_STATUS_INVALID_OBJECT_ID.
+* This can happen if the object id is already deleted.
+*/
+#define SAI_STATUS_INVALID_OBJECT_ID        SAI_STATUS_CODE(0x0000001BL)
  
 /*  
 *  Attribute is invalid (range from 0x00010000L to 0x0001FFFFL). 
