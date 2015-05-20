@@ -83,9 +83,10 @@ typedef enum _sai_log_level_t
 {
     SAI_LOG_DEBUG            = 1,
     SAI_LOG_INFO             = 2,
-    SAI_LOG_WARN             = 3,
-    SAI_LOG_ERROR            = 4,
-    SAI_LOG_CRITICAL         = 5
+    SAI_LOG_NOTICE           = 3,
+    SAI_LOG_WARN             = 4,
+    SAI_LOG_ERROR            = 5,
+    SAI_LOG_CRITICAL         = 6
 } sai_log_level_t;
 
 /*

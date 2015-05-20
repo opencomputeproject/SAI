@@ -225,7 +225,7 @@ typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_flush_fdb_entries_fn)(
-    _In_ uint32_t attr_cout,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
