@@ -377,12 +377,9 @@ typedef enum _sai_acl_entry_attr_t
     /* Start of Rule Actions */
     SAI_ACL_ENTRY_ATTR_ACTION_START = 0x00002000,
 
-    /* Forward Normally */
-    SAI_ACL_ENTRY_ATTR_ACTION_FORWARD = SAI_ACL_ENTRY_ATTR_ACTION_START,
-
     /* Redirect Packet to a destination which can be a port,
      * lag, nexthop, nexthopgroup. [sai_object_id_t] */
-    SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT,
+    SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
 
     /* Drop Packet [sai_packet_action_t] */
     SAI_ACL_ENTRY_ATTR_PACKET_ACTION,

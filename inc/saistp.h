@@ -67,7 +67,7 @@ typedef enum _sai_stp_attr_t
 } sai_stp_attr_t;
 
 /**
- * @brief Create stp instance.
+ * @brief Create stp instance with default port state as forwarding.
  *
  * @param[out] stp_id stp instance id
  * @param[in] attr_count Number of attributes
