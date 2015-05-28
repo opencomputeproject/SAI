@@ -49,7 +49,7 @@ typedef enum _sai_virtual_router_attr_t
     SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE,
 
     /* MAC Address [sai_mac_t]  
-      (equal to the SAI_SWITCH_ATTR_ATTR_SRC_MAC_ADDRESS by default) */
+      (equal to the SAI_SWITCH_ATTR_SRC_MAC_ADDRESS by default) */
     SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS,
 
     /* Action for Packets with TTL 0 or 1 [sai_packet_action_t]
