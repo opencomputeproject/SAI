@@ -47,6 +47,12 @@ typedef enum _sai_neighbor_attr_t
     *    (default to SAI_PACKET_ACTION_FORWARD) */
     SAI_NEIGHBOR_ATTR_PACKET_ACTION,
 
+    /* Neighbor not to be programmed as a host route entry in ASIC and to be only
+     * used to setup next-hop purpose. Typical use-case is to set this true
+     * for neighbor with IPv6 link-local addresses.
+     * [bool] (CREATE_AND_SET) (default to false) */
+    SAI_NEIGHBOR_ATTR_NO_HOST_ROUTE,
+
     /* Custom range base value */
     SAI_NEIGHBOR_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
