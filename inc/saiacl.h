@@ -450,8 +450,14 @@ typedef enum _sai_acl_entry_attr_t
     /* Set egress packet sampling (samplepacket session id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
 
+    /* Set CPU Queue for CPU bound traffic [sai_object_id_t]
+     * Action can be used whenever packet is destined to CPU such as
+     * when packet action specifies the packet needs to be punted
+     * to CPU (Trap/Log) or the destination port points to CPU. */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
+
     /* End of Rule Actions */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE
 
 } sai_acl_entry_attr_t;
 
