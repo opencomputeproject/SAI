@@ -1,0 +1,9 @@
+# In this file we track the current API version
+# of the SwitchX SDK libraries.
+# The version is built of the following
+# tree numbers:
+# MAJOR:MINOR:REV
+# MAJOR - API has completely changed
+# MINOR - API changes require code fixing
+# REV   - API is compatible with previous versions
+LIBVERSION=1:0:0
