@@ -1,22 +1,22 @@
 /*
-* Copyright (c) 2014 Microsoft Open Technologies, Inc. 
-*   
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may 
-*    not use this file except in compliance with the License. You may obtain 
+* Copyright (c) 2014 Microsoft Open Technologies, Inc.
+*
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
 *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 *
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
+*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
 *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 *
-*    See the Apache Version 2.0 License for specific language governing 
-*    permissions and limitations under the License. 
+*    See the Apache Version 2.0 License for specific language governing
+*    permissions and limitations under the License.
 *
 *    Microsoft would like to thank the following companies for their review and
 *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 *    Dell Products, L.P., Facebook, Inc
-*   
+*
 * Module Name:
 *
 *    saifdb.h
@@ -24,7 +24,7 @@
 * Abstract:
 *
 *    This module defines SAI FDB API
-*    FDB: Forwarding Database a.k.a. MAC Address Table 
+*    FDB: Forwarding Database a.k.a. MAC Address Table
 *
 */
 
@@ -77,7 +77,7 @@ typedef enum sai_fdb_event_t
 /*
 *  Attribute Id for fdb entry
 */
-typedef enum _sai_fdb_entry_attr_t 
+typedef enum _sai_fdb_entry_attr_t
 {
     /* READ-ONLY */
 
@@ -86,8 +86,8 @@ typedef enum _sai_fdb_entry_attr_t
     /* FDB entry type [sai_fdb_entry_type_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_FDB_ENTRY_ATTR_TYPE,
 
-    /* FDB entry port id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) 
-     * The port id here can refer to a generic port object such as SAI port object id, 
+    /* FDB entry port id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
+     * The port id here can refer to a generic port object such as SAI port object id,
      * SAI LAG object id and etc. on. */
     SAI_FDB_ENTRY_ATTR_PORT_ID,
 
@@ -112,22 +112,19 @@ typedef enum _sai_fdb_flush_entry_type_t
     /* Flush static FDB entries */
     SAI_FDB_FLUSH_ENTRY_STATIC,
 
-    /* Flush all types of FDB entries */
-    SAI_FDB_FLUSH_ENTRY_ALL,
-
 } sai_fdb_flush_entry_type_t;
 
 /*
-* Attribute for FDB delete. These can be used in the following combinations
-* in the flush API
-* 1) Flush all entries in fdb table - Set SAI_FDB_FLUSH_ATTR_ENTRY_TYPE with
-*    value of SAI_FDB_FLUSH_ENTRY_ALL
-* 2) Flush all entries by port - SAI_FDB_FLUSH_ATTR_PORT_ID
-* 3) Flush all entries by VLAN - SAI_FDB_FLUSH_ATTR_VLAN_ID
-* 4) Flush all entries by port VLAN - SAI_FDB_FLUSH_ATTR_PORT_ID,
+* Attributei for FDB flush API to specify the type of FDB entries being flushed.
+* The API uses AND operation when multiple attributes are specified. For
+* exmaple,
+* 1) Flush all entries in fdb table - Do not specify any attribute
+* 2) Flush all entries by port - Set SAI_FDB_FLUSH_ATTR_PORT_ID
+* 3) Flush all entries by VLAN - Set SAI_FDB_FLUSH_ATTR_VLAN_ID
+* 4) Flush all entries by port and VLAN - Set SAI_FDB_FLUSH_ATTR_PORT_ID and
 *    SAI_FDB_FLUSH_ATTR_VLAN_ID
-* Additionally the type of entry needs to be flushed can be specified
-* using SAI_FDB_FLUSH_ATTR_ENTRY_TYPE which can be static or dynamic or all
+* 5) Flush all static entries by port and VLAN - Set SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
+     SAI_FDB_FLUSH_ATTR_PORT_ID, and SAI_FDB_FLUSH_ATTR_VLAN_ID
 */
 typedef enum _sai_fdb_flush_attr {
 
