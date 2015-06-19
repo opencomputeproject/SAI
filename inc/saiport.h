@@ -68,6 +68,19 @@ typedef enum _sai_port_oper_status_t
 } sai_port_oper_status_t;
 
 /*
+ * Defines the operational status of the port
+ */
+typedef struct _sai_port_oper_status_notification_t {
+
+    /* Port id */
+    sai_object_id_t port_id;
+
+    /* Port operational status */
+    sai_port_oper_status_t port_state;
+
+} sai_port_oper_status_notification_t;
+
+/*
 * Attribute data for SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL
 */
 typedef enum _sai_port_flow_control_mode_t
@@ -136,6 +149,19 @@ typedef enum _sai_port_event_t
     SAI_PORT_EVENT_DELETE,
 
 } sai_port_event_t;
+
+/*
+ * Defines the port event notification
+ */
+typedef struct _sai_port_event_notification_t {
+
+    /* Port id */
+    sai_object_id_t port_id;
+
+    /* Port event */
+    sai_port_event_t port_event;
+
+} sai_port_event_notification_t;
 
 /*
  * Attribute data for SAI_PORT_ATTR_MEDIA_TYPE
@@ -414,15 +440,15 @@ typedef sai_status_t (*sai_get_port_stats_fn)(
 *   Passed as a parameter into sai_initialize_switch()
 *
 * Arguments:
-*   [in] port_id - port id
-*   [in] port_state - new port state
+*   [in] count - number of notifications
+*   [in] data  - array of port operational status
 *
 * Return Values:
 *    None
 */
 typedef void (*sai_port_state_change_notification_fn)(
-    _In_ sai_object_id_t port_id,
-    _In_ sai_port_oper_status_t port_state
+    _In_ uint32_t count,
+    _In_ sai_port_oper_status_notification_t *data
     );
 
 /*
@@ -430,15 +456,15 @@ typedef void (*sai_port_state_change_notification_fn)(
  *   Port event notification
  *
  * Arguments:
- *    [in] port_id - port id
- *    [in] port_event - new event associated with this port
- *
+ *    [in] count - number of notifications
+ *    [in] data  - array of port events
+
  * Return Values:
  *     None
  */
 typedef void (*sai_port_event_notification_fn)(
-    _In_ sai_object_id_t port_id,
-    _In_ sai_port_event_t port_event
+    _In_ uint32_t count,
+    _In_ sai_port_event_notification_t *data
     );
 /*
 * Port methods table retrieved with sai_api_query()
