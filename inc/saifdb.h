@@ -116,6 +116,9 @@ typedef enum _sai_fdb_flush_entry_type_t
 
 /*
 * Attributei for FDB flush API to specify the type of FDB entries being flushed.
+* For example, if you want to flush all static entries, set SAI_FDB_FLUSH_ATTR_ENTRY_TYPE
+* = SAI_FDB_FLUSH_ENTRY_STATIC. If you want to flush both static and dynamic entries,
+* then there is no need to specify the SAI_FDB_FLUSH_ATTR_ENTRY_TYPE attribute.
 * The API uses AND operation when multiple attributes are specified. For
 * exmaple,
 * 1) Flush all entries in fdb table - Do not specify any attribute
@@ -124,7 +127,7 @@ typedef enum _sai_fdb_flush_entry_type_t
 * 4) Flush all entries by port and VLAN - Set SAI_FDB_FLUSH_ATTR_PORT_ID and
 *    SAI_FDB_FLUSH_ATTR_VLAN_ID
 * 5) Flush all static entries by port and VLAN - Set SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
-     SAI_FDB_FLUSH_ATTR_PORT_ID, and SAI_FDB_FLUSH_ATTR_VLAN_ID
+*    SAI_FDB_FLUSH_ATTR_PORT_ID, and SAI_FDB_FLUSH_ATTR_VLAN_ID
 */
 typedef enum _sai_fdb_flush_attr {
 
