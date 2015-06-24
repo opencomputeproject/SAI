@@ -266,6 +266,10 @@ A default STP instance is created during SAI initialization phase. User can use 
 ## Router functionality (sairouter.h)
 Provides functions to manage virtual routers, such as creating and deleting virtual routers.
 
+A default virtual router will be created during the switch intialization time, which can be queried using `SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID`. In some ASICs, this default virtual router is also referred as the global virtual router which contains global routes, and other virtual routers contain private routes. In those ASICs, IP lookups in both global routes and private routes can be applied to an IP packet going to a private virtual router.
+
+SAI should return `SAI_STATUS_OBJECT_IN_USE` when deleting a virtual router which is still referenced by router interfaces, routes or other SAI objects.
+
 ## Router Interface functionality (sairouterintf.h)
 Provides "router interface" object. The router interface is attached a specific virtual router. It can be either VLAN-based or port-based router interface. You can also specify mac address for the router interface. However, if the forwarding element does not support per-router interface mac address, the mac address will inherit from the mac address from higher hierarchy such as virtual router or switch object.
 
