@@ -31,26 +31,26 @@
 #include "saitypes.h"
 #include "saistatus.h"
 
-/** \defgroup SAISTP SAI - STP specific public APIs and datastructures. 
+/** \defgroup SAISTP SAI - STP specific public APIs and datastructures.
  *
  *  \{
  */
 
-/**  
- * Datastructure for stp port state 
- */  
-typedef enum _sai_port_stp_port_state_t 
-{  
-    /** Port is in Learning mode*/  
-    SAI_PORT_STP_STATE_LEARNING,  
+/**
+ * Datastructure for stp port state
+ */
+typedef enum _sai_port_stp_port_state_t
+{
+    /** Port is in Learning mode*/
+    SAI_PORT_STP_STATE_LEARNING,
 
-    /** Port is in Forwarding mode */  
-    SAI_PORT_STP_STATE_FORWARDING,  
+    /** Port is in Forwarding mode */
+    SAI_PORT_STP_STATE_FORWARDING,
 
-    /** Port is in Blocking mode */  
-    SAI_PORT_STP_STATE_BLOCKING,  
+    /** Port is in Blocking mode */
+    SAI_PORT_STP_STATE_BLOCKING,
 
-} sai_port_stp_port_state_t; 
+} sai_port_stp_port_state_t;
 
 /**
  * @brief SAI attributes for STP
@@ -60,7 +60,7 @@ typedef enum _sai_stp_attr_t
     /** READ-ONLY */
 
     /** Vlans attached to STP instance [sai_vlan_list_t] */
-    SAI_STP_ATTR_VLAN,
+    SAI_STP_ATTR_VLAN_LIST,
 
     /** READ-WRITE */
 
@@ -101,8 +101,8 @@ typedef sai_status_t (*sai_remove_stp_fn)(
  *  error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_port_state_fn)(
-    _In_ sai_object_id_t stp_id,     
-    _In_ sai_object_id_t port_id,   
+    _In_ sai_object_id_t stp_id,
+    _In_ sai_object_id_t port_id,
     _In_ sai_port_stp_port_state_t stp_port_state);
 
 /**
@@ -115,8 +115,8 @@ typedef sai_status_t (*sai_set_stp_port_state_fn)(
  *  error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_port_state_fn)(
-    _In_ sai_object_id_t stp_id,     
-    _In_ sai_object_id_t port_id,   
+    _In_ sai_object_id_t stp_id,
+    _In_ sai_object_id_t port_id,
     _Out_ sai_port_stp_port_state_t  *stp_port_state);
 
 /**
