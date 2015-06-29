@@ -170,6 +170,12 @@ typedef enum _sai_switch_attr_t
     /* Default SAI STP instance ID [sai_object_id_t] */
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
 
+    /* Maximum number of ports that can be part of a LAG [uint32_t] */
+    SAI_SWITCH_ATTR_MAX_LAG_MEMBERS,
+
+    /* Maximum number of LAGs that can be created per switch [uint32_t] */
+    SAI_SWITCH_ATTR_MAX_LAG_NUMBER,
+
     /* READ-WRITE */
 
     /* Switching mode [sai_switch_switching_mode_t]
