@@ -129,7 +129,7 @@ typedef enum _sai_fdb_flush_entry_type_t
 * 5) Flush all static entries by port and VLAN - Set SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
 *    SAI_FDB_FLUSH_ATTR_PORT_ID, and SAI_FDB_FLUSH_ATTR_VLAN_ID
 */
-typedef enum _sai_fdb_flush_attr {
+typedef enum _sai_fdb_flush_attr_t {
 
    /*Flush based on port [sai_object_id_t]*/
    SAI_FDB_FLUSH_ATTR_PORT_ID,
@@ -140,7 +140,15 @@ typedef enum _sai_fdb_flush_attr {
    /*Flush based on entry type [sai_fdb_flush_entry_type_t]*/
    SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
 
-}sai_fdb_flush_attr;
+} sai_fdb_flush_attr_t;
+
+/* Notification data format received from SAI FDB callback*/
+typedef struct _sai_fdb_event_notification_data_t {
+    sai_fdb_event_t event_type;
+    sai_fdb_entry_t fdb_entry;
+    uint32_t attr_count;
+    sai_attribute_t *attr;
+} sai_fdb_event_notification_data_t;
 
 /*
 * Routine Description:
@@ -234,19 +242,15 @@ typedef sai_status_t (*sai_flush_fdb_entries_fn)(
 *     FDB notifications
 *
 * Arguments:
-*    [in] event_type - FDB event type
-*    [in] fdb entry - fdb entry
-*    [in] attr_count - number of attributes
-*    [in] attr - array of attributes
+*    [in] count - number of notifications
+*    [in] data  - pointer to fdb event notification data array
 *
 * Return Values:
 *    None
 */
 typedef void (*sai_fdb_event_notification_fn)(
-    _In_ sai_fdb_event_t event_type,
-    _In_ sai_fdb_entry_t* fdb_entry,
-    _In_ uint32_t attr_count,
-    _In_ sai_attribute_t *attr
+    _In_ uint32_t count,
+    _In_ sai_fdb_event_notification_data_t *data
     );
 
 /*
