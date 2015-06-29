@@ -64,6 +64,11 @@ typedef struct _sai_vlan_port_t
 */
 typedef enum _sai_vlan_attr_t 
 {
+    /* READ-ONLY */
+
+    /* List of ports in a VLAN [sai_vlan_port_list_t]*/
+    SAI_VLAN_ATTR_PORT_LIST,
+
     /* READ-WRITE */
     
     /* Maximum number of learned MAC addresses [uint32_t]
