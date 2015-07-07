@@ -27,15 +27,15 @@ We propose a few attribtues for SAI switch to specify the hash object for differ
 
 For the ECMP group, it has the following attributes. More packet types can be defined in the future.
 
-* SAI\_ECMP\_HASH specifies the hash object to handle all the packets going through ECMP.
-* SAI\_ECMP\_IPV4\_HASH specifies the hash object to handle all the IPv4 packets going through ECMP.
-* SAI\_ECMP\_IPV4\_IN\_IPV4\_HASH specifies the hash object to handle all the IPv4-In-IPv4 packets going through ECMP.
+* `SAI_ECMP_HASH` specifies the hash object to handle all the packets going through ECMP.
+* `SAI_ECMP_IPV4_HASH` specifies the hash object to handle all the IPv4 packets going through ECMP.
+* `SAI_ECMP_IPV4_IN_IPV4_HASH` specifies the hash object to handle all the IPv4-In-IPv4 packets going through ECMP.
 
 For the LAG group, it has the following attributes. More packet types can be defined in the future.
 
-* SAI\_LAG\_HASH specifies the hash object to handle all the packets going through LAG.
-* SAI\_LAG\_IPV4\_HASH specifies the hash object to handle all the IPv4 packets going through LAG.
-* SAI\_LAG\_IPV4\_IN\_IPV4\_HASH specifies the hash object to handle all the IPv4-In-IPv4 packets going through LAG.
+* `SAI_LAG_HASH` specifies the hash object to handle all the packets going through LAG.
+* `SAI_LAG_IPV4_HASH` specifies the hash object to handle all the IPv4 packets going through LAG.
+* `SAI_LAG_IPV4_IN_IPV4_HASH` specifies the hash object to handle all the IPv4-In-IPv4 packets going through LAG.
 
 Default hash objects for these attributes must be created when the switch is initialized. Users could override them with their own hash object later.
 
@@ -43,13 +43,13 @@ Default hash objects for these attributes must be created when the switch is ini
 
 SAI hash object is used to extract hash fields for a packet.To extract the fields of the packet, SAI hash object uses the attributes of native fields (`sai_native_hash_field`) and the UDF groups. 
 
-Global hash algorithm and seed are used to calculate the hash value based on the extracted fields, i.e, SAI\_SWITCH\_ATTR\_ECMP\_DEFAULT\_HASH\_ALGORITHM, SAI\_SWITCH\_ATTR\_LAG\_DEFAULT\_HASH\_ALGORITHM, SAI\_SWITCH\_ATTR\_ECMP\_DEFAULT\_HASH\_SEED, SAI\_SWITCH\_ATTR\_LAG\_DEFAULT\_HASH\_SEED.
+Global hash algorithm and seed are used to calculate the hash value based on the extracted fields, i.e, `SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM`, `SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM`, `SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED`, `SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED`.
 
 ### UDF Group ###
 
 SAI UDF group object is used to extract a single field from a packet. Since incoming packet can be different type, e.g., ipv4, ipv4-in-ipv4. SAI UDF group contains a list of UDFs, each of which is used to extract a field for a certain type of packet. When a packet goes through a UDF group object, one UDF is selected based on its UDF match object.
 
-A UDF group that will be used in hash should be set SAI\_UDF\_GROUP\_HASH as the group type.
+A UDF group that will be used in hash should be set `SAI_UDF_GROUP_HASH` as the group type.
 
 ### UDF ###
 
@@ -57,7 +57,7 @@ UDF object is used to extract a single field for a certain type of packet. UDF o
 
 ### UDF Match ###
 
-UDF match object contains a set of matching fields to match the packet. The matching fields are simliar to ACL matching fields with limited types. It also defines a matching priority. In a UDF group, if multiple UDF matches a packet, the UDF with top priority wins.
+UDF match object contains a set of matching fields to match the packet. The matching fields are simliar to ACL matching fields with limited types. It also defines a matching priority. When a packet matches multiple UDF matches, the match with top priority wins, and corresponding UDFs are selected.
 
 In SAI, UDF match object with the same matching rule can only be created once.
 
@@ -66,7 +66,7 @@ In SAI, UDF match object with the same matching rule can only be created once.
 
 ### Changes To sai.h ###
 
-New types **SAI_API_HASH**, **SAI_API_UDF_GROUP**, **SAI_API_UDF**, **SAI_API_UDF_MATCH** are added.
+New types `SAI_API_HASH`, `SAI_API_UDF_GROUP`, `SAI_API_UDF`, `SAI_API_UDF_MATCH` are added.
 
 ~~~cpp
 /*
@@ -106,9 +106,9 @@ typedef enum _sai_api_t
 
 ### Changes To saiswitch.h ###
 
-Existing types, **sai_switch_ecmp_hash_type_t** and **sai_switch_ecmp_hash_fields_t**, are deleted.
+Existing types, `sai_switch_ecmp_hash_type_t` and `sai_switch_ecmp_hash_fields_t`, are deleted.
 
-*sai_hash_algorithm_t* defines the hash algorithms.
+`sai_hash_algorithm_t` defines the hash algorithms.
 
 ~~~cpp
 /*
@@ -125,10 +125,10 @@ typedef enum _sai_hash_algorithm_t
     /* SAI random-based hash algorithm */
     SAI_HASH_RANDOM,
 
-} sai_hash_algorithm;
+} sai_hash_algorithm_t;
 ~~~
 
-A few hash related attributes are added into sai\_switch\_attr\_t.
+A few hash related attributes are added into `sai_switch_attr_t`.
 
 ~~~cpp
 /*
@@ -182,7 +182,7 @@ typedef enum _sai_switch_attr_t
 
 ### New Header saihash.h ###
 
-*sai_native_hash_field* defines the native hash fields.
+`sai_native_hash_field` defines the native hash fields.
 
 ~~~cpp
 /*
@@ -223,7 +223,7 @@ typedef enum _sai_native_hash_field
 } sai_native_hash_field;
 ~~~
 
-*sai_hash_attr_t* defines the hash attributes.
+`sai_hash_attr_t` defines the hash attributes.
 
 ~~~cpp
 /*
@@ -244,7 +244,7 @@ typedef enum _sai_hash_attr_t
 } sai_hash_attr_t;
 ~~~
 
-*sai_create_hash_fn* defines the interface to create hash.
+`sai_create_hash_fn` defines the interface to create hash.
 
 ~~~cpp
 /*
@@ -267,7 +267,7 @@ typedef sai_status_t(*sai_create_hash_fn)(
     );
 ~~~
 
-*sai_remove_hash_fn* defines the interface to remove hash.
+`sai_remove_hash_fn` defines the interface to remove hash.
 
 ~~~cpp
 /*
@@ -286,7 +286,7 @@ typedef sai_status_t(*sai_remove_hash_fn)(
     );
 ~~~
 
-*sai_set_hash_attribute_fn* defines the interface to set attribute for the hash.
+`sai_set_hash_attribute_fn` defines the interface to set attribute for the hash.
 
 ~~~cpp
 /*
@@ -307,7 +307,7 @@ typedef sai_status_t (*sai_set_hash_attribute_fn)(
     );
 ~~~
 
-*sai_get_hash_attribute_fn* defines the interface to get attributes for the hash.
+`sai_get_hash_attribute_fn` defines the interface to get attributes for the hash.
 
 ~~~cpp
 /*
@@ -330,7 +330,7 @@ typedef sai_status_t (*sai_get_hash_attribute_fn)(
     );
 ~~~
 
-*sai_hash_api_t* defines the Hash API table.
+`sai_hash_api_t` defines the Hash API table.
 
 ~~~cpp
 /*
@@ -348,7 +348,7 @@ typedef struct _sai_hash_api_t
 
 ### New Header saiudf.h ###
 
-*sai_udf_base_t* defines the SAI UDF base type.
+`sai_udf_base_t` defines the SAI UDF base type.
 
 ~~~cpp
 /*
@@ -368,7 +368,7 @@ typedef enum _sai_udf_base_t
 } sai_udf_base_t;
 ~~~
 
-*sai_udf_attr_t* defines the SAI UDF attributes.
+`sai_udf_attr_t` defines the SAI UDF attributes.
 
 ~~~cpp
 /*
@@ -380,8 +380,11 @@ typedef enum _sai_udf_attr_t
 
     /* READ-WRITE */
 
-    /* UDF L2 match rule [sai_udf_match_attr_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_UDF_ATTR_MATCH,
+    /* UDF L2 match ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_UDF_ATTR_MATCH_ID,
+
+    /* UDF group id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
+    SAI_UDF_ATTR_GROUP_ID,
 
     /* UDF base [sai_udf_base_t] (CREATE_AND_SET) (default to SAI_UDF_BASE_L2) */
     SAI_UDF_ATTR_BASE,
@@ -392,7 +395,7 @@ typedef enum _sai_udf_attr_t
     /* UDF byte length [uint16_t] (CREATE_AND_SET) (default to 2 bytes)*/
     SAI_UDF_ATTR_LENGTH,
 
-	/* UDF Mask [sai_u8_list_t](CREATE_AND_SET) (default to 2 bytes, value 0xFF, 0xFF)
+    /* UDF Mask [sai_u8_list_t](CREATE_AND_SET) (default to 2 bytes, value 0xFF, 0xFF)
      * The count in the list must be equal to the UDF byte length.
      * The mask only applies to extracted UDF when it is used for hash,
      * it does not apply to the extracted UDF when it is used for ACL.  */
@@ -401,7 +404,7 @@ typedef enum _sai_udf_attr_t
 } sai_udf_attr_t;
 ~~~
 
-*sai_create_udf_fn* defines the interface to create UDF.
+`sai_create_udf_fn` defines the interface to create UDF.
 
 ~~~cpp
 /*
@@ -416,6 +419,7 @@ typedef enum _sai_udf_attr_t
  * Return Values:
  *    SAI_STATUS_SUCCESS on success
  *    Failure status code on error
+
  */
 typedef sai_status_t (*sai_create_udf_fn)(
     _Out_ sai_object_id_t* udf_id,
@@ -424,7 +428,7 @@ typedef sai_status_t (*sai_create_udf_fn)(
     );
 ~~~
 
-*sai_remove_udf_fn* defines the interface to remove UDF.
+`sai_remove_udf_fn` defines the interface to remove UDF.
 
 ~~~cpp
 /*
@@ -443,7 +447,7 @@ typedef sai_status_t (*sai_remove_udf_fn)(
     );
 ~~~
 
-*sai_set_udf_attribute_fn* defines the interface to set attribute for UDF.
+`sai_set_udf_attribute_fn` defines the interface to set attribute for UDF.
 
 ~~~cpp
 /*
@@ -464,7 +468,7 @@ typedef sai_status_t (*sai_set_udf_attribute_fn)(
     );
 ~~~
 
-*sai_get_udf_attribute_fn* defines the interface to get attributes for UDF.
+`sai_get_udf_attribute_fn` defines the interface to get attributes for UDF.
 
 ~~~cpp
 /*
@@ -487,7 +491,7 @@ typedef sai_status_t (*sai_get_udf_attribute_fn)(
     );
 ~~~
 
-*sai_udf_api_t* defines the UDF API table.
+`sai_udf_api_t` defines the UDF API table.
 
 ~~~cpp
 /*
@@ -505,7 +509,7 @@ typedef struct _sai_udf_api_t
 
 ### New Header saiudfgroup.h ###
 
-*sai_udf_type_t* defines the SAI UDF group type.
+`sai_udf_type_t` defines the SAI UDF group type.
 
 ~~~cpp
 /*
@@ -522,7 +526,7 @@ typedef enum _sai_udf_group_type_t
 } sai_udf_group_type_t;
 ~~~
 
-*sai_udf_group_attr_t* defines the SAI UDF group attributes.
+`sai_udf_group_attr_t` defines the SAI UDF group attributes.
 
 ~~~cpp
 /*
@@ -532,18 +536,18 @@ typedef enum _sai_udf_group_attr_t
 {
     /* READ-ONLY */
 
+    /* UDF list [sai_object_list_t] */
+    SAI_UDF_GROUP_ATTR_UDF_LIST,
+
     /* READ-WRITE */
 
     /* UDF group type [sai_udf_group_type_t] (CREATE_ONLY) (default to SAI_UDF_GENERIC) */
     SAI_UDF_GROUP_ATTR_TYPE,
 
-    /* UDF list [sai_object_list_t] (CREATE_AND_SET) */
-    SAI_UDF_GROUP_ATTR_UDF_LIST,
-
 } sai_udf_group_attr_t;
 ~~~
 
-*sai_create_udf_group_fn* defines the interface to create UDF group.
+`sai_create_udf_group_fn` defines the interface to create UDF group.
 
 ~~~cpp
 /*
@@ -566,7 +570,7 @@ typedef sai_status_t (*sai_create_udf_group_fn)(
     );
 ~~~
 
-*sai_remove_udf_group_fn* defines the interface to remove UDF group.
+`sai_remove_udf_group_fn` defines the interface to remove UDF group.
 
 ~~~cpp
 /*
@@ -585,7 +589,7 @@ typedef sai_status_t (*sai_remove_udf_group_fn)(
     );
 ~~~
 
-*sai_set_udf_group_attribute_fn* defines the interface to set attribute for the UDF group.
+`sai_set_udf_group_attribute_fn` defines the interface to set attribute for the UDF group.
 
 ~~~cpp
 /*
@@ -606,7 +610,7 @@ typedef sai_status_t (*sai_set_udf_group_attribute_fn)(
     );
 ~~~
 
-*sai_set_udf_group_attribute_fn* defines the interface to get attribute for the UDF group.
+`sai_set_udf_group_attribute_fn` defines the interface to get attribute for the UDF group.
 
 ~~~cpp
 /*
@@ -629,53 +633,7 @@ typedef sai_status_t (*sai_get_udf_group_attribute_fn)(
     );
 ~~~
 
-*sai_add_udf_to_group_fn* defines the interface to add UDF into a UDF group.
-
-~~~cpp
-/*
- * Routine Description:
- *    Add UDF to a group
- *
- * Arguments:
- *    [in] udf_group_id - UDF group id
- *    [in] udf_count - number of UDFs
- *    [in] udfs - array of UDFs
- *
- * Return Values:
- *    SAI_STATUS_SUCCESS on success
- *    Failure status code on error
- */
-typedef sai_status_t (*sai_add_udf_to_group_fn)(
-    _In_ sai_object_id_t udf_group_id,
-    _In_ uint32_t udf_count,
-    _In_ const sai_object_id_t* udfs
-    );
-~~~
-
-*sai_add_udf_to_group_fn* defines the interface to add UDF from a UDF group.
-
-~~~cpp
-/*
- * Routine Description:
- *    Remove UDF from a group
- *
- * Arguments:
- *    [in] udf_group_id - UDF group id
- *    [in] udf_count - number of UDFs
- *    [in] udfs - array of UDFs
- *
- * Return Values:
- *    SAI_STATUS_SUCCESS on success
- *    Failure status code on error
- */
-typedef sai_status_t (*sai_remove_udf_from_group_fn)(
-    _In_ sai_object_id_t udf_group_id,
-    _In_ uint32_t udf_count,
-    _In_ const sai_object_id_t* udfs
-    );
-~~~
-
-*sai_udf_group_api_t* defines the UDF group API table.
+`sai_udf_group_api_t` defines the UDF group API table.
 
 ~~~cpp
 /*
@@ -687,15 +645,13 @@ typedef struct _sai_udf_group_api_t
     sai_remove_udf_group_fn        remove_udf_group;
     sai_set_udf_group_attribute_fn set_udf_group_attribute;
     sai_get_udf_group_attribute_fn get_udf_group_attribute;
-    sai_add_udf_to_group_fn        add_udf_to_group;
-    sai_remove_udf_from_group_fn   remove_udf_from_group;
 
 } sai_udf_group_api_t;
 ~~~
 
 ### New Header saiudfmatch.h ###
 
-*sai_udf_match_attr_t* defines the UDF match attributes.
+`sai_udf_match_attr_t` defines the UDF match attributes.
 
 ~~~cpp
 /*
@@ -722,7 +678,7 @@ typedef enum _sai_udf_match_attr_t
 } sai_udf_match_attr_t;
 ~~~
 
-*sai_create_udf_match_fn* defines the interface to create UDF match.
+`sai_create_udf_match_fn` defines the interface to create UDF match.
 
 ~~~cpp
 /*
@@ -745,7 +701,7 @@ typedef sai_status_t (*sai_create_udf_match_fn)(
     );
 ~~~
 
-*sai_remove_udf_match_fn* defines the interface to remove UDF match.
+`sai_remove_udf_match_fn` defines the interface to remove UDF match.
 
 ~~~cpp
 /*
@@ -764,7 +720,7 @@ typedef sai_status_t (*sai_remove_udf_match_fn)(
     );
 ~~~
 
-*sai_set_udf_match_attribute_fn* defines the interface to set attribute for UDF match.
+`sai_set_udf_match_attribute_fn` defines the interface to set attribute for UDF match.
 
 ~~~cpp
 /*
@@ -785,7 +741,7 @@ typedef sai_status_t (*sai_set_udf_match_attribute_fn)(
     );
 ~~~
 
-*sai_get_udf_match_attribute_fn* defines the interface to get attributes for UDF match.
+`sai_get_udf_match_attribute_fn` defines the interface to get attributes for UDF match.
 
 ~~~cpp
 /*
@@ -808,7 +764,7 @@ typedef sai_status_t (*sai_get_udf_match_attribute_fn)(
     );
 ~~~
 
-*sai_udf_match_api_t* defines the UDF match API table.
+`sai_udf_match_api_t` defines the UDF match API table.
 
 ~~~cpp
 /*
@@ -826,7 +782,7 @@ typedef struct _sai_udf_match_api_t
 
 ## Example ##
 
-The following example shows how to define UDF hash fields for all IPv4 packets. It first defines one UDF match object to match GRE packet with specific GRE protocol type. It then creates two UDF objects based on this match object and adds them to two UDF groups. Finally, it uses these two UDF groups as the hash fields for all IPv4 packets.
+The following example shows how to define UDF hash fields for all IPv4 packets. It first defines one UDF match object to match GRE packet with specific GRE protocol type. It then creates two UDF groups, and creates one UDF object for each UDF group. Finally, it uses these two UDF groups as the hash fields for all IPv4 packets.
 
 ~~~cpp
 // Set XOR hash algorithm
@@ -846,48 +802,46 @@ udf_match1_attrs[2].id = (sai_attr_id_t)SAI_UDF_MATCH_ATTR_GRE_TYPE;
 udf_match1_attrs[2].value.u16 = 0x0800;
 sai_udf_match_api->create_udf_match(&udf_match1_id, 3, udf_match1_attrs);
 
+// Create two UDF groups
+sai_object_id_t udf_group_ids[2];
+sai_attribute_t udf_group_attr;
+udf_group_attr.id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
+udf_group_attr.value.s32 = SAI_UDF_HASH;
+sai_udf_group_api->create_udf_group(&udf_group_ids[0], 1, udf_group_attr);
+
+udf_group_attr.id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
+udf_group_attr.value.s32 = SAI_UDF_HASH;
+sai_udf_group_api->create_udf_group(&udf_group_ids[1], 1, udf_group_attr);
+
 // Create UDF1 to match the inner src IP
 sai_object_id_t udf1_id;
-sai_attribute_t udf1_attrs[4];
-udf1_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH;
+sai_attribute_t udf1_attrs[5];
+udf1_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_ID;
 udf1_attrs[0].value.oid = udf_match1_id;
-udf1_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_BASE;
-udf1_attrs[1].value.s32 = SAI_UDF_BASE_L2;
-udf1_attrs[2].id = (sai_attr_id_t)SAI_UDF_ATTR_OFFSET;
-udf1_attrs[2].value.u16 = 56;
-udf1_attrs[3].id = (sai_attr_id_t)SAI_UDF_ATTR_LENGTH;
-udf1_attrs[3].value.u16 = 2;
-sai_udf_api->create_udf(&udf1_id, 4, udf1_attrs);
+udf1_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_GROUP_ID;
+udf1_attrs[1].value.oid = udf_group_ids[0];
+udf1_attrs[2].id = (sai_attr_id_t)SAI_UDF_ATTR_BASE;
+udf1_attrs[2].value.s32 = SAI_UDF_BASE_L2;
+udf1_attrs[3].id = (sai_attr_id_t)SAI_UDF_ATTR_OFFSET;
+udf1_attrs[3].value.u16 = 56;
+udf1_attrs[4].id = (sai_attr_id_t)SAI_UDF_ATTR_LENGTH;
+udf1_attrs[4].value.u16 = 2;
+sai_udf_api->create_udf(&udf1_id, 5, udf1_attrs);
 
 // Create UDF2 to match the inner dest IP
 sai_object_id_t udf2_id;
-sai_attribute_t udf2_attrs[4];
-udf2_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH;
+sai_attribute_t udf2_attrs[5];
+udf2_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_ID;
 udf2_attrs[0].value.oid = udf_match1_id;
-udf2_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_BASE;
-udf2_attrs[1].value.s32 = SAI_UDF_BASE_L2;
-udf2_attrs[2].id = (sai_attr_id_t)SAI_UDF_ATTR_OFFSET;
-udf2_attrs[2].value.u16 = 60;
-udf2_attrs[3].id = (sai_attr_id_t)SAI_UDF_ATTR_LENGTH;
-udf2_attrs[3].value.u16 = 2;
-sai_udf_api->create_udf(&udf2_id, 4, udf2_attrs);
-
-// Create two UDF groups
-sai_object_id_t udf_group_ids[2];
-sai_attribute_t udf_group_attrs[2];
-udf_group_attrs[0].id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
-udf_group_attrs[0].value.s32 = SAI_UDF_HASH;
-udf_group_attrs[1].id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_UDF_LIST;
-udf_group_attrs[1].value.objlist.count = 1;
-udf_group_attrs[1].value.objlist.list = &udf1_id;
-sai_udf_group_api->create_udf_group(&udf_group_ids[0], 2, udf_group_attrs);
-
-udf_group_attrs[0].id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
-udf_group_attrs[0].value.s32 = SAI_UDF_HASH;
-udf_group_attrs[1].id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_UDF_LIST;
-udf_group_attrs[1].value.objlist.count = 1;
-udf_group_attrs[1].value.objlist.list = &udf2_id;
-sai_udf_group_api->create_udf_group(&udf_group_ids[1], 2, udf_group_attrs);
+udf2_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_GROUP_ID;
+udf1_attrs[1].value.oid = udf_group_ids[1];
+udf2_attrs[2].id = (sai_attr_id_t)SAI_UDF_ATTR_BASE;
+udf2_attrs[2].value.s32 = SAI_UDF_BASE_L2;
+udf2_attrs[3].id = (sai_attr_id_t)SAI_UDF_ATTR_OFFSET;
+udf2_attrs[3].value.u16 = 60;
+udf2_attrs[4].id = (sai_attr_id_t)SAI_UDF_ATTR_LENGTH;
+udf2_attrs[4].value.u16 = 2;
+sai_udf_api->create_udf(&udf2_id, 5, udf2_attrs);
 
 // Create a hash object for the two UDFs
 sai_object_id_t hash_id;
