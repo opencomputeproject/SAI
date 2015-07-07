@@ -90,8 +90,8 @@ typedef struct _sai_attribute_entry_t {
 } sai_attribute_entry_t;
 typedef struct _stub_object_id_t {
     sai_uint8_t  object_type;
-    sai_uint32_t data;
     sai_uint8_t  reserved[3];
+    sai_uint32_t data;
 } stub_object_id_t;
 
 #define SAI_TYPE_CHECK_RANGE(type) (type < SAI_OBJECT_TYPE_MAX)
