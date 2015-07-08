@@ -136,6 +136,42 @@ typedef enum _sai_acl_table_attr_t
      * allocated and able to do ACL CAM Carving accurately */
     SAI_ACL_TABLE_ATTR_SIZE,
 
+    /* Table Group Id [sai_object_id_t], CREATE_ONLY
+     *
+     * By default, if the attribute is not present during table creation, SAI
+     * will internally allocate a unique group id which can be used to group
+     * tables which are created later. User would perform get operation for the
+     * already created ACL Table to fetch the group id created by SAI and use
+     * it for grouping the next table at the time of its creation.
+     * Group Id will be deleted from SAI once all the ACL Tables referencing
+     * the group are removed.
+     *
+     * In case none of the tables require grouping, SAI will assign unique group
+     * ids equal to the number of ACL Tables created and all will be independently
+     * looked up.
+     *
+     * User should always use the group id returned by SAI in the get operation
+     * to group the tables else Invalid attribute value error code will be returned.
+     *
+     * The ACL Table lookup could be done serially or in parallel. In both the
+     * cases there could be a need to group multiple tables so that only single
+     * ACL rule entry actions are performed.
+     *
+     * Within one ACL group, only one ACL entry will be hit which is based on the
+     * table priority as well as ACL entry priority within the table. Every ACL
+     * Table is associated to a priority which is a mandatory attribute needed at
+     * the time of table creation. The order of lookup within the ACL table group
+     * will be based on individual table priority. Action(s) from the ACL entry
+     * residing in the higher priority table within the group will be performed.
+     *
+     * Across the ACL groups, one hit ACL entry from each group will be selected
+     * and all non-conflicting actions from them will be performed.
+     *
+     * Without grouping, all non-conflicting actions from different ACL entry
+     * hits across the tables will be performed.
+     */
+    SAI_ACL_TABLE_ATTR_GROUP_ID,
+
     /* Match fields [bool]
      * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Table Creation)
      * (CREATE_ONLY, match fields cannot be changed after the table is created) */
