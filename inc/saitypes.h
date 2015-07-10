@@ -46,6 +46,7 @@ typedef UINT32  sai_switch_profile_id_t;
 typedef UINT16  sai_vlan_id_t;
 typedef UINT32  sai_attr_id_t;
 typedef UINT8   sai_cos_t;
+typedef UINT8   sai_queue_index_t;
 typedef UINT8   sai_mac_t[6];
 typedef UINT32  sai_ip4_t;
 typedef UINT8   sai_ip6_t[16];
@@ -83,6 +84,7 @@ typedef uint32_t sai_switch_profile_id_t;
 typedef uint16_t sai_vlan_id_t;
 typedef uint32_t sai_attr_id_t;
 typedef uint8_t  sai_cos_t;
+typedef uint8_t  sai_queue_index_t;
 typedef uint8_t  sai_mac_t[6];
 typedef uint32_t sai_ip4_t;
 typedef uint8_t  sai_ip6_t[16];
@@ -154,7 +156,13 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_STP_INSTANCE     = 13,
     SAI_OBJECT_TYPE_TRAP_GROUP       = 14,
     SAI_OBJECT_TYPE_ACL_TABLE_GROUP  = 15,
-    SAI_OBJECT_TYPE_MAX              = 16
+    SAI_OBJECT_TYPE_POLICER          = 16,
+    SAI_OBJECT_TYPE_WRED             = 17,
+    SAI_OBJECT_TYPE_QOS_MAPS         = 18,
+    SAI_OBJECT_TYPE_QUEUE            = 19,
+    SAI_OBJECT_TYPE_SCHEDULER        = 20,
+    SAI_OBJECT_TYPE_SCHEDULER_GROUP  = 21,
+    SAI_OBJECT_TYPE_MAX              = 22
 } sai_object_type_t;
 
 typedef struct _sai_u32_list_t {
@@ -326,6 +334,65 @@ typedef struct _sai_port_breakout_t
     sai_object_list_t  port_list;
 } sai_port_breakout_t;
 
+typedef enum _sai_packet_color_t
+{
+    SAI_PACKET_COLOR_GREEN,
+
+    SAI_PACKET_COLOR_YELLOW,
+
+    SAI_PACKET_COLOR_RED,
+
+} sai_packet_color_t;
+
+/*
+ * Defines qos map types.
+ * Examples:
+ * dot1p/dscp --> TC
+ * dot1p/dscp --> Color
+ * dot1p/dscp --> TC + Color
+ * Tc --> dot1p/Dscp.
+ * Tc + color --> dot1p/Dscp.
+ * Tc --> Egress Queue.
+ */
+
+typedef struct _sai_qos_map_params_t
+{
+    /* Traffic class */
+    sai_cos_t   tc;
+
+    /* DSCP value */
+    sai_uint8_t dscp;
+
+    /* Dot1p value */
+    sai_uint8_t dot1p;
+
+    /* Egress port queue UOID is not known at the time of map creation.
+     * Using queue index for maps. */
+    sai_queue_index_t    queue_index;
+
+    /* Color of the packet */
+    sai_packet_color_t color;
+
+} sai_qos_map_params_t;
+
+typedef struct _sai_qos_map_t
+{
+    /* Input parameters to match */
+    sai_qos_map_params_t key;
+
+    /* Output map parameters */
+    sai_qos_map_params_t value;
+
+} sai_qos_map_t;
+
+typedef struct _sai_qos_map_list_t
+{
+    /* Number of entries in the map  */
+    uint32_t count;
+    /* Map list */
+    sai_qos_map_t *list;
+} sai_qos_map_list_t;
+
 /*
  * Data Type to use enum's as attribute value is sai_int32_t s32
  *
@@ -354,6 +421,8 @@ typedef union {
     sai_acl_field_data_t aclfield;
     sai_acl_action_data_t aclaction;
     sai_port_breakout_t portbreakout;
+    sai_qos_map_list_t qosmap;
+
 } sai_attribute_value_t;
 
 typedef struct _sai_attribute_t {

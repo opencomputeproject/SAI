@@ -210,6 +210,12 @@ typedef enum _sai_port_attr_t
     /* Current breakout mode [sai_port_breakout_mode_type_t] */
     SAI_PORT_ATTR_CURRENT_BREAKOUT_MODE,
 
+    /* List of Queues for the port[sai_object_list_t] */
+    SAI_PORT_ATTR_QUEUE_LIST,
+
+    /* List of Scheduler groups for the port[sai_object_list_t] */
+    SAI_PORT_ATTR_QOS_SCHEDULER_GROUP_LIST,
+
     /* READ-WRITE */
     /* Speed in Mbps [uint32_t] */
     SAI_PORT_ATTR_SPEED,
@@ -258,14 +264,18 @@ typedef enum _sai_port_attr_t
        (default to 1514 bytes*/
     SAI_PORT_ATTR_MTU,
 
-    /* [bool] (default to FALSE) */
-    SAI_PORT_ATTR_FLOOD_STORM_CONTROL,
+    /* Enable flood (unknown unicast or unknown multicast)
+       storm control policer on port [sai_object_id_t]
+       Policer id = SAI_NULL_OBJECT_ID to disable policer on port */
+    SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID,
 
-    /* [bool] (default to FALSE) */
-    SAI_PORT_ATTR_BROADCAST_STORM_CONTROL,
+    /* Enable broadcast storm control policer on port [sai_object_id_t]
+       Policer id = SAI_NULL_OBJECT_ID to disable policer on port */
+    SAI_PORT_ATTR_BROADCAST_STORM_CONTROL_POLICER_ID,
 
-    /* [bool] (default to FALSE) */
-    SAI_PORT_ATTR_MULTICAST_STORM_CONTROL,
+    /* Enable multicast storm control policer on port [sai_object_id_t]
+       Policer id = SAI_NULL_OBJECT_ID to disable policer on port */
+    SAI_PORT_ATTR_MULTICAST_STORM_CONTROL_POLICER_ID,
 
     /* [sai_port_flow_control_mode_t]
        (default to SAI_PORT_FLOW_CONTROL_DISABLE) */
@@ -302,6 +312,80 @@ typedef enum _sai_port_attr_t
      * Disable egress sampling by assigning SAI_NULL_OBJECT_ID as
      * attribute value */
     SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE,
+
+    /* Attach/Detach policer to port [sai_object_id_t],
+     * Policer id = SAI_NULL_OBJECT_ID to disable policer on port */
+    SAI_PORT_ATTR_POLICER_ID,
+
+    /* Port default Traffic class Mapping */
+    SAI_PORT_ATTR_QOS_DEFAULT_TC,
+
+   /* Enable DOT1P -> TC MAP [sai_object_id_t] on port
+    * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
+    * To enable/disbale trust Dot1p, Map ID should be add/remove on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_DOT1P_TO_TC_MAP,
+
+   /* Enable DOT1P -> COLOR MAP [sai_object_id_t] on port
+    * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
+    * To enable/disbale trust Dot1p, Map ID should be add/remove on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_DOT1P_TO_COLOR_MAP,
+
+    /* Enable DOT1P -> TC AND COLOR MAP [sai_object_id_t] on port
+    * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
+    * To enable/disbale trust Dot1p, Map ID should be add/remove on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_DOT1P_TO_TC_AND_COLOR_MAP,
+
+   /* Enable DSCP -> TC MAP [sai_object_id_t] on port
+    * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
+    * To enable/disbale trust DSCP, Map ID should be add/remove on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_DSCP_TO_TC_MAP,
+
+   /* Enable DSCP -> COLOR MAP [sai_object_id_t] on port
+    * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
+    * To enable/disbale trust DSCP, Map ID should be add/remove on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_DSCP_TO_COLOR_MAP,
+
+    /* Enable DSCP -> TC AND COLOR MAP [sai_object_id_t] on port
+    * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
+    * To enable/disbale trust DSCP, Map ID should be add/remove on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_DSCP_TO_TC_AND_COLOR_MAP,
+
+   /* Enable TC -> Queue MAP [sai_object_id_t]  on port
+    * Map id = SAI_NULL_OBJECT_ID to disable map on port.
+    * Default no map i.e All packets to queue 0 */
+    SAI_PORT_ATTR_QOS_TC_TO_QUEUE_MAP,
+
+   /* Enable TC -> DOT1P MAP [sai_object_id_t]
+    * Map id = SAI_NULL_OBJECT_ID to disable map on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_TC_TO_DOT1P_MAP,
+
+    /* Enable TC AND COLOR -> DOT1P MAP [sai_object_id_t]
+    * Map id = SAI_NULL_OBJECT_ID to disable map on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
+
+   /* Enable TC AND COLOR -> DSCP MAP [sai_object_id_t]
+    * Map id = SAI_NULL_OBJECT_ID to disable map on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
+
+   /* sai_qos_drop_type_t, Default (TAIL DROP)*/
+    SAI_PORT_ATTR_QOS_DROP_TYPE,
+
+   /* Attach WRED to port [sai_object_id_t]
+     (mandatory when SAI_PORT_ATTR_QOS_DROP_TYPE =  SAI_QOS_DROP_TYPE_WRED) */
+    SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
+
+    /* Scheduler for port [sai_object_id_t],
+     * Default no limits */
+    SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID,
 
     /* -- */
 
@@ -372,7 +456,32 @@ typedef enum _sai_port_stat_counter_t
     SAI_PORT_STAT_IPV6_OUT_UCAST_PKTS,
     SAI_PORT_STAT_IPV6_OUT_NON_UCAST_PKTS,
     SAI_PORT_STAT_IPV6_OUT_MCAST_PKTS,
-    SAI_PORT_STAT_IPV6_OUT_DISCARDS
+    SAI_PORT_STAT_IPV6_OUT_DISCARDS,
+    /* get/set WRED green packet count [uint64_t] */
+    SAI_PORT_STAT_GREEN_DISCARD_DROPPED_PACKETS,
+
+    /* get/set WRED green byte count [uint64_t] */
+    SAI_PORT_STAT_GREEN_DISCARD_DROPPED_BYTES,
+
+    /* get/set WRED yellow packet count [uint64_t] */
+    SAI_PORT_STAT_YELLOW_DISCARD_DROPPED_PACKETS,
+
+    /* get/set WRED yellow byte count [uint64_t] */
+    SAI_PORT_STAT_YELLOW_DISCARD_DROPPED_BYTES,
+
+    /* get/set WRED red packet count [uint64_t] */
+    SAI_PORT_STAT_RED_DISCARD_DROPPED_PACKETS,
+
+    /* get/set WRED red byte count [uint64_t] */
+    SAI_PORT_STAT_RED_DISCARD_DROPPED_BYTES,
+
+    /* get/set WRED dropped packets count [uint64_t] */
+    SAI_PORT_STAT_DISCARD_DROPPED_PACKETS,
+
+    /* get/set WRED dropped bytes  count [uint64_t] */
+    SAI_PORT_STAT_DISCARD_DROPPED_BYTES,
+
+
 } sai_port_stat_counter_t;
 
 
