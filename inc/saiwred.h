@@ -39,13 +39,13 @@ typedef enum _sai_wred_attr_t
     /* [bool] enable/disable, Default FALSE*/
     SAI_WRED_ATTR_GREEN_ENABLE = 0x00000000,
 
-    /** bytes [ sai_uint32_t],  MANDATORY for SAI_WRED_ATTR_GREEN_ENABLE = TRUE
-     * Default 0
+    /**
+     * bytes [ sai_uint32_t],  MANDATORY for SAI_WRED_ATTR_GREEN_ENABLE = TRUE
      */
     SAI_WRED_ATTR_GREEN_MIN_THRESHOLD = 0x00000001,
 
-    /** bytes  [sai_uint32_t], MANDATORY for SAI_WRED_ATTR_GREEN_ENABLE = TRUE
-     * Default 0
+    /**
+     * bytes  [sai_uint32_t], MANDATORY for SAI_WRED_ATTR_GREEN_ENABLE = TRUE
      */
     SAI_WRED_ATTR_GREEN_MAX_THRESHOLD = 0x00000002,
 
@@ -55,30 +55,30 @@ typedef enum _sai_wred_attr_t
     /* [bool] enable/disable , Default FALSE */
     SAI_WRED_ATTR_YELLOW_ENABLE = 0x00000004,
 
-    /** bytes [ sai_uint32_t], MANDATORY for SAI_WRED_ATTR_YELLOW_ENABLE = TRUE
-     * Default 0
+    /**
+     * bytes [ sai_uint32_t], MANDATORY for SAI_WRED_ATTR_YELLOW_ENABLE = TRUE
      */
     SAI_WRED_ATTR_YELLOW_MIN_THRESHOLD = 0x00000005,
 
-    /** bytes [sai_uint32_t], MANDATORY for SAI_WRED_ATTR_YELLOW_ENABLE = TRUE
-     * Default 0
+    /**
+     * bytes [sai_uint32_t], MANDATORY for SAI_WRED_ATTR_YELLOW_ENABLE = TRUE
      */
     SAI_WRED_ATTR_YELLOW_MAX_THRESHOLD = 0x00000006,
 
-    /** Percentage 0 ~ 100 [sai_uint32_t], Default 100%*/
+    /** Percentage 0 ~ 100 [sai_uint32_t], Default 100% */
     SAI_WRED_ATTR_YELLOW_DROP_PROBABILITY = 0x00000007,
 
      /* [bool] enable/disable , Default FALSE*/
     SAI_WRED_ATTR_RED_ENABLE = 0x00000008,
 
-    /** bytes [ sai_uint32_t] , MANDATORY for SAI_WRED_ATTR_RED_ENABLE = TRUE
-     * Default 0
-     * */
+    /**
+     * bytes [ sai_uint32_t] , MANDATORY for SAI_WRED_ATTR_RED_ENABLE = TRUE
+     */
     SAI_WRED_ATTR_RED_MIN_THRESHOLD = 0x00000009,
 
-    /** bytes [ sai_uint32_t] , MANDATORY for SAI_WRED_ATTR_RED_ENABLE = TRUE
-     * Default 0
-     * */
+    /**
+     * bytes [ sai_uint32_t] , MANDATORY for SAI_WRED_ATTR_RED_ENABLE = TRUE
+     */
     SAI_WRED_ATTR_RED_MAX_THRESHOLD = 0x0000000a,
 
     /** Percentage 0 ~ 100 [sai_uint32_t], Default 100%*/
@@ -111,7 +111,7 @@ typedef enum _sai_wred_attr_t
 
 typedef sai_status_t (*sai_create_wred_fn)(
     _Out_ sai_object_id_t *wred_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
@@ -156,7 +156,7 @@ typedef sai_status_t (*sai_set_wred_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_wred_attribute_fn)(
     _In_ sai_object_id_t wred_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
    );
 

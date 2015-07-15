@@ -127,7 +127,7 @@ typedef enum _sai_policer_attr_t
     SAI_POLICER_ATTR_YELLOW_PACKET_ACTION = 0x00000008,
 
     /** Action to take for RED color packets [sai_packet_action_t],
-     * Default action SAI_PACKET_ACTION_DROP
+     * Default action SAI_PACKET_ACTION_FORWARD
      * For storm control action should be used as RED_PACKET_ACTION */
     SAI_POLICER_ATTR_RED_PACKET_ACTION = 0x00000009,
 
