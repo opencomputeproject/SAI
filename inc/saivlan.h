@@ -80,6 +80,14 @@ typedef enum _sai_vlan_attr_t
      * (default to default stp instance id)*/
     SAI_VLAN_ATTR_STP_INSTANCE,
 
+    /* To disable learning on a VLAN. [bool] (CREATE_AND_SET)
+     * (default set to false)
+     * This should override port learn settings. If this is set to true on a vlan,
+     * then the source mac learning is disabled for this vlan on a member port even
+     * if learn is enable on the port(based on port learn attribute)
+     */
+    SAI_VLAN_ATTR_LEARN_DISABLE,
+
     /* Custom range base value */
     SAI_VLAN_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
