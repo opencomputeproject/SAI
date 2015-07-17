@@ -233,10 +233,10 @@ typedef enum _sai_port_attr_t
      * (default to SAI_PORT_MEDIA_TYPE_NOT_PRESENT) */
     SAI_PORT_ATTR_MEDIA_TYPE,
 
-    /* Default VLAN [sai_vlan_id_t]
-    *   Untagged ingress frames are tagged with default VLAN
-    */
-    SAI_PORT_ATTR_DEFAULT_VLAN,
+    /* Port VLAN ID [sai_vlan_id_t]
+     * Untagged ingress frames are tagged with Port VLAN ID (PVID)
+       (default set to 1) */
+    SAI_PORT_ATTR_PORT_VLAN_ID,
 
     /* Default VLAN Priority [uint8_t]
        (default to 0) */
