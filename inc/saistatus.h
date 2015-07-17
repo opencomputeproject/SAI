@@ -122,24 +122,24 @@
 /*  
 *  Function is not implemented
 */
-#define SAI_STATUS_NOT_IMPLEMENTED          SAI_STATUS_CODE(0x00000012L)
+#define SAI_STATUS_NOT_IMPLEMENTED          SAI_STATUS_CODE(0x0000000FL)
 
 /*  
 *  Address not found 
 */
-#define SAI_STATUS_ADDR_NOT_FOUND           SAI_STATUS_CODE(0x00000013L)
+#define SAI_STATUS_ADDR_NOT_FOUND           SAI_STATUS_CODE(0x00000010L)
 
 /*
 *  SAI Object is in use
 */
-#define SAI_STATUS_OBJECT_IN_USE            SAI_STATUS_CODE(0x00000019L)
+#define SAI_STATUS_OBJECT_IN_USE            SAI_STATUS_CODE(0x00000011L)
 
 /*
 * Invalid SAI Object type passed to a function. If the object id
 * is passed as an attribute value in list, then 
 * SAI_STATUS_INVALID_ATTR_VALUE_0 status code should be used
 */
-#define SAI_STATUS_INVALID_OBJECT_TYPE      SAI_STATUS_CODE(0x0000001AL)
+#define SAI_STATUS_INVALID_OBJECT_TYPE      SAI_STATUS_CODE(0x00000012L)
 
 
 /*
@@ -147,7 +147,7 @@
 * when the object type is invalid, otherwise return this SAI_STATUS_INVALID_OBJECT_ID.
 * This can happen if the object id is already deleted.
 */
-#define SAI_STATUS_INVALID_OBJECT_ID        SAI_STATUS_CODE(0x0000001BL)
+#define SAI_STATUS_INVALID_OBJECT_ID        SAI_STATUS_CODE(0x00000013L)
  
 /*  
 *  Attribute is invalid (range from 0x00010000L to 0x0001FFFFL). 
