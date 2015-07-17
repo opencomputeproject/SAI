@@ -474,6 +474,9 @@ typedef enum _sai_acl_entry_attr_t
     /* Set Packet DSCP [sai_uint8_t : 6] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DSCP,
 
+    /* Set Packet ECN [sai_uint8_t : 2] */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ECN,
+
     /* Set Packet L4 Src Port [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_SRC_PORT,
 
