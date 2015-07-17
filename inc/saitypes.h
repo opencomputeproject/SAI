@@ -231,6 +231,8 @@ typedef struct _sai_ip_prefix_t {
 
 /*
  * Defines a single ACL filter
+ *
+ * Note : IPv4 and IPv6 Address expected in Network Byte Order
  */
 typedef struct _sai_acl_field_data_t
 {
@@ -274,6 +276,8 @@ typedef struct _sai_acl_field_data_t
 
 /*
  * Defines a single ACL action
+ *
+ * Note : IPv4 and IPv6 Address expected in Network Byte Order
  */
 typedef struct _sai_acl_action_data_t
 {
