@@ -81,18 +81,15 @@ typedef enum _sai_queue_attr_t
 
     /* READ-WRITE */
 
-    /** Drop Type [sai_drop_type_t], Default (TAIL DROP) */
-    SAI_QUEUE_ATTR_DROP_TYPE = 0x00000001,
-
     /** Attach WRED ID to queue [sai_wred_id_t]
-       Mandatory when SAI_QUEUE_ATTR_DROP_TYPE = SAI_DROP_TYPE_WRED */
-    SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000002,
+        ID = SAI_NULL_OBJECT_ID to disable WRED. */
+    SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000001,
 
     /** Attach buffer profile to Queue */
-    SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000003,
+    SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000002,
 
     /** Attach scheduler to Queue [sai_object_id_t]*/
-    SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000004,
+    SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000003,
 
     /* -- */
     /* Custom range base value */
