@@ -1,22 +1,22 @@
 /*
-* Copyright (c) 2014 Microsoft Open Technologies, Inc. 
-*   
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may 
-*    not use this file except in compliance with the License. You may obtain 
+* Copyright (c) 2014 Microsoft Open Technologies, Inc.
+*
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
 *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 *
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
+*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
 *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 *
-*    See the Apache Version 2.0 License for specific language governing 
-*    permissions and limitations under the License. 
+*    See the Apache Version 2.0 License for specific language governing
+*    permissions and limitations under the License.
 *
 *    Microsoft would like to thank the following companies for their review and
 *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 *    Dell Products, L.P., Facebook, Inc
-*   
+*
 * Module Name:
 *
 *    saiport.h
@@ -46,7 +46,7 @@ typedef enum _sai_port_type_t
 } sai_port_type_t;
 
 /*
-*  Attribute data for SAI_PORT_ATTR_OPER_STATUS 
+*  Attribute data for SAI_PORT_ATTR_OPER_STATUS
 */
 typedef enum _sai_port_oper_status_t
 {
@@ -118,7 +118,7 @@ typedef enum _sai_port_internal_loopback_mode_t
 /*
 * Attribute data for SAI_PORT_ATTR_FDB_LEARNING
 */
-typedef enum _sai_port_fdb_learning_mode_t 
+typedef enum _sai_port_fdb_learning_mode_t
 {
     /* Drop packets with unknown source MAC. Do not learn. Do not forward */
     SAI_PORT_LEARN_MODE_DROP,
@@ -188,7 +188,7 @@ typedef enum _sai_port_media_type_t
 } sai_port_media_type_t;
 
 /*
-*  Attribute Id in sai_set_port_attribute() and 
+*  Attribute Id in sai_set_port_attribute() and
 *  sai_get_port_attribute() calls
 */
 typedef enum _sai_port_attr_t
@@ -210,8 +210,14 @@ typedef enum _sai_port_attr_t
     /* Current breakout mode [sai_port_breakout_mode_type_t] */
     SAI_PORT_ATTR_CURRENT_BREAKOUT_MODE,
 
+    /* Number of queues on port [uint32_t]*/
+    SAI_PORT_ATTR_QOS_NUMBER_OF_QUEUES,
+
     /* List of Queues for the port[sai_object_list_t] */
     SAI_PORT_ATTR_QUEUE_LIST,
+
+    /* Number of Scheduler groups on port [uint32_t]*/
+    SAI_PORT_ATTR_QOS_NUMBER_OF_SCHEDULER_GROUPS,
 
     /* List of Scheduler groups for the port[sai_object_list_t] */
     SAI_PORT_ATTR_QOS_SCHEDULER_GROUP_LIST,
@@ -223,12 +229,12 @@ typedef enum _sai_port_attr_t
     /* Admin Mode [bool], (default to FALSE)*/
     SAI_PORT_ATTR_ADMIN_STATE,
 
-    /* Media Type [sai_port_media_type_t], 
+    /* Media Type [sai_port_media_type_t],
      * (default to SAI_PORT_MEDIA_TYPE_NOT_PRESENT) */
     SAI_PORT_ATTR_MEDIA_TYPE,
 
-    /* Default VLAN [sai_vlan_id_t] 
-    *   Untagged ingress frames are tagged with default VLAN 
+    /* Default VLAN [sai_vlan_id_t]
+    *   Untagged ingress frames are tagged with default VLAN
     */
     SAI_PORT_ATTR_DEFAULT_VLAN,
 
@@ -242,11 +248,11 @@ typedef enum _sai_port_attr_t
 
     /* Dropping of untagged frames on ingress [bool]
        (default to FALSE) */
-    SAI_PORT_ATTR_DROP_UNTAGGED, 
+    SAI_PORT_ATTR_DROP_UNTAGGED,
 
     /* Dropping of tagged frames on ingress [bool]
        (default to FALSE) */
-    SAI_PORT_ATTR_DROP_TAGGED, 
+    SAI_PORT_ATTR_DROP_TAGGED,
 
     /* Internal loopback control [sai_port_internal_loopback_mode_t]
        (default to SAI_PORT_INTERNAL_LOOPBACK_NONE) */
@@ -289,26 +295,26 @@ typedef enum _sai_port_attr_t
      * [sai_packet_action_t] (default to SAI_PACKET_ACTION_DROP) */
     SAI_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION,
 
-    /* Enable/Disable Mirror session [sai_object_list_t]. 
-     * Enable ingress mirroring by assigning list of mirror session 
+    /* Enable/Disable Mirror session [sai_object_list_t].
+     * Enable ingress mirroring by assigning list of mirror session
      * object id as attribute value
      * Disable ingress mirroring by assigning object_count as 0 in objlist */
     SAI_PORT_ATTR_INGRESS_MIRROR_SESSION,
 
-    /* Enable/Disable Mirror session [sai_object_list_t]. 
-     * Enable egress mirroring by assigning list of mirror session 
+    /* Enable/Disable Mirror session [sai_object_list_t].
+     * Enable egress mirroring by assigning list of mirror session
      * object id as attribute value
      * Disable egress mirroring by assigning object_count as 0 in objlist */
     SAI_PORT_ATTR_EGRESS_MIRROR_SESSION,
 
-    /* Enable/Disable Samplepacket session [sai_object_id_t]. 
-     * Enable ingress sampling by assigning samplepacket object id 
+    /* Enable/Disable Samplepacket session [sai_object_id_t].
+     * Enable ingress sampling by assigning samplepacket object id
      * Disable ingress sampling by assigning SAI_NULL_OBJECT_ID as
      * attribute value */
     SAI_PORT_ATTR_INGRESS_SAMPLEPACKET_ENABLE,
 
-    /* Enable/Disable Samplepacket session [sai_object_id_t]. 
-     * Enable egress sampling by assigning samplepacket object id 
+    /* Enable/Disable Samplepacket session [sai_object_id_t].
+     * Enable egress sampling by assigning samplepacket object id
      * Disable egress sampling by assigning SAI_NULL_OBJECT_ID as
      * attribute value */
     SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE,
@@ -498,7 +504,7 @@ typedef enum _sai_port_stat_counter_t
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_port_attribute_fn)(
-    _In_ sai_object_id_t port_id, 
+    _In_ sai_object_id_t port_id,
     _In_ const sai_attribute_t *attr
     );
 
@@ -535,7 +541,7 @@ typedef sai_status_t (*sai_get_port_attribute_fn)(
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
-*/ 
+*/
 typedef sai_status_t (*sai_get_port_stats_fn)(
     _In_ sai_object_id_t port_id,
     _In_ const sai_port_stat_counter_t *counter_ids,
