@@ -64,7 +64,7 @@ typedef enum _sai_scheduler_attr_t
     SAI_SCHEDULER_ATTR_SHAPER_TYPE = 0x00000002,
 
     /** [uint64_t] Guaranteed Bandwidth shape rate [bytes/sec or PPS]
-        0 to disable the values, Default disable */
+        Value 0 to No Limit, Default 0 */
     SAI_SCHEDULER_ATTR_MIN_BANDWIDTH_RATE = 0x00000003,
 
     /** [uint64_t] Guaranteed Burst for Bandwidth shape rate [Bytes or Packets]
@@ -72,7 +72,7 @@ typedef enum _sai_scheduler_attr_t
     SAI_SCHEDULER_ATTR_MIN_BANDWIDTH_BURST_RATE = 0x00000004,
 
     /** [uint64_t] Maximum Bandwidth shape rate [bytes/sec or PPS]
-        0 to disable the values, Default Disable */
+        Value 0 to No limit, Default 0 */
     SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE = 0x00000005,
 
     /** [uint64_t] Maximum Burst for Bandwidth shape rate [bytes or Packets]
