@@ -198,10 +198,6 @@ typedef enum _sai_switch_attr_t
     /* L2 multicast flood control to CPU port [bool] */
     SAI_SWITCH_ATTR_MCAST_CPU_FLOOD_ENABLE,
 
-    /* Default VlanID for ports that are not members of
-       any vlans [sai_vlan_id_t]  (default to vlan 1)*/
-    SAI_SWITCH_ATTR_DEFAULT_PORT_VLAN_ID,
-
     /* Default switch MAC Address [sai_mac_t] */
     SAI_SWITCH_ATTR_SRC_MAC_ADDRESS,
 
