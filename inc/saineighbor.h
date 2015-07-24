@@ -1,22 +1,22 @@
 /*
-* Copyright (c) 2014 Microsoft Open Technologies, Inc. 
-*   
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may 
-*    not use this file except in compliance with the License. You may obtain 
+* Copyright (c) 2014 Microsoft Open Technologies, Inc.
+*
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
 *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 *
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
+*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
 *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 *
-*    See the Apache Version 2.0 License for specific language governing 
-*    permissions and limitations under the License. 
+*    See the Apache Version 2.0 License for specific language governing
+*    permissions and limitations under the License.
 *
 *    Microsoft would like to thank the following companies for their review and
 *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 *    Dell Products, L.P., Facebook, Inc
-*   
+*
 * Module Name:
 *
 *    saineighbor.h
@@ -24,7 +24,7 @@
 * Abstract:
 *
 *    This module defines SAI neighbor table API
-*    The table contains both IPv4 and IPv6 neighbors 
+*    The table contains both IPv4 and IPv6 neighbors
 *
 */
 
@@ -41,7 +41,7 @@ typedef enum _sai_neighbor_attr_t
     /* READ-WRITE */
 
     /* Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
-    SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS, 
+    SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS,
 
     /* L3 forwarding action for this neighbor [sai_packet_action_t]
     *    (default to SAI_PACKET_ACTION_FORWARD) */
@@ -53,17 +53,22 @@ typedef enum _sai_neighbor_attr_t
      * [bool] (CREATE_AND_SET) (default to false) */
     SAI_NEIGHBOR_ATTR_NO_HOST_ROUTE,
 
+    /* User based Meta Data
+     * [sai_uint32_t] (CREATE_AND_SET)
+     * Value Range SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE */
+    SAI_NEIGHBOR_ATTR_META_DATA,
+
     /* Custom range base value */
     SAI_NEIGHBOR_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
 } sai_neighbor_attr_t;
 
 /*
-*  neighbor entry 
+*  neighbor entry
 */
 typedef struct _sai_neighbor_entry_t
 {
-    sai_object_id_t rif_id; 
+    sai_object_id_t rif_id;
     sai_ip_address_t ip_address;
 
 } sai_neighbor_entry_t;
@@ -71,10 +76,10 @@ typedef struct _sai_neighbor_entry_t
 
 /*
 * Routine Description:
-*    Create neighbor entry 
+*    Create neighbor entry
 *
 * Arguments:
-*    [in] neighbor_entry - neighbor entry 
+*    [in] neighbor_entry - neighbor entry
 *    [in] attr_count - number of attributes
 *    [in] attrs - array of attributes
 *
@@ -92,10 +97,10 @@ typedef sai_status_t (*sai_create_neighbor_entry_fn)(
 
 /*
 * Routine Description:
-*    Remove neighbor entry 
+*    Remove neighbor entry
 *
 * Arguments:
-*    [in] neighbor_entry - neighbor entry 
+*    [in] neighbor_entry - neighbor entry
 *
 * Return Values:
 *    SAI_STATUS_SUCCESS on success

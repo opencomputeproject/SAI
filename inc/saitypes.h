@@ -175,6 +175,17 @@ typedef struct _sai_s32_list_t {
     int32_t  *list;
 } sai_s32_list_t;
 
+typedef struct _sai_u32_range_t {
+    uint32_t min;
+    uint32_t max;
+} sai_u32_range_t;
+
+typedef struct _sai_s32_range_t {
+    int32_t min;
+    int32_t max;
+} sai_s32_range_t;
+
+
 /*
  * Defines a vlan list datastructure
  */
@@ -420,6 +431,8 @@ typedef union {
     sai_object_list_t objlist;
     sai_u32_list_t u32list;
     sai_s32_list_t s32list;
+    sai_u32_range_t u32range;
+    sai_s32_range_t s32range;
     sai_vlan_list_t vlanlist;
     sai_vlan_port_list_t vlanportlist;
     sai_acl_field_data_t aclfield;

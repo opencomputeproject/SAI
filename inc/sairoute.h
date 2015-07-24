@@ -1,22 +1,22 @@
 /*
-* Copyright (c) 2014 Microsoft Open Technologies, Inc. 
-*   
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may 
-*    not use this file except in compliance with the License. You may obtain 
+* Copyright (c) 2014 Microsoft Open Technologies, Inc.
+*
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
 *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 *
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
+*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
 *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 *
-*    See the Apache Version 2.0 License for specific language governing 
-*    permissions and limitations under the License. 
+*    See the Apache Version 2.0 License for specific language governing
+*    permissions and limitations under the License.
 *
 *    Microsoft would like to thank the following companies for their review and
 *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 *    Dell Products, L.P., Facebook, Inc
-*   
+*
 * Module Name:
 *
 *    sairoute.h
@@ -39,18 +39,23 @@ typedef enum _sai_route_attr_t
 {
     /* READ-WRITE */
 
-    /* Packet action [sai_packet_action_t] 
+    /* Packet action [sai_packet_action_t]
        (default to SAI_PACKET_ACTION_FORWARD) */
     SAI_ROUTE_ATTR_PACKET_ACTION,
 
-    /* Packet priority for trap/log actions [uint8_t] 
+    /* Packet priority for trap/log actions [uint8_t]
        (default to 0) */
     SAI_ROUTE_ATTR_TRAP_PRIORITY,
 
     /* Next hop or next hop group id for the packet [sai_object_id_t]
-     * The next hop id can be a generic next hop object, such as next hop, 
+     * The next hop id can be a generic next hop object, such as next hop,
      * next hop group. */
     SAI_ROUTE_ATTR_NEXT_HOP_ID,
+
+    /* User based Meta Data
+     * [sai_uint32_t] (CREATE_AND_SET)
+     * Value Range SAI_SWITCH_ATTR_ROUTE_USER_META_DATA_RANGE */
+    SAI_ROUTE_ATTR_META_DATA,
 
     /* Custom range base value */
     SAI_ROUTE_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
@@ -59,7 +64,7 @@ typedef enum _sai_route_attr_t
 
 
 /*
-*  Unicast route entry 
+*  Unicast route entry
 */
 typedef struct _sai_unicast_route_entry_t
 {
@@ -80,9 +85,9 @@ typedef struct _sai_unicast_route_entry_t
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
-* 
+*
 * Note: IP prefix/mask expected in Network Byte Order.
-*   
+*
 */
 typedef sai_status_t (*sai_create_route_fn)(
     _In_ const sai_unicast_route_entry_t* unicast_route_entry,

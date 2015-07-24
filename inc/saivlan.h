@@ -1,22 +1,22 @@
 /*
-* Copyright (c) 2014 Microsoft Open Technologies, Inc. 
-*   
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may 
-*    not use this file except in compliance with the License. You may obtain 
+* Copyright (c) 2014 Microsoft Open Technologies, Inc.
+*
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
 *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 *
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
+*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
 *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 *
-*    See the Apache Version 2.0 License for specific language governing 
-*    permissions and limitations under the License. 
+*    See the Apache Version 2.0 License for specific language governing
+*    permissions and limitations under the License.
 *
 *    Microsoft would like to thank the following companies for their review and
 *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 *    Dell Products, L.P., Facebook, Inc
-*   
+*
 * Module Name:
 *
 *    saivlan.h
@@ -59,10 +59,10 @@ typedef struct _sai_vlan_port_t
 } sai_vlan_port_t;
 
 /*
-*  Attribute Id in sai_set_vlan_attribute() and 
+*  Attribute Id in sai_set_vlan_attribute() and
 *  sai_get_vlan_attribute() calls
 */
-typedef enum _sai_vlan_attr_t 
+typedef enum _sai_vlan_attr_t
 {
     /* READ-ONLY */
 
@@ -70,13 +70,13 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_PORT_LIST,
 
     /* READ-WRITE */
-    
+
     /* Maximum number of learned MAC addresses [uint32_t]
      * zero means learning limit disable. (default to zero).
      */
     SAI_VLAN_ATTR_MAX_LEARNED_ADDRESSES,
 
-    /* STP Instance that the VLAN is associated to [sai_object_id_t] 
+    /* STP Instance that the VLAN is associated to [sai_object_id_t]
      * (default to default stp instance id)*/
     SAI_VLAN_ATTR_STP_INSTANCE,
 
@@ -87,6 +87,11 @@ typedef enum _sai_vlan_attr_t
      * if learn is enable on the port(based on port learn attribute)
      */
     SAI_VLAN_ATTR_LEARN_DISABLE,
+
+    /* User based Meta Data
+     * [sai_uint32_t] (CREATE_AND_SET)
+     * Value Range SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */
+    SAI_VLAN_ATTR_META_DATA,
 
     /* Custom range base value */
     SAI_VLAN_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
@@ -157,7 +162,7 @@ typedef sai_status_t (*sai_remove_vlan_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_set_vlan_attribute_fn)(
-    _In_ sai_vlan_id_t vlan_id, 
+    _In_ sai_vlan_id_t vlan_id,
     _In_ const sai_attribute_t *attr
     );
 
@@ -175,7 +180,7 @@ typedef sai_status_t (*sai_set_vlan_attribute_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_get_vlan_attribute_fn)(
-    _In_ sai_vlan_id_t vlan_id, 
+    _In_ sai_vlan_id_t vlan_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
@@ -209,7 +214,7 @@ typedef sai_status_t (*sai_remove_all_vlans_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_add_ports_to_vlan_fn)(
-    _In_ sai_vlan_id_t vlan_id, 
+    _In_ sai_vlan_id_t vlan_id,
     _In_ uint32_t port_count,
     _In_ const sai_vlan_port_t* port_list
     );
@@ -228,7 +233,7 @@ typedef sai_status_t (*sai_add_ports_to_vlan_fn)(
 *    Failure status code on error
 */
 typedef sai_status_t (*sai_remove_ports_from_vlan_fn)(
-    _In_ sai_vlan_id_t vlan_id, 
+    _In_ sai_vlan_id_t vlan_id,
     _In_ uint32_t port_count,
     _In_ const sai_vlan_port_t* port_list
     );
@@ -246,9 +251,9 @@ typedef sai_status_t (*sai_remove_ports_from_vlan_fn)(
 * Return Values:
 *    SAI_STATUS_SUCCESS on success
 *    Failure status code on error
-*/ 
+*/
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
-    _In_ sai_vlan_id_t vlan_id, 
+    _In_ sai_vlan_id_t vlan_id,
     _In_ const sai_vlan_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
@@ -267,7 +272,7 @@ typedef struct _sai_vlan_api_t
     sai_remove_ports_from_vlan_fn   remove_ports_from_vlan;
     sai_remove_all_vlans_fn         remove_all_vlans;
     sai_get_vlan_stats_fn           get_vlan_stats;
-    
+
 } sai_vlan_api_t;
 
 #endif // __SAIVLAN_H_

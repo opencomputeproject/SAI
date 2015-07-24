@@ -393,6 +393,10 @@ typedef enum _sai_port_attr_t
      * Default no limits */
     SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID,
 
+    /* User based Meta Data [sai_uint32_t]
+     * Value Range SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE */
+    SAI_PORT_ATTR_META_DATA,
+
     /* -- */
 
     /* Custom range base value */

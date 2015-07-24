@@ -94,6 +94,11 @@ typedef enum _sai_fdb_entry_attr_t
     /* FDB entry packet action [sai_packet_action_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_FDB_ENTRY_ATTR_PACKET_ACTION,
 
+    /* User based Meta Data
+     * [sai_uint32_t] (CREATE_AND_SET)
+     * Value Range SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE */
+    SAI_FDB_ENTRY_ATTR_META_DATA,
+
     /* -- */
 
     /* Custom range base value */

@@ -166,6 +166,24 @@ typedef enum _sai_switch_attr_t
     /* maximum priority for ACL entry [sai_uint32_t] */
     SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY,
 
+    /* FDB DST user-based meta data range [sai_u32_range_t] */
+    SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE,
+
+    /* Route DST Table user-based meta data range [sai_u32_range_t] */
+    SAI_SWITCH_ATTR_ROUTE_DST_USER_META_DATA_RANGE,
+
+    /* Neighbor DST Table user-based meta data range [sai_u32_range_t] */
+    SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE,
+
+    /* Port user-based meta data range [sai_u32_range_t] */
+    SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE,
+
+    /* VLAN user-based meta data range [sai_u32_range_t] */
+    SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE,
+
+    /* ACL user-based ACL meta data range [sai_u32_range_t] */
+    SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE,
+
     /* Default SAI STP instance ID [sai_object_id_t] */
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
 

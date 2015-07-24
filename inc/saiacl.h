@@ -269,8 +269,36 @@ typedef enum _sai_acl_table_attr_t
     /* Class-of-Service (Traffic Class) */
     SAI_ACL_TABLE_ATTR_FIELD_TC,
 
+    /* User Based Meta Data [bool] */
+
+    /* FDB DST user meta data */
+    SAI_ACL_TABLE_ATTR_FIELD_FDB_DST_USER_META,
+
+    /* ROUTE DST User Meta data */
+    SAI_ACL_TABLE_ATTR_FIELD_ROUTE_DST_USER_META,
+
+    /* Neighbor DST User Meta Data */
+    SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_USER_META,
+
+    /* Port User Meta Data */
+    SAI_ACL_TABLE_ATTR_FIELD_PORT_USER_META,
+
+    /* Vlan User Meta Data */
+    SAI_ACL_TABLE_ATTR_FIELD_VLAN_USER_META,
+
+    /* Meta Data carried from previous ACL Stage */
+    SAI_ACL_TABLE_ATTR_FIELD_ACL_USER_META,
+
+    /* NPU Based Meta Data [bool] */
+
+    /* DST MAC address match in FDB */
+    SAI_ACL_TABLE_ATTR_FIELD_FDB_DST_NPU_META_HIT,
+
+    /* DST IP address match in neighbor table */
+    SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
+
     /* End of Table Match Field */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_TC,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
 
     /* -- */
 
@@ -403,8 +431,50 @@ typedef enum _sai_acl_entry_attr_t
     /* Class-of-Service (Traffic Class) [sai_cos_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_TC,
 
+    /* User Based Meta Data [sai_uint32_t] */
+
+    /* DST MAC address match user meta data in FDB
+     * Value must be in the range defined in
+     * SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE */
+    SAI_ACL_ENTRY_ATTR_FIELD_FDB_DST_USER_META,
+
+    /* DST IP address match user meta data in Route Table
+     * Value must be in the range defined in
+     * SAI_SWITCH_ATTR_ROUTE_DST_USER_META_DATA_RANGE */
+    SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_DST_USER_META,
+
+    /* DST IP address match user meta data in Neighbor Table
+     * Value must be in the range defined in
+     * SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE */
+    SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_USER_META,
+
+    /* Port User Meta Data
+     * Value must be in the range defined in
+     * SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE */
+    SAI_ACL_ENTRY_ATTR_FIELD_PORT_USER_META,
+
+    /* Vlan User Meta Data
+     * Value must be in the range defined in
+     * SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */
+    SAI_ACL_ENTRY_ATTR_FIELD_VLAN_USER_META,
+
+    /* Meta Data carried from previous ACL Stage.
+     * When an ACL entry set the meta data, the ACL meta data
+     * form previous stages are overriden.
+     * Value must be in the range defined in
+     * SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE */
+    SAI_ACL_ENTRY_ATTR_FIELD_ACL_USER_META,
+
+    /* NPU Based Meta Data [bool] */
+
+    /* DST MAC address match in FDB */
+    SAI_ACL_ENTRY_ATTR_FIELD_FDB_NPU_META_DST_HIT,
+
+    /* DST IP address match in neighbor Table */
+    SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
+
     /* End of Rule Match Fields */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_TC,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
 
     /* Actions [sai_acl_action_data_t]
      * - To enable an action, parameter is needed unless noted specifically.
@@ -498,8 +568,13 @@ typedef enum _sai_acl_entry_attr_t
      * to CPU (Trap/Log) or the destination port points to CPU. */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
 
+    /* Set Meta Data to carry forward to next ACL Stage
+     * [sai_uint32_t]
+     * Value Range SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ACL_META_DATA,
+
     /* End of Rule Actions */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ACL_META_DATA
 
 } sai_acl_entry_attr_t;
 
