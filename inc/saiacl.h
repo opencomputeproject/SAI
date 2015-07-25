@@ -441,6 +441,9 @@ typedef enum _sai_acl_entry_attr_t
     /* Set Class-of-Service (Traffic Class) [sai_cos_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_TC,
 
+    /* Set packet color [sai_packet_color_t] */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_COLOR,
+
     /* Set Packet Inner Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_VLAN_ID,
 
