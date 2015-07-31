@@ -21,7 +21,6 @@
 #if !defined (__SAIQOSMAPS_H_)
 #define __SAIQOSMAPS_H_
 
-#include "sai.h"
 #include "saitypes.h"
 
 /** \defgroup SAIQOSMAPS SAI - Qos Maps specific API definitions.

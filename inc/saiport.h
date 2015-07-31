@@ -214,7 +214,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_NUMBER_OF_QUEUES,
 
     /* List of Queues for the port[sai_object_list_t] */
-    SAI_PORT_ATTR_QUEUE_LIST,
+    SAI_PORT_ATTR_QOS_QUEUE_LIST,
 
     /* Number of Scheduler groups on port [uint32_t]*/
     SAI_PORT_ATTR_QOS_NUMBER_OF_SCHEDULER_GROUPS,
@@ -328,37 +328,37 @@ typedef enum _sai_port_attr_t
 
    /* Enable DOT1P -> TC MAP [sai_object_id_t] on port
     * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
-    * To enable/disbale trust Dot1p, Map ID should be add/remove on port.
+    * To enable/disable trust Dot1p, Map ID should be add/remove on port.
     * Default no map */
     SAI_PORT_ATTR_QOS_DOT1P_TO_TC_MAP,
 
    /* Enable DOT1P -> COLOR MAP [sai_object_id_t] on port
     * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
-    * To enable/disbale trust Dot1p, Map ID should be add/remove on port.
+    * To enable/disable trust Dot1p, Map ID should be add/remove on port.
     * Default no map */
     SAI_PORT_ATTR_QOS_DOT1P_TO_COLOR_MAP,
 
     /* Enable DOT1P -> TC AND COLOR MAP [sai_object_id_t] on port
     * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
-    * To enable/disbale trust Dot1p, Map ID should be add/remove on port.
+    * To enable/disable trust Dot1p, Map ID should be add/remove on port.
     * Default no map */
     SAI_PORT_ATTR_QOS_DOT1P_TO_TC_AND_COLOR_MAP,
 
    /* Enable DSCP -> TC MAP [sai_object_id_t] on port
     * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
-    * To enable/disbale trust DSCP, Map ID should be add/remove on port.
+    * To enable/disable trust DSCP, Map ID should be add/remove on port.
     * Default no map */
     SAI_PORT_ATTR_QOS_DSCP_TO_TC_MAP,
 
    /* Enable DSCP -> COLOR MAP [sai_object_id_t] on port
     * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
-    * To enable/disbale trust DSCP, Map ID should be add/remove on port.
+    * To enable/disable trust DSCP, Map ID should be add/remove on port.
     * Default no map */
     SAI_PORT_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
     /* Enable DSCP -> TC AND COLOR MAP [sai_object_id_t] on port
     * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
-    * To enable/disbale trust DSCP, Map ID should be add/remove on port.
+    * To enable/disable trust DSCP, Map ID should be add/remove on port.
     * Default no map */
     SAI_PORT_ATTR_QOS_DSCP_TO_TC_AND_COLOR_MAP,
 
@@ -376,6 +376,11 @@ typedef enum _sai_port_attr_t
     * Map id = SAI_NULL_OBJECT_ID to disable map on port.
     * Default no map */
     SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
+
+   /* Enable TC -> DSCP MAP [sai_object_id_t]
+    * Map id = SAI_NULL_OBJECT_ID to disable map on port.
+    * Default no map */
+    SAI_PORT_ATTR_QOS_TC_TO_DSCP_MAP,
 
    /* Enable TC AND COLOR -> DSCP MAP [sai_object_id_t]
     * Map id = SAI_NULL_OBJECT_ID to disable map on port.

@@ -311,37 +311,37 @@ typedef enum _sai_switch_attr_t
 
     /* Enable DOT1P -> TC MAP [sai_object_id_t] on switch.
      * MAP id = SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disbale trust Dot1p, Map ID should be add/remove on switch.
+     * To enable/disable trust Dot1p, Map ID should be add/remove on switch.
      * Default disabled */
     SAI_SWITCH_ATTR_QOS_DOT1P_TO_TC_MAP,
 
     /* Enable DOT1P -> COLOR MAP [sai_object_id_t] on switch.
      * MAP id = SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disbale trust Dot1p, Map ID should be add/remove on switch.
+     * To enable/disable trust Dot1p, Map ID should be add/remove on switch.
      * Default disabled */
     SAI_SWITCH_ATTR_QOS_DOT1P_TO_COLOR_MAP,
 
     /* Enable DOT1P -> TC AND COLOR MAP [sai_object_id_t] on switch.
      * MAP id = SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disbale trust Dot1p, Map ID should be add/remove on switch.
+     * To enable/disable trust Dot1p, Map ID should be add/remove on switch.
      * Default disabled */
     SAI_SWITCH_ATTR_QOS_DOT1P_TO_TC_AND_COLOR_MAP,
 
     /* Enable DSCP -> TC MAP [sai_object_id_t] on switch.
      * MAP id = SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disbale trust DSCP, Map ID should be add/remove on port.
+     * To enable/disable trust DSCP, Map ID should be add/remove on port.
      * Default no map */
     SAI_SWITCH_ATTR_QOS_DSCP_TO_TC_MAP,
 
     /* Enable DSCP -> COLOR MAP [sai_object_id_t] on switch
      * MAP id = SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disbale trust DSCP, Map ID should be add/remove on switch.
+     * To enable/disable trust DSCP, Map ID should be add/remove on switch.
      * Default no map */
     SAI_SWITCH_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
     /* Enable DSCP -> TC AND COLOR MAP [sai_object_id_t] on switch
      * MAP id = SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disbale trust DSCP, Map ID should be add/remove on switch.
+     * To enable/disable trust DSCP, Map ID should be add/remove on switch.
      * Default no map */
     SAI_SWITCH_ATTR_QOS_DSCP_TO_TC_AND_COLOR_MAP,
 

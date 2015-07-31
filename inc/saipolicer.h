@@ -21,7 +21,6 @@
 #if !defined (__SAIPOLICER_H_)
 #define __SAIPOLICER_H_
 
-#include "sai.h"
 #include "saitypes.h"
 
 /** \defgroup SAIPOLICER  SAI - Qos Policer specific API definitions.
@@ -192,7 +191,7 @@ typedef enum _sai_policer_stat_counter_t
  */
 typedef sai_status_t (*sai_create_policer_fn)(
     _Out_ sai_object_id_t *policer_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list);
 
 
@@ -237,7 +236,7 @@ typedef sai_status_t (*sai_set_policer_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_policer_attribute_fn)(
     _In_ sai_object_id_t policer_id,
-    _In_ int attr_count,
+    _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 

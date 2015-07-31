@@ -21,7 +21,6 @@
 #if !defined (__SAISCHEDULER_H_)
 #define __SAISCHEDULER_H_
 
-#include "sai.h"
 #include "saitypes.h"
 
 /** \defgroup SAISCHEDULER SAI - Qos scheduler specific API definitions.

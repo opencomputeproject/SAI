@@ -22,7 +22,6 @@
 #if !defined (__SAIWRED_H_)
 #define __SAIWRED_H_
 
-#include "sai.h"
 #include "saitypes.h"
 
 /** \defgroup SAIWRED SAI - Qos Wred specific API definitions.

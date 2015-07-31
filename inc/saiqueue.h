@@ -22,7 +22,6 @@
 #if !defined (__SAIQUEUE_H_)
 #define __SAIQUEUE_H_
 
-#include "sai.h"
 #include "saitypes.h"
 
 /** \defgroup SAIQUEUE SAI - Qos Queue specific API definitions.
@@ -49,26 +48,6 @@ typedef enum _sai_queue_type_t
     SAI_QUEUE_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_queue_type_t;
-
-
-
-/**
- * @brief Enum defining Drop type.
- */
-typedef enum _sai_drop_type_t
-{
-
-    /** Tail Drop */
-    SAI_DROP_TYPE_TAIL = 0x00000000,
-
-    /** weighted Random early drop*/
-    SAI_DROP_TYPE_WRED = 0x00000001,
-
-    /* -- */
-    /* Custom range base value */
-    SAI_DROP_TYPE_CUSTOM_RANGE_BASE = 0x10000000
-
-} sai_drop_type_t;
 
 /**
  * @brief Enum defining queue attributes.
