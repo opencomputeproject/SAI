@@ -437,6 +437,10 @@ typedef enum _sai_port_stat_counter_t
     SAI_PORT_STAT_ETHER_STATS_PKTS_256_TO_511_OCTETS,
     SAI_PORT_STAT_ETHER_STATS_PKTS_512_TO_1023_OCTETS,
     SAI_PORT_STAT_ETHER_STATS_PKTS_1024_TO_1518_OCTETS,
+    SAI_PORT_STAT_ETHER_STATS_PKTS_1519_TO_2047_OCTETS,
+    SAI_PORT_STAT_ETHER_STATS_PKTS_2048_TO_4095_OCTETS,
+    SAI_PORT_STAT_ETHER_STATS_PKTS_4096_TO_9216_OCTETS,
+    SAI_PORT_STAT_ETHER_STATS_PKTS_9217_TO_16383_OCTETS,
     SAI_PORT_STAT_ETHER_STATS_OVERSIZE_PKTS,
     SAI_PORT_STAT_ETHER_RX_OVERSIZE_PKTS,
     SAI_PORT_STAT_ETHER_TX_OVERSIZE_PKTS,
@@ -498,12 +502,20 @@ typedef enum _sai_port_stat_counter_t
     SAI_PORT_STAT_ETHER_IN_PKTS_256_TO_511_OCTETS,
     SAI_PORT_STAT_ETHER_IN_PKTS_512_TO_1023_OCTETS,
     SAI_PORT_STAT_ETHER_IN_PKTS_1024_TO_1518_OCTETS,
+    SAI_PORT_STAT_ETHER_IN_PKTS_1519_TO_2047_OCTETS,
+    SAI_PORT_STAT_ETHER_IN_PKTS_2048_TO_4095_OCTETS,
+    SAI_PORT_STAT_ETHER_IN_PKTS_4096_TO_9216_OCTETS,
+    SAI_PORT_STAT_ETHER_IN_PKTS_9217_TO_16383_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_64_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_65_TO_127_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_128_TO_255_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_256_TO_511_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_512_TO_1023_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_1024_TO_1518_OCTETS,
+    SAI_PORT_STAT_ETHER_OUT_PKTS_1519_TO_2047_OCTETS,
+    SAI_PORT_STAT_ETHER_OUT_PKTS_2048_TO_4095_OCTETS,
+    SAI_PORT_STAT_ETHER_OUT_PKTS_4096_TO_9216_OCTETS,
+    SAI_PORT_STAT_ETHER_OUT_PKTS_9217_TO_16383_OCTETS,
 
 } sai_port_stat_counter_t;
 
@@ -567,6 +579,40 @@ typedef sai_status_t (*sai_get_port_stats_fn)(
     );
 
 /*
+ * Routine Description:
+ *   Clear port statistics counters.
+ *
+ * Arguments:
+ *    [in] port_id - port id
+ *    [in] counter_ids - specifies the array of counter ids
+ *    [in] number_of_counters - number of counters in the array
+ *
+ * Return Values:
+ *    SAI_STATUS_SUCCESS on success
+ *    Failure status code on error
+ */
+typedef sai_status_t (*sai_clear_port_stats_fn)(
+    _In_ sai_object_id_t port_id,
+    _In_ const sai_port_stat_counter_t *counter_ids,
+    _In_ uint32_t number_of_counters
+    );
+
+/*
+ * Routine Description:
+ *   Clear port's all statistics counters.
+ *
+ * Arguments:
+ *    [in] port_id - port id
+ *
+ * Return Values:
+ *    SAI_STATUS_SUCCESS on success
+ *    Failure status code on error
+ */
+typedef sai_status_t (*sai_clear_port_all_stats_fn)(
+    _In_ sai_object_id_t port_id
+    );
+
+/*
 * Routine Description:
 *   Port state change notification
 *   Passed as a parameter into sai_initialize_switch()
@@ -606,6 +652,8 @@ typedef struct _sai_port_api_t
     sai_set_port_attribute_fn       set_port_attribute;
     sai_get_port_attribute_fn       get_port_attribute;
     sai_get_port_stats_fn           get_port_stats;
+    sai_clear_port_stats_fn         clear_port_stats;
+    sai_clear_port_all_stats_fn     clear_port_all_stats;
 
 } sai_port_api_t;
 
