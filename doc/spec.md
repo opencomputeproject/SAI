@@ -248,9 +248,9 @@ Provides FDB entries manipulation as well as aging/learning notifications.
 Provides VLAN management functions, such as VLAN creation deletion and port membership.
 
 Default VLAN:
-1)By default during NPU initialization SAI would add all the ports as part of VLAN 1. During SAI NPU initialization SAI_PORT_ATTR_DEFAULT_VLAN is set to 1 by default for all ports. All ports are added as untagged members to this VLAN 1. 
+1)By default during NPU initialization SAI would add all the ports as part of VLAN 1. During SAI NPU initialization SAI_PORT_ATTR_PORT_VLAN_ID is set to 1 by default for all ports. All ports are added as untagged members to this VLAN 1. 
 
-2) SAI Adaptor host or any application above SAI can later modify these initial configurations. If the application intends to use a different untagged VLAN it can do so by setting the port attribute SAI_PORT_ATTR_DEFAULT_VLAN as well as adding the port as an untagged member of the particular VLAN. For example if VLAN ID 2 is intended to be used as untagged VLAN for port 1 then SAI_PORT_ATTR_DEFAULT_VLAN can be set to 2 for port 1 and port 1 should be added as untagged member of VLAN member 2. It is to be noted that SAI_PORT_ATTR_DEFAULT_VLAN does not add the port as a member of the  VLAN. This has to be done through add_ports_to_vlan API. SAI_PORT_ATTR_DEFAULT_VLAN just sets the VLAN ID to be associated for incoming untagged packets on the port.
+2) SAI Adaptor host or any application above SAI can later modify these initial configurations. If the application intends to use a different untagged VLAN it can do so by setting the port attribute SAI_PORT_ATTR_PORT_VLAN_ID as well as adding the port as an untagged member of the particular VLAN. For example if VLAN ID 2 is intended to be used as untagged VLAN for port 1 then SAI_PORT_ATTR_PORT_VLAN_ID can be set to 2 for port 1 and port 1 should be added as untagged member of VLAN member 2. It is to be noted that SAI_PORT_ATTR_PORT_VLAN_ID does not add the port as a member of the  VLAN. This has to be done through add_ports_to_vlan API. SAI_PORT_ATTR_PORT_VLAN_ID just sets the VLAN ID to be associated for incoming untagged packets on the port.
 
 ## STP functionality (saistp.h)
 
