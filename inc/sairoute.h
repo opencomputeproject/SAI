@@ -52,6 +52,11 @@ typedef enum _sai_route_attr_t
      * next hop group. */
     SAI_ROUTE_ATTR_NEXT_HOP_ID,
 
+    /* Is directly reachable route [bool] (CREATE_AND_SET)
+     * Directly reachable routes are the IP subnets that are directly attached to the router.
+       (default to false) */
+    SAI_ROUTE_ATTR_DIRECTLY_REACHABLE_ROUTE,
+
     /* User based Meta Data
      * [sai_uint32_t] (CREATE_AND_SET)
      * Value Range SAI_SWITCH_ATTR_ROUTE_USER_META_DATA_RANGE */
