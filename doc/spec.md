@@ -248,9 +248,9 @@ Provides FDB entries manipulation as well as aging/learning notifications.
 Provides VLAN management functions, such as VLAN creation deletion and port membership.
 
 Default VLAN:
-1)By default during NPU initialization SAI would add all the ports as part of VLAN 1. During SAI NPU initialization SAI_PORT_ATTR_PORT_VLAN_ID is set to 1 by default for all ports. All ports are added as untagged members to this VLAN 1. 
+1)By default during NPU initialization SAI would add all the ports as part of VLAN 1. During SAI NPU initialization `SAI_PORT_ATTR_PORT_VLAN_ID` is set to 1 by default for all ports. All ports are added as untagged members to this VLAN 1.
 
-2) SAI Adaptor host or any application above SAI can later modify these initial configurations. If the application intends to use a different untagged VLAN it can do so by setting the port attribute SAI_PORT_ATTR_PORT_VLAN_ID as well as adding the port as an untagged member of the particular VLAN. For example if VLAN ID 2 is intended to be used as untagged VLAN for port 1 then SAI_PORT_ATTR_PORT_VLAN_ID can be set to 2 for port 1 and port 1 should be added as untagged member of VLAN member 2. It is to be noted that SAI_PORT_ATTR_PORT_VLAN_ID does not add the port as a member of the  VLAN. This has to be done through add_ports_to_vlan API. SAI_PORT_ATTR_PORT_VLAN_ID just sets the VLAN ID to be associated for incoming untagged packets on the port.
+2) SAI Adaptor host or any application above SAI can later modify these initial configurations. If the application intends to use a different untagged VLAN it can do so by setting the port attribute `SAI_PORT_ATTR_PORT_VLAN_ID` as well as adding the port as an untagged member of the particular VLAN. For example if VLAN ID 2 is intended to be used as untagged VLAN for port 1 then `SAI_PORT_ATTR_PORT_VLAN_ID` can be set to 2 for port 1 and port 1 should be added as untagged member of VLAN member 2. It is to be noted that `SAI_PORT_ATTR_PORT_VLAN_ID` does not add the port as a member of the VLAN. This has to be done through `add_ports_to_vlan` API. `SAI_PORT_ATTR_PORT_VLAN_ID` just sets the VLAN ID to be associated for incoming untagged packets on the port.
 
 ## STP functionality (saistp.h)
 
@@ -260,7 +260,7 @@ A default STP instance is created during SAI initialization phase. User can use 
 
 -	When a VLAN is created, it is associated to the default STP instance by default.
 -	User can associate the VLAN to a non-default STP instance, and the VLAN is removed from the default STP instance.
--	A STP instance is not allowed to be deleted if it has VLAN’s associated. The user has to associate the VLAN’s to a new STP instance or default STP instance before deleting the STP instance
+-	A STP instance is not allowed to be deleted if it has VLANs associated. The user has to associate the VLANs to a new STP instance or default STP instance before deleting the STP instance
 -	When a VLAN associated with a non-default STP instance is removed, it will also be removed from the STP instance
 
 ## Router functionality (sairouter.h)
@@ -272,11 +272,13 @@ Provides "router interface" object. The router interface is attached a specific 
 ## Route functionality (sairoute.h)
 Provides IP routing table (FIB) management functions. When an IP packet is received, the forwarding element first determines if the packet is destined a certain router interface on the switch. If yes, then the forwarding element lookups its destination IP address in the IP routing table, and forwards the packet to a next hop or a next hop group.
 
+User needs to set `SAI_ROUTE_ATTR_DIRECTLY_REACHABLE_ROUTE` to TRUE for those IP subnets that are directly attached to the router. The router will lookup the destination IP in the neighbor table to determine the next hop. The user needs to set `SAI_ROUTE_ATTR_PACKET_ACTION` which will be applied to the packet when neighbor table lookup misses. `SAI_ROUTE_ATTR_NEXT_HOP_ID` will be an invalid attribute in this case.
+
 ## Neighbor functionality (saineighbor.h)
 Provides the IP neighbor table management functions. IP neighbor defines a L3 neighbor that is within the same IP subnet as one of the router interface on the router. The IP neighbor is associated with a specific router interface, is assigned to a specific IP address, and has a mac address. IP neighbor also has a packet action attribute to decide whether to forward, drop or trap the IP packet which comes from a different router interface with destination IP matching the neighbor IP. The IP neighbor does not define the outgoing port as this can be resolved using the FDB table.
 
 ## Next Hop functionality (sainexthop.h)
-Provides next hop objects such as IP next hop and IP tunnel next hop. Current version only has IP next hop defined. IP next hop must also be an IP neighbor. It defines an IP neighbor that a packet can be routed to. The user needs to create an IP neighbor before it creates an IP next hop. The sai associates them using the router interface ID and the IP address. The IP next hop is identified by a next hop ID which can be used in sai_route as well as other matching rules to forward traffic to an IP prefix to it. Intuitively, IP neighbor represents a device without any packet forwarding capability so that only traffic destined to its IP are forwarded to it, whereas IP next hop represents a device that can also forward other traffic. IP next hop is associated with a specific router interface, and is identified with an IP address.
+Provides next hop objects such as IP next hop and IP tunnel next hop. Current version only has IP next hop defined. IP next hop must also be an IP neighbor. It defines an IP neighbor that a packet can be routed to. The user needs to create an IP neighbor before it creates an IP next hop. The sai associates them using the router interface ID and the IP address. The IP next hop is identified by a next hop ID which can be used in `sai_route` as well as other matching rules to forward traffic to an IP prefix to it. Intuitively, IP neighbor represents a device without any packet forwarding capability so that only traffic destined to its IP are forwarded to it, whereas IP next hop represents a device that can also forward other traffic. IP next hop is associated with a specific router interface, and is identified with an IP address.
 
 ## Next Hop Group functionality (sainexthopgroup.h)
 Provides next hop group functions. A router can have many next hops. In case of unicast, a packet can be spread among a group of next hops. Next hop group contains a group of next hops.
@@ -299,7 +301,7 @@ SAI assigns a unique identifier `trap_id` to each control traffic. There are thr
 - Pipeline exception trap id: trap id for an exception in the forwarding pipeline, e.g. packets with TTL=1, packets whose size exceeds the interface MTU. 
 - User define trap id: application has the ability to extend and define additional control traffic trap id in order to support a new or proprietary control protocol or to define an additional exception in the switch pipeline. This capability is achieved by providing the ability to define trap-id via the switch-router pipeline, e.g. ACL, router.
 
-Application can register to receive a trap_id. In addition, it can control the action to apply to the trap-id, options are: 
+Application can register to receive a `trap_id`. In addition, it can control the action to apply to the trap-id, options are:
 
 - Forward: forward the trap-id as a regular packet 
 - Trap: terminate pipeline and send packet to CPU
