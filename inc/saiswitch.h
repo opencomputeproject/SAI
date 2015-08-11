@@ -62,17 +62,45 @@ typedef enum _sai_switch_oper_status_t
 */
 typedef enum _sai_packet_action_t
 {
-    /* Drop Packet */
+    /* Basic Packet Actions */
+
+    /* These could be further classified based on the nature of action
+     * - Data Plane Packet Actions
+     * - CPU Path Packet Actions */
+
+    /* Data Plane Packet Actions
+     * Following two packet actions only affect the packet action on the data plane.
+     * Packet action on the CPU path remains unchanged. */
+
+    /* Drop Packet in data plane */
     SAI_PACKET_ACTION_DROP,
 
-    /* Forward Packet */
+    /* Forward Packet in data plane. */
     SAI_PACKET_ACTION_FORWARD,
 
-    /* Trap Packet to CPU */
+    /* CPU Path Packet Actions
+     * Following two packet actions only affect the packet action on the CPU path.
+     * Packet action on the data plane remains unchanged. */
+
+    /* Copy Packet to CPU. */
+    SAI_PACKET_ACTION_COPY,
+
+    /* Cancel copy the packet to CPU. */
+    SAI_PACKET_ACTION_COPY_CANCEL,
+
+    /* Combination of Packet Actions */
+
+    /* This is a combination of sai packet action COPY and DROP. */
     SAI_PACKET_ACTION_TRAP,
 
-    /* Log (Trap + Forward) Packet */
-    SAI_PACKET_ACTION_LOG
+    /* This is a combination of sai packet action COPY and FORWARD. */
+    SAI_PACKET_ACTION_LOG,
+
+    /* This is a combination of sai packet action COPY_CANCEL and DROP */
+    SAI_PACKET_ACTION_DENY,
+
+    /* This is a combination of sai packet action COPY_CANCEL and FORWARD */
+    SAI_PACKET_ACTION_TRANSIT
 
 } sai_packet_action_t;
 
