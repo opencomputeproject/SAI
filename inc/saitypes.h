@@ -381,6 +381,12 @@ typedef struct _sai_qos_map_params_t
     /* Dot1p value */
     sai_uint8_t dot1p;
 
+    /* PFC priority value */
+    sai_uint8_t prio;
+
+    /* Priority group value */
+    sai_uint8_t pg;
+
     /* Egress port queue UOID is not known at the time of map creation.
      * Using queue index for maps. */
     sai_queue_index_t    queue_index;
