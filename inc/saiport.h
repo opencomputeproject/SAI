@@ -222,9 +222,18 @@ typedef enum _sai_port_attr_t
     /* List of Scheduler groups for the port[sai_object_list_t] */
     SAI_PORT_ATTR_QOS_SCHEDULER_GROUP_LIST,
 
+    /* Query list of supported port speed in Mbps [sai_u32_list_t] */
+    SAI_PORT_ATTR_SUPPORTED_SPEED,
+
     /* READ-WRITE */
     /* Speed in Mbps [uint32_t] */
     SAI_PORT_ATTR_SPEED,
+
+    /* Full Duplex setting [bool] (default to TRUE) */
+    SAI_PORT_ATTR_FULL_DUPLEX_MODE,
+
+    /* Auto Negotiation configuration [bool] (default set to TRUE) */
+    SAI_PORT_ATTR_AUTO_NEG_MODE,
 
     /* Admin Mode [bool], (default to FALSE)*/
     SAI_PORT_ATTR_ADMIN_STATE,

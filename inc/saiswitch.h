@@ -160,6 +160,9 @@ typedef enum _sai_switch_attr_t
     /* Get the port list [sai_object_list_t] */
     SAI_SWITCH_ATTR_PORT_LIST,
 
+    /* Get the Max MTU in bytes, Supported by the switch [uint32_t] */
+    SAI_SWITCH_ATTR_PORT_MAX_MTU,
+
     /* Get the CPU Port [sai_object_id_t] */
     SAI_SWITCH_ATTR_CPU_PORT,
 
