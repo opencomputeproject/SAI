@@ -29,6 +29,11 @@
 #if !defined (__SAITYPES_H_)
 #define __SAITYPES_H_
 
+/** \defgroup SAITYPES SAI - Types definitions.
+ *
+ *  \{
+ */
+
 #if defined(_WIN32)
 
 //
@@ -115,7 +120,7 @@ typedef uint64_t sai_object_id_t;
 
 #define SAI_NULL_OBJECT_ID 0L
 
-/*
+/**
  * Defines a list of sai object ids used as sai attribute value.
  *
  * - In set attribute function call, the count member defines the number of
@@ -136,8 +141,8 @@ typedef struct _sai_object_list_t {
     sai_object_id_t *list;
 } sai_object_list_t;
 
-/*
- * sai object type
+/**
+ * @brief sai object type
  */
 typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_NULL             =  0,
@@ -186,30 +191,30 @@ typedef struct _sai_s32_range_t {
 } sai_s32_range_t;
 
 
-/*
- * Defines a vlan list datastructure
+/**
+ * @brief Defines a vlan list datastructure
  */
 typedef struct _sai_vlan_list_t {
 
-    /* Number of Vlans*/
+    /** Number of Vlans*/
     uint32_t vlan_count;
 
-    /* List of Vlans*/
+    /** List of Vlans*/
     sai_vlan_id_t *vlan_list;
 
 } sai_vlan_list_t;
 
 typedef struct _sai_vlan_port_t sai_vlan_port_t;
 
-/*
- * Defines a vlan port list datastructure
+/**
+ * @brief Defines a vlan port list datastructure
  */
 typedef struct _sai_vlan_port_list_t {
 
-    /* Number of ports in a VLAN */
+    /** Number of ports in a VLAN */
     uint32_t count;
 
-    /* List of ports in a VLAN */
+    /** List of ports in a VLAN */
     sai_vlan_port_t *list;
 
 } sai_vlan_port_list_t;
@@ -240,19 +245,19 @@ typedef struct _sai_ip_prefix_t {
     } mask;
 } sai_ip_prefix_t;
 
-/*
- * Defines a single ACL filter
+/**
+ * @brief Defines a single ACL filter
  *
  * Note : IPv4 and IPv6 Address expected in Network Byte Order
  */
 typedef struct _sai_acl_field_data_t
 {
-    /*
+    /**
      * match enable/disable
      */
     bool enable;
 
-    /*
+    /**
      * Field match mask
      */
     union {
@@ -267,7 +272,7 @@ typedef struct _sai_acl_field_data_t
         sai_ip6_t ip6;
     } mask;
 
-    /*
+    /**
      * Expected AND result using match mask above with packet field value where applicable.
      */
     union {
@@ -285,18 +290,18 @@ typedef struct _sai_acl_field_data_t
     } data;
 } sai_acl_field_data_t;
 
-/*
- * Defines a single ACL action
+/**
+ * @brief Defines a single ACL action
  *
  * Note : IPv4 and IPv6 Address expected in Network Byte Order
  */
 typedef struct _sai_acl_action_data_t
 {
-    /*
+    /**
      * action enable/disable
      */
     bool enable;
-    /*
+    /**
      * Action parameter
      */
     union {
@@ -313,36 +318,36 @@ typedef struct _sai_acl_action_data_t
     } parameter;
 } sai_acl_action_data_t;
 
-/*
- * Breakout Mode types based on number
+/**
+ * @brief Breakout Mode types based on number
  * of SerDes lanes used in a port
  */
 typedef enum _sai_port_breakout_mode_type_t
 {
-    /* 1 lane breakout Mode */
+    /** 1 lane breakout Mode */
     SAI_PORT_BREAKOUT_MODE_1_LANE = 1,
 
-    /* 2 lanes breakout Mode */
+    /** 2 lanes breakout Mode */
     SAI_PORT_BREAKOUT_MODE_2_LANE = 2,
 
-    /* 4 lanes breakout Mode */
+    /** 4 lanes breakout Mode */
     SAI_PORT_BREAKOUT_MODE_4_LANE = 4,
 
-    /* Breakout mode max count */
+    /** Breakout mode max count */
     SAI_PORT_BREAKOUT_MODE_MAX
 } sai_port_breakout_mode_type_t;
 
-/*
- * Defines breakout mode on a switch port(s)
+/**
+ * @brief Defines breakout mode on a switch port(s)
  */
 typedef struct _sai_port_breakout_t
 {
-    /*
+    /**
      * Breakout mode type
      */
     sai_port_breakout_mode_type_t breakout_mode;
 
-    /*
+    /**
      * List of ports to be breakout
      * Break out - typically 1 port; Break in - set of ports
      */
@@ -359,7 +364,7 @@ typedef enum _sai_packet_color_t
 
 } sai_packet_color_t;
 
-/*
+/**
  * Defines qos map types.
  * Examples:
  * dot1p/dscp --> TC
@@ -372,50 +377,50 @@ typedef enum _sai_packet_color_t
 
 typedef struct _sai_qos_map_params_t
 {
-    /* Traffic class */
+    /** Traffic class */
     sai_cos_t   tc;
 
-    /* DSCP value */
+    /** DSCP value */
     sai_uint8_t dscp;
 
-    /* Dot1p value */
+    /** Dot1p value */
     sai_uint8_t dot1p;
 
-    /* PFC priority value */
+    /** PFC priority value */
     sai_uint8_t prio;
 
-    /* Priority group value */
+    /** Priority group value */
     sai_uint8_t pg;
 
-    /* Egress port queue UOID is not known at the time of map creation.
+    /** Egress port queue UOID is not known at the time of map creation.
      * Using queue index for maps. */
     sai_queue_index_t    queue_index;
 
-    /* Color of the packet */
+    /** Color of the packet */
     sai_packet_color_t color;
 
 } sai_qos_map_params_t;
 
 typedef struct _sai_qos_map_t
 {
-    /* Input parameters to match */
+    /** Input parameters to match */
     sai_qos_map_params_t key;
 
-    /* Output map parameters */
+    /** Output map parameters */
     sai_qos_map_params_t value;
 
 } sai_qos_map_t;
 
 typedef struct _sai_qos_map_list_t
 {
-    /* Number of entries in the map  */
+    /** Number of entries in the map  */
     uint32_t count;
-    /* Map list */
+    /** Map list */
     sai_qos_map_t *list;
 } sai_qos_map_list_t;
 
-/*
- * Data Type to use enum's as attribute value is sai_int32_t s32
+/**
+ * @brief Data Type to use enum's as attribute value is sai_int32_t s32
  *
  */
 typedef union {
@@ -453,4 +458,7 @@ typedef struct _sai_attribute_t {
     sai_attribute_value_t value;
 } sai_attribute_t;
 
+/**
+ *\}
+ */
 #endif // __SAITYPES_H_

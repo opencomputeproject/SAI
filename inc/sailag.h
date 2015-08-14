@@ -25,12 +25,17 @@
 
 #include <saitypes.h>
 
-/*Lag attribute: List of attributes for LAG module*/
+/** \defgroup SAILAG SAI - LAG specific API definitions.
+ *
+ *  \{
+ */
+
+/** Lag attribute: List of attributes for LAG module*/
 typedef enum _sai_lag_attr_t {
 
     /** READ_WRITE */
 
-    /* SAI port list [sai_object_list_t] (CREATE_AND_SET) */
+    /** SAI port list [sai_object_list_t] (CREATE_AND_SET) */
     SAI_LAG_ATTR_PORT_LIST,
 } sai_lag_attr_t;
 
@@ -111,9 +116,9 @@ typedef sai_status_t (*sai_get_lag_attribute_fn)(
     _Inout_ sai_attribute_t *attr_list
     );
 
-/*
-* LAG methods table retrieved with sai_api_query()
-*/
+/**
+ * @brief LAG methods table retrieved with sai_api_query()
+ */
 typedef struct _sai_lag_api_t
 {
    sai_create_lag_fn               create_lag;
@@ -124,4 +129,7 @@ typedef struct _sai_lag_api_t
    sai_remove_ports_from_lag_fn    remove_ports_from_lag;
 }sai_lag_api_t;
 
+/**
+ * \}
+ */
 #endif

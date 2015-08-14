@@ -54,39 +54,44 @@
 #include <saischeduler.h>
 #include <saischedulergroup.h>
 
-/*
-*
-* Defined API sets have assigned ID's. If specific api method table changes
-* in any way (method signature, number of methods), a new ID needs to be 
-* created (e.g. VLAN2) and old API still may need to be supported for 
-* compatibility with older adapter hosts.
-*
-*/
+/** \defgroup SAI SAI - Entry point specific API definitions.
+ *
+ *  \{
+ */
+
+/**
+ *
+ * Defined API sets have assigned ID's. If specific api method table changes
+ * in any way (method signature, number of methods), a new ID needs to be 
+ * created (e.g. VLAN2) and old API still may need to be supported for 
+ * compatibility with older adapter hosts.
+ *
+ */
 typedef enum _sai_api_t
 {    
     SAI_API_UNSPECIFIED      =  0, 
-    SAI_API_SWITCH           =  1,  /* sai_switch_api_t */
-    SAI_API_PORT             =  2,  /* sai_port_api_t */
-    SAI_API_FDB              =  3,  /* sai_fdb_api_t */
-    SAI_API_VLAN             =  4,  /* sai_vlan_api_t */
-    SAI_API_VIRTUAL_ROUTER   =  5,  /* sai_virtual_router_api_t */
-    SAI_API_ROUTE            =  6,  /* sai_route_api_t */
-    SAI_API_NEXT_HOP         =  7,  /* sai_next_hop_api_t */
-    SAI_API_NEXT_HOP_GROUP   =  8,  /* sai_next_hop_group_api_t */
-    SAI_API_ROUTER_INTERFACE =  9,  /* sai_router_interface_api_t */
-    SAI_API_NEIGHBOR         = 10,  /* sai_neighbor_api_t */
-    SAI_API_ACL              = 11,  /* sai_acl_api_t */
-    SAI_API_HOST_INTERFACE   = 12,  /* sai_host_interface_api_t */
-    SAI_API_MIRROR           = 13,  /* sai_mirror_api_t */
-    SAI_API_SAMPLEPACKET     = 14,  /* sai_samplepacket_api_t */
-    SAI_API_STP              = 15,  /* sai_stp_api_t */
-    SAI_API_LAG              = 16,  /* sai_lag_api_t */
-    SAI_API_POLICER          = 17,  /* sai_policer_api_t */
-    SAI_API_WRED             = 18,  /* sai_wred_api_t*/
-    SAI_API_QOS_MAPS         = 19,  /* sai_qos_map_api_t*/
-    SAI_API_QUEUE            = 20,  /* sai_queue_api_t*/
-    SAI_API_SCHEDULER        = 21,  /* sai_scheduler_api_t*/
-    SAI_API_SCHEDULER_GROUP  = 22,  /* sai_scheduler_group_api_t*/
+    SAI_API_SWITCH           =  1,  /**< sai_switch_api_t */
+    SAI_API_PORT             =  2,  /**< sai_port_api_t */
+    SAI_API_FDB              =  3,  /**< sai_fdb_api_t */
+    SAI_API_VLAN             =  4,  /**< sai_vlan_api_t */
+    SAI_API_VIRTUAL_ROUTER   =  5,  /**< sai_virtual_router_api_t */
+    SAI_API_ROUTE            =  6,  /**< sai_route_api_t */
+    SAI_API_NEXT_HOP         =  7,  /**< sai_next_hop_api_t */
+    SAI_API_NEXT_HOP_GROUP   =  8,  /**< sai_next_hop_group_api_t */
+    SAI_API_ROUTER_INTERFACE =  9,  /**< sai_router_interface_api_t */
+    SAI_API_NEIGHBOR         = 10,  /**< sai_neighbor_api_t */
+    SAI_API_ACL              = 11,  /**< sai_acl_api_t */
+    SAI_API_HOST_INTERFACE   = 12,  /**< sai_host_interface_api_t */
+    SAI_API_MIRROR           = 13,  /**< sai_mirror_api_t */
+    SAI_API_SAMPLEPACKET     = 14,  /**< sai_samplepacket_api_t */
+    SAI_API_STP              = 15,  /**< sai_stp_api_t */
+    SAI_API_LAG              = 16,  /**< sai_lag_api_t */
+    SAI_API_POLICER          = 17,  /**< sai_policer_api_t */
+    SAI_API_WRED             = 18,  /**< sai_wred_api_t*/
+    SAI_API_QOS_MAPS         = 19,  /**< sai_qos_map_api_t*/
+    SAI_API_QUEUE            = 20,  /**< sai_queue_api_t*/
+    SAI_API_SCHEDULER        = 21,  /**< sai_scheduler_api_t*/
+    SAI_API_SCHEDULER_GROUP  = 22,  /**< sai_scheduler_group_api_t*/
 } sai_api_t;
 
 typedef enum _sai_log_level_t
@@ -99,20 +104,20 @@ typedef enum _sai_log_level_t
     SAI_LOG_CRITICAL         = 6
 } sai_log_level_t;
 
-/*
-*   Method table that contains function pointers for services exposed by adapter
-*   host for adapter.
-*/
+/**
+ *   Method table that contains function pointers for services exposed by adapter
+ *   host for adapter.
+ */
 
 typedef struct _service_method_table_t
 {
-    /* Get variable value given its name */
+    /** Get variable value given its name */
     const char* (*profile_get_value)(_In_ sai_switch_profile_id_t profile_id,
                                      _In_ const char* variable);
 
-    /* Enumerate all the K/V pairs in a profile. 
-       Pointer to NULL passed as variable restarts enumeration.
-       Function returns 0 if next value exists, -1 at the end of the list. */
+    /** Enumerate all the K/V pairs in a profile. 
+     *  Pointer to NULL passed as variable restarts enumeration.
+     *   Function returns 0 if next value exists, -1 at the end of the list. */
     int (*profile_get_next_value)(_In_ sai_switch_profile_id_t profile_id,
                                   _Out_ const char** variable,
                                   _Out_ const char** value);
@@ -121,18 +126,18 @@ typedef struct _service_method_table_t
 
 
 
-/*
-* Routine Description:
-*     Adapter module initialization call. This is NOT for SDK initialization.
-*
-* Arguments:
-*     [in] flags - reserved for future use, must be zero
-*     [in] services - methods table with services provided by adapter host
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *     @brief Adapter module initialization call. This is NOT for SDK initialization.
+ *
+ * Arguments:
+ *     @param[in] flags    - reserved for future use, must be zero
+ *     @param[in] services - methods table with services provided by adapter host
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 sai_status_t
 sai_api_initialize(
     _In_ uint64_t flags,
@@ -140,20 +145,20 @@ sai_api_initialize(
     );
 
 
-/*
-* Routine Description:
-*     Retrieve a pointer to the C-style method table for desired SAI 
-*     functionality as specified by the given sai_api_id.
-*
-* Arguments:
-*     [in] sai_api_id - SAI api ID
-*     [out] api_method_table - Caller allocated method table
-*           The table must remain valid until the sai_api_uninitialize() is called 
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *     Retrieve a pointer to the C-style method table for desired SAI 
+ *     functionality as specified by the given sai_api_id.
+ *
+ * Arguments:
+ *     @param[in]  sai_api_id       - SAI api ID
+ *     @param[out] api_method_table - Caller allocated method table
+ *           The table must remain valid until the sai_api_uninitialize() is called 
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 sai_status_t
 sai_api_query(
     _In_ sai_api_t sai_api_id,
@@ -161,56 +166,58 @@ sai_api_query(
     );
 
 
-/*
-* Routine Description:
-*   Uninitialization of the adapter module. SAI functionalities, retrieved via 
-*   sai_api_query() cannot be used after this call.
-*
-* Arguments:
-*   None
-*
-* Return Values:
-*   SAI_STATUS_SUCCESS on success
-*   Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   Uninitialization of the adapter module. SAI functionalities, retrieved via 
+ *   sai_api_query() cannot be used after this call.
+ *
+ * Arguments:
+ *   None
+ *
+ * Return Values:
+ *   @return SAI_STATUS_SUCCESS on success
+ *           Failure status code on error
+ */
 sai_status_t
 sai_api_uninitialize(
     void
     );
 
-/*
-* Routine Description:
-*     Set log level for sai api module. The default log level is SAI_LOG_WARN.
-*
-* Arguments:
-*     [in] sai_api_id - SAI api ID
-*     [in] log_level - log level
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *     @brief Set log level for sai api module. The default log level is SAI_LOG_WARN.
+ *
+ * Arguments:
+ *     @param[in] sai_api_id - SAI api ID
+ *     @param[in] log_level  - log level
+ *
+ * Return Values:
+ *     @return  SAI_STATUS_SUCCESS on success
+ *              Failure status code on error
+ */
 sai_status_t 
 sai_log_set(
     _In_ sai_api_t sai_api_id,
     _In_ sai_log_level_t log_level
     );
 
-/*
-* Routine Description:
-*     Query sai object type.
-*
-* Arguments:
-*     [in] sai_object_id_t
-*
-* Return Values:
-*    Return SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
-*    Otherwise, return a valid sai object type SAI_OBJECT_TYPE_XXX
-*/
+/**
+ * Routine Description:
+ *     @brief  Query sai object type.
+ *
+ * Arguments:
+ *     @param[in] sai_object_id
+ *
+ * Return Values:
+ *    @return  Return SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
+ *             Otherwise, return a valid sai object type SAI_OBJECT_TYPE_XXX
+ */
 sai_object_type_t 
 sai_object_type_query(
     _In_ sai_object_id_t sai_object_id
     );
 
-
+/**
+ * \}
+ */
 #endif  // __SAI_H_

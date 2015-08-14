@@ -130,7 +130,7 @@ typedef enum _sai_policer_attr_t
      * For storm control action should be used as RED_PACKET_ACTION */
     SAI_POLICER_ATTR_RED_PACKET_ACTION = 0x00000009,
 
-    /* Enable/disable counter [sai_s32_list_t of sai_policer_stat_counter_t].
+    /** Enable/disable counter [sai_s32_list_t of sai_policer_stat_counter_t].
      * Default[disabled], Modify List Needs full new set*/
     SAI_POLICER_ATTR_ENABLE_COUNTER_LIST = 0x0000000a,
 
@@ -201,7 +201,7 @@ typedef sai_status_t (*sai_create_policer_fn)(
  * @param[in] policer_id - Policer id
  *
  * @return  SAI_STATUS_SUCCESS on success
- *         Failure status code on error
+ *          Failure status code on error
  */
 typedef sai_status_t (*sai_remove_policer_fn)(
     _In_ sai_object_id_t policer_id);
@@ -215,7 +215,7 @@ typedef sai_status_t (*sai_remove_policer_fn)(
  * @param[in] attr - attribute
  *
  * @return SAI_STATUS_SUCCESS on success
- *        Failure status code on error
+ *         Failure status code on error
  */
 typedef sai_status_t (*sai_set_policer_attribute_fn)(
     _In_ sai_object_id_t policer_id,
@@ -232,7 +232,7 @@ typedef sai_status_t (*sai_set_policer_attribute_fn)(
  * @param[inout] attr_list - array of attributes
  *
  * @return SAI_STATUS_SUCCESS on success
- *        Failure status code on error
+ *         Failure status code on error
  */
 typedef sai_status_t (*sai_get_policer_attribute_fn)(
     _In_ sai_object_id_t policer_id,
@@ -250,7 +250,7 @@ typedef sai_status_t (*sai_get_policer_attribute_fn)(
  * @param[out] counters - array of resulting counter values.
  *
  * @return SAI_STATUS_SUCCESS on success
- *        Failure status code on error
+ *         Failure status code on error
  */
 typedef sai_status_t (*sai_get_policer_stats_fn)(
     _In_ sai_object_id_t policer_id,

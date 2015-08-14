@@ -166,7 +166,7 @@ typedef sai_status_t (*sai_get_qos_map_attribute_fn)(
      _Inout_ sai_attribute_t *attr_list
     );
 
-/*
+/**
 *  Qos Map methods table retrieved with sai_api_query()
 */
 typedef struct _sai_qos_map_api_t

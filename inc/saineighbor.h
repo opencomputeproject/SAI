@@ -33,27 +33,32 @@
 
 #include <saitypes.h>
 
-/*
-*  Attribute Id for sai neighbor object
-*/
+/** \defgroup SAINEIGHBOR SAI - Neighbor specific API definitions.
+ *
+ *  \{
+ */
+ 
+/**
+ *  @brief Attribute Id for sai neighbor object
+ */
 typedef enum _sai_neighbor_attr_t
 {
-    /* READ-WRITE */
+    /** READ-WRITE */
 
-    /* Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
+    /** Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS,
 
-    /* L3 forwarding action for this neighbor [sai_packet_action_t]
+    /** L3 forwarding action for this neighbor [sai_packet_action_t]
     *    (default to SAI_PACKET_ACTION_FORWARD) */
     SAI_NEIGHBOR_ATTR_PACKET_ACTION,
 
-    /* Neighbor not to be programmed as a host route entry in ASIC and to be only
+    /** Neighbor not to be programmed as a host route entry in ASIC and to be only
      * used to setup next-hop purpose. Typical use-case is to set this true
      * for neighbor with IPv6 link-local addresses.
      * [bool] (CREATE_AND_SET) (default to false) */
     SAI_NEIGHBOR_ATTR_NO_HOST_ROUTE,
 
-    /* User based Meta Data
+    /** User based Meta Data
      * [sai_uint32_t] (CREATE_AND_SET)
      * Value Range SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE */
     SAI_NEIGHBOR_ATTR_META_DATA,
@@ -63,8 +68,8 @@ typedef enum _sai_neighbor_attr_t
 
 } sai_neighbor_attr_t;
 
-/*
-*  neighbor entry
+/**
+*  @brief neighbor entry
 */
 typedef struct _sai_neighbor_entry_t
 {
@@ -74,96 +79,96 @@ typedef struct _sai_neighbor_entry_t
 } sai_neighbor_entry_t;
 
 
-/*
-* Routine Description:
-*    Create neighbor entry
-*
-* Arguments:
-*    [in] neighbor_entry - neighbor entry
-*    [in] attr_count - number of attributes
-*    [in] attrs - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*
-* Note: IP address expected in Network Byte Order.
-*/
+/**
+ * Routine Description:
+ *    @brief Create neighbor entry
+ *
+ * Arguments:
+ *    @param[in] neighbor_entry - neighbor entry
+ *    @param[in] attr_count - number of attributes
+ *    @param[in] attrs - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ *
+ * Note: IP address expected in Network Byte Order.
+ */
 typedef sai_status_t (*sai_create_neighbor_entry_fn)(
     _In_ const sai_neighbor_entry_t* neighbor_entry,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*    Remove neighbor entry
-*
-* Arguments:
-*    [in] neighbor_entry - neighbor entry
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*
-* Note: IP address expected in Network Byte Order.
-*/
+/**
+ * Routine Description:
+ *    @brief Remove neighbor entry
+ *
+ * Arguments:
+ *    @param[in] neighbor_entry - neighbor entry
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ *
+ * Note: IP address expected in Network Byte Order.
+ */
 typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
     _In_ const sai_neighbor_entry_t* neighbor_entry
     );
 
-/*
-* Routine Description:
-*    Set neighbor attribute value
-*
-* Arguments:
-*    [in] neighbor_entry - neighbor entry
-*    [in] attr - attribute
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Set neighbor attribute value
+ *
+ * Arguments:
+ *    @param[in] neighbor_entry - neighbor entry
+ *    @param[in] attr - attribute
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
     _In_ const sai_neighbor_entry_t* neighbor_entry,
     _In_ const sai_attribute_t *attr
     );
 
-/*
-* Routine Description:
-*    Get neighbor attribute value
-*
-* Arguments:
-*    [in] neighbor_entry - neighbor entry
-*    [in] attr_count - number of attributes
-*    [inout] attrs - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Get neighbor attribute value
+ *
+ * Arguments:
+ *    @param[in] neighbor_entry - neighbor entry
+ *    @param[in] attr_count - number of attributes
+ *    @param[inout] attrs - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_get_neighbor_attribute_fn)(
     _In_ const sai_neighbor_entry_t* neighbor_entry,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*    Remove all neighbor entries
-*
-* Arguments:
-*    None
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Remove all neighbor entries
+ *
+ * Arguments:
+ *    None
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(void);
 
-/*
-*  neighbor table methods, retrieved via sai_api_query()
-*/
+/**
+ *  @brief neighbor table methods, retrieved via sai_api_query()
+ */
 typedef struct _sai_neighbor_api_t
 {
     sai_create_neighbor_entry_fn        create_neighbor_entry;
@@ -174,5 +179,8 @@ typedef struct _sai_neighbor_api_t
 
 } sai_neighbor_api_t;
 
+/**
+ * \}
+ */
 #endif // __SAINEIGHBOR_H_
 

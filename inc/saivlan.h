@@ -32,11 +32,16 @@
 
 #include <saitypes.h>
 
+/** \defgroup SAIVLAN SAI - VLAN specific API definitions.
+ *
+ *  \{
+ */
+ 
 #define VLAN_COUNTER_SET_DEFAULT    0
 
-/*
-*  Attribute data for tagging_mode parameter
-*/
+/**
+ *  @brief Attribute data for tagging_mode parameter
+ */
 typedef enum _sai_vlan_tagging_mode_t
 {
     SAI_VLAN_PORT_UNTAGGED,
@@ -47,9 +52,9 @@ typedef enum _sai_vlan_tagging_mode_t
 
 } sai_vlan_tagging_mode_t;
 
-/*
-*   Port/vlan membership structure
-*/
+/**
+ *   @brief Port/vlan membership structure
+ */
 typedef struct _sai_vlan_port_t
 {
     sai_object_id_t port_id;
@@ -58,50 +63,50 @@ typedef struct _sai_vlan_port_t
 
 } sai_vlan_port_t;
 
-/*
-*  Attribute Id in sai_set_vlan_attribute() and
-*  sai_get_vlan_attribute() calls
-*/
+/**
+ *  @brief Attribute Id in sai_set_vlan_attribute() and
+ *  sai_get_vlan_attribute() calls
+ */
 typedef enum _sai_vlan_attr_t
 {
-    /* READ-ONLY */
+    /** READ-ONLY */
 
-    /* List of ports in a VLAN [sai_vlan_port_list_t]*/
+    /** List of ports in a VLAN [sai_vlan_port_list_t]*/
     SAI_VLAN_ATTR_PORT_LIST,
 
-    /* READ-WRITE */
+    /** READ-WRITE */
 
-    /* Maximum number of learned MAC addresses [uint32_t]
-     * zero means learning limit disable. (default to zero).
-     */
+    /** Maximum number of learned MAC addresses [uint32_t]
+      * zero means learning limit disable. (default to zero).
+      */
     SAI_VLAN_ATTR_MAX_LEARNED_ADDRESSES,
 
-    /* STP Instance that the VLAN is associated to [sai_object_id_t]
-     * (default to default stp instance id)*/
+    /** STP Instance that the VLAN is associated to [sai_object_id_t]
+      * (default to default stp instance id)*/
     SAI_VLAN_ATTR_STP_INSTANCE,
 
-    /* To disable learning on a VLAN. [bool] (CREATE_AND_SET)
-     * (default set to false)
-     * This should override port learn settings. If this is set to true on a vlan,
-     * then the source mac learning is disabled for this vlan on a member port even
-     * if learn is enable on the port(based on port learn attribute)
-     */
+    /** To disable learning on a VLAN. [bool] (CREATE_AND_SET)
+      * (default set to false)
+      * This should override port learn settings. If this is set to true on a vlan,
+      * then the source mac learning is disabled for this vlan on a member port even
+      * if learn is enable on the port(based on port learn attribute)
+      */
     SAI_VLAN_ATTR_LEARN_DISABLE,
 
-    /* User based Meta Data
-     * [sai_uint32_t] (CREATE_AND_SET)
-     * Value Range SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */
+    /** User based Meta Data
+      * [sai_uint32_t] (CREATE_AND_SET)
+      * Value Range SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */
     SAI_VLAN_ATTR_META_DATA,
 
-    /* Custom range base value */
+    /** Custom range base value */
     SAI_VLAN_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
 } sai_vlan_attr_t;
 
 
-/*
-*  VLAN counter IDs in sai_get_vlan_stat_counters() call
-*/
+/**
+ *  @brief VLAN counter IDs in sai_get_vlan_stat_counters() call
+ */
 typedef enum _sai_vlan_stat_counter_t
 {
     SAI_VLAN_STAT_IN_OCTETS,
@@ -119,139 +124,139 @@ typedef enum _sai_vlan_stat_counter_t
 
 } sai_vlan_stat_counter_t;
 
-/*
-* Routine Description:
-*    Create a VLAN
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Create a VLAN
+ *
+ * Arguments:
+ *    @param[in] vlan_id - VLAN id
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_create_vlan_fn)(
     _In_ sai_vlan_id_t vlan_id
     );
 
-/*
-* Routine Description:
-*    Remove a VLAN
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Remove a VLAN
+ *
+ * Arguments:
+ *    @param[in] vlan_id - VLAN id
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_remove_vlan_fn)(
     _In_ sai_vlan_id_t vlan_id
     );
 
-/*
-* Routine Description:
-*    Set VLAN attribute Value
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*    [in] attr - attribute
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Set VLAN attribute Value
+ *
+ * Arguments:
+ *    @param[in] vlan_id - VLAN id
+ *    @param[in] attr - attribute
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_set_vlan_attribute_fn)(
     _In_ sai_vlan_id_t vlan_id,
-    _In_ const sai_attribute_t *attr
+    _In_ const sai_attribute_t  *attr
     );
 
-/*
-* Routine Description:
-*    Get VLAN attribute Value
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*    [in] attr_count - number of attributes
-*    [inout] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Get VLAN attribute Value
+ *
+ * Arguments:
+ *    @param[in] vlan_id - VLAN id
+ *    @param[in] attr_count - number of attributes
+ *    @param[inout] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_get_vlan_attribute_fn)(
     _In_ sai_vlan_id_t vlan_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*    Remove VLAN configuration (remove all VLANs).
-*
-* Arguments:
-*    None
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Remove VLAN configuration (remove all VLANs).
+ *
+ * Arguments:
+ *    None
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_remove_all_vlans_fn)(
     void
     );
 
-/*
-* Routine Description:
-*    Add Port to VLAN
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*    [in] port_count - number of ports
-*    [in] port_list - pointer to membership structures
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Add Port to VLAN
+ *
+ * Arguments:
+ *    @param[in] vlan_id - VLAN id
+ *    @param[in] port_count - number of ports
+ *    @param[in] port_list - pointer to membership structures
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_add_ports_to_vlan_fn)(
     _In_ sai_vlan_id_t vlan_id,
     _In_ uint32_t port_count,
-    _In_ const sai_vlan_port_t* port_list
+    _In_ const sai_vlan_port_t *port_list
     );
 
-/*
-* Routine Description:
-*    Remove Port from VLAN
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*    [in] port_count - number of ports
-*    [in] port_list - pointer to membership structures
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Remove Port from VLAN
+ *
+ * Arguments:
+ *    @param[in] vlan_id - VLAN id
+ *    @param[in] port_count - number of ports
+ *    @param[in] port_list - pointer to membership structures
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_remove_ports_from_vlan_fn)(
     _In_ sai_vlan_id_t vlan_id,
     _In_ uint32_t port_count,
     _In_ const sai_vlan_port_t* port_list
     );
 
-/*
-* Routine Description:
-*   Get vlan statistics counters.
-*
-* Arguments:
-*    [in] vlan_id - VLAN id
-*    [in] counter_ids - specifies the array of counter ids
-*    [in] number_of_counters - number of counters in the array
-*    [out] counters - array of resulting counter values.
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Get vlan statistics counters.
+ *
+ * Arguments:
+ *    @param[in] vlan_id - VLAN id
+ *    @param[in] counter_ids - specifies the array of counter ids
+ *    @param[in] number_of_counters - number of counters in the array
+ *    @param[out] counters - array of resulting counter values.
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
     _In_ sai_vlan_id_t vlan_id,
     _In_ const sai_vlan_stat_counter_t *counter_ids,
@@ -259,9 +264,9 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
     _Out_ uint64_t* counters
     );
 
-/*
-* VLAN methods table retrieved with sai_api_query()
-*/
+/**
+ * @brief VLAN methods table retrieved with sai_api_query()
+ */
 typedef struct _sai_vlan_api_t
 {
     sai_create_vlan_fn              create_vlan;
@@ -275,4 +280,7 @@ typedef struct _sai_vlan_api_t
 
 } sai_vlan_api_t;
 
+/**
+ *\}
+ */
 #endif // __SAIVLAN_H_

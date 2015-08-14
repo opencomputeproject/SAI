@@ -23,7 +23,7 @@
 
 #include "saitypes.h"
 
-/** \defgroup SAISCHEDULER GROUP  SAI - Qos scheduler group specific API definitions.
+/** \defgroup SAISCHEDULERGROUP SAI - Qos scheduler group specific API definitions.
  *
  *  \{
  */
@@ -35,7 +35,7 @@ typedef enum _sai_scheduler_group_attr_t
 {
     /** READ-ONLY */
 
-    /* Maximum Number of childs on group [uint32_t] */
+    /** Maximum Number of childs on group [uint32_t] */
     SAI_SCHEDULER_GROUP_ATTR_MAX_SUPPORTED_CHILDS = 0x00000000,
 
     /** Number of queues/groups childs added to
@@ -55,7 +55,7 @@ typedef enum _sai_scheduler_group_attr_t
        MANDATORY_ON_CREATE,  CREATE_ONLY */
     SAI_SCHEDULER_GROUP_ATTR_LEVEL = 0x00000004,
 
-    /* Scheucler ID [sai_object_id_t]
+    /** Scheucler ID [sai_object_id_t]
      * SET_ONLY */
     SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID = 0x00000005,
 

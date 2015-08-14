@@ -35,7 +35,7 @@
  */
 typedef enum _sai_wred_attr_t
 {
-    /* [bool] enable/disable, Default FALSE*/
+    /** [bool] enable/disable, Default FALSE*/
     SAI_WRED_ATTR_GREEN_ENABLE = 0x00000000,
 
     /**
@@ -53,7 +53,7 @@ typedef enum _sai_wred_attr_t
     /** Percentage 0 ~ 100 [sai_uint32_t], Default 100%*/
     SAI_WRED_ATTR_GREEN_DROP_PROBABILITY = 0x00000003,
 
-    /* [bool] enable/disable , Default FALSE */
+    /** [bool] enable/disable , Default FALSE */
     SAI_WRED_ATTR_YELLOW_ENABLE = 0x00000004,
 
     /**
@@ -71,7 +71,7 @@ typedef enum _sai_wred_attr_t
     /** Percentage 0 ~ 100 [sai_uint32_t], Default 100% */
     SAI_WRED_ATTR_YELLOW_DROP_PROBABILITY = 0x00000007,
 
-     /* [bool] enable/disable , Default FALSE*/
+     /** [bool] enable/disable , Default FALSE*/
     SAI_WRED_ATTR_RED_ENABLE = 0x00000008,
 
     /**
@@ -92,11 +92,11 @@ typedef enum _sai_wred_attr_t
     /** 0 ~ 15 [sai_uint8_t], Default 0*/
     SAI_WRED_ATTR_WEIGHT = 0x0000000c,
 
-    /* [bool] enable/disable ECN marking, Default is FALSE */
+    /** [bool] enable/disable ECN marking, Default is FALSE */
     SAI_WRED_ATTR_ECN_MARK_ENABLE = 0x0000000d,
 
-    /* -- */
-    /* Custom range base value */
+    /** -- */
+    /** Custom range base value */
     SAI_WRED_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_wred_attr_t;
 

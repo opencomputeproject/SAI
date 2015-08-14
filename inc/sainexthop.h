@@ -32,123 +32,127 @@
 
 #include <saitypes.h>
 
-
-/*
-*  Next hop type
-*/
+/** \defgroup SAINEXTHOP SAI - Next hop specific API definitions.
+ *
+ *  \{
+ */
+ 
+/**
+ *  @brief Next hop type
+ */
 typedef enum _sai_next_hop_type_t
 {
     SAI_NEXT_HOP_IP,
 
-    /* 
+    /** 
     Tunneling to be added later
     */
 
 } sai_next_hop_type_t;
 
-/*
-*  Attribute id for next hop
+/**
+*  @brief Attribute id for next hop
 */
 typedef enum _sai_next_hop_attr_t
 {
-    /* READ-ONLY */
+    /** READ-ONLY */
 
-    /* READ-WRITE */
+    /** READ-WRITE */
 
-    /* Next hop entry type [sai_next_hop_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /** Next hop entry type [sai_next_hop_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_NEXT_HOP_ATTR_TYPE,
 
-    /* Next hop entry ipv4 address [sai_ip_address_t]
+    /** Next hop entry ipv4 address [sai_ip_address_t]
      * (MANDATORY_ON_CREATE when SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_IP)
      * (CREATE_ONLY) */
     SAI_NEXT_HOP_ATTR_IP,
 
-    /* Next hop entry router interface id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /** Next hop entry router interface id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 
     /* -- */
 
-    /* Custom range base value */
+    /** Custom range base value */
     SAI_NEXT_HOP_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
 } sai_next_hop_attr_t;
 
-/*
-* Routine Description:
-*    Create next hop
-*
-* Arguments:
-*    [out] next_hop_id - next hop id
-*    [in] attr_count - number of attributes
-*    [in] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*
-* Note: IP address expected in Network Byte Order.
-*/
+/**
+ * Routine Description:
+ *    @brief Create next hop
+ *
+ * Arguments:
+ *    @param[out] next_hop_id - next hop id
+ *    @param[in] attr_count - number of attributes
+ *    @param[in] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ *
+ * Note: IP address expected in Network Byte Order.
+ */
 typedef sai_status_t (*sai_create_next_hop_fn)(
     _Out_ sai_object_id_t* next_hop_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*    Remove next hop
-*
-* Arguments:
-*    [in] next_hop_id - next hop id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Remove next hop
+ *
+ * Arguments:
+ *    @param[in] next_hop_id - next hop id
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_remove_next_hop_fn)(
     _In_ sai_object_id_t next_hop_id
     );
 
-/*
-* Routine Description:
-*    Set Next Hop attribute
-*
-* Arguments:
-*    [in] next_hop_id - next hop id
-*    [in] attr - attribute
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Set Next Hop attribute
+ *
+ * Arguments:
+ *    @param[in] next_hop_id - next hop id
+ *    @param[in] attr - attribute
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
     _In_ sai_object_id_t next_hop_id,
     _In_ const sai_attribute_t *attr
     );
 
 
-/*
-* Routine Description:
-*    Get Next Hop attribute
-*
-* Arguments:
-*    [in] next_hop_id - next hop id
-*    [in] attr_count - number of attributes
-*    [inout] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Get Next Hop attribute
+ *
+ * Arguments:
+ *    @param[in] next_hop_id - next hop id
+ *    @param[in] attr_count - number of attributes
+ *    @param[inout] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_get_next_hop_attribute_fn)(
     _In_ sai_object_id_t next_hop_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 
-/*
-*  Next Hop methods table retrieved with sai_api_query()
-*/
+/**
+ *  @brief Next Hop methods table retrieved with sai_api_query()
+ */
 typedef struct _sai_next_hop_api_t
 {
     sai_create_next_hop_fn        create_next_hop;
@@ -158,4 +162,7 @@ typedef struct _sai_next_hop_api_t
 
 } sai_next_hop_api_t;
 
+/**
+ * \}
+ */
 #endif // __SAINEXTHOP_H_

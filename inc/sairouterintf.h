@@ -32,56 +32,61 @@
 
 #include <saitypes.h>
 
-/*
-*  Attribute data for SAI_ROUTER_INTERFACE_ATTR_TYPE
-*/
+/** \defgroup SAIROUTERINTF SAI - Router interface specific API definitions.
+ *
+ *  \{
+ */
+ 
+/**
+ *  @brief Attribute data for SAI_ROUTER_INTERFACE_ATTR_TYPE
+ */
 typedef enum _sai_router_interface_type_t 
 {
-    /* Port or Lag Router Interface Type */
+    /** Port or Lag Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_PORT,
 
-    /* VLAN Router Interface Type */
+    /** VLAN Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_VLAN
 
 } sai_router_interface_type_t;
 
 
-/*
-*  Routing interface attribute IDs 
-*/
+/**
+ *  @brief Routing interface attribute IDs 
+ */
 typedef enum _sai_router_interface_attr_t
 {
-    /* READ-ONLY */
+    /** READ-ONLY */
 
-    /* Virtual router id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /** Virtual router id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID,
 
-    /* Type [sai_router_interface_type_t]  (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /** Type [sai_router_interface_type_t]  (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ROUTER_INTERFACE_ATTR_TYPE,
 
-    /* Assosiated Port or Lag object id [sai_object_id_t] 
+    /** Assosiated Port or Lag object id [sai_object_id_t] 
     *  (MANDATORY_ON_CREATE when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT | CREATE_ONLY) 
     */
     SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
 
-    /* Assosiated Vlan [sai_vlan_id_t] 
+    /** Assosiated Vlan [sai_vlan_id_t] 
     *  (MANDATORY_ON_CREATE when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN | CREATE_ONLY)
     */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
 
-    /* READ-WRITE */
+    /** READ-WRITE */
 
-    /* MAC Address [sai_mac_t] (CREATE_AND_SET)
+    /** MAC Address [sai_mac_t] (CREATE_AND_SET)
         (default to SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create) */
     SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS,
 
-    /* Admin V4 state [bool] (CREATE_AND_SET) (default to TRUE) */
+    /** Admin V4 state [bool] (CREATE_AND_SET) (default to TRUE) */
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_V4_STATE,
 
-    /* Admin V6 state [bool] (CREATE_AND_SET) (default to TRUE) */
+    /** Admin V6 state [bool] (CREATE_AND_SET) (default to TRUE) */
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_V6_STATE,
 
-    /* MTU [uint32_t] (CREATE_AND_SET) (default to 1514 bytes) */
+    /** MTU [uint32_t] (CREATE_AND_SET) (default to 1514 bytes) */
     SAI_ROUTER_INTERFACE_ATTR_MTU,
 
     /* -- */
@@ -91,80 +96,80 @@ typedef enum _sai_router_interface_attr_t
 
 } sai_router_interface_attr_t;
 
-/*
-* Routine Description:
-*    Create router interface. 
-*
-* Arguments:
-*    [out] rif_id - router interface id
-*    [in] attr_count - number of attributes
-*    [in] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Create router interface. 
+ *
+ * Arguments:
+ *    @param[out] rif_id - router interface id
+ *    @param[in] attr_count - number of attributes
+ *    @param[in] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t(*sai_create_router_interface_fn)(
     _Out_ sai_object_id_t* rif_id,
     _In_ uint32_t attr_count,
     _In_ sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*    Remove router interface
-*
-* Arguments:
-*    [in] rif_id - router interface id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Remove router interface
+ *
+ * Arguments:
+ *    @param[in] rif_id - router interface id
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t(*sai_remove_router_interface_fn)(
     _In_ sai_object_id_t rif_id
     );
 
-/*
-* Routine Description:
-*    Set router interface attribute
-*
-* Arguments:
-*    [in] rif_id - router interface id
-*    [in] attr - attribute
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Set router interface attribute
+ *
+ * Arguments:
+ *    @param[in] rif_id - router interface id
+ *    @param[in] attr - attribute
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
     _In_ sai_object_id_t rif_id,
     _In_ const sai_attribute_t *attr
     );
 
 
-/*
-* Routine Description:
-*    Get router interface attribute
-*
-* Arguments:
-*    [in] rif_id - router interface id
-*    [in] attr_count - number of attributes
-*    [inout] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *    @brief Get router interface attribute
+ *
+ * Arguments:
+ *    @param[in] rif_id - router interface id
+ *    @param[in] attr_count - number of attributes
+ *    @param[inout] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_get_router_interface_attribute_fn)(
     _In_ sai_object_id_t rif_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 
-/*
-*  Routing interface methods table retrieved with sai_api_query()
-*/
+/**
+ *  @brief Routing interface methods table retrieved with sai_api_query()
+ */
 typedef struct _sai_router_interface_api_t
 {
     sai_create_router_interface_fn          create_router_interface;
@@ -174,5 +179,8 @@ typedef struct _sai_router_interface_api_t
 
 } sai_router_interface_api_t;
 
+/**
+ * \}
+ */
 #endif // __SAIROUTERINTF_H_
 

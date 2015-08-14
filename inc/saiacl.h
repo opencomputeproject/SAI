@@ -32,90 +32,95 @@
 
 #include <saitypes.h>
 
+/** \defgroup SAIACL SAI - ACL specific API definitions.
+ *
+ *  \{
+ */
+ 
 typedef enum _sai_acl_stage_t
 {
-    /* Ingress Stage */
+    /** Ingress Stage */
     SAI_ACL_STAGE_INGRESS,
 
-    /* Egress Stage */
+    /** Egress Stage */
     SAI_ACL_STAGE_EGRESS,
 
 } sai_acl_stage_t;
 
 typedef enum _sai_acl_ip_type_t
 {
-    /* Don't care */
+    /** Don't care */
     SAI_ACL_IP_TYPE_ANY,
 
-    /* IPv4 and IPv6 packets */
+    /** IPv4 and IPv6 packets */
     SAI_ACL_IP_TYPE_IP,
 
-    /* Non-Ip packet */
+    /** Non-Ip packet */
     SAI_ACL_IP_TYPE_NON_IP,
 
-    /* Any IPv4 packet */
+    /** Any IPv4 packet */
     SAI_ACL_IP_TYPE_IPv4ANY,
 
-    /* Anything but IPv4 packets */
+    /** Anything but IPv4 packets */
     SAI_ACL_IP_TYPE_NON_IPv4,
 
-    /* IPv6 packet */
+    /** IPv6 packet */
     SAI_ACL_IP_TYPE_IPv6ANY,
 
-    /* Anything but IPv6 packets */
+    /** Anything but IPv6 packets */
     SAI_ACL_IP_TYPE_NON_IPv6,
 
-    /* ARP/RARP */
+    /** ARP/RARP */
     SAI_ACL_IP_TYPE_ARP,
 
-    /* ARP Request */
+    /** ARP Request */
     SAI_ACL_IP_TYPE_ARP_REQUEST,
 
-    /* ARP Reply */
+    /** ARP Reply */
     SAI_ACL_IP_TYPE_ARP_REPLY
 
 } sai_acl_ip_type_t;
 
 typedef enum _sai_acl_ip_frag_t
 {
-    /* Any Fragment of Fragmented Packet */
+    /** Any Fragment of Fragmented Packet */
     SAI_ACL_IP_FRAG_ANY,
 
-    /* Non-Fragmented Packet */
+    /** Non-Fragmented Packet */
     SAI_ACL_IP_FRAG_NON_FRAG,
 
-    /* Non-Fragmented or First Fragment */
+    /** Non-Fragmented or First Fragment */
     SAI_ACL_IP_FRAG_NON_FRAG_OR_HEAD,
 
-    /* First Fragment of Fragmented Packet */
+    /** First Fragment of Fragmented Packet */
     SAI_ACL_IP_FRAG_HEAD,
 
-    /* Not the First Fragment */
+    /** Not the First Fragment */
     SAI_ACL_IP_FRAG_NON_HEAD
 
 } sai_acl_ip_frag_t;
 
-/*
-*  Attribute Id for sai_acl_table
-*/
+/**
+ *  @brief Attribute Id for sai_acl_table
+ */
 typedef enum _sai_acl_table_attr_t
 {
-    /* READ-ONLY */
+    /** READ-ONLY */
 
-    /* READ-WRITE */
+    /** READ-WRITE */
 
-    /* ACL stage [sai_acl_stage_t]
+    /** ACL stage [sai_acl_stage_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ACL_TABLE_ATTR_STAGE,
 
-    /* Priority [sai_uint32_t]
+    /** Priority [sai_uint32_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY)
      * Value must be in the range defined in
      * [SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
      *  SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY] */
     SAI_ACL_TABLE_ATTR_PRIORITY,
 
-    /* Table size [sai_uint32_t], CREATE_ONLY
+    /** Table size [sai_uint32_t], CREATE_ONLY
      * (default = 0) - Grow dynamically till MAX ACL TCAM Size
      * By default table can grow upto maximum ACL TCAM space.
      * Supported only during Table Create for now until NPU
@@ -136,7 +141,7 @@ typedef enum _sai_acl_table_attr_t
      * allocated and able to do ACL CAM Carving accurately */
     SAI_ACL_TABLE_ATTR_SIZE,
 
-    /* Table Group Id [sai_object_id_t], CREATE_ONLY
+    /** Table Group Id [sai_object_id_t], CREATE_ONLY
      *
      * By default, if the attribute is not present during table creation, SAI
      * will internally allocate a unique group id which can be used to group
@@ -172,132 +177,132 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_GROUP_ID,
 
-    /* Match fields [bool]
+    /** Match fields [bool]
      * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Table Creation)
      * (CREATE_ONLY, match fields cannot be changed after the table is created) */
 
-    /* Start of Table Match Field */
+    /** Start of Table Match Field */
     SAI_ACL_TABLE_ATTR_FIELD_START = 0x00001000,
 
-    /* Src IPv6 Address */
+    /** Src IPv6 Address */
     SAI_ACL_TABLE_ATTR_FIELD_SRC_IPv6 = SAI_ACL_TABLE_ATTR_FIELD_START,
 
-    /* Dst IPv6 Address */
+    /** Dst IPv6 Address */
     SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6,
 
-    /* Src MAC Address */
+    /** Src MAC Address */
     SAI_ACL_TABLE_ATTR_FIELD_SRC_MAC,
 
-    /* Dst MAC Address */
+    /** Dst MAC Address */
     SAI_ACL_TABLE_ATTR_FIELD_DST_MAC,
 
-    /* Src IPv4 Address */
+    /** Src IPv4 Address */
     SAI_ACL_TABLE_ATTR_FIELD_SRC_IP,
 
-    /* Dst IPv4 Address */
+    /** Dst IPv4 Address */
     SAI_ACL_TABLE_ATTR_FIELD_DST_IP,
 
-    /* In-Ports */
+    /** In-Ports */
     SAI_ACL_TABLE_ATTR_FIELD_IN_PORTS,
 
-    /* Out-Ports */
+    /** Out-Ports */
     SAI_ACL_TABLE_ATTR_FIELD_OUT_PORTS,
 
-    /* In-Port */
+    /** In-Port */
     SAI_ACL_TABLE_ATTR_FIELD_IN_PORT,
 
-    /* Out-Port */
+    /** Out-Port */
     SAI_ACL_TABLE_ATTR_FIELD_OUT_PORT,
 
-    /* Outer Vlan-Id */
+    /** Outer Vlan-Id */
     SAI_ACL_TABLE_ATTR_FIELD_OUTER_VLAN_ID,
 
-    /* Outer Vlan-Priority */
+    /** Outer Vlan-Priority */
     SAI_ACL_TABLE_ATTR_FIELD_OUTER_VLAN_PRI,
 
-    /* Outer Vlan-CFI */
+    /** Outer Vlan-CFI */
     SAI_ACL_TABLE_ATTR_FIELD_OUTER_VLAN_CFI,
 
-    /* Inner Vlan-Id */
+    /** Inner Vlan-Id */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_VLAN_ID,
 
-    /* Inner Vlan-Priority */
+    /** Inner Vlan-Priority */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_VLAN_PRI,
 
-    /* Inner Vlan-CFI */
+    /** Inner Vlan-CFI */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_VLAN_CFI,
 
-    /* L4 Src Port */
+    /** L4 Src Port */
     SAI_ACL_TABLE_ATTR_FIELD_L4_SRC_PORT,
 
-    /* L4 Dst Port */
+    /** L4 Dst Port */
     SAI_ACL_TABLE_ATTR_FIELD_L4_DST_PORT,
 
-    /* EtherType */
+    /** EtherType */
     SAI_ACL_TABLE_ATTR_FIELD_ETHER_TYPE,
 
-    /* IP Protocol */
+    /** IP Protocol */
     SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL,
 
-    /* Ip Dscp */
+    /** Ip Dscp */
     SAI_ACL_TABLE_ATTR_FIELD_DSCP,
 
-    /* Ip Ecn */
+    /** Ip Ecn */
     SAI_ACL_TABLE_ATTR_FIELD_ECN,
 
-    /* Ip Ttl */
+    /** Ip Ttl */
     SAI_ACL_TABLE_ATTR_FIELD_TTL,
 
-    /* Ip Tos */
+    /** Ip Tos */
     SAI_ACL_TABLE_ATTR_FIELD_TOS,
 
-    /* Ip Flags */
+    /** Ip Flags */
     SAI_ACL_TABLE_ATTR_FIELD_IP_FLAGS,
 
-    /* Tcp Flags */
+    /** Tcp Flags */
     SAI_ACL_TABLE_ATTR_FIELD_TCP_FLAGS,
 
-    /* Ip Type */
+    /** Ip Type */
     SAI_ACL_TABLE_ATTR_FIELD_IP_TYPE,
 
-    /* Ip Frag */
+    /** Ip Frag */
     SAI_ACL_TABLE_ATTR_FIELD_IP_FRAG,
 
-    /* IPv6 Flow Label */
+    /** IPv6 Flow Label */
     SAI_ACL_TABLE_ATTR_FIELD_IPv6_FLOW_LABEL,
 
-    /* Class-of-Service (Traffic Class) */
+    /** Class-of-Service (Traffic Class) */
     SAI_ACL_TABLE_ATTR_FIELD_TC,
 
-    /* User Based Meta Data [bool] */
+    /** User Based Meta Data [bool] */
 
-    /* FDB DST user meta data */
+    /** FDB DST user meta data */
     SAI_ACL_TABLE_ATTR_FIELD_FDB_DST_USER_META,
 
-    /* ROUTE DST User Meta data */
+    /** ROUTE DST User Meta data */
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_DST_USER_META,
 
-    /* Neighbor DST User Meta Data */
+    /** Neighbor DST User Meta Data */
     SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_USER_META,
 
-    /* Port User Meta Data */
+    /** Port User Meta Data */
     SAI_ACL_TABLE_ATTR_FIELD_PORT_USER_META,
 
-    /* Vlan User Meta Data */
+    /** Vlan User Meta Data */
     SAI_ACL_TABLE_ATTR_FIELD_VLAN_USER_META,
 
-    /* Meta Data carried from previous ACL Stage */
+    /** Meta Data carried from previous ACL Stage */
     SAI_ACL_TABLE_ATTR_FIELD_ACL_USER_META,
 
-    /* NPU Based Meta Data [bool] */
+    /** NPU Based Meta Data [bool] */
 
-    /* DST MAC address match in FDB */
+    /** DST MAC address match in FDB */
     SAI_ACL_TABLE_ATTR_FIELD_FDB_DST_NPU_META_HIT,
 
-    /* DST IP address match in neighbor table */
+    /** DST IP address match in neighbor table */
     SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
 
-    /* End of Table Match Field */
+    /** End of Table Match Field */
     SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
 
     /* -- */
@@ -307,289 +312,289 @@ typedef enum _sai_acl_table_attr_t
 
 } sai_acl_table_attr_t;
 
-/*
-*  Attribute Id for sai_acl_entry
-*/
+/**
+ *  @brief Attribute Id for sai_acl_entry
+ */
 typedef enum _sai_acl_entry_attr_t
 {
-    /* READ-ONLY */
+    /** READ-ONLY */
 
-    /* SAI acl table object id [sai_object_id_t]
+    /** SAI acl table object id [sai_object_id_t]
      * (MANDATORY_ON_CREATE) */
     SAI_ACL_ENTRY_ATTR_TABLE_ID,
 
-    /* READ-WRITE */
+    /** READ-WRITE */
 
-    /* Priority [sai_uint32_t]
+    /** Priority [sai_uint32_t]
      * Value must be in the range defined in
      * [SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY,
      *  SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY]
      * (default = SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY) */
     SAI_ACL_ENTRY_ATTR_PRIORITY,
 
-    /* Enabled / Disabled [bool]
+    /** Enabled / Disabled [bool]
      * (default = enabled) */
     SAI_ACL_ENTRY_ATTR_ADMIN_STATE,
 
-    /* Match fields [sai_acl_field_data_t]
+    /** Match fields [sai_acl_field_data_t]
      * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Rule Creation)
      * - Unless noted specificially, both data and mask are required.
      * - When bitfield is used the comment, only those least significent bits
      *   are valid for matching.
      */
 
-    /* Start of Rule Match Fields */
+    /** Start of Rule Match Fields */
     SAI_ACL_ENTRY_ATTR_FIELD_START = 0x00001000,
 
-    /* Src IPv6 Address [sai_ip6_t] */
+    /** Src IPv6 Address [sai_ip6_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPv6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
 
-    /* Dst IPv6 Address [sai_ip6_t] */
+    /** Dst IPv6 Address [sai_ip6_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6,
 
-    /* Src MAC Address [sai_mac_t] */
+    /** Src MAC Address [sai_mac_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC,
 
-    /* Dst MAC Address [sai_mac_t] */
+    /** Dst MAC Address [sai_mac_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_MAC,
 
-    /* Src IPv4 Address [sai_ip4_t] */
+    /** Src IPv4 Address [sai_ip4_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_IP,
 
-    /* Dst IPv4 Address [sai_ip4_t] */
+    /** Dst IPv4 Address [sai_ip4_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IP,
 
-    /* In-Ports [sai_object_list_t] (mask is not needed) */
+    /** In-Ports [sai_object_list_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS,
 
-    /* Out-Ports [sai_object_list_t] (mask is not needed) */
+    /** Out-Ports [sai_object_list_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS,
 
-    /* In-Port [sai_object_id_t] (mask is not needed) */
+    /** In-Port [sai_object_id_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
 
-    /* Out-Port [sai_object_id_t] (mask is not needed) */
+    /** Out-Port [sai_object_id_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
-    /* Outer Vlan-Id [sai_uint16_t : 12] */
+    /** Outer Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID,
 
-    /* Outer Vlan-Priority [sai_uint8_t : 3] */
+    /** Outer Vlan-Priority [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_PRI,
 
-    /* Outer Vlan-CFI [sai_uint8_t : 1] */
+    /** Outer Vlan-CFI [sai_uint8_t : 1] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_CFI,
 
-    /* Inner Vlan-Id [sai_uint16_t: 12] */
+    /** Inner Vlan-Id [sai_uint16_t: 12] */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_ID,
 
-    /* Inner Vlan-Priority [sai_uint8_t : 3] */
+    /** Inner Vlan-Priority [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_PRI,
 
-    /* Inner Vlan-CFI [sai_uint8_t : 1] */
+    /** Inner Vlan-CFI [sai_uint8_t : 1] */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_CFI,
 
-    /* L4 Src Port [sai_uint16_t] */
+    /** L4 Src Port [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT,
 
-    /* L4 Dst Port [sai_uint16_t] */
+    /** L4 Dst Port [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
 
-    /* EtherType [sai_uint16_t] */
+    /** EtherType [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_ETHER_TYPE,
 
-    /* IP Protocol [sai_uint8_t] */
+    /** IP Protocol [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL,
 
-    /* Ip Dscp [sai_uint8_t : 6] */
+    /** Ip Dscp [sai_uint8_t : 6] */
     SAI_ACL_ENTRY_ATTR_FIELD_DSCP,
 
-    /* Ip Ecn [sai_uint8_t : 2] */
+    /** Ip Ecn [sai_uint8_t : 2] */
     SAI_ACL_ENTRY_ATTR_FIELD_ECN,
 
-    /* Ip Ttl [sai_uint8_t] */
+    /** Ip Ttl [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_TTL,
 
-    /* Ip Tos [sai_uint8_t] */
+    /** Ip Tos [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_TOS,
 
-    /* Ip Flags [sai_uint8_t : 3] */
+    /** Ip Flags [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_FLAGS,
 
-    /* Tcp Flags [sai_uint8_t : 6] */
+    /** Tcp Flags [sai_uint8_t : 6] */
     SAI_ACL_ENTRY_ATTR_FIELD_TCP_FLAGS,
 
-    /* Ip Type [sai_acl_ip_type_t] (field mask is not needed) */
+    /** Ip Type [sai_acl_ip_type_t] (field mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_TYPE,
 
-    /* Ip Frag [sai_acl_ip_frag_t] (field mask is not needed) */
+    /** Ip Frag [sai_acl_ip_frag_t] (field mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_FRAG,
 
-    /* IPv6 Flow Label [sai_uint32_t : 20] */
+    /** IPv6 Flow Label [sai_uint32_t : 20] */
     SAI_ACL_ENTRY_ATTR_FIELD_IPv6_FLOW_LABEL,
 
-    /* Class-of-Service (Traffic Class) [sai_cos_t] */
+    /** Class-of-Service (Traffic Class) [sai_cos_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_TC,
 
-    /* User Based Meta Data [sai_uint32_t] */
+    /** User Based Meta Data [sai_uint32_t] */
 
-    /* DST MAC address match user meta data in FDB
+    /** DST MAC address match user meta data in FDB
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE */
     SAI_ACL_ENTRY_ATTR_FIELD_FDB_DST_USER_META,
 
-    /* DST IP address match user meta data in Route Table
+    /** DST IP address match user meta data in Route Table
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_ROUTE_DST_USER_META_DATA_RANGE */
     SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_DST_USER_META,
 
-    /* DST IP address match user meta data in Neighbor Table
+    /** DST IP address match user meta data in Neighbor Table
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_USER_META,
 
-    /* Port User Meta Data
+    /** Port User Meta Data
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE */
     SAI_ACL_ENTRY_ATTR_FIELD_PORT_USER_META,
 
-    /* Vlan User Meta Data
+    /** Vlan User Meta Data
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */
     SAI_ACL_ENTRY_ATTR_FIELD_VLAN_USER_META,
 
-    /* Meta Data carried from previous ACL Stage.
+    /** Meta Data carried from previous ACL Stage.
      * When an ACL entry set the meta data, the ACL meta data
      * form previous stages are overriden.
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE */
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_USER_META,
 
-    /* NPU Based Meta Data [bool] */
+    /** NPU Based Meta Data [bool] */
 
-    /* DST MAC address match in FDB */
+    /** DST MAC address match in FDB */
     SAI_ACL_ENTRY_ATTR_FIELD_FDB_NPU_META_DST_HIT,
 
-    /* DST IP address match in neighbor Table */
+    /** DST IP address match in neighbor Table */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
 
-    /* End of Rule Match Fields */
+    /** End of Rule Match Fields */
     SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
 
-    /* Actions [sai_acl_action_data_t]
+    /** Actions [sai_acl_action_data_t]
      * - To enable an action, parameter is needed unless noted specifically.
      * - To disable an action, parameter is not needed. */
 
-    /* Start of Rule Actions */
+    /** Start of Rule Actions */
     SAI_ACL_ENTRY_ATTR_ACTION_START = 0x00002000,
 
-    /* Redirect Packet to a destination which can be a port,
+    /** Redirect Packet to a destination which can be a port,
      * lag, nexthop, nexthopgroup. [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
 
-    /* Drop Packet [sai_packet_action_t] */
+    /** Drop Packet [sai_packet_action_t] */
     SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
 
-    /* Flood Packet on Vlan domain (parameter is not needed) */
+    /** Flood Packet on Vlan domain (parameter is not needed) */
     SAI_ACL_ENTRY_ATTR_ACTION_FLOOD,
 
-    /* Attach/detach counter id to the entry [sai_object_id_t] */
+    /** Attach/detach counter id to the entry [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_COUNTER,
 
-    /* Ingress Mirror (mirror session id) [sai_object_id_t] */
+    /** Ingress Mirror (mirror session id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS,
 
-    /* Egress Mirror (mirror session id) [sai_object_id_t] */
+    /** Egress Mirror (mirror session id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS,
 
-    /* Assosiate with policer (policer id) [sai_object_id_t] */
+    /** Assosiate with policer (policer id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER,
 
-    /* Decrement TTL (enable/disable) (parameter is not needed) */
+    /** Decrement TTL (enable/disable) (parameter is not needed) */
     SAI_ACL_ENTRY_ATTR_ACTION_DECREMENT_TTL,
 
-    /* Set Class-of-Service (Traffic Class) [sai_cos_t] */
+    /** Set Class-of-Service (Traffic Class) [sai_cos_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_TC,
 
-    /* Set packet color [sai_packet_color_t] */
+    /** Set packet color [sai_packet_color_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_COLOR,
 
-    /* Set Packet Inner Vlan-Id [sai_uint16_t : 12] */
+    /** Set Packet Inner Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_VLAN_ID,
 
-    /* Set Packet Inner Vlan-Priority [sai_uint8_t : 3] */
+    /** Set Packet Inner Vlan-Priority [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_VLAN_PRI,
 
-    /* Set Packet Outer Vlan-Id [sai_uint16_t : 12] */
+    /** Set Packet Outer Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_ID,
 
-    /* Set Packet Outer Vlan-Priority [sai_uint8_t : 3] */
+    /** Set Packet Outer Vlan-Priority [sai_uint8_t : 3] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_PRI,
 
-    /* Set Packet Src MAC Address [sai_mac_t] */
+    /** Set Packet Src MAC Address [sai_mac_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_MAC,
 
-    /* Set Packet Dst MAC Address [sai_mac_t] */
+    /** Set Packet Dst MAC Address [sai_mac_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_MAC,
 
-    /* Set Packet Src IPv4 Address [sai_ip4_t] */
+    /** Set Packet Src IPv4 Address [sai_ip4_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IP,
 
-    /* Set Packet Src IPv4 Address [sai_ip4_t] */
+    /** Set Packet Src IPv4 Address [sai_ip4_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IP,
 
-    /* Set Packet Src IPv6 Address [sai_ip6_t] */
+    /** Set Packet Src IPv6 Address [sai_ip6_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IPv6,
 
-    /* Set Packet Src IPv6 Address [sai_ip6_t] */
+    /** Set Packet Src IPv6 Address [sai_ip6_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IPv6,
 
-    /* Set Packet DSCP [sai_uint8_t : 6] */
+    /** Set Packet DSCP [sai_uint8_t : 6] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DSCP,
 
-    /* Set Packet ECN [sai_uint8_t : 2] */
+    /** Set Packet ECN [sai_uint8_t : 2] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ECN,
 
-    /* Set Packet L4 Src Port [sai_uint16_t] */
+    /** Set Packet L4 Src Port [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_SRC_PORT,
 
-    /* Set Packet L4 Src Port [sai_uint16_t] */
+    /** Set Packet L4 Src Port [sai_uint16_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT,
 
-    /* Set ingress packet sampling (samplepacket session id) [sai_object_id_t] */
+    /** Set ingress packet sampling (samplepacket session id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
 
-    /* Set egress packet sampling (samplepacket session id) [sai_object_id_t] */
+    /** Set egress packet sampling (samplepacket session id) [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
 
-    /* Set CPU Queue for CPU bound traffic [sai_object_id_t]
+    /** Set CPU Queue for CPU bound traffic [sai_object_id_t]
      * Action can be used whenever packet is destined to CPU such as
      * when packet action specifies the packet needs to be punted
      * to CPU (Trap/Log) or the destination port points to CPU. */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
 
-    /* Set Meta Data to carry forward to next ACL Stage
+    /** Set Meta Data to carry forward to next ACL Stage
      * [sai_uint32_t]
      * Value Range SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ACL_META_DATA,
 
-    /* End of Rule Actions */
+    /** End of Rule Actions */
     SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ACL_META_DATA
 
 } sai_acl_entry_attr_t;
 
-/*
-*  Attribute Id for sai_acl_counter
-*/
+/**
+ *  @brief Attribute Id for sai_acl_counter
+ */
 typedef enum _sai_acl_counter_attr_t
 {
-    /* READ-ONLY */
+    /** READ-ONLY */
 
-    /* SAI acl table object id [sai_object_id_t]
+    /** SAI acl table object id [sai_object_id_t]
      * (MANDATORY_ON_CREATE) */
     SAI_ACL_COUNTER_ATTR_TABLE_ID,
 
-    /*
+    /**
      * By default Byte Counter would be created and following
      * use of the below attributes would result in an error.
      *
@@ -597,232 +602,233 @@ typedef enum _sai_acl_counter_attr_t
      * - Only Byte count used which is set to disable
      */
 
-    /* enable/disable packet count [bool] */
+    /** enable/disable packet count [bool] */
     SAI_ACL_COUNTER_ATTR_ENABLE_PACKET_COUNT,
 
-    /* enable/disable byte count [bool] */
+    /** enable/disable byte count [bool] */
     SAI_ACL_COUNTER_ATTR_ENABLE_BYTE_COUNT,
 
-    /* get/set packet count [uint64_t] */
+    /** get/set packet count [uint64_t] */
     SAI_ACL_COUNTER_ATTR_PACKETS,
 
-    /* get/set byte count [uint64_t] */
+    /** get/set byte count [uint64_t] */
     SAI_ACL_COUNTER_ATTR_BYTES
 
 } sai_acl_counter_attr_t;
 
-/*
-* Routine Description:
-*   Create an ACL table
-*
-* Arguments:
- *  [out] acl_table_id - the the acl table id
- *  [in] attr_count - number of attributes
- *  [in] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_create_acl_table_fn)(
+/**
+ *   Routine Description:
+ *    @brief Create an ACL table
+ * 
+ *  Arguments:
+ *  @param[out] acl_table_id - the the acl table id
+ *  @param[in] attr_count - number of attributes
+ *  @param[in] attr_list - array of attributes
+ * 
+ *  Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_create_acl_table_fn)(
     _Out_ sai_object_id_t* acl_table_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
-/*
-* Routine Description:
-*   Delete an ACL table
-*
-* Arguments:
-*   [in] acl_table_id - the acl table id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
-typedef sai_status_t (*sai_delete_acl_table_fn)(
+
+/**
+ *  Routine Description:
+ *    @brief Delete an ACL table
+ * 
+ *  Arguments:
+ *    @param[in] acl_table_id - the acl table id
+ * 
+ *  Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_delete_acl_table_fn)(
     _In_ sai_object_id_t acl_table_id
     );
 
-/*
-* Routine Description:
-*   Set ACL table attribute
-*
-* Arguments:
-*    [in] acl_table_id - the acl table id
-*    [in] attr - attribute
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Set ACL table attribute
+ *
+ * Arguments:
+ *    @param[in] acl_table_id - the acl table id
+ *    @param[in] attr - attribute
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
     _In_ sai_object_id_t acl_table_id,
     _In_ const sai_attribute_t *attr
     );
 
-/*
-* Routine Description:
-*   Get ACL table attribute
-*
-* Arguments:
-*    [in] acl_table_id - acl table id
-*    [in] attr_count - number of attributes
-*    [Out] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Get ACL table attribute
+ *
+ * Arguments:
+ *    @param[in] acl_table_id - acl table id
+ *    @param[in] attr_count - number of attributes
+ *    @param[out] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
     _In_ sai_object_id_t acl_table_id,
     _In_ uint32_t attr_count,
     _Out_ sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*   Create an ACL entry
-*
-* Arguments:
-*   [out] acl_entry_id - the acl entry id
-*   [in] attr_count - number of attributes
-*   [in] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Create an ACL entry
+ *
+ * Arguments:
+ *   @param[out] acl_entry_id - the acl entry id
+ *   @param[in] attr_count - number of attributes
+ *   @param[in] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 typedef sai_status_t (*sai_create_acl_entry_fn)(
     _Out_ sai_object_id_t *acl_entry_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*   Delete an ACL entry
-*
-* Arguments:
- *  [in] acl_entry_id - the acl entry id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Delete an ACL entry
+ *
+ * Arguments:
+ *  @param[in] acl_entry_id - the acl entry id
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 typedef sai_status_t (*sai_delete_acl_entry_fn)(
     _In_ sai_object_id_t acl_entry_id
     );
 
-/*
-* Routine Description:
-*   Set ACL entry attribute
-*
-* Arguments:
-*    [in] acl_entry_id - the acl entry id
-*    [in] attr - attribute
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Set ACL entry attribute
+ *
+ * Arguments:
+ *    @param[in] acl_entry_id - the acl entry id
+ *    @param[in] attr - attribute
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
     _In_ sai_object_id_t acl_entry_id,
     _In_ const sai_attribute_t *attr
     );
 
-/*
-* Routine Description:
-*   Get ACL entry attribute
-*
-* Arguments:
-*    [in] acl_entry_id - acl entry id
-*    [in] attr_count - number of attributes
-*    [Out] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Get ACL entry attribute
+ *
+ * Arguments:
+ *    @param[in] acl_entry_id - acl entry id
+ *    @param[in] attr_count - number of attributes
+ *    @param[out] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
     _In_ sai_object_id_t acl_entry_id,
     _In_ uint32_t attr_count,
     _Out_ sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*   Create an ACL counter
-*
-* Arguments:
-*   [out] acl_counter_id - the acl counter id
-*   [in] attr_count - number of attributes
-*   [in] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Create an ACL counter
+ *
+ * Arguments:
+ *   @param[out] acl_counter_id - the acl counter id
+ *   @param[in] attr_count - number of attributes
+ *   @param[in] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 typedef sai_status_t (*sai_create_acl_counter_fn)(
     _Out_ sai_object_id_t *acl_counter_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
-/*
-* Routine Description:
-*   Delete an ACL counter
-*
-* Arguments:
- *  [in] acl_counter_id - the acl counter id
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Delete an ACL counter
+ *
+ * Arguments:
+ *  @param[in] acl_counter_id - the acl counter id
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
 typedef sai_status_t (*sai_delete_acl_counter_fn)(
     _In_ sai_object_id_t acl_counter_id
     );
 
-/*
-* Routine Description:
-*   Set ACL counter attribute
-*
-* Arguments:
-*    [in] acl_counter_id - the acl counter id
-*    [in] attr - attribute
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Set ACL counter attribute
+ *
+ * Arguments:
+ *    @param[in] acl_counter_id - the acl counter id
+ *    @param[in] attr - attribute
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
     _In_ sai_object_id_t acl_counter_id,
     _In_ const sai_attribute_t *attr
     );
 
-/*
-* Routine Description:
-*   Get ACL counter attribute
-*
-* Arguments:
-*    [in] acl_counter_id - acl counter id
-*    [in] attr_count - number of attributes
-*    [Out] attr_list - array of attributes
-*
-* Return Values:
-*    SAI_STATUS_SUCCESS on success
-*    Failure status code on error
-*/
+/**
+ * Routine Description:
+ *   @brief Get ACL counter attribute
+ *
+ * Arguments:
+ *    @param[in] acl_counter_id - acl counter id
+ *    @param[in] attr_count - number of attributes
+ *    @param[out] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
 typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
     _In_ sai_object_id_t acl_counter_id,
     _In_ uint32_t attr_count,
     _Out_ sai_attribute_t *attr_list
     );
 
-/*
-* Port methods table retrieved with sai_api_query()
-*/
+/**
+ * @brief Port methods table retrieved with sai_api_query()
+ */
 typedef struct _sai_acl_api_t
 {
     sai_create_acl_table_fn             create_acl_table;
@@ -840,5 +846,8 @@ typedef struct _sai_acl_api_t
 
 } sai_acl_api_t;
 
+/**
+ * \}
+ */
 #endif // __SAIACL_H_
 

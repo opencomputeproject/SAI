@@ -17,7 +17,10 @@
 #
 
 
-.PHONY: test clean
+.PHONY: test doc clean
+
+doc:
+	doxygen Doxyfile
 
 test:
 	make -C test

@@ -33,13 +33,13 @@
  */
 typedef enum _sai_scheduling_type_t
 {
-    /* Strict Scheduling */
+    /** Strict Scheduling */
     SAI_SCHEDULING_STRICT = 0x00000000,
 
-    /* Weighted Round-Robin Scheduling */
+    /** Weighted Round-Robin Scheduling */
     SAI_SCHEDULING_WRR = 0x00000001,
 
-    /* Deficit Weighted Round-Robin Scheduling */
+    /** Deficit Weighted Round-Robin Scheduling */
     SAI_SCHEDULING_DWRR = 0x00000002,
 
 } sai_scheduling_type_t;
@@ -59,7 +59,7 @@ typedef enum _sai_scheduler_attr_t
         Default Weight = 1 */
     SAI_SCHEDULER_ATTR_SCHEDULING_WEIGHT = 0x00000001,
 
-    /* [sai_meter_type_t], Default bytes/sec */
+    /** [sai_meter_type_t], Default bytes/sec */
     SAI_SCHEDULER_ATTR_SHAPER_TYPE = 0x00000002,
 
     /** [uint64_t] Guaranteed Bandwidth shape rate [bytes/sec or PPS]
