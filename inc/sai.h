@@ -1,17 +1,17 @@
 /*
-* Copyright (c) 2014 Microsoft Open Technologies, Inc. 
-*   
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may 
-*    not use this file except in compliance with the License. You may obtain 
+* Copyright (c) 2014 Microsoft Open Technologies, Inc.
+*
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
 *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 *
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
+*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
 *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 *
-*    See the Apache Version 2.0 License for specific language governing 
-*    permissions and limitations under the License. 
+*    See the Apache Version 2.0 License for specific language governing
+*    permissions and limitations under the License.
 *
 *    Microsoft would like to thank the following companies for their review and
 *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
@@ -20,7 +20,7 @@
 * Module Name:
 *
 *    sai.h
-*     
+*
 * Abstract:
 *
 *   This module defines an entry point into Switch Abstraction Interfrace (SAI)
@@ -92,6 +92,7 @@ typedef enum _sai_api_t
     SAI_API_QUEUE            = 20,  /**< sai_queue_api_t*/
     SAI_API_SCHEDULER        = 21,  /**< sai_scheduler_api_t*/
     SAI_API_SCHEDULER_GROUP  = 22,  /**< sai_scheduler_group_api_t*/
+    SAI_API_BUFFERS          = 23,  /**< sai_buffer_api_t */
 } sai_api_t;
 
 typedef enum _sai_log_level_t

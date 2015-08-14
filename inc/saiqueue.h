@@ -60,11 +60,11 @@ typedef enum _sai_queue_attr_t
 
     /* READ-WRITE */
 
-    /** Attach WRED ID to queue [sai_wred_id_t]
+    /** Attach WRED ID to queue [sai_object_id_t]
         ID = SAI_NULL_OBJECT_ID to disable WRED. */
     SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000001,
 
-    /** Attach buffer profile to Queue */
+    /** Attach buffer profile to Queue [sai_object_id_t] */
     SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000002,
 
     /** Attach scheduler to Queue [sai_object_id_t]*/

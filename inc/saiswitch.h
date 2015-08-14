@@ -240,6 +240,15 @@ typedef enum _sai_switch_attr_t
     /** Maximum number of LAGs that can be created per switch [uint32_t] */
     SAI_SWITCH_ATTR_MAX_LAG_NUMBER,
 
+    /** switch total buffer size in KB [sai_uint32_t] */
+    SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE,
+
+    /** switch number of ingress buffer pool [sai_uint32_t] */
+    SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM,
+
+    /** switch number of egress buffer pool [sai_uint32_t] */
+    SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM,
+
     /** READ-WRITE */
 
     /** Switching mode [sai_switch_switching_mode_t]
