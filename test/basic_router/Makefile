@@ -26,12 +26,12 @@ LIBS = -lpthread -lsai
 SAI_IDIR = /usr/include/sai
 
 ODIR = ../obj
-LDIR = ../../lib
-BDIR = ../../bin
+LDIR = ../lib
+BDIR = ../bin
 IDIR = .
 all: $(BDIR)/basic_router
 
-GTEST_DIR = ../../gtest-1.7.0
+GTEST_DIR = ../gtest-1.7.0
 CXXFLAGS += -g -Wall -Wextra -pthread -I./  -std=c++11
 GTEST_FLAGS = -isystem $(GTEST_DIR)/include
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \

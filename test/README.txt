@@ -25,20 +25,20 @@ SAI ver 0.9.3
 Location of SAI Headers
 /usr/include/sai
 
-Install gtest-1.7.0
+1. Download gtest-1.7.0
+   
+   wget https://googletest.googlecode.com/files/gtest-1.7.0.zip
 
-cp ./lib/gtest-1.7.0.zip .
-unzip gtest-1.7.0.zip
-rm gtest-1.7.0.zip
+2. Unzip gtest-1.7.0.zip
 
-Make the binary basic_router:
-make bin/basic_router
+   unzip gtest-1.7.0.zip 
 
-Make all of the binaries:
-make
+3. Build
 
-Location of the binary:
-./bin
+   make
 
-Cleaning:
-make clean
+   basic_router is under bin/
+
+4. Clean
+
+   make clean
