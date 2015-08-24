@@ -243,7 +243,7 @@ typedef enum _sai_port_attr_t
     /** Full Duplex setting [bool] (default to TRUE) */
     SAI_PORT_ATTR_FULL_DUPLEX_MODE,
 
-    /** Auto Negotiation configuration [bool] (default set to TRUE) */
+    /** Auto Negotiation configuration [bool] (default to FALSE) */
     SAI_PORT_ATTR_AUTO_NEG_MODE,
 
     /** Admin Mode [bool], (default to FALSE)*/
