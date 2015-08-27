@@ -167,7 +167,10 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_QUEUE            = 19,
     SAI_OBJECT_TYPE_SCHEDULER        = 20,
     SAI_OBJECT_TYPE_SCHEDULER_GROUP  = 21,
-    SAI_OBJECT_TYPE_MAX              = 22
+    SAI_OBJECT_TYPE_BUFFER_POOL      = 22,
+    SAI_OBJECT_TYPE_BUFFER_PROFILE   = 23,
+    SAI_OBJECT_TYPE_PRIORITY_GROUP   = 24,
+    SAI_OBJECT_TYPE_MAX              = 25
 } sai_object_type_t;
 
 typedef struct _sai_u32_list_t {
