@@ -122,7 +122,7 @@
 /**
  *  Mandatory attribute is missing 
  */
-#define SAI_MANDATORY_ATTRIBUTE_MISSING     SAI_STATUS_CODE(0x0000000EL)
+#define SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING     SAI_STATUS_CODE(0x0000000EL)
 
 /**  
  *  Function is not implemented
