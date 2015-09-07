@@ -249,6 +249,16 @@ typedef enum _sai_switch_attr_t
     /** switch number of egress buffer pool [sai_uint32_t] */
     SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM,
 
+    /** Default trap group [sai_object_id_t]
+    * (default value after switch initialization
+    *    SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE = true
+    *    SAI_HOSTIF_TRAP_GROUP_ATTR_PRIO = SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
+    *    SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE = 0,
+    *    SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER = SAI_NULL_OBJECT_ID)
+    * The group handle is read only, while the group attributes, such as queue and policer,
+    * may be modified */
+    SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP,
+
     /** READ-WRITE */
 
     /** Switching mode [sai_switch_switching_mode_t]
@@ -332,24 +342,6 @@ typedef enum _sai_switch_attr_t
      * [uint32_t]
      */
     SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL,
-
-    /** Default trap channel [sai_hostif_trap_channel_t]
-     * (default to SAI_HOSTIF_TRAP_CHANNEL_CB) */
-    SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL,
-
-    /** Default file descriptor for SAI_HOSTIF_TRAP_CHANNEL_FD [sai_object_id_t]
-     * Must be set before set SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL to SAI_HOSTIF_TRAP_CHANNEL_FD
-     * (default to SAI_NULL_OBJECT_ID) */
-    SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL_FD,
-
-    /** Default trap group [sai_object_id_t]
-     * (default value after switch initialization
-     *    SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE = true
-     *    SAI_HOSTIF_TRAP_GROUP_ATTR_PRIO = SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
-     *    SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE = 0,
-     *    SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER = SAI_NULL_OBJECT_ID)
-     */
-    SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP,
 
     /** Default Traffic class value, Defalut TC = 0 */
     SAI_SWITCH_ATTR_QOS_DEFAULT_TC,

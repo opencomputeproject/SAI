@@ -279,13 +279,13 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
 
     /** trap channel to use [sai_hostif_trap_channel_t]
-     * (default to SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL) */
+     * (default to SAI_HOSTIF_TRAP_CHANNEL_CB) */
     SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL,
 
     /** file descriptor [sai_object_id_t]
      * Valid only when SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL == SAI_HOSTIF_TRAP_CHANNEL_FD
      * Must be set before set SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to SAI_HOSTIF_TRAP_CHANNEL_FD 
-     * (default to SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL_FD) */
+     * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_TRAP_ATTR_FD,
 
     /** enable trap for a list of SAI ports [sai_object_list_t]
@@ -373,13 +373,13 @@ typedef enum _sai_hostif_user_defined_trap_id_t
 typedef enum _sai_hostif_user_defined_trap_attr_t
 {
     /** trap channel to use [sai_hostif_trap_channel_t]
-     * (default to SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL) */
+     * (default to SAI_HOSTIF_TRAP_CHANNEL_CB) */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_CHANNEL,
 
     /** file descriptor [sai_object_id_t]
      * Valid only when SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL == SAI_HOSTIF_TRAP_CHANNEL_FD
      * Must be set before set SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to SAI_HOSTIF_TRAP_CHANNEL_FD 
-     * (default to SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL_FD) */
+     * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_FD,
 
 } sai_hostif_user_defined_trap_attr_t;
