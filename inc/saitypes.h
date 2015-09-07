@@ -170,7 +170,8 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_BUFFER_POOL      = 22,
     SAI_OBJECT_TYPE_BUFFER_PROFILE   = 23,
     SAI_OBJECT_TYPE_PRIORITY_GROUP   = 24,
-    SAI_OBJECT_TYPE_MAX              = 25
+    SAI_OBJECT_TYPE_LAG_MEMBER       = 25,
+    SAI_OBJECT_TYPE_MAX              = 26
 } sai_object_type_t;
 
 typedef struct _sai_u32_list_t {
