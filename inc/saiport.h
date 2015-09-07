@@ -230,11 +230,11 @@ typedef enum _sai_port_attr_t
     /** Query list of supported port speed in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_SUPPORTED_SPEED,
 
-    /** Priority group number [sai_uint32_t] */
-    SAI_PORT_ATTR_PG_NUM,
+    /** Number of ingress priority groups [sai_uint32_t] */
+    SAI_PORT_ATTR_NUMBER_OF_PRIORITY_GROUPS,
 
-    /** list of ingress priority group ID [sai_object_list_t] */
-    SAI_PORT_ATTR_PG_ID_LIST,
+    /** list of ingress priority groups [sai_object_list_t] */
+    SAI_PORT_ATTR_PRIORITY_GROUP_LIST,
 
     /** READ-WRITE */
     /** Speed in Mbps [uint32_t] */
@@ -432,6 +432,9 @@ typedef enum _sai_port_attr_t
     /** Scheduler for port [sai_object_id_t],
      * Default no limits */
     SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID,
+
+    /** Buffer profile for port [sai_object_id_t]*/
+    SAI_PORT_ATTR_QOS_BUFFER_PROFILE_ID,
 
     /** bit vector enable/disable port PFC [sai_uint8_t].
      * Valid from bit 0 to bit 7 */
