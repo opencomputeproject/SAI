@@ -107,7 +107,7 @@ typedef enum _sai_lag_member_attr_t {
     /* LAG ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_LAG_MEMBER_ATTR_LAG_ID,
 
-    /* logical port ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
+    /* logical port ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_LAG_MEMBER_ATTR_PORT_ID,
 
      /* Disable traffic distribution to this port as part of LAG. [bool] (CREATE_AND_SET) default to FALSE */
