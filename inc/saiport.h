@@ -441,6 +441,11 @@ typedef enum _sai_port_attr_t
      * Value Range SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE */
     SAI_PORT_ATTR_META_DATA,
 
+    /** Egress block port list [sai_object_list_t]
+     * Traffic ingressing on this port and egressing out of the ports in the
+     * given port list will be dropped. */
+    SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST,
+
     /** -- */
 
     /* Custom range base value */
