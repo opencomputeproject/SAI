@@ -171,7 +171,7 @@ typedef sai_status_t(*sai_set_buffer_pool_attr_fn)(
  *           Failure status code on error
  */
 typedef sai_status_t(*sai_get_buffer_pool_attr_fn)(
-    _In_ sai_object_id_t* pool_id,
+    _In_ sai_object_id_t pool_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
@@ -262,7 +262,7 @@ typedef sai_status_t(*sai_set_buffer_profile_attr_fn)(
  *           Failure status code on error
  */
 typedef sai_status_t(*sai_get_buffer_profile_attr_fn)(
-    _In_ sai_object_id_t* buffer_profile_id,
+    _In_ sai_object_id_t buffer_profile_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
