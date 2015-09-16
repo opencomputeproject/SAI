@@ -319,6 +319,7 @@ typedef struct _sai_acl_action_data_t
         sai_ip4_t ip4;
         sai_ip6_t ip6;
         sai_object_id_t oid;
+        sai_object_list_t objlist;
     } parameter;
 } sai_acl_action_data_t;
 
