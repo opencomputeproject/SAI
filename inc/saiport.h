@@ -422,9 +422,6 @@ typedef enum _sai_port_attr_t
      * Default no map */
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP,
 
-	/** sai_qos_drop_type_t, Default (TAIL DROP)*/
-    SAI_PORT_ATTR_QOS_DROP_TYPE,
-
     /** Attach WRED to port [sai_object_id_t]
      (mandatory when SAI_PORT_ATTR_QOS_DROP_TYPE =  SAI_QOS_DROP_TYPE_WRED) */
     SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
