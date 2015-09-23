@@ -518,10 +518,10 @@ typedef enum _sai_acl_entry_attr_t
     /** Attach/detach counter id to the entry [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_COUNTER,
 
-    /** Ingress Mirror (mirror session id) [sai_object_id_t] */
+    /** Ingress Mirror (mirror session id list) [sai_object_list_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS,
 
-    /** Egress Mirror (mirror session id) [sai_object_id_t] */
+    /** Egress Mirror (mirror session id list) [sai_object_list_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS,
 
     /** Assosiate with policer (policer id) [sai_object_id_t] */
