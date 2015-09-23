@@ -285,8 +285,11 @@ typedef enum _sai_acl_table_attr_t
     /** Class-of-Service (Traffic Class) */
     SAI_ACL_TABLE_ATTR_FIELD_TC,
 
-    /** ICMP Type and Code */
-    SAI_ACL_TABLE_ATTR_FIELD_ICMP_TYPE_CODE,
+    /** ICMP Type */
+    SAI_ACL_TABLE_ATTR_FIELD_ICMP_TYPE,
+
+    /** ICMP Code */
+    SAI_ACL_TABLE_ATTR_FIELD_ICMP_CODE,
 
     /** User Based Meta Data [bool] */
 
@@ -450,8 +453,11 @@ typedef enum _sai_acl_entry_attr_t
     /** Class-of-Service (Traffic Class) [sai_cos_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_TC,
 
-    /** ICMP Type and Code [sai_uint16_t] */
-    SAI_ACL_ENTRY_ATTR_FIELD_ICMP_TYPE_CODE,
+    /** ICMP Type [sai_uint8_t] */
+    SAI_ACL_ENTRY_ATTR_FIELD_ICMP_TYPE,
+
+    /** ICMP Code [sai_uint8_t] */
+    SAI_ACL_ENTRY_ATTR_FIELD_ICMP_CODE,
 
     /** User Based Meta Data [sai_uint32_t] */
 
