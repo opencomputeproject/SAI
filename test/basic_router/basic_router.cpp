@@ -172,12 +172,12 @@ static bool setup_one_l3_interface(sai_vlan_id_t vlanid,
     }
 
     sai_attribute_t attr;
-    attr.id = SAI_PORT_ATTR_DEFAULT_VLAN;
+    attr.id = SAI_PORT_ATTR_PORT_VLAN_ID;
     attr.value.u16 = vlanid;
 
     for (int i = 0; i < port_count; ++i)
     {
-        LOGG(TEST_INFO, SETL3, "sai_port_api->set_port_attribute SAI_PORT_ATTR_DEFAULT_VLAN %hu to port 0x%lx\n",
+        LOGG(TEST_INFO, SETL3, "sai_port_api->set_port_attribute SAI_PORT_ATTR_PORT_VLAN_ID %hu to port 0x%lx\n",
              vlanid,  port_list[i]);
         status = sai_port_api->set_port_attribute(port_list[i], &attr);
 
