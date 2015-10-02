@@ -35,9 +35,9 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
 				$(GTEST_DIR)/include/gtest/internal/*.h
 
 
-all : directories $(LDIR)/gtest_main.a $(TESTS)
+all : directories $(LDIR)/gtest_main.a $(TESTS) sai_ut
 
-.PHONY: directories clean $(TESTS)
+.PHONY: directories clean $(TESTS) sai_ut
 
 ###########################################################
 
@@ -47,8 +47,13 @@ directories:
 $(USER_BDIR)/basic_router:
 	make -C basic_router
 
+sai_ut:
+	make -C sai_ut
+
 clean :
-	rm -f $(TESTS) $(USER_ODIR)/gtest.a $(USER_ODIR)/gtest_main.a $(USER_ODIR)/*.o 
+	rm -f $(TESTS) $(USER_ODIR)/gtest.a $(USER_ODIR)/gtest_main.a $(USER_ODIR)/*.o
+	make -C sai_ut clean
+
 
 ###########################################################
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)

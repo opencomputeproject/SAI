@@ -1,0 +1,32 @@
+README for running unit-tests for SAI
+
+## Dependency  ##
+
+We rely on google-test infrastructure to run these unit-tests. Download 
+google-test from this location
+https://code.google.com/p/googletest/downloads/list
+update the pointer to gtest in the Makefile. Build gtest lib target from
+the common Makefile inside 'sai/test' directory.
+
+We also rely on SAI library which are _your_ implementation of the SAI API
+Update the pointer to SAI library and other Linking flags in Makefile
+Update the pointer to the SAI API Include directory, if necessary.
+By default, the relative path to the inc/ folder as in OCP github dir. structure
+is added in the Makefile.
+
+## Building unit-tests ##
+
+Add your unit-test sources to *_SRCS in the Makefile.
+Some unit-test files are already added, which tests SAI router, 
+router interface, route, nexthop, neighbor, nexthop group objects as seperate
+binaries.
+
+## Running unit-tests ##
+After building with "make all", one binary/executable (*_EXEC variable in Makefile)
+is generated for each SAI API in the 'sai/test/bin' directory. 
+Place this binary/executable on the switch, along with the SAI library, and run the executable. It outputs a 
+PASS/FAIL per testcase, which can be used to validate the test run
+
+## Alternative environments for running the unit-test ##
+P4 test framework and soft switch - TBD
+
