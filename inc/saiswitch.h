@@ -227,7 +227,7 @@ typedef enum _sai_switch_attr_t
      * Must return SAI_STATUS_OBJECT_IN_USE when try to delete this VR ID. */
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
-    /** Maximum traffic classes limit*/
+    /** Maximum traffic classes limit [sai_uint8_t] */
     SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_TRAFFIC_CLASSES,
 
     /** HQOS - Maximum Number of Hierarchy scheduler
@@ -347,7 +347,7 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL,
 
-    /** Default Traffic class value, Defalut TC = 0 */
+    /** Default Traffic class value, Default TC = 0 */
     SAI_SWITCH_ATTR_QOS_DEFAULT_TC,
 
     /** Enable DOT1P -> TC MAP [sai_object_id_t] on switch.
@@ -411,6 +411,12 @@ typedef enum _sai_switch_attr_t
        Map id = SAI_NULL_OBJECT_ID to disable map on switch.
        Default no map */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
+
+    /** Number of preamble and Inter frame gap bytes to be added in the 
+     *  Meters(Policer, shaper and meter counters) [uint32_t]. 
+     *  Default to 20 Bytes. 
+     */
+    SAI_SWITCH_ATTR_QOS_METER_ADJUST,
 
     /** WRITE-ONLY */
 

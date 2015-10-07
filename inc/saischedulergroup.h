@@ -35,9 +35,6 @@ typedef enum _sai_scheduler_group_attr_t
 {
     /** READ-ONLY */
 
-    /** Maximum Number of childs on group [uint32_t] */
-    SAI_SCHEDULER_GROUP_ATTR_MAX_SUPPORTED_CHILDS = 0x00000000,
-
     /** Number of queues/groups childs added to
      * scheduler group [uint32_t] */
     SAI_SCHEDULER_GROUP_ATTR_CHILD_COUNT = 0x00000001,
@@ -54,6 +51,10 @@ typedef enum _sai_scheduler_group_attr_t
     /** Scheduler group level [sai_uint8_t]
        MANDATORY_ON_CREATE,  CREATE_ONLY */
     SAI_SCHEDULER_GROUP_ATTR_LEVEL = 0x00000004,
+
+    /** Maximum Number of childs on group [uint8_t]
+     * MANDATORY_ON_CREATE,  CREATE_ONLY */
+    SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS = 0x00000000,
 
     /** Scheucler ID [sai_object_id_t]
      * SET_ONLY */
