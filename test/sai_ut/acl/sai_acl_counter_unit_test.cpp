@@ -1,21 +1,29 @@
 /************************************************************************
- * * LEGALESE:   "Copyright (c) 2015, Dell Inc. All rights reserved."
+ * * Copyright (c) 2015 Dell Inc. 
+ * *   
+ * *    Licensed under the Apache License, Version 2.0 (the "License"); you may 
+ * *    not use this file except in compliance with the License. You may obtain 
+ * *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * *
- * * This source code is confidential, proprietary, and contains trade
- * * secrets that are the sole property of Dell Inc.
- * * Copy and/or distribution of this source code or disassembly or reverse
- * * engineering of the resultant object code are strictly forbidden without
- * * the written consent of Dell Inc.
+ * *    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
+ * *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
+ * *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+ * *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
  * *
- * ************************************************************************/
- /**
- * * @file sai_acl_counter_unit_test.cpp
+ * *    See the Apache Version 2.0 License for specific language governing 
+ * *    permissions and limitations under the License. 
  * *
- * * @brief This file contains the google unit test cases to test the
- * *        SAI APIs for SAI ACL Counter functionality
+ * *
+ * * Module Name:
+ * *
+ * *    sai_acl_counter_unit_test.cpp 
+ * *     
+ * * Abstract:
+ * *
+ * *    SAI ACL COUNTER UNIT TEST :- Covers the test cases for validating all 
+ * *    public APIs in SAI ACL COUNTER module.
  * *
  * *************************************************************************/
-
 #include "gtest/gtest.h"
 
 #include "sai_acl_unit_test_utils.h"
@@ -887,16 +895,16 @@ TEST_F(saiACLCounterTest, counter_create_without_mandatory_attr)
     /* Create ACL Counter without Mandatory attr */
 
     printf ("Counter Creation without Mandatory attributes\r\n");
-    printf ("Expecting error - SAI_MANDATORY_ATTRIBUTE_MISSING.\r\n");
+    printf ("Expecting error - SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING\r\n");
 
     sai_rc = sai_test_acl_counter_create (&acl_counter_id, 1,
                                           SAI_ACL_COUNTER_ATTR_ENABLE_PACKET_COUNT, true);
-    EXPECT_EQ (SAI_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
+    EXPECT_EQ (SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
 
     sai_rc = sai_test_acl_counter_create (&acl_counter_id, 2,
                                           SAI_ACL_COUNTER_ATTR_ENABLE_PACKET_COUNT, true,
                                           SAI_ACL_COUNTER_ATTR_ENABLE_BYTE_COUNT, true);
-    EXPECT_EQ (SAI_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
+    EXPECT_EQ (SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
 }
 
 TEST_F(saiACLCounterTest, counter_create_with_invalid_table_id)
@@ -1280,7 +1288,7 @@ TEST_F(saiACLCounterTest, counter_set_without_mandatory_attr)
     /* Create ACL Counter without Mandatory attr */
 
     printf ("Counter Set without Mandatory Attr\r\n");
-    printf ("Expecting error - SAI_MANDATORY_ATTRIBUTE_MISSING\r\n");
+    printf ("Expecting error - SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING\r\n");
 
     sai_rc = sai_test_acl_counter_create (&acl_counter_id, 2,
                                           SAI_ACL_COUNTER_ATTR_TABLE_ID, mac_table_id,
@@ -1289,7 +1297,7 @@ TEST_F(saiACLCounterTest, counter_set_without_mandatory_attr)
 
     sai_rc = sai_test_acl_counter_set (acl_counter_id, 1,
                                        SAI_ACL_COUNTER_ATTR_ENABLE_BYTE_COUNT, 10);
-    EXPECT_EQ (SAI_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
+    EXPECT_EQ (SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
 
     sai_rc = sai_test_acl_counter_remove (acl_counter_id);
 

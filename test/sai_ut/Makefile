@@ -26,6 +26,11 @@ nhg_SRCS = $(l3_util_SRCS) ./routing/sai_l3_nexthopgroup_unit_test.cpp
 nbr_SRCS = $(l3_util_SRCS) ./routing/sai_l3_neighbor_unit_test.cpp
 route_SRCS = $(l3_util_SRCS) ./routing/sai_l3_route_unit_test.cpp
 
+acl_util_SRCS = ./acl/sai_acl_unit_test_utils.cpp 
+counter_SRCS = $(acl_util_SRCS) ./acl/sai_acl_counter_unit_test.cpp
+rule_SRCS = $(acl_util_SRCS) $(l3_util_SRCS) ./acl/sai_acl_rule_unit_test.cpp
+table_SRCS = $(acl_util_SRCS) ./acl/sai_acl_table_unit_test.cpp
+
 ### platform specific Linker/LD Flags
 # add pointers to SAI library
 # by adding -l<sai> and -L<location-to-libsai.so> directives
@@ -42,8 +47,12 @@ nh_EXEC    = sai_ut_nh
 nhg_EXEC   = sai_ut_nhg
 nbr_EXEC   = sai_ut_nbr
 route_EXEC = sai_ut_route
+counter_EXEC = sai_ut_counter
+rule_EXEC 	 = sai_ut_rule
+table_EXEC 	 = sai_ut_table
 
-EXEC_ALL = $(BDIR)/$(vr_EXEC) $(BDIR)/$(rif_EXEC) $(BDIR)/$(nh_EXEC) $(BDIR)/$(nhg_EXEC) $(BDIR)/$(nbr_EXEC) $(BDIR)/$(route_EXEC)
+EXEC_ALL = $(BDIR)/$(vr_EXEC) $(BDIR)/$(rif_EXEC) $(BDIR)/$(nh_EXEC) $(BDIR)/$(nhg_EXEC) $(BDIR)/$(nbr_EXEC) $(BDIR)/$(route_EXEC) \
+		   $(BDIR)/$(counter_EXEC) $(BDIR)/$(rule_EXEC) $(BDIR)/$(table_EXEC)
 
 # what to use for compiling
 CXX=g++
@@ -63,7 +72,11 @@ nhg_OBJS = $(nhg_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 nbr_OBJS = $(nbr_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 route_OBJS = $(route_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 
-all : $(vr_SRCS) $(rif_SRCS) $(nh_SRCS) $(nhg_SRCS) $(nbr_SRCS) $(route_SRCS) $(EXEC_ALL)
+counter_OBJS = $(counter_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+rule_OBJS = $(rule_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+table_OBJS = $(table_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+
+all : $(vr_SRCS) $(rif_SRCS) $(nh_SRCS) $(nhg_SRCS) $(nbr_SRCS) $(route_SRCS) $(counter_SRCS) $(rule_SRCS) $(table_SRCS) $(EXEC_ALL)
 
 # rule for execs
 $(BDIR)/$(vr_EXEC): $(vr_OBJS)
@@ -83,6 +96,15 @@ $(BDIR)/$(nbr_EXEC): $(nbr_OBJS)
 
 $(BDIR)/$(route_EXEC): $(route_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(route_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(counter_EXEC): $(counter_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(counter_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(rule_EXEC): $(rule_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(rule_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(table_EXEC): $(table_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(table_OBJS) -o $@ $(LDFLAGS)
 
 .cpp.o:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDEFLAGS) -o $@ -c $<

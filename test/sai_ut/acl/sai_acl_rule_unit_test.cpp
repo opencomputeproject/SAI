@@ -1,21 +1,29 @@
 /************************************************************************
- * * LEGALESE:   "Copyright (c) 2015, Dell Inc. All rights reserved."
+ * * Copyright (c) 2015 Dell Inc. 
+ * *   
+ * *    Licensed under the Apache License, Version 2.0 (the "License"); you may 
+ * *    not use this file except in compliance with the License. You may obtain 
+ * *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  * *
- * * This source code is confidential, proprietary, and contains trade
- * * secrets that are the sole property of Dell Inc.
- * * Copy and/or distribution of this source code or disassembly or reverse
- * * engineering of the resultant object code are strictly forbidden without
- * * the written consent of Dell Inc.
+ * *    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
+ * *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
+ * *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+ * *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
  * *
- * ************************************************************************/
- /**
- * * @file sai_acl_rule_unit_test.cpp
+ * *    See the Apache Version 2.0 License for specific language governing 
+ * *    permissions and limitations under the License. 
  * *
- * * @brief This file contains the google unit test cases to test the
- * *        SAI APIs for SAI ACL Rule functionality
+ * *
+ * * Module Name:
+ * *
+ * *    sai_acl_rule_unit_test.cpp
+ * *     
+ * * Abstract:
+ * *
+ * *    SAI ACL RULE TEST :- Covers the test cases for validating
+ * *    all public APIs in SAI ACL RULE module.
  * *
  * *************************************************************************/
-
 #include "gtest/gtest.h"
 
 #include "sai_acl_unit_test_utils.h"
@@ -779,7 +787,7 @@ TEST_F(saiACLRuleTest, rule_create_without_field_attr)
     sai_object_id_t       acl_rule_id = 0;
 
     printf ("Rule Creation without Field Attributes\r\n");
-    printf ("Expecting error - SAI_MANDATORY_ATTRIBUTE_MISSING.\r\n");
+    printf ("Expecting error - SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING.\r\n");
 
     sai_rc = sai_test_acl_rule_create (&acl_rule_id, 4,
                                        SAI_ACL_ENTRY_ATTR_TABLE_ID, 1,
@@ -787,7 +795,7 @@ TEST_F(saiACLRuleTest, rule_create_without_field_attr)
                                        SAI_ACL_ENTRY_ATTR_ADMIN_STATE, true,
                                        SAI_ACL_ENTRY_ATTR_PACKET_ACTION, true,
                                        SAI_PACKET_ACTION_LOG);
-    EXPECT_EQ (SAI_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
+    EXPECT_EQ (SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
 }
 
 
@@ -798,7 +806,7 @@ TEST_F(saiACLRuleTest, rule_create_without_mandatory_attr)
     unsigned int          invalid_table_id = 0;
 
     printf ("Rule Creation without Mandatory Attributes\r\n");
-    printf ("Expecting error - SAI_MANDATORY_ATTRIBUTE_MISSING.\r\n");
+    printf ("Expecting error - SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING.\r\n");
 
     /* Create ACL Rule without ACL Table ID */
     sai_rc = sai_test_acl_rule_create (&acl_rule_id, 4,
@@ -807,7 +815,7 @@ TEST_F(saiACLRuleTest, rule_create_without_mandatory_attr)
                                        SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT, 1, 14, 255,
                                        SAI_ACL_ENTRY_ATTR_PACKET_ACTION, true,
                                        SAI_PACKET_ACTION_LOG);
-    EXPECT_EQ (SAI_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
+    EXPECT_EQ (SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
 
     /* Create ACL Rule with invalid ACL Table ID */
     sai_rc = sai_test_acl_rule_create (&acl_rule_id, 5,
@@ -817,7 +825,7 @@ TEST_F(saiACLRuleTest, rule_create_without_mandatory_attr)
                                        SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT, 1, 14, 255,
                                        SAI_ACL_ENTRY_ATTR_PACKET_ACTION, true,
                                        SAI_PACKET_ACTION_LOG);
-    EXPECT_EQ (SAI_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
+    EXPECT_EQ (SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
 
     /* Create ACL Rule with invalid ACL Counter Id */
     sai_rc = sai_test_acl_rule_create (&acl_rule_id, 5,
