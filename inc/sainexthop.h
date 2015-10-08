@@ -44,6 +44,9 @@ typedef enum _sai_next_hop_type_t
 {
     SAI_NEXT_HOP_IP,
 
+    /** Lookup the neighbor table for direct reachable subnet */
+    SAI_NEXT_HOP_ON_LINK,
+
     /** 
     Tunneling to be added later
     */
@@ -62,13 +65,18 @@ typedef enum _sai_next_hop_attr_t
     /** Next hop entry type [sai_next_hop_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_NEXT_HOP_ATTR_TYPE,
 
+    /** Next hop entry router interface id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
+
     /** Next hop entry ipv4 address [sai_ip_address_t]
      * (MANDATORY_ON_CREATE when SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_IP)
      * (CREATE_ONLY) */
     SAI_NEXT_HOP_ATTR_IP,
 
-    /** Next hop entry router interface id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
+    /** Packet action when neighbor table lookup miss
+     * (MANDATORY_ON_CREATE when SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_ON_LINK)
+     * (CREATE_AND_SET) */
+    SAI_NEXT_HOP_NEIGHBOR_MISS_PACKET_ACTION,
 
     /* -- */
 

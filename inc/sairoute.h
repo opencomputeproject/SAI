@@ -55,9 +55,8 @@ typedef enum _sai_route_attr_t
     /** Next hop or next hop group id for the packet or a router interface
      * in case of directly reachable route [sai_object_id_t]
      * The next hop id can be a generic next hop object, such as next hop,
-     * next hop group.
-     * Directly reachable routes are the IP subnets that are directly attached to the router.
-     * For such routes, fill the router interface id to which the subnet is attached */
+     * next hop group. (CREATE_AND_SET)
+     * MANDATORY_ON_CREATE when SAI_ROUTE_ATTR_PACKET_ACTION = FORWARD */
     SAI_ROUTE_ATTR_NEXT_HOP_ID,
 
     /** User based Meta Data
