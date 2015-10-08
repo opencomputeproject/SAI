@@ -259,6 +259,11 @@ typedef enum _sai_switch_attr_t
      * The object id is read only, while the object attributes can be modified */
     SAI_SWITCH_ATTR_LAG_HASH,
 
+    /** Synchronize counter statistics with the HW when SW cache based counter
+     * collection is enabled. This attribute is not required when direct HW based
+     * counter stats collection is enabled.
+     */
+    SAI_SWITCH_ATTR_COUNTER_SYNC,
 
     /** READ-WRITE */
 
