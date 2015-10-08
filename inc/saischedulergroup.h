@@ -37,24 +37,24 @@ typedef enum _sai_scheduler_group_attr_t
 
     /** Number of queues/groups childs added to
      * scheduler group [uint32_t] */
-    SAI_SCHEDULER_GROUP_ATTR_CHILD_COUNT = 0x00000001,
+    SAI_SCHEDULER_GROUP_ATTR_CHILD_COUNT = 0x00000000,
 
     /** Scheduler Group child obejct id List [sai_object_list_t] */
-    SAI_SCHEDULER_GROUP_ATTR_CHILD_LIST = 0x00000002,
+    SAI_SCHEDULER_GROUP_ATTR_CHILD_LIST = 0x00000001,
 
     /** READ-WRITE */
 
     /** Scheduler group on port [sai_object_id_t]
        MANDATORY_ON_CREATE,  CREATE_ONLY */
-    SAI_SCHEDULER_GROUP_ATTR_PORT_ID = 0x00000003,
+    SAI_SCHEDULER_GROUP_ATTR_PORT_ID = 0x00000002,
 
     /** Scheduler group level [sai_uint8_t]
        MANDATORY_ON_CREATE,  CREATE_ONLY */
-    SAI_SCHEDULER_GROUP_ATTR_LEVEL = 0x00000004,
+    SAI_SCHEDULER_GROUP_ATTR_LEVEL = 0x00000003,
 
     /** Maximum Number of childs on group [uint8_t]
      * MANDATORY_ON_CREATE,  CREATE_ONLY */
-    SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS = 0x00000000,
+    SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS = 0x00000004,
 
     /** Scheucler ID [sai_object_id_t]
      * SET_ONLY */

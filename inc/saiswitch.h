@@ -412,9 +412,10 @@ typedef enum _sai_switch_attr_t
        Default no map */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
-    /** Number of preamble and Inter frame gap bytes to be added in the 
-     *  Meters(Policer, shaper and meter counters) [uint32_t]. 
-     *  Default to 20 Bytes. 
+    /** Number of preamble and Inter frame gap bytes to be 
+     *  added/removed in the Meters(Policer, shaper and meter counters) [int8_t]. 
+     *  Default NPU to include PREAMBLE + SFD + IFG of 12 bytes in meter.
+     *  This attribute will be used by apps to control.
      */
     SAI_SWITCH_ATTR_QOS_METER_ADJUST,
 
