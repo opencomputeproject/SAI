@@ -166,44 +166,34 @@ typedef enum _sai_switch_attr_t
     /** The size of the FDB Table in bytes [sai_uint32_t] */
     SAI_SWITCH_ATTR_FDB_TABLE_SIZE,
 
-    /** Number of ports that can be part of a LAG [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** Number of ports that can be part of a LAG [sai_uint32_t] */
     SAI_SWITCH_ATTR_LAG_MEMBERS,
 
-    /** Number of LAGs that can be created [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** Number of LAGs that can be created [sai_uint32_t] */
     SAI_SWITCH_ATTR_LAG_NUMBER,
 
-    /** ECMP number of paths per group [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** ECMP number of paths per group [sai_uint32_t] */
     SAI_SWITCH_ATTR_ECMP_PATHS,
 
-    /** The L3 Host Table size [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** The L3 Host Table size [sai_uint32_t] */
     SAI_SWITCH_ATTR_L3_NEIGHBOR_TABLE_SIZE,
 
-    /** The L3 Route Table size [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** The L3 Route Table size [sai_uint32_t] */
     SAI_SWITCH_ATTR_L3_ROUTE_TABLE_SIZE,
 
-    /** The number of Unicast Queues per port [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** The number of Unicast Queues per port [sai_uint32_t] */
     SAI_SWITCH_ATTR_NUM_UNICAST_QUEUES,
 
-    /** The number of Multicast Queues per port [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** The number of Multicast Queues per port [sai_uint32_t] */
     SAI_SWITCH_ATTR_NUM_MULTICAST_QUEUES,
 
-    /** The total number of Queues per port [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** The total number of Queues per port [sai_uint32_t] */
     SAI_SWITCH_ATTR_NUM_QUEUES,
 
-    /** The number of CPU Queues [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** The number of CPU Queues [sai_uint32_t] */
     SAI_SWITCH_ATTR_NUM_CPU_QUEUES,
 
-    /** ECMP number of group [sai_uint32_t]
-     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    /** ECMP number of group [sai_uint32_t] */
     SAI_SWITCH_ATTR_NUM_ECMP_GROUPS,
 
     /**
