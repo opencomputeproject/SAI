@@ -40,8 +40,9 @@
  *  \{
  */
 
-#define SAI_MAX_HARDWARE_ID_LEN         255
-#define SAI_MAX_FIRMWARE_PATH_NAME_LEN  PATH_MAX
+#define SAI_MAX_HARDWARE_ID_LEN                 255
+#define SAI_MAX_FIRMWARE_PATH_NAME_LEN          PATH_MAX
+#define SAI_MAX_PLATFORM_INFO_PATH_NAME_LEN     PATH_MAX
 
 /**
  *  @brief Attribute data for SAI_SWITCH_ATTR_OPER_STATUS
@@ -147,23 +148,63 @@ typedef enum _sai_switch_attr_t
 {
     /** READ-ONLY */
 
-    /** The number of ports on the switch [uint32_t] */
+    /** The number of ports on the switch [sai_uint32_t] */
     SAI_SWITCH_ATTR_PORT_NUMBER,
 
     /** Get the port list [sai_object_list_t] */
     SAI_SWITCH_ATTR_PORT_LIST,
 
-    /** Get the Max MTU in bytes, Supported by the switch [uint32_t] */
+    /** Get the Max MTU in bytes, Supported by the switch [sai_uint32_t] */
     SAI_SWITCH_ATTR_PORT_MAX_MTU,
 
     /** Get the CPU Port [sai_object_id_t] */
     SAI_SWITCH_ATTR_CPU_PORT,
 
-    /** Max number of virtual routers supported [uint32_t] */
+    /** Max number of virtual routers supported [sai_uint32_t] */
     SAI_SWITCH_ATTR_MAX_VIRTUAL_ROUTERS,
 
-    /** The size of the FDB Table in bytes [uint32_t] */
+    /** The size of the FDB Table in bytes [sai_uint32_t] */
     SAI_SWITCH_ATTR_FDB_TABLE_SIZE,
+
+    /** Number of ports that can be part of a LAG [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_LAG_MEMBERS,
+
+    /** Number of LAGs that can be created [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_LAG_NUMBER,
+
+    /** ECMP number of paths per group [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_ECMP_PATHS,
+
+    /** The L3 Host Table size [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_L3_NEIGHBOR_TABLE_SIZE,
+
+    /** The L3 Route Table size [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_L3_ROUTE_TABLE_SIZE,
+
+    /** The number of Unicast Queues per port [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_NUM_UNICAST_QUEUES,
+
+    /** The number of Multicast Queues per port [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_NUM_MULTICAST_QUEUES,
+
+    /** The total number of Queues per port [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_NUM_QUEUES,
+
+    /** The number of CPU Queues [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_NUM_CPU_QUEUES,
+
+    /** ECMP number of group [sai_uint32_t]
+     * Set SAI_SWITCH_ATTR_RESET_DEFAULT to reset to default value */
+    SAI_SWITCH_ATTR_NUM_ECMP_GROUPS,
 
     /**
     *   Local subnet routing supported [bool]
@@ -226,12 +267,6 @@ typedef enum _sai_switch_attr_t
      * each Hierarchy level [sai_u32_list_t] */
     SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUPS_PER_HIERARCHY_LEVEL,
 
-    /** Maximum number of ports that can be part of a LAG [uint32_t] */
-    SAI_SWITCH_ATTR_MAX_LAG_MEMBERS,
-
-    /** Maximum number of LAGs that can be created per switch [uint32_t] */
-    SAI_SWITCH_ATTR_MAX_LAG_NUMBER,
-
     /** switch total buffer size in KB [sai_uint32_t] */
     SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE,
 
@@ -275,11 +310,11 @@ typedef enum _sai_switch_attr_t
     /** Default switch MAC Address [sai_mac_t] */
     SAI_SWITCH_ATTR_SRC_MAC_ADDRESS,
 
-    /** Maximum number of learned MAC addresses [uint32_t]
+    /** Maximum number of learned MAC addresses [sai_uint32_t]
      * zero means learning limit disable. (default to zero) */
     SAI_SWITCH_ATTR_MAX_LEARNED_ADDRESSES,
 
-    /** Dynamic FDB entry aging time in seconds [uint32_t]
+    /** Dynamic FDB entry aging time in seconds [sai_uint32_t]
     *   Zero means aging is disabled.
     *  (default to zero)
     */
@@ -297,7 +332,7 @@ typedef enum _sai_switch_attr_t
     /** SAI ECMP default hash algorithm [sai_hash_algorithm] (default to SAI_HASH_ALGORITHM_CRC) */
     SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM,
 
-    /** SAI ECMP default hash seed [uint32_t] (default to 0) */
+    /** SAI ECMP default hash seed [sai_uint32_t] (default to 0) */
     SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED,
 
     /** The hash object for IPv4 packets going through ECMP [sai_object_id_t] */
@@ -309,7 +344,7 @@ typedef enum _sai_switch_attr_t
     /** SAI LAG default hash algorithm [sai_hash_algorithm] (default to SAI_HASH_ALGORITHM_CRC) */
     SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM,
 
-    /** SAI LAG default hash seed [uint32_t] (default to 0) */
+    /** SAI LAG default hash seed [sai_uint32_t] (default to 0) */
     SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED,
 
     /** The hash object for IPv4 packets going through LAG [sai_object_id_t] */
@@ -317,10 +352,6 @@ typedef enum _sai_switch_attr_t
 
     /** The hash object for IPv4 in IPv4 packets going through LAG [sai_object_id_t] */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4_IN_IPV4,
-
-    /** ECMP max number of paths per group [uint32_t]
-       (default to 64) */
-    SAI_SWITCH_ATTR_ECMP_MAX_PATHS,
 
     /** The SDK can
      * 1 - Read the counters directly from HW (or)
@@ -338,7 +369,7 @@ typedef enum _sai_switch_attr_t
      *
      * Default - 1 sec (SW counter cache)
      *
-     * [uint32_t]
+     * [sai_uint32_t]
      */
     SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL,
 
@@ -420,6 +451,35 @@ typedef enum _sai_switch_attr_t
 } sai_switch_attr_t;
 
 /**
+ * @def SAI_SWITCH_ATTR_MAX_KEY_STRING_LEN
+ * Maximum length of switch attribute key string that can be set using key=value
+ */
+#define SAI_SWITCH_ATTR_MAX_KEY_STRING_LEN    64
+
+/**
+ * @def SAI_SWITCH_ATTR_MAX_KEY_COUNT
+ * Maximum count of switch attribute keys
+ * @note This value needs to be incremented whenever a new switch attribute key
+ * is added.
+ */
+#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         11
+
+/**
+ * List of switch attributes keys that can be set using key=value
+ */
+#define SAI_KEY_FDB_TABLE_SIZE                "SAI_FDB_TABLE_SIZE"
+#define SAI_KEY_NUM_LAG_MEMBERS               "SAI_NUM_LAG_MEMBERS"
+#define SAI_KEY_NUM_LAG_COUNT                 "SAI_NUM_LAG_COUNT"
+#define SAI_KEY_NUM_ECMP_PATHS                "SAI_NUM_ECMP_PATHS"
+#define SAI_KEY_L3_NEIGHBOR_TABLE_SIZE        "SAI_L3_NEIGHBOR_TABLE_SIZE"
+#define SAI_KEY_L3_ROUTE_TABLE_SIZE           "SAI_L3_ROUTE_TABLE_SIZE"
+#define SAI_KEY_NUM_UNICAST_QUEUES            "SAI_NUM_UNICAST_QUEUES"
+#define SAI_KEY_NUM_MULTICAST_QUEUES          "SAI_NUM_MULTICAST_QUEUES"
+#define SAI_KEY_NUM_QUEUES                    "SAI_NUM_QUEUES"
+#define SAI_KEY_NUM_CPU_QUEUES                "SAI_NUM_CPU_QUEUES"
+#define SAI_KEY_NUM_ECMP_GROUPS               "SAI_NUM_ECMP_GROUPS"
+
+/**
  * Routine Description:
  *   @brief Switch shutdown request callback.
  *   Adapter DLL may request a shutdown due to an unrecoverable failure
@@ -474,6 +534,7 @@ typedef struct _sai_switch_notification_t
 *   @param[in] switch_hardware_id - Switch hardware ID to open
 *   @param[in] firmware_path_name - Vendor specific path name of the firmware
 *                                   to load
+*   @param[in] platform_info_path_name - Platform specific information file path
 *   @param[in] switch_notifications - switch notification table
 * Return Values:
 *   @return SAI_STATUS_SUCCESS on success
@@ -483,6 +544,7 @@ typedef sai_status_t (*sai_initialize_switch_fn)(
     _In_ sai_switch_profile_id_t profile_id,
     _In_reads_z_(SAI_MAX_HARDWARE_ID_LEN) char* switch_hardware_id,
     _In_reads_opt_z_(SAI_MAX_FIRMWARE_PATH_NAME_LEN) char* firmware_path_name,
+    _In_reads_opt_z_(SAI_MAX_PLATFORM_INFO_PATH_NAME_LEN) char* platform_info_path_name,
     _In_ sai_switch_notification_t* switch_notifications
     );
 
@@ -566,7 +628,7 @@ typedef sai_status_t (*sai_set_switch_attribute_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_get_switch_attribute_fn)(
-    _In_ uint32_t attr_count,
+    _In_ sai_uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
 

@@ -448,6 +448,9 @@ typedef struct _sai_qos_map_list_t
     sai_qos_map_t *list;
 } sai_qos_map_list_t;
 
+/* Configuring this as attribute value will use NPU default setting */
+#define SAI_SWITCH_ATTR_RESET_DEFAULT 0xFFFFFFFF
+
 /**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
  *
