@@ -238,6 +238,9 @@ typedef enum _sai_switch_attr_t
      * each Hierarchy level [sai_u32_list_t] */
     SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUPS_PER_HIERARCHY_LEVEL,
 
+    /** HQOS - Maximum number of childs supported per scheudler group [sai_uint32_t]*/
+    SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_CHILDS_PER_SCHEDULER_GROUPS,
+
     /** Maximum number of ports that can be part of a LAG [uint32_t] */
     SAI_SWITCH_ATTR_MAX_LAG_MEMBERS,
 
