@@ -260,12 +260,8 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_LAG_HASH,
 
     /** Synchronize counter statistics with the HW when SW cache based counter
-     * collection is enabled. This attribute can be useful for sflow, and also 
-     * for accurate statistics collection needed by application for diagnostic
-     * purpose, and also to collect counter samples and send to any analytics 
-     * software.
-     * This attribute is not required when direct HW based  counter stats 
-     * collection is enabled.
+     * collection is enabled. This attribute is not required when direct HW based
+     * counter stats collection is enabled.
      */
     SAI_SWITCH_ATTR_COUNTER_SYNC,
 
