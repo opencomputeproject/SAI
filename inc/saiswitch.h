@@ -215,7 +215,7 @@ typedef enum _sai_switch_attr_t
      * Must return SAI_STATUS_OBJECT_IN_USE when try to delete this VR ID. */
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
-    /** Maximum traffic classes limit*/
+    /** Maximum traffic classes limit [sai_uint8_t] */
     SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_TRAFFIC_CLASSES,
 
     /** HQOS - Maximum Number of Hierarchy scheduler
@@ -225,6 +225,9 @@ typedef enum _sai_switch_attr_t
     /** HQOS - Maximum number of scheduler groups supported on
      * each Hierarchy level [sai_u32_list_t] */
     SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUPS_PER_HIERARCHY_LEVEL,
+
+    /** HQOS - Maximum number of childs supported per scheudler group [sai_uint32_t]*/
+    SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_CHILDS_PER_SCHEDULER_GROUPS,
 
     /** Maximum number of ports that can be part of a LAG [uint32_t] */
     SAI_SWITCH_ATTR_MAX_LAG_MEMBERS,
@@ -342,7 +345,7 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL,
 
-    /** Default Traffic class value, Defalut TC = 0 */
+    /** Default Traffic class value, Default TC = 0 */
     SAI_SWITCH_ATTR_QOS_DEFAULT_TC,
 
     /** Enable DOT1P -> TC MAP [sai_object_id_t] on switch.
