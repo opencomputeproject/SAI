@@ -135,7 +135,7 @@ typedef enum _sai_hash_algorithm_t
     SAI_HASH_ALGORITHM_XOR = 2,
 
     /** Random-based hash algorithm */
-    SAI_HASH_RANDOM = 3,
+    SAI_HASH_ALGORITHM_RANDOM = 3,
 
 } sai_hash_algorithm_t;
 
