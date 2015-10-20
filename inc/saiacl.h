@@ -601,6 +601,11 @@ typedef enum _sai_acl_entry_attr_t
      * Value Range SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ACL_META_DATA,
 
+    /** Egress block port list [sai_object_list_t]
+     * Packets matching the ACL entry and egressing out of the ports in the
+     * given port list will be dropped. */
+    SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
+
     /** End of Rule Actions */
     SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ACL_META_DATA
 
