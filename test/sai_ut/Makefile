@@ -26,13 +26,20 @@ nhg_SRCS = $(l3_util_SRCS) ./routing/sai_l3_nexthopgroup_unit_test.cpp
 nbr_SRCS = $(l3_util_SRCS) ./routing/sai_l3_neighbor_unit_test.cpp
 route_SRCS = $(l3_util_SRCS) ./routing/sai_l3_route_unit_test.cpp
 
+qos_util_SRCS = ./qos/sai_qos_unit_test_utils.cpp
+queue_SRCS = $(qos_util_SRCS) ./qos/sai_queue_unit_test.cpp
+scheduler_SRCS = $(qos_util_SRCS) ./qos/sai_scheduler_unit_test.cpp
+qos_maps_SRCS = $(qos_util_SRCS) ./qos/sai_qos_maps_unit_test.cpp
+policer_SRCS = $(qos_util_SRCS) ./qos/sai_policer_unit_test.cpp
+wred_SRCS = $(qos_util_SRCS) ./qos/sai_wred_unit_test.cpp
+scheduler_group_SRCS = $(qos_util_SRCS) ./qos/sai_scheduler_group_unit_test.cpp
+
 ### platform specific Linker/LD Flags
 # add pointers to SAI library
 # by adding -l<sai> and -L<location-to-libsai.so> directives
 # add other linker dependencies too. alternately, dlopen/dlsym
 # in unit-test source. For e.g:
 #PLATFORM_LINK_LDFLAGS = -lsai -L../lib -Wl,-rpath-link,../lib
-PLATFORM_LINK_LDFLAGS =
 ###########
 
 # binary for all unit-tests
@@ -42,8 +49,15 @@ nh_EXEC    = sai_ut_nh
 nhg_EXEC   = sai_ut_nhg
 nbr_EXEC   = sai_ut_nbr
 route_EXEC = sai_ut_route
+queue_EXEC = sai_ut_queue
+scheduler_EXEC = sai_ut_scheduler
+qos_maps_EXEC = sai_ut_qos_maps
+policer_EXEC = sai_ut_policer
+wred_EXEC = sai_ut_wred
+scheduler_group_EXEC = sai_ut_scheduler_group
 
 EXEC_ALL = $(BDIR)/$(vr_EXEC) $(BDIR)/$(rif_EXEC) $(BDIR)/$(nh_EXEC) $(BDIR)/$(nhg_EXEC) $(BDIR)/$(nbr_EXEC) $(BDIR)/$(route_EXEC)
+EXEC_ALL += $(BDIR)/$(queue_EXEC) $(BDIR)/$(scheduler_EXEC) $(BDIR)/$(qos_maps_EXEC) $(BDIR)/$(policer_EXEC) $(BDIR)/$(wred_EXEC) $(BDIR)/$(scheduler_group_EXEC)
 
 # what to use for compiling
 CXX=g++
@@ -62,8 +76,14 @@ nh_OBJS = $(nh_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 nhg_OBJS = $(nhg_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 nbr_OBJS = $(nbr_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 route_OBJS = $(route_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+queue_OBJS = $(queue_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+scheduler_OBJS = $(scheduler_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+qos_maps_OBJS = $(qos_maps_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+policer_OBJS = $(policer_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+wred_OBJS = $(wred_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+scheduler_group_OBJS = $(scheduler_group_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 
-all : $(vr_SRCS) $(rif_SRCS) $(nh_SRCS) $(nhg_SRCS) $(nbr_SRCS) $(route_SRCS) $(EXEC_ALL)
+all : $(vr_SRCS) $(rif_SRCS) $(nh_SRCS) $(nhg_SRCS) $(nbr_SRCS) $(route_SRCS) $(queue_SRCS) $(scheduler_SRCS) $(qos_maps_SRCS) $(wred_SRCS) $(policer_SRCS) $(scheduler_group_SRCS) $(EXEC_ALL)
 
 # rule for execs
 $(BDIR)/$(vr_EXEC): $(vr_OBJS)
@@ -84,10 +104,26 @@ $(BDIR)/$(nbr_EXEC): $(nbr_OBJS)
 $(BDIR)/$(route_EXEC): $(route_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(route_OBJS) -o $@ $(LDFLAGS)
 
+$(BDIR)/$(queue_EXEC): $(queue_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(queue_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(scheduler_EXEC): $(scheduler_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(scheduler_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(qos_maps_EXEC): $(qos_maps_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(qos_maps_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(policer_EXEC): $(policer_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(policer_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(wred_EXEC): $(wred_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(wred_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(scheduler_group_EXEC): $(scheduler_group_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(scheduler_group_OBJS) -o $@ $(LDFLAGS)
+
 .cpp.o:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDEFLAGS) -o $@ -c $<
  
 clean :
-	rm -f $(EXEC_ALL) *.o routing/*.o
-
-
+	rm -f $(EXEC_ALL) *.o routing/*.o qos/*.o
