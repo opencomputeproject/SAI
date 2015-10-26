@@ -42,7 +42,6 @@
 
 #define SAI_MAX_HARDWARE_ID_LEN                 255
 #define SAI_MAX_FIRMWARE_PATH_NAME_LEN          PATH_MAX
-#define SAI_MAX_PLATFORM_INFO_PATH_NAME_LEN     PATH_MAX
 
 /**
  *  @brief Attribute data for SAI_SWITCH_ATTR_OPER_STATUS
@@ -452,7 +451,7 @@ typedef enum _sai_switch_attr_t
  * @note This value needs to be incremented whenever a new switch attribute key
  * is added.
  */
-#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         11
+#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         12
 
 /**
  * List of switch attributes keys that can be set using key=value
@@ -468,6 +467,7 @@ typedef enum _sai_switch_attr_t
 #define SAI_KEY_NUM_QUEUES                    "SAI_NUM_QUEUES"
 #define SAI_KEY_NUM_CPU_QUEUES                "SAI_NUM_CPU_QUEUES"
 #define SAI_KEY_NUM_ECMP_GROUPS               "SAI_NUM_ECMP_GROUPS"
+#define SAI_KEY_INIT_CONFIG_FILE              "SAI_INIT_CONFIG_FILE"
 
 /**
  * Routine Description:
@@ -524,7 +524,6 @@ typedef struct _sai_switch_notification_t
 *   @param[in] switch_hardware_id - Switch hardware ID to open
 *   @param[in] firmware_path_name - Vendor specific path name of the firmware
 *                                   to load
-*   @param[in] platform_info_path_name - Platform specific information file path
 *   @param[in] switch_notifications - switch notification table
 * Return Values:
 *   @return SAI_STATUS_SUCCESS on success
@@ -534,7 +533,6 @@ typedef sai_status_t (*sai_initialize_switch_fn)(
     _In_ sai_switch_profile_id_t profile_id,
     _In_reads_z_(SAI_MAX_HARDWARE_ID_LEN) char* switch_hardware_id,
     _In_reads_opt_z_(SAI_MAX_FIRMWARE_PATH_NAME_LEN) char* firmware_path_name,
-    _In_reads_opt_z_(SAI_MAX_PLATFORM_INFO_PATH_NAME_LEN) char* platform_info_path_name,
     _In_ sai_switch_notification_t* switch_notifications
     );
 
