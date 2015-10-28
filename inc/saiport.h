@@ -423,7 +423,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP,
 
     /** Attach WRED to port [sai_object_id_t]
-     (mandatory when SAI_PORT_ATTR_QOS_DROP_TYPE =  SAI_QOS_DROP_TYPE_WRED) */
+     * ID = SAI_NULL_OBJECT_ID to disable WRED. */
     SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
 
     /** Scheduler for port [sai_object_id_t], Default no limits.
