@@ -412,10 +412,10 @@ typedef enum _sai_port_attr_t
      * Default no map */
     SAI_PORT_ATTR_QOS_TC_TO_PRIORITY_GROUP_MAP,
 
-    /** Enable Priority Group -> PFC Priority MAP [sai_object_id_t]
+    /** Enable PFC Priority -> Priority Group MAP [sai_object_id_t]
      * Map id = SAI_NULL_OBJECT_ID to disable map on port.
      * Default no map */
-    SAI_PORT_ATTR_QOS_PRIORITY_GROUP_TO_PFC_PRIORITY_MAP,
+    SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP,
 
     /** Enable PFC Priority -> Queue MAP [sai_object_id_t]
      * Map id = SAI_NULL_OBJECT_ID to disable map on port.
