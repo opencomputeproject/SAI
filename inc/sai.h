@@ -54,6 +54,8 @@
 #include <saischeduler.h>
 #include <saischedulergroup.h>
 #include <saibuffer.h>
+#include <saihash.h>
+#include <saiudf.h>
 
 /** \defgroup SAI SAI - Entry point specific API definitions.
  *
