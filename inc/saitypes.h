@@ -274,6 +274,34 @@ typedef struct _sai_ip_prefix_t {
 } sai_ip_prefix_t;
 
 /**
+ * @brief Defines a single ACL User Defined Field data
+ *
+ */
+typedef struct _sai_acl_udf_data_t {
+    /** UDF Group object id */
+    sai_object_id_t  udf_group_id;
+
+    /** The count in the list must be equal to the UDF byte length. */
+    sai_u8_list_t    data;
+
+    /** The count in the list must be equal to the UDF byte length. */
+    sai_u8_list_t    mask;
+} sai_acl_udf_data_t;
+
+/**
+ * @brief Defines a list of ACL User Defined Field data
+ *
+ */
+typedef struct _sai_acl_udf_data_list_t
+{
+    /** Number of UDF data */
+    uint32_t count;
+
+    /** List of UDF data */
+    sai_acl_udf_data_t *udf_list;
+} sai_acl_udf_data_list_t;
+
+/**
  * @brief Defines a single ACL filter
  *
  * Note : IPv4 and IPv6 Address expected in Network Byte Order
@@ -304,6 +332,7 @@ typedef struct _sai_acl_field_data_t
      * Expected AND result using match mask above with packet field value where applicable.
      */
     union {
+        bool booldata;
         sai_uint8_t u8;
         sai_int8_t s8;
         sai_uint16_t u16;
@@ -480,6 +509,7 @@ typedef union {
     sai_vlan_list_t vlanlist;
     sai_vlan_port_list_t vlanportlist;
     sai_acl_field_data_t aclfield;
+    sai_acl_udf_data_list_t acludflist;
     sai_acl_action_data_t aclaction;
     sai_port_breakout_t portbreakout;
     sai_qos_map_list_t qosmap;

@@ -319,8 +319,11 @@ typedef enum _sai_acl_table_attr_t
     /** DST IP address match in neighbor table */
     SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
 
+    /** User Defined Field Group list [sai_object_list_t] */
+    SAI_ACL_TABLE_ATTR_UDF_GROUP_LIST,
+
     /** End of Table Match Field */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_UDF_GROUP_LIST,
 
     /* -- */
 
@@ -501,8 +504,11 @@ typedef enum _sai_acl_entry_attr_t
     /** DST IP address match in neighbor Table */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
 
+    /** User Defined Field Data list [sai_acl_udf_data_list_t] */
+    SAI_ACL_ENTRY_ATTR_FIELD_UDF_DATA_LIST,
+
     /** End of Rule Match Fields */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_UDF_DATA_LIST,
 
     /** Actions [sai_acl_action_data_t]
      * - To enable an action, parameter is needed unless noted specifically.
