@@ -38,7 +38,7 @@ extern "C" {
 #include "saistatus.h"
 #include <inttypes.h>
 }
-#define SAI_MAX_GROUPS_PER_LEVEL 2
+#define SAI_MAX_GROUPS_PER_LEVEL 3
 #define SAI_MAX_HIERARCHY_LEVELS 10
 #define SAI_MAX_QUEUES_PER_PORT  40
 
@@ -228,12 +228,6 @@ static void sai_test_sched_group_attr_list_print (unsigned int attr_count,
          attr_index < attr_count; ++attr_index, ++p_attr) {
 
         switch (p_attr->id) {
-
-            case SAI_SCHEDULER_GROUP_ATTR_MAX_SUPPORTED_CHILDS:
-                printf ("Index: %d, Max supported Group child Count: %d.\n",
-                        attr_index, p_attr->value.u32);
-                break;
-
             case SAI_SCHEDULER_GROUP_ATTR_CHILD_COUNT:
                 printf ("Index: %d, Active Group child Count: %d.\n",
                         attr_index, p_attr->value.u32);
@@ -263,6 +257,13 @@ static void sai_test_sched_group_attr_list_print (unsigned int attr_count,
                         attr_index,
                         p_attr->value.u32);
                 break;
+
+            case SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS:
+                printf ("Index: %d, Scheduler Group max childs: %d.\n",
+                        attr_index,
+                        p_attr->value.u32);
+                break;
+
 
             case SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID:
                 printf ("Index: %d, Scheduler Group scheduler profile: 0x%"PRIx64".\n",
@@ -445,22 +446,27 @@ static sai_status_t sai_sched_group_create_test_hierarchy (void)
     unsigned int     level = 0;
     unsigned int     group = 0;
     unsigned int     queue = 0;
+    unsigned int     max_childs = 3;
 
     printf("Create Scheduler groups at all levels \r\n");
     /* Root/Level 0 */
-    sai_rc = sai_test_sched_group_create (&sg_id_list[level][group], 2,
+    sai_rc = sai_test_sched_group_create (&sg_id_list[level][group], 3,
                                           SAI_SCHEDULER_GROUP_ATTR_PORT_ID,
                                           default_port_id,
-                                          SAI_SCHEDULER_GROUP_ATTR_LEVEL, level);
+                                          SAI_SCHEDULER_GROUP_ATTR_LEVEL, level,
+                                          SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS,
+                                          max_childs);
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
     /* Create SAI_MAX_GROUPS_PER_LEVEL at each level */
     for (level = 1; level < hqos_levels; level++) {
         for (group = 0; group < SAI_MAX_GROUPS_PER_LEVEL; group++) {
-            sai_rc = sai_test_sched_group_create (&sg_id_list[level][group], 2,
+            sai_rc = sai_test_sched_group_create (&sg_id_list[level][group], 3,
                                                   SAI_SCHEDULER_GROUP_ATTR_PORT_ID,
                                                   default_port_id,
-                                                  SAI_SCHEDULER_GROUP_ATTR_LEVEL, level);
+                                                  SAI_SCHEDULER_GROUP_ATTR_LEVEL, level,
+                                                  SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS,
+                                                  max_childs);
             EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
         }
     }
@@ -469,9 +475,10 @@ static sai_status_t sai_sched_group_create_test_hierarchy (void)
     parent_sg_id = sg_id_list[0][0];
 
     for (level = 1; level < hqos_levels; level++) {
-        sai_rc = sai_test_add_child_object_to_group (parent_sg_id, 2,
+        sai_rc = sai_test_add_child_object_to_group (parent_sg_id, max_childs,
                                                       sg_id_list[level][0],
-                                                      sg_id_list[level][1]);
+                                                      sg_id_list[level][1],
+                                                      sg_id_list[level][2]);
         EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
         parent_sg_id = sg_id_list[level][0];
@@ -527,6 +534,7 @@ static sai_status_t sai_sched_group_remove_test_hierarchy (void)
     }
     return sai_rc;
 }
+
 /*
  * Validate get port scheduler group id list get.
  */
@@ -564,12 +572,15 @@ TEST (saiQosSchedulerGroupTest, sched_group_create_and_remove)
 {
     sai_status_t sai_rc = SAI_STATUS_SUCCESS;
     unsigned int level = 0;
+    unsigned int max_childs = 1;
 
     for (level = 0; level < hqos_levels; level++) {
-        sai_rc = sai_test_sched_group_create (&sg_id_list[level][0], 2,
+        sai_rc = sai_test_sched_group_create (&sg_id_list[level][0], 3,
                                               SAI_SCHEDULER_GROUP_ATTR_PORT_ID,
                                               default_port_id,
-                                              SAI_SCHEDULER_GROUP_ATTR_LEVEL, level);
+                                              SAI_SCHEDULER_GROUP_ATTR_LEVEL, level,
+                                              SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS,
+                                              max_childs);
         EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
     }
 
@@ -599,6 +610,12 @@ TEST (saiQosSchedulerGroupTest, sched_group_create_and_mandatory_attribute)
     sai_rc = sai_test_sched_group_create (&sg_id_list[1][0], 1,
                                           SAI_SCHEDULER_GROUP_ATTR_LEVEL, 1);
     EXPECT_EQ (SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
+
+    sai_rc = sai_test_sched_group_create (&sg_id_list[1][0], 2,
+                                          SAI_SCHEDULER_GROUP_ATTR_LEVEL, 1,
+                                          SAI_SCHEDULER_GROUP_ATTR_PORT_ID,
+                                          default_port_id);
+    EXPECT_EQ (SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING, sai_rc);
 }
 
 /*
@@ -618,19 +635,23 @@ TEST (saiQosSchedulerGroupTest, add_and_remove_childs_to_group)
 
     printf("Create Scheduler groups at all levels \r\n");
     /* Root/Level 0 */
-    sai_rc = sai_test_sched_group_create (&sg_id_list[level][group], 2,
+    sai_rc = sai_test_sched_group_create (&sg_id_list[level][group], 3,
                                           SAI_SCHEDULER_GROUP_ATTR_PORT_ID,
                                           default_port_id,
-                                          SAI_SCHEDULER_GROUP_ATTR_LEVEL, level);
+                                          SAI_SCHEDULER_GROUP_ATTR_LEVEL, level,
+                                          SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS,
+                                          SAI_MAX_GROUPS_PER_LEVEL);
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
     /* Create SAI_MAX_GROUPS_PER_LEVEL at each level */
     for (level = 1; level < hqos_levels; level++) {
         for (group = 0; group < SAI_MAX_GROUPS_PER_LEVEL; group++) {
-            sai_rc = sai_test_sched_group_create (&sg_id_list[level][group], 2,
+            sai_rc = sai_test_sched_group_create (&sg_id_list[level][group], 3,
                                                   SAI_SCHEDULER_GROUP_ATTR_PORT_ID,
                                                   default_port_id,
-                                                  SAI_SCHEDULER_GROUP_ATTR_LEVEL, level);
+                                                  SAI_SCHEDULER_GROUP_ATTR_LEVEL, level,
+                                                  SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS,
+                                                  SAI_MAX_GROUPS_PER_LEVEL);
             EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
         }
     }
@@ -639,9 +660,15 @@ TEST (saiQosSchedulerGroupTest, add_and_remove_childs_to_group)
     parent_sg_id = sg_id_list[0][0];
 
     for (level = 1; level < hqos_levels; level++) {
-        sai_rc = sai_test_add_child_object_to_group (parent_sg_id, 2,
+        sai_rc = sai_test_add_child_object_to_group (parent_sg_id, 3,
                                                       sg_id_list[level][0],
                                                       sg_id_list[level][1]);
+        EXPECT_EQ (SAI_STATUS_INVALID_PARAMETER, sai_rc);
+
+        sai_rc = sai_test_add_child_object_to_group (parent_sg_id, 3,
+                                                      sg_id_list[level][0],
+                                                      sg_id_list[level][1],
+                                                      sg_id_list[level][2]);
         EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
         parent_sg_id = sg_id_list[level][0];
@@ -726,10 +753,12 @@ TEST (saiQosSchedulerGroupTest, sched_group_attribute_get)
     unsigned int     attr_count = 4;
     sai_attribute_t  attr_list[attr_count];
 
-    sai_rc = sai_test_sched_group_create (&sg_id, 2,
+    sai_rc = sai_test_sched_group_create (&sg_id, 3,
                                           SAI_SCHEDULER_GROUP_ATTR_PORT_ID,
                                           default_port_id,
-                                          SAI_SCHEDULER_GROUP_ATTR_LEVEL, 1);
+                                          SAI_SCHEDULER_GROUP_ATTR_LEVEL, 1,
+                                          SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS,
+                                          2);
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
     sai_rc = sai_test_sched_group_attr_get (sg_id, &attr_list[0], attr_count,
@@ -801,10 +830,11 @@ TEST (saiQosSchedulerGroupTest, sched_group_attribute_set)
     sai_attribute_t  attr;
     sai_object_id_t  child_id;
 
-    sai_rc = sai_test_sched_group_create (&sg_id, 2,
+    sai_rc = sai_test_sched_group_create (&sg_id, 3,
                                           SAI_SCHEDULER_GROUP_ATTR_PORT_ID,
                                           default_port_id,
-                                          SAI_SCHEDULER_GROUP_ATTR_LEVEL, 1);
+                                          SAI_SCHEDULER_GROUP_ATTR_LEVEL, 1,
+                                          SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS,1);
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
     /* Validate CREATE_ONLY Attributes's */
@@ -1102,13 +1132,14 @@ TEST (saiQosSchedulerGroupTest, sched_group_attribute_create_set)
     sai_rc = sai_test_scheduler_create (&sched_id, 0);
     ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
-    sai_rc = sai_test_sched_group_create (&sg_id, 3,
+    sai_rc = sai_test_sched_group_create (&sg_id, 4,
                                           SAI_SCHEDULER_GROUP_ATTR_PORT_ID,
                                           default_port_id,
                                           SAI_SCHEDULER_GROUP_ATTR_LEVEL, 1,
+                                          SAI_SCHEDULER_GROUP_ATTR_MAX_CHILDS,1,
                                           SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID,
                                           sched_id);
-    EXPECT_EQ (sai_test_invalid_attr_status_code(SAI_STATUS_INVALID_ATTRIBUTE_0, 2), sai_rc);
+    EXPECT_EQ (sai_test_invalid_attr_status_code(SAI_STATUS_INVALID_ATTRIBUTE_0, 3), sai_rc);
 
     sai_rc =  sai_test_scheduler_remove (sched_id);
     ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
@@ -1200,6 +1231,98 @@ TEST (saiQosSchedulerGroupTest, sched_group_inuse)
 
     sai_rc =  sai_test_scheduler_remove (sched_id);
     ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+}
+
+/*
+ * Validate strict priority setting for more than one children
+ * Apply a strict priority scheduler on more than one children at a level
+ * Retreive the applied scheduler id to validate
+ * Revert by applying a WRR scheduler on a SP child
+ *
+ */
+TEST (saiQosSchedulerGroupTest, two_strict_priority)
+{
+    sai_status_t sai_rc = SAI_STATUS_SUCCESS;
+    sai_object_id_t  sched_id = SAI_NULL_OBJECT_ID;
+    sai_object_id_t  wrr_sched_id = SAI_NULL_OBJECT_ID;
+    sai_object_id_t  sg_id = SAI_NULL_OBJECT_ID;
+    sai_attribute_t  attr;
+    sai_attribute_t  get_attr;
+
+    sai_rc = sai_sched_group_create_test_hierarchy();
+    EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    sai_rc = sai_test_scheduler_create (&sched_id, 6,
+                                        SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM, SAI_SCHEDULING_STRICT,
+                                        SAI_SCHEDULER_ATTR_SHAPER_TYPE, SAI_METER_TYPE_BYTES,
+                                        SAI_SCHEDULER_ATTR_MIN_BANDWIDTH_RATE, 512,
+                                        SAI_SCHEDULER_ATTR_MIN_BANDWIDTH_BURST_RATE, 1024,
+                                        SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE, 1024,
+                                        SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE, 2048);
+
+    ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    sai_rc = sai_test_scheduler_create (&wrr_sched_id, 7,
+                                        SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM, SAI_SCHEDULING_WRR,
+                                        SAI_SCHEDULER_ATTR_SHAPER_TYPE, SAI_METER_TYPE_BYTES,
+                                        SAI_SCHEDULER_ATTR_SCHEDULING_WEIGHT, 10,
+                                        SAI_SCHEDULER_ATTR_MIN_BANDWIDTH_RATE, 512,
+                                        SAI_SCHEDULER_ATTR_MIN_BANDWIDTH_BURST_RATE, 1024,
+                                        SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE, 1024,
+                                        SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE, 2048);
+
+    ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    get_attr.id = SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID;
+    attr.id = SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID;
+    attr.value.oid = sched_id;
+
+    /* Apply SP scheduler on L0 nodes. The order of sg node is made intentionally random */
+    sg_id = sg_id_list[1][0];
+    sai_rc = p_sai_qos_sg_api_table->set_scheduler_group_attribute (sg_id, &attr);
+    ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    sai_rc = p_sai_qos_sg_api_table->get_scheduler_group_attribute (sg_id, 1, &get_attr);
+    EXPECT_EQ (sched_id, get_attr.value.oid);
+
+    sg_id = sg_id_list[1][2];
+    sai_rc = p_sai_qos_sg_api_table->set_scheduler_group_attribute (sg_id, &attr);
+    ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    sai_rc = p_sai_qos_sg_api_table->get_scheduler_group_attribute (sg_id, 1, &get_attr);
+    EXPECT_EQ (sched_id, get_attr.value.oid);
+
+    sg_id = sg_id_list[1][1];
+    sai_rc = p_sai_qos_sg_api_table->set_scheduler_group_attribute (sg_id, &attr);
+    ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    sai_rc = p_sai_qos_sg_api_table->get_scheduler_group_attribute (sg_id, 1, &get_attr);
+    EXPECT_EQ (sched_id, get_attr.value.oid);
+
+    /* Apply SP scheduler on L1 nodes */
+    sg_id = sg_id_list[2][2];
+    sai_rc = p_sai_qos_sg_api_table->set_scheduler_group_attribute (sg_id, &attr);
+    ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    sai_rc = p_sai_qos_sg_api_table->get_scheduler_group_attribute (sg_id, 1, &get_attr);
+    EXPECT_EQ (sched_id, get_attr.value.oid);
+
+    sg_id = sg_id_list[2][0];
+    sai_rc = p_sai_qos_sg_api_table->set_scheduler_group_attribute (sg_id, &attr);
+    ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    sai_rc = p_sai_qos_sg_api_table->get_scheduler_group_attribute (sg_id, 1, &get_attr);
+    EXPECT_EQ (sched_id, get_attr.value.oid);
+
+    attr.id = SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID;
+    attr.value.oid = wrr_sched_id;
+
+    sg_id = sg_id_list[1][0];
+    sai_rc = p_sai_qos_sg_api_table->set_scheduler_group_attribute (sg_id, &attr);
+    ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    sai_rc = p_sai_qos_sg_api_table->get_scheduler_group_attribute (sg_id, 1, &get_attr);
+    EXPECT_EQ (wrr_sched_id, get_attr.value.oid);
 }
 
 int main (int argc, char **argv)
