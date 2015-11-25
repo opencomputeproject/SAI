@@ -343,7 +343,7 @@ typedef enum _sai_port_attr_t
      * Policer id = SAI_NULL_OBJECT_ID to disable policer on port */
     SAI_PORT_ATTR_POLICER_ID,
 
-    /** Port default Traffic class Mapping */
+    /** Port default Traffic class Mapping [sai_uint8_t], Default TC=0*/
     SAI_PORT_ATTR_QOS_DEFAULT_TC,
 
    /** Enable DOT1P -> TC MAP [sai_object_id_t] on port
@@ -423,11 +423,12 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP,
 
     /** Attach WRED to port [sai_object_id_t]
-     (mandatory when SAI_PORT_ATTR_QOS_DROP_TYPE =  SAI_QOS_DROP_TYPE_WRED) */
+     * ID = SAI_NULL_OBJECT_ID to disable WRED. */
     SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
 
-    /** Scheduler for port [sai_object_id_t],
-     * Default no limits */
+    /** Scheduler for port [sai_object_id_t], Default no limits.
+     * SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE & SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE
+     * attributes alone valid. Rest will be ignored */
     SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID,
 
     /** Buffer profile for port [sai_object_id_t]*/
