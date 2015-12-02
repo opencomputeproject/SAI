@@ -279,11 +279,13 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP,
 
     /** The hash object for packets going through ECMP [sai_object_id_t]
-     * The object id is read only, while the object attributes can be modified */
-    SAI_SWITCH_ATTR_ECMP_HASH,
+     * The object id is read only, while the object attributes can be modified 
+     * (default all fields in sai_native_hash_field_t are enabled) */
+     SAI_SWITCH_ATTR_ECMP_HASH,
 
     /** The hash object for packets going through LAG [sai_object_id_t]
-     * The object id is read only, while the object attributes can be modified */
+     * The object id is read only, while the object attributes can be modified
+     * (default all fields in sai_native_hash_field_t are enabled) */
     SAI_SWITCH_ATTR_LAG_HASH,
 
 
