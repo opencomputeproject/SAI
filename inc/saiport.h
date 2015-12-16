@@ -670,13 +670,16 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
  * Arguments:
  *   @param[in] count - number of notifications
  *   @param[in] data  - array of port operational status
+ *   @param[in] cb_data - Pointer to application data passed to
+ *         callback
  *
  * Return Values:
  *    None
  */
 typedef void (*sai_port_state_change_notification_fn)(
     _In_ uint32_t count,
-    _In_ sai_port_oper_status_notification_t *data
+    _In_ sai_port_oper_status_notification_t *data,
+    void *cb_data
     );
 
 /**
@@ -686,13 +689,16 @@ typedef void (*sai_port_state_change_notification_fn)(
  * Arguments:
  *    @param[in] count - number of notifications
  *    @param[in] data  - array of port events
-
+ *    @param[in] cb_data - Pointer to application data passed to
+ *          callback
+ * 
  * Return Values:
  *    None
  */
 typedef void (*sai_port_event_notification_fn)(
     _In_ uint32_t count,
-    _In_ sai_port_event_notification_t *data
+    _In_ sai_port_event_notification_t *data,
+    void *cb_data
     );
 /**
  * @brief Port methods table retrieved with sai_api_query()

@@ -627,6 +627,8 @@ typedef sai_status_t(*sai_send_hostif_packet_fn)(
  *    @param[in] buffer_size - actual packet size in bytes
  *    @param[in] attr_count - number of attributes
  *    @param[in] attr_list - array of attributes
+ *    @param[in] cb_data - Pointer to application data passed to
+ *          callback
  *
  * Return Values:
  *		None
@@ -635,7 +637,8 @@ typedef void(*sai_packet_event_notification_fn)(
     _In_ const void *buffer,
     _In_ sai_size_t buffer_size,
     _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list
+    _In_ const sai_attribute_t *attr_list,
+    void *cb_data
     );
 
 /**
