@@ -556,6 +556,9 @@ typedef enum _sai_hostif_packet_attr
     /** Ingress LAG [sai_object_id_t] (for receive-only) */
     SAI_HOSTIF_PACKET_INGRESS_LAG,
 
+    /** Ingress VLAN [sai_vlan_id_t] (for receive-only) */
+    SAI_HOSTIF_PACKET_INGRESS_VLAN,
+
     /** packet transmit type [sai_hostif_tx_type_t]. (MANDATORY_ON_SEND) */
     SAI_HOSTIF_PACKET_TX_TYPE,
 
