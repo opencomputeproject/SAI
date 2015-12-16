@@ -74,6 +74,7 @@ typedef enum _sai_neighbor_attr_t
 typedef struct _sai_neighbor_entry_t
 {
     sai_object_id_t rif_id;
+    sai_object_id_t egress_port_id; /*Must be set to SAI_NULL_OBJECT_ID in case rif_id points to router port(not a VLAN).*/
     sai_ip_address_t ip_address;
 
 } sai_neighbor_entry_t;
