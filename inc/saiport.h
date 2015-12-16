@@ -121,28 +121,6 @@ typedef enum _sai_port_internal_loopback_mode_t
 } sai_port_internal_loopback_mode_t;
 
 /**
- * @brief Attribute data for SAI_PORT_ATTR_FDB_LEARNING
- */
-typedef enum _sai_port_fdb_learning_mode_t
-{
-    /** Drop packets with unknown source MAC. Do not learn. Do not forward */
-    SAI_PORT_LEARN_MODE_DROP,
-
-    /** Do not learn unknown source MAC. Forward based on destination MAC */
-    SAI_PORT_LEARN_MODE_DISABLE,
-
-    /** Hardware learning. Learn source MAC. Forward based on destination MAC */
-    SAI_PORT_LEARN_MODE_HW,
-
-    /** Trap packets with unknown source MAC to CPU. Do not learn. Do not forward */
-    SAI_PORT_LEARN_MODE_CPU_TRAP,
-
-    /** Trap packets with unknown source MAC to CPU. Do not learn. Forward based on destination MAC */
-    SAI_PORT_LEARN_MODE_CPU_LOG,
-
-} sai_port_fdb_learning_mode_t;
-
-/**
  * @brief Port Add/Delete Event
  */
 typedef enum _sai_port_event_t
@@ -278,9 +256,17 @@ typedef enum _sai_port_attr_t
        (default to SAI_PORT_INTERNAL_LOOPBACK_NONE) */
     SAI_PORT_ATTR_INTERNAL_LOOPBACK,
 
-    /** FDB Learning mode [sai_port_fdb_learning_mode_t]
-       (default to SAI_PORT_LEARN_MODE_HW) */
-    SAI_PORT_ATTR_FDB_LEARNING,
+    /** To enable/disable learning on port. [bool] (CREATE_AND_SET)
+      * (default set to true). If this is set to true on a port, 
+      * then the source MAC learning mode is enabled on this port 
+      * and overrides learning mode on any VLAN the port is 
+      * participating in.*/
+    SAI_PORT_ATTR_FDB_LEARNING_ENABLE,
+
+    /** Per port FDB Learning mode [sai_fdb_learning_mode_t].
+        Takes precedence over learning mode confidured per VLAN(over SAI_VLAN_ATTR_FDB_LEARNING) 
+       (default to SAI_LEARN_MODE_HW) */ */
+    SAI_PORT_ATTR_FDB_LEARNING_MODE,
 
     /** Update DSCP of outgoing packets [bool]
        (default to FALSE) */
