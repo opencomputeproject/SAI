@@ -253,7 +253,7 @@ typedef sai_status_t (*sai_flush_fdb_entries_fn)(
  * Arguments:
  *    @param[in] count - number of notifications
  *    @param[in] data  - pointer to fdb event notification data array
- *    @param[in] cb_data - Pointer to pplication data passed to
+ *    @param[in] cb_data - Pointer to aplication data passed to
  *           callback
  *
  * Return Values:
