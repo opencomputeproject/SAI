@@ -1,0 +1,3 @@
+[submodule "test/ptf"]
+	path = test/ptf
+	url = https://github.com/p4lang/ptf
