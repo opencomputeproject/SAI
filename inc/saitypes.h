@@ -274,32 +274,17 @@ typedef struct _sai_ip_prefix_t {
 } sai_ip_prefix_t;
 
 /**
- * @brief Defines a single ACL User Defined Field data
+ * @brief Defines ACL User Defined Field bytes
  *
  */
-typedef struct _sai_acl_udf_data_t {
+typedef struct _sai_acl_udf_t {
     /** UDF Group object id */
     sai_object_id_t  udf_group_id;
 
     /** The count in the list must be equal to the UDF byte length. */
-    sai_u8_list_t    data;
+    sai_u8_list_t    byte_list;
 
-    /** The count in the list must be equal to the UDF byte length. */
-    sai_u8_list_t    mask;
-} sai_acl_udf_data_t;
-
-/**
- * @brief Defines a list of ACL User Defined Field data
- *
- */
-typedef struct _sai_acl_udf_data_list_t
-{
-    /** Number of UDF data */
-    uint32_t count;
-
-    /** List of UDF data */
-    sai_acl_udf_data_t *udf_list;
-} sai_acl_udf_data_list_t;
+} sai_acl_udf_t;
 
 /**
  * @brief Defines a single ACL filter
@@ -326,6 +311,7 @@ typedef struct _sai_acl_field_data_t
         sai_mac_t mac;
         sai_ip4_t ip4;
         sai_ip6_t ip6;
+        sai_acl_udf_t udf_mask;
     } mask;
 
     /**
@@ -344,6 +330,7 @@ typedef struct _sai_acl_field_data_t
         sai_ip6_t ip6;
         sai_object_id_t oid;
         sai_object_list_t objlist;
+        sai_acl_udf_t udf_data;
     } data;
 } sai_acl_field_data_t;
 
@@ -509,7 +496,6 @@ typedef union {
     sai_vlan_list_t vlanlist;
     sai_vlan_port_list_t vlanportlist;
     sai_acl_field_data_t aclfield;
-    sai_acl_udf_data_list_t acludflist;
     sai_acl_action_data_t aclaction;
     sai_port_breakout_t portbreakout;
     sai_qos_map_list_t qosmap;

@@ -332,6 +332,8 @@ typedef enum _sai_acl_table_attr_t
 
 } sai_acl_table_attr_t;
 
+#define SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_RANGE 0x40
+
 /**
  *  @brief Attribute Id for sai_acl_entry
  */
@@ -504,11 +506,13 @@ typedef enum _sai_acl_entry_attr_t
     /** DST IP address match in neighbor Table */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
 
-    /** User Defined Field Data list [sai_acl_udf_data_list_t] */
-    SAI_ACL_ENTRY_ATTR_FIELD_UDF_DATA_LIST,
+    /** User Defined Fields [sai_acl_udf_t] */
+    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN,
+
+    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN + SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_RANGE,
 
     /** End of Rule Match Fields */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_UDF_DATA_LIST,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX,
 
     /** Actions [sai_acl_action_data_t]
      * - To enable an action, parameter is needed unless noted specifically.
