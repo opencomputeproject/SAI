@@ -279,10 +279,20 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP,
 
     /** The hash object for packets going through ECMP [sai_object_id_t]
+     * (default value after switch initialization
+     *   SAI_HASH_NATIVE_FIELD_LIST = [SAI_NATIVE_HASH_FIELD_SRC_MAC, 
+     *   SAI_NATIVE_HASH_FIELD_DST_MAC, SAI_NATIVE_HASH_FIELD_IN_PORT, 
+     *   SAI_NATIVE_HASH_FIELD_ETHERTYPE]
+     *   SAI_HASH_UDF_GROUP_LIST empty list)
      * The object id is read only, while the object attributes can be modified */
     SAI_SWITCH_ATTR_ECMP_HASH,
 
     /** The hash object for packets going through LAG [sai_object_id_t]
+     * (default value after switch initialization
+     *   SAI_HASH_NATIVE_FIELD_LIST = [SAI_NATIVE_HASH_FIELD_SRC_MAC,
+     *   SAI_NATIVE_HASH_FIELD_DST_MAC, SAI_NATIVE_HASH_FIELD_IN_PORT,
+     *   SAI_NATIVE_HASH_FIELD_ETHERTYPE]
+     *   SAI_HASH_UDF_GROUP_LIST empty list)
      * The object id is read only, while the object attributes can be modified */
     SAI_SWITCH_ATTR_LAG_HASH,
 
