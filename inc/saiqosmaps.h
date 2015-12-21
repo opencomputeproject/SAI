@@ -39,41 +39,29 @@ typedef enum _sai_qos_map_type_t
     /** Qos Map to set DOT1P to color*/
     SAI_QOS_MAP_DOT1P_TO_COLOR = 0x00000001,
 
-    /** Qos Map to set DOT1P to traffic class and color*/
-    SAI_QOS_MAP_DOT1P_TO_TC_AND_COLOR = 0x00000002,
-
     /** Qos Map to set DSCP to Traffic class*/
-    SAI_QOS_MAP_DSCP_TO_TC = 0x00000003,
+    SAI_QOS_MAP_DSCP_TO_TC = 0x00000002,
 
     /** Qos Map to set DSCP to color*/
-    SAI_QOS_MAP_DSCP_TO_COLOR = 0x00000004,
-
-    /** Qos Map to set DSCP to traffic class and color*/
-    SAI_QOS_MAP_DSCP_TO_TC_AND_COLOR = 0x00000005,
+    SAI_QOS_MAP_DSCP_TO_COLOR = 0x00000003,
 
     /** Qos Map to set traffic class to queue */
-    SAI_QOS_MAP_TC_TO_QUEUE = 0x00000006,
-
-    /** Qos Map to set traffic class to DSCP */
-    SAI_QOS_MAP_TC_TO_DSCP = 0x00000007,
+    SAI_QOS_MAP_TC_TO_QUEUE = 0x00000004,
 
     /** Qos Map to set traffic class and color to DSCP */
-    SAI_QOS_MAP_TC_AND_COLOR_TO_DSCP = 0x00000008,
-
-    /** Qos Map to set traffic class to DOT1P */
-    SAI_QOS_MAP_TC_TO_DOT1P = 0x00000009,
+    SAI_QOS_MAP_TC_AND_COLOR_TO_DSCP = 0x00000005,
 
     /** Qos Map to set traffic class and color to DSCP */
-    SAI_QOS_MAP_TC_AND_COLOR_TO_DOT1P = 0x0000000a,
+    SAI_QOS_MAP_TC_AND_COLOR_TO_DOT1P = 0x00000006,
 
     /** Qos Map to set traffic class to priority group */
-    SAI_QOS_MAP_TC_TO_PRIORITY_GROUP = 0x0000000b,
+    SAI_QOS_MAP_TC_TO_PRIORITY_GROUP = 0x00000007,
 
     /** Qos Map to set PFC priority to priority group */
-    SAI_QOS_MAP_PFC_PRIORITY_TO_PRIORITY_GROUP = 0x0000000c,
+    SAI_QOS_MAP_PFC_PRIORITY_TO_PRIORITY_GROUP = 0x00000008,
 
     /** Qos Map to set PFC priority to queue */
-    SAI_QOS_MAP_PFC_PRIORITY_TO_QUEUE = 0x0000000d,
+    SAI_QOS_MAP_PFC_PRIORITY_TO_QUEUE = 0x00000009,
 
     /* -- */
     /* Custom range base value */
