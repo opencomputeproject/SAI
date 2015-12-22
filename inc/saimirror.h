@@ -82,6 +82,12 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_MONITOR_PORT,
 
     /** CREATE_AND_SET */
+    /** Truncate size - [uint16_t]
+    /** Truncate mirrored packets to this size to reduce SPAN traffic bandwidth
+    /** Value 0 to no truncation, Default is 0*/
+    SAI_MIRROR_SESSION_ATTR_TRUNCATE_SIZE,
+
+    /** CREATE_AND_SET */
     /** Class-of-Service (Traffic Class) - [uint8_t],Default is 0*/
     SAI_MIRROR_SESSION_ATTR_TC,
 
