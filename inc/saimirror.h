@@ -101,8 +101,12 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_VLAN_ID,
 
     /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** Valid for RSPAN and ERSPAN packet priority - [uint8_t] */
+    /** Valid for RSPAN and ERSPAN packet priority - [uint8_t : 3] */
     SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
+
+    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
+    /** Valid for RSPAN and ERSPAN Vlan-CFI - [uint8_t : 1] */
+    SAI_MIRROR_SESSION_ATTR_VLAN_CFI,
 
     /** All attributes below are Valid only for ERSPAN 
         [SAI_MIRROR_TYPE_ENHANCED_REMOTE]*/
