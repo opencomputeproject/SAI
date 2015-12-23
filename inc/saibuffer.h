@@ -57,10 +57,10 @@ typedef enum _sai_ingress_priority_group_stat_counter_t
     /** get/set rx bytes count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_BYTES = 0x00000001,
 
-    /** get current pg occupany in bytes [uint64_t] */
+    /** get current pg occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES = 0x00000002,
 
-    /** get watermark pg occupany in bytes [uint64_t] */
+    /** get watermark pg occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES = 0x00000003,
 
     /** -- */
@@ -187,10 +187,10 @@ typedef enum _sai_buffer_pool_attr_t
 */
 typedef enum _sai_buffer_pool_stat_counter_t
 {
-    /** get current pool occupany in bytes [uint64_t] */
+    /** get current pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_BYTES = 0x00000000,
 
-    /** get watermark pool occupany in bytes [uint64_t] */
+    /** get watermark pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
 
     /** -- */

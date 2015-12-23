@@ -156,10 +156,10 @@ typedef enum _sai_queue_stat_counter_t
     /** get/set WRED red dropped bytes count [uint64_t] */
     SAI_QUEUE_STAT_DISCARD_DROPPED_BYTES = 0x00000017,
 
-    /** get current queue occupany in bytes [uint64_t] */
+    /** get current queue occupancy in bytes [uint64_t] */
     SAI_QUEUE_STAT_CURR_OCCUPANCY_BYTES = 0x00000018,
 
-    /** get watermark queue occupany in bytes [uint64_t] */
+    /** get watermark queue occupancy in bytes [uint64_t] */
     SAI_QUEUE_STAT_WATERMARK_BYTES = 0x00000019,
 
     /* -- */
