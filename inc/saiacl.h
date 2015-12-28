@@ -111,6 +111,8 @@ typedef enum _sai_acl_ip_frag_t
 
 } sai_acl_ip_frag_t;
 
+#define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
+
 /**
  *  @brief Attribute Id for sai_acl_table
  */
@@ -319,8 +321,14 @@ typedef enum _sai_acl_table_attr_t
     /** DST IP address match in neighbor table */
     SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
 
+    /** User Defined Field Groups [sai_object_id_t]
+     * (CREATE_ONLY, default to SAI_NULL_OBJECT_ID) */
+    SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN,
+
+    SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
+
     /** End of Table Match Field */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX,
 
     /* -- */
 
@@ -501,8 +509,14 @@ typedef enum _sai_acl_entry_attr_t
     /** DST IP address match in neighbor Table */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
 
+    /** User Defined Field data for the UDF Groups in ACL Table.
+     * [sai_u8_list_t] */
+    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN,
+
+    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
+
     /** End of Rule Match Fields */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX,
 
     /** Actions [sai_acl_action_data_t]
      * - To enable an action, parameter is needed unless noted specifically.

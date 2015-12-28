@@ -298,6 +298,7 @@ typedef struct _sai_acl_field_data_t
         sai_mac_t mac;
         sai_ip4_t ip4;
         sai_ip6_t ip6;
+        sai_u8_list_t u8list;
     } mask;
 
     /**
@@ -315,6 +316,7 @@ typedef struct _sai_acl_field_data_t
         sai_ip6_t ip6;
         sai_object_id_t oid;
         sai_object_list_t objlist;
+        sai_u8_list_t u8list;
     } data;
 } sai_acl_field_data_t;
 
