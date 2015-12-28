@@ -390,12 +390,6 @@ typedef enum _sai_switch_attr_t
      * Default disabled */
     SAI_SWITCH_ATTR_QOS_DOT1P_TO_COLOR_MAP,
 
-    /** Enable DOT1P -> TC AND COLOR MAP [sai_object_id_t] on switch.
-     * MAP id = SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disable trust Dot1p, Map ID should be add/remove on switch.
-     * Default disabled */
-    SAI_SWITCH_ATTR_QOS_DOT1P_TO_TC_AND_COLOR_MAP,
-
     /** Enable DSCP -> TC MAP [sai_object_id_t] on switch.
      * MAP id = SAI_NULL_OBJECT_ID to disable map on switch.
      * To enable/disable trust DSCP, Map ID should be add/remove on port.
@@ -408,32 +402,16 @@ typedef enum _sai_switch_attr_t
      * Default no map */
     SAI_SWITCH_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
-    /** Enable DSCP -> TC AND COLOR MAP [sai_object_id_t] on switch
-     * MAP id = SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disable trust DSCP, Map ID should be add/remove on switch.
-     * Default no map */
-    SAI_SWITCH_ATTR_QOS_DSCP_TO_TC_AND_COLOR_MAP,
-
     /** Enable TC -> Queue MAP [sai_object_id_t] on switch
      * Map id = SAI_NULL_OBJECT_ID to disable map on switch.
      * Default no map i.e All packets to queue 0.
      */
     SAI_SWITCH_ATTR_QOS_TC_TO_QUEUE_MAP,
 
-    /** Enable TC -> DOT1P MAP [sai_object_id_t]
-       Map id = SAI_NULL_OBJECT_ID to disable map on switch.
-       Default no map */
-    SAI_SWITCH_ATTR_QOS_TC_TO_DOT1P_MAP,
-
     /** Enable TC + COLOR -> DOT1P MAP [sai_object_id_t]
        Map id = SAI_NULL_OBJECT_ID to disable map on switch.
        Default no map */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
-
-    /** Enable TC -> DSCP MAP [sai_object_id_t]
-       Map id = SAI_NULL_OBJECT_ID to disable map on switch.
-       Default no map */
-    SAI_SWITCH_ATTR_QOS_TC_TO_DSCP_MAP,
 
     /** Enable TC + COLOR -> DSCP MAP [sai_object_id_t]
        Map id = SAI_NULL_OBJECT_ID to disable map on switch.
