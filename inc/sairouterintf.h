@@ -46,7 +46,10 @@ typedef enum _sai_router_interface_type_t
     SAI_ROUTER_INTERFACE_TYPE_PORT,
 
     /** VLAN Router Interface Type */
-    SAI_ROUTER_INTERFACE_TYPE_VLAN
+    SAI_ROUTER_INTERFACE_TYPE_VLAN,
+
+    /** Loopback Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_LOOPBACK
 
 } sai_router_interface_type_t;
 

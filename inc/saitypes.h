@@ -175,7 +175,10 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_UDF              = 27,
     SAI_OBJECT_TYPE_UDF_MATCH        = 28,
     SAI_OBJECT_TYPE_UDF_GROUP        = 29,
-    SAI_OBJECT_TYPE_MAX              = 30
+    SAI_OBJECT_TYPE_TUNNEL_MAP       = 30,
+    SAI_OBJECT_TYPE_TUNNEL           = 31,
+    SAI_OBJECT_TYPE_TUNNEL_TABLE_ENTRY = 32,
+    SAI_OBJECT_TYPE_MAX              = 33
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -448,6 +451,37 @@ typedef struct _sai_qos_map_list_t
     sai_qos_map_t *list;
 } sai_qos_map_list_t;
 
+typedef struct _sai_tunnel_map_params_t
+{
+    /** ECN */
+    sai_uint8_t ecn;
+
+    /** vlan id  */
+    sai_vlan_id_t vlan_id;
+
+    /** VNI id  */
+    sai_uint32_t vni_id;
+
+} sai_tunnel_map_params_t;
+
+typedef struct _sai_tunnel_map_t
+{
+    /** Input parameters to match */
+    sai_tunnel_map_params_t key;
+
+    /** Output map parameters */
+    sai_tunnel_map_params_t value;
+
+} sai_tunnel_map_t;
+
+typedef struct _sai_tunnel_map_list_t
+{
+    /** Number of entries in the map  */
+    uint32_t count;
+    /** Map list */
+    sai_tunnel_map_t * list;
+} sai_tunnel_map_list_t;
+
 /**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
  *
@@ -483,6 +517,7 @@ typedef union {
     sai_acl_action_data_t aclaction;
     sai_port_breakout_t portbreakout;
     sai_qos_map_list_t qosmap;
+    sai_tunnel_map_list_t tunnelmap;
 
 } sai_attribute_value_t;
 
