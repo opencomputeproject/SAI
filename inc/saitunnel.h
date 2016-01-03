@@ -306,52 +306,52 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
     _Inout_ sai_attribute_t *attr_list
     );
 
-typedef enum _sai_tunnel_table_entry_type_t
+typedef enum _sai_tunnel_term_table_entry_type_t
 {
-    /** tunnel table point to point entry match on dst & src ip & tunnel type  **/
-    SAI_TUNNEL_TABLE_ENTRY_P2P,
+    /** tunnel termination table point to point entry match on dst & src ip & tunnel type  **/
+    SAI_TUNNEL_TERM_TABLE_ENTRY_P2P,
 
-    /** tunnel table point to multi point entry match on dst ip  & tunnel type  **/
-    SAI_TUNNEL_TABLE_ENTRY_P2MP,
+    /** tunnel termination table point to multi point entry match on dst ip  & tunnel type  **/
+    SAI_TUNNEL_TERM_TABLE_ENTRY_P2MP,
 
-} sai_tunnel_table_entry_type_t;
+} sai_tunnel_term_table_entry_type_t;
 
-typedef enum _sai_tunnel_table_entry_attr_t
+typedef enum _sai_tunnel_term_table_entry_attr_t
 {
     /** READ-ONLY */
 
     /** READ-WRITE */
 
     /** tunnel virtual router id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY)*/
-    SAI_TUNNEL_TABLE_ENTRY_ATTR_VR_ID,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_VR_ID,
 
     /** tunnel entry type [sai_tunnel_table_entry_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_TUNNEL_TABLE_ENTRY_ATTR_TYPE,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE,
 
     /** tunnel termination ip address [sai_ip_address_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_TUNNEL_TABLE_ENTRY_ATTR_DST_IP,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP,
 
     /** tunnel source ip address [sai_ip_address_t] 
      *  (MANDATORY_ON_CREATE|CREATE_ONLY) valid only for SAI_TUNNEL_TABLE_P2P  */
-    SAI_TUNNEL_TABLE_ENTRY_ATTR_SRC_IP,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP,
 
     /** tunnel type [sai_tunnel_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_TUNNEL_TABLE_ENTRY_ATTR_TUNNEL_TYPE,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TUNNEL_TYPE,
 
     /** tunnel id to be use for decap [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) valid o */
-    SAI_TUNNEL_TABLE_ENTRY_ACTION_TUNNEL_ID,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ACTION_TUNNEL_ID,
 
     /** Custom range base value */
-    SAI_TUNNEL_TABLE_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
-} sai_tunnel_table_entry_attr_t;
+} sai_tunnel_term_table_entry_attr_t;
 
 /**
  * Routine Description:
- *    @brief Create tunnel table entry 
+ *    @brief Create tunnel termination table entry 
  *
  * Arguments:
- *    @param[out] tunnel_table_entry_id - tunnel table entry id 
+ *    @param[out] tunnel_term_table_entry_id - tunnel termination table entry id 
  *    @param[in] attr_count - number of attributes
  *    @param[in] attr_list - array of attributes
  *
@@ -359,51 +359,51 @@ typedef enum _sai_tunnel_table_entry_attr_t
  *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
-typedef sai_status_t (*sai_create_tunnel_table_entry_fn)(
-    _Out_ sai_object_id_t* tunnel_table_entry_id,
+typedef sai_status_t (*sai_create_tunnel_term_table_entry_fn)(
+    _Out_ sai_object_id_t* tunnel_term_table_entry_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
 
 /**
  * Routine Description:
- *    @brief Remove tunnel table entry
+ *    @brief Remove tunnel termination table entry
  *
  * Arguments:
- *    @param[in] tunnel_table_entry_id - tunnel table entry id 
+ *    @param[in] tunnel_term_table_entry_id - tunnel termination table entry id 
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
-typedef sai_status_t (*sai_remove_tunnel_table_entry_fn)(
-    _In_ sai_object_id_t tunnel_table_entry_id
+typedef sai_status_t (*sai_remove_tunnel_term_table_entry_fn)(
+    _In_ sai_object_id_t tunnel_term_table_entry_id
     );
 
 /**
  * Routine Description:
- *    @brief Set tunnel table entry attribute
+ *    @brief Set tunnel termination table entry attribute
  *
  * Arguments:
- *    @param[in] tunnel_table_entry_id - tunnel table entry id 
+ *    @param[in] tunnel_term_table_entry_id - tunnel termination table entry id 
  *    @param[in] attr - attribute
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
-typedef sai_status_t (*sai_set_tunnel_table_entry_attribute_fn)(
-    _In_ sai_object_id_t tunnel_table_entry_id,
+typedef sai_status_t (*sai_set_tunnel_term_table_entry_attribute_fn)(
+    _In_ sai_object_id_t tunnel_term_table_entry_id,
     _In_ const sai_attribute_t *attr
     );
 
 
 /**
  * Routine Description:
- *    @brief Get tunnel table entry attributes
+ *    @brief Get tunnel termination table entry attributes
  *
  * Arguments:
- *    @param[in] tunnel_table_entry_id – tunnel table entry id
+ *    @param[in] tunnel_term_table_entry_id - tunnel termination table entry id
  *    @param[in] attr_count - number of attributes
  *    @param[inout] attr_list - array of attributes
  *
@@ -411,8 +411,8 @@ typedef sai_status_t (*sai_set_tunnel_table_entry_attribute_fn)(
  *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
-typedef sai_status_t (*sai_get_tunnel_table_entry_attribute_fn)(
-    _In_ sai_object_id_t tunnel_table_entry_id,
+typedef sai_status_t (*sai_get_tunnel_term_table_entry_attribute_fn)(
+    _In_ sai_object_id_t tunnel_term_table_entry_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
@@ -422,18 +422,18 @@ typedef sai_status_t (*sai_get_tunnel_table_entry_attribute_fn)(
  */
 typedef struct _sai_tunnel_api_t
 {
-    sai_create_tunnel_map_fn                create_tunnel_map;
-    sai_remove_tunnel_map_fn                remove_tunnel_map;
-    sai_set_tunnel_map_attribute_fn         set_tunnel_map_attribute;
-    sai_get_tunnel_map_attribute_fn         get_tunnel_map_attribute;
-    sai_create_tunnel_fn                    create_tunnel;
-    sai_remove_tunnel_fn                    remove_tunnel;
-    sai_set_tunnel_attribute_fn             set_tunnel_attribute;
-    sai_get_tunnel_attribute_fn             get_tunnel_attribute;
-    sai_create_tunnel_table_entry_fn        create_tunnel_table_entry;
-    sai_remove_tunnel_table_entry_fn        remove_tunnel_table_entry;
-    sai_set_tunnel_table_entry_attribute_fn set_tunnel_table_entry_attribute;
-    sai_get_tunnel_table_entry_attribute_fn get_tunnel_table_entry_attribute;
+    sai_create_tunnel_map_fn                     create_tunnel_map;
+    sai_remove_tunnel_map_fn                     remove_tunnel_map;
+    sai_set_tunnel_map_attribute_fn              set_tunnel_map_attribute;
+    sai_get_tunnel_map_attribute_fn              get_tunnel_map_attribute;
+    sai_create_tunnel_fn                         create_tunnel;
+    sai_remove_tunnel_fn                         remove_tunnel;
+    sai_set_tunnel_attribute_fn                  set_tunnel_attribute;
+    sai_get_tunnel_attribute_fn                  get_tunnel_attribute;
+    sai_create_tunnel_term_table_entry_fn        create_tunnel_term_table_entry;
+    sai_remove_tunnel_term_table_entry_fn        remove_tunnel_term_table_entry;
+    sai_set_tunnel_term_table_entry_attribute_fn set_tunnel_term_table_entry_attribute;
+    sai_get_tunnel_term_table_entry_attribute_fn get_tunnel_term_table_entry_attribute;
 
 } sai_tunnel_api_t;
 
