@@ -410,13 +410,8 @@ typedef enum _sai_port_attr_t
      * attributes alone valid. Rest will be ignored */
     SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID,
 
-    /** Ingress buffer profiles for port [sai_object_list_t]
-     *  There can be up to SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM profiles */
-    SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST,
-
-    /** Egress buffer profiles for port [sai_object_list_t]
-     *  There can be up to SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM profiles */
-    SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST,
+    /** Buffer profile for port [sai_object_id_t]*/
+    SAI_PORT_ATTR_QOS_BUFFER_PROFILE_ID,
 
     /** bit vector enable/disable port PFC [sai_uint8_t].
      * Valid from bit 0 to bit 7 */
