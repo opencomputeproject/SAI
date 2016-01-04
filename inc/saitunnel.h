@@ -162,6 +162,15 @@ typedef enum _sai_tunnel_dscp_mode_t
 
 } sai_tunnel_dscp_mode_t;
 
+typedef enum _sai_tunnel_decap_ecn_mode_t
+{
+    SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
+
+    SAI_TUNNEL_DECAP_ECN_MODE_KEEP_INNER,
+
+    SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
+} sai_tunnel_decap_ecn_mode_t;
+
 typedef enum _sai_tunnel_attr_t
 {
     /** READ-WRITE */
@@ -177,10 +186,6 @@ typedef enum _sai_tunnel_attr_t
 
     /** tunnel encap attribute*/
 
-    /** tunnel ip verssion ipv4/ipv6 [sai_ip_addr_family_t] 
-     *  (MANDATORY_ON_CREATE when (CREATE_ONLY) */
-    SAI_TUNNEL_ATTR_IP_VER,
-
     /** tunnel src ip [sai_ip_address_t] (MANDATORY_ON_CREATE when 
      *  SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE,
      *  SAI_TUNNEL_IPINIP_GRE_AND_KEY) (CREATE_ONLY) */
@@ -192,7 +197,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_TTL_MODE,
 
     /** tunnel TTL value [sai_uint8_t] 
-     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_TTL_MODE = SAI_TUNNEL_TTL_USER_DEFINE) */
+     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_TTL_MODE = SAI_TUNNEL_TTL_USER_DEFINE) */
     SAI_TUNNEL_ATTR_ENCAP_TTL_VAL,
 
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t] 
@@ -201,7 +206,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE,
 
     /** tunnel DSCP value [sai_uint8_t : 6] 
-     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_DSCP_MODE = SAI_TUNNEL_DSCP_USER_DEFINE) */
+     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_DSCP_MODE = SAI_TUNNEL_DSCP_USER_DEFINE) */
     SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL,
 
     /** tunnel GRE key [sai_uint32_t] (MANDATORY_ON_CREATE when 
@@ -213,7 +218,11 @@ typedef enum _sai_tunnel_attr_t
 
     /** tunnel decap attribute **/
 
-    /**  tunnel decap ECN mapping [sai_object_id_t] */
+    /**  tunnel decap ECN mode [sai_tunnel_decap_ecn_mode_t] */ 
+    SAI_TUNNEL_ATTR_DECAP_ECN_MODE,
+
+    /**  tunnel decap ECN mapping [sai_object_id_t] 
+     *   (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_DECAP_ECN_MODE = SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED */
     SAI_TUNNEL_ATTR_DECAP_ECN_TABLE,
 
     /**  tunnel mapper [sai_object_id_t] */
@@ -224,10 +233,18 @@ typedef enum _sai_tunnel_attr_t
     *  SAI_TUNNEL_IPINIP_GRE_AND_KEY) (CREATE_ONLY) */
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
+    /** tunnel TTL value [sai_uint8_t]
+    *  (MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_TTL_MODE = SAI_TUNNEL_TTL_USER_DEFINE) */
+    SAI_TUNNEL_ATTR_DECAP_TTL_VAL,
+
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t]
     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE,
     *  SAI_TUNNEL_IPINIP_GRE_AND_KEY) (CREATE_ONLY) */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
+
+    /** tunnel DSCP value [sai_uint8_t : 6]
+    *  (MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_DSCP_MODE = SAI_TUNNEL_DSCP_USER_DEFINE) */
+    SAI_TUNNEL_ATTR_DECAP_DSCP_VAL,
 
     /** Custom range base value */
     SAI_TUNNEL_ATTR_CUSTOM_RANGE_BASE = 0x10000000
