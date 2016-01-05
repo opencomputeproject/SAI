@@ -22,17 +22,36 @@
 #define __SAIOBJECT_H_
 
 #include <saitypes.h>
-
+#include <saifdb.h>
+#include <saineighbor.h>
+#include <sairoute.h>
 /** \defgroup SAIOBJECT SAI - Object API definitions.
  *
  *  \{
  */
 
 /**
+ * @brief Structure for bulk retrieval of objectids, attribute
+ * and values for each object-type. Key will be used in case
+ * of object-types not having object-ids.
+ */
+typedef struct _sai_object_key_t
+{
+    union
+    {
+        sai_object_id_t           object_id;
+        sai_vlan_id_t             vlan_id;
+        sai_fdb_entry_t           fdb_entry;
+        sai_neighbor_entry_t      neighbor_entry;
+        sai_unicast_route_entry_t route_entry;
+
+    } key;
+} sai_object_key_t;
+/**
  * Routine Description:
  *   @brief Get maximum number of attributes for an object type
  * Arguments:
- *  [in] sai_object_type_t  - SAI object type
+ *  [in] object_type  - SAI object type
  *  [inout] count – maximum number of attribute for an object type
  * 
  * Return Values:
@@ -40,13 +59,13 @@
  *  Failure status code on error
  */
 sai_status_t sai_get_maximum_attribute_count(_In_ sai_object_type_t object_type,
-                                             _InOut_ uint32_t *count);
+                                             _Inout_ uint32_t *count);
 
 /**
  * Routine Description:
  *   @brief Get the number of objects present in SAI
  * Arguments:
- *  [in] sai_object_type_t  - SAI object type
+ *  [in] object_type - SAI object type
  *  [inout] count – number of objects in SAI
  * 
  * Return Values:
@@ -54,13 +73,13 @@ sai_status_t sai_get_maximum_attribute_count(_In_ sai_object_type_t object_type,
  *  Failure status code on error
  */
 sai_status_t sai_get_object_count(_In_ sai_object_type_t object_type,
-                                  _InOut_ uint32_t *count);
+                                  _Inout_ uint32_t *count);
 
 /**
  * Routine Description:
  *   @brief Get the list of object keys present in SAI
  * Arguments:
- *  [in] sai_object_type_t  - SAI object type
+ *  [in] object_type  - SAI object type
  *  [in] count – number of objects in SAI
  *  [in] object_list – List of SAI objects or keys
  *
@@ -70,7 +89,7 @@ sai_status_t sai_get_object_count(_In_ sai_object_type_t object_type,
  */
 sai_status_t sai_get_object_key(_In_ sai_object_type_t object_type,
                                 _In_ uint32_t object_count,
-                                _InOut_ sai_object_key_t *object_list);
+                                _Inout_ sai_object_key_t *object_list);
 
 /*
  * Routine Description:
@@ -110,7 +129,7 @@ sai_status_t sai_bulk_get_attribute(_In_ sai_object_type_t object_type,
                                     _In_ sai_object_key_t *object_key,
                                     _Inout_ uint32_t *attr_count,
                                     _Inout_ sai_attribute_t **attrs,
-                                    _Inout sai_status_t *object_statuses);
+                                    _Inout_ sai_status_t *object_statuses);
 
 /**
  * \}

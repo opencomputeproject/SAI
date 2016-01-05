@@ -456,24 +456,6 @@ typedef struct _sai_qos_map_list_t
 } sai_qos_map_list_t;
 
 /**
- * @brief Structure for bulk retrieval of objectids, attribute
- * and values for each object-type. Key will be used in case
- * of object-types not having object-ids.
- */
-typedef struct _sai_object_key_t
-{
-    union
-    {
-        sai_object_id_t           object_id;
-        sai_vlan_id_t             vlan_id;
-        sai_fdb_entry_t           fdb_entry;
-        sai_neighbor_entry_t      neighbor_entry;
-        sai_unicast_route_entry_t route_entry;
-
-    } key;
-} sai_object_key_t;
-
-/**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
  *
  */
