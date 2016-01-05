@@ -153,7 +153,16 @@
  * This can happen if the object id is already deleted.
  */
 #define SAI_STATUS_INVALID_OBJECT_ID        SAI_STATUS_CODE(0x00000013L)
- 
+
+/** The NV storage used is either invalid or corrupt. (rv for initialize_switch()) */
+#define SAI_STATUS_INVALID_NV_STORAGE       SAI_STATUS_CODE(0x00000014L)
+
+/** Version mismatch in case of Inservice upgrade (rv for initialize_switch()) */
+#define SAI_STATUS_SW_UPGRADE_VERSION_MISMATCH     SAI_STATUS_CODE(0x00000016L)
+
+/** The NV storage is full. (rv for shutdown_switch()) */
+#define SAI_STATUS_NV_STORAGE_FULL          SAI_STATUS_CODE(0x00000015L)
+
 /**  
  *  Attribute is invalid (range from 0x00010000L to 0x0001FFFFL). 
  *  Return this when the property attached to the attribute does not match

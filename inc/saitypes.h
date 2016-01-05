@@ -175,7 +175,12 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_UDF              = 27,
     SAI_OBJECT_TYPE_UDF_MATCH        = 28,
     SAI_OBJECT_TYPE_UDF_GROUP        = 29,
-    SAI_OBJECT_TYPE_MAX              = 30
+    SAI_OBJECT_TYPE_FDB              = 30,
+    SAI_OBJECT_TYPE_ROUTE            = 31,
+    SAI_OBJECT_TYPE_NEIGHBOR         = 32,
+    SAI_OBJECT_TYPE_VLAN             = 33,
+    SAI_OBJECT_TYPE_MAX              = 34
+
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -449,6 +454,24 @@ typedef struct _sai_qos_map_list_t
     /** Map list */
     sai_qos_map_t *list;
 } sai_qos_map_list_t;
+
+/**
+ * @brief Structure for bulk retrieval of objectids, attribute
+ * and values for each object-type. Key will be used in case
+ * of object-types not having object-ids.
+ */
+typedef struct _sai_object_key_t
+{
+    union
+    {
+        sai_object_id_t           object_id;
+        sai_vlan_id_t             vlan_id;
+        sai_fdb_entry_t           fdb_entry;
+        sai_neighbor_entry_t      neighbor_entry;
+        sai_unicast_route_entry_t route_entry;
+
+    } key;
+} sai_object_key_t;
 
 /**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
