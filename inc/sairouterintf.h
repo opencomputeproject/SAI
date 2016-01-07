@@ -89,6 +89,10 @@ typedef enum _sai_router_interface_attr_t
     /** MTU [uint32_t] (CREATE_AND_SET) (default to 1514 bytes) */
     SAI_ROUTER_INTERFACE_ATTR_MTU,
 
+    /** Packet action when neighbor table lookup miss for this router interface [sai_packet_action_t]
+     * (CREATE_AND_SET) (default to SAI_PACKET_ACTION_TRAP) */
+    SAI_ROUTER_INTERFACE_ATTR_NEIGHBOR_MISS_PACKET_ACTION,
+
     /* -- */
 
     /* Custom range base value */
