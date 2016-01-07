@@ -189,7 +189,7 @@ typedef enum _sai_tunnel_attr_t
     /** tunnel src ip [sai_ip_address_t] (MANDATORY_ON_CREATE when 
      *  SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE,
      *  SAI_TUNNEL_IPINIP_GRE_AND_KEY) (CREATE_ONLY) */
-    SAI_TUNNEL_ATTR_SRC_IP,
+    SAI_TUNNEL_ATTR_ENCAP_SRC_IP,
 
     /** tunnel TTL mode copy from inner or user define [sai_tunnel_ttl_mode_t] 
      *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE,
