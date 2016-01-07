@@ -637,7 +637,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
 
     /** Set User Defined Trap ID [sai_uint32_t]
-     *  Copy packet action mandatory to be preset (Copy/Trap/Log)
+     *  Copy packet action mandatory to be present (Copy/Trap/Log)
      *  Value Range SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID,
 
