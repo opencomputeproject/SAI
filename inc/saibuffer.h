@@ -47,6 +47,28 @@ typedef enum _sai_ingress_priority_group_attr_t
 } sai_ingress_priority_group_attr_t;
 
 /**
+* @brief Enum defining statistics for ingress priority group.
+*/
+typedef enum _sai_ingress_priority_group_stat_counter_t
+{
+    /** get/set rx packets count [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS = 0x00000000,
+
+    /** get/set rx bytes count [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_BYTES = 0x00000001,
+
+    /** get current pg occupancy in bytes [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES = 0x00000002,
+
+    /** get watermark pg occupancy in bytes [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES = 0x00000003,
+
+    /** -- */
+    /** Custom range base value */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
+} sai_ingress_priority_group_stat_counter_t;
+
+/**
  * @brief Set ingress priority group attribute
  * @param[in] ingress_pg_id ingress priority group id
  * @param[in] attr attribute to set
@@ -72,6 +94,40 @@ typedef sai_status_t(*sai_get_ingress_priority_group_attr_fn)(
     _In_ sai_object_id_t ingress_pg_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
+    );
+
+/**
+* @brief   Get ingress priority group statistics counters.
+*
+* @param[in] ingress_pg_id ingress priority group id
+* @param[in] counter_ids specifies the array of counter ids
+* @param[in] number_of_counters number of counters in the array
+* @param[out] counters array of resulting counter values.
+*
+* @return SAI_STATUS_SUCCESS on success
+*         Failure status code on error
+*/
+typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
+    _In_ sai_object_id_t ingress_pg_id,
+    _In_ const sai_ingress_priority_group_stat_counter_t *counter_ids,
+    _In_ uint32_t number_of_counters,
+    _Out_ uint64_t* counters
+    );
+
+/**
+* @brief   Clear ingress priority group statistics counters.
+*
+* @param[in] ingress_pg_id ingress priority group id
+* @param[in] counter_ids specifies the array of counter ids
+* @param[in] number_of_counters number of counters in the array
+*
+* @return SAI_STATUS_SUCCESS on success
+*         Failure status code on error
+*/
+typedef sai_status_t(*sai_clear_ingress_priority_group_stats_fn)(
+    _In_ sai_object_id_t ingress_pg_id,
+    _In_ const sai_ingress_priority_group_stat_counter_t *counter_ids,
+    _In_ uint32_t number_of_counters
     );
 
 /**
@@ -127,6 +183,22 @@ typedef enum _sai_buffer_pool_attr_t
 } sai_buffer_pool_attr_t;
 
 /**
+* @brief Enum defining statistics for buffer pool.
+*/
+typedef enum _sai_buffer_pool_stat_counter_t
+{
+    /** get current pool occupancy in bytes [uint64_t] */
+    SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_BYTES = 0x00000000,
+
+    /** get watermark pool occupancy in bytes [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
+
+    /** -- */
+    /** Custom range base value */
+    SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
+} sai_buffer_pool_stat_counter_t;
+
+/**
  * @brief Create buffer pool
  * @param[out] pool_id buffer pool id
  * @param[in] attr_count number of attributes
@@ -174,6 +246,24 @@ typedef sai_status_t(*sai_get_buffer_pool_attr_fn)(
     _In_ sai_object_id_t pool_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
+    );
+
+/**
+* @brief   Get buffer pool statistics counters.
+*
+* @param[in] pool_id buffer pool id
+* @param[in] counter_ids specifies the array of counter ids
+* @param[in] number_of_counters number of counters in the array
+* @param[out] counters array of resulting counter values.
+*
+* @return SAI_STATUS_SUCCESS on success
+*         Failure status code on error
+*/
+typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
+    _In_ sai_object_id_t pool_id,
+    _In_ const sai_buffer_pool_stat_counter_t *counter_ids,
+    _In_ uint32_t number_of_counters,
+    _Out_ uint64_t* counters
     );
 
 /**
@@ -272,16 +362,19 @@ typedef sai_status_t(*sai_get_buffer_profile_attr_fn)(
  */
 typedef struct _sai_buffer_api_t
 {
-    sai_create_buffer_pool_fn              create_buffer_pool;
-    sai_remove_buffer_pool_fn              remove_buffer_pool;
-    sai_set_buffer_pool_attr_fn            set_buffer_pool_attr;
-    sai_get_buffer_pool_attr_fn            get_buffer_pool_attr;
-    sai_set_ingress_priority_group_attr_fn set_ingress_priority_group_attr;
-    sai_get_ingress_priority_group_attr_fn get_ingress_priority_group_attr;
-    sai_create_buffer_profile_fn           create_buffer_profile;
-    sai_remove_buffer_profile_fn           remove_buffer_profile;
-    sai_set_buffer_profile_attr_fn         set_buffer_profile_attr;
-    sai_get_buffer_profile_attr_fn         get_buffer_profile_attr;
+    sai_create_buffer_pool_fn                  create_buffer_pool;
+    sai_remove_buffer_pool_fn                  remove_buffer_pool;
+    sai_set_buffer_pool_attr_fn                set_buffer_pool_attr;
+    sai_get_buffer_pool_attr_fn                get_buffer_pool_attr;
+    sai_get_buffer_pool_stats_fn               get_buffer_pool_stats;
+    sai_set_ingress_priority_group_attr_fn     set_ingress_priority_group_attr;
+    sai_get_ingress_priority_group_attr_fn     get_ingress_priority_group_attr;
+    sai_get_ingress_priority_group_stats_fn    get_ingress_priority_group_stats;
+    sai_clear_ingress_priority_group_stats_fn  clear_ingress_priority_group_stats;
+    sai_create_buffer_profile_fn               create_buffer_profile;
+    sai_remove_buffer_profile_fn               remove_buffer_profile;
+    sai_set_buffer_profile_attr_fn             set_buffer_profile_attr;
+    sai_get_buffer_profile_attr_fn             get_buffer_profile_attr;
 } sai_buffer_api_t;
 
 /**
