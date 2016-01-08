@@ -116,7 +116,7 @@ typedef enum _sai_router_interface_attr_t
 typedef sai_status_t(*sai_create_router_interface_fn)(
     _Out_ sai_object_id_t* rif_id,
     _In_ uint32_t attr_count,
-    _In_ sai_attribute_t *attr_list
+    _In_ const sai_attribute_t *attr_list
     );
 
 /**
