@@ -546,6 +546,36 @@ typedef enum _sai_port_stat_counter_t
     SAI_PORT_STAT_ETHER_OUT_PKTS_4096_TO_9216_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_9217_TO_16383_OCTETS,
 
+    /** get current port occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_CURR_OCCUPANCY_BYTES,
+
+    /** get watermark port occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_WATERMARK_BYTES,
+
+    /** get current port shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_SHARED_CURR_OCCUPANCY_BYTES,
+
+    /** get watermark port shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_SHARED_WATERMARK_BYTES,
+
+    /** PFC Packet Counters for RX and TX per PFC priority */
+    SAI_PORT_STAT_PFC_0_RX_PTKS,
+    SAI_PORT_STAT_PFC_0_TX_PTKS,
+    SAI_PORT_STAT_PFC_1_RX_PTKS,
+    SAI_PORT_STAT_PFC_1_TX_PTKS,
+    SAI_PORT_STAT_PFC_2_RX_PTKS,
+    SAI_PORT_STAT_PFC_2_TX_PTKS,
+    SAI_PORT_STAT_PFC_3_RX_PTKS,
+    SAI_PORT_STAT_PFC_3_TX_PTKS,
+    SAI_PORT_STAT_PFC_4_RX_PTKS,
+    SAI_PORT_STAT_PFC_4_TX_PTKS,
+    SAI_PORT_STAT_PFC_5_RX_PTKS,
+    SAI_PORT_STAT_PFC_5_TX_PTKS,
+    SAI_PORT_STAT_PFC_6_RX_PTKS,
+    SAI_PORT_STAT_PFC_6_TX_PTKS,
+    SAI_PORT_STAT_PFC_7_RX_PTKS,
+    SAI_PORT_STAT_PFC_7_TX_PTKS,
+
 } sai_port_stat_counter_t;
 
 
