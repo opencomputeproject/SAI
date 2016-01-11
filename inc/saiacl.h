@@ -476,7 +476,7 @@ typedef enum _sai_acl_entry_attr_t
     /** ICMP Code [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_ICMP_CODE,
 
-    /** Number of VLAN Tags [sai_uint8_t] */
+    /** Number of VLAN Tags [sai_packet_vlan_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_VLAN_TAGS,
 
     /** User Based Meta Data [sai_uint32_t] */
