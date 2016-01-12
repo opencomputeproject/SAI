@@ -337,6 +337,9 @@ typedef enum _sai_switch_attr_t
     /** SAI ECMP default hash seed [sai_uint32_t] (default to 0) */
     SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED,
 
+    /** SAI ECMP default symmetric hash [bool] (default to false) */
+    SAI_SWITCH_ATTR_ECMP_DEFAULT_SYMMETRIC_HASH,
+
     /** The hash object for IPv4 packets going through ECMP [sai_object_id_t] */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4,
 
