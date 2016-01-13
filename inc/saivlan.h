@@ -280,7 +280,7 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_clear_vlan_stats_fn)(
-    _In_ sai_object_id_t vlan_id,
+    _In_ sai_vlan_id_t vlan_id,
     _In_ const sai_vlan_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters
     );
