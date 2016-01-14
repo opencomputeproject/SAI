@@ -227,8 +227,8 @@ typedef enum _sai_acl_table_attr_t
     /** Out-Port */
     SAI_ACL_TABLE_ATTR_FIELD_OUT_PORT,
 
-    /** LAG */
-    SAI_ACL_TABLE_ATTR_FIELD_LAG,
+    /** Source Port */
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_PORT,
 
     /** Outer Vlan-Id */
     SAI_ACL_TABLE_ATTR_FIELD_OUTER_VLAN_ID,
@@ -407,8 +407,9 @@ typedef enum _sai_acl_entry_attr_t
     /** Out-Port [sai_object_id_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
-    /** LAG ID [sai_object_id_t] (mask is not needed) */
-    SAI_ACL_ENTRY_ATTR_FIELD_LAG,
+    /** Source port which could be a physical or lag port 
+     *  [sai_object_id_t] (mask is not needed) */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_PORT,
 
     /** Outer Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID,
