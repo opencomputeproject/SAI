@@ -637,13 +637,8 @@ typedef enum _sai_acl_entry_attr_t
      * given port list will be dropped. */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
 
-    /** Set User Defined Trap ID [sai_uint32_t]
-     *  Copy packet action mandatory to be present (Copy/Trap/Log)
-     *  Value Range SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID,
-
     /** End of Rule Actions */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST
 
 } sai_acl_entry_attr_t;
 

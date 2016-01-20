@@ -336,7 +336,7 @@ typedef sai_status_t(*sai_get_hostif_trap_attribute_fn)(
     _Inout_ sai_attribute_t *attr_list
     );
 
-#define SAI_HOSTIF_USER_DEFINED_TRAP_ID_TABLE_RANGE 0x3ff
+#define SAI_HOSTIF_USER_DEFINED_TRAP_ID_TABLE_RANGE 0x0
 
 /**
  * @brief user defined traps
@@ -349,9 +349,6 @@ typedef enum _sai_hostif_user_defined_trap_id_t
     /** ACL traps */
     SAI_HOSTIF_USER_DEFINED_TRAP_ID_ACL_MIN = 0x00000002,
 
-    /** Actual Max supported by the NPU can be obtained by performing get
-     *  operation on SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE switch attribute
-     *  to fetch the range of user-defined ACL trap id */
     SAI_HOSTIF_USER_DEFINED_TRAP_ID_ACL_MAX = SAI_HOSTIF_USER_DEFINED_TRAP_ID_ACL_MIN + SAI_HOSTIF_USER_DEFINED_TRAP_ID_TABLE_RANGE,
 
     /** router traps */
@@ -552,9 +549,6 @@ typedef enum _sai_hostif_packet_attr
 {
     /** Trap ID [sai_hostif_trap_id_t] (for receive-only) */
     SAI_HOSTIF_PACKET_TRAP_ID,
-
-    /** User-Defined Trap ID [sai_hostif_user_defined_trap_id_t] (for receive-only) */
-    SAI_HOSTIF_PACKET_USER_TRAP_ID,
 
     /** Ingress port [sai_object_id_t] (for receive-only) */
     SAI_HOSTIF_PACKET_INGRESS_PORT,
