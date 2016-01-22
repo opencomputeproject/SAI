@@ -110,6 +110,27 @@ typedef enum _sai_packet_action_t
 } sai_packet_action_t;
 
 /**
+ *  @brief Attribute data for number of vlan tags present in a packet
+ */
+typedef enum _sai_packet_vlan_t
+{
+    /** Untagged
+     *  Packet without vlan tags */
+    SAI_PACKET_VLAN_UNTAG,
+
+    /** Single Outer Tag 
+     *  Packet outer TPID matches to the ingress port outer TPID and
+     *  Packet inner TPID if present, does not matches the configured inner TPID */
+    SAI_PACKET_VLAN_SINGLE_OUTER_TAG,
+
+    /** Double Tag
+     *  Packet outer TPID matches to the ingress port outer TPID and
+     *  Packet inner TPID matches to the configured inner TPID */
+    SAI_PACKET_VLAN_DOUBLE_TAG
+
+} sai_packet_vlan_t;
+
+/**
 * @brief Attribute data for SAI_SWITCH_SWITCHING_MODE
 */
 typedef enum _sai_switch_switching_mode_t
