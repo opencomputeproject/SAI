@@ -259,6 +259,9 @@ typedef enum _sai_switch_attr_t
     /** ACL user-based ACL meta data range [sai_u32_range_t] */
     SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE,
 
+    /** ACL user-based trap id range [sai_u32_range_t] */
+    SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE,
+
     /** Default SAI STP instance ID [sai_object_id_t] */
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
 
