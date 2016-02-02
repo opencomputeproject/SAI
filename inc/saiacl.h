@@ -227,6 +227,9 @@ typedef enum _sai_acl_table_attr_t
     /** Out-Port */
     SAI_ACL_TABLE_ATTR_FIELD_OUT_PORT,
 
+    /** Source Port */
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_PORT,
+
     /** Outer Vlan-Id */
     SAI_ACL_TABLE_ATTR_FIELD_OUTER_VLAN_ID,
 
@@ -292,6 +295,9 @@ typedef enum _sai_acl_table_attr_t
 
     /** ICMP Code */
     SAI_ACL_TABLE_ATTR_FIELD_ICMP_CODE,
+
+    /** Vlan Tags */
+    SAI_ACL_TABLE_ATTR_FIELD_VLAN_TAGS,
 
     /** User Based Meta Data [bool] */
 
@@ -401,6 +407,10 @@ typedef enum _sai_acl_entry_attr_t
     /** Out-Port [sai_object_id_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
+    /** Source port which could be a physical or lag port
+     *  [sai_object_id_t] (mask is not needed) */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_PORT,
+
     /** Outer Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID,
 
@@ -467,6 +477,9 @@ typedef enum _sai_acl_entry_attr_t
     /** ICMP Code [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_ICMP_CODE,
 
+    /** Number of VLAN Tags [sai_packet_vlan_t] */
+    SAI_ACL_ENTRY_ATTR_FIELD_VLAN_TAGS,
+
     /** User Based Meta Data [sai_uint32_t] */
 
     /** DST MAC address match user meta data in FDB
@@ -528,6 +541,10 @@ typedef enum _sai_acl_entry_attr_t
     /** Redirect Packet to a destination which can be a port,
      * lag, nexthop, nexthopgroup. [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
+
+    /** Redirect Packet to a list of destination which can be
+     *  a port list. [sai_object_list_t] */
+    SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
 
     /** Drop Packet [sai_packet_action_t] */
     SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
@@ -621,7 +638,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
 
     /** End of Rule Actions */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ACL_META_DATA
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST
 
 } sai_acl_entry_attr_t;
 
