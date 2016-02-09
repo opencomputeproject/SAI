@@ -225,10 +225,10 @@ typedef struct _sai_s32_range_t {
 typedef struct _sai_vlan_list_t {
 
     /** Number of Vlans*/
-    uint32_t vlan_count;
+    uint32_t count;
 
     /** List of Vlans*/
-    sai_vlan_id_t *vlan_list;
+    sai_vlan_id_t *list;
 
 } sai_vlan_list_t;
 
