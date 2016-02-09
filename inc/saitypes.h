@@ -175,7 +175,15 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_UDF              = 27,
     SAI_OBJECT_TYPE_UDF_MATCH        = 28,
     SAI_OBJECT_TYPE_UDF_GROUP        = 29,
-    SAI_OBJECT_TYPE_MAX              = 30
+    SAI_OBJECT_TYPE_FDB              = 30,
+    SAI_OBJECT_TYPE_SWITCH           = 31,
+    SAI_OBJECT_TYPE_TRAP             = 32,
+    SAI_OBJECT_TYPE_TRAP_USER_DEF    = 33,
+    SAI_OBJECT_TYPE_NEIGHBOR         = 34,
+    SAI_OBJECT_TYPE_ROUTE            = 35,
+    SAI_OBJECT_TYPE_VLAN             = 36,
+    SAI_OBJECT_TYPE_MAX              = 37,
+
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
