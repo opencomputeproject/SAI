@@ -56,13 +56,18 @@ sai_status_t  redis_remove_vlan(
  */
 sai_status_t  redis_set_vlan_attribute(
     _In_ sai_vlan_id_t vlan_id,
-    _In_ const sai_attribute_t  *attr)
+    _In_ const sai_attribute_t *attr)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_VLAN,
+            vlan_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**

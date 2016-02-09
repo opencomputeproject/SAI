@@ -46,13 +46,19 @@ sai_status_t  redis_remove_samplepacket_session( _In_ sai_object_id_t session_id
  *  error code is returned.
  */
 sai_status_t  redis_set_samplepacket_attribute(
-        _In_ sai_object_id_t session_id, _In_ const sai_attribute_t *attr)
+        _In_ sai_object_id_t session_id, 
+        _In_ const sai_attribute_t *attr)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_SAMPLEPACKET,
+            session_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**

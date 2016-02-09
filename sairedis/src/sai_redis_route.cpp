@@ -69,9 +69,14 @@ sai_status_t  redis_set_route_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_ROUTER_INTERFACE,
+            unicast_route_entry,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**

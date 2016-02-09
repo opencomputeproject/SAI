@@ -1,6 +1,6 @@
 # Makefile.am -- Process this file with automake to produce Makefile.in
 
-AM_CPPFLAGS = 
+AM_CPPFLAGS =
 AM_CPPFLAGS += -I$(top_srcdir)/../inc
 AM_CPPFLAGS += -I$(top_srcdir)/inc
 
@@ -36,7 +36,8 @@ libsairedis_la_SOURCES = sai_redis_acl.cpp \
 						 sai_redis_stp.cpp \
 						 sai_redis_switch.cpp \
 						 sai_redis_vlan.cpp \
-						 sai_redis_wred.cpp
+						 sai_redis_wred.cpp \
+						 sai_redis_generic.cpp
 
 libsairedis_la_CPPFLAGS = $(DBGFLAGS) $(AM_CPPFLAGS)
 libsairedis_la_LIBADD =

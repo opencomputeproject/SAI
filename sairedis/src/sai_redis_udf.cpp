@@ -65,9 +65,15 @@ sai_status_t  redis_set_udf_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_API_FUNCTION_SET_UDF_ATTRIBUTE,
+            SAI_OBJECT_TYPE_UDF,
+            udf_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -160,6 +166,15 @@ sai_status_t  redis_set_udf_match_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_API_FUNCTION_SET_UDF_MATCH_ATTRIBUTE,
+            SAI_OBJECT_TYPE_UDF_MATCH,
+            udf_match_id,
+            attr);
+
+    REDIS_LOG_EXIT();
+
+    return status;
     REDIS_LOG_EXIT();
 
     return SAI_STATUS_NOT_IMPLEMENTED;
@@ -255,6 +270,15 @@ sai_status_t  redis_set_udf_group_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_API_FUNCTION_SET_UDF_GROUP_ATTRIBUTE,
+            SAI_OBJECT_TYPE_UDF_GROUP,
+            udf_group_id,
+            attr);
+
+    REDIS_LOG_EXIT();
+
+    return status;
     REDIS_LOG_EXIT();
 
     return SAI_STATUS_NOT_IMPLEMENTED;
