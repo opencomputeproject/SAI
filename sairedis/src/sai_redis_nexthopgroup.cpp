@@ -64,9 +64,14 @@ sai_status_t  redis_set_next_hop_group_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_NEXT_HOP_GROUP,
+            next_hop_group_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**

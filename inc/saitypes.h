@@ -142,6 +142,17 @@ typedef struct _sai_object_list_t {
 } sai_object_list_t;
 
 /**
+ * @brief sai common api type
+ */
+typedef enum _sai_common_api_t {
+    SAI_COMMON_API_CREATE = 0,
+    SAI_COMMON_API_REMOVE = 1,
+    SAI_COMMON_API_SET    = 2,
+    SAI_COMMON_API_GET    = 3,
+    SAI_COMMON_API_MAX    = 4,
+} sai_common_api_t;
+
+/**
  * @brief sai object type
  */
 typedef enum _sai_object_type_t {
@@ -175,7 +186,14 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_UDF              = 27,
     SAI_OBJECT_TYPE_UDF_MATCH        = 28,
     SAI_OBJECT_TYPE_UDF_GROUP        = 29,
-    SAI_OBJECT_TYPE_MAX              = 30
+    SAI_OBJECT_TYPE_FDB              = 30,
+    SAI_OBJECT_TYPE_SWITCH           = 31,
+    SAI_OBJECT_TYPE_TRAP             = 32,
+    SAI_OBJECT_TYPE_TRAP_USER_DEF    = 33,
+    SAI_OBJECT_TYPE_NEIGHBOR         = 34,
+    SAI_OBJECT_TYPE_ROUTE            = 35,
+    SAI_OBJECT_TYPE_VLAN             = 36,
+    SAI_OBJECT_TYPE_MAX              = 37,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -225,10 +243,10 @@ typedef struct _sai_s32_range_t {
 typedef struct _sai_vlan_list_t {
 
     /** Number of Vlans*/
-    uint32_t vlan_count;
+    uint32_t count;
 
     /** List of Vlans*/
-    sai_vlan_id_t *vlan_list;
+    sai_vlan_id_t *list;
 
 } sai_vlan_list_t;
 

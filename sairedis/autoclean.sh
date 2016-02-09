@@ -1,10 +1,11 @@
-rm -rf aclocal.m4 autom4te.cache stamp-h1 libtool configure config.* Makefile.in Makefile *~ .*~ *.swp .*.swp
-rm -rf config/*
-rm -rf .deps
-rm -rf m4/*
+#!/bin/bash
 
-for a in src
-do
-	rm -rf $a/Makefile 2>&1
-	rm -rf $a/Makefile.in 2>&1
-done
+rm -rf aclocal.m4 autom4te.cache stamp-h1 libtool configure config.* Makefile.in Makefile config/* m4/*
+
+find -type f -name "*~" -print0 | xargs -0 -t rm -f
+find -type f -name "*.sw[po]" -print0 | xargs -0 -t rm -f
+find -type f -name "Makefile" -print0 | xargs -0 -t rm -f
+find -type f -name "Makefile.in" -print0 | xargs -0 -t rm -f
+
+find -type d -name .deps -print0 | xargs -0 rm -rf
+

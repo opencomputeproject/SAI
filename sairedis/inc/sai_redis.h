@@ -45,5 +45,49 @@ extern const sai_wred_api_t             redis_wred_api;
 #define REDIS_LOG_ERR(fmt, arg ...) UTILS_LOG(SAI_LOG_ERROR, fmt, ## arg)
 #define REDIS_LOG_NTC(fmt, arg ...) UTILS_LOG(SAI_LOG_NOTICE, fmt, ## arg)
 
+
+sai_status_t redis_generic_set(
+    _In_ sai_object_type_t objet_type,
+    _In_ sai_object_id_t object_id,
+    _In_ const sai_attribute_t *attr);
+
+/**
+ *   Routine Description:
+ *    @brief Generic set attribute
+ *
+ *  Arguments:
+ *  @param[in] api_function - caller
+ *  @param[in] object_type - type of object
+ *  @param[in] any non complex struct - id of object
+ *  @param[in] attr - attribute to serialize
+ *
+ *  Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+template <typename T>
+sai_status_t redis_generic_set(
+    _In_ sai_object_type_t objet_type,
+    _In_ const T *object_id,
+    _In_ const sai_attribute_t *attr)
+{
+    /*
+     * Since this is template method, 
+     * implementation need to be in header.
+     */
+
+    REDIS_LOG_ENTER();
+
+    sai_status_t status = SAI_STATUS_NOT_IMPLEMENTED;
+
+    // TODO sai_function should only go to message queue in redis
+    // TODO base on object_type and attr.id we should know what
+    // type to serialize
+
+    REDIS_LOG_EXIT();
+
+    return status;
+}
+
 #endif // __SAI_REDIS__
 

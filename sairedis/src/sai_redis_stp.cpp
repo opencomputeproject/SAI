@@ -48,9 +48,12 @@ sai_status_t  redis_remove_stp( _In_ sai_object_id_t stp_id)
  */
 sai_status_t  redis_set_stp_port_state(
     _In_ sai_object_id_t stp_id,
-    _In_ sai_object_id_t port_id, _In_ sai_port_stp_port_state_t stp_port_state)
+    _In_ sai_object_id_t port_id, 
+    _In_ sai_port_stp_port_state_t stp_port_state)
 {
     REDIS_LOG_ENTER();
+
+    // TODO function signature must be changed to match other types
 
     REDIS_LOG_EXIT();
 
@@ -68,7 +71,8 @@ sai_status_t  redis_set_stp_port_state(
  */
 sai_status_t  redis_get_stp_port_state(
     _In_ sai_object_id_t stp_id,
-    _In_ sai_object_id_t port_id, _Out_ sai_port_stp_port_state_t  *stp_port_state)
+    _In_ sai_object_id_t port_id, 
+    _Out_ sai_port_stp_port_state_t  *stp_port_state)
 {
     REDIS_LOG_ENTER();
 
@@ -86,13 +90,19 @@ sai_status_t  redis_get_stp_port_state(
  *  error code is returned.
  */
 sai_status_t  redis_set_stp_attribute(
-    _In_ sai_object_id_t stp_id, _In_ const sai_attribute_t *attr)
+    _In_ sai_object_id_t stp_id, 
+    _In_ const sai_attribute_t *attr)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_STP_INSTANCE,
+            stp_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
