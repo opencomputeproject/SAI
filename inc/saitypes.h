@@ -142,6 +142,17 @@ typedef struct _sai_object_list_t {
 } sai_object_list_t;
 
 /**
+ * @brief sai common api type
+ */
+typedef enum _sai_common_api_t {
+    SAI_COMMON_API_CREATE = 0,
+    SAI_COMMON_API_REMOVE = 1,
+    SAI_COMMON_API_SET    = 2,
+    SAI_COMMON_API_GET    = 3,
+    SAI_COMMON_API_MAX    = 4,
+} sai_common_api_t;
+
+/**
  * @brief sai object type
  */
 typedef enum _sai_object_type_t {
