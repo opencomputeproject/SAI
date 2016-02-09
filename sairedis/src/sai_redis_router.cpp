@@ -14,16 +14,22 @@
  *            SAI_STATUS_ADDR_NOT_FOUND if neither SAI_SWITCH_ATTR_SRC_MAC_ADDRESS nor 
  *            SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS is set.
  */
-sai_status_t  redis_create_virtual_router(
+sai_status_t redis_create_virtual_router(
     _Out_ sai_object_id_t *vr_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+            SAI_OBJECT_TYPE_VIRTUAL_ROUTER,
+            vr_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -42,9 +48,13 @@ sai_status_t  redis_remove_virtual_router(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+            SAI_OBJECT_TYPE_VIRTUAL_ROUTER,
+            vr_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -65,9 +75,14 @@ sai_status_t  redis_set_virtual_router_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_VIRTUAL_ROUTER,
+            vr_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -90,9 +105,15 @@ sai_status_t  redis_get_virtual_router_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_VIRTUAL_ROUTER,
+            vr_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**

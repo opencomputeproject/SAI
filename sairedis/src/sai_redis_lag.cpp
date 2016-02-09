@@ -16,9 +16,15 @@ sai_status_t redis_create_lag(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+            SAI_OBJECT_TYPE_LAG,
+            lag_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /*
@@ -28,13 +34,17 @@ sai_status_t redis_create_lag(
             Failure: Failure status code on error
 */
 sai_status_t redis_remove_lag(
-    _In_ sai_object_id_t  lag_id)
+    _In_ sai_object_id_t lag_id)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+            SAI_OBJECT_TYPE_LAG,
+            lag_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /*
@@ -50,9 +60,14 @@ sai_status_t  redis_set_lag_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_LAG,
+            lag_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /*
@@ -71,11 +86,16 @@ sai_status_t  redis_get_lag_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_LAG,
+            lag_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
 
 /*
     \brief Create LAG Member
@@ -92,9 +112,15 @@ sai_status_t redis_create_lag_member(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+            SAI_OBJECT_TYPE_LAG_MEMBER,
+            lag_member_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /*
@@ -104,15 +130,18 @@ sai_status_t redis_create_lag_member(
             Failure: Failure status code on error
 */
 sai_status_t redis_remove_lag_member(
-    _In_ sai_object_id_t  lag_member_id)
+    _In_ sai_object_id_t lag_member_id)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+            SAI_OBJECT_TYPE_LAG_MEMBER,
+            lag_member_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
 
 /*
     \brief Set LAG Member Attribute
@@ -127,9 +156,14 @@ sai_status_t  redis_set_lag_member_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_LAG_MEMBER,
+            lag_member_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /*
@@ -148,9 +182,15 @@ sai_status_t  redis_get_lag_member_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_LAG_MEMBER,
+            lag_member_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**

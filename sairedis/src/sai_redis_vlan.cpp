@@ -16,9 +16,13 @@ sai_status_t  redis_create_vlan(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create_vlan(
+            SAI_OBJECT_TYPE_VLAN,
+            vlan_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -32,14 +36,18 @@ sai_status_t  redis_create_vlan(
  *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
-sai_status_t  redis_remove_vlan(
+sai_status_t redis_remove_vlan(
     _In_ sai_vlan_id_t vlan_id)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove_vlan(
+            SAI_OBJECT_TYPE_VLAN,
+            vlan_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -56,13 +64,18 @@ sai_status_t  redis_remove_vlan(
  */
 sai_status_t  redis_set_vlan_attribute(
     _In_ sai_vlan_id_t vlan_id,
-    _In_ const sai_attribute_t  *attr)
+    _In_ const sai_attribute_t *attr)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set_vlan(
+            SAI_OBJECT_TYPE_VLAN,
+            vlan_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -85,9 +98,15 @@ sai_status_t  redis_get_vlan_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get_vlan(
+            SAI_OBJECT_TYPE_VLAN,
+            vlan_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -101,8 +120,7 @@ sai_status_t  redis_get_vlan_attribute(
  *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
-sai_status_t  redis_remove_all_vlans(
-    void)
+sai_status_t  redis_remove_all_vlans(void)
 {
     REDIS_LOG_ENTER();
 

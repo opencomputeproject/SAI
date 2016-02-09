@@ -14,9 +14,14 @@ sai_status_t  redis_set_queue_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_QUEUE,
+            queue_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -35,11 +40,16 @@ sai_status_t  redis_get_queue_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_QUEUE,
+            queue_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
 
 /**
  * @brief   Get queue statistics counters.

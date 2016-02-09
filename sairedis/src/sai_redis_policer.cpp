@@ -14,15 +14,21 @@
  */
 sai_status_t  redis_create_policer(
     _Out_ sai_object_id_t *policer_id,
-    _In_ uint32_t attr_count, _In_ const sai_attribute_t *attr_list)
+    _In_ uint32_t attr_count, 
+    _In_ const sai_attribute_t *attr_list)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+            SAI_OBJECT_TYPE_POLICER,
+            policer_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
 
 /**
  * @brief Delete policer
@@ -32,16 +38,19 @@ sai_status_t  redis_create_policer(
  * @return  SAI_STATUS_SUCCESS on success
  *          Failure status code on error
  */
-sai_status_t  redis_remove_policer( _In_ sai_object_id_t policer_id)
+sai_status_t  redis_remove_policer(
+        _In_ sai_object_id_t policer_id)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+            SAI_OBJECT_TYPE_POLICER,
+            policer_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
-
 
 /**
  * @brief  Set Policer attribute
@@ -58,12 +67,15 @@ sai_status_t  redis_set_policer_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_POLICER,
+            policer_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
-
 
 /**
  * @brief  Get Policer attribute
@@ -82,11 +94,16 @@ sai_status_t  redis_get_policer_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_POLICER,
+            policer_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
 
 /**
  * @brief  Get Policer Statistics

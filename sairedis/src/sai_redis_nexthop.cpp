@@ -22,9 +22,15 @@ sai_status_t  redis_create_next_hop(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+            SAI_OBJECT_TYPE_NEXT_HOP,
+            next_hop_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -43,9 +49,13 @@ sai_status_t  redis_remove_next_hop(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+            SAI_OBJECT_TYPE_NEXT_HOP,
+            next_hop_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -66,11 +76,15 @@ sai_status_t  redis_set_next_hop_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_NEXT_HOP,
+            next_hop_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
 
 /**
  * Routine Description:
@@ -92,9 +106,15 @@ sai_status_t  redis_get_next_hop_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_NEXT_HOP,
+            next_hop_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -105,5 +125,4 @@ const sai_next_hop_api_t redis_next_hop_api = {
     redis_remove_next_hop,
     redis_set_next_hop_attribute,
     redis_get_next_hop_attribute,
-
 };

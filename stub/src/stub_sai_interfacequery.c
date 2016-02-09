@@ -120,7 +120,7 @@ sai_status_t sai_api_query(_In_ sai_api_t sai_api_id, _Out_ void** api_method_ta
         *(const sai_neighbor_api_t**)api_method_table = &neighbor_api;
         return SAI_STATUS_SUCCESS;
 
-    case SAI_API_QOS:
+    case SAI_API_QOS_MAPS:
         /* TODO : implement */
         return SAI_STATUS_NOT_IMPLEMENTED;
 
@@ -243,7 +243,7 @@ sai_status_t sai_log_set(_In_ sai_api_t sai_api_id, _In_ sai_log_level_t log_lev
     case SAI_API_NEIGHBOR:
         break;
 
-    case SAI_API_QOS:
+    case SAI_API_QOS_MAPS:
         break;
 
     case SAI_API_ACL:

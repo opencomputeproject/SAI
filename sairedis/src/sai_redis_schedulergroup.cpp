@@ -10,16 +10,22 @@
  * @return  SAI_STATUS_SUCCESS on success
  *          Failure status code on error
  */
-sai_status_t  redis_create_scheduler_group(
+sai_status_t redis_create_scheduler_group(
     _Out_ sai_object_id_t  *scheduler_group_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+            SAI_OBJECT_TYPE_SCHEDULER_GROUP,
+            scheduler_group_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -30,16 +36,19 @@ sai_status_t  redis_create_scheduler_group(
  * @return  SAI_STATUS_SUCCESS on success
  *          Failure status code on error
  */
-sai_status_t  redis_remove_scheduler_group(
+sai_status_t redis_remove_scheduler_group(
     _In_ sai_object_id_t scheduler_group_id)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+            SAI_OBJECT_TYPE_SCHEDULER_GROUP,
+            scheduler_group_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
 
 /**
  * @brief  Set Scheduler group Attribute
@@ -50,15 +59,20 @@ sai_status_t  redis_remove_scheduler_group(
  * @return  SAI_STATUS_SUCCESS on success
  *          Failure status code on error
  */
-sai_status_t  redis_set_scheduler_group_attribute(
+sai_status_t redis_set_scheduler_group_attribute(
     _In_ sai_object_id_t scheduler_group_id,
     _In_ const sai_attribute_t *attr)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_SCHEDULER_GROUP,
+            scheduler_group_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -79,9 +93,15 @@ sai_status_t  redis_get_scheduler_group_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_SCHEDULER_GROUP,
+            scheduler_group_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
