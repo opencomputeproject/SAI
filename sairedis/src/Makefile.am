@@ -15,6 +15,7 @@ lib_LTLIBRARIES = libsairedis.la
 libsairedis_la_SOURCES = sai_redis_acl.cpp \
 						 sai_redis_buffer.cpp \
 						 sai_redis_fdb.cpp \
+						 sai_redis_generic.cpp \
 						 sai_redis_hash.cpp \
 						 sai_redis_hostintf.cpp \
 						 sai_redis_interfacequery.cpp \
@@ -35,6 +36,7 @@ libsairedis_la_SOURCES = sai_redis_acl.cpp \
 						 sai_redis_schedulergroup.cpp \
 						 sai_redis_stp.cpp \
 						 sai_redis_switch.cpp \
+						 sai_redis_udf.cpp \
 						 sai_redis_vlan.cpp \
 						 sai_redis_wred.cpp \
 						 sai_redis_generic.cpp
