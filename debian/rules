@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+
+# skip tests; test/ assumes a specific embedded gtest copy which is hard to
+# override with package deps
+override_dh_auto_test:
+	:
+
+%:
+	dh $@

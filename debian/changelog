@@ -1,0 +1,5 @@
+sai (0.9.3.0+dee8756-0ocp1) trusty; urgency=medium
+
+  * Initial release.
+
+ -- Loïc Minier <loic.minier@ubuntu.com>  Tue, 09 Feb 2016 18:48:31 +0100

@@ -1,0 +1,23 @@
+Source: sai
+Priority: extra
+Maintainer: Loïc Minier <loic.minier@ubuntu.com>
+Build-Depends: debhelper (>= 8~), doxygen
+Standards-Version: 3.9.3
+Section: libs
+
+Package: libsai-dev
+Section: libdevel
+Architecture: all
+Depends: ${misc:Depends}
+Description: generic SAI header files
+ This package provides the SAI headers from the opensource OpenCompute
+ SAI project. Because SAI is implementation specific, no binary library
+ is provided.
+
+Package: libsai-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}
+Description: documentation for SAI
+ This package provides HTML documentation for the opensource OpenCompute
+ SAI project.
