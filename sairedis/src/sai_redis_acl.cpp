@@ -20,9 +20,15 @@ sai_status_t redis_create_acl_table(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+        SAI_OBJECT_TYPE_ACL_TABLE,
+        acl_table_id,
+        attr_count,
+        attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -41,9 +47,13 @@ sai_status_t redis_delete_acl_table(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+        SAI_OBJECT_TYPE_ACL_TABLE,
+        acl_table_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -64,9 +74,14 @@ sai_status_t redis_set_acl_table_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_ACL_TABLE,
+            acl_table_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -89,9 +104,15 @@ sai_status_t redis_get_acl_table_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+        SAI_OBJECT_TYPE_ACL_TABLE,
+        acl_table_id,
+        attr_count,
+        attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -114,9 +135,15 @@ sai_status_t redis_create_acl_entry(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+        SAI_OBJECT_TYPE_ACL_ENTRY,
+        acl_entry_id,
+        attr_count,
+        attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -135,9 +162,13 @@ sai_status_t redis_delete_acl_entry(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+        SAI_OBJECT_TYPE_ACL_ENTRY,
+        acl_entry_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -158,9 +189,14 @@ sai_status_t redis_set_acl_entry_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_ACL_ENTRY,
+            acl_entry_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -183,9 +219,15 @@ sai_status_t redis_get_acl_entry_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+        SAI_OBJECT_TYPE_ACL_ENTRY,
+        acl_entry_id,
+        attr_count,
+        attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -208,9 +250,15 @@ sai_status_t redis_create_acl_counter(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+        SAI_OBJECT_TYPE_ACL_COUNTER,
+        acl_counter_id,
+        attr_count,
+        attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -229,9 +277,13 @@ sai_status_t redis_delete_acl_counter(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+        SAI_OBJECT_TYPE_ACL_COUNTER,
+        acl_counter_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -252,9 +304,14 @@ sai_status_t redis_set_acl_counter_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_ACL_COUNTER,
+            acl_counter_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -277,9 +334,15 @@ sai_status_t redis_get_acl_counter_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_ACL_COUNTER,
+            acl_counter_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**

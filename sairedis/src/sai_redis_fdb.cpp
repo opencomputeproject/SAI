@@ -14,15 +14,21 @@
  *            Failure status code on error
  */
 sai_status_t  redis_create_fdb_entry(
-    _In_ const sai_fdb_entry_t* fdb_entry,
+    _In_ const sai_fdb_entry_t *fdb_entry,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+            SAI_OBJECT_TYPE_FDB,
+            fdb_entry,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -41,9 +47,13 @@ sai_status_t  redis_remove_fdb_entry(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+            SAI_OBJECT_TYPE_FDB,
+            fdb_entry);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -53,9 +63,7 @@ sai_status_t  redis_remove_fdb_entry(
  * Arguments:
  *    @param[in] fdb_entry - fdb entry
  *    @param[in] attr - attribute
- *
- * Return Values:
- *    @return SAI_STATUS_SUCCESS on success
+ * * Return Values: *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
 sai_status_t  redis_set_fdb_entry_attribute(
@@ -64,9 +72,14 @@ sai_status_t  redis_set_fdb_entry_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_FDB,
+            fdb_entry,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -89,9 +102,15 @@ sai_status_t  redis_get_fdb_entry_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_FDB,
+            fdb_entry,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**

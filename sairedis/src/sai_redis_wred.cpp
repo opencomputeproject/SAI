@@ -19,9 +19,15 @@ sai_status_t  redis_create_wred_profile(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_create(
+            SAI_OBJECT_TYPE_WRED,
+            wred_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -33,15 +39,18 @@ sai_status_t  redis_create_wred_profile(
  *         Failure status code on error
  */
 sai_status_t  redis_remove_wred_profile(
-    _In_ sai_object_id_t  wred_id)
+    _In_ sai_object_id_t wred_id)
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_remove(
+            SAI_OBJECT_TYPE_WRED,
+            wred_id);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
-
 
 /**
  * @brief Set attributes to Wred profile.
@@ -60,9 +69,14 @@ sai_status_t  redis_set_wred_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_set(
+            SAI_OBJECT_TYPE_WRED,
+            wred_id,
+            attr);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
@@ -82,15 +96,21 @@ sai_status_t  redis_get_wred_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_WRED,
+            wred_id,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**
  * @brief WRED methods table retrieved with sai_api_query()
  */
-const sai_wred_api_t redis_sai_api = {
+const sai_wred_api_t redis_wred_api = {
     redis_create_wred_profile,
     redis_remove_wred_profile,
     redis_set_wred_attribute,
