@@ -26,4 +26,5 @@ test:
 	make -C test
 
 clean:
+	rm -rf html
 	make -C test clean    
