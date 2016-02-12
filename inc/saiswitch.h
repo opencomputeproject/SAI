@@ -110,6 +110,27 @@ typedef enum _sai_packet_action_t
 } sai_packet_action_t;
 
 /**
+ *  @brief Attribute data for number of vlan tags present in a packet
+ */
+typedef enum _sai_packet_vlan_t
+{
+    /** Untagged
+     *  Packet without vlan tags */
+    SAI_PACKET_VLAN_UNTAG,
+
+    /** Single Outer Tag
+     *  Packet outer TPID matches to the ingress port outer TPID and
+     *  Packet inner TPID if present, does not matches the configured inner TPID */
+    SAI_PACKET_VLAN_SINGLE_OUTER_TAG,
+
+    /** Double Tag
+     *  Packet outer TPID matches to the ingress port outer TPID and
+     *  Packet inner TPID matches to the configured inner TPID */
+    SAI_PACKET_VLAN_DOUBLE_TAG
+
+} sai_packet_vlan_t;
+
+/**
 * @brief Attribute data for SAI_SWITCH_SWITCHING_MODE
 */
 typedef enum _sai_switch_switching_mode_t
@@ -337,6 +358,13 @@ typedef enum _sai_switch_attr_t
     /** SAI ECMP default hash seed [sai_uint32_t] (default to 0) */
     SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED,
 
+    /** SAI ECMP default symmetric hash [bool] (default to false)
+    *   When set, the hash calculation will result in the same value as when the source and
+    *   destination addresses (L2 src/dst mac,L3 src/dst ip,L4 src/dst port) were swapped,
+    *   ensuring the same conversation will result in the same hash value.
+    */
+    SAI_SWITCH_ATTR_ECMP_DEFAULT_SYMMETRIC_HASH,
+
     /** The hash object for IPv4 packets going through ECMP [sai_object_id_t] */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4,
 
@@ -348,6 +376,13 @@ typedef enum _sai_switch_attr_t
 
     /** SAI LAG default hash seed [sai_uint32_t] (default to 0) */
     SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED,
+
+    /** SAI LAG default symmetric hash [bool] (default to false)
+    *   When set, the hash calculation will result in the same value as when the source and
+    *   destination addresses (L2 src/dst mac,L3 src/dst ip,L4 src/dst port) were swapped,
+    *   ensuring the same conversation will result in the same hash value.
+    */
+    SAI_SWITCH_ATTR_LAG_DEFAULT_SYMMETRIC_HASH,
 
     /** The hash object for IPv4 packets going through LAG [sai_object_id_t] */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4,
