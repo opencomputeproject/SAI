@@ -281,6 +281,12 @@ typedef enum _sai_buffer_profile_attr_t
     /** reserved buffer size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,
 
+    /** shared threshold mode for the buffer profile [sai_buffer_threadhold_mode_t] (CREATE_AND_SET)
+     * If set, this overrides SAI_BUFFER_POOL_ATTR_TH_MODE.
+     * If not set, use SAI_BUFFER_POOL_ATTR_TH_MODE. 
+     * (default to value set in SAI_BUFFER_POOL_ATTR_TH_MODE.) */
+    SAI_BUFFER_PROFILE_ATTR_TH_MODE,
+
     /** dynamic threshold for the shared usage [sai_int8_t]
      * The threshold is set to the 2^n of available buffer of the pool.
      * Mandatory when SAI_BUFFER_POOL_TH_MODE = SAI_BUFFER_THRESHOLD_MODE_DYNAMIC
