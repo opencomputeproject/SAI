@@ -69,11 +69,11 @@ typedef enum _sai_ingress_priority_group_stat_counter_t
     /** get watermark pg shared occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_WATERMARK_BYTES = 0x00000005,
 
-    /** get current pg inflight occupancy in bytes [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_INFLIGHT_CURR_OCCUPANCY_BYTES = 0x00000006,
+    /** get current pg xoff room occupancy in bytes [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_CURR_OCCUPANCY_BYTES = 0x00000006,
 
-    /** get watermark pg inflight occupancy in bytes [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_INFLIGHT_WATERMARK_BYTES = 0x00000007,
+    /** get watermark pg xoff room occupancy in bytes [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
 
     /** -- */
     /** Custom range base value */
