@@ -257,6 +257,17 @@ def sai_thrift_create_lag(client, port_list):
     lag = client.sai_thrift_create_lag(lag_attr_list)
     return lag
 
+def sai_thrift_create_lag_member(client, lag_id, port_id):
+    lag_member_attr1_value = sai_thrift_attribute_value_t(oid=lag_id)
+    lag_member_attr1 = sai_thrift_attribute_t(id=SAI_LAG_MEMBER_ATTR_LAG_ID,
+                                              value=lag_member_attr1_value)
+    lag_member_attr2_value = sai_thrift_attribute_value_t(oid=port_id)
+    lag_member_attr2 = sai_thrift_attribute_t(id=SAI_LAG_MEMBER_ATTR_PORT_ID,
+                                              value=lag_member_attr2_value)
+    lag_member_attr_list = [lag_member_attr1, lag_member_attr2]
+    lag_member_id = client.sai_thrift_create_lag_member(lag_member_attr_list)
+    return lag_member_id
+
 def sai_thrift_create_stp_entry(client, vlan_list):
     vlanlist=sai_thrift_vlan_list_t(vlan_count=len(vlan_list), vlan_list=vlan_list)
     stp_attribute1_value = sai_thrift_attribute_value_t(vlanlist=vlanlist)

@@ -826,14 +826,18 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_lag_api_t *lag_api;
       sai_object_id_t lag_id = 0;
-      sai_object_id_t *port_list;
+      sai_object_id_t *port_list = NULL;
       status = sai_api_query(SAI_API_LAG, (void **) &lag_api);
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
-      sai_thrift_parse_lag_attributes(thrift_attr_list, attr_list, &port_list);
       uint32_t attr_count = thrift_attr_list.size();
+      sai_attribute_t *attr_list = NULL;
+      if (attr_count > 0)
+      {
+        attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+        sai_thrift_parse_lag_attributes(thrift_attr_list, attr_list, &port_list);
+      }
       status = lag_api->create_lag(&lag_id, attr_count, attr_list);
       if (port_list) free(port_list);
       free(attr_list);

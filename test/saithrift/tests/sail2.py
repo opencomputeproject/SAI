@@ -287,7 +287,11 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         self.client.sai_thrift_create_vlan(vlan_id)
 
-        lag_id1 = sai_thrift_create_lag(self.client, [port1, port2, port3, port4])
+        lag_id1 = self.client.sai_thrift_create_lag([])
+        lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
+        lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
+        lag_member_id3 = sai_thrift_create_lag_member(self.client, lag_id1, port3)
+        lag_member_id4 = sai_thrift_create_lag_member(self.client, lag_id1, port4)
 
         vlan_port1 = sai_thrift_vlan_port_t(port_id=port1, tagging_mode=SAI_VLAN_PORT_UNTAGGED)
         vlan_port2 = sai_thrift_vlan_port_t(port_id=port2, tagging_mode=SAI_VLAN_PORT_UNTAGGED)
@@ -374,5 +378,9 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_ports_from_vlan(vlan_id, [vlan_port1, vlan_port2, vlan_port3, vlan_port4, vlan_port5])
 
+            self.client.sai_thrift_remove_lag_member(lag_member_id1)
+            self.client.sai_thrift_remove_lag_member(lag_member_id2)
+            self.client.sai_thrift_remove_lag_member(lag_member_id3)
+            self.client.sai_thrift_remove_lag_member(lag_member_id4)
             self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_delete_vlan(vlan_id)

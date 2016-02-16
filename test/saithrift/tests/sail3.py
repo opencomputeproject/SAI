@@ -704,7 +704,9 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        lag_id1 = sai_thrift_create_lag(self.client, [port1, port2])
+        lag_id1 = self.client.sai_thrift_create_lag([])
+        lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
+        lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
 
         rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id1, 0, v4_enabled, v6_enabled, mac)
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac)
@@ -739,6 +741,8 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
 
+            self.client.sai_thrift_remove_lag_member(lag_member_id1)
+            self.client.sai_thrift_remove_lag_member(lag_member_id2)
             self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
@@ -756,7 +760,9 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        lag_id1 = sai_thrift_create_lag(self.client, [port1, port2])
+        lag_id1 = self.client.sai_thrift_create_lag([])
+        lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
+        lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
 
         rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id1, 0, v4_enabled, v6_enabled, mac)
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac)
@@ -793,6 +799,8 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
 
+            self.client.sai_thrift_remove_lag_member(lag_member_id1)
+            self.client.sai_thrift_remove_lag_member(lag_member_id2)
             self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
@@ -825,8 +833,13 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        lag_id1 = sai_thrift_create_lag(self.client, [port1, port2, port3])
-        lag_id2 = sai_thrift_create_lag(self.client, [port4, port5])
+        lag_id1 = self.client.sai_thrift_create_lag([])
+        lag_id2 = self.client.sai_thrift_create_lag([])
+        lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
+        lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
+        lag_member_id3 = sai_thrift_create_lag_member(self.client, lag_id1, port3)
+        lag_member_id4 = sai_thrift_create_lag_member(self.client, lag_id2, port4)
+        lag_member_id5 = sai_thrift_create_lag_member(self.client, lag_id2, port5)
 
         rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id1, 0, v4_enabled, v6_enabled, mac)
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id2, 0, v4_enabled, v6_enabled, mac)
@@ -917,6 +930,11 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id3)
             self.client.sai_thrift_remove_router_interface(rif_id4)
 
+            self.client.sai_thrift_remove_lag_member(lag_member_id1)
+            self.client.sai_thrift_remove_lag_member(lag_member_id2)
+            self.client.sai_thrift_remove_lag_member(lag_member_id3)
+            self.client.sai_thrift_remove_lag_member(lag_member_id4)
+            self.client.sai_thrift_remove_lag_member(lag_member_id5)
             self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_lag(lag_id2)
 
