@@ -39,6 +39,7 @@ libsairedis_la_SOURCES = sai_redis_acl.cpp \
 						 sai_redis_vlan.cpp \
 						 sai_redis_wred.cpp \
 						 sai_serialize.cpp \
+						 sai_attribute_list.cpp \
 						 sai_redis_generic_create.cpp \
 						 sai_redis_generic_remove.cpp \
 						 sai_redis_generic_set.cpp \
