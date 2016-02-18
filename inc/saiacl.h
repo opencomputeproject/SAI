@@ -333,8 +333,11 @@ typedef enum _sai_acl_table_attr_t
 
     SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
+    /** L4 Port, VLAN, Packet Length Range */
+    SAI_ACL_TABLE_ATTR_FIELD_RANGE,
+
     /** End of Table Match Field */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
     /* -- */
 
@@ -528,8 +531,12 @@ typedef enum _sai_acl_entry_attr_t
 
     SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
+    /** L4 Port, VLAN, Packet Length Range
+     *  SAI ACL Range Object Id [sai_object_id_t] */
+    SAI_ACL_ENTRY_ATTR_FIELD_RANGE,
+
     /** End of Rule Match Fields */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_RANGE,
 
     /** Actions [sai_acl_action_data_t]
      * - To enable an action, parameter is needed unless noted specifically.
@@ -679,6 +686,46 @@ typedef enum _sai_acl_counter_attr_t
     SAI_ACL_COUNTER_ATTR_BYTES
 
 } sai_acl_counter_attr_t;
+
+/**
+ *  @brief Attribute data for ACL Range Type
+ */
+typedef enum _sai_acl_range_type_t
+{
+    /** L4 Source Port Range */
+    SAI_ACL_RANGE_L4_SRC_PORT_RANGE,
+
+    /** L4 Destination Port Range */
+    SAI_ACL_RANGE_L4_DST_PORT_RANGE,
+
+    /** Outer Vlan Range */
+    SAI_ACL_RANGE_OUTER_VLAN,
+
+    /** Inner Vlan Range */
+    SAI_ACL_RANGE_INNER_VLAN,
+
+    /** Packet Length Range in bytes */
+    SAI_ACL_RANGE_PACKET_LENGTH
+
+} sai_acl_range_type_t;
+
+/**
+ *  @brief Attribute Id for ACL Range Object
+ */
+typedef enum _sai_acl_range_attr_t
+{
+    /** Start and End of ACL Range [sai_u32_range_t]
+     *  (MANDATORY_ON_CREATE) 
+     *  (CREATE_ONLY, Range Limit cannot be changed after the range is created) */
+    SAI_ACL_RANGE_LIMIT,
+
+    /** Range Type [sai_acl_range_type_t]
+     * (MANDATORY_ON_CREATE, mandatory to pass only one of the range types
+     *  defined in sai_acl_range_type_t enum during ACL Range Creation)
+     * (CREATE_ONLY, Range Type cannot be changed after the range is created) */
+    SAI_ACL_RANGE_TYPE
+
+} sai_acl_range_attr_t;
 
 /**
  *   Routine Description:
@@ -891,6 +938,76 @@ typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
     );
 
 /**
+ *   Routine Description:
+ *     @brief Create an ACL Range
+ *
+ *  Arguments:
+ *  @param[out] acl_range_id - the acl range id
+ *  @param[in] attr_count - number of attributes
+ *  @param[in] attr_list - array of attributes
+ *
+ *  Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_create_acl_range_fn)(
+    _Out_ sai_object_id_t* acl_range_id,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list
+    );
+
+/**
+ *  Routine Description:
+ *    @brief Delete an ACL Range
+ *
+ *  Arguments:
+ *    @param[in] acl_range_id - the acl range id
+ *
+ *  Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_delete_acl_range_fn)(
+    _In_ sai_object_id_t acl_range_id
+    );
+
+/**
+ * Routine Description:
+ *   @brief Set ACL range attribute
+ *
+ * Arguments:
+ *    @param[in] acl_range_id - the acl range id
+ *    @param[in] attr - attribute
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_set_acl_range_attribute_fn)(
+    _In_ sai_object_id_t acl_range_id,
+    _In_ const sai_attribute_t *attr
+    );
+
+/**
+ * Routine Description:
+ *   @brief Get ACL range attribute
+ *
+ * Arguments:
+ *    @param[in] acl_range_id - acl range id
+ *    @param[in] attr_count - number of attributes
+ *    @param[out] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
+    _In_ sai_object_id_t acl_range_id,
+    _In_ uint32_t attr_count,
+    _Out_ sai_attribute_t *attr_list
+    );
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_acl_api_t
@@ -907,6 +1024,10 @@ typedef struct _sai_acl_api_t
     sai_delete_acl_counter_fn           delete_acl_counter;
     sai_set_acl_counter_attribute_fn    set_acl_counter_attribute;
     sai_get_acl_counter_attribute_fn    get_acl_counter_attribute;
+    sai_create_acl_range_fn             create_acl_range;
+    sai_delete_acl_range_fn             delete_acl_range;
+    sai_set_acl_range_attribute_fn      set_acl_range_attribute;
+    sai_get_acl_range_attribute_fn      get_acl_range_attribute;
 
 } sai_acl_api_t;
 
