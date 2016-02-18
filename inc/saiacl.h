@@ -688,19 +688,10 @@ typedef enum _sai_acl_counter_attr_t
 } sai_acl_counter_attr_t;
 
 /**
- *  @brief Attribute Id for ACL Range Object
+ *  @brief Attribute data for ACL Range Type
  */
-typedef enum _sai_acl_range_attr_t
+typedef enum _sai_acl_range_type_t
 {
-    /** Start and End of ACL Range [sai_u32_range_t]
-     *  (MANDATORY_ON_CREATE) */
-    SAI_ACL_RANGE_LIMIT,
-
-    /** Range Fields [bool]
-     * (MANDATORY_ON_CREATE, mandatory to pass only one of the below defined 
-     *  range type fields during ACL Range Creation)
-     * (CREATE_ONLY, Range Type cannot be changed after the range is created) */
-
     /** L4 Source Port Range */
     SAI_ACL_RANGE_L4_SRC_PORT_RANGE,
 
@@ -715,6 +706,24 @@ typedef enum _sai_acl_range_attr_t
 
     /** Packet Length Range in bytes */
     SAI_ACL_RANGE_PACKET_LENGTH
+
+} sai_acl_range_type_t;
+
+/**
+ *  @brief Attribute Id for ACL Range Object
+ */
+typedef enum _sai_acl_range_attr_t
+{
+    /** Start and End of ACL Range [sai_u32_range_t]
+     *  (MANDATORY_ON_CREATE) 
+     *  (CREATE_ONLY, Range Limit cannot be changed after the range is created) */
+    SAI_ACL_RANGE_LIMIT,
+
+    /** Range Type [sai_acl_range_type_t]
+     * (MANDATORY_ON_CREATE, mandatory to pass only one of the range types
+     *  defined in sai_acl_range_type_t enum during ACL Range Creation)
+     * (CREATE_ONLY, Range Type cannot be changed after the range is created) */
+    SAI_ACL_RANGE_TYPE
 
 } sai_acl_range_attr_t;
 
