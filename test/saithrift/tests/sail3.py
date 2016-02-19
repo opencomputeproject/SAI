@@ -941,6 +941,110 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
 @group('l3')
+class L3EcmpLagTestMini(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        port4 = port_list[3]
+        v4_enabled = 1
+        v6_enabled = 1
+        mac = ''
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        lag_id1 = self.client.sai_thrift_create_lag([])
+        lag_member11 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
+        lag_member12 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
+
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac)
+        rif_id3 = sai_thrift_create_router_interface(self.client, vr_id, 1, port4, 0, v4_enabled, v6_enabled, mac)
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1 = '10.10.0.0'
+        ip_mask1 = '255.255.0.0'
+        nhop_ip1 = '11.11.11.11'
+        nhop_ip2 = '22.22.22.22'
+        dmac1 = '00:11:22:33:44:55'
+        dmac2 = '00:11:22:33:44:56'
+
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id2, nhop_ip2, dmac2)
+
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip1, rif_id1)
+        nhop2 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip2, rif_id2)
+
+        nhop_group1 = sai_thrift_create_next_hop_group(self.client, [nhop1, nhop2])
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
+
+        try:
+            count = [0, 0, 0]
+            dst_ip = int(socket.inet_aton('10.10.10.1').encode('hex'), 16)
+            src_mac_start = '00:22:22:22:23:'
+            max_itrs = 500
+            for i in range(0, max_itrs):
+                dst_ip_addr = socket.inet_ntoa(hex(dst_ip)[2:].zfill(8).decode('hex'))
+                src_mac = src_mac_start + str(i%99).zfill(2)
+                pkt = simple_tcp_packet(eth_dst='00:77:66:55:44:33',
+                        eth_src=src_mac,
+                        ip_dst=dst_ip_addr,
+                        ip_src='192.168.8.1',
+                        ip_id=106,
+                        ip_ttl=64)
+
+                exp_pkt1 = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                        eth_src='00:77:66:55:44:33',
+                        ip_dst=dst_ip_addr,
+                        ip_src='192.168.8.1',
+                        ip_id=106,
+                        ip_ttl=63)
+                exp_pkt2 = simple_tcp_packet(eth_dst='00:11:22:33:44:56',
+                        eth_src='00:77:66:55:44:33',
+                        ip_dst=dst_ip_addr,
+                        ip_src='192.168.8.1',
+                        ip_id=106,
+                        ip_ttl=63)
+
+                send_packet(self, 3, str(pkt))
+                rcv_idx = verify_any_packet_any_port(self,
+                              [exp_pkt1, exp_pkt2],
+                              [0, 1, 2])
+                count[rcv_idx] += 1
+                dst_ip += 1
+
+            print count
+            ecmp_count = [count[0] + count[1], count[2]]
+            for i in range(0, 2):
+                self.assertTrue((ecmp_count[i] >= ((max_itrs / 2) * 0.75)),
+                        "Ecmp paths are not equally balanced")
+            for i in range(0, 2):
+                self.assertTrue((count[i] >= ((max_itrs / 4) * 0.75)),
+                        "Lag path1 is not equally balanced")
+        finally:
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
+
+            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2])
+            self.client.sai_thrift_remove_next_hop_group(nhop_group1)
+
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
+
+            self.client.sai_thrift_remove_next_hop(nhop2)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, nhop_ip2, dmac2)
+
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
+            self.client.sai_thrift_remove_router_interface(rif_id3)
+
+            self.client.sai_thrift_remove_lag_member(lag_member11)
+            self.client.sai_thrift_remove_lag_member(lag_member12)
+            self.client.sai_thrift_remove_lag(lag_id1)
+
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+@group('l3')
 class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
