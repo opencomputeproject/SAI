@@ -196,8 +196,8 @@ class L3IPv6LpmTest(sai_base_test.ThriftInterfaceDataPlane):
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
-        ip_addr1 = '1234:5678:9abc:def0:4422:1133:5577:9900'
-        ip_mask1 = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00'
+        ip_addr1 = '1234:5678:9abc:def0:0000:0000:0000:0000'
+        ip_mask1 = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000'
         dmac1 = '00:11:22:33:44:55'
         nhop_ip1 = '3000::1'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
