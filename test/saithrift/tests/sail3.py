@@ -27,8 +27,8 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         print
         print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 101])"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
+        port1 = port_list[0]
+        port2 = port_list[1]
         v4_enabled = 1
         v6_enabled = 1
         mac_valid = 0
@@ -62,8 +62,8 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_id=105,
                                 ip_ttl=63)
         try:
-            send_packet(self, 2, str(pkt))
-            verify_packets(self, exp_pkt, [1])
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -80,8 +80,8 @@ class L3IPv4LpmTest(sai_base_test.ThriftInterfaceDataPlane):
         print
         print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 101])"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
+        port1 = port_list[0]
+        port2 = port_list[1]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -115,8 +115,8 @@ class L3IPv4LpmTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_id=105,
                                 ip_ttl=63)
         try:
-            send_packet(self, 2, str(pkt))
-            verify_packets(self, exp_pkt, [1])
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -133,8 +133,8 @@ class L3IPv6HostTest(sai_base_test.ThriftInterfaceDataPlane):
         print
         print "Sending packet port 1 -> port 2 (2000::1 -> 3000::1)"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
+        port1 = port_list[0]
+        port2 = port_list[1]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -165,8 +165,8 @@ class L3IPv6HostTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ipv6_src='2000::1',
                                 ipv6_hlim=63)
         try:
-            send_packet(self, 2, str(pkt))
-            verify_packets(self, exp_pkt, [1])
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -184,8 +184,8 @@ class L3IPv6LpmTest(sai_base_test.ThriftInterfaceDataPlane):
         print "IPv6 Lpm Test"
         print "Sending packet port 1 -> port 2 (2000::1 -> 3000::1, routing with 3000::0/120 route"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
+        port1 = port_list[0]
+        port2 = port_list[1]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -217,8 +217,8 @@ class L3IPv6LpmTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ipv6_src='2000::1',
                                 ipv6_hlim=63)
         try:
-            send_packet(self, 2, str(pkt))
-            verify_packets(self, exp_pkt, [1])
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -236,9 +236,9 @@ class L3IPv4EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
         print
         print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 101])"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
-        port3 = port_list[3]
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -288,8 +288,8 @@ class L3IPv4EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
                                 #ip_tos=3,
                                 ip_ttl=63)
 
-            send_packet(self, 3, str(pkt))
-            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [1, 2])
+            send_packet(self, 2, str(pkt))
+            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [0, 1])
 
             pkt = simple_tcp_packet(eth_dst='00:77:66:55:44:33',
                                     eth_src='00:22:22:22:22:22',
@@ -314,8 +314,8 @@ class L3IPv4EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
                                     ip_id=106,
                                     #ip_tos=3,
                                     ip_ttl=63)
-            send_packet(self, 3, str(pkt))
-            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [1, 2])
+            send_packet(self, 2, str(pkt))
+            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [0, 1])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
             self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2])
@@ -338,9 +338,9 @@ class L3IPv6EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
         print
         print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 101])"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
-        port3 = port_list[3]
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -389,8 +389,8 @@ class L3IPv6EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
                                     tcp_sport=0x1234,
                                     ipv6_hlim=63)
 
-            send_packet(self, 3, str(pkt))
-            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [1, 2])
+            send_packet(self, 2, str(pkt))
+            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [0, 1])
 
             pkt = simple_tcpv6_packet(
                                     eth_dst='00:77:66:55:44:33',
@@ -415,8 +415,8 @@ class L3IPv6EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
                                     tcp_sport=0x1248,
                                     ipv6_hlim=63)
 
-            send_packet(self, 3, str(pkt))
-            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [1, 2])
+            send_packet(self, 2, str(pkt))
+            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [0, 1])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
             self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2])
@@ -437,13 +437,12 @@ class L3IPv6EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
 class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
-        print "Sending packet port 5 -> port [1,2,3,4] (192.168.0.1 -> 10.10.10.1 [id = 101])"
+        print "Sending packet port 3 -> port [0,1,2] (192.168.0.1 -> 10.10.10.1 [id = 101])"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
-        port3 = port_list[3]
-        port4 = port_list[4]
-        port5 = port_list[5]
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        port4 = port_list[3]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -454,11 +453,9 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
         nhop_ip1 = '11.11.11.11'
         nhop_ip2 = '22.22.22.22'
         nhop_ip3 = '33.33.33.33'
-        nhop_ip4 = '44.44.44.44'
         dmac1 = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:56'
         dmac3 = '00:11:22:33:44:57'
-        dmac4 = '00:11:22:33:44:58'
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
@@ -466,23 +463,20 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
         rif_id3 = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac)
         rif_id4 = sai_thrift_create_router_interface(self.client, vr_id, 1, port4, 0, v4_enabled, v6_enabled, mac)
-        rif_id5 = sai_thrift_create_router_interface(self.client, vr_id, 1, port5, 0, v4_enabled, v6_enabled, mac)
 
 
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
         sai_thrift_create_neighbor(self.client, addr_family, rif_id2, nhop_ip2, dmac2)
         sai_thrift_create_neighbor(self.client, addr_family, rif_id3, nhop_ip3, dmac3)
-        sai_thrift_create_neighbor(self.client, addr_family, rif_id4, nhop_ip4, dmac4)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip1, rif_id1)
         nhop2 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip2, rif_id2)
         nhop3 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip3, rif_id3)
-        nhop4 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip4, rif_id4)
-        nhop_group1 = sai_thrift_create_next_hop_group(self.client, [nhop1, nhop2, nhop3, nhop4])
+        nhop_group1 = sai_thrift_create_next_hop_group(self.client, [nhop1, nhop2, nhop3])
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
 
         # send the test packet(s)
         try:
-            count = [0, 0, 0, 0]
+            count = [0, 0, 0]
             dst_ip = int(socket.inet_aton('10.10.10.1').encode('hex'),16)
             max_itrs = 200
             for i in range(0, max_itrs):
@@ -512,41 +506,32 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
                         ip_src='192.168.8.1',
                         ip_id=106,
                         ip_ttl=63)
-                exp_pkt4 = simple_tcp_packet(eth_dst='00:11:22:33:44:58',
-                        eth_src='00:77:66:55:44:33',
-                        ip_dst=dst_ip_addr,
-                        ip_src='192.168.8.1',
-                        ip_id=106,
-                        ip_ttl=63)
 
-                send_packet(self, 5, str(pkt))
+                send_packet(self, 3, str(pkt))
                 rcv_idx = verify_any_packet_any_port(self,
-                              [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
-                              [1, 2, 3, 4])
+                              [exp_pkt1, exp_pkt2, exp_pkt3],
+                              [0, 1, 2])
                 count[rcv_idx] += 1
                 dst_ip += 1
 
-            for i in range(0, 4):
-                self.assertTrue((count[i] >= ((max_itrs / 4) * 0.8)),
+            for i in range(0, 3):
+                self.assertTrue((count[i] >= ((max_itrs / 3) * 0.8)),
                         "Not all paths are equally balanced, %s" % count)
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
-            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2, nhop3, nhop4])
+            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2, nhop3])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             self.client.sai_thrift_remove_next_hop(nhop2)
             self.client.sai_thrift_remove_next_hop(nhop3)
-            self.client.sai_thrift_remove_next_hop(nhop4)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, nhop_ip2, dmac2)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id3, nhop_ip3, dmac3)
-            sai_thrift_remove_neighbor(self.client, addr_family, rif_id4, nhop_ip4, dmac4)
 
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
             self.client.sai_thrift_remove_router_interface(rif_id3)
             self.client.sai_thrift_remove_router_interface(rif_id4)
-            self.client.sai_thrift_remove_router_interface(rif_id5)
 
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
@@ -557,11 +542,10 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
         print
         print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 101])"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
-        port3 = port_list[3]
-        port4 = port_list[4]
-        port5 = port_list[5]
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        port4 = port_list[3]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -572,7 +556,6 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
         rif_id3 = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac)
         rif_id4 = sai_thrift_create_router_interface(self.client, vr_id, 1, port4, 0, v4_enabled, v6_enabled, mac)
-        rif_id5 = sai_thrift_create_router_interface(self.client, vr_id, 1, port5, 0, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
         ip_addr1 = '6000:1:1:0:0:0:0:0'
@@ -580,26 +563,22 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
         nhop_ip1 = '2000:1:1:0:0:0:0:1'
         nhop_ip2 = '3000:1:1:0:0:0:0:1'
         nhop_ip3 = '4000:1:1:0:0:0:0:1'
-        nhop_ip4 = '5000:1:1:0:0:0:0:1'
         dmac1 = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:56'
         dmac3 = '00:11:22:33:44:57'
-        dmac4 = '00:11:22:33:44:58'
 
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
         sai_thrift_create_neighbor(self.client, addr_family, rif_id2, nhop_ip2, dmac2)
         sai_thrift_create_neighbor(self.client, addr_family, rif_id3, nhop_ip3, dmac3)
-        sai_thrift_create_neighbor(self.client, addr_family, rif_id4, nhop_ip4, dmac4)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip1, rif_id1)
         nhop2 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip2, rif_id2)
         nhop3 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip3, rif_id3)
-        nhop4 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip4, rif_id4)
-        nhop_group1 = sai_thrift_create_next_hop_group(self.client, [nhop1, nhop2, nhop3, nhop4])
+        nhop_group1 = sai_thrift_create_next_hop_group(self.client, [nhop1, nhop2, nhop3])
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
 
         # send the test packet(s)
         try:
-            count = [0, 0, 0, 0]
+            count = [0, 0, 0]
             dst_ip = socket.inet_pton(socket.AF_INET6, '6000:1:1:0:0:0:0:1')
             dst_ip_arr = list(dst_ip)
             max_itrs = 200
@@ -650,10 +629,10 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
                         tcp_dport=dport,
                         ipv6_hlim=63)
 
-                send_packet(self, 5, str(pkt))
+                send_packet(self, 3, str(pkt))
                 rcv_idx = verify_any_packet_any_port(self,
-                              [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
-                              [1, 2, 3, 4])
+                              [exp_pkt1, exp_pkt2, exp_pkt3],
+                              [0, 1, 2])
                 count[rcv_idx] += 1
                 dst_ip_arr[15] = chr(ord(dst_ip_arr[15]) + 1)
                 dst_ip = ''.join(dst_ip_arr)
@@ -661,27 +640,24 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
                 dport += 20
 
             print "Count = %s" % str(count)
-            for i in range(0, 4):
-                self.assertTrue((count[i] >= ((max_itrs / 4) * 0.75)),
+            for i in range(0, 3):
+                self.assertTrue((count[i] >= ((max_itrs / 3) * 0.75)),
                         "Not all paths are equally balanced")
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
-            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2, nhop3, nhop4])
+            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2, nhop3])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             self.client.sai_thrift_remove_next_hop(nhop2)
             self.client.sai_thrift_remove_next_hop(nhop3)
-            self.client.sai_thrift_remove_next_hop(nhop4)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, nhop_ip2, dmac2)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id3, nhop_ip3, dmac3)
-            sai_thrift_remove_neighbor(self.client, addr_family, rif_id4, nhop_ip4, dmac4)
 
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
             self.client.sai_thrift_remove_router_interface(rif_id3)
             self.client.sai_thrift_remove_router_interface(rif_id4)
-            self.client.sai_thrift_remove_router_interface(rif_id5)
 
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
@@ -690,9 +666,9 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
 class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
-        port3 = port_list[3]
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -731,8 +707,8 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
                                     ip_src='192.168.0.1',
                                     ip_id=110,
                                     ip_ttl=63)
-            send_packet(self, 3, str(pkt))
-            verify_packets_any(self, exp_pkt, [1, 2])
+            send_packet(self, 2, str(pkt))
+            verify_packets_any(self, exp_pkt, [0, 1])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -751,9 +727,9 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
 class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
-        port3 = port_list[3]
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -789,8 +765,8 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
                                     ipv6_dst='4001::1',
                                     ipv6_src='5001::1',
                                     ipv6_hlim=63)
-            send_packet(self, 3, str(pkt))
-            verify_packets_any(self, exp_pkt, [1, 2])
+            send_packet(self, 2, str(pkt))
+            verify_packets_any(self, exp_pkt, [0, 1])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -810,13 +786,13 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
 class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
-        port3 = port_list[3]
-        port4 = port_list[4]
-        port5 = port_list[5]
-        port6 = port_list[6]
-        port7 = port_list[7]
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        port4 = port_list[3]
+        port5 = port_list[4]
+        port6 = port_list[5]
+        port7 = port_list[6]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -891,10 +867,10 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
                         ip_id=106,
                         ip_ttl=63)
 
-                send_packet(self, 7, str(pkt))
+                send_packet(self, 6, str(pkt))
                 rcv_idx = verify_any_packet_any_port(self,
                               [exp_pkt1, exp_pkt2, exp_pkt3],
-                              [1, 2, 3, 4, 5, 6])
+                              [0, 1, 2, 3, 4, 5])
                 count[rcv_idx] += 1
                 dst_ip += 1
 
@@ -1050,8 +1026,8 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         print
         print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 101])"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
+        port1 = port_list[0]
+        port2 = port_list[1]
         v4_enabled = 1
         v6_enabled = 1
         vlan_id = 10
@@ -1100,8 +1076,8 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_src='10.10.10.1',
                                 ip_id=105,
                                 ip_ttl=63)
-            send_packet(self, 1, str(pkt))
-            verify_packets(self, exp_pkt, [2])
+            send_packet(self, 0, str(pkt))
+            verify_packets(self, exp_pkt, [1])
 
             # send the test packet(s)
             pkt = simple_tcp_packet(eth_dst='00:77:66:55:44:33',
@@ -1117,8 +1093,8 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_src='11.11.11.1',
                                 ip_id=105,
                                 ip_ttl=63)
-            send_packet(self, 2, str(pkt))
-            verify_packets(self, exp_pkt, [1])
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr2, ip_mask2, nhop2)
@@ -1140,8 +1116,8 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
         print
         print "Sending packet port 1 -> port 2 (192.168.0.1 -> 10.10.10.1 [id = 101])"
         switch_init(self.client)
-        port1 = port_list[1]
-        port2 = port_list[2]
+        port1 = port_list[0]
+        port2 = port_list[1]
         v4_enabled = 1
         v6_enabled = 1
 
@@ -1178,8 +1154,8 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_id=105,
                                 ip_ttl=63)
         try:
-            send_packet(self, 2, str(pkt))
-            verify_packets(self, exp_pkt, [1])
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
