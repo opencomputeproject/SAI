@@ -208,7 +208,10 @@ def sai_thrift_create_nhop(client, addr_family, ip_addr, rif_id):
     nhop_attribute2_value = sai_thrift_attribute_value_t(oid=rif_id)
     nhop_attribute2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
                                              value=nhop_attribute2_value)
-    nhop_attr_list = [nhop_attribute1, nhop_attribute2]
+    nhop_attribute3_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_IP)
+    nhop_attribute3 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_TYPE,
+                                             value=nhop_attribute3_value)
+    nhop_attr_list = [nhop_attribute1, nhop_attribute2, nhop_attribute3]
     nhop = client.sai_thrift_create_next_hop(thrift_attr_list=nhop_attr_list)
     return nhop
 
