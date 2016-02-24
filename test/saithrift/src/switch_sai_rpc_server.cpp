@@ -384,8 +384,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   for (uint32_t j = 0; j < attribute.value.vlanlist.vlan_list.size(); j++, *it2++) {
                       *vlan_list[j] = (sai_vlan_id_t) *it2;
                   }
-                  attr_list[i].value.vlanlist.vlan_count = attribute.value.vlanlist.vlan_count;
-                  attr_list[i].value.vlanlist.vlan_list = *vlan_list;
+                  attr_list[i].value.vlanlist.count = attribute.value.vlanlist.vlan_count;
+                  attr_list[i].value.vlanlist.list = *vlan_list;
                   break;
           }
       }
