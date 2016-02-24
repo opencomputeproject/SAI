@@ -1047,6 +1047,10 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         vlan_port1 = sai_thrift_vlan_port_t(port_id=port1, tagging_mode=SAI_VLAN_PORT_UNTAGGED)
         self.client.sai_thrift_add_ports_to_vlan(vlan_id, [vlan_port1])
 
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
         rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id, v4_enabled, v6_enabled, mac1)
@@ -1159,10 +1163,8 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
-            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
 
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
             self.client.sai_thrift_remove_virtual_router(vr_id)
-
-
