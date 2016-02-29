@@ -532,7 +532,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
     /** L4 Port, VLAN, Packet Length Range
-     *  SAI ACL Range Object Id [sai_object_id_t] */
+     *  List of SAI ACL Range Object Id [sai_object_list_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_RANGE,
 
     /** End of Rule Match Fields */
