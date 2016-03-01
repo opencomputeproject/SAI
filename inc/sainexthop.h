@@ -70,6 +70,13 @@ typedef enum _sai_next_hop_attr_t
     /** Next hop entry router interface id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 
+    /** Next hop entry egress port id [sai_object_id_t]
+     *  (MANDATORY_ON_CREATE|CREATE_ONLY).
+     *  Must be set to SAI_NULL_OBJECT_ID in case
+     *  SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID points to router
+     *  port(not a VLAN). */
+    SAI_NEXT_HOP_ATTR_EGRESS_PORT_ID,
+
     /* -- */
 
     /** Custom range base value */
