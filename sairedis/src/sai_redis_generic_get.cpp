@@ -182,11 +182,19 @@ sai_status_t internal_redis_generic_get(
 
     // wait for response
     
+    ssw::Select s;
+
+    s.addSelectable(g_redisGetConsumer);
+
     while (true)
     {
-        int status = g_redisGetConsumer->select(2000); // 2 seconds to receive get request
+        ssw::Selectable *sel;
 
-        if (status == ssw::ConsumerTable::DATA)
+        int fd;
+
+        int result = s.select(&sel, &fd, 2000);
+
+        if (result == ssw::Select::OBJECT)
         {
             ssw::KeyOpFieldsValuesTuple kco;
 
@@ -212,7 +220,7 @@ sai_status_t internal_redis_generic_get(
             return sai_status;
         }
 
-        REDIS_LOG_ERR("failed to get response for get status: %d", status);
+        REDIS_LOG_ERR("failed to get response for get status: %d", result);
         break;
     }
 

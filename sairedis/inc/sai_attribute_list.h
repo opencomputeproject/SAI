@@ -5,8 +5,8 @@
 #include <vector>
 
 #include <hiredis/hiredis.h>
-#include "sswcommon/dbconnector.h"
-#include "sswcommon/table.h"
+#include "common/dbconnector.h"
+#include "common/table.h"
 #include "sai.h"
 #include "sai_serialize.h"
 #include "string.h"

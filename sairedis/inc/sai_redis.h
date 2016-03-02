@@ -8,10 +8,11 @@
 #include "sai_serialize.h"
 #include "sai_attribute_list.h"
 
-#include "sswcommon/dbconnector.h"
-#include "sswcommon/producertable.h"
-#include "sswcommon/consumertable.h"
-#include "sswcommon/redishash.h"
+#include "common/dbconnector.h"
+#include "common/producertable.h"
+#include "common/consumertable.h"
+#include "common/redishash.h"
+#include "common/select.h"
 
 extern service_method_table_t           g_services;
 extern ssw::DBConnector                *g_db;
