@@ -320,6 +320,14 @@ typedef enum _sai_switch_attr_t
      * The object id is read only, while the object attributes can be modified */
     SAI_SWITCH_ATTR_LAG_HASH,
 
+    /** When SW cached based counter collection is enabled, the counter measurements 
+     * can be skewed by maximum of SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL time.
+     * When SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL  is high the packet rate 
+     * measurements could be incorrect. In such cases the attribute below can be 
+     * used synchronize the SW Cached counter statistics with the HW before 
+     * starting to retrieve the stats
+     */
+    SAI_SWITCH_ATTR_COUNTER_SYNC,
 
     /** READ-WRITE */
 
