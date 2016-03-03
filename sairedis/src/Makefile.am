@@ -1,7 +1,7 @@
 # Makefile.am -- Process this file with automake to produce Makefile.in
 
 AM_CPPFLAGS =
-AM_CPPFLAGS += -I$(top_srcdir)/../inc
+AM_CPPFLAGS += -I/usr/include/sai
 AM_CPPFLAGS += -I$(top_srcdir)/inc
 
 if DEBUG
