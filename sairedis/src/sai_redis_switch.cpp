@@ -26,7 +26,7 @@ sai_status_t redis_initialize_switch(
 
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return SAI_STATUS_SUCCESS;
 }
 
 /**
