@@ -50,5 +50,5 @@ libsairedis_la_CPPFLAGS = $(DBGFLAGS) $(AM_CPPFLAGS) $(CFLAGS_COMMON) \
 							-I$(top_srcdir)/../../../swss/ 
 
 libsairedis_la_LIBADD = -lhiredis \
-					-L$(top_srcdir)/../../../swss/sswcommon -lsswcommon
+					-L$(top_srcdir)/../../../swss/common -lsswcommon
 
