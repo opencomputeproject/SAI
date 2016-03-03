@@ -190,14 +190,10 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_ROUTE            = 31,
     SAI_OBJECT_TYPE_NEIGHBOR         = 32,
     SAI_OBJECT_TYPE_VLAN             = 33,
-    SAI_OBJECT_TYPE_MAX              = 34
-    SAI_OBJECT_TYPE_SWITCH           = 35,
-    SAI_OBJECT_TYPE_TRAP             = 36,
-    SAI_OBJECT_TYPE_TRAP_USER_DEF    = 37,
-    SAI_OBJECT_TYPE_NEIGHBOR         = 38,
-    SAI_OBJECT_TYPE_ROUTE            = 39,
-    SAI_OBJECT_TYPE_VLAN             = 40,
-    SAI_OBJECT_TYPE_MAX              = 41,
+    SAI_OBJECT_TYPE_SWITCH           = 34,
+    SAI_OBJECT_TYPE_TRAP             = 35,
+    SAI_OBJECT_TYPE_TRAP_USER_DEF    = 36,
+    SAI_OBJECT_TYPE_MAX              = 37,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
