@@ -4,7 +4,9 @@
 #include "stdint.h"
 #include "stdio.h"
 
+extern "C" {
 #include "sai.h"
+}
 #include "sai_serialize.h"
 #include "sai_attribute_list.h"
 
