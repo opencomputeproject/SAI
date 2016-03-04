@@ -15,6 +15,7 @@ extern "C" {
 #include "common/consumertable.h"
 #include "common/redishash.h"
 #include "common/select.h"
+#include "common/scheme.h"
 
 extern service_method_table_t           g_services;
 extern ssw::DBConnector                *g_db;

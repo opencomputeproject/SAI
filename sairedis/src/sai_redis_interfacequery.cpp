@@ -36,7 +36,7 @@ sai_status_t sai_api_initialize(
     if (g_db != NULL)
         delete g_db;
 
-    g_db = new ssw::DBConnector(0, "localhost", 6379, 0);
+    g_db = new ssw::DBConnector(ASIC_DB, "localhost", 6379, 0);
 
     if (g_asicState != NULL)
         delete g_asicState;
