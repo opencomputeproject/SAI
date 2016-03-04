@@ -15,8 +15,6 @@ SaiAttributeList::SaiAttributeList(
         const std::string &str_attr_id = fvField(values[i]);
         const std::string &str_attr_value = fvValue(values[i]);
 
-        std::cout << " <deserialize>  " << str_attr_id << " = " << str_attr_value << std::endl; // DEBUG
-
         sai_attribute_t attr;
         memset(&attr, 1, sizeof(sai_attribute_t));
 
