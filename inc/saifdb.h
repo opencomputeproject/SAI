@@ -92,7 +92,7 @@ typedef enum _sai_fdb_entry_attr_t
 
     /** FDB entry port id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
      * The port id here can refer to a generic port object such as SAI port object id,
-     * SAI LAG object id and etc. on. */
+     * SAI LAG object id, SAI 802.1BR CB Extended port object id, etc. on. */
     SAI_FDB_ENTRY_ATTR_PORT_ID,
 
     /** FDB entry packet action [sai_packet_action_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
