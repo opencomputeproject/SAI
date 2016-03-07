@@ -333,7 +333,7 @@ typedef enum _sai_acl_table_attr_t
 
     SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
-    /** L4 Port, VLAN, Packet Length Range */
+    /** Range type defined in sai_acl_range_type_t */
     SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
     /** End of Table Match Field */
@@ -531,7 +531,7 @@ typedef enum _sai_acl_entry_attr_t
 
     SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
-    /** L4 Port, VLAN, Packet Length Range
+    /** Range Type defined in sai_acl_range_type_t
      *  List of SAI ACL Range Object Id [sai_object_list_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_RANGE,
 
@@ -714,16 +714,16 @@ typedef enum _sai_acl_range_type_t
  */
 typedef enum _sai_acl_range_attr_t
 {
-    /** Start and End of ACL Range [sai_u32_range_t]
-     *  (MANDATORY_ON_CREATE) 
-     *  (CREATE_ONLY, Range Limit cannot be changed after the range is created) */
-    SAI_ACL_RANGE_LIMIT,
-
     /** Range Type [sai_acl_range_type_t]
      * (MANDATORY_ON_CREATE, mandatory to pass only one of the range types
      *  defined in sai_acl_range_type_t enum during ACL Range Creation)
      * (CREATE_ONLY, Range Type cannot be changed after the range is created) */
-    SAI_ACL_RANGE_TYPE
+    SAI_ACL_RANGE_TYPE,
+
+    /** Start and End of ACL Range [sai_u32_range_t]
+     *  (MANDATORY_ON_CREATE, Range will include the start and end values)
+     *  (CREATE_ONLY, Range Limit cannot be changed after the range is created) */
+    SAI_ACL_RANGE_LIMIT
 
 } sai_acl_range_attr_t;
 
