@@ -11,7 +11,7 @@
 #include "sai_serialize.h"
 #include "string.h"
 
-namespace ssw
+namespace swss
 {
 
 class SaiAttributeList
@@ -20,7 +20,7 @@ class SaiAttributeList
 
         SaiAttributeList(
                 _In_ const sai_object_type_t object_type,
-                _In_ const std::vector<ssw::FieldValueTuple> &values,
+                _In_ const std::vector<swss::FieldValueTuple> &values,
                 _In_ bool onlyCount);
 
         ~SaiAttributeList();
@@ -29,7 +29,7 @@ class SaiAttributeList
 
         uint32_t get_attr_count();
 
-        static std::vector<ssw::FieldValueTuple> serialize_attr_list(
+        static std::vector<swss::FieldValueTuple> serialize_attr_list(
                 _In_ sai_object_type_t object_type,
                 _In_ uint32_t attr_count,
                 _In_ const sai_attribute_t *attr_list,
@@ -41,6 +41,6 @@ class SaiAttributeList
         std::vector<sai_attr_serialization_type_t> m_serialization_type_list;
 };
 
-} // namespace ssw
+} // namespace swss
 
 #endif // __SAI_ATTRIBUTE_LIST__

@@ -1,11 +1,11 @@
 #include "sai_attribute_list.h"
 
-namespace ssw
+namespace swss
 {
 
 SaiAttributeList::SaiAttributeList(
         _In_ const sai_object_type_t object_type,
-        _In_ const std::vector<ssw::FieldValueTuple> &values,
+        _In_ const std::vector<swss::FieldValueTuple> &values,
         _In_ bool onlyCount)
 {
     uint32_t attr_count = values.size();
@@ -61,13 +61,13 @@ SaiAttributeList::~SaiAttributeList()
     }
 }
 
-std::vector<ssw::FieldValueTuple> SaiAttributeList::serialize_attr_list(
+std::vector<swss::FieldValueTuple> SaiAttributeList::serialize_attr_list(
         _In_ sai_object_type_t object_type,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list,
         _In_ bool onlyCount)
 {
-    std::vector<ssw::FieldValueTuple> entry;
+    std::vector<swss::FieldValueTuple> entry;
 
     for (uint32_t index = 0; index < attr_count; ++index)
     {
@@ -103,7 +103,7 @@ std::vector<ssw::FieldValueTuple> SaiAttributeList::serialize_attr_list(
             throw std::runtime_error("unable to serialize attribute value");
         }
 
-        ssw::FieldValueTuple fvt(str_attr_id, str_attr_value);
+        swss::FieldValueTuple fvt(str_attr_id, str_attr_value);
 
         entry.push_back(fvt);
     }
@@ -121,4 +121,4 @@ uint32_t SaiAttributeList::get_attr_count()
     return m_attr_list.size();
 }
 
-} // namespace ssw
+} // namespace swss
