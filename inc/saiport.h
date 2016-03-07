@@ -563,7 +563,7 @@ typedef enum _sai_port_stat_counter_t
     /** get watermark port shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_SHARED_WATERMARK_BYTES,
 
-    /** PFC Packet Counters for RX and TX per PFC priority */
+    /** PFC Packet Counters for RX and TX per PFC priority [uint64_t] */
     SAI_PORT_STAT_PFC_0_RX_PTKS,
     SAI_PORT_STAT_PFC_0_TX_PTKS,
     SAI_PORT_STAT_PFC_1_RX_PTKS,
