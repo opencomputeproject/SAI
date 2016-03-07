@@ -294,6 +294,7 @@ typedef enum _sai_buffer_profile_attr_t
 
     /** static threshold for the shared usage in bytes [sai_uint32_t]
      * Mandatory when SAI_BUFFER_POOL_TH_MODE = SAI_BUFFER_THRESHOLD_MODE_STATIC
+     * When set to zero there is no limit for the shared usage.
      * (CREATE_AND_SET) */
     SAI_BUFFER_PROFILE_ATTR_SHARED_STATIC_TH,
 
