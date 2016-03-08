@@ -7,9 +7,9 @@
 extern "C" {
 #include "sai.h"
 }
-#include "sai_serialize.h"
-#include "sai_attribute_list.h"
 
+#include "common/saiserialize.h"
+#include "common/saiattributelist.h"
 #include "common/dbconnector.h"
 #include "common/producertable.h"
 #include "common/consumertable.h"
