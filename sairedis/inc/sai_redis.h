@@ -18,14 +18,14 @@ extern "C" {
 #include "common/scheme.h"
 
 extern service_method_table_t           g_services;
-extern ssw::DBConnector                *g_db;
-extern ssw::ProducerTable              *g_asicState;
+extern swss::DBConnector                *g_db;
+extern swss::ProducerTable              *g_asicState;
 
-extern ssw::ProducerTable              *g_redisGetProducer;
-extern ssw::ConsumerTable              *g_redisGetConsumer;
+extern swss::ProducerTable              *g_redisGetProducer;
+extern swss::ConsumerTable              *g_redisGetConsumer;
 
-extern ssw::RedisHash *g_vidToRid;
-extern ssw::RedisHash *g_ridToVid;
+extern swss::RedisHash *g_vidToRid;
+extern swss::RedisHash *g_ridToVid;
 
 extern const sai_acl_api_t              redis_acl_api;
 extern const sai_buffer_api_t           redis_buffer_api;
