@@ -563,23 +563,29 @@ typedef enum _sai_port_stat_counter_t
     /** get watermark port shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_SHARED_WATERMARK_BYTES,
 
+    /** get the number of pause frames received on the port [uint64_t] */
+    SAI_PORT_STAT_PAUSE_RX_PKTS,
+
+    /** get the number of pause frames transmitted on the port [uint64_t] */
+    SAI_PORT_STAT_PAUSE_TX_PKTS,
+
     /** PFC Packet Counters for RX and TX per PFC priority [uint64_t] */
-    SAI_PORT_STAT_PFC_0_RX_PTKS,
-    SAI_PORT_STAT_PFC_0_TX_PTKS,
-    SAI_PORT_STAT_PFC_1_RX_PTKS,
-    SAI_PORT_STAT_PFC_1_TX_PTKS,
-    SAI_PORT_STAT_PFC_2_RX_PTKS,
-    SAI_PORT_STAT_PFC_2_TX_PTKS,
-    SAI_PORT_STAT_PFC_3_RX_PTKS,
-    SAI_PORT_STAT_PFC_3_TX_PTKS,
-    SAI_PORT_STAT_PFC_4_RX_PTKS,
-    SAI_PORT_STAT_PFC_4_TX_PTKS,
-    SAI_PORT_STAT_PFC_5_RX_PTKS,
-    SAI_PORT_STAT_PFC_5_TX_PTKS,
-    SAI_PORT_STAT_PFC_6_RX_PTKS,
-    SAI_PORT_STAT_PFC_6_TX_PTKS,
-    SAI_PORT_STAT_PFC_7_RX_PTKS,
-    SAI_PORT_STAT_PFC_7_TX_PTKS,
+    SAI_PORT_STAT_PFC_0_RX_PKTS,
+    SAI_PORT_STAT_PFC_0_TX_PKTS,
+    SAI_PORT_STAT_PFC_1_RX_PKTS,
+    SAI_PORT_STAT_PFC_1_TX_PKTS,
+    SAI_PORT_STAT_PFC_2_RX_PKTS,
+    SAI_PORT_STAT_PFC_2_TX_PKTS,
+    SAI_PORT_STAT_PFC_3_RX_PKTS,
+    SAI_PORT_STAT_PFC_3_TX_PKTS,
+    SAI_PORT_STAT_PFC_4_RX_PKTS,
+    SAI_PORT_STAT_PFC_4_TX_PKTS,
+    SAI_PORT_STAT_PFC_5_RX_PKTS,
+    SAI_PORT_STAT_PFC_5_TX_PKTS,
+    SAI_PORT_STAT_PFC_6_RX_PKTS,
+    SAI_PORT_STAT_PFC_6_TX_PKTS,
+    SAI_PORT_STAT_PFC_7_RX_PKTS,
+    SAI_PORT_STAT_PFC_7_TX_PKTS,
 
 } sai_port_stat_counter_t;
 
