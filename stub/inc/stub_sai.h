@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <syslog.h>
 #include <stdarg.h>
+#include <assert.h>
 
 extern service_method_table_t           g_services;
 extern const sai_route_api_t            route_api;
@@ -199,6 +200,8 @@ sai_status_t sai_get_attributes(_In_ const sai_object_key_t             *key,
 #define MAX_VALUE_STR_LEN      100
 #define MAX_LIST_VALUE_STR_LEN 1000
 
+#define PORT_NUMBER 32
+
 sai_status_t sai_value_to_str(_In_ sai_attribute_value_t      value,
                               _In_ sai_attribute_value_type_t type,
                               _In_ uint32_t                   max_length,
@@ -222,6 +225,7 @@ sai_status_t stub_create_object(sai_object_type_t type, uint32_t data, sai_objec
 
 void db_init_next_hop_group();
 sai_status_t db_get_next_hop_group(_In_ uint32_t next_hop_group_id, _Out_ sai_object_list_t *next_hop_list);
+void db_init_vlan();
 
 sai_status_t stub_fill_objlist(sai_object_id_t *data, uint32_t count, sai_object_list_t *list);
 sai_status_t stub_fill_u32list(uint32_t *data, uint32_t count, sai_u32_list_t *list);
@@ -232,6 +236,8 @@ void utils_log(const sai_log_level_t severity, const char *module_name, const ch
 
 #define QUOTEME_(x) #x                        /* add "" to x */
 #define QUOTEME(x)  QUOTEME_(x)
+
+#define STUB_ASSERT(exp) assert((exp))
 
 #ifndef _WIN32
 

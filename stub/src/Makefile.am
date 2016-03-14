@@ -41,7 +41,6 @@ libsai_apiinclude_HEADERS = \
 	$(top_srcdir)/../inc/saineighbor.h \
 	$(top_srcdir)/../inc/saifdb.h \
 	$(top_srcdir)/../inc/saiport.h \
-	$(top_srcdir)/../inc/saiqos.h \
 	$(top_srcdir)/../inc/saiacl.h \
 	$(top_srcdir)/../inc/saiswitch.h \
 	$(top_srcdir)/../inc/saistatus.h \
@@ -52,7 +51,14 @@ libsai_apiinclude_HEADERS = \
 	$(top_srcdir)/../inc/sailag.h \
     $(top_srcdir)/../inc/saimirror.h \
     $(top_srcdir)/../inc/saisamplepacket.h \
-	$(top_srcdir)/../inc/saistp.h
+	$(top_srcdir)/../inc/saistp.h \
+	$(top_srcdir)/../inc/saipolicer.h \
+	$(top_srcdir)/../inc/saiwred.h \
+	$(top_srcdir)/../inc/saiqosmaps.h \
+	$(top_srcdir)/../inc/saiqueue.h \
+	$(top_srcdir)/../inc/saischeduler.h \
+	$(top_srcdir)/../inc/saischedulergroup.h \
+	$(top_srcdir)/../inc/saibuffer.h
 
 
 libsai_api_version=$(shell grep LIBVERSION= $(top_srcdir)/sai_interface.ver | sed 's/LIBVERSION=//')

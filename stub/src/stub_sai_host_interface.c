@@ -101,11 +101,13 @@ sai_status_t stub_create_host_interface(_Out_ sai_object_id_t     * hif_id,
                                         _In_ const sai_attribute_t *attr_list)
 {
     sai_status_t                 status;
+    int                          ret;
     const sai_attribute_value_t *type, *rif_port, *name;
     uint32_t                     type_index, rif_port_index, name_index, rif_data;
     char                         key_str[MAX_KEY_STR_LEN];
     char                         list_str[MAX_LIST_VALUE_STR_LEN];
     static uint32_t              next_id = 0;
+    char                         system_cmd[1024];
 
     STUB_LOG_ENTER();
 
@@ -136,7 +138,7 @@ sai_status_t stub_create_host_interface(_Out_ sai_object_id_t     * hif_id,
                  find_attrib_in_list(attr_count, attr_list, SAI_HOSTIF_ATTR_RIF_OR_PORT_ID, &rif_port,
                                      &rif_port_index))) {
             STUB_LOG_ERR("Missing mandatory attribute rif port id on create of host if netdev type\n");
-            return SAI_MANDATORY_ATTRIBUTE_MISSING;
+            return SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING;
         }
 
         if (SAI_OBJECT_TYPE_ROUTER_INTERFACE == sai_object_type_query(rif_port->oid)) {
@@ -152,6 +154,13 @@ sai_status_t stub_create_host_interface(_Out_ sai_object_id_t     * hif_id,
             STUB_LOG_ERR("Invalid rif port object type %s", SAI_TYPE_STR(sai_object_type_query(rif_port->oid)));
             return SAI_STATUS_INVALID_ATTR_VALUE_0 + rif_port_index;
         }
+        snprintf(system_cmd, sizeof(system_cmd), "ip link add name %s type dummy", name->chardata);
+        ret = system(system_cmd);
+        if (0 != ret) {
+            STUB_LOG_INF("Error on attempt to create dummy interface. Possibly interface already exists");
+            return SAI_STATUS_SUCCESS;
+        }
+
     } else if (SAI_HOSTIF_TYPE_FD == type->s32) {
     } else {
         STUB_LOG_ERR("Invalid host interface type %d\n", type->s32);
@@ -332,6 +341,16 @@ sai_status_t stub_host_interface_name_set(_In_ const sai_object_key_t      *key,
     return SAI_STATUS_SUCCESS;
 }
 
+sai_status_t stub_set_host_interface_trap_attribute(_In_ sai_hostif_trap_id_t  hostif_trapid,
+                                                    _In_ const sai_attribute_t *attr)
+{
+    STUB_LOG_ENTER();
+    STUB_LOG_EXIT();
+
+    return SAI_STATUS_SUCCESS;
+}
+
+
 const sai_hostif_api_t host_interface_api = {
     stub_create_host_interface,
     stub_remove_host_interface,
@@ -341,7 +360,7 @@ const sai_hostif_api_t host_interface_api = {
     NULL,
     NULL,
     NULL,
-    NULL,
+    stub_set_host_interface_trap_attribute,
     NULL,
     NULL,
     NULL,
