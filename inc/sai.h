@@ -56,6 +56,7 @@
 #include "saibuffer.h"
 #include "saihash.h"
 #include "saiudf.h"
+#include "saitunnel.h"
 
 /** \defgroup SAI SAI - Entry point specific API definitions.
  *
@@ -98,10 +99,10 @@ typedef enum _sai_api_t
     SAI_API_BUFFERS                 = 23,  /**< sai_buffer_api_t */
     SAI_API_HASH                    = 24,  /**< sai_hash_api_t */
     SAI_API_UDF                     = 25,  /**< sai_udf_api_t */
-    SAI_API_DOT1BR_CB_EXTENDED_PORT = 26,  /**< sai_dot1br_cb_extended_port_api_t */
-    SAI_API_DOT1BR_PORT             = 27,  /**< sai_dot1br_port_api_t */
-    SAI_API_DOT1BR_FDB_ENTRY        = 28,  /**< sai_dot1br_fdb_entry_api_t */  
-
+    SAI_API_TUNNEL                  = 26,  /**< sai_tunnel_api_t */
+    SAI_API_DOT1BR_CB_EXTENDED_PORT = 27,  /**< sai_dot1br_cb_extended_port_api_t */
+    SAI_API_DOT1BR_PORT             = 28,  /**< sai_dot1br_port_api_t */
+    SAI_API_DOT1BR_FDB_ENTRY        = 29,  /**< sai_dot1br_fdb_entry_api_t */  
 } sai_api_t;
 
 typedef enum _sai_log_level_t

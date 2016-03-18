@@ -193,10 +193,13 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_NEIGHBOR                = 34,
     SAI_OBJECT_TYPE_ROUTE                   = 35,
     SAI_OBJECT_TYPE_VLAN                    = 36,
-    SAI_OBJECT_TYPE_DOT1BR_CB_EXTENDED_PORT = 37,
-    SAI_OBJECT_TYPE_DOT1BR_PORT             = 38,
-    SAI_OBJECT_TYPE_DOT1BR_FDB_ENTRY        = 39,
-    SAI_OBJECT_TYPE_MAX                     = 40,
+    SAI_OBJECT_TYPE_TUNNEL_MAP              = 37,
+    SAI_OBJECT_TYPE_TUNNEL                  = 38,
+    SAI_OBJECT_TYPE_TUNNEL_TABLE_ENTRY      = 39,
+    SAI_OBJECT_TYPE_DOT1BR_CB_EXTENDED_PORT = 40,
+    SAI_OBJECT_TYPE_DOT1BR_PORT             = 41,
+    SAI_OBJECT_TYPE_DOT1BR_FDB_ENTRY        = 42,
+    SAI_OBJECT_TYPE_MAX                     = 43,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -471,6 +474,37 @@ typedef struct _sai_qos_map_list_t
     sai_qos_map_t *list;
 } sai_qos_map_list_t;
 
+typedef struct _sai_tunnel_map_params_t
+{
+    /** ECN */
+    sai_uint8_t ecn;
+
+    /** vlan id  */
+    sai_vlan_id_t vlan_id;
+
+    /** VNI id  */
+    sai_uint32_t vni_id;
+
+} sai_tunnel_map_params_t;
+
+typedef struct _sai_tunnel_map_t
+{
+    /** Input parameters to match */
+    sai_tunnel_map_params_t key;
+
+    /** Output map parameters */
+    sai_tunnel_map_params_t value;
+
+} sai_tunnel_map_t;
+
+typedef struct _sai_tunnel_map_list_t
+{
+    /** Number of entries in the map  */
+    uint32_t count;
+    /** Map list */
+    sai_tunnel_map_t * list;
+} sai_tunnel_map_list_t;
+
 /**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
  *
@@ -506,6 +540,7 @@ typedef union {
     sai_acl_action_data_t aclaction;
     sai_port_breakout_t portbreakout;
     sai_qos_map_list_t qosmap;
+    sai_tunnel_map_list_t tunnelmap;
 
 } sai_attribute_value_t;
 
