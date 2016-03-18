@@ -198,6 +198,8 @@ typedef enum _sai_port_media_type_t
  */
 typedef enum _sai_port_attr_t
 {
+    /** NOT Applicable to 802.1BR Extended Ports */
+
     /** READ-ONLY */
 
     /** Port Type [sai_port_type_t] */
@@ -430,6 +432,14 @@ typedef enum _sai_port_attr_t
      * Traffic ingressing on this port and egressing out of the ports in the
      * given port list will be dropped. */
     SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST,
+
+    /** Dropping of 802.1BR untagged frames on ingress [bool] (default to FALSE).
+     * Applicable only to Physical ports. */
+    SAI_PORT_ATTR_DOT1BR_DROP_UNTAGGED,
+
+    /** Dropping of 802.1BR tagged frames on ingress [bool] (default to FALSE)
+     * Applicable only to Physical ports. */
+    SAI_PORT_ATTR_DOT1BR_DROP_TAGGED,
 
     /** -- */
 

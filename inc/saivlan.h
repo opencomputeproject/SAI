@@ -98,6 +98,12 @@ typedef enum _sai_vlan_attr_t
       * Value Range SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */
     SAI_VLAN_ATTR_META_DATA,
 
+    /**
+      * The Multicast 802.1BR E-Channel Id (ECID), to be used in the flooding traffic
+      * sent by the CB to Port Extenders (PE). [sai_uint32_t] (CREATE_AND_SET) (default to 0)
+      */
+    SAI_VLAN_ATTR_FLOODING_ECID,
+
     /** Custom range base value */
     SAI_VLAN_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
@@ -214,7 +220,9 @@ typedef sai_status_t (*sai_remove_all_vlans_fn)(
  * Arguments:
  *    @param[in] vlan_id - VLAN id
  *    @param[in] port_count - number of ports
- *    @param[in] port_list - pointer to membership structures
+ *    @param[in] port_list - pointer to membership structures. The port list
+ *                           can also include 802.1BR CB Extended Ports
+ *                           (SAI_OBJECT_TYPE_DOT1BR_CB_EXTENDED_PORT)
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success
@@ -233,7 +241,9 @@ typedef sai_status_t (*sai_add_ports_to_vlan_fn)(
  * Arguments:
  *    @param[in] vlan_id - VLAN id
  *    @param[in] port_count - number of ports
- *    @param[in] port_list - pointer to membership structures
+ *    @param[in] port_list - pointer to membership structures. The port list
+ *                           can also include 802.1BR CB Extended Ports
+ *                           (SAI_OBJECT_TYPE_DOT1BR_CB_EXTENDED_PORT)
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success

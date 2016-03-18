@@ -73,33 +73,36 @@
  */
 typedef enum _sai_api_t
 {    
-    SAI_API_UNSPECIFIED      =  0, 
-    SAI_API_SWITCH           =  1,  /**< sai_switch_api_t */
-    SAI_API_PORT             =  2,  /**< sai_port_api_t */
-    SAI_API_FDB              =  3,  /**< sai_fdb_api_t */
-    SAI_API_VLAN             =  4,  /**< sai_vlan_api_t */
-    SAI_API_VIRTUAL_ROUTER   =  5,  /**< sai_virtual_router_api_t */
-    SAI_API_ROUTE            =  6,  /**< sai_route_api_t */
-    SAI_API_NEXT_HOP         =  7,  /**< sai_next_hop_api_t */
-    SAI_API_NEXT_HOP_GROUP   =  8,  /**< sai_next_hop_group_api_t */
-    SAI_API_ROUTER_INTERFACE =  9,  /**< sai_router_interface_api_t */
-    SAI_API_NEIGHBOR         = 10,  /**< sai_neighbor_api_t */
-    SAI_API_ACL              = 11,  /**< sai_acl_api_t */
-    SAI_API_HOST_INTERFACE   = 12,  /**< sai_host_interface_api_t */
-    SAI_API_MIRROR           = 13,  /**< sai_mirror_api_t */
-    SAI_API_SAMPLEPACKET     = 14,  /**< sai_samplepacket_api_t */
-    SAI_API_STP              = 15,  /**< sai_stp_api_t */
-    SAI_API_LAG              = 16,  /**< sai_lag_api_t */
-    SAI_API_POLICER          = 17,  /**< sai_policer_api_t */
-    SAI_API_WRED             = 18,  /**< sai_wred_api_t*/
-    SAI_API_QOS_MAPS         = 19,  /**< sai_qos_map_api_t*/
-    SAI_API_QUEUE            = 20,  /**< sai_queue_api_t*/
-    SAI_API_SCHEDULER        = 21,  /**< sai_scheduler_api_t*/
-    SAI_API_SCHEDULER_GROUP  = 22,  /**< sai_scheduler_group_api_t*/
-    SAI_API_BUFFERS          = 23,  /**< sai_buffer_api_t */
-    SAI_API_HASH             = 24,  /**< sai_hash_api_t */
-    SAI_API_UDF              = 25,  /**< sai_udf_api_t */
-    SAI_API_TUNNEL           = 26,  /**< sai_tunnel_api_t */
+    SAI_API_UNSPECIFIED             =  0, 
+    SAI_API_SWITCH                  =  1,  /**< sai_switch_api_t */
+    SAI_API_PORT                    =  2,  /**< sai_port_api_t */
+    SAI_API_FDB                     =  3,  /**< sai_fdb_api_t */
+    SAI_API_VLAN                    =  4,  /**< sai_vlan_api_t */
+    SAI_API_VIRTUAL_ROUTER          =  5,  /**< sai_virtual_router_api_t */
+    SAI_API_ROUTE                   =  6,  /**< sai_route_api_t */
+    SAI_API_NEXT_HOP                =  7,  /**< sai_next_hop_api_t */
+    SAI_API_NEXT_HOP_GROUP          =  8,  /**< sai_next_hop_group_api_t */
+    SAI_API_ROUTER_INTERFACE        =  9,  /**< sai_router_interface_api_t */
+    SAI_API_NEIGHBOR                = 10,  /**< sai_neighbor_api_t */
+    SAI_API_ACL                     = 11,  /**< sai_acl_api_t */
+    SAI_API_HOST_INTERFACE          = 12,  /**< sai_host_interface_api_t */
+    SAI_API_MIRROR                  = 13,  /**< sai_mirror_api_t */
+    SAI_API_SAMPLEPACKET            = 14,  /**< sai_samplepacket_api_t */
+    SAI_API_STP                     = 15,  /**< sai_stp_api_t */
+    SAI_API_LAG                     = 16,  /**< sai_lag_api_t */
+    SAI_API_POLICER                 = 17,  /**< sai_policer_api_t */
+    SAI_API_WRED                    = 18,  /**< sai_wred_api_t*/
+    SAI_API_QOS_MAPS                = 19,  /**< sai_qos_map_api_t*/
+    SAI_API_QUEUE                   = 20,  /**< sai_queue_api_t*/
+    SAI_API_SCHEDULER               = 21,  /**< sai_scheduler_api_t*/
+    SAI_API_SCHEDULER_GROUP         = 22,  /**< sai_scheduler_group_api_t*/
+    SAI_API_BUFFERS                 = 23,  /**< sai_buffer_api_t */
+    SAI_API_HASH                    = 24,  /**< sai_hash_api_t */
+    SAI_API_UDF                     = 25,  /**< sai_udf_api_t */
+    SAI_API_TUNNEL                  = 26,  /**< sai_tunnel_api_t */
+    SAI_API_DOT1BR_CB_EXTENDED_PORT = 27,  /**< sai_dot1br_cb_extended_port_api_t */
+    SAI_API_DOT1BR_PORT             = 28,  /**< sai_dot1br_port_api_t */
+    SAI_API_DOT1BR_FDB_ENTRY        = 29,  /**< sai_dot1br_fdb_entry_api_t */  
 } sai_api_t;
 
 typedef enum _sai_log_level_t

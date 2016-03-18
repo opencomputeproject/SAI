@@ -131,6 +131,18 @@ typedef enum _sai_packet_vlan_t
 } sai_packet_vlan_t;
 
 /**
+* @brief Attribute data for SAI_SWITCH_ATTR_DOT1BR_NODE_TYPE
+*/
+typedef enum _sai_switch_dot1br_node_type_t
+{
+    /** Controlling Bridge Node */
+    SAI_SWITCH_DOT1BR_NODE_TYPE_CB,
+
+    /** Port Extender Node */
+    SAI_SWITCH_DOT1BR_NODE_TYPE_PE,
+} sai_switch_dot1br_node_type;
+
+/**
 * @brief Attribute data for SAI_SWITCH_SWITCHING_MODE
 */
 typedef enum _sai_switch_switching_mode_t
@@ -349,6 +361,12 @@ typedef enum _sai_switch_attr_t
     /** Nonvolatile storage required by both SAI and NPU in KB [sai_uint64_t]
      * Will be 0 for SAI_RESTART_TYPE_NONE */
     SAI_SWITCH_ATTR_NV_STORAGE_SIZE,
+
+    /** switch's 802.1BR capability [bool] */
+    SAI_SWITCH_ATTR_DOT1BR_CAPABLE,
+
+    /** 802.1BR Node type [sai_switch_dot1br_node_type] */
+    SAI_SWITCH_ATTR_DOT1BR_NODE_TYPE,
 
     /** READ-WRITE */
 
