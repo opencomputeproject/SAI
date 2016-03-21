@@ -322,10 +322,13 @@ typedef enum _sai_acl_table_attr_t
     /** NPU Based Meta Data [bool] */
 
     /** DST MAC address match in FDB */
-    SAI_ACL_TABLE_ATTR_FIELD_FDB_DST_NPU_META_HIT,
+    SAI_ACL_TABLE_ATTR_FIELD_FDB_NPU_META_DST_HIT,
 
     /** DST IP address match in neighbor table */
-    SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
+    SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
+
+    /** DST IP address match in Route table [bool] */
+    SAI_ACL_TABLE_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /** User Defined Field Groups [sai_object_id_t]
      * (CREATE_ONLY, default to SAI_NULL_OBJECT_ID) */
@@ -521,6 +524,9 @@ typedef enum _sai_acl_entry_attr_t
 
     /** DST IP address match in neighbor Table */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
+
+    /** DST IP address match in Route Table [bool] */
+    SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /** User Defined Field data for the UDF Groups in ACL Table.
      * [sai_u8_list_t] */
