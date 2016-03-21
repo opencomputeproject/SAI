@@ -1646,8 +1646,8 @@ int start_p4_sai_thrift_rpc_server(int port)
     int rc = pthread_create(&switch_sai_thrift_rpc_thread, NULL, switch_sai_thrift_rpc_server_thread, &port);
     std::cerr << "create pthread switch_sai_thrift_rpc_server_thread result " << rc << std::endl;
 
-    rc = pthread_join(switch_sai_thrift_rpc_thread, NULL);
-    std::cerr << "join switch_sai_thrift_rpc_server_thread rc" << rc  << std::endl;
+    rc = pthread_detach(switch_sai_thrift_rpc_thread);
+    std::cerr << "detach switch_sai_thrift_rpc_server_thread rc" << rc  << std::endl;
 
     return rc;
 }
