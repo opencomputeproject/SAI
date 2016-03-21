@@ -403,6 +403,9 @@ typedef enum _sai_switch_attr_t
     /** The hash object for IPv4 in IPv4 packets going through ECMP [sai_object_id_t] */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4_IN_IPV4,
 
+    /** The hash object for IPv6 packets going through ECMP [sai_object_id_t] */
+    SAI_SWITCH_ATTR_ECMP_HASH_IPV6,
+
     /** SAI LAG default hash algorithm [sai_hash_algorithm] (default to SAI_HASH_ALGORITHM_CRC) */
     SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM,
 
@@ -421,6 +424,9 @@ typedef enum _sai_switch_attr_t
 
     /** The hash object for IPv4 in IPv4 packets going through LAG [sai_object_id_t] */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4_IN_IPV4,
+
+    /** The hash object for IPv6 packets going through LAG [sai_object_id_t] */
+    SAI_SWITCH_ATTR_LAG_HASH_IPV6,
 
     /** The SDK can
      * 1 - Read the counters directly from HW (or)
