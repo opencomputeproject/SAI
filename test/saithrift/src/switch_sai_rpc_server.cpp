@@ -1639,7 +1639,7 @@ static pthread_t switch_sai_thrift_rpc_thread;
 
 extern "C" {
 
-int start_p4_sai_thrift_rpc_server(int port)
+int start_sai_thrift_rpc_server(int port)
 {
     std::cerr << "Starting SAI RPC server on port " << port << std::endl;
 

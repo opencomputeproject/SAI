@@ -146,7 +146,7 @@ main(int argc, char* argv[])
     bcm_diag_shell_thread.detach();
 #endif
 
-    start_p4_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
+    start_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
 
     while (1) pause();
 
