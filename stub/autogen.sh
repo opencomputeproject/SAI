@@ -59,8 +59,8 @@ if test $? = 1; then
 fi
 
 # make sure libtool is up-to-date
-lt_ver=`libtool --version | head -n 1 | awk '{print $4}'`
-compare_versions 1.4.2 $lt_ver
+lt_ver=`libtoolize --version | head -n 1 | awk '{print $4}'`
+compare_versions 2.4.2 $lt_ver
 if test $? = 1; then
     echo Min libtool version is 1.4.2
     exit 1
