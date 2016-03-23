@@ -26,7 +26,7 @@ sai_status_t redis_initialize_switch(
 
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return SAI_STATUS_SUCCESS;
 }
 
 /**
@@ -139,9 +139,15 @@ sai_status_t  redis_get_switch_attribute(
 {
     REDIS_LOG_ENTER();
 
+    sai_status_t status = redis_generic_get(
+            SAI_OBJECT_TYPE_SWITCH,
+            (sai_object_id_t)0,
+            attr_count,
+            attr_list);
+
     REDIS_LOG_EXIT();
 
-    return SAI_STATUS_NOT_IMPLEMENTED;
+    return status;
 }
 
 /**

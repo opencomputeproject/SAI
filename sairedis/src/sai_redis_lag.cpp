@@ -12,7 +12,7 @@
 sai_status_t redis_create_lag(
     _Out_ sai_object_id_t* lag_id,
     _In_ uint32_t attr_count,
-    _In_ sai_attribute_t *attr_list)
+    _In_ const sai_attribute_t *attr_list)
 {
     REDIS_LOG_ENTER();
 
@@ -108,7 +108,7 @@ sai_status_t  redis_get_lag_attribute(
 sai_status_t redis_create_lag_member(
     _Out_ sai_object_id_t* lag_member_id,
     _In_ uint32_t attr_count,
-    _In_ sai_attribute_t *attr_list)
+    _In_ const sai_attribute_t *attr_list)
 {
     REDIS_LOG_ENTER();
 
