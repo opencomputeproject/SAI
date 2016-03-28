@@ -253,4 +253,7 @@ service switch_sai_rpc {
     list<i64> sai_thrift_get_policer_stats(
                              1: sai_thrift_object_id_t policer_id,
                              2: list<sai_thrift_policer_stat_counter_t> counter_ids);
+
+    // Scheduler API
+    sai_thrift_object_id_t sai_thrift_create_scheduler_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);  
 }
