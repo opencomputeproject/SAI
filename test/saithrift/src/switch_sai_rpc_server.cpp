@@ -172,9 +172,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               case SAI_PORT_ATTR_PORT_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
                   break;
-              case SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID:
+			  case SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID:
                   attr_list[i].value.u64 = attribute.value.u64;
-                  break;
+		          break;
               default:
                   break;
           }
@@ -1623,7 +1623,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return;
   }
 
-  sai_thrift_object_id_t sai_thrift_create_scheduler_profile(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+    sai_thrift_object_id_t sai_thrift_create_scheduler_profile(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_create_scheduler_profile\n");  
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_scheduler_api_t *scheduler_api;
