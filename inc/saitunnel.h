@@ -241,6 +241,13 @@ typedef enum _sai_tunnel_attr_t
     /** tunnel DSCP value [sai_uint8_t : 6]
     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_DSCP_MODE = SAI_TUNNEL_DSCP_USER_DEFINE) */
     SAI_TUNNEL_ATTR_DECAP_DSCP_VAL,
+    
+    /** tunnel GRE key valid [bool] (CREATE_ONLY) */
+    SAI_TUNNEL_ATTR_DECAP_GRE_KEY_VALID,
+
+    /** tunnel GRE key [sai_uint32_t] (MANDATORY_ON_CREATE when
+     *  SAI_TUNNEL_ATTR_DECAP_GRE_KEY_VALID=true) (CREATE_ONLY) */
+    SAI_TUNNEL_ATTR_DECAP_GRE_KEY,
 
     /** Custom range base value */
     SAI_TUNNEL_ATTR_CUSTOM_RANGE_BASE = 0x10000000
