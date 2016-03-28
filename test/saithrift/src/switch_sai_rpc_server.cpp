@@ -172,6 +172,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               case SAI_PORT_ATTR_PORT_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
                   break;
+			  case SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID:
+                  attr_list[i].value.u64 = attribute.value.u64;
+		          break;
               default:
                   break;
           }
@@ -1620,6 +1623,56 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return;
   }
 
+    sai_thrift_object_id_t sai_thrift_create_scheduler_profile(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      printf("sai_thrift_create_scheduler_profile\n");  
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_scheduler_api_t *scheduler_api;
+      sai_object_id_t scheduler_id = 0;
+      status = sai_api_query(SAI_API_SCHEDULER, (void **) &scheduler_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_scheduler_attributes(thrift_attr_list, attr_list);
+      uint32_t attr_count = thrift_attr_list.size();
+      scheduler_api->create_scheduler_profile(&scheduler_id, attr_count, attr_list);
+      return scheduler_id;
+  }
+
+  void sai_thrift_parse_scheduler_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM:
+                  attr_list[i].value.u64 = attribute.value.u64;
+                  break;
+              case SAI_SCHEDULER_ATTR_SCHEDULING_WEIGHT:
+                  attr_list[i].value.u8 = attribute.value.u8;
+                  break;
+              case SAI_SCHEDULER_ATTR_SHAPER_TYPE:
+                  attr_list[i].value.u64 = attribute.value.u64;
+                  break;
+              case SAI_SCHEDULER_ATTR_MIN_BANDWIDTH_RATE:
+                  attr_list[i].value.u64 = attribute.value.u64;
+                  break;
+              case SAI_SCHEDULER_ATTR_MIN_BANDWIDTH_BURST_RATE:
+                  attr_list[i].value.u64 = attribute.value.u64;
+                  break;
+              case SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE :
+                  attr_list[i].value.u64 = attribute.value.u64;
+                  break;
+              case SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE:
+                  attr_list[i].value.u64 = attribute.value.u64;
+                  break;
+              case SAI_SCHEDULER_ATTR_CUSTOM_RANGE_BASE:
+                  attr_list[i].value.u8 = attribute.value.u8;
+                  break;
+          }
+      }
+  }
 };
 
 static void * switch_sai_thrift_rpc_server_thread(void *arg) {

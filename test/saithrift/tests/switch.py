@@ -526,4 +526,15 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
     mirror_id = client.sai_thrift_create_mirror_session(mirror_attr_list)
     return mirror_id
 
-
+def sai_thrift_create_scheduler_profile(client, max_rate, algorithm=0):
+    scheduler_attr_list = []
+    attribute_value = sai_thrift_attribute_value_t(u64=max_rate)
+    attribute = sai_thrift_attribute_t(id=SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE ,
+                                           value=attribute_value)
+    scheduler_attr_list.append(attribute)
+    attribute_value = sai_thrift_attribute_value_t(u64=algorithm)
+    attribute = sai_thrift_attribute_t(id=SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM ,
+                                           value=attribute_value)
+    scheduler_attr_list.append(attribute)
+    scheduler_profile_id = client.sai_thrift_create_scheduler_profile(scheduler_attr_list)
+    return scheduler_profile_id
