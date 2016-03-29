@@ -136,8 +136,6 @@ typedef enum _sai_tunnel_type_t
 {
     SAI_TUNNEL_IPINIP,
 
-    SAI_TUNNEL_IPINIP_GRE,
-
     SAI_TUNNEL_VXLAN,
 
     SAI_TUNNEL_MPLS,
