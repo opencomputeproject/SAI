@@ -56,12 +56,12 @@ typedef enum _sai_samplepacket_mode_t
       * an actual session is instantiated which is private for that port. 
       * In case multiple ports are configured with the same profile, 
       * sampling is independently done per port. */
-    SAI_SAMPLEPACKET_MODE_PROFILE,
+    SAI_SAMPLEPACKET_MODE_EXCLUSIVE,
     
     /** An instance of sample packet session. 
       * This session can be attached to multiple ACL entries. Traffic matching 
       * these ACL entries is merged from a sampling point of view. */
-    SAI_SAMPLEPACKET_MODE_NETFLOW,
+    SAI_SAMPLEPACKET_MODE_SHARED,
     
 } sai_samplepacket_mode_t;
 
@@ -90,7 +90,7 @@ typedef enum _sai_samplepacket_attr_t
     
     /** CREATE ONLY */
     /** samplepacket mode sai_samplepacket_mode_t. 
-    Default would be SAI_SAMPLEPACKET_MODE_PROFILE */
+    Default would be SAI_SAMPLEPACKET_MODE_EXCLUSIVE */
     SAI_SAMPLEPACKET_ATTR_MODE,
 
 } sai_samplepacket_attr_t;
