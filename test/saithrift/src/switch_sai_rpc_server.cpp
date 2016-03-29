@@ -1636,6 +1636,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_scheduler_attributes(thrift_attr_list, attr_list);
       uint32_t attr_count = thrift_attr_list.size();
       scheduler_api->create_scheduler_profile(&scheduler_id, attr_count, attr_list);
+	  free (attr_list);
       return scheduler_id;
   }
 
@@ -1647,13 +1648,13 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
               case SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM:
-                  attr_list[i].value.u64 = attribute.value.u64;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_SCHEDULER_ATTR_SCHEDULING_WEIGHT:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_SCHEDULER_ATTR_SHAPER_TYPE:
-                  attr_list[i].value.u64 = attribute.value.u64;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_SCHEDULER_ATTR_MIN_BANDWIDTH_RATE:
                   attr_list[i].value.u64 = attribute.value.u64;
@@ -1666,9 +1667,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   break;
               case SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE:
                   attr_list[i].value.u64 = attribute.value.u64;
-                  break;
-              case SAI_SCHEDULER_ATTR_CUSTOM_RANGE_BASE:
-                  attr_list[i].value.u8 = attribute.value.u8;
                   break;
           }
       }

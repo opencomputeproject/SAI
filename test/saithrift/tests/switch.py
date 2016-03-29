@@ -532,7 +532,7 @@ def sai_thrift_create_scheduler_profile(client, max_rate, algorithm=0):
     attribute = sai_thrift_attribute_t(id=SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE ,
                                        value=attribute_value)
     scheduler_attr_list.append(attribute)
-    attribute_value = sai_thrift_attribute_value_t(u64=algorithm)
+    attribute_value = sai_thrift_attribute_value_t(s32=algorithm)
     attribute = sai_thrift_attribute_t(id=SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM ,
                                        value=attribute_value)
     scheduler_attr_list.append(attribute)
