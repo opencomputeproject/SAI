@@ -157,7 +157,7 @@ typedef struct _sai_fdb_event_notification_data_t {
     sai_fdb_event_t event_type;
     sai_fdb_entry_t fdb_entry;
     uint32_t attr_count;
-    sai_attribute_t *attr;
+    const sai_attribute_t *attr;
 } sai_fdb_event_notification_data_t;
 
 /**

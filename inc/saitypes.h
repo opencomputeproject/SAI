@@ -328,6 +328,7 @@ typedef struct _sai_acl_field_data_t
      * Expected AND result using match mask above with packet field value where applicable.
      */
     union {
+        bool booldata;
         sai_uint8_t u8;
         sai_int8_t s8;
         sai_uint16_t u16;
