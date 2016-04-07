@@ -160,13 +160,20 @@ typedef enum _sai_tunnel_dscp_mode_t
 
 } sai_tunnel_dscp_mode_t;
 
-typedef enum _sai_tunnel_ecn_mode_t
+typedef enum _sai_tunnel_encap_ecn_mode_t
 {
-    SAI_TUNNEL_ECN_MODE_COPY_FROM_OUTER,
+    SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
 
-    SAI_TUNNEL_ECN_MODE_KEEP_INNER,
+    SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
+    
+} sai_tunnel_ecn_mode_t;
 
-    SAI_TUNNEL_ECN_MODE_USER_DEFINED
+typedef enum _sai_tunnel_decap_ecn_mode_t
+{
+    SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
+
+    SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
+    
 } sai_tunnel_ecn_mode_t;
 
 typedef enum _sai_tunnel_attr_t
@@ -210,7 +217,8 @@ typedef enum _sai_tunnel_attr_t
      *  SAI_TUNNEL_ATTR_ENCAP_GRE_KEY_VALID=true) (CREATE_ONLY) */
     SAI_TUNNEL_ATTR_ENCAP_GRE_KEY,
 
-    /**  tunnel encap ECN mode [sai_tunnel_ecn_mode_t] */
+    /**  tunnel encap ECN mode [sai_tunnel_encap_ecn_mode_t]
+     *   Default would be SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD */
     SAI_TUNNEL_ATTR_ENCAP_ECN_MODE,
 
     /** tunnel encap mappers [sai_object_list_t] */
@@ -218,7 +226,8 @@ typedef enum _sai_tunnel_attr_t
 
     /** tunnel decap attribute **/
 
-    /**  tunnel decap ECN mode [sai_tunnel_ecn_mode_t] */
+    /**  tunnel decap ECN mode [sai_tunnel_decap_ecn_mode_t]
+     *   Default would be SAI_TUNNEL_DECAP_ECN_MODE_STANDARD */
     SAI_TUNNEL_ATTR_DECAP_ECN_MODE,
 
     /**  tunnel decap mappers [sai_object_list_t] */
