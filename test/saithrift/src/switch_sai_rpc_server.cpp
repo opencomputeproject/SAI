@@ -1672,7 +1672,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
   }
   
-    void sai_thrift_get_port_stats(
+  void sai_thrift_get_port_stats(
           std::vector<int64_t> & thrift_counters,
           const sai_thrift_object_id_t port_id,
           const std::vector<sai_thrift_port_stat_counter_t> & thrift_counter_ids,
@@ -1703,6 +1703,18 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       free(counter_ids);
       free(counters);
       return;
+  }
+  
+  sai_thrift_status_t sai_thrift_clear_port_all_stats(const sai_thrift_object_id_t port_id) {
+      printf("sai_thrift_clear_port_all_stats\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_port_api_t *port_api;
+      status = sai_api_query(SAI_API_PORT, (void **) &port_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      status = port_api->clear_port_all_stats( (sai_object_id_t) port_id);
+      return status;
   }
 
   void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t port_id) {
@@ -1771,6 +1783,33 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       free(counters);
       return;
   }
+  
+  sai_thrift_status_t sai_thrift_clear_queue_stats(
+          const sai_thrift_object_id_t queue_id,
+          const std::vector<sai_thrift_queue_stat_counter_t> & thrift_counter_ids,
+          const int32_t number_of_counters) {
+      printf("sai_thrift_clear_queue_stats\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_queue_api_t *queue_api;
+      status = sai_api_query(SAI_API_QUEUE, (void **) &queue_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_queue_stat_counter_t *counter_ids = (sai_queue_stat_counter_t *) malloc(sizeof(sai_queue_stat_counter_t) * thrift_counter_ids.size());
+      std::vector<int32_t>::const_iterator it = thrift_counter_ids.begin();
+      for(uint32_t i = 0; i < thrift_counter_ids.size(); i++, it++) {
+          counter_ids[i] = (sai_queue_stat_counter_t) *it;
+      }
+
+      status = queue_api->clear_queue_stats(
+                             (sai_object_id_t) queue_id,
+                             counter_ids,
+                             number_of_counters);
+
+      free(counter_ids);
+      return status;
+  }
+  
 };
 
 static void * switch_sai_thrift_rpc_server_thread(void *arg) {
