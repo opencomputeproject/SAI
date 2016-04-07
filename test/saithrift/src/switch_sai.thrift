@@ -170,6 +170,7 @@ service switch_sai_rpc {
                              1: sai_thrift_object_id_t port_id,
                              2: list<sai_thrift_port_stat_counter_t> counter_ids,
                              3: i32 number_of_counters);
+    sai_thrift_status_t sai_thrift_clear_port_all_stats(1: sai_thrift_object_id_t port_id)
 
     //fdb API
     sai_thrift_status_t sai_thrift_create_fdb_entry(1: sai_thrift_fdb_entry_t thrift_fdb_entry, 2: list<sai_thrift_attribute_t> thrift_attr_list);
@@ -269,5 +270,8 @@ service switch_sai_rpc {
                              1: sai_thrift_object_id_t queue_id,
                              2: list<sai_thrift_queue_stat_counter_t> counter_ids,
                              3: i32 number_of_counters);
-							 
+    sai_thrift_status_t sai_thrift_clear_queue_stats(
+                             1: sai_thrift_object_id_t queue_id,
+                             2: list<sai_thrift_queue_stat_counter_t> counter_ids,
+                             3: i32 number_of_counters);							 
 }
