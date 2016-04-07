@@ -1688,7 +1688,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       std::vector<int32_t>::const_iterator it = thrift_counter_ids.begin();
       uint64_t *counters = (uint64_t *) malloc(sizeof(uint64_t) * thrift_counter_ids.size());
       for(uint32_t i = 0; i < thrift_counter_ids.size(); i++, it++) {
-          printf("YOHAI IM HERE %d\n",(sai_port_stat_counter_t) *it);
           counter_ids[i] = (sai_port_stat_counter_t) *it;
       }
 
@@ -1756,7 +1755,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       std::vector<int32_t>::const_iterator it = thrift_counter_ids.begin();
       uint64_t *counters = (uint64_t *) malloc(sizeof(uint64_t) * thrift_counter_ids.size());
       for(uint32_t i = 0; i < thrift_counter_ids.size(); i++, it++) {
-          printf("YOHAI IM HERE %d\n",(sai_queue_stat_counter_t) *it);
           counter_ids[i] = (sai_queue_stat_counter_t) *it;
       }
 
