@@ -110,12 +110,14 @@ typedef enum _sai_vlan_attr_t
 typedef enum _sai_vlan_stat_counter_t
 {
     SAI_VLAN_STAT_IN_OCTETS,
+    SAI_VLAN_STAT_IN_PACKETS,
     SAI_VLAN_STAT_IN_UCAST_PKTS,
     SAI_VLAN_STAT_IN_NON_UCAST_PKTS,
     SAI_VLAN_STAT_IN_DISCARDS,
     SAI_VLAN_STAT_IN_ERRORS,
     SAI_VLAN_STAT_IN_UNKNOWN_PROTOS,
     SAI_VLAN_STAT_OUT_OCTETS,
+    SAI_VLAN_STAT_OUT_PACKETS,
     SAI_VLAN_STAT_OUT_UCAST_PKTS,
     SAI_VLAN_STAT_OUT_NON_UCAST_PKTS,
     SAI_VLAN_STAT_OUT_DISCARDS,
@@ -265,6 +267,25 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
     );
 
 /**
+ * Routine Description:
+ *   @brief Clear vlan statistics counters.
+ *
+ * Arguments:
+ *    @param[in] vlan_id - vlan id
+ *    @param[in] counter_ids - specifies the array of counter ids
+ *    @param[in] number_of_counters - number of counters in the array
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
+typedef sai_status_t (*sai_clear_vlan_stats_fn)(
+    _In_ sai_vlan_id_t vlan_id,
+    _In_ const sai_vlan_stat_counter_t *counter_ids,
+    _In_ uint32_t number_of_counters
+    );
+
+/**
  * @brief VLAN methods table retrieved with sai_api_query()
  */
 typedef struct _sai_vlan_api_t
@@ -277,7 +298,7 @@ typedef struct _sai_vlan_api_t
     sai_remove_ports_from_vlan_fn   remove_ports_from_vlan;
     sai_remove_all_vlans_fn         remove_all_vlans;
     sai_get_vlan_stats_fn           get_vlan_stats;
-
+    sai_clear_vlan_stats_fn         clear_vlan_stats;
 } sai_vlan_api_t;
 
 /**

@@ -343,7 +343,7 @@ typedef enum _sai_port_attr_t
      * Policer id = SAI_NULL_OBJECT_ID to disable policer on port */
     SAI_PORT_ATTR_POLICER_ID,
 
-    /** Port default Traffic class Mapping */
+    /** Port default Traffic class Mapping [sai_uint8_t], Default TC=0*/
     SAI_PORT_ATTR_QOS_DEFAULT_TC,
 
    /** Enable DOT1P -> TC MAP [sai_object_id_t] on port
@@ -358,12 +358,6 @@ typedef enum _sai_port_attr_t
     * Default no map */
     SAI_PORT_ATTR_QOS_DOT1P_TO_COLOR_MAP,
 
-    /** Enable DOT1P -> TC AND COLOR MAP [sai_object_id_t] on port
-    * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
-    * To enable/disable trust Dot1p, Map ID should be add/remove on port.
-    * Default no map */
-    SAI_PORT_ATTR_QOS_DOT1P_TO_TC_AND_COLOR_MAP,
-
    /** Enable DSCP -> TC MAP [sai_object_id_t] on port
     * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
     * To enable/disable trust DSCP, Map ID should be add/remove on port.
@@ -376,31 +370,16 @@ typedef enum _sai_port_attr_t
     * Default no map */
     SAI_PORT_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
-    /** Enable DSCP -> TC AND COLOR MAP [sai_object_id_t] on port
-    * MAP id = SAI_NULL_OBJECT_ID to disable map on port.
-    * To enable/disable trust DSCP, Map ID should be add/remove on port.
-    * Default no map */
-    SAI_PORT_ATTR_QOS_DSCP_TO_TC_AND_COLOR_MAP,
 
    /** Enable TC -> Queue MAP [sai_object_id_t]  on port
     * Map id = SAI_NULL_OBJECT_ID to disable map on port.
     * Default no map i.e All packets to queue 0 */
     SAI_PORT_ATTR_QOS_TC_TO_QUEUE_MAP,
 
-   /** Enable TC -> DOT1P MAP [sai_object_id_t]
-    * Map id = SAI_NULL_OBJECT_ID to disable map on port.
-    * Default no map */
-    SAI_PORT_ATTR_QOS_TC_TO_DOT1P_MAP,
-
     /** Enable TC AND COLOR -> DOT1P MAP [sai_object_id_t]
     * Map id = SAI_NULL_OBJECT_ID to disable map on port.
     * Default no map */
     SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
-
-   /** Enable TC -> DSCP MAP [sai_object_id_t]
-    * Map id = SAI_NULL_OBJECT_ID to disable map on port.
-    * Default no map */
-    SAI_PORT_ATTR_QOS_TC_TO_DSCP_MAP,
 
    /** Enable TC AND COLOR -> DSCP MAP [sai_object_id_t]
     * Map id = SAI_NULL_OBJECT_ID to disable map on port.
@@ -412,10 +391,10 @@ typedef enum _sai_port_attr_t
      * Default no map */
     SAI_PORT_ATTR_QOS_TC_TO_PRIORITY_GROUP_MAP,
 
-    /** Enable Priority Group -> PFC Priority MAP [sai_object_id_t]
+    /** Enable PFC Priority -> Priority Group MAP [sai_object_id_t]
      * Map id = SAI_NULL_OBJECT_ID to disable map on port.
      * Default no map */
-    SAI_PORT_ATTR_QOS_PRIORITY_GROUP_TO_PFC_PRIORITY_MAP,
+    SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP,
 
     /** Enable PFC Priority -> Queue MAP [sai_object_id_t]
      * Map id = SAI_NULL_OBJECT_ID to disable map on port.
@@ -423,15 +402,21 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP,
 
     /** Attach WRED to port [sai_object_id_t]
-     (mandatory when SAI_PORT_ATTR_QOS_DROP_TYPE =  SAI_QOS_DROP_TYPE_WRED) */
+     * ID = SAI_NULL_OBJECT_ID to disable WRED. */
     SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
 
-    /** Scheduler for port [sai_object_id_t],
-     * Default no limits */
+    /** Scheduler for port [sai_object_id_t], Default no limits.
+     * SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE & SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE
+     * attributes alone valid. Rest will be ignored */
     SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID,
 
-    /** Buffer profile for port [sai_object_id_t]*/
-    SAI_PORT_ATTR_QOS_BUFFER_PROFILE_ID,
+    /** Ingress buffer profiles for port [sai_object_list_t]
+     *  There can be up to SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM profiles */
+    SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST,
+
+    /** Egress buffer profiles for port [sai_object_list_t]
+     *  There can be up to SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM profiles */
+    SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST,
 
     /** bit vector enable/disable port PFC [sai_uint8_t].
      * Valid from bit 0 to bit 7 */
@@ -565,6 +550,42 @@ typedef enum _sai_port_stat_counter_t
     SAI_PORT_STAT_ETHER_OUT_PKTS_2048_TO_4095_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_4096_TO_9216_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_9217_TO_16383_OCTETS,
+
+    /** get current port occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_CURR_OCCUPANCY_BYTES,
+
+    /** get watermark port occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_WATERMARK_BYTES,
+
+    /** get current port shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_SHARED_CURR_OCCUPANCY_BYTES,
+
+    /** get watermark port shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_SHARED_WATERMARK_BYTES,
+
+    /** get the number of pause frames received on the port [uint64_t] */
+    SAI_PORT_STAT_PAUSE_RX_PKTS,
+
+    /** get the number of pause frames transmitted on the port [uint64_t] */
+    SAI_PORT_STAT_PAUSE_TX_PKTS,
+
+    /** PFC Packet Counters for RX and TX per PFC priority [uint64_t] */
+    SAI_PORT_STAT_PFC_0_RX_PKTS,
+    SAI_PORT_STAT_PFC_0_TX_PKTS,
+    SAI_PORT_STAT_PFC_1_RX_PKTS,
+    SAI_PORT_STAT_PFC_1_TX_PKTS,
+    SAI_PORT_STAT_PFC_2_RX_PKTS,
+    SAI_PORT_STAT_PFC_2_TX_PKTS,
+    SAI_PORT_STAT_PFC_3_RX_PKTS,
+    SAI_PORT_STAT_PFC_3_TX_PKTS,
+    SAI_PORT_STAT_PFC_4_RX_PKTS,
+    SAI_PORT_STAT_PFC_4_TX_PKTS,
+    SAI_PORT_STAT_PFC_5_RX_PKTS,
+    SAI_PORT_STAT_PFC_5_TX_PKTS,
+    SAI_PORT_STAT_PFC_6_RX_PKTS,
+    SAI_PORT_STAT_PFC_6_TX_PKTS,
+    SAI_PORT_STAT_PFC_7_RX_PKTS,
+    SAI_PORT_STAT_PFC_7_TX_PKTS,
 
 } sai_port_stat_counter_t;
 

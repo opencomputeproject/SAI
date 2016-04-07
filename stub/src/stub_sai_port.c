@@ -64,6 +64,9 @@ sai_status_t stub_port_mtu_set(_In_ const sai_object_key_t      *key,
 sai_status_t stub_port_speed_set(_In_ const sai_object_key_t      *key,
                                  _In_ const sai_attribute_value_t *value,
                                  void                             *arg);
+sai_status_t stub_port_autoneg_set(_In_ const sai_object_key_t      *key,
+                                   _In_ const sai_attribute_value_t *value,
+                                   void                             *arg);
 sai_status_t stub_port_type_get(_In_ const sai_object_key_t   *key,
                                 _Inout_ sai_attribute_value_t *value,
                                 _In_ uint32_t                  attr_index,
@@ -119,6 +122,11 @@ sai_status_t stub_port_speed_get(_In_ const sai_object_key_t   *key,
                                  _In_ uint32_t                  attr_index,
                                  _Inout_ vendor_cache_t        *cache,
                                  void                          *arg);
+sai_status_t stub_port_autoneg_get(_In_ const sai_object_key_t   *key,
+                                   _Inout_ sai_attribute_value_t *value,
+                                   _In_ uint32_t                  attr_index,
+                                   _Inout_ vendor_cache_t        *cache,
+                                   void                          *arg);
 sai_status_t stub_port_default_vlan_get(_In_ const sai_object_key_t   *key,
                                         _Inout_ sai_attribute_value_t *value,
                                         _In_ uint32_t                  attr_index,
@@ -168,11 +176,13 @@ static const sai_attribute_entry_t        port_attribs[] = {
       "Port current breakout mode", SAI_ATTR_VAL_TYPE_S32 },
     { SAI_PORT_ATTR_SPEED, false, false, true, true,
       "Port speed", SAI_ATTR_VAL_TYPE_U32 },
+    { SAI_PORT_ATTR_AUTO_NEG_MODE, false, false, true, true,
+     "Port autoneg mode", SAI_ATTR_VAL_TYPE_BOOL },
     { SAI_PORT_ATTR_ADMIN_STATE, false, false, true, true,
       "Port admin state", SAI_ATTR_VAL_TYPE_BOOL },
     { SAI_PORT_ATTR_MEDIA_TYPE, false, false, true, true,
       "Port media type", SAI_ATTR_VAL_TYPE_S32 },
-    { SAI_PORT_ATTR_DEFAULT_VLAN, false, false, true, true,
+    { SAI_PORT_ATTR_PORT_VLAN_ID, false, false, true, true,
       "Port default vlan", SAI_ATTR_VAL_TYPE_U16 },
     { SAI_PORT_ATTR_DEFAULT_VLAN_PRIORITY, false, false, true, true,
       "Port default vlan priority", SAI_ATTR_VAL_TYPE_U8 },
@@ -190,11 +200,11 @@ static const sai_attribute_entry_t        port_attribs[] = {
       "Port update DSCP", SAI_ATTR_VAL_TYPE_BOOL },
     { SAI_PORT_ATTR_MTU, false, false, true, true,
       "Port mtu", SAI_ATTR_VAL_TYPE_U32 },
-    { SAI_PORT_ATTR_FLOOD_STORM_CONTROL, false, false, true, true,
+    { SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID, false, false, true, true,
       "Port flood storm control", SAI_ATTR_VAL_TYPE_BOOL },
-    { SAI_PORT_ATTR_BROADCAST_STORM_CONTROL, false, false, true, true,
+    { SAI_PORT_ATTR_BROADCAST_STORM_CONTROL_POLICER_ID, false, false, true, true,
       "Port broadcast storm control", SAI_ATTR_VAL_TYPE_BOOL },
-    { SAI_PORT_ATTR_MULTICAST_STORM_CONTROL, false, false, true, true,
+    { SAI_PORT_ATTR_MULTICAST_STORM_CONTROL_POLICER_ID, false, false, true, true,
       "Port multicast storm control", SAI_ATTR_VAL_TYPE_BOOL },
     { SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL, false, false, true, true,
       "Port global flow control", SAI_ATTR_VAL_TYPE_S32 },
@@ -244,6 +254,11 @@ static const sai_vendor_attribute_entry_t port_vendor_attribs[] = {
       { false, false, true, true },
       stub_port_speed_get, NULL,
       stub_port_speed_set, NULL },
+    { SAI_PORT_ATTR_AUTO_NEG_MODE,
+      { false, false, true, true },
+      { false, false, true, true },
+      stub_port_autoneg_get, NULL,
+      stub_port_autoneg_set, NULL },
     { SAI_PORT_ATTR_ADMIN_STATE,
       { false, false, true, true },
       { false, false, true, true },
@@ -254,7 +269,7 @@ static const sai_vendor_attribute_entry_t port_vendor_attribs[] = {
       { false, false, true, true },
       stub_port_media_type_get, NULL,
       stub_port_media_type_set, NULL },
-    { SAI_PORT_ATTR_DEFAULT_VLAN,
+    { SAI_PORT_ATTR_PORT_VLAN_ID,
       { false, false, true, true },
       { false, false, true, true },
       stub_port_default_vlan_get, NULL,
@@ -299,21 +314,21 @@ static const sai_vendor_attribute_entry_t port_vendor_attribs[] = {
       { false, false, true, true },
       stub_port_mtu_get, NULL,
       stub_port_mtu_set, NULL },
-    { SAI_PORT_ATTR_FLOOD_STORM_CONTROL,
+    { SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID,
       { false, false, true, true },
       { false, false, true, true },
-      stub_port_storm_control_get, (void*)SAI_PORT_ATTR_FLOOD_STORM_CONTROL,
-      stub_port_storm_control_set, (void*)SAI_PORT_ATTR_FLOOD_STORM_CONTROL },
-    { SAI_PORT_ATTR_BROADCAST_STORM_CONTROL,
+      stub_port_storm_control_get, (void*)SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID,
+      stub_port_storm_control_set, (void*)SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID },
+    { SAI_PORT_ATTR_BROADCAST_STORM_CONTROL_POLICER_ID,
       { false, false, true, true },
       { false, false, true, true },
-      stub_port_storm_control_get, (void*)SAI_PORT_ATTR_BROADCAST_STORM_CONTROL,
-      stub_port_storm_control_set, (void*)SAI_PORT_ATTR_BROADCAST_STORM_CONTROL },
-    { SAI_PORT_ATTR_MULTICAST_STORM_CONTROL,
+      stub_port_storm_control_get, (void*)SAI_PORT_ATTR_BROADCAST_STORM_CONTROL_POLICER_ID,
+      stub_port_storm_control_set, (void*)SAI_PORT_ATTR_BROADCAST_STORM_CONTROL_POLICER_ID },
+    { SAI_PORT_ATTR_MULTICAST_STORM_CONTROL_POLICER_ID,
       { false, false, true, true },
       { false, false, true, true },
-      stub_port_storm_control_get, (void*)SAI_PORT_ATTR_MULTICAST_STORM_CONTROL,
-      stub_port_storm_control_set, (void*)SAI_PORT_ATTR_MULTICAST_STORM_CONTROL },
+      stub_port_storm_control_get, (void*)SAI_PORT_ATTR_MULTICAST_STORM_CONTROL_POLICER_ID,
+      stub_port_storm_control_set, (void*)SAI_PORT_ATTR_MULTICAST_STORM_CONTROL_POLICER_ID },
     { SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL,
       { false, false, false, false },
       { false, false, true, true },
@@ -637,6 +652,22 @@ sai_status_t stub_port_speed_set(_In_ const sai_object_key_t *key, _In_ const sa
     return SAI_STATUS_SUCCESS;
 }
 
+/* Autoneg mode [bool] */
+sai_status_t stub_port_autoneg_set(_In_ const sai_object_key_t *key, _In_ const sai_attribute_value_t *value, void *arg)
+{
+    sai_status_t status;
+    uint32_t     port_id;
+
+    STUB_LOG_ENTER();
+
+    if (SAI_STATUS_SUCCESS != (status = stub_object_to_type(key->object_id, SAI_OBJECT_TYPE_PORT, &port_id))) {
+        return status;
+    }
+
+    STUB_LOG_EXIT();
+    return SAI_STATUS_SUCCESS;
+}
+
 /* Port type [sai_port_type_t] */
 sai_status_t stub_port_type_get(_In_ const sai_object_key_t   *key,
                                 _Inout_ sai_attribute_value_t *value,
@@ -809,6 +840,8 @@ sai_status_t stub_port_hw_lanes_get(_In_ const sai_object_key_t   *key,
 {
     sai_status_t status;
     uint32_t     port_id;
+    uint32_t     hw_lane;
+
 
     STUB_LOG_ENTER();
 
@@ -816,8 +849,12 @@ sai_status_t stub_port_hw_lanes_get(_In_ const sai_object_key_t   *key,
         return status;
     }
 
+    hw_lane = port_id;
+
+    status = stub_fill_u32list(&hw_lane, 1, &value->u32list);
+
     STUB_LOG_EXIT();
-    return SAI_STATUS_SUCCESS;
+    return status;
 }
 
 /* Breakout mode(s) supported [sai_s32_list_t] */
@@ -879,6 +916,28 @@ sai_status_t stub_port_speed_get(_In_ const sai_object_key_t   *key,
     }
 
     value->u32 = 40000;
+
+    STUB_LOG_EXIT();
+    return SAI_STATUS_SUCCESS;
+}
+
+/* Autoneg mode [bool] */
+sai_status_t stub_port_autoneg_get(_In_ const sai_object_key_t   *key,
+                                   _Inout_ sai_attribute_value_t *value,
+                                   _In_ uint32_t                  attr_index,
+                                   _Inout_ vendor_cache_t        *cache,
+                                   void                          *arg)
+{
+    sai_status_t status;
+    uint32_t     port_id;
+
+    STUB_LOG_ENTER();
+
+    if (SAI_STATUS_SUCCESS != (status = stub_object_to_type(key->object_id, SAI_OBJECT_TYPE_PORT, &port_id))) {
+        return status;
+    }
+
+    value->booldata = false;
 
     STUB_LOG_EXIT();
     return SAI_STATUS_SUCCESS;
@@ -1319,5 +1378,7 @@ sai_status_t stub_get_port_stats(_In_ sai_object_id_t                port_id,
 const sai_port_api_t port_api = {
     stub_set_port_attribute,
     stub_get_port_attribute,
-    stub_get_port_stats
+    stub_get_port_stats,
+    NULL,
+    NULL
 };

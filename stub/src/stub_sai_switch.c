@@ -124,11 +124,6 @@ sai_status_t stub_switch_ecmp_hash_fields_get(_In_ const sai_object_key_t   *key
                                               _In_ uint32_t                  attr_index,
                                               _Inout_ vendor_cache_t        *cache,
                                               void                          *arg);
-sai_status_t stub_switch_ecmp_max_paths_get(_In_ const sai_object_key_t   *key,
-                                            _Inout_ sai_attribute_value_t *value,
-                                            _In_ uint32_t                  attr_index,
-                                            _Inout_ vendor_cache_t        *cache,
-                                            void                          *arg);
 sai_status_t stub_switch_counter_refresh_get(_In_ const sai_object_key_t   *key,
                                              _Inout_ sai_attribute_value_t *value,
                                              _In_ uint32_t                  attr_index,
@@ -167,9 +162,6 @@ sai_status_t stub_switch_ecmp_hash_algo_set(_In_ const sai_object_key_t      *ke
 sai_status_t stub_switch_ecmp_hash_fields_set(_In_ const sai_object_key_t      *key,
                                               _In_ const sai_attribute_value_t *value,
                                               void                             *arg);
-sai_status_t stub_switch_ecmp_max_paths_set(_In_ const sai_object_key_t      *key,
-                                            _In_ const sai_attribute_value_t *value,
-                                            void                             *arg);
 sai_status_t stub_switch_counter_refresh_set(_In_ const sai_object_key_t      *key,
                                              _In_ const sai_attribute_value_t *value,
                                              void                             *arg);
@@ -216,8 +208,6 @@ static const sai_attribute_entry_t        switch_attribs[] = {
       "Switch broadcast flood control to cpu", SAI_ATTR_VAL_TYPE_BOOL },
     { SAI_SWITCH_ATTR_MCAST_CPU_FLOOD_ENABLE, false, false, true, true,
       "Switch multicast flood control to cpu", SAI_ATTR_VAL_TYPE_BOOL },
-    { SAI_SWITCH_ATTR_DEFAULT_PORT_VLAN_ID, false, false, true, true,
-      "Switch port default vlan ID", SAI_ATTR_VAL_TYPE_U16 },
     { SAI_SWITCH_ATTR_SRC_MAC_ADDRESS, false, false, true, true,
       "Switch source MAC address", SAI_ATTR_VAL_TYPE_MAC },
     { SAI_SWITCH_ATTR_MAX_LEARNED_ADDRESSES, false, false, true, true,
@@ -230,26 +220,20 @@ static const sai_attribute_entry_t        switch_attribs[] = {
       "Switch flood control for unknown broadcast address", SAI_ATTR_VAL_TYPE_S32 },
     { SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_ACTION, false, false, true, true,
       "Switch flood control for unknown multicast address", SAI_ATTR_VAL_TYPE_S32 },
-    { SAI_SWITCH_ATTR_LAG_HASH_SEED, false, false, true, true,
+    { SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED, false, false, true, true,
       "Switch LAG hash seed", SAI_ATTR_VAL_TYPE_U32 },
-    { SAI_SWITCH_ATTR_LAG_HASH_ALGO, false, false, true, true,
+    { SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM, false, false, true, true,
       "Switch LAG hash algorithm", SAI_ATTR_VAL_TYPE_S32 },
-    { SAI_SWITCH_ATTR_LAG_HASH_FIELDS, false, false, true, true,
+    { SAI_SWITCH_ATTR_LAG_HASH, false, false, true, true,
       "Switch LAG hash fields", SAI_ATTR_VAL_TYPE_S32LIST },
-    { SAI_SWITCH_ATTR_ECMP_HASH_SEED, false, false, true, true,
+    { SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED, false, false, true, true,
       "Switch ECMP hash seed", SAI_ATTR_VAL_TYPE_U32 },
-    { SAI_SWITCH_ATTR_ECMP_HASH_ALGO, false, false, true, true,
+    { SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM, false, false, true, true,
       "Switch ECMP hash algorithm", SAI_ATTR_VAL_TYPE_S32 },
-    { SAI_SWITCH_ATTR_ECMP_HASH_FIELDS, false, false, true, true,
+    { SAI_SWITCH_ATTR_ECMP_HASH, false, false, true, true,
       "Switch ECMP hash fields", SAI_ATTR_VAL_TYPE_S32LIST },
-    { SAI_SWITCH_ATTR_ECMP_MAX_PATHS, false, false, true, true,
-      "Switch maximum number of ECMP paths", SAI_ATTR_VAL_TYPE_U32 },
     { SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL, false, false, true, true,
       "Switch counter refresh interval", SAI_ATTR_VAL_TYPE_U32 },
-    { SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL, false, false, true, true,
-      "Switch default trap channel", SAI_ATTR_VAL_TYPE_S32 },
-    { SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL_FD, false, false, true, true,
-      "Switch default FD", SAI_ATTR_VAL_TYPE_OID },
     { SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP, false, false, true, true,
       "Switch default trap group", SAI_ATTR_VAL_TYPE_OID },
     { SAI_SWITCH_ATTR_PORT_BREAKOUT, false, false, true, false,
@@ -338,11 +322,6 @@ static const sai_vendor_attribute_entry_t switch_vendor_attribs[] = {
       { false, false, true, true },
       NULL, NULL,
       NULL, NULL },
-    { SAI_SWITCH_ATTR_DEFAULT_PORT_VLAN_ID,
-      { false, false, true, true },
-      { false, false, true, true },
-      stub_switch_default_port_vlan_get, NULL,
-      stub_switch_default_port_vlan_set, NULL },
     { SAI_SWITCH_ATTR_SRC_MAC_ADDRESS,
       { false, false, false, true },
       { false, false, true, true },
@@ -373,56 +352,41 @@ static const sai_vendor_attribute_entry_t switch_vendor_attribs[] = {
       { false, false, true, true },
       NULL, NULL,
       NULL, NULL },
-    { SAI_SWITCH_ATTR_LAG_HASH_SEED,
+    { SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED,
       { false, false, false, false },
       { false, false, true, true },
       NULL, NULL,
       NULL, NULL },
-    { SAI_SWITCH_ATTR_LAG_HASH_ALGO,
+    { SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM,
       { false, false, false, false },
       { false, false, true, true },
       NULL, NULL,
       NULL, NULL },
-    { SAI_SWITCH_ATTR_LAG_HASH_FIELDS,
+    { SAI_SWITCH_ATTR_LAG_HASH,
       { false, false, false, false },
       { false, false, true, true },
       NULL, NULL,
       NULL, NULL },
-    { SAI_SWITCH_ATTR_ECMP_HASH_SEED,
+    { SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED,
       { false, false, true, true },
       { false, false, true, true },
       stub_switch_ecmp_hash_seed_get, NULL,
       stub_switch_ecmp_hash_seed_set, NULL },
-    { SAI_SWITCH_ATTR_ECMP_HASH_ALGO,
+    { SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM,
       { false, false, true, true },
       { false, false, true, true },
       stub_switch_ecmp_hash_algo_get, NULL,
       stub_switch_ecmp_hash_algo_set, NULL },
-    { SAI_SWITCH_ATTR_ECMP_HASH_FIELDS,
+    { SAI_SWITCH_ATTR_ECMP_HASH,
       { false, false, true, true },
       { false, false, true, true },
       stub_switch_ecmp_hash_fields_get, NULL,
       stub_switch_ecmp_hash_fields_set, NULL },
-    { SAI_SWITCH_ATTR_ECMP_MAX_PATHS,
-      { false, false, true, true },
-      { false, false, true, true },
-      stub_switch_ecmp_max_paths_get, NULL,
-      stub_switch_ecmp_max_paths_set, NULL },
     { SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL,
       { false, false, true, true },
       { false, false, true, true },
       stub_switch_counter_refresh_get, NULL,
       stub_switch_counter_refresh_set, NULL },
-    { SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL,
-      { false, false, true, true },
-      { false, false, true, true },
-      stub_switch_default_trap_channel_get, NULL,
-      stub_switch_default_trap_channel_set, NULL },
-    { SAI_SWITCH_ATTR_DEFAULT_TRAP_CHANNEL_FD,
-      { false, false, true, true },
-      { false, false, true, true },
-      stub_switch_default_trap_channel_fd_get, NULL,
-      stub_switch_default_trap_channel_fd_set, NULL },
     { SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP,
       { false, false, true, true },
       { false, false, true, true },
@@ -476,6 +440,7 @@ sai_status_t stub_initialize_switch(_In_ sai_switch_profile_id_t                
 
     STUB_LOG_NTC("Initialize switch\n");
 
+    db_init_vlan();
     db_init_next_hop_group();
 
     return SAI_STATUS_SUCCESS;
@@ -647,13 +612,13 @@ sai_status_t stub_switch_ecmp_hash_algo_set(_In_ const sai_object_key_t      *ke
     STUB_LOG_ENTER();
 
     switch (value->s32) {
-    case SAI_HASH_XOR:
+    case SAI_HASH_ALGORITHM_XOR:
         break;
 
-    case SAI_HASH_CRC:
+    case SAI_HASH_ALGORITHM_CRC:
         break;
 
-    case SAI_HASH_RANDOM:
+    case SAI_HASH_ALGORITHM_RANDOM:
         break;
 
     default:
@@ -676,34 +641,34 @@ sai_status_t stub_switch_ecmp_hash_fields_set(_In_ const sai_object_key_t      *
 
     for (ii = 0; ii < value->s32list.count; ii++) {
         switch (value->s32list.list[ii]) {
-        case SAI_HASH_SRC_IP:
+        case SAI_NATIVE_HASH_FIELD_SRC_IP:
             break;
 
-        case SAI_HASH_DST_IP:
+        case SAI_NATIVE_HASH_FIELD_DST_IP:
             break;
 
-        case SAI_HASH_VLAN_ID:
+        case SAI_NATIVE_HASH_FIELD_VLAN_ID:
             break;
 
-        case SAI_HASH_IP_PROTOCOL:
+        case SAI_NATIVE_HASH_FIELD_IP_PROTOCOL:
             break;
 
-        case SAI_HASH_ETHERTYPE:
+        case SAI_NATIVE_HASH_FIELD_ETHERTYPE:
             break;
 
-        case SAI_HASH_L4_SOURCE_PORT:
+        case SAI_NATIVE_HASH_FIELD_L4_SRC_PORT:
             break;
 
-        case SAI_HASH_L4_DEST_PORT:
+        case SAI_NATIVE_HASH_FIELD_L4_DST_PORT:
             break;
 
-        case SAI_HASH_SOURCE_MAC:
+        case SAI_NATIVE_HASH_FIELD_SRC_MAC:
             break;
 
-        case SAI_HASH_DEST_MAC:
+        case SAI_NATIVE_HASH_FIELD_DST_MAC:
             break;
 
-        case SAI_HASH_IN_PORT:
+        case SAI_NATIVE_HASH_FIELD_IN_PORT:
             break;
 
         default:
@@ -711,18 +676,6 @@ sai_status_t stub_switch_ecmp_hash_fields_set(_In_ const sai_object_key_t      *
             return SAI_STATUS_INVALID_ATTR_VALUE_0;
         }
     }
-
-    STUB_LOG_EXIT();
-    return SAI_STATUS_SUCCESS;
-}
-
-/* ECMP max number of paths per group [uint32_t]
- *  (default to 64) */
-sai_status_t stub_switch_ecmp_max_paths_set(_In_ const sai_object_key_t      *key,
-                                            _In_ const sai_attribute_value_t *value,
-                                            void                             *arg)
-{
-    STUB_LOG_ENTER();
 
     STUB_LOG_EXIT();
     return SAI_STATUS_SUCCESS;
@@ -812,7 +765,7 @@ sai_status_t stub_switch_port_number_get(_In_ const sai_object_key_t   *key,
 {
     STUB_LOG_ENTER();
 
-    value->u32 = 0;
+    value->u32 = PORT_NUMBER;
 
     STUB_LOG_EXIT();
     return SAI_STATUS_SUCCESS;
@@ -825,10 +778,23 @@ sai_status_t stub_switch_port_list_get(_In_ const sai_object_key_t   *key,
                                        _Inout_ vendor_cache_t        *cache,
                                        void                          *arg)
 {
+    sai_object_id_t ports[PORT_NUMBER];
+    uint32_t        ii;
+    sai_status_t    status;
+
     STUB_LOG_ENTER();
 
+    for (ii = 0; ii < PORT_NUMBER; ii++) {
+        if (SAI_STATUS_SUCCESS != (status = stub_create_object(SAI_OBJECT_TYPE_PORT, ii, &ports[ii]))) {
+            return status;
+        }
+    }
+
+    status = stub_fill_objlist(ports, PORT_NUMBER, &value->objlist);
+
     STUB_LOG_EXIT();
-    return SAI_STATUS_SUCCESS;
+
+    return status;
 }
 
 /* Get the CPU Port [sai_object_id_t] */
@@ -1087,7 +1053,7 @@ sai_status_t stub_switch_ecmp_hash_algo_get(_In_ const sai_object_key_t   *key,
 {
     STUB_LOG_ENTER();
 
-    value->s32 = SAI_HASH_XOR;
+    value->s32 = SAI_HASH_ALGORITHM_XOR;
 
     STUB_LOG_EXIT();
     return SAI_STATUS_SUCCESS;
@@ -1101,22 +1067,6 @@ sai_status_t stub_switch_ecmp_hash_fields_get(_In_ const sai_object_key_t   *key
                                               void                          *arg)
 {
     STUB_LOG_ENTER();
-
-    STUB_LOG_EXIT();
-    return SAI_STATUS_SUCCESS;
-}
-
-/* ECMP max number of paths per group [uint32_t]
- *  (default to 64) */
-sai_status_t stub_switch_ecmp_max_paths_get(_In_ const sai_object_key_t   *key,
-                                            _Inout_ sai_attribute_value_t *value,
-                                            _In_ uint32_t                  attr_index,
-                                            _Inout_ vendor_cache_t        *cache,
-                                            void                          *arg)
-{
-    STUB_LOG_ENTER();
-
-    value->u32 = 64;
 
     STUB_LOG_EXIT();
     return SAI_STATUS_SUCCESS;

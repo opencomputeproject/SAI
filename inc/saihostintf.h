@@ -550,6 +550,9 @@ typedef enum _sai_hostif_packet_attr
     /** Trap ID [sai_hostif_trap_id_t] (for receive-only) */
     SAI_HOSTIF_PACKET_TRAP_ID,
 
+    /** User-Defined Trap ID [sai_hostif_user_defined_trap_id_t] (for receive-only) */
+    SAI_HOSTIF_PACKET_USER_TRAP_ID,
+
     /** Ingress port [sai_object_id_t] (for receive-only) */
     SAI_HOSTIF_PACKET_INGRESS_PORT,
 

@@ -51,6 +51,8 @@ typedef enum _sai_scheduler_attr_t
 {
     /** READ-ONLY */
 
+    /** READ-WRITE */
+
     /** Scheduling algorithm [sai_scheduling_type_t ], Default WRR*/
     SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM = 0x00000000,
 

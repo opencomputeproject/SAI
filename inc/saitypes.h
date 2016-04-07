@@ -142,6 +142,17 @@ typedef struct _sai_object_list_t {
 } sai_object_list_t;
 
 /**
+ * @brief sai common api type
+ */
+typedef enum _sai_common_api_t {
+    SAI_COMMON_API_CREATE = 0,
+    SAI_COMMON_API_REMOVE = 1,
+    SAI_COMMON_API_SET    = 2,
+    SAI_COMMON_API_GET    = 3,
+    SAI_COMMON_API_MAX    = 4,
+} sai_common_api_t;
+
+/**
  * @brief sai object type
  */
 typedef enum _sai_object_type_t {
@@ -155,27 +166,39 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_ACL_TABLE        =  7,
     SAI_OBJECT_TYPE_ACL_ENTRY        =  8,
     SAI_OBJECT_TYPE_ACL_COUNTER      =  9,
-    SAI_OBJECT_TYPE_HOST_INTERFACE   = 10,
-    SAI_OBJECT_TYPE_MIRROR           = 11,
-    SAI_OBJECT_TYPE_SAMPLEPACKET     = 12,
-    SAI_OBJECT_TYPE_STP_INSTANCE     = 13,
-    SAI_OBJECT_TYPE_TRAP_GROUP       = 14,
-    SAI_OBJECT_TYPE_ACL_TABLE_GROUP  = 15,
-    SAI_OBJECT_TYPE_POLICER          = 16,
-    SAI_OBJECT_TYPE_WRED             = 17,
-    SAI_OBJECT_TYPE_QOS_MAPS         = 18,
-    SAI_OBJECT_TYPE_QUEUE            = 19,
-    SAI_OBJECT_TYPE_SCHEDULER        = 20,
-    SAI_OBJECT_TYPE_SCHEDULER_GROUP  = 21,
-    SAI_OBJECT_TYPE_BUFFER_POOL      = 22,
-    SAI_OBJECT_TYPE_BUFFER_PROFILE   = 23,
-    SAI_OBJECT_TYPE_PRIORITY_GROUP   = 24,
-    SAI_OBJECT_TYPE_LAG_MEMBER       = 25,
-    SAI_OBJECT_TYPE_HASH             = 25,
-    SAI_OBJECT_TYPE_UDF              = 26,
-    SAI_OBJECT_TYPE_UDF_MATCH        = 27,
-    SAI_OBJECT_TYPE_UDF_GROUP        = 28,
-    SAI_OBJECT_TYPE_MAX              = 29
+    SAI_OBJECT_TYPE_ACL_RANGE        = 10,
+    SAI_OBJECT_TYPE_HOST_INTERFACE   = 11,
+    SAI_OBJECT_TYPE_MIRROR           = 12,
+    SAI_OBJECT_TYPE_SAMPLEPACKET     = 13,
+    SAI_OBJECT_TYPE_STP_INSTANCE     = 14,
+    SAI_OBJECT_TYPE_TRAP_GROUP       = 15,
+    SAI_OBJECT_TYPE_ACL_TABLE_GROUP  = 16,
+    SAI_OBJECT_TYPE_POLICER          = 17,
+    SAI_OBJECT_TYPE_WRED             = 18,
+    SAI_OBJECT_TYPE_QOS_MAPS         = 19,
+    SAI_OBJECT_TYPE_QUEUE            = 20,
+    SAI_OBJECT_TYPE_SCHEDULER        = 21,
+    SAI_OBJECT_TYPE_SCHEDULER_GROUP  = 22,
+    SAI_OBJECT_TYPE_BUFFER_POOL      = 23,
+    SAI_OBJECT_TYPE_BUFFER_PROFILE   = 24,
+    SAI_OBJECT_TYPE_PRIORITY_GROUP   = 25,
+    SAI_OBJECT_TYPE_LAG_MEMBER       = 26,
+    SAI_OBJECT_TYPE_HASH             = 27,
+    SAI_OBJECT_TYPE_UDF              = 28,
+    SAI_OBJECT_TYPE_UDF_MATCH        = 29,
+    SAI_OBJECT_TYPE_UDF_GROUP        = 30,
+    SAI_OBJECT_TYPE_FDB              = 31,
+    SAI_OBJECT_TYPE_SWITCH           = 32,
+    SAI_OBJECT_TYPE_TRAP             = 33,
+    SAI_OBJECT_TYPE_TRAP_USER_DEF    = 34,
+    SAI_OBJECT_TYPE_NEIGHBOR         = 35,
+    SAI_OBJECT_TYPE_ROUTE            = 36,
+    SAI_OBJECT_TYPE_VLAN             = 37,
+    SAI_OBJECT_TYPE_TUNNEL_MAP       = 38,
+    SAI_OBJECT_TYPE_TUNNEL           = 39,
+    SAI_OBJECT_TYPE_TUNNEL_TABLE_ENTRY = 40,
+    SAI_OBJECT_TYPE_MAX              = 41
+
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -225,10 +248,10 @@ typedef struct _sai_s32_range_t {
 typedef struct _sai_vlan_list_t {
 
     /** Number of Vlans*/
-    uint32_t vlan_count;
+    uint32_t count;
 
     /** List of Vlans*/
-    sai_vlan_id_t *vlan_list;
+    sai_vlan_id_t *list;
 
 } sai_vlan_list_t;
 
@@ -298,12 +321,14 @@ typedef struct _sai_acl_field_data_t
         sai_mac_t mac;
         sai_ip4_t ip4;
         sai_ip6_t ip6;
+        sai_u8_list_t u8list;
     } mask;
 
     /**
      * Expected AND result using match mask above with packet field value where applicable.
      */
     union {
+        bool booldata;
         sai_uint8_t u8;
         sai_int8_t s8;
         sai_uint16_t u16;
@@ -315,6 +340,7 @@ typedef struct _sai_acl_field_data_t
         sai_ip6_t ip6;
         sai_object_id_t oid;
         sai_object_list_t objlist;
+        sai_u8_list_t u8list;
     } data;
 } sai_acl_field_data_t;
 
@@ -448,6 +474,37 @@ typedef struct _sai_qos_map_list_t
     sai_qos_map_t *list;
 } sai_qos_map_list_t;
 
+typedef struct _sai_tunnel_map_params_t
+{
+    /** ECN */
+    sai_uint8_t ecn;
+
+    /** vlan id  */
+    sai_vlan_id_t vlan_id;
+
+    /** VNI id  */
+    sai_uint32_t vni_id;
+
+} sai_tunnel_map_params_t;
+
+typedef struct _sai_tunnel_map_t
+{
+    /** Input parameters to match */
+    sai_tunnel_map_params_t key;
+
+    /** Output map parameters */
+    sai_tunnel_map_params_t value;
+
+} sai_tunnel_map_t;
+
+typedef struct _sai_tunnel_map_list_t
+{
+    /** Number of entries in the map  */
+    uint32_t count;
+    /** Map list */
+    sai_tunnel_map_t * list;
+} sai_tunnel_map_list_t;
+
 /**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
  *
@@ -483,6 +540,7 @@ typedef union {
     sai_acl_action_data_t aclaction;
     sai_port_breakout_t portbreakout;
     sai_qos_map_list_t qosmap;
+    sai_tunnel_map_list_t tunnelmap;
 
 } sai_attribute_value_t;
 

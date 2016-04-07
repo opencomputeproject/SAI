@@ -29,31 +29,34 @@
 #if !defined (__SAI_H_)
 #define __SAI_H_
 
-#include <saitypes.h>
-#include <saistatus.h>
-#include <saiswitch.h>
-#include <saiport.h>
-#include <saivlan.h>
-#include <saifdb.h>
-#include <sairouter.h>
-#include <sairouterintf.h>
-#include <saineighbor.h>
-#include <sainexthop.h>
-#include <sainexthopgroup.h>
-#include <sairoute.h>
-#include <saiacl.h>
-#include <saihostintf.h>
-#include <saimirror.h>
-#include <saistp.h>
-#include <saisamplepacket.h>
-#include <sailag.h>
-#include <saipolicer.h>
-#include <saiwred.h>
-#include <saiqosmaps.h>
-#include <saiqueue.h>
-#include <saischeduler.h>
-#include <saischedulergroup.h>
-#include <saibuffer.h>
+#include "saitypes.h"
+#include "saistatus.h"
+#include "saiswitch.h"
+#include "saiport.h"
+#include "saivlan.h"
+#include "saifdb.h"
+#include "sairouter.h"
+#include "sairouterintf.h"
+#include "saineighbor.h"
+#include "sainexthop.h"
+#include "sainexthopgroup.h"
+#include "sairoute.h"
+#include "saiacl.h"
+#include "saihostintf.h"
+#include "saimirror.h"
+#include "saistp.h"
+#include "saisamplepacket.h"
+#include "sailag.h"
+#include "saipolicer.h"
+#include "saiwred.h"
+#include "saiqosmaps.h"
+#include "saiqueue.h"
+#include "saischeduler.h"
+#include "saischedulergroup.h"
+#include "saibuffer.h"
+#include "saihash.h"
+#include "saiudf.h"
+#include "saitunnel.h"
 
 /** \defgroup SAI SAI - Entry point specific API definitions.
  *
@@ -96,6 +99,7 @@ typedef enum _sai_api_t
     SAI_API_BUFFERS          = 23,  /**< sai_buffer_api_t */
     SAI_API_HASH             = 24,  /**< sai_hash_api_t */
     SAI_API_UDF              = 25,  /**< sai_udf_api_t */
+    SAI_API_TUNNEL           = 26,  /**< sai_tunnel_api_t */
 } sai_api_t;
 
 typedef enum _sai_log_level_t

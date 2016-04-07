@@ -78,6 +78,36 @@ static const sai_vendor_attribute_entry_t vlan_vendor_attribs[] = {
         stub_vlan_stp_set, NULL
     },
 };
+
+/*
+ * Routine Description:
+ *    Create default VLAN and add all port into it.
+ */
+void db_init_vlan()
+{
+    int ii;
+    sai_object_id_t port;
+
+    if (NULL != vlans) {
+        free(vlans);
+    }
+
+    vlans = malloc(sizeof(struct __vlan));
+    STUB_ASSERT(NULL != vlans);
+
+    vlans[0].id = 1;
+    vlans[0].number_of_ports = PORT_NUMBER;
+    vlans[0].port_list = malloc(sizeof(sai_vlan_port_t) * PORT_NUMBER);
+
+    for (ii = 0; ii < PORT_NUMBER; ++ii) {
+        stub_create_object(SAI_OBJECT_TYPE_PORT, ii, &port);
+        vlans[0].port_list[ii].port_id = port;
+        vlans[0].port_list[ii].tagging_mode = SAI_VLAN_PORT_UNTAGGED;
+    }
+
+    number_of_vlans = 1;
+}
+
 static void vlan_key_to_str(_In_ sai_vlan_id_t vlan_id, _Out_ char *key_str)
 {
     snprintf(key_str, MAX_KEY_STR_LEN, "vlan %u", vlan_id);
@@ -492,5 +522,6 @@ const sai_vlan_api_t vlan_api = {
     stub_add_ports_to_vlan,
     stub_remove_ports_from_vlan,
     stub_remove_all_vlans,
-    stub_get_vlan_stats
+    stub_get_vlan_stats,
+    NULL
 };

@@ -1,0 +1,6 @@
+[submodule "test/ptf"]
+	path = test/ptf
+	url = https://github.com/p4lang/ptf
+[submodule "test/saithrift/ctypesgen"]
+	path = test/saithrift/ctypesgen
+	url = https://github.com/davidjamesca/ctypesgen

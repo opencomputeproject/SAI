@@ -46,7 +46,10 @@ typedef enum _sai_router_interface_type_t
     SAI_ROUTER_INTERFACE_TYPE_PORT,
 
     /** VLAN Router Interface Type */
-    SAI_ROUTER_INTERFACE_TYPE_VLAN
+    SAI_ROUTER_INTERFACE_TYPE_VLAN,
+
+    /** Loopback Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_LOOPBACK
 
 } sai_router_interface_type_t;
 
@@ -77,7 +80,8 @@ typedef enum _sai_router_interface_attr_t
     /** READ-WRITE */
 
     /** MAC Address [sai_mac_t] (CREATE_AND_SET)
-        (default to SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create) */
+     *  (not valid when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_LOOPBACK)
+     *  (default to SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create) */
     SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS,
 
     /** Admin V4 state [bool] (CREATE_AND_SET) (default to TRUE) */
@@ -88,6 +92,10 @@ typedef enum _sai_router_interface_attr_t
 
     /** MTU [uint32_t] (CREATE_AND_SET) (default to 1514 bytes) */
     SAI_ROUTER_INTERFACE_ATTR_MTU,
+
+    /** Packet action when neighbor table lookup miss for this router interface [sai_packet_action_t]
+     * (CREATE_AND_SET) (default to SAI_PACKET_ACTION_TRAP) */
+    SAI_ROUTER_INTERFACE_ATTR_NEIGHBOR_MISS_PACKET_ACTION,
 
     /* -- */
 
@@ -112,7 +120,7 @@ typedef enum _sai_router_interface_attr_t
 typedef sai_status_t(*sai_create_router_interface_fn)(
     _Out_ sai_object_id_t* rif_id,
     _In_ uint32_t attr_count,
-    _In_ sai_attribute_t *attr_list
+    _In_ const sai_attribute_t *attr_list
     );
 
 /**

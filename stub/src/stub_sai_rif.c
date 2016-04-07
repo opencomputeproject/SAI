@@ -128,7 +128,7 @@ static void rif_key_to_str(_In_ sai_object_id_t rif_id, _Out_ char *key_str)
  */
 sai_status_t stub_create_router_interface(_Out_ sai_object_id_t* rif_id,
                                           _In_ uint32_t          attr_count,
-                                          _In_ sai_attribute_t  *attr_list)
+                                          _In_ const sai_attribute_t  *attr_list)
 {
     sai_status_t                 status;
     const sai_attribute_value_t *type, *vrid, *port, *vlan;
@@ -168,7 +168,7 @@ sai_status_t stub_create_router_interface(_Out_ sai_object_id_t* rif_id,
             (status =
                  find_attrib_in_list(attr_count, attr_list, SAI_ROUTER_INTERFACE_ATTR_VLAN_ID, &vlan, &vlan_index))) {
             STUB_LOG_ERR("Missing mandatory attribute vlan id on create\n");
-            return SAI_MANDATORY_ATTRIBUTE_MISSING;
+            return SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING;
         }
         if (SAI_STATUS_ITEM_NOT_FOUND !=
             (status =
@@ -181,7 +181,7 @@ sai_status_t stub_create_router_interface(_Out_ sai_object_id_t* rif_id,
             (status =
                  find_attrib_in_list(attr_count, attr_list, SAI_ROUTER_INTERFACE_ATTR_PORT_ID, &port, &port_index))) {
             STUB_LOG_ERR("Missing mandatory attribute port id on create\n");
-            return SAI_MANDATORY_ATTRIBUTE_MISSING;
+            return SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING;
         }
         if (SAI_STATUS_SUCCESS != (status = stub_object_to_type(port->oid, SAI_OBJECT_TYPE_PORT, &port_data))) {
             return status;

@@ -156,6 +156,18 @@ typedef enum _sai_queue_stat_counter_t
     /** get/set WRED red dropped bytes count [uint64_t] */
     SAI_QUEUE_STAT_DISCARD_DROPPED_BYTES = 0x00000017,
 
+    /** get current queue occupancy in bytes [uint64_t] */
+    SAI_QUEUE_STAT_CURR_OCCUPANCY_BYTES = 0x00000018,
+
+    /** get watermark queue occupancy in bytes [uint64_t] */
+    SAI_QUEUE_STAT_WATERMARK_BYTES = 0x00000019,
+
+    /** get current queue shared occupancy in bytes [uint64_t] */
+    SAI_QUEUE_STAT_SHARED_CURR_OCCUPANCY_BYTES = 0x00000020,
+
+    /** get watermark queue shared occupancy in bytes [uint64_t] */
+    SAI_QUEUE_STAT_SHARED_WATERMARK_BYTES = 0x00000021,
+
     /* -- */
     /* Custom range base value */
     SAI_QUEUE_STAT_CUSTOM_RANGE_BASE = 0x10000000
@@ -211,6 +223,23 @@ typedef sai_status_t (*sai_get_queue_stats_fn)(
     );
 
 /**
+ * @brief   Clear queue statistics counters.
+ *
+ * @param[in] queue_id Queue id
+ * @param[in] counter_ids specifies the array of counter ids
+ * @param[in] number_of_counters number of counters in the array
+ *
+ * @return SAI_STATUS_SUCCESS on success
+ *         Failure status code on error
+ */
+typedef sai_status_t (*sai_clear_queue_stats_fn)(
+    _In_ sai_object_id_t queue_id,
+    _In_ const sai_queue_stat_counter_t *counter_ids,
+    _In_ uint32_t number_of_counters
+    );
+
+
+/**
  *  @brief Qos methods table retrieved with sai_api_query()
  */
 typedef struct _sai_queue_api_t
@@ -218,6 +247,7 @@ typedef struct _sai_queue_api_t
     sai_set_queue_attribute_fn   set_queue_attribute;
     sai_get_queue_attribute_fn   get_queue_attribute;
     sai_get_queue_stats_fn       get_queue_stats;
+    sai_clear_queue_stats_fn     clear_queue_stats;
 
 } sai_queue_api_t;
 
