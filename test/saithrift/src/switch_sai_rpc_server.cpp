@@ -1671,6 +1671,108 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           }
       }
   }
+  
+    void sai_thrift_get_port_stats(
+          std::vector<int64_t> & thrift_counters,
+          const sai_thrift_object_id_t port_id,
+          const std::vector<sai_thrift_port_stat_counter_t> & thrift_counter_ids,
+          const int32_t number_of_counters) {
+      printf("sai_thrift_get_port_stats\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_port_api_t *port_api;
+      status = sai_api_query(SAI_API_PORT, (void **) &port_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return;
+      }
+      sai_port_stat_counter_t *counter_ids = (sai_port_stat_counter_t *) malloc(sizeof(sai_port_stat_counter_t) * thrift_counter_ids.size());
+      std::vector<int32_t>::const_iterator it = thrift_counter_ids.begin();
+      uint64_t *counters = (uint64_t *) malloc(sizeof(uint64_t) * thrift_counter_ids.size());
+      for(uint32_t i = 0; i < thrift_counter_ids.size(); i++, it++) {
+          printf("YOHAI IM HERE %d\n",(sai_port_stat_counter_t) *it);
+          counter_ids[i] = (sai_port_stat_counter_t) *it;
+      }
+
+      status = port_api->get_port_stats(
+                             (sai_object_id_t) port_id,
+                             counter_ids,
+                             number_of_counters,
+                             counters);
+
+      for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
+          thrift_counters.push_back(counters[i]);
+      }
+      free(counter_ids);
+      free(counters);
+      return;
+  }
+
+  void sai_thrift_get_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t port_id) {
+      printf("sai_thrift_get_port_attribute\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_port_api_t *port_api;
+      sai_attribute_t max_queue_attribute;
+      sai_attribute_t queue_list_object_attribute;
+      sai_thrift_attribute_t thrift_queue_list_attribute;
+      sai_object_list_t *queue_list_object;
+      int max_queues = 0;
+      status = sai_api_query(SAI_API_PORT, (void **) &port_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return;
+      }
+
+      max_queue_attribute.id = SAI_PORT_ATTR_QOS_NUMBER_OF_QUEUES;
+      port_api->get_port_attribute(port_id, 1, &max_queue_attribute);
+      max_queues = max_queue_attribute.value.u32;
+      queue_list_object_attribute.id = SAI_PORT_ATTR_QOS_QUEUE_LIST;
+      queue_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_queues);
+      port_api->get_port_attribute(port_id, 1, &queue_list_object_attribute);
+
+      thrift_attr_list.attr_count = 2;
+      std::vector<sai_thrift_attribute_t>& attr_list = thrift_attr_list.attr_list;
+      thrift_queue_list_attribute.id = SAI_PORT_ATTR_QOS_QUEUE_LIST;
+      thrift_queue_list_attribute.value.objlist.count = max_queues;
+      std::vector<sai_thrift_object_id_t>& queue_list = thrift_queue_list_attribute.value.objlist.object_id_list;
+      queue_list_object = &queue_list_object_attribute.value.objlist;
+      for (int index = 0; index < max_queues; index++) {
+          queue_list.push_back((sai_thrift_object_id_t) queue_list_object->list[index]);
+      }
+      attr_list.push_back(thrift_queue_list_attribute);
+      free(queue_list_object_attribute.value.objlist.list);
+  }
+
+  void sai_thrift_get_queue_stats(
+          std::vector<int64_t> & thrift_counters,
+          const sai_thrift_object_id_t queue_id,
+          const std::vector<sai_thrift_queue_stat_counter_t> & thrift_counter_ids,
+          const int32_t number_of_counters) {
+      printf("sai_thrift_get_queue_stats\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_queue_api_t *queue_api;
+      status = sai_api_query(SAI_API_QUEUE, (void **) &queue_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return;
+      }
+      sai_queue_stat_counter_t *counter_ids = (sai_queue_stat_counter_t *) malloc(sizeof(sai_queue_stat_counter_t) * thrift_counter_ids.size());
+      std::vector<int32_t>::const_iterator it = thrift_counter_ids.begin();
+      uint64_t *counters = (uint64_t *) malloc(sizeof(uint64_t) * thrift_counter_ids.size());
+      for(uint32_t i = 0; i < thrift_counter_ids.size(); i++, it++) {
+          printf("YOHAI IM HERE %d\n",(sai_queue_stat_counter_t) *it);
+          counter_ids[i] = (sai_queue_stat_counter_t) *it;
+      }
+
+      status = queue_api->get_queue_stats(
+                             (sai_object_id_t) queue_id,
+                             counter_ids,
+                             number_of_counters,
+                             counters);
+
+      for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
+          thrift_counters.push_back(counters[i]);
+      }
+      free(counter_ids);
+      free(counters);
+      return;
+  }
 };
 
 static void * switch_sai_thrift_rpc_server_thread(void *arg) {
