@@ -497,7 +497,7 @@ typedef struct _sai_tunnel_map_t
 
     /** Output map parameters */
     sai_tunnel_map_params_t value;
-    
+
 } sai_tunnel_map_t;
 
 typedef struct _sai_tunnel_map_list_t
