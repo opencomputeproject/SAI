@@ -42,11 +42,11 @@
  */
 typedef enum _sai_tunnel_map_type_t
 {
-    /** TUNNEL Map overlay ECN to underlay ECN   */
+    /** TUNNEL Map overlay ECN to underlay ECN (only valid for encap)  */
     SAI_TUNNEL_MAP_OECN_TO_UECN = 0x00000001,
 
-    /** TUNNEL Map underlay ECN to overlay ECN   */
-    SAI_TUNNEL_MAP_UECN_TO_OECN = 0x00000002,
+    /** TUNNEL Map underlay ECN and overlay ECN to overlay ECN (only valid for decap)  */
+    SAI_TUNNEL_MAP_UECN_OECN_TO_OECN = 0x00000002,
 
     /** TUNNEL Map VNI to VLAN ID  */
     SAI_TUNNEL_MAP_VNI_TO_VLAN_ID = 0x00000003,
