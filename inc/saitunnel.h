@@ -209,7 +209,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_TTL_MODE,
 
     /** tunnel TTL value [sai_uint8_t]
-     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_TTL_MODE = SAI_TUNNEL_TTL_PIPE_MODEL) */
+     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_TTL_MODE = SAI_TUNNEL_TTL_PIPE_MODEL) */
     SAI_TUNNEL_ATTR_ENCAP_TTL_VAL,
 
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t]
@@ -218,7 +218,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE,
 
     /** tunnel DSCP value [sai_uint8_t : 6]
-     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_DSCP_MODE = SAI_TUNNEL_DSCP_PIPE_MODEL) */
+     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_DSCP_MODE = SAI_TUNNEL_DSCP_PIPE_MODEL) */
     SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL,
 
     /** tunnel GRE key valid [bool] (CREATE_ONLY) */
@@ -249,7 +249,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
     /** tunnel TTL value [sai_uint8_t]
-     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_TTL_MODE = SAI_TUNNEL_TTL_PIPE_MODEL) */
+     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_TTL_MODE = SAI_TUNNEL_TTL_PIPE_MODEL) */
     SAI_TUNNEL_ATTR_DECAP_TTL_VAL,
 
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t]
@@ -259,7 +259,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
 
     /** tunnel DSCP value [sai_uint8_t : 6]
-     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_DSCP_MODE = SAI_TUNNEL_DSCP_PIPE_MODEL) */
+     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_DSCP_MODE = SAI_TUNNEL_DSCP_PIPE_MODEL) */
     SAI_TUNNEL_ATTR_DECAP_DSCP_VAL,
 
     /** Custom range base value */
