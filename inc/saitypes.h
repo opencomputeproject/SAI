@@ -490,7 +490,7 @@ typedef struct _sai_tunnel_map_params_t
 
 } sai_tunnel_map_params_t;
 
-typedef struct _sai_tunnel_general_map_t
+typedef struct _sai_tunnel_map_t
 {
     /** Input parameters to match */
     sai_tunnel_map_params_t key;
