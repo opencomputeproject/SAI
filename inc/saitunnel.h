@@ -162,16 +162,24 @@ typedef enum _sai_tunnel_dscp_mode_t
 
 typedef enum _sai_tunnel_encap_ecn_mode_t
 {
+    /** Normal mode behavior defined in RFC 6040 section 4.1:
+      * copy from inner */
     SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
 
+    /** User defined behavior */
     SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
     
 } sai_tunnel_ecn_mode_t;
 
 typedef enum _sai_tunnel_decap_ecn_mode_t
 {
+    /** Behavior defined in RFC 6040 section 4.2 */
     SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
 
+    /** Copy from outer ECN */
+    SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
+    
+    /** User defined behavior */
     SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
     
 } sai_tunnel_ecn_mode_t;
@@ -221,7 +229,8 @@ typedef enum _sai_tunnel_attr_t
      *   Default would be SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD */
     SAI_TUNNEL_ATTR_ENCAP_ECN_MODE,
 
-    /** tunnel encap mappers [sai_object_list_t] */
+    /** tunnel encap mappers [sai_object_list_t]
+      * (valid when SAI_TUNNEL_ATTR_ENCAP_ECN_MODE=SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED) */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
     /** tunnel decap attribute **/
@@ -230,7 +239,8 @@ typedef enum _sai_tunnel_attr_t
      *   Default would be SAI_TUNNEL_DECAP_ECN_MODE_STANDARD */
     SAI_TUNNEL_ATTR_DECAP_ECN_MODE,
 
-    /**  tunnel decap mappers [sai_object_list_t] */
+    /**  tunnel decap mappers [sai_object_list_t]
+      *  (valid when SAI_TUNNEL_ATTR_DECAP_ECN_MODE=SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED) */
     SAI_TUNNEL_ATTR_DECAP_MAPPERS,
 
     /** tunnel TTL mode copy from inner or user define [sai_tunnel_ttl_mode_t]
