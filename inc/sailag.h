@@ -56,7 +56,7 @@ typedef enum _sai_lag_attr_t {
 typedef sai_status_t(*sai_create_lag_fn)(
     _Out_ sai_object_id_t* lag_id,
     _In_ uint32_t attr_count,
-    _In_ sai_attribute_t *attr_list
+    _In_ const sai_attribute_t *attr_list
     );
 
 /*
@@ -132,7 +132,7 @@ typedef enum _sai_lag_member_attr_t {
 typedef sai_status_t(*sai_create_lag_member_fn)(
     _Out_ sai_object_id_t* lag_member_id,
     _In_ uint32_t attr_count,
-    _In_ sai_attribute_t *attr_list
+    _In_ const sai_attribute_t *attr_list
     );
 
 /*
