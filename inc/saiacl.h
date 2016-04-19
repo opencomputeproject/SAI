@@ -339,6 +339,11 @@ typedef enum _sai_acl_table_attr_t
     /** Range type defined in sai_acl_range_type_t */
     SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
+    /** End of Table Action Field */
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_RANGE,
+
+    /** Start of Action attributes */
+    SAI_ACL_TABLE_ATTR_ACTION_START = 0x00002000,
     /**
      * ACTION FIELDS
      * Some NPUs require the action set similar to the qualifier set
@@ -350,7 +355,7 @@ typedef enum _sai_acl_table_attr_t
 
     /** Redirect Packet to a destination which can be a port,
      * lag, nexthop, nexthopgroup. [sai_object_id_t] */
-    SAI_ACL_TABLE_ATTR_ACTION_REDIRECT 
+    SAI_ACL_TABLE_ATTR_ACTION_REDIRECT = SAI_ACL_TABLE_ATTR_ACTION_START,
 
     /** Redirect Packet to a list of destination which can be
      *  a port list. [sai_object_list_t] */
@@ -452,8 +457,8 @@ typedef enum _sai_acl_table_attr_t
      *  Value Range SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE */
     SAI_ACL_TABLE_ATTR_ACTION_SET_USER_TRAP_ID,
 
-    /** End of Table Match Field */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_ACTION_SET_USER_TRAP_ID,
+    /** End of Table Action Field */
+    SAI_ACL_TABLE_ATTR_ACTION_END = SAI_ACL_TABLE_ATTR_ACTION_SET_USER_TRAP_ID,
 
     /* -- */
 
