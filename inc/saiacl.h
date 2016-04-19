@@ -339,8 +339,121 @@ typedef enum _sai_acl_table_attr_t
     /** Range type defined in sai_acl_range_type_t */
     SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
+    /**
+     * ACTION FIELDS
+     * Some NPUs require the action set similar to the qualifier set
+     * during table creation. The entries in the table can make use 
+     * of the actions present in the action set. 
+     * The action list cannot be modified once entries are added to the table.
+     * OPTIONAL / CREATE_ONLY. 
+     */
+
+    /** Redirect Packet to a destination which can be a port,
+     * lag, nexthop, nexthopgroup. [sai_object_id_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_REDIRECT 
+
+    /** Redirect Packet to a list of destination which can be
+     *  a port list. [sai_object_list_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_REDIRECT_LIST,
+
+    /** Drop Packet [sai_packet_action_t] */
+    SAI_ACL_TABLE_ATTR_PACKET_ACTION,
+
+    /** Flood Packet on Vlan domain (parameter is not needed) */
+    SAI_ACL_TABLE_ATTR_ACTION_FLOOD,
+
+    /** Attach/detach counter id to the entry [sai_object_id_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_COUNTER,
+
+    /** Ingress Mirror (mirror session id list) [sai_object_list_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_MIRROR_INGRESS,
+
+    /** Egress Mirror (mirror session id list) [sai_object_list_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_MIRROR_EGRESS,
+
+    /** Assosiate with policer (policer id) [sai_object_id_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_POLICER,
+
+    /** Decrement TTL (enable/disable) (parameter is not needed) */
+    SAI_ACL_TABLE_ATTR_ACTION_DECREMENT_TTL,
+
+    /** Set Class-of-Service (Traffic Class) [sai_cos_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_TC,
+
+    /** Set packet color [sai_packet_color_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_COLOR,
+
+    /** Set Packet Inner Vlan-Id [sai_uint16_t : 12] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_INNER_VLAN_ID,
+
+    /** Set Packet Inner Vlan-Priority [sai_uint8_t : 3] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_INNER_VLAN_PRI,
+
+    /** Set Packet Outer Vlan-Id [sai_uint16_t : 12] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_OUTER_VLAN_ID,
+
+    /** Set Packet Outer Vlan-Priority [sai_uint8_t : 3] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_OUTER_VLAN_PRI,
+
+    /** Set Packet Src MAC Address [sai_mac_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_SRC_MAC,
+
+    /** Set Packet Dst MAC Address [sai_mac_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_DST_MAC,
+
+    /** Set Packet Src IPv4 Address [sai_ip4_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_SRC_IP,
+
+    /** Set Packet Src IPv4 Address [sai_ip4_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_DST_IP,
+
+    /** Set Packet Src IPv6 Address [sai_ip6_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_SRC_IPv6,
+
+    /** Set Packet Src IPv6 Address [sai_ip6_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_DST_IPv6,
+
+    /** Set Packet DSCP [sai_uint8_t : 6] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_DSCP,
+
+    /** Set Packet ECN [sai_uint8_t : 2] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_ECN,
+
+    /** Set Packet L4 Src Port [sai_uint16_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_L4_SRC_PORT,
+
+    /** Set Packet L4 Src Port [sai_uint16_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_L4_DST_PORT,
+
+    /** Set ingress packet sampling (samplepacket session id) [sai_object_id_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
+
+    /** Set egress packet sampling (samplepacket session id) [sai_object_id_t] */
+    SAI_ACL_TABLE_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
+
+    /** Set CPU Queue for CPU bound traffic [sai_object_id_t]
+     * Action can be used whenever packet is destined to CPU such as
+     * when packet action specifies the packet needs to be punted
+     * to CPU (Trap/Log) or the destination port points to CPU. */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_CPU_QUEUE,
+
+    /** Set Meta Data to carry forward to next ACL Stage
+     * [sai_uint32_t]
+     * Value Range SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_ACL_META_DATA,
+
+    /** Egress block port list [sai_object_list_t]
+     * Packets matching the ACL entry and egressing out of the ports in the
+     * given port list will be dropped. */
+    SAI_ACL_TABLE_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
+
+    /** Set User Defined Trap ID [sai_uint32_t]
+     *  Copy packet action mandatory to be present (Copy/Trap/Log)
+     *  Value Range SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE */
+    SAI_ACL_TABLE_ATTR_ACTION_SET_USER_TRAP_ID,
+
     /** End of Table Match Field */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_RANGE,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_ACTION_SET_USER_TRAP_ID,
 
     /* -- */
 
