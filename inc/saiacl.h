@@ -339,7 +339,7 @@ typedef enum _sai_acl_table_attr_t
     /** Range type defined in sai_acl_range_type_t */
     SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
-    /** End of Table Action Field */
+    /** End of Table Match Field */
     SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
     /** Start of Action attributes */
