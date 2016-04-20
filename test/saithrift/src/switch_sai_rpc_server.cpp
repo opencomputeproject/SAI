@@ -1673,10 +1673,10 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
   }
   
   void sai_thrift_get_port_stats(
-          std::vector<int64_t> & thrift_counters,
+          std::vector<uint64_t> & thrift_counters,
           const sai_thrift_object_id_t port_id,
           const std::vector<sai_thrift_port_stat_counter_t> & thrift_counter_ids,
-          const int32_t number_of_counters) {
+          const uint32_t number_of_counters) {
       printf("sai_thrift_get_port_stats\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_port_api_t *port_api;
@@ -1752,10 +1752,10 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
   }
 
   void sai_thrift_get_queue_stats(
-          std::vector<int64_t> & thrift_counters,
+          std::vector<uint64_t> & thrift_counters,
           const sai_thrift_object_id_t queue_id,
           const std::vector<sai_thrift_queue_stat_counter_t> & thrift_counter_ids,
-          const int32_t number_of_counters) {
+          const uint32_t number_of_counters) {
       printf("sai_thrift_get_queue_stats\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_queue_api_t *queue_api;
@@ -1787,7 +1787,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
   sai_thrift_status_t sai_thrift_clear_queue_stats(
           const sai_thrift_object_id_t queue_id,
           const std::vector<sai_thrift_queue_stat_counter_t> & thrift_counter_ids,
-          const int32_t number_of_counters) {
+          const uint32_t number_of_counters) {
       printf("sai_thrift_clear_queue_stats\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_queue_api_t *queue_api;

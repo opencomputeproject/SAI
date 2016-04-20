@@ -166,10 +166,10 @@ service switch_sai_rpc {
     //port API
     sai_thrift_status_t sai_thrift_set_port_attribute(1: sai_thrift_object_id_t port_id, 2: sai_thrift_attribute_t thrift_attr);
     sai_thrift_attribute_list_t sai_thrift_get_port_attribute(1: sai_thrift_object_id_t port_id);
-    list<i64> sai_thrift_get_port_stats(
+    list<u64> sai_thrift_get_port_stats(
                              1: sai_thrift_object_id_t port_id,
                              2: list<sai_thrift_port_stat_counter_t> counter_ids,
-                             3: i32 number_of_counters);
+                             3: u32 number_of_counters);
     sai_thrift_status_t sai_thrift_clear_port_all_stats(1: sai_thrift_object_id_t port_id)
 
     //fdb API
@@ -266,12 +266,12 @@ service switch_sai_rpc {
     sai_thrift_object_id_t sai_thrift_create_scheduler_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
 
     // Queue API
-    list<i64> sai_thrift_get_queue_stats(
+    list<u64> sai_thrift_get_queue_stats(
                              1: sai_thrift_object_id_t queue_id,
                              2: list<sai_thrift_queue_stat_counter_t> counter_ids,
-                             3: i32 number_of_counters);
+                             3: u32 number_of_counters);
     sai_thrift_status_t sai_thrift_clear_queue_stats(
                              1: sai_thrift_object_id_t queue_id,
                              2: list<sai_thrift_queue_stat_counter_t> counter_ids,
-                             3: i32 number_of_counters);							 
+                             3: u32 number_of_counters);							 
 }
