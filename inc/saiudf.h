@@ -134,7 +134,7 @@ typedef enum _sai_udf_group_attr_t
     SAI_UDF_GROUP_ATTR_TYPE,
 
     /** UDF byte length [uint16_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_UDF_ATTR_LENGTH,
+    SAI_UDF_GROUP_ATTR_LENGTH,
 
 } sai_udf_group_attr_t;
 

@@ -724,12 +724,12 @@ typedef enum _sai_acl_range_attr_t
      * (MANDATORY_ON_CREATE, mandatory to pass only one of the range types
      *  defined in sai_acl_range_type_t enum during ACL Range Creation)
      * (CREATE_ONLY, Range Type cannot be changed after the range is created) */
-    SAI_ACL_RANGE_TYPE,
+    SAI_ACL_RANGE_ATTR_TYPE,
 
     /** Start and End of ACL Range [sai_u32_range_t]
      *  (MANDATORY_ON_CREATE, Range will include the start and end values)
      *  (CREATE_ONLY, Range Limit cannot be changed after the range is created) */
-    SAI_ACL_RANGE_LIMIT
+    SAI_ACL_RANGE_ATTR_LIMIT
 
 } sai_acl_range_attr_t;
 
