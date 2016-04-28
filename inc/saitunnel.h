@@ -352,7 +352,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TUNNEL_TYPE,
 
     /** tunnel id to be use for decap [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) valid o */
-    SAI_TUNNEL_TERM_TABLE_ENTRY_ACTION_TUNNEL_ID,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_ACTION_TUNNEL_ID,
 
     /** Custom range base value */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
