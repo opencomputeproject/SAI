@@ -194,10 +194,11 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_NEIGHBOR         = 35,
     SAI_OBJECT_TYPE_ROUTE            = 36,
     SAI_OBJECT_TYPE_VLAN             = 37,
-    SAI_OBJECT_TYPE_TUNNEL_MAP       = 38,
-    SAI_OBJECT_TYPE_TUNNEL           = 39,
-    SAI_OBJECT_TYPE_TUNNEL_TABLE_ENTRY = 40,
-    SAI_OBJECT_TYPE_MAX              = 41
+    SAI_OBJECT_TYPE_PACKET           = 38,
+    SAI_OBJECT_TYPE_TUNNEL_MAP       = 39,
+    SAI_OBJECT_TYPE_TUNNEL           = 40,
+    SAI_OBJECT_TYPE_TUNNEL_TABLE_ENTRY = 41,
+    SAI_OBJECT_TYPE_MAX              = 42
 
 } sai_object_type_t;
 
