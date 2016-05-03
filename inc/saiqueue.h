@@ -163,10 +163,10 @@ typedef enum _sai_queue_stat_counter_t
     SAI_QUEUE_STAT_WATERMARK_BYTES = 0x00000019,
 
     /** get current queue shared occupancy in bytes [uint64_t] */
-    SAI_QUEUE_STAT_SHARED_CURR_OCCUPANCY_BYTES = 0x00000020,
+    SAI_QUEUE_STAT_SHARED_CURR_OCCUPANCY_BYTES = 0x0000001a,
 
     /** get watermark queue shared occupancy in bytes [uint64_t] */
-    SAI_QUEUE_STAT_SHARED_WATERMARK_BYTES = 0x00000021,
+    SAI_QUEUE_STAT_SHARED_WATERMARK_BYTES = 0x0000001b,
 
     /* -- */
     /* Custom range base value */

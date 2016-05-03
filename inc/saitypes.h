@@ -477,8 +477,11 @@ typedef struct _sai_qos_map_list_t
 
 typedef struct _sai_tunnel_map_params_t
 {
-    /** ECN */
-    sai_uint8_t ecn;
+    /** inner ECN */
+    sai_uint8_t oecn;
+    
+    /** outer ECN */
+    sai_uint8_t uecn;
 
     /** vlan id  */
     sai_vlan_id_t vlan_id;

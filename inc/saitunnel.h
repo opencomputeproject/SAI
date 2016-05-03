@@ -42,11 +42,11 @@
  */
 typedef enum _sai_tunnel_map_type_t
 {
-    /** TUNNEL Map overlay ECN to underlay ECN   */
+    /** TUNNEL Map overlay ECN to underlay ECN (only valid for encap)  */
     SAI_TUNNEL_MAP_OECN_TO_UECN = 0x00000001,
 
-    /** TUNNEL Map underlay ECN to overlay ECN   */
-    SAI_TUNNEL_MAP_UECN_TO_OECN = 0x00000002,
+    /** TUNNEL Map underlay ECN and overlay ECN to overlay ECN (only valid for decap)  */
+    SAI_TUNNEL_MAP_UECN_OECN_TO_OECN = 0x00000002,
 
     /** TUNNEL Map VNI to VLAN ID  */
     SAI_TUNNEL_MAP_VNI_TO_VLAN_ID = 0x00000003,
@@ -146,27 +146,58 @@ typedef enum _sai_tunnel_type_t
 
 typedef enum _sai_tunnel_ttl_mode_t
 {
-    SAI_TUNNEL_TTL_COPY_FROM_INNER,
+    /** The uniform model:
+     *  where the TTL field is preserved end-to-end by copying into the
+     *  outer header on encapsulation and copying from the outer header on
+     *  decapsulation. */
+    SAI_TUNNEL_TTL_UNIFORM_MODEL,
 
-    SAI_TUNNEL_TTL_USER_DEFINE
+    /** The pipe model:
+     *  where the outer header is independent of that in the inner header so
+     *  it hides the TTL field of the inner header from any interaction
+     *  with nodes along the tunnel. */
+    SAI_TUNNEL_TTL_PIPE_MODEL
 
 } sai_tunnel_ttl_mode_t;
 
 typedef enum _sai_tunnel_dscp_mode_t
 {
-    SAI_TUNNEL_DSCP_COPY_FROM_INNER,
+    /** The uniform model:
+     *  where the DSCP field is preserved end-to-end by copying into the
+     *  outer header on encapsulation and copying from the outer header on
+     *  decapsulation. */
+    SAI_TUNNEL_DSCP_UNIFORM_MODEL,
 
-    SAI_TUNNEL_DSCP_USER_DEFINE
+    /** The pipe model:
+     *  where the outer header is independent of that in the inner header so
+     *  it hides the DSCP field of the inner header from any interaction
+     *  with nodes along the tunnel. */
+    SAI_TUNNEL_DSCP_PIPE_MODEL
 
 } sai_tunnel_dscp_mode_t;
 
-typedef enum _sai_tunnel_ecn_mode_t
+typedef enum _sai_tunnel_encap_ecn_mode_t
 {
-    SAI_TUNNEL_ECN_MODE_COPY_FROM_OUTER,
+    /** Normal mode behavior defined in RFC 6040 section 4.1:
+      * copy from inner */
+    SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
 
-    SAI_TUNNEL_ECN_MODE_KEEP_INNER,
+    /** User defined behavior */
+    SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
+    
+} sai_tunnel_ecn_mode_t;
 
-    SAI_TUNNEL_ECN_MODE_USER_DEFINED
+typedef enum _sai_tunnel_decap_ecn_mode_t
+{
+    /** Behavior defined in RFC 6040 section 4.2 */
+    SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
+
+    /** Copy from outer ECN */
+    SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
+    
+    /** User defined behavior */
+    SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
+    
 } sai_tunnel_ecn_mode_t;
 
 typedef enum _sai_tunnel_attr_t
@@ -187,20 +218,22 @@ typedef enum _sai_tunnel_attr_t
     /** tunnel src ip [sai_ip_address_t] (CREATE_ONLY) */
     SAI_TUNNEL_ATTR_ENCAP_SRC_IP,
 
-    /** tunnel TTL mode copy from inner or user define [sai_tunnel_ttl_mode_t]
-     *  (CREATE_ONLY) */
+    /** tunnel TTL mode (pipe or uniform model) [sai_tunnel_ttl_mode_t]
+     *  (CREATE_ONLY) 
+     *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_ENCAP_TTL_MODE,
 
     /** tunnel TTL value [sai_uint8_t]
-     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_TTL_MODE = SAI_TUNNEL_TTL_USER_DEFINE) */
+     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_TTL_MODE = SAI_TUNNEL_TTL_PIPE_MODEL) */
     SAI_TUNNEL_ATTR_ENCAP_TTL_VAL,
 
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t]
-     *  (CREATE_ONLY) */
+     *  (CREATE_ONLY)
+     *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE,
 
     /** tunnel DSCP value [sai_uint8_t : 6]
-     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_DSCP_MODE = SAI_TUNNEL_DSCP_USER_DEFINE) */
+     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_DSCP_MODE = SAI_TUNNEL_DSCP_PIPE_MODEL) */
     SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL,
 
     /** tunnel GRE key valid [bool] (CREATE_ONLY) */
@@ -210,36 +243,42 @@ typedef enum _sai_tunnel_attr_t
      *  SAI_TUNNEL_ATTR_ENCAP_GRE_KEY_VALID=true) (CREATE_ONLY) */
     SAI_TUNNEL_ATTR_ENCAP_GRE_KEY,
 
-    /**  tunnel encap ECN mode [sai_tunnel_ecn_mode_t] */
+    /**  tunnel encap ECN mode [sai_tunnel_encap_ecn_mode_t]
+     *   Default would be SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD */
     SAI_TUNNEL_ATTR_ENCAP_ECN_MODE,
 
-    /** tunnel encap mappers [sai_object_list_t] */
+    /** tunnel encap mappers [sai_object_list_t]
+      * (valid when SAI_TUNNEL_ATTR_ENCAP_ECN_MODE=SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED) */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
     /** tunnel decap attribute **/
 
-    /**  tunnel decap ECN mode [sai_tunnel_ecn_mode_t] */
+    /**  tunnel decap ECN mode [sai_tunnel_decap_ecn_mode_t]
+     *   Default would be SAI_TUNNEL_DECAP_ECN_MODE_STANDARD */
     SAI_TUNNEL_ATTR_DECAP_ECN_MODE,
 
-    /**  tunnel decap mappers [sai_object_list_t] */
+    /**  tunnel decap mappers [sai_object_list_t]
+      *  (valid when SAI_TUNNEL_ATTR_DECAP_ECN_MODE=SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED) */
     SAI_TUNNEL_ATTR_DECAP_MAPPERS,
 
-    /** tunnel TTL mode copy from inner or user define [sai_tunnel_ttl_mode_t]
-    *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE)
-    *  (CREATE_ONLY) */
+    /** tunnel TTL mode (pipe or uniform model) [sai_tunnel_ttl_mode_t]
+     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE)
+     *  (CREATE_ONLY)
+     *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
     /** tunnel TTL value [sai_uint8_t]
-    *  (MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_TTL_MODE = SAI_TUNNEL_TTL_USER_DEFINE) */
+     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_TTL_MODE = SAI_TUNNEL_TTL_PIPE_MODEL) */
     SAI_TUNNEL_ATTR_DECAP_TTL_VAL,
 
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t]
-    *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE)
-    *  (CREATE_ONLY) */
+     *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE)
+     *  (CREATE_ONLY)
+     *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
 
     /** tunnel DSCP value [sai_uint8_t : 6]
-    *  (MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_DSCP_MODE = SAI_TUNNEL_DSCP_USER_DEFINE) */
+     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_DSCP_MODE = SAI_TUNNEL_DSCP_PIPE_MODEL) */
     SAI_TUNNEL_ATTR_DECAP_DSCP_VAL,
 
     /** Custom range base value */
