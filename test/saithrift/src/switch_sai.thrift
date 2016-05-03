@@ -32,6 +32,7 @@ typedef i32 sai_thrift_vlan_stat_counter_t
 typedef i32 sai_thrift_policer_stat_counter_t
 typedef i32 sai_thrift_port_stat_counter_t
 typedef i32 sai_thrift_queue_stat_counter_t
+typedef i32 sai_thrift_pg_stat_counter_t
 
 struct sai_thrift_fdb_entry_t {
     1: sai_thrift_mac_t mac_address;
@@ -274,4 +275,16 @@ service switch_sai_rpc {
                              1: sai_thrift_object_id_t queue_id,
                              2: list<sai_thrift_queue_stat_counter_t> counter_ids,
                              3: u32 number_of_counters);							 
+    sai_thrift_status_t sai_thrift_set_queue_attribute(1: sai_thrift_object_id_t queue_id,
+                                                       2: sai_thrift_attribute_t thrift_attr)
+
+    // Buffer API
+    sai_thrift_object_id_t sai_thrift_create_buffer_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_object_id_t sai_thrift_create_pool_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_set_priority_group_attribute(1: sai_thrift_object_id_t pg_id,
+                                                                2: sai_thrift_attribute_t thrift_attr)
+    list<u64> sai_thrift_get_pg_stats(
+                         1: sai_thrift_object_id_t pg_id,
+                         2: list<sai_thrift_pg_stat_counter_t> counter_ids,
+                         3: u32 number_of_counters);
 }
