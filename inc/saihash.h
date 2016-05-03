@@ -94,10 +94,10 @@ typedef enum _sai_hash_attr_t
     /** READ-WRITE */
 
     /** Hash native fields [sai_s32_list_t(sai_native_hash_field)] (CREATE_AND_SET) (default to an empty list) */
-    SAI_HASH_NATIVE_FIELD_LIST,
+    SAI_HASH_ATTR_NATIVE_FIELD_LIST,
 
     /** Hash UDF group [sai_object_list_t(sai_udf_group_t)] (CREATE_AND_SET) (default to an empty list) */
-    SAI_HASH_UDF_GROUP_LIST
+    SAI_HASH_ATTR_UDF_GROUP_LIST
 
 } sai_hash_attr_t;
 

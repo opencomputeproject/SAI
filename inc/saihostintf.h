@@ -545,26 +545,26 @@ typedef enum _sai_hostif_tx_type
 
 } sai_hostif_tx_type_t;
 
-typedef enum _sai_hostif_packet_attr
+typedef enum _sai_hostif_packet_attr_t
 {
     /** Trap ID [sai_hostif_trap_id_t] (for receive-only) */
-    SAI_HOSTIF_PACKET_TRAP_ID,
+    SAI_HOSTIF_PACKET_ATTR_TRAP_ID,
 
     /** User-Defined Trap ID [sai_hostif_user_defined_trap_id_t] (for receive-only) */
-    SAI_HOSTIF_PACKET_USER_TRAP_ID,
+    SAI_HOSTIF_PACKET_ATTR_USER_TRAP_ID,
 
     /** Ingress port [sai_object_id_t] (for receive-only) */
-    SAI_HOSTIF_PACKET_INGRESS_PORT,
+    SAI_HOSTIF_PACKET_ATTR_INGRESS_PORT,
 
     /** Ingress LAG [sai_object_id_t] (for receive-only) */
-    SAI_HOSTIF_PACKET_INGRESS_LAG,
+    SAI_HOSTIF_PACKET_ATTR_INGRESS_LAG,
 
     /** packet transmit type [sai_hostif_tx_type_t]. (MANDATORY_ON_SEND) */
-    SAI_HOSTIF_PACKET_TX_TYPE,
+    SAI_HOSTIF_PACKET_ATTR_TX_TYPE,
 
     /** Egress port or LAG [sai_object_id_t] (for send-only).
      * (MANDATORY_ON_SEND when SAI_HOSTIF_PACKET_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS) */
-    SAI_HOSTIF_PACKET_EGRESS_PORT_OR_LAG,
+    SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
 
 } sai_hostif_packet_attr_t;
 
