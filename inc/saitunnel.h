@@ -185,7 +185,7 @@ typedef enum _sai_tunnel_encap_ecn_mode_t
     /** User defined behavior */
     SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
     
-} sai_tunnel_ecn_mode_t;
+} sai_tunnel_encap_ecn_mode_t;
 
 typedef enum _sai_tunnel_decap_ecn_mode_t
 {
@@ -198,7 +198,7 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
     /** User defined behavior */
     SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
     
-} sai_tunnel_ecn_mode_t;
+} sai_tunnel_decap_ecn_mode_t;
 
 typedef enum _sai_tunnel_attr_t
 {
