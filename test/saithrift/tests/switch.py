@@ -538,3 +538,103 @@ def sai_thrift_create_scheduler_profile(client, max_rate, algorithm=0):
     scheduler_attr_list.append(attribute)
     scheduler_profile_id = client.sai_thrift_create_scheduler_profile(scheduler_attr_list)
     return scheduler_profile_id
+
+def sai_thrift_create_buffer_profile(client, pool_id, size, threshold, xoff_th, xon_th):
+    buffer_attr_list = []
+    attribute_value = sai_thrift_attribute_value_t(oid=pool_id)
+    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_POOL_ID ,
+                                           value=attribute_value)
+    buffer_attr_list.append(attribute)
+    
+    attribute_value = sai_thrift_attribute_value_t(u32=size)
+    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE ,
+                                           value=attribute_value)
+    buffer_attr_list.append(attribute)
+
+    attribute_value = sai_thrift_attribute_value_t(u8=threshold)
+    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_SHARED_DYNAMIC_TH ,
+                                           value=attribute_value)
+    buffer_attr_list.append(attribute)
+
+    attribute_value = sai_thrift_attribute_value_t(u32=xoff_th)
+    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_XOFF_TH ,
+                                           value=attribute_value)
+    buffer_attr_list.append(attribute)
+
+    attribute_value = sai_thrift_attribute_value_t(u32=xon_th)
+    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_XON_TH ,
+                                           value=attribute_value)
+    buffer_attr_list.append(attribute)
+
+    buffer_profile_id = client.sai_thrift_create_buffer_profile(buffer_attr_list)
+    return buffer_profile_id
+
+def sai_thrift_create_pool_profile(client, pool_type, size, threshold_mode):
+    pool_attr_list = []
+    attribute_value = sai_thrift_attribute_value_t(s32=pool_type)
+    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_POOL_ATTR_TYPE ,
+                                           value=attribute_value)
+    pool_attr_list.append(attribute)
+
+    attribute_value = sai_thrift_attribute_value_t(u32=size)
+    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_POOL_ATTR_SIZE ,
+                                           value=attribute_value)
+    pool_attr_list.append(attribute)
+
+    attribute_value = sai_thrift_attribute_value_t(s32=threshold_mode)
+    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_POOL_ATTR_TH_MODE ,
+                                           value=attribute_value)
+    pool_attr_list.append(attribute)
+    pool_id = client.sai_thrift_create_pool_profile(pool_attr_list)
+    return pool_id
+
+def sai_thrift_clear_all_counters(client):
+    for port in port_list:
+        queue_list=[]
+        client.sai_thrift_clear_port_all_stats(port)
+        port_attr_list = client.sai_thrift_get_port_attribute(port)
+        attr_list = port_attr_list.attr_list
+        for attribute in attr_list:
+            if attribute.id == SAI_PORT_ATTR_QOS_QUEUE_LIST:
+                for queue_id in attribute.value.objlist.object_id_list:
+                    queue_list.append(queue_id)
+
+        cnt_ids=[]
+        cnt_ids.append(SAI_QUEUE_STAT_PACKETS)
+        for queue in queue_list:
+            client.sai_thrift_clear_queue_stats(queue,cnt_ids,len(cnt_ids))
+
+def sai_thrift_read_port_counters(client,port):
+    port_cnt_ids=[]
+    port_cnt_ids.append(SAI_PORT_STAT_IF_OUT_DISCARDS)
+    port_cnt_ids.append(SAI_PORT_STAT_ETHER_STATS_DROP_EVENTS)
+    port_cnt_ids.append(SAI_PORT_STAT_PFC_0_TX_PKTS)
+    port_cnt_ids.append(SAI_PORT_STAT_PFC_1_TX_PKTS)
+    port_cnt_ids.append(SAI_PORT_STAT_PFC_2_TX_PKTS)
+    port_cnt_ids.append(SAI_PORT_STAT_PFC_3_TX_PKTS)
+    port_cnt_ids.append(SAI_PORT_STAT_PFC_4_TX_PKTS)
+    port_cnt_ids.append(SAI_PORT_STAT_PFC_5_TX_PKTS)
+    port_cnt_ids.append(SAI_PORT_STAT_PFC_6_TX_PKTS)
+    port_cnt_ids.append(SAI_PORT_STAT_PFC_7_TX_PKTS)
+    port_cnt_ids.append(SAI_PORT_STAT_IF_OUT_OCTETS)
+    port_cnt_ids.append(SAI_PORT_STAT_IF_OUT_UCAST_PKTS)
+    counters_results=[]
+    counters_results = client.sai_thrift_get_port_stats(port,port_cnt_ids,len(port_cnt_ids))
+    queue_list=[]
+    port_attr_list = client.sai_thrift_get_port_attribute(port)
+    attr_list = port_attr_list.attr_list
+    for attribute in attr_list:
+        if attribute.id == SAI_PORT_ATTR_QOS_QUEUE_LIST:
+            for queue_id in attribute.value.objlist.object_id_list:
+                queue_list.append(queue_id)
+    cnt_ids=[]
+    thrift_results=[]
+    queue_counters_results=[]
+    cnt_ids.append(SAI_QUEUE_STAT_PACKETS)
+    queue1=0
+    for queue in queue_list:
+        if queue1 <= 7:
+            thrift_results=client.sai_thrift_get_queue_stats(queue,cnt_ids,len(cnt_ids))
+            queue_counters_results.append(thrift_results[0])
+            queue1+=1
+    return (counters_results, queue_counters_results)
