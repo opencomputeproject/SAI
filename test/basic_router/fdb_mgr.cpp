@@ -131,7 +131,7 @@ bool FdbMgr::Del(MacAddress macAddr,
     sai_fdb_entry_t saifdbent;
 
 
-    std::vector<FdbEntry>::const_iterator it;
+    std::vector<FdbEntry>::iterator it;
 
     for (it = m_FdbVector.begin(); it != m_FdbVector.end(); ++it)
     {
