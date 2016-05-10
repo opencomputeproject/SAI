@@ -230,6 +230,18 @@ typedef enum _sai_hostif_trap_id_t
     /** default packet action is forward */
     SAI_HOSTIF_TRAP_ID_MLD_V2_REPORT = 0x0000200f,
 
+    /** IP packets to local router IP address (routes with SAI_ROUTE_ATTR_NEXT_HOP_ID=SAI_SWITCH_ATTR_CPU_PORT)
+     * (default packet action is trap) */
+    SAI_HOSTIF_TRAP_ID_IP2ME = 0x00002010,
+
+    /** SSH traffic to local router IP address 
+     * (default packet action is trap) */
+    SAI_HOSTIF_TRAP_ID_SSH = 0x00002011,
+
+    /** SNMP traffic to local router IP address
+     * (default packet action is trap) */
+    SAI_HOSTIF_TRAP_ID_SNMP = 0x00002012,
+
     /** default packet action is forward */
     SAI_HOSTIF_TRAP_ID_ROUTER_CUSTOM_RANGE_BASE = 0x0003000,
 
