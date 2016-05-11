@@ -167,7 +167,7 @@ service switch_sai_rpc {
     //port API
     sai_thrift_status_t sai_thrift_set_port_attribute(1: sai_thrift_object_id_t port_id, 2: sai_thrift_attribute_t thrift_attr);
     sai_thrift_attribute_list_t sai_thrift_get_port_attribute(1: sai_thrift_object_id_t port_id);
-    list<u64> sai_thrift_get_port_stats(
+    list<i64> sai_thrift_get_port_stats(
                              1: sai_thrift_object_id_t port_id,
                              2: list<sai_thrift_port_stat_counter_t> counter_ids,
                              3: i32 number_of_counters);
@@ -267,7 +267,7 @@ service switch_sai_rpc {
     sai_thrift_object_id_t sai_thrift_create_scheduler_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
 
     // Queue API
-    list<u64> sai_thrift_get_queue_stats(
+    list<i64> sai_thrift_get_queue_stats(
                              1: sai_thrift_object_id_t queue_id,
                              2: list<sai_thrift_queue_stat_counter_t> counter_ids,
                              3: i32 number_of_counters);
@@ -283,7 +283,7 @@ service switch_sai_rpc {
     sai_thrift_object_id_t sai_thrift_create_pool_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_set_priority_group_attribute(1: sai_thrift_object_id_t pg_id,
                                                                 2: sai_thrift_attribute_t thrift_attr)
-    list<u64> sai_thrift_get_pg_stats(
+    list<i64> sai_thrift_get_pg_stats(
                          1: sai_thrift_object_id_t pg_id,
                          2: list<sai_thrift_pg_stat_counter_t> counter_ids,
                          3: i32 number_of_counters);
