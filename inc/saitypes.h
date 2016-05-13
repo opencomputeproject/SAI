@@ -194,12 +194,12 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_NEIGHBOR         = 35,
     SAI_OBJECT_TYPE_ROUTE            = 36,
     SAI_OBJECT_TYPE_VLAN             = 37,
-    SAI_OBJECT_TYPE_PACKET           = 38,
-    SAI_OBJECT_TYPE_TUNNEL_MAP       = 39,
-    SAI_OBJECT_TYPE_TUNNEL           = 40,
-    SAI_OBJECT_TYPE_TUNNEL_TABLE_ENTRY = 41,
-    SAI_OBJECT_TYPE_MAX              = 42
-
+    SAI_OBJECT_TYPE_VLAN_MEMBER      = 38,
+    SAI_OBJECT_TYPE_PACKET           = 39,
+    SAI_OBJECT_TYPE_TUNNEL_MAP       = 40,
+    SAI_OBJECT_TYPE_TUNNEL           = 41,
+    SAI_OBJECT_TYPE_TUNNEL_TABLE_ENTRY = 42,
+    SAI_OBJECT_TYPE_MAX              = 43
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -255,21 +255,6 @@ typedef struct _sai_vlan_list_t {
     sai_vlan_id_t *list;
 
 } sai_vlan_list_t;
-
-typedef struct _sai_vlan_port_t sai_vlan_port_t;
-
-/**
- * @brief Defines a vlan port list datastructure
- */
-typedef struct _sai_vlan_port_list_t {
-
-    /** Number of ports in a VLAN */
-    uint32_t count;
-
-    /** List of ports in a VLAN */
-    sai_vlan_port_t *list;
-
-} sai_vlan_port_list_t;
 
 typedef enum _sai_ip_addr_family_t {
     SAI_IP_ADDR_FAMILY_IPV4,
@@ -539,7 +524,6 @@ typedef union {
     sai_u32_range_t u32range;
     sai_s32_range_t s32range;
     sai_vlan_list_t vlanlist;
-    sai_vlan_port_list_t vlanportlist;
     sai_acl_field_data_t aclfield;
     sai_acl_action_data_t aclaction;
     sai_port_breakout_t portbreakout;
