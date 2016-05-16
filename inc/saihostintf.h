@@ -47,10 +47,6 @@ typedef enum _sai_hostif_trap_group_attr_t
     /** Admin Mode [bool] (default to TRUE) */
     SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE,
 
-    /** group priority [uint32_t] (MANDATORY_ON_CREATE|CREATE_ONLY).
-    * This is equivalent to ACL table priority SAI_ACL_TABLE_ATTR_PRIORITY */
-    SAI_HOSTIF_TRAP_GROUP_ATTR_PRIO,
-
     /** cpu egress queue [uint32_t] (CREATE_AND_SET)
      * (default to 0) */
     SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
