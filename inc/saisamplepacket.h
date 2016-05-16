@@ -47,6 +47,27 @@ typedef enum _sai_samplepacket_type_t
 } sai_samplepacket_type_t;
 
 /**
+  * @brief SAI mode of samplepacket sampling
+  */
+typedef enum _sai_samplepacket_mode_t
+{
+    /** A profile defining sample packet attributes. 
+      * The profile can be configured on a port or as ACL entry action,
+      * in which case, an actual session is instantiated which is private
+      * for that port or ACL.
+      * In case multiple ports or ACL entries are configured with the same
+      * profile, sampling is independently done per port / ACL. */
+    SAI_SAMPLEPACKET_MODE_EXCLUSIVE,
+    
+    /** An instance of sample packet session. 
+      * This session can be attached to multiple ports and ACL entries.
+      * Traffic going through these ports or matching these ACL entries
+      * is merged from a sampling point of view. */
+    SAI_SAMPLEPACKET_MODE_SHARED,
+    
+} sai_samplepacket_mode_t;
+
+/**
  * @brief SAI attributes of samplepacket session
  */
 typedef enum _sai_samplepacket_attr_t
@@ -68,6 +89,11 @@ typedef enum _sai_samplepacket_attr_t
     /** samplepacket switching type sai_samplepacket_type_t. 
     Default would be SAI_SAMPLEPACKET_SLOW_PATH */
     SAI_SAMPLEPACKET_ATTR_TYPE,
+    
+    /** CREATE ONLY */
+    /** samplepacket mode sai_samplepacket_mode_t. 
+    Default would be SAI_SAMPLEPACKET_MODE_EXCLUSIVE */
+    SAI_SAMPLEPACKET_ATTR_MODE,
 
 } sai_samplepacket_attr_t;
 
