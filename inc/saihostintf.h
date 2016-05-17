@@ -234,11 +234,11 @@ typedef enum _sai_hostif_trap_id_t
      * (default packet action is trap) */
     SAI_HOSTIF_TRAP_ID_IP2ME = 0x00002010,
 
-    /** SSH traffic to local router IP address 
+    /** SSH traffic (tcp port 22) to local router IP address 
      * (default packet action is trap) */
     SAI_HOSTIF_TRAP_ID_SSH = 0x00002011,
 
-    /** SNMP traffic to local router IP address
+    /** SNMP traffic (udp port 161) to local router IP address
      * (default packet action is trap) */
     SAI_HOSTIF_TRAP_ID_SNMP = 0x00002012,
 
