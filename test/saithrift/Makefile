@@ -45,6 +45,11 @@ SAI_PY_HEADERS = \
 
 MKDIR_P = mkdir -p
 
+MLNX_PY_H_EXCL = /usr/include/sai/mlnx_sai.h \
+                 /usr/include/sai/sai_windows.h
+
+PY_H_EXCL += $(MLNX_PY_H_EXCL)
+
 all: directories $(ODIR)/librpcserver.a saiserver clientlib
 
 directories:
@@ -57,7 +62,7 @@ $(PY_SOURCES): src/switch_sai.thrift
 	$(THRIFT) -o $(SRC) --gen py -r $(SRC)/switch_sai.thrift 
 
 $(SAI_PY_HEADERS): $(SAI_HEADERS)
-	$(CTYPESGEN) -I/usr/include -I$(SAI_HEADER_DIR) $^ -o $@
+	$(CTYPESGEN) -I/usr/include --include /usr/include/linux/limits.h -I$(SAI_HEADER_DIR) $(filter-out $(PY_H_EXCL), $^) -o $@
 
 clientlib: $(PY_SOURCES) $(SAI_PY_HEADERS)
 	python setup.py sdist
