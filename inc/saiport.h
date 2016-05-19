@@ -529,6 +529,9 @@ typedef enum _sai_port_stat_counter_t
     /** get/set WRED dropped bytes  count [uint64_t] */
     SAI_PORT_STAT_DISCARD_DROPPED_BYTES,
 
+    /** get/set packets marked by ECN count [uint64_t] */
+    SAI_PORT_STAT_ECN_MARKED_PACKETS,
+
     /** packet size based packets count */
     SAI_PORT_STAT_ETHER_IN_PKTS_64_OCTETS,
     SAI_PORT_STAT_ETHER_IN_PKTS_65_TO_127_OCTETS,
