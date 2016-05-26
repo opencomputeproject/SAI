@@ -1017,6 +1017,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       max_ports = max_port_attribute.value.u32;
       port_list_object_attribute.id = SAI_SWITCH_ATTR_PORT_LIST;
       port_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_ports);
+      port_list_object_attribute.value.objlist.count = max_ports;
       switch_api->get_switch_attribute(1, &port_list_object_attribute);
 
       thrift_attr_list.attr_count = 1;
