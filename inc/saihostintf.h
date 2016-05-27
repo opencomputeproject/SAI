@@ -200,7 +200,7 @@ typedef enum _sai_hostif_trap_id_t
     /** default packet action is forward */
     SAI_HOSTIF_TRAP_ID_VRRP = 0x00002005,
 
-    /** BGP traffic (tcp port 179) to local router IP address
+    /** BGP traffic (tcp src port == 179 or tcp dst port == 179) to local router IP address
     * (default packet action is forward) */
     SAI_HOSTIF_TRAP_ID_BGP = 0x00002006,
 
@@ -213,7 +213,7 @@ typedef enum _sai_hostif_trap_id_t
     /** default packet action is forward */
     SAI_HOSTIF_TRAP_ID_VRRPV6 = 0x00002009,
 
-    /** BGPv6 traffic (tcp port 179) to local router IP address
+    /** BGPv6 traffic (tcp src port == 179 or tcp dst port == 179) to local router IP address
     * (default packet action is forward) */
     SAI_HOSTIF_TRAP_ID_BGPV6 = 0x0000200a,
 
@@ -236,11 +236,11 @@ typedef enum _sai_hostif_trap_id_t
      * (default packet action is trap) */
     SAI_HOSTIF_TRAP_ID_IP2ME = 0x00002010,
 
-    /** SSH traffic (tcp port 22) to local router IP address 
+    /** SSH traffic (tcp dst port == 22) to local router IP address 
      * (default packet action is trap) */
     SAI_HOSTIF_TRAP_ID_SSH = 0x00002011,
 
-    /** SNMP traffic (udp port 161) to local router IP address
+    /** SNMP traffic (udp dst port == 161) to local router IP address
      * (default packet action is trap) */
     SAI_HOSTIF_TRAP_ID_SNMP = 0x00002012,
 
