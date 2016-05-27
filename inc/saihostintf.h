@@ -558,8 +558,10 @@ typedef enum _sai_hostif_packet_attr_t
     /** packet transmit type [sai_hostif_tx_type_t]. (MANDATORY_ON_SEND) */
     SAI_HOSTIF_PACKET_ATTR_TX_TYPE,
 
-    /** Egress port or LAG [sai_object_id_t] (for send-only).
-     * (MANDATORY_ON_SEND when SAI_HOSTIF_PACKET_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS) */
+    /** Egress port or LAG [sai_object_id_t].
+     * (MANDATORY_ON_SEND when SAI_HOSTIF_PACKET_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS) 
+     * For the receive case, filled with the egress destination port for unicast packets.
+     * Applicable for use-case like SAMPLEPACKET traps */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
 
 } sai_hostif_packet_attr_t;
