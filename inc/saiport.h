@@ -431,6 +431,15 @@ typedef enum _sai_port_attr_t
      * given port list will be dropped. */
     SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST,
 
+    /** Port Hardware Configuration Profile ID [sai_uint64_t]
+     * Port can require different hardware configuration based on the attached
+     * media type, cable length etc. A Profile ID maps to a Port Hardware
+     * configuration settings that needs to be applied on the Port.
+     * This attribute need not be implemented and can be ignored if the port
+     * doesn't require any specific hardware settings based on media type/cable.
+     */
+    SAI_PORT_ATTR_HW_PROFILE_ID,
+
     /** -- */
 
     /* Custom range base value */
