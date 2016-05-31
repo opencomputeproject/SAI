@@ -174,7 +174,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.u16 = attribute.value.u16;
                   break;
               case SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID:
-                  attr_list[i].value.u64 = attribute.value.u64;
+                  attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL:
                   attr_list[i].value.u8 = attribute.value.u8;
