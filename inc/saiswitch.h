@@ -349,7 +349,12 @@ typedef enum _sai_switch_attr_t
     /** Nonvolatile storage required by both SAI and NPU in KB [sai_uint64_t]
      * Will be 0 for SAI_RESTART_TYPE_NONE */
     SAI_SWITCH_ATTR_NV_STORAGE_SIZE,
+    
+    /** Whether action list is mandatory for table creation [bool] */
+    SAI_SWITCH_ATTR_ACL_TABLE_ACTION_LIST_MANDATORY,
 
+    /** List of actions supported [sai_u32_list_t] */
+    SAI_SWITCH_ATTR_ACL_TABLE_ACTION_LIST,
     /** READ-WRITE */
 
     /** Switching mode [sai_switch_switching_mode_t]
@@ -495,6 +500,8 @@ typedef enum _sai_switch_attr_t
 
     /** Port Breakout mode [sai_port_breakout_t] */
     SAI_SWITCH_ATTR_PORT_BREAKOUT,
+
+
 
     /* -- */
 
