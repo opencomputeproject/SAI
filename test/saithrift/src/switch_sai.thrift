@@ -287,4 +287,8 @@ service switch_sai_rpc {
                          1: sai_thrift_object_id_t pg_id,
                          2: list<sai_thrift_pg_stat_counter_t> counter_ids,
                          3: i32 number_of_counters);
+
+    // WRED API
+    sai_thrift_object_id_t sai_thrift_create_wred_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_wred_profile(1: sai_thrift_object_id_t wred_id);
 }
