@@ -113,98 +113,98 @@ typedef enum _sai_acl_ip_frag_t
 
 typedef enum _sai_acl_table_action_list_t
 {
-    SAI_ACL_ACTION_REDIRECT, 
+    SAI_ACL_ATTR_ACTION_REDIRECT, 
 
     /** Redirect Packet to a list of destination which can be
      *  a port list.*/
-    SAI_ACL_ACTION_REDIRECT_LIST,
+    SAI_ACL_ATTR_ACTION_REDIRECT_LIST,
 
     /** Drop Packet */
-    SAI_ACL_TABLE_ATTR_PACKET_ACTION,
+    SAI_ACL_ATTR_ACTION_PACKET_ACTION,
 
     /** Flood Packet on Vlan domain */
-    SAI_ACL_ACTION_FLOOD,
+    SAI_ACL_ATTR_ACTION_FLOOD,
 
     /** Attach/detach counter id to the entry */
-    SAI_ACL_ACTION_COUNTER,
+    SAI_ACL_ATTR_ACTION_COUNTER,
 
     /** Ingress Mirror */
-    SAI_ACL_ACTION_MIRROR_INGRESS,
+    SAI_ACL_ATTR_ACTION_MIRROR_INGRESS,
 
     /** Egress Mirror */
-    SAI_ACL_ACTION_MIRROR_EGRESS,
+    SAI_ACL_ATTR_ACTION_MIRROR_EGRESS,
 
     /** Assosiate with policer (policer id) */
-    SAI_ACL_ACTION_SET_POLICER,
+    SAI_ACL_ATTR_ACTION_SET_POLICER,
 
     /** Decrement TTL */ 
-    SAI_ACL_ACTION_DECREMENT_TTL,
+    SAI_ACL_ATTR_ACTION_DECREMENT_TTL,
 
     /** Set Class-of-Service */ 
-    SAI_ACL_ACTION_SET_TC,
+    SAI_ACL_ATTR_ACTION_SET_TC,
 
     /** Set packet color */
-    SAI_ACL_ACTION_SET_COLOR,
+    SAI_ACL_ATTR_ACTION_SET_COLOR,
 
     /** Set Packet Inner Vlan-Id */
-    SAI_ACL_ACTION_SET_INNER_VLAN_ID,
+    SAI_ACL_ATTR_ACTION_SET_INNER_VLAN_ID,
 
     /** Set Packet Inner Vlan-Priority */
-    SAI_ACL_ACTION_SET_INNER_VLAN_PRI,
+    SAI_ACL_ATTR_ACTION_SET_INNER_VLAN_PRI,
 
     /** Set Packet Outer Vlan-Id */ 
-    SAI_ACL_ACTION_SET_OUTER_VLAN_ID,
+    SAI_ACL_ATTR_ACTION_SET_OUTER_VLAN_ID,
 
     /** Set Packet Outer Vlan-Priority */ 
-    SAI_ACL_ACTION_SET_OUTER_VLAN_PRI,
+    SAI_ACL_ATTR_ACTION_SET_OUTER_VLAN_PRI,
 
     /** Set Packet Src MAC Address */
-    SAI_ACL_ACTION_SET_SRC_MAC,
+    SAI_ACL_ATTR_ACTION_SET_SRC_MAC,
 
     /** Set Packet Dst MAC Address */
-    SAI_ACL_ACTION_SET_DST_MAC,
+    SAI_ACL_ATTR_ACTION_SET_DST_MAC,
 
     /** Set Packet Src IPv4 Address */
-    SAI_ACL_ACTION_SET_SRC_IP,
+    SAI_ACL_ATTR_ACTION_SET_SRC_IP,
 
     /** Set Packet Src IPv4 Address */
-    SAI_ACL_ACTION_SET_DST_IP,
+    SAI_ACL_ATTR_ACTION_SET_DST_IP,
 
     /** Set Packet Src IPv6 Address */
-    SAI_ACL_ACTION_SET_SRC_IPv6,
+    SAI_ACL_ATTR_ACTION_SET_SRC_IPv6,
 
     /** Set Packet Src IPv6 Address */
-    SAI_ACL_ACTION_SET_DST_IPv6,
+    SAI_ACL_ATTR_ACTION_SET_DST_IPv6,
 
     /** Set Packet DSCP */
-    SAI_ACL_ACTION_SET_DSCP,
+    SAI_ACL_ATTR_ACTION_SET_DSCP,
 
     /** Set Packet ECN */
-    SAI_ACL_ACTION_SET_ECN,
+    SAI_ACL_ATTR_ACTION_SET_ECN,
 
     /** Set Packet L4 Src Port */
-    SAI_ACL_ACTION_SET_L4_SRC_PORT,
+    SAI_ACL_ATTR_ACTION_SET_L4_SRC_PORT,
 
     /** Set Packet L4 Src Port */
-    SAI_ACL_ACTION_SET_L4_DST_PORT,
+    SAI_ACL_ATTR_ACTION_SET_L4_DST_PORT,
 
     /** Set ingress packet sampling */ 
-    SAI_ACL_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
+    SAI_ACL_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
 
     /** Set egress packet sampling */
-    SAI_ACL_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
+    SAI_ACL_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
 
     /** Set CPU Queue for CPU bound traffic */ 
-    SAI_ACL_ACTION_SET_CPU_QUEUE,
+    SAI_ACL_ATTR_ACTION_SET_CPU_QUEUE,
 
     /** Set Meta Data to carry forward to next ACL Stage */
-    SAI_ACL_ACTION_SET_ACL_META_DATA,
+    SAI_ACL_ATTR_ACTION_SET_ACL_META_DATA,
 
     /** Egress block port list  */
-    SAI_ACL_ACTION_EGRESS_BLOCK_PORT_LIST,
+    SAI_ACL_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
 
     /** Set User Defined Trap ID  */
-    SAI_ACL_ACTION_SET_USER_TRAP_ID,
+    SAI_ACL_ATTR_ACTION_SET_USER_TRAP_ID,
 
 }sai_acl_table_action_list_t; 
 
@@ -437,7 +437,8 @@ typedef enum _sai_acl_table_attr_t
     /** Range type defined in sai_acl_range_type_t */
     SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
-    /** List of actions in sai_acl_table_action_list_t [sai_u32_list_t] */
+    /** List of actions in sai_acl_table_action_list_t [sai_u32_list_t] 
+     * Default action list will be present which can be modified*/
     SAI_ACL_TABLE_ATTR_ACTION_LIST,
 
     /** End of Table Match Field */

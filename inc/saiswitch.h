@@ -350,10 +350,12 @@ typedef enum _sai_switch_attr_t
      * Will be 0 for SAI_RESTART_TYPE_NONE */
     SAI_SWITCH_ATTR_NV_STORAGE_SIZE,
     
-    /** Whether action list is mandatory for table creation [bool] */
+    /** Whether action list is mandatory for table creation [bool] 
+     * Default [false]*/
     SAI_SWITCH_ATTR_ACL_TABLE_ACTION_LIST_MANDATORY,
 
-    /** List of actions supported [sai_u32_list_t] */
+    /** List of actions supported [sai_u32_list_t] 
+     * List of all supported actions will be returned */
     SAI_SWITCH_ATTR_ACL_TABLE_ACTION_LIST,
     /** READ-WRITE */
 
