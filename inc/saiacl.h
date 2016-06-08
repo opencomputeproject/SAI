@@ -438,7 +438,8 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
     /** List of actions in sai_acl_table_action_list_t [sai_u32_list_t] 
-     * Default action list will be present which can be modified*/
+     * If SAI_SWITCH_ATTR_ACL_TABLE_ACTION_LIST_MANDATORY is true then 
+     * application has to pass the action list. */
     SAI_ACL_TABLE_ATTR_ACTION_LIST,
 
     /** End of Table Match Field */
