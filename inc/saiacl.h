@@ -111,7 +111,7 @@ typedef enum _sai_acl_ip_frag_t
 
 } sai_acl_ip_frag_t;
 
-typedef enum _sai_acl_table_action_list_t
+typedef enum _sai_acl_action_list_t
 {
     SAI_ACL_ATTR_ACTION_REDIRECT, 
 
@@ -206,7 +206,7 @@ typedef enum _sai_acl_table_action_list_t
     /** Set User Defined Trap ID  */
     SAI_ACL_ATTR_ACTION_SET_USER_TRAP_ID,
 
-}sai_acl_table_action_list_t; 
+}sai_acl_action_list_t; 
 
 
 #define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
@@ -437,9 +437,13 @@ typedef enum _sai_acl_table_attr_t
     /** Range type defined in sai_acl_range_type_t */
     SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
-    /** List of actions in sai_acl_table_action_list_t [sai_u32_list_t] 
-     * If SAI_SWITCH_ATTR_ACL_TABLE_ACTION_LIST_MANDATORY is true then 
-     * application has to pass the action list. */
+    /** List of actions in sai_acl_table_action_list_t [sai_s32_list_t] 
+     * Based on the acl capability per stage obtained from the switch
+     * attribute SAI_SWITCH_ATTR_ACL_CAPABILITY application should 
+     * pass the action list if its mandatory per stage.
+     * If its not mandatory application can either pass the action list
+     * or ignore it.
+     */
     SAI_ACL_TABLE_ATTR_ACTION_LIST,
 
     /** End of Table Match Field */
@@ -835,6 +839,36 @@ typedef enum _sai_acl_range_attr_t
     SAI_ACL_RANGE_ATTR_LIMIT
 
 } sai_acl_range_attr_t;
+
+/**
+ *  @brief Structure for acl attributes supported at each stage.
+ *  action_list alone is added now. Qualifier list can also be added 
+ *  when needed.
+ */
+typedef struct _sai_acl_attr_per_stage_t
+{
+    /* Type of acl stage */
+    sai_acl_stage_t stage;
+
+    /* boolean indicating whether action list is mandatory for table creation */
+    bool            is_action_list_mandatory;
+
+    /* List of actions supported per stage from the sai_acl_table_action_list_t.
+     * Count can be obtained from the switch attribute SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT*/
+    sai_s32_list_t  action_list;
+}sai_acl_attr_per_stage_t;
+
+/**
+ * @brief Structure to get the acl capabilities 
+ */
+typedef struct _sai_acl_capabality_t
+{
+    /* Number of stages */
+    int no_of_stages;
+
+    /* Pointer to structure having the attributes per stage */
+    sai_acl_attr_per_stage_t *acl_attrs;
+}sai_acl_capabality_t;
 
 /**
  *   Routine Description:
