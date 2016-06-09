@@ -179,24 +179,6 @@ typedef enum _sai_port_media_type_t
     /** Media type not known */
     SAI_PORT_MEDIA_TYPE_UNKNONWN,
 
-    /** Media type QSFP fiber optic */
-    SAI_PORT_MEDIA_TYPE_QSFP_FIBER,
-
-    /** Media type QSFP copper optic */
-    SAI_PORT_MEDIA_TYPE_QSFP_COPPER,
-
-    /** Media type SFP fiber optic */
-    SAI_PORT_MEDIA_TYPE_SFP_FIBER,
-
-    /** Media type SFP copper optic */
-    SAI_PORT_MEDIA_TYPE_SFP_COPPER,
-
-    /** Media type QSFP28 fiber optic */
-    SAI_PORT_MEDIA_TYPE_QSFP28_FIBER,
-
-    /** Media type QSFP28 copper optic */
-    SAI_PORT_MEDIA_TYPE_QSFP28_COPPER,
-
     /** Media type fiber. Remote advertise medium information as fiber */
     SAI_PORT_MEDIA_TYPE_FIBER,
 
