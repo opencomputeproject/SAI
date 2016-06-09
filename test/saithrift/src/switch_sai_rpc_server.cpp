@@ -174,7 +174,10 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.u16 = attribute.value.u16;
                   break;
               case SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID:
-                  attr_list[i].value.u64 = attribute.value.u64;
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_PORT_ATTR_QOS_WRED_PROFILE_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL:
                   attr_list[i].value.u8 = attribute.value.u8;
@@ -2002,6 +2005,87 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       free(counters);
       return;
    }
+
+  sai_thrift_object_id_t sai_thrift_create_wred_profile(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      printf("sai_thrift_create_wred_profile\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_wred_api_t *wred_api;
+      sai_object_id_t wred_id = 0;
+      status = sai_api_query(SAI_API_WRED, (void **) &wred_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_wred_attributes(thrift_attr_list, attr_list);
+      uint32_t attr_count = thrift_attr_list.size();
+      wred_api->create_wred_profile(&wred_id, attr_count, attr_list);
+      return wred_id;
+  }
+
+  void sai_thrift_parse_wred_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_WRED_ATTR_GREEN_ENABLE:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
+              case SAI_WRED_ATTR_GREEN_MIN_THRESHOLD:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_WRED_ATTR_GREEN_MAX_THRESHOLD:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_WRED_ATTR_GREEN_DROP_PROBABILITY:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_WRED_ATTR_YELLOW_ENABLE:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
+              case SAI_WRED_ATTR_YELLOW_MIN_THRESHOLD:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_WRED_ATTR_YELLOW_MAX_THRESHOLD:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_WRED_ATTR_YELLOW_DROP_PROBABILITY:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_WRED_ATTR_RED_ENABLE:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
+              case SAI_WRED_ATTR_RED_MIN_THRESHOLD:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_WRED_ATTR_RED_MAX_THRESHOLD:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_WRED_ATTR_RED_DROP_PROBABILITY:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_WRED_ATTR_WEIGHT:
+                  attr_list[i].value.u8 = attribute.value.u8;
+                  break;
+              case SAI_WRED_ATTR_ECN_MARK_ENABLE:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
+          }
+      }
+  }
+
+  sai_thrift_status_t sai_thrift_remove_wred_profile(const sai_thrift_object_id_t wred_id) {
+      printf("sai_thrift_remove_wred_profile\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_wred_api_t *wred_api;
+      status = sai_api_query(SAI_API_WRED, (void **) &wred_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      status = wred_api->remove_wred_profile((sai_object_id_t) wred_id);
+      return status;
+  }
 
 };
 
