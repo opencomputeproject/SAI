@@ -1662,6 +1662,18 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return scheduler_id;
   }
 
+  sai_thrift_status_t sai_thrift_remove_scheduler_profile(const sai_thrift_object_id_t scheduler_id) {
+      printf("sai_thrift_remove_scheduler\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_scheduler_api_t *scheduler_api;
+      status = sai_api_query(SAI_API_SCHEDULER, (void **) &scheduler_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      status = scheduler_api->remove_scheduler_profile((sai_object_id_t) scheduler_id);
+      return status;
+  }
+  
   void sai_thrift_parse_scheduler_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
