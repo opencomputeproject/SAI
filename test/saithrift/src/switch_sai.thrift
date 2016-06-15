@@ -265,6 +265,7 @@ service switch_sai_rpc {
 
     // Scheduler API
     sai_thrift_object_id_t sai_thrift_create_scheduler_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_scheduler_profile(1: sai_thrift_object_id_t scheduler_id);
 
     // Queue API
     list<i64> sai_thrift_get_queue_stats(
