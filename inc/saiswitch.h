@@ -505,8 +505,6 @@ typedef enum _sai_switch_attr_t
     /** Port Breakout mode [sai_port_breakout_t] */
     SAI_SWITCH_ATTR_PORT_BREAKOUT,
 
-
-
     /* -- */
 
     /* Custom range base value */

@@ -840,35 +840,6 @@ typedef enum _sai_acl_range_attr_t
 
 } sai_acl_range_attr_t;
 
-/**
- *  @brief Structure for acl attributes supported at each stage.
- *  action_list alone is added now. Qualifier list can also be added 
- *  when needed.
- */
-typedef struct _sai_acl_attr_per_stage_t
-{
-    /* Type of acl stage */
-    sai_acl_stage_t stage;
-
-    /* boolean indicating whether action list is mandatory for table creation */
-    bool            is_action_list_mandatory;
-
-    /* List of actions supported per stage from the sai_acl_table_action_list_t.
-     * Count can be obtained from the switch attribute SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT*/
-    sai_s32_list_t  action_list;
-}sai_acl_attr_per_stage_t;
-
-/**
- * @brief Structure to get the acl capabilities 
- */
-typedef struct _sai_acl_capabality_t
-{
-    /* Number of stages */
-    int no_of_stages;
-
-    /* Pointer to structure having the attributes per stage */
-    sai_acl_attr_per_stage_t *acl_attrs;
-}sai_acl_capabality_t;
 
 /**
  *   Routine Description:

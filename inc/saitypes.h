@@ -506,6 +506,35 @@ typedef struct _sai_tunnel_map_list_t
 } sai_tunnel_map_list_t;
 
 /**
+ *  @brief Structure for acl attributes supported at each stage.
+ *  action_list alone is added now. Qualifier list can also be added 
+ *  when needed.
+ */
+typedef struct _sai_acl_attr_stage_info_t
+{
+    /* Type of acl stage */
+    uint32_t stage;
+
+    /* boolean indicating whether action list is mandatory for table creation */
+    bool  is_action_list_mandatory;
+
+    /* List of actions supported per stage from the sai_acl_table_action_list_t.
+     * Count can be obtained from the switch attribute SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT*/
+    sai_s32_list_t  action_list;
+}sai_acl_attr_stage_info_t;
+
+/**
+ * @brief Structure to get the acl capabilities 
+ */
+typedef struct _sai_acl_capabality_t
+{
+    /* Number of stages */
+    int count;
+
+    /* Pointer to structure having the attributes per stage */
+    sai_acl_attr_stage_info_t *acl_attrs_list;
+}sai_acl_capabality_t;
+/**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
  *
  */
@@ -541,6 +570,7 @@ typedef union {
     sai_port_breakout_t portbreakout;
     sai_qos_map_list_t qosmap;
     sai_tunnel_map_list_t tunnelmap;
+    sai_acl_capabality_t aclcapability; 
 
 } sai_attribute_value_t;
 
