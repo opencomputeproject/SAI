@@ -46,6 +46,10 @@ typedef enum _sai_dot1br_port_attr_t
 {
     /** READ-WRITE */
 
+    /** The Port to which the 802.1BR Port is mapped to [sai_object_id_t]  (MANDATORY_ON_CREATE|CREATE_ONLY).
+     * Applicable only to Physical ports. */
+    SAI_DOT1BR_PORT_ATTR_PORT,
+
     /** 802.1BR Port Type [sai_dot1br_port_type_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY).
      * Applicable only to Physical ports. */
