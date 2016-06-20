@@ -27,32 +27,12 @@ libsai_la_SOURCES = \
                        stub_sai_utils.c \
                        stub_sai_vlan.c \
                        stub_sai_rif.c \
-					   stub_sai_host_interface.c
+                       stub_sai_host_interface.c
 					   
 libsai_la_LIBADD =
 
 libsai_apiincludedir = $(includedir)/sai
-libsai_apiinclude_HEADERS = \
-	$(top_srcdir)/../inc/sainexthop.h \
-	$(top_srcdir)/../inc/sainexthopgroup.h \
-	$(top_srcdir)/../inc/sai.h \
-	$(top_srcdir)/../inc/sairouter.h \
-	$(top_srcdir)/../inc/saivlan.h \
-	$(top_srcdir)/../inc/saineighbor.h \
-	$(top_srcdir)/../inc/saifdb.h \
-	$(top_srcdir)/../inc/saiport.h \
-	$(top_srcdir)/../inc/saiqos.h \
-	$(top_srcdir)/../inc/saiacl.h \
-	$(top_srcdir)/../inc/saiswitch.h \
-	$(top_srcdir)/../inc/saistatus.h \
-	$(top_srcdir)/../inc/sairoute.h \
-	$(top_srcdir)/../inc/saitypes.h \
-	$(top_srcdir)/../inc/sairouterintf.h \
-	$(top_srcdir)/../inc/saihostintf.h \
-	$(top_srcdir)/../inc/sailag.h \
-    $(top_srcdir)/../inc/saimirror.h \
-    $(top_srcdir)/../inc/saisamplepacket.h \
-	$(top_srcdir)/../inc/saistp.h
+libsai_apiinclude_HEADERS = $(top_srcdir)/../inc/*.h
 
 
 libsai_api_version=$(shell grep LIBVERSION= $(top_srcdir)/sai_interface.ver | sed 's/LIBVERSION=//')

@@ -46,7 +46,10 @@ typedef enum _sai_router_interface_type_t
     SAI_ROUTER_INTERFACE_TYPE_PORT,
 
     /** VLAN Router Interface Type */
-    SAI_ROUTER_INTERFACE_TYPE_VLAN
+    SAI_ROUTER_INTERFACE_TYPE_VLAN,
+
+    /** Loopback Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_LOOPBACK
 
 } sai_router_interface_type_t;
 
@@ -77,7 +80,8 @@ typedef enum _sai_router_interface_attr_t
     /** READ-WRITE */
 
     /** MAC Address [sai_mac_t] (CREATE_AND_SET)
-        (default to SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create) */
+     *  (not valid when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_LOOPBACK)
+     *  (default to SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create) */
     SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS,
 
     /** Admin V4 state [bool] (CREATE_AND_SET) (default to TRUE) */

@@ -63,6 +63,18 @@ typedef enum _sai_ingress_priority_group_stat_counter_t
     /** get watermark pg occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES = 0x00000003,
 
+    /** get current pg shared occupancy in bytes [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES = 0x00000004,
+
+    /** get watermark pg shared occupancy in bytes [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_WATERMARK_BYTES = 0x00000005,
+
+    /** get current pg xoff room occupancy in bytes [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_CURR_OCCUPANCY_BYTES = 0x00000006,
+
+    /** get watermark pg xoff room occupancy in bytes [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
+
     /** -- */
     /** Custom range base value */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
@@ -281,6 +293,12 @@ typedef enum _sai_buffer_profile_attr_t
     /** reserved buffer size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,
 
+    /** shared threshold mode for the buffer profile [sai_buffer_threadhold_mode_t] (CREATE_AND_SET)
+     * If set, this overrides SAI_BUFFER_POOL_ATTR_TH_MODE.
+     * If not set, use SAI_BUFFER_POOL_ATTR_TH_MODE. 
+     * (default to value set in SAI_BUFFER_POOL_ATTR_TH_MODE.) */
+    SAI_BUFFER_PROFILE_ATTR_TH_MODE,
+
     /** dynamic threshold for the shared usage [sai_int8_t]
      * The threshold is set to the 2^n of available buffer of the pool.
      * Mandatory when SAI_BUFFER_POOL_TH_MODE = SAI_BUFFER_THRESHOLD_MODE_DYNAMIC
@@ -289,6 +307,7 @@ typedef enum _sai_buffer_profile_attr_t
 
     /** static threshold for the shared usage in bytes [sai_uint32_t]
      * Mandatory when SAI_BUFFER_POOL_TH_MODE = SAI_BUFFER_THRESHOLD_MODE_STATIC
+     * When set to zero there is no limit for the shared usage.
      * (CREATE_AND_SET) */
     SAI_BUFFER_PROFILE_ATTR_SHARED_STATIC_TH,
 

@@ -227,6 +227,9 @@ typedef enum _sai_acl_table_attr_t
     /** Out-Port */
     SAI_ACL_TABLE_ATTR_FIELD_OUT_PORT,
 
+    /** Source Port */
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_PORT,
+
     /** Outer Vlan-Id */
     SAI_ACL_TABLE_ATTR_FIELD_OUTER_VLAN_ID,
 
@@ -293,6 +296,9 @@ typedef enum _sai_acl_table_attr_t
     /** ICMP Code */
     SAI_ACL_TABLE_ATTR_FIELD_ICMP_CODE,
 
+    /** Vlan Tags */
+    SAI_ACL_TABLE_ATTR_FIELD_VLAN_TAGS,
+
     /** User Based Meta Data [bool] */
 
     /** FDB DST user meta data */
@@ -316,10 +322,13 @@ typedef enum _sai_acl_table_attr_t
     /** NPU Based Meta Data [bool] */
 
     /** DST MAC address match in FDB */
-    SAI_ACL_TABLE_ATTR_FIELD_FDB_DST_NPU_META_HIT,
+    SAI_ACL_TABLE_ATTR_FIELD_FDB_NPU_META_DST_HIT,
 
     /** DST IP address match in neighbor table */
-    SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_NPU_META_HIT,
+    SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
+
+    /** DST IP address match in Route table [bool] */
+    SAI_ACL_TABLE_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /** User Defined Field Groups [sai_object_id_t]
      * (CREATE_ONLY, default to SAI_NULL_OBJECT_ID) */
@@ -327,8 +336,11 @@ typedef enum _sai_acl_table_attr_t
 
     SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
+    /** Range type defined in sai_acl_range_type_t */
+    SAI_ACL_TABLE_ATTR_FIELD_RANGE,
+
     /** End of Table Match Field */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
     /* -- */
 
@@ -401,6 +413,10 @@ typedef enum _sai_acl_entry_attr_t
     /** Out-Port [sai_object_id_t] (mask is not needed) */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
+    /** Source port which could be a physical or lag port
+     *  [sai_object_id_t] (mask is not needed) */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_PORT,
+
     /** Outer Vlan-Id [sai_uint16_t : 12] */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID,
 
@@ -467,6 +483,9 @@ typedef enum _sai_acl_entry_attr_t
     /** ICMP Code [sai_uint8_t] */
     SAI_ACL_ENTRY_ATTR_FIELD_ICMP_CODE,
 
+    /** Number of VLAN Tags [sai_packet_vlan_t] */
+    SAI_ACL_ENTRY_ATTR_FIELD_VLAN_TAGS,
+
     /** User Based Meta Data [sai_uint32_t] */
 
     /** DST MAC address match user meta data in FDB
@@ -509,14 +528,21 @@ typedef enum _sai_acl_entry_attr_t
     /** DST IP address match in neighbor Table */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
 
+    /** DST IP address match in Route Table [bool] */
+    SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
+
     /** User Defined Field data for the UDF Groups in ACL Table.
      * [sai_u8_list_t] */
     SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN,
 
     SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
+    /** Range Type defined in sai_acl_range_type_t
+     *  List of SAI ACL Range Object Id [sai_object_list_t] */
+    SAI_ACL_ENTRY_ATTR_FIELD_RANGE,
+
     /** End of Rule Match Fields */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_RANGE,
 
     /** Actions [sai_acl_action_data_t]
      * - To enable an action, parameter is needed unless noted specifically.
@@ -528,6 +554,10 @@ typedef enum _sai_acl_entry_attr_t
     /** Redirect Packet to a destination which can be a port,
      * lag, nexthop, nexthopgroup. [sai_object_id_t] */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
+
+    /** Redirect Packet to a list of destination which can be
+     *  a port list. [sai_object_list_t] */
+    SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
 
     /** Drop Packet [sai_packet_action_t] */
     SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
@@ -620,8 +650,13 @@ typedef enum _sai_acl_entry_attr_t
      * given port list will be dropped. */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
 
+    /** Set User Defined Trap ID [sai_uint32_t]
+     *  Copy packet action mandatory to be present (Copy/Trap/Log)
+     *  Value Range SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID,
+
     /** End of Rule Actions */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ACL_META_DATA
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID
 
 } sai_acl_entry_attr_t;
 
@@ -657,6 +692,46 @@ typedef enum _sai_acl_counter_attr_t
     SAI_ACL_COUNTER_ATTR_BYTES
 
 } sai_acl_counter_attr_t;
+
+/**
+ *  @brief Attribute data for ACL Range Type
+ */
+typedef enum _sai_acl_range_type_t
+{
+    /** L4 Source Port Range */
+    SAI_ACL_RANGE_L4_SRC_PORT_RANGE,
+
+    /** L4 Destination Port Range */
+    SAI_ACL_RANGE_L4_DST_PORT_RANGE,
+
+    /** Outer Vlan Range */
+    SAI_ACL_RANGE_OUTER_VLAN,
+
+    /** Inner Vlan Range */
+    SAI_ACL_RANGE_INNER_VLAN,
+
+    /** Packet Length Range in bytes */
+    SAI_ACL_RANGE_PACKET_LENGTH
+
+} sai_acl_range_type_t;
+
+/**
+ *  @brief Attribute Id for ACL Range Object
+ */
+typedef enum _sai_acl_range_attr_t
+{
+    /** Range Type [sai_acl_range_type_t]
+     * (MANDATORY_ON_CREATE, mandatory to pass only one of the range types
+     *  defined in sai_acl_range_type_t enum during ACL Range Creation)
+     * (CREATE_ONLY, Range Type cannot be changed after the range is created) */
+    SAI_ACL_RANGE_ATTR_TYPE,
+
+    /** Start and End of ACL Range [sai_u32_range_t]
+     *  (MANDATORY_ON_CREATE, Range will include the start and end values)
+     *  (CREATE_ONLY, Range Limit cannot be changed after the range is created) */
+    SAI_ACL_RANGE_ATTR_LIMIT
+
+} sai_acl_range_attr_t;
 
 /**
  *   Routine Description:
@@ -869,6 +944,76 @@ typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
     );
 
 /**
+ *   Routine Description:
+ *     @brief Create an ACL Range
+ *
+ *  Arguments:
+ *  @param[out] acl_range_id - the acl range id
+ *  @param[in] attr_count - number of attributes
+ *  @param[in] attr_list - array of attributes
+ *
+ *  Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_create_acl_range_fn)(
+    _Out_ sai_object_id_t* acl_range_id,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list
+    );
+
+/**
+ *  Routine Description:
+ *    @brief Remove an ACL Range
+ *
+ *  Arguments:
+ *    @param[in] acl_range_id - the acl range id
+ *
+ *  Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_remove_acl_range_fn)(
+    _In_ sai_object_id_t acl_range_id
+    );
+
+/**
+ * Routine Description:
+ *   @brief Set ACL range attribute
+ *
+ * Arguments:
+ *    @param[in] acl_range_id - the acl range id
+ *    @param[in] attr - attribute
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_set_acl_range_attribute_fn)(
+    _In_ sai_object_id_t acl_range_id,
+    _In_ const sai_attribute_t *attr
+    );
+
+/**
+ * Routine Description:
+ *   @brief Get ACL range attribute
+ *
+ * Arguments:
+ *    @param[in] acl_range_id - acl range id
+ *    @param[in] attr_count - number of attributes
+ *    @param[out] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ */
+ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
+    _In_ sai_object_id_t acl_range_id,
+    _In_ uint32_t attr_count,
+    _Out_ sai_attribute_t *attr_list
+    );
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_acl_api_t
@@ -885,6 +1030,10 @@ typedef struct _sai_acl_api_t
     sai_delete_acl_counter_fn           delete_acl_counter;
     sai_set_acl_counter_attribute_fn    set_acl_counter_attribute;
     sai_get_acl_counter_attribute_fn    get_acl_counter_attribute;
+    sai_create_acl_range_fn             create_acl_range;
+    sai_remove_acl_range_fn             remove_acl_range;
+    sai_set_acl_range_attribute_fn      set_acl_range_attribute;
+    sai_get_acl_range_attribute_fn      get_acl_range_attribute;
 
 } sai_acl_api_t;
 

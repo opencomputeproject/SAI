@@ -190,6 +190,18 @@ typedef enum _sai_port_media_type_t
 
     /** Media type SFP copper optic */
     SAI_PORT_MEDIA_TYPE_SFP_COPPER,
+
+    /** Media type QSFP28 fiber optic */
+    SAI_PORT_MEDIA_TYPE_QSFP28_FIBER,
+
+    /** Media type QSFP28 copper optic */
+    SAI_PORT_MEDIA_TYPE_QSFP28_COPPER,
+
+    /** Media type fiber. Remote advertise medium information as fiber */
+    SAI_PORT_MEDIA_TYPE_FIBER,
+
+    /** Media type copper. Remote advertise medium information as copper */
+    SAI_PORT_MEDIA_TYPE_COPPER,
 } sai_port_media_type_t;
 
 /**
@@ -227,8 +239,65 @@ typedef enum _sai_port_attr_t
     /** List of Scheduler groups for the port[sai_object_list_t] */
     SAI_PORT_ATTR_QOS_SCHEDULER_GROUP_LIST,
 
-    /** Query list of supported port speed in Mbps [sai_u32_list_t] */
+    /** Query list of supported port speed(full-duplex) in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_SUPPORTED_SPEED,
+
+    /** Query list of Supported HALF-Duplex speed in Mbps [sai_u32_list_t] */
+    SAI_PORT_ATTR_SUPPORTED_HALF_DUPLEX_SPEED,
+
+    /** Query auto-negotiation support [bool] */
+    SAI_PORT_ATTR_SUPPORTED_AUTO_NEG_MODE,
+
+    /** Query port supported flow control mode [sai_port_flow_control_mode_t] */
+    SAI_PORT_ATTR_SUPPORTED_FLOW_CONTROL,
+
+    /** Query port supported asymmetric pause mode [bool] */
+    SAI_PORT_ATTR_SUPPORTED_ASYMMETRIC_PAUSE_MODE,
+
+    /** Query port supported MEDIA type [sai_port_media_type_t] */
+    SAI_PORT_ATTR_SUPPORTED_MEDIA_TYPE,
+
+    /** Query list of supported remote port speed (Full-Duplex)
+      * in Mbps [sai_u32_list_t] */
+    SAI_PORT_ATTR_REMOTE_SUPPORTED_SPEED,
+
+    /** Query list of Remote Port’s Supported
+      * HALF-Duplex speed in Mbps [sai_u32_list_t] */
+    SAI_PORT_ATTR_REMOTE_SUPPORTED_HALF_DUPLEX_SPEED,
+
+    /** Query Remote Port’s auto-negotiation support [bool] */
+    SAI_PORT_ATTR_REMOTE_SUPPORTED_AUTO_NEG_MODE,
+
+    /** Query Remote port supported flow control mode
+      * [sai_port_flow_control_mode_t] */
+    SAI_PORT_ATTR_REMOTE_SUPPORTED_FLOW_CONTROL,
+
+    /** Query Remote port supported asymmetric pause mode [bool] */
+    SAI_PORT_ATTR_REMOTE_SUPPORTED_ASYMMETRIC_PAUSE_MODE,
+
+    /** Query Remote port MEDIA type [sai_port_media_type_t] */
+    SAI_PORT_ATTR_REMOTE_SUPPORTED_MEDIA_TYPE,
+
+    /** Query list of Advertised remote port speed (Full-Duplex)
+      * in Mbps [sai_u32_list_t] */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_SPEED,
+
+    /** Query list of Remote Port’s
+      * Advertised HALF-Duplex speed in Mbps [sai_u32_list_t] */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_HALF_DUPLEX_SPEED,
+
+    /** Query Remote Port’s auto-negotiation Advertisement [bool] */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_AUTO_NEG_MODE,
+
+    /** Query Remote port Advertised flow control mode
+      * [sai_port_flow_control_mode_t] */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_FLOW_CONTROL,
+
+    /** Query Remote port Advertised asymmetric pause mode [bool] */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_ASYMMETRIC_PAUSE_MODE,
+
+    /** Query Remote port Advertised MEDIA type [sai_port_media_type_t] */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_MEDIA_TYPE,
 
     /** Number of ingress priority groups [sai_uint32_t] */
     SAI_PORT_ATTR_NUMBER_OF_PRIORITY_GROUPS,
@@ -252,6 +321,27 @@ typedef enum _sai_port_attr_t
     /** Media Type [sai_port_media_type_t],
      * (default to SAI_PORT_MEDIA_TYPE_NOT_PRESENT) */
     SAI_PORT_ATTR_MEDIA_TYPE,
+
+    /** Query/Configure list of Advertised port speed (Full-Duplex)
+      * in Mbps [sai_u32_list_t] */
+    SAI_PORT_ATTR_ADVERTISED_SPEED,
+
+    /** Query/Configure list of Advertised
+     * HALF-Duplex speed in Mbps [sai_u32_list_t] */
+    SAI_PORT_ATTR_ADVERTISED_HALF_DUPLEX_SPEED,
+
+    /** Query/Configure Port’s Advertised auto-negotiation configuration [bool] */
+    SAI_PORT_ATTR_ADVERTISED_AUTO_NEG_MODE,
+
+    /** Query/Configure Port’s Advertised flow control mode
+      * [sai_port_flow_control_mode_t] */
+    SAI_PORT_ATTR_ADVERTISED_FLOW_CONTROL,
+
+    /** Query port's Advertised asymmetric pause mode [bool] */
+    SAI_PORT_ATTR_ADVERTISED_ASYMMETRIC_PAUSE_MODE,
+
+    /** Query/Configure Port’s Advertised media type [sai_port_media_type_t] */
+    SAI_PORT_ATTR_ADVERTISED_MEDIA_TYPE,
 
     /** Port VLAN ID [sai_vlan_id_t]
      * Untagged ingress frames are tagged with Port VLAN ID (PVID)
@@ -529,6 +619,9 @@ typedef enum _sai_port_stat_counter_t
     /** get/set WRED dropped bytes  count [uint64_t] */
     SAI_PORT_STAT_DISCARD_DROPPED_BYTES,
 
+    /** get/set packets marked by ECN count [uint64_t] */
+    SAI_PORT_STAT_ECN_MARKED_PACKETS,
+
     /** packet size based packets count */
     SAI_PORT_STAT_ETHER_IN_PKTS_64_OCTETS,
     SAI_PORT_STAT_ETHER_IN_PKTS_65_TO_127_OCTETS,
@@ -550,6 +643,42 @@ typedef enum _sai_port_stat_counter_t
     SAI_PORT_STAT_ETHER_OUT_PKTS_2048_TO_4095_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_4096_TO_9216_OCTETS,
     SAI_PORT_STAT_ETHER_OUT_PKTS_9217_TO_16383_OCTETS,
+
+    /** get current port occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_CURR_OCCUPANCY_BYTES,
+
+    /** get watermark port occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_WATERMARK_BYTES,
+
+    /** get current port shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_SHARED_CURR_OCCUPANCY_BYTES,
+
+    /** get watermark port shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_SHARED_WATERMARK_BYTES,
+
+    /** get the number of pause frames received on the port [uint64_t] */
+    SAI_PORT_STAT_PAUSE_RX_PKTS,
+
+    /** get the number of pause frames transmitted on the port [uint64_t] */
+    SAI_PORT_STAT_PAUSE_TX_PKTS,
+
+    /** PFC Packet Counters for RX and TX per PFC priority [uint64_t] */
+    SAI_PORT_STAT_PFC_0_RX_PKTS,
+    SAI_PORT_STAT_PFC_0_TX_PKTS,
+    SAI_PORT_STAT_PFC_1_RX_PKTS,
+    SAI_PORT_STAT_PFC_1_TX_PKTS,
+    SAI_PORT_STAT_PFC_2_RX_PKTS,
+    SAI_PORT_STAT_PFC_2_TX_PKTS,
+    SAI_PORT_STAT_PFC_3_RX_PKTS,
+    SAI_PORT_STAT_PFC_3_TX_PKTS,
+    SAI_PORT_STAT_PFC_4_RX_PKTS,
+    SAI_PORT_STAT_PFC_4_TX_PKTS,
+    SAI_PORT_STAT_PFC_5_RX_PKTS,
+    SAI_PORT_STAT_PFC_5_TX_PKTS,
+    SAI_PORT_STAT_PFC_6_RX_PKTS,
+    SAI_PORT_STAT_PFC_6_TX_PKTS,
+    SAI_PORT_STAT_PFC_7_RX_PKTS,
+    SAI_PORT_STAT_PFC_7_TX_PKTS,
 
 } sai_port_stat_counter_t;
 

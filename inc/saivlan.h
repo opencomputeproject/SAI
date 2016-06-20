@@ -53,17 +53,6 @@ typedef enum _sai_vlan_tagging_mode_t
 } sai_vlan_tagging_mode_t;
 
 /**
- *   @brief Port/vlan membership structure
- */
-typedef struct _sai_vlan_port_t
-{
-    sai_object_id_t port_id;
-
-    sai_vlan_tagging_mode_t tagging_mode;
-
-} sai_vlan_port_t;
-
-/**
  *  @brief Attribute Id in sai_set_vlan_attribute() and
  *  sai_get_vlan_attribute() calls
  */
@@ -71,8 +60,8 @@ typedef enum _sai_vlan_attr_t
 {
     /** READ-ONLY */
 
-    /** List of ports in a VLAN [sai_vlan_port_list_t]*/
-    SAI_VLAN_ATTR_PORT_LIST,
+    /** List of vlan members in a VLAN [sai_object_list_t]*/
+    SAI_VLAN_ATTR_MEMBER_LIST,
 
     /** READ-WRITE */
 
@@ -102,6 +91,30 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
 } sai_vlan_attr_t;
+
+
+/*
+    \brief List of VLAN Member Attributes
+*/
+typedef enum _sai_vlan_member_attr_t {
+
+    /** READ_WRITE */
+
+    /** VLAN ID [sai_vlan_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_VLAN_MEMBER_ATTR_VLAN_ID,
+
+    /** logical port ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_VLAN_MEMBER_ATTR_PORT_ID,
+
+    /** VLAN tagging mode [sai_vlan_tagging_mode_t] (CREATE_AND_SET)
+     * (default to SAI_VLAN_PORT_UNTAGGED) */
+    SAI_VLAN_MEMBER_ATTR_TAGGING_MODE,
+
+    /** custom range base value */
+    SAI_VLAN_MEMBER_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+
+} sai_vlan_member_attr_t;
+
 
 
 /**
@@ -192,57 +205,54 @@ typedef sai_status_t (*sai_get_vlan_attribute_fn)(
     _Inout_ sai_attribute_t *attr_list
     );
 
-/**
- * Routine Description:
- *    @brief Remove VLAN configuration (remove all VLANs).
- *
- * Arguments:
- *    None
- *
- * Return Values:
- *    @return SAI_STATUS_SUCCESS on success
- *            Failure status code on error
- */
-typedef sai_status_t (*sai_remove_all_vlans_fn)(
-    void
+/*
+    \brief Create VLAN Member
+    \param[out] vlan_member_id VLAN member ID
+    \param[in] attr_count number of attributes
+    \param[in] attr_list array of attributes
+    \return Success: SAI_STATUS_SUCCESS
+            Failure: failure status code on error
+*/
+typedef sai_status_t (*sai_create_vlan_member_fn)(
+    _Out_ sai_object_id_t* vlan_member_id,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list
     );
 
-/**
- * Routine Description:
- *    @brief Add Port to VLAN
- *
- * Arguments:
- *    @param[in] vlan_id - VLAN id
- *    @param[in] port_count - number of ports
- *    @param[in] port_list - pointer to membership structures
- *
- * Return Values:
- *    @return SAI_STATUS_SUCCESS on success
- *            Failure status code on error
- */
-typedef sai_status_t (*sai_add_ports_to_vlan_fn)(
-    _In_ sai_vlan_id_t vlan_id,
-    _In_ uint32_t port_count,
-    _In_ const sai_vlan_port_t *port_list
+/*
+    \brief Remove VLAN Member
+    \param[in] vlan_member_id VLAN member ID
+    \return Success: SAI_STATUS_SUCCESS
+            Failure: failure status code on error
+*/
+typedef sai_status_t (*sai_remove_vlan_member_fn)(
+    _In_ sai_object_id_t vlan_member_id
     );
 
-/**
- * Routine Description:
- *    @brief Remove Port from VLAN
- *
- * Arguments:
- *    @param[in] vlan_id - VLAN id
- *    @param[in] port_count - number of ports
- *    @param[in] port_list - pointer to membership structures
- *
- * Return Values:
- *    @return SAI_STATUS_SUCCESS on success
- *            Failure status code on error
- */
-typedef sai_status_t (*sai_remove_ports_from_vlan_fn)(
-    _In_ sai_vlan_id_t vlan_id,
-    _In_ uint32_t port_count,
-    _In_ const sai_vlan_port_t* port_list
+/*
+    \brief Set VLAN Member Attribute
+    \param[in] vlan_member_id VLAN member ID
+    \param[in] attr attribute structure containing ID and value
+    \return Success: SAI_STATUS_SUCCESS
+            Failure: failure status code on error
+*/
+typedef sai_status_t (*sai_set_vlan_member_attribute_fn)(
+    _In_ sai_object_id_t vlan_member_id,
+    _In_ const sai_attribute_t *attr
+    );
+
+/*
+    \brief Get VLAN Member Attribute
+    \param[in] vlan_member_id VLAN member ID
+    \param[in] attr_count number of attributes
+    \param[in,out] attr_list list of attribute structures containing ID and value
+    \return Success: SAI_STATUS_SUCCESS
+            Failure: failure status code on error
+*/
+typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
+    _In_ sai_object_id_t vlan_member_id,
+    _In_ const uint32_t attr_count,
+    _Inout_ sai_attribute_t *attr_list
     );
 
 /**
@@ -280,7 +290,7 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_clear_vlan_stats_fn)(
-    _In_ sai_object_id_t vlan_id,
+    _In_ sai_vlan_id_t vlan_id,
     _In_ const sai_vlan_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters
     );
@@ -290,15 +300,17 @@ typedef sai_status_t (*sai_clear_vlan_stats_fn)(
  */
 typedef struct _sai_vlan_api_t
 {
-    sai_create_vlan_fn              create_vlan;
-    sai_remove_vlan_fn              remove_vlan;
-    sai_set_vlan_attribute_fn       set_vlan_attribute;
-    sai_get_vlan_attribute_fn       get_vlan_attribute;
-    sai_add_ports_to_vlan_fn        add_ports_to_vlan;
-    sai_remove_ports_from_vlan_fn   remove_ports_from_vlan;
-    sai_remove_all_vlans_fn         remove_all_vlans;
-    sai_get_vlan_stats_fn           get_vlan_stats;
-    sai_clear_vlan_stats_fn         clear_vlan_stats;
+    sai_create_vlan_fn                  create_vlan;
+    sai_remove_vlan_fn                  remove_vlan;
+    sai_set_vlan_attribute_fn           set_vlan_attribute;
+    sai_get_vlan_attribute_fn           get_vlan_attribute;
+    sai_create_vlan_member_fn           create_vlan_member;
+    sai_remove_vlan_member_fn           remove_vlan_member;
+    sai_set_vlan_member_attribute_fn    set_vlan_member_attribute;
+    sai_get_vlan_member_attribute_fn    get_vlan_member_attribute;
+    sai_get_vlan_stats_fn               get_vlan_stats;
+    sai_clear_vlan_stats_fn             clear_vlan_stats;
+
 } sai_vlan_api_t;
 
 /**

@@ -177,7 +177,7 @@ sai_status_t check_attribs_metadata(_In_ uint32_t                            att
             ((SAI_ATTR_VAL_TYPE_S32LIST == functionality_attr[index].type) &&
              (NULL == attr_list[ii].value.s32list.list)) ||
             ((SAI_ATTR_VAL_TYPE_VLANLIST == functionality_attr[index].type) &&
-             (NULL == attr_list[ii].value.vlanlist.vlan_list))) {
+             (NULL == attr_list[ii].value.vlanlist.list))) {
             STUB_LOG_ERR("Null list attribute %s at index %d\n",
                          functionality_attr[index].attrib_name,
                          ii);
@@ -194,7 +194,7 @@ sai_status_t check_attribs_metadata(_In_ uint32_t                            att
                 (!attr_present[ii])) {
                 STUB_LOG_ERR("Missing mandatory attribute %s on create\n", functionality_attr[ii].attrib_name);
                 free(attr_present);
-                return SAI_MANDATORY_ATTRIBUTE_MISSING;
+                return SAI_STATUS_MANDATORY_ATTRIBUTE_MISSING;
             }
         }
     }
@@ -613,7 +613,7 @@ sai_status_t sai_value_to_str(_In_ sai_attribute_value_t      value,
         count = (SAI_ATTR_VAL_TYPE_OBJLIST == type) ? value.objlist.count :
                 (SAI_ATTR_VAL_TYPE_U32LIST == type) ? value.u32list.count :
                 (SAI_ATTR_VAL_TYPE_S32LIST == type) ? value.s32list.count :
-                (SAI_ATTR_VAL_TYPE_VLANLIST == type) ? value.vlanlist.vlan_count :
+                (SAI_ATTR_VAL_TYPE_VLANLIST == type) ? value.vlanlist.count :
                 value.portbreakout.port_list.count;
         pos += snprintf(value_str + pos, max_length - pos, "%u : [", count);
         if (pos > max_length) {
@@ -628,7 +628,7 @@ sai_status_t sai_value_to_str(_In_ sai_attribute_value_t      value,
             } else if (SAI_ATTR_VAL_TYPE_S32LIST == type) {
                 pos += snprintf(value_str + pos, max_length - pos, " %d", value.s32list.list[ii]);
             } else if (SAI_ATTR_VAL_TYPE_VLANLIST == type) {
-                pos += snprintf(value_str + pos, max_length - pos, " %u", value.vlanlist.vlan_list[ii]);
+                pos += snprintf(value_str + pos, max_length - pos, " %u", value.vlanlist.list[ii]);
             } else {
                 pos += snprintf(value_str + pos, max_length - pos, " %" PRIx64, value.portbreakout.port_list.list[ii]);
             }
