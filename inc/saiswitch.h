@@ -515,29 +515,34 @@ typedef enum _sai_switch_attr_t
  * @note This value needs to be incremented whenever a new switch attribute key
  * is added.
  */
-#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         15
+#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         16
 
 /**
  * List of switch attributes keys that can be set using key=value
  */
-#define SAI_KEY_FDB_TABLE_SIZE                "SAI_FDB_TABLE_SIZE"
-#define SAI_KEY_L3_ROUTE_TABLE_SIZE           "SAI_L3_ROUTE_TABLE_SIZE"
-#define SAI_KEY_L3_NEIGHBOR_TABLE_SIZE        "SAI_L3_NEIGHBOR_TABLE_SIZE"
-#define SAI_KEY_NUM_LAG_MEMBERS               "SAI_NUM_LAG_MEMBERS"
-#define SAI_KEY_NUM_LAGS                      "SAI_NUM_LAGS"
-#define SAI_KEY_NUM_ECMP_MEMBERS              "SAI_NUM_ECMP_MEMBERS"
-#define SAI_KEY_NUM_ECMP_GROUPS               "SAI_NUM_ECMP_GROUPS"
-#define SAI_KEY_NUM_UNICAST_QUEUES            "SAI_NUM_UNICAST_QUEUES"
-#define SAI_KEY_NUM_MULTICAST_QUEUES          "SAI_NUM_MULTICAST_QUEUES"
-#define SAI_KEY_NUM_QUEUES                    "SAI_NUM_QUEUES"
-#define SAI_KEY_NUM_CPU_QUEUES                "SAI_NUM_CPU_QUEUES"
-#define SAI_KEY_INIT_CONFIG_FILE              "SAI_INIT_CONFIG_FILE"
+#define SAI_KEY_FDB_TABLE_SIZE                    "SAI_FDB_TABLE_SIZE"
+#define SAI_KEY_L3_ROUTE_TABLE_SIZE               "SAI_L3_ROUTE_TABLE_SIZE"
+#define SAI_KEY_L3_NEIGHBOR_TABLE_SIZE            "SAI_L3_NEIGHBOR_TABLE_SIZE"
+#define SAI_KEY_NUM_LAG_MEMBERS                   "SAI_NUM_LAG_MEMBERS"
+#define SAI_KEY_NUM_LAGS                          "SAI_NUM_LAGS"
+#define SAI_KEY_NUM_ECMP_MEMBERS                  "SAI_NUM_ECMP_MEMBERS"
+#define SAI_KEY_NUM_ECMP_GROUPS                   "SAI_NUM_ECMP_GROUPS"
+#define SAI_KEY_NUM_UNICAST_QUEUES                "SAI_NUM_UNICAST_QUEUES"
+#define SAI_KEY_NUM_MULTICAST_QUEUES              "SAI_NUM_MULTICAST_QUEUES"
+#define SAI_KEY_NUM_QUEUES                        "SAI_NUM_QUEUES"
+#define SAI_KEY_NUM_CPU_QUEUES                    "SAI_NUM_CPU_QUEUES"
+#define SAI_KEY_INIT_CONFIG_FILE                  "SAI_INIT_CONFIG_FILE"
 /** 0: means cold boot, and 1: means warm boot */
-#define SAI_KEY_WARM_BOOT                     "SAI_WARM_BOOT"
+#define SAI_KEY_WARM_BOOT                         "SAI_WARM_BOOT"
 /** The file to recover SAI/NPU state from */
-#define SAI_KEY_WARM_BOOT_READ_FILE           "SAI_WARM_BOOT_READ_FILE"
+#define SAI_KEY_WARM_BOOT_READ_FILE               "SAI_WARM_BOOT_READ_FILE"
 /** The file to write SAI/NPU state to */
-#define SAI_KEY_WARM_BOOT_WRITE_FILE          "SAI_WARM_BOOT_WRITE_FILE"
+#define SAI_KEY_WARM_BOOT_WRITE_FILE              "SAI_WARM_BOOT_WRITE_FILE"
+/** Vendor specific Configuration file for Hardware Port Profile ID parameters.
+ * HW port profile ID can be used to set vendor specific port attributes based on
+ * the tranceiver type plugged in to the port
+ */
+#define SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE    "SAI_HW_PORT_PROFILE_ID_CONFIG_FILE"
 
 
 /**

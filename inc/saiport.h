@@ -179,24 +179,6 @@ typedef enum _sai_port_media_type_t
     /** Media type not known */
     SAI_PORT_MEDIA_TYPE_UNKNONWN,
 
-    /** Media type QSFP fiber optic */
-    SAI_PORT_MEDIA_TYPE_QSFP_FIBER,
-
-    /** Media type QSFP copper optic */
-    SAI_PORT_MEDIA_TYPE_QSFP_COPPER,
-
-    /** Media type SFP fiber optic */
-    SAI_PORT_MEDIA_TYPE_SFP_FIBER,
-
-    /** Media type SFP copper optic */
-    SAI_PORT_MEDIA_TYPE_SFP_COPPER,
-
-    /** Media type QSFP28 fiber optic */
-    SAI_PORT_MEDIA_TYPE_QSFP28_FIBER,
-
-    /** Media type QSFP28 copper optic */
-    SAI_PORT_MEDIA_TYPE_QSFP28_COPPER,
-
     /** Media type fiber. Remote advertise medium information as fiber */
     SAI_PORT_MEDIA_TYPE_FIBER,
 
@@ -520,6 +502,15 @@ typedef enum _sai_port_attr_t
      * Traffic ingressing on this port and egressing out of the ports in the
      * given port list will be dropped. */
     SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST,
+
+    /** Port Hardware Configuration Profile ID [sai_uint64_t]
+     * Port can require different hardware configuration based on the attached
+     * media type, cable length etc. A Profile ID maps to a Port Hardware
+     * configuration settings that needs to be applied on the Port.
+     * This attribute need not be implemented and can be ignored if the port
+     * doesn't require any specific hardware settings based on media type/cable.
+     */
+    SAI_PORT_ATTR_HW_PROFILE_ID,
 
     /** -- */
 
