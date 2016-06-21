@@ -155,7 +155,9 @@ typedef enum _sai_tunnel_ttl_mode_t
     /** The pipe model:
      *  where the outer header is independent of that in the inner header so
      *  it hides the TTL field of the inner header from any interaction
-     *  with nodes along the tunnel. */
+     *  with nodes along the tunnel.
+     *  TTL field is user-defined for outer header on encapsulation and copied
+     *  from inner header on decapsulation. */
     SAI_TUNNEL_TTL_PIPE_MODEL
 
 } sai_tunnel_ttl_mode_t;
@@ -171,7 +173,9 @@ typedef enum _sai_tunnel_dscp_mode_t
     /** The pipe model:
      *  where the outer header is independent of that in the inner header so
      *  it hides the DSCP field of the inner header from any interaction
-     *  with nodes along the tunnel. */
+     *  with nodes along the tunnel.
+     *  DSCP field is user-defined for outer header on encapsulation and copied
+     *  from inner header on decapsulation. */
     SAI_TUNNEL_DSCP_PIPE_MODEL
 
 } sai_tunnel_dscp_mode_t;
