@@ -29,6 +29,36 @@
  *  \{
  */
 
+/**
+* @brief Attribute data for SAI_WRED_ATTR_ECN_MARK_ENABLE
+*/
+typedef enum _sai_ecn_mark_mode_t
+{
+    /** disable ECN marking for all colors */
+    SAI_ECN_MARK_MODE_NONE,
+
+    /** enable ECN marking for green color. Yellow and red are disabled */
+    SAI_ECN_MARK_MODE_GREEN,
+
+    /** enable ECN marking for yellow color. Green and red are disabled */
+    SAI_ECN_MARK_MODE_YELLOW,
+
+    /** enable ECN marking for red color. Green and yellow are disabled */
+    SAI_ECN_MARK_MODE_RED,
+
+    /** enable ECN marking for green and yellow colors. Red is disabled */
+    SAI_ECN_MARK_MODE_GREEN_YELLOW,
+
+    /** enable ECN marking for green and red colors. Yellow is disabled */
+    SAI_ECN_MARK_MODE_GREEN_RED,
+
+    /** enable ECN marking for yellow and red colors. Green is disabled */
+    SAI_ECN_MARK_MODE_YELLOW_RED,
+
+    /** enable ECN marking for all colors */
+    SAI_ECN_MARK_MODE_ALL,
+
+} sai_ecn_mark_mode_t;
 
 /**
  * @brief Enum defining WRED profile attributes
@@ -92,8 +122,8 @@ typedef enum _sai_wred_attr_t
     /** 0 ~ 15 [sai_uint8_t], Default 0*/
     SAI_WRED_ATTR_WEIGHT = 0x0000000c,
 
-    /** [bool] enable/disable ECN marking, Default is FALSE */
-    SAI_WRED_ATTR_ECN_MARK_ENABLE = 0x0000000d,
+    /** [sai_ecn_mark_mode_t] enable/disable ECN marking, Default is SAI_ECN_MARK_MODE_NONE */
+    SAI_WRED_ATTR_ECN_MARK_MODE = 0x0000000d,
 
     /** -- */
     /** Custom range base value */
