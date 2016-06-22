@@ -799,7 +799,7 @@ udf_match1_attrs[0].value.u16 = 0x0800;
 udf_match1_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_L3_TYPE;
 udf_match1_attrs[1].value.u8 = 0x2f;
 udf_match1_attrs[2].id = (sai_attr_id_t)SAI_UDF_MATCH_ATTR_GRE_TYPE;
-udf_match1_attrs[2].value.u16 = 0x0800;
+udf_match1_attrs[2].value.u16 = 0x88be;
 sai_udf_match_api->create_udf_match(&udf_match1_id, 3, udf_match1_attrs);
 
 // Create two UDF groups
