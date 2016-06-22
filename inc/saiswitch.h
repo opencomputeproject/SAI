@@ -350,9 +350,6 @@ typedef enum _sai_switch_attr_t
      * Will be 0 for SAI_RESTART_TYPE_NONE */
     SAI_SWITCH_ATTR_NV_STORAGE_SIZE,
    
-    /** Maximum number of acl stages supported by the NPU. [sai_uint32_t] */
-    SAI_SWITCH_ATTR_MAX_ACL_STAGE,
-
     /** Count of the total number of actions supported by NPU. [sai_uint32_t] */
     SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
 
