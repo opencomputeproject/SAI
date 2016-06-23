@@ -100,7 +100,7 @@ typedef enum _sai_vlan_member_attr_t {
 
     /** READ_WRITE */
 
-    /** VLAN ID [sai_vlan_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /** VLAN ID [sai_vlan_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_VLAN_MEMBER_ATTR_VLAN_ID,
 
     /** logical port ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */

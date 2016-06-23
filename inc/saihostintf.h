@@ -559,7 +559,7 @@ typedef enum _sai_hostif_packet_attr_t
     SAI_HOSTIF_PACKET_ATTR_TX_TYPE,
 
     /** Egress port or LAG [sai_object_id_t] (for send-only).
-     * (MANDATORY_ON_SEND when SAI_HOSTIF_PACKET_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS) */
+     * (MANDATORY_ON_SEND when SAI_HOSTIF_PACKET_ATTR_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS) */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
 
 } sai_hostif_packet_attr_t;
