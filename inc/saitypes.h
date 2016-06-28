@@ -514,7 +514,7 @@ typedef struct _sai_acl_capability_t
 {
     /* Type of acl stage. Input to get the action list
      * Failure to pass the stage as input will be treated as error */
-    uint32_t stage;
+    sai_int32_t  stage;
 
     /* Output from get function.
      * boolean indicating whether action list is mandatory for table creation */
