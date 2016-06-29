@@ -538,8 +538,10 @@ typedef enum _sai_switch_attr_t
 #define SAI_KEY_NUM_QUEUES                        "SAI_NUM_QUEUES"
 #define SAI_KEY_NUM_CPU_QUEUES                    "SAI_NUM_CPU_QUEUES"
 #define SAI_KEY_INIT_CONFIG_FILE                  "SAI_INIT_CONFIG_FILE"
-/** 0: means cold boot, and 1: means warm boot */
-#define SAI_KEY_WARM_BOOT                         "SAI_WARM_BOOT"
+/** 0: cold boot. Initialize NPU and external phys.
+ *  1: warm boot. Do not re-initialize NPU or external phys, reconstruct SAI/SDK state from stored state.
+ *  2: fast boot. Only initilize NPU */
+#define SAI_KEY_BOOT_TYPE                         "SAI_BOOT_TYPE"
 /** The file to recover SAI/NPU state from */
 #define SAI_KEY_WARM_BOOT_READ_FILE               "SAI_WARM_BOOT_READ_FILE"
 /** The file to write SAI/NPU state to */
