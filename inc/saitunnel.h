@@ -155,7 +155,9 @@ typedef enum _sai_tunnel_ttl_mode_t
     /** The pipe model:
      *  where the outer header is independent of that in the inner header so
      *  it hides the TTL field of the inner header from any interaction
-     *  with nodes along the tunnel. */
+     *  with nodes along the tunnel.
+     *  TTL field is user-defined for outer header on encapsulation. TTL
+     *  field of inner header remains the same on decapsulation. */
     SAI_TUNNEL_TTL_PIPE_MODEL
 
 } sai_tunnel_ttl_mode_t;
@@ -171,7 +173,9 @@ typedef enum _sai_tunnel_dscp_mode_t
     /** The pipe model:
      *  where the outer header is independent of that in the inner header so
      *  it hides the DSCP field of the inner header from any interaction
-     *  with nodes along the tunnel. */
+     *  with nodes along the tunnel.
+     *  DSCP field is user-defined for outer header on encapsulation. DSCP
+     *  field of inner header remains the same on decapsulation. */
     SAI_TUNNEL_DSCP_PIPE_MODEL
 
 } sai_tunnel_dscp_mode_t;
@@ -267,19 +271,11 @@ typedef enum _sai_tunnel_attr_t
      *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
-    /** tunnel TTL value [sai_uint8_t]
-     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_TTL_MODE = SAI_TUNNEL_TTL_PIPE_MODEL) */
-    SAI_TUNNEL_ATTR_DECAP_TTL_VAL,
-
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t]
      *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE)
      *  (CREATE_ONLY)
      *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
-
-    /** tunnel DSCP value [sai_uint8_t : 6]
-     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_DSCP_MODE = SAI_TUNNEL_DSCP_PIPE_MODEL) */
-    SAI_TUNNEL_ATTR_DECAP_DSCP_VAL,
 
     /** Custom range base value */
     SAI_TUNNEL_ATTR_CUSTOM_RANGE_BASE = 0x10000000
