@@ -70,12 +70,18 @@ typedef enum _sai_wred_attr_t
 
     /**
      * bytes [ sai_uint32_t],  MANDATORY for SAI_WRED_ATTR_GREEN_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_GREEN,
+     * SAI_ECN_MARK_MODE_GREEN_YELLOW, SAI_ECN_MARK_MODE_GREEN_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_GREEN_MIN_THRESHOLD = 0x00000001,
 
     /**
      * bytes  [sai_uint32_t], MANDATORY for SAI_WRED_ATTR_GREEN_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_GREEN,
+     * SAI_ECN_MARK_MODE_GREEN_YELLOW, SAI_ECN_MARK_MODE_GREEN_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_GREEN_MAX_THRESHOLD = 0x00000002,
@@ -88,12 +94,18 @@ typedef enum _sai_wred_attr_t
 
     /**
      * bytes [ sai_uint32_t], MANDATORY for SAI_WRED_ATTR_YELLOW_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_YELLOW,
+     * SAI_ECN_MARK_MODE_GREEN_YELLOW, SAI_ECN_MARK_MODE_YELLOW_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_YELLOW_MIN_THRESHOLD = 0x00000005,
 
     /**
      * bytes [sai_uint32_t], MANDATORY for SAI_WRED_ATTR_YELLOW_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_YELLOW,
+     * SAI_ECN_MARK_MODE_GREEN_YELLOW, SAI_ECN_MARK_MODE_YELLOW_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_YELLOW_MAX_THRESHOLD = 0x00000006,
@@ -106,12 +118,18 @@ typedef enum _sai_wred_attr_t
 
     /**
      * bytes [ sai_uint32_t] , MANDATORY for SAI_WRED_ATTR_RED_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_RED,
+     * SAI_ECN_MARK_MODE_GREEN_RED, SAI_ECN_MARK_MODE_YELLOW_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_RED_MIN_THRESHOLD = 0x00000009,
 
     /**
      * bytes [ sai_uint32_t] , MANDATORY for SAI_WRED_ATTR_RED_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_RED,
+     * SAI_ECN_MARK_MODE_GREEN_RED, SAI_ECN_MARK_MODE_YELLOW_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_RED_MAX_THRESHOLD = 0x0000000a,
