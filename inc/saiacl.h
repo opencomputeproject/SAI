@@ -111,6 +111,104 @@ typedef enum _sai_acl_ip_frag_t
 
 } sai_acl_ip_frag_t;
 
+typedef enum _sai_acl_action_list_t
+{
+    SAI_ACL_ATTR_ACTION_REDIRECT, 
+
+    /** Redirect Packet to a list of destination which can be
+     *  a port list.*/
+    SAI_ACL_ATTR_ACTION_REDIRECT_LIST,
+
+    /** Drop Packet */
+    SAI_ACL_ATTR_ACTION_PACKET_ACTION,
+
+    /** Flood Packet on Vlan domain */
+    SAI_ACL_ATTR_ACTION_FLOOD,
+
+    /** Attach/detach counter id to the entry */
+    SAI_ACL_ATTR_ACTION_COUNTER,
+
+    /** Ingress Mirror */
+    SAI_ACL_ATTR_ACTION_MIRROR_INGRESS,
+
+    /** Egress Mirror */
+    SAI_ACL_ATTR_ACTION_MIRROR_EGRESS,
+
+    /** Assosiate with policer (policer id) */
+    SAI_ACL_ATTR_ACTION_SET_POLICER,
+
+    /** Decrement TTL */ 
+    SAI_ACL_ATTR_ACTION_DECREMENT_TTL,
+
+    /** Set Class-of-Service */ 
+    SAI_ACL_ATTR_ACTION_SET_TC,
+
+    /** Set packet color */
+    SAI_ACL_ATTR_ACTION_SET_COLOR,
+
+    /** Set Packet Inner Vlan-Id */
+    SAI_ACL_ATTR_ACTION_SET_INNER_VLAN_ID,
+
+    /** Set Packet Inner Vlan-Priority */
+    SAI_ACL_ATTR_ACTION_SET_INNER_VLAN_PRI,
+
+    /** Set Packet Outer Vlan-Id */ 
+    SAI_ACL_ATTR_ACTION_SET_OUTER_VLAN_ID,
+
+    /** Set Packet Outer Vlan-Priority */ 
+    SAI_ACL_ATTR_ACTION_SET_OUTER_VLAN_PRI,
+
+    /** Set Packet Src MAC Address */
+    SAI_ACL_ATTR_ACTION_SET_SRC_MAC,
+
+    /** Set Packet Dst MAC Address */
+    SAI_ACL_ATTR_ACTION_SET_DST_MAC,
+
+    /** Set Packet Src IPv4 Address */
+    SAI_ACL_ATTR_ACTION_SET_SRC_IP,
+
+    /** Set Packet Src IPv4 Address */
+    SAI_ACL_ATTR_ACTION_SET_DST_IP,
+
+    /** Set Packet Src IPv6 Address */
+    SAI_ACL_ATTR_ACTION_SET_SRC_IPv6,
+
+    /** Set Packet Src IPv6 Address */
+    SAI_ACL_ATTR_ACTION_SET_DST_IPv6,
+
+    /** Set Packet DSCP */
+    SAI_ACL_ATTR_ACTION_SET_DSCP,
+
+    /** Set Packet ECN */
+    SAI_ACL_ATTR_ACTION_SET_ECN,
+
+    /** Set Packet L4 Src Port */
+    SAI_ACL_ATTR_ACTION_SET_L4_SRC_PORT,
+
+    /** Set Packet L4 Src Port */
+    SAI_ACL_ATTR_ACTION_SET_L4_DST_PORT,
+
+    /** Set ingress packet sampling */ 
+    SAI_ACL_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
+
+    /** Set egress packet sampling */
+    SAI_ACL_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
+
+    /** Set CPU Queue for CPU bound traffic */ 
+    SAI_ACL_ATTR_ACTION_SET_CPU_QUEUE,
+
+    /** Set Meta Data to carry forward to next ACL Stage */
+    SAI_ACL_ATTR_ACTION_SET_ACL_META_DATA,
+
+    /** Egress block port list  */
+    SAI_ACL_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
+
+    /** Set User Defined Trap ID  */
+    SAI_ACL_ATTR_ACTION_SET_USER_TRAP_ID,
+
+}sai_acl_action_list_t; 
+
+
 #define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
 
 /**
@@ -339,8 +437,17 @@ typedef enum _sai_acl_table_attr_t
     /** Range type defined in sai_acl_range_type_t */
     SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
+    /** List of actions in sai_acl_table_action_list_t [sai_s32_list_t] 
+     * Based on the acl capability per stage obtained from the switch
+     * attribute SAI_SWITCH_ATTR_ACL_CAPABILITY application should 
+     * pass the action list if its mandatory per stage.
+     * If its not mandatory application can either pass the action list
+     * or ignore it.
+     */
+    SAI_ACL_TABLE_ATTR_ACTION_LIST,
+
     /** End of Table Match Field */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_RANGE,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_ACTION_LIST,
 
     /* -- */
 
@@ -732,6 +839,7 @@ typedef enum _sai_acl_range_attr_t
     SAI_ACL_RANGE_ATTR_LIMIT
 
 } sai_acl_range_attr_t;
+
 
 /**
  *   Routine Description:

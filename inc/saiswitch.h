@@ -349,6 +349,12 @@ typedef enum _sai_switch_attr_t
     /** Nonvolatile storage required by both SAI and NPU in KB [sai_uint64_t]
      * Will be 0 for SAI_RESTART_TYPE_NONE */
     SAI_SWITCH_ATTR_NV_STORAGE_SIZE,
+   
+    /** Count of the total number of actions supported by NPU. [sai_uint32_t] */
+    SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
+
+    /** Acl capabilities supported by the NPU. [sai_acl_capability_t] */
+    SAI_SWITCH_ATTR_ACL_CAPABILITY,
 
     /** READ-WRITE */
 
