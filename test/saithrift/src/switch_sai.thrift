@@ -121,6 +121,11 @@ struct sai_thrift_acl_action_data_t {
     2: sai_thrift_acl_parameter_t parameter;
 }
 
+struct sai_thrift_u32_list_t {
+    1: i32 count;
+    2: list<i32> u32list;
+}
+
 union sai_thrift_attribute_value_t {
     1:  bool booldata;
     2:  string chardata;
@@ -141,6 +146,7 @@ union sai_thrift_attribute_value_t {
     17: sai_thrift_vlan_list_t vlanlist;
     18: sai_thrift_acl_field_data_t aclfield;
     19: sai_thrift_acl_action_data_t aclaction;
+    20: sai_thrift_u32_list_t u32list;
 }
 
 struct sai_thrift_attribute_t {
