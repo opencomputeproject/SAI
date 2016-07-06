@@ -1809,6 +1809,26 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
       attr_list.push_back(thrift_pg_list_attribute);
       free(pg_list_object_attribute.value.objlist.list);
+
+      sai_attribute_t port_hw_lane;
+      sai_thrift_attribute_t thrift_port_hw_lane;
+      sai_u32_list_t *lane_list_num;
+  
+      port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
+      port_hw_lane.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
+      port_hw_lane.value.u32list.count = 4;
+      port_api->get_port_attribute(port_id, 1, &port_hw_lane);
+      
+      thrift_attr_list.attr_count = 4;
+      thrift_port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
+      thrift_port_hw_lane.value.u32list.count = port_hw_lane.value.u32list.count;
+      std::vector<int32_t>& lane_list = thrift_port_hw_lane.value.u32list.u32list;
+      lane_list_num = &port_hw_lane.value.u32list;
+      for (int index = 0; index < port_hw_lane.value.u32list.count ; index++) {
+          lane_list.push_back((uint32_t) lane_list_num->list[index]);
+      }
+      attr_list.push_back(thrift_port_hw_lane);
+      free(port_hw_lane.value.u32list.list); 
   }
 
   void sai_thrift_get_queue_stats(
