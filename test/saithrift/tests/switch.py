@@ -282,14 +282,11 @@ def sai_thrift_create_stp_entry(client, vlan_list):
     stp_id = client.sai_thrift_create_stp_entry(stp_attr_list)
     return stp_id
 
-def sai_thrift_create_hostif_trap_group(client, queue_id, priority):
-    attribute1_value = sai_thrift_attribute_value_t(u32=priority)
-    attribute1 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_PRIO,
-                                        value=attribute1_value)
-    attribute2_value = sai_thrift_attribute_value_t(u32=queue_id)
-    attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
-                                        value=attribute2_value)
-    attr_list = [attribute1, attribute2]
+def sai_thrift_create_hostif_trap_group(client, queue_id):
+    attribute_value = sai_thrift_attribute_value_t(u32=queue_id)
+    attribute = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
+                                        value=attribute_value)
+    attr_list = [attribute]
     trap_group_id = client.sai_thrift_create_hostif_trap_group(thrift_attr_list=attr_list)
     return trap_group_id
 
@@ -640,6 +637,25 @@ def sai_thrift_read_port_counters(client,port):
             queue_counters_results.append(thrift_results[0])
             queue1+=1
     return (counters_results, queue_counters_results)
+
+def sai_thrift_create_vlan_member(client, vlan_id, port_id, tagging_mode):
+    vlan_member_attr_list = []
+    attribute_value = sai_thrift_attribute_value_t(s32=vlan_id)
+    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_VLAN_ID,
+                                           value=attribute_value)
+    vlan_member_attr_list.append(attribute)
+
+    attribute_value = sai_thrift_attribute_value_t(oid=port_id)
+    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_PORT_ID,
+                                           value=attribute_value)
+    vlan_member_attr_list.append(attribute)
+
+    attribute_value = sai_thrift_attribute_value_t(s32=tagging_mode)
+    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_TAGGING_MODE,
+                                           value=attribute_value)
+    vlan_member_attr_list.append(attribute)
+    vlan_member_id = client.sai_thrift_create_vlan_member(vlan_member_attr_list)
+    return vlan_member_id
 
 def sai_thrift_set_port_shaper(client, port_id, max_rate):
     sched_prof_id=sai_thrift_create_scheduler_profile(client, max_rate)

@@ -1069,8 +1069,7 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         mac2 = ''
 
         self.client.sai_thrift_create_vlan(vlan_id)
-        vlan_port1 = sai_thrift_vlan_port_t(port_id=port1, tagging_mode=SAI_VLAN_PORT_UNTAGGED)
-        self.client.sai_thrift_add_ports_to_vlan(vlan_id, [vlan_port1])
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_id, port1, SAI_VLAN_PORT_UNTAGGED)
 
         attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -1135,7 +1134,7 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
-            self.client.sai_thrift_remove_ports_from_vlan(vlan_id, [vlan_port1])
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_delete_vlan(vlan_id)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
