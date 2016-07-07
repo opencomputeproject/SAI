@@ -118,13 +118,16 @@ typedef enum _sai_acl_ip_frag_t
  */
 typedef enum _sai_acl_table_attr_t
 {
+
+    SAI_ACL_TABLE_ATTR_START,
+    
     /** READ-ONLY */
 
     /** READ-WRITE */
 
     /** ACL stage [sai_acl_stage_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_ACL_TABLE_ATTR_STAGE,
+    SAI_ACL_TABLE_ATTR_STAGE = SAI_ACL_TABLE_ATTR_START,
 
     /** Priority [sai_uint32_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY)
@@ -189,6 +192,8 @@ typedef enum _sai_acl_table_attr_t
      * hits across the tables will be performed.
      */
     SAI_ACL_TABLE_ATTR_GROUP_ID,
+
+    SAI_ACL_TABLE_ATTR_END,
 
     /** Match fields [bool]
      * (MANDATORY_ON_CREATE, mandatory to pass at least one field during ACL Table Creation)
@@ -354,11 +359,12 @@ typedef enum _sai_acl_table_attr_t
  */
 typedef enum _sai_acl_entry_attr_t
 {
+    SAI_ACL_ENTRY_ATTR_START,
     /** READ-ONLY */
 
     /** SAI acl table object id [sai_object_id_t]
      * (MANDATORY_ON_CREATE) */
-    SAI_ACL_ENTRY_ATTR_TABLE_ID,
+    SAI_ACL_ENTRY_ATTR_TABLE_ID = SAI_ACL_ENTRY_ATTR_START,
 
     /** READ-WRITE */
 
@@ -379,6 +385,8 @@ typedef enum _sai_acl_entry_attr_t
      * - When bitfield is used the comment, only those least significent bits
      *   are valid for matching.
      */
+    
+    SAI_ACL_ENTRY_ATTR_END,
 
     /** Start of Rule Match Fields */
     SAI_ACL_ENTRY_ATTR_FIELD_START = 0x00001000,

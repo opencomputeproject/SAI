@@ -42,11 +42,14 @@
  */
 typedef enum _sai_route_attr_t
 {
+    
+    SAI_ROUTE_ATTR_START,         
+    
     /** READ-WRITE */
 
     /** Packet action [sai_packet_action_t]
        (default to SAI_PACKET_ACTION_FORWARD) */
-    SAI_ROUTE_ATTR_PACKET_ACTION,
+    SAI_ROUTE_ATTR_PACKET_ACTION = SAI_ROUTE_ATTR_START,
 
     /** Packet priority for trap/log actions [uint8_t]
        (default to 0) */
@@ -68,6 +71,8 @@ typedef enum _sai_route_attr_t
      * Value Range SAI_SWITCH_ATTR_ROUTE_USER_META_DATA_RANGE */
     SAI_ROUTE_ATTR_META_DATA,
 
+    SAI_ROUTE_ATTR_END,
+    
     /** Custom range base value */
     SAI_ROUTE_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 

@@ -44,8 +44,10 @@
 
 typedef enum _sai_hostif_trap_group_attr_t
 {
+    SAI_HOSTIF_TRAP_GROUP_ATTR_START,    
+
     /** Admin Mode [bool] (default to TRUE) */
-    SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE,
+    SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE = SAI_HOSTIF_TRAP_GROUP_ATTR_START,
 
     /** cpu egress queue [uint32_t] (CREATE_AND_SET)
      * (default to 0) */
@@ -54,6 +56,8 @@ typedef enum _sai_hostif_trap_group_attr_t
     /** sai policer object id [sai_object_id_t] (CREATE_AND_SET) 
      * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER,
+
+    SAI_HOSTIF_TRAP_GROUP_ATTR_END, 
 
     SAI_HOSTIF_TRAP_GROUP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_hostif_trap_group_attr_t;
@@ -276,8 +280,11 @@ typedef enum _sai_hostif_trap_channel_t
 
 typedef enum _sai_hostif_trap_attr_t
 {
+    
+    SAI_HOSTIF_TRAP_ATTR_START,
+    
     /** trap action [sai_packet_action_t] */
-    SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
+    SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION = SAI_HOSTIF_TRAP_ATTR_START,
 
     /** Below attributes are only valid when
      * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or 
@@ -305,6 +312,8 @@ typedef enum _sai_hostif_trap_attr_t
     /** trap-group ID for the trap [sai_object_id_t]
      * (default to SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP) */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
+
+    SAI_HOSTIF_TRAP_ATTR_END,
 
     SAI_HOSTIF_TRAP_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
@@ -448,12 +457,14 @@ typedef enum _sai_hostif_type_t
  */
 typedef enum _sai_hostif_attr_t
 {
+    
+    SAI_HOSTIF_ATTR_START, 
     /** READ-ONLY */
 
     /** READ-WRITE */
 
     /** Host interface type [sai_hostif_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_HOSTIF_ATTR_TYPE,
+    SAI_HOSTIF_ATTR_TYPE = SAI_HOSTIF_ATTR_START,
 
     /** Assosiated port or router interface [sai_object_id_t]
     * Valid only when SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
@@ -466,6 +477,8 @@ typedef enum _sai_hostif_attr_t
     * Valid only when SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
     *   (MANDATORY_ON_CREATE when SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV) */
     SAI_HOSTIF_ATTR_NAME,
+
+    SAI_HOSTIF_ATTR_END,    
 
     /* Custom range base value */
     SAI_HOSTIF_ATTR_CUSTOM_RANGE_BASE = 0x10000000
@@ -557,8 +570,10 @@ typedef enum _sai_hostif_tx_type
 
 typedef enum _sai_hostif_packet_attr_t
 {
+    SAI_HOSTIF_PACKET_ATTR_START,    
+
     /** Trap ID [sai_hostif_trap_id_t] (for receive-only) */
-    SAI_HOSTIF_PACKET_ATTR_TRAP_ID,
+    SAI_HOSTIF_PACKET_ATTR_TRAP_ID = SAI_HOSTIF_PACKET_ATTR_START,
 
     /** User-Defined Trap ID [sai_hostif_user_defined_trap_id_t] (for receive-only) */
     SAI_HOSTIF_PACKET_ATTR_USER_TRAP_ID,
@@ -578,6 +593,8 @@ typedef enum _sai_hostif_packet_attr_t
      * Egress LAG member port id to be filled for the LAG destination case.
      * Applicable for use-case like SAMPLEPACKET traps */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
+
+    SAI_HOSTIF_PACKET_ATTR_END,
 
 } sai_hostif_packet_attr_t;
 

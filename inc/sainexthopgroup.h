@@ -55,9 +55,11 @@ typedef enum _sai_next_hop_group_type_t
  */
 typedef enum _sai_next_hop_group_attr_t
 {
+    SAI_NEXT_HOP_GROUP_ATTR_START,
+
     /** READ-ONLY */
     /** Number of next hops in the group [uint32_t] */
-    SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_COUNT,
+    SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_COUNT = SAI_NEXT_HOP_GROUP_ATTR_START,
 
     /** READ-WRITE */
 
@@ -70,6 +72,8 @@ typedef enum _sai_next_hop_group_attr_t
 
     /* -- */
 
+    SAI_NEXT_HOP_GROUP_ATTR_END,
+    
     /* Custom range base value */
     SAI_NEXT_HOP_GROUP_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 

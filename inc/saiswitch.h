@@ -183,10 +183,13 @@ typedef enum _sai_switch_restart_type_t
 */
 typedef enum _sai_switch_attr_t
 {
+    
+    SAI_SWITCH_ATTR_START,    
+
     /** READ-ONLY */
 
     /** The number of ports on the switch [sai_uint32_t] */
-    SAI_SWITCH_ATTR_PORT_NUMBER,
+    SAI_SWITCH_ATTR_PORT_NUMBER = SAI_SWITCH_ATTR_START,
 
     /** Get the port list [sai_object_list_t] */
     SAI_SWITCH_ATTR_PORT_LIST,
@@ -497,6 +500,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PORT_BREAKOUT,
 
     /* -- */
+    SAI_SWITCH_ATTR_END,
 
     /* Custom range base value */
     SAI_SWITCH_ATTR_CUSTOM_RANGE_BASE  = 0x10000000

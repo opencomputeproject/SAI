@@ -42,8 +42,10 @@
  */
 typedef enum _sai_ingress_priority_group_attr_t
 {
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_START, 
     /** buffer profile pointer [sai_object_id_t] */
-    SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE,
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_END
 } sai_ingress_priority_group_attr_t;
 
 /**
@@ -173,12 +175,13 @@ typedef enum _sai_buffer_threshold_mode_t
  */
 typedef enum _sai_buffer_pool_attr_t
 {
+    SAI_BUFFER_POOL_ATTR_START,
     /** READ-ONLY */
 
     /** shared buffer size in bytes [sai_uint32_t].
      * This is derived from substracting all reversed buffers of queue/port
      * from the total pool size. */
-    SAI_BUFFER_POOL_ATTR_SHARED_SIZE,
+    SAI_BUFFER_POOL_ATTR_SHARED_SIZE = SAI_BUFFER_POOL_ATTR_START,
 
     /** READ-WRITE */
 
@@ -191,6 +194,8 @@ typedef enum _sai_buffer_pool_attr_t
     /** shared threshold mode for the buffer pool [sai_buffer_threadhold_mode_t] (CREATE_ONLY)
      * (default to SAI_BUFFER_POOL_DYNAMIC_TH) */
     SAI_BUFFER_POOL_ATTR_TH_MODE,
+    
+    SAI_BUFFER_POOL_ATTR_END,
 
 } sai_buffer_pool_attr_t;
 
@@ -283,12 +288,14 @@ typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
  */
 typedef enum _sai_buffer_profile_attr_t
 {
+    
+    SAI_BUFFER_PROFILE_ATTR_START,
     /** READ-WRITE */
 
     /** pointer to buffer pool object id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
     *  Pool id = SAI_NULL_OBJECT_ID can be used when profile is not associated with specific
     *  pool, for example for global port buffer. Not applicable to priority group or queue buffer profile */
-    SAI_BUFFER_PROFILE_ATTR_POOL_ID,
+    SAI_BUFFER_PROFILE_ATTR_POOL_ID = SAI_BUFFER_PROFILE_ATTR_START,
 
     /** reserved buffer size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,
@@ -325,6 +332,8 @@ typedef enum _sai_buffer_profile_attr_t
      * is larger than the XOFF threahold.
      * default to 0. */
     SAI_BUFFER_PROFILE_ATTR_XON_TH,
+
+    SAI_BUFFER_PROFILE_ATTR_END,
 
 } sai_buffer_profile_attr_t;
 

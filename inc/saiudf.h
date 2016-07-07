@@ -58,12 +58,15 @@ typedef enum _sai_udf_base_t
  */
 typedef enum _sai_udf_attr_t
 {
+    
+    SAI_UDF_ATTR_START,
+    
     /** READ-ONLY */
 
     /** READ-WRITE */
 
     /** UDF match ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_UDF_ATTR_MATCH_ID,
+    SAI_UDF_ATTR_MATCH_ID = SAI_UDF_ATTR_START,
 
     /** UDF group id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_UDF_ATTR_GROUP_ID,
@@ -78,7 +81,9 @@ typedef enum _sai_udf_attr_t
      * The count in the list must be equal to the UDF byte length.
      * The mask only applies to extracted UDF when it is used for hash,
      * it does not apply to the extracted UDF when it is used for ACL.  */
-    SAI_UDF_ATTR_HASH_MASK
+    SAI_UDF_ATTR_HASH_MASK,
+
+    SAI_UDF_ATTR_END,
 
 } sai_udf_attr_t;
 
@@ -87,12 +92,14 @@ typedef enum _sai_udf_attr_t
  */
 typedef enum _sai_udf_match_attr_t
 {
+
+    SAI_UDF_MATCH_ATTR_START,
     /** READ-ONLY */
 
     /** READ-WRITE */
 
     /** UDF L2 match rule [sai_acl_field_data_t(uint16_t)] (CREATE_ONLY) (default to None) */
-    SAI_UDF_MATCH_ATTR_L2_TYPE,
+    SAI_UDF_MATCH_ATTR_L2_TYPE = SAI_UDF_MATCH_ATTR_START,
 
     /** UDF L3 match rule [sai_acl_field_data_t(uint8_t)] (CREATE_ONLY) (default to None) */
     SAI_UDF_MATCH_ATTR_L3_TYPE,
@@ -101,7 +108,9 @@ typedef enum _sai_udf_match_attr_t
     SAI_UDF_MATCH_ATTR_GRE_TYPE,
 
     /** UDF match priority [uint8_t] (CREATE_ONLY) (default to 0) */
-    SAI_UDF_MATCH_ATTR_PRIORITY
+    SAI_UDF_MATCH_ATTR_PRIORITY,
+
+    SAI_UDF_MATCH_ATTR_END,
 
 } sai_udf_match_attr_t;
 
@@ -110,11 +119,16 @@ typedef enum _sai_udf_match_attr_t
  */
 typedef enum _sai_udf_group_type_t
 {
+    
+    SAI_UDF_GROUP_START,
+    
     /** Generic UDF group */
-    SAI_UDF_GROUP_GENERIC,
+    SAI_UDF_GROUP_GENERICi = SAI_UDF_GROUP_START,
 
     /** UDF group for hash */
     SAI_UDF_GROUP_HASH,
+
+    SAI_UDF_GROUP_END
 
 } sai_udf_group_type_t;
 
@@ -123,6 +137,9 @@ typedef enum _sai_udf_group_type_t
  */
 typedef enum _sai_udf_group_attr_t
 {
+    
+    SAI_UDF_GROUP_ATTR_START,
+    
     /** READ-ONLY */
 
     /** UDF list [sai_object_list_t] */
@@ -135,6 +152,8 @@ typedef enum _sai_udf_group_attr_t
 
     /** UDF byte length [uint16_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_UDF_GROUP_ATTR_LENGTH,
+
+    SAI_UDF_GROUP_ATTR_END,
 
 } sai_udf_group_attr_t;
 

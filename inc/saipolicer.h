@@ -83,10 +83,12 @@ typedef enum _sai_policer_color_source_t
 typedef enum _sai_policer_attr_t
 {
 
+    SAI_POLICER_ATTR_START = 0x00000000,
+
     /** Policer Meter Type [sai_meter_type_t ]
      *  MANDATORY_ON_CREATE,  CREATE_ONLY
      */
-    SAI_POLICER_ATTR_METER_TYPE = 0x00000000,
+    SAI_POLICER_ATTR_METER_TYPE = SAI_POLICER_ATTR_START,
 
     /** Policer mode [sai_policer_mode_t],
      * MANDATORY_ON_CREATE,  CREATE_ONLY */
@@ -133,6 +135,8 @@ typedef enum _sai_policer_attr_t
     /** Enable/disable counter [sai_s32_list_t of sai_policer_stat_counter_t].
      * Default[disabled], Modify List Needs full new set*/
     SAI_POLICER_ATTR_ENABLE_COUNTER_LIST = 0x0000000a,
+
+    SAI_POLICER_ATTR_END,
 
     /* -- */
     /* Custom range base value */

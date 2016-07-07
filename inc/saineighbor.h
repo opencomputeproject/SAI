@@ -43,10 +43,12 @@
  */
 typedef enum _sai_neighbor_attr_t
 {
+
+    SAI_NEIGHBOR_ATTR_START, 
     /** READ-WRITE */
 
     /** Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
-    SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS,
+    SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS = SAI_NEIGHBOR_ATTR_START,
 
     /** L3 forwarding action for this neighbor [sai_packet_action_t]
     *    (default to SAI_PACKET_ACTION_FORWARD) */
@@ -62,6 +64,8 @@ typedef enum _sai_neighbor_attr_t
      * [sai_uint32_t] (CREATE_AND_SET)
      * Value Range SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE */
     SAI_NEIGHBOR_ATTR_META_DATA,
+
+    SAI_NEIGHBOR_ATTR_END,
 
     /* Custom range base value */
     SAI_NEIGHBOR_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
