@@ -43,7 +43,9 @@ this_dir = os.path.dirname(os.path.abspath(__file__))
 switch_inited=0
 port_list = []
 table_attr_list = []
-
+router_mac='00:77:66:55:44:00'
+rewrite_mac1='00:77:66:55:45:01'
+rewrite_mac2='00:77:66:55:46:01'
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
 
@@ -71,7 +73,7 @@ def switch_init(client):
     client.sai_thrift_set_switch_attribute(attr)
 
     # wait till the port are up
-    time.sleep(5)
+    time.sleep(10)
     switch_inited = 1
 
 
@@ -100,7 +102,7 @@ def sai_thrift_flush_fdb_by_vlan(client, vlan_id):
     fdb_attribute1_value = sai_thrift_attribute_value_t(u16=vlan_id)
     fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_VLAN_ID,
                                             value=fdb_attribute1_value)
-    fdb_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_FDB_FLUSH_ENTRY_STATIC)
+    fdb_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_FDB_FLUSH_ENTRY_DYNAMIC)
     fdb_attribute2 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
                                             value=fdb_attribute2_value)
     fdb_attr_list = [fdb_attribute1, fdb_attribute2]
@@ -638,3 +640,9 @@ def sai_thrift_read_port_counters(client,port):
             queue_counters_results.append(thrift_results[0])
             queue1+=1
     return (counters_results, queue_counters_results)
+
+def sai_thrift_set_port_shaper(client, port_id, max_rate):
+    sched_prof_id=sai_thrift_create_scheduler_profile(client, max_rate)
+    attr_value = sai_thrift_attribute_value_t(oid=sched_prof_id)
+    attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID, value=attr_value)
+    client.sai_thrift_set_port_attribute(port_id,attr)
