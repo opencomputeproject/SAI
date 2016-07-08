@@ -41,11 +41,12 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
-        ip_mask1 = '255.255.255.255'
+        ip_addr1_subnet = '10.10.10.0'
+        ip_mask1 = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
 
         # send the test packet(s)
         pkt = simple_tcp_packet(eth_dst=router_mac,
@@ -65,7 +66,7 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 1, str(pkt))
             verify_packets(self, exp_pkt, [0])
         finally:
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
 
@@ -96,11 +97,12 @@ class L3IPv4LpmTest(sai_base_test.ThriftInterfaceDataPlane):
         ip_mask1 = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
         nhop_ip1 = '20.20.20.1'
-        ip_mask2 = '255.255.255.255'
+        nhop_ip1_subnet = '20.20.20.0'
+        ip_mask2 = '255.255.255.0'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask2, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
 
         # send the test packet(s)
         pkt = simple_tcp_packet(eth_dst=router_mac,
@@ -121,7 +123,7 @@ class L3IPv4LpmTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_packets(self, exp_pkt, [0])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask2, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
 
@@ -149,11 +151,12 @@ class L3IPv6HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
         ip_addr1 = '1234:5678:9abc:def0:4422:1133:5577:99aa'
-        ip_mask1 = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'
+        ip_addr1_subnet = '1234:5678:9abc:def0:4422:1133:5577:0'
+        ip_mask1 = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:0'
         dmac1 = '00:11:22:33:44:55'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
 
         # send the test packet(s)
         pkt = simple_tcpv6_packet( eth_dst=router_mac,
@@ -171,7 +174,7 @@ class L3IPv6HostTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 1, str(pkt))
             verify_packets(self, exp_pkt, [0])
         finally:
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
 
@@ -201,13 +204,14 @@ class L3IPv6LpmTest(sai_base_test.ThriftInterfaceDataPlane):
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
         ip_addr1 = '1234:5678:9abc:def0:0000:0000:0000:0000'
         ip_mask1 = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000'
-        ip_mask2 = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'
+        ip_mask2 = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:0000'
         dmac1 = '00:11:22:33:44:55'
         nhop_ip1 = '3000::1'
+        nhop_ip1_subnet = '3000::0'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask2, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
 
         # send the test packet(s)
         pkt = simple_tcpv6_packet( eth_dst=router_mac,
@@ -226,7 +230,7 @@ class L3IPv6LpmTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_packets(self, exp_pkt, [0])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask2, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
 
@@ -257,7 +261,8 @@ class L3IPv4EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
-        ip_mask1 = '255.255.255.255'
+        ip_addr1_subnet = '10.10.10.0'
+        ip_mask1 = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:56'
 
@@ -266,8 +271,8 @@ class L3IPv4EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
         nhop2 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id2)
         nhop_group1 = sai_thrift_create_next_hop_group(self.client, [nhop1, nhop2])
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id2)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id2)
 
         # send the test packet(s)
         try:
@@ -324,8 +329,8 @@ class L3IPv4EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 2, str(pkt))
             verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [0, 1])
         finally:
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id2)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id2)
             self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -458,10 +463,13 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.0.0'
         ip_mask1 = '255.255.0.0'
-        ip_mask2 = '255.255.255.255'
+        ip_mask2 = '255.255.255.0'
         nhop_ip1 = '11.11.11.11'
+        nhop_ip1_subnet = '11.11.11.0'
         nhop_ip2 = '22.22.22.22'
+        nhop_ip2_subnet = '22.22.22.0'
         nhop_ip3 = '33.33.33.33'
+        nhop_ip3_subnet = '33.33.33.0'
         dmac1 = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:56'
         dmac3 = '00:11:22:33:44:57'
@@ -482,9 +490,9 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
         nhop3 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip3, rif_id3)
         nhop_group1 = sai_thrift_create_next_hop_group(self.client, [nhop1, nhop2, nhop3])
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask2, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip2, ip_mask2, rif_id2)
-        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip3, ip_mask2, rif_id3)
+        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip2_subnet, ip_mask2, rif_id2)
+        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip3_subnet, ip_mask2, rif_id3)
 
         # send the test packet(s)
         try:
@@ -531,9 +539,9 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
                         "Not all paths are equally balanced, %s" % count)
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask2, rif_id1)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip2, ip_mask2, rif_id2)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip3, ip_mask2, rif_id3)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip2_subnet, ip_mask2, rif_id2)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip3_subnet, ip_mask2, rif_id3)
             self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2, nhop3])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -690,7 +698,8 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
-        ip_mask1 = '255.255.255.255'
+        ip_addr1_subnet = '10.10.10.0'
+        ip_mask1 = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
@@ -704,7 +713,7 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
 
         # send the test packet(s)
         try:
@@ -725,7 +734,7 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 2, str(pkt))
             verify_packets_any(self, exp_pkt, [0, 1])
         finally:
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
 
@@ -760,11 +769,12 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
         ip_addr1 = '4001::1'
-        ip_mask1 = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'
+        ip_addr1_subnet = '4001::0'
+        ip_mask1 = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:0'
         dmac1 = '00:11:22:33:44:55'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
 
         # send the test packet(s)
         try:
@@ -783,7 +793,7 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 2, str(pkt))
             verify_packets_any(self, exp_pkt, [0, 1])
         finally:
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
 
@@ -956,9 +966,11 @@ class L3EcmpLagTestMini(sai_base_test.ThriftInterfaceDataPlane):
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.0.0'
         ip_mask1 = '255.255.0.0'
-        ip_mask2 = '255.255.255.255'
+        ip_mask2 = '255.255.255.0'
         nhop_ip1 = '11.11.11.11'
+        nhop_ip1_subnet = '11.11.11.0'
         nhop_ip2 = '22.22.22.22'
+        nhop_ip2_subnet = '22.22.22.0'
         dmac1 = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:56'
 
@@ -970,8 +982,8 @@ class L3EcmpLagTestMini(sai_base_test.ThriftInterfaceDataPlane):
 
         nhop_group1 = sai_thrift_create_next_hop_group(self.client, [nhop1, nhop2])
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask2, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip2, ip_mask2, rif_id2)
+        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip2_subnet, ip_mask2, rif_id2)
 
         try:
             count = [0, 0, 0]
@@ -1023,8 +1035,8 @@ class L3EcmpLagTestMini(sai_base_test.ThriftInterfaceDataPlane):
                         "Lag path1 is not equally balanced")
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask2, rif_id1)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip2, ip_mask2, rif_id2)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip2_subnet, ip_mask2, rif_id2)
 
             self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
@@ -1060,10 +1072,12 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
-        ip_mask1 = '255.255.255.255'
+        ip_addr1_subnet = '10.10.10.0'
+        ip_mask1 = '255.255.255.0'
         dmac1 = '00:0a:00:00:00:01'
         ip_addr2 = '11.11.11.1'
-        ip_mask2 = '255.255.255.255'
+        ip_addr2_subnet = '11.11.11.0'
+        ip_mask2 = '255.255.255.0'
         dmac2 = '00:0b:00:00:00:01'
         mac1 = ''
         mac2 = ''
@@ -1083,11 +1097,11 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_fdb(self.client, vlan_id, dmac1, port1, mac_action)
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
 
         sai_thrift_create_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
         nhop2 = sai_thrift_create_nhop(self.client, addr_family, ip_addr2, rif_id2)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2, ip_mask2, rif_id2)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
 
         try:
             # send the test packet(s)
@@ -1124,8 +1138,8 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 1, str(pkt))
             verify_packets(self, exp_pkt, [0])
         finally:
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr2, ip_mask2, rif_id2)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
             self.client.sai_thrift_remove_next_hop(nhop1)
             self.client.sai_thrift_remove_next_hop(nhop2)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
@@ -1163,6 +1177,8 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         nhop_ip1 = '11.11.11.11'
+        nhop_ip1_subnet = '11.11.11.0'
+        nhop_ip1_mask = '255.255.255.0'
         ip_mask1 = '255.255.255.255'
         ip_addr1 = '10.10.10.1'
         dmac1 = '00:11:22:33:44:55'
@@ -1170,7 +1186,7 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, nhop_ip1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, nhop_ip1_subnet, nhop_ip1_mask, rif_id1)
 
         # send the test packet(s)
         pkt = simple_tcp_packet(eth_dst=rewrite_mac2,
@@ -1191,7 +1207,7 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_packets(self, exp_pkt, [0])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1_subnet, nhop_ip1_mask, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
 

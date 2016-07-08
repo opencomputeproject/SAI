@@ -293,13 +293,16 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
         lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
         lag_member_id3 = sai_thrift_create_lag_member(self.client, lag_id1, port3)
 
-        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_id, lag_id1, SAI_VLAN_PORT_UNTAGGED)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_id, port1, SAI_VLAN_PORT_UNTAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_id, port2, SAI_VLAN_PORT_UNTAGGED)
+        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_id, port3, SAI_VLAN_PORT_UNTAGGED)
         vlan_member4 = sai_thrift_create_vlan_member(self.client, vlan_id, port4, SAI_VLAN_PORT_UNTAGGED)
-
 
         attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
-        self.client.sai_thrift_set_port_attribute(lag_id1, attr)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+        self.client.sai_thrift_set_port_attribute(port3, attr)
         self.client.sai_thrift_set_port_attribute(port4, attr)
 
         sai_thrift_create_fdb(self.client, vlan_id, mac1, lag_id1, mac_action)
@@ -359,6 +362,8 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_delete_fdb(self.client, vlan_id, mac1, lag_id1)
             sai_thrift_delete_fdb(self.client, vlan_id, mac2, port4)
 
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan_member(vlan_member3)
             self.client.sai_thrift_remove_vlan_member(vlan_member4)
 
