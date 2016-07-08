@@ -187,12 +187,12 @@ service switch_sai_rpc {
     //vlan API
     sai_thrift_status_t sai_thrift_create_vlan(1: sai_thrift_vlan_id_t vlan_id);
     sai_thrift_status_t sai_thrift_delete_vlan(1: sai_thrift_vlan_id_t vlan_id);
-    sai_thrift_status_t sai_thrift_add_ports_to_vlan(1: sai_thrift_vlan_id_t vlan_id, 2: list<sai_thrift_vlan_port_t> thrift_port_list);
-    sai_thrift_status_t sai_thrift_remove_ports_from_vlan(1: sai_thrift_vlan_id_t vlan_id, 2: list<sai_thrift_vlan_port_t> thrift_port_list);
     list<i64> sai_thrift_get_vlan_stats(
                              1: sai_thrift_vlan_id_t vlan_id,
                              2: list<sai_thrift_vlan_stat_counter_t> counter_ids,
                              3: i32 number_of_counters);
+    sai_thrift_object_id_t sai_thrift_create_vlan_member(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_vlan_member(1: sai_thrift_object_id_t vlan_member_id);
 
     //virtual router API
     sai_thrift_object_id_t sai_thrift_create_virtual_router(1: list<sai_thrift_attribute_t> thrift_attr_list);
