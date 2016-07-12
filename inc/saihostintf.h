@@ -287,8 +287,12 @@ typedef enum _sai_hostif_trap_attr_t
     
     SAI_HOSTIF_TRAP_ATTR_START,
     
+    /** Host interface trap ID [sai_hostif_trap_id_t]
+     * (CREATE_ONLY|MANDATORY_ON_CREATE|KEY) */
+    SAI_HOSTIF_TRAP_ATTR_TRAP_ID = SAI_HOSTIF_TRAP_ATTR_START,
+
     /** trap action [sai_packet_action_t] */
-    SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION = SAI_HOSTIF_TRAP_ATTR_START,
+    SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
 
     /** Below attributes are only valid when
      * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or 
@@ -329,6 +333,41 @@ typedef enum _sai_hostif_trap_attr_t
 
 /**
  * Routine Description:
+ *    @brief Create host interface trap
+ *
+ * Arguments:
+ *  @param[out] hostif_trap_id  - host interface trap id
+ *  @param[in] attr_count - number of attributes
+ *  @param[in] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
+typedef sai_status_t (*sai_create_hostif_trap_fn)(
+    _Out_ sai_object_id_t *hostif_trap_id,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list
+    );
+
+/**
+ * Routine Description:
+ *    @brief Remove host interface trap
+ *
+ * Arguments:
+ *  @param[in] hostif_trap_group_id - host interface trap group id
+ *
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_hostif_trap_fn)(
+    _In_ sai_object_id_t hostif_trap_id
+    );
+
+/**
+ * Routine Description:
  *   @brief Set trap attribute value.
  *
  * Arguments:
@@ -340,7 +379,7 @@ typedef enum _sai_hostif_trap_attr_t
  *            Failure status code on error
  */
 typedef sai_status_t(*sai_set_hostif_trap_attribute_fn)(
-    _In_ sai_hostif_trap_id_t hostif_trapid,
+    _In_ sai_object_id_t hostif_trapid,
     _In_ const sai_attribute_t *attr
     );
 
@@ -358,7 +397,7 @@ typedef sai_status_t(*sai_set_hostif_trap_attribute_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t(*sai_get_hostif_trap_attribute_fn)(
-    _In_ sai_hostif_trap_id_t hostif_trapid,
+    _In_ sai_object_id_t hostif_trapid,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
@@ -697,6 +736,8 @@ typedef struct _sai_hostif_api_t
     sai_remove_hostif_trap_group_fn                remove_hostif_trap_group;
     sai_set_hostif_trap_group_attribute_fn         set_trap_group_attribute;
     sai_get_hostif_trap_group_attribute_fn         get_trap_group_attribute;
+    sai_create_hostif_trap_fn                      create_trap;
+    sai_remove_hostif_trap_fn                      remove_trap;
     sai_set_hostif_trap_attribute_fn               set_trap_attribute;
     sai_get_hostif_trap_attribute_fn               get_trap_attribute;
     sai_set_hostif_user_defined_trap_attribute_fn  set_user_defined_trap_attribute;
