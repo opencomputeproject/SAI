@@ -1162,7 +1162,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
       for (gPortMapIt = gPortMap.begin() ; gPortMapIt != gPortMap.end() ; gPortMapIt++){
           if (gPortMapIt->second == port_name){
-              printf("FOUND ITERATOR\n");
               break;
           }
       }
@@ -1170,7 +1169,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       std::set<int> lane_set;
       if (gPortMapIt != gPortMap.end()){
           lane_set = gPortMapIt->first;
-          printf("GOOD LANE_SET\n");
       }
       else {
           printf("Didn't find matching port to received name!\n");
@@ -1197,7 +1195,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           }
    
           if (port_lanes == lane_set){
-              printf("FOUND LANESET\n");
               port_id = (sai_thrift_object_id_t) port_list_object_attribute.value.objlist.list[i];
               free(port_list_object_attribute.value.objlist.list);
               free(port_lane_list_attribute.value.u32list.list);
