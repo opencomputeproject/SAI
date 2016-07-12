@@ -1122,6 +1122,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           else {
               printf("DIDN'T FOUND FRONT PORT FOR LANE SET\n");
           }
+          free(port_lane_list_attribute.value.u32list.list);
       }
 
       sai_thrift_attribute_t& attr = thrift_attr;
@@ -1135,6 +1136,79 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       free(port_list_object_attribute.value.objlist.list);
   }
 
+  sai_thrift_object_id_t sai_thrift_get_port_id_by_front_port(const std::string& port_name) {
+      printf("sai_thrift_get_port_id_by_front_port\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_switch_api_t *switch_api;
+      sai_port_api_t *port_api;
+      sai_attribute_t max_port_attribute;
+      sai_attribute_t port_list_object_attribute;
+      sai_attribute_t port_lane_list_attribute;
+      sai_object_list_t *port_list_object;
+      int max_ports = 0;
+      sai_thrift_object_id_t port_id;
+      extern std::map<std::set<int>, std::string> gPortMap;
+      std::map<std::set<int>, std::string>::iterator gPortMapIt;
+
+      status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          printf("sai_api_query failed!!!\n");
+          return 0;
+      }
+      status = sai_api_query(SAI_API_PORT, (void **) &port_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          printf("sai_api_query failed!!!\n");
+          return 0;
+      }
+      for (gPortMapIt = gPortMap.begin() ; gPortMapIt != gPortMap.end() ; gPortMapIt++){
+          if (gPortMapIt->second == port_name){
+              printf("FOUND ITERATOR\n");
+              break;
+          }
+      }
+ 
+      std::set<int> lane_set;
+      if (gPortMapIt != gPortMap.end()){
+          lane_set = gPortMapIt->first;
+          printf("GOOD LANE_SET\n");
+      }
+      else {
+          printf("Didn't find matching port to received name!\n");
+          return 0;
+      }
+     
+      max_port_attribute.id = SAI_SWITCH_ATTR_PORT_NUMBER;
+      switch_api->get_switch_attribute(1, &max_port_attribute);
+      max_ports = max_port_attribute.value.u32;
+      port_list_object_attribute.id = SAI_SWITCH_ATTR_PORT_LIST;
+      port_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_ports);
+      port_list_object_attribute.value.objlist.count = max_ports;
+      switch_api->get_switch_attribute(1, &port_list_object_attribute);
+
+      for (int i=0 ; i<max_ports ; i++){
+          port_lane_list_attribute.id = SAI_PORT_ATTR_HW_LANE_LIST;
+          port_lane_list_attribute.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
+          port_lane_list_attribute.value.u32list.count = 4;
+          port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
+
+          std::set<int> port_lanes;
+          for (int j=0 ; j<4 ; j++){
+              port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
+          }
+   
+          if (port_lanes == lane_set){
+              printf("FOUND LANESET\n");
+              port_id = (sai_thrift_object_id_t) port_list_object_attribute.value.objlist.list[i];
+              free(port_list_object_attribute.value.objlist.list);
+              free(port_lane_list_attribute.value.u32list.list);
+              return port_id;
+          }
+          free(port_lane_list_attribute.value.u32list.list);
+      }
+      printf("Didn't find port\n");
+      free(port_list_object_attribute.value.objlist.list);
+      return 0;
+  }
 
   sai_thrift_object_id_t sai_thrift_create_hostif(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_create_hostif\n");

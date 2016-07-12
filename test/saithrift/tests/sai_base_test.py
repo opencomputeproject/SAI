@@ -57,8 +57,13 @@ class ThriftInterface(BaseTest):
                 interface_front_pair = line.split("@")
                 interface_to_front_mapping[interface_front_pair[0]] = interface_front_pair[1].strip()
         else:
-            exit("No interface<->front port mapping, please specify as parameter or external file")
-
+            f = open('./tests/default_interface_to_front_map.ini', 'r')
+            for line in f:
+                if (len(line) > 0 and (line[0] == '#' or line[0] == ';' or line[0]=='/')):
+                    continue;
+                interface_front_pair = line.split("@")
+                interface_to_front_mapping[interface_front_pair[0]] = interface_front_pair[1].strip()		    
+            
         print interface_to_front_mapping
 
         # Set up thrift client and contact server

@@ -204,11 +204,6 @@ cmdOptions handleCmdLine(int argc, char **argv)
                 options.portMapFile = std::string(optarg);
                 break;
 
-            case '?':
-                printf("unknown get opti option %c", optopt);
-                exit(EXIT_FAILURE);
-                break;
-
             default:
                 printf("getopt_long failure");
                 exit(EXIT_FAILURE);
