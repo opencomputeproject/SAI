@@ -63,6 +63,9 @@ typedef enum _sai_vlan_attr_t
     /** List of vlan members in a VLAN [sai_object_list_t]*/
     SAI_VLAN_ATTR_MEMBER_LIST,
 
+    /** List of member ports in a VLAN [sai_object_list_t]*/
+    SAI_VLAN_ATTR_PORT_LIST,
+
     /** READ-WRITE */
 
     /** Maximum number of learned MAC addresses [uint32_t]
