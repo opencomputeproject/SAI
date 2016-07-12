@@ -234,6 +234,7 @@ service switch_sai_rpc {
 
     //switch API
     sai_thrift_attribute_list_t sai_thrift_get_switch_attribute();
+    sai_thrift_attribute_t sai_thrift_get_port_list_by_front_port();
     sai_thrift_status_t sai_thrift_set_switch_attribute(1: sai_thrift_attribute_t attribute);
 
     //Trap API
