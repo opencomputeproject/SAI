@@ -17,7 +17,7 @@ Thrift SAI interface basic tests
 """
 
 import switch_sai_thrift
-
+from sai_base_test import *
 import time
 import sys
 import logging
@@ -41,7 +41,9 @@ from switch_sai_thrift.sai_headers import  *
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
 switch_inited=0
-port_list = []
+port_list = {}
+sai_port_list = []
+front_port_list = []
 table_attr_list = []
 router_mac='00:77:66:55:44:00'
 rewrite_mac1='00:77:66:55:45:01'
@@ -64,7 +66,7 @@ def switch_init(client):
                 attr_value = sai_thrift_attribute_value_t(booldata=1)
                 attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_ADMIN_STATE, value=attr_value)
                 client.sai_thrift_set_port_attribute(port_id, attr)
-                port_list.append(port_id)
+                sai_port_list.append(port_id)
         else:
             print "unknown switch attribute"
 
@@ -74,6 +76,16 @@ def switch_init(client):
 
     # wait till the port are up
     time.sleep(10)
+
+    thrift_attr = client.sai_thrift_get_port_list_by_front_port()
+    if thrift_attr.id == SAI_SWITCH_ATTR_PORT_LIST:
+        for port_id in thrift_attr.value.objlist.object_id_list:
+            front_port_list.append(port_id)
+
+    for interface,front in interface_to_front_mapping.iteritems():
+        sai_port_id = client.sai_thrift_get_port_id_by_front_port(front);
+        port_list[int(interface)]=sai_port_id
+           
     switch_inited = 1
 
 
@@ -588,7 +600,7 @@ def sai_thrift_create_pool_profile(client, pool_type, size, threshold_mode):
     return pool_id
 
 def sai_thrift_clear_all_counters(client):
-    for port in port_list:
+    for port in sai_port_list:
         queue_list=[]
         client.sai_thrift_clear_port_all_stats(port)
         port_attr_list = client.sai_thrift_get_port_attribute(port)
