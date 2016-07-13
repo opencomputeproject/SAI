@@ -1153,12 +1153,12 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
       if (status != SAI_STATUS_SUCCESS) {
           printf("sai_api_query failed!!!\n");
-          return 0;
+          return SAI_NULL_OBJECT_ID;
       }
       status = sai_api_query(SAI_API_PORT, (void **) &port_api);
       if (status != SAI_STATUS_SUCCESS) {
           printf("sai_api_query failed!!!\n");
-          return 0;
+          return SAI_NULL_OBJECT_ID;
       }
       for (gPortMapIt = gPortMap.begin() ; gPortMapIt != gPortMap.end() ; gPortMapIt++){
           if (gPortMapIt->second == port_name){
@@ -1172,7 +1172,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
       else {
           printf("Didn't find matching port to received name!\n");
-          return 0;
+          return SAI_NULL_OBJECT_ID;
       }
      
       max_port_attribute.id = SAI_SWITCH_ATTR_PORT_NUMBER;
@@ -1204,7 +1204,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
       printf("Didn't find port\n");
       free(port_list_object_attribute.value.objlist.list);
-      return 0;
+      return SAI_NULL_OBJECT_ID;
   }
 
   sai_thrift_object_id_t sai_thrift_create_hostif(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
