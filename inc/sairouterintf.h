@@ -100,7 +100,11 @@ typedef enum _sai_router_interface_attr_t
     /* -- */
 
     /* Custom range base value */
-    SAI_ROUTER_INTERFACE_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_ROUTER_INTERFACE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_ROUTER_INTERFACE_ATTR_CUSTOM_RANGE_END
+
 
 } sai_router_interface_attr_t;
 

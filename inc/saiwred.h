@@ -65,8 +65,11 @@ typedef enum _sai_ecn_mark_mode_t
  */
 typedef enum _sai_wred_attr_t
 {
+
+    SAI_WRED_ATTR_START = 0x00000000,
+    
     /** [bool] enable/disable, Default FALSE*/
-    SAI_WRED_ATTR_GREEN_ENABLE = 0x00000000,
+    SAI_WRED_ATTR_GREEN_ENABLE = SAI_WRED_ATTR_START,
 
     /**
      * bytes [ sai_uint32_t],  MANDATORY for SAI_WRED_ATTR_GREEN_ENABLE = TRUE
@@ -144,8 +147,14 @@ typedef enum _sai_wred_attr_t
     SAI_WRED_ATTR_ECN_MARK_MODE = 0x0000000d,
 
     /** -- */
+    SAI_WRED_ATTR_END,
+
     /** Custom range base value */
-    SAI_WRED_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_WRED_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_WRED_ATTR_CUSTOM_RANGE_END
+
 } sai_wred_attr_t;
 
 

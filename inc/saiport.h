@@ -192,10 +192,13 @@ typedef enum _sai_port_media_type_t
  */
 typedef enum _sai_port_attr_t
 {
+        
+    SAI_PORT_ATTR_START,
+    
     /** READ-ONLY */
 
     /** Port Type [sai_port_type_t] */
-    SAI_PORT_ATTR_TYPE,
+    SAI_PORT_ATTR_TYPE = SAI_PORT_ATTR_START,
 
     /** Operational Status [sai_port_oper_status_t] */
     SAI_PORT_ATTR_OPER_STATUS,
@@ -514,8 +517,15 @@ typedef enum _sai_port_attr_t
 
     /** -- */
 
+    SAI_PORT_ATTR_END,
+
+
     /* Custom range base value */
-    SAI_PORT_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_PORT_ATTR_CUSTOM_RANGE_END
+
 
 } sai_port_attr_t;
 
