@@ -94,7 +94,11 @@ typedef enum _sai_qos_map_attr_t
     SAI_QOS_MAP_ATTR_END,
 
     /* Custom range base value */
-    SAI_QOS_MAP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_QOS_MAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_QOS_MAP_ATTR_CUSTOM_RANGE_END
+
 
 } sai_qos_map_attr_t ;
 

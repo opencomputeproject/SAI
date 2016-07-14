@@ -75,7 +75,11 @@ typedef enum _sai_tunnel_map_attr_t
     SAI_TUNNEL_MAP_ATTR_END,
 
     /* Custom range base value */
-    SAI_TUNNEL_MAP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_TUNNEL_MAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_TUNNEL_MAP_ATTR_CUSTOM_RANGE_END
+
 
 } sai_tunnel_map_attr_t;
 
@@ -287,7 +291,11 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_END,
 
     /** Custom range base value */
-    SAI_TUNNEL_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_TUNNEL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_TUNNEL_ATTR_CUSTOM_RANGE_END
+
 
 } sai_tunnel_attr_t;
 
@@ -403,7 +411,11 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_END
+
 
 } sai_tunnel_term_table_entry_attr_t;
 

@@ -62,7 +62,11 @@ typedef enum _sai_scheduler_group_attr_t
 
     /* -- */
     /* Custom range base value */
-    SAI_SCHEDULER_GROUP_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_SCHEDULER_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_SCHEDULER_GROUP_ATTR_CUSTOM_RANGE_END
+
 
 } sai_scheduler_group_attr_t;
 

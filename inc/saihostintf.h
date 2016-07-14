@@ -59,7 +59,11 @@ typedef enum _sai_hostif_trap_group_attr_t
 
     SAI_HOSTIF_TRAP_GROUP_ATTR_END, 
 
-    SAI_HOSTIF_TRAP_GROUP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_HOSTIF_TRAP_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_HOSTIF_TRAP_GROUP_ATTR_CUSTOM_RANGE_END
+
 } sai_hostif_trap_group_attr_t;
 
 /**
@@ -315,7 +319,11 @@ typedef enum _sai_hostif_trap_attr_t
 
     SAI_HOSTIF_TRAP_ATTR_END,
 
-    SAI_HOSTIF_TRAP_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_HOSTIF_TRAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_HOSTIF_TRAP_ATTR_CUSTOM_RANGE_END
+
 
 } sai_hostif_trap_attr_t;
 
@@ -481,7 +489,11 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_END,    
 
     /* Custom range base value */
-    SAI_HOSTIF_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_HOSTIF_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_HOSTIF_ATTR_CUSTOM_RANGE_END
+
 
 } sai_hostif_attr_t;
 

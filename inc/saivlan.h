@@ -93,7 +93,11 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_END,
 
     /** Custom range base value */
-    SAI_VLAN_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_VLAN_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_VLAN_ATTR_CUSTOM_RANGE_END
+
 
 } sai_vlan_attr_t;
 
@@ -120,7 +124,11 @@ typedef enum _sai_vlan_member_attr_t {
     SAI_VLAN_MEMBER_ATTR_END,
 
     /** custom range base value */
-    SAI_VLAN_MEMBER_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_VLAN_MEMBER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_VLAN_MEMBER_ATTR_CUSTOM_RANGE_END
+
 
 } sai_vlan_member_attr_t;
 

@@ -503,7 +503,11 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_END,
 
     /* Custom range base value */
-    SAI_SWITCH_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_SWITCH_ATTR_CUSTOM_RANGE_END
+
 
 } sai_switch_attr_t;
 

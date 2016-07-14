@@ -45,7 +45,11 @@ typedef enum _sai_lag_attr_t {
     SAI_LAG_ATTR_END,
 
     /** Custom range base value */
-    SAI_LAG_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_LAG_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_LAG_ATTR_CUSTOM_RANGE_END
+
 
 } sai_lag_attr_t;
 
@@ -125,7 +129,11 @@ typedef enum _sai_lag_member_attr_t {
     SAI_LAG_MEMBER_ATTR_END,
 
     /** Custom range base value */
-    SAI_LAG_MEMBER_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_LAG_MEMBER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_LAG_MEMBER_ATTR_CUSTOM_RANGE_END
+
 
 } sai_lag_member_attr_t;
 

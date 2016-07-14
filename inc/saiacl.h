@@ -350,7 +350,11 @@ typedef enum _sai_acl_table_attr_t
     /* -- */
 
     /* Custom range base value */
-    SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_END
+
 
 } sai_acl_table_attr_t;
 
