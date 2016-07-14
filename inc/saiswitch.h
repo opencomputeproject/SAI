@@ -352,6 +352,12 @@ typedef enum _sai_switch_attr_t
     /** Nonvolatile storage required by both SAI and NPU in KB [sai_uint64_t]
      * Will be 0 for SAI_RESTART_TYPE_NONE */
     SAI_SWITCH_ATTR_NV_STORAGE_SIZE,
+   
+    /** Count of the total number of actions supported by NPU. [sai_uint32_t] */
+    SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
+
+    /** Acl capabilities supported by the NPU. [sai_acl_capability_t] */
+    SAI_SWITCH_ATTR_ACL_CAPABILITY,
 
     /** READ-WRITE */
 
@@ -540,8 +546,12 @@ typedef enum _sai_switch_attr_t
 #define SAI_KEY_NUM_QUEUES                        "SAI_NUM_QUEUES"
 #define SAI_KEY_NUM_CPU_QUEUES                    "SAI_NUM_CPU_QUEUES"
 #define SAI_KEY_INIT_CONFIG_FILE                  "SAI_INIT_CONFIG_FILE"
-/** 0: means cold boot, and 1: means warm boot */
-#define SAI_KEY_WARM_BOOT                         "SAI_WARM_BOOT"
+/** 0: cold boot. Initialize NPU and external phys.
+ *  1: warm boot. Do not re-initialize NPU or external phys, reconstruct SAI/SDK state from stored state.
+ *  2: fast boot. Only initilize NPU. SAI/SDK state should not be persisted except for those related 
+ *                to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status. 
+ */
+#define SAI_KEY_BOOT_TYPE                         "SAI_BOOT_TYPE"
 /** The file to recover SAI/NPU state from */
 #define SAI_KEY_WARM_BOOT_READ_FILE               "SAI_WARM_BOOT_READ_FILE"
 /** The file to write SAI/NPU state to */

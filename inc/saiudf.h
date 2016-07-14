@@ -42,13 +42,13 @@
  */
 typedef enum _sai_udf_base_t
 {
-    /** UDF offset base L2 header */
+    /** UDF offset base from the start of L2 header */
     SAI_UDF_BASE_L2,
 
-    /** UDF offset base L3 header */
+    /** UDF offset base from the start of L3 header */
     SAI_UDF_BASE_L3,
 
-    /** UDF offset base L4 header */
+    /** UDF offset base from the start of L4 header */
     SAI_UDF_BASE_L4,
 
 } sai_udf_base_t;

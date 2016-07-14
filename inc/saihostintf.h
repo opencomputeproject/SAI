@@ -486,6 +486,10 @@ typedef enum _sai_hostif_attr_t
     *   (MANDATORY_ON_CREATE when SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV) */
     SAI_HOSTIF_ATTR_NAME,
 
+    /** Set the operational status for this host interface [bool] (default to false) */
+    SAI_HOSTIF_ATTR_OPER_STATUS,
+
+    /* --*/
     SAI_HOSTIF_ATTR_END,    
 
     /* Custom range base value */
