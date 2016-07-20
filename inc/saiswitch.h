@@ -500,14 +500,14 @@ typedef enum _sai_switch_attr_t
        Default no map */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
+    /* Enable vendor specific switch shell [bool] (default to false) */
+    SAI_SWITCH_ATTR_SWITCH_SHELL_ENABLE,
+
     /* -- */
     SAI_SWITCH_ATTR_END,
 
     /* Custom range base value */
     SAI_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /* Enable Broadcom switch shell [bool] (default to 0) */
-    SAI_SWITCH_ATTR_BRCM_SWITCH_SHELL_ENABLE,
 
     /* --*/
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END
