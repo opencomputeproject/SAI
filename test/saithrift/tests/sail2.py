@@ -380,23 +380,31 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_set_port_attribute(port3, attr)
             self.client.sai_thrift_set_port_attribute(port4, attr)
 			
-class L2SonicVlanTest(sai_base_test.ThriftInterfaceDataPlane):
+class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
-        print "[access vlan=10]"
-        print "1. Sending L2 broadcast packet from port 1 -> all vlan members."
-        print "2. Sending L2 unicast packet from port 1 -> port 2."
+        """
+        For SONiC
+        Vlan broadcast and known unicast test. Verify the broacast packet reaches all ports in the vlan and unicast packet reach specific port. 
+        Steps:
+        1. remove all ports from default vlan
+        2. create vlan 10
+        3. add n-1 ports to vlan 10
+        4. add mac for each port
+        5. send untagged broadcast packet from port 1, verify all n-1 ports receive the packet except the last port
+        6. send untagged unicast packets from port 1 to port the rest of the vlan members port. Verify only one port at a time receives the packet and port n does not.
+        7. clean up.
+        """
+
         switch_init(self.client)
         default_vlan = 1
         vlan_id = 10
         default_vlan_members_list = []
-        port1 = port_list[0]
-        port2 = port_list[1]
-        port3 = port_list[2]
-        port4 = port_list[3]
-        mac1 = '00:11:11:11:11:11'
-        mac2 = '00:22:22:22:22:22'
-        mac3 = '00:33:33:33:33:33'
-        mac4 = '00:44:44:44:44:44'
+        mac_list = []
+        vlan_member_list = []
+
+        for i in range (1, len(port_list)):
+            str_i = str(i)
+            mac_list.append('00:'+str_i+str_i+':'+str_i+str_i+':'+str_i+str_i+':'+str_i+str_i+':'+str_i+str_i)
         mac_action = SAI_PACKET_ACTION_FORWARD
 
         vlan_attr_list = self.client.sai_thrift_get_vlan_attribute(default_vlan)
@@ -406,66 +414,59 @@ class L2SonicVlanTest(sai_base_test.ThriftInterfaceDataPlane):
                 for vlan_member in attribute.value.objlist.object_id_list:
                     default_vlan_members_list.append(vlan_member)
 
-        print default_vlan_members_list
-		
         for vlan_member in default_vlan_members_list:
             self.client.sai_thrift_remove_vlan_member(vlan_member)
 				
         self.client.sai_thrift_create_vlan(vlan_id)
-        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_id, port1, SAI_VLAN_PORT_UNTAGGED)
-        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_id, port2, SAI_VLAN_PORT_UNTAGGED)
-        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_id, port3, SAI_VLAN_PORT_UNTAGGED)
-        vlan_member4 = sai_thrift_create_vlan_member(self.client, vlan_id, port4, SAI_VLAN_PORT_UNTAGGED)
-		
+		for i in range (0, len(port_list)-1):
+            vlan_member_list.append(sai_thrift_create_vlan_member(self.client, vlan_id, port_list[i], SAI_VLAN_PORT_UNTAGGED))
+
         attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
-        self.client.sai_thrift_set_port_attribute(port1, attr)
-        self.client.sai_thrift_set_port_attribute(port2, attr)
-        self.client.sai_thrift_set_port_attribute(port3, attr)
-        self.client.sai_thrift_set_port_attribute(port4, attr)
-		
-        sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_id, mac3, port3, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_id, mac4, port4, mac_action)		
+        for i in range (0, len(port_list)-1):
+            self.client.sai_thrift_set_port_attribute(port_list[i], attr)	
+            sai_thrift_create_fdb(self.client, vlan_id, mac_list[i], port_list[i], mac_action)
 
         bcast_pkt = simple_tcp_packet(eth_dst='ff:ff:ff:ff:ff:ff',
                                 eth_src='00:22:22:22:22:22',
                                 ip_dst='10.0.0.1',
                                 ip_id=101,
                                 ip_ttl=64)
-								
-        ucast_pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst='10.0.0.1',
-                                ip_id=101,
-                                ip_ttl=64)
 
         try:
+            expected_ports = []
+            for i in range (0, len(port_list)-1):
+                expected_ports.append(i)
+            expected_ports.remove(1)
+
             send_packet(self, 1, str(bcast_pkt))
-            verify_packets(self, bcast_pkt, [0,2,3])
+            verify_packets(self, bcast_pkt, expected_ports)
 			
-            send_packet(self, 1, str(ucast_pkt))
-            verify_packets(self, ucast_pkt, [0])
+            for i in range (0, len(port_list)-1):
+                if i == 1:
+                    continue
+                else:
+                    ucast_pkt = simple_tcp_packet(eth_dst=mac_list[i],
+                                        eth_src='00:22:22:22:22:22',
+                                        ip_dst='10.0.0.1',
+                                        ip_id=101,
+                                        ip_ttl=64)	
+                    send_packet(self, 1, str(ucast_pkt))
+                    verify_packets(self, ucast_pkt, [i])
 			
         finally:
-            sai_thrift_delete_fdb(self.client, vlan_id, mac1, port1)
-            sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)
-            sai_thrift_delete_fdb(self.client, vlan_id, mac3, port3)
-            sai_thrift_delete_fdb(self.client, vlan_id, mac4, port4)
-			
             attr_value = sai_thrift_attribute_value_t(u16=default_vlan)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
-            self.client.sai_thrift_set_port_attribute(port1, attr)
-            self.client.sai_thrift_set_port_attribute(port2, attr)
-            self.client.sai_thrift_set_port_attribute(port3, attr)
-            self.client.sai_thrift_set_port_attribute(port4, attr)
-			
-            self.client.sai_thrift_remove_vlan_member(vlan_member1)
-            self.client.sai_thrift_remove_vlan_member(vlan_member2)
-            self.client.sai_thrift_remove_vlan_member(vlan_member3)
-            self.client.sai_thrift_remove_vlan_member(vlan_member4)
-			
+
+            for i in range (0, len(port_list)-1):
+                sai_thrift_delete_fdb(self.client, vlan_id, mac_list[i], port_list[i])
+                self.client.sai_thrift_set_port_attribute(port_list[i], attr)
+
+            for vlan_member in vlan_member_list:
+                self.client.sai_thrift_remove_vlan_member(vlan_member)
+
             self.client.sai_thrift_delete_vlan(vlan_id)
+
             for port in sai_port_list:
                 sai_thrift_create_vlan_member(self.client, default_vlan, port, SAI_VLAN_PORT_UNTAGGED)
+
