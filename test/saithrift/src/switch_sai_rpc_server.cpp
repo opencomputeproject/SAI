@@ -619,6 +619,36 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return;
   }
 
+  void sai_thrift_get_vlan_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t vlan_id) {
+      printf("sai_thrift_get_vlan_attribute\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_vlan_api_t *vlan_api;
+      sai_attribute_t vlan_member_list_object_attribute;
+      sai_thrift_attribute_t thrift_vlan_member_list_attribute;
+      sai_object_list_t *vlan_member_list_object;
+      status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return;
+      }
+
+      vlan_member_list_object_attribute.id = SAI_VLAN_ATTR_MEMBER_LIST;
+      vlan_member_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * 64);
+      vlan_member_list_object_attribute.value.objlist.count = 64;
+      vlan_api->get_vlan_attribute(vlan_id, 1, &vlan_member_list_object_attribute);
+
+      thrift_attr_list.attr_count = 1;
+      std::vector<sai_thrift_attribute_t>& attr_list = thrift_attr_list.attr_list;
+      thrift_vlan_member_list_attribute.id = SAI_VLAN_ATTR_MEMBER_LIST;
+      thrift_vlan_member_list_attribute.value.objlist.count = vlan_member_list_object_attribute.value.objlist.count;
+      std::vector<sai_thrift_object_id_t>& vlan_member_list = thrift_vlan_member_list_attribute.value.objlist.object_id_list;
+      vlan_member_list_object = &vlan_member_list_object_attribute.value.objlist;
+      for (int index = 0; index < vlan_member_list_object_attribute.value.objlist.count; index++) {
+          vlan_member_list.push_back((sai_thrift_object_id_t) vlan_member_list_object->list[index]);
+      }
+      attr_list.push_back(thrift_vlan_member_list_attribute);
+      free(vlan_member_list_object_attribute.value.objlist.list);
+  }
+  
   sai_thrift_object_id_t sai_thrift_create_vlan_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_create_vlan_member\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
