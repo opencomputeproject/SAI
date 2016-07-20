@@ -1296,6 +1296,12 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           attribute = (sai_thrift_attribute_t)*it;
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
+            case SAI_ACL_TABLE_ATTR_STAGE:
+              attr_list[i].value.s32 = attribute.value.s32;
+              break;
+            case SAI_ACL_TABLE_ATTR_PRIORITY:
+              attr_list[i].value.u32 = attribute.value.u32;
+              break;
             case SAI_ACL_TABLE_ATTR_FIELD_SRC_IPv6:
             case SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6:
             case SAI_ACL_TABLE_ATTR_FIELD_SRC_MAC:
@@ -1365,8 +1371,10 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                 sai_thrift_string_to_v4_ip(attribute.value.aclfield.mask.ip4, &attr_list[i].value.aclfield.mask.ip4);
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT:
+            case SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT:
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
+            case SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS:
             case SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS:
                 {
                     int count = attribute.value.aclfield.data.objlist.object_id_list.size();
@@ -1379,12 +1387,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                     attr_list[i].value.aclfield.data.objlist.count =  count;
                 }
                 break;
-            case SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
-                break;
-            /*
-            case SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS:
-            */
             case SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_PRI:
             case SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_CFI:
             case SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_PRI:
@@ -1425,10 +1427,10 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_COUNTER:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
+                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_PACKET_ACTION:
-                attr_list[i].value.aclfield.data.u8 = attribute.value.aclfield.data.u8;
+                attr_list[i].value.aclaction.parameter.s32 = attribute.value.aclaction.parameter.s32;
                 break;
               default:
                 break;
