@@ -418,7 +418,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_vlan_member(vlan_member)
 				
         self.client.sai_thrift_create_vlan(vlan_id)
-		for i in range (0, len(port_list)-1):
+        for i in range (0, len(port_list)-1):
             vlan_member_list.append(sai_thrift_create_vlan_member(self.client, vlan_id, port_list[i], SAI_VLAN_PORT_UNTAGGED))
 
         attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
