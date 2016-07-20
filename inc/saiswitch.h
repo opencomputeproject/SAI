@@ -506,6 +506,9 @@ typedef enum _sai_switch_attr_t
     /* Custom range base value */
     SAI_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
+    /* Enable Broadcom switch shell [bool] (default to 0) */
+    SAI_SWITCH_ATTR_BRCM_SWITCH_SHELL_ENABLE,
+
     /* --*/
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END
 
