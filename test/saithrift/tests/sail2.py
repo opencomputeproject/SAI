@@ -391,7 +391,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
         3. add n-1 ports to vlan 10
         4. add mac for each port
         5. send untagged broadcast packet from port 1, verify all n-1 ports receive the packet except the last port
-        6. send untagged unicast packets from port 1 to port the rest of the vlan members port. Verify only one port at a time receives the packet and port n does not.
+        6. send untagged unicast packets from port 1 to the rest of the vlan members ports. Verify only one port at a time receives the packet and port n does not.
         7. clean up.
         """
 
