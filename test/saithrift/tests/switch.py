@@ -408,7 +408,7 @@ def sai_thrift_create_acl_table(client,
     acl_table_id = client.sai_thrift_create_acl_table(acl_attr_list)
     return acl_table_id
 
-def sai_thrift_create_acl_entry(client, acl_table_id,
+def sai_thrift_create_acl_entry(client, acl_table_id, priority,
                                 action, addr_family,
                                 mac_src, mac_src_mask,
                                 mac_dst, mac_dst_mask,
@@ -428,7 +428,7 @@ def sai_thrift_create_acl_entry(client, acl_table_id,
     acl_attr_list.append(attribute)
 
     #Priority
-    attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u32=10)))
+    attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u32=priority)))
     attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PRIORITY,
                                        value=attribute_value)
     acl_attr_list.append(attribute)
@@ -505,6 +505,13 @@ def sai_thrift_create_acl_entry(client, acl_table_id,
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
+        
+    if action == 10:
+        #Action redirect
+        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(s32=action)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
 
     if counter != None:
         attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(oid=counter)))
@@ -514,6 +521,22 @@ def sai_thrift_create_acl_entry(client, acl_table_id,
 
     acl_entry_id = client.sai_thrift_create_acl_entry(acl_attr_list)
     return acl_entry_id
+
+def sai_thrift_create_acl_counter(client, acl_table_id):
+    acl_attr_list = []
+
+    #TABLE OID
+    attribute_value = sai_thrift_attribute_value_t(oid=acl_table_id)
+    attribute = sai_thrift_attribute_t(id=SAI_ACL_COUNTER_ATTR_TABLE_ID,
+                                       value=attribute_value)
+    acl_attr_list.append(attribute)
+
+    acl_counter_id = client.sai_thrift_create_acl_counter(acl_attr_list)
+    return acl_counter_id
+
+def sai_thrift_delete_acl_counter(client, acl_counter_id):
+
+    client.sai_thrift_delete_acl_counter(acl_counter_id)
 
 def sai_thrift_create_mirror_session(client, mirror_type, port,
                                      vlan, vlan_priority, vlan_tpid,
