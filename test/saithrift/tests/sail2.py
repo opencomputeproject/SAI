@@ -381,7 +381,7 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_set_port_attribute(port4, attr)
 
 @group('l2')
-@group('sonic')			
+@group('sonic')
 class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         """
@@ -403,7 +403,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
         default_vlan_members_list = []
         mac_list = []
         vlan_member_list = []
-		ingress_port = 0
+        ingress_port = 0
 
         for i in range (1, len(port_list)):
             mac_list.append("00:00:00:00:00:%d" %(i+1))

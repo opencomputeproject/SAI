@@ -632,8 +632,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
 
       vlan_member_list_object_attribute.id = SAI_VLAN_ATTR_MEMBER_LIST;
-      vlan_member_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * 64);
-      vlan_member_list_object_attribute.value.objlist.count = 64;
+      vlan_member_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * 128);
+      vlan_member_list_object_attribute.value.objlist.count = 128;
       vlan_api->get_vlan_attribute(vlan_id, 1, &vlan_member_list_object_attribute);
 
       thrift_attr_list.attr_count = 1;
