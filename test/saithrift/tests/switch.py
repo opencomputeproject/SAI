@@ -490,29 +490,33 @@ def sai_thrift_create_acl_entry(client, acl_table_id, priority,
         acl_attr_list.append(attribute)
 
     #Packet action
-    if action == 2:
+    if action == SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS:
         #Ingress mirroring
         if ingress_mirror != None:
             attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=ingress_mirror)))
             attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS, value=attribute_value)
             acl_attr_list.append(attribute)
-        elif egress_mirror != None:
+
+    if action == SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS:
+        #Egress mirroring
+        if egress_mirror != None:
             attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=egress_mirror)))
             attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS, value=attribute_value)
             acl_attr_list.append(attribute)
-    else:
-        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(s32=action)))
-        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
-                                           value=attribute_value)
-        acl_attr_list.append(attribute)
-        
-    if action == 10:
+            
+    if action == SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT:
         #Action redirect
         attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(s32=action)))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
+    else:
+        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(s32=action)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+        
     if counter != None:
         attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(oid=counter)))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_COUNTER,
