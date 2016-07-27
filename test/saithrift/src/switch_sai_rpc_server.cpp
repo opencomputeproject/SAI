@@ -283,7 +283,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_TYPE:
-                  attr_list[i].value.u32 = attribute.value.u32;//FIXME
+                  attr_list[i].value.u32 = attribute.value.u32;
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
@@ -535,7 +535,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       uint32_t attr_count = thrift_attr_list.size();
       status = fdb_api->create_fdb_entry(&fdb_entry, attr_count, attr_list);
       free(attr_list);
-      printf("status is %d\n",status);
 
       return status;
   }
@@ -552,7 +551,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_fdb_entry(thrift_fdb_entry, &fdb_entry);
       status = fdb_api->remove_fdb_entry(&fdb_entry);
 
-      printf("status is %d\n",status);
 
       return status;
   }
@@ -753,7 +751,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       status = route_api->create_route(&unicast_route_entry, attr_count, attr_list);
       free(attr_list);
 
-      printf("status is %d\n",status);
 
       return status;
   }
@@ -786,7 +783,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       uint32_t attr_count = thrift_attr_list.size();
       status = rif_api->create_router_interface(&rif_id, attr_count, attr_list);
 
-      printf("status is %d\n",status);
 
       return rif_id;
   }
@@ -817,7 +813,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       uint32_t attr_count = thrift_attr_list.size();
       status = nhop_api->create_next_hop(&nhop_id, attr_count, attr_list);
 
-      printf("status is %d\n",status);
 
       return nhop_id;
   }
@@ -1038,7 +1033,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       status = neighbor_api->create_neighbor_entry(&neighbor_entry, attr_count, attr_list);
       free(attr_list);
 
-      printf("status is %d\n",status);
 
       return status;
   }
@@ -2379,7 +2373,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                         attr_list[i].value.oid = attribute.value.oid;					
                         break;
                case SAI_TUNNEL_TABLE_ENTRY_ATTR_TYPE :
-                        attr_list[i].value.u32 = attribute.value.u32;//s32
+                        attr_list[i].value.u32 = attribute.value.u32;
                         break;
                case SAI_TUNNEL_TABLE_ENTRY_ATTR_DST_IP:
                case SAI_TUNNEL_TABLE_ENTRY_ATTR_SRC_IP:
@@ -2413,7 +2407,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_tunnel_attributes(thrift_attr_list,attr_list);
       uint32_t list_count = thrift_attr_list.size();
       status = tunnel_api->create_tunnel(&tunnel_id, list_count, attr_list);
-      printf("istatus is %d\n",status);
       free(attr_list);
       return tunnel_id;
   }
@@ -2428,7 +2421,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
       sai_object_id_t tunnel_id = (sai_object_id_t ) thrift_tunnel_id;
       status = tunnel_api->remove_tunnel(tunnel_id);
-      printf("status is %d\n",status);
       return status;
    }
    
@@ -2445,7 +2437,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_tunnel_entry_attributes(thrift_attr_list,attr_list);
       uint32_t list_count = thrift_attr_list.size();
       status = tunnel_api->create_tunnel_table_entry(&tunnel_entry_id, list_count, attr_list);
-      printf("status is %d\n",status);
       free(attr_list);
       printf("tunnel_entry_id %d\n",tunnel_entry_id);
       return tunnel_entry_id;
@@ -2461,7 +2452,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
       sai_object_id_t tunnel_entry_id = (sai_object_id_t ) thrift_tunnel_entry_id;
       status = tunnel_api->remove_tunnel_table_entry(tunnel_entry_id);
-      printf("status is %d\n",status);
       return status;
 	  }
   
