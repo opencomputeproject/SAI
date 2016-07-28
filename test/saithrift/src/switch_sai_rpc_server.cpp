@@ -2321,9 +2321,11 @@ extern "C" {
 
 int start_sai_thrift_rpc_server(int port)
 {
+    static int param = port;
+
     std::cerr << "Starting SAI RPC server on port " << port << std::endl;
 
-    int rc = pthread_create(&switch_sai_thrift_rpc_thread, NULL, switch_sai_thrift_rpc_server_thread, &port);
+    int rc = pthread_create(&switch_sai_thrift_rpc_thread, NULL, switch_sai_thrift_rpc_server_thread, &param);
     std::cerr << "create pthread switch_sai_thrift_rpc_server_thread result " << rc << std::endl;
 
     rc = pthread_detach(switch_sai_thrift_rpc_thread);
