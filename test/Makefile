@@ -22,7 +22,7 @@ LDIR = ./lib
 MKDIR_P = mkdir -p 
 USER_ODIR = obj
 USER_BDIR = bin
-OUT_DIRS = $(USER_BDIR) $(USER_ODIR) 
+OUT_DIRS = $(USER_BDIR) $(USER_ODIR) $(LDIR) 
 TESTS = $(USER_BDIR)/basic_router 
 
 ###########################################################
@@ -66,7 +66,7 @@ $(USER_ODIR)/gtest_main.o : $(GTEST_SRCS_)
 	$(CXX) $(GTEST_FLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
 	$(GTEST_DIR)/src/gtest_main.cc -o $@
 
-$(LDIR)/gtest.a : $(USER_DIR)/gtest-all.o
+$(LDIR)/gtest.a : $(USER_ODIR)/gtest-all.o
 	$(AR) $(ARFLAGS) -o $@ $^ 
 
 $(LDIR)/gtest_main.a : $(USER_ODIR)/gtest-all.o $(USER_ODIR)/gtest_main.o
