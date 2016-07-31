@@ -38,14 +38,14 @@ PKT = simple_tcp_packet(eth_dst = SWITCH_MAC,
                         ip_src = IP_SRC,
                         ip_id = IP_ID,
                         ip_ttl = IP_TTL)
-                        
+
 EXP_PKT = simple_tcp_packet(eth_dst = NEIGHBOR_MAC,
                             eth_src = SWITCH_MAC,
                             ip_dst = IP_DST,
                             ip_src = IP_SRC,
                             ip_id = IP_ID,
                             ip_ttl = IP_TTL - 1)
-                            
+
 
 
 ###############################################################################################################
@@ -88,8 +88,8 @@ class aclTestBase(object):
     def setupAclTable(self, stage = None, mac_src = None, mac_dst = None, mac_src_mask = None, mac_dst_mask = None,
                  in_port = None, out_port = None, in_ports = None, out_ports = None, priority = None, action = None,
                  ip_src = None, ip_src_mask = None, ip_dst = None, ip_dst_mask= None, ip_proto = None,
-                 ingress_mirror_id = None, egress_mirror_id = None, counter = None):
-        
+                 ingress_mirror_id = None, egress_mirror_id = None, counter = None, redirect_port = None):
+
         self.acl_table_id = sai_thrift_create_acl_table(self.client, stage,
                                                         priority,
                                                         self.addr_family,
@@ -99,11 +99,11 @@ class aclTestBase(object):
                                                         in_ports, out_ports,
                                                         in_port, out_port)
         return True
-        
+
     def setupAclEntry(self, stage = None, mac_src = None, mac_dst = None, mac_src_mask = None, mac_dst_mask = None,
                  in_port = None, out_port = None, in_ports = None, out_ports = None, priority = None, action = None,
                  ip_src = None, ip_src_mask = None, ip_dst = None, ip_dst_mask= None, ip_proto = None,
-                 ingress_mirror_id = None, egress_mirror_id = None, counter = None):   
+                 ingress_mirror_id = None, egress_mirror_id = None, counter = None, redirect_port = None):   
         
         self.acl_entry_id = sai_thrift_create_acl_entry(self.client, self.acl_table_id, priority,
                                                         action, self.addr_family,
@@ -114,13 +114,14 @@ class aclTestBase(object):
                                                         ip_proto,
                                                         in_ports, out_ports,
                                                         in_port, out_port,
+                                                        redirect_port,
                                                         ingress_mirror_id,
                                                         egress_mirror_id, counter)
         
         self.acl_counter_id = sai_thrift_create_acl_counter(self.client, self.acl_table_id)
 
         return True
-    
+
     def cleanupAcl(self):
         print "----------------------------------------------------------------------"
         print "Clearing all rules"
@@ -142,33 +143,31 @@ class aclTestBase(object):
         # check for absence of packet here!
         verify_no_packet(self, exp_pkt, port_out, 1)
         print "Packet not received on port %d" %port_out
-        
+
     def verifyPacketOnPort(self, pkt, exp_pkt, port_in, port_out):
         verify_packets(self, exp_pkt, [port_out])
-        print "Packet verified on port %d" %port_out
+        print "Packet verified on port with oid = %d" %port_out
 
-    def runTestFunc(self, action = SAI_PACKET_ACTION_DROP, setup_acltbl=True, **kwargs):
+    def runTestFunc(self, action = 0, setup_acltbl=True, **kwargs):
 
         print kwargs
-        
+
         if setup_acltbl:
             self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
             self.setupAclTable(**kwargs)
 
         self.setupAclEntry(action=action, **kwargs)
-        if not action:
+        if action == SAI_PACKET_ACTION_DROP:
             self.verifyNoRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
+        elif action == SAI_PACKET_ACTION_FORWARD:
+            self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
         elif action == SAI_PACKET_ACTION_COPY:
             self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
-        elif action == SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT:
-            self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_REDIRECT)
-        else:
-            self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
-            
+
     def runTest(self):
         print
         switch_init(self.client)
-       
+
         self.setupRouting(port_list[PORT_OUT], port_list[PORT_IN], port_list[PORT_REDIRECT])
 
         try:
@@ -237,7 +236,7 @@ class testAclSrcMacDrop(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
                                                    in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
                                                    mac_src = TEST_SRC_MAC)
         print "Source MAC address dropped successfully"
-        
+
 @group('acl')
 class testAclSrcMacForward(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
     def runTestFunc(self):
@@ -246,7 +245,7 @@ class testAclSrcMacForward(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
                                                       in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
                                                       mac_src = TEST_SRC_MAC)
         print "Source MAC address forwarded successfully"
-        
+
 @group('acl')
 class testAclDstMacDrop(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
     def runTestFunc(self):
@@ -255,7 +254,7 @@ class testAclDstMacDrop(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
                                                    in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
                                                    mac_dst = SWITCH_MAC)
         print "Destination MAC address dropped successfully"
-        
+
 @group('acl')
 class testAclDstMacForward(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
     def runTestFunc(self):
@@ -277,7 +276,7 @@ class testAclSrcIpCopy(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
                                                   in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
                                                   ip_src = IP_SRC,
                                                   ip_src_mask = IP_MASK)
-        print "Source IPv4 address copied to port 176 (CPU)"
+        print "Source IPv4 address copied to CPU"
 
 @group('acl')
 class testAclDstIpCopy(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
@@ -287,8 +286,8 @@ class testAclDstIpCopy(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
                                                   in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
                                                   ip_dst = IP_DST,
                                                   ip_dst_mask = IP_MASK)
-        print "Destination IPv4 address copied to port 176 (CPU)"
-        
+        print "Destination IPv4 address copied to CPU"
+
 @group('acl')
 class testAclSrcMacCopy(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
     def runTestFunc(self):
@@ -296,7 +295,7 @@ class testAclSrcMacCopy(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
                                                    action = SAI_PACKET_ACTION_COPY,
                                                    in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
                                                    mac_src = TEST_SRC_MAC)
-        print "Source MAC address copied to port 176 (CPU)"
+        print "Source MAC address copied to CPU"
 
 @group('acl')
 class testAclDstMacCopy(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
@@ -305,7 +304,7 @@ class testAclDstMacCopy(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
                                                    action = SAI_PACKET_ACTION_COPY,
                                                    in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
                                                    mac_dst = SWITCH_MAC)
-        print "Destination MAC address copied to port 176 (CPU)"
+        print "Destination MAC address copied to CPU"
 
 ###############################################################################################################
 ############################### testing REDIRECT action (SAI_ACL_STAGE_INGRESS) ###############################
@@ -315,36 +314,40 @@ class testAclDstMacCopy(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
 class testAclSrcIpRedirect(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
     def runTestFunc(self):
         super(testAclSrcIpRedirect, self).runTestFunc(stage = SAI_ACL_STAGE_INGRESS, priority = 10,
-                                                      action = SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT,
-                                                      in_ports = [port_list[PORT_OUT], port_list[PORT_IN], port_list[PORT_REDIRECT]],
+                                                      in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
+                                                      redirect_port = port_list[PORT_REDIRECT],
                                                       ip_src = IP_SRC,
                                                       ip_src_mask = IP_MASK)
-        print "Source IPv4 address redirected to port 3"
+        self.verifyPacketOnPort(PKT, EXP_PKT, PORT_IN, port_list[PORT_REDIRECT])
+        print "Source IPv4 address redirected to redirect port"
 
 @group('acl')
 class testAclDstIpRedirect(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
     def runTestFunc(self):
         super(testAclDstIpRedirect, self).runTestFunc(stage = SAI_ACL_STAGE_INGRESS, priority = 10,
-                                                      action = SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT,
-                                                      in_ports = [port_list[PORT_OUT], port_list[PORT_IN], port_list[PORT_REDIRECT]],
+                                                      in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],                                                      
+                                                      redirect_port = port_list[PORT_REDIRECT],
                                                       ip_dst = IP_DST,
                                                       ip_dst_mask = IP_MASK)
-        print "Destination IPv4 address redirected to port 3"
-        
+        self.verifyPacketOnPort(PKT, EXP_PKT, PORT_IN, port_list[PORT_REDIRECT])
+        print "Destination IPv4 address redirected to redirect port"
+
 @group('acl')
 class testAclSrcMacRedirect(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
     def runTestFunc(self):
         super(testAclSrcMacRedirect, self).runTestFunc(stage = SAI_ACL_STAGE_INGRESS, priority = 10,
-                                                       action = SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT,
-                                                       in_ports = [port_list[PORT_OUT], port_list[PORT_IN], port_list[PORT_REDIRECT]],
+                                                       in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
+                                                       redirect_port = port_list[PORT_REDIRECT],
                                                        mac_src = TEST_SRC_MAC)
-        print "Source MAC address redirected to port 3"
+        self.verifyPacketOnPort(PKT, EXP_PKT, PORT_IN, port_list[PORT_REDIRECT])
+        print "Source MAC address redirected to redirect port"
 
 @group('acl')
 class testAclDstMacRedirect(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
     def runTestFunc(self):
         super(testAclDstMacRedirect, self).runTestFunc(stage = SAI_ACL_STAGE_INGRESS, priority = 10,
-                                                       action = SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT,
-                                                       in_ports = [port_list[PORT_OUT], port_list[PORT_IN], port_list[PORT_REDIRECT]],
+                                                       in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
+                                                       redirect_port = port_list[PORT_REDIRECT],
                                                        mac_dst = SWITCH_MAC)
-        print "Destination MAC address redirected to port 3"
+        self.verifyPacketOnPort(PKT, EXP_PKT, PORT_IN, port_list[PORT_REDIRECT])
+        print "Destination MAC address redirected to redirect port"

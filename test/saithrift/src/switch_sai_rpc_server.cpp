@@ -1423,6 +1423,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
             case SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS:
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
+            case SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT:
+                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
+                break;
             case SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER:
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
