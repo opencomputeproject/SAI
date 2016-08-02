@@ -315,7 +315,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
                   break;
               case SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID:
-	      case SAI_NEXT_HOP_ATTR_TUNNEL_ID:	  
+              case SAI_NEXT_HOP_ATTR_TUNNEL_ID:	  
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
           }
@@ -2359,7 +2359,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                         break;
           }
       }
-
    }
  
   void sai_thrift_parse_tunnel_entry_attributes(const std::vector<sai_thrift_attribute_t> & thrift_attr_list ,sai_attribute_t *attr_list){
