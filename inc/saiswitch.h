@@ -500,6 +500,12 @@ typedef enum _sai_switch_attr_t
        Default no map */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
+    /** The number of default objects created on the switch [sai_uint32_t] */
+    SAI_SWITCH_ATTR_DEFAULT_OBJ_NUMBER,
+
+    /** Get the list of default objects created on the switch [sai_object_list_t] */
+    SAI_SWITCH_ATTR_DEFAULT_OBJ_LIST,
+
     /** WRITE-ONLY */
 
     /** Port Breakout mode [sai_port_breakout_t] */
