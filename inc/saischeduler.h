@@ -49,12 +49,15 @@ typedef enum _sai_scheduling_type_t
  */
 typedef enum _sai_scheduler_attr_t
 {
+
+    SAI_SCHEDULER_ATTR_START = 0x00000000,
+
     /** READ-ONLY */
 
     /** READ-WRITE */
 
     /** Scheduling algorithm [sai_scheduling_type_t ], Default WRR*/
-    SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM = 0x00000000,
+    SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM = SAI_SCHEDULER_ATTR_START,
 
     /** [uint8_t] scheduling algorithm weight, Range [1 - 100]
         Valid SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM = SAI_SCHEDULING_DWRR,
@@ -81,8 +84,14 @@ typedef enum _sai_scheduler_attr_t
     SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE = 0x00000006,
 
     /* -- */
+    SAI_SCHEDULER_ATTR_END,
+
     /* Custom range base value */
-    SAI_SCHEDULER_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_SCHEDULER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_SCHEDULER_ATTR_CUSTOM_RANGE_END
+
 } sai_scheduler_attr_t;
 
 

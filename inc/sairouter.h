@@ -45,10 +45,13 @@
  */
 typedef enum _sai_virtual_router_attr_t
 {
+    
+    SAI_VIRTUAL_ROUTER_ATTR_START,
+    
     /** READ-WRITE */
 
     /** Admin V4 state [bool] (default to TRUE) */
-    SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V4_STATE,
+    SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V4_STATE = SAI_VIRTUAL_ROUTER_ATTR_START,
 
     /** Admin V6 state [bool] (default to TRUE) */
     SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE,
@@ -67,8 +70,14 @@ typedef enum _sai_virtual_router_attr_t
 
     /* -- */
 
+    SAI_VIRTUAL_ROUTER_ATTR_END,
+
     /** Custom range base value */
-    SAI_VIRTUAL_ROUTER_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_VIRTUAL_ROUTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_VIRTUAL_ROUTER_ATTR_CUSTOM_RANGE_END
+
 
 } sai_virtual_router_attr_t;
 

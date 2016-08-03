@@ -29,23 +29,62 @@
  *  \{
  */
 
+/**
+* @brief Attribute data for SAI_WRED_ATTR_ECN_MARK_ENABLE
+*/
+typedef enum _sai_ecn_mark_mode_t
+{
+    /** disable ECN marking for all colors */
+    SAI_ECN_MARK_MODE_NONE,
+
+    /** enable ECN marking for green color. Yellow and red are disabled */
+    SAI_ECN_MARK_MODE_GREEN,
+
+    /** enable ECN marking for yellow color. Green and red are disabled */
+    SAI_ECN_MARK_MODE_YELLOW,
+
+    /** enable ECN marking for red color. Green and yellow are disabled */
+    SAI_ECN_MARK_MODE_RED,
+
+    /** enable ECN marking for green and yellow colors. Red is disabled */
+    SAI_ECN_MARK_MODE_GREEN_YELLOW,
+
+    /** enable ECN marking for green and red colors. Yellow is disabled */
+    SAI_ECN_MARK_MODE_GREEN_RED,
+
+    /** enable ECN marking for yellow and red colors. Green is disabled */
+    SAI_ECN_MARK_MODE_YELLOW_RED,
+
+    /** enable ECN marking for all colors */
+    SAI_ECN_MARK_MODE_ALL,
+
+} sai_ecn_mark_mode_t;
 
 /**
  * @brief Enum defining WRED profile attributes
  */
 typedef enum _sai_wred_attr_t
 {
+
+    SAI_WRED_ATTR_START = 0x00000000,
+    
     /** [bool] enable/disable, Default FALSE*/
-    SAI_WRED_ATTR_GREEN_ENABLE = 0x00000000,
+    SAI_WRED_ATTR_GREEN_ENABLE = SAI_WRED_ATTR_START,
 
     /**
      * bytes [ sai_uint32_t],  MANDATORY for SAI_WRED_ATTR_GREEN_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_GREEN,
+     * SAI_ECN_MARK_MODE_GREEN_YELLOW, SAI_ECN_MARK_MODE_GREEN_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_GREEN_MIN_THRESHOLD = 0x00000001,
 
     /**
      * bytes  [sai_uint32_t], MANDATORY for SAI_WRED_ATTR_GREEN_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_GREEN,
+     * SAI_ECN_MARK_MODE_GREEN_YELLOW, SAI_ECN_MARK_MODE_GREEN_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_GREEN_MAX_THRESHOLD = 0x00000002,
@@ -58,12 +97,18 @@ typedef enum _sai_wred_attr_t
 
     /**
      * bytes [ sai_uint32_t], MANDATORY for SAI_WRED_ATTR_YELLOW_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_YELLOW,
+     * SAI_ECN_MARK_MODE_GREEN_YELLOW, SAI_ECN_MARK_MODE_YELLOW_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_YELLOW_MIN_THRESHOLD = 0x00000005,
 
     /**
      * bytes [sai_uint32_t], MANDATORY for SAI_WRED_ATTR_YELLOW_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_YELLOW,
+     * SAI_ECN_MARK_MODE_GREEN_YELLOW, SAI_ECN_MARK_MODE_YELLOW_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_YELLOW_MAX_THRESHOLD = 0x00000006,
@@ -76,12 +121,18 @@ typedef enum _sai_wred_attr_t
 
     /**
      * bytes [ sai_uint32_t] , MANDATORY for SAI_WRED_ATTR_RED_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_RED,
+     * SAI_ECN_MARK_MODE_GREEN_RED, SAI_ECN_MARK_MODE_YELLOW_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_RED_MIN_THRESHOLD = 0x00000009,
 
     /**
      * bytes [ sai_uint32_t] , MANDATORY for SAI_WRED_ATTR_RED_ENABLE = TRUE
+     * or SAI_WRED_ATTR_ECN_MARK_MODE in [SAI_ECN_MARK_MODE_RED,
+     * SAI_ECN_MARK_MODE_GREEN_RED, SAI_ECN_MARK_MODE_YELLOW_RED,
+     * SAI_ECN_MARK_MODE_ALL]
      * Range 1 - Max Buffer size.
      */
     SAI_WRED_ATTR_RED_MAX_THRESHOLD = 0x0000000a,
@@ -92,12 +143,18 @@ typedef enum _sai_wred_attr_t
     /** 0 ~ 15 [sai_uint8_t], Default 0*/
     SAI_WRED_ATTR_WEIGHT = 0x0000000c,
 
-    /** [bool] enable/disable ECN marking, Default is FALSE */
-    SAI_WRED_ATTR_ECN_MARK_ENABLE = 0x0000000d,
+    /** [sai_ecn_mark_mode_t] enable/disable ECN marking, Default is SAI_ECN_MARK_MODE_NONE */
+    SAI_WRED_ATTR_ECN_MARK_MODE = 0x0000000d,
 
     /** -- */
+    SAI_WRED_ATTR_END,
+
     /** Custom range base value */
-    SAI_WRED_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_WRED_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_WRED_ATTR_CUSTOM_RANGE_END
+
 } sai_wred_attr_t;
 
 

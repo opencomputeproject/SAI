@@ -183,10 +183,13 @@ typedef enum _sai_switch_restart_type_t
 */
 typedef enum _sai_switch_attr_t
 {
+    
+    SAI_SWITCH_ATTR_START,    
+
     /** READ-ONLY */
 
     /** The number of ports on the switch [sai_uint32_t] */
-    SAI_SWITCH_ATTR_PORT_NUMBER,
+    SAI_SWITCH_ATTR_PORT_NUMBER = SAI_SWITCH_ATTR_START,
 
     /** Get the port list [sai_object_list_t] */
     SAI_SWITCH_ATTR_PORT_LIST,
@@ -349,6 +352,12 @@ typedef enum _sai_switch_attr_t
     /** Nonvolatile storage required by both SAI and NPU in KB [sai_uint64_t]
      * Will be 0 for SAI_RESTART_TYPE_NONE */
     SAI_SWITCH_ATTR_NV_STORAGE_SIZE,
+   
+    /** Count of the total number of actions supported by NPU. [sai_uint32_t] */
+    SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
+
+    /** Acl capabilities supported by the NPU. [sai_acl_capability_t] */
+    SAI_SWITCH_ATTR_ACL_CAPABILITY,
 
     /** READ-WRITE */
 
@@ -491,15 +500,15 @@ typedef enum _sai_switch_attr_t
        Default no map */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
-    /** WRITE-ONLY */
-
-    /** Port Breakout mode [sai_port_breakout_t] */
-    SAI_SWITCH_ATTR_PORT_BREAKOUT,
-
     /* -- */
+    SAI_SWITCH_ATTR_END,
 
     /* Custom range base value */
-    SAI_SWITCH_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_SWITCH_ATTR_CUSTOM_RANGE_END
+
 
 } sai_switch_attr_t;
 
@@ -515,29 +524,38 @@ typedef enum _sai_switch_attr_t
  * @note This value needs to be incremented whenever a new switch attribute key
  * is added.
  */
-#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         15
+#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         16
 
 /**
  * List of switch attributes keys that can be set using key=value
  */
-#define SAI_KEY_FDB_TABLE_SIZE                "SAI_FDB_TABLE_SIZE"
-#define SAI_KEY_L3_ROUTE_TABLE_SIZE           "SAI_L3_ROUTE_TABLE_SIZE"
-#define SAI_KEY_L3_NEIGHBOR_TABLE_SIZE        "SAI_L3_NEIGHBOR_TABLE_SIZE"
-#define SAI_KEY_NUM_LAG_MEMBERS               "SAI_NUM_LAG_MEMBERS"
-#define SAI_KEY_NUM_LAGS                      "SAI_NUM_LAGS"
-#define SAI_KEY_NUM_ECMP_MEMBERS              "SAI_NUM_ECMP_MEMBERS"
-#define SAI_KEY_NUM_ECMP_GROUPS               "SAI_NUM_ECMP_GROUPS"
-#define SAI_KEY_NUM_UNICAST_QUEUES            "SAI_NUM_UNICAST_QUEUES"
-#define SAI_KEY_NUM_MULTICAST_QUEUES          "SAI_NUM_MULTICAST_QUEUES"
-#define SAI_KEY_NUM_QUEUES                    "SAI_NUM_QUEUES"
-#define SAI_KEY_NUM_CPU_QUEUES                "SAI_NUM_CPU_QUEUES"
-#define SAI_KEY_INIT_CONFIG_FILE              "SAI_INIT_CONFIG_FILE"
-/** 0: means cold boot, and 1: means warm boot */
-#define SAI_KEY_WARM_BOOT                     "SAI_WARM_BOOT"
+#define SAI_KEY_FDB_TABLE_SIZE                    "SAI_FDB_TABLE_SIZE"
+#define SAI_KEY_L3_ROUTE_TABLE_SIZE               "SAI_L3_ROUTE_TABLE_SIZE"
+#define SAI_KEY_L3_NEIGHBOR_TABLE_SIZE            "SAI_L3_NEIGHBOR_TABLE_SIZE"
+#define SAI_KEY_NUM_LAG_MEMBERS                   "SAI_NUM_LAG_MEMBERS"
+#define SAI_KEY_NUM_LAGS                          "SAI_NUM_LAGS"
+#define SAI_KEY_NUM_ECMP_MEMBERS                  "SAI_NUM_ECMP_MEMBERS"
+#define SAI_KEY_NUM_ECMP_GROUPS                   "SAI_NUM_ECMP_GROUPS"
+#define SAI_KEY_NUM_UNICAST_QUEUES                "SAI_NUM_UNICAST_QUEUES"
+#define SAI_KEY_NUM_MULTICAST_QUEUES              "SAI_NUM_MULTICAST_QUEUES"
+#define SAI_KEY_NUM_QUEUES                        "SAI_NUM_QUEUES"
+#define SAI_KEY_NUM_CPU_QUEUES                    "SAI_NUM_CPU_QUEUES"
+#define SAI_KEY_INIT_CONFIG_FILE                  "SAI_INIT_CONFIG_FILE"
+/** 0: cold boot. Initialize NPU and external phys.
+ *  1: warm boot. Do not re-initialize NPU or external phys, reconstruct SAI/SDK state from stored state.
+ *  2: fast boot. Only initilize NPU. SAI/SDK state should not be persisted except for those related 
+ *                to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status. 
+ */
+#define SAI_KEY_BOOT_TYPE                         "SAI_BOOT_TYPE"
 /** The file to recover SAI/NPU state from */
-#define SAI_KEY_WARM_BOOT_READ_FILE           "SAI_WARM_BOOT_READ_FILE"
+#define SAI_KEY_WARM_BOOT_READ_FILE               "SAI_WARM_BOOT_READ_FILE"
 /** The file to write SAI/NPU state to */
-#define SAI_KEY_WARM_BOOT_WRITE_FILE          "SAI_WARM_BOOT_WRITE_FILE"
+#define SAI_KEY_WARM_BOOT_WRITE_FILE              "SAI_WARM_BOOT_WRITE_FILE"
+/** Vendor specific Configuration file for Hardware Port Profile ID parameters.
+ * HW port profile ID can be used to set vendor specific port attributes based on
+ * the tranceiver type plugged in to the port
+ */
+#define SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE    "SAI_HW_PORT_PROFILE_ID_CONFIG_FILE"
 
 
 /**

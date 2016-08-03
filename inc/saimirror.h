@@ -69,13 +69,15 @@ typedef enum _sai_erspan_encapsulation_type_t
  */
 typedef enum _sai_mirror_session_attr_t
 {
+    
+    SAI_MIRROR_SESSION_ATTR_START,
     /** READ_ONLY */
 
     /** READ_WRITE */
 
     /** MANDATORY_ON_CREATE|CREATE_ONLY */
     /** Mirror type SPAN/RSPAN/ERSPAN [sai_mirror_type_t]*/
-    SAI_MIRROR_SESSION_ATTR_TYPE,
+    SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
 
     /** MANDATORY_ON_CREATE|CREATE_AND_SET */
     /** Destination/Analyser/Monitor Port [sai_object_id_t]*/
@@ -144,8 +146,10 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_DST_MAC_ADDRESS,
 
     /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** GRE protocol Id - [uint16_t] */
+    /** Valid for ERSPAN, GRE protocol Id - [uint16_t] */
     SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE,
+
+    SAI_MIRROR_SESSION_ATTR_END,    
 
 } sai_mirror_session_attr_t;
 

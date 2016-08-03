@@ -75,8 +75,11 @@ typedef enum _sai_qos_map_type_t
 
 typedef enum _sai_qos_map_attr_t
 {
+
+    SAI_QOS_MAP_ATTR_START,
+    
     /** Qos Map type [sai_qos_map_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_QOS_MAP_ATTR_TYPE = 0x00000000,
+    SAI_QOS_MAP_ATTR_TYPE = SAI_QOS_MAP_ATTR_START,
 
     /** Dot1p to TC Mapping [sai_qos_map_list_t],
      *
@@ -88,8 +91,14 @@ typedef enum _sai_qos_map_attr_t
      SAI_QOS_MAP_ATTR_MAP_TO_VALUE_LIST = 0x00000001,
 
      /* -- */
+    SAI_QOS_MAP_ATTR_END,
+
     /* Custom range base value */
-    SAI_QOS_MAP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_QOS_MAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_QOS_MAP_ATTR_CUSTOM_RANGE_END
+
 
 } sai_qos_map_attr_t ;
 

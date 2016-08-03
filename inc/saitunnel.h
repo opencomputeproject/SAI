@@ -62,15 +62,24 @@ typedef enum _sai_tunnel_map_type_t
 
 typedef enum _sai_tunnel_map_attr_t
 {
+        
+    SAI_TUNNEL_MAP_ATTR_START = 0x00000000,    
+    
     /** tunnel Map type [sai_tunnel_map_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_TUNNEL_MAP_ATTR_TYPE = 0x00000000,
+    SAI_TUNNEL_MAP_ATTR_TYPE = SAI_TUNNEL_MAP_ATTR_START,
 
     /** tunnel mapper  [sai_tunnel_map_list_t] */
     SAI_TUNNEL_MAP_ATTR_MAP_TO_VALUE_LIST = 0x00000001,
 
     /* -- */
+    SAI_TUNNEL_MAP_ATTR_END,
+
     /* Custom range base value */
-    SAI_TUNNEL_MAP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_TUNNEL_MAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_TUNNEL_MAP_ATTR_CUSTOM_RANGE_END
+
 
 } sai_tunnel_map_attr_t;
 
@@ -155,7 +164,9 @@ typedef enum _sai_tunnel_ttl_mode_t
     /** The pipe model:
      *  where the outer header is independent of that in the inner header so
      *  it hides the TTL field of the inner header from any interaction
-     *  with nodes along the tunnel. */
+     *  with nodes along the tunnel.
+     *  TTL field is user-defined for outer header on encapsulation. TTL
+     *  field of inner header remains the same on decapsulation. */
     SAI_TUNNEL_TTL_PIPE_MODEL
 
 } sai_tunnel_ttl_mode_t;
@@ -171,7 +182,9 @@ typedef enum _sai_tunnel_dscp_mode_t
     /** The pipe model:
      *  where the outer header is independent of that in the inner header so
      *  it hides the DSCP field of the inner header from any interaction
-     *  with nodes along the tunnel. */
+     *  with nodes along the tunnel.
+     *  DSCP field is user-defined for outer header on encapsulation. DSCP
+     *  field of inner header remains the same on decapsulation. */
     SAI_TUNNEL_DSCP_PIPE_MODEL
 
 } sai_tunnel_dscp_mode_t;
@@ -202,10 +215,12 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
 
 typedef enum _sai_tunnel_attr_t
 {
+
+    SAI_TUNNEL_ATTR_START,
     /** READ-WRITE */
 
     /** tunnel type [sai_tunnel_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_TUNNEL_ATTR_TYPE,
+    SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_ATTR_START,
 
     /** tunnel underlay interface [sai_object_id_t] */
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
@@ -267,22 +282,20 @@ typedef enum _sai_tunnel_attr_t
      *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
-    /** tunnel TTL value [sai_uint8_t]
-     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_TTL_MODE = SAI_TUNNEL_TTL_PIPE_MODEL) */
-    SAI_TUNNEL_ATTR_DECAP_TTL_VAL,
-
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t]
      *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE)
      *  (CREATE_ONLY)
      *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
-
-    /** tunnel DSCP value [sai_uint8_t : 6]
-     *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_DECAP_DSCP_MODE = SAI_TUNNEL_DSCP_PIPE_MODEL) */
-    SAI_TUNNEL_ATTR_DECAP_DSCP_VAL,
+    
+    SAI_TUNNEL_ATTR_END,
 
     /** Custom range base value */
-    SAI_TUNNEL_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_TUNNEL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_TUNNEL_ATTR_CUSTOM_RANGE_END
+
 
 } sai_tunnel_attr_t;
 
@@ -370,12 +383,14 @@ typedef enum _sai_tunnel_term_table_entry_type_t
 
 typedef enum _sai_tunnel_term_table_entry_attr_t
 {
+
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_START,
     /** READ-ONLY */
 
     /** READ-WRITE */
 
     /** tunnel virtual router id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY)*/
-    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_VR_ID,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_VR_ID = SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_START,
 
     /** tunnel entry type [sai_tunnel_table_entry_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE,
@@ -393,8 +408,14 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     /** tunnel id to be use for decap [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) valid o */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_ACTION_TUNNEL_ID,
 
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_END,
+
     /** Custom range base value */
-    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_END
+
 
 } sai_tunnel_term_table_entry_attr_t;
 

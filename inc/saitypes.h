@@ -359,42 +359,6 @@ typedef struct _sai_acl_action_data_t
     } parameter;
 } sai_acl_action_data_t;
 
-/**
- * @brief Breakout Mode types based on number
- * of SerDes lanes used in a port
- */
-typedef enum _sai_port_breakout_mode_type_t
-{
-    /** 1 lane breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_1_LANE = 1,
-
-    /** 2 lanes breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_2_LANE = 2,
-
-    /** 4 lanes breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_4_LANE = 4,
-
-    /** Breakout mode max count */
-    SAI_PORT_BREAKOUT_MODE_MAX
-} sai_port_breakout_mode_type_t;
-
-/**
- * @brief Defines breakout mode on a switch port(s)
- */
-typedef struct _sai_port_breakout_t
-{
-    /**
-     * Breakout mode type
-     */
-    sai_port_breakout_mode_type_t breakout_mode;
-
-    /**
-     * List of ports to be breakout
-     * Break out - typically 1 port; Break in - set of ports
-     */
-    sai_object_list_t  port_list;
-} sai_port_breakout_t;
-
 typedef enum _sai_packet_color_t
 {
     SAI_PACKET_COLOR_GREEN,
@@ -495,6 +459,28 @@ typedef struct _sai_tunnel_map_list_t
 } sai_tunnel_map_list_t;
 
 /**
+ *  @brief Structure for acl attributes supported at each stage.
+ *  action_list alone is added now. Qualifier list can also be added 
+ *  when needed.
+ */
+typedef struct _sai_acl_capability_t
+{
+    /* Type of acl stage. Input to get the action list
+     * Failure to pass the stage as input will be treated as error */
+    sai_int32_t  stage;
+
+    /* Output from get function.
+     * boolean indicating whether action list is mandatory for table creation */
+    bool  is_action_list_mandatory;
+
+    /* Output from get function.
+     * List of actions supported per stage from the sai_acl_table_action_list_t.
+     * Max action list can be obtained using the SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT
+     */
+    sai_s32_list_t  action_list;
+}sai_acl_capability_t;
+
+/**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
  *
  */
@@ -526,9 +512,9 @@ typedef union {
     sai_vlan_list_t vlanlist;
     sai_acl_field_data_t aclfield;
     sai_acl_action_data_t aclaction;
-    sai_port_breakout_t portbreakout;
     sai_qos_map_list_t qosmap;
     sai_tunnel_map_list_t tunnelmap;
+    sai_acl_capability_t aclcapability; 
 
 } sai_attribute_value_t;
 

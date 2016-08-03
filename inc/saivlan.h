@@ -58,10 +58,13 @@ typedef enum _sai_vlan_tagging_mode_t
  */
 typedef enum _sai_vlan_attr_t
 {
+
+    SAI_VLAN_ATTR_START,    
+
     /** READ-ONLY */
 
     /** List of vlan members in a VLAN [sai_object_list_t]*/
-    SAI_VLAN_ATTR_MEMBER_LIST,
+    SAI_VLAN_ATTR_MEMBER_LIST = SAI_VLAN_ATTR_START,
 
     /** READ-WRITE */
 
@@ -87,8 +90,14 @@ typedef enum _sai_vlan_attr_t
       * Value Range SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */
     SAI_VLAN_ATTR_META_DATA,
 
+    SAI_VLAN_ATTR_END,
+
     /** Custom range base value */
-    SAI_VLAN_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_VLAN_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_VLAN_ATTR_CUSTOM_RANGE_END
+
 
 } sai_vlan_attr_t;
 
@@ -98,10 +107,12 @@ typedef enum _sai_vlan_attr_t
 */
 typedef enum _sai_vlan_member_attr_t {
 
+    SAI_VLAN_MEMBER_ATTR_START,
+
     /** READ_WRITE */
 
-    /** VLAN ID [sai_vlan_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_VLAN_MEMBER_ATTR_VLAN_ID,
+    /** VLAN ID [sai_vlan_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_VLAN_MEMBER_ATTR_VLAN_ID = SAI_VLAN_MEMBER_ATTR_START,
 
     /** logical port ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_VLAN_MEMBER_ATTR_PORT_ID,
@@ -110,8 +121,14 @@ typedef enum _sai_vlan_member_attr_t {
      * (default to SAI_VLAN_PORT_UNTAGGED) */
     SAI_VLAN_MEMBER_ATTR_TAGGING_MODE,
 
+    SAI_VLAN_MEMBER_ATTR_END,
+
     /** custom range base value */
-    SAI_VLAN_MEMBER_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
+    SAI_VLAN_MEMBER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /* --*/
+    SAI_VLAN_MEMBER_ATTR_CUSTOM_RANGE_END
+
 
 } sai_vlan_member_attr_t;
 

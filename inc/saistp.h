@@ -57,12 +57,17 @@ typedef enum _sai_port_stp_port_state_t
  */
 typedef enum _sai_stp_attr_t
 {
+    
+    SAI_STP_ATTR_START,
+    
     /** READ-ONLY */
 
     /** Vlans attached to STP instance [sai_vlan_list_t] */
-    SAI_STP_ATTR_VLAN_LIST,
+    SAI_STP_ATTR_VLAN_LIST = SAI_STP_ATTR_START,
 
     /** READ-WRITE */
+
+    SAI_STP_ATTR_END,
 
 } sai_stp_attr_t;
 

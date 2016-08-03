@@ -73,6 +73,8 @@ typedef enum _sai_samplepacket_mode_t
 typedef enum _sai_samplepacket_attr_t
 {
 
+    SAI_SAMPLEPACKET_ATTR_START,    
+
     /** READ-ONLY */
 
     /** READ-WRITE */
@@ -83,7 +85,7 @@ typedef enum _sai_samplepacket_attr_t
       * to samples generated. For example a sampling rate of 100 specifies 
       * that, on average, 1 sample will be generated for every 100 packets 
       * observed. */   
-    SAI_SAMPLEPACKET_ATTR_SAMPLE_RATE,
+    SAI_SAMPLEPACKET_ATTR_SAMPLE_RATE = SAI_SAMPLEPACKET_ATTR_START,
 
     /** CREATE_ONLY */
     /** samplepacket switching type sai_samplepacket_type_t. 
@@ -94,6 +96,8 @@ typedef enum _sai_samplepacket_attr_t
     /** samplepacket mode sai_samplepacket_mode_t. 
     Default would be SAI_SAMPLEPACKET_MODE_EXCLUSIVE */
     SAI_SAMPLEPACKET_ATTR_MODE,
+
+    SAI_SAMPLEPACKET_ATTR_END,
 
 } sai_samplepacket_attr_t;
 

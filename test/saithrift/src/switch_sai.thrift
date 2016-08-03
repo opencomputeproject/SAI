@@ -121,6 +121,11 @@ struct sai_thrift_acl_action_data_t {
     2: sai_thrift_acl_parameter_t parameter;
 }
 
+struct sai_thrift_u32_list_t {
+    1: i32 count;
+    2: list<i32> u32list;
+}
+
 union sai_thrift_attribute_value_t {
     1:  bool booldata;
     2:  string chardata;
@@ -141,6 +146,7 @@ union sai_thrift_attribute_value_t {
     17: sai_thrift_vlan_list_t vlanlist;
     18: sai_thrift_acl_field_data_t aclfield;
     19: sai_thrift_acl_action_data_t aclaction;
+    20: sai_thrift_u32_list_t u32list;
 }
 
 struct sai_thrift_attribute_t {
@@ -181,12 +187,13 @@ service switch_sai_rpc {
     //vlan API
     sai_thrift_status_t sai_thrift_create_vlan(1: sai_thrift_vlan_id_t vlan_id);
     sai_thrift_status_t sai_thrift_delete_vlan(1: sai_thrift_vlan_id_t vlan_id);
-    sai_thrift_status_t sai_thrift_add_ports_to_vlan(1: sai_thrift_vlan_id_t vlan_id, 2: list<sai_thrift_vlan_port_t> thrift_port_list);
-    sai_thrift_status_t sai_thrift_remove_ports_from_vlan(1: sai_thrift_vlan_id_t vlan_id, 2: list<sai_thrift_vlan_port_t> thrift_port_list);
     list<i64> sai_thrift_get_vlan_stats(
                              1: sai_thrift_vlan_id_t vlan_id,
                              2: list<sai_thrift_vlan_stat_counter_t> counter_ids,
                              3: i32 number_of_counters);
+    sai_thrift_object_id_t sai_thrift_create_vlan_member(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_vlan_member(1: sai_thrift_object_id_t vlan_member_id);
+    sai_thrift_attribute_list_t sai_thrift_get_vlan_attribute(1: sai_thrift_object_id_t vlan_id);
 
     //virtual router API
     sai_thrift_object_id_t sai_thrift_create_virtual_router(1: list<sai_thrift_attribute_t> thrift_attr_list);
@@ -228,6 +235,8 @@ service switch_sai_rpc {
 
     //switch API
     sai_thrift_attribute_list_t sai_thrift_get_switch_attribute();
+    sai_thrift_attribute_t sai_thrift_get_port_list_by_front_port();
+    sai_thrift_object_id_t sai_thrift_get_port_id_by_front_port(1: string port_name);
     sai_thrift_status_t sai_thrift_set_switch_attribute(1: sai_thrift_attribute_t attribute);
 
     //Trap API
