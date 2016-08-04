@@ -345,6 +345,9 @@ typedef enum _sai_switch_attr_t
     /** The hash object for IPv4 in IPv4 packets going through LAG [sai_object_id_t] */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4_IN_IPV4,
 
+     /** ECMP max number of paths per group [uint32_t]
+      *        (default to 64) */
+        SAI_SWITCH_ATTR_ECMP_MAX_PATHS,
     /** The SDK can
      * 1 - Read the counters directly from HW (or)
      * 2 - Cache the counters in SW. Caching is typically done if

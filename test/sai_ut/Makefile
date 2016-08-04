@@ -41,6 +41,7 @@ scheduler_group_SRCS = $(qos_util_SRCS) ./qos/sai_scheduler_group_unit_test.cpp
 # in unit-test source. For e.g:
 #PLATFORM_LINK_LDFLAGS = -lsai -L../lib -Wl,-rpath-link,../lib
 ###########
+PLATFORM_LINK_LDFLAGS = -L../lib -ldn_common -levent_log -lsai-common-utils -lsai-common
 
 # binary for all unit-tests
 vr_EXEC    = sai_ut_vr
