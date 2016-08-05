@@ -500,11 +500,6 @@ typedef enum _sai_switch_attr_t
        Default no map */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
-    /** WRITE-ONLY */
-
-    /** Port Breakout mode [sai_port_breakout_t] */
-    SAI_SWITCH_ATTR_PORT_BREAKOUT,
-
     /* -- */
     SAI_SWITCH_ATTR_END,
 

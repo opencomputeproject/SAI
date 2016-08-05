@@ -58,8 +58,13 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_START = 0x00000000,    
 
     /** READ-ONLY */
-    /** Queue type [sai_queue_type_t] */
+    /** Queue type [sai_queue_type_t]
+     * (CREATE_ONLY|MANDATORY_ON_CREATE|KEY) */
     SAI_QUEUE_ATTR_TYPE = SAI_QUEUE_ATTR_START,
+
+    /* Queue index [sai_uint8_t]
+     * (CREATE_ONLY|MANDATORY_ON_CREATE|KEY) */
+    SAI_QUEUE_ATTR_INDEX,
 
     /* READ-WRITE */
 
@@ -184,6 +189,40 @@ typedef enum _sai_queue_stat_counter_t
 
 } sai_queue_stat_counter_t;
 
+/**
+ * Routine Description:
+ *    @brief Create queue
+ *
+ * Arguments:
+ *    @param[out] queue_id - queue id
+ *    @param[in] attr_count - number of attributes
+ *    @param[in] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ *
+ */
+typedef sai_status_t (*sai_create_queue_fn)(
+    _Out_ sai_object_id_t* queue_id,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list
+    );
+
+/**
+ * Routine Description:
+ *    @brief Remove queue
+ *
+ * Arguments:
+ *    @param[in] queue_id - queue id
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_queue_fn)(
+    _In_ sai_object_id_t queue_id
+    );
 
 /**
  * @brief Set attribute to Queue
@@ -254,6 +293,8 @@ typedef sai_status_t (*sai_clear_queue_stats_fn)(
  */
 typedef struct _sai_queue_api_t
 {
+    sai_create_queue_fn          create_queue;
+    sai_remove_queue_fn          remove_queue;
     sai_set_queue_attribute_fn   set_queue_attribute;
     sai_get_queue_attribute_fn   get_queue_attribute;
     sai_get_queue_stats_fn       get_queue_stats;
