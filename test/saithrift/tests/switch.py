@@ -17,7 +17,7 @@ Thrift SAI interface basic tests
 """
 
 import switch_sai_thrift
-from sai_base_test import *
+
 import time
 import sys
 import logging
@@ -41,13 +41,9 @@ from switch_sai_thrift.sai_headers import  *
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
 switch_inited=0
-port_list = {}
-sai_port_list = []
-front_port_list = []
+port_list = []
 table_attr_list = []
-router_mac='00:77:66:55:44:00'
-rewrite_mac1='00:77:66:55:45:01'
-rewrite_mac2='00:77:66:55:46:01'
+
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
 
@@ -66,7 +62,10 @@ def switch_init(client):
                 attr_value = sai_thrift_attribute_value_t(booldata=1)
                 attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_ADMIN_STATE, value=attr_value)
                 client.sai_thrift_set_port_attribute(port_id, attr)
-                sai_port_list.append(port_id)
+                port_list.append(port_id)
+# TBD: Temporary solution to avoid serdes tuning on all ports
+                if len(port_list) == len(config["port_map"]):
+                    break
         else:
             print "unknown switch attribute"
 
@@ -75,17 +74,7 @@ def switch_init(client):
     client.sai_thrift_set_switch_attribute(attr)
 
     # wait till the port are up
-    time.sleep(10)
-
-    thrift_attr = client.sai_thrift_get_port_list_by_front_port()
-    if thrift_attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-        for port_id in thrift_attr.value.objlist.object_id_list:
-            front_port_list.append(port_id)
-
-    for interface,front in interface_to_front_mapping.iteritems():
-        sai_port_id = client.sai_thrift_get_port_id_by_front_port(front);
-        port_list[int(interface)]=sai_port_id
-           
+    time.sleep(5)
     switch_inited = 1
 
 
@@ -114,7 +103,7 @@ def sai_thrift_flush_fdb_by_vlan(client, vlan_id):
     fdb_attribute1_value = sai_thrift_attribute_value_t(u16=vlan_id)
     fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_VLAN_ID,
                                             value=fdb_attribute1_value)
-    fdb_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_FDB_FLUSH_ENTRY_DYNAMIC)
+    fdb_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_FDB_FLUSH_ENTRY_STATIC)
     fdb_attribute2 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
                                             value=fdb_attribute2_value)
     fdb_attr_list = [fdb_attribute1, fdb_attribute2]
@@ -222,10 +211,7 @@ def sai_thrift_create_nhop(client, addr_family, ip_addr, rif_id):
     nhop_attribute2_value = sai_thrift_attribute_value_t(oid=rif_id)
     nhop_attribute2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
                                              value=nhop_attribute2_value)
-    nhop_attribute3_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_IP)
-    nhop_attribute3 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_TYPE,
-                                             value=nhop_attribute3_value)
-    nhop_attr_list = [nhop_attribute1, nhop_attribute2, nhop_attribute3]
+    nhop_attr_list = [nhop_attribute1, nhop_attribute2]
     nhop = client.sai_thrift_create_next_hop(thrift_attr_list=nhop_attr_list)
     return nhop
 
@@ -294,11 +280,14 @@ def sai_thrift_create_stp_entry(client, vlan_list):
     stp_id = client.sai_thrift_create_stp_entry(stp_attr_list)
     return stp_id
 
-def sai_thrift_create_hostif_trap_group(client, queue_id):
-    attribute_value = sai_thrift_attribute_value_t(u32=queue_id)
-    attribute = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
-                                        value=attribute_value)
-    attr_list = [attribute]
+def sai_thrift_create_hostif_trap_group(client, queue_id, priority):
+    attribute1_value = sai_thrift_attribute_value_t(u32=priority)
+    attribute1 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_PRIO,
+                                        value=attribute1_value)
+    attribute2_value = sai_thrift_attribute_value_t(u32=queue_id)
+    attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
+                                        value=attribute2_value)
+    attr_list = [attribute1, attribute2]
     trap_group_id = client.sai_thrift_create_hostif_trap_group(thrift_attr_list=attr_list)
     return trap_group_id
 
@@ -335,14 +324,18 @@ def sai_thrift_create_hostif(client, rif_or_port_id, intf_name):
     return hif_id
 
 def sai_thrift_create_acl_table(client,
+                                addr_family,
                                 stage,
                                 priority,
-                                addr_family,
-                                mac_src, mac_dst,
-                                ip_src, ip_dst,
-                                ip_proto,
-                                in_ports, out_ports,
-                                in_port, out_port):
+                                enable_mac_src,
+                                enable_mac_dst,
+                                enable_ip_src,
+                                enable_ip_dst,
+                                enable_ip_proto,
+                                enable_in_ports,
+                                enable_out_ports,
+                                enable_in_port,
+                                enable_out_port):
     acl_attr_list = []
 
     if stage != None:
@@ -357,49 +350,55 @@ def sai_thrift_create_acl_table(client,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
-    if mac_src != None:
+    if enable_mac_src is True:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_SRC_MAC,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
-    if mac_dst != None:
+    if enable_mac_dst is True:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_DST_MAC,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
-    if ip_src != None:
+    if enable_ip_src is True:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_SRC_IP,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
-    if ip_dst != None:
+
+    if enable_ip_dst is True:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_DST_IP,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
-    if ip_proto != None:
+
+    if enable_ip_proto is True:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
-    if in_ports:
+
+    if enable_in_ports is True:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_IN_PORTS,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
-    if out_ports:
+
+    if enable_out_ports is True:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_OUT_PORTS,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
-    if in_port != None:
+
+    if enable_in_port is True:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_IN_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
-    if out_port != None:
+
+    if enable_out_port is True:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_OUT_PORT,
                                            value=attribute_value)
@@ -621,140 +620,3 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
     mirror_id = client.sai_thrift_create_mirror_session(mirror_attr_list)
     return mirror_id
 
-def sai_thrift_create_scheduler_profile(client, max_rate, algorithm=0):
-    scheduler_attr_list = []
-    attribute_value = sai_thrift_attribute_value_t(u64=max_rate)
-    attribute = sai_thrift_attribute_t(id=SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE ,
-                                       value=attribute_value)
-    scheduler_attr_list.append(attribute)
-    attribute_value = sai_thrift_attribute_value_t(s32=algorithm)
-    attribute = sai_thrift_attribute_t(id=SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM ,
-                                       value=attribute_value)
-    scheduler_attr_list.append(attribute)
-    scheduler_profile_id = client.sai_thrift_create_scheduler_profile(scheduler_attr_list)
-    return scheduler_profile_id
-
-def sai_thrift_create_buffer_profile(client, pool_id, size, threshold, xoff_th, xon_th):
-    buffer_attr_list = []
-    attribute_value = sai_thrift_attribute_value_t(oid=pool_id)
-    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_POOL_ID ,
-                                           value=attribute_value)
-    buffer_attr_list.append(attribute)
-    
-    attribute_value = sai_thrift_attribute_value_t(u32=size)
-    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE ,
-                                           value=attribute_value)
-    buffer_attr_list.append(attribute)
-
-    attribute_value = sai_thrift_attribute_value_t(u8=threshold)
-    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_SHARED_DYNAMIC_TH ,
-                                           value=attribute_value)
-    buffer_attr_list.append(attribute)
-
-    attribute_value = sai_thrift_attribute_value_t(u32=xoff_th)
-    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_XOFF_TH ,
-                                           value=attribute_value)
-    buffer_attr_list.append(attribute)
-
-    attribute_value = sai_thrift_attribute_value_t(u32=xon_th)
-    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_PROFILE_ATTR_XON_TH ,
-                                           value=attribute_value)
-    buffer_attr_list.append(attribute)
-
-    buffer_profile_id = client.sai_thrift_create_buffer_profile(buffer_attr_list)
-    return buffer_profile_id
-
-def sai_thrift_create_pool_profile(client, pool_type, size, threshold_mode):
-    pool_attr_list = []
-    attribute_value = sai_thrift_attribute_value_t(s32=pool_type)
-    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_POOL_ATTR_TYPE ,
-                                           value=attribute_value)
-    pool_attr_list.append(attribute)
-
-    attribute_value = sai_thrift_attribute_value_t(u32=size)
-    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_POOL_ATTR_SIZE ,
-                                           value=attribute_value)
-    pool_attr_list.append(attribute)
-
-    attribute_value = sai_thrift_attribute_value_t(s32=threshold_mode)
-    attribute = sai_thrift_attribute_t(id=SAI_BUFFER_POOL_ATTR_TH_MODE ,
-                                           value=attribute_value)
-    pool_attr_list.append(attribute)
-    pool_id = client.sai_thrift_create_pool_profile(pool_attr_list)
-    return pool_id
-
-def sai_thrift_clear_all_counters(client):
-    for port in sai_port_list:
-        queue_list=[]
-        client.sai_thrift_clear_port_all_stats(port)
-        port_attr_list = client.sai_thrift_get_port_attribute(port)
-        attr_list = port_attr_list.attr_list
-        for attribute in attr_list:
-            if attribute.id == SAI_PORT_ATTR_QOS_QUEUE_LIST:
-                for queue_id in attribute.value.objlist.object_id_list:
-                    queue_list.append(queue_id)
-
-        cnt_ids=[]
-        cnt_ids.append(SAI_QUEUE_STAT_PACKETS)
-        for queue in queue_list:
-            client.sai_thrift_clear_queue_stats(queue,cnt_ids,len(cnt_ids))
-
-def sai_thrift_read_port_counters(client,port):
-    port_cnt_ids=[]
-    port_cnt_ids.append(SAI_PORT_STAT_IF_OUT_DISCARDS)
-    port_cnt_ids.append(SAI_PORT_STAT_ETHER_STATS_DROP_EVENTS)
-    port_cnt_ids.append(SAI_PORT_STAT_PFC_0_TX_PKTS)
-    port_cnt_ids.append(SAI_PORT_STAT_PFC_1_TX_PKTS)
-    port_cnt_ids.append(SAI_PORT_STAT_PFC_2_TX_PKTS)
-    port_cnt_ids.append(SAI_PORT_STAT_PFC_3_TX_PKTS)
-    port_cnt_ids.append(SAI_PORT_STAT_PFC_4_TX_PKTS)
-    port_cnt_ids.append(SAI_PORT_STAT_PFC_5_TX_PKTS)
-    port_cnt_ids.append(SAI_PORT_STAT_PFC_6_TX_PKTS)
-    port_cnt_ids.append(SAI_PORT_STAT_PFC_7_TX_PKTS)
-    port_cnt_ids.append(SAI_PORT_STAT_IF_OUT_OCTETS)
-    port_cnt_ids.append(SAI_PORT_STAT_IF_OUT_UCAST_PKTS)
-    counters_results=[]
-    counters_results = client.sai_thrift_get_port_stats(port,port_cnt_ids,len(port_cnt_ids))
-    queue_list=[]
-    port_attr_list = client.sai_thrift_get_port_attribute(port)
-    attr_list = port_attr_list.attr_list
-    for attribute in attr_list:
-        if attribute.id == SAI_PORT_ATTR_QOS_QUEUE_LIST:
-            for queue_id in attribute.value.objlist.object_id_list:
-                queue_list.append(queue_id)
-    cnt_ids=[]
-    thrift_results=[]
-    queue_counters_results=[]
-    cnt_ids.append(SAI_QUEUE_STAT_PACKETS)
-    queue1=0
-    for queue in queue_list:
-        if queue1 <= 7:
-            thrift_results=client.sai_thrift_get_queue_stats(queue,cnt_ids,len(cnt_ids))
-            queue_counters_results.append(thrift_results[0])
-            queue1+=1
-    return (counters_results, queue_counters_results)
-
-def sai_thrift_create_vlan_member(client, vlan_id, port_id, tagging_mode):
-    vlan_member_attr_list = []
-    attribute_value = sai_thrift_attribute_value_t(s32=vlan_id)
-    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_VLAN_ID,
-                                           value=attribute_value)
-    vlan_member_attr_list.append(attribute)
-
-    attribute_value = sai_thrift_attribute_value_t(oid=port_id)
-    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_PORT_ID,
-                                           value=attribute_value)
-    vlan_member_attr_list.append(attribute)
-
-    attribute_value = sai_thrift_attribute_value_t(s32=tagging_mode)
-    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_TAGGING_MODE,
-                                           value=attribute_value)
-    vlan_member_attr_list.append(attribute)
-    vlan_member_id = client.sai_thrift_create_vlan_member(vlan_member_attr_list)
-    return vlan_member_id
-
-def sai_thrift_set_port_shaper(client, port_id, max_rate):
-    sched_prof_id=sai_thrift_create_scheduler_profile(client, max_rate)
-    attr_value = sai_thrift_attribute_value_t(oid=sched_prof_id)
-    attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID, value=attr_value)
-    client.sai_thrift_set_port_attribute(port_id,attr)
