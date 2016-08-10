@@ -103,7 +103,7 @@ def sai_thrift_create_fdb(client, vlan_id, mac, port, mac_action):
     fdb_attribute3_value = sai_thrift_attribute_value_t(s32=mac_action)
     fdb_attribute3 = sai_thrift_attribute_t(id=SAI_FDB_ENTRY_ATTR_PACKET_ACTION,
                                             value=fdb_attribute3_value)
-    fdb_attr_list = [fdb_attribute1, fdb_attribute2]#, fdb_attribute3]
+    fdb_attr_list = [fdb_attribute1, fdb_attribute2, fdb_attribute3]
     client.sai_thrift_create_fdb_entry(thrift_fdb_entry=fdb_entry, thrift_attr_list=fdb_attr_list)
 
 def sai_thrift_delete_fdb(client, vlan_id, mac, port):
@@ -120,7 +120,7 @@ def sai_thrift_flush_fdb_by_vlan(client, vlan_id):
     fdb_attr_list = [fdb_attribute1, fdb_attribute2]
     client.sai_thrift_flush_fdb_entries(thrift_attr_list=fdb_attr_list)
 
-def sai_thrift_create_virtual_router(client, v4_enabled, v6_ienabled,mac):
+def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled, mac):
     #v4 enabled
     vr_attribute1_value = sai_thrift_attribute_value_t(booldata=v4_enabled)
     vr_attribute1 = sai_thrift_attribute_t(id=SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V4_STATE,
@@ -135,7 +135,7 @@ def sai_thrift_create_virtual_router(client, v4_enabled, v6_ienabled,mac):
     vr_id = client.sai_thrift_create_virtual_router(thrift_attr_list=vr_attr_list)
     return vr_id
 
-def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id, v4_enabled, v6_enabled,is_lb, mac):
+def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id, v4_enabled, v6_enabled, is_lb, mac):
     #vrf attribute
     rif_attr_list = []
     rif_attribute1_value = sai_thrift_attribute_value_t(oid=vr_id)
@@ -217,7 +217,7 @@ def sai_thrift_remove_route(client, vr_id, addr_family, ip_addr, ip_mask, nhop):
     route = sai_thrift_unicast_route_entry_t(vr_id, ip_prefix)
     client.sai_thrift_remove_route(thrift_unicast_route_entry=route)
 
-def sai_thrift_create_nhop(client, addr_family,is_tunnel ,ip_addr, rif_id):
+def sai_thrift_create_nhop(client, addr_family, is_tunnel, ip_addr, rif_id):
     nhop_attr_list = []
     if addr_family == SAI_IP_ADDR_FAMILY_IPV4:
         addr = sai_thrift_ip_t(ip4=ip_addr)
@@ -709,7 +709,7 @@ def sai_thrift_set_port_shaper(client, port_id, max_rate):
     client.sai_thrift_set_port_attribute(port_id,attr)
 
 
-def sai_thrift_create_tunnel(client,addr_family,ip_addr,underlay_if,overlay_if):
+def sai_thrift_create_tunnel(client, addr_family, ip_addr, underlay_if, overlay_if):
     attribute1_value=sai_thrift_attribute_value_t(u32 = SAI_TUNNEL_IPINIP)
     attribute1=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_TYPE,value=attribute1_value)
 
@@ -749,7 +749,7 @@ def sai_thrift_create_tunnel(client,addr_family,ip_addr,underlay_if,overlay_if):
 
 
 	
-def sai_thrift_create_tunnel_table (client,addr_family,vr_id,ip_addr_dst,ip_addr_src,tunnel_oid):
+def sai_thrift_create_tunnel_table (client, addr_family, vr_id, ip_addr_dst, ip_addr_src, tunnel_oid):
     attribute1_value=sai_thrift_attribute_value_t(oid=vr_id)
     attribute1=sai_thrift_attribute_t(id=SAI_TUNNEL_TABLE_ENTRY_ATTR_VR_ID,value=attribute1_value);
 
