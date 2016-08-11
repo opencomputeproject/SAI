@@ -206,6 +206,8 @@ class aclTestBase(object):
             self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
         elif action == SAI_PACKET_ACTION_COPY:
             self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
+        elif action == SAI_PACKET_ACTION_TRAP:
+            self.verifyNoRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
 
     def runTest(self):
         print
@@ -349,6 +351,48 @@ class testAclDstMacCopy(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
                                                    in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
                                                    mac_dst = router_mac)
         print "Destination MAC address copied to CPU"
+
+###############################################################################################################
+################################# testing TRAP action (SAI_ACL_STAGE_INGRESS) #################################
+###############################################################################################################
+
+@group('acl')
+class testAclSrcIpTrap(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
+    def runTestFunc(self):
+        super(testAclSrcIpTrap, self).runTestFunc(stage = SAI_ACL_STAGE_INGRESS,
+                                                  action = SAI_PACKET_ACTION_TRAP,
+                                                  in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
+                                                  ip_src = IP_SRC,
+                                                  ip_src_mask = IP_MASK)
+        print "Source IPv4 address droped in port 1 and forwarded to CPU"
+
+@group('acl')
+class testAclDstIpTrap(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
+    def runTestFunc(self):
+        super(testAclDstIpTrap, self).runTestFunc(stage = SAI_ACL_STAGE_INGRESS,
+                                                  action = SAI_PACKET_ACTION_TRAP,
+                                                  in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
+                                                  ip_dst = IP_DST,
+                                                  ip_dst_mask = IP_MASK)
+        print "Destination IPv4 address droped in port 1 and forwarded to CPU"
+
+@group('acl')
+class testAclSrcMacTrap(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
+    def runTestFunc(self):
+        super(testAclSrcMacTrap, self).runTestFunc(stage = SAI_ACL_STAGE_INGRESS,
+                                                   action = SAI_PACKET_ACTION_TRAP,
+                                                   in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
+                                                   mac_src = rewrite_mac1)
+        print "Source MAC address droped in port 1 and forwarded to CPU"
+
+@group('acl')
+class testAclDstMacTrap(sai_base_test.ThriftInterfaceDataPlane, aclTestBase):
+    def runTestFunc(self):
+        super(testAclDstMacTrap, self).runTestFunc(stage = SAI_ACL_STAGE_INGRESS,
+                                                   action = SAI_PACKET_ACTION_TRAP,
+                                                   in_ports = [port_list[PORT_OUT], port_list[PORT_IN]],
+                                                   mac_dst = router_mac)
+        print "Destination MAC address droped in port 1 and forwarded to CPU"
 
 ###############################################################################################################
 ############################### testing REDIRECT action (SAI_ACL_STAGE_INGRESS) ###############################
