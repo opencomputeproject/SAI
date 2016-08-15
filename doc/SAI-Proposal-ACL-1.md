@@ -26,10 +26,9 @@ In this proposal, we propose a model for binding an ACL table, clarify the usage
 ![SAI acl design](figures/sai_aclobjs.png "Figure 1: ACL ID's relationship and binding points with other SAI objects.")
 __Figure 1: ACL ID's relationship and binding points with other SAI objects__
 
-
 ### ACL ID Binding Model 
 We propose the usage of UOID based ACL Table ID allocated by the create_acl_table function should be uniformly applied to identify the binding point. This bind point is typically identified by various physical and or logical interfaces identified by various objects: 
-1. Physical Ports (saiport.h)
+1. Physical Ports and Lag (saiport.h and sailag.h)
 2. VLANs (saivlan.h)
 3. Router Interfaces (sairouterintf.h)
 4. Bridge Ports (saibridgeintf.h) - includes both .1q and .1d bridge ports
@@ -46,12 +45,23 @@ __Figure 2: Group ID and ACL ID's relation with several binding points.__
 ### Metadata Usage Model
 Metadata is a completely user defined field or an identifier that does not need to be allocated within the SAI implementtaions. The Metadata field(s) in the logical pipeline is to allow users to derive a *Metadata* field from any SAI objects (ports, vlans, rifs, bridge ports, Etc.), as well as flow tables (like unicast/multicast FDBs, Neighbor table, acl table entries, route entries). Currently the Metadata field derived at various stages of the pipeline overrides the previous metadata field.
 
+### ACLs on Tunnels 
+Tunnel interfaces are defined by saitunnel.h. The following tunnel attributes can be configured on the Decap flow as well as Encap flows: 
+* SAI_TUNNEL_ATTR_DECAP_INGRESS_ACL_ID [Ingress ACL table bound to inner packets ]
+* SAI_TUNNEL_ATTR_DECAP_INGRESS_ACL_GROUP_ID [Ingress ACL group bound to inner packets]
+* SAI_TUNNEL_ATTR_ENCAP_EGRESS_ACL_ID [EGRESS ACL bound on encap or originated tunnels]
+
 ### ACL Stages 
 Based on various binding points, the scope of the ACL stages are restricted to primarily INGRESS and EGRESS. The ingress stage of the ACL table gets applied to various flows right after the determinition of the type of interface. For a bridge flow after the port or the bridge port determination, for the router flow right after the rif determination, and for a tunnelled flow it is after the tunnel decap and tunnel determination stage. Please refer to the ACL changes to the behavioral pipeline model for various ACL stages.
 
 ## Example ##
-The following examples shows how to define ACLs, Group IDs, Metadata, Etc. 
+TBD: Examples show how to define ACLs, Group IDs, Metadata, Etc.
+TBD: Update pipeline models after incorporating all review feedbacks.
 
 ## References ##
 1. SAI v0.9.1 specification.
 
+## Next Steps
+1. Community Review 
+2. Update examples
+3. Update pipeline models

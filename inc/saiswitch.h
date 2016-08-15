@@ -289,6 +289,33 @@ typedef enum _sai_switch_attr_t
      * Must return SAI_STATUS_OBJECT_IN_USE when try to delete this VR ID. */
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
+    /** Bind/Unbind a DEFAULT ingress acl on all flows [sai_object_id_t].
+     *      Enable (or bind) ingress ACL filtering by assigning the ACL table 
+     *      object id as attribute value. 
+     *      Disable (or unbind) ingress ACL filtering by assigning 
+     *      SAI_NULL_OBJECT_ID in the attribute value.
+     * Default Value: SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_ID,
+
+    /** Bind/Unbind a DEFAULT ingress acl on all flows [sai_object_id_t].
+     *      Enable (or bind) ingress ACL group filtering by assigning 
+     *      the group id as attribute value.
+     *      Disable (or unbind) ingress ACL group filtering by assigning 
+     *      SAI_NULL_OBJECT_ID in the attribute value.
+     * Default Value: SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_GROUP_ID,
+
+    /** Bind/Unbind a DEFAULT egress acl on all flows [sai_object_id_t].
+     *      Enable (or bind) egress ACL filtering by assigning the ACL table 
+     *      object id as attribute value. 
+     *      Disable (or unbind) egress ACL filtering by assigning 
+     *      SAI_NULL_OBJECT_ID in the attribute value.
+     * Default Value: SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_ID,
+
     /** Maximum traffic classes limit [sai_uint8_t] */
     SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_TRAFFIC_CLASSES,
 

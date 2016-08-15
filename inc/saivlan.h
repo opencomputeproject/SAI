@@ -85,6 +85,33 @@ typedef enum _sai_vlan_attr_t
       */
     SAI_VLAN_ATTR_LEARN_DISABLE,
 
+    /** Bind/Unbind an ingress acl on a vlan [sai_object_id_t].
+     *      Enable (or bind) ingress ACL filtering by assigning the ACL table 
+     *      object id as attribute value. 
+     *      Disable (or unbind) ingress ACL filtering by assigning 
+     *      SAI_NULL_OBJECT_ID in the attribute value.
+     *      Default Value: SAI_NULL_OBJECT_ID
+     */
+    SAI_VLAN_ATTR_INGRESS_ACL_ID,
+
+    /** Bind/Unbind an ingress acl group on a vlan [sai_object_id_t].
+     *      Enable (or bind) ingress ACL group filtering by assigning 
+     *      the group id as attribute value.
+     *      Disable (or unbind) ingress ACL group filtering by assigning 
+     *      SAI_NULL_OBJECT_ID in the attribute value.
+     *      Default Value: SAI_NULL_OBJECT_ID
+     */
+    SAI_VLAN_ATTR_INGRESS_ACL_GROUP_ID,
+
+    /** Bind/Unbind an egress acl on a vlan [sai_object_id_t].
+     *      Enable (or bind) egress ACL filtering by assigning the ACL table 
+     *      object id as attribute value. 
+     *      Disable (or unbind) egress ACL filtering by assigning 
+     *      SAI_NULL_OBJECT_ID in the attribute value.
+     *      Default Value: SAI_NULL_OBJECT_ID
+     */
+    SAI_VLAN_ATTR_EGRESS_ACL_ID,
+
     /** User based Meta Data
       * [sai_uint32_t] (CREATE_AND_SET)
       * Value Range SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */

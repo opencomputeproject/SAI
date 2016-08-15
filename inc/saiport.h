@@ -412,6 +412,33 @@ typedef enum _sai_port_attr_t
      * [sai_packet_action_t] (default to SAI_PACKET_ACTION_DROP) */
     SAI_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION,
 
+    /** Bind/Unbind an ingress acl on a port [sai_object_id_t].
+     *      Enable (or bind) ingress ACL filtering by assigning the ACL table 
+     *      object id as attribute value. 
+     *      Disable (or unbind) ingress ACL filtering by assigning 
+     *      SAI_NULL_OBJECT_ID in the attribute value.
+     *      Default Value: SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_INGRESS_ACL_ID,
+
+    /** Bind/Unbind an ingress acl group on a port [sai_object_id_t].
+     *      Enable (or bind) ingress ACL group filtering by assigning 
+     *      the group id as attribute value.
+     *      Disable (or unbind) ingress ACL group filtering by assigning 
+     *      SAI_NULL_OBJECT_ID in the attribute value.
+     *      Default Value: SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_INGRESS_ACL_GROUP_ID,
+
+    /** Bind/Unbind an egress acl on a port [sai_object_id_t].
+     *      Enable (or bind) egress ACL filtering by assigning the ACL table 
+     *      object id as attribute value. 
+     *      Disable (or unbind) egress ACL filtering by assigning 
+     *      SAI_NULL_OBJECT_ID in the attribute value.
+     *      Default Value: SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_EGRESS_ACL_ID,
+
     /** Enable/Disable Mirror session [sai_object_list_t].
      * Enable ingress mirroring by assigning list of mirror session
      * object id as attribute value
