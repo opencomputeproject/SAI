@@ -20,6 +20,27 @@ from switch import *
 import sai_base_test
 
 @group('l2')
+class UnknownUnicastTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        print
+        print "Sending L2 packet to port 1 with unknown-unicast"
+        switch_init(self.client)
+        sai_thrift_clear_all_counters(self.client)
+        in_port = 0
+        pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.0.0.1',
+                                ip_id=101,
+                                ip_ttl=64)
+
+        send_packet(self, in_port, str(pkt))
+        verify_no_other_packets(self)
+        for i in range(len(port_list)):
+            if (i ==  in_port): continue
+            port_counters, queue_counters = sai_thrift_read_port_counters(self.client, port_list[i])
+            assert(port_counters[COUNTERS_EGRESS_DROP] == 1)
+
+@group('l2')
 class L2AccessToAccessVlanTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
