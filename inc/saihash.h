@@ -93,10 +93,14 @@ typedef enum _sai_hash_attr_t
     SAI_HASH_ATTR_START,
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    SAI_HASH_ATTR_SWITCH_ID = SAI_HASH_ATTR_START,
+
     /** READ-WRITE */
 
     /** Hash native fields [sai_s32_list_t(sai_native_hash_field)] (CREATE_AND_SET) (default to an empty list) */
-    SAI_HASH_ATTR_NATIVE_FIELD_LIST = SAI_HASH_ATTR_START,
+    SAI_HASH_ATTR_NATIVE_FIELD_LIST,
 
     /** Hash UDF group [sai_object_list_t(sai_udf_group_t)] (CREATE_AND_SET) (default to an empty list) */
     SAI_HASH_ATTR_UDF_GROUP_LIST,

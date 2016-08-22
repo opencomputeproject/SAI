@@ -61,6 +61,10 @@ typedef enum _sai_router_interface_attr_t
 {
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    SAI_ROUTER_INTERFACE_ATTR_SWITCH_ID,
+   
     /** Virtual router id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID,
 

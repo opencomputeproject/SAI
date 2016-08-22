@@ -216,8 +216,12 @@ typedef enum _sai_port_attr_t
     
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    SAI_PORT_ATTR_SWITCH_ID = SAI_PORT_ATTR_START,
+   
     /** Port Type [sai_port_type_t] */
-    SAI_PORT_ATTR_TYPE = SAI_PORT_ATTR_START,
+    SAI_PORT_ATTR_TYPE,
 
     /** Operational Status [sai_port_oper_status_t] */
     SAI_PORT_ATTR_OPER_STATUS,

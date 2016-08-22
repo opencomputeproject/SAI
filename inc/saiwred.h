@@ -146,6 +146,10 @@ typedef enum _sai_wred_attr_t
     /** [sai_ecn_mark_mode_t] enable/disable ECN marking, Default is SAI_ECN_MARK_MODE_NONE */
     SAI_WRED_ATTR_ECN_MARK_MODE = 0x0000000d,
 
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    SAI_WRED_ATTR_SWITCH_ID = 0x0000000e,
+
     /** -- */
     SAI_WRED_ATTR_END,
 

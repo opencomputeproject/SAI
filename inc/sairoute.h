@@ -44,12 +44,17 @@ typedef enum _sai_route_attr_t
 {
     
     SAI_ROUTE_ATTR_START,         
-    
+ 
+    /** READ-ONLY */
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    SAI_ROUTE_ATTR_SWITCH_ID = SAI_ROUTE_ATTR_START,
+   
     /** READ-WRITE */
 
     /** Packet action [sai_packet_action_t]
        (default to SAI_PACKET_ACTION_FORWARD) */
-    SAI_ROUTE_ATTR_PACKET_ACTION = SAI_ROUTE_ATTR_START,
+    SAI_ROUTE_ATTR_PACKET_ACTION,
 
     /** Packet priority for trap/log actions [uint8_t]
        (default to 0) */

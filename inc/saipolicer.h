@@ -136,6 +136,10 @@ typedef enum _sai_policer_attr_t
      * Default[disabled], Modify List Needs full new set*/
     SAI_POLICER_ATTR_ENABLE_COUNTER_LIST = 0x0000000a,
 
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    SAI_POLICER_ATTR_SWITCH_ID,
+
     SAI_POLICER_ATTR_END,
 
     /* -- */

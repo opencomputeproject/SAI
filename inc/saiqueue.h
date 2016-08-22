@@ -64,19 +64,28 @@ typedef enum _sai_queue_attr_t
 
     /* Queue index [sai_uint8_t]
      * (CREATE_ONLY|MANDATORY_ON_CREATE|KEY) */
-    SAI_QUEUE_ATTR_INDEX,
+    SAI_QUEUE_ATTR_INDEX = 0x00000001,
+
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    SAI_QUEUE_ATTR_SWITCH_ID = 0x00000002,
+    
+    /** Assosiated Port [sai_object_id_t] 
+     *  (MANDATORY_ON_CREATE | CREATE_ONLY) 
+     */
+    SAI_QUEUE_ATTR_PORT_ID = = 0x00000003,
 
     /* READ-WRITE */
 
     /** Attach WRED ID to queue [sai_object_id_t]
         ID = SAI_NULL_OBJECT_ID to disable WRED. */
-    SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000001,
+    SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000004,
 
     /** Attach buffer profile to Queue [sai_object_id_t] */
-    SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000002,
+    SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000005,
 
     /** Attach scheduler to Queue [sai_object_id_t]*/
-    SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000003,
+    SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000006,
 
     /* -- */
 

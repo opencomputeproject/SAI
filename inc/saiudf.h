@@ -63,10 +63,14 @@ typedef enum _sai_udf_attr_t
     
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    SAI_UDF_ATTR_SWITCH_ID = SAI_UDF_ATTR_START,
+
     /** READ-WRITE */
 
     /** UDF match ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_UDF_ATTR_MATCH_ID = SAI_UDF_ATTR_START,
+    SAI_UDF_ATTR_MATCH_ID,
 
     /** UDF group id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_UDF_ATTR_GROUP_ID,

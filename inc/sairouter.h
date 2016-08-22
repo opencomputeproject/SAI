@@ -47,7 +47,14 @@ typedef enum _sai_virtual_router_attr_t
 {
     
     SAI_VIRTUAL_ROUTER_ATTR_START,
+ 
+    /** READ-ONLY */
     
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    
+    SAI_VIRTUAL_ROUTER_ATTR_SWITCH_ID = SAI_VIRTUAL_ROUTER_ATTR_START,
+   
     /** READ-WRITE */
 
     /** Admin V4 state [bool] (default to TRUE) */

@@ -61,6 +61,10 @@ typedef enum _sai_next_hop_group_attr_t
     /** Number of next hops in the group [uint32_t] */
     SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_COUNT = SAI_NEXT_HOP_GROUP_ATTR_START,
 
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     * Default SAI_NULL_OBJECT_ID */
+    SAI_NEXT_HOP_GROUP_ATTR_SWITCH_ID,
+ 
     /** READ-WRITE */
 
     /** Next hop group type [sai_next_hop_group_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
