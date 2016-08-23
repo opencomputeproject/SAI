@@ -457,7 +457,7 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL,
 
-    /** Default Traffic class value, Default TC = 0 */
+    /** Default Traffic class value, [sai_cos_t] Default TC = 0 */
     SAI_SWITCH_ATTR_QOS_DEFAULT_TC,
 
     /** Enable DOT1P -> TC MAP [sai_object_id_t] on switch.
