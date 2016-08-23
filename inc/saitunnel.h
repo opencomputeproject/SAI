@@ -224,10 +224,12 @@ typedef enum _sai_tunnel_attr_t
     /** tunnel type [sai_tunnel_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_ATTR_START,
 
-    /** tunnel underlay interface [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /** tunnel underlay interface [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY)
+     *  underlay interface is router interface when SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_IPINIP or SAI_TUNNEL_IPINIP_GRE */
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
 
-    /** tunnel overlay interafce [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /** tunnel overlay interafce [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY)
+     *  overlay interface is router interface when SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_IPINIP or SAI_TUNNEL_IPINIP_GRE */
     SAI_TUNNEL_ATTR_OVERLAY_INTERFACE,
 
     /** tunnel encap attribute*/
