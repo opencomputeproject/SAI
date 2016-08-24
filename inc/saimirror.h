@@ -73,8 +73,9 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_START,
     /** READ_ONLY */
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_MIRROR_SESSION_ATTR_SWITCH_ID = SAI_MIRROR_SESSION_ATTR_START,
 
     /** READ_WRITE */

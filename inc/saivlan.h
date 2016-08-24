@@ -63,8 +63,9 @@ typedef enum _sai_vlan_attr_t
 
     /** READ-ONLY */
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_VLAN_ATTR_SWITCH_ID,
 
     /** vlan id [sai_vlan_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */

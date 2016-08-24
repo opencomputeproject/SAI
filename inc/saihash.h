@@ -91,10 +91,12 @@ typedef enum _sai_hash_attr_t
 {
 
     SAI_HASH_ATTR_START,
+    
     /** READ-ONLY */
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_HASH_ATTR_SWITCH_ID = SAI_HASH_ATTR_START,
 
     /** READ-WRITE */

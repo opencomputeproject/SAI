@@ -195,12 +195,16 @@ typedef enum _sai_switch_attr_t
 
     /** Switch hardware ID to open 
      * sai_string_t of size _In_reads_z_(SAI_MAX_HARDWARE_ID_LEN)
-     * (MANDATORY_ON_CREATE|CREATE_ONLY) */
+     * (MANDATORY_ON_CREATE | CREATE_ONLY). 
+     * Hardware information format is based on SAI implementations by vendors.
+     * Example: Like PCI location, I2C adddress etc.
+     * In case of NULL string, first NPU should be initialized.
+     * */
     SAI_SWITCH_ATTR_HARDWARE_INFO,
 
     /** Vendor specific path name of the firmware to load
      * sai_string_t of size _In_reads_z_(SAI_MAX_FIRMWARE_PATH_NAME_LEN)
-     * (MANDATORY_ON_CREATE|CREATE_ONLY) */
+     * (CREATE_ONLY) */
     SAI_SWITCH_ATTR_FIRMWARE_PATH_NAME,
 
     /** Switch initialize or connect to NPU/SDK. [bool] 
@@ -214,37 +218,43 @@ typedef enum _sai_switch_attr_t
 
     /** Switch oper status change notification callback function passed to the adapter.
      *  (CREATE_AND_SET) 
-     *  [sai_switch_state_change_notification_fn as sai_pointer_t]
+     *  [sai_switch_state_change_notification_fn as sai_pointer_t]. 
+     *  Default to NULL
      **/
     SAI_SWITCH_ATTR_OPER_STATUS_CHANGE_NOTIFY,
 
     /** Switch shutdown notification callback function passed to the adapter.
      *  (CREATE_AND_SET) 
      *  [sai_switch_shutdown_request_fn as sai_pointer_t]
+     *   Default to NULL
      **/
     SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY,
 
     /** Switch FDB Event notification callback function passed to the adapter.
      *  (CREATE_AND_SET) 
      *  [sai_fdb_event_notification_fn as sai_pointer_t]
+     *  Default to NULL
      **/
     SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY,
 
     /** Switch Port state change notification callback function passed to the adapter.
      *  (CREATE_AND_SET) 
      *  [sai_port_state_change_notification_fn as sai_pointer_t]
+     *  Default to NULL
      **/
     SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
 
     /** Switch Port event notification callback function passed to the adapter.
      *  (CREATE_AND_SET) 
      *  [sai_port_event_notification_fn as sai_pointer_t]
+     *  Default to NULL
      **/
     SAI_SWITCH_ATTR_PORT_EVENT_NOTIFY,
 
     /** Switch Port event notification callback function passed to the adapter.
      *  (CREATE_AND_SET) 
      *  [sai_packet_event_notification_fn as sai_pointer_t]
+     *   Default to NULL
      **/
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
 

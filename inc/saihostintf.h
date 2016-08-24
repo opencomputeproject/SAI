@@ -57,8 +57,9 @@ typedef enum _sai_hostif_trap_group_attr_t
      * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER,
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_HOSTIF_TRAP_GROUP_ATTR_SWITCH_ID,
 
     SAI_HOSTIF_TRAP_GROUP_ATTR_END, 
@@ -321,8 +322,9 @@ typedef enum _sai_hostif_trap_attr_t
      * (default to SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP) */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_HOSTIF_TRAP_ATTR_SWITCH_ID,
 
     SAI_HOSTIF_TRAP_ATTR_END,
@@ -417,8 +419,9 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_FD,
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_HOSTIF_USER_DEFINED_ATTR_SWITCH_ID,
 
 } sai_hostif_user_defined_trap_attr_t;
@@ -481,8 +484,9 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_START, 
     /** READ-ONLY */
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_HOSTIF_ATTR_SWITCH_ID = SAI_HOSTIF_ATTR_START,
 
     /** Host interface type [sai_hostif_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */

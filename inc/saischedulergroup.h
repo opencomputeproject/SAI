@@ -60,8 +60,9 @@ typedef enum _sai_scheduler_group_attr_t
      * SET_ONLY */
     SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID = 0x00000005,
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_SCHEDULER_GROUP_ATTR_SWITCH_ID = 0x00000006,
     
     /* -- */

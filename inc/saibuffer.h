@@ -46,8 +46,9 @@ typedef enum _sai_ingress_priority_group_attr_t
     
     /** READ-ONLY */
     
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     *  (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_INGRESS_PRIORITY_GROUP_ATTR_SWITCH_ID = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
     
     /** Assosiated Port [sai_object_id_t] 
@@ -233,8 +234,9 @@ typedef enum _sai_buffer_pool_attr_t
      * from the total pool size. */
     SAI_BUFFER_POOL_ATTR_SHARED_SIZE = SAI_BUFFER_POOL_ATTR_START,
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     *  Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_BUFFER_POOL_ATTR_SWITCH_ID,
 
     /** READ-WRITE */
@@ -347,9 +349,10 @@ typedef enum _sai_buffer_profile_attr_t
 
     /** READ-ONLY */
     
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     *  Default SAI_NULL_OBJECT_ID */
-     SAI_BUFFER_PROFILE_ATTR_SWITCH_ID = SAI_BUFFER_PROFILE_ATTR_START,
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_BUFFER_PROFILE_ATTR_SWITCH_ID = SAI_BUFFER_PROFILE_ATTR_START,
 
     /** READ-WRITE */
     /** pointer to buffer pool object id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)

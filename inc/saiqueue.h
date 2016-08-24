@@ -66,8 +66,9 @@ typedef enum _sai_queue_attr_t
      * (CREATE_ONLY|MANDATORY_ON_CREATE|KEY) */
     SAI_QUEUE_ATTR_INDEX = 0x00000001,
 
-    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
-     * Default SAI_NULL_OBJECT_ID */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
     SAI_QUEUE_ATTR_SWITCH_ID = 0x00000002,
     
     /** Assosiated Port [sai_object_id_t] 
