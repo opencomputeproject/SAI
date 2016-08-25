@@ -292,7 +292,7 @@ typedef enum _sai_buffer_profile_attr_t
     SAI_BUFFER_PROFILE_ATTR_START,
     /** READ-WRITE */
 
-    /** pointer to buffer pool object id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
+    /** pointer to buffer pool object id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY)
     *  Pool id = SAI_NULL_OBJECT_ID can be used when profile is not associated with specific
     *  pool, for example for global port buffer. Not applicable to priority group or queue buffer profile */
     SAI_BUFFER_PROFILE_ATTR_POOL_ID = SAI_BUFFER_PROFILE_ATTR_START,
