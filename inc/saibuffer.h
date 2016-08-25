@@ -158,17 +158,17 @@ typedef enum _sai_buffer_pool_type_t
 } sai_buffer_pool_type_t;
 
 /**
- * @brief Enum defining buffer threshold modes
+ * @brief Enum defining buffer pool threshold modes
  */
-typedef enum _sai_buffer_threshold_mode_t
+typedef enum _sai_buffer_pool_threshold_mode_t
 {
     /** static maximum */
-    SAI_BUFFER_THRESHOLD_MODE_STATIC,
+    SAI_BUFFER_POOL_THRESHOLD_MODE_STATIC,
 
     /** dynamic maximum (relative) */
-    SAI_BUFFER_THRESHOLD_MODE_DYNAMIC,
+    SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC,
 
-} sai_buffer_threshold_mode_t;
+} sai_buffer_pool_threshold_mode_t;
 
 /**
  * @brief Enum defining buffer pool attributes.
@@ -191,8 +191,8 @@ typedef enum _sai_buffer_pool_attr_t
     /** buffer pool size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_BUFFER_POOL_ATTR_SIZE,
 
-    /** shared threshold mode for the buffer pool [sai_buffer_threadhold_mode_t] (CREATE_ONLY)
-     * (default to SAI_BUFFER_POOL_DYNAMIC_TH) */
+    /** shared threshold mode for the buffer pool [sai_buffer_pool_threadhold_mode_t] (CREATE_ONLY)
+     * (default to SAI_BUFFER_POOL_THRESHOLD_DYNAMIC) */
     SAI_BUFFER_POOL_ATTR_TH_MODE,
     
     SAI_BUFFER_POOL_ATTR_END,
@@ -284,6 +284,22 @@ typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
     );
 
 /**
+ * @brief Enum defining buffer profile threshold modes
+ */
+typedef enum _sai_buffer_profile_threshold_mode_t
+{
+    /** static maximum */
+    SAI_BUFFER_PROFILE_THRESHOLD_MODE_STATIC,
+
+    /** dynamic maximum (relative) */
+    SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC,
+
+    /** inherit from buffer pool threshold mode */
+    SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE,
+
+} sai_buffer_profile_threshold_mode_t;
+
+/**
  * @brief Enum defining buffer profile attributes.
  */
 typedef enum _sai_buffer_profile_attr_t
@@ -300,10 +316,9 @@ typedef enum _sai_buffer_profile_attr_t
     /** reserved buffer size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,
 
-    /** shared threshold mode for the buffer profile [sai_buffer_threadhold_mode_t] (CREATE_AND_SET)
+    /** shared threshold mode for the buffer profile [sai_buffer_profile_threadhold_mode_t] (CREATE_AND_SET)
      * If set, this overrides SAI_BUFFER_POOL_ATTR_TH_MODE.
-     * If not set, use SAI_BUFFER_POOL_ATTR_TH_MODE. 
-     * (default to value set in SAI_BUFFER_POOL_ATTR_TH_MODE.) */
+     * (default to value set to SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE) */
     SAI_BUFFER_PROFILE_ATTR_TH_MODE,
 
     /** dynamic threshold for the shared usage [sai_int8_t]
