@@ -139,7 +139,7 @@ typedef sai_status_t(*sai_get_hostif_trap_group_attribute_fn)(
     _Inout_ sai_attribute_t *attr_list
     );
 
-typedef enum _sai_hostif_trap_id_t
+typedef enum _sai_hostif_trap_type_t
 {
     /** control plane protocol*/
 
@@ -148,108 +148,108 @@ typedef enum _sai_hostif_trap_id_t
      */
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_ID_STP = 0x00000001,
+    SAI_HOSTIF_TRAP_TYPE_STP = 0x00000001,
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_ID_LACP = 0x00000002,
+    SAI_HOSTIF_TRAP_TYPE_LACP = 0x00000002,
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_ID_EAPOL = 0x00000003,
+    SAI_HOSTIF_TRAP_TYPE_EAPOL = 0x00000003,
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_ID_LLDP = 0x00000004,
+    SAI_HOSTIF_TRAP_TYPE_LLDP = 0x00000004,
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_ID_PVRST = 0x00000005,
+    SAI_HOSTIF_TRAP_TYPE_PVRST = 0x00000005,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_ID_IGMP_TYPE_QUERY = 0x00000006,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_QUERY = 0x00000006,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_ID_IGMP_TYPE_LEAVE = 0x00000007,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_LEAVE = 0x00000007,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_ID_IGMP_TYPE_V1_REPORT = 0x00000008,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V1_REPORT = 0x00000008,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_ID_IGMP_TYPE_V2_REPORT = 0x00000009,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V2_REPORT = 0x00000009,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_ID_IGMP_TYPE_V3_REPORT = 0x00000000a,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V3_REPORT = 0x00000000a,
 
     /** default action is trap */
-    SAI_HOSTIF_TRAP_ID_SAMPLEPACKET = 0x00000000b,
+    SAI_HOSTIF_TRAP_TYPE_SAMPLEPACKET = 0x00000000b,
 
-    SAI_HOSTIF_TRAP_ID_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
+    SAI_HOSTIF_TRAP_TYPE_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
 
     /**
     * @brief router trap
     */
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_ARP_REQUEST = 0x00002000,
+    SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST = 0x00002000,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_ARP_RESPONSE = 0x00002001,
+    SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE = 0x00002001,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_DHCP = 0x00002002,
+    SAI_HOSTIF_TRAP_TYPE_DHCP = 0x00002002,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_OSPF = 0x00002003,
+    SAI_HOSTIF_TRAP_TYPE_OSPF = 0x00002003,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_PIM = 0x00002004,
+    SAI_HOSTIF_TRAP_TYPE_PIM = 0x00002004,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_VRRP = 0x00002005,
+    SAI_HOSTIF_TRAP_TYPE_VRRP = 0x00002005,
 
     /** BGP traffic (tcp src port == 179 or tcp dst port == 179) to local router IP address
     * (default packet action is forward) */
-    SAI_HOSTIF_TRAP_ID_BGP = 0x00002006,
+    SAI_HOSTIF_TRAP_TYPE_BGP = 0x00002006,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_DHCPV6 = 0x00002007,
+    SAI_HOSTIF_TRAP_TYPE_DHCPV6 = 0x00002007,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_OSPFV6 = 0x00002008,
+    SAI_HOSTIF_TRAP_TYPE_OSPFV6 = 0x00002008,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_VRRPV6 = 0x00002009,
+    SAI_HOSTIF_TRAP_TYPE_VRRPV6 = 0x00002009,
 
     /** BGPv6 traffic (tcp src port == 179 or tcp dst port == 179) to local router IP address
     * (default packet action is forward) */
-    SAI_HOSTIF_TRAP_ID_BGPV6 = 0x0000200a,
+    SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x0000200a,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_IPV6_NEIGHBOR_DISCOVERY = 0x0000200b,
+    SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_DISCOVERY = 0x0000200b,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_IPV6_MLD_V1_V2 = 0x0000200c,
+    SAI_HOSTIF_TRAP_TYPE_IPV6_MLD_V1_V2 = 0x0000200c,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_IPV6_MLD_V1_REPORT = 0x0000200d,
+    SAI_HOSTIF_TRAP_TYPE_IPV6_MLD_V1_REPORT = 0x0000200d,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_IPV6_MLD_V1_DONE = 0x0000200e,
+    SAI_HOSTIF_TRAP_TYPE_IPV6_MLD_V1_DONE = 0x0000200e,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_MLD_V2_REPORT = 0x0000200f,
+    SAI_HOSTIF_TRAP_TYPE_MLD_V2_REPORT = 0x0000200f,
 
     /** IP packets to local router IP address (routes with SAI_ROUTE_ATTR_NEXT_HOP_ID=SAI_SWITCH_ATTR_CPU_PORT)
      * (default packet action is trap) */
-    SAI_HOSTIF_TRAP_ID_IP2ME = 0x00002010,
+    SAI_HOSTIF_TRAP_TYPE_IP2ME = 0x00002010,
 
     /** SSH traffic (tcp dst port == 22) to local router IP address 
      * (default packet action is trap) */
-    SAI_HOSTIF_TRAP_ID_SSH = 0x00002011,
+    SAI_HOSTIF_TRAP_TYPE_SSH = 0x00002011,
 
     /** SNMP traffic (udp dst port == 161) to local router IP address
      * (default packet action is trap) */
-    SAI_HOSTIF_TRAP_ID_SNMP = 0x00002012,
+    SAI_HOSTIF_TRAP_TYPE_SNMP = 0x00002012,
 
     /** default packet action is forward */
-    SAI_HOSTIF_TRAP_ID_ROUTER_CUSTOM_RANGE_BASE = 0x0003000,
+    SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x0003000,
 
     /**
     * @brief pipeline exceptions
@@ -257,15 +257,15 @@ typedef enum _sai_hostif_trap_id_t
 
     /** packets size exceeds the router interface MTU size
      * (default packet action is trap) */
-    SAI_HOSTIF_TRAP_ID_L3_MTU_ERROR = 0x00004000,
+    SAI_HOSTIF_TRAP_TYPE_L3_MTU_ERROR = 0x00004000,
 
     /** packets with TTL 0 or 1
      * (default packet action is trap) */
-    SAI_HOSTIF_TRAP_ID_TTL_ERROR = 0x00004001,
+    SAI_HOSTIF_TRAP_TYPE_TTL_ERROR = 0x00004001,
 
-    SAI_HOSTIF_TRAP_ID_CUSTOM_EXCEPTION_RANGE_BASE = 0x00005000,
+    SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00005000,
 
-} sai_hostif_trap_id_t;
+} sai_hostif_trap_type_t;
 
 typedef enum _sai_hostif_trap_channel_t
 {
@@ -284,11 +284,14 @@ typedef enum _sai_hostif_trap_channel_t
 
 typedef enum _sai_hostif_trap_attr_t
 {
-    
     SAI_HOSTIF_TRAP_ATTR_START,
     
+    /** Host interface trap type [sai_hostif_trap_type_t]
+     * (CREATE_ONLY|MANDATORY_ON_CREATE|KEY) */
+    SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE = SAI_HOSTIF_TRAP_ATTR_START,
+
     /** trap action [sai_packet_action_t] */
-    SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION = SAI_HOSTIF_TRAP_ATTR_START,
+    SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
 
     /** Below attributes are only valid when
      * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or 
@@ -329,6 +332,41 @@ typedef enum _sai_hostif_trap_attr_t
 
 /**
  * Routine Description:
+ *    @brief Create host interface trap
+ *
+ * Arguments:
+ *  @param[out] hostif_trap_id  - host interface trap id
+ *  @param[in] attr_count - number of attributes
+ *  @param[in] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
+typedef sai_status_t (*sai_create_hostif_trap_fn)(
+    _Out_ sai_object_id_t *hostif_trap_id,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list
+    );
+
+/**
+ * Routine Description:
+ *    @brief Remove host interface trap
+ *
+ * Arguments:
+ *  @param[in] hostif_trap_group_id - host interface trap group id
+ *
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_hostif_trap_fn)(
+    _In_ sai_object_id_t hostif_trap_id
+    );
+
+/**
+ * Routine Description:
  *   @brief Set trap attribute value.
  *
  * Arguments:
@@ -340,7 +378,7 @@ typedef enum _sai_hostif_trap_attr_t
  *            Failure status code on error
  */
 typedef sai_status_t(*sai_set_hostif_trap_attribute_fn)(
-    _In_ sai_hostif_trap_id_t hostif_trapid,
+    _In_ sai_object_id_t hostif_trapid,
     _In_ const sai_attribute_t *attr
     );
 
@@ -358,7 +396,7 @@ typedef sai_status_t(*sai_set_hostif_trap_attribute_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t(*sai_get_hostif_trap_attribute_fn)(
-    _In_ sai_hostif_trap_id_t hostif_trapid,
+    _In_ sai_object_id_t hostif_trapid,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
@@ -588,8 +626,8 @@ typedef enum _sai_hostif_packet_attr_t
 {
     SAI_HOSTIF_PACKET_ATTR_START,    
 
-    /** Trap ID [sai_hostif_trap_id_t] (for receive-only) */
-    SAI_HOSTIF_PACKET_ATTR_TRAP_ID = SAI_HOSTIF_PACKET_ATTR_START,
+    /** Trap ID [sai_hostif_trap_type_t] (for receive-only) */
+    SAI_HOSTIF_PACKET_ATTR_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
 
     /** User-Defined Trap ID [sai_hostif_user_defined_trap_id_t] (for receive-only) */
     SAI_HOSTIF_PACKET_ATTR_USER_TRAP_ID,
@@ -697,6 +735,8 @@ typedef struct _sai_hostif_api_t
     sai_remove_hostif_trap_group_fn                remove_hostif_trap_group;
     sai_set_hostif_trap_group_attribute_fn         set_trap_group_attribute;
     sai_get_hostif_trap_group_attribute_fn         get_trap_group_attribute;
+    sai_create_hostif_trap_fn                      create_trap;
+    sai_remove_hostif_trap_fn                      remove_trap;
     sai_set_hostif_trap_attribute_fn               set_trap_attribute;
     sai_get_hostif_trap_attribute_fn               get_trap_attribute;
     sai_set_hostif_user_defined_trap_attribute_fn  set_user_defined_trap_attribute;
