@@ -23,8 +23,6 @@
 
 #include <saitypes.h>
 #include <saifdb.h>
-#include <saineighbor.h>
-#include <sairoute.h>
 /** \defgroup SAIOBJECT SAI - Object API definitions.
  *
  *  \{
@@ -42,7 +40,6 @@ typedef struct _sai_object_key_t
         sai_object_id_t           object_id;
         sai_vlan_id_t             vlan_id;
         sai_fdb_entry_t           fdb_entry;
-        sai_neighbor_entry_t      neighbor_entry;
 
     } key;
 } sai_object_key_t;
