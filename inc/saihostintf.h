@@ -265,7 +265,7 @@ typedef enum _sai_hostif_trap_type_t
 
     SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00005000,
 
-} sai_hostif_trap_id_t;
+} sai_hostif_trap_type_t;
 
 typedef enum _sai_hostif_trap_channel_t
 {
@@ -626,8 +626,8 @@ typedef enum _sai_hostif_packet_attr_t
 {
     SAI_HOSTIF_PACKET_ATTR_START,    
 
-    /** Trap ID [sai_hostif_trap_id_t] (for receive-only) */
-    SAI_HOSTIF_PACKET_ATTR_TRAP_ID = SAI_HOSTIF_PACKET_ATTR_START,
+    /** Trap ID [sai_hostif_trap_type_t] (for receive-only) */
+    SAI_HOSTIF_PACKET_ATTR_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
 
     /** User-Defined Trap ID [sai_hostif_user_defined_trap_id_t] (for receive-only) */
     SAI_HOSTIF_PACKET_ATTR_USER_TRAP_ID,
