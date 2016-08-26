@@ -22,7 +22,6 @@
 #define __SAIOBJECT_H_
 
 #include <saitypes.h>
-#include <saifdb.h>
 /** \defgroup SAIOBJECT SAI - Object API definitions.
  *
  *  \{
@@ -39,7 +38,8 @@ typedef struct _sai_object_key_t
     {
         sai_object_id_t           object_id;
         sai_vlan_id_t             vlan_id;
-        sai_fdb_entry_t           fdb_entry;
+        // when vlan will be converted to sai_object_id_t
+        // then sai_object_key_t can be exchanged to sai_object_id_t
 
     } key;
 } sai_object_key_t;
