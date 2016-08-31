@@ -123,7 +123,7 @@ typedef enum _sai_udf_group_type_t
     SAI_UDF_GROUP_START,
     
     /** Generic UDF group */
-    SAI_UDF_GROUP_GENERICi = SAI_UDF_GROUP_START,
+    SAI_UDF_GROUP_GENERIC = SAI_UDF_GROUP_START,
 
     /** UDF group for hash */
     SAI_UDF_GROUP_HASH,
