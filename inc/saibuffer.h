@@ -333,6 +333,9 @@ typedef enum _sai_buffer_profile_attr_t
      * Ensures to generate XON, and ignore hysteresis, when the total 
      * buffer usage of this PG is less than this threshold and available 
      * buffer in the PG buffer is larger than the XOFF threshold.
+     * When the user sets both XON and XON_OFFSET thresholds, the XON
+     * trigger condition is governed by:
+     *          max(XOFF_TH - XON_OFFSET_TH, XON_TH)
      * default to 0. */
     SAI_BUFFER_PROFILE_ATTR_XON_TH,
 
@@ -342,8 +345,11 @@ typedef enum _sai_buffer_profile_attr_t
      * buffer usage of this PG plus this threshold is less than the XOFF 
      * threshold and available buffer in the PG buffer is larger than the 
      * XON threshold.
+     * When the user sets both XON and XON_OFFSET thresholds, the XON
+     * trigger condition is governed by:
+     *          max(XOFF_TH - XON_OFFSET_TH, XON_TH)
      * default to 0. */
-    SAI_BUFFER_PROFILE_ATTR_XON_HYSTERESIS_TH,
+    SAI_BUFFER_PROFILE_ATTR_XON_OFFSET_TH,
 
     SAI_BUFFER_PROFILE_ATTR_END,
 
