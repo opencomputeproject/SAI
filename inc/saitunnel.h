@@ -195,7 +195,8 @@ typedef enum _sai_tunnel_encap_ecn_mode_t
       * copy from inner */
     SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
 
-    /** User defined behavior */
+    /** User defined behavior.
+     *  Need to provide SAI_TUNNEL_MAP_OECN_TO_UECN in SAI_TUNNEL_ATTR_ENCAP_MAPPERS */
     SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
     
 } sai_tunnel_encap_ecn_mode_t;
@@ -208,7 +209,8 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
     /** Copy from outer ECN */
     SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
     
-    /** User defined behavior */
+    /** User defined behavior
+     *  Need to provide SAI_TUNNEL_MAP_UECN_OECN_TO_OECN in SAI_TUNNEL_ATTR_DECAP_MAPPERS */
     SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
     
 } sai_tunnel_decap_ecn_mode_t;
@@ -222,10 +224,12 @@ typedef enum _sai_tunnel_attr_t
     /** tunnel type [sai_tunnel_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_ATTR_START,
 
-    /** tunnel underlay interface [sai_object_id_t] */
+    /** tunnel underlay interface [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY)
+     *  underlay interface is router interface when SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_IPINIP or SAI_TUNNEL_IPINIP_GRE */
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
 
-    /** tunnel overlay interafce [sai_object_id_t]
+    /** tunnel overlay interafce [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY)
+     *  overlay interface is router interface when SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_IPINIP or SAI_TUNNEL_IPINIP_GRE
      *  overlay interface is bridge port object when SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_VXLAN */
     SAI_TUNNEL_ATTR_OVERLAY_INTERFACE,
 
@@ -254,7 +258,8 @@ typedef enum _sai_tunnel_attr_t
      *  (valid and MANDATORY_ON_CREATE when SAI_TUNNEL_ENCAP_DSCP_MODE = SAI_TUNNEL_DSCP_PIPE_MODEL) */
     SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL,
 
-    /** tunnel GRE key valid [bool] (CREATE_ONLY) */
+    /** tunnel GRE key valid [bool] (CREATE_ONLY) (default = false)
+     *  (valid only when SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_IPINIP_GRE) */
     SAI_TUNNEL_ATTR_ENCAP_GRE_KEY_VALID,
 
     /** tunnel GRE key [sai_uint32_t] (MANDATORY_ON_CREATE when
