@@ -500,6 +500,9 @@ typedef enum _sai_switch_attr_t
        Default no map */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
+    /* Enable vendor specific switch shell [bool] (default to false) */
+    SAI_SWITCH_ATTR_SWITCH_SHELL_ENABLE,
+
     /* -- */
     SAI_SWITCH_ATTR_END,
 
