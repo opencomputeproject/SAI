@@ -351,7 +351,7 @@ typedef sai_status_t (*sai_create_tunnel_fn)(
  *    @brief Remove tunnel
  *
  * Arguments:
- *    @param[in] tunnel_id – tunnel id
+ *    @param[in] tunnel_id - tunnel id
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success

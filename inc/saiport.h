@@ -262,11 +262,11 @@ typedef enum _sai_port_attr_t
       * in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_REMOTE_SUPPORTED_SPEED,
 
-    /** Query list of Remote Port’s Supported
+    /** Query list of Remote Port's Supported
       * HALF-Duplex speed in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_REMOTE_SUPPORTED_HALF_DUPLEX_SPEED,
 
-    /** Query Remote Port’s auto-negotiation support [bool] */
+    /** Query Remote Port's auto-negotiation support [bool] */
     SAI_PORT_ATTR_REMOTE_SUPPORTED_AUTO_NEG_MODE,
 
     /** Query Remote port supported flow control mode
@@ -283,11 +283,11 @@ typedef enum _sai_port_attr_t
       * in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_SPEED,
 
-    /** Query list of Remote Port’s
+    /** Query list of Remote Port's
       * Advertised HALF-Duplex speed in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_HALF_DUPLEX_SPEED,
 
-    /** Query Remote Port’s auto-negotiation Advertisement [bool] */
+    /** Query Remote Port's auto-negotiation Advertisement [bool] */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_AUTO_NEG_MODE,
 
     /** Query Remote port Advertised flow control mode
@@ -337,17 +337,17 @@ typedef enum _sai_port_attr_t
      * HALF-Duplex speed in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_ADVERTISED_HALF_DUPLEX_SPEED,
 
-    /** Query/Configure Port’s Advertised auto-negotiation configuration [bool] */
+    /** Query/Configure Port's Advertised auto-negotiation configuration [bool] */
     SAI_PORT_ATTR_ADVERTISED_AUTO_NEG_MODE,
 
-    /** Query/Configure Port’s Advertised flow control mode
+    /** Query/Configure Port's Advertised flow control mode
       * [sai_port_flow_control_mode_t] */
     SAI_PORT_ATTR_ADVERTISED_FLOW_CONTROL,
 
     /** Query port's Advertised asymmetric pause mode [bool] */
     SAI_PORT_ATTR_ADVERTISED_ASYMMETRIC_PAUSE_MODE,
 
-    /** Query/Configure Port’s Advertised media type [sai_port_media_type_t] */
+    /** Query/Configure Port's Advertised media type [sai_port_media_type_t] */
     SAI_PORT_ATTR_ADVERTISED_MEDIA_TYPE,
 
     /** Port VLAN ID [sai_vlan_id_t]
