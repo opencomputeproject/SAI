@@ -266,9 +266,9 @@ typedef enum _sai_tunnel_attr_t
       * (valid when SAI_TUNNEL_ATTR_ENCAP_ECN_MODE=SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED) */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
-    /** Bind/Unbind an egress acl on a tunnel after encap [sai_object_id_t].
+    /** Bind/Unbind an egress acl or acl-group on a tunnel after encap [sai_object_id_t].
      *      Enable (or bind) egress ACL filtering by assigning the ACL table 
-     *      object id as attribute value. 
+     *      object id or ACL group object id as attribute value. 
      *      Disable (or unbind) egress ACL filtering by assigning 
      *      SAI_NULL_OBJECT_ID in the attribute value.
      *      Default Value: SAI_NULL_OBJECT_ID
@@ -297,23 +297,14 @@ typedef enum _sai_tunnel_attr_t
      *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
 
-    /** Bind/Unbind an ingress acl on a tunnel after decap. [sai_object_id_t].
+    /** Bind/Unbind an ingress acl or acl-group on a tunnel after decap. [sai_object_id_t].
      *      Enable (or bind) ingress ACL filtering by assigning the ACL table 
-     *      object id as attribute value. 
+     *      object id or ACL group object id as attribute value. 
      *      Disable (or unbind) ingress ACL filtering by assigning 
      *      SAI_NULL_OBJECT_ID in the attribute value.
      *      Default Value: SAI_NULL_OBJECT_ID
      */
     SAI_TUNNEL_ATTR_DECAP_INGRESS_ACL_ID,
-
-    /** Bind/Unbind an ingress acl group on a tunnel after decap [sai_object_id_t].
-     *      Enable (or bind) ingress ACL group filtering by assigning 
-     *      the group id as attribute value.
-     *      Disable (or unbind) ingress ACL group filtering by assigning 
-     *      SAI_NULL_OBJECT_ID in the attribute value.
-     *      Default Value: SAI_NULL_OBJECT_ID
-     */
-    SAI_TUNNEL_ATTR_DECAP_INGRESS_ACL_GROUP_ID,
 
     SAI_TUNNEL_ATTR_END,
 

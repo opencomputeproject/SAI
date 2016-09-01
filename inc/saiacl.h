@@ -1154,7 +1154,8 @@ typedef struct _sai_acl_api_t
     sai_remove_acl_range_fn             remove_acl_range;
     sai_set_acl_range_attribute_fn      set_acl_range_attribute;
     sai_get_acl_range_attribute_fn      get_acl_range_attribute;
-
+    sai_create_acl_group_fn             create_acl_group;
+    sai_remove_acl_group_fn             remove_acl_group;
 } sai_acl_api_t;
 
 /**
