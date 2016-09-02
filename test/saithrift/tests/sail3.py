@@ -1288,7 +1288,6 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
             #sending unkown UC for learning the ports mac and expecting flooding only on the vlan
             send_packet(self, 0, str(local_pkt))
             verify_packets(self, local_pkt, [1])
-            verify_no_other_packets(self)
             #sending L3 packet from port 3 through router to port 1 that update the fdb with is MAC
             L3_pkt = simple_tcp_packet(pktlen=100,
                                 eth_dst=router_mac,
@@ -1308,7 +1307,6 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_ttl=63)
             send_packet(self, 2, str(L3_pkt))
             verify_packets(self, exp_pkt, [0])
-            verify_no_other_packets(self)
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_vlan_id)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_vlan_id, ip_port1, mac_port1)
