@@ -69,6 +69,8 @@ class aclTestBase(object):
         sai_thrift_create_neighbor(self.client, self.addr_family, self.rif_id1, self.ip_addr1, self.dmac1)
         self.nhop1 = sai_thrift_create_nhop(self.client, self.addr_family, self.ip_addr1, self.rif_id1)
         sai_thrift_create_route(self.client, self.vr_id, self.addr_family, self.ip_addr1, self.ip_mask1, self.nhop1)
+        
+        wait_till_configuration_will_end()
 
     def cleanupRouting(self):
         sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, self.ip_addr1, self.ip_mask1, self.nhop1)
@@ -160,8 +162,6 @@ class aclTestBase(object):
                                                         redirect_port,
                                                         ingress_mirror_id,
                                                         egress_mirror_id, counter)
-        
-        self.acl_counter_id = sai_thrift_create_acl_counter(self.client, self.acl_table_id)
 
         return True
 
@@ -171,7 +171,6 @@ class aclTestBase(object):
         print "----------------------------------------------------------------------"
         self.client.sai_thrift_delete_acl_entry(self.acl_entry_id)
         self.client.sai_thrift_delete_acl_table(self.acl_table_id)
-        self.client.sai_thrift_delete_acl_counter(self.acl_counter_id)
 
     def verifyRouting(self, pkt, exp_pkt, port_in, port_out):
         print "Sending packet"

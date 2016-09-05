@@ -68,7 +68,7 @@ def switch_init(client):
         else:
             print "unknown switch attribute"
 
-    attr_value = sai_thrift_attribute_value_t(mac='00:77:66:55:44:33')
+    attr_value = sai_thrift_attribute_value_t(mac=router_mac)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_SRC_MAC_ADDRESS, value=attr_value)
     client.sai_thrift_set_switch_attribute(attr)
 
@@ -751,3 +751,6 @@ def sai_thrift_set_port_shaper(client, port_id, max_rate):
     attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID, value=attr_value)
     client.sai_thrift_set_port_attribute(port_id,attr)
 
+def wait_till_configuration_will_end():
+    print "Waiting the end of configuration..."
+    time.sleep(5)
