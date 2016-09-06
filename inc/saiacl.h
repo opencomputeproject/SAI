@@ -221,11 +221,16 @@ typedef enum _sai_acl_table_attr_t
     
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t] 
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_ACL_TABLE_ATTR_SWITCH_ID = SAI_ACL_TABLE_ATTR_START,
+
     /** READ-WRITE */
 
     /** ACL stage [sai_acl_stage_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_ACL_TABLE_ATTR_STAGE = SAI_ACL_TABLE_ATTR_START,
+    SAI_ACL_TABLE_ATTR_STAGE,
 
     /** Priority [sai_uint32_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY)
@@ -473,9 +478,14 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_START,
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     */
+    SAI_ACL_ENTRY_ATTR_SWITCH_ID = SAI_ACL_ENTRY_ATTR_START,
+
     /** SAI acl table object id [sai_object_id_t]
      * (MANDATORY_ON_CREATE) */
-    SAI_ACL_ENTRY_ATTR_TABLE_ID = SAI_ACL_ENTRY_ATTR_START,
+    SAI_ACL_ENTRY_ATTR_TABLE_ID,
 
     /** READ-WRITE */
 
@@ -786,6 +796,10 @@ typedef enum _sai_acl_counter_attr_t
 {
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t] (CREATE_ONLY),
+     *  Default SAI_NULL_OBJECT_ID */
+    SAI_ACL_COUNTER_ATTR_SWITCH_ID,
+
     /** SAI acl table object id [sai_object_id_t]
      * (MANDATORY_ON_CREATE) */
     SAI_ACL_COUNTER_ATTR_TABLE_ID,
@@ -839,6 +853,11 @@ typedef enum _sai_acl_range_type_t
  */
 typedef enum _sai_acl_range_attr_t
 {
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     */
+    SAI_ACL_RANGE_ATTR_SWITCH_ID,
+
     /** Range Type [sai_acl_range_type_t]
      * (MANDATORY_ON_CREATE, mandatory to pass only one of the range types
      *  defined in sai_acl_range_type_t enum during ACL Range Creation)

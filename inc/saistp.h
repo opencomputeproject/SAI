@@ -65,6 +65,11 @@ typedef enum _sai_stp_attr_t
     /** Vlans attached to STP instance [sai_vlan_list_t] */
     SAI_STP_ATTR_VLAN_LIST = SAI_STP_ATTR_START,
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_STP_ATTR_SWITCH_ID,
+
     /** READ-WRITE */
 
     SAI_STP_ATTR_END,

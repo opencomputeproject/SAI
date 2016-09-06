@@ -57,6 +57,11 @@ typedef enum _sai_hostif_trap_group_attr_t
      * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER,
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_HOSTIF_TRAP_GROUP_ATTR_SWITCH_ID,
+
     SAI_HOSTIF_TRAP_GROUP_ATTR_END, 
 
     SAI_HOSTIF_TRAP_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
@@ -320,6 +325,11 @@ typedef enum _sai_hostif_trap_attr_t
      * (default to SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP) */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_HOSTIF_TRAP_ATTR_SWITCH_ID,
+
     SAI_HOSTIF_TRAP_ATTR_END,
 
     SAI_HOSTIF_TRAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
@@ -447,6 +457,11 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_FD,
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_HOSTIF_USER_DEFINED_ATTR_SWITCH_ID,
+
 } sai_hostif_user_defined_trap_attr_t;
 
 /**
@@ -507,16 +522,21 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_START, 
     /** READ-ONLY */
 
-    /** READ-WRITE */
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_HOSTIF_ATTR_SWITCH_ID = SAI_HOSTIF_ATTR_START,
 
     /** Host interface type [sai_hostif_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_HOSTIF_ATTR_TYPE = SAI_HOSTIF_ATTR_START,
+    SAI_HOSTIF_ATTR_TYPE,
 
     /** Assosiated port or router interface [sai_object_id_t]
     * Valid only when SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
     *   (MANDATORY_ON_CREATE when SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV | CREATE_ONLY) */
     SAI_HOSTIF_ATTR_RIF_OR_PORT_ID,
 
+    /** READ-WRITE */
+    
     /** Name [char[HOSTIF_NAME_SIZE]]
     * The maximum number of charactars for the name is HOSTIF_NAME_SIZE - 1 since
     * it needs the terminating null byte ('\0') at the end.

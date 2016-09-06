@@ -42,10 +42,25 @@
  */
 typedef enum _sai_ingress_priority_group_attr_t
 {
-    SAI_INGRESS_PRIORITY_GROUP_ATTR_START, 
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
+    
+    /** READ-ONLY */
+    
+    /** Switch Object ID [sai_object_id_t]
+     *  (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_SWITCH_ID = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
+    
+    /** Assosiated Port [sai_object_id_t] 
+     *  (MANDATORY_ON_CREATE | CREATE_ONLY) 
+     */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_PORT_ID,
+
     /** buffer profile pointer [sai_object_id_t] */
-    SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE,
+
     SAI_INGRESS_PRIORITY_GROUP_ATTR_END
+
 } sai_ingress_priority_group_attr_t;
 
 /**
@@ -81,6 +96,41 @@ typedef enum _sai_ingress_priority_group_stat_counter_t
     /** Custom range base value */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
 } sai_ingress_priority_group_stat_counter_t;
+
+/**
+ * Routine Description:
+ *    @brief Create Ingress Priority Group
+ *
+ * Arguments:
+ *    @param[out] ingress_pg_id - Priority Group id
+ *    @param[in] attr_count - number of attributes
+ *    @param[in] attr_list - array of attributes
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ *
+ */
+typedef sai_status_t (*sai_create_ingress_priority_group_fn)(
+    _Out_ sai_object_id_t* ingress_pg_id,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list
+    );
+
+/**
+ * Routine Description:
+ *    @brief Remove Ingress Priority Group
+ *
+ * Arguments:
+ *    @param[in] ingress_pg_id - queue id
+ *
+ * Return Values:
+ *    @return SAI_STATUS_SUCCESS on success
+ *            Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_ingress_priority_group_fn)(
+    _In_ sai_object_id_t ingress_pg_id
+    );
 
 /**
  * @brief Set ingress priority group attribute
@@ -176,12 +226,18 @@ typedef enum _sai_buffer_threshold_mode_t
 typedef enum _sai_buffer_pool_attr_t
 {
     SAI_BUFFER_POOL_ATTR_START,
+    
     /** READ-ONLY */
 
     /** shared buffer size in bytes [sai_uint32_t].
      * This is derived from substracting all reversed buffers of queue/port
      * from the total pool size. */
     SAI_BUFFER_POOL_ATTR_SHARED_SIZE = SAI_BUFFER_POOL_ATTR_START,
+
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_BUFFER_POOL_ATTR_SWITCH_ID,
 
     /** READ-WRITE */
 
@@ -290,12 +346,19 @@ typedef enum _sai_buffer_profile_attr_t
 {
     
     SAI_BUFFER_PROFILE_ATTR_START,
-    /** READ-WRITE */
 
+    /** READ-ONLY */
+    
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_BUFFER_PROFILE_ATTR_SWITCH_ID = SAI_BUFFER_PROFILE_ATTR_START,
+
+    /** READ-WRITE */
     /** pointer to buffer pool object id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
     *  Pool id = SAI_NULL_OBJECT_ID can be used when profile is not associated with specific
     *  pool, for example for global port buffer. Not applicable to priority group or queue buffer profile */
-    SAI_BUFFER_PROFILE_ATTR_POOL_ID = SAI_BUFFER_PROFILE_ATTR_START,
+    SAI_BUFFER_PROFILE_ATTR_POOL_ID,
 
     /** reserved buffer size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,

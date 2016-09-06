@@ -90,7 +90,12 @@ typedef enum _sai_qos_map_attr_t
      */
      SAI_QOS_MAP_ATTR_MAP_TO_VALUE_LIST = 0x00000001,
 
-     /* -- */
+     /** Switch Object ID [sai_object_id_t]
+      * (MANDATORY_ON_CREATE | CREATE_ONLY)
+      **/
+    SAI_QOS_MAP_ATTR_SWITCH_ID = 0x00000002, 
+
+    /* -- */
     SAI_QOS_MAP_ATTR_END,
 
     /* Custom range base value */

@@ -77,6 +77,11 @@ typedef enum _sai_samplepacket_attr_t
 
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_SAMPLEPACKET_ATTR_SWITCH_ID = SAI_SAMPLEPACKET_ATTR_START,
+
     /** READ-WRITE */
 
     /** MANDATORY_ON_CREATE|CREATE_AND_SET */
@@ -85,7 +90,7 @@ typedef enum _sai_samplepacket_attr_t
       * to samples generated. For example a sampling rate of 100 specifies 
       * that, on average, 1 sample will be generated for every 100 packets 
       * observed. */   
-    SAI_SAMPLEPACKET_ATTR_SAMPLE_RATE = SAI_SAMPLEPACKET_ATTR_START,
+    SAI_SAMPLEPACKET_ATTR_SAMPLE_RATE,
 
     /** CREATE_ONLY */
     /** samplepacket switching type sai_samplepacket_type_t. 

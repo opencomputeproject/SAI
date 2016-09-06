@@ -73,11 +73,16 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_START,
     /** READ_ONLY */
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_MIRROR_SESSION_ATTR_SWITCH_ID = SAI_MIRROR_SESSION_ATTR_START,
+
     /** READ_WRITE */
 
     /** MANDATORY_ON_CREATE|CREATE_ONLY */
     /** Mirror type SPAN/RSPAN/ERSPAN [sai_mirror_type_t]*/
-    SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
+    SAI_MIRROR_SESSION_ATTR_TYPE,
 
     /** MANDATORY_ON_CREATE|CREATE_AND_SET */
     /** Destination/Analyser/Monitor Port [sai_object_id_t]*/

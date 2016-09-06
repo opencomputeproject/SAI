@@ -63,10 +63,23 @@ typedef enum _sai_vlan_attr_t
 
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_VLAN_ATTR_SWITCH_ID,
+
+    /** vlan id [sai_vlan_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    SAI_VLAN_ATTR_VLAN_ID,
+
     /** List of vlan members in a VLAN [sai_object_list_t]*/
     SAI_VLAN_ATTR_MEMBER_LIST = SAI_VLAN_ATTR_START,
 
     /** READ-WRITE */
+
+    /** STP Instance that the VLAN is associated to [sai_object_id_t]
+      * (default to default stp instance id)*/
+    SAI_VLAN_ATTR_STP_INSTANCE,
+
 
     /** Maximum number of learned MAC addresses [uint32_t]
       * zero means learning limit disable. (default to zero).
@@ -111,7 +124,7 @@ typedef enum _sai_vlan_member_attr_t {
 
     /** READ_WRITE */
 
-    /** VLAN ID [sai_vlan_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /** VLAN ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_VLAN_MEMBER_ATTR_VLAN_ID = SAI_VLAN_MEMBER_ATTR_START,
 
     /** logical port ID [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
@@ -158,32 +171,36 @@ typedef enum _sai_vlan_stat_counter_t
 
 /**
  * Routine Description:
- *    @brief Create a VLAN
+ *    @brief Create a VLAN Object
  *
  * Arguments:
- *    @param[in] vlan_id - VLAN id
+ *    @param[out] vlan_obj_id - Vlan object id
+ *    @param[in] attr_count - number of attributes
+ *    @param[in] attr_list - array of attributes
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_create_vlan_fn)(
-    _In_ sai_vlan_id_t vlan_id
-    );
+     _Out_ sai_object_id_t* vlan_obj_id,
+     _In_ uint32_t attr_count,
+     _In_ const sai_attribute_t *attr_list
+   );
 
 /**
  * Routine Description:
  *    @brief Remove a VLAN
  *
  * Arguments:
- *    @param[in] vlan_id - VLAN id
+ *    @param[in] vlan_obj_id - VLAN id
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_remove_vlan_fn)(
-    _In_ sai_vlan_id_t vlan_id
+    _In_ sai_object_id_t vlan_obj_id
     );
 
 /**
@@ -199,7 +216,7 @@ typedef sai_status_t (*sai_remove_vlan_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_set_vlan_attribute_fn)(
-    _In_ sai_vlan_id_t vlan_id,
+    _In_ sai_object_id_t vlan_id,
     _In_ const sai_attribute_t  *attr
     );
 
@@ -217,7 +234,7 @@ typedef sai_status_t (*sai_set_vlan_attribute_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_get_vlan_attribute_fn)(
-    _In_ sai_vlan_id_t vlan_id,
+    _In_ sai_object_id_t vlan_id,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
@@ -287,7 +304,7 @@ typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
-    _In_ sai_vlan_id_t vlan_id,
+    _In_ sai_object_id_t vlan_id,
     _In_ const sai_vlan_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
@@ -307,7 +324,7 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_clear_vlan_stats_fn)(
-    _In_ sai_vlan_id_t vlan_id,
+    _In_ sai_object_id_t vlan_id,
     _In_ const sai_vlan_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters
     );

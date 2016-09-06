@@ -61,11 +61,16 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_START,
 
     /** READ-ONLY */
+   
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_NEXT_HOP_ATTR_SWITCH_ID = SAI_NEXT_HOP_ATTR_START,
 
     /** READ-WRITE */
 
     /** Next hop entry type [sai_next_hop_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
-    SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_ATTR_START,
+    SAI_NEXT_HOP_ATTR_TYPE,
 
     /** Next hop entry ipv4 address [sai_ip_address_t]
      * (MANDATORY_ON_CREATE when SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_IP)

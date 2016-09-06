@@ -87,10 +87,15 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_START,
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_FDB_ENTRY_ATTR_SWITCH_ID = SAI_FDB_ENTRY_ATTR_START,
+
     /** READ-WRITE */
 
     /** FDB entry type [sai_fdb_entry_type_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
-    SAI_FDB_ENTRY_ATTR_TYPE = SAI_FDB_ENTRY_ATTR_START,
+    SAI_FDB_ENTRY_ATTR_TYPE,
 
     /** FDB entry port id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
      * The port id here can refer to a generic port object such as SAI port object id,
@@ -150,13 +155,18 @@ typedef enum _sai_fdb_flush_attr_t {
     
    SAI_FDB_FLUSH_ATTR_START,
 
-   /**Flush based on port [sai_object_id_t]*/
-   SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
+   /** Switch Object ID [sai_object_id_t]
+    * (MANDATORY_ON_CREATE | CREATE_ONLY)
+    **/
+   SAI_FDB_FLUSH_ATTR_SWITCH_ID = SAI_FDB_FLUSH_ATTR_START,
 
-   /**Flush based on VLAN [sai_vlan_id_t]*/
+   /** Flush based on port [sai_object_id_t]*/
+   SAI_FDB_FLUSH_ATTR_PORT_ID,
+
+   /** Flush based on VLAN [sai_vlan_id_t]*/
    SAI_FDB_FLUSH_ATTR_VLAN_ID,
 
-   /**Flush based on entry type [sai_fdb_flush_entry_type_t]*/
+   /** Flush based on entry type [sai_fdb_flush_entry_type_t]*/
    SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
 
    SAI_FDB_FLUSH_ATTR_END,

@@ -45,10 +45,17 @@ typedef enum _sai_neighbor_attr_t
 {
 
     SAI_NEIGHBOR_ATTR_START, 
+    /** READ-ONLY */
+   
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_NEIGHBOR_ATTR_SWITCH_ID = SAI_NEIGHBOR_ATTR_START,
+
     /** READ-WRITE */
 
     /** Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
-    SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS = SAI_NEIGHBOR_ATTR_START,
+    SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS,
 
     /** L3 forwarding action for this neighbor [sai_packet_action_t]
     *    (default to SAI_PACKET_ACTION_FORWARD) */

@@ -71,6 +71,11 @@ typedef enum _sai_tunnel_map_attr_t
     /** tunnel mapper  [sai_tunnel_map_list_t] */
     SAI_TUNNEL_MAP_ATTR_MAP_TO_VALUE_LIST = 0x00000001,
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_TUNNEL_MAP_ATTR_SWITCH_ID = 0x00000002,
+
     /* -- */
     SAI_TUNNEL_MAP_ATTR_END,
 
@@ -292,7 +297,13 @@ typedef enum _sai_tunnel_attr_t
      *  (CREATE_ONLY)
      *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
-    
+
+
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_TUNNEL_ATTR_SWITCH_ID,
+
     SAI_TUNNEL_ATTR_END,
 
     /** Custom range base value */
@@ -412,6 +423,11 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
 
     /** tunnel id to be use for decap [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY) valid o */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_ACTION_TUNNEL_ID,
+
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SWITCH_ID,
 
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_END,
 

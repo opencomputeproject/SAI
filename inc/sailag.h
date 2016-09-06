@@ -37,8 +37,13 @@ typedef enum _sai_lag_attr_t {
 
     /** READ-ONLY */
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_LAG_ATTR_SWITCH_ID = SAI_LAG_ATTR_START,
+
     /** SAI port list [sai_object_list_t] */
-    SAI_LAG_ATTR_PORT_LIST = SAI_LAG_ATTR_START,
+    SAI_LAG_ATTR_PORT_LIST,
 
     /** READ_WRITE */
 

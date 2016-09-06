@@ -117,7 +117,8 @@ typedef uint8_t sai_uint8_t;
 typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
-
+typedef char *sai_string_t;
+typedef void *sai_pointer_t;
 #define SAI_NULL_OBJECT_ID 0L
 
 /**
@@ -478,7 +479,8 @@ typedef struct _sai_acl_capability_t
      * Max action list can be obtained using the SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT
      */
     sai_s32_list_t  action_list;
-}sai_acl_capability_t;
+} sai_acl_capability_t;
+
 
 /**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
@@ -495,6 +497,8 @@ typedef union {
     sai_int32_t s32;
     sai_uint64_t u64;
     sai_int64_t s64;
+    sai_string_t string; 
+    sai_pointer_t ptr; 
     sai_mac_t mac;
     sai_ip4_t ip4;
     sai_ip6_t ip6;
@@ -515,7 +519,6 @@ typedef union {
     sai_qos_map_list_t qosmap;
     sai_tunnel_map_list_t tunnelmap;
     sai_acl_capability_t aclcapability; 
-
 } sai_attribute_value_t;
 
 typedef struct _sai_attribute_t {

@@ -83,6 +83,11 @@ typedef enum _sai_scheduler_attr_t
      */
     SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE = 0x00000006,
 
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_SCHEDULER_ATTR_SWITCH_ID = 0x00000007,
+ 
     /* -- */
     SAI_SCHEDULER_ATTR_END,
 

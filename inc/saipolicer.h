@@ -135,6 +135,11 @@ typedef enum _sai_policer_attr_t
     /** Enable/disable counter [sai_s32_list_t of sai_policer_stat_counter_t].
      * Default[disabled], Modify List Needs full new set*/
     SAI_POLICER_ATTR_ENABLE_COUNTER_LIST = 0x0000000a,
+  
+    /** Switch Object ID [sai_object_id_t]
+     * (MANDATORY_ON_CREATE | CREATE_ONLY)
+     **/
+    SAI_POLICER_ATTR_SWITCH_ID,
 
     SAI_POLICER_ATTR_END,
 
