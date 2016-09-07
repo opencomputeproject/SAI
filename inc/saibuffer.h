@@ -325,13 +325,28 @@ typedef enum _sai_buffer_profile_attr_t
      * default to 0. */
     SAI_BUFFER_PROFILE_ATTR_XOFF_TH,
 
-    /** set the buffer profile XON threshold in byte [sai_uint32_t]
+    /** set the buffer profile XON non-hysteresis threshold in byte [sai_uint32_t]
      * Valid only for ingress PG (CREATE_AND_SET)
-     * Generate XON when the total buffer usage of this PG
-     * is less this threshold and available buffer in the PG buffer
-     * is larger than the XOFF threahold.
+     * Ensures to generate XON, and ignore hysteresis, when the total 
+     * buffer usage of this PG is less than this threshold and available 
+     * buffer in the PG buffer is larger than the XOFF threshold.
+     * When the user sets both XON and XON_OFFSET thresholds, the XON
+     * trigger condition is governed by:
+     *          max(XOFF_TH - XON_OFFSET_TH, XON_TH)
      * default to 0. */
     SAI_BUFFER_PROFILE_ATTR_XON_TH,
+
+    /** set the buffer profile XON hysteresis threshold in byte [sai_uint32_t]
+     * Valid only for ingress PG (CREATE_AND_SET)
+     * Ensures to generate XON, taking into account hysteresis, when the total 
+     * buffer usage of this PG plus this threshold is less than the XOFF 
+     * threshold and available buffer in the PG buffer is larger than the 
+     * XON threshold.
+     * When the user sets both XON and XON_OFFSET thresholds, the XON
+     * trigger condition is governed by:
+     *          max(XOFF_TH - XON_OFFSET_TH, XON_TH)
+     * default to 0. */
+    SAI_BUFFER_PROFILE_ATTR_XON_OFFSET_TH,
 
     SAI_BUFFER_PROFILE_ATTR_END,
 
