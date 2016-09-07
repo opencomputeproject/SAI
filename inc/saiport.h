@@ -81,7 +81,7 @@ typedef struct _sai_port_oper_status_notification_t {
     sai_object_id_t port_id;
 
     /** Port operational status */
-    sai_port_oper_status_t port_state;
+    sai_port_oper_status_t port_status;
 
 } sai_port_oper_status_notification_t;
 
@@ -323,7 +323,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_AUTO_NEG_MODE,
 
     /** Admin Mode [bool], (default to FALSE)*/
-    SAI_PORT_ATTR_ADMIN_STATE,
+    SAI_PORT_ATTR_ADMIN_STATUS,
 
     /** Media Type [sai_port_media_type_t],
      * (default to SAI_PORT_MEDIA_TYPE_NOT_PRESENT) */
@@ -832,7 +832,7 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
 
 /**
  * Routine Description:
- *   Port state change notification
+ *   Port status change notification
  *   Passed as a parameter into sai_initialize_switch()
  *
  * Arguments:
@@ -842,7 +842,7 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
  * Return Values:
  *    None
  */
-typedef void (*sai_port_state_change_notification_fn)(
+typedef void (*sai_port_status_change_notification_fn)(
     _In_ uint32_t count,
     _In_ sai_port_oper_status_notification_t *data
     );
