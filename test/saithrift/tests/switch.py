@@ -16,20 +16,22 @@
 Thrift SAI interface basic tests
 """
 
+import switch_sai_thrift
+from sai_base_test import *
 import time
 import sys
 import logging
-import os
+
 import unittest
 import random
 
 import sai_base_test
-import switch_sai_thrift
 
-from sai_base_test import *
 from ptf import config
 from ptf.testutils import *
 from ptf.thriftutils import *
+
+import os
 
 from switch_sai_thrift.ttypes import  *
 
@@ -44,8 +46,8 @@ sai_port_list = []
 front_port_list = []
 table_attr_list = []
 router_mac='00:77:66:55:44:00'
-rewrite_mac1='00:77:66:55:45:01'
-rewrite_mac2='00:77:66:55:46:01'
+rewrite_mac1='00:77:66:55:44:01'
+rewrite_mac2='00:77:66:55:44:02'
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
 
@@ -65,6 +67,7 @@ def switch_init(client):
                 attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_ADMIN_STATE, value=attr_value)
                 client.sai_thrift_set_port_attribute(port_id, attr)
                 sai_port_list.append(port_id)
+
         else:
             print "unknown switch attribute"
 
@@ -83,7 +86,7 @@ def switch_init(client):
     for interface,front in interface_to_front_mapping.iteritems():
         sai_port_id = client.sai_thrift_get_port_id_by_front_port(front);
         port_list[int(interface)]=sai_port_id
-           
+
     switch_inited = 1
 
 
@@ -126,7 +129,7 @@ def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled):
     #v6 enabled
     vr_attribute2_value = sai_thrift_attribute_value_t(booldata=v6_enabled)
     vr_attribute2 = sai_thrift_attribute_t(id=SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE,
-                                           value=vr_attribute1_value)
+                                           value=vr_attribute2_value)
     vr_attr_list = [vr_attribute1, vr_attribute2]
     vr_id = client.sai_thrift_create_virtual_router(thrift_attr_list=vr_attr_list)
     return vr_id
@@ -533,6 +536,22 @@ def sai_thrift_create_acl_entry(client, acl_table_id, priority,
     acl_entry_id = client.sai_thrift_create_acl_entry(acl_attr_list)
     return acl_entry_id
 
+def sai_thrift_create_acl_counter(client, acl_table_id):
+    acl_attr_list = []
+
+    #TABLE OID
+    attribute_value = sai_thrift_attribute_value_t(oid=acl_table_id)
+    attribute = sai_thrift_attribute_t(id=SAI_ACL_COUNTER_ATTR_TABLE_ID,
+                                       value=attribute_value)
+    acl_attr_list.append(attribute)
+
+    acl_counter_id = client.sai_thrift_create_acl_counter(acl_attr_list)
+    return acl_counter_id
+
+def sai_thrift_delete_acl_counter(client, acl_counter_id):
+
+    client.sai_thrift_delete_acl_counter(acl_counter_id)
+
 def sai_thrift_create_mirror_session(client, mirror_type, port,
                                      vlan, vlan_priority, vlan_tpid,
                                      src_mac, dst_mac,
@@ -705,6 +724,7 @@ def sai_thrift_read_port_counters(client,port):
     port_cnt_ids.append(SAI_PORT_STAT_PFC_7_TX_PKTS)
     port_cnt_ids.append(SAI_PORT_STAT_IF_OUT_OCTETS)
     port_cnt_ids.append(SAI_PORT_STAT_IF_OUT_UCAST_PKTS)
+    port_cnt_ids.append(SAI_PORT_STAT_IF_IN_UCAST_PKTS)
     counters_results=[]
     counters_results = client.sai_thrift_get_port_stats(port,port_cnt_ids,len(port_cnt_ids))
     queue_list=[]
