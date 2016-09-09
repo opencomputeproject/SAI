@@ -36,7 +36,7 @@
  *
  *  \{
  */
- 
+
 #define VLAN_COUNTER_SET_DEFAULT    0
 
 /**
@@ -58,8 +58,7 @@ typedef enum _sai_vlan_tagging_mode_t
  */
 typedef enum _sai_vlan_attr_t
 {
-
-    SAI_VLAN_ATTR_START,    
+    SAI_VLAN_ATTR_START,
 
     /** READ-ONLY */
 
@@ -98,9 +97,7 @@ typedef enum _sai_vlan_attr_t
     /* --*/
     SAI_VLAN_ATTR_CUSTOM_RANGE_END
 
-
 } sai_vlan_attr_t;
-
 
 /*
     \brief List of VLAN Member Attributes
@@ -129,10 +126,7 @@ typedef enum _sai_vlan_member_attr_t
     /* --*/
     SAI_VLAN_MEMBER_ATTR_CUSTOM_RANGE_END
 
-
 } sai_vlan_member_attr_t;
-
-
 
 /**
  *  @brief VLAN counter IDs in sai_get_vlan_stat_counters() call

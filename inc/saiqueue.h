@@ -18,7 +18,6 @@
 * @brief This file contains Qos Queue functionality.
 ************************************************************************/
 
-
 #if !defined (__SAIQUEUE_H_)
 #define __SAIQUEUE_H_
 
@@ -54,8 +53,7 @@ typedef enum _sai_queue_type_t
  */
 typedef enum _sai_queue_attr_t
 {
-
-    SAI_QUEUE_ATTR_START = 0x00000000,    
+    SAI_QUEUE_ATTR_START = 0x00000000,
 
     /** READ-ONLY */
     /** Queue type [sai_queue_type_t]
@@ -81,17 +79,14 @@ typedef enum _sai_queue_attr_t
     /* -- */
 
     SAI_QUEUE_ATTR_END,
-    
+
     /* Custom range base value */
     SAI_QUEUE_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /* --*/
     SAI_QUEUE_ATTR_CUSTOM_RANGE_END
 
-
 } sai_queue_attr_t;
-
-
 
 /**
  * @brief Enum defining statistics for Queue.
@@ -252,7 +247,6 @@ typedef sai_status_t (*sai_get_queue_attribute_fn)(
     _Inout_ sai_attribute_t *attr_list
     );
 
-
 /**
  * @brief   Get queue statistics counters.
  *
@@ -286,7 +280,6 @@ typedef sai_status_t (*sai_clear_queue_stats_fn)(
     _In_ const sai_queue_stat_counter_t *counter_ids,
     _In_ uint32_t number_of_counters
     );
-
 
 /**
  *  @brief Qos methods table retrieved with sai_api_query()

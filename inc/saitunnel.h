@@ -62,9 +62,8 @@ typedef enum _sai_tunnel_map_type_t
 
 typedef enum _sai_tunnel_map_attr_t
 {
-        
-    SAI_TUNNEL_MAP_ATTR_START = 0x00000000,    
-    
+    SAI_TUNNEL_MAP_ATTR_START = 0x00000000,
+
     /** tunnel Map type [sai_tunnel_map_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_TUNNEL_MAP_ATTR_TYPE = SAI_TUNNEL_MAP_ATTR_START,
 
@@ -79,7 +78,6 @@ typedef enum _sai_tunnel_map_attr_t
 
     /* --*/
     SAI_TUNNEL_MAP_ATTR_CUSTOM_RANGE_END
-
 
 } sai_tunnel_map_attr_t;
 
@@ -198,7 +196,7 @@ typedef enum _sai_tunnel_encap_ecn_mode_t
     /** User defined behavior.
      *  Need to provide SAI_TUNNEL_MAP_OECN_TO_UECN in SAI_TUNNEL_ATTR_ENCAP_MAPPERS */
     SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
-    
+
 } sai_tunnel_encap_ecn_mode_t;
 
 typedef enum _sai_tunnel_decap_ecn_mode_t
@@ -208,16 +206,15 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
 
     /** Copy from outer ECN */
     SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
-    
+
     /** User defined behavior
      *  Need to provide SAI_TUNNEL_MAP_UECN_OECN_TO_OECN in SAI_TUNNEL_ATTR_DECAP_MAPPERS */
     SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
-    
+
 } sai_tunnel_decap_ecn_mode_t;
 
 typedef enum _sai_tunnel_attr_t
 {
-
     SAI_TUNNEL_ATTR_START,
     /** READ-WRITE */
 
@@ -238,7 +235,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_SRC_IP,
 
     /** tunnel TTL mode (pipe or uniform model) [sai_tunnel_ttl_mode_t]
-     *  (CREATE_ONLY) 
+     *  (CREATE_ONLY)
      *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_ENCAP_TTL_MODE,
 
@@ -292,7 +289,7 @@ typedef enum _sai_tunnel_attr_t
      *  (CREATE_ONLY)
      *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
-    
+
     SAI_TUNNEL_ATTR_END,
 
     /** Custom range base value */
@@ -300,7 +297,6 @@ typedef enum _sai_tunnel_attr_t
 
     /* --*/
     SAI_TUNNEL_ATTR_CUSTOM_RANGE_END
-
 
 } sai_tunnel_attr_t;
 
@@ -356,7 +352,6 @@ typedef sai_status_t (*sai_set_tunnel_attribute_fn)(
     _In_ const sai_attribute_t *attr
     );
 
-
 /**
  * Routine Description:
  *    @brief Get tunnel attributes
@@ -388,7 +383,6 @@ typedef enum _sai_tunnel_term_table_entry_type_t
 
 typedef enum _sai_tunnel_term_table_entry_attr_t
 {
-
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_START,
     /** READ-ONLY */
 
@@ -420,7 +414,6 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
 
     /* --*/
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_END
-
 
 } sai_tunnel_term_table_entry_attr_t;
 
@@ -475,7 +468,6 @@ typedef sai_status_t (*sai_set_tunnel_term_table_entry_attribute_fn)(
     _In_ const sai_attribute_t *attr
     );
 
-
 /**
  * Routine Description:
  *    @brief Get tunnel termination table entry attributes
@@ -514,7 +506,6 @@ typedef struct _sai_tunnel_api_t
     sai_get_tunnel_term_table_entry_attribute_fn get_tunnel_term_table_entry_attribute;
 
 } sai_tunnel_api_t;
-
 
 /**
  * \}

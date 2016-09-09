@@ -49,7 +49,6 @@ typedef enum _sai_scheduling_type_t
  */
 typedef enum _sai_scheduler_attr_t
 {
-
     SAI_SCHEDULER_ATTR_START = 0x00000000,
 
     /** READ-ONLY */
@@ -94,7 +93,6 @@ typedef enum _sai_scheduler_attr_t
 
 } sai_scheduler_attr_t;
 
-
 /**
  * @brief  Create Scheduler Profile
  *
@@ -122,7 +120,6 @@ typedef sai_status_t (*sai_create_scheduler_fn)(
 typedef sai_status_t (*sai_remove_scheduler_fn)(
     _In_ sai_object_id_t scheduler_id
     );
-
 
 /**
  * @brief  Set Scheduler Attribute
@@ -155,7 +152,6 @@ typedef sai_status_t (*sai_get_scheduler_attribute_fn)(
     _Inout_ sai_attribute_t *attr_list
     );
 
-
 /**
  * @brief  Scheduler methods table retrieved with sai_api_query()
  */
@@ -166,7 +162,6 @@ typedef struct _sai_scheduler_api_t
     sai_set_scheduler_attribute_fn set_scheduler_attribute;
     sai_get_scheduler_attribute_fn get_scheduler_attribute;
 } sai_scheduler_api_t;
-
 
 /**
  * \}

@@ -42,7 +42,7 @@
  */
 typedef enum _sai_ingress_priority_group_attr_t
 {
-    SAI_INGRESS_PRIORITY_GROUP_ATTR_START, 
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
     /** buffer profile pointer [sai_object_id_t] */
     SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
     SAI_INGRESS_PRIORITY_GROUP_ATTR_END
@@ -194,7 +194,7 @@ typedef enum _sai_buffer_pool_attr_t
     /** shared threshold mode for the buffer pool [sai_buffer_threadhold_mode_t] (CREATE_ONLY)
      * (default to SAI_BUFFER_POOL_DYNAMIC_TH) */
     SAI_BUFFER_POOL_ATTR_TH_MODE,
-    
+
     SAI_BUFFER_POOL_ATTR_END,
 
 } sai_buffer_pool_attr_t;
@@ -288,7 +288,6 @@ typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
  */
 typedef enum _sai_buffer_profile_attr_t
 {
-    
     SAI_BUFFER_PROFILE_ATTR_START,
     /** READ-WRITE */
 
@@ -302,7 +301,7 @@ typedef enum _sai_buffer_profile_attr_t
 
     /** shared threshold mode for the buffer profile [sai_buffer_threadhold_mode_t] (CREATE_AND_SET)
      * If set, this overrides SAI_BUFFER_POOL_ATTR_TH_MODE.
-     * If not set, use SAI_BUFFER_POOL_ATTR_TH_MODE. 
+     * If not set, use SAI_BUFFER_POOL_ATTR_TH_MODE.
      * (default to value set in SAI_BUFFER_POOL_ATTR_TH_MODE.) */
     SAI_BUFFER_PROFILE_ATTR_TH_MODE,
 

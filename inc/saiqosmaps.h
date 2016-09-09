@@ -75,9 +75,8 @@ typedef enum _sai_qos_map_type_t
 
 typedef enum _sai_qos_map_attr_t
 {
-
     SAI_QOS_MAP_ATTR_START,
-    
+
     /** Qos Map type [sai_qos_map_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_QOS_MAP_ATTR_TYPE = SAI_QOS_MAP_ATTR_START,
 
@@ -98,7 +97,6 @@ typedef enum _sai_qos_map_attr_t
 
     /* --*/
     SAI_QOS_MAP_ATTR_CUSTOM_RANGE_END
-
 
 } sai_qos_map_attr_t ;
 
@@ -156,7 +154,6 @@ typedef sai_status_t (*sai_set_qos_map_attribute_fn)(
  *        Failure status code on error
  */
 
-
 typedef sai_status_t (*sai_get_qos_map_attribute_fn)(
      _In_ sai_object_id_t   qos_map_id ,
      _In_ uint32_t attr_count,
@@ -174,7 +171,6 @@ typedef struct _sai_qos_map_api_t
     sai_get_qos_map_attribute_fn  get_qos_map_attribute;
 
 }sai_qos_map_api_t;
-
 
 /**
  *\}

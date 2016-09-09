@@ -37,14 +37,13 @@
  *
  *  \{
  */
- 
+
 /**
  *  @brief Attribute Id for sai neighbor object
  */
 typedef enum _sai_neighbor_attr_t
 {
-
-    SAI_NEIGHBOR_ATTR_START, 
+    SAI_NEIGHBOR_ATTR_START,
     /** READ-WRITE */
 
     /** Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
@@ -73,7 +72,6 @@ typedef enum _sai_neighbor_attr_t
     /* --*/
     SAI_NEIGHBOR_ATTR_CUSTOM_RANGE_END
 
-
 } sai_neighbor_attr_t;
 
 /**
@@ -85,7 +83,6 @@ typedef struct _sai_neighbor_entry_t
     sai_ip_address_t ip_address;
 
 } sai_neighbor_entry_t;
-
 
 /**
  * Routine Description:

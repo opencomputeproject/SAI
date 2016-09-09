@@ -76,8 +76,6 @@ typedef enum {
  */
 #define PATH_MAX MAX_PATH
 
-
-
 #else  /* #if defined(_WIN32) */
 
 #include <stdint.h>
@@ -100,7 +98,6 @@ typedef uint32_t sai_switch_hash_seed_t;
 #define _Inout_
 #define _In_reads_z_(_LEN_)
 #define _In_reads_opt_z_(_LEN_)
-
 
 #endif /* _WIN32 */
 
@@ -241,7 +238,6 @@ typedef struct _sai_s32_range_t {
     int32_t min;
     int32_t max;
 } sai_s32_range_t;
-
 
 /**
  * @brief Defines a vlan list datastructure

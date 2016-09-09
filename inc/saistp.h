@@ -57,9 +57,8 @@ typedef enum _sai_port_stp_port_state_t
  */
 typedef enum _sai_stp_attr_t
 {
-    
     SAI_STP_ATTR_START,
-    
+
     /** READ-ONLY */
 
     /** Vlans attached to STP instance [sai_vlan_list_t] */
@@ -84,7 +83,6 @@ typedef sai_status_t (*sai_create_stp_fn)(
     _Out_ sai_object_id_t *stp_id,
     _In_  uint32_t attr_count,
     _In_  const sai_attribute_t *attr_list);
-
 
 /**
  * @brief Remove stp instance.
@@ -153,15 +151,16 @@ typedef sai_status_t (*sai_get_stp_attribute_fn)(
 /**
  * @brief STP method table retrieved with sai_api_query()
  */
-typedef struct _sai_stp_api_t {
+typedef struct _sai_stp_api_t
+{
     sai_create_stp_fn           create_stp;
     sai_remove_stp_fn           remove_stp;
     sai_set_stp_attribute_fn    set_stp_attribute;
     sai_get_stp_attribute_fn    get_stp_attribute;
     sai_set_stp_port_state_fn   set_stp_port_state;
     sai_get_stp_port_state_fn   get_stp_port_state;
-} sai_stp_api_t;
 
+} sai_stp_api_t;
 
 /**
  * \}

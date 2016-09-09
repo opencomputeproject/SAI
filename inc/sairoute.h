@@ -36,15 +36,14 @@
  *
  *  \{
  */
- 
+
 /**
  *  @brief Attribute Id for sai route object
  */
 typedef enum _sai_route_attr_t
 {
-    
-    SAI_ROUTE_ATTR_START,         
-    
+    SAI_ROUTE_ATTR_START,
+
     /** READ-WRITE */
 
     /** Packet action [sai_packet_action_t]
@@ -61,7 +60,7 @@ typedef enum _sai_route_attr_t
      * The next hop id can be a generic next hop object, such as next hop,
      * next hop group.
      * Directly reachable routes are the IP subnets that are directly attached to the router.
-     * For such routes, fill the router interface id to which the subnet is attached. 
+     * For such routes, fill the router interface id to which the subnet is attached.
      * IP2ME route adds a local router IP address. For such routes, fill the CPU port
      * (SAI_SWITCH_ATTR_CPU_PORT). */
     SAI_ROUTE_ATTR_NEXT_HOP_ID,
@@ -72,16 +71,14 @@ typedef enum _sai_route_attr_t
     SAI_ROUTE_ATTR_META_DATA,
 
     SAI_ROUTE_ATTR_END,
-    
+
     /** Custom range base value */
     SAI_ROUTE_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /* --*/
     SAI_ROUTE_ATTR_CUSTOM_RANGE_END
 
-
 } sai_route_attr_t;
-
 
 /**
  *  @brief Unicast route entry
@@ -167,7 +164,6 @@ typedef sai_status_t (*sai_get_route_attribute_fn)(
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
-
 
 /**
  *  @brief Router entry methods table retrieved with sai_api_query()

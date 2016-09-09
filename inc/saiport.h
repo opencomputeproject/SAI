@@ -75,8 +75,8 @@ typedef enum _sai_port_oper_status_t
 /**
  * @brief Defines the operational status of the port
  */
-typedef struct _sai_port_oper_status_notification_t {
-
+typedef struct _sai_port_oper_status_notification_t 
+{
     /** Port id */
     sai_object_id_t port_id;
 
@@ -158,8 +158,8 @@ typedef enum _sai_port_event_t
 /**
  * @brief Defines the port event notification
  */
-typedef struct _sai_port_event_notification_t {
-
+typedef struct _sai_port_event_notification_t 
+{
     /** Port id */
     sai_object_id_t port_id;
 
@@ -211,9 +211,8 @@ typedef enum _sai_port_breakout_mode_type_t
  */
 typedef enum _sai_port_attr_t
 {
-        
     SAI_PORT_ATTR_START,
-    
+
     /** READ-ONLY */
 
     /** Port Type [sai_port_type_t] */
@@ -467,7 +466,6 @@ typedef enum _sai_port_attr_t
     * Default no map */
     SAI_PORT_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
-
    /** Enable TC -> Queue MAP [sai_object_id_t]  on port
     * Map id = SAI_NULL_OBJECT_ID to disable map on port.
     * Default no map i.e All packets to queue 0 */
@@ -541,13 +539,11 @@ typedef enum _sai_port_attr_t
 
     SAI_PORT_ATTR_END,
 
-
     /* Custom range base value */
     SAI_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /* --*/
     SAI_PORT_ATTR_CUSTOM_RANGE_END
-
 
 } sai_port_attr_t;
 

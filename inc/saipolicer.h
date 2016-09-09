@@ -28,7 +28,6 @@
  *  \{
  */
 
-
 /**
  * @brief Enum defining types of meters
  */
@@ -63,7 +62,6 @@ typedef enum _sai_policer_mode_t
     SAI_POLICER_MODE_CUSTOM_RANGE_BASE = 0x10000000
 } sai_policer_mode_t;
 
-
 /** @brief Enum defining Policer color source */
 typedef enum _sai_policer_color_source_t
 {
@@ -78,11 +76,9 @@ typedef enum _sai_policer_color_source_t
     SAI_POLICER_COLOR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_policer_color_source_t;
 
-
 /** @brief Enum defining Policer Attributes */
 typedef enum _sai_policer_attr_t
 {
-
     SAI_POLICER_ATTR_START = 0x00000000,
 
     /** Policer Meter Type [sai_meter_type_t ]
@@ -145,10 +141,7 @@ typedef enum _sai_policer_attr_t
     /* --*/
     SAI_POLICER_ATTR_CUSTOM_RANGE_END
 
-
 } sai_policer_attr_t;
-
-
 
 /** @brief Enum defining policer statistics */
 typedef enum _sai_policer_stat_counter_t
@@ -183,10 +176,6 @@ typedef enum _sai_policer_stat_counter_t
 
 } sai_policer_stat_counter_t;
 
-
-
-
-
 /**
  * @brief Create Policer
  *
@@ -202,7 +191,6 @@ typedef sai_status_t (*sai_create_policer_fn)(
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list);
 
-
 /**
  * @brief Delete policer
  *
@@ -213,8 +201,6 @@ typedef sai_status_t (*sai_create_policer_fn)(
  */
 typedef sai_status_t (*sai_remove_policer_fn)(
     _In_ sai_object_id_t policer_id);
-
-
 
 /**
  * @brief  Set Policer attribute
@@ -229,8 +215,6 @@ typedef sai_status_t (*sai_set_policer_attribute_fn)(
     _In_ sai_object_id_t policer_id,
     _In_ const sai_attribute_t *attr
     );
-
-
 
 /**
  * @brief  Get Policer attribute
@@ -247,7 +231,6 @@ typedef sai_status_t (*sai_get_policer_attribute_fn)(
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
-
 
 /**
  * @brief  Get Policer Statistics

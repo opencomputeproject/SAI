@@ -44,7 +44,7 @@
 
 typedef enum _sai_hostif_trap_group_attr_t
 {
-    SAI_HOSTIF_TRAP_GROUP_ATTR_START,    
+    SAI_HOSTIF_TRAP_GROUP_ATTR_START,
 
     /** Admin Mode [bool] (default to TRUE) */
     SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE = SAI_HOSTIF_TRAP_GROUP_ATTR_START,
@@ -53,11 +53,11 @@ typedef enum _sai_hostif_trap_group_attr_t
      * (default to 0) */
     SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
 
-    /** sai policer object id [sai_object_id_t] (CREATE_AND_SET) 
+    /** sai policer object id [sai_object_id_t] (CREATE_AND_SET)
      * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER,
 
-    SAI_HOSTIF_TRAP_GROUP_ATTR_END, 
+    SAI_HOSTIF_TRAP_GROUP_ATTR_END,
 
     SAI_HOSTIF_TRAP_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
@@ -143,8 +143,8 @@ typedef enum _sai_hostif_trap_type_t
 {
     /** control plane protocol*/
 
-    /** 
-     * @brief switch trap 
+    /**
+     * @brief switch trap
      */
 
     /** default action is drop */
@@ -240,7 +240,7 @@ typedef enum _sai_hostif_trap_type_t
      * (default packet action is trap) */
     SAI_HOSTIF_TRAP_TYPE_IP2ME = 0x00002010,
 
-    /** SSH traffic (tcp dst port == 22) to local router IP address 
+    /** SSH traffic (tcp dst port == 22) to local router IP address
      * (default packet action is trap) */
     SAI_HOSTIF_TRAP_TYPE_SSH = 0x00002011,
 
@@ -285,7 +285,7 @@ typedef enum _sai_hostif_trap_channel_t
 typedef enum _sai_hostif_trap_attr_t
 {
     SAI_HOSTIF_TRAP_ATTR_START,
-    
+
     /** Host interface trap type [sai_hostif_trap_type_t]
      * (CREATE_ONLY|MANDATORY_ON_CREATE|KEY) */
     SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE = SAI_HOSTIF_TRAP_ATTR_START,
@@ -294,7 +294,7 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
 
     /** Below attributes are only valid when
-     * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or 
+     * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or
      * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG */
 
     /** trap priority [sai_uint32_t]
@@ -308,7 +308,7 @@ typedef enum _sai_hostif_trap_attr_t
 
     /** file descriptor [sai_object_id_t]
      * Valid only when SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL == SAI_HOSTIF_TRAP_CHANNEL_FD
-     * Must be set before set SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to SAI_HOSTIF_TRAP_CHANNEL_FD 
+     * Must be set before set SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to SAI_HOSTIF_TRAP_CHANNEL_FD
      * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_TRAP_ATTR_FD,
 
@@ -326,7 +326,6 @@ typedef enum _sai_hostif_trap_attr_t
 
     /* --*/
     SAI_HOSTIF_TRAP_ATTR_CUSTOM_RANGE_END
-
 
 } sai_hostif_trap_attr_t;
 
@@ -443,7 +442,7 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
 
     /** file descriptor [sai_object_id_t]
      * Valid only when SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL == SAI_HOSTIF_TRAP_CHANNEL_FD
-     * Must be set before set SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to SAI_HOSTIF_TRAP_CHANNEL_FD 
+     * Must be set before set SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to SAI_HOSTIF_TRAP_CHANNEL_FD
      * (default to SAI_NULL_OBJECT_ID) */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_FD,
 
@@ -503,8 +502,7 @@ typedef enum _sai_hostif_type_t
  */
 typedef enum _sai_hostif_attr_t
 {
-    
-    SAI_HOSTIF_ATTR_START, 
+    SAI_HOSTIF_ATTR_START,
     /** READ-ONLY */
 
     /** READ-WRITE */
@@ -528,14 +526,13 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_OPER_STATUS,
 
     /* --*/
-    SAI_HOSTIF_ATTR_END,    
+    SAI_HOSTIF_ATTR_END,
 
     /* Custom range base value */
     SAI_HOSTIF_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /* --*/
     SAI_HOSTIF_ATTR_CUSTOM_RANGE_END
-
 
 } sai_hostif_attr_t;
 
@@ -611,7 +608,7 @@ typedef sai_status_t(*sai_get_hostif_attribute_fn)(
 
 typedef enum _sai_hostif_tx_type
 {
-    /** bypass switch ASIC processing pipeline, 
+    /** bypass switch ASIC processing pipeline,
      * tx packet goes to the specified output port directly */
     SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS,
 
@@ -624,7 +621,7 @@ typedef enum _sai_hostif_tx_type
 
 typedef enum _sai_hostif_packet_attr_t
 {
-    SAI_HOSTIF_PACKET_ATTR_START,    
+    SAI_HOSTIF_PACKET_ATTR_START,
 
     /** Trap ID [sai_hostif_trap_type_t] (for receive-only) */
     SAI_HOSTIF_PACKET_ATTR_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
@@ -713,7 +710,7 @@ typedef sai_status_t(*sai_send_hostif_packet_fn)(
  *    @param[in] attr_list - array of attributes
  *
  * Return Values:
- *		None
+ *      None
  */
 typedef void(*sai_packet_event_notification_fn)(
     _In_ const void *buffer,

@@ -37,7 +37,7 @@
  *
  *  \{
  */
- 
+
 /**
  *  @brief FDB entry type.
  */
@@ -61,7 +61,6 @@ typedef struct _sai_fdb_entry_t
 
 } sai_fdb_entry_t;
 
-
 /**
  *  @brief FDB event type
  */
@@ -83,7 +82,6 @@ typedef enum sai_fdb_event_t
  */
 typedef enum _sai_fdb_entry_attr_t
 {
-
     SAI_FDB_ENTRY_ATTR_START,
     /** READ-ONLY */
 
@@ -114,7 +112,6 @@ typedef enum _sai_fdb_entry_attr_t
 
     /* --*/
     SAI_FDB_ENTRY_ATTR_CUSTOM_RANGE_END
-
 
 } sai_fdb_entry_attr_t;
 
@@ -164,7 +161,8 @@ typedef enum _sai_fdb_flush_attr_t
 } sai_fdb_flush_attr_t;
 
 /** Notification data format received from SAI FDB callback*/
-typedef struct _sai_fdb_event_notification_data_t {
+typedef struct _sai_fdb_event_notification_data_t
+{
     sai_fdb_event_t event_type;
     sai_fdb_entry_t fdb_entry;
     uint32_t attr_count;
