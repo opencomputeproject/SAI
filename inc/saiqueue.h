@@ -95,92 +95,92 @@ typedef enum _sai_queue_attr_t
 typedef enum _sai_queue_stat_counter_t
 {
     /** get/set tx packets count [uint64_t] */
-    SAI_QUEUE_STAT_PACKETS = 0x00000000,
+    SAI_QUEUE_STAT_COUNTER_PACKETS = 0x00000000,
 
     /** get/set tx bytes count [uint64_t] */
-    SAI_QUEUE_STAT_BYTES = 0x00000001,
+    SAI_QUEUE_STAT_COUNTER_BYTES = 0x00000001,
 
     /** get/set dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_DROPPED_PACKETS = 0x00000002,
+    SAI_QUEUE_STAT_COUNTER_DROPPED_PACKETS = 0x00000002,
 
     /** get/set dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_DROPPED_BYTES = 0x00000003,
+    SAI_QUEUE_STAT_COUNTER_DROPPED_BYTES = 0x00000003,
 
     /** get/set green color tx packets count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_PACKETS = 0x00000004,
+    SAI_QUEUE_STAT_COUNTER_GREEN_PACKETS = 0x00000004,
 
     /** get/set green color tx bytes count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_BYTES = 0x00000005,
+    SAI_QUEUE_STAT_COUNTER_GREEN_BYTES = 0x00000005,
 
     /** get/set green color dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_DROPPED_PACKETS = 0x00000006,
+    SAI_QUEUE_STAT_COUNTER_GREEN_DROPPED_PACKETS = 0x00000006,
 
     /**  get/set green color dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_DROPPED_BYTES = 0x00000007,
+    SAI_QUEUE_STAT_COUNTER_GREEN_DROPPED_BYTES = 0x00000007,
 
     /** get/set yellow color tx packets count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_PACKETS = 0x00000008,
+    SAI_QUEUE_STAT_COUNTER_YELLOW_PACKETS = 0x00000008,
 
     /** get/set yellow color tx bytes count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_BYTES = 0x00000009,
+    SAI_QUEUE_STAT_COUNTER_YELLOW_BYTES = 0x00000009,
 
     /** get/set yellow color drooped packets count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_DROPPED_PACKETS = 0x0000000a,
+    SAI_QUEUE_STAT_COUNTER_YELLOW_DROPPED_PACKETS = 0x0000000a,
 
     /** get/set yellow color dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_DROPPED_BYTES = 0x0000000b,
+    SAI_QUEUE_STAT_COUNTER_YELLOW_DROPPED_BYTES = 0x0000000b,
 
     /** get/set red color tx packets count [uint64_t] */
-    SAI_QUEUE_STAT_RED_PACKETS = 0x0000000c,
+    SAI_QUEUE_STAT_COUNTER_RED_PACKETS = 0x0000000c,
 
     /** get/set red color tx bytes count [uint64_t] */
-    SAI_QUEUE_STAT_RED_BYTES = 0x0000000d,
+    SAI_QUEUE_STAT_COUNTER_RED_BYTES = 0x0000000d,
 
     /** get/set red color dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_RED_DROPPED_PACKETS = 0x0000000e,
+    SAI_QUEUE_STAT_COUNTER_RED_DROPPED_PACKETS = 0x0000000e,
 
     /** get/set red color drooped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_RED_DROPPED_BYTES = 0x0000000f,
+    SAI_QUEUE_STAT_COUNTER_RED_DROPPED_BYTES = 0x0000000f,
 
     /** get/set WRED green color dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_DISCARD_DROPPED_PACKETS = 0x00000010,
+    SAI_QUEUE_STAT_COUNTER_GREEN_DISCARD_DROPPED_PACKETS = 0x00000010,
 
     /** get/set WRED green color dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_DISCARD_DROPPED_BYTES = 0x00000011,
+    SAI_QUEUE_STAT_COUNTER_GREEN_DISCARD_DROPPED_BYTES = 0x00000011,
 
     /** get/set WRED yellow color dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_DISCARD_DROPPED_PACKETS = 0x00000012,
+    SAI_QUEUE_STAT_COUNTER_YELLOW_DISCARD_DROPPED_PACKETS = 0x00000012,
 
     /** get/set WRED yellow color dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_DISCARD_DROPPED_BYTES = 0x00000013,
+    SAI_QUEUE_STAT_COUNTER_YELLOW_DISCARD_DROPPED_BYTES = 0x00000013,
 
     /** get/set WRED red color dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_RED_DISCARD_DROPPED_PACKETS = 0x00000014,
+    SAI_QUEUE_STAT_COUNTER_RED_DISCARD_DROPPED_PACKETS = 0x00000014,
 
     /** get/set WRED red color dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_RED_DISCARD_DROPPED_BYTES = 0x00000015,
+    SAI_QUEUE_STAT_COUNTER_RED_DISCARD_DROPPED_BYTES = 0x00000015,
 
     /** get/set WRED dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_DISCARD_DROPPED_PACKETS = 0x00000016,
+    SAI_QUEUE_STAT_COUNTER_DISCARD_DROPPED_PACKETS = 0x00000016,
 
     /** get/set WRED red dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_DISCARD_DROPPED_BYTES = 0x00000017,
+    SAI_QUEUE_STAT_COUNTER_DISCARD_DROPPED_BYTES = 0x00000017,
 
     /** get current queue occupancy in bytes [uint64_t] */
-    SAI_QUEUE_STAT_CURR_OCCUPANCY_BYTES = 0x00000018,
+    SAI_QUEUE_STAT_COUNTER_CURR_OCCUPANCY_BYTES = 0x00000018,
 
     /** get watermark queue occupancy in bytes [uint64_t] */
-    SAI_QUEUE_STAT_WATERMARK_BYTES = 0x00000019,
+    SAI_QUEUE_STAT_COUNTER_WATERMARK_BYTES = 0x00000019,
 
     /** get current queue shared occupancy in bytes [uint64_t] */
-    SAI_QUEUE_STAT_SHARED_CURR_OCCUPANCY_BYTES = 0x0000001a,
+    SAI_QUEUE_STAT_COUNTER_SHARED_CURR_OCCUPANCY_BYTES = 0x0000001a,
 
     /** get watermark queue shared occupancy in bytes [uint64_t] */
-    SAI_QUEUE_STAT_SHARED_WATERMARK_BYTES = 0x0000001b,
+    SAI_QUEUE_STAT_COUNTER_SHARED_WATERMARK_BYTES = 0x0000001b,
 
     /* -- */
     /* Custom range base value */
-    SAI_QUEUE_STAT_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_QUEUE_STAT_COUNTER_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_queue_stat_counter_t;
 

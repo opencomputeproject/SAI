@@ -42,7 +42,7 @@
 typedef enum _sai_samplepacket_type_t
 {
     /** Copy the sample packets to CPU */
-    SAI_SAMPLEPACKET_SLOW_PATH,
+    SAI_SAMPLEPACKET_TYPE_SLOW_PATH,
 
 } sai_samplepacket_type_t;
 

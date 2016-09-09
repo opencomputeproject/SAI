@@ -48,10 +48,10 @@ typedef enum _sai_meter_type_t
 typedef enum _sai_policer_mode_t
 {
     /**RFC 2697, Single Rate Three color marker, CIR, CBS and PBS, G, Y and R*/
-    SAI_POLICER_MODE_Sr_TCM = 0x00000000,
+    SAI_POLICER_MODE_SR_TCM = 0x00000000,
 
     /** RFC 2698,  Two Rate Three color marker, CIR, CBS , PIR and PBS, G, Y and R*/
-    SAI_POLICER_MODE_Tr_TCM = 0x00000001,
+    SAI_POLICER_MODE_TR_TCM = 0x00000001,
 
     /** Storm control mode
      * Single Rate Two color CIR, CBS, G and R */
@@ -147,32 +147,32 @@ typedef enum _sai_policer_attr_t
 typedef enum _sai_policer_stat_counter_t
 {
     /** get/set packet count [uint64_t] */
-    SAI_POLICER_STAT_PACKETS = 0x00000000,
+    SAI_POLICER_STAT_COUNTER_PACKETS = 0x00000000,
 
     /** get/set byte count [uint64_t] */
-    SAI_POLICER_STAT_ATTR_BYTES = 0x00000001,
+    SAI_POLICER_STAT_COUNTER_ATTR_BYTES = 0x00000001,
 
     /** get/set green packet count [uint64_t] */
-    SAI_POLICER_STAT_GREEN_PACKETS = 0x00000002,
+    SAI_POLICER_STAT_COUNTER_GREEN_PACKETS = 0x00000002,
 
     /** get/set green byte count [uint64_t] */
-    SAI_POLICER_STAT_GREEN_BYTES = 0x00000003,
+    SAI_POLICER_STAT_COUNTER_GREEN_BYTES = 0x00000003,
 
     /** get/set yellow packet count [uint64_t] */
-    SAI_POLICER_STAT_YELLOW_PACKETS = 0x00000004,
+    SAI_POLICER_STAT_COUNTER_YELLOW_PACKETS = 0x00000004,
 
     /** get/set yellow byte count [uint64_t] */
-    SAI_POLICER_STAT_YELLOW_BYTES = 0x00000005,
+    SAI_POLICER_STAT_COUNTER_YELLOW_BYTES = 0x00000005,
 
     /** get/set red packet count [uint64_t] */
-    SAI_POLICER_STAT_RED_PACKETS = 0x00000006,
+    SAI_POLICER_STAT_COUNTER_RED_PACKETS = 0x00000006,
 
     /** get/set red byte count [uint64_t] */
-    SAI_POLICER_STAT_RED_BYTES = 0x00000007,
+    SAI_POLICER_STAT_COUNTER_RED_BYTES = 0x00000007,
 
     /* -- */
     /* Custom range base value */
-    SAI_POLICER_STAT_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_POLICER_STAT_COUNTER_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_policer_stat_counter_t;
 

@@ -60,7 +60,7 @@ typedef enum _sai_erspan_encapsulation_type_t
     /** L3 GRE Tunnel Encapsulation
       | L2 Ethernet header | IP header | GRE header | Original mirrored packet |
      */
-    SAI_MIRROR_L3_GRE_TUNNEL,
+    SAI_ERSPAN_ENCAPSULATION_TYPE_MIRROR_L3_GRE_TUNNEL,
 
 } sai_erspan_encapsulation_type_t;
 

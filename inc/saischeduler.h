@@ -34,13 +34,13 @@
 typedef enum _sai_scheduling_type_t
 {
     /** Strict Scheduling */
-    SAI_SCHEDULING_STRICT = 0x00000000,
+    SAI_SCHEDULING_TYPE_STRICT = 0x00000000,
 
     /** Weighted Round-Robin Scheduling */
-    SAI_SCHEDULING_WRR = 0x00000001,
+    SAI_SCHEDULING_TYPE_WRR = 0x00000001,
 
     /** Deficit Weighted Round-Robin Scheduling */
-    SAI_SCHEDULING_DWRR = 0x00000002,
+    SAI_SCHEDULING_TYPE_DWRR = 0x00000002,
 
 } sai_scheduling_type_t;
 

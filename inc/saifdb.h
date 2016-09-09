@@ -44,10 +44,10 @@
 typedef enum _sai_fdb_entry_type_t
 {
     /** Dynamic FDB Entry */
-    SAI_FDB_ENTRY_DYNAMIC,
+    SAI_FDB_ENTRY_TYPE_DYNAMIC,
 
     /** Static FDB Entry */
-    SAI_FDB_ENTRY_STATIC,
+    SAI_FDB_ENTRY_TYPE_STATIC,
 
 } sai_fdb_entry_type_t;
 
@@ -121,10 +121,10 @@ typedef enum _sai_fdb_entry_attr_t
 typedef enum _sai_fdb_flush_entry_type_t
 {
     /** Flush dynamic FDB entries */
-    SAI_FDB_FLUSH_ENTRY_DYNAMIC,
+    SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC,
 
     /** Flush static FDB entries */
-    SAI_FDB_FLUSH_ENTRY_STATIC,
+    SAI_FDB_FLUSH_ENTRY_TYPE_STATIC,
 
 } sai_fdb_flush_entry_type_t;
 

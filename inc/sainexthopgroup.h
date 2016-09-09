@@ -43,7 +43,7 @@
 typedef enum _sai_next_hop_group_type_t
 {
     /** Next hop group is ECMP */
-    SAI_NEXT_HOP_GROUP_ECMP,
+    SAI_NEXT_HOP_GROUP_TYPE_ECMP,
 
     /** Other types of next hop group to be defined in the future, e.g., WCMP */
 

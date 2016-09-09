@@ -42,13 +42,13 @@
  */
 typedef enum _sai_next_hop_type_t
 {
-    SAI_NEXT_HOP_IP,
+    SAI_NEXT_HOP_TYPE_IP,
 
     /** MPLS(NHLFE) next hop */
-    SAI_NEXT_HOP_MPLS,
+    SAI_NEXT_HOP_TYPE_MPLS,
 
     /** tunnel next hop */
-    SAI_NEXT_HOP_TUNNEL_ENCAP
+    SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
 
 } sai_next_hop_type_t;
 
