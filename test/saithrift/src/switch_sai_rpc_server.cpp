@@ -42,7 +42,7 @@ extern "C" {
 #include <saiswitch.h>
 #include <saimirror.h>
 #include <saistatus.h>
-
+#include <saitunnel.h>
 #include "arpa/inet.h"
 
 using namespace ::apache::thrift;
@@ -184,11 +184,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.objlist.list = *buffer_profile_list;
                   break;
                   }
-
-              case SAI_PORT_ATTR_INGRESS_MIRROR_SESSION:
-              case SAI_PORT_ATTR_EGRESS_MIRROR_SESSION:
-                  attr_list[i].value.oid = attribute.value.oid;
-                  break;
               default:
                   break;
           }
@@ -283,7 +278,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_TYPE:
-                  attr_list[i].value.u32 = attribute.value.u32;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
@@ -315,7 +310,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
                   break;
               case SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID:
-              case SAI_NEXT_HOP_ATTR_TUNNEL_ID:	  
+              case SAI_NEXT_HOP_ATTR_TUNNEL_ID: 		  
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
           }
@@ -535,7 +530,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       uint32_t attr_count = thrift_attr_list.size();
       status = fdb_api->create_fdb_entry(&fdb_entry, attr_count, attr_list);
       free(attr_list);
-
       return status;
   }
 
@@ -550,8 +544,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
       sai_thrift_parse_fdb_entry(thrift_fdb_entry, &fdb_entry);
       status = fdb_api->remove_fdb_entry(&fdb_entry);
-
-
       return status;
   }
 
@@ -750,8 +742,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       uint32_t attr_count = thrift_attr_list.size();
       status = route_api->create_route(&unicast_route_entry, attr_count, attr_list);
       free(attr_list);
-
-
       return status;
   }
 
@@ -782,8 +772,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_router_interface_attributes(thrift_attr_list, attr_list);
       uint32_t attr_count = thrift_attr_list.size();
       status = rif_api->create_router_interface(&rif_id, attr_count, attr_list);
-
-
       return rif_id;
   }
 
@@ -812,8 +800,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_next_hop_attributes(thrift_attr_list, attr_list);
       uint32_t attr_count = thrift_attr_list.size();
       status = nhop_api->create_next_hop(&nhop_id, attr_count, attr_list);
-
-
       return nhop_id;
   }
 
@@ -1032,8 +1018,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       uint32_t attr_count = thrift_attr_list.size();
       status = neighbor_api->create_neighbor_entry(&neighbor_entry, attr_count, attr_list);
       free(attr_list);
-
-
       return status;
   }
 
@@ -1374,6 +1358,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
             case SAI_ACL_TABLE_ATTR_FIELD_IPv6_FLOW_LABEL:
             case SAI_ACL_TABLE_ATTR_FIELD_TC:
                 break;
+            case SAI_ACL_TABLE_ATTR_STAGE:
+		attr_list[i].value.u32=attribute.value.u32;
+                break;
               default:
                 break;
           }
@@ -1388,7 +1375,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
             case SAI_ACL_ENTRY_ATTR_TABLE_ID:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
+                attr_list[i].value.oid = attribute.value.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_PRIORITY:
                 attr_list[i].value.aclfield.data.u32 = attribute.value.aclfield.data.u32;
@@ -1672,7 +1659,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_VLAN_TPID:
-                  attr_list[i].value.u16 = attribute.value.u32;
+                  attr_list[i].value.u16 = attribute.value.u16;
                   break;
               case SAI_MIRROR_SESSION_ATTR_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
@@ -1681,7 +1668,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_ENCAP_TYPE:
-                  attr_list[i].value.s32 = attribute.value.s32;//u8
+                  attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_IPHDR_VERSION:
                   attr_list[i].value.u8 = attribute.value.u8;
@@ -1856,7 +1843,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_scheduler_attributes(thrift_attr_list, attr_list);
       uint32_t attr_count = thrift_attr_list.size();
       scheduler_api->create_scheduler_profile(&scheduler_id, attr_count, attr_list);
-	  free (attr_list);
+      free (attr_list);
       return scheduler_id;
   }
 
@@ -2316,8 +2303,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       status = wred_api->remove_wred_profile((sai_object_id_t) wred_id);
       return status;
   }
-  
-  void sai_thrift_parse_tunnel_attributes(const std::vector<sai_thrift_attribute_t> & thrift_attr_list,sai_attribute_t *attr_list){
+void sai_thrift_parse_tunnel_attributes(const std::vector<sai_thrift_attribute_t> & thrift_attr_list,sai_attribute_t *attr_list){
 
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
@@ -2334,7 +2320,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                 case SAI_TUNNEL_ATTR_OVERLAY_INTERFACE:
                         attr_list[i].value.oid =attribute.value.oid;
                         break;
-                case SAI_TUNNEL_ATTR_SRC_IP:
+                case SAI_TUNNEL_ATTR_ENCAP_SRC_IP:
                         sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
                         break;
                 case SAI_TUNNEL_ATTR_ENCAP_TTL_MODE :
@@ -2346,13 +2332,13 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                 case SAI_TUNNEL_ATTR_ENCAP_TTL_VAL :
                         attr_list[i].value.u8=attribute.value.u8;
                         break;
-                case SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL : 
+                case SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL :
                         attr_list[i].value.u8 = attribute.value.u8;
                         break;
                 case SAI_TUNNEL_ATTR_DECAP_TTL_MODE :
                         attr_list[i].value.u32=attribute.value.u32;
                         break;
-                case SAI_TUNNEL_ATTR_DECAP_DSCP_MODE: 
+                case SAI_TUNNEL_ATTR_DECAP_DSCP_MODE:
                         attr_list[i].value.u32 = attribute.value.u32;
                         break;
                 default:
@@ -2360,28 +2346,27 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           }
       }
    }
- 
-  void sai_thrift_parse_tunnel_entry_attributes(const std::vector<sai_thrift_attribute_t> & thrift_attr_list ,sai_attribute_t *attr_list){
+void sai_thrift_parse_tunnel_entry_attributes(const std::vector<sai_thrift_attribute_t> & thrift_attr_list ,sai_attribute_t *attr_list){
     std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
       for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
           attribute = (sai_thrift_attribute_t)*it;
           attr_list[i].id = attribute.id;
         switch (attribute.id) {
-               case SAI_TUNNEL_TABLE_ENTRY_ATTR_VR_ID:
-                        attr_list[i].value.oid = attribute.value.oid;					
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_VR_ID:
+                        attr_list[i].value.oid = attribute.value.oid;
                         break;
-               case SAI_TUNNEL_TABLE_ENTRY_ATTR_TYPE :
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE:
                         attr_list[i].value.u32 = attribute.value.u32;
                         break;
-               case SAI_TUNNEL_TABLE_ENTRY_ATTR_DST_IP:
-               case SAI_TUNNEL_TABLE_ENTRY_ATTR_SRC_IP:
-                        sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);		   		   
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP:
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP:
+                        sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
                         break;
-               case SAI_TUNNEL_TABLE_ENTRY_ATTR_TUNNEL_TYPE :
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TUNNEL_TYPE:
                         attr_list[i].value.s32=attribute.value.s32;
                         break;
-               case SAI_TUNNEL_TABLE_ENTRY_ACTION_TUNNEL_ID:
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_ACTION_TUNNEL_ID:
                         attr_list[i].value.oid=attribute.value.oid;
                         break;
                default:
@@ -2390,10 +2375,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
  }
 
-
-  
-  sai_thrift_object_id_t sai_thrift_create_tunnel(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-	  printf("sai_thrift_create_tunnel\n");
+sai_thrift_object_id_t sai_thrift_create_tunnel(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+          printf("sai_thrift_create_tunnel\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_tunnel_api_t *tunnel_api;
 
@@ -2409,7 +2392,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       free(attr_list);
       return tunnel_id;
   }
-  
+
   sai_thrift_status_t sai_thrift_remove_tunnel(const sai_thrift_object_id_t thrift_tunnel_id) {
       printf("sai_thrift_remove_tunnel");
       sai_status_t status = SAI_STATUS_SUCCESS;
@@ -2422,9 +2405,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       status = tunnel_api->remove_tunnel(tunnel_id);
       return status;
    }
-   
-   sai_thrift_object_id_t sai_thrift_create_tunnel_table_entry(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-      printf("sai_thrift_create_tunnel_table_entry");
+
+   sai_thrift_object_id_t sai_thrift_create_tunnel_term_table_entry(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      printf("sai_thrift_create_tunnel_term_table_entry");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_tunnel_api_t *tunnel_api;
       status = sai_api_query(SAI_API_TUNNEL, (void **) &tunnel_api);
@@ -2435,14 +2418,12 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_object_id_t tunnel_entry_id = 0;
       sai_thrift_parse_tunnel_entry_attributes(thrift_attr_list,attr_list);
       uint32_t list_count = thrift_attr_list.size();
-      status = tunnel_api->create_tunnel_table_entry(&tunnel_entry_id, list_count, attr_list);
+      status = tunnel_api->create_tunnel_term_table_entry(&tunnel_entry_id, list_count, attr_list);
       free(attr_list);
-      printf("tunnel_entry_id %d\n",tunnel_entry_id);
       return tunnel_entry_id;
    }
-   
-   sai_thrift_status_t sai_thrift_remove_tunnel_table_entry(const sai_thrift_object_id_t thrift_tunnel_entry_id) {
-	  printf("sai_thrift_remove_tunnel_table_entry");
+sai_thrift_status_t sai_thrift_remove_tunnel_term_table_entry(const sai_thrift_object_id_t thrift_tunnel_entry_id) {
+          printf("sai_thrift_remove_tunnel_term_table_entry");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_tunnel_api_t *tunnel_api;
       status = sai_api_query(SAI_API_TUNNEL, (void **) &tunnel_api);
@@ -2450,11 +2431,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           return status;
       }
       sai_object_id_t tunnel_entry_id = (sai_object_id_t ) thrift_tunnel_entry_id;
-      status = tunnel_api->remove_tunnel_table_entry(tunnel_entry_id);
+      status = tunnel_api->remove_tunnel_term_table_entry(tunnel_entry_id);
       return status;
-	  }
-  
-
+          }
 };
 
 static void * switch_sai_thrift_rpc_server_thread(void *arg) {
