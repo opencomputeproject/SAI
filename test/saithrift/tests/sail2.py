@@ -488,5 +488,5 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
 
             for port in sai_port_list:
                 sai_thrift_create_vlan_member(self.client, default_vlan, port, SAI_VLAN_PORT_UNTAGGED)
-                
+
 

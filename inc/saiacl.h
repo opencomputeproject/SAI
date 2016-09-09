@@ -883,7 +883,7 @@ typedef enum _sai_acl_range_attr_t
  *    @return  SAI_STATUS_SUCCESS on success
  *             Failure status code on error
  */
- typedef sai_status_t (*sai_delete_acl_table_fn)(
+ typedef sai_status_t (*sai_remove_acl_table_fn)(
     _In_ sai_object_id_t acl_table_id
     );
 
@@ -953,7 +953,7 @@ typedef sai_status_t (*sai_create_acl_entry_fn)(
  *    @return  SAI_STATUS_SUCCESS on success
  *             Failure status code on error
  */
-typedef sai_status_t (*sai_delete_acl_entry_fn)(
+typedef sai_status_t (*sai_remove_acl_entry_fn)(
     _In_ sai_object_id_t acl_entry_id
     );
 
@@ -1023,7 +1023,7 @@ typedef sai_status_t (*sai_create_acl_counter_fn)(
  *    @return  SAI_STATUS_SUCCESS on success
  *             Failure status code on error
  */
-typedef sai_status_t (*sai_delete_acl_counter_fn)(
+typedef sai_status_t (*sai_remove_acl_counter_fn)(
     _In_ sai_object_id_t acl_counter_id
     );
 
@@ -1139,15 +1139,15 @@ typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
 typedef struct _sai_acl_api_t
 {
     sai_create_acl_table_fn             create_acl_table;
-    sai_delete_acl_table_fn             delete_acl_table;
+    sai_remove_acl_table_fn             remove_acl_table;
     sai_set_acl_table_attribute_fn      set_acl_table_attribute;
     sai_get_acl_table_attribute_fn      get_acl_table_attribute;
     sai_create_acl_entry_fn             create_acl_entry;
-    sai_delete_acl_entry_fn             delete_acl_entry;
+    sai_remove_acl_entry_fn             remove_acl_entry;
     sai_set_acl_entry_attribute_fn      set_acl_entry_attribute;
     sai_get_acl_entry_attribute_fn      get_acl_entry_attribute;
     sai_create_acl_counter_fn           create_acl_counter;
-    sai_delete_acl_counter_fn           delete_acl_counter;
+    sai_remove_acl_counter_fn           remove_acl_counter;
     sai_set_acl_counter_attribute_fn    set_acl_counter_attribute;
     sai_get_acl_counter_attribute_fn    get_acl_counter_attribute;
     sai_create_acl_range_fn             create_acl_range;

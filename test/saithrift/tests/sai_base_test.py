@@ -59,8 +59,6 @@ class ThriftInterface(BaseTest):
         else:
             exit("No ptf interface<-> switch front port mapping, please specify as parameter or in external file")	    
             
-        print interface_to_front_mapping
-
         # Set up thrift client and contact server
         self.transport = TSocket.TSocket(server, 9092)
         self.transport = TTransport.TBufferedTransport(self.transport)

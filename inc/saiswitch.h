@@ -457,7 +457,7 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL,
 
-    /** Default Traffic class value, Default TC = 0 */
+    /** Default Traffic class value, [sai_cos_t] Default TC = 0 */
     SAI_SWITCH_ATTR_QOS_DEFAULT_TC,
 
     /** Enable DOT1P -> TC MAP [sai_object_id_t] on switch.
@@ -500,10 +500,8 @@ typedef enum _sai_switch_attr_t
        Default no map */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
-    /** WRITE-ONLY */
-
-    /** Port Breakout mode [sai_port_breakout_t] */
-    SAI_SWITCH_ATTR_PORT_BREAKOUT,
+    /* Enable vendor specific switch shell [bool] (default to false) */
+    SAI_SWITCH_ATTR_SWITCH_SHELL_ENABLE,
 
     /* -- */
     SAI_SWITCH_ATTR_END,
