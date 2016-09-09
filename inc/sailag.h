@@ -31,7 +31,8 @@
  */
 
 /** Lag attribute: List of attributes for LAG object */
-typedef enum _sai_lag_attr_t {
+typedef enum _sai_lag_attr_t
+{
     
     SAI_LAG_ATTR_START,
 
@@ -49,7 +50,6 @@ typedef enum _sai_lag_attr_t {
 
     /* --*/
     SAI_LAG_ATTR_CUSTOM_RANGE_END
-
 
 } sai_lag_attr_t;
 
@@ -108,9 +108,8 @@ typedef sai_status_t (*sai_get_lag_attribute_fn)(
 /**
  *  @brief List of LAG member attributes
  */
-typedef enum _sai_lag_member_attr_t {
-
-
+typedef enum _sai_lag_member_attr_t
+{
     SAI_LAG_MEMBER_ATTR_START,
     /** READ_WRITE */
 

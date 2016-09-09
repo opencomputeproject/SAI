@@ -156,50 +156,50 @@ typedef enum _sai_common_api_t {
  * @brief sai object type
  */
 typedef enum _sai_object_type_t {
-    SAI_OBJECT_TYPE_NULL             =  0,
-    SAI_OBJECT_TYPE_PORT             =  1,
-    SAI_OBJECT_TYPE_LAG              =  2,
-    SAI_OBJECT_TYPE_VIRTUAL_ROUTER   =  3,
-    SAI_OBJECT_TYPE_NEXT_HOP         =  4,
-    SAI_OBJECT_TYPE_NEXT_HOP_GROUP   =  5,
-    SAI_OBJECT_TYPE_ROUTER_INTERFACE =  6,
-    SAI_OBJECT_TYPE_ACL_TABLE        =  7,
-    SAI_OBJECT_TYPE_ACL_ENTRY        =  8,
-    SAI_OBJECT_TYPE_ACL_COUNTER      =  9,
-    SAI_OBJECT_TYPE_ACL_RANGE        = 10,
-    SAI_OBJECT_TYPE_HOST_INTERFACE   = 11,
-    SAI_OBJECT_TYPE_MIRROR           = 12,
-    SAI_OBJECT_TYPE_SAMPLEPACKET     = 13,
-    SAI_OBJECT_TYPE_STP_INSTANCE     = 14,
-    SAI_OBJECT_TYPE_TRAP_GROUP       = 15,
-    SAI_OBJECT_TYPE_ACL_TABLE_GROUP  = 16,
-    SAI_OBJECT_TYPE_POLICER          = 17,
-    SAI_OBJECT_TYPE_WRED             = 18,
-    SAI_OBJECT_TYPE_QOS_MAPS         = 19,
-    SAI_OBJECT_TYPE_QUEUE            = 20,
-    SAI_OBJECT_TYPE_SCHEDULER        = 21,
-    SAI_OBJECT_TYPE_SCHEDULER_GROUP  = 22,
-    SAI_OBJECT_TYPE_BUFFER_POOL      = 23,
-    SAI_OBJECT_TYPE_BUFFER_PROFILE   = 24,
-    SAI_OBJECT_TYPE_PRIORITY_GROUP   = 25,
-    SAI_OBJECT_TYPE_LAG_MEMBER       = 26,
-    SAI_OBJECT_TYPE_HASH             = 27,
-    SAI_OBJECT_TYPE_UDF              = 28,
-    SAI_OBJECT_TYPE_UDF_MATCH        = 29,
-    SAI_OBJECT_TYPE_UDF_GROUP        = 30,
-    SAI_OBJECT_TYPE_FDB              = 31,
-    SAI_OBJECT_TYPE_SWITCH           = 32,
-    SAI_OBJECT_TYPE_TRAP             = 33,
-    SAI_OBJECT_TYPE_TRAP_USER_DEF    = 34,
-    SAI_OBJECT_TYPE_NEIGHBOR         = 35,
-    SAI_OBJECT_TYPE_ROUTE            = 36,
-    SAI_OBJECT_TYPE_VLAN             = 37,
-    SAI_OBJECT_TYPE_VLAN_MEMBER      = 38,
-    SAI_OBJECT_TYPE_PACKET           = 39,
-    SAI_OBJECT_TYPE_TUNNEL_MAP       = 40,
-    SAI_OBJECT_TYPE_TUNNEL           = 41,
-    SAI_OBJECT_TYPE_TUNNEL_TABLE_ENTRY = 42,
-    SAI_OBJECT_TYPE_MAX              = 43
+    SAI_OBJECT_TYPE_NULL                    =  0,
+    SAI_OBJECT_TYPE_PORT                    =  1,
+    SAI_OBJECT_TYPE_LAG                     =  2,
+    SAI_OBJECT_TYPE_VIRTUAL_ROUTER          =  3,
+    SAI_OBJECT_TYPE_NEXT_HOP                =  4,
+    SAI_OBJECT_TYPE_NEXT_HOP_GROUP          =  5,
+    SAI_OBJECT_TYPE_ROUTER_INTERFACE        =  6,
+    SAI_OBJECT_TYPE_ACL_TABLE               =  7,
+    SAI_OBJECT_TYPE_ACL_ENTRY               =  8,
+    SAI_OBJECT_TYPE_ACL_COUNTER             =  9,
+    SAI_OBJECT_TYPE_ACL_RANGE               = 10,
+    SAI_OBJECT_TYPE_HOSTIF                  = 11,
+    SAI_OBJECT_TYPE_MIRROR_SESSION          = 12,
+    SAI_OBJECT_TYPE_SAMPLEPACKET            = 13,
+    SAI_OBJECT_TYPE_STP                     = 14,
+    SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP       = 15,
+    SAI_OBJECT_TYPE_ACL_TABLE_GROUP         = 16,
+    SAI_OBJECT_TYPE_POLICER                 = 17,
+    SAI_OBJECT_TYPE_WRED                    = 18,
+    SAI_OBJECT_TYPE_QOS_MAP                 = 19,
+    SAI_OBJECT_TYPE_QUEUE                   = 20,
+    SAI_OBJECT_TYPE_SCHEDULER               = 21,
+    SAI_OBJECT_TYPE_SCHEDULER_GROUP         = 22,
+    SAI_OBJECT_TYPE_BUFFER_POOL             = 23,
+    SAI_OBJECT_TYPE_BUFFER_PROFILE          = 24,
+    SAI_OBJECT_TYPE_PRIORITY_GROUP          = 25,
+    SAI_OBJECT_TYPE_LAG_MEMBER              = 26,
+    SAI_OBJECT_TYPE_HASH                    = 27,
+    SAI_OBJECT_TYPE_UDF                     = 28,
+    SAI_OBJECT_TYPE_UDF_MATCH               = 29,
+    SAI_OBJECT_TYPE_UDF_GROUP               = 30,
+    SAI_OBJECT_TYPE_FDB_ENTRY               = 31,
+    SAI_OBJECT_TYPE_SWITCH                  = 32,
+    SAI_OBJECT_TYPE_HOSTIF_TRAP             = 33,
+    SAI_OBJECT_TYPE_HOSTIF_TRAP_USER_DEF    = 34,
+    SAI_OBJECT_TYPE_NEIGHBOR                = 35,
+    SAI_OBJECT_TYPE_ROUTE                   = 36,
+    SAI_OBJECT_TYPE_VLAN                    = 37,
+    SAI_OBJECT_TYPE_VLAN_MEMBER             = 38,
+    SAI_OBJECT_TYPE_PACKET                  = 39,
+    SAI_OBJECT_TYPE_TUNNEL_MAP              = 40,
+    SAI_OBJECT_TYPE_TUNNEL                  = 41,
+    SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY = 42,
+    SAI_OBJECT_TYPE_MAX                     = 43
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -428,7 +428,7 @@ typedef struct _sai_tunnel_map_params_t
 {
     /** inner ECN */
     sai_uint8_t oecn;
-    
+
     /** outer ECN */
     sai_uint8_t uecn;
 
@@ -460,7 +460,7 @@ typedef struct _sai_tunnel_map_list_t
 
 /**
  *  @brief Structure for acl attributes supported at each stage.
- *  action_list alone is added now. Qualifier list can also be added 
+ *  action_list alone is added now. Qualifier list can also be added
  *  when needed.
  */
 typedef struct _sai_acl_capability_t
@@ -514,7 +514,7 @@ typedef union {
     sai_acl_action_data_t aclaction;
     sai_qos_map_list_t qosmap;
     sai_tunnel_map_list_t tunnelmap;
-    sai_acl_capability_t aclcapability; 
+    sai_acl_capability_t aclcapability;
 
 } sai_attribute_value_t;
 

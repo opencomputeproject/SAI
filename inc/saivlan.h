@@ -105,8 +105,8 @@ typedef enum _sai_vlan_attr_t
 /*
     \brief List of VLAN Member Attributes
 */
-typedef enum _sai_vlan_member_attr_t {
-
+typedef enum _sai_vlan_member_attr_t
+{
     SAI_VLAN_MEMBER_ATTR_START,
 
     /** READ_WRITE */

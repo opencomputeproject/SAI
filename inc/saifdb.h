@@ -146,20 +146,20 @@ typedef enum _sai_fdb_flush_entry_type_t
  * 5) Flush all static entries by port and VLAN - Set SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
  *    SAI_FDB_FLUSH_ATTR_PORT_ID, and SAI_FDB_FLUSH_ATTR_VLAN_ID
  */
-typedef enum _sai_fdb_flush_attr_t {
-    
-   SAI_FDB_FLUSH_ATTR_START,
+typedef enum _sai_fdb_flush_attr_t
+{
+    SAI_FDB_FLUSH_ATTR_START,
 
-   /**Flush based on port [sai_object_id_t]*/
-   SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
+    /**Flush based on port [sai_object_id_t]*/
+    SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
 
-   /**Flush based on VLAN [sai_vlan_id_t]*/
-   SAI_FDB_FLUSH_ATTR_VLAN_ID,
+    /**Flush based on VLAN [sai_vlan_id_t]*/
+    SAI_FDB_FLUSH_ATTR_VLAN_ID,
 
-   /**Flush based on entry type [sai_fdb_flush_entry_type_t]*/
-   SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
+    /**Flush based on entry type [sai_fdb_flush_entry_type_t]*/
+    SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
 
-   SAI_FDB_FLUSH_ATTR_END,
+    SAI_FDB_FLUSH_ATTR_END,
 
 } sai_fdb_flush_attr_t;
 

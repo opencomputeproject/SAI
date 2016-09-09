@@ -88,7 +88,7 @@ typedef enum _sai_qos_map_attr_t
      *   All Dot1p/DSCP maps to color SAI_PACKET_COLOR_GREEN
      *   All traffic class maps to queue 0.
      */
-     SAI_QOS_MAP_ATTR_MAP_TO_VALUE_LIST = 0x00000001,
+    SAI_QOS_MAP_ATTR_MAP_TO_VALUE_LIST = 0x00000001,
 
      /* -- */
     SAI_QOS_MAP_ATTR_END,
