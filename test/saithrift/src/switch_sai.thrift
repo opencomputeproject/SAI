@@ -301,6 +301,7 @@ service switch_sai_rpc {
     // WRED API
     sai_thrift_object_id_t sai_thrift_create_wred_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_wred_profile(1: sai_thrift_object_id_t wred_id);
+<<<<<<< HEAD
 
    //Tunnel API
     sai_thrift_object_id_t sai_thrift_create_tunnel(1: list<sai_thrift_attribute_t> thrift_attr_list);
@@ -308,4 +309,13 @@ service switch_sai_rpc {
     sai_thrift_object_id_t sai_thrift_create_tunnel_term_table_entry(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_tunnel_term_table_entry(1: sai_thrift_object_id_t thrift_tunnel_entry_id);
 
+=======
+    
+   //Tunnel API
+    sai_thrift_object_id_t sai_thrift_create_tunnel(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_tunnel(1: sai_thrift_object_id_t thrift_tunnel_id);
+    sai_thrift_object_id_t sai_thrift_create_tunnel_table_entry(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_tunnel_table_entry(1: sai_thrift_object_id_t thrift_tunnel_entry_id); 
+   
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
 }

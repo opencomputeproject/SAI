@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # (C) Copyright @ 2016 Broadcom.  All Rights Reserved.  The term Broadcom refers to Broadcom Limited and/or its subsidiaries.
+=======
+# (C) Copyright © 2016 Broadcom.  All Rights Reserved.  The term “Broadcom” refers to Broadcom Limited and/or its subsidiaries.
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,9 +25,16 @@ from switch import *
 
 import sai_base_test
 
+<<<<<<< HEAD
 @group("tunnel")
 @disabled
 class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
+=======
+
+@group("group_1")
+@disabled
+class encapsulation(sai_base_test.ThriftInterfaceDataPlane):
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
     '''
     performs the encapsulation 
     we send normal ip packet on port2 and we expected to receive encapsulated packet on port 1
@@ -39,8 +50,13 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
         print
         switch_init(self.client)
         time.sleep(10)
+<<<<<<< HEAD
         port1=port_list[0] #From where we expect encapsulated packet 
         port2=port_list[1] #From where we send normal ip packet
+=======
+        port1=port_list[11] #From where we expect encapsulated packet 
+        port2=port_list[13] #From where we send normal ip packet
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         mac1 = '00:05:06:00:00:00' # port1 l2 entry
         mac2 = '00:05:06:00:00:02' 
         vr_mac='00:00:08:08:08:08'
@@ -70,19 +86,32 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
         sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
         
+<<<<<<< HEAD
                
         ########################################################################
         #Virtual router created with Mac = 00:00:08:08:08:08
         #######################################################################
         vr_id=sai_thrift_create_virtual_router(self.client,1,1,vr_mac)
             
+=======
+		
+        ########################################################################
+        #  Virtual router created with Mac = 00:00:08:08:08:08
+        #######################################################################
+        vr_id=sai_thrift_create_virtual_router(self.client,vr_mac,1,1)
+		
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         #creating a underlay interface in loopback
         underlay_if = sai_thrift_create_router_interface(self.client,is_port=1,port_id=0,vr_id=vr_id,vlan_id=vlan_id,v4_enabled=1,v6_enabled=1,is_lb=1, mac='')
         #creating an overlay interface in loopback
         overlay_if = sai_thrift_create_router_interface(self.client,is_port=1,port_id=0,vr_id=vr_id,vlan_id=vlan_id,v4_enabled=1,v6_enabled=1,is_lb=1,mac='')
         #creating a tunnel
         tunnel_id=sai_thrift_create_tunnel(self.client,addr_family=addr_family,ip_addr=tunnel_src_ip_addr,underlay_if=underlay_if,overlay_if=overlay_if)
+<<<<<<< HEAD
       
+=======
+	   
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         ##############################################################################
         #  Egress configurations
         #  create router interface,
@@ -91,7 +120,11 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
         #  create route
         #   
         ##############################################################################
+<<<<<<< HEAD
        
+=======
+	   
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         #encap router interface
         encap_if_id=sai_thrift_create_router_interface(self.client,vr_id=vr_id,is_port=1,port_id=port1,vlan_id=vlan_id,v4_enabled = 1,v6_enabled = 1,is_lb=0,mac='')
         #egress(encap side) neighbor (ip=10.10.1.1 , mac=00:05:06:00:00:00 )
@@ -99,7 +132,11 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
         #egress(encap) nhop and route create
         egress_nhop=sai_thrift_create_nhop(self.client,addr_family=addr_family,is_tunnel=0,ip_addr=egress_nhop_ip_addr,rif_id=encap_if_id)
         sai_thrift_create_route(self.client,vr_id=vr_id,addr_family=addr_family,ip_addr=nhop_ip_addr_encap,ip_mask=nhop_ip_mask_encap,nhop=egress_nhop)
+<<<<<<< HEAD
         
+=======
+		
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         ###############################################################################
         #  Ingress configurations
         #  create router interface,
@@ -108,7 +145,11 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
         #  create route
         #   
         ##############################################################################
+<<<<<<< HEAD
          
+=======
+		
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         #ingress router interface
         ingress_if_id=sai_thrift_create_router_interface(self.client,vr_id=vr_id,is_port=1,port_id=port2,vlan_id=vlan_id,v4_enabled=1,v6_enabled = 1,is_lb=0,mac='')
         #ingress neighbor neighbor (ip=20.20.1.1 , mac = 00:05:06:00:00:02)
@@ -123,6 +164,11 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_route(self.client,vr_id=vr_id,addr_family=addr_family,ip_addr=tunnel_ip_addr,ip_mask=tunnel_ip_mask,nhop=initiator_id)
         
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         pkt = simple_tcp_packet(eth_dst='00:00:08:08:08:08',
                                 eth_src='00:00:00:00:00:01',
                                 ip_src='20.20.1.2',
@@ -131,7 +177,11 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_ttl=64)
 
         inner_hdr = simple_tcp_packet(eth_dst='00:00:08:08:08:08',
+<<<<<<< HEAD
                                 eth_src='00:00:00:00:00:01',
+=======
+                                eth_src='00:00:00:00:00:11',
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
                                 ip_src='20.20.1.2',
                                 ip_dst='1.1.1.1',
                                 ip_id=1,
@@ -140,13 +190,18 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
                                 eth_src='00:00:08:08:08:08',
                                 ip_dst='10.10.1.1',
                                 ip_src='2.2.2.2',
+<<<<<<< HEAD
                                 ip_id=0,#mask the indentifier during check because it differs evry time.better chech with wireshark
+=======
+                                ip_id=0,#mask the indentifier during check
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
                                 ip_ttl=64,
                                 inner_frame=inner_hdr['IP']
                                 )
         
         m=Mask(exp_pkt)
         m.set_do_not_care_scapy(IP , 'id')
+<<<<<<< HEAD
         
         try:
             # in tuple: 0 is device number, 2 is port number
@@ -156,6 +211,16 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
             verify_packets(self,str(m),[1])
 
         
+=======
+        try:
+            # in tuple: 0 is device number, 2 is port number
+            # this tuple uniquely identifies a port
+            send_packet(self, 1, pkt)
+            #verify_packets(self,exp_pkt,ports=[1])
+            verify_packets(self,str(m),[2])
+
+
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         finally:
             sai_thrift_remove_route(self.client,vr_id,addr_family,tunnel_ip_addr,tunnel_ip_mask,initiator_id) 
             self.client.sai_thrift_remove_next_hop(initiator_id)
@@ -176,13 +241,22 @@ class TunnelEncapsulation(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_tunnel(tunnel_id)
 
 
+<<<<<<< HEAD
 @group("tunnel")
+=======
+@group("group_2")
+@disabled
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
 class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
     '''
     performs the decapsulation 
     Tunnel table source is 10.10.1.1
     Tunnel table Dest is 2.2.2.2
+<<<<<<< HEAD
     
+=======
+	
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
     We will send encapsulated packet from port1 and expects a decapsulated packet on port2
     -----------------------------------------------------------------
     Egress side[port2]           |          ingress side[port1]
@@ -192,12 +266,23 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
     '''
     def runTest(self):
         print
+<<<<<<< HEAD
         switch_init(self.client)
         time.sleep(10)
         port1=port_list[0] #From where we send encapsulated packet 
         port2=port_list[1] #From where we see normal ip packet
         mac1 = '00:05:06:00:00:00' # port1 l2 entry
         mac2 = '00:05:06:00:00:02' 
+=======
+        global value_oid;
+        switch_init(self.client)
+        time.sleep(10)
+        port1=port_list[11] #From where we send encapsulated packet 
+        port2=port_list[13] #From where we see normal ip packet
+        mac1 = '00:05:06:00:00:00' # port1 l2 entry
+        mac2 = '00:05:06:00:00:02' 
+	    
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         mac_action=1                
         vlan_id=0            #expecting to use unused vlans
         addr_family=0 #1 for v6
@@ -225,16 +310,27 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
         sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
         vr_id=0 #using default vr id
+<<<<<<< HEAD
                 
+=======
+	    
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         #creating a underlay interface in loopback
         underlay_if = sai_thrift_create_router_interface(self.client,is_port=1,port_id=0,vr_id=vr_id,vlan_id=vlan_id,v4_enabled=1,v6_enabled=1,is_lb=1, mac='')
         
         #creating an overlay interface in loopback
         overlay_if = sai_thrift_create_router_interface(self.client,is_port=1,port_id=0,vr_id=vr_id,vlan_id=vlan_id,v4_enabled=1,v6_enabled=1,is_lb=1,mac='')
+<<<<<<< HEAD
         
         #creating a tunnel
         tunnel_id=sai_thrift_create_tunnel(self.client,addr_family=addr_family,ip_addr=tunnel_src_ip_addr,underlay_if=underlay_if,overlay_if=overlay_if)
             
+=======
+     	
+        #creating a tunnel
+        tunnel_id=sai_thrift_create_tunnel(self.client,addr_family=addr_family,ip_addr=tunnel_src_ip_addr,underlay_if=underlay_if,overlay_if=overlay_if)
+	     
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         ###############################################################################
         #  Ingress configurations
         #  create router interface,
@@ -243,7 +339,11 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
         #  create route
         #   
         ############################################################################## 
+<<<<<<< HEAD
 
+=======
+		
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         #ingress router interface
         ingress_if_id=sai_thrift_create_router_interface(self.client,vr_id=vr_id,is_port=1,port_id=port1,vlan_id=vlan_id,v4_enabled = 1,v6_enabled = 1,is_lb=0,mac='')
         #ingress neighbor (ip=10.10.1.1 , mac=00:05:06:00:00:00 )
@@ -251,7 +351,11 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
         #ingress(encap) nhop and route create
         ingress_nhop=sai_thrift_create_nhop(self.client,addr_family=addr_family,is_tunnel=0,ip_addr=ingress_nhop_ip_addr,rif_id=ingress_if_id)
         sai_thrift_create_route(self.client,vr_id=vr_id,addr_family=addr_family,ip_addr=nhop_ip_addr_ingress,ip_mask=nhop_ip_mask_ingress,nhop=ingress_nhop)
+<<<<<<< HEAD
         
+=======
+	   
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         ###############################################################################
         #  Ingress configurations
         #  create router interface,
@@ -260,7 +364,11 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
         #  create route
         #   
         ############################################################################## 
+<<<<<<< HEAD
             
+=======
+        	
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         #egress router interface
         egress_if_id=sai_thrift_create_router_interface(self.client,vr_id=vr_id,is_port=1,port_id=port2,vlan_id=vlan_id,v4_enabled=1,v6_enabled = 1,is_lb=0,mac='')
         #egress neighbor (ip=20.20.1.1 , mac = 00:05:06:00:00:02)
@@ -271,7 +379,13 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
         #adding tunnel and route
         initiator_id=sai_thrift_create_nhop(self.client,addr_family=addr_family,is_tunnel=1,ip_addr=initiator_ip_addr,rif_id=tunnel_id)
         sai_thrift_create_route(self.client,vr_id=vr_id,addr_family=addr_family,ip_addr=tunnel_ip_addr,ip_mask=tunnel_ip_mask,nhop=initiator_id)
+<<<<<<< HEAD
             
+=======
+        
+        
+		
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
         ###################################################################################
         #Creating a Tunnel Table entry with
         #Source match 10.10.1.10
@@ -280,10 +394,17 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
         #####################################################################################
         
         #create tunnel table entry for incoming match 		
+<<<<<<< HEAD
         tunnel_entry_id=sai_thrift_create_tunnel_term_table(self.client,addr_family=addr_family,vr_id=vr_id,ip_addr_dst=ip_addr_decap_dst,ip_addr_src=ip_addr_decap_src,tunnel_oid=tunnel_id)
         
             
         exp_pkt = simple_tcp_packet(eth_src='00:77:66:55:44:00',
+=======
+        tunnel_entry_id=sai_thrift_create_tunnel_table(self.client,addr_family=addr_family,vr_id=vr_id,ip_addr_dst=ip_addr_decap_dst,ip_addr_src=ip_addr_decap_src,tunnel_oid=tunnel_id)
+        
+		
+        exp_pkt = simple_tcp_packet(eth_src='00:77:66:55:44:33',
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
                                 eth_dst='00:05:06:00:00:02',
                                 ip_dst='20.20.1.2',
                                 ip_src='1.1.1.1',
@@ -296,7 +417,11 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_src='1.1.1.1',
                                 ip_id=108,
                                 ip_ttl=63)
+<<<<<<< HEAD
         pkt = simple_ipv4ip_packet(eth_dst='00:77:66:55:44:00',
+=======
+        pkt = simple_ipv4ip_packet(eth_dst='00:77:66:55:44:33',
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
                                 eth_src='00:00:08:08:08:08',
                                 ip_src='10.10.1.1',
                                 ip_dst='2.2.2.2',
@@ -308,6 +433,7 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
         try:
             # in tuple: 0 is device number, 2 is port number
             # this tuple uniquely identifies a port
+<<<<<<< HEAD
             send_packet(self, 1, pkt)
             #verify_packets(self,exp_pkt,ports=[1])
             verify_packets(self,exp_pkt,[2])
@@ -315,6 +441,15 @@ class decapsulation(sai_base_test.ThriftInterfaceDataPlane):
 
         finally:
             self.client.sai_thrift_remove_tunnel_term_table_entry(tunnel_entry_id)
+=======
+            send_packet(self, 2, pkt)
+            #verify_packets(self,exp_pkt,ports=[1])
+            verify_packets(self,exp_pkt,[1])
+
+
+        finally:
+            self.client.sai_thrift_remove_tunnel_table_entry(tunnel_entry_id)
+>>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
             sai_thrift_remove_route(self.client,vr_id,addr_family,tunnel_ip_addr,tunnel_ip_mask,initiator_id) 
             self.client.sai_thrift_remove_next_hop(initiator_id)
 
