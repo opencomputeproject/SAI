@@ -316,10 +316,14 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   break;
               case SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID:
 <<<<<<< HEAD
+<<<<<<< HEAD
               case SAI_NEXT_HOP_ATTR_TUNNEL_ID: 		  
 =======
               case SAI_NEXT_HOP_ATTR_TUNNEL_ID:	  
 >>>>>>> 1709aebeca3f62978b0928e4833baa576e2f3d40
+=======
+	      case SAI_NEXT_HOP_ATTR_TUNNEL_ID:	  
+>>>>>>> parent of b3f3520... addressed few reviews
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
           }
@@ -2369,6 +2373,7 @@ void sai_thrift_parse_tunnel_attributes(const std::vector<sai_thrift_attribute_t
                         break;
           }
       }
+
    }
  
   void sai_thrift_parse_tunnel_entry_attributes(const std::vector<sai_thrift_attribute_t> & thrift_attr_list ,sai_attribute_t *attr_list){
