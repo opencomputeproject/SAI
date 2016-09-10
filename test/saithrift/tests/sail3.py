@@ -1265,7 +1265,7 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id2)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
- @group('l3')
+@group('l3')
 class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         """
@@ -1374,4 +1374,4 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
-            
+
