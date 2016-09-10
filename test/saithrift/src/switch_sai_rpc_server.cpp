@@ -1319,7 +1319,7 @@ public:
           return status;
       }
       sai_thrift_parse_hostif_trap_attribute(thrift_attr, &attr);
-      status = hostif_api->set_trap_attribute((sai_hostif_trap_id_t) trap_id, &attr);
+      status = hostif_api->set_trap_attribute((sai_hostif_trap_type_t) trap_id, &attr);
       return status;
   }
 
@@ -1556,7 +1556,7 @@ public:
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      status = acl_api->delete_acl_table(acl_table_id);
+      status = acl_api->remove_acl_table(acl_table_id);
       return status;
   }
 
@@ -1584,7 +1584,7 @@ public:
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      status = acl_api->delete_acl_entry(acl_entry);
+      status = acl_api->remove_acl_entry(acl_entry);
       return status;
   }
 
@@ -1612,7 +1612,7 @@ public:
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      status = acl_api->delete_acl_counter(acl_counter_id);
+      status = acl_api->remove_acl_counter(acl_counter_id);
       return status;
   }
 
