@@ -236,6 +236,4 @@ typedef struct _sai_wred_api_t
 /**
  *\}
  */
-
-#endif
-
+#endif /* __SAIWRED_H_ */

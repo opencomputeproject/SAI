@@ -194,5 +194,4 @@ typedef struct _sai_router_interface_api_t
 /**
  * \}
  */
-#endif // __SAIROUTERINTF_H_
-
+#endif /* __SAIROUTERINTF_H_ */

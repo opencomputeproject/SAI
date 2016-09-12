@@ -190,5 +190,4 @@ typedef struct _sai_neighbor_api_t
 /**
  * \}
  */
-#endif // __SAINEIGHBOR_H_
-
+#endif /* __SAINEIGHBOR_H_ */

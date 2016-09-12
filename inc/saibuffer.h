@@ -410,5 +410,4 @@ typedef struct _sai_buffer_api_t
 /**
  *\}
  */
-
-#endif // __SAIBUFFER_H_
+#endif /* __SAIBUFFER_H_ */

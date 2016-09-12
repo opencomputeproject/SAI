@@ -282,5 +282,4 @@ typedef struct _sai_policer_api_t
 /**
  *\}
  */
-
-#endif
+#endif /* __SAIPOLICER_H_ */

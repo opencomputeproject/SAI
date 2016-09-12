@@ -135,5 +135,4 @@ sai_status_t sai_bulk_get_attribute(_In_ sai_object_type_t object_type,
 /**
  * \}
  */
-#endif // __SAIOBJECT_H_
-
+#endif /* __SAIOBJECT_H_ */

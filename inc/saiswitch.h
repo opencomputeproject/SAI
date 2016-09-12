@@ -729,5 +729,4 @@ typedef struct _sai_switch_api_t
 /**
  *\}
  */
-#endif  // __SAISWITCH_H_
-
+#endif /* __SAISWITCH_H_ */

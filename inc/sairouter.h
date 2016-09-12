@@ -167,4 +167,4 @@ typedef struct _sai_virtual_router_api_t
 /**
  * \}
  */
-#endif // __SAIROUTER_H_
+#endif /* __SAIROUTER_H_ */

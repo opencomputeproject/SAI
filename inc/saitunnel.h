@@ -519,4 +519,4 @@ typedef struct _sai_tunnel_api_t
 /**
  * \}
  */
-#endif // __SAITUNNEL_H_
+#endif /* __SAITUNNEL_H_ */

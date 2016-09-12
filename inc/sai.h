@@ -228,4 +228,4 @@ sai_object_type_query(
 /**
  * \}
  */
-#endif  // __SAI_H_
+#endif /* __SAI_H_ */

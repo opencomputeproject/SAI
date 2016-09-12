@@ -290,4 +290,4 @@ typedef struct _sai_fdb_api_t
 /**
  * \}
  */
-#endif // __SAIFDB_H_
+#endif /* __SAIFDB_H_ */

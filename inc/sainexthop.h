@@ -181,4 +181,4 @@ typedef struct _sai_next_hop_api_t
 /**
  * \}
  */
-#endif // __SAINEXTHOP_H_
+#endif /* __SAINEXTHOP_H_ */

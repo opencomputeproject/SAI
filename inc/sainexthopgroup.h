@@ -211,5 +211,4 @@ typedef struct _sai_next_hop_group_api_t
 /**
  * \}
  */
-#endif // __SAINEXTHOPGROUP_H_
-
+#endif /* __SAINEXTHOPGROUP_H_ */

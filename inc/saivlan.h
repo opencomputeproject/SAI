@@ -333,4 +333,4 @@ typedef struct _sai_vlan_api_t
 /**
  *\}
  */
-#endif // __SAIVLAN_H_
+#endif /* __SAIVLAN_H_ */

@@ -219,6 +219,4 @@ typedef struct _sai_mirror_api_t
 /**
  * \}
  */
-
-#endif // __SAIMIRROR_H_
-
+#endif /* __SAIMIRROR_H_ */

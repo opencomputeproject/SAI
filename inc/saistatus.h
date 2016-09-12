@@ -40,9 +40,9 @@
 #define SAI_STATUS_CODE(_S_)    ((sai_status_t)(_S_)) 
 
 #else
-//
-// Any mapping schema from _S_ to error codes convenient on *nix can be used.
-//
+/*
+ * Any mapping schema from _S_ to error codes convenient on *nix can be used.
+ */
 #define SAI_STATUS_CODE(_S_)    (-(_S_))
 #endif
 
@@ -218,4 +218,4 @@
 /**
  * \}
  */
-#endif // __SAISTATUS_H_
+#endif /* __SAISTATUS_H_ */
