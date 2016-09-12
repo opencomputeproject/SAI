@@ -191,4 +191,4 @@ typedef struct _sai_hash_api_t
 /**
  * \}
  */
-#endif  // __SAIHASH_H_
+#endif /* __SAIHASH_H_ */

@@ -182,5 +182,4 @@ typedef struct _sai_scheduler_group_api_t
 /**
  * \}
  */
-
-#endif
+#endif /* __SAISCHEDULER_GROUP_H_ */

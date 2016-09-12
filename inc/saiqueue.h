@@ -305,6 +305,4 @@ typedef struct _sai_queue_api_t
 /**
  *\}
  */
-
-#endif
-
+#endif /* __SAIQUEUE_H_ */

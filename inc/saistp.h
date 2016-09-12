@@ -166,4 +166,4 @@ typedef struct _sai_stp_api_t {
 /**
  * \}
  */
-#endif // __SAISTP_H_
+#endif /* __SAISTP_H_ */

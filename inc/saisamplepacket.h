@@ -166,5 +166,4 @@ typedef struct _sai_samplepacket_api_t
 /**
  * \}
  */
-#endif // __SAISAMPLEPACKET_H_
-
+#endif /* __SAISAMPLEPACKET_H_ */

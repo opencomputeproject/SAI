@@ -36,9 +36,9 @@
 
 #if defined(_WIN32)
 
-//
-// *nix already has lower-case definitions for types.
-//
+/*
+ * *nix already has lower-case definitions for types.
+ */
 typedef UINT8  uint8_t;
 typedef UINT16 uint16_t;
 typedef UINT32 uint32_t;
@@ -69,16 +69,16 @@ typedef enum {
 
 #define bool _bool
 
-#endif  // __BOOL_DEFINED
+#endif  /* __BOOL_DEFINED */
 
-//
-// N.B. Equal to 260 on Windows
-//
+/*
+ * N.B. Equal to 260 on Windows
+ */
 #define PATH_MAX MAX_PATH
 
 
 
-#else  // #if defined(_WIN32)
+#else  /* #if defined(_WIN32) */
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -102,11 +102,11 @@ typedef uint32_t sai_switch_hash_seed_t;
 #define _In_reads_opt_z_(_LEN_)
 
 
-#endif // _WIN32
+#endif /* _WIN32 */
 
-//
-// New common definitions
-//
+/*
+ * New common definitions
+ */
 typedef uint64_t sai_uint64_t;
 typedef int64_t sai_int64_t;
 typedef uint32_t sai_uint32_t;
@@ -526,4 +526,4 @@ typedef struct _sai_attribute_t {
 /**
  *\}
  */
-#endif // __SAITYPES_H_
+#endif /* __SAITYPES_H_ */

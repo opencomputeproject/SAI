@@ -54,7 +54,7 @@ typedef enum _sai_udf_base_t
 } sai_udf_base_t;
 
 /**
- * @breif Attribute id for UDF
+ * @brief Attribute id for UDF
  */
 typedef enum _sai_udf_attr_t
 {
@@ -393,4 +393,4 @@ typedef struct _sai_udf_api_t
 /**
  * \}
  */
-#endif // __SAIUDF_H_
+#endif /* __SAIUDF_H_ */

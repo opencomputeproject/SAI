@@ -748,5 +748,4 @@ typedef struct _sai_hostif_api_t
 /**
  * \}
  */
-#endif // __SAIHOSTINTF_H_
-
+#endif /* __SAIHOSTINTF_H_ */

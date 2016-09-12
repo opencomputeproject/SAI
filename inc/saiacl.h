@@ -1160,5 +1160,4 @@ typedef struct _sai_acl_api_t
 /**
  * \}
  */
-#endif // __SAIACL_H_
-
+#endif /* __SAIACL_H_ */

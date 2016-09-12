@@ -184,4 +184,4 @@ typedef struct _sai_route_api_t
 /**
  * \}
  */
-#endif // __SAIROUTE_H_
+#endif /* __SAIROUTE_H_ */

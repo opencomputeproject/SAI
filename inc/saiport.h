@@ -880,5 +880,4 @@ typedef struct _sai_port_api_t
 /**
  * \}
  */
-#endif // __SAIPORT_H_
-
+#endif /* __SAIPORT_H_ */

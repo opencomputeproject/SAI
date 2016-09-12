@@ -171,5 +171,4 @@ typedef struct _sai_scheduler_api_t
 /**
  * \}
  */
-
-#endif
+#endif /* __SAISCHEDULER_H_ */

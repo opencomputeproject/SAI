@@ -207,4 +207,4 @@ typedef struct _sai_lag_api_t
 /**
  * \}
  */
-#endif
+#endif /* __SAILAG_H_ */
