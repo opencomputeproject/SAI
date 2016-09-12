@@ -51,10 +51,10 @@ typedef enum _sai_acl_stage_t
     /** Ingress Sub Stages */
 
     /** Ingress Sub Stage: Before L2 processing in the ingress pipeline */
-    SAI_ACL_SUBSTAGE_INGRESS_PRE_L2,
+    SAI_ACL_STAGE_SUBSTAGE_INGRESS_PRE_L2,
 
     /** Ingress Sub Stage: Post L3 processing in the ingress pipeline */
-    SAI_ACL_SUBSTAGE_INGRESS_POST_L3,
+    SAI_ACL_STAGE_SUBSTAGE_INGRESS_POST_L3,
 
 } sai_acl_stage_t;
 

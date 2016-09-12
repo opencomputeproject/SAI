@@ -64,7 +64,7 @@ typedef struct _sai_fdb_entry_t
 /**
  *  @brief FDB event type
  */
-typedef enum sai_fdb_event_t
+typedef enum _sai_fdb_event_t
 {
     /** New FDB entry learned */
     SAI_FDB_EVENT_LEARNED,

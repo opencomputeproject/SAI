@@ -73,7 +73,7 @@ typedef enum _sai_policer_color_source_t
 
     /* -- */
     /* Custom range base value */
-    SAI_POLICER_COLOR_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_POLICER_COLOR_SOURCE_CUSTOM_RANGE_BASE = 0x10000000
 } sai_policer_color_source_t;
 
 /** @brief Enum defining Policer Attributes */

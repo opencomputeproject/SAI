@@ -430,7 +430,7 @@ typedef enum _sai_hostif_user_defined_trap_id_t
 
     SAI_HOSTIF_USER_DEFINED_TRAP_ID_FDB_MAX = SAI_HOSTIF_USER_DEFINED_TRAP_ID_FDB_MIN + SAI_HOSTIF_USER_DEFINED_TRAP_ID_TABLE_RANGE,
 
-    SAI_HOSTIF_TRAP_ID_CUSTOM_RANGE_BASE = 0x10000000,
+    SAI_HOSTIF_USER_DEFINED_TRAP_ID_CUSTOM_RANGE_BASE = 0x10000000,
 
 } sai_hostif_user_defined_trap_id_t;
 
@@ -606,7 +606,7 @@ typedef sai_status_t(*sai_get_hostif_attribute_fn)(
     _Inout_ sai_attribute_t *attr_list
     );
 
-typedef enum _sai_hostif_tx_type
+typedef enum _sai_hostif_tx_type_t
 {
     /** bypass switch ASIC processing pipeline,
      * tx packet goes to the specified output port directly */

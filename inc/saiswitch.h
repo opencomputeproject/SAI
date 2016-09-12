@@ -136,10 +136,10 @@ typedef enum _sai_packet_vlan_t
 typedef enum _sai_switch_switching_mode_t
 {
     /** cut-through switching mode */
-    SAI_SWITCHING_MODE_CUT_THROUGH,
+    SAI_SWITCH_SWITCHING_MODE_CUT_THROUGH,
 
     /** store-and-forward switching mode */
-    SAI_SWITCHING_MODE_STORE_AND_FORWARD
+    SAI_SWITCH_SWITCHING_MODE_STORE_AND_FORWARD
 
 } sai_switch_switching_mode_t;
 
@@ -166,13 +166,13 @@ typedef enum _sai_hash_algorithm_t
 typedef enum _sai_switch_restart_type_t
 {
     /** NPU doesn't support warmboot */
-    SAI_RESTART_TYPE_NONE = 0,
+    SAI_SWITCH_RESTART_TYPE_NONE = 0,
 
     /** Planned restart only */
-    SAI_RESTART_TYPE_PLANNED = 1,
+    SAI_SWITCH_RESTART_TYPE_PLANNED = 1,
 
     /** Both planned and unplanned restart */
-    SAI_RESTART_TYPE_ANY = 2,
+    SAI_SWITCH_RESTART_TYPE_ANY = 2,
 
 } sai_switch_restart_type_t;
 

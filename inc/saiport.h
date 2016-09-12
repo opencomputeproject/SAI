@@ -75,7 +75,7 @@ typedef enum _sai_port_oper_status_t
 /**
  * @brief Defines the operational status of the port
  */
-typedef struct _sai_port_oper_status_notification_t 
+typedef struct _sai_port_oper_status_notification_t
 {
     /** Port id */
     sai_object_id_t port_id;
@@ -126,19 +126,19 @@ typedef enum _sai_port_internal_loopback_mode_t
 typedef enum _sai_port_fdb_learning_mode_t
 {
     /** Drop packets with unknown source MAC. Do not learn. Do not forward */
-    SAI_PORT_LEARN_MODE_DROP,
+    SAI_PORT_FDB_LEARNING_MODE_DROP,
 
     /** Do not learn unknown source MAC. Forward based on destination MAC */
-    SAI_PORT_LEARN_MODE_DISABLE,
+    SAI_PORT_FDB_LEARNING_MODE_DISABLE,
 
     /** Hardware learning. Learn source MAC. Forward based on destination MAC */
-    SAI_PORT_LEARN_MODE_HW,
+    SAI_PORT_FDB_LEARNING_MODE_HW,
 
     /** Trap packets with unknown source MAC to CPU. Do not learn. Do not forward */
-    SAI_PORT_LEARN_MODE_CPU_TRAP,
+    SAI_PORT_FDB_LEARNING_MODE_CPU_TRAP,
 
     /** Trap packets with unknown source MAC to CPU. Do not learn. Forward based on destination MAC */
-    SAI_PORT_LEARN_MODE_CPU_LOG,
+    SAI_PORT_FDB_LEARNING_MODE_CPU_LOG,
 
 } sai_port_fdb_learning_mode_t;
 
@@ -158,7 +158,7 @@ typedef enum _sai_port_event_t
 /**
  * @brief Defines the port event notification
  */
-typedef struct _sai_port_event_notification_t 
+typedef struct _sai_port_event_notification_t
 {
     /** Port id */
     sai_object_id_t port_id;

@@ -39,7 +39,7 @@
 /**
  * Datastructure for stp port state
  */
-typedef enum _sai_port_stp_port_state_t
+typedef enum _sai_port_stp_state_t
 {
     /** Port is in Learning mode*/
     SAI_PORT_STP_STATE_LEARNING,
@@ -50,7 +50,7 @@ typedef enum _sai_port_stp_port_state_t
     /** Port is in Blocking mode */
     SAI_PORT_STP_STATE_BLOCKING,
 
-} sai_port_stp_port_state_t;
+} sai_port_stp_state_t;
 
 /**
  * @brief SAI attributes for STP
@@ -106,7 +106,7 @@ typedef sai_status_t (*sai_remove_stp_fn)(
 typedef sai_status_t (*sai_set_stp_port_state_fn)(
     _In_ sai_object_id_t stp_id,
     _In_ sai_object_id_t port_id,
-    _In_ sai_port_stp_port_state_t stp_port_state);
+    _In_ sai_port_stp_state_t stp_port_state);
 
 /**
  * @brief Retrieve stp state of a port in specified stp instance.
@@ -120,7 +120,7 @@ typedef sai_status_t (*sai_set_stp_port_state_fn)(
 typedef sai_status_t (*sai_get_stp_port_state_fn)(
     _In_ sai_object_id_t stp_id,
     _In_ sai_object_id_t port_id,
-    _Out_ sai_port_stp_port_state_t  *stp_port_state);
+    _Out_ sai_port_stp_state_t  *stp_port_state);
 
 /**
  * @brief Set the attribute of STP instance.
