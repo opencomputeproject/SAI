@@ -526,6 +526,9 @@ typedef enum _sai_hostif_attr_t
 
     /** Set the operational status for this host interface [bool] (default to false) */
     SAI_HOSTIF_ATTR_OPER_STATUS,
+    
+    /** Set the cos queue number to be used for packets going out through this interface */
+    SAI_HOSTIF_ATTR_COS_QUEUE,
 
     /* --*/
     SAI_HOSTIF_ATTR_END,    
