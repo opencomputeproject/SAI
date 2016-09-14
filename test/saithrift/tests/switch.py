@@ -30,7 +30,7 @@ import sai_base_test
 from ptf import config
 from ptf.testutils import *
 from ptf.thriftutils import *
-
+from ptf.mask import Mask
 import os
 
 from switch_sai_thrift.ttypes import  *
@@ -120,7 +120,8 @@ def sai_thrift_flush_fdb_by_vlan(client, vlan_id):
     fdb_attr_list = [fdb_attribute1, fdb_attribute2]
     client.sai_thrift_flush_fdb_entries(thrift_attr_list=fdb_attr_list)
 
-def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled):
+
+def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled, mac):
     #v4 enabled
     vr_attribute1_value = sai_thrift_attribute_value_t(booldata=v4_enabled)
     vr_attribute1 = sai_thrift_attribute_t(id=SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V4_STATE,
@@ -129,11 +130,14 @@ def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled):
     vr_attribute2_value = sai_thrift_attribute_value_t(booldata=v6_enabled)
     vr_attribute2 = sai_thrift_attribute_t(id=SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE,
                                            value=vr_attribute1_value)
-    vr_attr_list = [vr_attribute1, vr_attribute2]
+    vr_attribute3_value = sai_thrift_attribute_value_t(mac=mac)
+    vr_attribute3 = sai_thrift_attribute_t(id=SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS, value=vr_attribute3_value)
+    vr_attr_list = [vr_attribute1, vr_attribute2, vr_attribute3]
     vr_id = client.sai_thrift_create_virtual_router(thrift_attr_list=vr_attr_list)
     return vr_id
 
-def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id, v4_enabled, v6_enabled, mac):
+
+def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id, v4_enabled, v6_enabled, is_lb, mac):
     #vrf attribute
     rif_attr_list = []
     rif_attribute1_value = sai_thrift_attribute_value_t(oid=vr_id)
@@ -141,15 +145,20 @@ def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id,
                                             value=rif_attribute1_value)
     rif_attr_list.append(rif_attribute1)
     if is_port:
-        #port type and port id
-        rif_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_ROUTER_INTERFACE_TYPE_PORT)
-        rif_attribute2 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_TYPE,
+       if is_lb:#for loopback type
+          rif_attribute7_value = sai_thrift_attribute_value_t(s32=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK)
+          rif_attribute7 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_TYPE,
+                                                value=rif_attribute7_value)
+          rif_attr_list.append(rif_attribute7)
+       else :#port type and port id
+          rif_attribute2_value = sai_thrift_attribute_value_t(u32=SAI_ROUTER_INTERFACE_TYPE_PORT)
+          rif_attribute2 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_TYPE,
                                                 value=rif_attribute2_value)
-        rif_attr_list.append(rif_attribute2)
-        rif_attribute3_value = sai_thrift_attribute_value_t(oid=port_id)
-        rif_attribute3 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
+          rif_attr_list.append(rif_attribute2)
+          rif_attribute3_value = sai_thrift_attribute_value_t(oid=port_id)
+          rif_attribute3 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
                                                 value=rif_attribute3_value)
-        rif_attr_list.append(rif_attribute3)
+          rif_attr_list.append(rif_attribute3)
     else:
         #vlan type and vlan id
         rif_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_ROUTER_INTERFACE_TYPE_VLAN)
@@ -177,6 +186,7 @@ def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id,
         rif_attribute6 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_SRC_MAC_ADDRESS,
                                                 value=rif_attribute6_value)
         rif_attr_list.append(rif_attribute6)
+
 
     rif_id = client.sai_thrift_create_router_interface(rif_attr_list)
     return rif_id
@@ -209,7 +219,8 @@ def sai_thrift_remove_route(client, vr_id, addr_family, ip_addr, ip_mask, nhop):
     route = sai_thrift_unicast_route_entry_t(vr_id, ip_prefix)
     client.sai_thrift_remove_route(thrift_unicast_route_entry=route)
 
-def sai_thrift_create_nhop(client, addr_family, ip_addr, rif_id):
+def sai_thrift_create_nhop(client, addr_family, is_tunnel, ip_addr, rif_id):
+    nhop_attr_list = []
     if addr_family == SAI_IP_ADDR_FAMILY_IPV4:
         addr = sai_thrift_ip_t(ip4=ip_addr)
         ipaddr = sai_thrift_ip_address_t(addr_family=SAI_IP_ADDR_FAMILY_IPV4, addr=addr)
@@ -219,15 +230,27 @@ def sai_thrift_create_nhop(client, addr_family, ip_addr, rif_id):
     nhop_attribute1_value = sai_thrift_attribute_value_t(ipaddr=ipaddr)
     nhop_attribute1 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_IP,
                                              value=nhop_attribute1_value)
-    nhop_attribute2_value = sai_thrift_attribute_value_t(oid=rif_id)
-    nhop_attribute2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
+    nhop_attr_list.append(nhop_attribute1)
+    if is_tunnel:#nhop for tunnel
+       nhop_attribute2_value = sai_thrift_attribute_value_t(oid=rif_id)
+       nhop_attribute2 = sai_thrift_attribute_t(id = SAI_NEXT_HOP_ATTR_TUNNEL_ID,value = nhop_attribute2_value)
+       nhop_attr_list.append(nhop_attribute2)
+
+       nhop_attribute3_value = sai_thrift_attribute_value_t(s32 = SAI_NEXT_HOP_TUNNEL_ENCAP)
+       nhop_attribute3 = sai_thrift_attribute_t(id = SAI_NEXT_HOP_ATTR_TYPE, value = nhop_attribute3_value )
+       nhop_attr_list.append(nhop_attribute3)
+    else:
+       nhop_attribute2_value = sai_thrift_attribute_value_t(oid=rif_id)
+       nhop_attribute2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
                                              value=nhop_attribute2_value)
-    nhop_attribute3_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_IP)
-    nhop_attribute3 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_TYPE,
+       nhop_attr_list.append(nhop_attribute2)
+       nhop_attribute3_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_IP)
+       nhop_attribute3 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_TYPE,
                                              value=nhop_attribute3_value)
-    nhop_attr_list = [nhop_attribute1, nhop_attribute2, nhop_attribute3]
+       nhop_attr_list.append(nhop_attribute3)
     nhop = client.sai_thrift_create_next_hop(thrift_attr_list=nhop_attr_list)
     return nhop
+
 
 def sai_thrift_create_neighbor(client, addr_family, rif_id, ip_addr, dmac):
     if addr_family == SAI_IP_ADDR_FAMILY_IPV4:
@@ -675,3 +698,74 @@ def sai_thrift_set_port_shaper(client, port_id, max_rate):
     attr_value = sai_thrift_attribute_value_t(oid=sched_prof_id)
     attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID, value=attr_value)
     client.sai_thrift_set_port_attribute(port_id,attr)
+
+def sai_thrift_create_tunnel(client, addr_family, ip_addr, underlay_if, overlay_if):
+    attribute1_value=sai_thrift_attribute_value_t(u32 = SAI_TUNNEL_IPINIP)
+    attribute1=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_TYPE,value=attribute1_value)
+
+    attribute2_value=sai_thrift_attribute_value_t(oid=underlay_if)
+    attribute2=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,value=attribute2_value)
+
+    attribute3_value=sai_thrift_attribute_value_t(oid=overlay_if)
+    attribute3=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_OVERLAY_INTERFACE,value=attribute3_value)
+
+    if addr_family == 0 :
+         addr = sai_thrift_ip_t(ip4=ip_addr)
+         ipaddr = sai_thrift_ip_address_t(addr_family = SAI_IP_ADDR_FAMILY_IPV4 ,addr=addr)
+    else :
+         addr = sai_thrift_ip_t(ip6=ip_addr)
+         ipaddr = sai_thrift_ip_address_t(addr_family = SAI_IP_ADDR_FAMILY_IPV6 ,addr=addr)
+    attribute4_value=sai_thrift_attribute_value_t(ipaddr=ipaddr)
+    attribute4=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_ENCAP_SRC_IP,value=attribute4_value)
+
+    attribute5_value=sai_thrift_attribute_value_t(u32=SAI_TUNNEL_TTL_PIPE_MODEL)
+    attribute5=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_ENCAP_TTL_MODE,value=attribute5_value)
+    attribute6_value=sai_thrift_attribute_value_t(u32=SAI_TUNNEL_DSCP_PIPE_MODEL)
+    attribute6=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE,value=attribute6_value)
+    attribute7_value=sai_thrift_attribute_value_t(u8=64)#TTL
+    attribute7=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_ENCAP_TTL_VAL,value=attribute7_value);
+    attribute8_value=sai_thrift_attribute_value_t(u8=50)#DCSP
+    attribute8=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL,value=attribute8_value);
+    attribute9_value=sai_thrift_attribute_value_t(u32=SAI_TUNNEL_DSCP_PIPE_MODEL)
+    attribute9=sai_thrift_attribute_t(id=SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,value=attribute9_value);
+    attr_list=[attribute1,attribute2,attribute3,attribute4,attribute5,attribute6,attribute7,attribute8,attribute9]
+    tunnel_id=client.sai_thrift_create_tunnel(attr_list)
+    return tunnel_id
+
+def sai_thrift_create_tunnel_term_table(client, addr_family, vr_id, ip_addr_dst, ip_addr_src, tunnel_oid):
+    attribute1_value=sai_thrift_attribute_value_t(oid=vr_id)
+    attribute1=sai_thrift_attribute_t(id=SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_VR_ID,value=attribute1_value);
+
+    attribute2_value=sai_thrift_attribute_value_t(u32=SAI_TUNNEL_TERM_TABLE_ENTRY_P2P)
+    attribute2=sai_thrift_attribute_t(id=SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE,value=attribute2_value)
+
+    if addr_family == 0 :
+         addr = sai_thrift_ip_t(ip4=ip_addr_dst)
+         ipaddr_dst = sai_thrift_ip_address_t(addr_family = SAI_IP_ADDR_FAMILY_IPV4 ,addr=addr)
+    else :
+         addr = sai_thrift_ip_t(ip6=ip_addr_dst)
+         ipaddr_dst = sai_thrift_ip_address_t(addr_family = SAI_IP_ADDR_FAMILY_IPV6 ,addr=addr)
+
+    attribute3_value=sai_thrift_attribute_value_t(ipaddr=ipaddr_dst)
+    attribute3=sai_thrift_attribute_t(id=SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP,value=attribute3_value)
+
+    attribute4_value=sai_thrift_attribute_value_t(s32=SAI_TUNNEL_IPINIP)
+    attribute4=sai_thrift_attribute_t(id=SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TUNNEL_TYPE,value=attribute4_value)
+
+    attribute5_value=sai_thrift_attribute_value_t(oid=tunnel_oid)
+    attribute5=sai_thrift_attribute_t(id=SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_ACTION_TUNNEL_ID,value=attribute5_value)
+
+
+    if addr_family == 0 :
+         addr = sai_thrift_ip_t(ip4=ip_addr_src)
+         ipaddr_src = sai_thrift_ip_address_t(addr_family = SAI_IP_ADDR_FAMILY_IPV4 ,addr=addr)
+    else :
+         addr = sai_thrift_ip_t(ip6=ip_addr_src)
+         ipaddr_src = sai_thrift_ip_address_t(addr_family = SAI_IP_ADDR_FAMILY_IPV6 ,addr=addr)
+
+    attribute6_value=sai_thrift_attribute_value_t(ipaddr=ipaddr_src)
+    attribute6=sai_thrift_attribute_t(id=SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP,value=attribute6_value)
+
+    tb_attr_list=[attribute1,attribute2,attribute3,attribute4,attribute5,attribute6]
+    tunnel_entry_id=client.sai_thrift_create_tunnel_term_table_entry(tb_attr_list)
+    return tunnel_entry_id
