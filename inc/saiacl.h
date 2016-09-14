@@ -113,7 +113,7 @@ typedef enum _sai_acl_ip_frag_t
 
 typedef enum _sai_acl_action_list_t
 {
-    SAI_ACL_ATTR_ACTION_REDIRECT, 
+    SAI_ACL_ATTR_ACTION_REDIRECT,
 
     /** Redirect Packet to a list of destination which can be
      *  a port list.*/
@@ -137,10 +137,10 @@ typedef enum _sai_acl_action_list_t
     /** Assosiate with policer (policer id) */
     SAI_ACL_ATTR_ACTION_SET_POLICER,
 
-    /** Decrement TTL */ 
+    /** Decrement TTL */
     SAI_ACL_ATTR_ACTION_DECREMENT_TTL,
 
-    /** Set Class-of-Service */ 
+    /** Set Class-of-Service */
     SAI_ACL_ATTR_ACTION_SET_TC,
 
     /** Set packet color */
@@ -152,10 +152,10 @@ typedef enum _sai_acl_action_list_t
     /** Set Packet Inner Vlan-Priority */
     SAI_ACL_ATTR_ACTION_SET_INNER_VLAN_PRI,
 
-    /** Set Packet Outer Vlan-Id */ 
+    /** Set Packet Outer Vlan-Id */
     SAI_ACL_ATTR_ACTION_SET_OUTER_VLAN_ID,
 
-    /** Set Packet Outer Vlan-Priority */ 
+    /** Set Packet Outer Vlan-Priority */
     SAI_ACL_ATTR_ACTION_SET_OUTER_VLAN_PRI,
 
     /** Set Packet Src MAC Address */
@@ -188,13 +188,13 @@ typedef enum _sai_acl_action_list_t
     /** Set Packet L4 Src Port */
     SAI_ACL_ATTR_ACTION_SET_L4_DST_PORT,
 
-    /** Set ingress packet sampling */ 
+    /** Set ingress packet sampling */
     SAI_ACL_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
 
     /** Set egress packet sampling */
     SAI_ACL_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
 
-    /** Set CPU Queue for CPU bound traffic */ 
+    /** Set CPU Queue for CPU bound traffic */
     SAI_ACL_ATTR_ACTION_SET_CPU_QUEUE,
 
     /** Set Meta Data to carry forward to next ACL Stage */
@@ -206,7 +206,7 @@ typedef enum _sai_acl_action_list_t
     /** Set User Defined Trap ID  */
     SAI_ACL_ATTR_ACTION_SET_USER_TRAP_ID,
 
-}sai_acl_action_list_t; 
+}sai_acl_action_list_t;
 
 
 #define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
@@ -218,7 +218,7 @@ typedef enum _sai_acl_table_attr_t
 {
 
     SAI_ACL_TABLE_ATTR_START,
-    
+
     /** READ-ONLY */
 
     /** READ-WRITE */
@@ -433,18 +433,17 @@ typedef enum _sai_acl_table_attr_t
     /** DST IP address match in Route table [bool] */
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
-    /** User Defined Field Groups [sai_object_id_t]
-     * (CREATE_ONLY, default to SAI_NULL_OBJECT_ID) */
-    SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN,
-
-    SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
+    /** User Defined Field Groups list[sai_object_id_t]
+     * (CREATE_ONLY, default to empty list)
+     * Max list length is SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE */
+    SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_LIST,
 
     /** Range type defined in sai_acl_range_type_t */
     SAI_ACL_TABLE_ATTR_FIELD_RANGE,
 
-    /** List of actions in sai_acl_table_action_list_t [sai_s32_list_t] 
+    /** List of actions in sai_acl_table_action_list_t [sai_s32_list_t]
      * Based on the acl capability per stage obtained from the switch
-     * attribute SAI_SWITCH_ATTR_ACL_CAPABILITY application should 
+     * attribute SAI_SWITCH_ATTR_ACL_CAPABILITY application should
      * pass the action list if its mandatory per stage.
      * If its not mandatory application can either pass the action list
      * or ignore it.
@@ -496,7 +495,7 @@ typedef enum _sai_acl_entry_attr_t
      * - When bitfield is used the comment, only those least significent bits
      *   are valid for matching.
      */
-    
+
     SAI_ACL_ENTRY_ATTR_END,
 
     /** Start of Rule Match Fields */
@@ -856,12 +855,12 @@ typedef enum _sai_acl_range_attr_t
 /**
  *   Routine Description:
  *    @brief Create an ACL table
- * 
+ *
  *  Arguments:
  *  @param[out] acl_table_id - the the acl table id
  *  @param[in] attr_count - number of attributes
  *  @param[in] attr_list - array of attributes
- * 
+ *
  *  Return Values:
  *    @return  SAI_STATUS_SUCCESS on success
  *             Failure status code on error
@@ -875,10 +874,10 @@ typedef enum _sai_acl_range_attr_t
 /**
  *  Routine Description:
  *    @brief Delete an ACL table
- * 
+ *
  *  Arguments:
  *    @param[in] acl_table_id - the acl table id
- * 
+ *
  *  Return Values:
  *    @return  SAI_STATUS_SUCCESS on success
  *             Failure status code on error
