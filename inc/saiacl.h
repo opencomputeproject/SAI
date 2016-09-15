@@ -206,6 +206,10 @@ typedef enum _sai_acl_action_list_t
     /** Set User Defined Trap ID  */
     SAI_ACL_ATTR_ACTION_SET_USER_TRAP_ID,
 
+    /** Set Do Not Learn Action */
+    SAI_ACL_ATTR_ACTION_SET_DO_NOT_LEARN,
+
+
 }sai_acl_action_list_t; 
 
 
@@ -774,8 +778,11 @@ typedef enum _sai_acl_entry_attr_t
      *  Value Range SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID,
 
+    /** Set Do Not Learn Action [bool] */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
+
     /** End of Rule Actions */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN
 
 } sai_acl_entry_attr_t;
 
