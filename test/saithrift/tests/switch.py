@@ -46,8 +46,8 @@ sai_port_list = []
 front_port_list = []
 table_attr_list = []
 router_mac='00:77:66:55:44:00'
-rewrite_mac1='00:77:66:55:45:01'
-rewrite_mac2='00:77:66:55:46:01'
+rewrite_mac1='00:77:66:55:44:01'
+rewrite_mac2='00:77:66:55:44:02'
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
 
