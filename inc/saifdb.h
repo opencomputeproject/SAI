@@ -37,7 +37,7 @@
  *
  *  \{
  */
- 
+
 /**
  *  @brief FDB entry type.
  */
@@ -50,16 +50,6 @@ typedef enum _sai_fdb_entry_type_t
     SAI_FDB_ENTRY_STATIC,
 
 } sai_fdb_entry_type_t;
-
-/**
- *  @brief FDB entry key
- */
-typedef struct _sai_fdb_entry_t
-{
-    sai_mac_t mac_address;
-    sai_vlan_id_t vlan_id;
-
-} sai_fdb_entry_t;
 
 
 /**
@@ -83,7 +73,6 @@ typedef enum sai_fdb_event_t
  */
 typedef enum _sai_fdb_entry_attr_t
 {
-
     SAI_FDB_ENTRY_ATTR_START,
     /** READ-ONLY */
 
@@ -91,6 +80,19 @@ typedef enum _sai_fdb_entry_attr_t
 
     /** FDB entry type [sai_fdb_entry_type_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_FDB_ENTRY_ATTR_TYPE = SAI_FDB_ENTRY_ATTR_START,
+
+    /*
+     * MAC_ADDRESS and VLAN_ID attributes create unique key,
+     * and creation of fdb entry with the same key should fail.
+     */
+
+    /** Valid mac address [sai_mac_t]
+     * MANDATORY_ON_CREATE|CREATE_ONLY|KEY */
+    SAI_FDB_ENTRY_ATTR_MAC_ADDRESS,
+
+    /** Valid vlan id [sai_vlan_id_t]
+     * MANDATORY_ON_CREATE|CREATE_ONLY|KEY */
+    SAI_FDB_ATTR_VLAN_ID,
 
     /** FDB entry port id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
      * The port id here can refer to a generic port object such as SAI port object id,
@@ -147,7 +149,7 @@ typedef enum _sai_fdb_flush_entry_type_t
  *    SAI_FDB_FLUSH_ATTR_PORT_ID, and SAI_FDB_FLUSH_ATTR_VLAN_ID
  */
 typedef enum _sai_fdb_flush_attr_t {
-    
+
    SAI_FDB_FLUSH_ATTR_START,
 
    /**Flush based on port [sai_object_id_t]*/
@@ -163,10 +165,10 @@ typedef enum _sai_fdb_flush_attr_t {
 
 } sai_fdb_flush_attr_t;
 
-/** Notification data format received from SAI FDB callback*/
+/** Notification data format received from SAI FDB callback
+ * attribute list must contain MAC_ADDRESS and IP_ADDRESS */
 typedef struct _sai_fdb_event_notification_data_t {
     sai_fdb_event_t event_type;
-    sai_fdb_entry_t fdb_entry;
     uint32_t attr_count;
     sai_attribute_t *attr;
 } sai_fdb_event_notification_data_t;
@@ -176,7 +178,7 @@ typedef struct _sai_fdb_event_notification_data_t {
  *    @brief Create FDB entry
  *
  * Arguments:
- *    @param[in] fdb_entry - fdb entry
+ *    @param[in] fdb_entry_id - fdb entry ID
  *    @param[in] attr_count - number of attributes
  *    @param[in] attr_list - array of attributes
  *
@@ -185,7 +187,7 @@ typedef struct _sai_fdb_event_notification_data_t {
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_create_fdb_entry_fn)(
-    _In_ const sai_fdb_entry_t* fdb_entry,
+    _Out_ sai_object_id_t *fdb_entry_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
@@ -195,14 +197,14 @@ typedef sai_status_t (*sai_create_fdb_entry_fn)(
  *    @brief Remove FDB entry
  *
  * Arguments:
- *    @param[in] fdb_entry - fdb entry
+ *    @param[in] fdb_entry_id - fdb entry ID
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_remove_fdb_entry_fn)(
-    _In_ const sai_fdb_entry_t* fdb_entry
+    _In_ sai_object_id_t fdb_entry_id
     );
 
 /**
@@ -210,7 +212,7 @@ typedef sai_status_t (*sai_remove_fdb_entry_fn)(
  *    @brief Set fdb entry attribute value
  *
  * Arguments:
- *    @param[in] fdb_entry - fdb entry
+ *    @param[in] fdb_entry_id - fdb entry ID
  *    @param[in] attr - attribute
  *
  * Return Values:
@@ -218,7 +220,7 @@ typedef sai_status_t (*sai_remove_fdb_entry_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
-    _In_ const sai_fdb_entry_t* fdb_entry,
+    _In_ sai_object_id_t fdb_entry_id
     _In_ const sai_attribute_t *attr
     );
 
@@ -227,7 +229,7 @@ typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
  *    @brief Get fdb entry attribute value
  *
  * Arguments:
- *    @param[in] fdb_entry - fdb entry
+ *    @param[in] fdb_entry_id - fdb entry ID
  *    @param[in] attr_count - number of attributes
  *    @param[inout] attr_list - array of attributes
  *
@@ -236,7 +238,7 @@ typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
-    _In_ const sai_fdb_entry_t* fdb_entry,
+    _In_ sai_object_id_t fdb_entry_id
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );

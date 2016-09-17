@@ -37,18 +37,31 @@
  *
  *  \{
  */
- 
+
 /**
  *  @brief Attribute Id for sai neighbor object
  */
 typedef enum _sai_neighbor_attr_t
 {
 
-    SAI_NEIGHBOR_ATTR_START, 
+    SAI_NEIGHBOR_ATTR_START,
     /** READ-WRITE */
 
     /** Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS = SAI_NEIGHBOR_ATTR_START,
+
+    /*
+     * RIF_ID and IP_ADDRESS attributes create unique key,
+     * and creation of neighbor entry with the same key should fail.
+     */
+
+    /** Valid router interface id [sai_object_id_t]
+     * MANDATORY_ON_CREATE|CREATE_ONLY|KEY */
+    SAI_NEIGHBOR_ATTR_RIF_ID,
+
+    /** Valid ip address [sai_ip_address_t]
+     * MANDATORY_ON_CREATE|CREATE_ONLY|KEY */
+    SAI_NEIGHBOR_ATTR_IP_ADDRESS,
 
     /** L3 forwarding action for this neighbor [sai_packet_action_t]
     *    (default to SAI_PACKET_ACTION_FORWARD) */
@@ -77,22 +90,11 @@ typedef enum _sai_neighbor_attr_t
 } sai_neighbor_attr_t;
 
 /**
-*  @brief neighbor entry
-*/
-typedef struct _sai_neighbor_entry_t
-{
-    sai_object_id_t rif_id;
-    sai_ip_address_t ip_address;
-
-} sai_neighbor_entry_t;
-
-
-/**
  * Routine Description:
  *    @brief Create neighbor entry
  *
  * Arguments:
- *    @param[in] neighbor_entry - neighbor entry
+ *    @param[in] neighbor_entry_id - neighbor entry ID
  *    @param[in] attr_count - number of attributes
  *    @param[in] attrs - array of attributes
  *
@@ -103,7 +105,7 @@ typedef struct _sai_neighbor_entry_t
  * Note: IP address expected in Network Byte Order.
  */
 typedef sai_status_t (*sai_create_neighbor_entry_fn)(
-    _In_ const sai_neighbor_entry_t* neighbor_entry,
+    _Out_ sai_object_id_t *neighbor_entry_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
@@ -113,7 +115,7 @@ typedef sai_status_t (*sai_create_neighbor_entry_fn)(
  *    @brief Remove neighbor entry
  *
  * Arguments:
- *    @param[in] neighbor_entry - neighbor entry
+ *    @param[in] neighbor_entry_id - neighbor entry ID
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success
@@ -122,7 +124,7 @@ typedef sai_status_t (*sai_create_neighbor_entry_fn)(
  * Note: IP address expected in Network Byte Order.
  */
 typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
-    _In_ const sai_neighbor_entry_t* neighbor_entry
+    _In_ sai_object_id_t neighbor_entry_id
     );
 
 /**
@@ -130,7 +132,7 @@ typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
  *    @brief Set neighbor attribute value
  *
  * Arguments:
- *    @param[in] neighbor_entry - neighbor entry
+ *    @param[in] neighbor_entry_id - neighbor entry ID
  *    @param[in] attr - attribute
  *
  * Return Values:
@@ -138,7 +140,7 @@ typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
-    _In_ const sai_neighbor_entry_t* neighbor_entry,
+    _In_ sai_object_id_t neighbor_entry_id
     _In_ const sai_attribute_t *attr
     );
 
@@ -147,7 +149,7 @@ typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
  *    @brief Get neighbor attribute value
  *
  * Arguments:
- *    @param[in] neighbor_entry - neighbor entry
+ *    @param[in] neighbor_entry_id - neighbor entry ID
  *    @param[in] attr_count - number of attributes
  *    @param[inout] attrs - array of attributes
  *
@@ -156,7 +158,7 @@ typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_get_neighbor_attribute_fn)(
-    _In_ const sai_neighbor_entry_t* neighbor_entry,
+    _In_ sai_object_id_t neighbor_entry_id
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
