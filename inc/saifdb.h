@@ -265,13 +265,16 @@ typedef sai_status_t (*sai_flush_fdb_entries_fn)(
  * Arguments:
  *    @param[in] count - number of notifications
  *    @param[in] data  - pointer to fdb event notification data array
+ *    @param[in] cb_data - Pointer to aplication data passed to
+ *           callback
  *
  * Return Values:
  *    None
  */
 typedef void (*sai_fdb_event_notification_fn)(
     _In_ uint32_t count,
-    _In_ sai_fdb_event_notification_data_t *data
+    _In_ sai_fdb_event_notification_data_t *data,
+    void *cb_data
     );
 
 /**

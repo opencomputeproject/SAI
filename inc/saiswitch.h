@@ -584,12 +584,16 @@ typedef void (*sai_switch_shutdown_request_fn)(
  *
  * Arguments:
  *  @param[in] switch_oper_status - new switch oper state
+ *  @param[in] *cb_data - Pointer to application data passed to
+ *        callback
+ * 
  *
  * Return Values:
  *    None
  */
 typedef void (*sai_switch_state_change_notification_fn)(
-    _In_ sai_switch_oper_status_t switch_oper_status
+    _In_ sai_switch_oper_status_t switch_oper_status,
+    void *cb_data
     );
 
 
@@ -599,11 +603,16 @@ typedef void (*sai_switch_state_change_notification_fn)(
 typedef struct _sai_switch_notification_t
 {
     sai_switch_state_change_notification_fn on_switch_state_change;
+    void *on_switch_state_change_cb_data;   
     sai_fdb_event_notification_fn           on_fdb_event;
+    void *on_fdb_event_cb_data;  
     sai_port_state_change_notification_fn   on_port_state_change;
+    void *on_port_state_change_cb_data;  
     sai_port_event_notification_fn          on_port_event;
+    void *on_port_event_cb_data;  
     sai_switch_shutdown_request_fn          on_switch_shutdown_request;
     sai_packet_event_notification_fn        on_packet_event;
+    void *on_packet_event_cb_data;  
 } sai_switch_notification_t;
 
 /**
