@@ -132,7 +132,25 @@ typedef struct _service_method_table_t
 
 } service_method_table_t;
 
-
+/**
+ * Routine Description:
+ *     @brief Service method table initialization call.
+ *
+ * Arguments:
+ *     @param[in/out] services - methods table with services to
+ *           be initialised by host adapter
+ *
+ * Return Values:
+ *    @return  SAI_STATUS_SUCCESS on success
+ *             Failure status code on error
+ *  
+ * @note This function supposes to hide platform specific 
+ *       service method table initialization.
+ */
+sai_status_t
+sai_service_method_table_initialize(
+    _Inout_ service_method_table_t* services
+    );
 
 /**
  * Routine Description:
@@ -140,7 +158,8 @@ typedef struct _service_method_table_t
  *
  * Arguments:
  *     @param[in] flags    - reserved for future use, must be zero
- *     @param[in] services - methods table with services provided by adapter host
+ *     @param[in] services - initialized methods table with
+ *           services provided by adapter host
  *
  * Return Values:
  *    @return  SAI_STATUS_SUCCESS on success
