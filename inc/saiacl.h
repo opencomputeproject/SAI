@@ -679,7 +679,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
 
     /** Drop Packet [sai_packet_action_t] */
-    SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
+    SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION,
 
     /** Flood Packet on Vlan domain (parameter is not needed) */
     SAI_ACL_ENTRY_ATTR_ACTION_FLOOD,
