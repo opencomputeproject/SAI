@@ -370,6 +370,28 @@ typedef enum _sai_packet_color_t
 } sai_packet_color_t;
 
 /**
+ * @brief Attribute data for FDB learning mode()
+ */
+typedef enum _sai_fdb_learning_mode_t
+{
+    /** Drop packets with unknown source MAC. Do not learn. Do not forward */
+    SAI_LEARN_MODE_DROP,
+
+    /** Do not learn unknown source MAC. Forward based on destination MAC */
+    SAI_LEARN_MODE_FLOOD,
+
+    /** Hardware learning. Learn source MAC. Forward based on destination MAC */
+    SAI_LEARN_MODE_HW,
+
+    /** Trap packets with unknown source MAC to CPU. Do not learn. Do not forward */
+    SAI_LEARN_MODE_CPU_TRAP,
+
+    /** Trap packets with unknown source MAC to CPU. Do not learn. Forward based on destination MAC */
+    SAI_LEARN_MODE_CPU_LOG,
+
+} sai_fdb_learning_mode_t;
+
+/**
  * Defines qos map types.
  * Examples:
  * dot1p/dscp --> TC
