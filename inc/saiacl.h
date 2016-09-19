@@ -620,7 +620,7 @@ typedef enum _sai_acl_entry_attr_t
     /** DST IP address match user meta data in Neighbor Table
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE */
-    SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_USER_META,
+    SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_DST_USER_META,
 
     /** Port User Meta Data
      * Value must be in the range defined in
@@ -679,7 +679,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
 
     /** Drop Packet [sai_packet_action_t] */
-    SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
+    SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION,
 
     /** Flood Packet on Vlan domain (parameter is not needed) */
     SAI_ACL_ENTRY_ATTR_ACTION_FLOOD,
