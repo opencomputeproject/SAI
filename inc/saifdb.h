@@ -92,11 +92,14 @@ typedef enum _sai_fdb_entry_attr_t
     /** FDB entry type [sai_fdb_entry_type_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_FDB_ENTRY_ATTR_TYPE = SAI_FDB_ENTRY_ATTR_START,
 
-    /** FDB entry port id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
-     * The port id here can refer to a generic port object such as SAI port object id,
-     * SAI LAG object id and etc. or to a tunnel next hop object in case the entry is
-     * l2 tunnel */
-    SAI_FDB_ENTRY_ATTR_PORT_ID,
+    /** FDB entry output id [sai_object_id_t] (CREATE_AND_SET)
+      * This attribute only takes effect when SAI_FDB_ENTRY_ATTR_PACKET_ACTION is set to FORWARD.
+      * The OUTPUT_ID here can refer to a generic port object such as SAI port object id,
+      * SAI LAG object id and etc. or to a tunnel next hop object in case the entry is l2 tunnel.
+      * It can also refer to a genric group with type SAI_GROUP_TYPE_L2MC. 
+	  * If the group has no member, packets will be discarded.
+      * (MANDATORY_ON_CREATE when SAI_FDB_ENTRY_ATTR_PACKET_ACTION = SAI_PACKET_ACTION_FORWARD) */
+    SAI_FDB_ENTRY_ATTR_OUTPUT_ID,
 
     /** FDB entry packet action [sai_packet_action_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_FDB_ENTRY_ATTR_PACKET_ACTION,

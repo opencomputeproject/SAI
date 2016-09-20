@@ -85,6 +85,59 @@ typedef enum _sai_vlan_attr_t
       */
     SAI_VLAN_ATTR_LEARN_DISABLE,
 
+    /** VLAN Exception IGMP packet enable [bool] (CREATE_AND_SET)
+      *(default is disabled)*/
+    SAI_VLAN_ATTR_EXCEPTION_IGMP_EN, 
+
+    /** VLAN Exception MLD packet enable [bool] (CREATE_AND_SET)
+      *(default is disabled)*/
+    SAI_VLAN_ATTR_EXCEPTION_MLD_EN, 
+
+    /** IPv4 multicast snooping enable in a Vlan [bool] (CREATE_AND_SET)
+      * Setting value true would fail when NPU doesn’t have the MCAST SNOOPING capability.
+      *(default is disabled)*/
+    SAI_VLAN_ATTR_IPV4_MCAST_SNOOPING_EN, 
+
+    /** IPv6 multicast snooping enable in a Vlan [bool] (CREATE_AND_SET)
+      * Setting value true would fail when NPU doesn’t have the MCAST SNOOPING capability.
+      *(default is disabled)*/
+    SAI_VLAN_ATTR_IPV6_MCAST_SNOOPING_EN,
+
+    /** Generic group object id [sai_object_id_t] (CREATE_AND_SET)
+      * Indicating the output ports/LAGs for unknown non-ip multicast packets.
+      * This attribute only takes effect when one of the following conditions is met:
+      * (1)non-ip multicast packet
+      * (2)IPv4 multicast packet && not linklocal && IPv4 mcast snooping disabled for vlan
+      * (3)IPv6 multicast packet && not linklocal && IPv6 mcast snooping disabled for vlan
+      * If not set, unknown multicast packets will be discarded – default action.
+      * If the group has no member, unknown multicast packets will be discarded. */
+    SAI_VLAN_ATTR_UNKNOWN_NON_IP_MCAST_OUTPUT_GROUP_ID,
+
+    /** Generic group object id [sai_object_id_t] (CREATE_AND_SET)
+      * Indicating the output ports/LAGs for unknown IPv4 multicast packets.
+      * This attribute only takes effect when the following condition is met:
+      * (1)IPv4 multicast packet && not linklocal && IPv4 mcast snooping enabled for vlan
+      * If not set, unknown multicast packets will be discarded – default action.
+      * If the group has no member, unknown multicast packets will be discarded. */
+    SAI_VLAN_ATTR_UNKNOWN_IPV4_MCAST_OUTPUT_GROUP_ID,
+
+    /** Generic group object id [sai_object_id_t] (CREATE_AND_SET)
+      * Indicating the output ports/LAGs for unknown IPv6 multicast packets.
+      * This attribute only takes effect when the following condition is met:
+      * (1)IPv6 multicast packet && not linklocal && IPv6 mcast snooping enabled for vlan
+      * If not set, unknown multicast packets will be discarded – default action.
+      * If the group has no member, unknown multicast packets will be discarded. */
+    SAI_VLAN_ATTR_UNKNOWN_IPV6_MCAST_OUTPUT_GROUP_ID,
+
+    /** Generic group object id [sai_object_id_t] (CREATE_AND_SET)
+      * Indicating the output ports/LAGs for unknown linklocal multicast packets.
+      * This attribute only takes effect when the following condition is met:
+      * (1) IPv4 multicast packet && linklocal address && IPv4 mcast snooping enabled for vlan
+      * (2) IPv6 multicast packet && linklocal address && IPv6 mcast snooping enabled for vlan
+      * If not set, unknown multicast packets will be discarded – default action.
+      * If the group has no member, unknown multicast packets will be discarded. */
+    SAI_VLAN_ATTR_UNKNOWN_LINKLOCAL_MCAST_OUTPUT_GROUP_ID,
+
     /** User based Meta Data
       * [sai_uint32_t] (CREATE_AND_SET)
       * Value Range SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */

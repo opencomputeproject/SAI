@@ -68,6 +68,10 @@ typedef enum _sai_virtual_router_attr_t
      * (default to SAI_PACKET_ACTION_TRAP) */
     SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_IP_OPTIONS,
 
+    /** Action for Unknown L3 multicast packets [sai_packet_action_t] (CREATE_AND_SET)
+     * (default to SAI_PACKET_ACTION_DROP) */
+    SAI_VIRTUAL_ROUTER_ATTR_UNKNOWN_L3_MULTICAST_PACKET_ACTION,
+
     /* -- */
 
     SAI_VIRTUAL_ROUTER_ATTR_END,
