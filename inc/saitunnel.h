@@ -229,7 +229,8 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
 
     /** tunnel overlay interafce [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY)
-     *  overlay interface is router interface when SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_IPINIP or SAI_TUNNEL_IPINIP_GRE */
+     *  overlay interface is router interface when SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_IPINIP or SAI_TUNNEL_IPINIP_GRE
+     *  overlay interface is bridge port object when SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_VXLAN */
     SAI_TUNNEL_ATTR_OVERLAY_INTERFACE,
 
     /** tunnel encap attribute*/
@@ -239,7 +240,8 @@ typedef enum _sai_tunnel_attr_t
 
     /** tunnel TTL mode (pipe or uniform model) [sai_tunnel_ttl_mode_t]
      *  (CREATE_ONLY) 
-     *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL */
+     *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL
+     *  When SAI_TUNNEL_TYPE = SAI_TUNNEL_VXLAN, only SAI_TUNNEL_TTL_PIPE_MODEL is valid */
     SAI_TUNNEL_ATTR_ENCAP_TTL_MODE,
 
     /** tunnel TTL value [sai_uint8_t]
@@ -248,7 +250,8 @@ typedef enum _sai_tunnel_attr_t
 
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t]
      *  (CREATE_ONLY)
-     *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
+     *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL
+     *  When SAI_TUNNEL_TYPE = SAI_TUNNEL_VXLAN, only SAI_TUNNEL_DSCP_PIPE_MODEL is valid */
     SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE,
 
     /** tunnel DSCP value [sai_uint8_t : 6]
@@ -267,8 +270,7 @@ typedef enum _sai_tunnel_attr_t
      *   Default would be SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD */
     SAI_TUNNEL_ATTR_ENCAP_ECN_MODE,
 
-    /** tunnel encap mappers [sai_object_list_t]
-      * (valid when SAI_TUNNEL_ATTR_ENCAP_ECN_MODE=SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED) */
+    /** tunnel encap mappers [sai_object_list_t] */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
     /** tunnel decap attribute **/
@@ -277,20 +279,21 @@ typedef enum _sai_tunnel_attr_t
      *   Default would be SAI_TUNNEL_DECAP_ECN_MODE_STANDARD */
     SAI_TUNNEL_ATTR_DECAP_ECN_MODE,
 
-    /**  tunnel decap mappers [sai_object_list_t]
-      *  (valid when SAI_TUNNEL_ATTR_DECAP_ECN_MODE=SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED) */
+    /**  tunnel decap mappers [sai_object_list_t] */
     SAI_TUNNEL_ATTR_DECAP_MAPPERS,
 
     /** tunnel TTL mode (pipe or uniform model) [sai_tunnel_ttl_mode_t]
      *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE)
      *  (CREATE_ONLY)
-     *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL */
+     *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL
+     *  When SAI_TUNNEL_TYPE = SAI_TUNNEL_VXLAN, only SAI_TUNNEL_TTL_PIPE_MODEL is valid */
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
     /** tunnel dscp mode (pipe or uniform model) [sai_tunnel_dscp_mode_t]
      *  (MANDATORY_ON_CREATE when SAI_TUNNEL_ATTR_TYPE=SAI_TUNNEL_IPINIP,SAI_TUNNEL_IPINIP_GRE)
      *  (CREATE_ONLY)
-     *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
+     *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL
+     *  When SAI_TUNNEL_TYPE = SAI_TUNNEL_VXLAN, only SAI_TUNNEL_DSCP_PIPE_MODEL is valid */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
     
     SAI_TUNNEL_ATTR_END,
