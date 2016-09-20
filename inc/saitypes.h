@@ -196,7 +196,8 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_TUNNEL_MAP              = 40,
     SAI_OBJECT_TYPE_TUNNEL                  = 41,
     SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY = 42,
-    SAI_OBJECT_TYPE_MAX                     = 43
+    SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP  = 43
+    SAI_OBJECT_TYPE_MAX                     = 44
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
