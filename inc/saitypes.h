@@ -161,7 +161,7 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_LAG              =  2,
     SAI_OBJECT_TYPE_VIRTUAL_ROUTER   =  3,
     SAI_OBJECT_TYPE_NEXT_HOP         =  4,
-    SAI_OBJECT_TYPE_NEXT_HOP_GROUP   =  5,
+    SAI_OBJECT_TYPE_GROUP            =  5,
     SAI_OBJECT_TYPE_ROUTER_INTERFACE =  6,
     SAI_OBJECT_TYPE_ACL_TABLE        =  7,
     SAI_OBJECT_TYPE_ACL_ENTRY        =  8,
@@ -199,7 +199,10 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_TUNNEL_MAP       = 40,
     SAI_OBJECT_TYPE_TUNNEL           = 41,
     SAI_OBJECT_TYPE_TUNNEL_TABLE_ENTRY = 42,
-    SAI_OBJECT_TYPE_MAX              = 43
+    SAI_OBJECT_TYPE_GROUP_MEMBER     = 43,
+    SAI_OBJECT_TYPE_L2MC             = 44,
+    SAI_OBJECT_TYPE_IPMC             = 45,
+    SAI_OBJECT_TYPE_MAX              = 46
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {

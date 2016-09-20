@@ -97,6 +97,12 @@ typedef enum _sai_router_interface_attr_t
      * (CREATE_AND_SET) (default to SAI_PACKET_ACTION_TRAP) */
     SAI_ROUTER_INTERFACE_ATTR_NEIGHBOR_MISS_PACKET_ACTION,
 
+    /** V4 Mcast enable [bool] (CREATE_AND_SET) (default to FALSE) */
+    SAI_ROUTER_INTERFACE_ATTR_V4_MCAST_ENABLE,
+
+    /** V6 Mcast enable [bool] (CREATE_AND_SET) (default to FALSE) */
+    SAI_ROUTER_INTERFACE_ATTR_V6_MCAST_ENABLE,
+
     /* -- */
 
     /* Custom range base value */

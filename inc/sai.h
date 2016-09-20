@@ -81,7 +81,7 @@ typedef enum _sai_api_t
     SAI_API_VIRTUAL_ROUTER   =  5,  /**< sai_virtual_router_api_t */
     SAI_API_ROUTE            =  6,  /**< sai_route_api_t */
     SAI_API_NEXT_HOP         =  7,  /**< sai_next_hop_api_t */
-    SAI_API_NEXT_HOP_GROUP   =  8,  /**< sai_next_hop_group_api_t */
+    SAI_API_GROUP            =  8,  /**< sai_group_api_t */
     SAI_API_ROUTER_INTERFACE =  9,  /**< sai_router_interface_api_t */
     SAI_API_NEIGHBOR         = 10,  /**< sai_neighbor_api_t */
     SAI_API_ACL              = 11,  /**< sai_acl_api_t */
@@ -100,6 +100,8 @@ typedef enum _sai_api_t
     SAI_API_HASH             = 24,  /**< sai_hash_api_t */
     SAI_API_UDF              = 25,  /**< sai_udf_api_t */
     SAI_API_TUNNEL           = 26,  /**< sai_tunnel_api_t */
+    SAI_API_L2MC             = 27,  /**< sai_l2mc_api_t */
+    SAI_API_IPMC             = 28,  /**< sai_ipmc_api_t */
 } sai_api_t;
 
 typedef enum _sai_log_level_t
