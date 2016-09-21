@@ -190,6 +190,10 @@ typedef enum _sai_buffer_pool_attr_t
 
     /** buffer pool size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_BUFFER_POOL_ATTR_SIZE,
+    
+    /** For the ingress buffer pool, we allocate a shared XOFF (GLOBAL HEADROOM) room for lossless traffic 
+     *  default to 0. */
+    SAI_BUFFER_POOL_ATTR_XOFF_SIZE,
 
     /** shared threshold mode for the buffer pool [sai_buffer_threadhold_mode_t] (CREATE_ONLY)
      * (default to SAI_BUFFER_POOL_DYNAMIC_TH) */
@@ -319,8 +323,14 @@ typedef enum _sai_buffer_profile_attr_t
 
     /** set the buffer profile XOFF threshold in bytes [sai_uint32_t]
      * Valid only for ingress PG (CREATE_AND_SET).
-     * Generate XOFF when available buffer in the PG buffer
-     * is less than this threshold.
+     * Specifies the maximum available buffer for a PG after XOFF is 
+     * generated (i.e. headroom buffer). Note that the available 
+     * headroom buffer is dependent on XOFF_SIZE. If the user has 
+     * set XOFF_SIZE = 0, the PG headroom buffer is equal to XOFF_TH
+     * and it is not shared. If the user has set XOFF_SIZE > 0, the 
+     * total headroom pool buffer for all PGs is equal to XOFF_SIZE
+     * and XOFF_TH specifies the maximum amount of headroom pool 
+     * buffer one PG can use.
      * default to 0. */
     SAI_BUFFER_PROFILE_ATTR_XOFF_TH,
 
