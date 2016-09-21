@@ -333,6 +333,7 @@ typedef enum _sai_buffer_profile_attr_t
      * When the user sets both XON and XON_OFFSET thresholds, the XON
      * trigger condition is governed by:
      *          max(XOFF_TH - XON_OFFSET_TH, XON_TH)
+     * Note: XOFF_TH = SAI_BUFFER_PROFILE_ATTR_XOFF_TH
      * default to 0. */
     SAI_BUFFER_PROFILE_ATTR_XON_TH,
 
@@ -345,6 +346,7 @@ typedef enum _sai_buffer_profile_attr_t
      * When the user sets both XON and XON_OFFSET thresholds, the XON
      * trigger condition is governed by:
      *          max(XOFF_TH - XON_OFFSET_TH, XON_TH)
+     * Note: XOFF_TH = SAI_BUFFER_PROFILE_ATTR_XOFF_TH
      * default to 0xffffffff. */
     SAI_BUFFER_PROFILE_ATTR_XON_OFFSET_TH,
 
