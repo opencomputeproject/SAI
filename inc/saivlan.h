@@ -129,26 +129,26 @@ typedef enum _sai_vlan_member_attr_t
 } sai_vlan_member_attr_t;
 
 /**
- *  @brief VLAN counter IDs in sai_get_vlan_stat_counters() call
+ *  @brief VLAN counter IDs in sai_get_vlan_stats() call
  */
-typedef enum _sai_vlan_stat_counter_t
+typedef enum _sai_vlan_stat_t
 {
-    SAI_VLAN_STAT_COUNTER_IN_OCTETS,
-    SAI_VLAN_STAT_COUNTER_IN_PACKETS,
-    SAI_VLAN_STAT_COUNTER_IN_UCAST_PKTS,
-    SAI_VLAN_STAT_COUNTER_IN_NON_UCAST_PKTS,
-    SAI_VLAN_STAT_COUNTER_IN_DISCARDS,
-    SAI_VLAN_STAT_COUNTER_IN_ERRORS,
-    SAI_VLAN_STAT_COUNTER_IN_UNKNOWN_PROTOS,
-    SAI_VLAN_STAT_COUNTER_OUT_OCTETS,
-    SAI_VLAN_STAT_COUNTER_OUT_PACKETS,
-    SAI_VLAN_STAT_COUNTER_OUT_UCAST_PKTS,
-    SAI_VLAN_STAT_COUNTER_OUT_NON_UCAST_PKTS,
-    SAI_VLAN_STAT_COUNTER_OUT_DISCARDS,
-    SAI_VLAN_STAT_COUNTER_OUT_ERRORS,
-    SAI_VLAN_STAT_COUNTER_OUT_QLEN
+    SAI_VLAN_STAT_IN_OCTETS,
+    SAI_VLAN_STAT_IN_PACKETS,
+    SAI_VLAN_STAT_IN_UCAST_PKTS,
+    SAI_VLAN_STAT_IN_NON_UCAST_PKTS,
+    SAI_VLAN_STAT_IN_DISCARDS,
+    SAI_VLAN_STAT_IN_ERRORS,
+    SAI_VLAN_STAT_IN_UNKNOWN_PROTOS,
+    SAI_VLAN_STAT_OUT_OCTETS,
+    SAI_VLAN_STAT_OUT_PACKETS,
+    SAI_VLAN_STAT_OUT_UCAST_PKTS,
+    SAI_VLAN_STAT_OUT_NON_UCAST_PKTS,
+    SAI_VLAN_STAT_OUT_DISCARDS,
+    SAI_VLAN_STAT_OUT_ERRORS,
+    SAI_VLAN_STAT_OUT_QLEN
 
-} sai_vlan_stat_counter_t;
+} sai_vlan_stat_t;
 
 /**
  * Routine Description:
@@ -282,7 +282,7 @@ typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
     _In_ sai_vlan_id_t vlan_id,
-    _In_ const sai_vlan_stat_counter_t *counter_ids,
+    _In_ const sai_vlan_stat_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
     );
@@ -302,7 +302,7 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
  */
 typedef sai_status_t (*sai_clear_vlan_stats_fn)(
     _In_ sai_vlan_id_t vlan_id,
-    _In_ const sai_vlan_stat_counter_t *counter_ids,
+    _In_ const sai_vlan_stat_t *counter_ids,
     _In_ uint32_t number_of_counters
     );
 

@@ -51,36 +51,36 @@ typedef enum _sai_ingress_priority_group_attr_t
 /**
 * @brief Enum defining statistics for ingress priority group.
 */
-typedef enum _sai_ingress_priority_group_stat_counter_t
+typedef enum _sai_ingress_priority_group_stat_t
 {
     /** get/set rx packets count [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_COUNTER_PACKETS = 0x00000000,
+    SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS = 0x00000000,
 
     /** get/set rx bytes count [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_COUNTER_BYTES = 0x00000001,
+    SAI_INGRESS_PRIORITY_GROUP_STAT_BYTES = 0x00000001,
 
     /** get current pg occupancy in bytes [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_COUNTER_CURR_OCCUPANCY_BYTES = 0x00000002,
+    SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES = 0x00000002,
 
     /** get watermark pg occupancy in bytes [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_COUNTER_WATERMARK_BYTES = 0x00000003,
+    SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES = 0x00000003,
 
     /** get current pg shared occupancy in bytes [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_COUNTER_SHARED_CURR_OCCUPANCY_BYTES = 0x00000004,
+    SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES = 0x00000004,
 
     /** get watermark pg shared occupancy in bytes [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_COUNTER_SHARED_WATERMARK_BYTES = 0x00000005,
+    SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_WATERMARK_BYTES = 0x00000005,
 
     /** get current pg xoff room occupancy in bytes [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_COUNTER_XOFF_ROOM_CURR_OCCUPANCY_BYTES = 0x00000006,
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_CURR_OCCUPANCY_BYTES = 0x00000006,
 
     /** get watermark pg xoff room occupancy in bytes [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_COUNTER_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
 
     /** -- */
     /** Custom range base value */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_COUNTER_CUSTOM_RANGE_BASE = 0x10000000
-} sai_ingress_priority_group_stat_counter_t;
+    SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
+} sai_ingress_priority_group_stat_t;
 
 /**
  * @brief Set ingress priority group attribute
@@ -123,7 +123,7 @@ typedef sai_status_t(*sai_get_ingress_priority_group_attr_fn)(
 */
 typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
     _In_ sai_object_id_t ingress_pg_id,
-    _In_ const sai_ingress_priority_group_stat_counter_t *counter_ids,
+    _In_ const sai_ingress_priority_group_stat_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
     );
@@ -140,7 +140,7 @@ typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
 */
 typedef sai_status_t(*sai_clear_ingress_priority_group_stats_fn)(
     _In_ sai_object_id_t ingress_pg_id,
-    _In_ const sai_ingress_priority_group_stat_counter_t *counter_ids,
+    _In_ const sai_ingress_priority_group_stat_t *counter_ids,
     _In_ uint32_t number_of_counters
     );
 
@@ -202,18 +202,18 @@ typedef enum _sai_buffer_pool_attr_t
 /**
 * @brief Enum defining statistics for buffer pool.
 */
-typedef enum _sai_buffer_pool_stat_counter_t
+typedef enum _sai_buffer_pool_stat_t
 {
     /** get current pool occupancy in bytes [uint64_t] */
-    SAI_BUFFER_POOL_STAT_COUNTER_CURR_OCCUPANCY_BYTES = 0x00000000,
+    SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_BYTES = 0x00000000,
 
     /** get watermark pool occupancy in bytes [uint64_t] */
-    SAI_BUFFER_POOL_STAT_COUNTER_WATERMARK_BYTES = 0x00000001,
+    SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
 
     /** -- */
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_COUNTER_CUSTOM_RANGE_BASE = 0x10000000
-} sai_buffer_pool_stat_counter_t;
+} sai_buffer_pool_stat_t;
 
 /**
  * @brief Create buffer pool
@@ -278,7 +278,7 @@ typedef sai_status_t(*sai_get_buffer_pool_attr_fn)(
 */
 typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
     _In_ sai_object_id_t pool_id,
-    _In_ const sai_buffer_pool_stat_counter_t *counter_ids,
+    _In_ const sai_buffer_pool_stat_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
     );
