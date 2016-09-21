@@ -350,7 +350,7 @@ typedef enum _sai_buffer_profile_attr_t
      *
      * @type sai_buffer_threshold_mode_t
      * @flags CREATE_AND_SET
-     * @default inherit SAI_OBJECT_TYPE_BUFFER_POOL SAI_BUFFER_POOL_ATTR_TH_MODE
+     * @default inherit SAI_BUFFER_POOL_ATTR_TH_MODE
      */
     SAI_BUFFER_PROFILE_ATTR_TH_MODE,
 
