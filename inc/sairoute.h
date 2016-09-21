@@ -78,7 +78,7 @@ typedef enum _sai_route_entry_attr_t
     /* --*/
     SAI_ROUTE_ENTRY_ATTR_CUSTOM_RANGE_END
 
-} sai_route_attr_t;
+} sai_route_entry_attr_t;
 
 /**
  *  @brief Unicast route entry
