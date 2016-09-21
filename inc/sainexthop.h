@@ -19,7 +19,7 @@
  *
  * @file    sainexthop.h
  *
- * @brief   This module defines SAI Next Hop API
+ * @brief   This module defines SAI Next Hop interface
  */
 
 #if !defined (__SAINEXTHOP_H_)
