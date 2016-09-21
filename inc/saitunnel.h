@@ -43,28 +43,27 @@
 typedef enum _sai_tunnel_map_type_t
 {
     /** TUNNEL Map overlay ECN to underlay ECN (only valid for encap)  */
-    SAI_TUNNEL_MAP_OECN_TO_UECN = 0x00000001,
+    SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN = 0x00000001,
 
     /** TUNNEL Map underlay ECN and overlay ECN to overlay ECN (only valid for decap)  */
-    SAI_TUNNEL_MAP_UECN_OECN_TO_OECN = 0x00000002,
+    SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN = 0x00000002,
 
     /** TUNNEL Map VNI to VLAN ID  */
-    SAI_TUNNEL_MAP_VNI_TO_VLAN_ID = 0x00000003,
+    SAI_TUNNEL_MAP_TYPE_VNI_TO_VLAN_ID = 0x00000003,
 
     /** TUNNEL Map VLAN ID to VNI */
-    SAI_TUNNEL_MAP_VLAN_ID_TO_VNI = 0x00000004,
+    SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI = 0x00000004,
 
     /* -- */
     /* Custom range base value */
-    SAI_TUNNEL_MAP_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_TUNNEL_MAP_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tunnel_map_type_t;
 
 typedef enum _sai_tunnel_map_attr_t
 {
-        
-    SAI_TUNNEL_MAP_ATTR_START = 0x00000000,    
-    
+    SAI_TUNNEL_MAP_ATTR_START = 0x00000000,
+
     /** tunnel Map type [sai_tunnel_map_type_t] (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_TUNNEL_MAP_ATTR_TYPE = SAI_TUNNEL_MAP_ATTR_START,
 
@@ -79,7 +78,6 @@ typedef enum _sai_tunnel_map_attr_t
 
     /* --*/
     SAI_TUNNEL_MAP_ATTR_CUSTOM_RANGE_END
-
 
 } sai_tunnel_map_attr_t;
 
@@ -143,13 +141,13 @@ typedef sai_status_t(*sai_get_tunnel_map_attribute_fn)(
 
 typedef enum _sai_tunnel_type_t
 {
-    SAI_TUNNEL_IPINIP,
+    SAI_TUNNEL_TYPE_IPINIP,
 
-    SAI_TUNNEL_IPINIP_GRE,
+    SAI_TUNNEL_TYPE_IPINIP_GRE,
 
-    SAI_TUNNEL_VXLAN,
+    SAI_TUNNEL_TYPE_VXLAN,
 
-    SAI_TUNNEL_MPLS,
+    SAI_TUNNEL_TYPE_MPLS,
 
 } sai_tunnel_type_t;
 
@@ -159,7 +157,7 @@ typedef enum _sai_tunnel_ttl_mode_t
      *  where the TTL field is preserved end-to-end by copying into the
      *  outer header on encapsulation and copying from the outer header on
      *  decapsulation. */
-    SAI_TUNNEL_TTL_UNIFORM_MODEL,
+    SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL,
 
     /** The pipe model:
      *  where the outer header is independent of that in the inner header so
@@ -167,7 +165,7 @@ typedef enum _sai_tunnel_ttl_mode_t
      *  with nodes along the tunnel.
      *  TTL field is user-defined for outer header on encapsulation. TTL
      *  field of inner header remains the same on decapsulation. */
-    SAI_TUNNEL_TTL_PIPE_MODEL
+    SAI_TUNNEL_TTL_MODE_PIPE_MODEL
 
 } sai_tunnel_ttl_mode_t;
 
@@ -177,7 +175,7 @@ typedef enum _sai_tunnel_dscp_mode_t
      *  where the DSCP field is preserved end-to-end by copying into the
      *  outer header on encapsulation and copying from the outer header on
      *  decapsulation. */
-    SAI_TUNNEL_DSCP_UNIFORM_MODEL,
+    SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL,
 
     /** The pipe model:
      *  where the outer header is independent of that in the inner header so
@@ -185,7 +183,7 @@ typedef enum _sai_tunnel_dscp_mode_t
      *  with nodes along the tunnel.
      *  DSCP field is user-defined for outer header on encapsulation. DSCP
      *  field of inner header remains the same on decapsulation. */
-    SAI_TUNNEL_DSCP_PIPE_MODEL
+    SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
 
 } sai_tunnel_dscp_mode_t;
 
@@ -198,7 +196,7 @@ typedef enum _sai_tunnel_encap_ecn_mode_t
     /** User defined behavior.
      *  Need to provide SAI_TUNNEL_MAP_OECN_TO_UECN in SAI_TUNNEL_ATTR_ENCAP_MAPPERS */
     SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
-    
+
 } sai_tunnel_encap_ecn_mode_t;
 
 typedef enum _sai_tunnel_decap_ecn_mode_t
@@ -208,16 +206,15 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
 
     /** Copy from outer ECN */
     SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
-    
+
     /** User defined behavior
      *  Need to provide SAI_TUNNEL_MAP_UECN_OECN_TO_OECN in SAI_TUNNEL_ATTR_DECAP_MAPPERS */
     SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
-    
+
 } sai_tunnel_decap_ecn_mode_t;
 
 typedef enum _sai_tunnel_attr_t
 {
-
     SAI_TUNNEL_ATTR_START,
     /** READ-WRITE */
 
@@ -238,7 +235,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_SRC_IP,
 
     /** tunnel TTL mode (pipe or uniform model) [sai_tunnel_ttl_mode_t]
-     *  (CREATE_ONLY) 
+     *  (CREATE_ONLY)
      *  Default would be SAI_TUNNEL_TTL_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_ENCAP_TTL_MODE,
 
@@ -292,7 +289,7 @@ typedef enum _sai_tunnel_attr_t
      *  (CREATE_ONLY)
      *  Default would be SAI_TUNNEL_DSCP_UNIFORM_MODEL */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
-    
+
     SAI_TUNNEL_ATTR_END,
 
     /** Custom range base value */
@@ -300,7 +297,6 @@ typedef enum _sai_tunnel_attr_t
 
     /* --*/
     SAI_TUNNEL_ATTR_CUSTOM_RANGE_END
-
 
 } sai_tunnel_attr_t;
 
@@ -356,7 +352,6 @@ typedef sai_status_t (*sai_set_tunnel_attribute_fn)(
     _In_ const sai_attribute_t *attr
     );
 
-
 /**
  * Routine Description:
  *    @brief Get tunnel attributes
@@ -379,16 +374,15 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
 typedef enum _sai_tunnel_term_table_entry_type_t
 {
     /** tunnel termination table point to point entry match on dst & src ip & tunnel type  **/
-    SAI_TUNNEL_TERM_TABLE_ENTRY_P2P,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
 
     /** tunnel termination table point to multi point entry match on dst ip  & tunnel type  **/
-    SAI_TUNNEL_TERM_TABLE_ENTRY_P2MP,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP,
 
 } sai_tunnel_term_table_entry_type_t;
 
 typedef enum _sai_tunnel_term_table_entry_attr_t
 {
-
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_START,
     /** READ-ONLY */
 
@@ -420,7 +414,6 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
 
     /* --*/
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_END
-
 
 } sai_tunnel_term_table_entry_attr_t;
 
@@ -475,7 +468,6 @@ typedef sai_status_t (*sai_set_tunnel_term_table_entry_attribute_fn)(
     _In_ const sai_attribute_t *attr
     );
 
-
 /**
  * Routine Description:
  *    @brief Get tunnel termination table entry attributes
@@ -514,7 +506,6 @@ typedef struct _sai_tunnel_api_t
     sai_get_tunnel_term_table_entry_attribute_fn get_tunnel_term_table_entry_attribute;
 
 } sai_tunnel_api_t;
-
 
 /**
  * \}

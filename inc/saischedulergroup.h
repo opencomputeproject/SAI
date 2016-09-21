@@ -67,9 +67,7 @@ typedef enum _sai_scheduler_group_attr_t
     /* --*/
     SAI_SCHEDULER_GROUP_ATTR_CUSTOM_RANGE_END
 
-
 } sai_scheduler_group_attr_t;
-
 
 /**
  * @brief  Create Scheduler group
@@ -98,7 +96,6 @@ typedef sai_status_t (*sai_create_scheduler_group_fn)(
 typedef sai_status_t (*sai_remove_scheduler_group_fn)(
     _In_ sai_object_id_t scheduler_group_id
     );
-
 
 /**
  * @brief  Set Scheduler group Attribute
@@ -147,7 +144,6 @@ typedef sai_status_t (*sai_add_child_object_to_group_fn)(
     _In_ const sai_object_id_t* child_objects
     );
 
-
 /**
  * @brief   Remove Child queue/group objects from scheduler group
  *
@@ -177,7 +173,6 @@ typedef struct _sai_scheduler_group_api_t
     sai_remove_child_object_from_group_fn  remove_child_object_from_group;
 
 } sai_scheduler_group_api_t;
-
 
 /**
  * \}

@@ -136,10 +136,10 @@ typedef enum _sai_packet_vlan_t
 typedef enum _sai_switch_switching_mode_t
 {
     /** cut-through switching mode */
-    SAI_SWITCHING_MODE_CUT_THROUGH,
+    SAI_SWITCH_SWITCHING_MODE_CUT_THROUGH,
 
     /** store-and-forward switching mode */
-    SAI_SWITCHING_MODE_STORE_AND_FORWARD
+    SAI_SWITCH_SWITCHING_MODE_STORE_AND_FORWARD
 
 } sai_switch_switching_mode_t;
 
@@ -166,14 +166,13 @@ typedef enum _sai_hash_algorithm_t
 typedef enum _sai_switch_restart_type_t
 {
     /** NPU doesn't support warmboot */
-    SAI_RESTART_TYPE_NONE = 0,
+    SAI_SWITCH_RESTART_TYPE_NONE = 0,
 
     /** Planned restart only */
-    SAI_RESTART_TYPE_PLANNED = 1,
+    SAI_SWITCH_RESTART_TYPE_PLANNED = 1,
 
     /** Both planned and unplanned restart */
-    SAI_RESTART_TYPE_ANY = 2,
-
+    SAI_SWITCH_RESTART_TYPE_ANY = 2,
 
 } sai_switch_restart_type_t;
 
@@ -183,8 +182,7 @@ typedef enum _sai_switch_restart_type_t
 */
 typedef enum _sai_switch_attr_t
 {
-    
-    SAI_SWITCH_ATTR_START,    
+    SAI_SWITCH_ATTR_START,
 
     /** READ-ONLY */
 
@@ -352,7 +350,7 @@ typedef enum _sai_switch_attr_t
     /** Nonvolatile storage required by both SAI and NPU in KB [sai_uint64_t]
      * Will be 0 for SAI_RESTART_TYPE_NONE */
     SAI_SWITCH_ATTR_NV_STORAGE_SIZE,
-   
+
     /** Count of the total number of actions supported by NPU. [sai_uint32_t] */
     SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
 
@@ -512,7 +510,6 @@ typedef enum _sai_switch_attr_t
     /* --*/
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END
 
-
 } sai_switch_attr_t;
 
 /**
@@ -546,8 +543,8 @@ typedef enum _sai_switch_attr_t
 #define SAI_KEY_INIT_CONFIG_FILE                  "SAI_INIT_CONFIG_FILE"
 /** 0: cold boot. Initialize NPU and external phys.
  *  1: warm boot. Do not re-initialize NPU or external phys, reconstruct SAI/SDK state from stored state.
- *  2: fast boot. Only initilize NPU. SAI/SDK state should not be persisted except for those related 
- *                to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status. 
+ *  2: fast boot. Only initilize NPU. SAI/SDK state should not be persisted except for those related
+ *                to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status.
  */
 #define SAI_KEY_BOOT_TYPE                         "SAI_BOOT_TYPE"
 /** The file to recover SAI/NPU state from */
@@ -559,7 +556,6 @@ typedef enum _sai_switch_attr_t
  * the tranceiver type plugged in to the port
  */
 #define SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE    "SAI_HW_PORT_PROFILE_ID_CONFIG_FILE"
-
 
 /**
  * Routine Description:
@@ -577,7 +573,6 @@ typedef void (*sai_switch_shutdown_request_fn)(
     void
     );
 
-
 /**
  * Routine Description:
  *   @brief Switch oper state change notification
@@ -591,7 +586,6 @@ typedef void (*sai_switch_shutdown_request_fn)(
 typedef void (*sai_switch_state_change_notification_fn)(
     _In_ sai_switch_oper_status_t switch_oper_status
     );
-
 
 /**
  * @brief Switch notification table passed to the adapter via sai_initialize_switch()
@@ -678,7 +672,6 @@ typedef void (*sai_disconnect_switch_fn)(
     void
     );
 
-
 /**
  * Routine Description:
  *    @brief Set switch attribute value
@@ -693,7 +686,6 @@ typedef void (*sai_disconnect_switch_fn)(
 typedef sai_status_t (*sai_set_switch_attribute_fn)(
     _In_ const sai_attribute_t *attr
     );
-
 
 /**
  * Routine Description:

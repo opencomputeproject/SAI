@@ -1,22 +1,22 @@
 /*
-* Copyright (c) 2014 Microsoft Open Technologies, Inc. 
-*   
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may 
-*    not use this file except in compliance with the License. You may obtain 
+* Copyright (c) 2014 Microsoft Open Technologies, Inc.
+*
+*    Licensed under the Apache License, Version 2.0 (the "License"); you may
+*    not use this file except in compliance with the License. You may obtain
 *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 *
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR 
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT 
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS 
+*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
+*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
 *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
 *
-*    See the Apache Version 2.0 License for specific language governing 
-*    permissions and limitations under the License. 
+*    See the Apache Version 2.0 License for specific language governing
+*    permissions and limitations under the License.
 *
 *    Microsoft would like to thank the following companies for their review and
 *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 *    Dell Products, L.P., Facebook, Inc
-*   
+*
 * Module Name:
 *
 *    sairouterintf.h
@@ -36,11 +36,11 @@
  *
  *  \{
  */
- 
+
 /**
  *  @brief Attribute data for SAI_ROUTER_INTERFACE_ATTR_TYPE
  */
-typedef enum _sai_router_interface_type_t 
+typedef enum _sai_router_interface_type_t
 {
     /** Port or Lag Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_PORT,
@@ -53,9 +53,8 @@ typedef enum _sai_router_interface_type_t
 
 } sai_router_interface_type_t;
 
-
 /**
- *  @brief Routing interface attribute IDs 
+ *  @brief Routing interface attribute IDs
  */
 typedef enum _sai_router_interface_attr_t
 {
@@ -67,12 +66,12 @@ typedef enum _sai_router_interface_attr_t
     /** Type [sai_router_interface_type_t]  (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ROUTER_INTERFACE_ATTR_TYPE,
 
-    /** Assosiated Port or Lag object id [sai_object_id_t] 
-    *  (MANDATORY_ON_CREATE when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT | CREATE_ONLY) 
+    /** Assosiated Port or Lag object id [sai_object_id_t]
+    *  (MANDATORY_ON_CREATE when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT | CREATE_ONLY)
     */
     SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
 
-    /** Assosiated Vlan [sai_vlan_id_t] 
+    /** Assosiated Vlan [sai_vlan_id_t]
     *  (MANDATORY_ON_CREATE when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN | CREATE_ONLY)
     */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
@@ -105,12 +104,11 @@ typedef enum _sai_router_interface_attr_t
     /* --*/
     SAI_ROUTER_INTERFACE_ATTR_CUSTOM_RANGE_END
 
-
 } sai_router_interface_attr_t;
 
 /**
  * Routine Description:
- *    @brief Create router interface. 
+ *    @brief Create router interface.
  *
  * Arguments:
  *    @param[out] rif_id - router interface id
@@ -158,7 +156,6 @@ typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
     _In_ sai_object_id_t rif_id,
     _In_ const sai_attribute_t *attr
     );
-
 
 /**
  * Routine Description:

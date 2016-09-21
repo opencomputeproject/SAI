@@ -37,44 +37,42 @@
  *
  *  \{
  */
- 
+
 /**
  *  @brief Attribute Id for sai neighbor object
  */
-typedef enum _sai_neighbor_attr_t
+typedef enum _sai_neighbor_entry_attr_t
 {
-
-    SAI_NEIGHBOR_ATTR_START, 
+    SAI_NEIGHBOR_ENTRY_ATTR_START,
     /** READ-WRITE */
 
     /** Destination mac address for the neighbor [sai_mac_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
-    SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS = SAI_NEIGHBOR_ATTR_START,
+    SAI_NEIGHBOR_ENTRY_ATTR_DST_MAC_ADDRESS = SAI_NEIGHBOR_ENTRY_ATTR_START,
 
     /** L3 forwarding action for this neighbor [sai_packet_action_t]
     *    (default to SAI_PACKET_ACTION_FORWARD) */
-    SAI_NEIGHBOR_ATTR_PACKET_ACTION,
+    SAI_NEIGHBOR_ENTRY_ATTR_PACKET_ACTION,
 
     /** Neighbor not to be programmed as a host route entry in ASIC and to be only
      * used to setup next-hop purpose. Typical use-case is to set this true
      * for neighbor with IPv6 link-local addresses.
      * [bool] (CREATE_AND_SET) (default to false) */
-    SAI_NEIGHBOR_ATTR_NO_HOST_ROUTE,
+    SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE,
 
     /** User based Meta Data
      * [sai_uint32_t] (CREATE_AND_SET)
-     * Value Range SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE */
-    SAI_NEIGHBOR_ATTR_META_DATA,
+     * Value Range SAI_SWITCH_ENTRY_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE */
+    SAI_NEIGHBOR_ENTRY_ATTR_META_DATA,
 
-    SAI_NEIGHBOR_ATTR_END,
+    SAI_NEIGHBOR_ENTRY_ATTR_END,
 
     /* Custom range base value */
-    SAI_NEIGHBOR_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_NEIGHBOR_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /* --*/
-    SAI_NEIGHBOR_ATTR_CUSTOM_RANGE_END
+    SAI_NEIGHBOR_ENTRY_ATTR_CUSTOM_RANGE_END
 
-
-} sai_neighbor_attr_t;
+} sai_neighbor_entry_attr_t;
 
 /**
 *  @brief neighbor entry
@@ -85,7 +83,6 @@ typedef struct _sai_neighbor_entry_t
     sai_ip_address_t ip_address;
 
 } sai_neighbor_entry_t;
-
 
 /**
  * Routine Description:

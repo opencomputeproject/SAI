@@ -40,7 +40,7 @@
 /**
 * brief@ Attribute data for sai native hash fields
 */
-typedef enum _sai_native_hash_field
+typedef enum _sai_native_hash_field_t
 {
     /** Native hash field source IP.
      *  also refers to the outer source IP
@@ -89,7 +89,6 @@ typedef enum _sai_native_hash_field
  */
 typedef enum _sai_hash_attr_t
 {
-
     SAI_HASH_ATTR_START,
     /** READ-ONLY */
 

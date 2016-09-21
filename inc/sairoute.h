@@ -36,24 +36,23 @@
  *
  *  \{
  */
- 
+
 /**
  *  @brief Attribute Id for sai route object
  */
-typedef enum _sai_route_attr_t
+typedef enum _sai_route_entry_attr_t
 {
-    
-    SAI_ROUTE_ATTR_START,         
-    
+    SAI_ROUTE_ENTRY_ATTR_START,
+
     /** READ-WRITE */
 
     /** Packet action [sai_packet_action_t]
        (default to SAI_PACKET_ACTION_FORWARD) */
-    SAI_ROUTE_ATTR_PACKET_ACTION = SAI_ROUTE_ATTR_START,
+    SAI_ROUTE_ENTRY_ATTR_PACKET_ACTION = SAI_ROUTE_ENTRY_ATTR_START,
 
     /** Packet priority for trap/log actions [uint8_t]
        (default to 0) */
-    SAI_ROUTE_ATTR_TRAP_PRIORITY,
+    SAI_ROUTE_ENTRY_ATTR_TRAP_PRIORITY,
 
     /** Next hop or next hop group id for the packet, or a router interface
      * in case of directly reachable route, or the CPU port in case of
@@ -61,44 +60,42 @@ typedef enum _sai_route_attr_t
      * The next hop id can be a generic next hop object, such as next hop,
      * next hop group.
      * Directly reachable routes are the IP subnets that are directly attached to the router.
-     * For such routes, fill the router interface id to which the subnet is attached. 
+     * For such routes, fill the router interface id to which the subnet is attached.
      * IP2ME route adds a local router IP address. For such routes, fill the CPU port
-     * (SAI_SWITCH_ATTR_CPU_PORT). */
-    SAI_ROUTE_ATTR_NEXT_HOP_ID,
+     * (SAI_SWITCH_ENTRY_ATTR_CPU_PORT). */
+    SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID,
 
     /** User based Meta Data
      * [sai_uint32_t] (CREATE_AND_SET)
-     * Value Range SAI_SWITCH_ATTR_ROUTE_USER_META_DATA_RANGE */
-    SAI_ROUTE_ATTR_META_DATA,
+     * Value Range SAI_SWITCH_ENTRY_ATTR_ROUTE_USER_META_DATA_RANGE */
+    SAI_ROUTE_ENTRY_ATTR_META_DATA,
 
-    SAI_ROUTE_ATTR_END,
-    
+    SAI_ROUTE_ENTRY_ATTR_END,
+
     /** Custom range base value */
-    SAI_ROUTE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_ROUTE_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /* --*/
-    SAI_ROUTE_ATTR_CUSTOM_RANGE_END
+    SAI_ROUTE_ENTRY_ATTR_CUSTOM_RANGE_END
 
-
-} sai_route_attr_t;
-
+} sai_route_entry_attr_t;
 
 /**
  *  @brief Unicast route entry
  */
-typedef struct _sai_unicast_route_entry_t
+typedef struct _sai_route_entry_t
 {
     sai_object_id_t vr_id;
     sai_ip_prefix_t destination;
 
-} sai_unicast_route_entry_t;
+} sai_route_entry_t;
 
 /**
  * Routine Description:
  *    @brief Create Route
  *
  * Arguments:
- *    @param[in] unicast_route_entry - route entry
+ *    @param[in] route_entry - route entry
  *    @param[in] attr_count - number of attributes
  *    @param[in] attr_list - array of attributes
  *
@@ -110,7 +107,7 @@ typedef struct _sai_unicast_route_entry_t
  *
  */
 typedef sai_status_t (*sai_create_route_fn)(
-    _In_ const sai_unicast_route_entry_t* unicast_route_entry,
+    _In_ const sai_route_entry_t* route_entry,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
@@ -120,7 +117,7 @@ typedef sai_status_t (*sai_create_route_fn)(
  *    @brief Remove Route
  *
  * Arguments:
- *    @param[in] unicast_route_entry - route entry
+ *    @param[in] route_entry - route entry
  *
  * Return Values:
  *    @return SAI_STATUS_SUCCESS on success
@@ -129,7 +126,7 @@ typedef sai_status_t (*sai_create_route_fn)(
  * Note: IP prefix/mask expected in Network Byte Order.
  */
 typedef sai_status_t (*sai_remove_route_fn)(
-    _In_ const sai_unicast_route_entry_t* unicast_route_entry
+    _In_ const sai_route_entry_t* route_entry
     );
 
 /**
@@ -137,7 +134,7 @@ typedef sai_status_t (*sai_remove_route_fn)(
  *    @brief Set route attribute value
  *
  * Arguments:
- *    @param[in] unicast_route_entry - route entry
+ *    @param[in] route_entry - route entry
  *    @param[in] attr - attribute
  *
  * Return Values:
@@ -145,7 +142,7 @@ typedef sai_status_t (*sai_remove_route_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_set_route_attribute_fn)(
-    _In_ const sai_unicast_route_entry_t* unicast_route_entry,
+    _In_ const sai_route_entry_t* route_entry,
     _In_ const sai_attribute_t *attr
     );
 
@@ -154,7 +151,7 @@ typedef sai_status_t (*sai_set_route_attribute_fn)(
  *    @brief Get route attribute value
  *
  * Arguments:
- *    @param[in] unicast_route_entry - route entry
+ *    @param[in] route_entry - route entry
  *    @param[in] attr_count - number of attributes
  *    @param[inout] attr_list - array of attributes
  *
@@ -163,11 +160,10 @@ typedef sai_status_t (*sai_set_route_attribute_fn)(
  *            Failure status code on error
  */
 typedef sai_status_t (*sai_get_route_attribute_fn)(
-    _In_ const sai_unicast_route_entry_t* unicast_route_entry,
+    _In_ const sai_route_entry_t* route_entry,
     _In_ uint32_t attr_count,
     _Inout_ sai_attribute_t *attr_list
     );
-
 
 /**
  *  @brief Router entry methods table retrieved with sai_api_query()

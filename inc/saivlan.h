@@ -36,7 +36,7 @@
  *
  *  \{
  */
- 
+
 #define VLAN_COUNTER_SET_DEFAULT    0
 
 /**
@@ -44,11 +44,11 @@
  */
 typedef enum _sai_vlan_tagging_mode_t
 {
-    SAI_VLAN_PORT_UNTAGGED,
+    SAI_VLAN_TAGGING_MODE_UNTAGGED,
 
-    SAI_VLAN_PORT_TAGGED,
+    SAI_VLAN_TAGGING_MODE_TAGGED,
 
-    SAI_VLAN_PORT_PRIORITY_TAGGED
+    SAI_VLAN_TAGGING_MODE_PRIORITY_TAGGED
 
 } sai_vlan_tagging_mode_t;
 
@@ -58,8 +58,7 @@ typedef enum _sai_vlan_tagging_mode_t
  */
 typedef enum _sai_vlan_attr_t
 {
-
-    SAI_VLAN_ATTR_START,    
+    SAI_VLAN_ATTR_START,
 
     /** READ-ONLY */
 
@@ -98,15 +97,13 @@ typedef enum _sai_vlan_attr_t
     /* --*/
     SAI_VLAN_ATTR_CUSTOM_RANGE_END
 
-
 } sai_vlan_attr_t;
-
 
 /*
     \brief List of VLAN Member Attributes
 */
-typedef enum _sai_vlan_member_attr_t {
-
+typedef enum _sai_vlan_member_attr_t
+{
     SAI_VLAN_MEMBER_ATTR_START,
 
     /** READ_WRITE */
@@ -129,15 +126,12 @@ typedef enum _sai_vlan_member_attr_t {
     /* --*/
     SAI_VLAN_MEMBER_ATTR_CUSTOM_RANGE_END
 
-
 } sai_vlan_member_attr_t;
 
-
-
 /**
- *  @brief VLAN counter IDs in sai_get_vlan_stat_counters() call
+ *  @brief VLAN counter IDs in sai_get_vlan_stats() call
  */
-typedef enum _sai_vlan_stat_counter_t
+typedef enum _sai_vlan_stat_t
 {
     SAI_VLAN_STAT_IN_OCTETS,
     SAI_VLAN_STAT_IN_PACKETS,
@@ -154,7 +148,7 @@ typedef enum _sai_vlan_stat_counter_t
     SAI_VLAN_STAT_OUT_ERRORS,
     SAI_VLAN_STAT_OUT_QLEN
 
-} sai_vlan_stat_counter_t;
+} sai_vlan_stat_t;
 
 /**
  * Routine Description:
@@ -288,7 +282,7 @@ typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
     _In_ sai_vlan_id_t vlan_id,
-    _In_ const sai_vlan_stat_counter_t *counter_ids,
+    _In_ const sai_vlan_stat_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
     );
@@ -308,7 +302,7 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
  */
 typedef sai_status_t (*sai_clear_vlan_stats_fn)(
     _In_ sai_vlan_id_t vlan_id,
-    _In_ const sai_vlan_stat_counter_t *counter_ids,
+    _In_ const sai_vlan_stat_t *counter_ids,
     _In_ uint32_t number_of_counters
     );
 

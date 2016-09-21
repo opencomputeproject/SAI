@@ -42,7 +42,7 @@
 typedef enum _sai_samplepacket_type_t
 {
     /** Copy the sample packets to CPU */
-    SAI_SAMPLEPACKET_SLOW_PATH,
+    SAI_SAMPLEPACKET_TYPE_SLOW_PATH,
 
 } sai_samplepacket_type_t;
 
@@ -51,20 +51,20 @@ typedef enum _sai_samplepacket_type_t
   */
 typedef enum _sai_samplepacket_mode_t
 {
-    /** A profile defining sample packet attributes. 
+    /** A profile defining sample packet attributes.
       * The profile can be configured on a port or as ACL entry action,
       * in which case, an actual session is instantiated which is private
       * for that port or ACL.
       * In case multiple ports or ACL entries are configured with the same
       * profile, sampling is independently done per port / ACL. */
     SAI_SAMPLEPACKET_MODE_EXCLUSIVE,
-    
-    /** An instance of sample packet session. 
+
+    /** An instance of sample packet session.
       * This session can be attached to multiple ports and ACL entries.
       * Traffic going through these ports or matching these ACL entries
       * is merged from a sampling point of view. */
     SAI_SAMPLEPACKET_MODE_SHARED,
-    
+
 } sai_samplepacket_mode_t;
 
 /**
@@ -72,28 +72,27 @@ typedef enum _sai_samplepacket_mode_t
  */
 typedef enum _sai_samplepacket_attr_t
 {
-
-    SAI_SAMPLEPACKET_ATTR_START,    
+    SAI_SAMPLEPACKET_ATTR_START,
 
     /** READ-ONLY */
 
     /** READ-WRITE */
 
     /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** Sampling rate of type uint32_t. The sampling rate specifies 
-      * random sampling probability as the ratio of packets observed 
-      * to samples generated. For example a sampling rate of 100 specifies 
-      * that, on average, 1 sample will be generated for every 100 packets 
-      * observed. */   
+    /** Sampling rate of type uint32_t. The sampling rate specifies
+      * random sampling probability as the ratio of packets observed
+      * to samples generated. For example a sampling rate of 100 specifies
+      * that, on average, 1 sample will be generated for every 100 packets
+      * observed. */
     SAI_SAMPLEPACKET_ATTR_SAMPLE_RATE = SAI_SAMPLEPACKET_ATTR_START,
 
     /** CREATE_ONLY */
-    /** samplepacket switching type sai_samplepacket_type_t. 
+    /** samplepacket switching type sai_samplepacket_type_t.
     Default would be SAI_SAMPLEPACKET_SLOW_PATH */
     SAI_SAMPLEPACKET_ATTR_TYPE,
-    
+
     /** CREATE ONLY */
-    /** samplepacket mode sai_samplepacket_mode_t. 
+    /** samplepacket mode sai_samplepacket_mode_t.
     Default would be SAI_SAMPLEPACKET_MODE_EXCLUSIVE */
     SAI_SAMPLEPACKET_ATTR_MODE,
 
@@ -114,7 +113,6 @@ typedef sai_status_t (*sai_create_samplepacket_session_fn)(
         _Out_ sai_object_id_t *session_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
-
 
 /**
  * @brief Remove samplepacket session.
