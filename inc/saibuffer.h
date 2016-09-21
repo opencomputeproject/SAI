@@ -322,7 +322,7 @@ typedef enum _sai_buffer_profile_attr_t
     /**
      * @brief Pointer to buffer pool object id
      *
-     * Pool id = SAI_NULL_OBJECT_ID can be used when profile is not associated
+     * Pool id = #SAI_NULL_OBJECT_ID can be used when profile is not associated
      * with specific pool, for example for global port buffer. Not applicable
      * to priority group or queue buffer profile.
      *
@@ -344,9 +344,9 @@ typedef enum _sai_buffer_profile_attr_t
     /**
      * @brief Shared threshold mode for the buffer profile
      *
-     * If set, this overrides SAI_BUFFER_POOL_ATTR_TH_MODE.
-     * If not set, use SAI_BUFFER_POOL_ATTR_TH_MODE.
-     * (default to value set in SAI_BUFFER_POOL_ATTR_TH_MODE)
+     * If set, this overrides #SAI_BUFFER_POOL_ATTR_TH_MODE.
+     * If not set, use #SAI_BUFFER_POOL_ATTR_TH_MODE.
+     * (default to value set in #SAI_BUFFER_POOL_ATTR_TH_MODE)
      *
      * @type sai_buffer_threshold_mode_t
      * @flags CREATE_AND_SET

@@ -267,7 +267,7 @@ typedef enum _sai_acl_table_attr_t
      * than what is requested. As an example the NPU may support blocks of
      * 128 entries. When a user creates a table of size 100, the actual
      * size that gets allocated is 128. Hence its recommended that the user
-     * does a get_attribute(SAI_ACL_TABLE_ATTR_SIZE) to query the actual
+     * does a get_attribute(#SAI_ACL_TABLE_ATTR_SIZE) to query the actual
      * table size on table create so the user knows the ACL CAM space
      * allocated and able to do ACL CAM Carving accurately.
      *
@@ -728,7 +728,7 @@ typedef enum _sai_acl_table_attr_t
 
     /**
      * @brief User Defined Field Groups [sai_object_id_t]
-     * (CREATE_ONLY, default to SAI_NULL_OBJECT_ID)
+     * (CREATE_ONLY, default to #SAI_NULL_OBJECT_ID)
      *
      * @ignore
      */
@@ -753,7 +753,7 @@ typedef enum _sai_acl_table_attr_t
      * @brief List of actions in sai_acl_table_action_list_t [sai_s32_list_t]
      *
      * Based on the ACL capability per stage obtained from the switch
-     * attribute SAI_SWITCH_ATTR_ACL_CAPABILITY application should
+     * attribute #SAI_SWITCH_ATTR_ACL_CAPABILITY application should
      * pass the action list if its mandatory per stage.
      * If its not mandatory application can either pass the action list
      * or ignore it.
@@ -802,9 +802,9 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Priority
      *
      * Value must be in the range defined in
-     * [SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY,
-     * SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY]
-     * (default = SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY)
+     * \[#SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY,
+     * #SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY\]
+     * (default = #SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY)
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1122,7 +1122,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief DST MAC address match user meta data in FDB
      * Value must be in the range defined in
-     * SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE
+     * #SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1132,7 +1132,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief DST IP address match user meta data in Route Table
      * Value must be in the range defined in
-     * SAI_SWITCH_ATTR_ROUTE_DST_USER_META_DATA_RANGE
+     * #SAI_SWITCH_ATTR_ROUTE_DST_USER_META_DATA_RANGE
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1142,7 +1142,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief DST IP address match user meta data in Neighbor Table
      * Value must be in the range defined in
-     * SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE
+     * #SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1162,7 +1162,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Vlan User Meta Data
      * Value must be in the range defined in
-     * SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE
+     * #SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1174,7 +1174,7 @@ typedef enum _sai_acl_entry_attr_t
      * When an ACL entry set the meta data, the ACL meta data
      * form previous stages are overriden.
      * Value must be in the range defined in
-     * SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE
+     * #SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1491,7 +1491,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Set Meta Data to carry forward to next ACL Stage
-     * Value Range SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE
+     * Value Range #SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE
      *
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1513,7 +1513,7 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Set User Defined Trap ID
      *
      * Copy packet action mandatory to be present (Copy/Trap/Log)
-     * Value Range SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE
+     * Value Range #SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE
      *
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1799,7 +1799,7 @@ typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_range_fn)(
-        _Out_ sai_object_id_t* acl_range_id,
+        _Out_ sai_object_id_t *acl_range_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
