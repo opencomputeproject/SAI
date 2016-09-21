@@ -212,7 +212,7 @@ typedef enum _sai_buffer_pool_stat_t
 
     /** -- */
     /** Custom range base value */
-    SAI_BUFFER_POOL_STAT_COUNTER_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
 } sai_buffer_pool_stat_t;
 
 /**
