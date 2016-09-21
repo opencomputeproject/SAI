@@ -19,7 +19,7 @@
  *
  * @file    saineighbor.h
  *
- * @brief   This module defines SAI neighbor interface
+ * @brief   This module defines SAI Neighbor interface
  *
  * @par Abstract
  *

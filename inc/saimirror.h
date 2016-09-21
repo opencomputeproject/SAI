@@ -19,7 +19,7 @@
  *
  * @file    saimirror.h
  *
- * @brief   This module defines SAI port mirror interface
+ * @brief   This module defines SAI Port Mirror interface
  */
 
 #if !defined (__SAIMIRROR_H_)
