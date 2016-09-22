@@ -20,6 +20,7 @@ import socket
 from switch import *
 
 import sai_base_test
+from ptf.mask import Mask
 
 @group('l3')
 class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -1325,3 +1326,160 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
 
+@group('lag')            
+@group('l3')
+class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
+    addr_family = SAI_IP_ADDR_FAMILY_IPV4
+    lag_members = []
+    lags = []
+    vr_id = 0
+    mac_action = SAI_PACKET_ACTION_FORWARD
+    src_port = 0
+    mac_pool = ['00:11:22:33:44:50',
+               '00:11:23:33:44:51',
+               '00:11:24:33:44:52',
+               '00:11:25:33:44:53',
+               '00:11:26:33:44:54',
+               '00:11:27:33:44:55',
+               '00:11:28:33:44:56',
+               '00:11:29:33:44:57',
+               '00:11:30:33:44:58',
+               '00:11:31:33:44:59',
+               '00:11:32:33:44:60',
+               '00:11:33:33:44:61',
+               '00:11:34:33:44:62',
+               '00:11:35:33:44:63',
+               '00:11:36:33:44:64',
+               '00:11:37:33:44:65',
+               '00:11:38:33:44:66']
+    
+    
+    def config_for_lags(self, num_of_lags, port_list):
+        for i in xrange(num_of_lags):
+            self.lags.append(self.client.sai_thrift_create_lag([]))
+        for port_num in xrange(16):
+            self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lags[port_num % num_of_lags], port_list[port_num]))
+        for i in xrange(16): 
+            sai_thrift_create_fdb(self.client, 1, self.mac_pool[i], self.lags[i % len(self.lags)], self.mac_action)
+            
+    def cleaning_lags(self, num_of_lags, port_list):
+        if (num_of_lags == 0 ): return
+        for i in xrange(16): 
+            sai_thrift_delete_fdb(self.client, 1, self.mac_pool[i], self.lags[i % len(self.lags)])
+        for lag_member in self.lag_members:
+            self.client.sai_thrift_remove_lag_member(lag_member)
+        del self.lag_members[:]
+        for lag in self.lags:
+            self.client.sai_thrift_remove_lag(lag)
+        del self.lags[:]
+        
+    def send_and_verify_packets(self, num_of_lags, port_list):
+        exp_pkts = [0]*16
+        pkt_counter = [0] * 16
+        destanation_ports = range(16)
+        sport = 0x1234
+        dport = 0x50
+        IP_LAST_WORD_RANGE = 254
+        IP_2ND_LAST_WORD_RANGE = 16
+        for i in xrange(IP_LAST_WORD_RANGE):
+                for j in xrange(IP_2ND_LAST_WORD_RANGE):
+                    ip_src = '10.0.' + str(j) + '.' + str(i)
+                    src_mac = self.dataplane.get_mac(0, 0)
+                    ip_dst = '10.10.' + str(j+1) + '.1'
+                    pkt = simple_tcp_packet(
+                                            eth_dst=router_mac,
+                                            eth_src=src_mac,
+                                            ip_src=ip_src,
+                                            ip_dst=ip_dst,
+                                            ip_id=i,
+                                            tcp_sport=sport,
+                                            tcp_dport=dport,
+                                            ip_ttl=64)
+                    exp_pkt = simple_tcp_packet(
+                                            eth_dst=self.mac_pool[0],
+                                            eth_src=router_mac,
+                                            ip_src=ip_src,
+                                            ip_dst=ip_dst,
+                                            ip_id=i,
+                                            tcp_sport=sport,
+                                            tcp_dport=dport,
+                                            ip_ttl=63)
+                    masked_exp_pkt = Mask(exp_pkt)
+                    masked_exp_pkt.set_do_not_care_scapy(ptf.packet.Ether,"dst")
+
+                    send_packet(self, 16, str(pkt))
+                    (match_index,rcv_pkt) = verify_packet_any_port(self,masked_exp_pkt,destanation_ports)
+                    logging.debug("found expected packet from port %d" % destanation_ports[match_index])
+                    pkt_counter[match_index] += 1
+                    sport = random.randint(0,0xffff)
+                    dport = random.randint(0,0xffff)
+                        
+        #final uniform distribution check
+        for stat_port in xrange(16):
+            logging.debug( "PORT #"+str(hex(port_list[stat_port]))+":")
+            logging.debug(str(pkt_counter[stat_port]))
+            self.assertTrue((pkt_counter[stat_port] >= ((IP_LAST_WORD_RANGE ) * 0.8)),
+                    "Not all paths are equally balanced, %s" % pkt_counter[stat_port])
+            self.assertTrue((pkt_counter[stat_port] <= ((IP_LAST_WORD_RANGE ) * 1.2)),
+                    "Not all paths are equally balanced, %s" % pkt_counter[stat_port])
+                    
+    def runTest(self):
+        """
+        For sai server, testing different lags with router
+        ---- Test for 17 ports minimun ----
+        Steps
+        1. Create virtual router
+        2. Reserve one port for sending packets
+        3. Create router interfaces 1-for all the lags, 2-for the source port 
+        3. Create sixteen LAGs with each hash one member
+        4. Config neighbors,and FDB entries
+        5. Send packet and check for arrivals balanced traffic
+        6. Repeat steps 3-5 with 8 lags with each has 2 members, 4 lags with 4 members, 2 lags with 8 members and 1 lag with 16 members
+        7. clean up.
+        """
+       
+        
+        v4_enabled = 1
+        v6_enabled = 1
+        mac1 = ''
+        ip_addr = '10.10.0.0'
+        ip_mask = '255.255.0.0'
+        
+        print
+        print "L3MultipleLagTest"
+        #general configuration 
+        random.seed(1)
+        switch_init(self.client)
+        #not for git
+        sai_thrift_clear_all_counters(self.client)
+        #not for git
+        self.src_port = port_list[16]
+        if (len(port_list) < 17 ) : return
+        
+        self.vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+        rif_lags_id = sai_thrift_create_router_interface(self.client, self.vr_id, 0, 0, 1, v4_enabled, v6_enabled, mac1)
+        rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, v4_enabled, v6_enabled, mac1)
+        for i in xrange(16):
+            sai_thrift_create_neighbor(self.client, self.addr_family, rif_lags_id, "10.10.%s.1" % str(i+1), self.mac_pool[i])
+        sai_thrift_create_route(self.client, self.vr_id, self.addr_family, ip_addr, ip_mask, rif_lags_id)
+        num_of_lags = 16
+        try:
+            while (num_of_lags > 0):
+                print "testing with " +str(num_of_lags) + " lags"
+                self.config_for_lags(num_of_lags,port_list)
+                self.send_and_verify_packets(num_of_lags,port_list)
+                self.cleaning_lags(num_of_lags,port_list)
+                num_of_lags /= 2
+                
+        finally:
+
+            #in case of an exception in the send_and_verify_packets
+            self.cleaning_lags(num_of_lags,port_list)
+            for i in xrange(16):
+                sai_thrift_remove_neighbor(self.client, self.addr_family, rif_lags_id, "10.10.%s.1" % str(i+1), self.mac_pool[i])
+            sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, ip_addr, ip_mask, rif_lags_id)
+            self.client.sai_thrift_remove_router_interface(rif_lags_id)
+            self.client.sai_thrift_remove_router_interface(rif_port_id)
+            self.client.sai_thrift_remove_virtual_router(self.vr_id)
+            print "END OF TEST"
+            
