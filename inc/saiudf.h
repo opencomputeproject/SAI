@@ -36,7 +36,7 @@
  *
  *  \{
  */
- 
+
 /**
  * @brief UDF base enum
  */
@@ -54,13 +54,12 @@ typedef enum _sai_udf_base_t
 } sai_udf_base_t;
 
 /**
- * @breif Attribute id for UDF
+ * @brief Attribute id for UDF
  */
 typedef enum _sai_udf_attr_t
 {
-    
     SAI_UDF_ATTR_START,
-    
+
     /** READ-ONLY */
 
     /** READ-WRITE */
@@ -92,7 +91,6 @@ typedef enum _sai_udf_attr_t
  */
 typedef enum _sai_udf_match_attr_t
 {
-
     SAI_UDF_MATCH_ATTR_START,
     /** READ-ONLY */
 
@@ -119,16 +117,15 @@ typedef enum _sai_udf_match_attr_t
  */
 typedef enum _sai_udf_group_type_t
 {
-    
-    SAI_UDF_GROUP_START,
-    
+    SAI_UDF_GROUP_TYPE_START,
+
     /** Generic UDF group */
-    SAI_UDF_GROUP_GENERICi = SAI_UDF_GROUP_START,
+    SAI_UDF_GROUP_TYPE_GENERIC = SAI_UDF_GROUP_TYPE_START,
 
     /** UDF group for hash */
-    SAI_UDF_GROUP_HASH,
+    SAI_UDF_GROUP_TYPE_HASH,
 
-    SAI_UDF_GROUP_END
+    SAI_UDF_GROUP_TYPE_END
 
 } sai_udf_group_type_t;
 
@@ -137,9 +134,8 @@ typedef enum _sai_udf_group_type_t
  */
 typedef enum _sai_udf_group_attr_t
 {
-    
     SAI_UDF_GROUP_ATTR_START,
-    
+
     /** READ-ONLY */
 
     /** UDF list [sai_object_list_t] */
@@ -393,4 +389,4 @@ typedef struct _sai_udf_api_t
 /**
  * \}
  */
-#endif // __SAIUDF_H_
+#endif /* __SAIUDF_H_ */

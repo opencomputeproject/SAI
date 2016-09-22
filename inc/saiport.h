@@ -75,8 +75,8 @@ typedef enum _sai_port_oper_status_t
 /**
  * @brief Defines the operational status of the port
  */
-typedef struct _sai_port_oper_status_notification_t {
-
+typedef struct _sai_port_oper_status_notification_t
+{
     /** Port id */
     sai_object_id_t port_id;
 
@@ -91,16 +91,16 @@ typedef struct _sai_port_oper_status_notification_t {
 typedef enum _sai_port_flow_control_mode_t
 {
     /** disable flow control for both tx and rx */
-    SAI_PORT_FLOW_CONTROL_DISABLE,
+    SAI_PORT_FLOW_CONTROL_MODE_DISABLE,
 
     /** enable flow control for tx only */
-    SAI_PORT_FLOW_CONTROL_TX_ONLY,
+    SAI_PORT_FLOW_CONTROL_MODE_TX_ONLY,
 
     /** enable flow control for rx only */
-    SAI_PORT_FLOW_CONTROL_RX_ONLY,
+    SAI_PORT_FLOW_CONTROL_MODE_RX_ONLY,
 
     /** enable flow control for both tx and rx */
-    SAI_PORT_FLOW_CONTROL_BOTH_ENABLE,
+    SAI_PORT_FLOW_CONTROL_MODE_BOTH_ENABLE,
 
 } sai_port_flow_control_mode_t;
 
@@ -110,13 +110,13 @@ typedef enum _sai_port_flow_control_mode_t
 typedef enum _sai_port_internal_loopback_mode_t
 {
     /** disable internal loopback */
-    SAI_PORT_INTERNAL_LOOPBACK_NONE,
+    SAI_PORT_INTERNAL_LOOPBACK_MODE_NONE,
 
     /** port internal loopback at phy module */
-    SAI_PORT_INTERNAL_LOOPBACK_PHY,
+    SAI_PORT_INTERNAL_LOOPBACK_MODE_PHY,
 
     /** port internal loopback at mac module */
-    SAI_PORT_INTERNAL_LOOPBACK_MAC
+    SAI_PORT_INTERNAL_LOOPBACK_MODE_MAC
 
 } sai_port_internal_loopback_mode_t;
 
@@ -126,19 +126,19 @@ typedef enum _sai_port_internal_loopback_mode_t
 typedef enum _sai_port_fdb_learning_mode_t
 {
     /** Drop packets with unknown source MAC. Do not learn. Do not forward */
-    SAI_PORT_LEARN_MODE_DROP,
+    SAI_PORT_FDB_LEARNING_MODE_DROP,
 
     /** Do not learn unknown source MAC. Forward based on destination MAC */
-    SAI_PORT_LEARN_MODE_DISABLE,
+    SAI_PORT_FDB_LEARNING_MODE_DISABLE,
 
     /** Hardware learning. Learn source MAC. Forward based on destination MAC */
-    SAI_PORT_LEARN_MODE_HW,
+    SAI_PORT_FDB_LEARNING_MODE_HW,
 
     /** Trap packets with unknown source MAC to CPU. Do not learn. Do not forward */
-    SAI_PORT_LEARN_MODE_CPU_TRAP,
+    SAI_PORT_FDB_LEARNING_MODE_CPU_TRAP,
 
     /** Trap packets with unknown source MAC to CPU. Do not learn. Forward based on destination MAC */
-    SAI_PORT_LEARN_MODE_CPU_LOG,
+    SAI_PORT_FDB_LEARNING_MODE_CPU_LOG,
 
 } sai_port_fdb_learning_mode_t;
 
@@ -158,8 +158,8 @@ typedef enum _sai_port_event_t
 /**
  * @brief Defines the port event notification
  */
-typedef struct _sai_port_event_notification_t {
-
+typedef struct _sai_port_event_notification_t
+{
     /** Port id */
     sai_object_id_t port_id;
 
@@ -193,16 +193,16 @@ typedef enum _sai_port_media_type_t
 typedef enum _sai_port_breakout_mode_type_t
 {
     /** 1 lane breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_1_LANE = 1,
+    SAI_PORT_BREAKOUT_MODE_TYPE_1_LANE = 1,
 
     /** 2 lanes breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_2_LANE = 2,
+    SAI_PORT_BREAKOUT_MODE_TYPE_2_LANE = 2,
 
     /** 4 lanes breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_4_LANE = 4,
+    SAI_PORT_BREAKOUT_MODE_TYPE_4_LANE = 4,
 
     /** Breakout mode max count */
-    SAI_PORT_BREAKOUT_MODE_MAX
+    SAI_PORT_BREAKOUT_MODE_TYPE_MAX
 } sai_port_breakout_mode_type_t;
 
 /**
@@ -211,9 +211,8 @@ typedef enum _sai_port_breakout_mode_type_t
  */
 typedef enum _sai_port_attr_t
 {
-        
     SAI_PORT_ATTR_START,
-    
+
     /** READ-ONLY */
 
     /** Port Type [sai_port_type_t] */
@@ -262,11 +261,11 @@ typedef enum _sai_port_attr_t
       * in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_REMOTE_SUPPORTED_SPEED,
 
-    /** Query list of Remote Port’s Supported
+    /** Query list of Remote Port's Supported
       * HALF-Duplex speed in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_REMOTE_SUPPORTED_HALF_DUPLEX_SPEED,
 
-    /** Query Remote Port’s auto-negotiation support [bool] */
+    /** Query Remote Port's auto-negotiation support [bool] */
     SAI_PORT_ATTR_REMOTE_SUPPORTED_AUTO_NEG_MODE,
 
     /** Query Remote port supported flow control mode
@@ -283,11 +282,11 @@ typedef enum _sai_port_attr_t
       * in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_SPEED,
 
-    /** Query list of Remote Port’s
+    /** Query list of Remote Port's
       * Advertised HALF-Duplex speed in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_HALF_DUPLEX_SPEED,
 
-    /** Query Remote Port’s auto-negotiation Advertisement [bool] */
+    /** Query Remote Port's auto-negotiation Advertisement [bool] */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_AUTO_NEG_MODE,
 
     /** Query Remote port Advertised flow control mode
@@ -337,17 +336,17 @@ typedef enum _sai_port_attr_t
      * HALF-Duplex speed in Mbps [sai_u32_list_t] */
     SAI_PORT_ATTR_ADVERTISED_HALF_DUPLEX_SPEED,
 
-    /** Query/Configure Port’s Advertised auto-negotiation configuration [bool] */
+    /** Query/Configure Port's Advertised auto-negotiation configuration [bool] */
     SAI_PORT_ATTR_ADVERTISED_AUTO_NEG_MODE,
 
-    /** Query/Configure Port’s Advertised flow control mode
+    /** Query/Configure Port's Advertised flow control mode
       * [sai_port_flow_control_mode_t] */
     SAI_PORT_ATTR_ADVERTISED_FLOW_CONTROL,
 
     /** Query port's Advertised asymmetric pause mode [bool] */
     SAI_PORT_ATTR_ADVERTISED_ASYMMETRIC_PAUSE_MODE,
 
-    /** Query/Configure Port’s Advertised media type [sai_port_media_type_t] */
+    /** Query/Configure Port's Advertised media type [sai_port_media_type_t] */
     SAI_PORT_ATTR_ADVERTISED_MEDIA_TYPE,
 
     /** Port VLAN ID [sai_vlan_id_t]
@@ -467,7 +466,6 @@ typedef enum _sai_port_attr_t
     * Default no map */
     SAI_PORT_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
-
    /** Enable TC -> Queue MAP [sai_object_id_t]  on port
     * Map id = SAI_NULL_OBJECT_ID to disable map on port.
     * Default no map i.e All packets to queue 0 */
@@ -541,20 +539,18 @@ typedef enum _sai_port_attr_t
 
     SAI_PORT_ATTR_END,
 
-
     /* Custom range base value */
     SAI_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /* --*/
     SAI_PORT_ATTR_CUSTOM_RANGE_END
 
-
 } sai_port_attr_t;
 
 /**
- *  @brief Port counter IDs in sai_get_port_stat_counters() call
+ *  @brief Port counter IDs in sai_get_port_stats() call
  */
-typedef enum _sai_port_stat_counter_t
+typedef enum _sai_port_stat_t
 {
     SAI_PORT_STAT_IF_IN_OCTETS,
     SAI_PORT_STAT_IF_IN_UCAST_PKTS,
@@ -703,7 +699,7 @@ typedef enum _sai_port_stat_counter_t
     SAI_PORT_STAT_PFC_7_RX_PKTS,
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
-} sai_port_stat_counter_t;
+} sai_port_stat_t;
 
 /**
  * Routine Description:
@@ -791,7 +787,7 @@ typedef sai_status_t (*sai_get_port_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_port_stats_fn)(
     _In_ sai_object_id_t port_id,
-    _In_ const sai_port_stat_counter_t *counter_ids,
+    _In_ const sai_port_stat_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
     );
@@ -811,7 +807,7 @@ typedef sai_status_t (*sai_get_port_stats_fn)(
  */
 typedef sai_status_t (*sai_clear_port_stats_fn)(
     _In_ sai_object_id_t port_id,
-    _In_ const sai_port_stat_counter_t *counter_ids,
+    _In_ const sai_port_stat_t *counter_ids,
     _In_ uint32_t number_of_counters
     );
 
@@ -880,5 +876,4 @@ typedef struct _sai_port_api_t
 /**
  * \}
  */
-#endif // __SAIPORT_H_
-
+#endif /* __SAIPORT_H_ */

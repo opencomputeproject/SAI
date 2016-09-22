@@ -22,7 +22,9 @@
 
     3. Run sai server
 
-      ./saiserver
+      ./saiserver -p profile.ini -f portmap.ini
+
+      You can find the sample configuration for mellanox sn2700 under src/msn_2700 directory
 
   Server side:
 
@@ -36,4 +38,4 @@
 
     3. Copy tests directory to client
 
-    sudo ptf --test-dir tests switch.L3IPv4HostTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' -t "server='10.0.0.1'"
+    sudo ptf --test-dir tests switch.L3IPv4HostTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' -t "server='10.0.0.1';port_map_file='default_interface_to_front_map.ini'"

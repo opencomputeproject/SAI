@@ -37,17 +37,17 @@
  *
  *  \{
  */
- 
+
 /**
  *  @brief FDB entry type.
  */
 typedef enum _sai_fdb_entry_type_t
 {
     /** Dynamic FDB Entry */
-    SAI_FDB_ENTRY_DYNAMIC,
+    SAI_FDB_ENTRY_TYPE_DYNAMIC,
 
     /** Static FDB Entry */
-    SAI_FDB_ENTRY_STATIC,
+    SAI_FDB_ENTRY_TYPE_STATIC,
 
 } sai_fdb_entry_type_t;
 
@@ -61,11 +61,10 @@ typedef struct _sai_fdb_entry_t
 
 } sai_fdb_entry_t;
 
-
 /**
  *  @brief FDB event type
  */
-typedef enum sai_fdb_event_t
+typedef enum _sai_fdb_event_t
 {
     /** New FDB entry learned */
     SAI_FDB_EVENT_LEARNED,
@@ -83,7 +82,6 @@ typedef enum sai_fdb_event_t
  */
 typedef enum _sai_fdb_entry_attr_t
 {
-
     SAI_FDB_ENTRY_ATTR_START,
     /** READ-ONLY */
 
@@ -115,7 +113,6 @@ typedef enum _sai_fdb_entry_attr_t
     /* --*/
     SAI_FDB_ENTRY_ATTR_CUSTOM_RANGE_END
 
-
 } sai_fdb_entry_attr_t;
 
 /**
@@ -124,10 +121,10 @@ typedef enum _sai_fdb_entry_attr_t
 typedef enum _sai_fdb_flush_entry_type_t
 {
     /** Flush dynamic FDB entries */
-    SAI_FDB_FLUSH_ENTRY_DYNAMIC,
+    SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC,
 
     /** Flush static FDB entries */
-    SAI_FDB_FLUSH_ENTRY_STATIC,
+    SAI_FDB_FLUSH_ENTRY_TYPE_STATIC,
 
 } sai_fdb_flush_entry_type_t;
 
@@ -146,25 +143,26 @@ typedef enum _sai_fdb_flush_entry_type_t
  * 5) Flush all static entries by port and VLAN - Set SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
  *    SAI_FDB_FLUSH_ATTR_PORT_ID, and SAI_FDB_FLUSH_ATTR_VLAN_ID
  */
-typedef enum _sai_fdb_flush_attr_t {
-    
-   SAI_FDB_FLUSH_ATTR_START,
+typedef enum _sai_fdb_flush_attr_t
+{
+    SAI_FDB_FLUSH_ATTR_START,
 
-   /**Flush based on port [sai_object_id_t]*/
-   SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
+    /**Flush based on port [sai_object_id_t]*/
+    SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
 
-   /**Flush based on VLAN [sai_vlan_id_t]*/
-   SAI_FDB_FLUSH_ATTR_VLAN_ID,
+    /**Flush based on VLAN [sai_vlan_id_t]*/
+    SAI_FDB_FLUSH_ATTR_VLAN_ID,
 
-   /**Flush based on entry type [sai_fdb_flush_entry_type_t]*/
-   SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
+    /**Flush based on entry type [sai_fdb_flush_entry_type_t]*/
+    SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
 
-   SAI_FDB_FLUSH_ATTR_END,
+    SAI_FDB_FLUSH_ATTR_END,
 
 } sai_fdb_flush_attr_t;
 
 /** Notification data format received from SAI FDB callback*/
-typedef struct _sai_fdb_event_notification_data_t {
+typedef struct _sai_fdb_event_notification_data_t
+{
     sai_fdb_event_t event_type;
     sai_fdb_entry_t fdb_entry;
     uint32_t attr_count;
@@ -290,4 +288,4 @@ typedef struct _sai_fdb_api_t
 /**
  * \}
  */
-#endif // __SAIFDB_H_
+#endif /* __SAIFDB_H_ */

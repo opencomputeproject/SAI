@@ -42,7 +42,7 @@
  */
 typedef enum _sai_ingress_priority_group_attr_t
 {
-    SAI_INGRESS_PRIORITY_GROUP_ATTR_START, 
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
     /** buffer profile pointer [sai_object_id_t] */
     SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
     SAI_INGRESS_PRIORITY_GROUP_ATTR_END
@@ -51,7 +51,7 @@ typedef enum _sai_ingress_priority_group_attr_t
 /**
 * @brief Enum defining statistics for ingress priority group.
 */
-typedef enum _sai_ingress_priority_group_stat_counter_t
+typedef enum _sai_ingress_priority_group_stat_t
 {
     /** get/set rx packets count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS = 0x00000000,
@@ -80,7 +80,7 @@ typedef enum _sai_ingress_priority_group_stat_counter_t
     /** -- */
     /** Custom range base value */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
-} sai_ingress_priority_group_stat_counter_t;
+} sai_ingress_priority_group_stat_t;
 
 /**
  * @brief Set ingress priority group attribute
@@ -123,7 +123,7 @@ typedef sai_status_t(*sai_get_ingress_priority_group_attr_fn)(
 */
 typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
     _In_ sai_object_id_t ingress_pg_id,
-    _In_ const sai_ingress_priority_group_stat_counter_t *counter_ids,
+    _In_ const sai_ingress_priority_group_stat_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
     );
@@ -140,7 +140,7 @@ typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
 */
 typedef sai_status_t(*sai_clear_ingress_priority_group_stats_fn)(
     _In_ sai_object_id_t ingress_pg_id,
-    _In_ const sai_ingress_priority_group_stat_counter_t *counter_ids,
+    _In_ const sai_ingress_priority_group_stat_t *counter_ids,
     _In_ uint32_t number_of_counters
     );
 
@@ -150,10 +150,10 @@ typedef sai_status_t(*sai_clear_ingress_priority_group_stats_fn)(
 typedef enum _sai_buffer_pool_type_t
 {
     /** Ingress buffer pool */
-    SAI_BUFFER_POOL_INGRESS,
+    SAI_BUFFER_POOL_TYPE_INGRESS,
 
     /** Egress buffer pool */
-    SAI_BUFFER_POOL_EGRESS,
+    SAI_BUFFER_POOL_TYPE_EGRESS,
 
 } sai_buffer_pool_type_t;
 
@@ -190,11 +190,15 @@ typedef enum _sai_buffer_pool_attr_t
 
     /** buffer pool size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
     SAI_BUFFER_POOL_ATTR_SIZE,
+    
+    /** For the ingress buffer pool, we allocate a shared XOFF (GLOBAL HEADROOM) room for lossless traffic 
+     *  default to 0. */
+    SAI_BUFFER_POOL_ATTR_XOFF_SIZE,
 
     /** shared threshold mode for the buffer pool [sai_buffer_threadhold_mode_t] (CREATE_ONLY)
      * (default to SAI_BUFFER_POOL_DYNAMIC_TH) */
     SAI_BUFFER_POOL_ATTR_TH_MODE,
-    
+
     SAI_BUFFER_POOL_ATTR_END,
 
 } sai_buffer_pool_attr_t;
@@ -202,7 +206,7 @@ typedef enum _sai_buffer_pool_attr_t
 /**
 * @brief Enum defining statistics for buffer pool.
 */
-typedef enum _sai_buffer_pool_stat_counter_t
+typedef enum _sai_buffer_pool_stat_t
 {
     /** get current pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_BYTES = 0x00000000,
@@ -213,7 +217,7 @@ typedef enum _sai_buffer_pool_stat_counter_t
     /** -- */
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
-} sai_buffer_pool_stat_counter_t;
+} sai_buffer_pool_stat_t;
 
 /**
  * @brief Create buffer pool
@@ -278,7 +282,7 @@ typedef sai_status_t(*sai_get_buffer_pool_attr_fn)(
 */
 typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
     _In_ sai_object_id_t pool_id,
-    _In_ const sai_buffer_pool_stat_counter_t *counter_ids,
+    _In_ const sai_buffer_pool_stat_t *counter_ids,
     _In_ uint32_t number_of_counters,
     _Out_ uint64_t* counters
     );
@@ -288,11 +292,10 @@ typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
  */
 typedef enum _sai_buffer_profile_attr_t
 {
-    
     SAI_BUFFER_PROFILE_ATTR_START,
     /** READ-WRITE */
 
-    /** pointer to buffer pool object id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
+    /** pointer to buffer pool object id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_ONLY)
     *  Pool id = SAI_NULL_OBJECT_ID can be used when profile is not associated with specific
     *  pool, for example for global port buffer. Not applicable to priority group or queue buffer profile */
     SAI_BUFFER_PROFILE_ATTR_POOL_ID = SAI_BUFFER_PROFILE_ATTR_START,
@@ -302,7 +305,7 @@ typedef enum _sai_buffer_profile_attr_t
 
     /** shared threshold mode for the buffer profile [sai_buffer_threadhold_mode_t] (CREATE_AND_SET)
      * If set, this overrides SAI_BUFFER_POOL_ATTR_TH_MODE.
-     * If not set, use SAI_BUFFER_POOL_ATTR_TH_MODE. 
+     * If not set, use SAI_BUFFER_POOL_ATTR_TH_MODE.
      * (default to value set in SAI_BUFFER_POOL_ATTR_TH_MODE.) */
     SAI_BUFFER_PROFILE_ATTR_TH_MODE,
 
@@ -320,8 +323,14 @@ typedef enum _sai_buffer_profile_attr_t
 
     /** set the buffer profile XOFF threshold in bytes [sai_uint32_t]
      * Valid only for ingress PG (CREATE_AND_SET).
-     * Generate XOFF when available buffer in the PG buffer
-     * is less than this threshold.
+     * Specifies the maximum available buffer for a PG after XOFF is 
+     * generated (i.e. headroom buffer). Note that the available 
+     * headroom buffer is dependent on XOFF_SIZE. If the user has 
+     * set XOFF_SIZE = 0, the PG headroom buffer is equal to XOFF_TH
+     * and it is not shared. If the user has set XOFF_SIZE > 0, the 
+     * total headroom pool buffer for all PGs is equal to XOFF_SIZE
+     * and XOFF_TH specifies the maximum amount of headroom pool 
+     * buffer one PG can use.
      * default to 0. */
     SAI_BUFFER_PROFILE_ATTR_XOFF_TH,
 
@@ -410,5 +419,4 @@ typedef struct _sai_buffer_api_t
 /**
  *\}
  */
-
-#endif // __SAIBUFFER_H_
+#endif /* __SAIBUFFER_H_ */

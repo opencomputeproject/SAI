@@ -866,7 +866,7 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             for i in range(0, max_itrs):
                 dst_ip_addr = socket.inet_ntoa(hex(dst_ip)[2:].zfill(8).decode('hex'))
                 src_mac = src_mac_start + str(i%99).zfill(2)
-                pkt = simple_tcp_packet(eth_dst='00:77:66:55:44:33',
+                pkt = simple_tcp_packet(eth_dst=router_mac,
                         eth_src=src_mac,
                         ip_dst=dst_ip_addr,
                         ip_src='192.168.8.1',
@@ -874,19 +874,19 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
                         ip_ttl=64)
 
                 exp_pkt1 = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                        eth_src='00:77:66:55:44:33',
+                        eth_src=router_mac,
                         ip_dst=dst_ip_addr,
                         ip_src='192.168.8.1',
                         ip_id=106,
                         ip_ttl=63)
                 exp_pkt2 = simple_tcp_packet(eth_dst='00:11:22:33:44:56',
-                        eth_src='00:77:66:55:44:33',
+                        eth_src=router_mac,
                         ip_dst=dst_ip_addr,
                         ip_src='192.168.8.1',
                         ip_id=106,
                         ip_ttl=63)
                 exp_pkt3 = simple_tcp_packet(eth_dst='00:11:22:33:44:57',
-                        eth_src='00:77:66:55:44:33',
+                        eth_src=router_mac,
                         ip_dst=dst_ip_addr,
                         ip_src='192.168.8.1',
                         ip_id=106,
@@ -1215,7 +1215,7 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id2)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
- @group('l3')
+@group('l3')
 class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         """
@@ -1324,4 +1324,4 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
-            
+

@@ -57,10 +57,10 @@ typedef enum _sai_mirror_type_t
  */
 typedef enum _sai_erspan_encapsulation_type_t
 {
-    /** L3 GRE Tunnel Encapsulation    
+    /** L3 GRE Tunnel Encapsulation
       | L2 Ethernet header | IP header | GRE header | Original mirrored packet |
      */
-    SAI_MIRROR_L3_GRE_TUNNEL,
+    SAI_ERSPAN_ENCAPSULATION_TYPE_MIRROR_L3_GRE_TUNNEL,
 
 } sai_erspan_encapsulation_type_t;
 
@@ -69,7 +69,6 @@ typedef enum _sai_erspan_encapsulation_type_t
  */
 typedef enum _sai_mirror_session_attr_t
 {
-    
     SAI_MIRROR_SESSION_ATTR_START,
     /** READ_ONLY */
 
@@ -110,7 +109,7 @@ typedef enum _sai_mirror_session_attr_t
     /** Valid for RSPAN and ERSPAN Vlan-CFI - [uint8_t : 1] */
     SAI_MIRROR_SESSION_ATTR_VLAN_CFI,
 
-    /** All attributes below are Valid only for ERSPAN 
+    /** All attributes below are Valid only for ERSPAN
         [SAI_MIRROR_TYPE_ENHANCED_REMOTE]*/
 
     /** MANDATORY_ON_CREATE|CREATE_ONLY */
@@ -149,7 +148,7 @@ typedef enum _sai_mirror_session_attr_t
     /** Valid for ERSPAN, GRE protocol Id - [uint16_t] */
     SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE,
 
-    SAI_MIRROR_SESSION_ATTR_END,    
+    SAI_MIRROR_SESSION_ATTR_END,
 
 } sai_mirror_session_attr_t;
 
@@ -166,7 +165,6 @@ typedef sai_status_t (*sai_create_mirror_session_fn)(
         _Out_ sai_object_id_t *session_id,
         _In_  uint32_t attr_count,
         _In_  const sai_attribute_t *attr_list);
-
 
 /**
  * @brief Remove mirror session.
@@ -204,7 +202,6 @@ typedef sai_status_t (*sai_get_mirror_session_attribute_fn)(
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
-
 /**
  * @brief MIRROR method table retrieved with sai_api_query()
  */
@@ -219,6 +216,4 @@ typedef struct _sai_mirror_api_t
 /**
  * \}
  */
-
-#endif // __SAIMIRROR_H_
-
+#endif /* __SAIMIRROR_H_ */

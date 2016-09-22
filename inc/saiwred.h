@@ -18,7 +18,6 @@
 * @brief This file contains Qos Wred functionality.
 ************************************************************************/
 
-
 #if !defined (__SAIWRED_H_)
 #define __SAIWRED_H_
 
@@ -65,9 +64,8 @@ typedef enum _sai_ecn_mark_mode_t
  */
 typedef enum _sai_wred_attr_t
 {
-
     SAI_WRED_ATTR_START = 0x00000000,
-    
+
     /** [bool] enable/disable, Default FALSE*/
     SAI_WRED_ATTR_GREEN_ENABLE = SAI_WRED_ATTR_START,
 
@@ -157,8 +155,6 @@ typedef enum _sai_wred_attr_t
 
 } sai_wred_attr_t;
 
-
-
 /**
  * @brief Create WRED Profile
  *
@@ -188,7 +184,6 @@ typedef sai_status_t (*sai_create_wred_fn)(
 typedef sai_status_t (*sai_remove_wred_fn)(
     _In_ sai_object_id_t  wred_id
     );
-
 
 /**
  * @brief Set attributes to Wred profile.
@@ -236,6 +231,4 @@ typedef struct _sai_wred_api_t
 /**
  *\}
  */
-
-#endif
-
+#endif /* __SAIWRED_H_ */

@@ -31,8 +31,8 @@
  */
 
 /** Lag attribute: List of attributes for LAG object */
-typedef enum _sai_lag_attr_t {
-    
+typedef enum _sai_lag_attr_t
+{
     SAI_LAG_ATTR_START,
 
     /** READ-ONLY */
@@ -49,7 +49,6 @@ typedef enum _sai_lag_attr_t {
 
     /* --*/
     SAI_LAG_ATTR_CUSTOM_RANGE_END
-
 
 } sai_lag_attr_t;
 
@@ -104,13 +103,11 @@ typedef sai_status_t (*sai_get_lag_attribute_fn)(
     _Inout_ sai_attribute_t *attr_list
     );
 
-
 /**
  *  @brief List of LAG member attributes
  */
-typedef enum _sai_lag_member_attr_t {
-
-
+typedef enum _sai_lag_member_attr_t
+{
     SAI_LAG_MEMBER_ATTR_START,
     /** READ_WRITE */
 
@@ -125,7 +122,7 @@ typedef enum _sai_lag_member_attr_t {
 
      /* Disable traffic collection from this port as part of LAG. [bool] (CREATE_AND_SET) default to FALSE. */
     SAI_LAG_MEMBER_ATTR_INGRESS_DISABLE,
-    
+
     SAI_LAG_MEMBER_ATTR_END,
 
     /** Custom range base value */
@@ -133,7 +130,6 @@ typedef enum _sai_lag_member_attr_t {
 
     /* --*/
     SAI_LAG_MEMBER_ATTR_CUSTOM_RANGE_END
-
 
 } sai_lag_member_attr_t;
 
@@ -160,7 +156,6 @@ typedef sai_status_t(*sai_create_lag_member_fn)(
 typedef sai_status_t(*sai_remove_lag_member_fn)(
     _In_ sai_object_id_t  lag_member_id
     );
-
 
 /*
     \brief Set LAG Member Attribute
@@ -207,4 +202,4 @@ typedef struct _sai_lag_api_t
 /**
  * \}
  */
-#endif
+#endif /* __SAILAG_H_ */

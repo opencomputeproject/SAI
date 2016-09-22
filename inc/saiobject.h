@@ -43,7 +43,7 @@ typedef struct _sai_object_key_t
         sai_vlan_id_t             vlan_id;
         sai_fdb_entry_t           fdb_entry;
         sai_neighbor_entry_t      neighbor_entry;
-        sai_unicast_route_entry_t route_entry;
+        sai_route_entry_t         route_entry;
 
     } key;
 } sai_object_key_t;
@@ -135,5 +135,4 @@ sai_status_t sai_bulk_get_attribute(_In_ sai_object_type_t object_type,
 /**
  * \}
  */
-#endif // __SAIOBJECT_H_
-
+#endif /* __SAIOBJECT_H_ */
