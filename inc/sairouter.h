@@ -19,7 +19,7 @@
  *
  * @file    sairouter.h
  *
- * @brief   This module defines SAI Router interface
+ * @brief   This module defines SAI Virtual Router interface
  *
  * @par Abstract
  *
@@ -98,7 +98,6 @@ typedef enum _sai_virtual_router_attr_t
      * @default SAI_PACKET_ACTION_TRAP
      */
     SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_IP_OPTIONS,
-
 
     /**
      * @brief End of attributes

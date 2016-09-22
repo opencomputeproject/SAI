@@ -245,7 +245,6 @@ typedef enum _sai_acl_table_attr_t
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @default 0
      */
     SAI_ACL_TABLE_ATTR_PRIORITY,
 
@@ -1188,7 +1187,6 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t bool
      * @flags CREATE_AND_SET
-     * @default false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_FDB_NPU_META_DST_HIT,
 
@@ -1197,7 +1195,6 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t bool
      * @flags CREATE_AND_SET
-     * @default false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
 
@@ -1206,7 +1203,6 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t bool
      * @flags CREATE_AND_SET
-     * @default false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
@@ -1273,7 +1269,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Drop Packet
      *
-     * @type sai_packet_action_t
+     * @type sai_acl_action_data_t sai_packet_action_t
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION,
@@ -1299,7 +1295,7 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Ingress Mirror (mirror session id list)
      *
      * @type sai_acl_action_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS,
@@ -1308,7 +1304,7 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Egress Mirror (mirror session id list)
      *
      * @type sai_acl_action_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS,
@@ -1397,7 +1393,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Set Packet Src IPv4 Address
      *
-     * @type sai_acl_action_data_t sai_ipv4_t
+     * @type sai_acl_action_data_t sai_ip4_t
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IP,
@@ -1405,7 +1401,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Set Packet Src IPv4 Address
      *
-     * @type sai_acl_action_data_t sai_ipv4_t
+     * @type sai_acl_action_data_t sai_ip4_t
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IP,
@@ -1413,7 +1409,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Set Packet Src IPv6 Address
      *
-     * @type sai_acl_action_data_t sai_ipv6_t
+     * @type sai_acl_action_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IPv6,
@@ -1421,7 +1417,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Set Packet Src IPv6 Address
      *
-     * @type sai_acl_action_data_t sai_ipv6_t
+     * @type sai_acl_action_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IPv6,
@@ -1581,7 +1577,7 @@ typedef enum _sai_acl_counter_attr_t
      *
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @default 0
      */
     SAI_ACL_COUNTER_ATTR_BYTES
 

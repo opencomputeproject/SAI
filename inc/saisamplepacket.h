@@ -96,7 +96,7 @@ typedef enum _sai_samplepacket_attr_t
      *
      * @type sai_samplepacket_type_t
      * @flags CREATE_ONLY
-     * @default SAI_SAMPLEPACKET_SLOW_PATH
+     * @default SAI_SAMPLEPACKET_TYPE_SLOW_PATH
      */
     SAI_SAMPLEPACKET_ATTR_TYPE,
 
@@ -160,7 +160,7 @@ typedef sai_status_t (*sai_set_samplepacket_attribute_fn)(
  *
  * @param[in] session_id Samplepacket session id
  * @param[in] attr_count Number of attributes
- * @param[in,out] attr_list Value of attribute
+ * @param[inout] attr_list Value of attribute
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.

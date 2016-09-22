@@ -233,7 +233,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Breakout mode(s) supported
      *
-     * @type sai_int32_list_t
+     * @type sai_s32_list_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_SUPPORTED_BREAKOUT_MODE,
@@ -283,7 +283,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Query list of supported port speed(full-duplex) in Mbps
      *
-     * @type sai_uint32_list_t
+     * @type sai_u32_list_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_SUPPORTED_SPEED,
@@ -446,7 +446,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Hardware Lane list
      *
-     * @type sai_uint32_list_t
+     * @type sai_u32_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
      */
     SAI_PORT_ATTR_HW_LANE_LIST,
@@ -602,7 +602,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_internal_loopback_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_INTERNAL_LOOPBACK_NONE
+     * @default SAI_PORT_INTERNAL_LOOPBACK_MODE_NONE
      */
     SAI_PORT_ATTR_INTERNAL_LOOPBACK,
 
@@ -611,7 +611,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_fdb_learning_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_LEARN_MODE_HW
+     * @default SAI_PORT_FDB_LEARNING_MODE_HW
      */
     SAI_PORT_ATTR_FDB_LEARNING,
 
@@ -672,7 +672,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_flow_control_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_FLOW_CONTROL_DISABLE
+     * @default SAI_PORT_FLOW_CONTROL_MODE_DISABLE
      */
     SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL,
 
@@ -703,7 +703,7 @@ typedef enum _sai_port_attr_t
      * as 0 in objlist
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
      * @default empty
      */
@@ -717,7 +717,7 @@ typedef enum _sai_port_attr_t
      * in objlist
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
      * @default empty
      */
@@ -780,7 +780,7 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -793,7 +793,7 @@ typedef enum _sai_port_attr_t
      * To enable/disable trust Dot1p, Map ID should be add/remove on port.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -807,7 +807,7 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -820,7 +820,7 @@ typedef enum _sai_port_attr_t
      * To enable/disable trust DSCP, Map ID should be add/remove on port.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -833,7 +833,7 @@ typedef enum _sai_port_attr_t
      * Default no map i.e All packets to queue 0
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -846,7 +846,7 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -859,7 +859,7 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -872,7 +872,7 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -885,7 +885,7 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -897,7 +897,7 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */

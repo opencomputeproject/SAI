@@ -72,7 +72,7 @@ typedef enum _sai_next_hop_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_IP
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP
      */
     SAI_NEXT_HOP_ATTR_IP,
 
@@ -91,7 +91,7 @@ typedef enum _sai_next_hop_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TUNNEL_ENCAP
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
      */
     SAI_NEXT_HOP_ATTR_TUNNEL_ID,
 

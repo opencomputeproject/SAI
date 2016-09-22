@@ -103,9 +103,9 @@ typedef enum _sai_udf_attr_t
      * The mask only applies to extracted UDF when it is used for hash,
      * it does not apply to the extracted UDF when it is used for ACL.
      *
-     * @type sai_uint8_list_t
+     * @type sai_u8_list_t
      * @flags CREATE_AND_SET
-     * @default complex
+     * @default const
      */
     SAI_UDF_ATTR_HASH_MASK,
 
@@ -133,6 +133,7 @@ typedef enum _sai_udf_match_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_ONLY
+     * @default 0
      */
     SAI_UDF_MATCH_ATTR_L2_TYPE = SAI_UDF_MATCH_ATTR_START,
 
@@ -143,6 +144,7 @@ typedef enum _sai_udf_match_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_ONLY
+     * @default 0
      */
     SAI_UDF_MATCH_ATTR_L3_TYPE,
 
@@ -153,6 +155,7 @@ typedef enum _sai_udf_match_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_ONLY
+     * @default 0
      */
     SAI_UDF_MATCH_ATTR_GRE_TYPE,
 
@@ -215,7 +218,7 @@ typedef enum _sai_udf_group_attr_t
      *
      * @type sai_udf_group_type_t
      * @flags CREATE_ONLY
-     * @default SAI_UDF_GENERIC
+     * @default SAI_UDF_GROUP_TYPE_GENERIC
      */
     SAI_UDF_GROUP_ATTR_TYPE,
 

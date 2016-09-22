@@ -398,7 +398,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief FDB DST user-based meta data range
      *
-     * @type sai_uint32_range_t
+     * @type sai_u32_range_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE,
@@ -406,7 +406,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Route DST Table user-based meta data range
      *
-     * @type sai_uint32_range_t
+     * @type sai_u32_range_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ROUTE_DST_USER_META_DATA_RANGE,
@@ -414,7 +414,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Neighbor DST Table user-based meta data range
      *
-     * @type sai_uint32_range_t
+     * @type sai_u32_range_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE,
@@ -422,7 +422,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Port user-based meta data range
      *
-     * @type sai_uint32_range_t
+     * @type sai_u32_range_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE,
@@ -430,7 +430,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief VLAN user-based meta data range
      *
-     * @type sai_uint32_range_t
+     * @type sai_u32_range_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE,
@@ -438,7 +438,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief ACL user-based ACL meta data range
      *
-     * @type sai_uint32_range_t
+     * @type sai_u32_range_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE,
@@ -446,7 +446,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief ACL user-based trap id range
      *
-     * @type sai_uint32_range_t
+     * @type sai_u32_range_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE,
@@ -455,7 +455,7 @@ typedef enum _sai_switch_attr_t
      * @brief Default SAI STP instance ID
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_STP_INSTANCE
+     * @objects SAI_OBJECT_TYPE_STP
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
@@ -492,7 +492,7 @@ typedef enum _sai_switch_attr_t
      * @brief HQOS - Maximum number of scheduler groups supported on
      * each Hierarchy level
      *
-     * @type sai_uint32_list_t
+     * @type sai_u32_list_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUPS_PER_HIERARCHY_LEVEL,
@@ -543,7 +543,7 @@ typedef enum _sai_switch_attr_t
      * may be modified
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TRAP_GROUP
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP,
@@ -638,7 +638,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_switch_switching_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_SWITCHING_MODE_STORE_AND_FORWARD
+     * @default SAI_SWITCH_SWITCHING_MODE_STORE_AND_FORWARD
      */
     SAI_SWITCH_ATTR_SWITCHING_MODE,
 
@@ -881,7 +881,7 @@ typedef enum _sai_switch_attr_t
      * Default disabled
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -895,7 +895,7 @@ typedef enum _sai_switch_attr_t
      * Default disabled
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -909,7 +909,7 @@ typedef enum _sai_switch_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -923,7 +923,7 @@ typedef enum _sai_switch_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -937,7 +937,7 @@ typedef enum _sai_switch_attr_t
      *
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -950,7 +950,7 @@ typedef enum _sai_switch_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */
@@ -963,7 +963,7 @@ typedef enum _sai_switch_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAPS
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
      */

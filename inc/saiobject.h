@@ -58,8 +58,8 @@ typedef struct _sai_object_key_t
 /**
  * @brief Get maximum number of attributes for an object type
  *
- *  @param[in] object_type SAI object type
- *  @param[in,out] count Maximum number of attribute for an object type
+ * @param[in] object_type SAI object type
+ * @param[inout] count Maximum number of attribute for an object type
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -71,7 +71,7 @@ sai_status_t sai_get_maximum_attribute_count(
  * @brief Get the number of objects present in SAI
  *
  * @param[in] object_type SAI object type
- * @param[in,out] count Number of objects in SAI
+ * @param[inout] count Number of objects in SAI
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -83,7 +83,7 @@ sai_status_t sai_get_object_count(
  * @brief Get the list of object keys present in SAI
  *
  * @param[in] object_type SAI object type
- * @param[in] count Number of objects in SAI
+ * @param[in] object_count Number of objects in SAI
  * @param[in] object_list List of SAI objects or keys
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -95,33 +95,32 @@ sai_status_t sai_get_object_key(
 
 /**
  * @brief Get the bulk list of valid attributes for a given list of
- *   object keys.Only valid attributes for an objects are returned.
+ * object keys.Only valid attributes for an objects are returned.
  *
  * @param[in] object_type SAI object type
  * @param[in] object_count Number of objects
  * @param[in] object_key List of object keys
- * @param[in,out] attr_count List of attr_count. Caller passes the number
+ * @param[inout] attr_count List of attr_count. Caller passes the number
  *         of attribute allocated in. Callee returns with the actual
  *         number of attributes filled in. If the count is less than
  *         needed, callee fills with the needed count and do not fill
  *         the attributes. Callee also set the corresponding status to
  *         #SAI_STATUS_BUFFER_OVERFLOW.
  *
- * @param[in,out] attrs Nist of attributes for every object. Caller is
+ * @param[inout] attrs Nist of attributes for every object. Caller is
  *         responsible for allocating and freeing buffer for the attributes.
  *         For list based attribute, e.g., s32list, oidlist, callee should
  *         assume the caller has not allocate the memory for the list and
  *         should only to fill the count but not list. Then, caller
  *         can use corresponding get_attribute to get the list.
  *
- * @param[in,out] object_statuses Status for each object. If the object does
+ * @param[inout] object_statuses Status for each object. If the object does
  *         not exist, callee sets the correpsonding status to #SAI_STATUS_INVALID_OBJECT_ID.
  *         If the allocated attribute count is not large enough,
  *         set the status to #SAI_STATUS_BUFFER_OVERFLOW.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-
 sai_status_t sai_bulk_get_attribute(
         _In_ sai_object_type_t object_type,
         _In_ uint32_t object_count,

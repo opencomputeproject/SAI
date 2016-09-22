@@ -41,6 +41,7 @@
  * @brief Any mapping schema from _S_ to error codes convenient on *nix can be used.
  */
 #define SAI_STATUS_CODE(_S_)    (-(_S_))
+
 #endif
 
 /**
@@ -156,14 +157,14 @@
 #define SAI_STATUS_INVALID_NV_STORAGE               SAI_STATUS_CODE(0x00000014L)
 
 /**
- * @brief Version mismatch in case of Inservice upgrade (rv for initialize_switch())
- */
-#define SAI_STATUS_SW_UPGRADE_VERSION_MISMATCH      SAI_STATUS_CODE(0x00000016L)
-
-/**
  * @brief The NV storage is full. (rv for shutdown_switch())
  */
 #define SAI_STATUS_NV_STORAGE_FULL                  SAI_STATUS_CODE(0x00000015L)
+
+/**
+ * @brief Version mismatch in case of Inservice upgrade (rv for initialize_switch())
+ */
+#define SAI_STATUS_SW_UPGRADE_VERSION_MISMATCH      SAI_STATUS_CODE(0x00000016L)
 
 /**
  * @brief Attribute is invalid (range from 0x00010000L to 0x0001FFFFL).

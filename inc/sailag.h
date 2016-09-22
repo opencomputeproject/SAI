@@ -106,7 +106,7 @@ typedef sai_status_t (*sai_set_lag_attribute_fn)(
  *
  * @param[in] lag_id LAG id
  * @param[in] attr_count Number of attributes to be get
- * @param[in,out] attr_list List of structures containing ID and value to be get
+ * @param[inout] attr_list List of structures containing ID and value to be get
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -215,7 +215,7 @@ typedef sai_status_t (*sai_set_lag_member_attribute_fn)(
  *
  * @param[in] lag_member_id LAG Member id
  * @param[in] attr_count Number of attributes to be get
- * @param[in,out] attr_list List of structures containing ID and value to be get
+ * @param[inout] attr_list List of structures containing ID and value to be get
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */

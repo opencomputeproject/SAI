@@ -75,13 +75,12 @@ typedef enum _sai_hostif_trap_group_attr_t
     SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
 
     /**
-     * @brief Ssai policer object id
+     * @brief Sai policer object id
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
      */
     SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER,
 
@@ -139,7 +138,7 @@ typedef sai_status_t (*sai_set_hostif_trap_group_attribute_fn)(
  *
  * @param[in] hostif_trap_group_id Host interface trap group id
  * @param[in] attr_count Number of attributes
- * @param[in,out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -382,7 +381,6 @@ typedef enum _sai_hostif_trap_attr_t
      * @type sai_object_list_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
-     * @allownull true
      * @default empty
      */
     SAI_HOSTIF_TRAP_ATTR_PORT_LIST,
@@ -391,7 +389,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @brief Trap-group ID for the trap
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TRAP_GROUP
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @flags CREATE_AND_SET
      * @default attrvalue SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP
      */
@@ -451,7 +449,7 @@ typedef sai_status_t(*sai_set_hostif_trap_attribute_fn)(
  *
  * @param[in] hostif_trap_id Host interface trap id
  * @param[in] attr_count Number of attributes
- * @param[in,out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -463,7 +461,7 @@ typedef sai_status_t(*sai_get_hostif_trap_attribute_fn)(
 /**
  * @brief Host interface user defined trap ID table range
  */
-#define SAI_HOSTIF_USER_DEFINED_TRAP_ID_TABLE_RANGE 0x0
+#define SAI_HOSTIF_USER_DEFINED_TRAP_ID_TABLE_RANGE 0x1
 
 /**
  * @brief user defined traps
@@ -548,7 +546,7 @@ typedef sai_status_t(*sai_set_hostif_user_defined_trap_attribute_fn)(
  *
  * @param[in] hostif_user_defined_trap_id Host interface user defined trap id
  * @param[in] attr_count Number of attributes
- * @param[in,out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -782,8 +780,8 @@ typedef enum _sai_hostif_packet_attr_t
  *
  * @param[in] hif_id Host interface id
  * @param[out] buffer Packet buffer
- * @param[in,out] buffer_size Allocated buffer size [in], actual packet size in bytes [out]
- * @param[in,out] attr_count Allocated list size [in], number of attributes [out]
+ * @param[inout] buffer_size Allocated buffer size [in], actual packet size in bytes [out]
+ * @param[inout] attr_count Allocated list size [in], number of attributes [out]
  * @param[out] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success #SAI_STATUS_BUFFER_OVERFLOW if

@@ -78,7 +78,7 @@ typedef enum _sai_queue_attr_t
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
      */
-    SAI_QUEUE_ATTR_INDEX,
+    SAI_QUEUE_ATTR_INDEX = 0x00000001,
 
     /* READ-WRITE */
 
@@ -92,7 +92,7 @@ typedef enum _sai_queue_attr_t
      * @flags CREATE_AND_SET
      * @allownull true
      */
-    SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000001,
+    SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000002,
 
     /**
      * @brief Attach buffer profile to Queue
@@ -102,7 +102,7 @@ typedef enum _sai_queue_attr_t
      * @flags CREATE_AND_SET
      * @allownull true
      */
-    SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000002,
+    SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000003,
 
     /**
      * @brief Attach scheduler to Queue
@@ -112,7 +112,7 @@ typedef enum _sai_queue_attr_t
      * @flags CREATE_AND_SET
      * @allownull true
      */
-    SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000003,
+    SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000004,
 
     /**
      * @brief End of attributes
@@ -120,7 +120,7 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_END,
 
     /** Custom range base value */
-    SAI_QUEUE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_QUEUE_ATTR_CUSTOM_RANGE_START = 0x10000005,
 
     /** End of custom range base */
     SAI_QUEUE_ATTR_CUSTOM_RANGE_END

@@ -285,7 +285,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_IPINIP_GRE
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
 
@@ -297,7 +297,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_IPINIP_GRE
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_OVERLAY_INTERFACE,
 
@@ -318,7 +318,7 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_tunnel_ttl_mode_t
      * @flags CREATE_ONLY
-     * @default SAI_TUNNEL_TTL_UNIFORM_MODEL
+     * @default SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL
      */
     SAI_TUNNEL_ATTR_ENCAP_TTL_MODE,
 
@@ -327,7 +327,7 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_ATTR_ENCAP_TTL_MODE == SAI_TUNNEL_TTL_PIPE_MODEL
+     * @condition SAI_TUNNEL_ATTR_ENCAP_TTL_MODE == SAI_TUNNEL_TTL_MODE_PIPE_MODEL
      */
     SAI_TUNNEL_ATTR_ENCAP_TTL_VAL,
 
@@ -336,7 +336,7 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_tunnel_dscp_mode_t
      * @flags CREATE_ONLY
-     * @default SAI_TUNNEL_DSCP_UNIFORM_MODEL
+     * @default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
      */
     SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE,
 
@@ -345,7 +345,7 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE == SAI_TUNNEL_DSCP_PIPE_MODEL
+     * @condition SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE == SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
      */
     SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL,
 
@@ -355,7 +355,7 @@ typedef enum _sai_tunnel_attr_t
      * @type bool
      * @flags CREATE_ONLY
      * @default false
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_IPINIP_GRE
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_ENCAP_GRE_KEY_VALID,
 
@@ -411,20 +411,22 @@ typedef enum _sai_tunnel_attr_t
     /**
      * @brief Tunnel TTL mode (pipe or uniform model)
      *
+     * Default SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL
+     *
      * @type sai_tunnel_ttl_mode_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @default SAI_TUNNEL_TTL_UNIFORM_MODEL
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_IPINIP_GRE
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
     /**
      * @brief Tunnel dscp mode (pipe or uniform model)
      *
+     * Default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
+     *
      * @type sai_tunnel_dscp_mode_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @default SAI_TUNNEL_DSCP_UNIFORM_MODEL
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_IPINIP_GRE
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
 
@@ -544,7 +546,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_P2P
+     * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP,
 
@@ -553,7 +555,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      *
      * @type sai_tunnel_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_P2P
+     * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TUNNEL_TYPE,
 

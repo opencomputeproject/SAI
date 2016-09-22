@@ -47,6 +47,7 @@ typedef enum _sai_ingress_priority_group_attr_t
      * @brief Buffer profile pointer
      *
      * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @flags CREATE_AND_SET
      */
     SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
@@ -216,7 +217,7 @@ typedef enum _sai_buffer_pool_attr_t
      *
      * @type sai_buffer_threshold_mode_t
      * @flags CREATE_ONLY
-     * @default SAI_BUFFER_POOL_DYNAMIC_TH
+     * @default SAI_BUFFER_THRESHOLD_MODE_DYNAMIC
      */
     SAI_BUFFER_POOL_ATTR_TH_MODE,
 

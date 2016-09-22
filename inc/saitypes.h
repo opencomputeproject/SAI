@@ -157,7 +157,7 @@ typedef enum _sai_common_api_t {
  * @brief sai object type
  */
 typedef enum _sai_object_type_t {
-    SAI_OBJECT_TYPE_NULL                    =  0,
+    SAI_OBJECT_TYPE_NULL                    =  0, /**< invalid object type */
     SAI_OBJECT_TYPE_PORT                    =  1,
     SAI_OBJECT_TYPE_LAG                     =  2,
     SAI_OBJECT_TYPE_VIRTUAL_ROUTER          =  3,
@@ -480,9 +480,9 @@ typedef struct _sai_tunnel_map_list_t
 } sai_tunnel_map_list_t;
 
 /**
- *  @brief Structure for acl attributes supported at each stage.
- *  action_list alone is added now. Qualifier list can also be added
- *  when needed.
+ * @brief Structure for acl attributes supported at each stage.
+ * action_list alone is added now. Qualifier list can also be added
+ * when needed.
  */
 typedef struct _sai_acl_capability_t
 {
@@ -509,7 +509,6 @@ typedef struct _sai_acl_capability_t
 
 /**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
- *
  */
 typedef union {
     bool booldata;

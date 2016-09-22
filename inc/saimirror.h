@@ -284,7 +284,7 @@ typedef sai_status_t (*sai_set_mirror_session_attribute_fn)(
  *
  * @param[in] session_id Port mirror session id
  * @param[in] attr_count Number of attributes
- * @param[in,out] attr_list Value of attribute
+ * @param[inout] attr_list Value of attribute
  *
  * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.

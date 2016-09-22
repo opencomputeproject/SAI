@@ -88,7 +88,7 @@ typedef enum _sai_vlan_attr_t
      * Ddefault to default stp instance id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_STP_INSTANCE
+     * @objects SAI_OBJECT_TYPE_STP
      * @flags CREATE_AND_SET
      */
     SAI_VLAN_ATTR_STP_INSTANCE,
@@ -163,7 +163,7 @@ typedef enum _sai_vlan_member_attr_t
      *
      * @type sai_vlan_tagging_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_VLAN_PORT_UNTAGGED
+     * @default SAI_VLAN_TAGGING_MODE_UNTAGGED
      */
     SAI_VLAN_MEMBER_ATTR_TAGGING_MODE,
 
