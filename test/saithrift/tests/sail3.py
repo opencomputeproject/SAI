@@ -1325,13 +1325,18 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
-
 @group('lag')            
 @group('l3')
 class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
+v4_enabled = 1
+    v6_enabled = 1
+    ip_mask = '255.255.255.0'
     addr_family = SAI_IP_ADDR_FAMILY_IPV4
     lag_members = []
     lags = []
+    lags_rifs = []
+    neighbors = []
+    routes = []
     vr_id = 0
     mac_action = SAI_PACKET_ACTION_FORWARD
     src_port = 0
@@ -1355,17 +1360,26 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
     
     
     def config_for_lags(self, num_of_lags, port_list):
+        print port_list
+        mac =''
         for i in xrange(num_of_lags):
             self.lags.append(self.client.sai_thrift_create_lag([]))
-        for port_num in xrange(16):
-            self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lags[port_num % num_of_lags], port_list[port_num]))
-        for i in xrange(16): 
-            sai_thrift_create_fdb(self.client, 1, self.mac_pool[i], self.lags[i % len(self.lags)], self.mac_action)
-            
+        for i in xrange(16):
+            self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lags[i % num_of_lags], port_list[i]))
+        for i in xrange(num_of_lags):
+            self.lags_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lags[i], 0, self.v4_enabled, self.v6_enabled, mac))
+        for i in xrange(16):
+            sai_thrift_create_neighbor(self.client, self.addr_family, self.lags_rifs[i%len(self.lags_rifs)], "10.10.%s.1" % str(i+1), self.mac_pool[i])
+            sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i% len(self.lags_rifs)])
+
     def cleaning_lags(self, num_of_lags, port_list):
         if (num_of_lags == 0 ): return
-        for i in xrange(16): 
-            sai_thrift_delete_fdb(self.client, 1, self.mac_pool[i], self.lags[i % len(self.lags)])
+        for i in xrange(16):
+            sai_thrift_remove_neighbor(self.client, self.addr_family, self.lags_rifs[i%num_of_lags], "10.10.%s.1" % str(i+1), self.mac_pool[i])
+            sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i%num_of_lags])
+        for rif in self.lags_rifs:
+            self.client.sai_thrift_remove_router_interface(rif)
+        del self.lags_rifs[:]
         for lag_member in self.lag_members:
             self.client.sai_thrift_remove_lag_member(lag_member)
         del self.lag_members[:]
@@ -1384,7 +1398,7 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
         for i in xrange(IP_LAST_WORD_RANGE):
                 for j in xrange(IP_2ND_LAST_WORD_RANGE):
                     ip_src = '10.0.' + str(j) + '.' + str(i)
-                    src_mac = self.dataplane.get_mac(0, 0)
+                    src_mac = self.dataplane.get_mac(0, 16)
                     ip_dst = '10.10.' + str(j+1) + '.1'
                     pkt = simple_tcp_packet(
                                             eth_dst=router_mac,
@@ -1438,30 +1452,17 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
         7. clean up.
         """
        
-        
-        v4_enabled = 1
-        v6_enabled = 1
-        mac1 = ''
-        ip_addr = '10.10.0.0'
-        ip_mask = '255.255.0.0'
-        
+          
         print
         print "L3MultipleLagTest"
         #general configuration 
         random.seed(1)
         switch_init(self.client)
-        #not for git
-        sai_thrift_clear_all_counters(self.client)
-        #not for git
         self.src_port = port_list[16]
         if (len(port_list) < 17 ) : return
         
-        self.vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
-        rif_lags_id = sai_thrift_create_router_interface(self.client, self.vr_id, 0, 0, 1, v4_enabled, v6_enabled, mac1)
-        rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, v4_enabled, v6_enabled, mac1)
-        for i in xrange(16):
-            sai_thrift_create_neighbor(self.client, self.addr_family, rif_lags_id, "10.10.%s.1" % str(i+1), self.mac_pool[i])
-        sai_thrift_create_route(self.client, self.vr_id, self.addr_family, ip_addr, ip_mask, rif_lags_id)
+        self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
+        rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
         num_of_lags = 16
         try:
             while (num_of_lags > 0):
@@ -1472,14 +1473,11 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
                 num_of_lags /= 2
                 
         finally:
-
+            
             #in case of an exception in the send_and_verify_packets
             self.cleaning_lags(num_of_lags,port_list)
-            for i in xrange(16):
-                sai_thrift_remove_neighbor(self.client, self.addr_family, rif_lags_id, "10.10.%s.1" % str(i+1), self.mac_pool[i])
-            sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, ip_addr, ip_mask, rif_lags_id)
-            self.client.sai_thrift_remove_router_interface(rif_lags_id)
             self.client.sai_thrift_remove_router_interface(rif_port_id)
             self.client.sai_thrift_remove_virtual_router(self.vr_id)
             print "END OF TEST"
+            
             
