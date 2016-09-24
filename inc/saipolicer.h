@@ -192,7 +192,7 @@ typedef enum _sai_policer_attr_t
      * @brief Enable/disable counter
      * Default disabled. Modify List Needs full new set
      *
-     * @type sai_s32list_t sai_packet_action_t
+     * @type sai_s32_list_t sai_packet_action_t
      * @flags CREATE_AND_SET
      * @default empty
      */

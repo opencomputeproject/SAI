@@ -261,7 +261,7 @@ sub ProcessTagType
 {
     my ($type, $value, $val) = @_;
 
-    if ($val =~/^sai_s32list_t sai_\w+_t$/)
+    if ($val =~/^sai_s32_list_t sai_\w+_t$/)
     {
         return $val;
     }
@@ -457,10 +457,9 @@ sub ProcessEnumSection
 
             push$SAI_ENUMS{$enumtypename}{values},$enumvaluename;
 
-# parse and set metadata
         }
 
-# remove unnecessary attributes
+        # remove unnecessary attributes
         my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(CUSTOM_RANGE_BASE)$/, @values);
@@ -470,12 +469,12 @@ sub ProcessEnumSection
 
         my $prefix = uc$1;
 
-# remove unnecessary attributes
+        # remove unnecessary attributes
         @values = @{ $SAI_ENUMS{$enumtypename}{values} };
         @values = grep(!/^${prefix}(CUSTOM_RANGE_|FIELD_|ACTION_)?(START|END)$/, @values);
         $SAI_ENUMS{$enumtypename}{values} = \@values;
 
-# this is attribute
+        # this is attribute
 
         for my $ev (@{ $memberdef->{enumvalue} })
         {
@@ -516,7 +515,7 @@ sub ProcessTypedefSection
 
         next if not $typedefname =~ /^sai_(\w+)_attr_t$/;
 
-# this enum is attribute definition for object
+        # this enum is attribute definition for object
 
         my $objecttype = "SAI_OBJECT_TYPE_" . uc $1;
 
@@ -653,7 +652,7 @@ sub CreateMetadataHeaderAndSource
         WriteSource "DEFINE_ENUM_METADATA($1, $count);";
     }
 
-# all enums
+    # all enums
 
     WriteHeader "extern const sai_enum_metadata_t* metadata_all_enums[];";
     WriteSource "const sai_enum_metadata_t* metadata_all_enums[] = {";
@@ -706,7 +705,7 @@ sub CreateMetadataHeaderAndSource
     WriteHeader "extern const size_t metadata_attr_enums_count;";
     WriteSource "const size_t metadata_attr_enums_count = $count;";
 
-# attr enums as object types for sanity check
+    # attr enums as object types for sanity check
 
     WriteSource "const sai_object_type_t metadata_object_types[] = {";
 
@@ -717,7 +716,7 @@ sub CreateMetadataHeaderAndSource
             next;
         }
 
-# skip unsupported types for now
+        # skip unsupported types for now
         next if $key =~ m!sai_fdb_flush_attr_t|sai_hostif_packet_attr_t|sai_hostif_user_defined_trap_attr_t!;
 
         my $typedef = $1;
@@ -771,7 +770,7 @@ sub ProcessType
         return "${prefix}_INT32";
     }
 
-    if ($type =~ /^sai_s32list_t (sai_\w+_t)$/)
+    if ($type =~ /^sai_s32_list_t (sai_\w+_t)$/)
     {
         if (not defined $SAI_ENUMS{$1})
         {
@@ -902,8 +901,6 @@ sub ProcessDefaultValue
 
     return "NULL" if not defined $default;
 
-# TODO we need to check type and acl
-
     my $val = "const sai_attribute_value_t metadata_${attr}_default_value";
 
     if ($default =~ /^(true|false)$/ and $type eq "bool")
@@ -968,7 +965,6 @@ sub ProcessIsEnum
 {
     my ($value, $type) = @_;
 
-# TODO acl enum
     return "false" if not defined $type;
 
     return "true" if $type =~ /^sai_\w+_t$/ and not defined $VALUE_TYPES{$type};
@@ -998,6 +994,7 @@ sub ProcessEnumMetadata
     return "&metadata_enum_$type" if $type =~ /^sai_\w+_t$/ and not defined $VALUE_TYPES{$type};
     return "&metadata_enum_$1" if $type =~ /^sai_acl_field_data_t (sai_\w+_t)$/ and not defined $ACL_FIELD_TYPES{$1};
     return "&metadata_enum_$1" if $type =~ /^sai_acl_action_data_t (sai_\w+_t)$/ and not defined $ACL_ACTION_TYPES{$1};
+    return "&metadata_enum_$1" if $type =~ /^sai_s32_list_t (sai_\w+_t)$/;
 
     return "NULL";
 }
@@ -1216,7 +1213,7 @@ sub CreateMetadata
             next;
         }
 
-# skip unsupported types for now
+        # skip unsupported types for now
         next if $key =~ m!sai_fdb_flush_attr_t|sai_hostif_packet_attr_t|sai_hostif_user_defined_trap_attr_t!;
 
         my $typedef = $1;
@@ -1360,6 +1357,7 @@ sub CreateEnumHelperMethods
     WriteHeader "        _In_ const sai_enum_metadata_t* metadata,";
     WriteHeader "        _In_ int value);";
 }
+
 #
 # MAIN
 #
