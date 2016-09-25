@@ -519,7 +519,7 @@ typedef enum _sai_hostif_attr_t
     * The maximum number of charactars for the name is HOSTIF_NAME_SIZE - 1 since
     * it needs the terminating null byte ('\0') at the end.
     * Valid only when SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
-    *   (MANDATORY_ON_CREATE when SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV) */
+    *   (MANDATORY_ON_CREATE when SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV | CREATE_ONLY) */
     SAI_HOSTIF_ATTR_NAME,
 
     /** Set the operational status for this host interface [bool] (default to false) */
