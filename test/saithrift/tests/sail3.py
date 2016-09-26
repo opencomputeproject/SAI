@@ -1325,10 +1325,11 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
-@group('lag')            
+@group('lag')
 @group('l3')
 class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
-v4_enabled = 1
+    total_lag_port = 16
+    v4_enabled = 1
     v6_enabled = 1
     ip_mask = '255.255.255.0'
     addr_family = SAI_IP_ADDR_FAMILY_IPV4
@@ -1359,22 +1360,20 @@ v4_enabled = 1
                '00:11:38:33:44:66']
     
     
-    def config_for_lags(self, num_of_lags, port_list):
-        print port_list
-        mac =''
+    def setup_lags(self, num_of_lags, port_list):
         for i in xrange(num_of_lags):
             self.lags.append(self.client.sai_thrift_create_lag([]))
-        for i in xrange(16):
+        for i in xrange(self.total_lag_port):
             self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lags[i % num_of_lags], port_list[i]))
         for i in xrange(num_of_lags):
-            self.lags_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lags[i], 0, self.v4_enabled, self.v6_enabled, mac))
-        for i in xrange(16):
+            self.lags_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lags[i], 0, self.v4_enabled, self.v6_enabled, ''))
+        for i in xrange(self.total_lag_port):
             sai_thrift_create_neighbor(self.client, self.addr_family, self.lags_rifs[i%len(self.lags_rifs)], "10.10.%s.1" % str(i+1), self.mac_pool[i])
             sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i% len(self.lags_rifs)])
 
-    def cleaning_lags(self, num_of_lags, port_list):
+    def teardown_lags(self, num_of_lags, port_list):
         if (num_of_lags == 0 ): return
-        for i in xrange(16):
+        for i in xrange(self.total_lag_port):
             sai_thrift_remove_neighbor(self.client, self.addr_family, self.lags_rifs[i%num_of_lags], "10.10.%s.1" % str(i+1), self.mac_pool[i])
             sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i%num_of_lags])
         for rif in self.lags_rifs:
@@ -1388,17 +1387,17 @@ v4_enabled = 1
         del self.lags[:]
         
     def send_and_verify_packets(self, num_of_lags, port_list):
-        exp_pkts = [0]*16
-        pkt_counter = [0] * 16
-        destanation_ports = range(16)
+        exp_pkts = [0]*self.total_lag_port
+        pkt_counter = [0] * self.total_lag_port
+        destanation_ports = range(self.total_lag_port)
         sport = 0x1234
         dport = 0x50
+        src_mac = self.dataplane.get_mac(0, 16)
         IP_LAST_WORD_RANGE = 254
         IP_2ND_LAST_WORD_RANGE = 16
         for i in xrange(IP_LAST_WORD_RANGE):
                 for j in xrange(IP_2ND_LAST_WORD_RANGE):
                     ip_src = '10.0.' + str(j) + '.' + str(i)
-                    src_mac = self.dataplane.get_mac(0, 16)
                     ip_dst = '10.10.' + str(j+1) + '.1'
                     pkt = simple_tcp_packet(
                                             eth_dst=router_mac,
@@ -1421,7 +1420,7 @@ v4_enabled = 1
                     masked_exp_pkt = Mask(exp_pkt)
                     masked_exp_pkt.set_do_not_care_scapy(ptf.packet.Ether,"dst")
 
-                    send_packet(self, 16, str(pkt))
+                    send_packet(self, self.total_lag_port, str(pkt))
                     (match_index,rcv_pkt) = verify_packet_any_port(self,masked_exp_pkt,destanation_ports)
                     logging.debug("found expected packet from port %d" % destanation_ports[match_index])
                     pkt_counter[match_index] += 1
@@ -1429,7 +1428,7 @@ v4_enabled = 1
                     dport = random.randint(0,0xffff)
                         
         #final uniform distribution check
-        for stat_port in xrange(16):
+        for stat_port in xrange(self.total_lag_port):
             logging.debug( "PORT #"+str(hex(port_list[stat_port]))+":")
             logging.debug(str(pkt_counter[stat_port]))
             self.assertTrue((pkt_counter[stat_port] >= ((IP_LAST_WORD_RANGE ) * 0.8)),
@@ -1443,13 +1442,13 @@ v4_enabled = 1
         ---- Test for 17 ports minimun ----
         Steps
         1. Create virtual router
-        2. Reserve one port for sending packets
+        2. Reserve port 16 for sending packets
         3. Create router interfaces 1-for all the lags, 2-for the source port 
-        3. Create sixteen LAGs with each hash one member
-        4. Config neighbors,and FDB entries
-        5. Send packet and check for arrivals balanced traffic
-        6. Repeat steps 3-5 with 8 lags with each has 2 members, 4 lags with 4 members, 2 lags with 8 members and 1 lag with 16 members
-        7. clean up.
+        4. Create sixteen LAGs with each hash one member
+        5. Config neighbors and routes 
+        6. Send packet and check for arrivals balanced traffic
+        7. Repeat steps 3-6 with 8 lags with each has 2 members, 4 lags with 4 members, 2 lags with 8 members and 1 lag with 16 members
+        8. clean up.
         """
        
           
@@ -1458,26 +1457,26 @@ v4_enabled = 1
         #general configuration 
         random.seed(1)
         switch_init(self.client)
-        self.src_port = port_list[16]
-        if (len(port_list) < 17 ) : return
+        self.src_port = port_list[self.total_lag_port]
+        if (len(port_list) < (self.total_lag_port + 1) ) : 
+            print "skip this test as it requires 17 ports"
+            return
         
         self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
         rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
-        num_of_lags = 16
+        num_of_lags = self.total_lag_port
         try:
             while (num_of_lags > 0):
                 print "testing with " +str(num_of_lags) + " lags"
-                self.config_for_lags(num_of_lags,port_list)
+                self.setup_lags(num_of_lags,port_list)
                 self.send_and_verify_packets(num_of_lags,port_list)
-                self.cleaning_lags(num_of_lags,port_list)
+                self.teardown_lags(num_of_lags,port_list)
                 num_of_lags /= 2
                 
         finally:
             
             #in case of an exception in the send_and_verify_packets
-            self.cleaning_lags(num_of_lags,port_list)
+            self.teardown_lags(num_of_lags,port_list)
             self.client.sai_thrift_remove_router_interface(rif_port_id)
             self.client.sai_thrift_remove_virtual_router(self.vr_id)
             print "END OF TEST"
-            
-            
