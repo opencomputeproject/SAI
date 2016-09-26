@@ -70,8 +70,6 @@ class aclTestBase(object):
         self.nhop1 = sai_thrift_create_nhop(self.client, self.addr_family, self.ip_addr1, self.rif_id1)
         sai_thrift_create_route(self.client, self.vr_id, self.addr_family, self.ip_addr1, self.ip_mask1, self.nhop1)
         
-        wait_till_configuration_will_end()
-
     def cleanupRouting(self):
         sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, self.ip_addr1, self.ip_mask1, self.nhop1)
         self.client.sai_thrift_remove_next_hop(self.nhop1)

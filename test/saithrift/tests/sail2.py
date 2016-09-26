@@ -44,9 +44,6 @@ class L2AccessToAccessVlanTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
         sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
 
-        # Waiting the end of configuration ...
-        wait_till_configuration_will_end()
-
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
                                 ip_dst='10.0.0.1',
@@ -88,9 +85,6 @@ class L2TrunkToTrunkVlanTest(sai_base_test.ThriftInterfaceDataPlane):
 
         sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
         sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
-
-        # Waiting the end of configuration ...
-        wait_till_configuration_will_end()
 
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
@@ -141,9 +135,6 @@ class L2AccessToTrunkVlanTest(sai_base_test.ThriftInterfaceDataPlane):
 
         sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
         sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
-
-        # Waiting the end of configuration ...
-        wait_till_configuration_will_end()
 
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
@@ -197,9 +188,6 @@ class L2TrunkToAccessVlanTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
         sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
 
-        # Waiting the end of configuration ...
-        wait_till_configuration_will_end()
-
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
                                 dl_vlan_enable=True,
@@ -252,9 +240,6 @@ class L2FloodTest(sai_base_test.ThriftInterfaceDataPlane):
         self.client.sai_thrift_set_port_attribute(port1, attr)
         self.client.sai_thrift_set_port_attribute(port2, attr)
         self.client.sai_thrift_set_port_attribute(port3, attr)
-
-        # Waiting the end of configuration ...
-        wait_till_configuration_will_end()
 
         pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
                                 eth_src='00:11:11:11:11:11',
@@ -324,9 +309,6 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         sai_thrift_create_fdb(self.client, vlan_id, mac1, lag_id1, mac_action)
         sai_thrift_create_fdb(self.client, vlan_id, mac2, port4, mac_action)
-
-        # Waiting the end of configuration ...
-        wait_till_configuration_will_end()
 
         try:
             count = [0, 0, 0]
