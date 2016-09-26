@@ -807,7 +807,7 @@ void check_attr_conditions(
 
     size_t index = 0;
 
-    for (; index < md->conditionslenght; ++index)
+    for (; index < md->conditionslength; ++index)
     {
         const sai_attr_condition_t* c = md->conditions[index];
 

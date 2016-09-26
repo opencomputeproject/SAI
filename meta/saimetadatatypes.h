@@ -656,7 +656,7 @@ typedef struct _sai_attr_metadata_t
     const sai_object_type_t* const      allowedobjecttypes;
 
     /**
-     * @brief Lenght of allowed object types.
+     * @brief Length of allowed object types.
      */
     size_t                              allowedobjecttypeslength;
 
@@ -768,9 +768,9 @@ typedef struct _sai_attr_metadata_t
     const sai_attr_condition_t** const  conditions;
 
     /**
-     * @brief Lenght of the conditions.
+     * @brief Length of the conditions.
      */
-    size_t                              conditionslenght;
+    size_t                              conditionslength;
 
     /**
      * @brief Provides conditions when this attribute is valid.
@@ -789,9 +789,9 @@ typedef struct _sai_attr_metadata_t
     const sai_attr_condition_t* const   validonlywhen;
 
     /**
-     * @brief Lenght of the valid only when conditions.
+     * @brief Length of the valid only when conditions.
      */
-    size_t                              validonlywhenlenght;
+    size_t                              validonlywhenlength;
 
     /**
      * @brief When calling GET api result will be put

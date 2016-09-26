@@ -1194,9 +1194,9 @@ sub ProcessSingleObjectType
         WriteSource "    .enummetadata                  = $enummetadata,";
         WriteSource "    .conditiontype                 = $conditiontype,";
         WriteSource "    .conditions                    = $conditions,";
-        WriteSource "    .conditionslenght              = $conditionslen,";
+        WriteSource "    .conditionslength              = $conditionslen,";
         WriteSource "    .validonlywhen                 = NULL,";           # TODO
-        WriteSource "    .validonlywhenlenght           = 0,";              # TODO
+        WriteSource "    .validonlywhenlength           = 0,";              # TODO
         WriteSource "    .getsave                       = $getsave,";
         WriteSource "    .isvlan                        = $isvlan,";
 
