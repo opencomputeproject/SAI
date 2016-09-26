@@ -172,13 +172,13 @@ class aclTestBase(object):
         self.client.sai_thrift_delete_acl_entry(self.acl_entry_id)
         self.client.sai_thrift_delete_acl_table(self.acl_table_id)
 
-    def verifyRouting(self, pkt, exp_pkt, port_in, port_out):
+    def verifyForwarding(self, pkt, exp_pkt, port_in, port_out):
         print "Sending packet"
         send_packet(self, port_in, str(pkt))
         verify_packets(self, exp_pkt, [port_out])
         print "Packet received on port %d" %port_out
 
-    def verifyNoRouting(self, pkt, exp_pkt, port_in, port_out):
+    def verifyNoForwarding(self, pkt, exp_pkt, port_in, port_out):
         print "Sending packet"
         send_packet(self, port_in, str(pkt))
         # ensure packet is dropped
@@ -195,18 +195,18 @@ class aclTestBase(object):
         print kwargs
 
         if setup_acltbl:
-            self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
+            self.verifyForwarding(PKT, EXP_PKT, PORT_IN, PORT_OUT)
             self.setupAclTable(**kwargs)
 
         self.setupAclRule(action=action, **kwargs)
         if action == SAI_PACKET_ACTION_DROP:
-            self.verifyNoRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
+            self.verifyNoForwarding(PKT, EXP_PKT, PORT_IN, PORT_OUT)
         elif action == SAI_PACKET_ACTION_FORWARD:
-            self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
+            self.verifyForwarding(PKT, EXP_PKT, PORT_IN, PORT_OUT)
         elif action == SAI_PACKET_ACTION_COPY:
-            self.verifyRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
+            self.verifyForwarding(PKT, EXP_PKT, PORT_IN, PORT_OUT)
         elif action == SAI_PACKET_ACTION_TRAP:
-            self.verifyNoRouting(PKT, EXP_PKT, PORT_IN, PORT_OUT)
+            self.verifyNoForwarding(PKT, EXP_PKT, PORT_IN, PORT_OUT)
 
     def runTest(self):
         print
