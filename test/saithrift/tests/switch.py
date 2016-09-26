@@ -338,7 +338,7 @@ def sai_thrift_create_hostif(client, rif_or_port_id, intf_name):
 def sai_thrift_create_acl_table(client,
                                 addr_family,
                                 stage,
-                                priority,
+                                table_priority,
                                 enable_mac_src,
                                 enable_mac_dst,
                                 enable_ip_src,
@@ -356,8 +356,8 @@ def sai_thrift_create_acl_table(client,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
-    if priority != None:
-        attribute_value = sai_thrift_attribute_value_t(u32=priority)
+    if table_priority != None:
+        attribute_value = sai_thrift_attribute_value_t(u32=table_priority)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_PRIORITY,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -419,7 +419,8 @@ def sai_thrift_create_acl_table(client,
     acl_table_id = client.sai_thrift_create_acl_table(acl_attr_list)
     return acl_table_id
 
-def sai_thrift_create_acl_entry(client, acl_table_id, priority,
+def sai_thrift_create_acl_entry(client, acl_table_id, 
+                                entry_priority,
                                 action, addr_family,
                                 mac_src, mac_src_mask,
                                 mac_dst, mac_dst_mask,
@@ -440,10 +441,11 @@ def sai_thrift_create_acl_entry(client, acl_table_id, priority,
     acl_attr_list.append(attribute)
 
     #Priority
-    attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u32=priority)))
-    attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PRIORITY,
-                                       value=attribute_value)
-    acl_attr_list.append(attribute)
+    if entry_priority != None:
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u32=entry_priority)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PRIORITY,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
 
     #MAC source
     if mac_src != None:
