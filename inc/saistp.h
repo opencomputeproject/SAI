@@ -1,43 +1,40 @@
 /**
-* Copyright (c) 2015 Dell Inc.
-*
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may
-*    not use this file except in compliance with the License. You may obtain
-*    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-*
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
-*    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
-*
-*    See the Apache Version 2.0 License for specific language governing
-*    permissions and limitations under the License.
-*
-*/
-/**
-* Module Name:
-*
-* saistp.h
-*
-* Abstract:
-*
-* This module defines SAI STP API
-*
-*/
+ * Copyright (c) 2014 Microsoft Open Technologies, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *    not use this file except in compliance with the License. You may obtain
+ *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+ *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+ *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *
+ *    See the Apache Version 2.0 License for specific language governing
+ *    permissions and limitations under the License.
+ *
+ *    Microsoft would like to thank the following companies for their review and
+ *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+ *    Dell Products, L.P., Facebook, Inc
+ *
+ * @file    saistp.h
+ *
+ * @brief   This module defines SAI STP interface
+ */
 
 #if !defined (__SAISTP_H_)
 #define __SAISTP_H_
 
-#include "saitypes.h"
-#include "saistatus.h"
+#include <saitypes.h>
 
-/** \defgroup SAISTP SAI - STP specific public APIs and datastructures.
+/**
+ * @defgroup SAISTP SAI - STP specific public APIs and datastructures
  *
- *  \{
+ * @{
  */
 
 /**
- * Datastructure for stp port state
+ * @brief Datastructure for stp port state
  */
 typedef enum _sai_port_stp_state_t
 {
@@ -57,15 +54,22 @@ typedef enum _sai_port_stp_state_t
  */
 typedef enum _sai_stp_attr_t
 {
+    /**
+     * @brief Start of attributes
+     */
     SAI_STP_ATTR_START,
 
-    /** READ-ONLY */
-
-    /** Vlans attached to STP instance [sai_vlan_list_t] */
+    /**
+     * @brief Vlans attached to STP instance
+     *
+     * @type sai_vlan_list_t
+     * @flags READ_ONLY
+     */
     SAI_STP_ATTR_VLAN_LIST = SAI_STP_ATTR_START,
 
-    /** READ-WRITE */
-
+    /**
+     * @brief End of attributes
+     */
     SAI_STP_ATTR_END,
 
 } sai_stp_attr_t;
@@ -76,77 +80,83 @@ typedef enum _sai_stp_attr_t
  * @param[out] stp_id stp instance id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * error code is returned.
  */
 typedef sai_status_t (*sai_create_stp_fn)(
-    _Out_ sai_object_id_t *stp_id,
-    _In_  uint32_t attr_count,
-    _In_  const sai_attribute_t *attr_list);
+        _Out_ sai_object_id_t *stp_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove stp instance.
  *
- * @param[in] stp_id stp instance id
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ * @param[in] stp_id Stp instance id
+ *
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * error code is returned.
  */
 typedef sai_status_t (*sai_remove_stp_fn)(
-    _In_ sai_object_id_t stp_id);
+        _In_ sai_object_id_t stp_id);
 
 /**
  * @brief Update stp state of a port in specified stp instance.
  *
- * @param[in] stp_id stp instance id
- * @param[in] port_id port id
- * @param[in] stp_port_state stp state of the port
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ * @param[in] stp_id Stp instance id
+ * @param[in] port_id Port id
+ * @param[in] stp_port_state Stp state of the port
+ *
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_port_state_fn)(
-    _In_ sai_object_id_t stp_id,
-    _In_ sai_object_id_t port_id,
-    _In_ sai_port_stp_state_t stp_port_state);
+        _In_ sai_object_id_t stp_id,
+        _In_ sai_object_id_t port_id,
+        _In_ sai_port_stp_state_t stp_port_state);
 
 /**
  * @brief Retrieve stp state of a port in specified stp instance.
  *
- * @param[in] stp_id stp instance id
- * @param[in] port_id port id
- * @param[out] stp_port_state stp state of the port
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ * @param[in] stp_id Stp instance id
+ * @param[in] port_id Port id
+ * @param[out] stp_port_state Stp state of the port
+ *
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_port_state_fn)(
-    _In_ sai_object_id_t stp_id,
-    _In_ sai_object_id_t port_id,
-    _Out_ sai_port_stp_state_t  *stp_port_state);
+        _In_ sai_object_id_t stp_id,
+        _In_ sai_object_id_t port_id,
+        _Out_ sai_port_stp_state_t *stp_port_state);
 
 /**
  * @brief Set the attribute of STP instance.
  *
- * @param[in] stp_id stp instance id
- * @param[in] attr attribute value
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ * @param[in] stp_id Stp instance id
+ * @param[in] attr Attribute value
+ *
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_attribute_fn)(
-    _In_ sai_object_id_t stp_id,
-    _In_ const sai_attribute_t *attr);
+        _In_ sai_object_id_t stp_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get the attribute of STP instance.
  *
- * @param[in] stp_id stp instance id
- * @param[in] attr_count number of the attribute
- * @param[in] attr_list attribute value
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ * @param[in] stp_id Stp instance id
+ * @param[in] attr_count Number of the attribute
+ * @param[in] attr_list Attribute value
+ *
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_attribute_fn)(
-    _In_ sai_object_id_t stp_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list);
+        _In_ sai_object_id_t stp_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief STP method table retrieved with sai_api_query()
@@ -163,6 +173,6 @@ typedef struct _sai_stp_api_t
 } sai_stp_api_t;
 
 /**
- * \}
+ * @}
  */
-#endif /* __SAISTP_H_ */
+#endif /** __SAISTP_H_ */
