@@ -58,13 +58,13 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
     {
         const sai_attr_metadata_t** md = metadata_attr_by_object_type[objecttype];
 
-        size_t count = 0;
+        size_t index = 0;
 
-        for (; md[count] != NULL; count++)
+        for (; md[index] != NULL; index++)
         {
-            if (md[count]->attrid == attrid)
+            if (md[index]->attrid == attrid)
             {
-                return md[count];
+                return md[index];
             }
         }
     }

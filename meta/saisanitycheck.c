@@ -1208,11 +1208,11 @@ void check_single_object_type_attributes(
 {
     META_LOG_ENTER();
 
-    size_t count = 0;
+    size_t index = 0;
 
-    for (; attributes[count] != NULL; ++count)
+    for (; attributes[index] != NULL; ++index)
     {
-        check_single_attribute(attributes[count]);
+        check_single_attribute(attributes[index]);
     }
 }
 

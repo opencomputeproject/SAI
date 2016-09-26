@@ -991,7 +991,7 @@ sub ProcessEnumMetadata
 
     return "NULL" if not defined $type;
 
-    return "&metadata_enum_$type" if $type =~ /^sai_\w+_t$/ and not defined $VALUE_TYPES{$type};
+    return "&metadata_enum_$1" if $type =~ /^(sai_\w+_t)$/ and not defined $VALUE_TYPES{$type};
     return "&metadata_enum_$1" if $type =~ /^sai_acl_field_data_t (sai_\w+_t)$/ and not defined $ACL_FIELD_TYPES{$1};
     return "&metadata_enum_$1" if $type =~ /^sai_acl_action_data_t (sai_\w+_t)$/ and not defined $ACL_ACTION_TYPES{$1};
     return "&metadata_enum_$1" if $type =~ /^sai_s32_list_t (sai_\w+_t)$/;
@@ -1196,8 +1196,8 @@ sub ProcessSingleObjectType
         WriteSource "    .conditions                    = $conditions,";
         WriteSource "    .conditionslenght              = $conditionslen,";
         WriteSource "    .validonlywhen                 = NULL,";           # TODO
-            WriteSource "    .validonlywhenlenght           = 0,";              # TODO
-            WriteSource "    .getsave                       = $getsave,";
+        WriteSource "    .validonlywhenlenght           = 0,";              # TODO
+        WriteSource "    .getsave                       = $getsave,";
         WriteSource "    .isvlan                        = $isvlan,";
 
         WriteSource "};";
