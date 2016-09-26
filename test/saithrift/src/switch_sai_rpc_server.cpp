@@ -1358,10 +1358,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
             case SAI_ACL_TABLE_ATTR_FIELD_IPv6_FLOW_LABEL:
             case SAI_ACL_TABLE_ATTR_FIELD_TC:
                 break;
-            case SAI_ACL_TABLE_ATTR_STAGE:
-		attr_list[i].value.u32=attribute.value.u32;
-                break;
-              default:
+            default:
                 break;
           }
       }
@@ -1378,10 +1375,10 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                 attr_list[i].value.oid = attribute.value.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_PRIORITY:
-                attr_list[i].value.aclfield.data.u32 = attribute.value.aclfield.data.u32;
+                attr_list[i].value.u32 = attribute.value.u32;
                 break;
             case SAI_ACL_ENTRY_ATTR_ADMIN_STATE:
-                attr_list[i].value.aclfield.data.u8 = attribute.value.aclfield.data.u8;
+                attr_list[i].value.u8 = attribute.value.u8;
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPv6:
             case SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6:

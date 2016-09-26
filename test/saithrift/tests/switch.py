@@ -46,8 +46,8 @@ sai_port_list = []
 front_port_list = []
 table_attr_list = []
 router_mac='00:77:66:55:44:00'
-rewrite_mac1='00:77:66:55:45:01'
-rewrite_mac2='00:77:66:55:46:01'
+rewrite_mac1='00:77:66:55:44:01'
+rewrite_mac2='00:77:66:55:44:02'
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
 
@@ -121,7 +121,7 @@ def sai_thrift_flush_fdb_by_vlan(client, vlan_id):
     client.sai_thrift_flush_fdb_entries(thrift_attr_list=fdb_attr_list)
 
 
-def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled, mac):
+def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled):
     #v4 enabled
     vr_attribute1_value = sai_thrift_attribute_value_t(booldata=v4_enabled)
     vr_attribute1 = sai_thrift_attribute_t(id=SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V4_STATE,
@@ -129,15 +129,13 @@ def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled, mac):
     #v6 enabled
     vr_attribute2_value = sai_thrift_attribute_value_t(booldata=v6_enabled)
     vr_attribute2 = sai_thrift_attribute_t(id=SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE,
-                                           value=vr_attribute1_value)
-    vr_attribute3_value = sai_thrift_attribute_value_t(mac=mac)
-    vr_attribute3 = sai_thrift_attribute_t(id=SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS, value=vr_attribute3_value)
-    vr_attr_list = [vr_attribute1, vr_attribute2, vr_attribute3]
+                                           value=vr_attribute2_value)
+    vr_attr_list = [vr_attribute1, vr_attribute2]
     vr_id = client.sai_thrift_create_virtual_router(thrift_attr_list=vr_attr_list)
     return vr_id
 
 
-def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id, v4_enabled, v6_enabled, is_lb, mac):
+def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id, v4_enabled, v6_enabled, mac, is_lb=False):
     #vrf attribute
     rif_attr_list = []
     rif_attribute1_value = sai_thrift_attribute_value_t(oid=vr_id)
@@ -219,7 +217,7 @@ def sai_thrift_remove_route(client, vr_id, addr_family, ip_addr, ip_mask, nhop):
     route = sai_thrift_unicast_route_entry_t(vr_id, ip_prefix)
     client.sai_thrift_remove_route(thrift_unicast_route_entry=route)
 
-def sai_thrift_create_nhop(client, addr_family, is_tunnel, ip_addr, rif_id):
+def sai_thrift_create_nhop(client, addr_family, ip_addr, rif_id, is_tunnel=False):
     nhop_attr_list = []
     if addr_family == SAI_IP_ADDR_FAMILY_IPV4:
         addr = sai_thrift_ip_t(ip4=ip_addr)
