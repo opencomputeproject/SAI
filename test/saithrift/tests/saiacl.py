@@ -84,12 +84,12 @@ class aclTestBase(object):
         self.client.sai_thrift_remove_virtual_router(self.vr_id)
 
     def setupAclTable(self, stage = None, mac_src = None, mac_dst = None, mac_src_mask = None, mac_dst_mask = None,
-                      in_port = None, out_port = None, in_ports = None, out_ports = None, priority = None, action = None,
-                      ip_src = None, ip_src_mask = None, ip_dst = None, ip_dst_mask= None, ip_proto = None,
+                      in_port = None, out_port = None, in_ports = None, out_ports = None, table_priority = None,
+                      action = None, ip_src = None, ip_src_mask = None, ip_dst = None, ip_dst_mask= None, ip_proto = None,
                       ingress_mirror_id = None, egress_mirror_id = None, counter = None, redirect_port = None):
 
         stage = SAI_ACL_STAGE_INGRESS
-        priority = SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY
+        table_priority = SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY
 
         # attributes for acl_table
 
@@ -132,7 +132,7 @@ class aclTestBase(object):
         self.acl_table_id = sai_thrift_create_acl_table(self.client,
                                                         self.addr_family,
                                                         stage,
-                                                        priority,
+                                                        table_priority,
                                                         enable_mac_src,
                                                         enable_mac_dst,
                                                         enable_ip_src,
@@ -146,11 +146,14 @@ class aclTestBase(object):
         return True
 
     def setupAclRule(self, stage = None, mac_src = None, mac_dst = None, mac_src_mask = None, mac_dst_mask = None,
-                     in_port = None, out_port = None, in_ports = None, out_ports = None, priority = None, action = None,
-                     ip_src = None, ip_src_mask = None, ip_dst = None, ip_dst_mask= None, ip_proto = None,
+                     in_port = None, out_port = None, in_ports = None, out_ports = None, entry_priority = None,
+                     action = None, ip_src = None, ip_src_mask = None, ip_dst = None, ip_dst_mask= None, ip_proto = None,
                      ingress_mirror_id = None, egress_mirror_id = None, counter = None, redirect_port = None):   
 
-        self.acl_entry_id = sai_thrift_create_acl_entry(self.client, self.acl_table_id, priority,
+        entry_priority = SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY
+
+        self.acl_entry_id = sai_thrift_create_acl_entry(self.client, self.acl_table_id,
+                                                        entry_priority,
                                                         action, self.addr_family,
                                                         mac_src, mac_src_mask,
                                                         mac_dst, mac_dst_mask,
