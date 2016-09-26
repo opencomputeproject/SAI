@@ -771,6 +771,3 @@ def sai_thrift_set_port_shaper(client, port_id, max_rate):
     attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID, value=attr_value)
     client.sai_thrift_set_port_attribute(port_id,attr)
 
-def wait_till_configuration_will_end():
-    print "Waiting the end of configuration..."
-    time.sleep(5)
