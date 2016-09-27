@@ -100,7 +100,6 @@ typedef enum _sai_api_t
     SAI_API_HASH             = 24,  /**< sai_hash_api_t */
     SAI_API_UDF              = 25,  /**< sai_udf_api_t */
     SAI_API_TUNNEL           = 26,  /**< sai_tunnel_api_t */
-    SAI_API_XXX              = 27,  /**< test */
 } sai_api_t;
 
 typedef enum _sai_log_level_t
