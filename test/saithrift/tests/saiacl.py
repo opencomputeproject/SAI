@@ -63,8 +63,17 @@ class IPAclTest(sai_base_test.ThriftInterfaceDataPlane):
         try:
             send_packet(self, 2, str(pkt))
             verify_packets(self, exp_pkt, [1])
-        finally:
+        except IPSendRecvErr:
             # cleanup
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
+
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
 
         # setup ACL to block based on Source IP
         action = 1 #Drop
