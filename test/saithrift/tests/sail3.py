@@ -156,7 +156,7 @@ class L3IPv6HostTest(sai_base_test.ThriftInterfaceDataPlane):
         dmac1 = '00:11:22:33:44:55'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
 
         # send the test packet(s)
         pkt = simple_tcpv6_packet( eth_dst=router_mac,
@@ -688,6 +688,8 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
 @group('lag')
 class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
+        print
+        print 'Sending packet - port 3 -> lag (ports 1 and 2 - lag members)'
         switch_init(self.client)
         port1 = port_list[0]
         port2 = port_list[1]
@@ -750,6 +752,8 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
 @group('lag')
 class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
+        print
+        print 'Sending packet - port 3 -> lag (ports 1 and 2 - lag members)'
         switch_init(self.client)
         port1 = port_list[0]
         port2 = port_list[1]
@@ -774,7 +778,7 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
         dmac1 = '00:11:22:33:44:55'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
 
         # send the test packet(s)
         try:
@@ -810,6 +814,8 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
 @group('lag')
 class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
+        print
+        print 'Sending packets (500) - port 7 -> lag (ports 1 - port 6 - lag members)'
         switch_init(self.client)
         port1 = port_list[0]
         port2 = port_list[1]
@@ -944,6 +950,8 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
 @group('l3')
 class L3EcmpLagTestMini(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
+        print
+        print 'Sending packets (500) - port 4 -> lag (ports 1 - port 3 - lag members)'
         switch_init(self.client)
         port1 = port_list[0]
         port2 = port_list[1]

@@ -83,7 +83,6 @@ class L2TrunkToTrunkVlanTest(sai_base_test.ThriftInterfaceDataPlane):
         vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_id, port1, SAI_VLAN_PORT_TAGGED)
         vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_id, port2, SAI_VLAN_PORT_TAGGED)
 
-
         sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
         sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
 
@@ -108,6 +107,7 @@ class L2TrunkToTrunkVlanTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_delete_fdb(self.client, vlan_id, mac1, port1)
             sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)
+
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_delete_vlan(vlan_id)
@@ -276,6 +276,8 @@ class L2FloodTest(sai_base_test.ThriftInterfaceDataPlane):
 @group('lag')
 class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
+        print
+        print 'Sending L2 packets (200) - port 4 -> lag (ports 1, 2 and 3 - lag members)'
         switch_init(self.client)
         vlan_id = 10
         port1 = port_list[0]
@@ -329,6 +331,7 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
                                             ip_ttl=64)
 
                 send_packet(self, 3, str(pkt))
+                time.sleep(0.5)
                 rcv_idx = verify_any_packet_any_port(self, [exp_pkt], [0, 1, 2])
                 count[rcv_idx] += 1
                 dst_ip += 1
@@ -448,7 +451,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
                                     eth_src='00:00:00:00:00:01',
                                     ip_dst='10.0.0.1',
                                     ip_id=101,
-                                    ip_ttl=64)	
+                                    ip_ttl=64)
                 send_packet(self, ingress_port, str(ucast_pkt))
                 verify_packets(self, ucast_pkt, [i])
 
@@ -467,4 +470,5 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
 
             for port in sai_port_list:
                 sai_thrift_create_vlan_member(self.client, default_vlan, port, SAI_VLAN_PORT_UNTAGGED)
+
 
