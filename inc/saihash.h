@@ -97,7 +97,7 @@ typedef enum _sai_hash_attr_t
     /**
      * @brief Hash native fields
      *
-     * @type sai_s32list_t sai_native_hash_field_t
+     * @type sai_s32_list_t sai_native_hash_field_t
      * @flags CREATE_AND_SET
      * @default empty
      */
