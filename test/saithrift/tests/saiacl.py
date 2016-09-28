@@ -63,7 +63,7 @@ class IPAclTest(sai_base_test.ThriftInterfaceDataPlane):
         try:
             send_packet(self, 2, str(pkt))
             verify_packets(self, exp_pkt, [1])
-        finally:
+        except IPSendRecvErr:
             # cleanup
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
