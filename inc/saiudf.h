@@ -211,7 +211,7 @@ typedef enum _sai_udf_group_attr_t
      * @objects SAI_OBJECT_TYPE_UDF
      * @flags READ_ONLY
      */
-    SAI_UDF_GROUP_ATTR_UDF_LIST,
+    SAI_UDF_GROUP_ATTR_UDF_LIST = SAI_UDF_GROUP_ATTR_START,
 
     /**
      * @brief UDF group type

@@ -180,8 +180,7 @@ typedef enum _sai_fdb_flush_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
-     * @flags SPECIAL
-     * @ignore
+     * @flags CREATE_ONLY
      */
     SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
 
@@ -189,9 +188,9 @@ typedef enum _sai_fdb_flush_attr_t
      * @brief Flush based on VLAN
      *
      * @type sai_uint16_t
-     * @flags SPECIAL
+     * @flags CREATE_ONLY
      * @isvlan true
-     * @ignore
+     * @default 1
      */
     SAI_FDB_FLUSH_ATTR_VLAN_ID,
 
@@ -199,8 +198,8 @@ typedef enum _sai_fdb_flush_attr_t
      * @brief Flush based on entry type
      *
      * @type sai_fdb_flush_entry_type_t
-     * @flags SPECIAL
-     * @ignore
+     * @flags CREATE_ONLY
+     * @default SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC
      */
     SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
 

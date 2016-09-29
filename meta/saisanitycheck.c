@@ -23,6 +23,12 @@ defined_attr_t* defined_attributes = NULL;
 #define META_LOG_WARN(emd, format, ...)\
     fprintf(stderr, "WARN: %s: " format "\n",emd->name, ##__VA_ARGS__);
 
+#define META_WARN(md, format, ...)\
+    fprintf(stderr, "WARN: %s: " format "\n",md->attridname, ##__VA_ARGS__);
+
+#define META_WARN_LOG(format, ...)\
+    fprintf(stderr, "WARN: " format "\n", ##__VA_ARGS__);
+
 #define META_ASSERT_FAIL(md, format, ...)\
 {\
     fprintf(stderr, \
@@ -184,7 +190,6 @@ void check_object_type()
 
         int value = metadata_enum_sai_object_type_t.values[i];
 
-        META_ASSERT_TRUE(value == last + 1, "object type values must be consecutive numbers");
         META_ASSERT_TRUE(value == last + 1, "object type values must be consecutive numbers");
 
         last = value;
@@ -1216,6 +1221,79 @@ void check_single_object_type_attributes(
     }
 }
 
+void check_object_infos()
+{
+    META_LOG_ENTER();
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        META_ASSERT_TRUE(info->objecttype == i, "object type mismatch");
+
+        META_LOG_INFO("processing object type: %s", sai_metadata_get_object_type_name((sai_object_type_t)i));
+
+        META_ASSERT_TRUE(info->attridstart == 0, "attribute enum start should be zero");
+        META_ASSERT_TRUE(info->attridend > 0, "attribute enum end must be > 0");
+
+        const sai_attr_metadata_t** const meta = info->attrmetadata;
+
+        META_ASSERT_NOT_NULL(meta);
+
+        size_t index = 0;
+
+        int last = -1;
+
+        /* check all listed attributes under this object type */
+
+        for (; meta[index] != NULL; ++index)
+        {
+            const sai_attr_metadata_t* am = meta[index];
+
+            META_ASSERT_TRUE((int)am->attrid >= 0, "attrmust be non negative");
+            META_ASSERT_TRUE(last < (int)am->attrid, "attributes are not incresing");
+
+            if (last + 1 != (int)am->attrid)
+            {
+                if (info->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY &&
+                        info->objecttype != SAI_OBJECT_TYPE_ACL_TABLE)
+                {
+                    META_WARN(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
+                }
+            }
+
+            last = (int)am->attrid;
+
+            if (am->attrid >= info->attridstart &&
+                    am->attrid < info->attridend)
+            {
+                continue;
+            }
+
+            if (info->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY ||
+                    info->objecttype == SAI_OBJECT_TYPE_ACL_TABLE)
+            {
+                continue;
+            }
+
+            META_ASSERT_FAIL(am, "attr is is not in start .. end range");
+        }
+
+        if (index != info->attridend)
+        {
+            META_WARN_LOG("end of attributes don't match attr count on %s",
+                    sai_metadata_get_object_type_name((sai_object_type_t)i));
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -1232,6 +1310,8 @@ int main(int argc, char **argv)
     {
         check_single_object_type_attributes(metadata_attr_by_object_type[i]);
     }
+
+    check_object_infos();
 
     printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 

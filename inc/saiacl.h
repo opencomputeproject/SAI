@@ -214,6 +214,31 @@ typedef enum _sai_acl_action_type_t
 } sai_acl_action_type_t;
 
 /**
+ * @brief Attribute Id for sai_acl_table_group
+ */
+typedef enum _sai_acl_table_group_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_START,
+
+    /**
+     * @brief Dummy attribute
+     *
+     * @type sai_int32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_DUMMY = SAI_ACL_TABLE_GROUP_ATTR_START,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_END
+
+} sai_acl_table_group_attr_t;
+
+/**
  * @brief ACL User Defined Field Attribute ID Range
  */
 #define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
@@ -1529,13 +1554,18 @@ typedef enum _sai_acl_entry_attr_t
 typedef enum _sai_acl_counter_attr_t
 {
     /**
+     * @brief Start of attributes
+     */
+    SAI_ACL_COUNTER_ATTR_START,
+
+    /**
      * @brief SAI ACL table object id
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_COUNTER_ATTR_TABLE_ID,
+    SAI_ACL_COUNTER_ATTR_TABLE_ID = SAI_ACL_COUNTER_ATTR_START,
 
     /*
      * By default Byte Counter would be created and following
@@ -1579,7 +1609,12 @@ typedef enum _sai_acl_counter_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ACL_COUNTER_ATTR_BYTES
+    SAI_ACL_COUNTER_ATTR_BYTES,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_ACL_COUNTER_ATTR_END,
 
 } sai_acl_counter_attr_t;
 
@@ -1611,6 +1646,11 @@ typedef enum _sai_acl_range_type_t
 typedef enum _sai_acl_range_attr_t
 {
     /**
+     * @brief Start of attributes
+     */
+    SAI_ACL_RANGE_ATTR_START,
+
+    /**
      * @brief Range Type
      *
      * Mandatory to pass only one of the range types
@@ -1620,7 +1660,7 @@ typedef enum _sai_acl_range_attr_t
      * @type sai_acl_range_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_RANGE_ATTR_TYPE,
+    SAI_ACL_RANGE_ATTR_TYPE = SAI_ACL_RANGE_ATTR_START,
 
     /**
      * @brief Start and End of ACL Range
@@ -1631,7 +1671,12 @@ typedef enum _sai_acl_range_attr_t
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_RANGE_ATTR_LIMIT
+    SAI_ACL_RANGE_ATTR_LIMIT,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_ACL_RANGE_ATTR_END,
 
 } sai_acl_range_attr_t;
 

@@ -814,6 +814,33 @@ typedef struct _sai_attr_metadata_t
 } sai_attr_metadata_t;
 
 /**
+ * @brief SAI object type information
+ */
+typedef struct _sai_object_type_info_t
+{
+    /**
+     * @brief Object Type
+     */
+    sai_object_type_t                   objecttype;
+
+    /**
+     * @brief Start of attributes *_START
+     */
+    sai_attr_id_t                       attridstart;
+
+    /**
+     * @brief End of attributes *_END
+     */
+    sai_attr_id_t                       attridend;
+
+    /**
+     * @brief Attributes metadata
+     */
+    const sai_attr_metadata_t** const   attrmetadata;
+
+} sai_object_type_info_t;
+
+/**
  * @}
  */
 #endif /** __SAI_METADATA_TYPES_H__ */
