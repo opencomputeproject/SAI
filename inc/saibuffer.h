@@ -1,40 +1,36 @@
-/*
-* Copyright (c) 2014 Microsoft Open Technologies, Inc.
-*
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may
-*    not use this file except in compliance with the License. You may obtain
-*    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-*
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
-*    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
-*
-*    See the Apache Version 2.0 License for specific language governing
-*    permissions and limitations under the License.
-*
-*    Microsoft would like to thank the following companies for their review and
-*    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
-*    Dell Products, L.P., Facebook, Inc
-*
-* Module Name:
-*
-*    saibuffer.h
-*
-* Abstract:
-*
-*    This module defines SAI Buffer API
-*
-*/
+/**
+ * Copyright (c) 2014 Microsoft Open Technologies, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *    not use this file except in compliance with the License. You may obtain
+ *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+ *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+ *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *
+ *    See the Apache Version 2.0 License for specific language governing
+ *    permissions and limitations under the License.
+ *
+ *    Microsoft would like to thank the following companies for their review and
+ *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+ *    Dell Products, L.P., Facebook, Inc
+ *
+ * @file    saibuffer.h
+ *
+ * @brief   This module defines SAI Buffer interface
+ */
 
 #if !defined (__SAIBUFFER_H_)
 #define __SAIBUFFER_H_
 
 #include <saitypes.h>
 
-/** \defgroup SAIBUFFER SAI - Buffer specific API definitions.
+/**
+ * @defgroup SAIBUFFER SAI - Buffer specific API definitions
  *
- *  \{
+ * @{
  */
 
 /**
@@ -42,16 +38,31 @@
  */
 typedef enum _sai_ingress_priority_group_attr_t
 {
-    SAI_INGRESS_PRIORITY_GROUP_ATTR_START, 
-    /** buffer profile pointer [sai_object_id_t] */
+    /**
+     * @brief Start of attributes
+     */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
+
+    /**
+     * @brief Buffer profile pointer
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
+     * @flags CREATE_AND_SET
+     */
     SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
+
+    /**
+     * @brief End of attributes
+     */
     SAI_INGRESS_PRIORITY_GROUP_ATTR_END
+
 } sai_ingress_priority_group_attr_t;
 
 /**
-* @brief Enum defining statistics for ingress priority group.
-*/
-typedef enum _sai_ingress_priority_group_stat_counter_t
+ * @brief Enum defining statistics for ingress priority group.
+ */
+typedef enum _sai_ingress_priority_group_stat_t
 {
     /** get/set rx packets count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS = 0x00000000,
@@ -77,72 +88,66 @@ typedef enum _sai_ingress_priority_group_stat_counter_t
     /** get watermark pg xoff room occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
 
-    /** -- */
     /** Custom range base value */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
-} sai_ingress_priority_group_stat_counter_t;
+
+} sai_ingress_priority_group_stat_t;
 
 /**
  * @brief Set ingress priority group attribute
- * @param[in] ingress_pg_id ingress priority group id
- * @param[in] attr attribute to set
  *
- * @return  SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ * @param[in] ingress_pg_id Ingress priority group id
+ * @param[in] attr Attribute to set
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_ingress_priority_group_attr_fn)(
-    _In_ sai_object_id_t ingress_pg_id,
-    _In_ const sai_attribute_t *attr
-    );
+        _In_ sai_object_id_t ingress_pg_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get ingress priority group attributes
- * @param[in] ingress_pg_id ingress priority group id
- * @param[in] attr_count number of attributes
- * @param[inout] attr_list array of attributes
  *
- * @return  SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ * @param[in] ingress_pg_id Ingress priority group id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_ingress_priority_group_attr_fn)(
-    _In_ sai_object_id_t ingress_pg_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list
-    );
+        _In_ sai_object_id_t ingress_pg_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
-* @brief   Get ingress priority group statistics counters.
-*
-* @param[in] ingress_pg_id ingress priority group id
-* @param[in] counter_ids specifies the array of counter ids
-* @param[in] number_of_counters number of counters in the array
-* @param[out] counters array of resulting counter values.
-*
-* @return SAI_STATUS_SUCCESS on success
-*         Failure status code on error
-*/
+ * @brief Get ingress priority group statistics counters.
+ *
+ * @param[in] ingress_pg_id Ingress priority group id
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
 typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
-    _In_ sai_object_id_t ingress_pg_id,
-    _In_ const sai_ingress_priority_group_stat_counter_t *counter_ids,
-    _In_ uint32_t number_of_counters,
-    _Out_ uint64_t* counters
-    );
+        _In_ sai_object_id_t ingress_pg_id,
+        _In_ const sai_ingress_priority_group_stat_t *counter_ids,
+        _In_ uint32_t number_of_counters,
+        _Out_ uint64_t* counters);
 
 /**
-* @brief   Clear ingress priority group statistics counters.
-*
-* @param[in] ingress_pg_id ingress priority group id
-* @param[in] counter_ids specifies the array of counter ids
-* @param[in] number_of_counters number of counters in the array
-*
-* @return SAI_STATUS_SUCCESS on success
-*         Failure status code on error
-*/
+ * @brief Clear ingress priority group statistics counters.
+ *
+ * @param[in] ingress_pg_id Ingress priority group id
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] number_of_counters Number of counters in the array
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
 typedef sai_status_t(*sai_clear_ingress_priority_group_stats_fn)(
-    _In_ sai_object_id_t ingress_pg_id,
-    _In_ const sai_ingress_priority_group_stat_counter_t *counter_ids,
-    _In_ uint32_t number_of_counters
-    );
+        _In_ sai_object_id_t ingress_pg_id,
+        _In_ const sai_ingress_priority_group_stat_t *counter_ids,
+        _In_ uint32_t number_of_counters);
 
 /**
  * @brief Enum defining buffer pool types.
@@ -150,10 +155,10 @@ typedef sai_status_t(*sai_clear_ingress_priority_group_stats_fn)(
 typedef enum _sai_buffer_pool_type_t
 {
     /** Ingress buffer pool */
-    SAI_BUFFER_POOL_INGRESS,
+    SAI_BUFFER_POOL_TYPE_INGRESS,
 
     /** Egress buffer pool */
-    SAI_BUFFER_POOL_EGRESS,
+    SAI_BUFFER_POOL_TYPE_EGRESS,
 
 } sai_buffer_pool_type_t;
 
@@ -162,10 +167,10 @@ typedef enum _sai_buffer_pool_type_t
  */
 typedef enum _sai_buffer_threshold_mode_t
 {
-    /** static maximum */
+    /** Static maximum */
     SAI_BUFFER_THRESHOLD_MODE_STATIC,
 
-    /** dynamic maximum (relative) */
+    /** Dynamic maximum (relative) */
     SAI_BUFFER_THRESHOLD_MODE_DYNAMIC,
 
 } sai_buffer_threshold_mode_t;
@@ -175,34 +180,58 @@ typedef enum _sai_buffer_threshold_mode_t
  */
 typedef enum _sai_buffer_pool_attr_t
 {
+    /**
+     * @brief Start of attributes
+     */
     SAI_BUFFER_POOL_ATTR_START,
-    /** READ-ONLY */
 
-    /** shared buffer size in bytes [sai_uint32_t].
+    /**
+     * @brief Shared buffer size in bytes
+     *
      * This is derived from substracting all reversed buffers of queue/port
-     * from the total pool size. */
+     * from the total pool size.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
     SAI_BUFFER_POOL_ATTR_SHARED_SIZE = SAI_BUFFER_POOL_ATTR_START,
 
-    /** READ-WRITE */
-
-    /** buffer pool type [sai_buffer_pool_type_t]  (MANDATORY_ON_CREATE|CREATE_ONLY) */
+    /**
+     * @brief Buffer pool type
+     *
+     * @type sai_buffer_pool_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
     SAI_BUFFER_POOL_ATTR_TYPE,
 
-    /** buffer pool size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
+    /**
+     * @brief buffer pool size in bytes
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
     SAI_BUFFER_POOL_ATTR_SIZE,
 
-    /** shared threshold mode for the buffer pool [sai_buffer_threadhold_mode_t] (CREATE_ONLY)
-     * (default to SAI_BUFFER_POOL_DYNAMIC_TH) */
+    /**
+     * @brief shared threshold mode for the buffer
+     *
+     * @type sai_buffer_threshold_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_BUFFER_THRESHOLD_MODE_DYNAMIC
+     */
     SAI_BUFFER_POOL_ATTR_TH_MODE,
-    
+
+    /**
+     * @brief End of attributes
+     */
     SAI_BUFFER_POOL_ATTR_END,
 
 } sai_buffer_pool_attr_t;
 
 /**
-* @brief Enum defining statistics for buffer pool.
-*/
-typedef enum _sai_buffer_pool_stat_counter_t
+ * @brief Enum defining statistics for buffer pool.
+ */
+typedef enum _sai_buffer_pool_stat_t
 {
     /** get current pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_BYTES = 0x00000000,
@@ -210,185 +239,231 @@ typedef enum _sai_buffer_pool_stat_counter_t
     /** get watermark pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
 
-    /** -- */
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
-} sai_buffer_pool_stat_counter_t;
+
+} sai_buffer_pool_stat_t;
 
 /**
  * @brief Create buffer pool
- * @param[out] pool_id buffer pool id
- * @param[in] attr_count number of attributes
- * @param[in] attr_list array of attributes
- * @return SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ *
+ * @param[out] pool_id Buffer pool id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_buffer_pool_fn)(
-    _Out_ sai_object_id_t* pool_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list
-    );
+        _Out_ sai_object_id_t* pool_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove buffer pool
- * @param[in] pool_id buffer pool id
- * @return SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ *
+ * @param[in] pool_id Buffer pool id
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_buffer_pool_fn)(
-    _In_ sai_object_id_t pool_id
-    );
+        _In_ sai_object_id_t pool_id);
 
 /**
  * @brief Set buffer pool attribute
- * @param[in] pool_id buffer pool id
- * @param[in] attr attribute
- * @return SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ *
+ * @param[in] pool_id Buffer pool id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_buffer_pool_attr_fn)(
-    _In_ sai_object_id_t pool_id,
-    _In_ const sai_attribute_t *attr
-    );
+        _In_ sai_object_id_t pool_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get buffer pool attributes
- * @param[in] pool_id buffer pool id
- * @param[in] attr_count number of attributes
- * @param[inout] attr_list array of attributes
- * @return SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ *
+ * @param[in] pool_id Buffer pool id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_buffer_pool_attr_fn)(
-    _In_ sai_object_id_t pool_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list
-    );
+        _In_ sai_object_id_t pool_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
-* @brief   Get buffer pool statistics counters.
-*
-* @param[in] pool_id buffer pool id
-* @param[in] counter_ids specifies the array of counter ids
-* @param[in] number_of_counters number of counters in the array
-* @param[out] counters array of resulting counter values.
-*
-* @return SAI_STATUS_SUCCESS on success
-*         Failure status code on error
-*/
+ * @brief Get buffer pool statistics counters.
+ *
+ * @param[in] pool_id Buffer pool id
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
 typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
-    _In_ sai_object_id_t pool_id,
-    _In_ const sai_buffer_pool_stat_counter_t *counter_ids,
-    _In_ uint32_t number_of_counters,
-    _Out_ uint64_t* counters
-    );
+        _In_ sai_object_id_t pool_id,
+        _In_ const sai_buffer_pool_stat_t *counter_ids,
+        _In_ uint32_t number_of_counters,
+        _Out_ uint64_t* counters);
 
 /**
  * @brief Enum defining buffer profile attributes.
  */
 typedef enum _sai_buffer_profile_attr_t
 {
-    
+    /**
+     * @brief Start of attributes
+     */
     SAI_BUFFER_PROFILE_ATTR_START,
-    /** READ-WRITE */
 
-    /** pointer to buffer pool object id [sai_object_id_t] (MANDATORY_ON_CREATE|CREATE_AND_SET)
-    *  Pool id = SAI_NULL_OBJECT_ID can be used when profile is not associated with specific
-    *  pool, for example for global port buffer. Not applicable to priority group or queue buffer profile */
+    /**
+     * @brief Pointer to buffer pool object id
+     *
+     * Pool id = #SAI_NULL_OBJECT_ID can be used when profile is not associated
+     * with specific pool, for example for global port buffer. Not applicable
+     * to priority group or queue buffer profile.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @allownull true
+     */
     SAI_BUFFER_PROFILE_ATTR_POOL_ID = SAI_BUFFER_PROFILE_ATTR_START,
 
-    /** reserved buffer size in bytes [sai_uint32_t] (MANDATORY_ON_CREATE|CREATE_AND_SET) */
+    /**
+     * @brief Reserved buffer size in bytes
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
     SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,
 
-    /** shared threshold mode for the buffer profile [sai_buffer_threadhold_mode_t] (CREATE_AND_SET)
-     * If set, this overrides SAI_BUFFER_POOL_ATTR_TH_MODE.
-     * If not set, use SAI_BUFFER_POOL_ATTR_TH_MODE. 
-     * (default to value set in SAI_BUFFER_POOL_ATTR_TH_MODE.) */
+    /**
+     * @brief Shared threshold mode for the buffer profile
+     *
+     * If set, this overrides #SAI_BUFFER_POOL_ATTR_TH_MODE.
+     * If not set, use #SAI_BUFFER_POOL_ATTR_TH_MODE.
+     * (default to value set in #SAI_BUFFER_POOL_ATTR_TH_MODE)
+     *
+     * @type sai_buffer_threshold_mode_t
+     * @flags CREATE_AND_SET
+     * @default inherit SAI_BUFFER_POOL_ATTR_TH_MODE
+     */
     SAI_BUFFER_PROFILE_ATTR_TH_MODE,
 
-    /** dynamic threshold for the shared usage [sai_int8_t]
+    /**
+     * @brief Dynamic threshold for the shared usage
+     *
      * The threshold is set to the 2^n of available buffer of the pool.
      * Mandatory when SAI_BUFFER_POOL_TH_MODE = SAI_BUFFER_THRESHOLD_MODE_DYNAMIC
-     * (CREATE_AND_SET). */
+     *
+     * @type sai_int8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
     SAI_BUFFER_PROFILE_ATTR_SHARED_DYNAMIC_TH,
 
-    /** static threshold for the shared usage in bytes [sai_uint32_t]
+    /**
+     * @brief Static threshold for the shared usage in bytes
+     *
      * Mandatory when SAI_BUFFER_POOL_TH_MODE = SAI_BUFFER_THRESHOLD_MODE_STATIC
      * When set to zero there is no limit for the shared usage.
-     * (CREATE_AND_SET) */
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
     SAI_BUFFER_PROFILE_ATTR_SHARED_STATIC_TH,
 
-    /** set the buffer profile XOFF threshold in bytes [sai_uint32_t]
-     * Valid only for ingress PG (CREATE_AND_SET).
-     * Generate XOFF when available buffer in the PG buffer
-     * is less than this threshold.
-     * default to 0. */
+    /**
+     * @brief Set the buffer profile XOFF threshold in bytes
+     *
+     * Valid only for ingress PG.
+     * Generate XOFF when available buffer in the
+     * PG buffer is less than this threshold.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
     SAI_BUFFER_PROFILE_ATTR_XOFF_TH,
 
-    /** set the buffer profile XON threshold in byte [sai_uint32_t]
-     * Valid only for ingress PG (CREATE_AND_SET)
-     * Generate XON when the total buffer usage of this PG
-     * is less this threshold and available buffer in the PG buffer
-     * is larger than the XOFF threahold.
-     * default to 0. */
+    /**
+     * @brief Set the buffer profile XON threshold in byte
+     *
+     * Valid only for ingress PG.
+     * Generate XON when the total buffer usage of this PG is less this
+     * threshold and available buffer in the PG buffer is larger than the XOFF
+     * threahold.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
     SAI_BUFFER_PROFILE_ATTR_XON_TH,
 
+    /**
+     * @brief End of attributes
+     */
     SAI_BUFFER_PROFILE_ATTR_END,
 
 } sai_buffer_profile_attr_t;
 
 /**
  * @brief Create buffer profile
- * @param[out] buffer_profile_id buffer profile id
- * @param[in] attr_count number of attributes
- * @param[in] attr_list array of attributes
- * @return SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ *
+ * @param[out] buffer_profile_id Buffer profile id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_buffer_profile_fn)(
-    _Out_ sai_object_id_t* buffer_profile_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list
-    );
+        _Out_ sai_object_id_t *buffer_profile_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove buffer profile
- * @param[in] buffer_profile_id buffer profile id
- * @return SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ *
+ * @param[in] buffer_profile_id Buffer profile id
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_buffer_profile_fn)(
-    _In_ sai_object_id_t buffer_profile_id
-    );
+        _In_ sai_object_id_t buffer_profile_id);
 
 /**
  * @brief Set buffer profile attribute
- * @param[in] buffer_profile_id buffer profile id
- * @param[in] attr attribute
- * @return SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ *
+ * @param[in] buffer_profile_id Buffer profile id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_buffer_profile_attr_fn)(
-    _In_ sai_object_id_t buffer_profile_id,
-    _In_ const sai_attribute_t *attr
-    );
+        _In_ sai_object_id_t buffer_profile_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get buffer profile attributes
- * @param[in] buffer_profile_id buffer profile id
- * @param[in] attr_count number of attributes
- * @param[inout] attr_list array of attributes
- * @return SAI_STATUS_SUCCESS on success
- *           Failure status code on error
+ *
+ * @param[in] buffer_profile_id Buffer profile id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_buffer_profile_attr_fn)(
-    _In_ sai_object_id_t buffer_profile_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list
-    );
+        _In_ sai_object_id_t buffer_profile_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list
+        );
 
 /**
- *  @brief buffer methods table retrieved with sai_api_query()
+ * @brief buffer methods table retrieved with sai_api_query()
  */
 typedef struct _sai_buffer_api_t
 {
@@ -408,7 +483,6 @@ typedef struct _sai_buffer_api_t
 } sai_buffer_api_t;
 
 /**
- *\}
+ *@}
  */
-
-#endif // __SAIBUFFER_H_
+#endif /** __SAIBUFFER_H_ */
