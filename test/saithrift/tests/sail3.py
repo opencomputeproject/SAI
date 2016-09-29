@@ -1367,15 +1367,15 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lags[i % num_of_lags], port_list[i]))
         for i in xrange(num_of_lags):
             self.lags_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lags[i], 0, self.v4_enabled, self.v6_enabled, ''))
-        for i in xrange(self.total_lag_port):
-            sai_thrift_create_neighbor(self.client, self.addr_family, self.lags_rifs[i%len(self.lags_rifs)], "10.10.%s.1" % str(i+1), self.mac_pool[i])
-            sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i% len(self.lags_rifs)])
+        for i in xrange(num_of_lags):
+            sai_thrift_create_neighbor(self.client, self.addr_family, self.lags_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
+            sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i])
 
     def teardown_lags(self, num_of_lags, port_list):
         if (num_of_lags == 0 ): return
-        for i in xrange(self.total_lag_port):
-            sai_thrift_remove_neighbor(self.client, self.addr_family, self.lags_rifs[i%num_of_lags], "10.10.%s.1" % str(i+1), self.mac_pool[i])
-            sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i%num_of_lags])
+        for i in xrange(num_of_lags):
+            sai_thrift_remove_neighbor(self.client, self.addr_family, self.lags_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
+            sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i])
         for rif in self.lags_rifs:
             self.client.sai_thrift_remove_router_interface(rif)
         del self.lags_rifs[:]
@@ -1393,47 +1393,44 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
         sport = 0x1234
         dport = 0x50
         src_mac = self.dataplane.get_mac(0, 16)
-        IP_LAST_WORD_RANGE = 254
-        IP_2ND_LAST_WORD_RANGE = 16
-        for i in xrange(IP_LAST_WORD_RANGE):
-                for j in xrange(IP_2ND_LAST_WORD_RANGE):
-                    ip_src = '10.0.' + str(j) + '.' + str(i)
-                    ip_dst = '10.10.' + str(j+1) + '.1'
-                    pkt = simple_tcp_packet(
-                                            eth_dst=router_mac,
-                                            eth_src=src_mac,
-                                            ip_src=ip_src,
-                                            ip_dst=ip_dst,
-                                            ip_id=i,
-                                            tcp_sport=sport,
-                                            tcp_dport=dport,
-                                            ip_ttl=64)
-                    exp_pkt = simple_tcp_packet(
-                                            eth_dst=self.mac_pool[0],
-                                            eth_src=router_mac,
-                                            ip_src=ip_src,
-                                            ip_dst=ip_dst,
-                                            ip_id=i,
-                                            tcp_sport=sport,
-                                            tcp_dport=dport,
-                                            ip_ttl=63)
-                    masked_exp_pkt = Mask(exp_pkt)
-                    masked_exp_pkt.set_do_not_care_scapy(ptf.packet.Ether,"dst")
+        NUM_OF_PKT_TO_EACH_PORT = 254
+        NUM_OF_PKTS_TO_SEND = NUM_OF_PKT_TO_EACH_PORT * self.total_lag_port
+        for i in xrange(NUM_OF_PKTS_TO_SEND):
+                ip_src = '10.0.' + str(i % 255) + '.' + str(i % 255)
+                ip_dst = '10.10.' + str((i % num_of_lags) + 1) + '.1'
+                pkt = simple_tcp_packet(
+                                        eth_dst=router_mac,
+                                        eth_src=src_mac,
+                                        ip_src=ip_src,
+                                        ip_dst=ip_dst,
+                                        ip_id=i,
+                                        tcp_sport=sport,
+                                        tcp_dport=dport,
+                                        ip_ttl=64)
+                exp_pkt = simple_tcp_packet(
+                                        eth_dst=self.mac_pool[i % num_of_lags],
+                                        eth_src=router_mac,
+                                        ip_src=ip_src,
+                                        ip_dst=ip_dst,
+                                        ip_id=i,
+                                        tcp_sport=sport,
+                                        tcp_dport=dport,
+                                        ip_ttl=63)
 
-                    send_packet(self, self.total_lag_port, str(pkt))
-                    (match_index,rcv_pkt) = verify_packet_any_port(self,masked_exp_pkt,destanation_ports)
-                    logging.debug("found expected packet from port %d" % destanation_ports[match_index])
-                    pkt_counter[match_index] += 1
-                    sport = random.randint(0,0xffff)
-                    dport = random.randint(0,0xffff)
+                send_packet(self, self.total_lag_port, str(pkt))
+                (match_index,rcv_pkt) = verify_packet_any_port(self,exp_pkt,destanation_ports)
+                logging.debug("found expected packet from port %d" % destanation_ports[match_index])
+                pkt_counter[match_index] += 1
+                sport = random.randint(0,0xffff)
+                dport = random.randint(0,0xffff)
                         
         #final uniform distribution check
         for stat_port in xrange(self.total_lag_port):
             logging.debug( "PORT #"+str(hex(port_list[stat_port]))+":")
             logging.debug(str(pkt_counter[stat_port]))
-            self.assertTrue((pkt_counter[stat_port] >= ((IP_LAST_WORD_RANGE ) * 0.8)),
+            self.assertTrue((pkt_counter[stat_port] >= ((NUM_OF_PKT_TO_EACH_PORT ) * 0.8)),
                     "Not all paths are equally balanced, %s" % pkt_counter[stat_port])
-            self.assertTrue((pkt_counter[stat_port] <= ((IP_LAST_WORD_RANGE ) * 1.2)),
+            self.assertTrue((pkt_counter[stat_port] <= ((NUM_OF_PKT_TO_EACH_PORT ) * 1.2)),
                     "Not all paths are equally balanced, %s" % pkt_counter[stat_port])
                     
     def runTest(self):
