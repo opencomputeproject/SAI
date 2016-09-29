@@ -1257,7 +1257,7 @@ void check_object_infos()
         {
             const sai_attr_metadata_t* am = meta[index];
 
-            META_ASSERT_TRUE((int)am->attrid >= 0, "attrmust be non negative");
+            META_ASSERT_TRUE((int)am->attrid >= 0, "attribute must be non negative");
             META_ASSERT_TRUE(last < (int)am->attrid, "attributes are not incresing");
 
             if (last + 1 != (int)am->attrid)
