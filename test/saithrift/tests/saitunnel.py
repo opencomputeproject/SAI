@@ -34,6 +34,7 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
     ------------------------------------------------------------------
     ip's falls in 20.20.1.0       |        ip's falls in 10.10.1.0
     ------------------------------------------------------------------
+    TTL MODE : SAI_TUNNEL_TTL_PIPE_MODEL
     ##Ingress packet=Ether(dst=router_mac)/IP(src=20.20.1.x,dst=1.1.1.1)/TCP()
     ##Expected encap packet = Ether(src=router_mac,dst=00:05:06:00:00:00)/IP(src=20.20.1.1,dst=1.1.1.1)/IP(src=2.2.2.2,dst=10.10.1.1)/TCP()
     '''
@@ -187,7 +188,6 @@ class IpIpP2PTunnelDecapTest(sai_base_test.ThriftInterfaceDataPlane):
     ------------------------------------------------------------------
     ##ingress encap packet=Ether(dst=router_mac)/IP(src=1.1.1.1,dst=20.20.1.2)/IP(src=10.10.1.1,dst=2.2.2.2)/TCP()
     ##expected decap packet = Ether(dst=00:05:06:00:00:02,src=router_mac)/IP(src=1.1.1.1,dst=20.20.1.2)/TCP()
-    TTL MODE : SAI_TUNNEL_TTL_PIPE_MODEL
     '''
     def runTest(self):
         print
