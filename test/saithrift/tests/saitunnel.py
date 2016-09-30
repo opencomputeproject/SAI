@@ -35,32 +35,24 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
     ip's falls in 20.20.1.0       |        ip's falls in 10.10.1.0
     ------------------------------------------------------------------
     TTL MODE : SAI_TUNNEL_TTL_PIPE_MODEL
-    ##Ingress packet=Ether(dst=router_mac)/IP(src=20.20.1.x,dst=1.1.1.1)/TCP()
-    ##Expected encap packet = Ether(src=router_mac,dst=00:05:06:00:00:00)/IP(src=20.20.1.1,dst=1.1.1.1)/IP(src=2.2.2.2,dst=10.10.1.1)/TCP()
+    ##Ingress packet=Ether(dst=router_mac,src=00:00:00:00:00:01)/IP(src=20.20.1.2,dst=1.1.1.1)/TCP()
+    ##Expected encap packet = Ether(src=router_mac,dst=00:05:06:00:00:00)/IP(src=2.2.2.2,dst=10.10.1.2)/IP(src=20.20.1.2,dst=1.1.1.1)/TCP()
     '''
     def runTest(self):
         print
         switch_init(self.client)
-        port1=port_list[0] #From where we expect encapsulated packet 
-        port2=port_list[1] #From where we send normal ip packet
-        mac1 = '00:05:06:00:00:00' # port1 l2 entry
-        mac2 = '00:05:06:00:00:02' 
-        mac_action=1                
+        port1 = port_list[0] #From where we expect encapsulated packet 
+        port2 = port_list[1] #From where we send normal ip packet
         vlan_id=0            #expecting to use unused vlans
         addr_family=0 #1 for v6
         tunnel_src_ip_addr='2.2.2.2' #src for outer ip
-        encap_ip_addr='10.10.1.1'    #egress enighbhor
-        ingress_ip_addr='20.20.1.1'  #ingress neighbor 
-        tunnel_ip_addr_route='1.1.1.0'  #to reach tunnel nhop
-        tunnel_ip_mask_route='255.255.255.0'
-        ingress_nhop_ip_addr='20.20.1.1'
+        encap_ip_addr='10.10.1.1'    #egress neighbhor
+        overlay_subnet='1.1.1.0'  #to reach tunnel nhop
+        overlay_subnet_mask='255.255.255.0'
         egress_nhop_ip_addr='10.10.1.1'
-        ip_addr_ingress_route='20.20.1.0'
-        ip_mask_ingress_route='255.255.255.0'
-        ip_addr_encap_route='10.10.1.0'
-        ip_mask_encap_route='255.255.255.0'
-        initiator_ip_addr='10.10.1.1'  #tunnel dest ip(outer header)
-        neighbor_mac_ingress='00:05:06:00:00:02'
+        underlay_subnet='10.10.1.0'
+        underlay_subnet_mask='255.255.255.0'
+        tunnel_endpoint_ip='10.10.1.1'  #tunnel dest ip(outer header)
         neighbor_mac_encap='00:05:06:00:00:00' #egress side
         ip_addr_decap_src='10.10.1.1'
         ip_addr_decap_dst='2.2.2.2'
@@ -69,20 +61,21 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
         #Creating Virtual router 
         #######################################################################
         vr_id=sai_thrift_create_virtual_router(self.client, 1, 1)
-            
+        
+        #Creating ingress router interface for packet routing
+        ingress_if_id=sai_thrift_create_router_interface(self.client, vr_id=vr_id, is_port=1, port_id=port2, vlan_id=vlan_id, v4_enabled=1, v6_enabled = 1, mac='', is_lb=0)
+
+
         #creating a underlay interface in loopback
         underlay_if = sai_thrift_create_router_interface(self.client, is_port=1, port_id=0, vr_id=vr_id, vlan_id=vlan_id, v4_enabled=1, v6_enabled=1, mac='', is_lb=1)
         #creating an overlay interface in loopback
         overlay_if = sai_thrift_create_router_interface(self.client, is_port=1, port_id=0, vr_id=vr_id, vlan_id=vlan_id, v4_enabled=1, v6_enabled=1, mac='', is_lb=1)
-        #creating a tunnel
-        tunnel_id=sai_thrift_create_tunnel(self.client, addr_family=addr_family, ip_addr=tunnel_src_ip_addr, underlay_if=underlay_if, overlay_if=overlay_if)
-      
         ##############################################################################
-        #  Egress configurations
-        #  create router interface,
-        #  create neighbor
-        #  create nhop
-        #  create route
+        #  Egress/encap configurations
+        #  1.create router interface,
+        #  2.create neighbor
+        #  2.create nhop
+        #  4.create route
         #   
         ##############################################################################
        
@@ -92,29 +85,17 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_neighbor(self.client, addr_family=addr_family, rif_id=encap_if_id, ip_addr=encap_ip_addr, dmac=neighbor_mac_encap)
         #egress(encap) nhop and route create
         egress_nhop=sai_thrift_create_nhop(self.client, addr_family=addr_family, ip_addr=egress_nhop_ip_addr, rif_id=encap_if_id, is_tunnel=0)
-        sai_thrift_create_route(self.client, vr_id=vr_id, addr_family=addr_family, ip_addr=ip_addr_encap_route, ip_mask=ip_mask_encap_route, nhop=egress_nhop)
+        sai_thrift_create_route(self.client, vr_id=vr_id, addr_family=addr_family, ip_addr=underlay_subnet, ip_mask=underlay_subnet_mask, nhop=egress_nhop)
         
-        ###############################################################################
-        #  Ingress configurations
-        #  create router interface,
-        #  create neighbor
-        #  create nhop
-        #  create route
-        #   
-        ##############################################################################
-         
-        #ingress router interface
-        ingress_if_id=sai_thrift_create_router_interface(self.client,vr_id=vr_id,is_port=1,port_id=port2,vlan_id=vlan_id,v4_enabled=1,v6_enabled = 1, mac='', is_lb=0)
-        #ingress neighbor neighbor (ip=20.20.1.1 , mac = 00:05:06:00:00:02)
-        sai_thrift_create_neighbor(self.client, addr_family=addr_family, rif_id=ingress_if_id, ip_addr=ingress_ip_addr, dmac=neighbor_mac_ingress)
-        #ingress nhop and route create
-        ingress_nhop=sai_thrift_create_nhop(self.client, addr_family=addr_family, ip_addr=ingress_nhop_ip_addr, rif_id=ingress_if_id, is_tunnel=0)
-        sai_thrift_create_route(self.client, vr_id=vr_id, addr_family=addr_family, ip_addr=ip_addr_ingress_route, ip_mask=ip_mask_ingress_route, nhop=ingress_nhop)
-
-        
-        #adding tunnel and route
-        initiator_id=sai_thrift_create_nhop(self.client, addr_family=addr_family, ip_addr=initiator_ip_addr, rif_id=tunnel_id , is_tunnel=1)
-        sai_thrift_create_route(self.client,vr_id=vr_id, addr_family=addr_family, ip_addr=tunnel_ip_addr_route, ip_mask=tunnel_ip_mask_route, nhop=initiator_id)
+        #################################################################################
+        #Tunnel configurations:
+        #1.Tunnel creation
+        #2.Tunnel Next hop
+        #3.Tunnel Overlay route
+        ################################################################################
+        tunnel_id=sai_thrift_create_tunnel(self.client, addr_family=addr_family, ip_addr=tunnel_src_ip_addr, underlay_if=underlay_if, overlay_if=overlay_if)
+        tunnel_nh_id=sai_thrift_create_nhop(self.client, addr_family=addr_family, ip_addr=tunnel_endpoint_ip, rif_id=tunnel_id , is_tunnel=1)
+        sai_thrift_create_route(self.client,vr_id=vr_id, addr_family=addr_family, ip_addr=overlay_subnet, ip_mask=overlay_subnet_mask, nhop=tunnel_nh_id)
         
         #Packet to be send 
         pkt = simple_tcp_packet(eth_dst=router_mac,
@@ -130,6 +111,7 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_dst='1.1.1.1',
                                 ip_id=1,
                                 ip_ttl=63)
+        #expected packet
         exp_pkt = simple_ipv4ip_packet(eth_dst='00:05:06:00:00:00',
                                 eth_src=router_mac,
                                 ip_dst='10.10.1.1',
@@ -150,25 +132,14 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 1, pkt)
             #verify_packets(self,exp_pkt,ports=[0])
             verify_packets(self,m,[0])
-
-        
         finally:
-            sai_thrift_remove_route(self.client,vr_id,addr_family,tunnel_ip_addr_route,tunnel_ip_mask_route,initiator_id) 
-            self.client.sai_thrift_remove_next_hop(initiator_id)
-
-            sai_thrift_remove_route(self.client,vr_id,addr_family,ip_addr_encap_route,ip_mask_encap_route,egress_nhop) 
+            sai_thrift_remove_route(self.client, vr_id, addr_family, overlay_subnet, overlay_subnet_mask, tunnel_nh_id) 
+            self.client.sai_thrift_remove_next_hop(tunnel_nh_id)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, underlay_subnet, underlay_subnet_mask, egress_nhop) 
             self.client.sai_thrift_remove_next_hop(egress_nhop)
-
-            sai_thrift_remove_route(self.client,vr_id,addr_family,ip_addr_ingress_route,ip_mask_ingress_route,ingress_nhop) 
-            self.client.sai_thrift_remove_next_hop(ingress_nhop)
-
-            sai_thrift_remove_neighbor(self.client,addr_family,rif_id=ingress_if_id,ip_addr=ingress_ip_addr,dmac=neighbor_mac_ingress)
-            
-            sai_thrift_remove_neighbor(self.client,addr_family,rif_id=encap_if_id,ip_addr=encap_ip_addr,dmac=neighbor_mac_encap)
-            self.client.sai_thrift_remove_router_interface(ingress_if_id)
-
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id=encap_if_id, ip_addr=encap_ip_addr, dmac=neighbor_mac_encap)
             self.client.sai_thrift_remove_router_interface(encap_if_id)
-
+            self.client.sai_thrift_remove_router_interface(ingress_if_id)
             self.client.sai_thrift_remove_tunnel(tunnel_id)
 
 
@@ -186,71 +157,46 @@ class IpIpP2PTunnelDecapTest(sai_base_test.ThriftInterfaceDataPlane):
     ------------------------------------------------------------------
     ip's falls in 20.20.1.0       |        ip's falls in 10.10.1.0
     ------------------------------------------------------------------
-    ##ingress encap packet=Ether(dst=router_mac)/IP(src=1.1.1.1,dst=20.20.1.2)/IP(src=10.10.1.1,dst=2.2.2.2)/TCP()
+    ##ingress encap packet=Ether(dst=router_mac)/IP(src=10.10.1.1,dst=2.2.2.2)/IP(src=1.1.1.1,dst=20.20.1.2)/TCP()
     ##expected decap packet = Ether(dst=00:05:06:00:00:02,src=router_mac)/IP(src=1.1.1.1,dst=20.20.1.2)/TCP()
     '''
     def runTest(self):
         print
         switch_init(self.client)
-        time.sleep(10)
         port1=port_list[0] #From where we send encapsulated packet 
         port2=port_list[1] #From where we see normal ip packet
-        mac1 = '00:05:06:00:00:00' # port1 l2 entry
-        mac2 = '00:05:06:00:00:02' 
-        mac_action=1                
         vlan_id=0            #expecting to use unused vlans
         addr_family=0 #1 for v6
-        tunnel_src_ip_addr='2.2.2.2'   #src for outer ip for encapsulation
-        ingress_ip_addr='10.10.1.1'    #ingress enighbhor
-        egress_ip_addr='20.20.1.1'     #egress neighbor 
-        tunnel_ip_addr_route='1.1.1.0'       #to reach tunnel nhop
-        tunnel_ip_mask_route='255.255.255.0'
+        tunnel_src_ip_addr='2.2.2.2'   #src for outer ip for encapulation packet
+        egress_ip_addr='20.20.1.1'     #egress/decap packet dst ip 
+        overlay_subnet='1.1.1.0'       #to reach tunnel nhop
+        overlay_subnet_mask='255.255.255.0'
         egress_nhop_ip_addr='20.20.1.1'
-        ingress_nhop_ip_addr='10.10.1.1'
-        ip_addr_egress_route='20.20.1.0' #for route
-        ip_mask_egress_route='255.255.255.0'
-        ip_addr_ingress_route='10.10.1.0' #for route
-        ip_mask_ingress_route='255.255.255.0'
-        initiator_ip_addr='10.10.1.1'  #tunnel dest ip(outer header)
+        egress_subnet='20.20.1.0' #for route
+        egress_subnet_mask='255.255.255.0'
+        tunnel_endpoint_ip='10.10.1.1'  #tunnel dest ip(outer header)
         neighbor_mac_egress='00:05:06:00:00:02'
-        neighbor_mac_ingress='00:05:06:00:00:00' #egress side
-        ip_addr_decap_src='10.10.1.1' #tunnel table decap src to macth
-        ip_addr_decap_dst='2.2.2.2'   #tunnel table decap dest to match
+        tunnel_term_src='10.10.1.1' #tunnel table decap src to macth
+        tunnel_term_dst='2.2.2.2'   #tunnel table decap dest to match
          
         vr_id=0 #using default vr id
-                
+        
+        #Creating ingress router interface for packet routing
+        ingress_if_id=sai_thrift_create_router_interface(self.client,vr_id=vr_id,is_port=1,port_id=port1,vlan_id=vlan_id,v4_enabled=1,v6_enabled = 1, mac='', is_lb=0)
+
+
         #creating a underlay interface in loopback
         underlay_if = sai_thrift_create_router_interface(self.client, is_port=1, port_id=0, vr_id=vr_id, vlan_id=vlan_id, v4_enabled=1, v6_enabled=1, mac='', is_lb=1)
         
         #creating an overlay interface in loopback
         overlay_if = sai_thrift_create_router_interface(self.client, is_port=1, port_id=0, vr_id=vr_id, vlan_id=vlan_id, v4_enabled=1, v6_enabled=1, mac='', is_lb=1)
         
-        #creating a tunnel
-        tunnel_id=sai_thrift_create_tunnel(self.client, addr_family=addr_family, ip_addr=tunnel_src_ip_addr, underlay_if=underlay_if, overlay_if=overlay_if)
-            
         ###############################################################################
-        #  Ingress configurations
-        #  create router interface,
-        #  create neighbor
-        #  create nhop
-        #  create route
-        #   
-        ############################################################################## 
-
-        #ingress router interface
-        ingress_if_id=sai_thrift_create_router_interface(self.client, vr_id=vr_id, is_port=1, port_id=port1, vlan_id=vlan_id, v4_enabled=1, v6_enabled = 1, mac='', is_lb=0)
-        #ingress neighbor (ip=10.10.1.1 , mac=00:05:06:00:00:00 )
-        sai_thrift_create_neighbor(self.client, addr_family=addr_family, rif_id=ingress_if_id, ip_addr=ingress_ip_addr, dmac=neighbor_mac_ingress)
-        #ingress(encap) nhop and route create
-        ingress_nhop=sai_thrift_create_nhop(self.client, addr_family=addr_family, ip_addr=ingress_nhop_ip_addr, rif_id=ingress_if_id, is_tunnel=0)
-        sai_thrift_create_route(self.client, vr_id=vr_id, addr_family=addr_family, ip_addr=ip_addr_ingress_route, ip_mask=ip_mask_ingress_route, nhop=ingress_nhop)
-        
-        ###############################################################################
-        #  Ingress configurations
-        #  create router interface,
-        #  create neighbor
-        #  create nhop
-        #  create route
+        #  Egress/decap configurations
+        #  1.create router interface,
+        #  2.create neighbor
+        #  3.create nhop
+        #  4.create route
         #   
         ############################################################################## 
             
@@ -260,35 +206,43 @@ class IpIpP2PTunnelDecapTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_neighbor(self.client,addr_family=addr_family,rif_id=egress_if_id,ip_addr=egress_ip_addr,dmac=neighbor_mac_egress)
         #egress nhop and route create
         egress_nhop=sai_thrift_create_nhop(self.client, addr_family=addr_family, ip_addr=egress_nhop_ip_addr, rif_id=egress_if_id, is_tunnel=0)
-        sai_thrift_create_route(self.client, vr_id=vr_id, addr_family=addr_family, ip_addr=ip_addr_egress_route, ip_mask=ip_mask_egress_route, nhop=egress_nhop)
-        #adding tunnel and route
-        initiator_id=sai_thrift_create_nhop(self.client, addr_family=addr_family, ip_addr=initiator_ip_addr, rif_id=tunnel_id, is_tunnel=1)
-        sai_thrift_create_route(self.client, vr_id=vr_id, addr_family=addr_family, ip_addr=tunnel_ip_addr_route, ip_mask=tunnel_ip_mask_route, nhop=initiator_id)
+        sai_thrift_create_route(self.client, vr_id=vr_id, addr_family=addr_family, ip_addr=egress_subnet, ip_mask=egress_subnet_mask, nhop=egress_nhop)
+        ################################################################################
+        #Tunnel creation
+        #1.Create Tunnel
+        #2.Create Tunnel nhop
+        #3.Create Tunnel Route
+        ##################################################################################
+
+        tunnel_id=sai_thrift_create_tunnel(self.client, addr_family=addr_family, ip_addr=tunnel_src_ip_addr, underlay_if=underlay_if, overlay_if=overlay_if)
+        tunnel_nh_id=sai_thrift_create_nhop(self.client, addr_family=addr_family, ip_addr=tunnel_endpoint_ip, rif_id=tunnel_id, is_tunnel=1)
+        sai_thrift_create_route(self.client, vr_id=vr_id, addr_family=addr_family, ip_addr=overlay_subnet, ip_mask=overlay_subnet_mask, nhop=tunnel_nh_id)
             
         ###################################################################################
-        #Creating a Tunnel Table entry with
-        #Source match 10.10.1.10
+        #Creating Tunnel Term  Table entry with
+        #Source match 10.10.1.1
         #Dest match 2.2.2.2
         #
         #####################################################################################
         
-        #create tunnel table entry for incoming match 		
-        tunnel_entry_id=sai_thrift_create_tunnel_term_table(self.client,addr_family=addr_family,vr_id=vr_id,ip_addr_dst=ip_addr_decap_dst,ip_addr_src=ip_addr_decap_src,tunnel_oid=tunnel_id)
+        #create tunnel term table entry for incoming packet match
+        tunnel_entry_id=sai_thrift_create_tunnel_term_table(self.client,addr_family=addr_family,vr_id=vr_id,ip_addr_dst=tunnel_term_dst,ip_addr_src=tunnel_term_src,tunnel_oid=tunnel_id)
         
-            
+        #expected decap packet    
         exp_pkt = simple_tcp_packet(eth_src=router_mac,
                                 eth_dst='00:05:06:00:00:02',
                                 ip_dst='20.20.1.2',
                                 ip_src='1.1.1.1',
                                 ip_id=108,
                                 ip_ttl=63)
-
+        #ingress encap packet inner frame
         inner_hdr = simple_tcp_packet(eth_dst='00:00:08:08:08:08',
                                 eth_src='00:00:00:00:00:11',
                                 ip_dst='20.20.1.2',
                                 ip_src='1.1.1.1',
                                 ip_id=108,
                                 ip_ttl=63)
+        #ingress encap packet
         pkt = simple_ipv4ip_packet(eth_dst=router_mac,
                                 eth_src='00:00:08:08:08:08',
                                 ip_src='10.10.1.1',
@@ -304,23 +258,13 @@ class IpIpP2PTunnelDecapTest(sai_base_test.ThriftInterfaceDataPlane):
             #verify_packets(self,exp_pkt,ports=[1])
             verify_packets(self,exp_pkt,[1])
 
-
         finally:
             self.client.sai_thrift_remove_tunnel_term_table_entry(tunnel_entry_id)
-            sai_thrift_remove_route(self.client,vr_id,addr_family,tunnel_ip_addr_route,tunnel_ip_mask_route,initiator_id) 
-            self.client.sai_thrift_remove_next_hop(initiator_id)
-
-            sai_thrift_remove_route(self.client,vr_id,addr_family,ip_addr_ingress_route,ip_mask_ingress_route,ingress_nhop) 
-            self.client.sai_thrift_remove_next_hop(ingress_nhop)
-
-            sai_thrift_remove_route(self.client,vr_id,addr_family,ip_addr_egress_route,ip_mask_egress_route,egress_nhop) 
+            sai_thrift_remove_route(self.client,vr_id,addr_family,overlay_subnet,overlay_subnet_mask,tunnel_nh_id) 
+            self.client.sai_thrift_remove_next_hop(tunnel_nh_id)
+            sai_thrift_remove_route(self.client,vr_id,addr_family,egress_subnet,egress_subnet_mask,egress_nhop) 
             self.client.sai_thrift_remove_next_hop(egress_nhop)
-
             sai_thrift_remove_neighbor(self.client,addr_family,rif_id=egress_if_id,ip_addr=egress_ip_addr,dmac=neighbor_mac_egress)
-            
-            sai_thrift_remove_neighbor(self.client,addr_family,rif_id=ingress_if_id,ip_addr=ingress_ip_addr,dmac=neighbor_mac_ingress)
             self.client.sai_thrift_remove_router_interface(egress_if_id)
-
             self.client.sai_thrift_remove_router_interface(ingress_if_id)
-
             self.client.sai_thrift_remove_tunnel(tunnel_id)
