@@ -70,7 +70,7 @@ def switch_init(client):
         else:
             print "unknown switch attribute"
 
-    attr_value = sai_thrift_attribute_value_t(mac='00:77:66:55:44:33')
+    attr_value = sai_thrift_attribute_value_t(mac=router_mac)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_SRC_MAC_ADDRESS, value=attr_value)
     client.sai_thrift_set_switch_attribute(attr)
 
