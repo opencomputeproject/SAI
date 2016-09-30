@@ -430,16 +430,16 @@ typedef enum _sai_port_attr_t
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_NUMBER_OF_PRIORITY_GROUPS,
+    SAI_PORT_ATTR_NUMBER_OF_INGRESS_PRIORITY_GROUPS,
 
     /**
      * @brief list of ingress priority groups
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PRIORITY_GROUP
+     * @objects SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_PRIORITY_GROUP_LIST,
+    SAI_PORT_ATTR_INGRESS_PRIORITY_GROUP_LIST,
 
     /* READ-WRITE */
 

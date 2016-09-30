@@ -690,8 +690,6 @@ sub CreateMetadataHeaderAndSource
             next;
         }
 
-        next if $key =~ m!sai_fdb_flush_attr_t|sai_hostif_packet_attr_t|sai_hostif_user_defined_trap_attr_t!;
-
         my $typedef = $1;
 
         WriteSource "    &metadata_enum_$typedef,";
@@ -715,9 +713,6 @@ sub CreateMetadataHeaderAndSource
         {
             next;
         }
-
-        # skip unsupported types for now
-        next if $key =~ m!sai_fdb_flush_attr_t|sai_hostif_packet_attr_t|sai_hostif_user_defined_trap_attr_t!;
 
         my $typedef = $1;
         my $objtype = $2;
@@ -1213,9 +1208,6 @@ sub CreateMetadata
             next;
         }
 
-        # skip unsupported types for now
-        next if $key =~ m!sai_fdb_flush_attr_t|sai_hostif_packet_attr_t|sai_hostif_user_defined_trap_attr_t!;
-
         my $typedef = $1;
         my $objtype = "SAI_OBJECT_TYPE_" . uc($2);
 
@@ -1293,8 +1285,6 @@ sub CreateMetadataForAttributes
             $SAI_ENUMS{$type}{values} = \@empty;
         }
 
-        next if $type =~ m!sai_hostif_user_defined_trap_attr_t!;
-
         WriteSource "const sai_attr_metadata_t* metadata_object_type_$type\[\] = {";
 
         my @values = @{ $SAI_ENUMS{$type}{values} };
@@ -1358,6 +1348,60 @@ sub CreateEnumHelperMethods
     WriteHeader "        _In_ int value);";
 }
 
+sub CreateObjectInfo
+{
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        next if $1 eq "NULL" or $1 eq "MAX";
+
+        my $type = "sai_" . lc($1) . "_attr_t";
+
+        my $start = "SAI_" . uc($1) . "_ATTR_START";
+        my $end   = "SAI_" . uc($1) . "_ATTR_END";
+
+        WriteHeader "extern const sai_object_type_info_t sai_object_type_info_$ot;";
+
+        WriteSource "const sai_object_type_info_t sai_object_type_info_$ot = {";
+        WriteSource "    .objecttype         = $ot,";
+        WriteSource "    .attridstart        = $start,";
+        WriteSource "    .attridend          = $end,";
+        WriteSource "    .attrmetadata       = metadata_object_type_$type,";
+        WriteSource "};";
+    }
+
+    WriteHeader "extern const sai_object_type_info_t* sai_all_object_type_infos[];";
+
+    WriteSource "const sai_object_type_info_t* sai_all_object_type_infos[] = {";
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        if ($1 eq "NULL" or $1 eq "MAX")
+        {
+            WriteSource "    NULL,";
+            next;
+        }
+
+        WriteSource "    &sai_object_type_info_$ot,";
+    }
+
+    WriteSource "    NULL";
+    WriteSource "};";
+}
+
 #
 # MAIN
 #
@@ -1382,6 +1426,8 @@ CreateMetadata();
 CreateMetadataForAttributes();
 
 CreateEnumHelperMethods();
+
+CreateObjectInfo();
 
 WriteHeader "#endif /* __SAI_METADATA_TYPES__ */";
 

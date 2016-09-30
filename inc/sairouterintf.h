@@ -54,6 +54,11 @@ typedef enum _sai_router_interface_type_t
  */
 typedef enum _sai_router_interface_attr_t
 {
+    /**
+     * @brief Start of attributes
+     */
+    SAI_ROUTER_INTERFACE_ATTR_START,
+
     /* READ-ONLY */
 
     /**
@@ -63,7 +68,7 @@ typedef enum _sai_router_interface_attr_t
      * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID,
+    SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID = SAI_ROUTER_INTERFACE_ATTR_START,
 
     /**
      * @brief Type
@@ -142,6 +147,11 @@ typedef enum _sai_router_interface_attr_t
      * @default SAI_PACKET_ACTION_TRAP
      */
     SAI_ROUTER_INTERFACE_ATTR_NEIGHBOR_MISS_PACKET_ACTION,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_ROUTER_INTERFACE_ATTR_END,
 
     /** Custom range base value */
     SAI_ROUTER_INTERFACE_ATTR_CUSTOM_RANGE_START = 0x10000000,

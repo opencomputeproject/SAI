@@ -39,12 +39,17 @@
 typedef enum _sai_scheduler_group_attr_t
 {
     /**
+     * @brief Start of attributes
+     */
+    SAI_SCHEDULER_GROUP_ATTR_START = 0x00000000,
+
+    /**
      * @brief Number of queues/groups childs added to
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_SCHEDULER_GROUP_ATTR_CHILD_COUNT = 0x00000000,
+    SAI_SCHEDULER_GROUP_ATTR_CHILD_COUNT = SAI_SCHEDULER_GROUP_ATTR_START,
 
     /**
      * @brief Scheduler Group child obejct id list
@@ -88,6 +93,11 @@ typedef enum _sai_scheduler_group_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID = 0x00000005,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_SCHEDULER_GROUP_ATTR_END,
 
     /** Custom range base value */
     SAI_SCHEDULER_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,

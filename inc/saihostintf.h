@@ -370,7 +370,6 @@ typedef enum _sai_hostif_trap_attr_t
      * @type sai_object_id_t
      * @flags SPECIAL
      * @objects SAI_OBJECT_TYPE_NULL
-     * @default SAI_NULL_OBJECT_ID
      * @ignore
      */
     SAI_HOSTIF_TRAP_ATTR_FD,
@@ -506,13 +505,18 @@ typedef enum _sai_hostif_user_defined_trap_id_t
 typedef enum _sai_hostif_user_defined_trap_attr_t
 {
     /**
+     * @brief Start of attributes
+     */
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
+
+    /**
      * @brief Trap channel to use
      *
      * @type sai_hostif_trap_channel_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
      * @default SAI_HOSTIF_TRAP_CHANNEL_CB
      */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_CHANNEL,
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_CHANNEL = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
 
     /**
      * @brief File descriptor
@@ -524,8 +528,14 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      * @objects SAI_OBJECT_TYPE_NULL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @default SAI_NULL_OBJECT_ID
+     * @ignore
      */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_FD,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_END,
 
 } sai_hostif_user_defined_trap_attr_t;
 
@@ -717,7 +727,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @brief Trap ID (for receive-only)
      *
      * @type sai_hostif_trap_type_t
-     * @flags SPECIAL
+     * @flags READ_ONLY
      */
     SAI_HOSTIF_PACKET_ATTR_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
 
@@ -725,7 +735,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @brief User-Defined Trap ID (for receive-only)
      *
      * @type sai_hostif_user_defined_trap_id_t
-     * @flags SPECIAL
+     * @flags READ_ONLY
      */
     SAI_HOSTIF_PACKET_ATTR_USER_TRAP_ID,
 
@@ -734,7 +744,7 @@ typedef enum _sai_hostif_packet_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
-     * @flags SPECIAL
+     * @flags READ_ONLY
      */
     SAI_HOSTIF_PACKET_ATTR_INGRESS_PORT,
 
@@ -743,7 +753,7 @@ typedef enum _sai_hostif_packet_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_LAG
-     * @flags SPECIAL
+     * @flags READ_ONLY
      */
     SAI_HOSTIF_PACKET_ATTR_INGRESS_LAG,
 
@@ -751,7 +761,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @brief Packet transmit type. (MANDATORY_ON_SEND)
      *
      * @type sai_hostif_tx_type_t
-     * @flags SPECIAL
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_HOSTIF_PACKET_ATTR_TX_TYPE,
 
@@ -764,7 +774,8 @@ typedef enum _sai_hostif_packet_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
-     * @flags SPECIAL
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_HOSTIF_PACKET_ATTR_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
      */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
 
