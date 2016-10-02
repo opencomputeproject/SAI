@@ -78,6 +78,8 @@ sai_switch_notification_t plat_switch_notification_handlers =
     NULL,
     NULL,
     NULL,
+    NULL,
+    NULL,
     NULL
 };
 
@@ -132,6 +134,8 @@ NeighborMgr* neighbor_mgr;
 RouteMgr* route_mgr;
 FdbMgr* fdb_mgr;
 
+std::vector<sai_object_id_t> vlan_member_list;
+
 /*--------------------------------------------------------*/
 //L3 Interface Initialization
 static bool setup_one_l3_interface(sai_vlan_id_t vlanid,
@@ -152,23 +156,32 @@ static bool setup_one_l3_interface(sai_vlan_id_t vlanid,
         return false;
     }
 
-    std::vector<sai_vlan_port_t> vlan_port_list;
-
+    std::vector<sai_attribute_t> member_attrs;
+    sai_attribute_t member_attr;
+    sai_object_id_t vlan_member_id;
+    
     for (int i = 0; i < port_count; ++i)
     {
-        sai_vlan_port_t vlan_port;
-        vlan_port.port_id = port_list[i];
-        vlan_port.tagging_mode = SAI_VLAN_PORT_UNTAGGED;
-        vlan_port_list.push_back(vlan_port);
-    }
+        member_attr.id = SAI_VLAN_MEMBER_ATTR_VLAN_ID;
+        member_attr.value.u16 = vlanid;
+        member_attrs.push_back(member_attr);
+        
+        member_attr.id = SAI_VLAN_MEMBER_ATTR_PORT_ID;
+        member_attr.value.oid =  port_list[i];
+        member_attrs.push_back(member_attr);
 
-    LOGG(TEST_INFO, SETL3, "sai_vlan_api->add_ports_to_vlan, add ports to vlan %d.\n", vlanid);
-    status = sai_vlan_api->add_ports_to_vlan(vlanid, port_count, vlan_port_list.data());
+        member_attr.id = SAI_VLAN_MEMBER_ATTR_TAGGING_MODE;
+        member_attr.value.s32 = SAI_VLAN_PORT_UNTAGGED;
+        member_attrs.push_back(member_attr);
 
-    if (status != SAI_STATUS_SUCCESS)
-    {
-        LOGG(TEST_ERR, SETL3, "fail to add ports to vlan %hu. status=0x%x\n",  vlanid, -status);
-        return false;
+        LOGG(TEST_INFO, SETL3, "sai_vlan_api->create_vlan_member, with vlan %d.\n", vlanid);
+        status = sai_vlan_api->create_vlan_member(&vlan_member_id, member_attrs.size(), member_attrs.data());
+        if (status != SAI_STATUS_SUCCESS)
+        {
+            LOGG(TEST_ERR, SETL3, "fail to create member vlan %hu. status=0x%x\n",  vlanid, -status);
+            return false;
+        }
+        vlan_member_list.push_back(vlan_member_id);
     }
 
     sai_attribute_t attr;
@@ -303,35 +316,27 @@ bool basic_router_setup()
         return false;
     }
 
-    std::vector<sai_vlan_port_t> vlan_port_list;
+   
     unsigned int i = 0;
-
-    for (i = 0; i < port_count; i++)
-    {
-        sai_vlan_port_t vlan_port;
-
-        if (!SAI_OID_TYPE_CHECK(port_list[i], SAI_OBJECT_TYPE_PORT))
+    sai_object_id_t vlan_member_id;
+    
+     while (!vlan_member_list.empty()) {
+        vlan_member_id = vlan_member_list.back();
+        if (!SAI_OID_TYPE_CHECK(vlan_member_id, SAI_OBJECT_TYPE_VLAN_MEMBER))
         {
-            LOGG(TEST_ERR, SETL3, "port id retrieved is not the right type%d", -status);
+            LOGG(TEST_ERR, SETL3, "vlan_member_id retrieved is not the right type%d", -status);
             return false;
         }
-
-        vlan_port.port_id = port_list[i];
-        vlan_port.tagging_mode = SAI_VLAN_PORT_UNTAGGED;
-        vlan_port_list.push_back(vlan_port);
+        
+        LOGG(TEST_INFO, SETL3, "sai_vlan_api->remove_vlan_member\n");
+        status = sai_vlan_api->remove_vlan_member(vlan_member_id);
+        if (status != SAI_STATUS_SUCCESS )
+        {
+            LOGG(TEST_ERR, SETL3, "fail to remove member ports from vlan 1. status=0x%x\n",  -status);
+            return false;
+        }
+        vlan_member_list.pop_back();
     }
-
-    LOGG(TEST_INFO, SETL3, "sai_vlan_api->remove_ports_from_vlan\n");
-
-    status = sai_vlan_api->remove_ports_from_vlan(1, vlan_port_list.size(), vlan_port_list.data());
-
-    if (status != SAI_STATUS_SUCCESS )
-    {
-        LOGG(TEST_ERR, SETL3, "fail to remove front panel ports from vlan 1. status=0x%x\n",  -status);
-        return false;
-    }
-
-
     LOGG(TEST_INFO, SETL3, "sai_hif_api->set_trap_attribute SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION, TTL_ERROR\n");
     attr.id = SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION;
     attr.value.s32 = SAI_PACKET_ACTION_TRAP;

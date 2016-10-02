@@ -1,39 +1,36 @@
-/*
-* Copyright (c) 2015 Dell Inc.
-*
-*    Licensed under the Apache License, Version 2.0 (the "License"); you may
-*    not use this file except in compliance with the License. You may obtain
-*    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-*
-*    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
-*    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
-*    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
-*    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
-*
-*    See the Apache Version 2.0 License for specific language governing
-*    permissions and limitations under the License.
-*
-*/
 /**
-* Module Name:
-*
-* saimirror.h
-*
-* Abstract:
-*
-* This module defines SAI Port mirror Interface
-*
-*/
+ * Copyright (c) 2014 Microsoft Open Technologies, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *    not use this file except in compliance with the License. You may obtain
+ *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+ *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+ *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *
+ *    See the Apache Version 2.0 License for specific language governing
+ *    permissions and limitations under the License.
+ *
+ *    Microsoft would like to thank the following companies for their review and
+ *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+ *    Dell Products, L.P., Facebook, Inc
+ *
+ * @file    saimirror.h
+ *
+ * @brief   This module defines SAI Port Mirror interface
+ */
 
 #if !defined (__SAIMIRROR_H_)
 #define __SAIMIRROR_H_
 
-#include "saitypes.h"
-#include "saistatus.h"
+#include <saitypes.h>
 
-/** \defgroup SAIMIRROR SAI - Mirror specific public APIs and datastructures
+/**
+ * @defgroup SAIMIRROR SAI - Mirror specific public APIs and datastructures
  *
- *  \{
+ * @{
  */
 
 /**
@@ -57,10 +54,10 @@ typedef enum _sai_mirror_type_t
  */
 typedef enum _sai_erspan_encapsulation_type_t
 {
-    /** L3 GRE Tunnel Encapsulation    
-      | L2 Ethernet header | IP header | GRE header | Original mirrored packet |
+    /**
+     * @brief L3 GRE Tunnel Encapsulation | L2 Ethernet header | IP header | GRE header | Original mirrored packet
      */
-    SAI_MIRROR_L3_GRE_TUNNEL,
+    SAI_ERSPAN_ENCAPSULATION_TYPE_MIRROR_L3_GRE_TUNNEL,
 
 } sai_erspan_encapsulation_type_t;
 
@@ -69,87 +66,177 @@ typedef enum _sai_erspan_encapsulation_type_t
  */
 typedef enum _sai_mirror_session_attr_t
 {
-    
+    /**
+     * @brief Start of attributes
+     */
     SAI_MIRROR_SESSION_ATTR_START,
-    /** READ_ONLY */
 
-    /** READ_WRITE */
-
-    /** MANDATORY_ON_CREATE|CREATE_ONLY */
-    /** Mirror type SPAN/RSPAN/ERSPAN [sai_mirror_type_t]*/
+    /**
+     * @brief Mirror type SPAN/RSPAN/ERSPAN
+     *
+     * @type sai_mirror_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
     SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** Destination/Analyser/Monitor Port [sai_object_id_t]*/
+    /**
+     * @brief Destination/Analyser/Monitor Port
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
     SAI_MIRROR_SESSION_ATTR_MONITOR_PORT,
 
-    /** CREATE_AND_SET */
-    /** Truncate size - [uint16_t]*/
-    /** Truncate mirrored packets to this size to reduce SPAN traffic bandwidth*/
-    /** Value 0 to no truncation, Default is 0*/
+    /**
+     * @brief Truncate size. Truncate mirrored packets to this size to reduce SPAN traffic bandwidth
+     *
+     * Value 0 to no truncation
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
     SAI_MIRROR_SESSION_ATTR_TRUNCATE_SIZE,
 
-    /** CREATE_AND_SET */
-    /** Class-of-Service (Traffic Class) - [uint8_t],Default is 0*/
+    /**
+     * @brief Class-of-Service (Traffic Class)
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
     SAI_MIRROR_SESSION_ATTR_TC,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** Valid for RSPAN and ERSPAN
-     * L2 header TPID if vlanId is not zero - [uint16_t]*/
+    /**
+     * @brief Valid for RSPAN and ERSPAN
+     *
+     * L2 header TPID if vlanId is not zero
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_VLAN_TPID,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** Valid for RSPAN and ERSPAN L2 header VlanId - [sai_vlan_id_t]*/
+    /**
+     * @brief Valid for RSPAN and ERSPAN L2 header VlanId
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_REMOTE
+     * @isvlan true
+     */
     SAI_MIRROR_SESSION_ATTR_VLAN_ID,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** Valid for RSPAN and ERSPAN packet priority - [uint8_t : 3] */
+    /**
+     * @brief Valid for RSPAN and ERSPAN packet priority (3 bits)
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** Valid for RSPAN and ERSPAN Vlan-CFI - [uint8_t : 1] */
+    /**
+     * @brief Valid for RSPAN and ERSPAN Vlan-CFI (1 bit)
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_VLAN_CFI,
 
-    /** All attributes below are Valid only for ERSPAN 
-        [SAI_MIRROR_TYPE_ENHANCED_REMOTE]*/
+    /*
+     * All attributes below are Valid only for ERSPAN
+     * SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     */
 
-    /** MANDATORY_ON_CREATE|CREATE_ONLY */
-    /** Encapsulation type - sai_erspan_encapsulation_type_t */
+    /**
+     * @brief Encapsulation type
+     *
+     * @type sai_erspan_encapsulation_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_ENCAP_TYPE,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** tunnel IP header version - [uint8_t]*/
+    /**
+     * @brief Tunnel IP header version
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_IPHDR_VERSION,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** tunnel header TOS - [uint8_t]*/
+    /**
+     * @brief Tunnel header TOS
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_TOS,
 
-    /** CREATE_AND_SET */
-    /** tunnel header TTL - [uint8_t],default 255*/
+    /**
+     * Tunnel header TTL
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     */
     SAI_MIRROR_SESSION_ATTR_TTL,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** tunnel source IP - [sai_ip_address_t] */
+    /**
+     * @brief tunnel source IP
+     *
+     * @type sai_ip_address_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_SRC_IP_ADDRESS,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** tunnel destination IP - [sai_ip_address_t] */
+    /**
+     * @brief Tunnel destination IP
+     *
+     * @type sai_ip_address_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_DST_IP_ADDRESS,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** L2 source MAC address - [sai_mac_t] */
+    /**
+     * @brief L2 source MAC address
+     *
+     * @type sai_mac_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_SRC_MAC_ADDRESS,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** L2 destination MAC address - [sai_mac_t] */
+    /**
+     * @brief L2 destination MAC address
+     *
+     * @type sai_mac_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_DST_MAC_ADDRESS,
 
-    /** MANDATORY_ON_CREATE|CREATE_AND_SET */
-    /** Valid for ERSPAN, GRE protocol Id - [uint16_t] */
+    /**
+     * @brief Valid for ERSPAN, GRE protocol Id
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     */
     SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE,
 
-    SAI_MIRROR_SESSION_ATTR_END,    
+    /**
+     * @brief End of attributes
+     */
+    SAI_MIRROR_SESSION_ATTR_END,
 
 } sai_mirror_session_attr_t;
 
@@ -159,21 +246,22 @@ typedef enum _sai_mirror_session_attr_t
  * @param[out] session_id Port mirror session id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * error code is returned.
  */
 typedef sai_status_t (*sai_create_mirror_session_fn)(
         _Out_ sai_object_id_t *session_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove mirror session.
  *
  * @param[in] session_id Port mirror session id
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * error code is returned.
  */
 typedef sai_status_t (*sai_remove_mirror_session_fn)(
         _In_ sai_object_id_t session_id);
@@ -183,12 +271,13 @@ typedef sai_status_t (*sai_remove_mirror_session_fn)(
  *
  * @param[in] session_id Port mirror session id
  * @param[in] attr Value of attribute
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * error code is returned.
  */
 typedef sai_status_t (*sai_set_mirror_session_attribute_fn)(
         _In_ sai_object_id_t session_id,
-        _In_ const  sai_attribute_t *attr);
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get mirror session attributes.
@@ -196,29 +285,28 @@ typedef sai_status_t (*sai_set_mirror_session_attribute_fn)(
  * @param[in] session_id Port mirror session id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Value of attribute
+ *
  * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ * error code is returned.
  */
 typedef sai_status_t (*sai_get_mirror_session_attribute_fn)(
         _In_ sai_object_id_t session_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
-
 /**
  * @brief MIRROR method table retrieved with sai_api_query()
  */
 typedef struct _sai_mirror_api_t
 {
-    sai_create_mirror_session_fn create_mirror_session;
-    sai_remove_mirror_session_fn remove_mirror_session;
-    sai_set_mirror_session_attribute_fn set_mirror_session_attribute;
-    sai_get_mirror_session_attribute_fn get_mirror_session_attribute;
+    sai_create_mirror_session_fn            create_mirror_session;
+    sai_remove_mirror_session_fn            remove_mirror_session;
+    sai_set_mirror_session_attribute_fn     set_mirror_session_attribute;
+    sai_get_mirror_session_attribute_fn     get_mirror_session_attribute;
+
 } sai_mirror_api_t;
 
 /**
- * \}
+ * @}
  */
-
-#endif // __SAIMIRROR_H_
-
+#endif /** __SAIMIRROR_H_ */

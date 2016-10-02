@@ -406,7 +406,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
         ingress_port = 0
 
         for i in range (1, len(port_list)):
-            mac_list.append("00:00:00:00:00:%d" %(i+1))
+            mac_list.append("00:00:00:00:00:%02x" %(i+1))
         mac_action = SAI_PACKET_ACTION_FORWARD
 
         vlan_attr_list = self.client.sai_thrift_get_vlan_attribute(default_vlan)
