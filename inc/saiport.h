@@ -1365,6 +1365,7 @@ typedef enum _sai_port_stat_t
  * @brief Create port
  *
  * @param[out] port_id Port id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1372,6 +1373,7 @@ typedef enum _sai_port_stat_t
  */
 typedef sai_status_t (*sai_create_port_fn)(
         _Out_ sai_object_id_t *port_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1456,22 +1458,26 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
  *
  * Passed as a parameter into sai_initialize_switch()
  *
+ * @param[in] switch_id Switch id
  * @param[in] count Number of notifications
  * @param[in] data Array of port operational status
  */
 typedef void (*sai_port_state_change_notification_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t count,
         _In_ sai_port_oper_status_notification_t *data);
 
 /**
  * @brief Port event notification
  *
+ * @param[in] switch_id Switch id
  * @param[in] count Number of notifications
  * @param[in] data Array of port events
  */
 typedef void (*sai_port_event_notification_fn)(
-        _In_ uint32_t count,
-        _In_ sai_port_event_notification_t *data);
+       _In_ sai_object_id_t switch_id,
+       _In_ uint32_t count,
+       _In_ sai_port_event_notification_t *data);
 
 /**
  * @brief Port methods table retrieved with sai_api_query()

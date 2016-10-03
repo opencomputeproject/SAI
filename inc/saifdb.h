@@ -232,6 +232,7 @@ typedef struct _sai_fdb_event_notification_data_t
 /**
  * @brief Create FDB entry
  *
+ * @param[in] switch_id Switch object id
  * @param[in] fdb_entry FDB entry
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -239,6 +240,7 @@ typedef struct _sai_fdb_event_notification_data_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_create_fdb_entry_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ const sai_fdb_entry_t *fdb_entry,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -246,28 +248,33 @@ typedef sai_status_t (*sai_create_fdb_entry_fn)(
 /**
  * @brief Remove FDB entry
  *
+ * @param[in] switch_id Switch object id
  * @param[in] fdb_entry FDB entry
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_fdb_entry_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ const sai_fdb_entry_t *fdb_entry);
 
 /**
  * @brief Set fdb entry attribute value
  *
+ * @param[in] switch_id Switch object id
  * @param[in] fdb_entry FDB entry
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ const sai_fdb_entry_t *fdb_entry,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get fdb entry attribute value
  *
+ * @param[in] switch_id Switch object id
  * @param[in] fdb_entry FDB entry
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
@@ -275,6 +282,7 @@ typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ const sai_fdb_entry_t *fdb_entry,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -282,22 +290,26 @@ typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
 /**
  * @brief Remove all FDB entries by attribute set in sai_fdb_flush_attr
  *
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_flush_fdb_entries_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief FDB notifications
  *
+ * @param[in] switch_id Switch object id
  * @param[in] count Number of notifications
  * @param[in] data Pointer to fdb event notification data array
  */
 typedef void (*sai_fdb_event_notification_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t count,
         _In_ sai_fdb_event_notification_data_t *data);
 

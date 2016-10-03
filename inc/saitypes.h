@@ -114,9 +114,10 @@ typedef uint8_t sai_uint8_t;
 typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
+typedef char *sai_string_t;
+typedef void *sai_pointer_t;
 
-/**
- * @def SAI_NULL_OBJECT_ID
+/* @def SAI_NULL_OBJECT_ID
  * Sai NULL object ID
  */
 #define SAI_NULL_OBJECT_ID 0L
@@ -521,6 +522,8 @@ typedef union {
     sai_int32_t s32;
     sai_uint64_t u64;
     sai_int64_t s64;
+    sai_string_t string; 
+    sai_pointer_t ptr; 
     sai_mac_t mac;
     sai_ip4_t ip4;
     sai_ip6_t ip6;

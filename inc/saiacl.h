@@ -1685,12 +1685,14 @@ typedef enum _sai_acl_range_attr_t
  *
  * @param[out] acl_table_id The the ACL table id
  * @param[in] attr_count number of attributes
+ * @param[in] switch_id  Switch Object id
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_table_fn)(
         _Out_ sai_object_id_t *acl_table_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1734,6 +1736,7 @@ typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
  * @brief Create an ACL entry
  *
  * @param[out] acl_entry_id The ACL entry id
+ * @param[in] switch_id The Switch Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1741,6 +1744,7 @@ typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_entry_fn)(
         _Out_ sai_object_id_t *acl_entry_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1784,6 +1788,7 @@ typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
  * @brief Create an ACL counter
  *
  * @param[out] acl_counter_id The ACL counter id
+ * @param[out] switch_id The switch Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1791,6 +1796,7 @@ typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_counter_fn)(
         _Out_ sai_object_id_t *acl_counter_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1834,6 +1840,7 @@ typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
  * @brief Create an ACL Range
  *
  * @param[out] acl_range_id The ACL range id
+ * @param[in] switch_id The Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1841,6 +1848,7 @@ typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_range_fn)(
         _Out_ sai_object_id_t *acl_range_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

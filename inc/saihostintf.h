@@ -101,6 +101,7 @@ typedef enum _sai_hostif_trap_group_attr_t
  * @brief Create host interface trap group
  *
  * @param[out] hostif_trap_group_id Host interface trap group id
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -108,6 +109,7 @@ typedef enum _sai_hostif_trap_group_attr_t
  */
 typedef sai_status_t (*sai_create_hostif_trap_group_fn)(
         _Out_ sai_object_id_t *hostif_trap_group_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -411,6 +413,7 @@ typedef enum _sai_hostif_trap_attr_t
  * @brief Create host interface trap
  *
  * @param[out] hostif_trap_id Host interface trap id
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -418,6 +421,7 @@ typedef enum _sai_hostif_trap_attr_t
  */
 typedef sai_status_t (*sai_create_hostif_trap_fn)(
         _Out_ sai_object_id_t *hostif_trap_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -648,6 +652,7 @@ typedef enum _sai_hostif_attr_t
  * @brief Create host interface
  *
  * @param[out] hif_id Host interface id
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Aarray of attributes
  *
@@ -655,6 +660,7 @@ typedef enum _sai_hostif_attr_t
  */
 typedef sai_status_t(*sai_create_hostif_fn)(
         _Out_ sai_object_id_t *hif_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

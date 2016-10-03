@@ -126,6 +126,7 @@ typedef struct _sai_route_entry_t
  *
  * Note: IP prefix/mask expected in Network Byte Order.
  *
+ * @param[in] switch_id Switch id
  * @param[in] route_entry Route entry
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -133,6 +134,7 @@ typedef struct _sai_route_entry_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_create_route_fn)(
+        _In_ sai_switch_id_t switch_id,
         _In_ const sai_route_entry_t *route_entry,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -142,28 +144,34 @@ typedef sai_status_t (*sai_create_route_fn)(
  *
  * Note: IP prefix/mask expected in Network Byte Order.
  *
+ * @param[in] switch_id - Switch id
  * @param[in] route_entry - route entry
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_route_fn)(
-        _In_ const sai_route_entry_t *route_entry);
+        _In_ sai_switch_id_t switch_id,
+        _In_ const sai_route_entry_t *route_entry, 
+        );
 
 /**
  * @brief Set route attribute value
  *
+ * @param[in] switch_id - Switch id
  * @param[in] route_entry Route entry
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_set_route_attribute_fn)(
+        _In_ sai_switch_id_t switch_id,
         _In_ const sai_route_entry_t *route_entry,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get route attribute value
  *
+ * @param[in] switch_id - Switch id
  * @param[in] route_entry Route entry
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
@@ -171,6 +179,7 @@ typedef sai_status_t (*sai_set_route_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_route_attribute_fn)(
+        _In_ sai_switch_id_t switch_id,
         _In_ const sai_route_entry_t *route_entry,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
