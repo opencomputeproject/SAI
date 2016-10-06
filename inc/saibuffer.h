@@ -215,9 +215,9 @@ typedef enum _sai_buffer_pool_attr_t
     /**
      * @brief shared threshold mode for the buffer
      *
-     * @type sai_buffer_profile_threshold_mode_t
+     * @type sai_buffer_pool_threshold_mode_t
      * @flags CREATE_ONLY
-     * @default SAI_BUFFER_THRESHOLD_MODE_DYNAMIC
+     * @default SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC
      */
     SAI_BUFFER_POOL_ATTR_TH_MODE,
 
@@ -358,11 +358,6 @@ typedef enum _sai_buffer_profile_attr_t
      */
     SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,
 
-<<<<<<< HEAD
-    /** shared threshold mode for the buffer profile [sai_buffer_profile_threadhold_mode_t] (CREATE_AND_SET)
-     * If set, this overrides SAI_BUFFER_POOL_ATTR_TH_MODE.
-     * (default to value set to SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE) */
-=======
     /**
      * @brief Shared threshold mode for the buffer profile
      *
@@ -370,11 +365,10 @@ typedef enum _sai_buffer_profile_attr_t
      * If not set, use #SAI_BUFFER_POOL_ATTR_TH_MODE.
      * (default to value set in #SAI_BUFFER_POOL_ATTR_TH_MODE)
      *
-     * @type sai_buffer_threshold_mode_t
+     * @type sai_buffer_profile_threshold_mode_t
      * @flags CREATE_AND_SET
-     * @default inherit SAI_BUFFER_POOL_ATTR_TH_MODE
+     * @default SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE
      */
->>>>>>> origin/master
     SAI_BUFFER_PROFILE_ATTR_TH_MODE,
 
     /**
