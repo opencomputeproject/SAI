@@ -51,6 +51,9 @@ typedef enum _sai_fdb_entry_type_t
  */
 typedef struct _sai_fdb_entry_t
 {
+    /** Switch ID */
+    sai_object_id_t switch_id;
+
     /** Mac address */
     sai_mac_t mac_address;
 
@@ -232,7 +235,6 @@ typedef struct _sai_fdb_event_notification_data_t
 /**
  * @brief Create FDB entry
  *
- * @param[in] switch_id Switch object id
  * @param[in] fdb_entry FDB entry
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -240,7 +242,6 @@ typedef struct _sai_fdb_event_notification_data_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_create_fdb_entry_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ const sai_fdb_entry_t *fdb_entry,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -254,7 +255,6 @@ typedef sai_status_t (*sai_create_fdb_entry_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_fdb_entry_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ const sai_fdb_entry_t *fdb_entry);
 
 /**
@@ -267,7 +267,6 @@ typedef sai_status_t (*sai_remove_fdb_entry_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ const sai_fdb_entry_t *fdb_entry,
         _In_ const sai_attribute_t *attr);
 
@@ -282,7 +281,6 @@ typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ const sai_fdb_entry_t *fdb_entry,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);

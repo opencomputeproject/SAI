@@ -106,6 +106,11 @@ typedef enum _sai_neighbor_entry_attr_t
  */
 typedef struct _sai_neighbor_entry_t
 {
+     /**
+     * @brief Switch ID
+     */
+    sai_object_id_t switch_id;
+    
     /**
      * @brief Router interface ID
      */
@@ -123,7 +128,6 @@ typedef struct _sai_neighbor_entry_t
  *
  * Note: IP address expected in Network Byte Order.
  *
- * @param[in] switch_id Switch Id 
  * @param[in] neighbor_entry Neighbor entry
  * @param[in] attr_count Number of attributes
  * @param[in] attrs Array of attributes
@@ -131,7 +135,6 @@ typedef struct _sai_neighbor_entry_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_create_neighbor_entry_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ const sai_neighbor_entry_t *neighbor_entry,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -141,26 +144,22 @@ typedef sai_status_t (*sai_create_neighbor_entry_fn)(
  *
  * Note: IP address expected in Network Byte Order.
  *
- * @param[in] switch_id Switch id
  * @param[in] neighbor_entry Neighbor entry
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ const sai_neighbor_entry_t *neighbor_entry);
 
 /**
  * @brief Set neighbor attribute value
  *
- * @param[in] switch_id Switch id
  * @param[in] neighbor_entry Neighbor entry
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ const sai_neighbor_entry_t *neighbor_entry,
         _In_ const sai_attribute_t *attr);
 
@@ -175,7 +174,6 @@ typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_neighbor_attribute_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ const sai_neighbor_entry_t *neighbor_entry,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);

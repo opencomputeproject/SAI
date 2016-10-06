@@ -1007,7 +1007,10 @@ typedef enum _sai_switch_attr_t
      * @brief Device Information for switch initialization.
      * 
      * Hardware information format is based on SAI implementations by vendors.
+     * String is NULL terminated. Format is vendor specific. 
      *   Example: Like PCI location, I2C adddress etc.
+     * In case of NULL, First NPU attached to CPU will be initialized.
+     * Single NPU case this attribute is optional.
      *
      * @type sai_string_t
      * @flags CREATE_ONLY
@@ -1034,7 +1037,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type bool
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @default true
      */
     SAI_SWITCH_ATTR_INIT_SWITCH,
 
@@ -1235,7 +1237,8 @@ typedef enum _sai_switch_attr_t
  *
  * @param[in] switch_id Switch Id
  */
-typedef void (*sai_switch_shutdown_request_fn)(_In_ sai_object_id_t switch_id);
+typedef void (*sai_switch_shutdown_request_fn)(
+              _In_ sai_object_id_t switch_id);
 
 /**
  * @brief Switch oper state change notification
