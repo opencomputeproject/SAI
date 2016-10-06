@@ -991,7 +991,7 @@ typedef enum _sai_switch_attr_t
      * @default false
      */
     SAI_SWITCH_ATTR_SWITCH_SHELL_ENABLE,
-
+    
     /**
      * @brief Handle for switch profile id.
      *
@@ -1000,6 +1000,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_switch_profile_id_t
      * @flags CREATE_ONLY
      * @allownull true
+     * @default 0
      */
     SAI_SWITCH_ATTR_SWITCH_PROFILE_ID,
 
@@ -1106,7 +1107,7 @@ typedef enum _sai_switch_attr_t
      * @allownull true
      */
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
-
+    
     /**
      * @brief End of attributes
      */
