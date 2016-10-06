@@ -95,6 +95,17 @@ typedef enum _sai_scheduler_group_attr_t
     SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID = 0x00000005,
 
     /**
+     * @brief Scheduler group parent node
+     *
+     * This is conditional when the level > 0, when level == 0, the parent is the port.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_SCHEDULER
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_SCHEDULER_GROUP_ATTR_PARENT_NODE = 0x00000006,
+
+    /**
      * @brief End of attributes
      */
     SAI_SCHEDULER_GROUP_ATTR_END,
@@ -158,34 +169,6 @@ typedef sai_status_t (*sai_get_scheduler_group_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Add Child queue/group objects to scheduler group
- *
- * @param[in] scheduler_group_id Scheduler group id.
- * @param[in] child_count Number of child count
- * @param[in] child_objects Array of child objects
- *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
- */
-typedef sai_status_t (*sai_add_child_object_to_group_fn)(
-        _In_ sai_object_id_t scheduler_group_id,
-        _In_ uint32_t child_count,
-        _In_ const sai_object_id_t *child_objects);
-
-/**
- * @brief Remove Child queue/group objects from scheduler group
- *
- * @param[in] scheduler_group_id Scheduler group id.
- * @param[in] child_count Number of child count
- * @param[in] child_objects Array of child objects
- *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
- */
-typedef sai_status_t (*sai_remove_child_object_from_group_fn)(
-        _In_ sai_object_id_t scheduler_group_id,
-        _In_ uint32_t child_count,
-        _In_ const sai_object_id_t *child_objects);
-
-/**
  * @brief Scheduler Group methods table retrieved with sai_api_query()
  */
 typedef struct _sai_scheduler_group_api_t
@@ -194,8 +177,6 @@ typedef struct _sai_scheduler_group_api_t
     sai_remove_scheduler_group_fn          remove_scheduler_group;
     sai_set_scheduler_group_attribute_fn   set_scheduler_group_attribute;
     sai_get_scheduler_group_attribute_fn   get_scheduler_group_attribute;
-    sai_add_child_object_to_group_fn       add_child_object_to_group;
-    sai_remove_child_object_from_group_fn  remove_child_object_from_group;
 
 } sai_scheduler_group_api_t;
 
