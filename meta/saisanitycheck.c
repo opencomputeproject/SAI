@@ -335,7 +335,6 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
-
             if (md->allowedobjecttypes == NULL)
             {
                 META_ASSERT_FAIL(md, "object types list is required but it's empty");
@@ -354,6 +353,9 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
+        case SAI_ATTR_VALUE_TYPE_STR:
+        case SAI_ATTR_VALUE_TYPE_PTR:
+ 
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
@@ -548,15 +550,16 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
-            break;
-
-        case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+             break;
+        case SAI_ATTR_VALUE_TYPE_STR:
+        case SAI_ATTR_VALUE_TYPE_PTR:
+        case SAI_ATTR_VALUE_TYPE_UINT32_LIST:        
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
-
+ 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
                 break;
@@ -719,7 +722,9 @@ void check_attr_default_value_type(
 
             switch (md->attrvaluetype)
             {
-                case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+                case SAI_ATTR_VALUE_TYPE_STR:
+                case SAI_ATTR_VALUE_TYPE_PTR:
+                case SAI_ATTR_VALUE_TYPE_UINT32_LIST:               
                 case SAI_ATTR_VALUE_TYPE_INT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
@@ -923,7 +928,9 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
-                break;
+            case SAI_ATTR_VALUE_TYPE_STR:
+            case SAI_ATTR_VALUE_TYPE_PTR:
+              break;
 
             default:
 
