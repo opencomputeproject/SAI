@@ -20,6 +20,7 @@ import socket
 from switch import *
 
 import sai_base_test
+from ptf.mask import Mask
 
 @group('l3')
 class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -866,7 +867,7 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             for i in range(0, max_itrs):
                 dst_ip_addr = socket.inet_ntoa(hex(dst_ip)[2:].zfill(8).decode('hex'))
                 src_mac = src_mac_start + str(i%99).zfill(2)
-                pkt = simple_tcp_packet(eth_dst='00:77:66:55:44:33',
+                pkt = simple_tcp_packet(eth_dst=router_mac,
                         eth_src=src_mac,
                         ip_dst=dst_ip_addr,
                         ip_src='192.168.8.1',
@@ -874,19 +875,19 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
                         ip_ttl=64)
 
                 exp_pkt1 = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                        eth_src='00:77:66:55:44:33',
+                        eth_src=router_mac,
                         ip_dst=dst_ip_addr,
                         ip_src='192.168.8.1',
                         ip_id=106,
                         ip_ttl=63)
                 exp_pkt2 = simple_tcp_packet(eth_dst='00:11:22:33:44:56',
-                        eth_src='00:77:66:55:44:33',
+                        eth_src=router_mac,
                         ip_dst=dst_ip_addr,
                         ip_src='192.168.8.1',
                         ip_id=106,
                         ip_ttl=63)
                 exp_pkt3 = simple_tcp_packet(eth_dst='00:11:22:33:44:57',
-                        eth_src='00:77:66:55:44:33',
+                        eth_src=router_mac,
                         ip_dst=dst_ip_addr,
                         ip_src='192.168.8.1',
                         ip_id=106,
@@ -1214,3 +1215,265 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
             self.client.sai_thrift_remove_virtual_router(vr_id)
+
+@group('l3')
+class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        """
+        For sai server for testing learning inside vlan and fwd packet to vlan through l3
+        Steps
+        1. Create VLAN
+        2. Create two VLAN members
+        3. Set port VLAN IDs
+        4. Create virtual router
+        5. Create router interface for VLAN and an extra port 3
+        6. Set SAI PORT LEARN MODE HW
+        7. Send packet from one port of the VLAN to the DUT to update the FDB entry
+        8. Create neighbor and route
+        9. Send L3 packet from port to the VLAN with the destination IP and verify that only the targeted port receives the packet and the MAC in the packet is updated 
+        10. clean up.
+        """
+
+        print
+        print "Sending packet port 1 -> switch (for learning purpuse)"
+        print "and then sending packet from port 3 -> port 1 (through the router)"
+        switch_init(self.client)
+        sai_thrift_clear_all_counters(self.client)
+        v4_enabled = 1
+        v6_enabled = 1
+        vlan_id = 10
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1_subnet = '10.10.10.0'
+        ip_mask1 = '255.255.255.0'
+        mac_port1 = '00:0a:00:00:00:01'
+        ip_port1 = '10.10.10.2'
+        mac_port3 = '00:0b:00:00:00:01'
+        mac1 = ''
+        mac2 = ''
+        self.client.sai_thrift_create_vlan(vlan_id)
+        
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_id, port1, SAI_VLAN_PORT_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_id, port2, SAI_VLAN_PORT_TAGGED)
+        attr_value1 = sai_thrift_attribute_value_t(u16=vlan_id)
+        attr1 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value1)
+        self.client.sai_thrift_set_port_attribute(port1, attr1)
+        self.client.sai_thrift_set_port_attribute(port2, attr1)
+        
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+        rif_vlan_id = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id, v4_enabled, v6_enabled, mac1)
+        rif_port_id = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac2)
+
+        attr_value2 = sai_thrift_attribute_value_t(s32=SAI_PORT_LEARN_MODE_HW)
+        attr2 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_FDB_LEARNING, value=attr_value2)
+        self.client.sai_thrift_set_port_attribute(port1, attr2)
+        self.client.sai_thrift_set_port_attribute(port2, attr2)
+        
+        sai_thrift_create_neighbor(self.client, addr_family, rif_vlan_id, ip_port1, mac_port1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_vlan_id)
+            
+        
+        local_pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
+                                eth_src=mac_port1,
+                                dl_vlan_enable=True,
+                                vlan_vid=vlan_id,
+                                ip_dst='10.0.0.1',
+                                ip_src=ip_port1,
+                                ip_id=102,
+                                ip_ttl=64)
+        
+
+        try:
+            #sending unkown UC for learning the ports mac and expecting flooding only on the vlan
+            send_packet(self, 0, str(local_pkt))
+            verify_packets(self, local_pkt, [1])
+            #sending L3 packet from port 3 through router to port 1 that update the fdb with is MAC
+            L3_pkt = simple_tcp_packet(pktlen=100,
+                                eth_dst=router_mac,
+                                eth_src=mac_port3,
+                                ip_src='11.11.11.1',
+                                ip_dst=ip_port1,
+                                ip_id=105,
+                                ip_ttl=64)
+            exp_pkt = simple_tcp_packet(pktlen=104,#additional 4bytes because of the vlan
+                                eth_dst=mac_port1,
+                                eth_src=router_mac,
+                                ip_dst=ip_port1,
+                                ip_src='11.11.11.1',
+                                dl_vlan_enable=True,
+                                vlan_vid=vlan_id,
+                                ip_id=105,
+                                ip_ttl=63)
+            send_packet(self, 2, str(L3_pkt))
+            verify_packets(self, exp_pkt, [0])
+        finally:
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_vlan_id)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_vlan_id, ip_port1, mac_port1)
+            
+            self.client.sai_thrift_remove_router_interface(rif_vlan_id)
+            self.client.sai_thrift_remove_router_interface(rif_port_id)
+            
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_delete_vlan(vlan_id)
+            
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+@group('lag')
+@group('l3')
+class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
+    total_lag_port = 16
+    v4_enabled = 1
+    v6_enabled = 1
+    ip_mask = '255.255.255.0'
+    addr_family = SAI_IP_ADDR_FAMILY_IPV4
+    lag_members = []
+    lags = []
+    lags_rifs = []
+    neighbors = []
+    routes = []
+    vr_id = 0
+    mac_action = SAI_PACKET_ACTION_FORWARD
+    src_port = 0
+    mac_pool = ['00:11:22:33:44:50',
+               '00:11:23:33:44:51',
+               '00:11:24:33:44:52',
+               '00:11:25:33:44:53',
+               '00:11:26:33:44:54',
+               '00:11:27:33:44:55',
+               '00:11:28:33:44:56',
+               '00:11:29:33:44:57',
+               '00:11:30:33:44:58',
+               '00:11:31:33:44:59',
+               '00:11:32:33:44:60',
+               '00:11:33:33:44:61',
+               '00:11:34:33:44:62',
+               '00:11:35:33:44:63',
+               '00:11:36:33:44:64',
+               '00:11:37:33:44:65',
+               '00:11:38:33:44:66']
+    
+    
+    def setup_lags(self, num_of_lags, port_list):
+        for i in xrange(num_of_lags):
+            self.lags.append(self.client.sai_thrift_create_lag([]))
+        for i in xrange(self.total_lag_port):
+            self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lags[i % num_of_lags], port_list[i]))
+        for i in xrange(num_of_lags):
+            self.lags_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lags[i], 0, self.v4_enabled, self.v6_enabled, ''))
+        for i in xrange(num_of_lags):
+            sai_thrift_create_neighbor(self.client, self.addr_family, self.lags_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
+            sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i])
+
+    def teardown_lags(self, num_of_lags, port_list):
+        if (num_of_lags == 0 ): return
+        for i in xrange(num_of_lags):
+            sai_thrift_remove_neighbor(self.client, self.addr_family, self.lags_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
+            sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i])
+        for rif in self.lags_rifs:
+            self.client.sai_thrift_remove_router_interface(rif)
+        del self.lags_rifs[:]
+        for lag_member in self.lag_members:
+            self.client.sai_thrift_remove_lag_member(lag_member)
+        del self.lag_members[:]
+        for lag in self.lags:
+            self.client.sai_thrift_remove_lag(lag)
+        del self.lags[:]
+        
+    def send_and_verify_packets(self, num_of_lags, port_list):
+        exp_pkts = [0]*self.total_lag_port
+        pkt_counter = [0] * self.total_lag_port
+        destanation_ports = range(self.total_lag_port)
+        sport = 0x1234
+        dport = 0x50
+        src_mac = self.dataplane.get_mac(0, 16)
+        NUM_OF_PKT_TO_EACH_PORT = 254
+        NUM_OF_PKTS_TO_SEND = NUM_OF_PKT_TO_EACH_PORT * self.total_lag_port
+        for i in xrange(NUM_OF_PKTS_TO_SEND):
+                ip_src = '10.0.' + str(i % 255) + '.' + str(i % 255)
+                ip_dst = '10.10.' + str((i % num_of_lags) + 1) + '.1'
+                pkt = simple_tcp_packet(
+                                        eth_dst=router_mac,
+                                        eth_src=src_mac,
+                                        ip_src=ip_src,
+                                        ip_dst=ip_dst,
+                                        ip_id=i,
+                                        tcp_sport=sport,
+                                        tcp_dport=dport,
+                                        ip_ttl=64)
+                exp_pkt = simple_tcp_packet(
+                                        eth_dst=self.mac_pool[i % num_of_lags],
+                                        eth_src=router_mac,
+                                        ip_src=ip_src,
+                                        ip_dst=ip_dst,
+                                        ip_id=i,
+                                        tcp_sport=sport,
+                                        tcp_dport=dport,
+                                        ip_ttl=63)
+
+                send_packet(self, self.total_lag_port, str(pkt))
+                (match_index,rcv_pkt) = verify_packet_any_port(self,exp_pkt,destanation_ports)
+                logging.debug("found expected packet from port %d" % destanation_ports[match_index])
+                pkt_counter[match_index] += 1
+                sport = random.randint(0,0xffff)
+                dport = random.randint(0,0xffff)
+                        
+        #final uniform distribution check
+        for stat_port in xrange(self.total_lag_port):
+            logging.debug( "PORT #"+str(hex(port_list[stat_port]))+":")
+            logging.debug(str(pkt_counter[stat_port]))
+            self.assertTrue((pkt_counter[stat_port] >= ((NUM_OF_PKT_TO_EACH_PORT ) * 0.8)),
+                    "Not all paths are equally balanced, %s" % pkt_counter[stat_port])
+            self.assertTrue((pkt_counter[stat_port] <= ((NUM_OF_PKT_TO_EACH_PORT ) * 1.2)),
+                    "Not all paths are equally balanced, %s" % pkt_counter[stat_port])
+                    
+    def runTest(self):
+        """
+        For sai server, testing different lags with router
+        ---- Test for 17 ports minimun ----
+        Steps
+        1. Create virtual router
+        2. Reserve port 16 for sending packets
+        3. Create router interfaces 1-for all the lags, 2-for the source port 
+        4. Create sixteen LAGs with each hash one member
+        5. Config neighbors and routes 
+        6. Send packet and check for arrivals balanced traffic
+        7. Repeat steps 3-6 with 8 lags with each has 2 members, 4 lags with 4 members, 2 lags with 8 members and 1 lag with 16 members
+        8. clean up.
+        """
+       
+          
+        print
+        print "L3MultipleLagTest"
+        #general configuration 
+        random.seed(1)
+        switch_init(self.client)
+        self.src_port = port_list[self.total_lag_port]
+        if (len(port_list) < (self.total_lag_port + 1) ) : 
+            print "skip this test as it requires 17 ports"
+            return
+        
+        self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
+        rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
+        num_of_lags = self.total_lag_port
+        try:
+            while (num_of_lags > 0):
+                print "testing with " +str(num_of_lags) + " lags"
+                self.setup_lags(num_of_lags,port_list)
+                self.send_and_verify_packets(num_of_lags,port_list)
+                self.teardown_lags(num_of_lags,port_list)
+                num_of_lags /= 2
+                
+        finally:
+            
+            #in case of an exception in the send_and_verify_packets
+            self.teardown_lags(num_of_lags,port_list)
+            self.client.sai_thrift_remove_router_interface(rif_port_id)
+            self.client.sai_thrift_remove_virtual_router(self.vr_id)
+            print "END OF TEST"
