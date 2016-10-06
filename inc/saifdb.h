@@ -249,7 +249,6 @@ typedef sai_status_t (*sai_create_fdb_entry_fn)(
 /**
  * @brief Remove FDB entry
  *
- * @param[in] switch_id Switch object id
  * @param[in] fdb_entry FDB entry
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -260,7 +259,6 @@ typedef sai_status_t (*sai_remove_fdb_entry_fn)(
 /**
  * @brief Set fdb entry attribute value
  *
- * @param[in] switch_id Switch object id
  * @param[in] fdb_entry FDB entry
  * @param[in] attr Attribute
  *
@@ -273,7 +271,6 @@ typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
 /**
  * @brief Get fdb entry attribute value
  *
- * @param[in] switch_id Switch object id
  * @param[in] fdb_entry FDB entry
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes

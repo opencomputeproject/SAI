@@ -166,7 +166,6 @@ typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
 /**
  * @brief Get neighbor attribute value
  *
- * @param[in] switch_id Switch id
  * @param[in] neighbor_entry Neighbor entry
  * @param[in] attr_count Number of attributes
  * @param[inout] attrs Array of attributes

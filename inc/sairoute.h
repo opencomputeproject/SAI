@@ -152,8 +152,7 @@ typedef sai_status_t (*sai_create_route_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_route_fn)(
-        _In_ const sai_route_entry_t *route_entry, 
-        );
+        _In_ const sai_route_entry_t *route_entry);
 
 /**
  * @brief Set route attribute value
