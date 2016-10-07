@@ -362,8 +362,6 @@ typedef enum _sai_buffer_profile_attr_t
      * @brief Shared threshold mode for the buffer profile
      *
      * If set, this overrides #SAI_BUFFER_POOL_ATTR_TH_MODE.
-     * If not set, use #SAI_BUFFER_POOL_ATTR_TH_MODE.
-     * (default to value set in #SAI_BUFFER_POOL_ATTR_TH_MODE)
      *
      * @type sai_buffer_profile_threshold_mode_t
      * @flags CREATE_AND_SET
