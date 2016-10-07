@@ -144,12 +144,12 @@ typedef enum _sai_attr_value_type_t {
     /**
      * @brief Attribute value is string with NULL terminated.
      */
-    SAI_ATTR_VALUE_TYPE_STR,
+    SAI_ATTR_VALUE_TYPE_STRING,
 
     /**
      * @brief Attribute value is pointer address.
      */
-    SAI_ATTR_VALUE_TYPE_PTR,
+    SAI_ATTR_VALUE_TYPE_POINTER,
 
     /**
      * @brief Attribute value is mac address.

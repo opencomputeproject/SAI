@@ -522,7 +522,7 @@ typedef union {
     sai_int32_t s32;
     sai_uint64_t u64;
     sai_int64_t s64;
-    sai_string_t string; 
+    sai_string_t str; 
     sai_pointer_t ptr; 
     sai_mac_t mac;
     sai_ip4_t ip4;
