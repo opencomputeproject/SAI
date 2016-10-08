@@ -81,8 +81,8 @@ typedef enum _sai_route_entry_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_PORT
-     * @flags CREATE_AND_SET
      * @default SAI_NULL_OBJECT_ID
+     * @flags CREATE_AND_SET
      * @allownull true
      */
     SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID,
