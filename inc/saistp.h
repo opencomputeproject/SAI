@@ -73,7 +73,7 @@ typedef enum _sai_stp_attr_t
      * When a stp is created, this list is empty, all ports state as blocking.
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_STP_PORT
      * @flags READ_ONLY
      */
     SAI_STP_ATTR_PORT_LIST,
