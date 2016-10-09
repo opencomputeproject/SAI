@@ -1102,7 +1102,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
-          for (int j=0 ; j<4 ; j++){
+          uint32_t laneCnt = port_lane_list_attribute.value.u32list.count;
+          for (int j=0 ; j<laneCnt; j++){
               port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
           }
           
@@ -1190,7 +1191,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
-          for (int j=0 ; j<4 ; j++){
+          uint32_t laneCnt = port_lane_list_attribute.value.u32list.count;
+          for (int j=0 ; j<laneCnt; j++){
               port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
           }
    
