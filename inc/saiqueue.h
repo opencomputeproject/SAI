@@ -92,10 +92,12 @@ typedef enum _sai_queue_attr_t
     /**
      * @brief Parent scheduler node
      *
-     * In case of Hierarchical Qos not supported, the parent node is the port
+     * In case of Hierarchical Qos not supported, the parent node is the port.
+     * Condition on whether Hierarchial Qos is supported or not, need to remove
+     * the MANDATORY_ON_CREATE FLAG when HQoS is introduced
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER, SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP, SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_QUEUE_ATTR_PARENT_SCHEDULER_NODE = 0x00000003,
