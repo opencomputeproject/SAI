@@ -100,7 +100,7 @@ typedef enum _sai_scheduler_group_attr_t
      * This is conditional when the level > 0, when level == 0, the parent is the port.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER
+     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_SCHEDULER_GROUP_ATTR_PARENT_NODE = 0x00000006,
