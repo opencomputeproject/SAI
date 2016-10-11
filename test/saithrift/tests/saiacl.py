@@ -46,7 +46,7 @@ class IPAclTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
 
         # send the test packet(s)
-        pkt = simple_tcp_packet(eth_dst='00:77:66:55:44:33',
+        pkt = simple_tcp_packet(eth_dst=router_mac,
                                 eth_src='00:22:22:22:22:22',
                                 ip_dst='10.10.10.1',
                                 ip_src='192.168.0.1',
@@ -54,7 +54,7 @@ class IPAclTest(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_ttl=64)
         exp_pkt = simple_tcp_packet(
                                 eth_dst='00:11:22:33:44:55',
-                                eth_src='00:77:66:55:44:33',
+                                eth_src=router_mac,
                                 ip_dst='10.10.10.1',
                                 ip_src='192.168.0.1',
                                 ip_id=105,
