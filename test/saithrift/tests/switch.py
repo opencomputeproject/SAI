@@ -89,7 +89,7 @@ def switch_init(client):
         else:
             all_ports_are_up = True
     if not all_ports_are_up:
-        raise NameError('Not all of the  ports are up')
+        raise RuntimeError('Not all of the  ports are up')
 
     thrift_attr = client.sai_thrift_get_port_list_by_front_port()
     if thrift_attr.id == SAI_SWITCH_ATTR_PORT_LIST:
