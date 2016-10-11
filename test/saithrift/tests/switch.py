@@ -98,9 +98,7 @@ def switch_init(client):
     for interface,front in interface_to_front_mapping.iteritems():
         sai_port_id = client.sai_thrift_get_port_id_by_front_port(front);
         port_list[int(interface)]=sai_port_id
-
-
-
+        
     switch_inited = 1
 
 
