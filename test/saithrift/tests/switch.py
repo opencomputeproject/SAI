@@ -46,8 +46,8 @@ sai_port_list = []
 front_port_list = []
 table_attr_list = []
 router_mac='00:77:66:55:44:00'
-rewrite_mac1='00:77:66:55:45:01'
-rewrite_mac2='00:77:66:55:46:01'
+rewrite_mac1='00:77:66:55:44:01'
+rewrite_mac2='00:77:66:55:44:02'
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
 
@@ -128,7 +128,7 @@ def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled):
     #v6 enabled
     vr_attribute2_value = sai_thrift_attribute_value_t(booldata=v6_enabled)
     vr_attribute2 = sai_thrift_attribute_t(id=SAI_VIRTUAL_ROUTER_ATTR_ADMIN_V6_STATE,
-                                           value=vr_attribute1_value)
+                                           value=vr_attribute2_value)
     vr_attr_list = [vr_attribute1, vr_attribute2]
     vr_id = client.sai_thrift_create_virtual_router(thrift_attr_list=vr_attr_list)
     return vr_id
