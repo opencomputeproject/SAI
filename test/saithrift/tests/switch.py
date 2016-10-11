@@ -69,23 +69,36 @@ def switch_init(client):
                 sai_port_list.append(port_id)
         else:
             print "unknown switch attribute"
-
     attr_value = sai_thrift_attribute_value_t(mac=router_mac)
     attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_SRC_MAC_ADDRESS, value=attr_value)
     client.sai_thrift_set_switch_attribute(attr)
-
-    # wait till the port are up
-    time.sleep(10)
+    all_ports_are_up = True
+    for num_of_tries in range(200):
+        time.sleep(1)
+        # wait till the port are up
+        for port in port_list:
+            port_attr_list = client.sai_thrift_get_port_attribute(port)
+            attr_list = port_attr_list.attr_list
+            for attribute in attr_list:
+                if attribute.id == SAI_PORT_ATTR_OPER_STATUS:
+                    if attribute.value.s32 != SAI_PORT_OPER_STATUS_UP:
+                        all_ports_are_up = False
+                        print "port %h is down" % port
+        if all_ports_are_up:
+            break
+        else:
+            all_ports_are_up = True
+    if not all_ports_are_up:
+        raise RuntimeError('Not all of the  ports are up')
 
     thrift_attr = client.sai_thrift_get_port_list_by_front_port()
     if thrift_attr.id == SAI_SWITCH_ATTR_PORT_LIST:
         for port_id in thrift_attr.value.objlist.object_id_list:
             front_port_list.append(port_id)
-
     for interface,front in interface_to_front_mapping.iteritems():
         sai_port_id = client.sai_thrift_get_port_id_by_front_port(front);
         port_list[int(interface)]=sai_port_id
-           
+        
     switch_inited = 1
 
 
