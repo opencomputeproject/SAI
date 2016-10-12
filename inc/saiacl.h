@@ -224,17 +224,39 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_START,
 
     /**
-     * @brief Dummy attribute
+     * @brief ACL stage
      *
-     * @type sai_int32_t
-     * @flags READ_ONLY
+     * @type sai_acl_stage_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_TABLE_GROUP_ATTR_DUMMY = SAI_ACL_TABLE_GROUP_ATTR_START,
+    SAI_ACL_TABLE_GROUP_ATTR_STAGE = SAI_ACL_TABLE_GROUP_ATTR_START,
+
+    /**
+     * @brief Priority
+     *
+     * Value must be in the range defined in
+     * [SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MINIMUM_PRIORITY,
+     * SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MAXIMUM_PRIORITY]
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_ACL_GROUP_ATTR_PRIORITY,
 
     /**
      * @brief End of attributes
      */
     SAI_ACL_TABLE_GROUP_ATTR_END
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_ACL_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_ACL_GROUP_ATTR_CUSTOM_RANGE_END
 
 } sai_acl_table_group_attr_t;
 
@@ -1880,6 +1902,30 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
         _Out_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Create an ACL Table Group
+ *
+ * @param[out] acl_table_group_id The ACL group id 
+ * @param[in] attr_count number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_create_acl_table_group_fn)(
+        _Out_ sai_object_id_t *acl_table_group_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Delete an ACL Group 
+ *
+ * @param[in] acl_table_group_id The ACL group id
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_acl_table_group_fn)(
+        _In_ sai_object_id_t acl_table_group_id);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_acl_api_t
@@ -1900,8 +1946,8 @@ typedef struct _sai_acl_api_t
     sai_remove_acl_range_fn             remove_acl_range;
     sai_set_acl_range_attribute_fn      set_acl_range_attribute;
     sai_get_acl_range_attribute_fn      get_acl_range_attribute;
-    sai_create_acl_group_fn             create_acl_group;
-    sai_remove_acl_group_fn             remove_acl_group;
+    sai_create_acl_table_group_fn       create_acl_table_group;
+    sai_remove_acl_table_group_fn       remove_acl_table_group;
 } sai_acl_api_t;
 
 /**
