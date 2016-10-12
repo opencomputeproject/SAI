@@ -291,6 +291,16 @@ void check_attr_flags(
                     break;
                 }
 
+                if ((md->attrvaluetype == SAI_ATTR_VALUE_TYPE_STRING) || 
+                    (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER))
+                {
+                    /*
+                     * String  or Pointer may not provide default value, 
+                     * which will mean it can be NULL.
+                     */
+                    break;
+                }
+
                 if (sai_metadata_is_acl_field_or_action(md))
                 {
                     break;
@@ -470,6 +480,13 @@ void check_attr_default_required(
             return;
         }
 
+        if ((md->attrvaluetype == SAI_ATTR_VALUE_TYPE_STRING) || 
+            (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER))
+        {
+            /* Pointer or String may not have default value */
+            return;
+        }
+
         if (sai_metadata_is_acl_field_or_action(md))
         {
             return;
@@ -556,7 +573,6 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
- 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
                 break;
@@ -567,8 +583,6 @@ void check_attr_default_required(
             break;
 
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
-        case SAI_ATTR_VALUE_TYPE_STRING:
-        case SAI_ATTR_VALUE_TYPE_POINTER:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
@@ -583,6 +597,10 @@ void check_attr_default_required(
             META_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
 
             break;
+
+        case SAI_ATTR_VALUE_TYPE_STRING:
+        case SAI_ATTR_VALUE_TYPE_POINTER:
+             break;
 
         default:
 
@@ -721,8 +739,6 @@ void check_attr_default_value_type(
 
             switch (md->attrvaluetype)
             {
-                case SAI_ATTR_VALUE_TYPE_STRING:
-                case SAI_ATTR_VALUE_TYPE_POINTER:
                 case SAI_ATTR_VALUE_TYPE_UINT32_LIST:               
                 case SAI_ATTR_VALUE_TYPE_INT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
