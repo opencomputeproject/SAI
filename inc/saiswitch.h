@@ -505,6 +505,17 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_ID,
 
+    /** 
+     * @brief Default SAI ACL Group's non-conflicting action behavior
+     *
+     * Must return bool (true) if supported or (false) if not supported
+     *
+     * @type bool
+     * @flags READ_ONLY
+     *
+     */
+    SAI_ACL_TABLE_GROUP_NON_CONFLICTING_ACTION,
+
     /** Maximum traffic classes limit [sai_uint8_t] */
     /**
      * @brief Maximum traffic classes limit
