@@ -241,7 +241,7 @@ typedef enum _sai_acl_table_group_attr_t
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_GROUP_ATTR_PRIORITY,
+    SAI_ACL_TABLE_GROUP_ATTR_PRIORITY,
 
     /**
      * @brief End of attributes

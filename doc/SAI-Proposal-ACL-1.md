@@ -46,39 +46,14 @@ Considering that binding an ACL to several logical interfaces can lead to use ca
 ![SAI acl design](figures/sai_aclobjs.png "Figure 1: Relationship between ACL Table ID and various binding points.")
 __Figure 1: Relationship between ACL Table ID and various binding points.__
 
-#### Example 1 - Binding an ACL to a port
-// create ACL 
-// update ACL table entry
-// bind an Acl to a port 
-// update ACL table entry
-// unbind an acl from a port 
-
-#### Example 2 - Binding an ACL to a router interface
-// Use the ACL created in example 1
-// bind an ACL to a router interface
-// unbind an acl from a router interface
-
 ### Group ID Management
 Two new APIs are introduced in saiacl.h object to manage group ID creation and removal. create_acl_group API allocates a UOID based group id and remove_acl_group API removes/frees the UOID for recycle.
 
 ### ACL GROUP ID Bind/Unbind Model 
-ACL GROUP ID is an UOID based identifier allocated via saiacl.h apis "create_acl_group". The purpose of the group object is to group more than one ACL tables and allow the group of ACL tables be bound to any bind points. This proposal introduces the ACL GROUP ID management APIs within saiacl.h. Figure 2 shows the relationship between ACL GROUPs and various bind points, it also provides a typical use case of allowing ACL TABLEs and ACL GROUPs to coexist and be bound to various bind points. Example 3 below shows how to create an ACL group and Example 4 below shows how to bind an unbind an ACL group. Example 5 shows the configuration example used in Figure 2.
+ACL GROUP ID is an UOID based identifier allocated via saiacl.h apis "create_acl_group". The purpose of the group object is to group more than one ACL tables and allow the group of ACL tables be bound to any bind points. This proposal introduces the ACL GROUP ID management APIs within saiacl.h. Figure 2 shows the relationship between ACL GROUPs and various bind points, it also provides a typical use case of allowing ACL TABLEs and ACL GROUPs to coexist and be bound to various bind points. Example 3 below shows how to create an ACL group and bind this ACL group to a port. Example 4 below shows how to bind the same ACL Group to multiple bind points. Example 5 shows that an ACL table part of an ACL group can also be applied individually to any other bind point. The SAI implementation should handle such complex but intuitive scenarios and simplify application logic.
 
 ![SAI acl group](figures/sai_aclgroups.png "Figure 2: Group ID and ACL ID's relation with several binding points. ")
 __Figure 2: Group ID and ACL ID's relation with several binding points.__
-
-#### Example 3 - Create an ACL group 
-// create an ACL table
-// create an ACL table 2 with priority
-// create an acl group using ACL group (new) apis
-
-#### Example 4 - Binding na ACL group to a set of ports
-// use the same acl group used in Example 3 
-// bind acl group to port 2, 3, 4. 
-// unbind acl group from port 3
-
-#### Example 5 - 
-// configuration example used in Figure 2. 
 
 ### ACL Table and ACL Group Match Behavior
 Within one ACL GROUP TABLE only one ACL entry will be hit which is based on the table priority as well as ACL entry priority within the table. Since only on ACL Group (or ACL Table) can be associated with a bind point, it is clear that only one entry (if hit) has corresponding actions to be taken. SAI 1.0.0 does not support resolution of non-conflicting actions across various ACL Groups. However, considering the behavioral pipeline (model) for SAI 1.0.0, multiple bind points can be valid for a specific flow. There are use cases when multiple ACL Tables and/or ACL Groups are assigned at different bind points, but the very first bind point with a valid ACL entry (if hit - irrespective of an ACL Table or ACL Group) takes precedence over rest of the entries. This avoids resolving non-conflicting actions across various ACL Groups.
@@ -95,6 +70,182 @@ Tunnel interfaces are defined by saitunnel.h. The following tunnel attributes ca
 ### ACL Stages 
 Based on various binding points, the scope of the ACL stages are restricted to primarily INGRESS and EGRESS. The ingress stage of the ACL table gets applied to various flows right after the determinition of the type of interface. For a bridge flow after the port or the bridge port determination, for the router flow right after the rif determination, and for a tunnelled flow it is after the tunnel decap and tunnel determination stage. Please refer to the ACL changes to the behavioral pipeline model for various ACL stages.
 
+## Examples ##
+### Example 1 - Binding an ACL to a port
+The following example creates an ACL table and one ACL entry to denys a specific SMAC received on a port.
+
+// Create an ACL table<br>
+sai_object_id_t acl_table_id1 = 0ULL;<br>
+acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_STAGE;<br>
+acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;<br>
+acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_PRIORITY;<br>
+acl_attr_list[1].value.s32 = 100;<br>
+acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_FIELD_SRC_MAC;<br>
+acl_attr_list[2].value.booldata = True;<br>
+saistatus = sai_acl_api->create_acl_table(&acl_table_id1, 3, acl_attr_list);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Create an ACL table entry to deny *src_Mac_to_suppress* mac entry<br>
+acl_entry_attrs[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;<br>
+acl_entry_attrs[0].value.oid = acl_table_id1;<br>
+acl_entry_attrs[1].id = SAI_ACL_ENTRY_ATTR_PRIORITY;<br>
+acl_entry_attrs[1].value.u32 = 1;<br>
+acl_entry_attrs[2].id = SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC;<br> 
+CONVERT_MAC_TO_SAI_MAC (acl_entry_attrs[2].value.aclfield.data.mac, src_mac_to_suppress);<br>
+saistatus = sai_acl_api->create_acl_entry(&acl_entry, 3, acl_entry_attrs);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Bind this ACL table to port1's object id<br>
+port_attr[0].id = SAI_PORT_ATTR_INGRESS_ACL_ID;<br>
+port_attr[0].value.oid = acl_table_id1;<br>
+sai_port_api->set_port_attribute(port_id, port_attr[0]);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+### Example 2 - Binding an ACL to a router interface
+// Create an ACL table with IP keys configured <br>
+sai_object_id_t acl_table_id2 = 0ULL;<br>
+acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_STAGE;<br>
+acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;<br>
+acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_PRIORITY;<br>
+acl_attr_list[1].value.s32 = 100;<br>
+acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_FIELD_SRC_IP;<br>
+acl_attr_list[2].value.booldata = True;<br>
+acl_attr_list[3].id = SAI_ACL_TABLE_ATTR_FIELD_L4_SRC_PORT;<br>
+acl_attr_list[3].value.booldata = True;<br>
+saistatus = sai_acl_api->create_acl_table(&acl_table_id2, 4, acl_attr_list);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Create an ACL table entry to deny *src_ip_to_suppress* and *src_l4_port_to_suppress*<br>
+acl_entry_attrs[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;<br>
+acl_entry_attrs[0].value.oid = acl_table_id2;<br>
+acl_entry_attrs[1].id = SAI_ACL_ENTRY_ATTR_PRIORITY;<br>
+acl_entry_attrs[1].value.u32 = 1;<br>
+acl_entry_attrs[2].id = SAI_ACL_ENTRY_ATTR_FIELD_SRC_IP;<br>
+CONVERT_STR_TO_IP(acl_entry_attrs[2].value.aclfield.data.ip4, "192.168.100.100");<br>
+acl_entry_attrs[3].id = SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT; <br>
+acl_entry_attrs[3].value.aclfield.data.u16 = 1000;<br>
+saistatus = sai_acl_api->create_acl_entry(&acl_entry, 4, acl_entry_attrs);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Bind this ACL table to a router interface *rifid10* <br>
+rif_attr[0].id = SAI_PORT_ATTR_INGRESS_ACL_ID;<br>
+rif_attr[0].value.oid = acl_table_id2;<br>
+saistatus = sai_router_interface_api->set_router_interface_attribute(rifid10, 1, rif_attr);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Unbind any ACL from the router interface *rifid10* <br>
+rif_attr[0].id = SAI_PORT_ATTR_INGRESS_ACL_ID;<br>
+rif_attr[0].value.oid = SAI_NULL_OBJECT_ID;<br>
+saistatus = sai_router_interface_api->set_router_interface_attribute(rifid10, 1, rif_attr);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Remove the ACL table created earlier *acl_table_id2*<br>
+saistatus = sai_acl_api->remove_acl_table(acl_table_id2);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+### Example 3 - Create an ACL group 
+// Create an ingress acl table group 
+sai_object_id_t acl_grp_id1 = 0ULL;<br>
+acl_grp_attr[0].id = SAI_ACL_TABLE_GROUP_STAGE;<br>
+acl_grp_attr[0].value.s32 = SAI_ACL_STAGE_INGRESS;<br>
+acl_grp_attr[1].id = SAI_ACL_TABLE_GROUP_ATTR_PRIORITY;<br>
+acl_grp_attr[1].value.s32 = 100;<br>
+saistatus = sai_acl_api->create_acl_table_group(&acl_grp_id1, 2, acl_grp_attr);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Update the ACL table created in Example 1, to be part of this group<br>
+acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_GROUP_ID;<br>
+acl_attr_list[0].value.oid = acl_grp_id1;<br>
+saistatus = sai_acl_api->set_acl_table_attribute(acl_table_id1, acl_attr_list[0]);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Create an aCL table *acl_table_id3* , to be part of this group *acl_grp_id1*<br>
+sai_object_id_t acl_table_id3 = 0ULL;<br>
+acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_STAGE;<br>
+acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;<br>
+acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_PRIORITY;<br>
+acl_attr_list[1].value.s32 = 101;<br>
+acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_FIELD_SRC_MAC;<br>
+acl_attr_list[2].value.booldata = True;<br>
+
+acl_attr_list[3].id = SAI_ACL_TABLE_ATTR_GROUP_ID;<br>
+acl_attr_list[3].value.oid = acl_grp_id1;<br>
+
+saistatus = sai_acl_api->create_acl_table(&acl_table_id3, 4, acl_attr_list);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Create an ACL table entry to deny *src_mac_to_suppress2*<br>
+acl_entry_attrs[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;<br>
+acl_entry_attrs[0].value.oid = acl_table_id3;<br>
+acl_entry_attrs[1].id = SAI_ACL_ENTRY_ATTR_PRIORITY;<br>
+acl_entry_attrs[1].value.u32 = 1;<br>
+acl_entry_attrs[2].id = SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC;<br> 
+CONVERT_MAC_TO_SAI_MAC (acl_entry_attrs[2].value.aclfield.data.mac, src_mac_to_suppress2);<br>
+saistatus = sai_acl_api->create_acl_entry(&acl_entry, 3, acl_entry_attrs);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+// Bind this ACL group to port1's OID (in the same way we bound ACL table in Example 1)<br>
+port_attr[0].id = SAI_PORT_ATTR_INGRESS_ACL_ID;<br>
+port_attr[0].value.oid = acl_grp_id1;<br>
+sai_port_api->set_port_attribute(port_id, port_attr[0]);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+### Example 4 - Binding an ACL group to a set of ports
+// Bind this ACL group *acl_grp_id1* to port2, and port20's OID.<br>
+port_attr[0].id = SAI_PORT_ATTR_INGRESS_ACL_ID;<br>
+port_attr[0].value.oid = acl_grp_id1;<br>
+
+//port2<br>
+sai_port_api->set_port_attribute(port2, port_attr[0]);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+//port20<br>
+sai_port_api->set_port_attribute(port20, port_attr[0]);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
+### Example 5 - Binding an ACL table part of the ACL table group to a specific bind point.
+// ACL Table *acl_table_id3*, which participates in acl group *acl_grp_id1* <br>
+// This example shows that SAI should allow them to be bound to any of the logical interfaces<br>
+// or physical interfaces , as shown in this example it is being bound to port31.<br>
+// at the same time the ACL group is bound to port2, port20 and port1.<br>
+
+port_attr[0].id = SAI_PORT_ATTR_INGRESS_ACL_ID;<br>
+port_attr[0].value.oid = acl_table_id3;<br>
+sai_port_api->set_port_attribute(port31, port_attr[0]);<br>
+if (saistatus != SAI_STATUS_SUCCESS) {<br>
+    return saistatus;<br>
+}<br>
+
 ## FAQs 
 1. Clarify the usage of binding point acl_id with the acl_table_id that is allocated from the saiacl.h object?
     - On creating an ACL table via create_acl_table API generates a UOID for a unique ACL table (or unique ACL group table using create_acl_group api). This UOID is used to bind this ACL table or the ACL Group to a binding point(s) that are idnetified by their UOIDs representing ports, vlans, lags, rifs, bridge-ifs, etc. The ACL table or the ACL group will be a hit if the object type its bound to is hit  ,and the ACL UOID is derived from the binding point (ports, vlan, rif, lag, etc..). 
@@ -110,14 +261,9 @@ Based on various binding points, the scope of the ACL stages are restricted to p
 6. We have port, vlan, rif in the egress and ingress both. While using for the binding point, how we get the direction.
     - When an ACL table is created the direction is specified, so UOID carries the ING or EGR direction of any ACL table. When an ingress ACL UOID is bound to a binding point, there is already a direction known, same for the egress. 
 
-## Example ##
-1. TBD: Examples show how to define ACLs, Group IDs, Metadata, Etc.
-2. TBD: Update pipeline model after review and incorporate feedbacks. 
-
 ## References ##
 1. SAI v0.9.1 specification.
 
 ## Next Steps
-1. Community Review - 09/01/16
-2. Update examples
-3. Update pipeline models
+1. First community review completed : 09/01/16.
+2. Incorporate review comments, update pipeline model, community review: 10/13/16.
