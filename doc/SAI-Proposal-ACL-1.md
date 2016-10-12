@@ -28,7 +28,7 @@ These enhancements are relatively generic and simplifies the ACL model for opera
 ### Binding Points
 In SAI all physical and logical interfaces are represented by a UOID (for eg. ports  - saiport.h, LAGs - sailag.h, RIFs - sairouterintf.h, Tunnels - saitunnel.h, Bridge Ports - saibridgeintf.h, etc). These are well defined objects in SAI that identify a flow ingressing and egressing through a switch. The ability to filter, classify, or apply specific rules to the traffic that ingresses or egresses through these objects/interfaces allow applications and operators to focus on the functionality of what they want to achieve (filtering traffic), and avoid looking at the internals of the switch asics.
 
-These physical and logical interfaces represented by UOIDs are well defined binding points to apply ACL tables rules (and ACL groups). Following are the binding points introduced in SAI 1.0.0:
+These physical and logical interfaces represented by UOIDs are well defined bind points to apply ACL tables rules (and ACL groups). Following are the bind points introduced in SAI 1.0.0:
 1. Physical Ports and Lags (saiport.h and sailag.h)
 2. VLANs (saivlan.h)
 3. Router Interfaces (sairouterintf.h)
@@ -36,12 +36,21 @@ These physical and logical interfaces represented by UOIDs are well defined bind
 5. Bridge Ports (saibridgeintf.h) - includes both .1q and .1d bridge ports
 6. Sai Switch (saiswitch.h - globally applies to all traffic ingressing and egressing a switch).
 
-Binding an ACL using SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_ID / SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_ID to a saiswitch object, allows an operator to define ACL rules to globally apply a filter to all traffic flowing through the switch. This provides backward compatibility to pre-SAI 1.0.0 version of ACLs and only to be used as a transitionary approach. 
+Binding an ACL using SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_ID / SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_ID to a saiswitch object, allows an operator to define ACL rules to globally apply a filter to all traffic flowing through the switch. This provides backward compatibility to pre-SAI 1.0.0 version of ACLs and only to be used as a transitionary approach and the last resort.
 
 ### ACL TABLE ID Bind/Unbind Model 
-The usage of UOID based ACL table ID allocated by the create_acl_table function should be uniformly applied to identify the binding point. This bind/unbind point is typically identified by various physical and or logical interfaces identified by these objects: Physical Ports, LAGs, VLANs, RIFs, Tunnels, Bridge Ports, and SaiSwitch.
+The usage of UOID based ACL table ID allocated by the create_acl_table function should be uniformly applied to identify the bind point(s). This bind/unbind point is typically identified by various physical and or logical interfaces identified by these objects: Physical Ports, LAGs, VLANs, RIFs, Tunnels, Bridge Ports, and SaiSwitch.
 
-Considering that binding an ACL to several logical interfaces can lead to use cases where more than one ACL becomes valid for a specific flow. The behavioral expectation is to apply all the valid ACL IDs derived from various binding points - in the order of their table priorities and within a table use an ACL entry's priority to resolve such conflicts. In addition the ACL model today does not support nor expects non-conflicting action resolution to take place. Example 1 and 2 below shows how to bind and unbind an ACL table. Figure 1 shows the relationship between an ACL TABLE and various bind points.
+In a behavioral model (pipeline model) , there are use cases when multiple bind points can have same or different ACL table(s) attached to them. These bind points can be cascaded in the pipeline , for eg. a port and a router interface (rif). The behavioral expectation in such a scenario is to do the following: 
+1. For a flow, when multiple bind points have valid ACL table(s): the first bind point appearing in the pipeline and its ACL table and ACL entry's action is executed. 
+2. Current pipeline model does not expect ACL table priority resolution nor non-conflicting action resolution across ACL Table(s) at different bind points. 
+3. ACL Table (or ACL Group) selection is primarily done based on the first bind point that is encountered.
+
+Notes:<br>
+1. Current specification **does not specifically** consider the following use case: where in case of multiple bind points deriving different valid ACL Table(s), the ACL Table's priority across different bind points should be considered to resolve the right ACL Table selection and within that table an ACL Entry is selected. The argument against this use case is that it magnifies the complexity of ACL Table management in the switch ASIC to be derived from the logical pipeline.<br>
+2. Current specification **does not specifically** consider nor expects non-conflicting action resolution within valid ACL Table(s) derived from different bind points.<br>
+
+Example 1 and 2 below shows how to bind and unbind an ACL Table. Figure 1 shows teh relationship between an ACL Table and various bind points.
 
 ![SAI acl design](figures/sai_aclobjs.png "Figure 1: Relationship between ACL Table ID and various binding points.")
 __Figure 1: Relationship between ACL Table ID and various binding points.__
