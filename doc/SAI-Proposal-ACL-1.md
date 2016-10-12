@@ -15,17 +15,17 @@ SAI access control lists (ACL) enhancements for SAI 1.0 release
 ## Overview ##
 SAI Access Control List (ACL) object implements ACL management functions. In SAI 0.9.1 through 0.9.5 versions, SAI ACL contained three types of objects, ACL table, ACL entry and ACL counter. SAI 1.0.0 introduces ACL group object to that list. An ACL table contains a number of ACL entries, with specific priorities. Each ACL table defines a set of unique match fields for all its ACL entries. Within an ACL table, if a packet matches multiple rules, only the actions from the rule of highest priority are executed. ACL groups are introduced to handle the case for allowing prioritized resolution of ACL tables associated with the same group. Within an ACL group a packet can match rules in different ACL tables and take non-conflicting actions from all the matched rules. ACL counters can also be created and attached to an ACL entry in order to count the number of packets or bytes that match the ACL entry. The SAI 1.0.0 specification below, clarifies several ambiguities and limitations that pre-SAI 1.0.0 ACL model had. 
 
-This specification introduced for SAI 1.0.0, proposes the following enhancements:
-1. Introduce well defined binding point for an ACL table (or ACL group) to be applied.
-2. Introduce ACL group object and clarify the behavioral expectations of ACL groups and metadata fields.
-3. Simplify ACL table stages that were relevant in absense of a binding point (INGRESS and EGRESS ONLY).
-4. Address scaling concerns in absense of a well defined binding point.
-5. Introduce behavioral model for ACLs.
-6. Adding tunnel and bridge interface specific ACL table and ACL group behavior.
+This specification introduced for SAI 1.0.0, proposes the following enhancements:<br>
+1. Introduce well defined binding point for an ACL table (or ACL group) to be applied.<br>
+2. Introduce ACL group object and clarify the behavioral expectations of ACL groups and metadata fields.<br>
+3. Simplify ACL table stages that were relevant in absense of a binding point (INGRESS and EGRESS ONLY).<br>
+4. Address scaling concerns in absense of a well defined binding point.<br>
+5. Introduce behavioral model for ACLs.<br>
+6. Adding tunnel and bridge interface specific ACL table and ACL group behavior.<br>
+<br>
+These enhancements are relatively generic and simplifies the ACL model for operators.<br>
 
-These enhancements are relatively generic and simplifies the ACL model for operators.
-
-### Binding Points
+## Binding Points
 In SAI all physical and logical interfaces are represented by a UOID (for eg. ports  - saiport.h, LAGs - sailag.h, RIFs - sairouterintf.h, Tunnels - saitunnel.h, Bridge Ports - saibridgeintf.h, etc). These are well defined objects in SAI that identify a flow ingressing and egressing through a switch. The ability to filter, classify, or apply specific rules to the traffic that ingresses or egresses through these objects/interfaces allow applications and operators to focus on the functionality of what they want to achieve (**filtering traffic**) and avoid looking at the internals of the switch asics.
 
 These physical and logical interfaces represented by UOIDs are well defined bind points to apply ACL tables rules (and ACL groups). Following are the bind points introduced in SAI 1.0.0:
@@ -38,7 +38,7 @@ These physical and logical interfaces represented by UOIDs are well defined bind
 
 Binding an ACL using SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_ID / SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_ID to a saiswitch object, allows an operator to define ACL rules to globally apply a filter to all traffic flowing through the switch. This provides backward compatibility to pre-SAI 1.0.0 version of ACLs and only to be used as a transitionary approach and the last resort.
 
-### ACL table bind/unbind model and match behavior
+## ACL table bind/unbind model and match behavior
 The usage of UOID based ACL table ID allocated by the create_acl_table function should be uniformly applied to identify the bind point(s). This bind/unbind point is typically identified by various physical and or logical interfaces identified by these objects: Physical Ports, LAGs, VLANs, RIFs, Tunnels, Bridge Ports, and SaiSwitch.
 
 In a behavioral model (pipeline model) , there are use cases when multiple bind points can have same or different ACL table(s) attached to them. These bind points can be cascaded in the pipeline , for eg. a port and a router interface (rif). The behavioral expectation in such a scenario is to do the following: 
@@ -55,7 +55,7 @@ Example 1 and 2 below shows how to bind and unbind an ACL table. Figure 1 shows 
 ![SAI acl design](figures/sai_aclobjs.png "Figure 1: Relationship between ACL table ID and various binding points.")
 __Figure 1: Relationship between ACL table ID and various binding points.__
 
-### Group ID Management
+## Group ID Management
 Two new APIs are introduced in saiacl.h object to manage group ID creation and removal. create_acl_group API allocates a UOID based group id and remove_acl_group API removes/frees the UOID for recycle.
 
 ### ACL GROUP ID Bind/Unbind Model 
@@ -77,16 +77,16 @@ In a behavioral model (pipeline model), there are use cases when multiple bind p
 Notes:<br>
 1. Current specification **does not specifically** consider the following use case: where in case of multiple bind points deriving different valid ACL group(s), and resolving the action. Similar to ACL tables the first ACL group finding a valid ACL entry to match should take effect, ignoring the subsequent bind points.
 
-### Metadata Usage Model
+## Metadata Usage Model
 Metadata is a completely user defined field or an identifier that does not need to be allocated within the SAI implementtaions. The Metadata field(s) in the logical pipeline is to allow users to derive a *Metadata* field from any SAI objects (ports, vlans, rifs, bridge ports, Etc.), as well as flow tables (like unicast/multicast FDBs, Neighbor table, acl table entries, route entries). Currently the Metadata field derived at various stages of the pipeline are appended to each other and a specific META_DATA is being used for lookup in the ACL entry. 
 
-### ACLs on Tunnels 
+## ACLs on Tunnels 
 Tunnel interfaces are defined by saitunnel.h. The following tunnel attributes can be configured on the Decap flow as well as Encap flows: 
 * SAI_TUNNEL_ATTR_DECAP_INGRESS_ACL_ID [Ingress ACL table bound to inner packets ]
 * SAI_TUNNEL_ATTR_DECAP_INGRESS_ACL_GROUP_ID [Ingress ACL group bound to inner packets]
 * SAI_TUNNEL_ATTR_ENCAP_EGRESS_ACL_ID [EGRESS ACL bound on encap or originated tunnels]
 
-### ACL Stages 
+## ACL Stages 
 Based on various binding points, the scope of the ACL stages are restricted to primarily INGRESS and EGRESS. The ingress stage of the ACL table gets applied to various flows right after the determinition of the type of interface. For a bridge flow after the port or the bridge port determination, for the router flow right after the rif determination, and for a tunnelled flow it is after the tunnel decap and tunnel determination stage. Please refer to the ACL changes to the behavioral pipeline model for various ACL stages.
 
 ## Examples ##
