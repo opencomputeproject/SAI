@@ -13,20 +13,20 @@ SAI access control lists (ACL) enhancements for SAI 1.0 release
 -------------------------------------------------------------------------------
 
 ## Overview ##
-SAI Access Control List (ACL) object implements ACL management functions. In SAI 0.9.1 through 0.9.5 versions, SAI ACL contained three types of objects, ACL table, ACL entry and ACL counter. The ACL table contains a number of ACL entries. Each ACL table defines a set of unique matching fields for all its ACL entries. A packet can match rules in different ACL tables and take non-conflicting actions from all the matched rules. However, within an ACL table, if a packet matches multiple rules, only the actions from the rule of highest priority are executed. ACL counters can also be created and attached to an ACL entry in order to counter the number of packets or bytes that match the ACL entry. The initial version of ACL table object has several ambiguities and limitations.
+SAI Access Control List (ACL) object implements ACL management functions. In SAI 0.9.1 through 0.9.5 versions, SAI ACL contained three types of objects, ACL table, ACL entry and ACL counter. SAI 1.0.0 introduces ACL group object to that list. An ACL table contains a number of ACL entries, with specific priorities. Each ACL table defines a set of unique match fields for all its ACL entries. Within an ACL table, if a packet matches multiple rules, only the actions from the rule of highest priority are executed. ACL groups are introduced to handle the case for allowing prioritized resolution of ACL tables associated with the same group. Within an ACL group a packet can match rules in different ACL tables and take non-conflicting actions from all the matched rules. ACL counters can also be created and attached to an ACL entry in order to count the number of packets or bytes that match the ACL entry. The SAI 1.0.0 specification below, clarifies several ambiguities and limitations that pre-SAI 1.0.0 ACL model had. 
 
-This proposal introduced for SAI 1.0.0, proposes the following enhancements:
-1. Introduce well defined binding point for an ACL table (or ACL Group) to be applied
-2. Clarify the behavior and usage of ACL group ID and metadata fields
-3. Simplify ACL table stages that were relevant in absense of a binding point
-4. Address scaling concerns in absense of a well defined binding point
-5. Introduce behavioral model for ACLs
-6. Adding tunnel and bridge interface specific ACL behavior
+This specification introduced for SAI 1.0.0, proposes the following enhancements:
+1. Introduce well defined binding point for an ACL table (or ACL group) to be applied.
+2. Introduce ACL group object and clarify the behavioral expectations of ACL groups and metadata fields.
+3. Simplify ACL table stages that were relevant in absense of a binding point (INGRESS and EGRESS ONLY).
+4. Address scaling concerns in absense of a well defined binding point.
+5. Introduce behavioral model for ACLs.
+6. Adding tunnel and bridge interface specific ACL table and ACL group behavior.
 
 These enhancements are relatively generic and simplifies the ACL model for operators.
 
 ### Binding Points
-In SAI all physical and logical interfaces are represented by a UOID (for eg. ports  - saiport.h, LAGs - sailag.h, RIFs - sairouterintf.h, Tunnels - saitunnel.h, Bridge Ports - saibridgeintf.h, etc). These are well defined objects in SAI that identify a flow ingressing and egressing through a switch. The ability to filter, classify, or apply specific rules to the traffic that ingresses or egresses through these objects/interfaces allow applications and operators to focus on the functionality of what they want to achieve (filtering traffic), and avoid looking at the internals of the switch asics.
+In SAI all physical and logical interfaces are represented by a UOID (for eg. ports  - saiport.h, LAGs - sailag.h, RIFs - sairouterintf.h, Tunnels - saitunnel.h, Bridge Ports - saibridgeintf.h, etc). These are well defined objects in SAI that identify a flow ingressing and egressing through a switch. The ability to filter, classify, or apply specific rules to the traffic that ingresses or egresses through these objects/interfaces allow applications and operators to focus on the functionality of what they want to achieve (**filtering traffic**) and avoid looking at the internals of the switch asics.
 
 These physical and logical interfaces represented by UOIDs are well defined bind points to apply ACL tables rules (and ACL groups). Following are the bind points introduced in SAI 1.0.0:
 1. Physical Ports and Lags (saiport.h and sailag.h)
@@ -38,34 +38,44 @@ These physical and logical interfaces represented by UOIDs are well defined bind
 
 Binding an ACL using SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_ID / SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_ID to a saiswitch object, allows an operator to define ACL rules to globally apply a filter to all traffic flowing through the switch. This provides backward compatibility to pre-SAI 1.0.0 version of ACLs and only to be used as a transitionary approach and the last resort.
 
-### ACL TABLE ID Bind/Unbind Model 
+### ACL table bind/unbind model and match behavior
 The usage of UOID based ACL table ID allocated by the create_acl_table function should be uniformly applied to identify the bind point(s). This bind/unbind point is typically identified by various physical and or logical interfaces identified by these objects: Physical Ports, LAGs, VLANs, RIFs, Tunnels, Bridge Ports, and SaiSwitch.
 
 In a behavioral model (pipeline model) , there are use cases when multiple bind points can have same or different ACL table(s) attached to them. These bind points can be cascaded in the pipeline , for eg. a port and a router interface (rif). The behavioral expectation in such a scenario is to do the following: 
 1. For a flow, when multiple bind points have valid ACL table(s): the first bind point appearing in the pipeline and its ACL table and ACL entry's action is executed. 
-2. Current pipeline model does not expect ACL table priority resolution nor non-conflicting action resolution across ACL Table(s) at different bind points. 
-3. ACL Table (or ACL Group) selection is primarily done based on the first bind point that is encountered.
+2. Current pipeline model does not expect ACL table priority resolution nor non-conflicting action resolution across ACL table(s) at different bind points. 
+3. ACL table (or ACL group) selection is primarily done based on the first bind point that is encountered.
 
 Notes:<br>
-1. Current specification **does not specifically** consider the following use case: where in case of multiple bind points deriving different valid ACL Table(s), the ACL Table's priority across different bind points should be considered to resolve the right ACL Table selection and within that table an ACL Entry is selected. The argument against this use case is that it magnifies the complexity of ACL Table management in the switch ASIC to be derived from the logical pipeline.<br>
-2. Current specification **does not specifically** consider nor expects non-conflicting action resolution within valid ACL Table(s) derived from different bind points.<br>
+1. Current specification **does not specifically** consider the following use case: where in case of multiple bind points deriving different valid ACL table(s), the ACL table's priority across different bind points should be considered to resolve the right ACL table selection and within that table an ACL Entry is selected. The argument against this use case is that it magnifies the complexity of ACL table management in the switch ASIC to be derived from the logical pipeline.<br>
+2. Current specification **does not specifically** consider nor expects non-conflicting action resolution within valid ACL table(s) derived from different bind points.<br>
 
-Example 1 and 2 below shows how to bind and unbind an ACL Table. Figure 1 shows teh relationship between an ACL Table and various bind points.
+Example 1 and 2 below shows how to bind and unbind an ACL table. Figure 1 shows teh relationship between an ACL table and various bind points.
 
-![SAI acl design](figures/sai_aclobjs.png "Figure 1: Relationship between ACL Table ID and various binding points.")
-__Figure 1: Relationship between ACL Table ID and various binding points.__
+![SAI acl design](figures/sai_aclobjs.png "Figure 1: Relationship between ACL table ID and various binding points.")
+__Figure 1: Relationship between ACL table ID and various binding points.__
 
 ### Group ID Management
 Two new APIs are introduced in saiacl.h object to manage group ID creation and removal. create_acl_group API allocates a UOID based group id and remove_acl_group API removes/frees the UOID for recycle.
 
 ### ACL GROUP ID Bind/Unbind Model 
-ACL GROUP ID is an UOID based identifier allocated via saiacl.h apis "create_acl_group". The purpose of the group object is to group more than one ACL tables and allow the group of ACL tables be bound to any bind points. This proposal introduces the ACL GROUP ID management APIs within saiacl.h. Figure 2 shows the relationship between ACL GROUPs and various bind points, it also provides a typical use case of allowing ACL TABLEs and ACL GROUPs to coexist and be bound to various bind points. Example 3 below shows how to create an ACL group and bind this ACL group to a port. Example 4 below shows how to bind the same ACL Group to multiple bind points. Example 5 shows that an ACL table part of an ACL group can also be applied individually to any other bind point. The SAI implementation should handle such complex but intuitive scenarios and simplify application logic.
+ACL GROUP ID is an UOID based identifier allocated via saiacl.h apis "create_acl_group_table". The purpose of the group object is to group more than one ACL tables and allow the group of ACL tables be bound to any bind point. This proposal introduces the ACL GROUP ID management APIs within saiacl.h. Figure 2 shows the relationship between ACL GROUPs and various bind points, it also provides a typical use case of allowing ACL TABLEs and ACL GROUPs to coexist and be bound to various bind points. Example 3 below shows how to create an ACL group and bind this ACL group to a port. Example 4 below shows how to bind the same ACL group to multiple bind points. Example 5 shows that an ACL table part of an ACL group can also be applied individually to any other bind point. The SAI implementation should handle such complex but intuitive scenarios and simplify application logic.
 
-![SAI acl group](figures/sai_aclgroups.png "Figure 2: Group ID and ACL ID's relation with several binding points. ")
-__Figure 2: Group ID and ACL ID's relation with several binding points.__
+![SAI acl group](figures/sai_aclgroups.png "Figure 2: group ID and ACL ID's relation with several binding points. ")
+__Figure 2: group ID and ACL ID's relation with several binding points.__
 
-### ACL Table and ACL Group Match Behavior
-Within one ACL GROUP TABLE only one ACL entry will be hit which is based on the table priority as well as ACL entry priority within the table. Since only on ACL Group (or ACL Table) can be associated with a bind point, it is clear that only one entry (if hit) has corresponding actions to be taken. SAI 1.0.0 does not support resolution of non-conflicting actions across various ACL Groups. However, considering the behavioral pipeline (model) for SAI 1.0.0, multiple bind points can be valid for a specific flow. There are use cases when multiple ACL Tables and/or ACL Groups are assigned at different bind points, but the very first bind point with a valid ACL entry (if hit - irrespective of an ACL Table or ACL Group) takes precedence over rest of the entries. This avoids resolving non-conflicting actions across various ACL Groups.
+### ACL group bind/unbind model and match behavior
+The usage of UOID based ACL group ID allocated by the create_acl_group_table function should be uniformly applied to identify the bind point(s). This bind/unbind point is typically identified by various physical and or logical interfaces identified by these objects: Physical Ports, LAGs, VLANs, RIFs, Tunnels, Bridge Ports, and SaiSwitch.
+
+Within one ACL group table only one ACL entry will be hit which is based on the table priority as well as ACL entry priority within the table. Since only an ACL group (or ACL table) can be associated with a bind point, it is clear that only one entry (if hit) has corresponding actions to be taken. SAI 1.0.0 does not support resolution of non-conflicting actions across various ACL groups - by default. However, we introduce an optional READ_ONLY attribute "SAI_ACL_TABLE_GROUP_NON_CONFLICTING_ACTION" (boolen). If a switch asic and its SAI implementation supports ACL groups to support non-conflicting actions across the ACL tables in the group - it should be feasible.
+
+In a behavioral model (pipeline model), there are use cases when multiple bind points can have same or different ACL group(s) attached to them. These bind points can be cascaded in the pipeline. The same rules and specifications that apply for an ACL table should apply for ACL groups in this case. 
+1. For a flow, when multiple bind points have valid ACL group(s): the first bind point appearing in the pipeline and its corresponding action/rules are executed.
+2. Across the ACL groups , optinally a switch asic and SAI implementation can support non-conflicting action resolution.
+3. ACL group selection is primarily done based on the first bind point that is encountered.
+
+Notes:<br>
+1. Current specification **does not specifically** consider the following use case: where in case of multiple bind points deriving different valid ACL group(s), and resolving the action. Similar to ACL tables the first ACL group finding a valid ACL entry to match should take effect, ignoring the subsequent bind points.
 
 ### Metadata Usage Model
 Metadata is a completely user defined field or an identifier that does not need to be allocated within the SAI implementtaions. The Metadata field(s) in the logical pipeline is to allow users to derive a *Metadata* field from any SAI objects (ports, vlans, rifs, bridge ports, Etc.), as well as flow tables (like unicast/multicast FDBs, Neighbor table, acl table entries, route entries). Currently the Metadata field derived at various stages of the pipeline are appended to each other and a specific META_DATA is being used for lookup in the ACL entry. 
@@ -243,7 +253,7 @@ if (saistatus != SAI_STATUS_SUCCESS) {<br>
 }<br>
 
 ### Example 5 - Binding an ACL table part of the ACL table group to a specific bind point.
-// ACL Table *acl_table_id3*, which participates in acl group *acl_grp_id1* <br>
+// ACL table *acl_table_id3*, which participates in acl group *acl_grp_id1* <br>
 // This example shows that SAI should allow them to be bound to any of the logical interfaces<br>
 // or physical interfaces , as shown in this example it is being bound to port31.<br>
 // at the same time the ACL group is bound to port2, port20 and port1.<br>
@@ -257,7 +267,7 @@ if (saistatus != SAI_STATUS_SUCCESS) {<br>
 
 ## FAQs 
 1. Clarify the usage of binding point acl_id with the acl_table_id that is allocated from the saiacl.h object?
-    - On creating an ACL table via create_acl_table API generates a UOID for a unique ACL table (or unique ACL group table using create_acl_group api). This UOID is used to bind this ACL table or the ACL Group to a binding point(s) that are idnetified by their UOIDs representing ports, vlans, lags, rifs, bridge-ifs, etc. The ACL table or the ACL group will be a hit if the object type its bound to is hit  ,and the ACL UOID is derived from the binding point (ports, vlan, rif, lag, etc..). 
+    - On creating an ACL table via create_acl_table API generates a UOID for a unique ACL table (or unique ACL group table using create_acl_group api). This UOID is used to bind this ACL table or the ACL group to a binding point(s) that are idnetified by their UOIDs representing ports, vlans, lags, rifs, bridge-ifs, etc. The ACL table or the ACL group will be a hit if the object type its bound to is hit  ,and the ACL UOID is derived from the binding point (ports, vlan, rif, lag, etc..). 
     - The purpose of having bind points is to allow duplication of rules in the ACL table when ports, vlans, rifs, lags, are MATCH KEYs in the ACL entry. However, this proposal does not restrict any of those less efficient behaviors, provided underlying switch ASIC has to use them.
 2. ACL table ids and group-ids are not one of the key fields in the ACL table entries, but they only point to the table(s) to be used? 
     - Yes. Binding point UOIDs (ports, vlans, etc..) are not match keys in the ACL table which gets bound. Binding points (port, lag, vlans, etc.. UOIDs) are configured/bound by an acl_table_id , so they derive an “acl_table_id” which is the table being used to filter all the traffic.
@@ -265,7 +275,7 @@ if (saistatus != SAI_STATUS_SUCCESS) {<br>
     - Multiple bind points is a valid scenario, where the table priority should take precedence since there are multiple tables being looked up. In case of several tables having the same priority in that case the table created earlier should have higher priority in terms of resolution. This is simply to make the model and usage behavior deterministic and avoid implementation specific differences.
 4. Now for a port a’ suppose one wants to hit table id’s x’, y’ and z’ then a group G needs to be formed between x’, y’ and z', and use G as group ID. Can we clarify this behavior?
     - Yes. For tables x’, y’ and z’ -> use group id G. That is associated or bound to port a’. IN that case flows hitting port a' will derive group ID G, and lookup ACL tables x', y', and z' in the prioritized order. The idea is to use the ACL table as a normal ACL table, but allow one level of grouping between ACLs. Again, this is grouping between ACL tables and not ACL entries. To group ACL entries metadata should be used.
-5. Meta data is one of the key fields so it will not interfere with the ACL ids/Group ids. The match/resolution are not conflicting between ACL/Group-id and meta-data. Meta data will interfere with the bind-point index, because if one uses meta data from the interface tables, he would want to match all the entries with the same meta data. Meta from flow entries is still ok. Because same port traffic will hit multiple of them.
+5. Meta data is one of the key fields so it will not interfere with the ACL ids/group ids. The match/resolution are not conflicting between ACL/group-id and meta-data. Meta data will interfere with the bind-point index, because if one uses meta data from the interface tables, he would want to match all the entries with the same meta data. Meta from flow entries is still ok. Because same port traffic will hit multiple of them.
     - Metadata is designed to provide more granularity within the ACL Entry rules to be matched. Metadata might interfere with the bind-point, but the idea is to use group_id there and not metadata. Metadata is used to have more granularities within the ACL table entry rules, ie. grouping ACL entry rules as opposed to grouping ACL tables. Especially metadata can be derived from flow entries. 
 6. We have port, vlan, rif in the egress and ingress both. While using for the binding point, how we get the direction.
     - When an ACL table is created the direction is specified, so UOID carries the ING or EGR direction of any ACL table. When an ingress ACL UOID is bound to a binding point, there is already a direction known, same for the egress. 
