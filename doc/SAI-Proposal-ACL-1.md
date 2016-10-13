@@ -26,25 +26,25 @@ This specification introduced for SAI 1.0.0, proposes the following enhancements
 These enhancements are relatively generic and simplifies the ACL model for operators.<br>
 
 ## Binding Points
-In SAI all physical and logical interfaces are represented by a UOID (for eg. ports  - saiport.h, LAGs - sailag.h, RIFs - sairouterintf.h, Tunnels - saitunnel.h, Bridge Ports - saibridgeintf.h, etc). These are well defined objects in SAI that identify a flow ingressing and egressing through a switch. The ability to filter, classify, or apply specific rules to the traffic that ingresses or egresses through these objects/interfaces allow applications and operators to focus on the functionality of what they want to achieve (**filtering traffic**) and avoid looking at the internals of the switch asics.
+In SAI all physical and logical interfaces are represented by a UOID (for eg. ports  - saiport.h, LAGs - sailag.h, RIFs - sairouterintf.h, Tunnels - saitunnel.h, Bridge Ports - saibridgeintf.h, etc). These are well defined objects in SAI that identify a flow ingressing and egressing through a switch. The ability to filter, classify, or apply specific rules to the traffic that ingresses or egresses through these objects/interfaces allow applications and operators to focus on the functionality of what they want to achieve (**filtering traffic**) and avoid looking at the internals of the switch asics.<br>
 
-These physical and logical interfaces represented by UOIDs are well defined bind points to apply ACL tables rules (and ACL groups). Following are the bind points introduced in SAI 1.0.0:
-1. Physical Ports and Lags (saiport.h and sailag.h)
-2. VLANs (saivlan.h)
-3. Router Interfaces (sairouterintf.h)
-4. Tunnels (saitunnel.h)
-5. Bridge Ports (saibridgeintf.h) - includes both .1q and .1d bridge ports
-6. Sai Switch (saiswitch.h - globally applies to all traffic ingressing and egressing a switch).
+These physical and logical interfaces represented by UOIDs are well defined bind points to apply ACL tables rules (and ACL groups). Following are the bind points introduced in SAI 1.0.0:<br>
+1. Physical Ports and Lags (saiport.h and sailag.h)<br>
+2. VLANs (saivlan.h)<br>
+3. Router Interfaces (sairouterintf.h)<br>
+4. Tunnels (saitunnel.h)<br>
+5. Bridge Ports (saibridgeintf.h) - includes both .1q and .1d bridge ports<br>
+6. Sai Switch (saiswitch.h - globally applies to all traffic ingressing and egressing a switch).<br>
 
-Binding an ACL using SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_ID / SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_ID to a saiswitch object, allows an operator to define ACL rules to globally apply a filter to all traffic flowing through the switch. This provides backward compatibility to pre-SAI 1.0.0 version of ACLs and only to be used as a transitionary approach and the last resort.
+Binding an ACL using SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_ID / SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_ID to a saiswitch object, allows an operator to define ACL rules to globally apply a filter to all traffic flowing through the switch. This provides backward compatibility to pre-SAI 1.0.0 version of ACLs and only to be used as a transitionary approach and the last resort.<br>
 
 ## ACL table bind/unbind model and match behavior
 The usage of UOID based ACL table ID allocated by the create_acl_table function should be uniformly applied to identify the bind point(s). This bind/unbind point is typically identified by various physical and or logical interfaces identified by these objects: Physical Ports, LAGs, VLANs, RIFs, Tunnels, Bridge Ports, and SaiSwitch.
 
-In a behavioral model (pipeline model) , there are use cases when multiple bind points can have same or different ACL table(s) attached to them. These bind points can be cascaded in the pipeline , for eg. a port and a router interface (rif). The behavioral expectation in such a scenario is to do the following: 
-1. For a flow, when multiple bind points have valid ACL table(s): the first bind point appearing in the pipeline and its ACL table and ACL entry's action is executed. 
-2. Current pipeline model does not expect ACL table priority resolution nor non-conflicting action resolution across ACL table(s) at different bind points. 
-3. ACL table (or ACL group) selection is primarily done based on the first bind point that is encountered.
+In a behavioral model (pipeline model) , there are use cases when multiple bind points can have same or different ACL table(s) attached to them. These bind points can be cascaded in the pipeline , for eg. a port and a router interface (rif). The behavioral expectation in such a scenario is to do the following:<br>
+1. For a flow, when multiple bind points have valid ACL table(s): the first bind point appearing in the pipeline and its ACL table and ACL entry's action is executed. <br>
+2. Current pipeline model does not expect ACL table priority resolution nor non-conflicting action resolution across ACL table(s) at different bind points. <br>
+3. ACL table (or ACL group) selection is primarily done based on the first bind point that is encountered.<br>
 
 Notes:<br>
 1. Current specification **does not specifically** consider the following use case: where in case of multiple bind points deriving different valid ACL table(s), the ACL table's priority across different bind points should be considered to resolve the right ACL table selection and within that table an ACL Entry is selected. The argument against this use case is that it magnifies the complexity of ACL table management in the switch ASIC to be derived from the logical pipeline.<br>
