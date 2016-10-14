@@ -979,6 +979,20 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SWITCH_SHELL_ENABLE,
 
     /**
+    * @brief Fast boot configuration sequence done
+    *
+    * If the switch was initialized with fast boot mode, SAI implementation may peform 
+    * configuration in optimized way. Application should mark fast boot done=true
+    * when finishing the initial configuration, in order to notify SAI implementation 
+    * to return to performing configuration in normal mode
+    *
+    * @type bool
+    * @flags CREATE_AND_SET
+    * @default false
+    */
+    SAI_SWITCH_ATTR_FAST_BOOT_DONE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
