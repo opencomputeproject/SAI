@@ -203,13 +203,13 @@ typedef enum _sai_acl_action_type_t
     SAI_ACL_ACTION_TYPE_SET_CPU_QUEUE,
 
     /** Set Meta Data to carry forward to next ACL Stage */
-    SAI_ACL_ACTION_TYPE_SET_ACL_META_DATA,
+    sai_acl_action_type_set_acl_meta_data,
 
-    /** Egress block port list */
-    SAI_ACL_ACTION_TYPE_EGRESS_BLOCK_PORT_LIST,
+    /** egress block port list */
+    sai_acl_action_type_egress_block_port_list,
 
-    /** Set User Defined Trap ID */
-    SAI_ACL_ACTION_TYPE_SET_USER_TRAP_ID,
+    /** set user defined trap id */
+    sai_acl_action_type_set_user_trap_id,
 
 } sai_acl_action_type_t;
 

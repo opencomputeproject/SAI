@@ -487,26 +487,39 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
-    /** Bind/Unbind a DEFAULT ingress acl or acl-group on all flows [sai_object_id_t].
-     *      Enable (or bind) ingress ACL filtering by assigning the ACL table 
-     *      object id or ACL group object id as attribute value. 
-     *      Disable (or unbind) ingress ACL filtering by assigning 
-     *      SAI_NULL_OBJECT_ID in the attribute value.
-     * Default Value: SAI_NULL_OBJECT_ID
+    /** 
+     * @brief Switch/Global bind point for ingress ACL objects
+     *
+     * Bind (or unbind) an ingress acl tables/groups globally. Enable/Update 
+     * ingress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
      */
-    SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_ID,
-
-    /** Bind/Unbind a DEFAULT egress acl or acl-group on all flows [sai_object_id_t].
-     *      Enable (or bind) egress ACL filtering by assigning the ACL table 
-     *      object id or ACL group object id as attribute value. 
-     *      Disable (or unbind) egress ACL filtering by assigning 
-     *      SAI_NULL_OBJECT_ID in the attribute value.
-     * Default Value: SAI_NULL_OBJECT_ID
-     */
-    SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_ID,
+ 
+    SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_LIST,
 
     /** 
-     * @brief Default SAI ACL Group's non-conflicting action behavior
+     * @brief Switch/Global bind point for egress ACL objects
+     *
+     * Bind (or unbind) an egress acl tables/groups globally. Enable/Update 
+     * egress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_LIST,
+
+    /** 
+     * @brief ACL object support for non-conflicting action resolution
      *
      * Must return bool (true) if supported or (false) if not supported
      *
@@ -514,7 +527,7 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      *
      */
-    SAI_ACL_TABLE_GROUP_NON_CONFLICTING_ACTION,
+    SAI_ACL_NON_CONFLICTING_ACTION,
 
     /** Maximum traffic classes limit [sai_uint8_t] */
     /**

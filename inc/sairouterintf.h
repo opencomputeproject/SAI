@@ -139,23 +139,35 @@ typedef enum _sai_router_interface_attr_t
      */
     SAI_ROUTER_INTERFACE_ATTR_MTU,
 
-    /** Bind/Unbind an ingress acl or acl-group on a router interface [sai_object_id_t].
-     *      Enable (or bind) ingress ACL filtering by assigning the ACL table 
-     *      object id or an ACL group object id as attribute value. 
-     *      Disable (or unbind) ingress ACL filtering by assigning 
-     *      SAI_NULL_OBJECT_ID in the attribute value.
-     *      Default Value: SAI_NULL_OBJECT_ID
+    /** 
+     * @brief RIF bind point for ingress ACL objects
+     *
+     * Bind (or unbind) an ingress acl tables/groups on a RIF. Enable/Update 
+     * ingress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
      */
-    SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL_ID,
+    SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL_LIST,
 
-    /** Bind/Unbind an egress acl or acl-group on a router interface [sai_object_id_t].
-     *      Enable (or bind) egress ACL filtering by assigning the ACL table 
-     *      object id or an ACL group object id as attribute value. 
-     *      Disable (or unbind) egress ACL filtering by assigning 
-     *      SAI_NULL_OBJECT_ID in the attribute value.
-     *      Default Value: SAI_NULL_OBJECT_ID
+    /** 
+     * @brief RIF bind point for egress ACL objects
+     *
+     * Bind (or unbind) an egress acl tables/groups on a RIF. Enable/Update 
+     * egress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
      */
-    SAI_ROUTER_INTERFACE_ATTR_EGRESS_ACL_ID,
+    SAI_ROUTER_INTERFACE_ATTR_EGRESS_ACL_LIST,
 
     /** Packet action when neighbor table lookup miss for this router interface [sai_packet_action_t]
      * (CREATE_AND_SET) (default to SAI_PACKET_ACTION_TRAP) */

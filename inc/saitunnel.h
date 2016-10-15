@@ -387,14 +387,20 @@ typedef enum _sai_tunnel_attr_t
      */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
-    /** Bind/Unbind an egress acl or acl-group on a tunnel after encap [sai_object_id_t].
-     *      Enable (or bind) egress ACL filtering by assigning the ACL table 
-     *      object id or ACL group object id as attribute value. 
-     *      Disable (or unbind) egress ACL filtering by assigning 
-     *      SAI_NULL_OBJECT_ID in the attribute value.
-     *      Default Value: SAI_NULL_OBJECT_ID
+    /** 
+     * @brief Tunnel (after encap) bind point for egress ACL objects
+     *
+     * Bind (or unbind) an egress acl tables/groups on a tunnel. Enable/Update 
+     * egress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
      */
-    SAI_TUNNEL_ATTR_ENCAP_EGRESS_ACL_ID,
+    SAI_TUNNEL_ATTR_ENCAP_EGRESS_ACL_LIST,
 
     /** tunnel decap attribute **/
     /* Tunnel decap attributes */
@@ -440,15 +446,20 @@ typedef enum _sai_tunnel_attr_t
      */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
 
-    /** Bind/Unbind an ingress acl or acl-group on a tunnel after decap. [sai_object_id_t].
-     *      Enable (or bind) ingress ACL filtering by assigning the ACL table 
-     *      object id or ACL group object id as attribute value. 
-     *      Disable (or unbind) ingress ACL filtering by assigning 
-     *      SAI_NULL_OBJECT_ID in the attribute value.
-     *      Default Value: SAI_NULL_OBJECT_ID
+    /** 
+     * @brief Tunnel (after decap) bind point for ingress ACL objects
+     *
+     * Bind (or unbind) an ingress acl tables/groups on a tunnel. Enable/Update 
+     * ingress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
      */
-    SAI_TUNNEL_ATTR_DECAP_INGRESS_ACL_ID,
-
+    SAI_TUNNEL_ATTR_DECAP_INGRESS_ACL_LIST,
 
     /**
      * @brief End of attributes

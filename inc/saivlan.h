@@ -106,23 +106,35 @@ typedef enum _sai_vlan_attr_t
      */
     SAI_VLAN_ATTR_LEARN_DISABLE,
 
-    /** Bind/Unbind an ingress acl or acl-group on a vlan [sai_object_id_t].
-     *      Enable (or bind) ingress ACL filtering by assigning the ACL table 
-     *      object id or ACL group object id as attribute value. 
-     *      Disable (or unbind) ingress ACL filtering by assigning 
-     *      SAI_NULL_OBJECT_ID in the attribute value.
-     *      Default Value: SAI_NULL_OBJECT_ID
+    /** 
+     * @brief VLAN bind point for ingress ACL objects
+     *
+     * Bind (or unbind) an ingress acl tables/groups on a VLAN. Enable/Update 
+     * ingress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
      */
-    SAI_VLAN_ATTR_INGRESS_ACL_ID,
+    SAI_VLAN_ATTR_INGRESS_ACL_LIST,
 
-    /** Bind/Unbind an egress acl or acl-group on a vlan [sai_object_id_t].
-     *      Enable (or bind) egress ACL filtering by assigning the ACL table 
-     *      object id or ACL group object id as attribute value. 
-     *      Disable (or unbind) egress ACL filtering by assigning 
-     *      SAI_NULL_OBJECT_ID in the attribute value.
-     *      Default Value: SAI_NULL_OBJECT_ID
+    /** 
+     * @brief VLAN bind point for egress ACL objects
+     *
+     * Bind (or unbind) an egress acl tables/groups on a VLAN. Enable/Update 
+     * egress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
      */
-    SAI_VLAN_ATTR_EGRESS_ACL_ID,
+    SAI_VLAN_ATTR_EGRESS_ACL_LIST,
 
     /** User based Meta Data
       * [sai_uint32_t] (CREATE_AND_SET)
