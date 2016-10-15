@@ -1057,6 +1057,14 @@ void check_attr_key(
 
                 META_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (list)");
 
+            case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+                if (md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT)
+                {
+                    break;
+                }
+
+                META_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (object id)");
+
             case SAI_ATTR_VALUE_TYPE_INT32:
             case SAI_ATTR_VALUE_TYPE_UINT32:
             case SAI_ATTR_VALUE_TYPE_UINT8:
