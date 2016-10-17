@@ -241,7 +241,6 @@ sai_uint32_t            UINT32
 sai_int32_t             INT32
 sai_uint64_t            UINT64
 sai_int64_t             INT64
-sai_string_t            STRING
 sai_pointer_t           POINTER
 sai_mac_t               MAC
 sai_ip4_t               IPV4

@@ -337,8 +337,7 @@ void check_attr_flags(
                     break;
                 }
 
-                if ((md->attrvaluetype == SAI_ATTR_VALUE_TYPE_STRING) || 
-                    (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER))
+                if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
                 {
                     /*
                      * String  or Pointer may not provide default value, 
@@ -401,6 +400,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_BOOL:
         case SAI_ATTR_VALUE_TYPE_INT8:
         case SAI_ATTR_VALUE_TYPE_INT32:
+        case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8:
@@ -409,7 +409,6 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
-        case SAI_ATTR_VALUE_TYPE_STRING:
         case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
@@ -528,8 +527,7 @@ void check_attr_default_required(
             return;
         }
 
-        if ((md->attrvaluetype == SAI_ATTR_VALUE_TYPE_STRING) || 
-            (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER))
+        if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
         {
             /* Pointer or String may not have default value */
             return;
@@ -615,7 +613,8 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
              break;
-        case SAI_ATTR_VALUE_TYPE_UINT32_LIST:        
+        case SAI_ATTR_VALUE_TYPE_INT8_LIST:
+        case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
@@ -646,7 +645,6 @@ void check_attr_default_required(
 
             break;
 
-        case SAI_ATTR_VALUE_TYPE_STRING:
         case SAI_ATTR_VALUE_TYPE_POINTER:
              break;
 
@@ -787,9 +785,10 @@ void check_attr_default_value_type(
 
             switch (md->attrvaluetype)
             {
-                case SAI_ATTR_VALUE_TYPE_UINT32_LIST:               
+                case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_INT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
+                case SAI_ATTR_VALUE_TYPE_INT8_LIST:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
@@ -991,7 +990,6 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
-            case SAI_ATTR_VALUE_TYPE_STRING:
             case SAI_ATTR_VALUE_TYPE_POINTER:
               break;
 
