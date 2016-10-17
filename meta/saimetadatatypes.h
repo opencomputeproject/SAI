@@ -844,6 +844,12 @@ typedef struct _sai_object_type_info_t
     sai_attr_id_t                       attridend;
 
     /**
+     * @brief Provides enum metadata if attribute
+     * is enum or enum list.
+     */
+    const sai_enum_metadata_t* const    enummetadata;
+
+    /**
      * @brief Attributes metadata
      */
     const sai_attr_metadata_t** const   attrmetadata;
