@@ -158,18 +158,14 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
               case SAI_PORT_ATTR_ADMIN_STATE:
+              case SAI_PORT_ATTR_UPDATE_DSCP:
                   attr_list[i].value.booldata = attribute.value.booldata;
                   break;
               case SAI_PORT_ATTR_PORT_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
                   break;
-              case SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID:
-                  attr_list[i].value.oid = attribute.value.oid;
-                  break;
-              case SAI_PORT_ATTR_QOS_WRED_PROFILE_ID:
-                  attr_list[i].value.oid = attribute.value.oid;
-                  break;
               case SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL:
+              case SAI_PORT_ATTR_QOS_DEFAULT_TC:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
 	          case SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST:
@@ -184,6 +180,20 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.objlist.list = *buffer_profile_list;
                   break;
                   }
+              case SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID:
+              case SAI_PORT_ATTR_QOS_WRED_PROFILE_ID:
+              case SAI_PORT_ATTR_QOS_DOT1P_TO_TC_MAP:
+              case SAI_PORT_ATTR_QOS_DOT1P_TO_COLOR_MAP:
+              case SAI_PORT_ATTR_QOS_DSCP_TO_TC_MAP:
+              case SAI_PORT_ATTR_QOS_DSCP_TO_COLOR_MAP:
+              case SAI_PORT_ATTR_QOS_TC_TO_QUEUE_MAP:
+              case SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP:
+              case SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP:
+              case SAI_PORT_ATTR_QOS_TC_TO_PRIORITY_GROUP_MAP:
+              case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP:
+              case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
               default:
                   break;
           }
@@ -2403,6 +2413,81 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
           return status;
       }
       status = wred_api->remove_wred_profile((sai_object_id_t) wred_id);
+      return status;
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_qos_map(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      sai_attribute_t *attr_list;
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_qos_map_api_t *qos_map_api;
+      sai_object_id_t qos_map_id = 0;
+      sai_qos_map_t *qos_map_list = NULL;
+
+      printf("sai_thrift_create_qos_map\n");
+
+      status = sai_api_query(SAI_API_QOS_MAPS, (void **) &qos_map_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+
+      for (uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+
+          switch (attribute.id) {
+              case SAI_QOS_MAP_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+
+              case SAI_QOS_MAP_ATTR_MAP_TO_VALUE_LIST:
+                  sai_attribute_t *attr = &attr_list[i];
+
+                  attr->value.qosmap.count = attribute.value.qosmap.count;
+
+                  qos_map_list = (sai_qos_map_t *) malloc(attr->value.qosmap.count * sizeof(sai_qos_map_t));
+                  attr->value.qosmap.list = qos_map_list;
+
+                  for (uint32_t j = 0; j < attribute.value.qosmap.count; j++) {
+                      sai_thrift_parse_qos_map_params(&attribute.value.qosmap.map_list[j].key, &attr->value.qosmap.list[j].key);
+                      sai_thrift_parse_qos_map_params(&attribute.value.qosmap.map_list[j].value, &attr->value.qosmap.list[j].value);
+                  }
+                  break;
+          }
+      }
+
+      qos_map_api->create_qos_map(&qos_map_id, thrift_attr_list.size(), attr_list);
+
+      free(qos_map_list);
+      free(attr_list);
+      return qos_map_id;
+  }
+
+  void sai_thrift_parse_qos_map_params(const sai_thrift_qos_map_params_t *thrift_qos_params, sai_qos_map_params_t *qos_params) {
+      qos_params->tc = thrift_qos_params->tc;
+      qos_params->dscp = thrift_qos_params->dscp;
+      qos_params->dot1p = thrift_qos_params->dot1p;
+      qos_params->prio = thrift_qos_params->prio;
+      qos_params->pg = thrift_qos_params->pg;
+      qos_params->queue_index = thrift_qos_params->queue_index;
+      qos_params->color = (sai_packet_color_t) thrift_qos_params->color;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_qos_map(const sai_thrift_object_id_t qos_map_id) {
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_qos_map_api_t *qos_map_api;
+
+      printf("sai_thrift_remove_qos_map\n");
+
+      status = sai_api_query(SAI_API_QOS_MAPS, (void **) &qos_map_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      status = qos_map_api->remove_qos_map((sai_object_id_t) qos_map_id);
       return status;
   }
 
