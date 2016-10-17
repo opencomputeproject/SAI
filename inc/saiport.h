@@ -996,7 +996,7 @@ typedef enum _sai_port_attr_t
      * This attribute need not be implemented and can be ignored if the port
      * doesn't require any specific hardware settings based on media type/cable.
      *
-     * @type sai_uint64_t
+     * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default vendor
      */
