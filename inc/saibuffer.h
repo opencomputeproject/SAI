@@ -45,10 +45,12 @@ typedef enum _sai_ingress_priority_group_attr_t
 
     /**
      * @brief Buffer profile pointer
+     * Default no profile
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @flags CREATE_AND_SET
+     * @allownull true
      */
     SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
 
