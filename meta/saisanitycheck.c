@@ -991,7 +991,7 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_POINTER:
-              break;
+                break;
 
             default:
 
