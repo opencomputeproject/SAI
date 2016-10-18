@@ -64,22 +64,20 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_COUNT = SAI_NEXT_HOP_GROUP_ATTR_START,
 
     /**
+     * @brief Next hop member list
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER
+     * @flags READ_ONLY
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_MEMBER_LIST,
+
+    /**
      * @brief Next hop group type
      *
      * @type sai_next_hop_group_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_NEXT_HOP_GROUP_ATTR_TYPE,
-
-    /**
-     * @brief Next hop list
-     * The next hop group must have at least one next hop member at the creation time
-     *
-     * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_NEXT_HOP
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_LIST,
 
     /**
      * @brief End of attributes
@@ -93,6 +91,50 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_CUSTOM_RANGE_END
 
 } sai_next_hop_group_attr_t;
+
+typedef enum _sai_next_hop_group_member_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_START,
+
+    /**
+     * @brief Next hop group id
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_START,
+
+    /**
+     * @brief Next hop id
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID,
+
+    /**
+     * @brief Member weights
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_WEIGHT,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_END,
+
+    /** Custom range base value */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_CUSTOM_RANGE_START  = 0x10000000,
+
+    /** End of custom range base */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_CUSTOM_RANGE_END
+
+} sai_next_hop_group_member_attr_t;
 
 /**
  * @brief Create next hop group
@@ -147,44 +189,73 @@ typedef sai_status_t (*sai_get_next_hop_group_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Add next hop to a group
+ * @brief Create next hop group member
  *
- * @param[in] next_hop_group_id Next hop group id
- * @param[in] next_hop_count Number of next hops
- * @param[in] nexthops Array of next hops
- *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
- */
-typedef sai_status_t (*sai_add_next_hop_to_group_fn)(
-        _In_ sai_object_id_t next_hop_group_id,
-        _In_ uint32_t next_hop_count,
-        _In_ const sai_object_id_t *nexthops);
-
-/**
- * @brief Remove next hop from a group
- *
- * @param[in] next_hop_group_id Next hop group id
- * @param[in] next_hop_count Number of next hops
- * @param[in] nexthops Array of next hops
+ * @param[out] next_hop_group_member_id - next hop group member id
+ * @param[in] attr_count - number of attributes
+ * @param[in] attr_list - array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_remove_next_hop_from_group_fn)(
-        _In_ sai_object_id_t next_hop_group_id,
-        _In_ uint32_t next_hop_count,
-        _In_ const sai_object_id_t *nexthops);
+typedef sai_status_t (*sai_create_next_hop_group_member_fn)(
+    _Out_ sai_object_id_t* next_hop_group_member_id,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list
+    );
 
 /**
- * @brief Next Hop methods table retrieved with sai_api_query()
+ * @brief Remove next hop group member
+ *
+ * @param[in] next_hop_group_member_id - next hop group member id
+ *
+ * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_next_hop_group_member_fn)(
+    _In_ sai_object_id_t next_hop_group_member_id
+    );
+
+/**
+ * @brief Set Next Hop Group attribute
+ *
+ * @param[in] sai_object_id_t - next_hop_group_member_id
+ * @param[in] attr - attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_set_next_hop_group_member_attribute_fn)(
+    _In_ sai_object_id_t next_hop_group_member_id,
+    _In_ const sai_attribute_t *attr
+    );
+
+
+/**
+ * @brief Get Next Hop Group attribute
+ *
+ * @param[in] sai_object_id_t - next_hop_group_member_id
+ * @param[in] attr_count - number of attributes
+ * @param[inout] attr_list - array of attributes
+ *
+ * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_get_next_hop_group_member_attribute_fn)(
+    _In_ sai_object_id_t next_hop_group_member_id,
+    _In_ uint32_t attr_count,
+    _Inout_ sai_attribute_t *attr_list
+    );
+
+/**
+ *  @brief Next Hop methods table retrieved with sai_api_query()
  */
 typedef struct _sai_next_hop_group_api_t
 {
-    sai_create_next_hop_group_fn        create_next_hop_group;
-    sai_remove_next_hop_group_fn        remove_next_hop_group;
-    sai_set_next_hop_group_attribute_fn set_next_hop_group_attribute;
-    sai_get_next_hop_group_attribute_fn get_next_hop_group_attribute;
-    sai_add_next_hop_to_group_fn        add_next_hop_to_group;
-    sai_remove_next_hop_from_group_fn   remove_next_hop_from_group;
+    sai_create_next_hop_group_fn               create_next_hop_group;
+    sai_remove_next_hop_group_fn               remove_next_hop_group;
+    sai_set_next_hop_group_attribute_fn        set_next_hop_group_attribute;
+    sai_get_next_hop_group_attribute_fn        get_next_hop_group_attribute;
+    sai_create_next_hop_group_member_fn        create_next_hop_group_member;
+    sai_remove_next_hop_group_member_fn        remove_next_hop_group_member;
+    sai_set_next_hop_group_member_attribute_fn set_next_hop_group_member_attribute;
+    sai_get_next_hop_group_member_attribute_fn get_next_hop_group_member_attribute;
 
 } sai_next_hop_group_api_t;
 

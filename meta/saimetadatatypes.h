@@ -142,6 +142,11 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_INT64,
 
     /**
+     * @brief Attribute value is pointer address.
+     */
+    SAI_ATTR_VALUE_TYPE_POINTER,
+
+    /**
      * @brief Attribute value is mac address.
      */
     SAI_ATTR_VALUE_TYPE_MAC,
@@ -832,6 +837,12 @@ typedef struct _sai_object_type_info_t
      * @brief End of attributes *_END
      */
     sai_attr_id_t                       attridend;
+
+    /**
+     * @brief Provides enum metadata if attribute
+     * is enum or enum list.
+     */
+    const sai_enum_metadata_t* const    enummetadata;
 
     /**
      * @brief Attributes metadata

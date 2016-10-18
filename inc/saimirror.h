@@ -39,7 +39,7 @@
 typedef enum _sai_mirror_type_t
 {
     /** Local span */
-    SAI_MIRROR_TYPE_LOCAL = 1,
+    SAI_MIRROR_TYPE_LOCAL = 0,
 
     /** Remote span */
     SAI_MIRROR_TYPE_REMOTE,

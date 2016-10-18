@@ -104,22 +104,22 @@ typedef enum _sai_api_t
 typedef enum _sai_log_level_t
 {
     /** Log Level Debug */
-    SAI_LOG_LEVEL_DEBUG            = 1,
+    SAI_LOG_LEVEL_DEBUG            = 0,
 
     /** Log Level Info */
-    SAI_LOG_LEVEL_INFO             = 2,
+    SAI_LOG_LEVEL_INFO             = 1,
 
     /** Log Level Notice */
-    SAI_LOG_LEVEL_NOTICE           = 3,
+    SAI_LOG_LEVEL_NOTICE           = 2,
 
     /** Log level Warnng */
-    SAI_LOG_LEVEL_WARN             = 4,
+    SAI_LOG_LEVEL_WARN             = 3,
 
     /** Log Level Error */
-    SAI_LOG_LEVEL_ERROR            = 5,
+    SAI_LOG_LEVEL_ERROR            = 4,
 
     /** Log Level Critical */
-    SAI_LOG_LEVEL_CRITICAL         = 6
+    SAI_LOG_LEVEL_CRITICAL         = 5
 
 } sai_log_level_t;
 
