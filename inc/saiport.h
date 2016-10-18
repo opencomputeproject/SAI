@@ -192,13 +192,13 @@ typedef enum _sai_port_media_type_t
 typedef enum _sai_port_breakout_mode_type_t
 {
     /** 1 lane breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_TYPE_1_LANE = 1,
+    SAI_PORT_BREAKOUT_MODE_TYPE_1_LANE = 0,
 
     /** 2 lanes breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_TYPE_2_LANE = 2,
+    SAI_PORT_BREAKOUT_MODE_TYPE_2_LANE = 1,
 
     /** 4 lanes breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_TYPE_4_LANE = 4,
+    SAI_PORT_BREAKOUT_MODE_TYPE_4_LANE = 2,
 
     /** Breakout mode max count */
     SAI_PORT_BREAKOUT_MODE_TYPE_MAX
