@@ -227,6 +227,7 @@ sai_acl_field_data_t    aclfield
 sai_acl_action_data_t   aclaction
 sai_qos_map_list_t      qosmap
 sai_tunnel_map_list_t   tunnelmap
+sai_acl_capability_t    aclcapability
 /;
 
 my %VALUE_TYPES_TO_VT = qw/
@@ -255,6 +256,7 @@ sai_s32_range_t         INT32_RANGE
 sai_vlan_list_t         VLAN_LIST
 sai_qos_map_list_t      QOS_MAP_LIST
 sai_tunnel_map_list_t   TUNNEL_MAP_LIST
+sai_acl_capability_t    ACL_CAPABILITY
 /;
 
 sub ProcessTagType
@@ -1367,12 +1369,15 @@ sub CreateObjectInfo
         my $start = "SAI_" . uc($1) . "_ATTR_START";
         my $end   = "SAI_" . uc($1) . "_ATTR_END";
 
+        my $enum  = "&metadata_enum_${type}";
+
         WriteHeader "extern const sai_object_type_info_t sai_object_type_info_$ot;";
 
         WriteSource "const sai_object_type_info_t sai_object_type_info_$ot = {";
         WriteSource "    .objecttype         = $ot,";
         WriteSource "    .attridstart        = $start,";
         WriteSource "    .attridend          = $end,";
+        WriteSource "    .enummetadata       = $enum,";
         WriteSource "    .attrmetadata       = metadata_object_type_$type,";
         WriteSource "};";
     }

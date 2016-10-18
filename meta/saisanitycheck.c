@@ -39,6 +39,16 @@ defined_attr_t* defined_attributes = NULL;
     exit(1);\
 }
 
+#define META_ENUM_ASSERT_FAIL(md, format, ...)\
+{\
+    fprintf(stderr, \
+            " ASSERT FAIL(on line %d) %s: " format "\n", \
+            __LINE__, \
+            md->name, \
+##__VA_ARGS__); \
+    exit(1);\
+}
+
 #define META_ASSERT_NOT_NULL(x)\
     if ((x) == NULL) { fprintf(stderr, "assert null failed: '%s' on line %d\n", #x, __LINE__); exit(1); }
 
@@ -92,6 +102,28 @@ void check_all_enums_name_pointers()
     }
 }
 
+bool is_flag_enum(const sai_enum_metadata_t* emd)
+{
+    const char* flagenums[] = {
+        "sai_acl_entry_attr_t",
+        "sai_acl_table_attr_t",
+        "sai_attr_flags_t",
+        "sai_hostif_trap_type_t",
+    };
+
+    size_t i = 0;
+
+    for (; i < sizeof(flagenums)/sizeof(const char*); ++i)
+    {
+        if (strcmp(emd->name, flagenums[i]) == 0)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void check_all_enums_values()
 {
     META_LOG_ENTER();
@@ -128,13 +160,27 @@ void check_all_enums_values()
             {
                 if (value != 0)
                 {
-                    META_LOG_WARN(emd, "first enum should start with zero");
+                    if (is_flag_enum(emd))
+                    {
+                        /* ok, flags not need zero enum */
+                    }
+                    else
+                    {
+                        META_ENUM_ASSERT_FAIL(emd, "first enum should start with zero");
+                    }
                 }
             }
 
             if (value != last + 1)
             {
-                META_LOG_WARN(emd, "values are not increasing by 1: last: %d current: %d", last, value);
+                if (is_flag_enum(emd))
+                {
+                    /* flags, ok */
+                }
+                else
+                {
+                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d", last, value);
+                }
             }
 
             last = emd->values[j];
@@ -359,6 +405,8 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
+        case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
 
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
@@ -1009,6 +1057,14 @@ void check_attr_key(
 
                 META_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (list)");
 
+            case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+                if (md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT)
+                {
+                    break;
+                }
+
+                META_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (object id)");
+
             case SAI_ATTR_VALUE_TYPE_INT32:
             case SAI_ATTR_VALUE_TYPE_UINT32:
             case SAI_ATTR_VALUE_TYPE_UINT8:
@@ -1265,7 +1321,7 @@ void check_object_infos()
                 if (info->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY &&
                         info->objecttype != SAI_OBJECT_TYPE_ACL_TABLE)
                 {
-                    META_WARN(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
+                    META_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
                 }
             }
 
@@ -1286,10 +1342,19 @@ void check_object_infos()
             META_ASSERT_FAIL(am, "attr is is not in start .. end range");
         }
 
+        META_ASSERT_NOT_NULL(info->enummetadata);
+
         if (index != info->attridend)
         {
-            META_WARN_LOG("end of attributes don't match attr count on %s",
+            if (is_flag_enum(info->enummetadata))
+            {
+                /* ok, flags */
+            }
+            else
+            {
+                META_ENUM_ASSERT_FAIL(info->enummetadata, "end of attributes don't match attr count on %s",
                     sai_metadata_get_object_type_name((sai_object_type_t)i));
+            }
         }
     }
 }

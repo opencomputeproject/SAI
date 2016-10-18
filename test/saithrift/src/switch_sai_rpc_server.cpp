@@ -1132,7 +1132,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
-          for (int j=0 ; j<4 ; j++){
+          uint32_t laneCnt = port_lane_list_attribute.value.u32list.count;
+          for (int j=0 ; j<laneCnt; j++){
               port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
           }
           
@@ -1220,7 +1221,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
-          for (int j=0 ; j<4 ; j++){
+          uint32_t laneCnt = port_lane_list_attribute.value.u32list.count;
+          for (int j=0 ; j<laneCnt; j++){
               port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
           }
    
@@ -2017,6 +2019,17 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
       attr_list.push_back(thrift_port_hw_lane);
       free(port_hw_lane.value.u32list.list); 
+	  
+      sai_attribute_t port_oper_status_attribute;
+      sai_thrift_attribute_t thrift_port_status;
+      port_oper_status_attribute.id = SAI_PORT_ATTR_OPER_STATUS;
+      port_api->get_port_attribute(port_id, 1, &port_oper_status_attribute);
+	  
+      thrift_attr_list.attr_count = 5;
+      thrift_port_status.id = SAI_PORT_ATTR_OPER_STATUS;
+      thrift_port_status.value.s32 =  port_oper_status_attribute.value.s32;
+      attr_list.push_back(thrift_port_status);
+	  
   }
 
   void sai_thrift_get_queue_stats(
@@ -2239,6 +2252,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_wred_attributes(thrift_attr_list, attr_list);
       uint32_t attr_count = thrift_attr_list.size();
       wred_api->create_wred_profile(&wred_id, attr_count, attr_list);
+      free(attr_list);
       return wred_id;
   }
 
