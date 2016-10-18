@@ -996,9 +996,8 @@ typedef enum _sai_switch_attr_t
      *
      * Use this to retrive the Key-Vlaue pairs as part of switch 
      * initialization. 
-     * @type sai_switch_profile_id_t
+     * @type sai_uint32_t
      * @flags CREATE_ONLY
-     * @allownull true
      * @default 0
      */
     SAI_SWITCH_ATTR_SWITCH_PROFILE_ID,
@@ -1012,18 +1011,18 @@ typedef enum _sai_switch_attr_t
      * In case of NULL, First NPU attached to CPU will be initialized.
      * Single NPU case this attribute is optional.
      *
-     * @type sai_string_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @allownull true
+     * @default empty
      */
     SAI_SWITCH_ATTR_SWITCH_HARDWARE_INFO,
 
     /**
      * @brief Vendor specific path name of the firmware to load.
      * 
-     * @type sai_string_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @allownull true
+     * @default empty
      */
     SAI_SWITCH_ATTR_FIRMWARE_PATH_NAME,
 
@@ -1048,7 +1047,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_pointer_t
      * @flags CREATE_AND_SET
-     * @allownull true
      */
     SAI_SWITCH_ATTR_OPER_STATUS_CHANGE_NOTIFY,
 
@@ -1059,7 +1057,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_pointer_t
      * @flags CREATE_AND_SET
-     * @allownull true
      */
     SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY,
 
@@ -1070,7 +1067,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_pointer_t
      * @flags CREATE_AND_SET
-     * @allownull true
      */
     SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY,
     
@@ -1081,7 +1077,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_pointer_t
      * @flags CREATE_AND_SET
-     * @allownull true
      */
     SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
 
@@ -1092,7 +1087,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_pointer_t
      * @flags CREATE_AND_SET
-     * @allownull true
      */
     SAI_SWITCH_ATTR_PORT_EVENT_NOTIFY,
 
@@ -1103,7 +1097,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_pointer_t
      * @flags CREATE_AND_SET
-     * @allownull true
      */
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
     

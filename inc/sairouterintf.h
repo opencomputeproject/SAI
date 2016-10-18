@@ -104,7 +104,7 @@ typedef enum _sai_router_interface_attr_t
      * @brief MAC Address
      *
      * Not valid when #SAI_ROUTER_INTERFACE_ATTR_TYPE == #SAI_ROUTER_INTERFACE_TYPE_LOOPBACK)
-     * Ddefault to #SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create)
+     * Default to #SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create)
      *
      * @type sai_mac_t
      * @flags CREATE_AND_SET
