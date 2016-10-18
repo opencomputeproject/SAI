@@ -136,8 +136,8 @@ typedef enum _sai_port_fdb_learning_mode_t
     /** Trap packets with unknown source MAC to CPU. Do not learn. Forward based on destination MAC */
     SAI_PORT_FDB_LEARNING_MODE_CPU_LOG,
 
-    /** Send MAC notification via FDB callback. Do not learn. Do not forward */
-    SAI_PORT_FDB_LEARNING_MODE_SW_TRAP,
+    /** Notify unknown source MAC using FDB callback. Do not learn. Do not forward */
+    SAI_PORT_FDB_LEARNING_MODE_FDB_NOTIFICATION,
 
 } sai_port_fdb_learning_mode_t;
 
