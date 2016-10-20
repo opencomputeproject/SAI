@@ -185,7 +185,7 @@ void check_all_enums_values()
 
             last = emd->values[j];
 
-            META_ASSERT_TRUE(value < 0x6000, "enum value is too big, range?");
+            META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
         }
     }
 }

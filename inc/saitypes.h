@@ -191,7 +191,7 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_FDB_ENTRY                = 31,
     SAI_OBJECT_TYPE_SWITCH                   = 32,
     SAI_OBJECT_TYPE_HOSTIF_TRAP              = 33,
-    SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP = 34,
+    SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY       = 34,
     SAI_OBJECT_TYPE_NEIGHBOR_ENTRY           = 35,
     SAI_OBJECT_TYPE_ROUTE_ENTRY              = 36,
     SAI_OBJECT_TYPE_VLAN                     = 37,
