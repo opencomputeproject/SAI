@@ -168,13 +168,13 @@ typedef enum _sai_switch_switching_mode_t
 typedef enum _sai_hash_algorithm_t
 {
     /** CRC-based hash algorithm */
-    SAI_HASH_ALGORITHM_CRC = 1,
+    SAI_HASH_ALGORITHM_CRC = 0,
 
     /** XOR-based hash algorithm */
-    SAI_HASH_ALGORITHM_XOR = 2,
+    SAI_HASH_ALGORITHM_XOR = 1,
 
     /** Random-based hash algorithm */
-    SAI_HASH_ALGORITHM_RANDOM = 3,
+    SAI_HASH_ALGORITHM_RANDOM = 2,
 
 } sai_hash_algorithm_t;
 
@@ -686,7 +686,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_acl_capability_t
      * @flags READ_ONLY
-     * @ignore
      */
     SAI_SWITCH_ATTR_ACL_CAPABILITY,
 
@@ -1036,6 +1035,15 @@ typedef enum _sai_switch_attr_t
      * @default false
      */
     SAI_SWITCH_ATTR_SWITCH_SHELL_ENABLE,
+
+    /**
+    * @brief Enable SAI function call fast mode, which executes calls very quickly
+    *
+    * @type bool
+    * @flags CREATE_AND_SET
+    * @default false
+    */
+    SAI_SWITCH_ATTR_FAST_API_ENABLE,
 
     /**
      * @brief End of attributes

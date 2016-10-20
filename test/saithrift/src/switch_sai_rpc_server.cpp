@@ -2252,6 +2252,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_wred_attributes(thrift_attr_list, attr_list);
       uint32_t attr_count = thrift_attr_list.size();
       wred_api->create_wred_profile(&wred_id, attr_count, attr_list);
+      free(attr_list);
       return wred_id;
   }
 
