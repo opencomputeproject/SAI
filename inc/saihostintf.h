@@ -377,12 +377,12 @@ typedef enum _sai_hostif_trap_attr_t
 
     /**
      * @brief Enable trap for a list of SAI ports
-     * Empty list means all ports (global) 
+     * Empty list means all ports (global) are enabled. To disable all ports remove the trap. 
      *
      * @type sai_object_list_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
-     * @default empty list (global)
+     * @default empty
      */
     SAI_HOSTIF_TRAP_ATTR_PORT_LIST,
 
