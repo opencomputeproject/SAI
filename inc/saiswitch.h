@@ -519,15 +519,16 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_LIST,
 
     /** 
-     * @brief ACL object support for non-conflicting action resolution
+     * @brief ACL object supports more than one ACL table (or group) at one bind point
      *
-     * Must return bool (true) if supported or (false) if not supported
+     * Must return bool (true) if supported or (false) if not supported. If a list
+     * of ACL table(s) or group(s) can be configured at a single bind point.
      *
      * @type bool
      * @flags READ_ONLY
      *
      */
-    SAI_ACL_NON_CONFLICTING_ACTION,
+    SAI_SWITCH_ATTR_ACL_LIST_SUPPORTED,
 
     /** Maximum traffic classes limit [sai_uint8_t] */
     /**

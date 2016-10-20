@@ -386,21 +386,6 @@ typedef enum _sai_tunnel_attr_t
      */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
-    /** 
-     * @brief Tunnel (after encap) bind point for egress ACL objects
-     *
-     * Bind (or unbind) an egress acl tables/groups on a tunnel. Enable/Update 
-     * egress ACL table(s)/group(s) filtering by assigning the list of valid 
-     * objects. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
-     * in the attribute value. 
-     *
-     * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
-     * @flags CREATE_AND_SET
-     * @default empty
-     */
-    SAI_TUNNEL_ATTR_ENCAP_EGRESS_ACL_LIST,
-
     /** tunnel decap attribute **/
     /* Tunnel decap attributes */
 
@@ -444,21 +429,6 @@ typedef enum _sai_tunnel_attr_t
      * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
-
-    /** 
-     * @brief Tunnel (after decap) bind point for ingress ACL objects
-     *
-     * Bind (or unbind) an ingress acl tables/groups on a tunnel. Enable/Update 
-     * ingress ACL table(s)/group(s) filtering by assigning the list of valid 
-     * objects. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
-     * in the attribute value. 
-     *
-     * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
-     * @flags CREATE_AND_SET
-     * @default empty
-     */
-    SAI_TUNNEL_ATTR_DECAP_INGRESS_ACL_LIST,
 
     /**
      * @brief End of attributes

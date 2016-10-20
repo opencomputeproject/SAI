@@ -44,15 +44,31 @@ typedef enum _sai_acl_stage_t
     /** Egress Stage */
     SAI_ACL_STAGE_EGRESS,
 
-    /** Ingress Sub Stages */
-
-    /** Ingress Sub Stage: Before L2 processing in the ingress pipeline */
-    SAI_ACL_STAGE_SUBSTAGE_INGRESS_PRE_L2,
-
-    /** Ingress Sub Stage: Post L3 processing in the ingress pipeline */
-    SAI_ACL_STAGE_SUBSTAGE_INGRESS_POST_L3,
-
 } sai_acl_stage_t;
+
+/**
+ * @brief Attribute data for SAI_ACL_TABLE_ATTR_BIND_POINT
+ */
+typedef enum _sai_acl_bind_point_t
+{
+    /** Port Bind Point */
+    SAI_ACL_PORT_BIND_POINT,
+
+    /** LAG Bind Point */
+    SAI_ACL_LAG_BIND_POINT,
+
+    /** VLAN Bind Point */
+    SAI_ACL_VLAN_BIND_POINT,
+
+    /** RIF Bind Point */
+    SAI_ACL_ROUTER_INTF_BIND_POINT,
+
+    /** SWITCH Bind Point */
+    SAI_ACL_SWITCH_BIND_POINT
+
+    //TODO: once available add bridge interface based binding point.
+
+} sai_acl_bind_point_t;
 
 /**
  * @brief ACL IP Type
@@ -232,6 +248,14 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_STAGE = SAI_ACL_TABLE_GROUP_ATTR_START,
 
     /**
+     * @brief List of ACL bind points where this group will be applied
+     *
+     * @type sai_acl_bind_point_t sai_object_list_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT_LIST
+
+    /**
      * @brief Priority
      *
      * Value must be in the range defined in
@@ -282,6 +306,14 @@ typedef enum _sai_acl_table_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_ACL_TABLE_ATTR_STAGE = SAI_ACL_TABLE_ATTR_START,
+
+    /**
+     * @brief List of ACL bind point where this ACL can be applied
+     *
+     * @type sai_acl_bind_point_t sai_object_list_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_ACL_TABLE_ATTR_BIND_POINT_LIST
 
     /**
      * @brief Priority
