@@ -105,7 +105,8 @@ Similarly, on creation of any ACL group table, it is mandatory to provide two MA
 
 Based on these two attributes **required** for creation of ACL table (or groups) allows SAI implementation to explicitly validate the scope of match fields and actions that can be supported at various bind points. Based on these explicit attributes the scope of ACL stages is restricted to INGRESS and EGRESS (removing the PRE_L2 and POST_L3). Hence, this proposal introduces well defined binding points along with specific stage(s) of the logical pipeline where any ACL table (or group) can be applied.
 
-A new enumeration is added to handle the types of bind points that are currently supported in the ACL specification. This enum would be changed once bridge interface specification is available.
+A new enumeration is added to handle the types of bind points that are currently supported in the ACL specification. This enum would be changed once bridge interface specification is available.<br>
+
     typedef enum _sai_acl_bind_point_t
     {
         /** Port Bind Point */
@@ -385,3 +386,4 @@ This example shows how to bind an ACL table to a port, especially that ACL table
 ## Next Steps
 1. Initial community review - 09/01/2016. 
 2. Second review with feedback and updates - 10/13/2016.
+3. Third review with feedback and updates - 10/20/2016.
