@@ -97,11 +97,27 @@ typedef enum _sai_stp_port_attr_t
     SAI_STP_PORT_ATTR_START,
 
     /**
+     * @brief STP id
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_STP
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_STP_PORT_ATTR_STP = SAI_STP_PORT_ATTR_START,
+
+    /**
+     * @brief Port id
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_STP_PORT_ATTR_PORT,
+
+    /**
      * @brief STP port state
      * @type sai_port_stp_state_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
-    SAI_STP_PORT_ATTR_STATE = SAI_STP_ATTR_START,
+    SAI_STP_PORT_ATTR_STATE,
 
     /**
      * @brief End of attributes
