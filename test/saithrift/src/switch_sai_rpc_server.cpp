@@ -1080,14 +1080,27 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           printf("sai_api_query failed!!!\n");
           return status;
       }
-      attr.id = thrift_attr.id;
-      switch(thrift_attr.id) {
-          case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
-              sai_thrift_string_to_mac(thrift_attr.value.mac, attr.value.mac);
-              break;
-      }
+
+      sai_thrift_parse_switch_attribute(thrift_attr, &attr);
+
       status = switch_api->set_switch_attribute(&attr);
       return status;
+  }
+
+  void sai_thrift_parse_switch_attribute(const sai_thrift_attribute_t &thrift_attr, sai_attribute_t *attr) {
+      attr->id = thrift_attr.id;
+
+      switch(thrift_attr.id) {
+          case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
+              sai_thrift_string_to_mac(thrift_attr.value.mac, attr->value.mac);
+              break;
+
+          case SAI_SWITCH_ATTR_FDB_UNICAST_MISS_ACTION:
+          case SAI_SWITCH_ATTR_FDB_BROADCAST_MISS_ACTION:
+          case SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_ACTION:
+              attr->value.s32 = thrift_attr.value.s32;
+              break;
+      }
   }
 
   void sai_thrift_get_port_list_by_front_port(sai_thrift_attribute_t& thrift_attr) {
