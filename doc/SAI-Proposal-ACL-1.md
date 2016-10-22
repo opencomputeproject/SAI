@@ -97,11 +97,11 @@ __Figure 2: group ID and ACL ID's relation with several binding points.__
 ## ACL Stages 
 On creation of any ACL table, it is mandatory to provide two MANDATORY_ON_CREATE attributes to "create_acl_table":<br>
     - SAI_ACL_TABLE_ATTR_STAGE<br>
-    - SAI_ACL_TABLE_ATTR_BIND_POINT_LIST<br>
+    - SAI_ACL_TABLE_ATTR_BIND_POINT<br>
 
 Similarly, on creation of any ACL group table, it is mandatory to provide two MANDATORY_ON_CREATE attributes to "create_acl_table_group":<br>
     - SAI_ACL_TABLE_GROUP_ATTR_STAGE<br>
-    - SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT_LIST<br>
+    - SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT<br>
 
 Based on these two attributes **required** for creation of ACL table (or groups) allows SAI implementation to explicitly validate the scope of match fields and actions that can be supported at various bind points. Based on these explicit attributes the scope of ACL stages is restricted to INGRESS and EGRESS (removing the PRE_L2 and POST_L3). Hence, this proposal introduces well defined binding points along with specific stage(s) of the logical pipeline where any ACL table (or group) can be applied.
 
@@ -110,19 +110,19 @@ A new enumeration is added to handle the types of bind points that are currently
     typedef enum _sai_acl_bind_point_t
     {
         /** Port Bind Point */
-        SAI_ACL_PORT_BIND_POINT,
+        SAI_ACL_BIND_POINT_PORT,
     
         /** LAG Bind Point */
-        SAI_ACL_LAG_BIND_POINT,
+        SAI_ACL_BIND_POINT_LAG,
     
         /** VLAN Bind Point */
-        SAI_ACL_VLAN_BIND_POINT,
+        SAI_ACL_BIND_POINT_VLAN,
     
         /** RIF Bind Point */
-        SAI_ACL_ROUTER_INTF_BIND_POINT,
+        SAI_ACL_BIND_POINT_ROUTER_INTF,
     
         /** Port Bind Point */
-        SAI_ACL_SWITCH_BIND_POINT
+        SAI_ACL_BIND_POINT_SWITCH
     } sai_acl_bind_point_t;
 
 ## Metadata Usage Model
@@ -160,9 +160,8 @@ The following example creates an ACL table and one ACL entry to denys a specific
     acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_STAGE;
     acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;
 
-    acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_BIND_POINT_LIST;
-    acl_attr_list[1].value.objlist.count = 1;
-    acl_attr_list[1].value.objlist.value[0] = SAI_ACL_PORT_BIND_POINT;
+    acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_BIND_POINT;
+    acl_attr_list[1].value.s32 = SAI_ACL_BIND_POINT_PORT;
  
     acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_PRIORITY;
     acl_attr_list[2].value.s32 = 100;
@@ -204,9 +203,8 @@ The following example creates an Layer3 ACL and one ACL entry to deny SIP and SP
     acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_STAGE;
     acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;
 
-    acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_BIND_POINT_LIST;
-    acl_attr_list[1].value.objlist.count = 1;
-    acl_attr_list[1].value.objlist.value[0] = SAI_ACL_ROUTER_INTF_BIND_POINT;
+    acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_BIND_POINT;
+    acl_attr_list[1].value.s32 = SAI_ACL_BIND_POINT_ROUTER_INTF;
  
     acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_PRIORITY;
     acl_attr_list[2].value.s32 = 100;
@@ -268,9 +266,8 @@ This example creates and ACL group with more than one ACL table and bind it to a
     acl_grp_attr[0].id = SAI_ACL_TABLE_GROUP_STAGE;
     acl_grp_attr[0].value.s32 = SAI_ACL_STAGE_INGRESS;
 
-    acl_attr_list[1].id = SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT_LIST;
-    acl_attr_list[1].value.objlist.count = 1;
-    acl_attr_list[1].value.objlist.value[0] = SAI_ACL_PORT_BIND_POINT;
+    acl_attr_list[1].id = SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT;
+    acl_attr_list[1].value.s32 = SAI_ACL_BIND_POINT_PORT;
 
     acl_grp_attr[2].id = SAI_ACL_TABLE_GROUP_ATTR_PRIORITY;
     acl_grp_attr[2].value.s32 = 100;
@@ -292,9 +289,8 @@ This example creates and ACL group with more than one ACL table and bind it to a
     acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_STAGE;
     acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;
 
-    acl_attr_list[1].id = SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT_LIST;
-    acl_attr_list[1].value.objlist.count = 1;
-    acl_attr_list[1].value.objlist.value[0] = SAI_ACL_PORT_BIND_POINT;
+    acl_attr_list[1].id = SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT;
+    acl_attr_list[1].value.s32 = SAI_ACL_BIND_POINT_PORT;
  
     acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_PRIORITY;
     acl_attr_list[2].value.s32 = 101;

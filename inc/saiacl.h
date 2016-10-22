@@ -52,21 +52,19 @@ typedef enum _sai_acl_stage_t
 typedef enum _sai_acl_bind_point_t
 {
     /** Port Bind Point */
-    SAI_ACL_PORT_BIND_POINT,
+    SAI_ACL_BIND_POINT_PORT,
 
     /** LAG Bind Point */
-    SAI_ACL_LAG_BIND_POINT,
+    SAI_ACL_BIND_POINT_LAG,
 
     /** VLAN Bind Point */
-    SAI_ACL_VLAN_BIND_POINT,
+    SAI_ACL_BIND_POINT_VLAN,
 
     /** RIF Bind Point */
-    SAI_ACL_ROUTER_INTF_BIND_POINT,
+    SAI_ACL_BIND_POINT_ROUTER_INTF,
 
     /** SWITCH Bind Point */
-    SAI_ACL_SWITCH_BIND_POINT
-
-    //TODO: once available add bridge interface based binding point.
+    SAI_ACL_BIND_POINT_SWITCH
 
 } sai_acl_bind_point_t;
 
@@ -219,13 +217,13 @@ typedef enum _sai_acl_action_type_t
     SAI_ACL_ACTION_TYPE_SET_CPU_QUEUE,
 
     /** Set Meta Data to carry forward to next ACL Stage */
-    sai_acl_action_type_set_acl_meta_data,
+    SAI_ACL_ACTION_TYPE_SET_ACL_META_DATA,
 
     /** egress block port list */
-    sai_acl_action_type_egress_block_port_list,
+    SAI_ACL_ACTION_TYPE_EGRESS_BLOCK_PORT_LIST,
 
     /** set user defined trap id */
-    sai_acl_action_type_set_user_trap_id,
+    SAI_ACL_ACTION_TYPE_SET_USER_TRAP_ID,
 
 } sai_acl_action_type_t;
 
@@ -250,10 +248,10 @@ typedef enum _sai_acl_table_group_attr_t
     /**
      * @brief List of ACL bind points where this group will be applied
      *
-     * @type sai_acl_bind_point_t sai_object_list_t
+     * @type sai_acl_bind_point_t 
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT_LIST
+    SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT,
 
     /**
      * @brief Priority
@@ -270,7 +268,7 @@ typedef enum _sai_acl_table_group_attr_t
     /**
      * @brief End of attributes
      */
-    SAI_ACL_TABLE_GROUP_ATTR_END
+    SAI_ACL_TABLE_GROUP_ATTR_END,
 
     /**
      * @brief Custom range base value start
@@ -310,10 +308,10 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief List of ACL bind point where this ACL can be applied
      *
-     * @type sai_acl_bind_point_t sai_object_list_t
+     * @type sai_acl_bind_point_t 
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_TABLE_ATTR_BIND_POINT_LIST
+    SAI_ACL_TABLE_ATTR_BIND_POINT,
 
     /**
      * @brief Priority

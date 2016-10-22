@@ -115,7 +115,7 @@ typedef enum _sai_vlan_attr_t
      * in the attribute value. 
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
      * @default empty
      */
@@ -130,7 +130,7 @@ typedef enum _sai_vlan_attr_t
      * in the attribute value. 
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE and/or SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
      * @default empty
      */
