@@ -127,8 +127,8 @@ int test_profile_get_next_value(
     if (gProfileIter == gProfileMap.end())
     {
         printf("iterator reached end");
-    return -1;
-}
+        return -1;
+    }
 
     *variable = gProfileIter->first.c_str();
     *value = gProfileIter->second.c_str();
