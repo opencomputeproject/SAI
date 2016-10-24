@@ -225,6 +225,9 @@ typedef enum _sai_acl_action_type_t
     /** set user defined trap id */
     SAI_ACL_ACTION_TYPE_SET_USER_TRAP_ID,
 
+    /** Set Do Not Learn unknow source MAC*/
+    SAI_ACL_ACTION_TYPE_SET_DO_NOT_LEARN,
+
 } sai_acl_action_type_t;
 
 /**
@@ -1594,9 +1597,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID,
 
     /**
+     * @brief Do Not Learn unknown source MAC on match(enable/disbale) (parameter is not needed)
+     *
+     * @type sai_acl_action_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     */
+
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN
 
 } sai_acl_entry_attr_t;
 

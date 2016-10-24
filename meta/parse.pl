@@ -875,6 +875,8 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_NONE" if not defined $default;
 
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^SAI_NULL_OBJECT_ID$/;
+
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_INHERIT" if $default =~ /^inherit SAI_\w+$/ and $default =~ /_ATTR_/;
@@ -903,6 +905,10 @@ sub ProcessDefaultValue
     if ($default =~ /^(true|false)$/ and $type eq "bool")
     {
         WriteSource "$val = { .booldata = $default };";
+    }
+    elsif ($default =~ /^SAI_NULL_OBJECT_ID$/ and $type =~ /^sai_object_id_t$/)
+    {
+        WriteSource "$val = { .oid = $default };";
     }
     elsif ($default =~ /^SAI_\w+$/ and $type =~ /^sai_\w+_t$/ and not defined $VALUE_TYPES{$type})
     {
