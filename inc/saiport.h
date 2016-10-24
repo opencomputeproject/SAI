@@ -1016,62 +1016,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_EEE_ENABLE,
 
     /**
-     * @brief Port EEE TX Event Count 
-     *
-     * Event of Low Power mode in TX direction on EEE enabled Ethernet port. 
-     *
-     * @type sai_uint64_t
-     * @flags READ_ONLY
-     * @default empty
-     */
-    SAI_PORT_ATTR_EEE_TX_EVENT_COUNT,
-
-    /**
-     * @brief Port EEE RX Event Count
-     *
-     * Event of Low Power mode in RX direction on EEE enabled Ethernet port.
-     *
-     * @type sai_uint64_t
-     * @flags READ_ONLY 
-     * @default empty
-     */
-    SAI_PORT_ATTR_EEE_RX_EVENT_COUNT,
-
-    /**
-     *@brief Port EEE TX Duration
-     *
-     * Duration of Low Power mode in TX direction on EEE enabled Ethernet port.
-     *
-     * @type sai_uint64_t 
-     * @flags READ_ONLY
-     * @default empty
-     */
-    SAI_PORT_ATTR_EEE_TX_DURATION,
-
-    /**
-     *@brief Port EEE RX Duration
-     *
-     * Duration of Low Power mode in RX direction on EEE enabled Ethernet port.
-     *
-     * @type sai_uint64_t 
-     * @flags READ_ONLY
-     * @default empty
-     */
-    SAI_PORT_ATTR_EEE_RX_DURATION,
-
-    /**
-     *@brief Port EEE Statistics Clear
-     *
-     * EEE statistics clear
-     *
-     * @type sai_uint64_t
-     * @flags CREATE_AND_SET
-     * @default empty
-     */
-    SAI_PORT_ATTR_EEE_STATISTICS_CLEAR,
-
-
-    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
