@@ -1003,6 +1003,75 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_HW_PROFILE_ID,
 
     /**
+     * @brief Port EEE Configuration
+     *
+     * Energy Efficient Ethernet(EEE) is an IEEE 802.3 az standard aiming to 
+     * reduce power consumptions on Ethernet ports (native copper ports). 
+     * Enable the EEE on port level
+     *
+     * @type bool 
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_EEE_ENABLE,
+
+    /**
+     * @brief Port EEE TX Event Count 
+     *
+     * Event of Low Power mode in TX direction on EEE enabled Ethernet port. 
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     * @default empty
+     */
+    SAI_PORT_ATTR_EEE_TX_EVENT_COUNT,
+
+    /**
+     * @brief Port EEE RX Event Count
+     *
+     * Event of Low Power mode in RX direction on EEE enabled Ethernet port.
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY 
+     * @default empty
+     */
+    SAI_PORT_ATTR_EEE_RX_EVENT_COUNT,
+
+    /**
+     *@brief Port EEE TX Duration
+     *
+     * Duration of Low Power mode in TX direction on EEE enabled Ethernet port.
+     *
+     * @type sai_uint64_t 
+     * @flags READ_ONLY
+     * @default empty
+     */
+    SAI_PORT_ATTR_EEE_TX_DURATION,
+
+    /**
+     *@brief Port EEE RX Duration
+     *
+     * Duration of Low Power mode in RX direction on EEE enabled Ethernet port.
+     *
+     * @type sai_uint64_t 
+     * @flags READ_ONLY
+     * @default empty
+     */
+    SAI_PORT_ATTR_EEE_RX_DURATION,
+
+    /**
+     *@brief Port EEE Statistics Clear
+     *
+     * EEE statistics clear
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_PORT_ATTR_EEE_STATISTICS_CLEAR,
+
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -1358,6 +1427,18 @@ typedef enum _sai_port_stat_t
 
     /** sai port stat pfc 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
+
+    /** Port EEE TX LPI(Low Power Idle)Event Count [uint64_t] */
+    SAI_PORT_STAT_EEE_TX_EVENT_COUNT,
+
+    /** Port EEE RX LPI Event Count [uint64_t] */
+    SAI_PORT_STAT_EEE_RX_EVENT_COUNT,
+
+    /** Port EEE TX LPI durationin in micro secs [uint64_t] */
+    SAI_PORT_STAT_EEE_TX_DURATION,
+
+    /** Port EEE RX LPI duration in micro secs [uint64_t] */
+    SAI_PORT_STAT_EEE_RX_DURATION,
 
 } sai_port_stat_t;
 
