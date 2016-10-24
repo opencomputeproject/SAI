@@ -67,6 +67,9 @@ typedef enum _sai_route_entry_attr_t
      * @brief Next hop or next hop group id for the packet, or a router interface
      * in case of directly reachable route, or the CPU port in case of IP2ME route
      *
+     * The next hop id is only effective when the packet action is one of the following:
+     *  FORWARD, COPY, LOG, TRANSIT
+     *
      * The next hop id can be a generic next hop object, such as next hop, next
      * hop group. Directly reachable routes are the IP subnets that are
      * directly attached to the router. For such routes, fill the router
@@ -74,9 +77,13 @@ typedef enum _sai_route_entry_attr_t
      * router IP address. For such routes, fill the CPU port
      * (#SAI_SWITCH_ATTR_CPU_PORT).
      *
+     * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
+     *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_PORT
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     * @flags CREATE_AND_SET
+     * @allownull true
      */
     SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID,
 
