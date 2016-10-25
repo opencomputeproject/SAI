@@ -1101,6 +1101,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
     
     /**
+    * @brief Enable SAI function call fast mode, which executes calls very quickly
+    *
+    * @type bool
+    * @flags CREATE_AND_SET
+    * @default false
+    */
+    SAI_SWITCH_ATTR_FAST_API_ENABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
