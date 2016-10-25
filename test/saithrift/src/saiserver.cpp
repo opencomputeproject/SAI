@@ -310,7 +310,7 @@ main(int argc, char* argv[])
     sai_api_initialize(0, (service_method_table_t *)&test_services);
     sai_api_query(SAI_API_SWITCH, (void**)&sai_switch_api);
 
-    sai_status_t status = sai_switch_api->initialize_switch(0, "", "", &switch_notifications);
+    sai_status_t status = sai_switch_api->initialize_switch(0, (char *)"", (char *)"", &switch_notifications);
     if (status != SAI_STATUS_SUCCESS)
     {
         exit(EXIT_FAILURE);
