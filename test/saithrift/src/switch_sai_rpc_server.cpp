@@ -496,7 +496,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
   }
 
-  int32_t sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id, const sai_thrift_attribute_t &thrift_attr) {
+  sai_thrift_status_t sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id, const sai_thrift_attribute_t &thrift_attr) {
       printf("sai_thrift_set_port\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_port_api_t *port_api;
@@ -514,7 +514,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+  sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_create_fdb_entry\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_fdb_api_t *fdb_api;
@@ -532,7 +532,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_delete_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry) {
+  sai_thrift_status_t sai_thrift_delete_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry) {
       printf("sai_thrift_delete_fdb_entry\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_fdb_api_t *fdb_api;
@@ -546,7 +546,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_flush_fdb_entries(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+  sai_thrift_status_t sai_thrift_flush_fdb_entries(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_flush_fdb_entries\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_fdb_api_t *fdb_api;
@@ -562,7 +562,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_create_vlan(const sai_thrift_vlan_id_t vlan_id) {
+  sai_thrift_status_t sai_thrift_create_vlan(const sai_thrift_vlan_id_t vlan_id) {
       printf("sai_thrift_create_vlan\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_vlan_api_t *vlan_api;
@@ -574,7 +574,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_delete_vlan(const sai_thrift_vlan_id_t vlan_id) {
+  sai_thrift_status_t sai_thrift_delete_vlan(const sai_thrift_vlan_id_t vlan_id) {
       printf("sai_thrift_delete_vlan\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_vlan_api_t *vlan_api;
