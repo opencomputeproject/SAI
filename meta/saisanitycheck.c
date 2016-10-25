@@ -612,7 +612,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
-             break;
+            break;
         case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
@@ -646,7 +646,7 @@ void check_attr_default_required(
             break;
 
         case SAI_ATTR_VALUE_TYPE_POINTER:
-             break;
+            break;
 
         default:
 
