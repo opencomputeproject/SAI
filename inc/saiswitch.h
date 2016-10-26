@@ -630,6 +630,19 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_ACL_CAPABILITY,
 
+    /**
+     * @brief Multicast snooping capability supported by the NPU
+     *
+     * Value true indicates that the NPU is capable of performing 
+     * SG/*G lookup for L2 multicast (IP based L2 multicast).
+     * Value false indicates that the NPU is only capable of performing
+     * multicast fdb lookup for L2 multicast (MAC based L2 mulitcast)
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MULTICAST_SNOOPING_CAPABILITY,
+
     /* READ-WRITE */
 
     /**
