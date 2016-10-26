@@ -380,6 +380,24 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6,
 
     /**
+    * @brief Inner Src IPv6 Address
+    *
+    * @type bool
+    * @flags CREATE_ONLY
+    * @default false
+    */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IPv6,
+
+    /**
+    * @brief Inner Dst IPv6 Address
+    *
+    * @type bool
+    * @flags CREATE_ONLY
+    * @default false
+    */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IPv6,
+
+    /**
      * @brief Src MAC Address
      *
      * @type bool
@@ -415,6 +433,24 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_DST_IP,
+
+    /**
+    * @brief Inner Src IPv4 Address
+    *
+    * @type bool
+    * @flags CREATE_ONLY
+    * @default false
+    */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IP,
+
+    /**
+    * @brief Inner Dst IPv4 Address
+    *
+    * @type bool
+    * @flags CREATE_ONLY
+    * @default false
+    */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IP,
 
     /**
      * @brief In-Ports
@@ -550,6 +586,15 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL,
+
+    /**
+    * @brief IP Identification
+    *
+    * @type bool
+    * @flags CREATE_ONLY
+    * @default false
+    */
+    SAI_ACL_TABLE_ATTR_FIELD_IP_IDENTIFICATION,
 
     /**
      * @brief Ip Dscp
@@ -883,6 +928,22 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6,
 
     /**
+    * @brief Inner Src IPv6 Address
+    *
+    * @type sai_acl_field_data_t sai_ip6_t
+    * @flags CREATE_AND_SET
+    */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IPv6,
+
+    /**
+    * @brief Inner Dst IPv6 Address
+    *
+    * @type sai_acl_field_data_t sai_ip6_t
+    * @flags CREATE_AND_SET
+    */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IPv6,
+
+    /**
      * @brief Src MAC Address
      *
      * @type sai_acl_field_data_t sai_mac_t
@@ -913,6 +974,22 @@ typedef enum _sai_acl_entry_attr_t
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IP,
+
+    /**
+    * @brief Inner Src IPv4 Address
+    *
+    * @type sai_acl_field_data_t sai_ip4_t
+    * @flags CREATE_AND_SET
+    */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IP,
+
+    /**
+    * @brief Inner Dst IPv4 Address
+    *
+    * @type sai_acl_field_data_t sai_ip4_t
+    * @flags CREATE_AND_SET
+    */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IP,
 
     /**
      * @brief In-Ports (mask is not needed)
@@ -1039,6 +1116,14 @@ typedef enum _sai_acl_entry_attr_t
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL,
+
+    /**
+    * @brief IP Identification
+    *
+    * @type sai_acl_field_data_t sai_uint16_t
+    * @flags CREATE_AND_SET
+    */
+    SAI_ACL_ENTRY_ATTR_FIELD_IP_IDENTIFICATION,
 
     /**
      * @brief Ip Dscp (6 bits)
