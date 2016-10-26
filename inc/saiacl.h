@@ -149,7 +149,7 @@ typedef enum _sai_acl_action_type_t
     SAI_ACL_ACTION_TYPE_SET_TC,
 
     /** Set Packet Color */
-    SAI_ACL_ACTION_TYPE_SET_COLOR,
+    SAI_ACL_ACTION_TYPE_SET_PACKET_COLOR,
 
     /** Set Packet Inner Vlan-Id */
     SAI_ACL_ACTION_TYPE_SET_INNER_VLAN_ID,
@@ -262,7 +262,7 @@ typedef enum _sai_acl_table_attr_t
      * @type sai_acl_stage_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_TABLE_ATTR_STAGE = SAI_ACL_TABLE_ATTR_START,
+    SAI_ACL_TABLE_ATTR_ACL_STAGE = SAI_ACL_TABLE_ATTR_START,
 
     /**
      * @brief Priority
@@ -657,7 +657,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_IP_TYPE,
+    SAI_ACL_TABLE_ATTR_FIELD_ACL_IP_TYPE,
 
     /**
      * @brief Ip Frag
@@ -666,7 +666,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_IP_FRAG,
+    SAI_ACL_TABLE_ATTR_FIELD_ACL_IP_FRAG,
 
     /**
      * @brief IPv6 Flow Label
@@ -711,7 +711,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_VLAN_TAGS,
+    SAI_ACL_TABLE_ATTR_FIELD_PACKET_VLAN,
 
     /* User Based Meta Data [bool] */
 
@@ -819,7 +819,7 @@ typedef enum _sai_acl_table_attr_t
      * @type sai_acl_range_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_TABLE_ATTR_FIELD_RANGE,
+    SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE,
 
     /**
      * @brief List of actions in sai_acl_table_action_list_t [sai_s32_list_t]
@@ -1179,7 +1179,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_acl_ip_type_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_IP_TYPE,
+    SAI_ACL_ENTRY_ATTR_FIELD_ACL_IP_TYPE,
 
     /**
      * @brief Ip Frag (field mask is not needed)
@@ -1187,7 +1187,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_acl_ip_frag_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_IP_FRAG,
+    SAI_ACL_ENTRY_ATTR_FIELD_ACL_IP_FRAG,
 
     /**
      * @brief IPv6 Flow Label (20 bits)
@@ -1227,7 +1227,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_packet_vlan_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_VLAN_TAGS,
+    SAI_ACL_ENTRY_ATTR_FIELD_PACKET_VLAN,
 
     /* User Based Meta Data */
 
@@ -1341,12 +1341,12 @@ typedef enum _sai_acl_entry_attr_t
      * @objects SAI_OBJECT_TYPE_ACL_RANGE
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_RANGE,
+    SAI_ACL_ENTRY_ATTR_FIELD_ACL_RANGE_TYPE,
 
     /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_RANGE,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_ACL_RANGE_TYPE,
 
     /*
      * Actions [sai_acl_action_data_t]
@@ -1453,7 +1453,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_packet_color_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_COLOR,
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_COLOR,
 
     /**
      * @brief Set Packet Inner Vlan-Id (12 bits)

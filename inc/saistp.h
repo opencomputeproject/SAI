@@ -36,18 +36,18 @@
 /**
  * @brief Datastructure for stp port state
  */
-typedef enum _sai_port_stp_state_t
+typedef enum _sai_stp_port_state_t
 {
     /** Port is in Learning mode*/
-    SAI_PORT_STP_STATE_LEARNING,
+    SAI_STP_PORT_STATE_LEARNING,
 
     /** Port is in Forwarding mode */
-    SAI_PORT_STP_STATE_FORWARDING,
+    SAI_STP_PORT_STATE_FORWARDING,
 
     /** Port is in Blocking mode */
-    SAI_PORT_STP_STATE_BLOCKING,
+    SAI_STP_PORT_STATE_BLOCKING,
 
-} sai_port_stp_state_t;
+} sai_stp_port_state_t;
 
 /**
  * @brief SAI attributes for STP
@@ -114,7 +114,7 @@ typedef enum _sai_stp_port_attr_t
 
     /**
      * @brief STP port state
-     * @type sai_port_stp_state_t
+     * @type sai_stp_port_state_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_STP_PORT_ATTR_STATE,

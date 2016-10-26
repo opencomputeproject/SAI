@@ -101,7 +101,7 @@ typedef enum _sai_hash_attr_t
      * @flags CREATE_AND_SET
      * @default empty
      */
-    SAI_HASH_ATTR_NATIVE_FIELD_LIST = SAI_HASH_ATTR_START,
+    SAI_HASH_ATTR_NATIVE_HASH_FIELD_LIST = SAI_HASH_ATTR_START,
 
     /**
      * @brief Hash UDF group

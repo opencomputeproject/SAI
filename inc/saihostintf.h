@@ -515,7 +515,7 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      * @flags CREATE_ONLY
      * @default SAI_HOSTIF_TRAP_CHANNEL_CB
      */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_CHANNEL = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_HOSTIF_TRAP_CHANNEL = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
 
     /**
      * @brief File descriptor
@@ -726,7 +726,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_hostif_trap_type_t
      * @flags READ_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
 
     /**
      * @brief User-Defined Trap ID (for receive-only)
@@ -734,7 +734,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_hostif_user_defined_trap_id_t
      * @flags READ_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_USER_TRAP_ID,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_USER_DEFINED_TRAP_ID,
 
     /**
      * @brief Ingress port (for receive-only)
@@ -760,11 +760,11 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_hostif_tx_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_TX_TYPE,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE,
 
     /**
      * @brief Egress port or
-     * (MANDATORY_ON_SEND when #SAI_HOSTIF_PACKET_ATTR_TX_TYPE == #SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS)
+     * (MANDATORY_ON_SEND when #SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == #SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS)
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
      * Applicable for use-case like SAMPLEPACKET traps
@@ -772,7 +772,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_HOSTIF_PACKET_ATTR_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
+     * @condition SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
      */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
 
