@@ -95,17 +95,18 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_TYPE = SAI_FDB_ENTRY_ATTR_START,
 
     /**
-     * @brief FDB entry port id
+     * @brief FDB entry output id
      *
-     * The port id here can refer to a generic port object such as SAI port object id,
+     * The output id here can refer to a generic port object such as SAI port object id,
      * SAI LAG object id and etc. or to a tunnel next hop object in case the entry is
-     * l2 tunnel
+     * l2 tunnel. It can also refer to a L2MC group object. In case of empty group, packets 
+     * will be discarded
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_TUNNEL
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_TUNNEL, SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_FDB_ENTRY_ATTR_PORT_ID,
+    SAI_FDB_ENTRY_ATTR_OUTPUT_ID,
 
     /**
      * @brief FDB entry packet action
