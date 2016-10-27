@@ -39,10 +39,10 @@
 typedef enum _sai_ipmc_entry_type_t
 {
     /** IPMC entry with type (S,G) */
-    SAI_IPMC_ENTRY_TYPE_SG = 0x00000001,
+    SAI_IPMC_ENTRY_TYPE_SG,
 
     /** IPMC entry with type (*,G) */
-    SAI_IPMC_ENTRY_TYPE_XG = 0x00000002,
+    SAI_IPMC_ENTRY_TYPE_XG,
 
 } sai_ipmc_entry_type_t;
 
@@ -52,7 +52,7 @@ typedef enum _sai_ipmc_entry_type_t
 typedef struct _sai_ipmc_entry_t
 {
     /** VRF ID */
-    sai_object_id_t vrf_id;;
+    sai_object_id_t vrf_id;
 
     /** IPMC entry type */
     sai_ipmc_entry_type_t type;
