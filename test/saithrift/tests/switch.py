@@ -76,14 +76,14 @@ def switch_init(client):
     for num_of_tries in range(200):
         time.sleep(1)
         # wait till the port are up
-        for port in port_list:
+        for port in sai_port_list:
             port_attr_list = client.sai_thrift_get_port_attribute(port)
             attr_list = port_attr_list.attr_list
             for attribute in attr_list:
                 if attribute.id == SAI_PORT_ATTR_OPER_STATUS:
                     if attribute.value.s32 != SAI_PORT_OPER_STATUS_UP:
                         all_ports_are_up = False
-                        print "port %h is down" % port
+                        print "port 0x%x is down" % port
         if all_ports_are_up:
             break
         else:

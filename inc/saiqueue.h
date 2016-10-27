@@ -118,6 +118,7 @@ typedef enum _sai_queue_attr_t
 
     /**
      * @brief Attach buffer profile to Queue
+     * Default no profile
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE

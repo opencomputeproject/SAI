@@ -208,6 +208,7 @@ sai_uint32_t            u32
 sai_int32_t             s32
 sai_uint64_t            u64
 sai_int64_t             s64
+sai_pointer_t           ptr
 sai_mac_t               mac
 sai_ip4_t               ip4
 sai_ip6_t               ip6
@@ -239,6 +240,7 @@ sai_uint32_t            UINT32
 sai_int32_t             INT32
 sai_uint64_t            UINT64
 sai_int64_t             INT64
+sai_pointer_t           POINTER
 sai_mac_t               MAC
 sai_ip4_t               IPV4
 sai_ip6_t               IPV6
@@ -875,6 +877,8 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_NONE" if not defined $default;
 
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^SAI_NULL_OBJECT_ID$/;
+
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_INHERIT" if $default =~ /^inherit SAI_\w+$/ and $default =~ /_ATTR_/;
@@ -903,6 +907,10 @@ sub ProcessDefaultValue
     if ($default =~ /^(true|false)$/ and $type eq "bool")
     {
         WriteSource "$val = { .booldata = $default };";
+    }
+    elsif ($default =~ /^SAI_NULL_OBJECT_ID$/ and $type =~ /^sai_object_id_t$/)
+    {
+        WriteSource "$val = { .oid = $default };";
     }
     elsif ($default =~ /^SAI_\w+$/ and $type =~ /^sai_\w+_t$/ and not defined $VALUE_TYPES{$type})
     {

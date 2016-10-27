@@ -114,7 +114,7 @@ typedef uint8_t sai_uint8_t;
 typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
-
+typedef void *sai_pointer_t;
 /**
  * @def SAI_NULL_OBJECT_ID
  * Sai NULL object ID
@@ -211,6 +211,10 @@ typedef struct _sai_u8_list_t {
     uint8_t *list;
 } sai_u8_list_t;
 
+/**
+ * @brief Defines a s8 list or string.
+ * string should be null terminated and count should include '\0'    
+ */
 typedef struct _sai_s8_list_t {
     uint32_t count;
     int8_t *list;
@@ -523,6 +527,7 @@ typedef union {
     sai_int32_t s32;
     sai_uint64_t u64;
     sai_int64_t s64;
+    sai_pointer_t ptr; 
     sai_mac_t mac;
     sai_ip4_t ip4;
     sai_ip6_t ip6;
