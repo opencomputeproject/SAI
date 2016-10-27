@@ -732,6 +732,7 @@ typedef enum _sai_hostif_table_entry_attr_t
     SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL,
 
     /**
+    * @brief Host interface table entry action target host interface object
     *
     * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL = #SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_FD
     * @type sai_object_id_t
