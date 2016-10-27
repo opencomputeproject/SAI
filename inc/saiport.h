@@ -1372,16 +1372,20 @@ typedef enum _sai_port_stat_t
     /** sai port stat pfc 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
-    /** Port EEE TX LPI(Low Power Idle)Event Count [uint64_t] */
+    /** Number of times port state changed from 
+     * high power mode to low power mode in TX direction [uint64_t] */
     SAI_PORT_STAT_EEE_TX_EVENT_COUNT,
 
-    /** Port EEE RX LPI Event Count [uint64_t] */
+    /** Number of times port state changed from 
+     * high power mode to low power mode in RX direction [uint64_t] */
     SAI_PORT_STAT_EEE_RX_EVENT_COUNT,
 
-    /** Port EEE TX LPI durationin in micro secs [uint64_t] */
+    /** Port Low power mode duration(micro secs) in TX direction [uint64_t].
+     * This Duration is accumulative since EEE enable on port/from last clear stats*/
     SAI_PORT_STAT_EEE_TX_DURATION,
 
-    /** Port EEE RX LPI duration in micro secs [uint64_t] */
+    /** Port Low power mode duration(micro secs) in RX direction [uint64_t] 
+     * This Duration is accumulative since EEE enable on port/from last clear stats*/
     SAI_PORT_STAT_EEE_RX_DURATION,
 
 } sai_port_stat_t;
@@ -1399,7 +1403,6 @@ typedef sai_status_t (*sai_create_port_fn)(
         _Out_ sai_object_id_t *port_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
-
 /**
  * @brief Remove port
  *
