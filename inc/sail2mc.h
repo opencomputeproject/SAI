@@ -96,6 +96,11 @@ typedef enum _sai_l2mc_entry_attr_t
      */
     SAI_L2MC_ENTRY_ATTR_OUTPUT_GROUP_ID,
 
+    /**
+     * @brief End of attributes
+     */
+    SAI_L2MC_ENTRY_ATTR_END,
+
     /* Custom range base value */
     SAI_L2MC_ENTRY_ATTR_CUSTOM_RANGE_BASE  = 0x10000000,
 
