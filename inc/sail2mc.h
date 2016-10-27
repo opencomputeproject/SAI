@@ -39,10 +39,10 @@
 typedef enum _sai_l2mc_entry_type_t
 {
     /** L2MC entry with type (S,G) */
-    SAI_L2MC_ENTRY_TYPE_SG = 0x00000001,
+    SAI_L2MC_ENTRY_TYPE_SG,
 
     /** L2MC entry with type (*,G) */
-    SAI_L2MC_ENTRY_TYPE_XG = 0x00000002,
+    SAI_L2MC_ENTRY_TYPE_XG,
 
 } sai_l2mc_entry_type_t;
 
