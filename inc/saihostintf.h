@@ -194,7 +194,7 @@ typedef enum _sai_hostif_trap_type_t
     /** default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V3_REPORT = 0x000000009,
 
-    /** default action is trap */
+    /** default action is drop */
     SAI_HOSTIF_TRAP_TYPE_SAMPLEPACKET = 0x00000000a,
 
     /** Switch traps custom range start */
@@ -252,31 +252,31 @@ typedef enum _sai_hostif_trap_type_t
     /**
      * @brief IP packets to local router IP address (routes with
      * #SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID = #SAI_SWITCH_ATTR_CPU_PORT)
-     * (default packet action is trap)
+     * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_IP2ME = 0x00004000,
 
     /**
      * @brief SSH traffic (tcp dst port == 22) to local router IP address
-     * (default packet action is trap)
+     * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_SSH = 0x00004001,
 
     /**
      * @brief SNMP traffic (udp dst port == 161) to local router IP address
-     * (default packet action is trap)
+     * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_SNMP = 0x00004002,
 
     /**
     * @brief BGP traffic (tcp src port == 179 or tcp dst port == 179) to local
-    * router IP address (default packet action is forward)
+    * router IP address (default packet action is drop)
     */
     SAI_HOSTIF_TRAP_TYPE_BGP = 0x00004003,
 
     /**
     * @brief BGPv6 traffic (tcp src port == 179 or tcp dst port == 179) to
-    * local router IP address (default packet action is forward)
+    * local router IP address (default packet action is drop)
     */
     SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x00004004,
 
@@ -287,13 +287,13 @@ typedef enum _sai_hostif_trap_type_t
 
     /**
      * @brief Packets size exceeds the router interface MTU size
-     * (default packet action is trap)
+     * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_L3_MTU_ERROR = 0x00006000,
 
     /**
      * @brief Packets with TTL 0 or 1
-     * (default packet action is trap)
+     * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_TTL_ERROR = 0x00006001,
 
@@ -302,25 +302,25 @@ typedef enum _sai_hostif_trap_type_t
 
     /* User defined traps */
 
-    /** router traps */
+    /** router traps (default packet action is drop) */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_MIN = 0x00008000,
 
     /** router traps max */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_MAX = SAI_HOSTIF_TRAP_TYPE_ROUTER_MIN + SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE,
 
-    /** neighbor table traps */
+    /** neighbor table traps (default packet action is drop) */
     SAI_HOSTIF_TRAP_TYPE_NEIGH_MIN = SAI_HOSTIF_TRAP_TYPE_ROUTER_MAX + 1,
 
     /** neighbor table traps max */
     SAI_HOSTIF_TRAP_TYPE_NEIGH_MAX = SAI_HOSTIF_TRAP_TYPE_NEIGH_MIN + SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE,
 
-    /** ACL traps */
+    /** ACL traps (default packet action is drop) */
     SAI_HOSTIF_TRAP_TYPE_ACL_MIN = SAI_HOSTIF_TRAP_TYPE_NEIGH_MAX + 1,
 
     /** ACL traps range max */
     SAI_HOSTIF_TRAP_TYPE_ACL_MAX = SAI_HOSTIF_TRAP_TYPE_ACL_MIN + SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE,
 
-    /** fdb traps */
+    /** fdb traps (default packet action is drop) */
     SAI_HOSTIF_TRAP_TYPE_FDB_MIN = SAI_HOSTIF_TRAP_TYPE_ACL_MAX + 1,
 
     /** fdb traps max */
@@ -353,8 +353,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @brief Trap action
      *
      * @type sai_packet_action_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PACKET_ACTION_FORWARD
+     * @flags CREATE_AND_SET | MANDATORY_ON_CREATE
      */
     SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
 
@@ -376,15 +375,14 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
 
     /**
-     * @brief Enable trap for a list of SAI ports
-     * Empty list means all ports (global) are enabled. To disable all ports remove the trap. 
+     * @brief List of SAI ports to be excluded (disabled) from the trap generation
      *
      * @type sai_object_list_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
      * @default empty
      */
-    SAI_HOSTIF_TRAP_ATTR_PORT_LIST,
+    SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
 
     /**
      * @brief Trap-group ID for the trap
@@ -466,6 +464,35 @@ typedef sai_status_t(*sai_get_hostif_trap_attribute_fn)(
  */
 typedef enum _sai_hostif_type_t
 {
+<<<<<<< HEAD
+=======
+    /**
+     * @brief Start of attributes
+     */
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
+
+    /**
+     * @brief Trap channel to use
+     *
+     * @type sai_hostif_trap_channel_t
+     * @flags CREATE_ONLY
+     * @default SAI_HOSTIF_TRAP_CHANNEL_CB
+     */
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_HOSTIF_TRAP_CHANNEL = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
+
+    /**
+     * @brief File descriptor
+     *
+     * Valid only when #SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL == #SAI_HOSTIF_TRAP_CHANNEL_FD
+     * Must be set before set #SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to #SAI_HOSTIF_TRAP_CHANNEL_FD
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_HOSTIF
+     * @flags CREATE_AND_SET
+     */
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_FD,
+=======
+>>>>>>> changes after initial review
     /** Port-based Host Interface Type */
     SAI_HOSTIF_TYPE_PORT,
 
@@ -474,12 +501,13 @@ typedef enum _sai_hostif_type_t
 
     /** Vlan Router Interface based Host Interface Type */
     SAI_HOSTIF_TYPE_VLAN,
+=======
+    /** Netdevice */
+    SAI_HOSTIF_TYPE_NETDEV,
+>>>>>>> changes after initial review
 
     /** File descriptor */
-    SAI_HOSTIF_TYPE_FD,
-
-    /** Call back  */
-    SAI_HOSTIF_TYPE_CB
+    SAI_HOSTIF_TYPE_FD
 
 } sai_hostif_type_t;
 
@@ -504,16 +532,15 @@ typedef enum _sai_hostif_attr_t
     /**
      * @brief Host interface object ID
      *
-     * Valid only when #SAI_HOSTIF_ATTR_TYPE == #SAI_HOSTIF_TYPE_PORT 
-     * || #SAI_HOSTIF_TYPE_LAG || #SAI_HOSTIF_TYPE_VLAN
-     * should be port object when type is SAI_HOSTIF_TYPE_PORT
-     * should be lag object when type is SAI_HOSTIF_TYPE_LAG
-     * should be VLAN rif object when type is SAI_HOSTIF_TYPE_VLAN
+     * Valid only when #SAI_HOSTIF_ATTR_TYPE == #SAI_HOSTIF_TYPE_NETDEV 
+     * Port netdev will be created when object type is SAI_OBJECT_TYPE_PORT
+     * LAG netdev will be created when object type is SAI_OBJECT_TYPE_LAG
+     * VLAN netdev will be created when object type is SAI_OBJECT_TYPE_VLAN
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_VLAN
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_PORT or SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_VLAN or SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_LAG
+     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
      */
     SAI_HOSTIF_ATTR_OBJ_ID,
 
@@ -523,12 +550,11 @@ typedef enum _sai_hostif_attr_t
      * The maximum number of charactars for the name is HOSTIF_NAME_SIZE - 1 since
      * it needs the terminating null byte ('\0') at the end.
      *
-     * Valid only when #SAI_HOSTIF_ATTR_TYPE == #SAI_HOSTIF_TYPE_PORT
-     * || #SAI_HOSTIF_TYPE_LAG || #SAI_HOSTIF_TYPE_VLAN
+     * Valid only when #SAI_HOSTIF_ATTR_TYPE == #SAI_HOSTIF_TYPE_NETDEV
      *
      * @type char
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_PORT or SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_VLAN or SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_LAG
+     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
      */
     SAI_HOSTIF_ATTR_NAME,
 
@@ -621,6 +647,9 @@ typedef enum _sai_host_interface_table_entry_type_t
     SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN,
 
     /** Wildcard Interface entry Type */
+    SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID,
+
+    /** Wildcard Interface, wildcard trap id */
     SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_WILDCARD
 
 } sai_host_interface_table_entry_type_t;
@@ -650,7 +679,7 @@ typedef enum _sai_hostif_table_entry_attr_t
     * || #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG || #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN
     * should be port object when type is SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_PORT
     * should be lag object when type is SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG
-    * should be VLAN rif object when type is SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN
+    * should be VLAN ID object when type is SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN
     *
     * @type sai_object_id_t
     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE
@@ -662,9 +691,13 @@ typedef enum _sai_hostif_table_entry_attr_t
     /**
     * @brief Host interface table entry match field trap-id
     *
+    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_PORT || 
+    * #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG || #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN ||
+    * #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID
     * @type sai_object_id_t
     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP
     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_PORT or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID
     */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID,
 
