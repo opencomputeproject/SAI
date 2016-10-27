@@ -203,7 +203,15 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_FDB_FLUSH                = 43,
     SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER    = 44,
     SAI_OBJECT_TYPE_STP_PORT                 = 45,
-    SAI_OBJECT_TYPE_MAX                      = 46
+    SAI_OBJECT_TYPE_RPF_GROUP                = 46,
+    SAI_OBJECT_TYPE_RPF_GROUP_MEMBER         = 47,
+    SAI_OBJECT_TYPE_L2MC_GROUP               = 48,
+    SAI_OBJECT_TYPE_L2MC_GROUP_MEMBER        = 49,
+    SAI_OBJECT_TYPE_IPMC_GROUP               = 50,
+    SAI_OBJECT_TYPE_IPMC_GROUP_MEMBER        = 51,
+    SAI_OBJECT_TYPE_L2MC_ENTRY               = 52,
+    SAI_OBJECT_TYPE_IPMC_ENTRY               = 53,
+    SAI_OBJECT_TYPE_MAX                      = 54
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
