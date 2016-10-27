@@ -655,6 +655,28 @@ typedef enum _sai_host_interface_table_entry_type_t
 } sai_host_interface_table_entry_type_t;
 
 /**
+* @brief Attribute data for SAI_HOST_INTERFACE_TABLE_ENTRY_ATTR_CHANNEL_TYPE
+*/
+typedef enum _sai_host_interface_table_entry_channel_type_t
+{
+    /** receive packets via callback */
+    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_CB,
+
+    /** receive packets via file descriptor */
+    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_FD,
+
+    /** receive packets via Linux netdev type port */
+    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT,
+
+    /** receive packets via Linux netdev logical port (LAG or port) */
+    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_LOGICAL_PORT,
+
+    /** receive packets via Linux netdev L3 interface */
+    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3
+
+} sai_host_interface_table_entry_channel_type_t;
+
+/**
 * @brief Host interface table entry attribute IDs
 */
 typedef enum _sai_hostif_table_entry_attr_t
@@ -702,11 +724,20 @@ typedef enum _sai_hostif_table_entry_attr_t
     SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID,
 
     /**
-    * @brief Host interface table entry action target host intarface
+    * @brief Host interface table entry action channel
     *
+    * @type sai_host_interface_table_entry_channel_type_t
+    * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+    */
+    SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL,
+
+    /**
+    *
+    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL = #SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_FD
     * @type sai_object_id_t
     * @objects SAI_OBJECT_TYPE_HOSTIF
     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL == SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_FD
     */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
 
