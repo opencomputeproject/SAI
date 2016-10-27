@@ -160,12 +160,17 @@ typedef sai_status_t(*sai_get_hostif_trap_group_attribute_fn)(
  */
 typedef enum _sai_hostif_trap_type_t
 {
+    /**
+    * @brief Start of trap types
+    */
+    SAI_HOSTIF_TRAP_TYPE_START = 0x0000000,
+
     /* Control plane protocol */
 
     /* Switch trap */
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_TYPE_STP = 0x00000000,
+    SAI_HOSTIF_TRAP_TYPE_STP = SAI_HOSTIF_TRAP_TYPE_START,
 
     /** default action is drop */
     SAI_HOSTIF_TRAP_TYPE_LACP = 0x00000001,
@@ -328,6 +333,11 @@ typedef enum _sai_hostif_trap_type_t
 
     /** Custom range base */
     SAI_HOSTIF_TRAP_TYPE_CUSTOM_RANGE_BASE = 0x00009000,
+
+    /**
+    * @brief End of trap types
+    */
+    SAI_HOSTIF_TRAP_TYPE_END,
 
 } sai_hostif_trap_type_t;
 
