@@ -107,6 +107,11 @@ typedef enum _sai_ipmc_entry_attr_t
      */
     SAI_IPMC_ENTRY_ATTR_RPF_GROUP_ID,
 
+    /**
+     * @brief End of attributes
+     */
+    SAI_IPMC_ENTRY_ATTR_END,
+
     /* Custom range base value */
     SAI_IPMC_ENTRY_ATTR_CUSTOM_RANGE_BASE  = 0x10000000,
 
