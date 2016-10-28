@@ -1206,6 +1206,33 @@ sub ProcessSingleObjectType
         WriteSource "    .isvlan                        = $isvlan,";
 
         WriteSource "};";
+
+        # check enum attributes if their names are ending on enum name
+
+        if ($isenum eq "true" or $isenumlist eq "true")
+        {
+            my $en = uc($1) if $meta{type} =~/.*sai_(\S+)_t/;
+
+            next if $attr =~ /_${en}_LIST$/;
+            next if $attr =~ /_$en$/;
+
+            $attr =~/SAI_(\S+?)_ATTR_(\S+)/;
+
+            my $aot = $1;
+            my $aend = $1;
+
+            if ($en =~/^${aot}_(\S+)$/)
+            {
+                my $ending = $1;
+
+                next if $attr =~/_$ending$/;
+
+                LogError "enum starts by object type $aot but not ending on $ending in $en";
+
+            }
+
+            LogError "$meta{type} == $attr not ending on enum name $en";
+        }
     }
 };
 

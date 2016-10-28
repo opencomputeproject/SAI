@@ -82,7 +82,7 @@ typedef struct _sai_port_oper_status_notification_t
 } sai_port_oper_status_notification_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL
+ * @brief Attribute data for #SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_MODE
  */
 typedef enum _sai_port_flow_control_mode_t
 {
@@ -101,7 +101,7 @@ typedef enum _sai_port_flow_control_mode_t
 } sai_port_flow_control_mode_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_INTERNAL_LOOPBACK
+ * @brief Attribute data for #SAI_PORT_ATTR_INTERNAL_LOOPBACK_MODE
  */
 typedef enum _sai_port_internal_loopback_mode_t
 {
@@ -117,7 +117,7 @@ typedef enum _sai_port_internal_loopback_mode_t
 } sai_port_internal_loopback_mode_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_FDB_LEARNING
+ * @brief Attribute data for #SAI_PORT_ATTR_FDB_LEARNING_MODE
  */
 typedef enum _sai_port_fdb_learning_mode_t
 {
@@ -236,7 +236,7 @@ typedef enum _sai_port_attr_t
      * @type sai_s32_list_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_SUPPORTED_BREAKOUT_MODE,
+    SAI_PORT_ATTR_SUPPORTED_BREAKOUT_MODE_TYPE,
 
     /**
      * @brief Current breakout mode
@@ -244,7 +244,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_breakout_mode_type_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_CURRENT_BREAKOUT_MODE,
+    SAI_PORT_ATTR_CURRENT_BREAKOUT_MODE_TYPE,
 
     /**
      * @brief Number of queues on port
@@ -310,7 +310,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_flow_control_mode_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_SUPPORTED_FLOW_CONTROL,
+    SAI_PORT_ATTR_SUPPORTED_FLOW_CONTROL_MODE,
 
     /**
      * @brief Query port supported asymmetric pause mode
@@ -358,7 +358,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_flow_control_mode_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_FLOW_CONTROL,
+    SAI_PORT_ATTR_REMOTE_SUPPORTED_FLOW_CONTROL_MODE,
 
     /**
      * @brief Query Remote port supported asymmetric pause mode
@@ -406,7 +406,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_flow_control_mode_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_REMOTE_ADVERTISED_FLOW_CONTROL,
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_FLOW_CONTROL_MODE,
 
     /**
      * @brief Query Remote port Advertised asymmetric pause mode
@@ -529,7 +529,7 @@ typedef enum _sai_port_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_FLOW_CONTROL_MODE_DISABLE
      */
-    SAI_PORT_ATTR_ADVERTISED_FLOW_CONTROL,
+    SAI_PORT_ATTR_ADVERTISED_FLOW_CONTROL_MODE,
 
     /**
      * @brief Query port's Advertised asymmetric pause mode
@@ -604,7 +604,7 @@ typedef enum _sai_port_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_INTERNAL_LOOPBACK_MODE_NONE
      */
-    SAI_PORT_ATTR_INTERNAL_LOOPBACK,
+    SAI_PORT_ATTR_INTERNAL_LOOPBACK_MODE,
 
     /**
      * @brief FDB Learning mode
@@ -613,7 +613,7 @@ typedef enum _sai_port_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_FDB_LEARNING_MODE_HW
      */
-    SAI_PORT_ATTR_FDB_LEARNING,
+    SAI_PORT_ATTR_FDB_LEARNING_MODE,
 
     /**
      * @brief Update DSCP of outgoing packets
@@ -674,7 +674,7 @@ typedef enum _sai_port_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_FLOW_CONTROL_MODE_DISABLE
      */
-    SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL,
+    SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_MODE,
 
     /**
      * @brief Maximum number of learned MAC addresses
@@ -693,7 +693,7 @@ typedef enum _sai_port_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_DROP
      */
-    SAI_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION,
+    SAI_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION_PACKET_ACTION,
 
     /**
      * @brief Enable/Disable Mirror session
