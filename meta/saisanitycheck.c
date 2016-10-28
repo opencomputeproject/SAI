@@ -337,6 +337,15 @@ void check_attr_flags(
                     break;
                 }
 
+                if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
+                {
+                    /*
+                     * String  or Pointer may not provide default value, 
+                     * which will mean it can be NULL.
+                     */
+                    break;
+                }
+
                 if (sai_metadata_is_acl_field_or_action(md))
                 {
                     break;
@@ -381,7 +390,6 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
-
             if (md->allowedobjecttypes == NULL)
             {
                 META_ASSERT_FAIL(md, "object types list is required but it's empty");
@@ -392,6 +400,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_BOOL:
         case SAI_ATTR_VALUE_TYPE_INT8:
         case SAI_ATTR_VALUE_TYPE_INT32:
+        case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8:
@@ -400,6 +409,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
+        case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
@@ -517,6 +527,12 @@ void check_attr_default_required(
             return;
         }
 
+        if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
+        {
+            /* Pointer or String may not have default value */
+            return;
+        }
+
         if (sai_metadata_is_acl_field_or_action(md))
         {
             return;
@@ -597,14 +613,13 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
             break;
-
+        case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
-
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
                 break;
@@ -628,6 +643,9 @@ void check_attr_default_required(
 
             META_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
 
+            break;
+
+        case SAI_ATTR_VALUE_TYPE_POINTER:
             break;
 
         default:
@@ -770,6 +788,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_INT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
+                case SAI_ATTR_VALUE_TYPE_INT8_LIST:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
@@ -971,6 +990,7 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+            case SAI_ATTR_VALUE_TYPE_POINTER:
                 break;
 
             default:
