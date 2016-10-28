@@ -342,26 +342,6 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
   }
 
-  void sai_thrift_parse_lag_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list, sai_object_id_t **port_list) {
-      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
-      sai_thrift_attribute_t attribute;
-      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
-          attribute = (sai_thrift_attribute_t)*it1;
-          attr_list[i].id = attribute.id;
-          switch (attribute.id) {
-              case SAI_LAG_ATTR_PORT_LIST:
-                  *port_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * attribute.value.objlist.count);
-                  std::vector<sai_thrift_object_id_t>::const_iterator it2 = attribute.value.objlist.object_id_list.begin();
-                  for (uint32_t j = 0; j < attribute.value.objlist.object_id_list.size(); j++, it2++) {
-                      (*port_list)[j] = (sai_object_id_t) *it2;
-                  }
-                  attr_list[i].value.objlist.count = attribute.value.objlist.count;
-                  attr_list[i].value.objlist.list = *port_list;
-                  break;
-          }
-      }
-  }
-
   void sai_thrift_parse_lag_member_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
@@ -884,21 +864,13 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_lag_api_t *lag_api;
       sai_object_id_t lag_id = 0;
-      sai_object_id_t *port_list = NULL;
+
       status = sai_api_query(SAI_API_LAG, (void **) &lag_api);
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      uint32_t attr_count = thrift_attr_list.size();
-      sai_attribute_t *attr_list = NULL;
-      if (attr_count > 0)
-      {
-        attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
-        sai_thrift_parse_lag_attributes(thrift_attr_list, attr_list, &port_list);
-      }
-      status = lag_api->create_lag(&lag_id, attr_count, attr_list);
-      if (port_list) free(port_list);
-      free(attr_list);
+
+      status = lag_api->create_lag(&lag_id, 0, NULL);
       return lag_id;
   }
 
