@@ -158,7 +158,7 @@ class L2AccessToTrunkVlanTest(sai_base_test.ThriftInterfaceDataPlane):
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
-            self.client.sai_thrift_set_port_attribute(port2, attr)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
 
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)            
@@ -210,7 +210,7 @@ class L2TrunkToAccessVlanTest(sai_base_test.ThriftInterfaceDataPlane):
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
-            self.client.sai_thrift_set_port_attribute(port2, attr)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
 
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
