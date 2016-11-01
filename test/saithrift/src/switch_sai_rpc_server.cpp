@@ -260,6 +260,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               case SAI_ROUTE_ATTR_NEXT_HOP_ID:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
+              case SAI_ROUTE_ATTR_PACKET_ACTION:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
               default:
                   break;
           }
@@ -427,6 +430,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               case SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE:
                   attr_list[i].value.u32 = attribute.value.u32;
                   break;
+              case SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
           }
       }
   }
@@ -490,7 +496,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_attribute_t attr;
       sai_thrift_parse_port_attributes(thrift_attr_list, &attr, &buffer_profile_list);
       status = port_api->set_port_attribute((sai_object_id_t)port_id, &attr);
-      if (buffer_profile_list) free(buffer_profile_list); 
+      if (buffer_profile_list) free(buffer_profile_list);
       return status;
   }
 
@@ -628,7 +634,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       attr_list.push_back(thrift_vlan_member_list_attribute);
       free(vlan_member_list_object_attribute.value.objlist.list);
   }
-  
+
   sai_thrift_object_id_t sai_thrift_create_vlan_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_create_vlan_member\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
@@ -1006,6 +1012,75 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
+sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
+      sai_status_t status;
+      sai_attribute_t attr;
+      sai_switch_api_t *switch_api;
+      sai_thrift_object_id_t cpu_port_id;
+      const char* f_name = __FUNCTION__;
+      printf("%s\n", f_name);
+      status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          printf("%s failed to obtain switch_api, status:%d\n", f_name, status);
+          return SAI_NULL_OBJECT_ID;
+      }
+      attr.id = SAI_SWITCH_ATTR_CPU_PORT;
+      status = switch_api->get_switch_attribute(1, &attr);
+      if (status != SAI_STATUS_SUCCESS)
+      {
+          printf("%s failed, status:%d\n", f_name, status);
+          return SAI_NULL_OBJECT_ID;
+      }
+      cpu_port_id = (sai_thrift_object_id_t) attr.value.oid;
+      return cpu_port_id;
+  }
+
+  sai_thrift_object_id_t sai_thrift_get_default_router_id() {
+      sai_status_t status;
+      sai_attribute_t attr;
+      sai_switch_api_t *switch_api;
+      sai_thrift_object_id_t default_router_id;
+      const char* f_name = __FUNCTION__;
+      printf("%s\n", f_name);
+      status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          printf("%s failed to obtain switch_api, status:%d\n", f_name, status);
+          return SAI_NULL_OBJECT_ID;
+      }
+      attr.id = SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID;
+      status = switch_api->get_switch_attribute(1, &attr);
+      if (status != SAI_STATUS_SUCCESS)
+      {
+          printf("%s. Failed to get switch virtual router ID, status %d", f_name, status);
+          return SAI_NULL_OBJECT_ID;
+      }
+      default_router_id = (sai_thrift_object_id_t)attr.value.oid;
+      return default_router_id;
+  }
+
+  sai_thrift_object_id_t sai_thrift_get_default_trap_group() {
+      sai_status_t status;
+      sai_attribute_t attr;
+      sai_switch_api_t *switch_api;
+      sai_thrift_object_id_t default_trap_group;
+      const char* f_name = __FUNCTION__;
+      printf("%s\n", f_name);
+      status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          printf("%s failed to obtain switch_api, status:%d\n", f_name, status);
+          return SAI_NULL_OBJECT_ID;
+      }
+      attr.id = SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP;
+      status = switch_api->get_switch_attribute(1, &attr);
+      if (status != SAI_STATUS_SUCCESS)
+      {
+          printf("%s. Failed to get switch default trap group, status %d", f_name, status);
+          return SAI_NULL_OBJECT_ID;
+      }
+      default_trap_group = (sai_thrift_object_id_t)attr.value.oid;
+      return default_trap_group;
+  }
+
   void sai_thrift_get_switch_attribute(sai_thrift_attribute_list_t& thrift_attr_list) {
       printf("sai_thrift_get_switch_attribute\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
@@ -1108,7 +1183,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       port_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_ports);
       port_list_object_attribute.value.objlist.count = max_ports;
       switch_api->get_switch_attribute(1, &port_list_object_attribute);
-      std::map<int, sai_object_id_t> front_to_sai_map;      
+      std::map<int, sai_object_id_t> front_to_sai_map;
 
       for (int i=0 ; i<max_ports ; i++){
           port_lane_list_attribute.id = SAI_PORT_ATTR_HW_LANE_LIST;
@@ -1121,7 +1196,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           for (int j=0 ; j<laneCnt; j++){
               port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
           }
-          
+
           gPortMapIt = gPortMap.find(port_lanes);
           if (gPortMapIt != gPortMap.end()){
               std::string front_port_alias = gPortMapIt->second.c_str();
@@ -1181,7 +1256,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               break;
           }
       }
- 
+
       std::set<int> lane_set;
       if (gPortMapIt != gPortMap.end()){
           lane_set = gPortMapIt->first;
@@ -1190,7 +1265,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           printf("Didn't find matching port to received name!\n");
           return SAI_NULL_OBJECT_ID;
       }
-     
+
       max_port_attribute.id = SAI_SWITCH_ATTR_PORT_NUMBER;
       switch_api->get_switch_attribute(1, &max_port_attribute);
       max_ports = max_port_attribute.value.u32;
@@ -1210,7 +1285,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           for (int j=0 ; j<laneCnt; j++){
               port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
           }
-   
+
           if (port_lanes == lane_set){
               port_id = (sai_thrift_object_id_t) port_list_object_attribute.value.objlist.list[i];
               free(port_list_object_attribute.value.objlist.list);
@@ -1306,7 +1381,32 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  void sai_thrift_parse_acl_table_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+  void sai_thrift_parse_hostif_trap_group_attribute(const sai_thrift_attribute_t &thrift_attr, sai_attribute_t *attr) {
+      attr->id = thrift_attr.id;
+      switch (thrift_attr.id) {
+          case SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER:
+              attr->value.oid = thrift_attr.value.oid;
+              break;
+          default:
+              break;
+      }
+  }
+
+  sai_thrift_status_t sai_thrift_set_hostif_trap_group(const sai_thrift_object_id_t trap_group_id, const sai_thrift_attribute_t& thrift_attr) {
+      printf("%s\n", __FUNCTION__);
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_hostif_api_t *hostif_api;
+      sai_attribute_t attr;
+      status = sai_api_query(SAI_API_HOST_INTERFACE, (void **) &hostif_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_thrift_parse_hostif_trap_group_attribute(thrift_attr, &attr);
+      status = hostif_api->set_trap_group_attribute((sai_object_id_t) trap_group_id, &attr);
+      return status;
+  }
+
+    void sai_thrift_parse_acl_table_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
       for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
@@ -1726,13 +1826,13 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
               case SAI_POLICER_ATTR_METER_TYPE:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_POLICER_ATTR_MODE:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_POLICER_ATTR_COLOR_SOURCE:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_POLICER_ATTR_CBS:
                   attr_list[i].value.u64 = attribute.value.u64;
@@ -1747,13 +1847,13 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.u64 = attribute.value.u64;
                   break;
               case SAI_POLICER_ATTR_GREEN_PACKET_ACTION:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_POLICER_ATTR_YELLOW_PACKET_ACTION:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_POLICER_ATTR_RED_PACKET_ACTION:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
           }
       }
@@ -1821,7 +1921,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
   }
 
   sai_thrift_object_id_t sai_thrift_create_scheduler_profile(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-      printf("sai_thrift_create_scheduler_profile\n");  
+      printf("sai_thrift_create_scheduler_profile\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_scheduler_api_t *scheduler_api;
       sai_object_id_t scheduler_id = 0;
@@ -1848,7 +1948,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       status = scheduler_api->remove_scheduler_profile((sai_object_id_t) scheduler_id);
       return status;
   }
-  
+
   void sai_thrift_parse_scheduler_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
@@ -1988,12 +2088,12 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_attribute_t port_hw_lane;
       sai_thrift_attribute_t thrift_port_hw_lane;
       sai_u32_list_t *lane_list_num;
-  
+
       port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
       port_hw_lane.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
       port_hw_lane.value.u32list.count = 4;
       port_api->get_port_attribute(port_id, 1, &port_hw_lane);
-      
+
       thrift_attr_list.attr_count = 4;
       thrift_port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
       thrift_port_hw_lane.value.u32list.count = port_hw_lane.value.u32list.count;
@@ -2088,7 +2188,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                              number_of_counters);
 
       free(counter_ids);
-      return status; 
+      return status;
   }
 
   sai_thrift_object_id_t sai_thrift_create_buffer_profile(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
