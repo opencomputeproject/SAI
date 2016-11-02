@@ -831,12 +831,14 @@ typedef sai_status_t(*sai_send_hostif_packet_fn)(
 /**
  * @brief Hostif receive callback
  *
+ * @param[in] switch_id Switch Object ID 
  * @param[in] buffer Packet buffer
  * @param[in] buffer_size Actual packet size in bytes
  * @param[in] attr_count Nnumber of attributes
  * @param[in] attr_list Array of attributes
  */
 typedef void(*sai_packet_event_notification_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ const void *buffer,
         _In_ sai_size_t buffer_size,
         _In_ uint32_t attr_count,

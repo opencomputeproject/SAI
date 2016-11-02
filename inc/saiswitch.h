@@ -1048,7 +1048,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_pointer_t
      * @flags CREATE_AND_SET
      */
-    SAI_SWITCH_ATTR_OPER_STATUS_CHANGE_NOTIFY,
+    SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY,
 
     /**
      * @brief Set Switch shutdown notification callback function passed to the adapter.

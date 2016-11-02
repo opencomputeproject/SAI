@@ -299,12 +299,10 @@ typedef sai_status_t (*sai_flush_fdb_entries_fn)(
 /**
  * @brief FDB notifications
  *
- * @param[in] switch_id Switch object id
  * @param[in] count Number of notifications
  * @param[in] data Pointer to fdb event notification data array
  */
 typedef void (*sai_fdb_event_notification_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ uint32_t count,
         _In_ sai_fdb_event_notification_data_t *data);
 
