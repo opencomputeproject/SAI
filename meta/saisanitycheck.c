@@ -527,12 +527,6 @@ void check_attr_default_required(
             return;
         }
 
-        if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
-        {
-            /* Pointer or String may not have default value */
-            return;
-        }
-
         if (sai_metadata_is_acl_field_or_action(md))
         {
             return;
