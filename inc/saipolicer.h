@@ -196,7 +196,7 @@ typedef enum _sai_policer_attr_t
      * @flags CREATE_AND_SET
      * @default empty
      */
-    SAI_POLICER_ATTR_ENABLE_COUNTER_LIST = 0x0000000a,
+    SAI_POLICER_ATTR_ENABLE_COUNTER_PACKET_ACTION_LIST = 0x0000000a,
 
     /**
      * @brief End of attributes

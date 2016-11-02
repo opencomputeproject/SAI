@@ -66,13 +66,13 @@ typedef enum _sai_scheduler_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_SCHEDULING_TYPE_WRR
      */
-    SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM = SAI_SCHEDULER_ATTR_START,
+    SAI_SCHEDULER_ATTR_SCHEDULING_TYPE = SAI_SCHEDULER_ATTR_START,
 
     /**
      * @brief Scheduling algorithm weight
      *
      * Range [1 - 100]
-     * Valid when #SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM = #SAI_SCHEDULING_TYPE_DWRR
+     * Valid when #SAI_SCHEDULER_ATTR_SCHEDULING_TYPE = #SAI_SCHEDULING_TYPE_DWRR
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -87,7 +87,7 @@ typedef enum _sai_scheduler_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_METER_TYPE_BYTES
      */
-    SAI_SCHEDULER_ATTR_SHAPER_TYPE = 0x00000002,
+    SAI_SCHEDULER_ATTR_METER_TYPE = 0x00000002,
 
     /**
      * @brief Guaranteed Bandwidth shape rate [bytes/sec or PPS]

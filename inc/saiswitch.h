@@ -553,7 +553,7 @@ typedef enum _sai_switch_attr_t
      *
      * Default value after switch initialization
      *
-     * #SAI_HASH_ATTR_NATIVE_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
+     * #SAI_HASH_ATTR_NATIVE_HASH_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
      * #SAI_NATIVE_HASH_FIELD_DST_MAC, #SAI_NATIVE_HASH_FIELD_IN_PORT,
      * #SAI_NATIVE_HASH_FIELD_ETHERTYPE\]
      * #SAI_HASH_ATTR_UDF_GROUP_LIST empty list
@@ -571,7 +571,7 @@ typedef enum _sai_switch_attr_t
      *
      * Default value after switch initialization
      *
-     * #SAI_HASH_ATTR_NATIVE_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
+     * #SAI_HASH_ATTR_NATIVE_HASH_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
      * #SAI_NATIVE_HASH_FIELD_DST_MAC, #SAI_NATIVE_HASH_FIELD_IN_PORT,
      * #SAI_NATIVE_HASH_FIELD_ETHERTYPE\]
      * #SAI_HASH_ATTR_UDF_GROUP_LIST empty list)
@@ -711,7 +711,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
-    SAI_SWITCH_ATTR_FDB_UNICAST_MISS_ACTION,
+    SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION,
 
     /**
      * @brief Broadcast miss action
@@ -720,7 +720,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_TRAP
      */
-    SAI_SWITCH_ATTR_FDB_BROADCAST_MISS_ACTION,
+    SAI_SWITCH_ATTR_FDB_BROADCAST_MISS_PACKET_ACTION,
 
     /**
      * @brief Multicast miss action
@@ -729,7 +729,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_TRAP
      */
-    SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_ACTION,
+    SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_PACKET_ACTION,
 
     /**
      * @brief SAI ECMP default hash algorithm

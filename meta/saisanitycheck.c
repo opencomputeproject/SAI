@@ -527,12 +527,6 @@ void check_attr_default_required(
             return;
         }
 
-        if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
-        {
-            /* Pointer or String may not have default value */
-            return;
-        }
-
         if (sai_metadata_is_acl_field_or_action(md))
         {
             return;
@@ -742,7 +736,7 @@ void check_attr_default_value_type(
         case SAI_DEFAULT_VALUE_TYPE_INHERIT:
 
             if (md->objecttype == SAI_OBJECT_TYPE_BUFFER_PROFILE &&
-                    md->attrid == SAI_BUFFER_PROFILE_ATTR_TH_MODE)
+                    md->attrid == SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE)
             {
                 break;
             }

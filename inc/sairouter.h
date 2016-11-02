@@ -88,7 +88,7 @@ typedef enum _sai_virtual_router_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_TRAP
      */
-    SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_TTL1_ACTION,
+    SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_TTL1_PACKET_ACTION,
 
     /**
      * @brief Action for Packets with IP options
@@ -97,7 +97,7 @@ typedef enum _sai_virtual_router_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_TRAP
      */
-    SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_IP_OPTIONS,
+    SAI_VIRTUAL_ROUTER_ATTR_VIOLATION_IP_OPTIONS_PACKET_ACTION,
 
     /**
      * @brief End of attributes

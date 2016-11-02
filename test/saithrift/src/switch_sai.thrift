@@ -236,6 +236,9 @@ service switch_sai_rpc {
     //switch API
     sai_thrift_attribute_list_t sai_thrift_get_switch_attribute();
     sai_thrift_attribute_t sai_thrift_get_port_list_by_front_port();
+    sai_thrift_object_id_t sai_thrift_get_cpu_port_id();
+    sai_thrift_object_id_t sai_thrift_get_default_trap_group();
+    sai_thrift_object_id_t sai_thrift_get_default_router_id();
     sai_thrift_object_id_t sai_thrift_get_port_id_by_front_port(1: string port_name);
     sai_thrift_status_t sai_thrift_set_switch_attribute(1: sai_thrift_attribute_t attribute);
 
@@ -247,6 +250,7 @@ service switch_sai_rpc {
     sai_thrift_status_t sai_thrift_create_hostif_trap(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_hostif_trap(1: sai_thrift_hostif_trap_id_t trap_id);
     sai_thrift_status_t sai_thrift_set_hostif_trap(1: sai_thrift_hostif_trap_id_t trap_id, 2: sai_thrift_attribute_t thrift_attr);
+    sai_thrift_status_t sai_thrift_set_hostif_trap_group(1: sai_thrift_object_id_t trap_group_id, 2: sai_thrift_attribute_t thrift_attr);
 
     // ACL API
     sai_thrift_object_id_t sai_thrift_create_acl_table(1: list<sai_thrift_attribute_t> thrift_attr_list);
@@ -284,7 +288,7 @@ service switch_sai_rpc {
     sai_thrift_status_t sai_thrift_clear_queue_stats(
                              1: sai_thrift_object_id_t queue_id,
                              2: list<sai_thrift_queue_stat_counter_t> counter_ids,
-                             3: i32 number_of_counters);							 
+                             3: i32 number_of_counters);
     sai_thrift_status_t sai_thrift_set_queue_attribute(1: sai_thrift_object_id_t queue_id,
                                                        2: sai_thrift_attribute_t thrift_attr)
 
