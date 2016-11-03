@@ -1458,24 +1458,20 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
  *
  * Passed as a parameter into sai_initialize_switch()
  *
- * @param[in] switch_id Switch id
  * @param[in] count Number of notifications
  * @param[in] data Array of port operational status
  */
 typedef void (*sai_port_state_change_notification_fn)(
-        _In_ sai_object_id_t switch_id,
         _In_ uint32_t count,
         _In_ sai_port_oper_status_notification_t *data);
 
 /**
  * @brief Port event notification
  *
- * @param[in] switch_id Switch id
  * @param[in] count Number of notifications
  * @param[in] data Array of port events
  */
 typedef void (*sai_port_event_notification_fn)(
-       _In_ sai_object_id_t switch_id,
        _In_ uint32_t count,
        _In_ sai_port_event_notification_t *data);
 
