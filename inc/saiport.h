@@ -1016,6 +1016,28 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_EEE_ENABLE,
 
     /**
+     * @brief Port EEE IDLE time configuration
+     * 
+     * In low power mode, After idle time(micro secs) interval, Link refresh will be triggered.
+     *
+     * @type sai_uint16_t 
+     * @flags CREATE_AND_SET
+     * @default 2500
+     */
+    SAI_PORT_ATTR_EEE_IDLE_TIME,
+    
+    /**
+     * @brief Port EEE Wakeup time configuration
+     * 
+     * After detect traffic time(micro secs) to be taken EEE to enter active state and resumes normal operation.
+     *
+     * @type sai_uint16_t 
+     * @flags CREATE_AND_SET
+     * @default 5 
+     */
+    SAI_PORT_ATTR_EEE_WAKE_TIME,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
