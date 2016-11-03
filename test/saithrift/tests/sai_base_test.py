@@ -59,7 +59,6 @@ class ThriftInterface(BaseTest):
     def createRpcClient(self):
         # Set up thrift client and contact server
 
-        self.test_params = testutils.test_params_get()
         if self.test_params.has_key("server"):
             server = self.test_params['server']
         else:
@@ -76,6 +75,9 @@ class ThriftInterface(BaseTest):
     def setUp(self):
         global interface_to_front_mapping
         BaseTest.setUp(self)
+
+        self.test_params = testutils.test_params_get()
+
         self.loadPortMap()
         self.createRpcClient()
         return
