@@ -157,37 +157,37 @@ typedef enum _sai_hostif_trap_type_t
     /* Switch trap */
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_TYPE_STP = 0x00000001,
+    SAI_HOSTIF_TRAP_TYPE_STP = 0x00000000,
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_TYPE_LACP = 0x00000002,
+    SAI_HOSTIF_TRAP_TYPE_LACP = 0x00000001,
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_TYPE_EAPOL = 0x00000003,
+    SAI_HOSTIF_TRAP_TYPE_EAPOL = 0x00000002,
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_TYPE_LLDP = 0x00000004,
+    SAI_HOSTIF_TRAP_TYPE_LLDP = 0x00000003,
 
     /** default action is drop */
-    SAI_HOSTIF_TRAP_TYPE_PVRST = 0x00000005,
+    SAI_HOSTIF_TRAP_TYPE_PVRST = 0x00000004,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_QUERY = 0x00000006,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_QUERY = 0x00000005,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_LEAVE = 0x00000007,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_LEAVE = 0x00000006,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V1_REPORT = 0x00000008,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V1_REPORT = 0x00000007,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V2_REPORT = 0x00000009,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V2_REPORT = 0x00000008,
 
     /** default action is forward */
-    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V3_REPORT = 0x00000000a,
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V3_REPORT = 0x000000009,
 
     /** default action is trap */
-    SAI_HOSTIF_TRAP_TYPE_SAMPLEPACKET = 0x00000000b,
+    SAI_HOSTIF_TRAP_TYPE_SAMPLEPACKET = 0x00000000a,
 
     /** Switch traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
@@ -368,9 +368,8 @@ typedef enum _sai_hostif_trap_attr_t
      * Must be set before set #SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to #SAI_HOSTIF_TRAP_CHANNEL_FD
      *
      * @type sai_object_id_t
-     * @flags SPECIAL
-     * @objects SAI_OBJECT_TYPE_NULL
-     * @ignore
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF
      */
     SAI_HOSTIF_TRAP_ATTR_FD,
 
@@ -468,10 +467,10 @@ typedef sai_status_t(*sai_get_hostif_trap_attribute_fn)(
 typedef enum _sai_hostif_user_defined_trap_id_t
 {
     /** Samplepacket traps */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ID_SAMPLEPACKET = 0x00000001,
+    SAI_HOSTIF_USER_DEFINED_TRAP_ID_SAMPLEPACKET = 0x00000000,
 
     /** ACL traps */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ID_ACL_MIN = 0x00000002,
+    SAI_HOSTIF_USER_DEFINED_TRAP_ID_ACL_MIN = 0x00000001,
 
     /** ACL traps range max */
     SAI_HOSTIF_USER_DEFINED_TRAP_ID_ACL_MAX = SAI_HOSTIF_USER_DEFINED_TRAP_ID_ACL_MIN + SAI_HOSTIF_USER_DEFINED_TRAP_ID_TABLE_RANGE,
@@ -516,7 +515,7 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      * @flags CREATE_ONLY
      * @default SAI_HOSTIF_TRAP_CHANNEL_CB
      */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_CHANNEL = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_HOSTIF_TRAP_CHANNEL = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
 
     /**
      * @brief File descriptor
@@ -525,10 +524,8 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      * Must be set before set #SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to #SAI_HOSTIF_TRAP_CHANNEL_FD
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_NULL
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @default SAI_NULL_OBJECT_ID
-     * @ignore
+     * @objects SAI_OBJECT_TYPE_HOSTIF
+     * @flags CREATE_AND_SET
      */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_FD,
 
@@ -729,7 +726,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_hostif_trap_type_t
      * @flags READ_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
 
     /**
      * @brief User-Defined Trap ID (for receive-only)
@@ -737,7 +734,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_hostif_user_defined_trap_id_t
      * @flags READ_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_USER_TRAP_ID,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_USER_DEFINED_TRAP_ID,
 
     /**
      * @brief Ingress port (for receive-only)
@@ -763,11 +760,11 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_hostif_tx_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_TX_TYPE,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE,
 
     /**
      * @brief Egress port or
-     * (MANDATORY_ON_SEND when #SAI_HOSTIF_PACKET_ATTR_TX_TYPE == #SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS)
+     * (MANDATORY_ON_SEND when #SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == #SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS)
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
      * Applicable for use-case like SAMPLEPACKET traps
@@ -775,7 +772,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_HOSTIF_PACKET_ATTR_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
+     * @condition SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
      */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
 

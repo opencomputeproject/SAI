@@ -114,7 +114,7 @@ typedef uint8_t sai_uint8_t;
 typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
-
+typedef void *sai_pointer_t;
 /**
  * @def SAI_NULL_OBJECT_ID
  * Sai NULL object ID
@@ -201,7 +201,9 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_TUNNEL                   = 41,
     SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY  = 42,
     SAI_OBJECT_TYPE_FDB_FLUSH                = 43,
-    SAI_OBJECT_TYPE_MAX                      = 44
+    SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER    = 44,
+    SAI_OBJECT_TYPE_STP_PORT                 = 45,
+    SAI_OBJECT_TYPE_MAX                      = 46
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -209,6 +211,10 @@ typedef struct _sai_u8_list_t {
     uint8_t *list;
 } sai_u8_list_t;
 
+/**
+ * @brief Defines a s8 list or string.
+ * string should be null terminated and count should include '\0'    
+ */
 typedef struct _sai_s8_list_t {
     uint32_t count;
     int8_t *list;
@@ -521,6 +527,7 @@ typedef union {
     sai_int32_t s32;
     sai_uint64_t u64;
     sai_int64_t s64;
+    sai_pointer_t ptr; 
     sai_mac_t mac;
     sai_ip4_t ip4;
     sai_ip6_t ip6;

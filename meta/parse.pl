@@ -208,6 +208,7 @@ sai_uint32_t            u32
 sai_int32_t             s32
 sai_uint64_t            u64
 sai_int64_t             s64
+sai_pointer_t           ptr
 sai_mac_t               mac
 sai_ip4_t               ip4
 sai_ip6_t               ip6
@@ -227,6 +228,7 @@ sai_acl_field_data_t    aclfield
 sai_acl_action_data_t   aclaction
 sai_qos_map_list_t      qosmap
 sai_tunnel_map_list_t   tunnelmap
+sai_acl_capability_t    aclcapability
 /;
 
 my %VALUE_TYPES_TO_VT = qw/
@@ -238,6 +240,7 @@ sai_uint32_t            UINT32
 sai_int32_t             INT32
 sai_uint64_t            UINT64
 sai_int64_t             INT64
+sai_pointer_t           POINTER
 sai_mac_t               MAC
 sai_ip4_t               IPV4
 sai_ip6_t               IPV6
@@ -255,6 +258,7 @@ sai_s32_range_t         INT32_RANGE
 sai_vlan_list_t         VLAN_LIST
 sai_qos_map_list_t      QOS_MAP_LIST
 sai_tunnel_map_list_t   TUNNEL_MAP_LIST
+sai_acl_capability_t    ACL_CAPABILITY
 /;
 
 sub ProcessTagType
@@ -376,7 +380,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    if ($val =~/^(true|false|SAI_\w+|\d+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
+    if ($val =~/^(true|false|NULL|SAI_\w+|\d+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
     {
         return $val;
     }
@@ -873,7 +877,9 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_NONE" if not defined $default;
 
-    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^SAI_NULL_OBJECT_ID$/;
+
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_INHERIT" if $default =~ /^inherit SAI_\w+$/ and $default =~ /_ATTR_/;
 
@@ -902,6 +908,10 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .booldata = $default };";
     }
+    elsif ($default =~ /^SAI_NULL_OBJECT_ID$/ and $type =~ /^sai_object_id_t$/)
+    {
+        WriteSource "$val = { .oid = $default };";
+    }
     elsif ($default =~ /^SAI_\w+$/ and $type =~ /^sai_\w+_t$/ and not defined $VALUE_TYPES{$type})
     {
         WriteSource "$val = { .s32 = $default };";
@@ -915,6 +925,10 @@ sub ProcessDefaultValue
         WriteSource "$val = { };";
     }
     elsif ($default =~ /^\d+$/ and $type =~ /sai_u?int\d+_t/)
+    {
+        WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
+    }
+    elsif ($default =~ /^NULL$/ and $type =~ /sai_pointer_t/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
@@ -1196,6 +1210,33 @@ sub ProcessSingleObjectType
         WriteSource "    .isvlan                        = $isvlan,";
 
         WriteSource "};";
+
+        # check enum attributes if their names are ending on enum name
+
+        if ($isenum eq "true" or $isenumlist eq "true")
+        {
+            my $en = uc($1) if $meta{type} =~/.*sai_(\S+)_t/;
+
+            next if $attr =~ /_${en}_LIST$/;
+            next if $attr =~ /_$en$/;
+
+            $attr =~/SAI_(\S+?)_ATTR_(\S+)/;
+
+            my $aot = $1;
+            my $aend = $1;
+
+            if ($en =~/^${aot}_(\S+)$/)
+            {
+                my $ending = $1;
+
+                next if $attr =~/_$ending$/;
+
+                LogError "enum starts by object type $aot but not ending on $ending in $en";
+
+            }
+
+            LogError "$meta{type} == $attr not ending on enum name $en";
+        }
     }
 };
 
@@ -1367,12 +1408,15 @@ sub CreateObjectInfo
         my $start = "SAI_" . uc($1) . "_ATTR_START";
         my $end   = "SAI_" . uc($1) . "_ATTR_END";
 
+        my $enum  = "&metadata_enum_${type}";
+
         WriteHeader "extern const sai_object_type_info_t sai_object_type_info_$ot;";
 
         WriteSource "const sai_object_type_info_t sai_object_type_info_$ot = {";
         WriteSource "    .objecttype         = $ot,";
         WriteSource "    .attridstart        = $start,";
         WriteSource "    .attridend          = $end,";
+        WriteSource "    .enummetadata       = $enum,";
         WriteSource "    .attrmetadata       = metadata_object_type_$type,";
         WriteSource "};";
     }

@@ -73,12 +73,34 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_TYPE = SAI_QUEUE_ATTR_START,
 
     /**
+     * @brief Pord id
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
+     */
+    SAI_QUEUE_ATTR_PORT = 0x00000001,
+
+    /**
      * @brief Queue index
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
      */
-    SAI_QUEUE_ATTR_INDEX = 0x00000001,
+    SAI_QUEUE_ATTR_INDEX = 0x00000002,
+
+    /**
+     * @brief Parent scheduler node
+     *
+     * In case of Hierarchical Qos not supported, the parent node is the port.
+     * Condition on whether Hierarchial Qos is supported or not, need to remove
+     * the MANDATORY_ON_CREATE FLAG when HQoS is introduced
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP, SAI_OBJECT_TYPE_PORT
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_QUEUE_ATTR_PARENT_SCHEDULER_NODE = 0x00000003,
 
     /* READ-WRITE */
 
@@ -92,17 +114,18 @@ typedef enum _sai_queue_attr_t
      * @flags CREATE_AND_SET
      * @allownull true
      */
-    SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000002,
+    SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000004,
 
     /**
      * @brief Attach buffer profile to Queue
+     * Default no profile
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @flags CREATE_AND_SET
      * @allownull true
      */
-    SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000003,
+    SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000005,
 
     /**
      * @brief Attach scheduler to Queue
@@ -112,7 +135,7 @@ typedef enum _sai_queue_attr_t
      * @flags CREATE_AND_SET
      * @allownull true
      */
-    SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000004,
+    SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000006,
 
     /**
      * @brief End of attributes
@@ -120,7 +143,7 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_END,
 
     /** Custom range base value */
-    SAI_QUEUE_ATTR_CUSTOM_RANGE_START = 0x10000005,
+    SAI_QUEUE_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
     SAI_QUEUE_ATTR_CUSTOM_RANGE_END

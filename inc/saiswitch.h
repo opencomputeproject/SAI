@@ -168,13 +168,13 @@ typedef enum _sai_switch_switching_mode_t
 typedef enum _sai_hash_algorithm_t
 {
     /** CRC-based hash algorithm */
-    SAI_HASH_ALGORITHM_CRC = 1,
+    SAI_HASH_ALGORITHM_CRC = 0,
 
     /** XOR-based hash algorithm */
-    SAI_HASH_ALGORITHM_XOR = 2,
+    SAI_HASH_ALGORITHM_XOR = 1,
 
     /** Random-based hash algorithm */
-    SAI_HASH_ALGORITHM_RANDOM = 3,
+    SAI_HASH_ALGORITHM_RANDOM = 2,
 
 } sai_hash_algorithm_t;
 
@@ -553,7 +553,7 @@ typedef enum _sai_switch_attr_t
      *
      * Default value after switch initialization
      *
-     * #SAI_HASH_ATTR_NATIVE_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
+     * #SAI_HASH_ATTR_NATIVE_HASH_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
      * #SAI_NATIVE_HASH_FIELD_DST_MAC, #SAI_NATIVE_HASH_FIELD_IN_PORT,
      * #SAI_NATIVE_HASH_FIELD_ETHERTYPE\]
      * #SAI_HASH_ATTR_UDF_GROUP_LIST empty list
@@ -571,7 +571,7 @@ typedef enum _sai_switch_attr_t
      *
      * Default value after switch initialization
      *
-     * #SAI_HASH_ATTR_NATIVE_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
+     * #SAI_HASH_ATTR_NATIVE_HASH_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
      * #SAI_NATIVE_HASH_FIELD_DST_MAC, #SAI_NATIVE_HASH_FIELD_IN_PORT,
      * #SAI_NATIVE_HASH_FIELD_ETHERTYPE\]
      * #SAI_HASH_ATTR_UDF_GROUP_LIST empty list)
@@ -627,7 +627,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_acl_capability_t
      * @flags READ_ONLY
-     * @ignore
      */
     SAI_SWITCH_ATTR_ACL_CAPABILITY,
 
@@ -698,7 +697,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
-    SAI_SWITCH_ATTR_FDB_UNICAST_MISS_ACTION,
+    SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION,
 
     /**
      * @brief Broadcast miss action
@@ -707,7 +706,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_TRAP
      */
-    SAI_SWITCH_ATTR_FDB_BROADCAST_MISS_ACTION,
+    SAI_SWITCH_ATTR_FDB_BROADCAST_MISS_PACKET_ACTION,
 
     /**
      * @brief Multicast miss action
@@ -716,7 +715,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_TRAP
      */
-    SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_ACTION,
+    SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_PACKET_ACTION,
 
     /**
      * @brief SAI ECMP default hash algorithm
@@ -977,6 +976,15 @@ typedef enum _sai_switch_attr_t
      * @default false
      */
     SAI_SWITCH_ATTR_SWITCH_SHELL_ENABLE,
+
+    /**
+    * @brief Enable SAI function call fast mode, which executes calls very quickly
+    *
+    * @type bool
+    * @flags CREATE_AND_SET
+    * @default false
+    */
+    SAI_SWITCH_ATTR_FAST_API_ENABLE,
 
     /**
      * @brief End of attributes

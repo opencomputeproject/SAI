@@ -36,18 +36,18 @@
 /**
  * @brief Datastructure for stp port state
  */
-typedef enum _sai_port_stp_state_t
+typedef enum _sai_stp_port_state_t
 {
     /** Port is in Learning mode*/
-    SAI_PORT_STP_STATE_LEARNING,
+    SAI_STP_PORT_STATE_LEARNING,
 
     /** Port is in Forwarding mode */
-    SAI_PORT_STP_STATE_FORWARDING,
+    SAI_STP_PORT_STATE_FORWARDING,
 
     /** Port is in Blocking mode */
-    SAI_PORT_STP_STATE_BLOCKING,
+    SAI_STP_PORT_STATE_BLOCKING,
 
-} sai_port_stp_state_t;
+} sai_stp_port_state_t;
 
 /**
  * @brief SAI attributes for STP
@@ -68,6 +68,18 @@ typedef enum _sai_stp_attr_t
     SAI_STP_ATTR_VLAN_LIST = SAI_STP_ATTR_START,
 
     /**
+     * @brief Port member list
+     *
+     * When a stp is created, this list is empty, all ports state as blocking.
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_STP_PORT
+     * @flags READ_ONLY
+     */
+    SAI_STP_ATTR_PORT_LIST,
+
+
+    /**
      * @brief End of attributes
      */
     SAI_STP_ATTR_END,
@@ -75,7 +87,47 @@ typedef enum _sai_stp_attr_t
 } sai_stp_attr_t;
 
 /**
- * @brief Create stp instance with default port state as forwarding.
+ * @brief SAI attributes for STP
+ */
+typedef enum _sai_stp_port_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_STP_PORT_ATTR_START,
+
+    /**
+     * @brief STP id
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_STP
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_STP_PORT_ATTR_STP = SAI_STP_PORT_ATTR_START,
+
+    /**
+     * @brief Port id
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_STP_PORT_ATTR_PORT,
+
+    /**
+     * @brief STP port state
+     * @type sai_stp_port_state_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_STP_PORT_ATTR_STATE,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_STP_PORT_ATTR_END,
+
+} sai_stp_port_attr_t;
+
+/**
+ * @brief Create stp instance with default port state as blocking.
  *
  * @param[out] stp_id stp instance id
  * @param[in] attr_count Number of attributes
@@ -101,75 +153,94 @@ typedef sai_status_t (*sai_remove_stp_fn)(
         _In_ sai_object_id_t stp_id);
 
 /**
- * @brief Update stp state of a port in specified stp instance.
- *
- * @param[in] stp_id Stp instance id
- * @param[in] port_id Port id
- * @param[in] stp_port_state Stp state of the port
- *
- * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
- * error code is returned.
- */
-typedef sai_status_t (*sai_set_stp_port_state_fn)(
-        _In_ sai_object_id_t stp_id,
-        _In_ sai_object_id_t port_id,
-        _In_ sai_port_stp_state_t stp_port_state);
-
-/**
- * @brief Retrieve stp state of a port in specified stp instance.
- *
- * @param[in] stp_id Stp instance id
- * @param[in] port_id Port id
- * @param[out] stp_port_state Stp state of the port
- *
- * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
- * error code is returned.
- */
-typedef sai_status_t (*sai_get_stp_port_state_fn)(
-        _In_ sai_object_id_t stp_id,
-        _In_ sai_object_id_t port_id,
-        _Out_ sai_port_stp_state_t *stp_port_state);
-
-/**
  * @brief Set the attribute of STP instance.
  *
  * @param[in] stp_id Stp instance id
- * @param[in] attr Attribute value
- *
- * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
- * error code is returned.
+ * @param[in] attr attribute value
+ * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ *  error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_attribute_fn)(
-        _In_ sai_object_id_t stp_id,
-        _In_ const sai_attribute_t *attr);
+    _In_ sai_object_id_t stp_id,
+    _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get the attribute of STP instance.
  *
- * @param[in] stp_id Stp instance id
- * @param[in] attr_count Number of the attribute
- * @param[in] attr_list Attribute value
- *
- * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
- * error code is returned.
+ * @param[in] stp_id stp instance id
+ * @param[in] attr_count number of the attribute
+ * @param[in] attr_list attribute value
+ * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ *  error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_attribute_fn)(
-        _In_ sai_object_id_t stp_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
+    _In_ sai_object_id_t stp_id,
+    _In_ uint32_t attr_count,
+    _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Create stp port object
+ *
+ * @param[out] stp_port_id stp port id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Value of attributes
+ * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ *  error code is returned.
+ */
+typedef sai_status_t (*sai_create_stp_port_fn)(
+    _Out_ sai_object_id_t *stp_port_id,
+    _In_  uint32_t attr_count,
+    _In_  const sai_attribute_t *attr_list);
+
+
+/**
+ * @brief Remove stp port object.
+ *
+ * @param[in] stp_port_id stp object id
+ * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ *  error code is returned.
+ */
+typedef sai_status_t (*sai_remove_stp_port_fn)(
+    _In_ sai_object_id_t stp_port_id);
+
+/**
+ * @brief Set the attribute of STP port.
+ *
+ * @param[in] stp_port_id stp port id
+ * @param[in] attr attribute value
+ * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ *  error code is returned.
+ */
+typedef sai_status_t (*sai_set_stp_port_attribute_fn)(
+    _In_ sai_object_id_t stp_port_id,
+    _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get the attribute of STP port.
+ *
+ * @param[in] stp_port_id stp port id
+ * @param[in] attr_count number of the attribute
+ * @param[in] attr_list attribute value
+ * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ *  error code is returned.
+ */
+typedef sai_status_t (*sai_get_stp_port_attribute_fn)(
+    _In_ sai_object_id_t stp_port_id,
+    _In_ uint32_t attr_count,
+    _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief STP method table retrieved with sai_api_query()
  */
-typedef struct _sai_stp_api_t
-{
-    sai_create_stp_fn           create_stp;
-    sai_remove_stp_fn           remove_stp;
-    sai_set_stp_attribute_fn    set_stp_attribute;
-    sai_get_stp_attribute_fn    get_stp_attribute;
-    sai_set_stp_port_state_fn   set_stp_port_state;
-    sai_get_stp_port_state_fn   get_stp_port_state;
-
+typedef struct _sai_stp_api_t {
+    sai_create_stp_fn               create_stp;
+    sai_remove_stp_fn               remove_stp;
+    sai_set_stp_attribute_fn        set_stp_attribute;
+    sai_get_stp_attribute_fn        get_stp_attribute;
+    sai_create_stp_port_fn          create_stp_port;
+    sai_remove_stp_port_fn          remove_stp_port;
+    sai_set_stp_port_attribute_fn   set_stp_port_attribute;
+    sai_get_stp_port_attribute_fn   get_stp_port_attribute;
 } sai_stp_api_t;
 
 /**

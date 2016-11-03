@@ -165,7 +165,7 @@ typedef enum _sai_vlan_member_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_VLAN_TAGGING_MODE_UNTAGGED
      */
-    SAI_VLAN_MEMBER_ATTR_TAGGING_MODE,
+    SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE,
 
     /**
      * @brief End of attributes

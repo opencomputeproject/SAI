@@ -88,7 +88,7 @@ const char* test_profile_get_value(
         printf("variable is null\n");
         return NULL;
     }
-    
+
     std::map<std::string, std::string>::const_iterator it = gProfileMap.find(variable);
     if (it == gProfileMap.end())
     {
@@ -127,8 +127,8 @@ int test_profile_get_next_value(
     if (gProfileIter == gProfileMap.end())
     {
         printf("iterator reached end");
-    return -1;
-}
+        return -1;
+    }
 
     *variable = gProfileIter->first.c_str();
     *value = gProfileIter->second.c_str();
@@ -280,21 +280,21 @@ void handlePortMap(const std::string& portMapFile)
             printf("not found ' ' in line %s\n", line.c_str());
             continue;
         }
-		 
-        std::string fp_value = line.substr(0, pos);		
+
+        std::string fp_value = line.substr(0, pos);
         std::string lanes    = line.substr(pos + 1);
         lanes.erase(lanes.begin(), std::find_if(lanes.begin(), lanes.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
         std::istringstream iss(lanes);
         std::string lane_str;
         std::set<int> lane_set;
-		
+
         while (getline(iss, lane_str, ','))
         {
             int lane = stoi(lane_str);
             lane_set.insert(lane);
-        }		 
+        }
 
-        gPortMap.insert(std::pair<std::set<int>,std::string>(lane_set,fp_value));     
+        gPortMap.insert(std::pair<std::set<int>,std::string>(lane_set,fp_value));
     }
 }
 
@@ -306,11 +306,11 @@ main(int argc, char* argv[])
     auto options = handleCmdLine(argc, argv);
     handleProfileMap(options.profileMapFile);
     handlePortMap(options.portMapFile);
-	
+
     sai_api_initialize(0, (service_method_table_t *)&test_services);
     sai_api_query(SAI_API_SWITCH, (void**)&sai_switch_api);
 
-    sai_status_t status = sai_switch_api->initialize_switch(0, "", "", &switch_notifications);
+    sai_status_t status = sai_switch_api->initialize_switch(0, (char *)"", (char *)"", &switch_notifications);
     if (status != SAI_STATUS_SUCCESS)
     {
         exit(EXIT_FAILURE);
@@ -337,6 +337,7 @@ main(int argc, char* argv[])
     sai_log_set(SAI_API_MIRROR, SAI_LOG_NOTICE);
     sai_log_set(SAI_API_LAG, SAI_LOG_NOTICE);
     sai_log_set(SAI_API_BUFFERS, SAI_LOG_NOTICE);
+    sai_log_set(SAI_API_POLICER, SAI_LOG_NOTICE);
 
     while (1) pause();
 
