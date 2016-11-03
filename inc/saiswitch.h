@@ -1132,7 +1132,6 @@ typedef struct _sai_switch_notification_t
     sai_switch_state_change_notification_fn on_switch_state_change;
     sai_fdb_event_notification_fn           on_fdb_event;
     sai_port_state_change_notification_fn   on_port_state_change;
-    sai_port_event_notification_fn          on_port_event;
     sai_switch_shutdown_request_fn          on_switch_shutdown_request;
     sai_packet_event_notification_fn        on_packet_event;
 

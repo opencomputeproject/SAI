@@ -139,32 +139,6 @@ typedef enum _sai_port_fdb_learning_mode_t
 } sai_port_fdb_learning_mode_t;
 
 /**
- * @brief Port Add/Delete Event
- */
-typedef enum _sai_port_event_t
-{
-    /** Create a new active port */
-    SAI_PORT_EVENT_ADD,
-
-    /** Delete/Invalidate an existing port */
-    SAI_PORT_EVENT_DELETE,
-
-} sai_port_event_t;
-
-/**
- * @brief Defines the port event notification
- */
-typedef struct _sai_port_event_notification_t
-{
-    /** Port id */
-    sai_object_id_t port_id;
-
-    /** Port event */
-    sai_port_event_t port_event;
-
-} sai_port_event_notification_t;
-
-/**
  * @brief Attribute data for #SAI_PORT_ATTR_MEDIA_TYPE
  */
 typedef enum _sai_port_media_type_t
@@ -1462,16 +1436,6 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
 typedef void (*sai_port_state_change_notification_fn)(
         _In_ uint32_t count,
         _In_ sai_port_oper_status_notification_t *data);
-
-/**
- * @brief Port event notification
- *
- * @param[in] count Number of notifications
- * @param[in] data Array of port events
- */
-typedef void (*sai_port_event_notification_fn)(
-        _In_ uint32_t count,
-        _In_ sai_port_event_notification_t *data);
 
 /**
  * @brief Port methods table retrieved with sai_api_query()
