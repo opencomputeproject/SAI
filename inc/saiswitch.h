@@ -1262,7 +1262,8 @@ typedef void (*sai_switch_state_change_notification_fn)(
  * @brief Create switch
  *
  *   SDK initialization/connect to SDK. After the call the capability attributes should be
- *   ready for retrieval via sai_get_switch_attribute().
+ *   ready for retrieval via sai_get_switch_attribute(). Same Switch Object id should be 
+ *   given for create/connect for each NPU.  
  *
  * @param[out] switch_id The Switch Object ID
  * @param[in] attr_count number of attributes

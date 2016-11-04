@@ -46,7 +46,6 @@ typedef struct _sai_object_key_t
     union
     {
         sai_object_id_t           object_id;
-        sai_vlan_id_t             vlan_id;
         sai_fdb_entry_t           fdb_entry;
         sai_neighbor_entry_t      neighbor_entry;
         sai_route_entry_t         route_entry;
