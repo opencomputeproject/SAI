@@ -338,6 +338,7 @@ main(int argc, char* argv[])
     sai_log_set(SAI_API_LAG, SAI_LOG_NOTICE);
     sai_log_set(SAI_API_BUFFERS, SAI_LOG_NOTICE);
     sai_log_set(SAI_API_POLICER, SAI_LOG_NOTICE);
+    sai_log_set(SAI_API_WRED, SAI_LOG_NOTICE);
 
     while (1) pause();
 
