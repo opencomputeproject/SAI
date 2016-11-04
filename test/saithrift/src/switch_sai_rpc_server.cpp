@@ -496,7 +496,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
   }
 
-  int32_t sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id, const sai_thrift_attribute_t &thrift_attr) {
+  sai_thrift_status_t sai_thrift_set_port_attribute(const sai_thrift_object_id_t port_id, const sai_thrift_attribute_t &thrift_attr) {
       printf("sai_thrift_set_port\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_port_api_t *port_api;
@@ -514,7 +514,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+  sai_thrift_status_t sai_thrift_create_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_create_fdb_entry\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_fdb_api_t *fdb_api;
@@ -532,7 +532,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_delete_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry) {
+  sai_thrift_status_t sai_thrift_delete_fdb_entry(const sai_thrift_fdb_entry_t& thrift_fdb_entry) {
       printf("sai_thrift_delete_fdb_entry\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_fdb_api_t *fdb_api;
@@ -546,7 +546,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_flush_fdb_entries(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+  sai_thrift_status_t sai_thrift_flush_fdb_entries(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_flush_fdb_entries\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_fdb_api_t *fdb_api;
@@ -562,7 +562,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_create_vlan(const sai_thrift_vlan_id_t vlan_id) {
+  sai_thrift_status_t sai_thrift_create_vlan(const sai_thrift_vlan_id_t vlan_id) {
       printf("sai_thrift_create_vlan\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_vlan_api_t *vlan_api;
@@ -574,7 +574,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       return status;
   }
 
-  int32_t sai_thrift_delete_vlan(const sai_thrift_vlan_id_t vlan_id) {
+  sai_thrift_status_t sai_thrift_delete_vlan(const sai_thrift_vlan_id_t vlan_id) {
       printf("sai_thrift_delete_vlan\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_vlan_api_t *vlan_api;
@@ -1080,14 +1080,27 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           printf("sai_api_query failed!!!\n");
           return status;
       }
-      attr.id = thrift_attr.id;
-      switch(thrift_attr.id) {
-          case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
-              sai_thrift_string_to_mac(thrift_attr.value.mac, attr.value.mac);
-              break;
-      }
+
+      sai_thrift_parse_switch_attribute(thrift_attr, &attr);
+
       status = switch_api->set_switch_attribute(&attr);
       return status;
+  }
+
+  void sai_thrift_parse_switch_attribute(const sai_thrift_attribute_t &thrift_attr, sai_attribute_t *attr) {
+      attr->id = thrift_attr.id;
+
+      switch(thrift_attr.id) {
+          case SAI_SWITCH_ATTR_SRC_MAC_ADDRESS:
+              sai_thrift_string_to_mac(thrift_attr.value.mac, attr->value.mac);
+              break;
+
+          case SAI_SWITCH_ATTR_FDB_UNICAST_MISS_ACTION:
+          case SAI_SWITCH_ATTR_FDB_BROADCAST_MISS_ACTION:
+          case SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_ACTION:
+              attr->value.s32 = thrift_attr.value.s32;
+              break;
+      }
   }
 
   void sai_thrift_get_port_list_by_front_port(sai_thrift_attribute_t& thrift_attr) {
@@ -1132,7 +1145,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
-          for (int j=0 ; j<4 ; j++){
+          uint32_t laneCnt = port_lane_list_attribute.value.u32list.count;
+          for (int j=0 ; j<laneCnt; j++){
               port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
           }
           
@@ -1220,7 +1234,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
-          for (int j=0 ; j<4 ; j++){
+          uint32_t laneCnt = port_lane_list_attribute.value.u32list.count;
+          for (int j=0 ; j<laneCnt; j++){
               port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
           }
    
@@ -1326,6 +1341,12 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           attribute = (sai_thrift_attribute_t)*it;
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
+            case SAI_ACL_TABLE_ATTR_STAGE:
+                attr_list[i].value.u32 = attribute.value.u32;
+                break;
+            case SAI_ACL_TABLE_ATTR_PRIORITY:
+                attr_list[i].value.u32 = attribute.value.u32;
+                break;
             case SAI_ACL_TABLE_ATTR_FIELD_SRC_IPv6:
             case SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6:
             case SAI_ACL_TABLE_ATTR_FIELD_SRC_MAC:
@@ -1356,8 +1377,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
             case SAI_ACL_TABLE_ATTR_FIELD_IP_FRAG:
             case SAI_ACL_TABLE_ATTR_FIELD_IPv6_FLOW_LABEL:
             case SAI_ACL_TABLE_ATTR_FIELD_TC:
+                attr_list[i].value.booldata = attribute.value.booldata;
                 break;
-              default:
+            default:
                 break;
           }
       }
@@ -1371,13 +1393,13 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
             case SAI_ACL_ENTRY_ATTR_TABLE_ID:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
+                attr_list[i].value.oid = attribute.value.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_PRIORITY:
-                attr_list[i].value.aclfield.data.u32 = attribute.value.aclfield.data.u32;
+                attr_list[i].value.u32 = attribute.value.u32;
                 break;
             case SAI_ACL_ENTRY_ATTR_ADMIN_STATE:
-                attr_list[i].value.aclfield.data.u8 = attribute.value.aclfield.data.u8;
+                attr_list[i].value.u8 = attribute.value.u8;
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPv6:
             case SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6:
@@ -2010,6 +2032,17 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       }
       attr_list.push_back(thrift_port_hw_lane);
       free(port_hw_lane.value.u32list.list); 
+	  
+      sai_attribute_t port_oper_status_attribute;
+      sai_thrift_attribute_t thrift_port_status;
+      port_oper_status_attribute.id = SAI_PORT_ATTR_OPER_STATUS;
+      port_api->get_port_attribute(port_id, 1, &port_oper_status_attribute);
+	  
+      thrift_attr_list.attr_count = 5;
+      thrift_port_status.id = SAI_PORT_ATTR_OPER_STATUS;
+      thrift_port_status.value.s32 =  port_oper_status_attribute.value.s32;
+      attr_list.push_back(thrift_port_status);
+	  
   }
 
   void sai_thrift_get_queue_stats(
@@ -2232,6 +2265,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_thrift_parse_wred_attributes(thrift_attr_list, attr_list);
       uint32_t attr_count = thrift_attr_list.size();
       wred_api->create_wred_profile(&wred_id, attr_count, attr_list);
+      free(attr_list);
       return wred_id;
   }
 
