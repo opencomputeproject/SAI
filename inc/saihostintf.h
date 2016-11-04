@@ -267,6 +267,12 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_SNMP = 0x00002012,
 
+    /**
+     * @brief Unknown L3 multicast packets
+     * (default packet action is trap)
+     */
+    SAI_HOSTIF_TRAP_TYPE_UNKNOWN_L3_MULTICAST = 0x00002013,
+
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x0003000,
 
