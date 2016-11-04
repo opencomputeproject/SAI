@@ -1477,3 +1477,192 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_port_id)
             self.client.sai_thrift_remove_virtual_router(self.vr_id)
             print "END OF TEST"
+@group('lag')
+@group('l3')
+class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
+    total_changing_ports = 15
+    first_changing_port = 2
+    total_dst_port = 16
+    v4_enabled = 1
+    v6_enabled = 1
+    ip_mask = '255.255.0.0'
+    addr_family = SAI_IP_ADDR_FAMILY_IPV4
+    lag_members = []
+    nhop_group =  0
+    lag = 0
+    lag_rif = 0
+    port_rifs = []
+    neighbors = []
+    nhops = []
+    routes = []
+    vr_id = 0
+    mac_action = SAI_PACKET_ACTION_FORWARD
+    src_port = 0
+    mac_pool = ['00:11:22:33:44:50',
+               '00:11:23:33:44:51',
+               '00:11:24:33:44:52',
+               '00:11:25:33:44:53',
+               '00:11:26:33:44:54',
+               '00:11:27:33:44:55',
+               '00:11:28:33:44:56',
+               '00:11:29:33:44:57',
+               '00:11:30:33:44:58',
+               '00:11:31:33:44:59',
+               '00:11:32:33:44:60',
+               '00:11:33:33:44:61',
+               '00:11:34:33:44:62',
+               '00:11:35:33:44:63',
+               '00:11:36:33:44:64',
+               '00:11:37:33:44:65',
+               '00:11:38:33:44:66']
+    
+    
+    def setup_rifs(self, first_rif_port, port_list):
+        for i in range(self.first_changing_port,first_rif_port):
+            self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[i]))
+        for i in range(first_rif_port,self.total_changing_ports):
+            self.port_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, port_list[i], 0, self.v4_enabled, self.v6_enabled, ''))
+        for i in range(self.total_changing_ports - first_rif_port):
+            sai_thrift_create_neighbor(self.client, self.addr_family, self.port_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
+            self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.%s.1" % str(i+1), self.port_rifs[i]))
+        self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.16.1" , self.lag_rif))
+        self.nhop_group = sai_thrift_create_next_hop_group(self.client, self.nhops)
+        sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.0.0", self.ip_mask, self.nhop_group)    
+
+
+    def teardown_rifs(self, first_rif_port, port_list):
+        sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.0.0", self.ip_mask, self.nhop_group)    
+        self.client.sai_thrift_remove_next_hop_from_group(self.nhop_group, self.nhops)
+        self.client.sai_thrift_remove_next_hop_group(self.nhop_group)
+        for nhop in self.nhops:
+            self.client.sai_thrift_remove_next_hop(nhop)
+        del self.nhops[:]
+        for i in range(self.total_changing_ports - first_rif_port):
+            sai_thrift_remove_neighbor(self.client, self.addr_family, self.port_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
+        print self.port_rifs
+        for rif in self.port_rifs:
+            self.client.sai_thrift_remove_router_interface(rif)
+        del self.port_rifs[:]
+        for lag_member in self.lag_members:
+            self.client.sai_thrift_remove_lag_member(lag_member)
+        del self.lag_members[:]
+    
+
+    def polarizationCheck(self,packets,avg):
+        if (avg < 150):
+            self.assertTrue((packets >= (avg * 0.65)),"Not all paths are equally balanced, %s" % packets)
+            self.assertTrue((packets <= (avg * 1.35)),"Not all paths are equally balanced, %s" % packets)
+        else:
+            self.assertTrue((packets >= (avg * 0.8)),"Not all paths are equally balanced, %s" % packets)
+            self.assertTrue((packets <= (avg * 1.2)),"Not all paths are equally balanced, %s" % packets)
+        
+    def send_and_verify_packets(self, first_rif_port, port_list):
+        exp_pkts = [0]*self.total_dst_port
+        pkt_counter = [0] * self.total_dst_port
+        destanation_ports = range(self.total_dst_port + 1)
+        router_mac = '00:02:03:04:05:00'
+        sport = 0x1234
+        dport = 0x50
+        src_mac = self.dataplane.get_mac(0, 0)
+        IP_LAST_WORD_RANGE = 254
+        IP_2ND_LAST_WORD_RANGE = 16
+        for i in xrange(IP_LAST_WORD_RANGE):
+                for j in xrange(IP_2ND_LAST_WORD_RANGE):
+                    ip_src = '10.0.' + str(j) + '.' + str(i+1)
+                    ip_dst = '10.10.' + str(j+1) + '.1'
+                    pkt = simple_tcp_packet(
+                                            eth_dst=router_mac,
+                                            eth_src=src_mac,
+                                            ip_src=ip_src,
+                                            ip_dst=ip_dst,
+                                            ip_id=i,
+                                            tcp_sport=sport,
+                                            tcp_dport=dport,
+                                            ip_ttl=64)
+                    exp_pkt = simple_tcp_packet(
+                                            eth_dst=self.mac_pool[0],
+                                            eth_src=router_mac,
+                                            ip_src=ip_src,
+                                            ip_dst=ip_dst,
+                                            ip_id=i,
+                                            tcp_sport=sport,
+                                            tcp_dport=dport,
+                                            ip_ttl=63)
+                    masked_exp_pkt = Mask(exp_pkt)
+                    masked_exp_pkt.set_do_not_care_scapy(ptf.packet.Ether,"dst")
+
+                    send_packet(self, 0, str(pkt))
+                    (match_index,rcv_pkt) = verify_packet_any_port(self,masked_exp_pkt,destanation_ports)
+                    logging.debug("found expected packet from port %d" % destanation_ports[match_index])
+                    pkt_counter[match_index] += 1
+                    sport = random.randint(0,0xffff)
+                    dport = random.randint(0,0xffff)
+                        
+        #final uniform distribution check
+        logging.debug(pkt_counter)
+        logging.debug(first_rif_port)
+        lag_packets = sum(pkt_counter[1:first_rif_port])
+        lag_average = lag_packets/(len(self.lag_members) + 1)
+        logging.debug("the sum of packets through the lag is " + str(lag_packets))
+        logging.debug("the lag average for the lag is " + str(lag_average))
+        for stat_port in range(1,first_rif_port):
+            logging.debug( "PORT #"+str(stat_port)+":")
+            logging.debug(str(pkt_counter[stat_port]))
+            self.polarizationCheck(pkt_counter[stat_port],lag_average)
+        rifs_average = sum(pkt_counter)/(len(self.port_rifs) + 1)
+        logging.debug("lag average " + str(lag_average))
+        self.polarizationCheck(lag_packets,rifs_average)
+        for stat_port in range(first_rif_port,self.total_changing_ports):
+            logging.debug( "PORT #"+str(stat_port)+":")
+            logging.debug(str(pkt_counter[stat_port]))
+            self.polarizationCheck(pkt_counter[stat_port],rifs_average)
+    
+                 
+    def runTest(self):
+        """
+        For sai server, testing different lags with router
+        ---- Test for 17 ports minimun ----
+        Steps
+        1. Create virtual router, lag with rif and rif for src port
+        2. add ports to the lag and the rest of the ports connect to rifs
+        3. configure neighbors, nhops for all of the rifs
+        4. make ecmp route with all of the nhops
+        5. send packets from src port
+        6. check polarization check in the lag and in the ecmp
+        7. remove rifs, neighbors, nhops, lag members and route
+        8. repeat steps 3-7 with differnt numbers of lag members and rifs
+        8. clean up.
+        """
+       
+          
+        print
+        print "L3MultipleEcmpLagTest"
+        #general configuration 
+        random.seed(1)
+        switch_init(self.client)
+        self.src_port = port_list[0]
+
+        self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
+        rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
+        self.lag = self.client.sai_thrift_create_lag([])
+        sai_thrift_create_lag_member(self.client, self.lag, port_list[1])
+
+        self.lag_rif = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lag, 0, self.v4_enabled, self.v6_enabled, '')
+        #create neighbor
+        sai_thrift_create_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
+        try:
+            for first_rif_port in range(self.first_changing_port,self.total_changing_ports):
+                print "testing with " +str(first_rif_port - 1) + " lag members"
+                self.setup_rifs(first_rif_port,port_list)
+                self.send_and_verify_packets(first_rif_port,port_list)
+                self.teardown_rifs(first_rif_port,port_list)
+        finally:
+
+            #in case of an exception in the send_and_verify_packets
+            self.teardown_rifs(self.total_dst_port,port_list)#check what number to send for tear down
+            sai_thrift_remove_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
+            self.client.sai_thrift_remove_router_interface(rif_port_id)
+            self.client.sai_thrift_remove_router_interface(self.lag_rif)
+            self.client.sai_thrift_remove_virtual_router(self.vr_id)
+            self.client.sai_thrift_remove_lag(self.lag)
+            print "END OF TEST"
