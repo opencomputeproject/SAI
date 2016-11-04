@@ -1621,7 +1621,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         """
         For sai server, testing different lags with router
-        ---- Test for 17 ports minimun ----
+        ---- Test for 16 ports minimun ----
         Steps
         1. Create virtual router, lag with rif and rif for src port
         2. add ports to the lag and the rest of the ports connect to rifs
