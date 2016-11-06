@@ -604,48 +604,48 @@ typedef sai_status_t(*sai_get_hostif_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
-* @brief Attribute data for SAI_HOST_INTERFACE_TABLE_ENTRY_ATTR_TYPE
+* @brief Attribute data for SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE
 */
-typedef enum _sai_host_interface_table_entry_type_t
+typedef enum _sai_hostif_table_entry_type_t
 {
     /** Port-based Host Interface entry Type */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_PORT,
+    SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT,
 
     /** LAG based Host Interface entry Type */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG,
+    SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG,
 
     /** Vlan based Host Interface entry Type */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN,
+    SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN,
 
     /** Wildcard Interface entry Type */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID,
+    SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID,
 
     /** Wildcard Interface, wildcard trap id */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_WILDCARD
+    SAI_HOSTIF_TABLE_ENTRY_TYPE_WILDCARD
 
-} sai_host_interface_table_entry_type_t;
+} sai_hostif_table_entry_type_t;
 
 /**
-* @brief Attribute data for SAI_HOST_INTERFACE_TABLE_ENTRY_ATTR_CHANNEL_TYPE
+* @brief Attribute data for SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE
 */
-typedef enum _sai_host_interface_table_entry_channel_type_t
+typedef enum _sai_hostif_table_entry_channel_type_t
 {
     /** receive packets via callback */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_CB,
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_CB,
 
     /** receive packets via file descriptor */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_FD,
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD,
 
     /** receive packets via Linux netdev type port */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT,
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT,
 
     /** receive packets via Linux netdev logical port (LAG or port) */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_LOGICAL_PORT,
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_LOGICAL_PORT,
 
     /** receive packets via Linux netdev L3 interface */
-    SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3
 
-} sai_host_interface_table_entry_channel_type_t;
+} sai_hostif_table_entry_channel_type_t;
 
 /**
 * @brief Host interface table entry attribute IDs
@@ -660,7 +660,7 @@ typedef enum _sai_hostif_table_entry_attr_t
     /**
     * @brief Host interface table entry type
     *
-    * @type sai_host_interface_table_entry_type_t
+    * @type sai_hostif_table_entry_type_t
     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
     */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE = SAI_HOSTIF_ATTR_START,
@@ -668,36 +668,36 @@ typedef enum _sai_hostif_table_entry_attr_t
     /**
     * @brief Host interface table entry match field object-id
     *
-    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_PORT
-    * || #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG || #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN
-    * should be port object when type is SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_PORT
-    * should be lag object when type is SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG
-    * should be VLAN ID object when type is SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN
+    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT
+    * || #SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG || #SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN
+    * should be port object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT
+    * should be lag object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG
+    * should be VLAN ID object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN
     *
     * @type sai_object_id_t
     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE
     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_PORT or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG
+    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG
     */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_OBJ_ID,
 
     /**
     * @brief Host interface table entry match field trap-id
     *
-    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_PORT || 
-    * #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG || #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN ||
-    * #SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID
+    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT || 
+    * #SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG || #SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN ||
+    * #SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID
     * @type sai_object_id_t
     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP
     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_PORT or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_VLAN or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_LAG or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOST_INTERFACE_TABLE_ENTRY_TYPE_TRAP_ID
+    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID
     */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID,
 
     /**
     * @brief Host interface table entry action channel
     *
-    * @type sai_host_interface_table_entry_channel_type_t
+    * @type sai_hostif_table_entry_channel_type_t
     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
     */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL,
@@ -705,11 +705,11 @@ typedef enum _sai_hostif_table_entry_attr_t
     /**
     * @brief Host interface table entry action target host interface object
     *
-    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL = #SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_FD
+    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL = #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
     * @type sai_object_id_t
     * @objects SAI_OBJECT_TYPE_HOSTIF
     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL == SAI_HOST_INTERFACE_TABLE_ENTRY_CHANNEL_TYPE_FD
+    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
     */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
 
