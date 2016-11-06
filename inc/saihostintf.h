@@ -474,47 +474,8 @@ typedef sai_status_t(*sai_get_hostif_trap_attribute_fn)(
  */
 typedef enum _sai_hostif_type_t
 {
-<<<<<<< HEAD
-=======
-    /**
-     * @brief Start of attributes
-     */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
-
-    /**
-     * @brief Trap channel to use
-     *
-     * @type sai_hostif_trap_channel_t
-     * @flags CREATE_ONLY
-     * @default SAI_HOSTIF_TRAP_CHANNEL_CB
-     */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_HOSTIF_TRAP_CHANNEL = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
-
-    /**
-     * @brief File descriptor
-     *
-     * Valid only when #SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL == #SAI_HOSTIF_TRAP_CHANNEL_FD
-     * Must be set before set #SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to #SAI_HOSTIF_TRAP_CHANNEL_FD
-     *
-     * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_HOSTIF
-     * @flags CREATE_AND_SET
-     */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_FD,
-=======
->>>>>>> changes after initial review
-    /** Port-based Host Interface Type */
-    SAI_HOSTIF_TYPE_PORT,
-
-    /** LAG based Host Interface Type */
-    SAI_HOSTIF_TYPE_LAG,
-
-    /** Vlan Router Interface based Host Interface Type */
-    SAI_HOSTIF_TYPE_VLAN,
-=======
     /** Netdevice */
     SAI_HOSTIF_TYPE_NETDEV,
->>>>>>> changes after initial review
 
     /** File descriptor */
     SAI_HOSTIF_TYPE_FD
@@ -769,6 +730,7 @@ typedef enum _sai_hostif_table_entry_attr_t
 * @brief Create host interface table entry
 *
 * @param[out] hif_table_entry Host interface table entry
+* @param[in] switch_id Switch object id
 * @param[in] attr_count Number of attributes
 * @param[in] attr_list Aarray of attributes
 *
@@ -776,6 +738,7 @@ typedef enum _sai_hostif_table_entry_attr_t
 */
 typedef sai_status_t(*sai_create_hostif_table_entry_fn)(
     _Out_ sai_object_id_t *hif_table_entry,
+    _In_ sai_object_id_t switch_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list);
 
