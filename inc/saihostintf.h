@@ -705,11 +705,11 @@ typedef enum _sai_hostif_table_entry_attr_t
     /**
     * @brief Host interface table entry action target host interface object
     *
-    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL = #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
+    * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE = #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
     * @type sai_object_id_t
     * @objects SAI_OBJECT_TYPE_HOSTIF
     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
+    * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
     */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
 
