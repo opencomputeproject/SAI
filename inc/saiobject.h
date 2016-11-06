@@ -46,7 +46,6 @@ typedef struct _sai_object_key_t
     union
     {
         sai_object_id_t           object_id;
-        sai_vlan_id_t             vlan_id;
         sai_fdb_entry_t           fdb_entry;
         sai_neighbor_entry_t      neighbor_entry;
         sai_route_entry_t         route_entry;
@@ -58,30 +57,35 @@ typedef struct _sai_object_key_t
 /**
  * @brief Get maximum number of attributes for an object type
  *
+ * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
  * @param[inout] count Maximum number of attribute for an object type
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 sai_status_t sai_get_maximum_attribute_count(
+        _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _Inout_ uint32_t *count);
 
 /**
  * @brief Get the number of objects present in SAI
  *
+ * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
  * @param[inout] count Number of objects in SAI
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 sai_status_t sai_get_object_count(
+        _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _Inout_ uint32_t *count);
 
 /**
  * @brief Get the list of object keys present in SAI
  *
+ * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
  * @param[in] object_count Number of objects in SAI
  * @param[in] object_list List of SAI objects or keys
@@ -89,6 +93,7 @@ sai_status_t sai_get_object_count(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 sai_status_t sai_get_object_key(
+        _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _In_ uint32_t object_count,
         _Inout_ sai_object_key_t *object_list);
@@ -97,6 +102,7 @@ sai_status_t sai_get_object_key(
  * @brief Get the bulk list of valid attributes for a given list of
  * object keys.Only valid attributes for an objects are returned.
  *
+ * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
  * @param[in] object_count Number of objects
  * @param[in] object_key List of object keys
@@ -122,6 +128,7 @@ sai_status_t sai_get_object_key(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 sai_status_t sai_bulk_get_attribute(
+        _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _In_ uint32_t object_count,
         _In_ sai_object_key_t *object_key,

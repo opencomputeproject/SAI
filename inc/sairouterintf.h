@@ -104,7 +104,7 @@ typedef enum _sai_router_interface_attr_t
      * @brief MAC Address
      *
      * Not valid when #SAI_ROUTER_INTERFACE_ATTR_TYPE == #SAI_ROUTER_INTERFACE_TYPE_LOOPBACK)
-     * Ddefault to #SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create)
+     * Default to #SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create)
      *
      * @type sai_mac_t
      * @flags CREATE_AND_SET
@@ -165,6 +165,7 @@ typedef enum _sai_router_interface_attr_t
  * @brief Create router interface.
  *
  * @param[out] rif_id Router interface id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -172,6 +173,7 @@ typedef enum _sai_router_interface_attr_t
  */
 typedef sai_status_t(*sai_create_router_interface_fn)(
         _Out_ sai_object_id_t *rif_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

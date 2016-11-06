@@ -51,6 +51,9 @@ typedef enum _sai_fdb_entry_type_t
  */
 typedef struct _sai_fdb_entry_t
 {
+    /** Switch ID */
+    sai_object_id_t switch_id;
+
     /** Mac address */
     sai_mac_t mac_address;
 
@@ -282,12 +285,14 @@ typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
 /**
  * @brief Remove all FDB entries by attribute set in sai_fdb_flush_attr
  *
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_flush_fdb_entries_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

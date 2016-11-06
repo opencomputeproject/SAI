@@ -98,6 +98,7 @@ typedef enum _sai_tunnel_map_attr_t
  * @brief Create tunnel Map
  *
  * @param[out] tunnel_map_id Runnel Map Id
+ * @param[in] switch_id Switch Id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -105,6 +106,7 @@ typedef enum _sai_tunnel_map_attr_t
  */
 typedef sai_status_t(*sai_create_tunnel_map_fn)(
         _Out_ sai_object_id_t *tunnel_map_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -446,6 +448,7 @@ typedef enum _sai_tunnel_attr_t
  * @brief Create tunnel
  *
  * @param[out] tunnel_id Tunnel id
+ * @param[in] switch_id Switch Id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -453,6 +456,7 @@ typedef enum _sai_tunnel_attr_t
  */
 typedef sai_status_t (*sai_create_tunnel_fn)(
         _Out_ sai_object_id_t *tunnel_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -584,6 +588,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
  * @brief Create tunnel termination table entry
  *
  * @param[out] tunnel_term_table_entry_id Tunnel termination table entry id
+ * @param[in] switch_id Switch Id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -591,6 +596,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
  */
 typedef sai_status_t (*sai_create_tunnel_term_table_entry_fn)(
         _Out_ sai_object_id_t *tunnel_term_table_entry_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
