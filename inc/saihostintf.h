@@ -700,7 +700,7 @@ typedef enum _sai_hostif_table_entry_attr_t
     * @type sai_hostif_table_entry_channel_type_t
     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
     */
-    SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL,
+    SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE,
 
     /**
     * @brief Host interface table entry action target host interface object
