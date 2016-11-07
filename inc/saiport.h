@@ -1017,8 +1017,9 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Port EEE IDLE time configuration
-     * 
-     * In low power mode, After idle time(micro secs) interval, Link refresh will be triggered.
+     *
+     * Time (in microsecs) to move to Low power state (No traffic), at the end of which MAC transitions to Low power state.
+     * MAX value set more benefit.
      *
      * @type sai_uint16_t 
      * @flags CREATE_AND_SET
@@ -1029,7 +1030,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port EEE Wakeup time configuration
      * 
-     * After detect traffic time(micro secs) to be taken EEE to enter active state and resumes normal operation.
+     * Time(in microsecs) to wait before transmitter is leaving Low Power Mode State. Min value set avoid latency.
      *
      * @type sai_uint16_t 
      * @flags CREATE_AND_SET
