@@ -669,6 +669,19 @@ def sai_thrift_create_vlan_member(client, vlan_id, port_id, tagging_mode):
     vlan_member_id = client.sai_thrift_create_vlan_member(vlan_member_attr_list)
     return vlan_member_id
 
+def sai_thrift_vlan_remove_all_ports(client, vid):
+        vlan_members_list = []
+
+        vlan_attr_list = client.sai_thrift_get_vlan_attribute(vid)
+        attr_list = vlan_attr_list.attr_list
+        for attribute in attr_list:
+            if attribute.id == SAI_VLAN_ATTR_MEMBER_LIST:
+                for vlan_member in attribute.value.objlist.object_id_list:
+                    vlan_members_list.append(vlan_member)
+
+        for vlan_member in vlan_members_list:
+            client.sai_thrift_remove_vlan_member(vlan_member)
+
 def sai_thrift_set_port_shaper(client, port_id, max_rate):
     sched_prof_id=sai_thrift_create_scheduler_profile(client, max_rate)
     attr_value = sai_thrift_attribute_value_t(oid=sched_prof_id)
