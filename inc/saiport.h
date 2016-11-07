@@ -1293,17 +1293,41 @@ typedef enum _sai_port_stat_t
     /** sai port stat ether out pkts 9217 to 16383 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_9217_TO_16383_OCTETS,
 
-    /** get current port occupancy in bytes [uint64_t] */
-    SAI_PORT_STAT_CURR_OCCUPANCY_BYTES,
+    /** get in port current occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_IN_CURR_OCCUPANCY_BYTES,
 
-    /** get watermark port occupancy in bytes [uint64_t] */
-    SAI_PORT_STAT_WATERMARK_BYTES,
+    /** get in port watermark occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_IN_WATERMARK_BYTES,
 
-    /** get current port shared occupancy in bytes [uint64_t] */
-    SAI_PORT_STAT_SHARED_CURR_OCCUPANCY_BYTES,
+    /** get in port current shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_IN_SHARED_CURR_OCCUPANCY_BYTES,
 
-    /** get watermark port shared occupancy in bytes [uint64_t] */
-    SAI_PORT_STAT_SHARED_WATERMARK_BYTES,
+    /** get in port watermark shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_IN_SHARED_WATERMARK_BYTES,
+
+    /** get out port current occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_OUT_CURR_OCCUPANCY_BYTES,
+
+    /** get out port watermark occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_OUT_WATERMARK_BYTES,
+
+    /** get out port current shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_OUT_SHARED_CURR_OCCUPANCY_BYTES,
+
+    /** get out port watermark shared occupancy in bytes [uint64_t] */
+    SAI_PORT_STAT_OUT_SHARED_WATERMARK_BYTES,
+
+    /** get in port packet drops due to buffers [uint64_t] */
+    SAI_PORT_STAT_IN_DROP_PACKETS,
+
+    /** get in port packet drops due to buffers [uint64_t] */
+    SAI_PORT_STAT_IN_DROP_BYTES,
+
+    /** get out port packet drops due to buffers [uint64_t] */
+    SAI_PORT_STAT_OUT_DROP_PACKETS,
+
+    /** get out port packet drops due to buffers [uint64_t] */
+    SAI_PORT_STAT_OUT_DROP_BYTES,
 
     /** get the number of pause frames received on the port [uint64_t] */
     SAI_PORT_STAT_PAUSE_RX_PKTS,
