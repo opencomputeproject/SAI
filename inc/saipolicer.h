@@ -249,6 +249,7 @@ typedef enum _sai_policer_stat_t
  * @brief Create Policer
  *
  * @param[out] policer_id The policer id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Nnumber of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -256,6 +257,7 @@ typedef enum _sai_policer_stat_t
  */
 typedef sai_status_t (*sai_create_policer_fn)(
         _Out_ sai_object_id_t *policer_id,
+        _In_ sai_object_id_t   switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

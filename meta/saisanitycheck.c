@@ -1082,6 +1082,7 @@ void check_attr_key(
             case SAI_ATTR_VALUE_TYPE_INT32:
             case SAI_ATTR_VALUE_TYPE_UINT32:
             case SAI_ATTR_VALUE_TYPE_UINT8:
+            case SAI_ATTR_VALUE_TYPE_UINT16:
                 break;
 
             default:
