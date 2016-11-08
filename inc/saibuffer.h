@@ -90,9 +90,6 @@ typedef enum _sai_ingress_priority_group_stat_t
     /** get watermark pg xoff room occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
 
-   /** get/set rx packets count [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS = 0x00000008,
-
     /** get/set rx bytes count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_BYTES = 0x00000009,
 
@@ -247,17 +244,11 @@ typedef enum _sai_buffer_pool_stat_t
     /** get watermark pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
 
-    /** get count of packets passed pool [uint64_t] */
-    SAI_BUFFER_POOL_STAT_PACKETS  = 0x00000002,
-
     /** get count of bytes passed pool [uint64_t] */
     SAI_BUFFER_POOL_STAT_BYTES  = 0x00000003,
 
-    /** get count of packets dropped by pool limits [uint64_t] */
-    SAI_BUFFER_POOL_STAT_DROPPED_PACKETS  = 0x00000004,
-
     /** get count of bytes dropped by pool limits [uint64_t] */
-    SAI_BUFFER_POOL_STAT_DROPPED_BYTES  = 0x00000005,
+    SAI_BUFFER_POOL_STAT_DROPPED_BYTES  = 0x00000004,
 
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
@@ -331,6 +322,20 @@ typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
         _In_ const sai_buffer_pool_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
         _Out_ uint64_t* counters);
+
+/**
+ * @brief Clear buffer pool statistics counters.
+ *
+ * @param[in] pool_id Buffer pool id
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] number_of_counters Number of counters in the array
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t(*sai_clear_buffer_pool_stats_fn)(
+        _In_ sai_object_id_t pool_id,
+        _In_ const sai_buffer_pool_stat_t *counter_ids,
+        _In_ uint32_t number_of_counters);
 
 /**
  * @brief Enum defining buffer profile threshold modes
@@ -528,6 +533,7 @@ typedef struct _sai_buffer_api_t
     sai_set_buffer_pool_attr_fn                set_buffer_pool_attr;
     sai_get_buffer_pool_attr_fn                get_buffer_pool_attr;
     sai_get_buffer_pool_stats_fn               get_buffer_pool_stats;
+    sai_clear_buffer_pool_stats_fn             clear_buffer_pool_stats;
     sai_set_ingress_priority_group_attr_fn     set_ingress_priority_group_attr;
     sai_get_ingress_priority_group_attr_fn     get_ingress_priority_group_attr;
     sai_get_ingress_priority_group_stats_fn    get_ingress_priority_group_stats;
