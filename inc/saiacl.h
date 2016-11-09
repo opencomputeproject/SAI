@@ -219,10 +219,10 @@ typedef enum _sai_acl_action_type_t
     /** Set Meta Data to carry forward to next ACL Stage */
     SAI_ACL_ACTION_TYPE_SET_ACL_META_DATA,
 
-    /** egress block port list */
+    /** Egress block port list */
     SAI_ACL_ACTION_TYPE_EGRESS_BLOCK_PORT_LIST,
 
-    /** set user defined trap id */
+    /** Set user defined trap id */
     SAI_ACL_ACTION_TYPE_SET_USER_TRAP_ID,
 
     /** Set Do Not Learn unknow source MAC*/
@@ -251,10 +251,11 @@ typedef enum _sai_acl_table_group_attr_t
     /**
      * @brief List of ACL bind points where this group will be applied
      *
-     * @type sai_acl_bind_point_t 
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @type sai_s32_list_t sai_acl_bind_point_t
+     * @flags CREATE_ONLY
+     * @default empty
      */
-    SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT,
+    SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT_LIST,
 
     /**
      * @brief Priority
@@ -264,7 +265,7 @@ typedef enum _sai_acl_table_group_attr_t
      * SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MAXIMUM_PRIORITY]
      *
      * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
      */
     SAI_ACL_TABLE_GROUP_ATTR_PRIORITY,
 
@@ -311,10 +312,11 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief List of ACL bind point where this ACL can be applied
      *
-     * @type sai_acl_bind_point_t 
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @type sai_s32_list_t sai_acl_bind_point_t
+     * @flags CREATE_ONLY
+     * @default empty
      */
-    SAI_ACL_TABLE_ATTR_BIND_POINT,
+    SAI_ACL_TABLE_ATTR_BIND_POINT_LIST,
 
     /**
      * @brief Priority
@@ -2061,28 +2063,56 @@ typedef sai_status_t (*sai_remove_acl_table_group_fn)(
         _In_ sai_object_id_t acl_table_group_id);
 
 /**
+ * @brief Set ACL table group attribute
+ *
+ * @param[in] acl_table_group_id The ACL table group id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_set_acl_table_group_attribute_fn)(
+        _In_ sai_object_id_t acl_table_group_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get ACL table group attribute
+ *
+ * @param[in] acl_table_group_id ACL table group id
+ * @param[in] attr_count Number of attributes
+ * @param[out] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
+        _In_ sai_object_id_t acl_table_group_id,
+        _In_ uint32_t attr_count,
+        _Out_ sai_attribute_t *attr_list);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_acl_api_t
 {
-    sai_create_acl_table_fn             create_acl_table;
-    sai_remove_acl_table_fn             remove_acl_table;
-    sai_set_acl_table_attribute_fn      set_acl_table_attribute;
-    sai_get_acl_table_attribute_fn      get_acl_table_attribute;
-    sai_create_acl_entry_fn             create_acl_entry;
-    sai_remove_acl_entry_fn             remove_acl_entry;
-    sai_set_acl_entry_attribute_fn      set_acl_entry_attribute;
-    sai_get_acl_entry_attribute_fn      get_acl_entry_attribute;
-    sai_create_acl_counter_fn           create_acl_counter;
-    sai_remove_acl_counter_fn           remove_acl_counter;
-    sai_set_acl_counter_attribute_fn    set_acl_counter_attribute;
-    sai_get_acl_counter_attribute_fn    get_acl_counter_attribute;
-    sai_create_acl_range_fn             create_acl_range;
-    sai_remove_acl_range_fn             remove_acl_range;
-    sai_set_acl_range_attribute_fn      set_acl_range_attribute;
-    sai_get_acl_range_attribute_fn      get_acl_range_attribute;
-    sai_create_acl_table_group_fn       create_acl_table_group;
-    sai_remove_acl_table_group_fn       remove_acl_table_group;
+    sai_create_acl_table_fn                 create_acl_table;
+    sai_remove_acl_table_fn                 remove_acl_table;
+    sai_set_acl_table_attribute_fn          set_acl_table_attribute;
+    sai_get_acl_table_attribute_fn          get_acl_table_attribute;
+    sai_create_acl_entry_fn                 create_acl_entry;
+    sai_remove_acl_entry_fn                 remove_acl_entry;
+    sai_set_acl_entry_attribute_fn          set_acl_entry_attribute;
+    sai_get_acl_entry_attribute_fn          get_acl_entry_attribute;
+    sai_create_acl_counter_fn               create_acl_counter;
+    sai_remove_acl_counter_fn               remove_acl_counter;
+    sai_set_acl_counter_attribute_fn        set_acl_counter_attribute;
+    sai_get_acl_counter_attribute_fn        get_acl_counter_attribute;
+    sai_create_acl_range_fn                 create_acl_range;
+    sai_remove_acl_range_fn                 remove_acl_range;
+    sai_set_acl_range_attribute_fn          set_acl_range_attribute;
+    sai_get_acl_range_attribute_fn          get_acl_range_attribute;
+    sai_create_acl_table_group_fn           create_acl_table_group;
+    sai_remove_acl_table_group_fn           remove_acl_table_group;
+    sai_set_acl_table_group_attribute_fn    set_acl_table_group_attribute;
+    sai_get_acl_table_group_attribute_fn    get_acl_table_group_attribute;
 } sai_acl_api_t;
 
 /**
