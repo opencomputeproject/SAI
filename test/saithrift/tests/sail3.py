@@ -1517,12 +1517,12 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
                '00:11:38:33:44:66']
     
     
-    def setup_rifs(self, first_rif_port, port_list):
-        for i in range(self.first_changing_port,first_rif_port):
+    def setup_ecmp_lag_group(self, lag_size):
+        for i in range(self.first_changing_port,lag_size):
             self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[i]))
-        for i in range(first_rif_port,self.total_changing_ports):
+        for i in range(lag_size,self.total_changing_ports):
             self.port_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, port_list[i], 0, self.v4_enabled, self.v6_enabled, ''))
-        for i in range(self.total_changing_ports - first_rif_port):
+        for i in range(self.total_changing_ports - lag_size):
             sai_thrift_create_neighbor(self.client, self.addr_family, self.port_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
             self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.%s.1" % str(i+1), self.port_rifs[i]))
         self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.16.1" , self.lag_rif))
@@ -1530,14 +1530,14 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.0.0", self.ip_mask, self.nhop_group)    
 
 
-    def teardown_rifs(self, first_rif_port, port_list):
+    def teardown_rifs(self, lag_size):
         sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.0.0", self.ip_mask, self.nhop_group)    
         self.client.sai_thrift_remove_next_hop_from_group(self.nhop_group, self.nhops)
         self.client.sai_thrift_remove_next_hop_group(self.nhop_group)
         for nhop in self.nhops:
             self.client.sai_thrift_remove_next_hop(nhop)
         del self.nhops[:]
-        for i in range(self.total_changing_ports - first_rif_port):
+        for i in range(self.total_changing_ports - lag_size):
             sai_thrift_remove_neighbor(self.client, self.addr_family, self.port_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
         print self.port_rifs
         for rif in self.port_rifs:
@@ -1556,7 +1556,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.assertTrue((packets >= (avg * 0.8)),"Not all paths are equally balanced, %s" % packets)
             self.assertTrue((packets <= (avg * 1.2)),"Not all paths are equally balanced, %s" % packets)
         
-    def send_and_verify_packets(self, first_rif_port, port_list):
+    def send_and_verify_packets(self, lag_size):
         exp_pkts = [0]*self.total_dst_port
         pkt_counter = [0] * self.total_dst_port
         destanation_ports = range(self.total_dst_port + 1)
@@ -1600,19 +1600,19 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
                         
         #final uniform distribution check
         logging.debug(pkt_counter)
-        logging.debug(first_rif_port)
-        lag_packets = sum(pkt_counter[1:first_rif_port])
+        logging.debug(lag_size)
+        lag_packets = sum(pkt_counter[1:lag_size])
         lag_average = lag_packets/(len(self.lag_members) + 1)
         logging.debug("the sum of packets through the lag is " + str(lag_packets))
         logging.debug("the lag average for the lag is " + str(lag_average))
-        for stat_port in range(1,first_rif_port):
+        for stat_port in range(1,lag_size):
             logging.debug( "PORT #"+str(stat_port)+":")
             logging.debug(str(pkt_counter[stat_port]))
             self.polarizationCheck(pkt_counter[stat_port],lag_average)
         rifs_average = sum(pkt_counter)/(len(self.port_rifs) + 1)
         logging.debug("lag average " + str(lag_average))
         self.polarizationCheck(lag_packets,rifs_average)
-        for stat_port in range(first_rif_port,self.total_changing_ports):
+        for stat_port in range(lag_size,self.total_changing_ports):
             logging.debug( "PORT #"+str(stat_port)+":")
             logging.debug(str(pkt_counter[stat_port]))
             self.polarizationCheck(pkt_counter[stat_port],rifs_average)
@@ -1651,15 +1651,15 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         #create neighbor
         sai_thrift_create_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
         try:
-            for first_rif_port in range(self.first_changing_port,self.total_changing_ports):
-                print "testing with " +str(first_rif_port - 1) + " lag members"
-                self.setup_rifs(first_rif_port,port_list)
-                self.send_and_verify_packets(first_rif_port,port_list)
-                self.teardown_rifs(first_rif_port,port_list)
+            for lag_size in range(self.first_changing_port,self.total_changing_ports):
+                print "testing with " +str(lag_size) + " lag members"
+                self.setup_ecmp_lag_group(lag_size)
+                self.send_and_verify_packets(lag_size)
+                self.teardown_rifs(lag_size)
         finally:
 
             #in case of an exception in the send_and_verify_packets
-            self.teardown_rifs(self.total_dst_port,port_list)#check what number to send for tear down
+            self.teardown_rifs(self.total_dst_port)#check what number to send for tear down
             sai_thrift_remove_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
             self.client.sai_thrift_remove_router_interface(rif_port_id)
             self.client.sai_thrift_remove_router_interface(self.lag_rif)
