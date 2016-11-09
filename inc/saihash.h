@@ -101,7 +101,7 @@ typedef enum _sai_hash_attr_t
      * @flags CREATE_AND_SET
      * @default empty
      */
-    SAI_HASH_ATTR_NATIVE_FIELD_LIST = SAI_HASH_ATTR_START,
+    SAI_HASH_ATTR_NATIVE_HASH_FIELD_LIST = SAI_HASH_ATTR_START,
 
     /**
      * @brief Hash UDF group
@@ -124,6 +124,7 @@ typedef enum _sai_hash_attr_t
  *@brief Create hash
  *
  * @param[out] hash_id Hash id
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -131,6 +132,7 @@ typedef enum _sai_hash_attr_t
  */
 typedef sai_status_t(*sai_create_hash_fn)(
         _Out_ sai_object_id_t *hash_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

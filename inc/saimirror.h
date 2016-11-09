@@ -36,18 +36,18 @@
 /**
  * @brief SAI type of mirroring
  */
-typedef enum _sai_mirror_type_t
+typedef enum _sai_mirror_session_type_t
 {
     /** Local span */
-    SAI_MIRROR_TYPE_LOCAL = 0,
+    SAI_MIRROR_SESSION_TYPE_LOCAL = 0,
 
     /** Remote span */
-    SAI_MIRROR_TYPE_REMOTE,
+    SAI_MIRROR_SESSION_TYPE_REMOTE,
 
     /** Enhanced Remote span */
-    SAI_MIRROR_TYPE_ENHANCED_REMOTE,
+    SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE,
 
-} sai_mirror_type_t;
+} sai_mirror_session_type_t;
 
 /**
  * @brief SAI type of encapsulation for RSPAN and ERSPAN
@@ -74,7 +74,7 @@ typedef enum _sai_mirror_session_attr_t
     /**
      * @brief Mirror type SPAN/RSPAN/ERSPAN
      *
-     * @type sai_mirror_type_t
+     * @type sai_mirror_session_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
@@ -115,7 +115,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_TPID,
 
@@ -124,7 +124,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      * @isvlan true
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_ID,
@@ -134,7 +134,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
 
@@ -143,13 +143,13 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_CFI,
 
     /*
      * All attributes below are Valid only for ERSPAN
-     * SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     * SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
 
     /**
@@ -157,16 +157,16 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_erspan_encapsulation_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
-    SAI_MIRROR_SESSION_ATTR_ENCAP_TYPE,
+    SAI_MIRROR_SESSION_ATTR_ERSPAN_ENCAPSULATION_TYPE,
 
     /**
      * @brief Tunnel IP header version
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_IPHDR_VERSION,
 
@@ -175,7 +175,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_TOS,
 
@@ -193,7 +193,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_SRC_IP_ADDRESS,
 
@@ -202,7 +202,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_DST_IP_ADDRESS,
 
@@ -211,7 +211,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_SRC_MAC_ADDRESS,
 
@@ -220,7 +220,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_DST_MAC_ADDRESS,
 
@@ -229,7 +229,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_TYPE_ENHANCED_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE,
 
@@ -244,6 +244,7 @@ typedef enum _sai_mirror_session_attr_t
  * @brief Create mirror session.
  *
  * @param[out] session_id Port mirror session id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
  *
@@ -252,6 +253,7 @@ typedef enum _sai_mirror_session_attr_t
  */
 typedef sai_status_t (*sai_create_mirror_session_fn)(
         _Out_ sai_object_id_t *session_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

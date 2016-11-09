@@ -122,6 +122,7 @@ typedef enum _sai_qos_map_attr_t
  * @brief Create Qos Map
  *
  * @param[out] qos_map_id Qos Map Id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -129,6 +130,7 @@ typedef enum _sai_qos_map_attr_t
  */
 typedef sai_status_t (*sai_create_qos_map_fn)(
         _Out_ sai_object_id_t *qos_map_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

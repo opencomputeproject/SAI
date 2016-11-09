@@ -117,6 +117,11 @@ typedef enum _sai_route_entry_attr_t
 typedef struct _sai_route_entry_t
 {
     /**
+     * @brief Switch ID
+     */
+    sai_object_id_t switch_id;
+
+    /**
      * @brief Virtual Router ID
      */
     sai_object_id_t vr_id;

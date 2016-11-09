@@ -380,7 +380,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    if ($val =~/^(true|false|SAI_\w+|\d+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
+    if ($val =~/^(true|false|NULL|SAI_\w+|\d+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
     {
         return $val;
     }
@@ -879,7 +879,7 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^SAI_NULL_OBJECT_ID$/;
 
-    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_INHERIT" if $default =~ /^inherit SAI_\w+$/ and $default =~ /_ATTR_/;
 
@@ -925,6 +925,10 @@ sub ProcessDefaultValue
         WriteSource "$val = { };";
     }
     elsif ($default =~ /^\d+$/ and $type =~ /sai_u?int\d+_t/)
+    {
+        WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
+    }
+    elsif ($default =~ /^NULL$/ and $type =~ /sai_pointer_t/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
@@ -1206,6 +1210,33 @@ sub ProcessSingleObjectType
         WriteSource "    .isvlan                        = $isvlan,";
 
         WriteSource "};";
+
+        # check enum attributes if their names are ending on enum name
+
+        if ($isenum eq "true" or $isenumlist eq "true")
+        {
+            my $en = uc($1) if $meta{type} =~/.*sai_(\S+)_t/;
+
+            next if $attr =~ /_${en}_LIST$/;
+            next if $attr =~ /_$en$/;
+
+            $attr =~/SAI_(\S+?)_ATTR_(\S+)/;
+
+            my $aot = $1;
+            my $aend = $1;
+
+            if ($en =~/^${aot}_(\S+)$/)
+            {
+                my $ending = $1;
+
+                next if $attr =~/_$ending$/;
+
+                LogError "enum starts by object type $aot but not ending on $ending in $en";
+
+            }
+
+            LogError "$meta{type} == $attr not ending on enum name $en";
+        }
     }
 };
 

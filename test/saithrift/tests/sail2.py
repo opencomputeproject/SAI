@@ -277,6 +277,7 @@ class L2FloodTest(sai_base_test.ThriftInterfaceDataPlane):
 class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         switch_init(self.client)
+        default_vlan = 1
         vlan_id = 10
         port1 = port_list[0]
         port2 = port_list[1]
@@ -284,25 +285,24 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
         port4 = port_list[3]
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
-        mac_action = 1
+        mac_action = SAI_PACKET_ACTION_FORWARD
 
         self.client.sai_thrift_create_vlan(vlan_id)
 
         lag_id1 = self.client.sai_thrift_create_lag([])
+
+        sai_thrift_vlan_remove_all_ports(self.client, default_vlan)
+
         lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
         lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
         lag_member_id3 = sai_thrift_create_lag_member(self.client, lag_id1, port3)
 
-        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_id, port1, SAI_VLAN_PORT_UNTAGGED)
-        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_id, port2, SAI_VLAN_PORT_UNTAGGED)
-        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_id, port3, SAI_VLAN_PORT_UNTAGGED)
-        vlan_member4 = sai_thrift_create_vlan_member(self.client, vlan_id, port4, SAI_VLAN_PORT_UNTAGGED)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_id, lag_id1, SAI_VLAN_PORT_UNTAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_id, port4, SAI_VLAN_PORT_UNTAGGED)
 
         attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
-        self.client.sai_thrift_set_port_attribute(port1, attr)
-        self.client.sai_thrift_set_port_attribute(port2, attr)
-        self.client.sai_thrift_set_port_attribute(port3, attr)
+        self.client.sai_thrift_set_port_attribute(lag_id1, attr)
         self.client.sai_thrift_set_port_attribute(port4, attr)
 
         sai_thrift_create_fdb(self.client, vlan_id, mac1, lag_id1, mac_action)
@@ -364,8 +364,6 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
-            self.client.sai_thrift_remove_vlan_member(vlan_member3)
-            self.client.sai_thrift_remove_vlan_member(vlan_member4)
 
             self.client.sai_thrift_remove_lag_member(lag_member_id1)
             self.client.sai_thrift_remove_lag_member(lag_member_id2)
@@ -373,11 +371,11 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_delete_vlan(vlan_id)
 
+            for port in sai_port_list:
+                sai_thrift_create_vlan_member(self.client, default_vlan, port, SAI_VLAN_PORT_UNTAGGED)
+
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
-            self.client.sai_thrift_set_port_attribute(port1, attr)
-            self.client.sai_thrift_set_port_attribute(port2, attr)
-            self.client.sai_thrift_set_port_attribute(port3, attr)
             self.client.sai_thrift_set_port_attribute(port4, attr)
 
 @group('l2')
@@ -400,7 +398,6 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
         switch_init(self.client)
         default_vlan = 1
         vlan_id = 10
-        default_vlan_members_list = []
         mac_list = []
         vlan_member_list = []
         ingress_port = 0
@@ -409,15 +406,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
             mac_list.append("00:00:00:00:00:%02x" %(i+1))
         mac_action = SAI_PACKET_ACTION_FORWARD
 
-        vlan_attr_list = self.client.sai_thrift_get_vlan_attribute(default_vlan)
-        attr_list = vlan_attr_list.attr_list
-        for attribute in attr_list:
-            if attribute.id == SAI_VLAN_ATTR_MEMBER_LIST:
-                for vlan_member in attribute.value.objlist.object_id_list:
-                    default_vlan_members_list.append(vlan_member)
-
-        for vlan_member in default_vlan_members_list:
-            self.client.sai_thrift_remove_vlan_member(vlan_member)
+        sai_thrift_vlan_remove_all_ports(self.client, default_vlan)
 
         self.client.sai_thrift_create_vlan(vlan_id)
         for i in range (0, len(port_list)-1):

@@ -106,6 +106,11 @@ typedef enum _sai_neighbor_entry_attr_t
  */
 typedef struct _sai_neighbor_entry_t
 {
+     /**
+     * @brief Switch ID
+     */
+    sai_object_id_t switch_id;
+    
     /**
      * @brief Router interface ID
      */
@@ -175,9 +180,11 @@ typedef sai_status_t (*sai_get_neighbor_attribute_fn)(
 /**
  * @brief Remove all neighbor entries
  *
+ * @param[in] switch_id Switch id
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(void);
+typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(
+        _In_ sai_object_id_t switch_id);
 
 /**
  *  @brief neighbor table methods, retrieved via sai_api_query()

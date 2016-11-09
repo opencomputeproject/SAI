@@ -241,6 +241,7 @@ typedef enum _sai_udf_group_attr_t
  * @brief Create UDF
  *
  * @param[out] udf_id UDF id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Aarray of attributes
  *
@@ -248,6 +249,7 @@ typedef enum _sai_udf_group_attr_t
  */
 typedef sai_status_t (*sai_create_udf_fn)(
         _Out_ sai_object_id_t *udf_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -291,6 +293,7 @@ typedef sai_status_t (*sai_get_udf_attribute_fn)(
  * @brief Create UDF match
  *
  * @param[out] udf_match_id UDF match id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -298,6 +301,7 @@ typedef sai_status_t (*sai_get_udf_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_udf_match_fn)(
         _Out_ sai_object_id_t *udf_match_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -341,6 +345,7 @@ typedef sai_status_t (*sai_get_udf_match_attribute_fn)(
  * @brief Create UDF group
  *
  * @param[out] udf_group_id UDF group id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -348,6 +353,7 @@ typedef sai_status_t (*sai_get_udf_match_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_udf_group_fn)(
         _Out_ sai_object_id_t *udf_group_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

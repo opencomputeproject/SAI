@@ -101,6 +101,7 @@ typedef enum _sai_hostif_trap_group_attr_t
  * @brief Create host interface trap group
  *
  * @param[out] hostif_trap_group_id Host interface trap group id
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -108,6 +109,7 @@ typedef enum _sai_hostif_trap_group_attr_t
  */
 typedef sai_status_t (*sai_create_hostif_trap_group_fn)(
         _Out_ sai_object_id_t *hostif_trap_group_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -410,6 +412,7 @@ typedef enum _sai_hostif_trap_attr_t
  * @brief Create host interface trap
  *
  * @param[out] hostif_trap_id Host interface trap id
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -417,6 +420,7 @@ typedef enum _sai_hostif_trap_attr_t
  */
 typedef sai_status_t (*sai_create_hostif_trap_fn)(
         _Out_ sai_object_id_t *hostif_trap_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -515,7 +519,7 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      * @flags CREATE_ONLY
      * @default SAI_HOSTIF_TRAP_CHANNEL_CB
      */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_CHANNEL = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_HOSTIF_TRAP_CHANNEL = SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
 
     /**
      * @brief File descriptor
@@ -645,6 +649,7 @@ typedef enum _sai_hostif_attr_t
  * @brief Create host interface
  *
  * @param[out] hif_id Host interface id
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Aarray of attributes
  *
@@ -652,6 +657,7 @@ typedef enum _sai_hostif_attr_t
  */
 typedef sai_status_t(*sai_create_hostif_fn)(
         _Out_ sai_object_id_t *hif_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -726,7 +732,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_hostif_trap_type_t
      * @flags READ_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
 
     /**
      * @brief User-Defined Trap ID (for receive-only)
@@ -734,7 +740,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_hostif_user_defined_trap_id_t
      * @flags READ_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_USER_TRAP_ID,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_USER_DEFINED_TRAP_ID,
 
     /**
      * @brief Ingress port (for receive-only)
@@ -760,11 +766,11 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_hostif_tx_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_TX_TYPE,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE,
 
     /**
      * @brief Egress port or
-     * (MANDATORY_ON_SEND when #SAI_HOSTIF_PACKET_ATTR_TX_TYPE == #SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS)
+     * (MANDATORY_ON_SEND when #SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == #SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS)
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
      * Applicable for use-case like SAMPLEPACKET traps
@@ -772,7 +778,7 @@ typedef enum _sai_hostif_packet_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_HOSTIF_PACKET_ATTR_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
+     * @condition SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
      */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
 
@@ -825,12 +831,14 @@ typedef sai_status_t(*sai_send_hostif_packet_fn)(
 /**
  * @brief Hostif receive callback
  *
+ * @param[in] switch_id Switch Object ID 
  * @param[in] buffer Packet buffer
  * @param[in] buffer_size Actual packet size in bytes
  * @param[in] attr_count Nnumber of attributes
  * @param[in] attr_list Array of attributes
  */
 typedef void(*sai_packet_event_notification_fn)(
+        _In_ sai_object_id_t switch_id,
         _In_ const void *buffer,
         _In_ sai_size_t buffer_size,
         _In_ uint32_t attr_count,

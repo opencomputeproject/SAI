@@ -120,6 +120,7 @@ typedef enum _sai_samplepacket_attr_t
  * @brief Create samplepacket session.
  *
  * @param[out] session_id Samplepacket session id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
  *
@@ -128,6 +129,7 @@ typedef enum _sai_samplepacket_attr_t
  */
 typedef sai_status_t (*sai_create_samplepacket_session_fn)(
         _Out_ sai_object_id_t *session_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

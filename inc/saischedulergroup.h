@@ -122,6 +122,7 @@ typedef enum _sai_scheduler_group_attr_t
  * @brief Create Scheduler group
  *
  * @param[out] scheduler_group_id Scheudler group id
+ * @param[in] switch_id The Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -129,6 +130,7 @@ typedef enum _sai_scheduler_group_attr_t
  */
 typedef sai_status_t (*sai_create_scheduler_group_fn)(
         _Out_ sai_object_id_t *scheduler_group_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
