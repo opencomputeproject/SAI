@@ -58,6 +58,28 @@ typedef enum _sai_acl_stage_t
 
 } sai_acl_stage_t;
 
+/**
+ * @brief Attribute data for SAI_ACL_TABLE_ATTR_BIND_POINT
+ */
+typedef enum _sai_acl_bind_point_t
+{
+    /** Port Bind Point */
+    SAI_ACL_BIND_POINT_PORT,
+
+    /** LAG Bind Point */
+    SAI_ACL_BIND_POINT_LAG,
+
+    /** VLAN Bind Point */
+    SAI_ACL_BIND_POINT_VLAN,
+
+    /** RIF Bind Point */
+    SAI_ACL_BIND_POINT_ROUTER_INTF,
+
+    /** SWITCH Bind Point */
+    SAI_ACL_BIND_POINT_SWITCH
+
+} sai_acl_bind_point_t;
+
 typedef enum _sai_acl_ip_type_t
 {
     /** Don't care */
@@ -223,6 +245,14 @@ typedef enum _sai_acl_table_attr_t
     /** ACL stage [sai_acl_stage_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY) */
     SAI_ACL_TABLE_ATTR_STAGE,
+
+    /**
+     * @brief List of ACL bind point where this ACL can be applied
+     *
+     * @type sai_acl_bind_point_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_ACL_TABLE_ATTR_BIND_POINT,
 
     /** Priority [sai_uint32_t]
      * (MANDATORY_ON_CREATE|CREATE_ONLY)
