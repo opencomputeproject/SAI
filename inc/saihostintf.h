@@ -153,7 +153,7 @@ typedef sai_status_t(*sai_get_hostif_trap_group_attribute_fn)(
 /**
 * @brief Host interface user defined trap type table range
 */
-#define SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE 0x1
+#define SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE 0x100
 
 /**
  * @brief Host interface trap type
