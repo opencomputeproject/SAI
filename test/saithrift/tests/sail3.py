@@ -1518,6 +1518,11 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     
     
     def setup_ecmp_lag_group(self, lag_size):
+        self.lag = self.client.sai_thrift_create_lag([])
+        sai_thrift_create_lag_member(self.client, self.lag, port_list[1])
+        self.lag_rif = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lag, 0, self.v4_enabled, self.v6_enabled, '')
+        sai_thrift_create_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
+        
         for i in range(self.first_changing_port,lag_size):
             self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[i]))
         for i in range(lag_size,self.total_changing_ports):
@@ -1530,7 +1535,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.0.0", self.ip_mask, self.nhop_group)    
 
 
-    def teardown_rifs(self, lag_size):
+    def teardown_ecmp_lag_group(self, lag_size):
         sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.0.0", self.ip_mask, self.nhop_group)    
         self.client.sai_thrift_remove_next_hop_from_group(self.nhop_group, self.nhops)
         self.client.sai_thrift_remove_next_hop_group(self.nhop_group)
@@ -1546,6 +1551,11 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         for lag_member in self.lag_members:
             self.client.sai_thrift_remove_lag_member(lag_member)
         del self.lag_members[:]
+        sai_thrift_remove_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
+        self.client.sai_thrift_remove_router_interface(self.lag_rif)
+        self.client.sai_thrift_remove_lag(self.lag)
+
+
     
 
     def polarizationCheck(self,packets,avg):
@@ -1623,13 +1633,13 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         For sai server, testing different lags with router
         ---- Test for 16 ports minimun ----
         Steps
-        1. Create virtual router, lag with rif and rif for src port
-        2. add ports to the lag and the rest of the ports connect to rifs
+        1. Create virtual router, and rif for src port
+        2. create a lag and lag rif,add ports to the lag and the rest of the ports connect to rifs
         3. configure neighbors, nhops for all of the rifs
         4. make ecmp route with all of the nhops
         5. send packets from src port
         6. check polarization check in the lag and in the ecmp
-        7. remove rifs, neighbors, nhops, lag members and route
+        7. remove rifs, neighbors, nhops, lag members, lag and route
         8. repeat steps 3-7 with differnt numbers of lag members and rifs
         8. clean up.
         """
@@ -1644,25 +1654,17 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
         rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
-        self.lag = self.client.sai_thrift_create_lag([])
-        sai_thrift_create_lag_member(self.client, self.lag, port_list[1])
-
-        self.lag_rif = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lag, 0, self.v4_enabled, self.v6_enabled, '')
-        #create neighbor
-        sai_thrift_create_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
+        
         try:
             for lag_size in range(self.first_changing_port,self.total_changing_ports):
                 print "testing with " +str(lag_size) + " lag members"
                 self.setup_ecmp_lag_group(lag_size)
                 self.send_and_verify_packets(lag_size)
-                self.teardown_rifs(lag_size)
+                self.teardown_ecmp_lag_group(lag_size)
         finally:
 
             #in case of an exception in the send_and_verify_packets
-            self.teardown_rifs(self.total_dst_port)#check what number to send for tear down
-            sai_thrift_remove_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
+            self.teardown_ecmp_lag_group(self.total_dst_port)#check what number to send for tear down
             self.client.sai_thrift_remove_router_interface(rif_port_id)
-            self.client.sai_thrift_remove_router_interface(self.lag_rif)
             self.client.sai_thrift_remove_virtual_router(self.vr_id)
-            self.client.sai_thrift_remove_lag(self.lag)
             print "END OF TEST"
