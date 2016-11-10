@@ -246,7 +246,7 @@ typedef enum _sai_acl_table_group_attr_t
      * @type sai_acl_stage_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_TABLE_GROUP_ATTR_STAGE = SAI_ACL_TABLE_GROUP_ATTR_START,
+    SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE = SAI_ACL_TABLE_GROUP_ATTR_START,
 
     /**
      * @brief List of ACL bind points where this group will be applied
@@ -255,7 +255,7 @@ typedef enum _sai_acl_table_group_attr_t
      * @flags CREATE_ONLY
      * @default empty
      */
-    SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT_LIST,
+    SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_LIST,
 
     /**
      * @brief Priority
@@ -266,7 +266,9 @@ typedef enum _sai_acl_table_group_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY
+     * @default 0
      */
+
     SAI_ACL_TABLE_GROUP_ATTR_PRIORITY,
 
     /**
@@ -316,7 +318,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default empty
      */
-    SAI_ACL_TABLE_ATTR_BIND_POINT_LIST,
+    SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_LIST,
 
     /**
      * @brief Priority
