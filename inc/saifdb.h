@@ -225,3 +225,17 @@ typedef void (*sai_fdb_event_notification_fn)(
 
 /**
  * @brief FDB method table retrieved with sai_api_query()
+ */
+typedef struct _sai_fdb_api_t
+{
+    sai_create_fdb_entry_fn                     create_fdb_entry;
+    sai_remove_fdb_entry_fn                     remove_fdb_entry;
+    sai_set_fdb_entry_attribute_fn              set_fdb_entry_attribute;
+    sai_get_fdb_entry_attribute_fn              get_fdb_entry_attribute;
+
+} sai_fdb_api_t;
+
+/**
+ * @}
+ */
+#endif /** __SAIFDB_H_ */
