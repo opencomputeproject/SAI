@@ -1534,13 +1534,19 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         for i in range(self.total_changing_ports - first_rif_port):
             sai_thrift_create_neighbor(self.client, self.addr_family, self.port_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
             self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.%s.1" % str(i+1), self.port_rifs[i]))
+            sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.1" % str(i+1), '255.255.255.0', self.port_rifs[i])
+        sai_thrift_create_route(self.client, self.vr_id,self.addr_family, "10.10.16.1", '255.255.255.0', self.lag_rif)        
         self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.16.1" , self.lag_rif))
         self.nhop_group = sai_thrift_create_next_hop_group(self.client, self.nhops)
-        sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.0.0", self.ip_mask, self.nhop_group)    
+        sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.20.0.0", self.ip_mask, self.nhop_group)
+        
 
 
     def teardown_ecmp_lag_group(self, first_rif_port):
-        sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.0.0", self.ip_mask, self.nhop_group)    
+        sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.20.0.0", self.ip_mask, self.nhop_group)
+        sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.16.1", '255.255.255.0', self.lag_rif)        
+        for i in range(self.total_changing_ports - first_rif_port):
+            sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.%s.1" % str(i+1), '255.255.255.0', self.port_rifs[i])
         self.client.sai_thrift_remove_next_hop_from_group(self.nhop_group, self.nhops)
         self.client.sai_thrift_remove_next_hop_group(self.nhop_group)
         for nhop in self.nhops:
@@ -1583,7 +1589,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         for i in xrange(IP_LAST_WORD_RANGE):
                 for j in xrange(IP_2ND_LAST_WORD_RANGE):
                     ip_src = '10.0.' + str(j) + '.' + str(i+1)
-                    ip_dst = '10.10.' + str(j+1) + '.1'
+                    ip_dst = '10.20.' + str(j+1) + '.1'
                     pkt = simple_tcp_packet(
                                             eth_dst=router_mac,
                                             eth_src=src_mac,
