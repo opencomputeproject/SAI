@@ -1500,23 +1500,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     vr_id = 0
     mac_action = SAI_PACKET_ACTION_FORWARD
     src_port = 0
-    mac_pool = ['00:11:22:33:44:50',
-               '00:11:23:33:44:51',
-               '00:11:24:33:44:52',
-               '00:11:25:33:44:53',
-               '00:11:26:33:44:54',
-               '00:11:27:33:44:55',
-               '00:11:28:33:44:56',
-               '00:11:29:33:44:57',
-               '00:11:30:33:44:58',
-               '00:11:31:33:44:59',
-               '00:11:32:33:44:60',
-               '00:11:33:33:44:61',
-               '00:11:34:33:44:62',
-               '00:11:35:33:44:63',
-               '00:11:36:33:44:64',
-               '00:11:37:33:44:65',
-               '00:11:38:33:44:66']
+    mac_pool = []
     
     
     def setup_ecmp_lag_group(self, first_rif_port):
@@ -1525,18 +1509,16 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_lag_member(self.client, self.lag, port_list[1])
         for i in range(self.first_changing_port,first_rif_port):
             self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[i]))
-        #adding router interfaces
         self.lag_rif = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lag, 0, self.v4_enabled, self.v6_enabled, '')
+        sai_thrift_create_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.0.1", self.mac_pool[15])
+        sai_thrift_create_route(self.client, self.vr_id,self.addr_family, "10.10.0.1", '255.255.255.0', self.lag_rif)        
+        self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.0.1" , self.lag_rif))
         for i in range(first_rif_port,self.total_changing_ports):
             self.port_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, port_list[i], 0, self.v4_enabled, self.v6_enabled, ''))
-        #adding neighbors
-        sai_thrift_create_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
-        for i in range(self.total_changing_ports - first_rif_port):
+        for i in range(len(self.port_rifs)):
             sai_thrift_create_neighbor(self.client, self.addr_family, self.port_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
             self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.%s.1" % str(i+1), self.port_rifs[i]))
             sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.1" % str(i+1), '255.255.255.0', self.port_rifs[i])
-        sai_thrift_create_route(self.client, self.vr_id,self.addr_family, "10.10.16.1", '255.255.255.0', self.lag_rif)        
-        self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.16.1" , self.lag_rif))
         self.nhop_group = sai_thrift_create_next_hop_group(self.client, self.nhops)
         sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.20.0.0", self.ip_mask, self.nhop_group)
         
@@ -1544,7 +1526,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
 
     def teardown_ecmp_lag_group(self, first_rif_port):
         sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.20.0.0", self.ip_mask, self.nhop_group)
-        sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.16.1", '255.255.255.0', self.lag_rif)        
+        sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.0.1", '255.255.255.0', self.lag_rif)        
         for i in range(self.total_changing_ports - first_rif_port):
             sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.%s.1" % str(i+1), '255.255.255.0', self.port_rifs[i])
         self.client.sai_thrift_remove_next_hop_from_group(self.nhop_group, self.nhops)
@@ -1561,7 +1543,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         for lag_member in self.lag_members:
             self.client.sai_thrift_remove_lag_member(lag_member)
         del self.lag_members[:]
-        sai_thrift_remove_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.16.1", self.mac_pool[15])
+        sai_thrift_remove_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.0.1", self.mac_pool[15])
         self.client.sai_thrift_remove_router_interface(self.lag_rif)
         self.client.sai_thrift_remove_lag(self.lag)
 
@@ -1661,6 +1643,8 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         random.seed(1)
         switch_init(self.client)
         self.src_port = port_list[0]
+        for i in range (self.total_dst_port+1):
+            self.mac_pool.append('00:11:22:33:44:'+str(50+i))
 
         self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
         rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
