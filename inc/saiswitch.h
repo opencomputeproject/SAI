@@ -1085,18 +1085,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
 
     /**
-     * @brief Set Switch Port event notification callback function passed to the adapter.
-     *
-     * Use sai_port_event_notification_fn as notification function.
-     *
-     * @type sai_pointer_t
-     * @flags CREATE_AND_SET
-     * @default NULL
-     */
-    SAI_SWITCH_ATTR_PORT_EVENT_NOTIFY,
-
-    /**
-     * @brief Set Switch Port event notification callback function passed to the adapter.
+     * @brief Set Switch Received packet event notification callback function passed to the adapter.
      *
      * Use sai_packet_event_notification_fn as notification function.
      *
