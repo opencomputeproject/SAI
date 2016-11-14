@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIGROUP SAI - IPMC group specific API definitions
+ * @defgroup SAIIPMCGROUP SAI - IPMC group specific API definitions
  *
  * @{
  */
