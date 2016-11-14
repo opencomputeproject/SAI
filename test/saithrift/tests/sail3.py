@@ -692,6 +692,7 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
         port1 = port_list[0]
         port2 = port_list[1]
         port3 = port_list[2]
+        default_vlan = 1
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -701,6 +702,8 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
         ip_addr1_subnet = '10.10.10.0'
         ip_mask1 = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
+
+        sai_thrift_vlan_remove_all_ports(self.client, default_vlan)
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
@@ -754,9 +757,12 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
         port1 = port_list[0]
         port2 = port_list[1]
         port3 = port_list[2]
+        default_vlan = 1
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
+
+        sai_thrift_vlan_remove_all_ports(self.client, default_vlan)
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
@@ -818,6 +824,7 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         port5 = port_list[4]
         port6 = port_list[5]
         port7 = port_list[6]
+        default_vlan = 1
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -831,6 +838,8 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         dmac1 = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:56'
         dmac3 = '00:11:22:33:44:57'
+
+        sai_thrift_vlan_remove_all_ports(self.client, default_vlan)
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
