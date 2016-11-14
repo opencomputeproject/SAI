@@ -984,6 +984,42 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_HW_PROFILE_ID,
 
     /**
+     * @brief Port EEE Configuration
+     *
+     * Energy Efficient Ethernet(EEE) is an IEEE 802.3 az standard aiming to 
+     * reduce power consumptions on Ethernet ports (native copper ports). 
+     * Enable the EEE on port level
+     *
+     * @type bool 
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_EEE_ENABLE,
+
+    /**
+     * @brief Port EEE IDLE time configuration
+     *
+     * Time (in microsecs) to move to Low power state (No traffic), at the end of which MAC transitions to Low power state.
+     * MAX value set more benefit.
+     *
+     * @type sai_uint16_t 
+     * @flags CREATE_AND_SET
+     * @default 2500
+     */
+    SAI_PORT_ATTR_EEE_IDLE_TIME,
+    
+    /**
+     * @brief Port EEE Wakeup time configuration
+     * 
+     * Time(in microsecs) to wait before transmitter is leaving Low Power Mode State. Min value set avoid latency.
+     *
+     * @type sai_uint16_t 
+     * @flags CREATE_AND_SET
+     * @default 5 
+     */
+    SAI_PORT_ATTR_EEE_WAKE_TIME,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -1340,6 +1376,22 @@ typedef enum _sai_port_stat_t
     /** sai port stat pfc 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
+    /** Number of times port state changed from 
+     * high power mode to low power mode in TX direction [uint64_t] */
+    SAI_PORT_STAT_EEE_TX_EVENT_COUNT,
+
+    /** Number of times port state changed from 
+     * high power mode to low power mode in RX direction [uint64_t] */
+    SAI_PORT_STAT_EEE_RX_EVENT_COUNT,
+
+    /** Port Low power mode duration(micro secs) in TX direction [uint64_t].
+     * This Duration is accumulative since EEE enable on port/from last clear stats*/
+    SAI_PORT_STAT_EEE_TX_DURATION,
+
+    /** Port Low power mode duration(micro secs) in RX direction [uint64_t] 
+     * This Duration is accumulative since EEE enable on port/from last clear stats*/
+    SAI_PORT_STAT_EEE_RX_DURATION,
+
 } sai_port_stat_t;
 
 /**
@@ -1357,7 +1409,6 @@ typedef sai_status_t (*sai_create_port_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
-
 /**
  * @brief Remove port
  *
