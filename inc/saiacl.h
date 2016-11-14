@@ -231,6 +231,19 @@ typedef enum _sai_acl_action_type_t
 } sai_acl_action_type_t;
 
 /**
+ * @brief Attribute data for SAI_ACL_TABLE_GROUP_ATTR_TYPE
+ */
+typedef enum _sai_acl_table_group_type_t
+{
+    /** SEQUENTIAL */
+    SAI_ACL_TABLE_GROUP_TYPE_SEQUENTIAL,
+
+    /** PARALLEL */
+    SAI_ACL_TABLE_GROUP_TYPE_PARALLEL,
+
+} sai_acl_table_group_type_t;
+
+/**
  * @brief Attribute Id for sai_acl_table_group
  */
 typedef enum _sai_acl_table_group_attr_t
@@ -256,6 +269,25 @@ typedef enum _sai_acl_table_group_attr_t
      * @default empty
      */
     SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_LIST,
+
+    /**
+     * @brief ACL table group type
+     *
+     * ACL table group type represents the way various ACL tables within this 
+     * ACL table group perform their lookups. There are two optional values : 
+     * Sequential - All the ACL tables are looked up in a sequential order , 
+     * which is based on the ACL table priorities and only one acl entry is matched
+     * with its corresponding acl entry action applied. In case two ACL tables
+     * have the same priority they are looked up on a first come basis.
+     * Parallel - All the ACL tables within the ACL table groups are looked up 
+     * in parallel and non-conflicting actions are resolved and applied from 
+     * multiple matched ACL entries (each from different ACL tables of this group).
+     *
+     * @type sai_uint32_t sai_acl_table_group_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_ACL_TABLE_GROUP_TYPE_SEQUENTIAL
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_TYPE,
 
     /**
      * @brief End of attributes
