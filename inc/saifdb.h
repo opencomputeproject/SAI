@@ -73,6 +73,9 @@ typedef enum _sai_fdb_event_t
     /** FDB entry aged */
     SAI_FDB_EVENT_AGED,
 
+    /** FDB entry move */
+    SAI_FDB_EVENT_MOVE,
+
     /** FDB entry flushd */
     SAI_FDB_EVENT_FLUSHED,
 
