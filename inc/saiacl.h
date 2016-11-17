@@ -342,6 +342,7 @@ typedef enum _sai_acl_table_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_ONLY
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_ACL_TABLE_ATTR_GROUP_ID,
 

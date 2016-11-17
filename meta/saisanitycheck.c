@@ -521,12 +521,6 @@ void check_attr_default_required(
 
     if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
     {
-        if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
-        {
-            /* object id may not have default value */
-            return;
-        }
-
         if (sai_metadata_is_acl_field_or_action(md))
         {
             return;
@@ -556,7 +550,6 @@ void check_attr_default_required(
         case SAI_DEFAULT_VALUE_TYPE_ATTR_RANGE:
         case SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL:
         case SAI_DEFAULT_VALUE_TYPE_VENDOR_SPECIFIC:
-        case SAI_DEFAULT_VALUE_TYPE_NONE:
         case SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST:
 
             if (md->defaultvalue != NULL)
@@ -853,9 +846,13 @@ void check_attr_conditions(
     {
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
 
-            if (md->objecttype != SAI_OBJECT_TYPE_MIRROR_SESSION)
+            /* condition needs to be changed to validonly since flags should be CREATE_AND_SET */
+
+            if (md->objecttype != SAI_OBJECT_TYPE_MIRROR_SESSION &&
+                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_TRAP &&
+                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP)
             {
-                META_ASSERT_FAIL(md, "marked as conditional on non mirror session, but invalid creation flags: 0x%u", md->flags);
+                META_ASSERT_FAIL(md, "marked as conditional on non mirror session /hostif_trap/hostif_user_defined_trap, but invalid creation flags: 0x%u", md->flags);
             }
 
             break;
