@@ -16,6 +16,8 @@
 Thrift SAI interface L3 tests
 """
 import socket
+import sys
+from struct import pack, unpack
 
 from switch import *
 
@@ -182,6 +184,86 @@ class L3IPv6HostTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
 
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+def ip6_to_integer(ip6):
+    ip6 = socket.inet_pton(socket.AF_INET6, ip6)
+    a, b = unpack(">QQ", ip6)
+    return (a << 64) | b
+
+def integer_to_ip6(ip6int):
+    a = (ip6int >> 64) & ((1 << 64) - 1)
+    b = ip6int & ((1 << 64) - 1)
+    return socket.inet_ntop(socket.AF_INET6, pack(">QQ", a, b))
+        
+@group('l3')
+class L3IPv6PrefixTest(sai_base_test.ThriftInterfaceDataPlane):
+    #Test packet forwarding for all IPv6 prefix lenghs (from 127 to 1)
+    def runTest(self):
+        print
+        switch_init(self.client)
+        port1 = port_list[1]
+        port2 = port_list[2]
+        port3 = port_list[3]
+        v4_enabled = 1
+        v6_enabled = 1
+        mac = ''
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
+        addr_family = SAI_IP_ADDR_FAMILY_IPV6
+        
+        #Create default route
+        sai_thrift_create_route(self.client, vr_id, addr_family, '::', '::', rif_id2, SAI_PACKET_ACTION_DROP)
+        
+        #Create neighbor and neighbor subnet
+        ip_addr1 = '2000:aaaa::1'
+        dmac1 = '00:11:22:33:44:55'
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, '2000:aaaa::', 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff0', rif_id1)
+        
+        dest = '1234:5678:9abc:def0:4422:1133:5577:99aa'
+        dest_int = ip6_to_integer(dest)   
+        try:
+            for i in range(128):
+                mask_int = ( ( 1 << (128-i) ) - 1 ) << i
+                net_int = dest_int & mask_int
+                mask = integer_to_ip6(mask_int)
+                net = integer_to_ip6(net_int)
+                
+                pkt = simple_tcpv6_packet( 
+                                        eth_dst=router_mac,
+                                        eth_src='00:22:22:22:22:22',
+                                        ipv6_dst=dest,
+                                        ipv6_src='2000:bbbb::1',
+                                        ipv6_hlim=64)
+                exp_pkt = simple_tcpv6_packet(
+                                        eth_dst='00:11:22:33:44:55',
+                                        eth_src=router_mac,
+                                        ipv6_dst=dest,
+                                        ipv6_src='2000:bbbb::1',
+                                        ipv6_hlim=63)
+
+                print "Test packet with dstaddr " + dest + ' sent to ' + net + '/' + str(128-i)
+                sai_thrift_create_route(self.client, vr_id, addr_family, net, mask, nhop1)
+                send_packet(self, 2, str(pkt))
+                verify_packets(self, exp_pkt, [1])
+                sai_thrift_remove_route(self.client, vr_id, addr_family, net, mask, None)
+                mask=""
+                send_packet(self, 2, str(pkt))
+                verify_no_packet(self, exp_pkt, 1)
+        finally:
+            if mask!="":
+                sai_thrift_remove_route(self.client, vr_id, addr_family, net, mask, None)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, '2000:aaaa::', 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff0', None)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, '::', '::', None)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+            
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
 @group('l3')
