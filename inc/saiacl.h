@@ -258,20 +258,6 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_LIST,
 
     /**
-     * @brief Priority
-     *
-     * Value must be in the range defined in
-     * [SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MINIMUM_PRIORITY,
-     * SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MAXIMUM_PRIORITY]
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_ONLY
-     * @default 0
-     */
-
-    SAI_ACL_TABLE_GROUP_ATTR_PRIORITY,
-
-    /**
      * @brief End of attributes
      */
     SAI_ACL_TABLE_GROUP_ATTR_END,

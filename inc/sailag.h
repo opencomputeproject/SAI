@@ -55,34 +55,34 @@ typedef enum _sai_lag_attr_t
     /** READ_WRITE */
 
     /** 
-     * @brief LAG bind point for ingress ACL objects
+     * @brief LAG bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl tables/groups on a LAG. Enable/Update 
-     * ingress ACL table(s)/group(s) filtering by assigning the list of valid 
-     * objects. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
+     * Bind (or unbind) an ingress acl table or acl group on a LAG. Enable/Update 
+     * ingress ACL table or ACL group filtering by assigning the list of valid 
+     * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
      * in the attribute value. 
      *
-     * @type sai_object_list_t
+     * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_LAG_ATTR_INGRESS_ACL_LIST,
+    SAI_LAG_ATTR_INGRESS_ACL,
 
     /** 
-     * @brief LAG bind point for egress ACL objects
+     * @brief LAG bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl tables/groups on a LAG. Enable/Update 
-     * egress ACL table(s)/group(s) filtering by assigning the list of valid 
-     * objects. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
+     * Bind (or unbind) an egress acl tables or acl groups on a LAG. Enable/Update 
+     * egress ACL table or ACL group filtering by assigning the list of valid 
+     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
      * in the attribute value. 
      *
-     * @type sai_object_list_t
+     * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_LAG_ATTR_EGRESS_ACL_LIST,
+    SAI_LAG_ATTR_EGRESS_ACL,
 
     /**
      * @brief End of attributes

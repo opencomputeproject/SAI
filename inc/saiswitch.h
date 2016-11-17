@@ -488,47 +488,34 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
     /** 
-     * @brief Switch/Global bind point for ingress ACL objects
+     * @brief Switch/Global bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl tables/groups globally. Enable/Update 
-     * ingress ACL table(s)/group(s) filtering by assigning the list of valid 
-     * objects. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
+     * Bind (or unbind) an ingress acl table or acl group globally. Enable/Update 
+     * ingress ACL table or ACL group filtering by assigning the list of valid 
+     * object id . Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
      * in the attribute value. 
      *
-     * @type sai_object_list_t
+     * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default SAI_NULL_OBJECT_ID
      */
- 
-    SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL_LIST,
+    SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL,
 
     /** 
-     * @brief Switch/Global bind point for egress ACL objects
+     * @brief Switch/Global bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl tables/groups globally. Enable/Update 
-     * egress ACL table(s)/group(s) filtering by assigning the list of valid 
-     * objects. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
+     * Bind (or unbind) an egress acl tables or acl group globally. Enable/Update 
+     * egress ACL table or ACL group filtering by assigning the list of valid 
+     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
      * in the attribute value. 
      *
-     * @type sai_object_list_t
+     * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL_LIST,
-
-    /** 
-     * @brief ACL object supports more than one ACL table (or group) at one bind point
-     *
-     * Must return bool (true) if supported or (false) if not supported. If a list
-     * of ACL table(s) or group(s) can be configured at a single bind point.
-     *
-     * @type bool
-     * @flags READ_ONLY
-     *
-     */
-    SAI_SWITCH_ATTR_ACL_LIST_SUPPORTED,
+    SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL,
 
     /** Maximum traffic classes limit [sai_uint8_t] */
     /**
