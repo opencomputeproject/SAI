@@ -1414,8 +1414,6 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
             case SAI_ACL_TABLE_ATTR_STAGE:
-                attr_list[i].value.u32 = attribute.value.u32;
-                break;
             case SAI_ACL_TABLE_ATTR_PRIORITY:
                 attr_list[i].value.u32 = attribute.value.u32;
                 break;
@@ -1540,10 +1538,10 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
                 attr_list[i].value.aclfield.mask.u16 = attribute.value.aclfield.mask.u16;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
+                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
+                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER:
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
@@ -1552,7 +1550,7 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_PACKET_ACTION:
-                attr_list[i].value.aclfield.data.u8 = attribute.value.aclfield.data.u8;
+                attr_list[i].value.aclaction.parameter.u32 = attribute.value.aclaction.parameter.u32;
                 break;
               default:
                 break;
