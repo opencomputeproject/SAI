@@ -145,76 +145,6 @@ typedef enum _sai_fdb_entry_attr_t
 
 } sai_fdb_entry_attr_t;
 
-/**
- * @brief FDB Flush entry type.
- */
-typedef enum _sai_fdb_flush_entry_type_t
-{
-    /** Flush dynamic FDB entries */
-    SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC,
-
-    /** Flush static FDB entries */
-    SAI_FDB_FLUSH_ENTRY_TYPE_STATIC,
-
-} sai_fdb_flush_entry_type_t;
-
-/**
- * @brief Attribute for FDB flush API to specify the type of FDB entries being flushed.
- *
- * For example, if you want to flush all static entries, set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE
- * = #SAI_FDB_FLUSH_ENTRY_TYPE_STATIC. If you want to flush both static and dynamic entries,
- * then there is no need to specify the #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE attribute.
- * The API uses AND operation when multiple attributes are specified. For
- * exmaple,
- * 1) Flush all entries in fdb table - Do not specify any attribute
- * 2) Flush all entries by port - Set #SAI_FDB_FLUSH_ATTR_PORT_ID
- * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_VLAN_ID
- * 4) Flush all entries by port and VLAN - Set #SAI_FDB_FLUSH_ATTR_PORT_ID and
- *    #SAI_FDB_FLUSH_ATTR_VLAN_ID
- * 5) Flush all static entries by port and VLAN - Set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
- *    #SAI_FDB_FLUSH_ATTR_PORT_ID, and #SAI_FDB_FLUSH_ATTR_VLAN_ID
- */
-typedef enum _sai_fdb_flush_attr_t
-{
-    /**
-     * @brief Start of attributes
-     */
-    SAI_FDB_FLUSH_ATTR_START,
-
-    /**
-     * @brief Flush based on port
-     *
-     * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
-     * @flags CREATE_ONLY
-     */
-    SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
-
-    /**
-     * @brief Flush based on VLAN
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_ONLY
-     * @isvlan true
-     * @default 1
-     */
-    SAI_FDB_FLUSH_ATTR_VLAN_ID,
-
-    /**
-     * @brief Flush based on entry type
-     *
-     * @type sai_fdb_flush_entry_type_t
-     * @flags CREATE_ONLY
-     * @default SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC
-     */
-    SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
-
-    /**
-     * @brief End of attributes
-     */
-    SAI_FDB_FLUSH_ATTR_END,
-
-} sai_fdb_flush_attr_t;
 
 /**
  * @brief Notification data format received from SAI FDB callback
@@ -285,19 +215,6 @@ typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
-/**
- * @brief Remove all FDB entries by attribute set in sai_fdb_flush_attr
- *
- * @param[in] switch_id Switch object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
- */
-typedef sai_status_t (*sai_flush_fdb_entries_fn)(
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief FDB notifications
@@ -318,7 +235,6 @@ typedef struct _sai_fdb_api_t
     sai_remove_fdb_entry_fn                     remove_fdb_entry;
     sai_set_fdb_entry_attribute_fn              set_fdb_entry_attribute;
     sai_get_fdb_entry_attribute_fn              get_fdb_entry_attribute;
-    sai_flush_fdb_entries_fn                    flush_fdb_entries;
 
 } sai_fdb_api_t;
 
