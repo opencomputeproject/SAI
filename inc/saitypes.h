@@ -557,6 +557,43 @@ typedef struct _sai_attribute_t {
 } sai_attribute_t;
 
 /**
+ * @brief Bulk objects creation.
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_count Number of objects to create
+ * @param[out] object_id List of object ids returned
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *         of attribute for each object to create.
+ *
+ * @param[in] attrs List of attributes for every object.
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are created. When
+ * there is failure, none of the objects are created, and failure code is returned.
+ */
+
+typedef sai_status_t (*sai_bulk_object_create_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t object_count,
+        _Out_ sai_object_id_t *object_id,
+        _In_ uint32_t *attr_count,
+        _In_ sai_attribute_t **attrs);
+
+/**
+ * @brief Bulk objects removal.
+ *
+ * @param[in] object_count Number of objects to create
+ * @param[in] object_id List of object ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed. When
+ * there is failure, none of the objects are removed, and failure code is returned.
+ */
+
+typedef sai_status_t (*sai_bulk_object_remove_fn)(
+        _In_ uint32_t object_count,
+        _In_ sai_object_id_t *object_id);
+
+
+/**
  * @}
  */
 #endif /** __SAITYPES_H_ */
