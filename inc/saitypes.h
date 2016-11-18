@@ -566,9 +566,11 @@ typedef struct _sai_attribute_t {
  *         of attribute for each object to create.
  *
  * @param[in] attrs List of attributes for every object.
+ * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
  *
- * @return #SAI_STATUS_SUCCESS on success when all objects are created. When
- * there is failure, none of the objects are created, and failure code is returned.
+ * @return #SAI_STATUS_SUCCESS on success when all objects are created or #SAI_STATUS_FAILURE when
+ * any of the objects fails to create. When there is failure, Caller is expected to go through the
+ * list of returned statuses to find out which fails and which succeeds.
  */
 
 typedef sai_status_t (*sai_bulk_object_create_fn)(
@@ -576,21 +578,25 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
         _In_ uint32_t object_count,
         _Out_ sai_object_id_t *object_id,
         _In_ uint32_t *attr_count,
-        _In_ sai_attribute_t **attrs);
+        _In_ sai_attribute_t **attrs,
+        _Out_ sai_status_t *object_statuses);
 
 /**
  * @brief Bulk objects removal.
  *
  * @param[in] object_count Number of objects to create
  * @param[in] object_id List of object ids
+ * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
  *
- * @return #SAI_STATUS_SUCCESS on success when all objects are removed. When
- * there is failure, none of the objects are removed, and failure code is returned.
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or #SAI_STATUS_FAILURE when
+ * any of the objects fails to remove. When there is failure, Caller is expected to go through the
+ * list of returned statuses to find out which fails and which succeeds.
  */
 
 typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ uint32_t object_count,
-        _In_ sai_object_id_t *object_id);
+        _In_ sai_object_id_t *object_id,
+        _Out_ sai_status_t *object_statuses);
 
 
 /**
