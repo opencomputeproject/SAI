@@ -310,34 +310,34 @@ typedef enum _sai_hostif_trap_type_t
 /**
 * @brief Host interface user defined trap type
 */
-typedef enum _sai_hostif_user_defined_trap_type_t
+typedef enum _sai_hostif_trap_user_defined_type_t
 {
     /**
      * @brief Start of user defined trap types
      */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START = 0x0000000,
+    SAI_HOSTIF_TRAP_USER_DEFINED_TYPE_START = 0x0000000,
 
     /** router traps (default packet action is drop) */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ROUTER = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START,
+    SAI_HOSTIF_TRAP_USER_DEFINED_TYPE_ROUTER = SAI_HOSTIF_TRAP_USER_DEFINED_TYPE_START,
 
     /** neighbor table traps (default packet action is drop) */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH,
+    SAI_HOSTIF_TRAP_USER_DEFINED_TYPE_NEIGH,
 
     /** ACL traps (default packet action is drop) */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ACL,
+    SAI_HOSTIF_TRAP_USER_DEFINED_TYPE_ACL,
 
     /** fdb traps (default packet action is drop) */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB,
+    SAI_HOSTIF_TRAP_USER_DEFINED_TYPE_FDB,
 
     /** Custom range base */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE = 0x00001000,
+    SAI_HOSTIF_TRAP_USER_DEFINED_TYPE_CUSTOM_RANGE_BASE = 0x00001000,
 
     /**
      * @brief End of user defined trap types
      */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_END,
+    SAI_HOSTIF_TRAP_USER_DEFINED_TYPE_END,
 
-} sai_hostif_user_defined_trap_type_t;
+} sai_hostif_trap_user_defined_type_t;
 
 /**
  * @brief Host interface trap attributes
@@ -371,11 +371,11 @@ typedef enum _sai_hostif_trap_attr_t
      * @brief Host interface user defined trap type []. 
      * It is valid to create multiple instances of the same user defined type
      *
-     * @type sai_hostif_user_defined_trap_type_t
+     * @type sai_hostif_trap_user_defined_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @condition SAI_HOSTIF_TRAP_ATTR_IS_USER_DEFINED_TRAP == true
      */
-    SAI_HOSTIF_TRAP_ATTR_USER_DEFINED_TRAP_TYPE,
+    SAI_HOSTIF_TRAP_ATTR_USER_DEFINED_TYPE,
 
     /**
      * @brief Trap action
