@@ -856,7 +856,7 @@ void check_attr_conditions(
             }
 
             break;
-
+        case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
         case SAI_ATTR_FLAGS_CREATE_ONLY: /* will require default value, on some cases may be dynamic */
             break;
