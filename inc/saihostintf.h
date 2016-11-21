@@ -151,18 +151,13 @@ typedef sai_status_t(*sai_get_hostif_trap_group_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
-* @brief Host interface user defined trap type table range
-*/
-#define SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE 0x100
-
-/**
  * @brief Host interface trap type
  */
 typedef enum _sai_hostif_trap_type_t
 {
     /**
-    * @brief Start of trap types
-    */
+     * @brief Start of trap types
+     */
     SAI_HOSTIF_TRAP_TYPE_START = 0x0000000,
 
     /* Control plane protocol */
@@ -305,41 +300,44 @@ typedef enum _sai_hostif_trap_type_t
     /** Exception traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00007000,
 
-    /* User defined traps */
-
-    /** router traps (default packet action is drop) */
-    SAI_HOSTIF_TRAP_TYPE_ROUTER_MIN = 0x00008000,
-
-    /** router traps max */
-    SAI_HOSTIF_TRAP_TYPE_ROUTER_MAX = SAI_HOSTIF_TRAP_TYPE_ROUTER_MIN + SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE,
-
-    /** neighbor table traps (default packet action is drop) */
-    SAI_HOSTIF_TRAP_TYPE_NEIGH_MIN = SAI_HOSTIF_TRAP_TYPE_ROUTER_MAX + 1,
-
-    /** neighbor table traps max */
-    SAI_HOSTIF_TRAP_TYPE_NEIGH_MAX = SAI_HOSTIF_TRAP_TYPE_NEIGH_MIN + SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE,
-
-    /** ACL traps (default packet action is drop) */
-    SAI_HOSTIF_TRAP_TYPE_ACL_MIN = SAI_HOSTIF_TRAP_TYPE_NEIGH_MAX + 1,
-
-    /** ACL traps range max */
-    SAI_HOSTIF_TRAP_TYPE_ACL_MAX = SAI_HOSTIF_TRAP_TYPE_ACL_MIN + SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE,
-
-    /** fdb traps (default packet action is drop) */
-    SAI_HOSTIF_TRAP_TYPE_FDB_MIN = SAI_HOSTIF_TRAP_TYPE_ACL_MAX + 1,
-
-    /** fdb traps max */
-    SAI_HOSTIF_TRAP_TYPE_FDB_MAX = SAI_HOSTIF_TRAP_TYPE_FDB_MIN + SAI_HOSTIF_TRAP_TYPE_TABLE_RANGE,
-
-    /** Custom range base */
-    SAI_HOSTIF_TRAP_TYPE_CUSTOM_RANGE_BASE = 0x00009000,
-
     /**
-    * @brief End of trap types
-    */
+     * @brief End of trap types
+     */
     SAI_HOSTIF_TRAP_TYPE_END,
 
 } sai_hostif_trap_type_t;
+
+/**
+* @brief Host interface user defined trap type
+*/
+typedef enum _sai_hostif_user_defined_trap_type_t
+{
+    /**
+     * @brief Start of user defined trap types
+     */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START = 0x0000000,
+
+    /** router traps (default packet action is drop) */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ROUTER = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START,
+
+    /** neighbor table traps (default packet action is drop) */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH,
+
+    /** ACL traps (default packet action is drop) */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ACL,
+
+    /** fdb traps (default packet action is drop) */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB,
+
+    /** Custom range base */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE = 0x00001000,
+
+    /**
+     * @brief End of user defined trap types
+     */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_END,
+
+} sai_hostif_user_defined_trap_type_t;
 
 /**
  * @brief Host interface trap attributes
@@ -352,12 +350,32 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_START,
 
     /**
+    * @brief Is user defined trap
+    *
+    * @type bool
+    * @flags CREATE_ONLY
+    * @default false
+    */
+    SAI_HOSTIF_TRAP_ATTR_IS_USER_DEFINED_TRAP = SAI_HOSTIF_TRAP_ATTR_START,
+
+    /**
      * @brief Host interface trap type []
      *
      * @type sai_hostif_trap_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
+     * @condition SAI_HOSTIF_TRAP_ATTR_IS_USER_DEFINED_TRAP == false
      */
-    SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE = SAI_HOSTIF_TRAP_ATTR_START,
+    SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE,
+
+    /**
+     * @brief Host interface user defined trap type []. 
+     * It is valid to create multiple instances of the same user defined type
+     *
+     * @type sai_hostif_user_defined_trap_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_HOSTIF_TRAP_ATTR_IS_USER_DEFINED_TRAP == true
+     */
+    SAI_HOSTIF_TRAP_ATTR_USER_DEFINED_TRAP_TYPE,
 
     /**
      * @brief Trap action
@@ -810,10 +828,11 @@ typedef enum _sai_hostif_packet_attr_t
     /**
      * @brief Trap ID (for receive-only)
      *
-     * @type sai_hostif_trap_type_t
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP
      * @flags READ_ONLY
      */
-    SAI_HOSTIF_PACKET_ATTR_HOSTIF_TRAP_TYPE = SAI_HOSTIF_PACKET_ATTR_START,
+    SAI_HOSTIF_PACKET_ATTR_HOSTIF_TRAP_ID = SAI_HOSTIF_PACKET_ATTR_START,
 
     /**
      * @brief Ingress port (for receive-only)
