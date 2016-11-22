@@ -183,7 +183,19 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.objlist.count = attribute.value.objlist.count;
                   attr_list[i].value.objlist.list = *buffer_profile_list;
                   break;
+              }
+    	      case SAI_PORT_ATTR_INGRESS_MIRROR_SESSION:
+              case SAI_PORT_ATTR_EGRESS_MIRROR_SESSION:
+    		  {
+                  *buffer_profile_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * attribute.value.objlist.count);
+                  std::vector<sai_thrift_object_id_t>::const_iterator it2 = attribute.value.objlist.object_id_list.begin();
+                  for (uint32_t j = 0; j < attribute.value.objlist.object_id_list.size(); j++, *it2++) {
+                      *buffer_profile_list[j] = (sai_object_id_t) *it2;
                   }
+                  attr_list[i].value.objlist.count = attribute.value.objlist.count;
+    		      attr_list[i].value.objlist.list=*buffer_profile_list;
+                  break;  	  
+    		  }
               default:
                   break;
           }
@@ -1747,7 +1759,7 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_VLAN_TPID:
-                  attr_list[i].value.u16 = attribute.value.u16;
+                  attr_list[i].value.u16 = attribute.value.u32;
                   break;
               case SAI_MIRROR_SESSION_ATTR_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
@@ -1756,16 +1768,16 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_ENCAP_TYPE:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_MIRROR_SESSION_ATTR_IPHDR_VERSION:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_TOS:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.u8 = attribute.value.u16;
                   break;
               case SAI_MIRROR_SESSION_ATTR_TTL:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.u8 = attribute.value.u16;
                   break;
               case SAI_MIRROR_SESSION_ATTR_SRC_IP_ADDRESS:
                   sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
@@ -1780,7 +1792,7 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
                   sai_thrift_string_to_mac(attribute.value.mac, attr_list[i].value.mac);
                   break;
               case SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE:
-                  attr_list[i].value.u16 = attribute.value.u16;
+                  attr_list[i].value.u16 = attribute.value.u32;
                   break;
               default:
                   break;
