@@ -172,7 +172,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               case SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
-	          case SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST:
+              case SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST:
               case SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST:
                   {
                   *buffer_profile_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * attribute.value.objlist.count);
@@ -184,18 +184,18 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
                   attr_list[i].value.objlist.list = *buffer_profile_list;
                   break;
               }
-    	      case SAI_PORT_ATTR_INGRESS_MIRROR_SESSION:
+              case SAI_PORT_ATTR_INGRESS_MIRROR_SESSION:
               case SAI_PORT_ATTR_EGRESS_MIRROR_SESSION:
-    		  {
+              {
                   *buffer_profile_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * attribute.value.objlist.count);
                   std::vector<sai_thrift_object_id_t>::const_iterator it2 = attribute.value.objlist.object_id_list.begin();
                   for (uint32_t j = 0; j < attribute.value.objlist.object_id_list.size(); j++, *it2++) {
                       *buffer_profile_list[j] = (sai_object_id_t) *it2;
                   }
                   attr_list[i].value.objlist.count = attribute.value.objlist.count;
-    		      attr_list[i].value.objlist.list=*buffer_profile_list;
-                  break;  	  
-    		  }
+                  attr_list[i].value.objlist.list=*buffer_profile_list;
+                  break;
+              }
               default:
                   break;
           }
