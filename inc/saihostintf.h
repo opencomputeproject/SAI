@@ -905,7 +905,9 @@ typedef sai_status_t(*sai_recv_hostif_packet_fn)(
 /**
  * @brief Hostif send function
  *
- * @param[in] hif_id Host interface id. only valid for send through FD channel. Use #SAI_NULL_OBJECT_ID for send through CB channel.
+ * @param[in] hif_id Host interface id. 
+ * When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type SAI_HOSTIF_TYPE_FD. 
+ * When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
  * @param[in] buffer Packet buffer
  * @param[in] buffer size Packet size in bytes
  * @param[in] attr_count Number of attributes
