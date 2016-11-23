@@ -40,6 +40,36 @@ typedef enum _sai_lag_attr_t {
 
     /** READ_WRITE */
 
+    /** 
+     * @brief LAG bind point for ingress ACL objects
+     *
+     * Bind (or unbind) an ingress acl tables/groups on a LAG. Enable/Update 
+     * ingress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_LAG_ATTR_INGRESS_ACL_LIST,
+
+    /** 
+     * @brief LAG bind point for egress ACL objects
+     *
+     * Bind (or unbind) an egress acl tables/groups on a LAG. Enable/Update 
+     * egress ACL table(s)/group(s) filtering by assigning the list of valid 
+     * objects. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_list_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_LAG_ATTR_EGRESS_ACL_LIST,
+
     /** Custom range base value */
     SAI_LAG_ATTR_CUSTOM_RANGE_BASE  = 0x10000000
 
