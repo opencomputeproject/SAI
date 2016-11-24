@@ -195,7 +195,7 @@ typedef enum _sai_switch_restart_type_t
 } sai_switch_restart_type_t;
 
 /**
- * @brief Attribute data for #SAI_SWITCH_ATTR_MULTICAST_SNOOPING_CAPABILITY
+ * @brief Attribute data for #SAI_SWITCH_ATTR_MCAST_SNOOPING_CAPABILITY
  */
 typedef enum _sai_switch_mcast_snooping_capability_t
 {
