@@ -81,6 +81,7 @@ typedef enum _sai_hostif_trap_group_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER,
 
@@ -358,7 +359,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @brief Trap channel to use
      *
      * @type sai_hostif_trap_channel_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default SAI_HOSTIF_TRAP_CHANNEL_CB
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL,
@@ -370,8 +371,9 @@ typedef enum _sai_hostif_trap_attr_t
      * Must be set before set #SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL to #SAI_HOSTIF_TRAP_CHANNEL_FD
      *
      * @type sai_object_id_t
-     * @flags CREATE_AND_SET
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HOSTIF
+     * @condition SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL == SAI_HOSTIF_TRAP_CHANNEL_FD
      */
     SAI_HOSTIF_TRAP_ATTR_FD,
 
@@ -529,7 +531,8 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HOSTIF
-     * @flags CREATE_AND_SET
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_HOSTIF_TRAP_CHANNEL == SAI_HOSTIF_TRAP_CHANNEL_FD
      */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_FD,
 

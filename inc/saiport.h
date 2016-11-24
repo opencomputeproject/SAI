@@ -623,6 +623,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID,
 
@@ -634,6 +635,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_BROADCAST_STORM_CONTROL_POLICER_ID,
 
@@ -645,6 +647,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_MULTICAST_STORM_CONTROL_POLICER_ID,
 
@@ -745,6 +748,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_INGRESS_SAMPLEPACKET_ENABLE,
 
@@ -759,6 +763,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE,
 
@@ -771,6 +776,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_POLICER_ID,
 
@@ -794,6 +800,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_DOT1P_TO_TC_MAP,
 
@@ -807,6 +814,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_DOT1P_TO_COLOR_MAP,
 
@@ -821,6 +829,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_DSCP_TO_TC_MAP,
 
@@ -834,6 +843,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
@@ -847,6 +857,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_TC_TO_QUEUE_MAP,
 
@@ -860,6 +871,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
 
@@ -873,6 +885,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
@@ -886,6 +899,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_TC_TO_PRIORITY_GROUP_MAP,
 
@@ -899,6 +913,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP,
 
@@ -911,6 +926,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP,
 
@@ -923,6 +939,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_WRED
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
 
@@ -936,6 +953,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SCHEDULER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID,
 

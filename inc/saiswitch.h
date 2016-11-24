@@ -944,6 +944,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_DOT1P_TO_TC_MAP,
 
@@ -958,6 +959,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_DOT1P_TO_COLOR_MAP,
 
@@ -972,6 +974,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_DSCP_TO_TC_MAP,
 
@@ -986,6 +989,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
@@ -1000,6 +1004,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_TC_TO_QUEUE_MAP,
 
@@ -1013,6 +1018,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
 
@@ -1026,6 +1032,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
