@@ -211,7 +211,8 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_IPMC_GROUP_MEMBER        = 51,
     SAI_OBJECT_TYPE_L2MC_ENTRY               = 52,
     SAI_OBJECT_TYPE_IPMC_ENTRY               = 53,
-    SAI_OBJECT_TYPE_MAX                      = 54
+    SAI_OBJECT_TYPE_MCAST_FDB_ENTRY          = 54,
+    SAI_OBJECT_TYPE_MAX                      = 55
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {

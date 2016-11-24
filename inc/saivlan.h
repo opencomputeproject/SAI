@@ -52,6 +52,21 @@ typedef enum _sai_vlan_tagging_mode_t
 } sai_vlan_tagging_mode_t;
 
 /**
+ * @brief Attribute data for multicast_lookup_key_type parameter
+ */
+typedef enum _sai_vlan_mcast_lookup_key_type_t
+{
+    SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_MAC_DA,
+
+    SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_XG,
+
+    SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_SG,
+
+    SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_XG_AND_SG
+
+} sai_vlan_mcast_lookup_key_type_t;
+
+/**
  * @brief Attribute Id in sai_set_vlan_attribute() and
  * sai_get_vlan_attribute() calls
  */
@@ -116,54 +131,22 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_LEARN_DISABLE,
 
     /**
-     * @brief To enable exception IGMP packets on a VLAN
+     * @brief To set IPv4 multicast lookup key on a VLAN
      *
-     * If this is set to true, all IGMP packets received in the vlan will be
-     * exceptioned to CPU, otherwise IGMP packets are forwarded as data packets
-     *
-     * @type bool
+     * @type sai_vlan_mcast_lookup_key_type_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @default SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_MAC_DA
      */
-    SAI_VLAN_ATTR_EXCEPTION_IGMP_EN, 
+    SAI_VLAN_ATTR_IPV4_MCAST_LOOKUP_KEY_TYPE, 
 
     /**
-     * @brief To enable exception MLD packets on a VLAN
+     * @brief To set IPv6 multicast lookup key on a VLAN
      *
-     * If this is set to true, all MLD packets received in the vlan will be
-     * exceptioned to CPU, otherwise MLD packets are forwarded as data packets
-     *
-     * @type bool
+     * @type sai_vlan_mcast_lookup_key_type_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @default SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_MAC_DA
      */
-    SAI_VLAN_ATTR_EXCEPTION_MLD_EN, 
-
-    /**
-     * @brief To enable IPv4 multicast snooping on a VLAN
-     *
-     * If this is set to true, NPU will use vlan-id + ip-address as lookup keys,
-     * otherwise NPU will use vlan-id + mac-da to as lookup keys. Setting value to
-     * true would fail when NPU doesn’t have the MCAST SNOOPING capability
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_VLAN_ATTR_IPV4_MCAST_SNOOPING_EN, 
-
-    /**
-     * @brief To enable IPv6 multicast snooping on a VLAN
-     *
-     * If this is set to true, NPU will use vlan-id + ipv6-address as lookup keys,
-     * otherwise NPU will use vlan-id + mac-da to as lookup keys. Setting value to
-     * true would fail when NPU doesn’t have the MCAST SNOOPING capability
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_VLAN_ATTR_IPV6_MCAST_SNOOPING_EN,
+    SAI_VLAN_ATTR_IPV6_MCAST_LOOKUP_KEY_TYPE,
 
     /**
      * @brief L2MC Group ID that unknown non-ip MACST packets forwarded to

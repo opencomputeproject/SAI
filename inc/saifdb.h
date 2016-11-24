@@ -73,6 +73,9 @@ typedef enum _sai_fdb_event_t
     /** FDB entry aged */
     SAI_FDB_EVENT_AGED,
 
+    /** FDB entry move */
+    SAI_FDB_EVENT_MOVE,
+
     /** FDB entry flushd */
     SAI_FDB_EVENT_FLUSHED,
 
@@ -98,18 +101,17 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_TYPE = SAI_FDB_ENTRY_ATTR_START,
 
     /**
-     * @brief FDB entry output id
+     * @brief FDB entry port id
      *
-     * The output id here can refer to a generic port object such as SAI port object id,
+     * The port id here can refer to a generic port object such as SAI port object id,
      * SAI LAG object id and etc. or to a tunnel next hop object in case the entry is
-     * l2 tunnel. It can also refer to a L2MC group object. In case of empty group, packets 
-     * will be discarded
+     * l2 tunnel
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_TUNNEL, SAI_OBJECT_TYPE_L2MC_GROUP
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_FDB_ENTRY_ATTR_OUTPUT_ID,
+    SAI_FDB_ENTRY_ATTR_PORT_ID,
 
     /**
      * @brief FDB entry packet action
@@ -185,6 +187,7 @@ typedef enum _sai_fdb_flush_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_ONLY
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
 

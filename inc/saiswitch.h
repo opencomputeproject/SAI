@@ -195,6 +195,25 @@ typedef enum _sai_switch_restart_type_t
 } sai_switch_restart_type_t;
 
 /**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_MULTICAST_SNOOPING_CAPABILITY
+ */
+typedef enum _sai_switch_mcast_snooping_type_t
+{
+    /** NPU doesn't support IP based L2MC */
+    SAI_SWITCH_MCAST_SNOOPING_TYPE_NONE = 0,
+
+    /** *G lookup only */
+    SAI_SWITCH_MCAST_SNOOPING_TYPE_XG = 1,
+
+    /** SG lookup only */
+    SAI_SWITCH_MCAST_SNOOPING_TYPE_SG = 2,
+
+    /** both *G/SG lookup supported */
+    SAI_SWITCH_MCAST_SNOOPING_TYPE_XG_AND_SG = 3,
+
+} sai_switch_mcast_snooping_type_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
  */
@@ -649,12 +668,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Multicast snooping capability supported by the NPU
      *
-     * Value true indicates that the NPU is capable of performing 
-     * SG/XG lookup for L2 multicast (IP based L2 multicast).
-     * Value false indicates that the NPU is only capable of performing
-     * multicast fdb lookup for L2 multicast (MAC based L2 mulitcast)
-     *
-     * @type bool
+     * @type sai_switch_mcast_snooping_type_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_MULTICAST_SNOOPING_CAPABILITY,
