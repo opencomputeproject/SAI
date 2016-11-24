@@ -73,9 +73,6 @@ typedef enum _sai_fdb_event_t
     /** FDB entry aged */
     SAI_FDB_EVENT_AGED,
 
-    /** FDB entry move */
-    SAI_FDB_EVENT_MOVE,
-
     /** FDB entry flushd */
     SAI_FDB_EVENT_FLUSHED,
 
@@ -187,7 +184,6 @@ typedef enum _sai_fdb_flush_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_ONLY
-     * @default SAI_NULL_OBJECT_ID
      */
     SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
 
