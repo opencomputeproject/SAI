@@ -197,21 +197,21 @@ typedef enum _sai_switch_restart_type_t
 /**
  * @brief Attribute data for #SAI_SWITCH_ATTR_MULTICAST_SNOOPING_CAPABILITY
  */
-typedef enum _sai_switch_mcast_snooping_type_t
+typedef enum _sai_switch_mcast_snooping_capability_t
 {
     /** NPU doesn't support IP based L2MC */
-    SAI_SWITCH_MCAST_SNOOPING_TYPE_NONE = 0,
+    SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_NONE = 0,
 
     /** *G lookup only */
-    SAI_SWITCH_MCAST_SNOOPING_TYPE_XG = 1,
+    SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_XG = 1,
 
     /** SG lookup only */
-    SAI_SWITCH_MCAST_SNOOPING_TYPE_SG = 2,
+    SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_SG = 2,
 
     /** both *G/SG lookup supported */
-    SAI_SWITCH_MCAST_SNOOPING_TYPE_XG_AND_SG = 3,
+    SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_XG_AND_SG = 3,
 
-} sai_switch_mcast_snooping_type_t;
+} sai_switch_mcast_snooping_capability_t;
 
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
@@ -668,10 +668,10 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Multicast snooping capability supported by the NPU
      *
-     * @type sai_switch_mcast_snooping_type_t
+     * @type sai_switch_mcast_snooping_capability_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_MULTICAST_SNOOPING_CAPABILITY,
+    SAI_SWITCH_ATTR_MCAST_SNOOPING_CAPABILITY,
 
     /**
      * @brief Switching mode
