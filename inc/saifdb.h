@@ -47,6 +47,19 @@ typedef enum _sai_fdb_entry_type_t
 } sai_fdb_entry_type_t;
 
 /**
+* @brief FDB entry type.
+*/
+typedef enum _sai_fdb_entry_bridge_type_t
+{
+    /** .1Q FDB Entry */
+    SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
+
+    /** .1D FDB Entry */
+    SAI_FDB_ENTRY_BRIDGE_TYPE_1D,
+
+} sai_fdb_entry_bridge_type_t;
+
+/**
  * @brief FDB entry key
  */
 typedef struct _sai_fdb_entry_t
@@ -57,8 +70,14 @@ typedef struct _sai_fdb_entry_t
     /** Mac address */
     sai_mac_t mac_address;
 
-    /** Vlan ID */
+    /** Bridge type */
+    sai_fdb_entry_bridge_type_t bridge_type;
+
+    /** Vlan ID. Valid for .1Q */
     sai_vlan_id_t vlan_id;
+
+    /** Bridge ID. Valid for .1D */
+    sai_object_id_t bridge_id;
 
 } sai_fdb_entry_t;
 
@@ -101,17 +120,13 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_TYPE = SAI_FDB_ENTRY_ATTR_START,
 
     /**
-     * @brief FDB entry port id
-     *
-     * The port id here can refer to a generic port object such as SAI port object id,
-     * SAI LAG object id and etc. or to a tunnel next hop object in case the entry is
-     * l2 tunnel
+     * @brief FDB entry bridge port id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_TUNNEL
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_FDB_ENTRY_ATTR_PORT_ID,
+    SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
 
     /**
      * @brief FDB entry packet action

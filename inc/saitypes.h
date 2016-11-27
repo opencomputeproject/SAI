@@ -203,7 +203,9 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_FDB_FLUSH                = 43,
     SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER    = 44,
     SAI_OBJECT_TYPE_STP_PORT                 = 45,
-    SAI_OBJECT_TYPE_MAX                      = 46
+    SAI_OBJECT_TYPE_BRIDGE                   = 46,
+    SAI_OBJECT_TYPE_BRIDGE_PORT              = 47,
+    SAI_OBJECT_TYPE_MAX                      = 48
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -462,6 +464,9 @@ typedef struct _sai_tunnel_map_params_t
 
     /** VNI id */
     sai_uint32_t vni_id;
+
+    /** Bridge IF */
+    sai_object_id_t bridge_if;
 
 } sai_tunnel_map_params_t;
 

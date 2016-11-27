@@ -53,6 +53,7 @@
 #include "saiudf.h"
 #include "saivlan.h"
 #include "saiwred.h"
+#include "saibridge.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -96,6 +97,7 @@ typedef enum _sai_api_t
     SAI_API_HASH             = 24, /**< sai_hash_api_t */
     SAI_API_UDF              = 25, /**< sai_udf_api_t */
     SAI_API_TUNNEL           = 26, /**< sai_tunnel_api_t */
+    SAI_API_BRIDGE           = 27, /**< sai_bridge_api_t */
 } sai_api_t;
 
 /**

@@ -50,6 +50,12 @@ typedef enum _sai_tunnel_map_type_t
     /** TUNNEL Map VLAN ID to VNI */
     SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI = 0x00000003,
 
+    /** TUNNEL Map VNI to Bridge IF */
+    SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF = 0x00000004,
+
+    /** TUNNEL Map Bridge IF to VNI */
+    SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI = 0x00000005,
+
     /** Custom range base value */
     SAI_TUNNEL_MAP_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
