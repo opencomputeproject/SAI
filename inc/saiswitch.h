@@ -472,6 +472,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
     /**
+     * @brief Default .1Q Bridge ID
+     *
+     * Must return #SAI_STATUS_OBJECT_IN_USE when try to delete this Bridge ID.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID,
+
+    /**
      * @brief Maximum traffic classes limit
      *
      * @type sai_uint8_t
