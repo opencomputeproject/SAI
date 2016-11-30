@@ -849,8 +849,7 @@ void check_attr_conditions(
             /* condition needs to be changed to validonly since flags should be CREATE_AND_SET */
 
             if (md->objecttype != SAI_OBJECT_TYPE_MIRROR_SESSION &&
-                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_TRAP &&
-                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP)
+                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_TRAP)
             {
                 META_ASSERT_FAIL(md, "marked as conditional on non mirror session /hostif_trap/hostif_user_defined_trap, but invalid creation flags: 0x%u", md->flags);
             }
