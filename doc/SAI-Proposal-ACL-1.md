@@ -12,93 +12,93 @@ SAI access control lists (ACL) enhancements for SAI 1.0.0
 -------------------------------------------------------------------------------
 
 ## Overview ##
-SAI Access Control List (ACL) object implements ACL management functions. The SAI 1.0.0 specification in this document clarifies ambiguities and limitations that pre-SAI 1.0.0 ACL model had. This specification is also an attempt to formally document the behavioral model for SAI ACLs. These enhancements are relatively generic and simplifies the ACL model for operators. The primary goal of introducing SAI ACL model for 1.0.0 release is to provide a generic and abstract ACL interface for operators.<br>
+SAI Access Control List (ACL) object implements ACL management functions. The SAI 1.0.0 specification in this document clarifies ambiguities and limitations that pre-SAI 1.0.0 ACL model had. This specification is also an attempt to formally document the behavioral model for SAI ACLs. These enhancements are relatively generic and simplifies the ACL model for operators. The primary goal of introducing SAI ACL model for 1.0.0 release is to provide a generic and abstract ACL interface for operators.
 
 In SAI 0.9.1 through 0.9.5 versions, SAI ACL contained three types of objects, ACL table, ACL entry and ACL counter. SAI 1.0.0 introduces ACL group object to that list. An ACL table contains a number of ACL entries, with specific priorities. Each ACL table defines a set of unique match fields for all its ACL entries. Within an ACL table, if a packet matches multiple rules, only the actions from the rule of highest priority are executed. An ACL group handles the case for allowing prioritized resolution of ACL tables associated with the same group. Within an ACL group a packet can match rules in different ACL tables and take non-conflicting actions from all the matched rules. ACL counters can also be created and attached to an ACL entry in order to count the number of packets or bytes that match the ACL entry. In the SAI 1.0.0 (and as agreed in the community meeting 10/17/2016), ACL group behavior is currently restricted to parallel lookups with non-conflicting action being resolved. A later effort will clarify the per-ACL group behavior of enabling parallel or serial lookup which is beyond the scope of this proposal.
 
-This specification proposes the following enhancements and changes:<br>
-1. Introduce the concept of binding points for ACLs.<br>
-2. Introduce ACL group object.<br>
-3. Introduce behavioral model for ACL tables and ACL groups.<br>
-4. Introduce the usage of metadata fields.<br>
-5. Introduce simplified ACL table stages (irrelevant by introducing binding points).<br>
-6. Introduce ACL (tables and groups) applied on Tunnels and Bridge Interfaces.<br>
-7. Introduce behavioral model when ACL (tables and groups) are applied to saiswitch object.<br>
-8. Address scaling concerns in absense of a well defined binding point.<br>
+This specification proposes the following enhancements and changes:
+1. Introduce the concept of binding points for ACLs.
+2. Introduce ACL group object.
+3. Introduce behavioral model for ACL tables and ACL groups.
+4. Introduce the usage of metadata fields.
+5. Introduce simplified ACL table stages (irrelevant by introducing binding points).
+6. Introduce ACL (tables and groups) applied on Tunnels and Bridge Interfaces.
+7. Introduce behavioral model when ACL (tables and groups) are applied to saiswitch object.
+8. Address scaling concerns in absense of a well defined binding point.
 
 ## Binding Points
-In SAI all physical and logical interfaces are represented by unique object ids, for eg. ports  - saiport.h, LAGs - sailag.h, RIFs - sairouterintf.h, tunnels - saitunnel.h, and bridge ports - saibridgeintf.h. These are well defined objects in SAI that identify a stage in the pipeline to clearly identify a flow, ingressing and egressing through a switch. The ability to filter, classify, or apply specific rules to the traffic that ingresses or egresses through these objects/interfaces allow applications and operators to focus on the functionality of what they want to achieve (**filtering traffic**) and avoid looking at the internals of the switch asics or relevant acl entry fields. At every binding point SAI APIs allow users to bind an ACL Table or ACL Group identified by their unique object id allocated on creation. The binding attribute provides a generic interface to configure or unconfigure an ACL table or group.<br>
+In SAI all physical and logical interfaces are represented by unique object ids, for eg. ports  - saiport.h, LAGs - sailag.h, RIFs - sairouterintf.h, tunnels - saitunnel.h, and bridge ports - saibridgeintf.h. These are well defined objects in SAI that identify a stage in the pipeline to clearly identify a flow, ingressing and egressing through a switch. The ability to filter, classify, or apply specific rules to the traffic that ingresses or egresses through these objects/interfaces allow applications and operators to focus on the functionality of what they want to achieve (**filtering traffic**) and avoid looking at the internals of the switch asics or relevant acl entry fields. At every binding point SAI APIs allow users to bind an ACL Table or ACL Group identified by their unique object id allocated on creation. The binding attribute provides a generic interface to configure or unconfigure an ACL table or group.
 
-These physical and logical interfaces represented by unique object ids represent distinct bind points to apply ACL tables rules (and ACL groups). Following are the bind points (__already well defined SAI objects__) being used in this proposal:<br>
-1. Physical Ports and Lags (saiport.h and sailag.h)<br>
-2. VLANs (saivlan.h)<br>
-3. Router Interfaces (sairouterintf.h)<br>
-4. Tunnels (saitunnel.h)<br>
-5. Bridge Ports (saibridgeintf.h) - includes both .1q and .1d bridge ports<br>
-6. Sai Switch (saiswitch.h - globally applies to all traffic ingressing and egressing a switch).<br>
+These physical and logical interfaces represented by unique object ids represent distinct bind points to apply ACL tables rules (and ACL groups). Following are the bind points (__already well defined SAI objects__) being used in this proposal:
+1. Physical Ports and Lags (saiport.h and sailag.h)
+2. VLANs (saivlan.h)
+3. Router Interfaces (sairouterintf.h)
+4. Tunnels (saitunnel.h)
+5. Bridge Ports (saibridgeintf.h) - includes both .1q and .1d bridge ports
+6. Sai Switch (saiswitch.h - globally applies to all traffic ingressing and egressing a switch).
 
 ### Binding to a physical port object(s)
-When an ACL table (or group) is bound to a specific port all the traffic ingressing the port are subject to the match/filter/action rules specified by the INGRESS ACL (or group), similarly all the traffic egressing the port are subject to the match/filter/action rules specified by the EGRESS ACL (or group). Use the following attributes to bind an INGRESS ACL OBJECT or an EGRESS ACL OBJECT on a physical port:<br>
-1. SAI_PORT_ATTR_INGRESS_ACL<br>
-2. SAI_PORT_ATTR_EGRESS_ACL<br>
+When an ACL table (or group) is bound to a specific port all the traffic ingressing the port are subject to the match/filter/action rules specified by the INGRESS ACL (or group), similarly all the traffic egressing the port are subject to the match/filter/action rules specified by the EGRESS ACL (or group). Use the following attributes to bind an INGRESS ACL OBJECT or an EGRESS ACL OBJECT on a physical port:
+1. SAI_PORT_ATTR_INGRESS_ACL
+2. SAI_PORT_ATTR_EGRESS_ACL
 
 ### Binding to LAG object(s)
-When an ACL table (or group) is bound to a specific LAG interface all the traffic ingressing the LAG are subject to the match/filter/action rules specified by the INGRESS ACL (or group), similarly all the traffic egressing the LAG are subject to the match/filter/action rules specified by the EGRESS ACL (or group). Use the following attributes to bind an INGRESS ACL OBJECT or an EGRESS ACL OBJECT on a physical LAG:<br>
-1. SAI_LAG_ATTR_INGRESS_ACL<br>
-2. SAI_LAG_ATTR_EGRESS_ACL<br>
+When an ACL table (or group) is bound to a specific LAG interface all the traffic ingressing the LAG are subject to the match/filter/action rules specified by the INGRESS ACL (or group), similarly all the traffic egressing the LAG are subject to the match/filter/action rules specified by the EGRESS ACL (or group). Use the following attributes to bind an INGRESS ACL OBJECT or an EGRESS ACL OBJECT on a physical LAG:
+1. SAI_LAG_ATTR_INGRESS_ACL
+2. SAI_LAG_ATTR_EGRESS_ACL
 
 ### Binding to VLAN object(s)
-When an ACL table (or group) is bound to a specific VLAN all the traffic ingressing the switch associated with the VLAN are subject to the match/filter/action rules specified by the INGRESS ACL (or group), similarly all the traffic egressing the switch with the VLAN are subject to the match/filter/action rules specified by the EGRESS ACL (or group). Use the following attributes to bind an INGRESS ACL OBJECT or an EGRESS ACL OBJECT to a VLAN:<br>
-1. SAI_VLAN_ATTR_INGRESS_ACL<br>
-2. SAI_VLAN_ATTR_EGRESS_ACL<br>
+When an ACL table (or group) is bound to a specific VLAN all the traffic ingressing the switch associated with the VLAN are subject to the match/filter/action rules specified by the INGRESS ACL (or group), similarly all the traffic egressing the switch with the VLAN are subject to the match/filter/action rules specified by the EGRESS ACL (or group). Use the following attributes to bind an INGRESS ACL OBJECT or an EGRESS ACL OBJECT to a VLAN:
+1. SAI_VLAN_ATTR_INGRESS_ACL
+2. SAI_VLAN_ATTR_EGRESS_ACL
 
 ### Binding to RIF object(s)
-When an ACL table (or group) is bound to a router interface all the traffic ingressing the switch which is qualified to be processed on the specific router interface, are subject to the match/filter/action rules specified by the INGRESS ACL (or group). Similarly all the traffic egressing the switch routed to a router interface, are subject to the match/filter/action rules specified by the EGRESS ACL (or group). Use the following attributes to bind an INGRESS ACL OBJECT or EGRESS ACL OBJECT on a router interface: <br>
-1. SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL<br>
-2. SAI_ROUTER_INTERFACE_ATTR_EGRESS_ACL<br>
+When an ACL table (or group) is bound to a router interface all the traffic ingressing the switch which is qualified to be processed on the specific router interface, are subject to the match/filter/action rules specified by the INGRESS ACL (or group). Similarly all the traffic egressing the switch routed to a router interface, are subject to the match/filter/action rules specified by the EGRESS ACL (or group). Use the following attributes to bind an INGRESS ACL OBJECT or EGRESS ACL OBJECT on a router interface: 
+1. SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL
+2. SAI_ROUTER_INTERFACE_ATTR_EGRESS_ACL
 
 ### Binding to tunnel object(s)
-When a tunnel is created using the SAI tunnel object (saitunnel.h) there are two unique OIDs provided as an argument to sai_create_tunnel_fn. These two unique OIDs are mandatory attributes while creating a tunnel: (a) SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE (b) SAI_TUNNEL_ATTR_OVERLAY_INTERFACE. For an IPINIP tunnel both these attributes are allocated via the router interface objects (sairouterintf.h) and created as TUNNEL RIFs. For a VXLAN tunnel the underlay interface is identified as a bridge port and the overlay interface is a RIF object, identified as TUNNEL bridge interface and TUNNEL RIF respectively. To bind or apply an ACL table (or group) to a tunnel: implies that the user would like to filter traffic that ingresses or egresses the tunnel overlay interfaces or underlay interfaces. For eg. after an IPINIP tunnel is decap or enacp the packet will go through OVERLAY RIF or UNDERLAY RIF respectively. To simplify the binding points for tunnel, the ACL model does not introduce any new attributes in the saitunnel.h object, and reuse the router interface object's ACL bind point and bridge port's ACL bind point to bind ACL table (or group) to a tunnel object(s).<br>
+When a tunnel is created using the SAI tunnel object (saitunnel.h) there are two unique OIDs provided as an argument to sai_create_tunnel_fn. These two unique OIDs are mandatory attributes while creating a tunnel: (a) SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE (b) SAI_TUNNEL_ATTR_OVERLAY_INTERFACE. For an IPINIP tunnel both these attributes are allocated via the router interface objects (sairouterintf.h) and created as TUNNEL RIFs. For a VXLAN tunnel the underlay interface is identified as a bridge port and the overlay interface is a RIF object, identified as TUNNEL bridge interface and TUNNEL RIF respectively. To bind or apply an ACL table (or group) to a tunnel: implies that the user would like to filter traffic that ingresses or egresses the tunnel overlay interfaces or underlay interfaces. For eg. after an IPINIP tunnel is decap or enacp the packet will go through OVERLAY RIF or UNDERLAY RIF respectively. To simplify the binding points for tunnel, the ACL model does not introduce any new attributes in the saitunnel.h object, and reuse the router interface object's ACL bind point and bridge port's ACL bind point to bind ACL table (or group) to a tunnel object(s).
 
 ### Binding to switch object
-When an ACL table (or group) is bound to a switch object (globally applied to all traffic), all the traffic ingressing a switch or egress a switch is subject to match/filter/action rules specified by the INGRESS or EGRESS ACL (or group). Primarily all the INGRESSED post-flow lookup traffic is filtered through the SWITCH BIND POINT. Binding an INGRESS ACL to a switch bind point, should result as the same behavior that was supported by SAI_ACL_STAGE_SUBSTAGE_INGRESS_POST_L3 in the pre-SAI 1.0.0 ACL model. To support SAI_ACL_STAGE_SUBSTAGE_INGRESS_PRE_L2 stage, one of the above L2/L3 interface specific bind points will work. This provides backward compatibility to pre-SAI 1.0.0 version of ACL stages and only to be used as a transitionary approach and the last resort. Use the following attributes to bind an INGRESS ACL OBJECT or EGRESS ACL OBJECT globally to a switch:<br>
-1. SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL<br>
-2. SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL<br>
+When an ACL table (or group) is bound to a switch object (globally applied to all traffic), all the traffic ingressing a switch or egress a switch is subject to match/filter/action rules specified by the INGRESS or EGRESS ACL (or group). Primarily all the INGRESSED post-flow lookup traffic is filtered through the SWITCH BIND POINT. Binding an INGRESS ACL to a switch bind point, should result as the same behavior that was supported by SAI_ACL_STAGE_SUBSTAGE_INGRESS_POST_L3 in the pre-SAI 1.0.0 ACL model. To support SAI_ACL_STAGE_SUBSTAGE_INGRESS_PRE_L2 stage, one of the above L2/L3 interface specific bind points will work. This provides backward compatibility to pre-SAI 1.0.0 version of ACL stages and only to be used as a transitionary approach and the last resort. Use the following attributes to bind an INGRESS ACL OBJECT or EGRESS ACL OBJECT globally to a switch:
+1. SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL
+2. SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL
 
 ## ACL table bind/unbind model and match behavior
-The usage of unique object id allocated for ACL table by the create_acl_table function should be uniformly applied to identify the bind point(s). These bind/unbind points described earlier are logical interfaces defined by: physical ports, LAGs, VLANs, RIFs, tunnels, bridge ports, and switch (global). At any given bind point there can be a set of valid ACl table bound to an interface to filter traffic. Various combinatorial use cases and their behavioral expectations are defined as follows:<br>
-1. One valid ACL table bound to a bind point: Higher priority ACL entry is selected , considering the flow matches that entry and its action set is executed.<br>
-2. ACL table bound to multiple bind points: For a specific flow, there can be multiple valid bind points configured with a one or more valid ACL table(s). These bind points can be cascaded in the pipeline. In such a scenario: any packet modification action to be executed (like SET VLAN, SET IP, etc.) will be executed at a specific stage of the bind point. Non-conflicting actions will be resolved across multiple ACLs derived from different bind points. However, any terminal action like DROP/TRAP will be executed right away, specifically to keep the health of counters, etc. sane.<br>
+The usage of unique object id allocated for ACL table by the create_acl_table function should be uniformly applied to identify the bind point(s). These bind/unbind points described earlier are logical interfaces defined by: physical ports, LAGs, VLANs, RIFs, tunnels, bridge ports, and switch (global). At any given bind point there can be a set of valid ACl table bound to an interface to filter traffic. Various combinatorial use cases and their behavioral expectations are defined as follows:
+1. One valid ACL table bound to a bind point: Higher priority ACL entry is selected , considering the flow matches that entry and its action set is executed.
+2. ACL table bound to multiple bind points: For a specific flow, there can be multiple valid bind points configured with a one or more valid ACL table(s). These bind points can be cascaded in the pipeline. In such a scenario: any packet modification action to be executed (like SET VLAN, SET IP, etc.) will be executed at a specific stage of the bind point. Non-conflicting actions will be resolved across multiple ACLs derived from different bind points. However, any terminal action like DROP/TRAP will be executed right away, specifically to keep the health of counters, etc. sane.
 
-Figure 1 shows the relationship between an ACL table and various bind points. Examples 1 and 2 in the subsequent sections show how to bind/unbind an ACL table.<br>
+Figure 1 shows the relationship between an ACL table and various bind points. Examples 1 and 2 in the subsequent sections show how to bind/unbind an ACL table.
 
 ![SAI acl design](figures/sai_aclobjs.png "Figure 1: Relationship between ACL table ID and various binding points.")
-__Figure 1: Relationship between ACL table ID and various binding points.__<br>
+__Figure 1: Relationship between ACL table ID and various binding points.__
 
 ## ACL group management 
-Grouping of ACL tables was supported in the previous version. This specification enhances the ACL table grouping model and primarily the management of ACL groups - for scalability and flexibility. Two new APIs are introduced in saiacl.h object to manage group ID creation and removal. create_acl_table_group - allocates a unique object ID based ACL group table ID and remove_acl_table_group API removes the unique object ID for recycle. This proposal introduces a new ACL group object. ACL groupid is bound to all the previously discussed bind points that are valid for ACL tables.<br>
+Grouping of ACL tables was supported in the previous version. This specification enhances the ACL table grouping model and primarily the management of ACL groups - for scalability and flexibility. Two new APIs are introduced in saiacl.h object to manage group ID creation and removal. create_acl_table_group - allocates a unique object ID based ACL group table ID and remove_acl_table_group API removes the unique object ID for recycle. This proposal introduces a new ACL group object. ACL groupid is bound to all the previously discussed bind points that are valid for ACL tables.
 
 ## ACL group bind/unbind model and match behavior
-The purpose of the group object is to group more than one ACL table and allow the group of ACL group be bound to a binding point (same as the ACL table bind points). Once an unique object id for an ACL group is created, any existing or new ACL table can be updated or created and be bound to this ACL group. Here are the combinatorial use cases and their behavioral expectations: <br>
-1. One valid ACL table group bound to a bind point: Every ACL table has an table priority. Within an ACL group all ACL tables are looked up in parallel in the order of their priority as well. In case of the multiple table entries hit across various tabls, the action resolution should handle resolving non-conflicting actions.<br>
-2. ACL groups bound to multiple bind points: For a specific flow, there can be multiple valid bind points configured with one or more valid ACL groups and/or tables. These bind points can be cascaded in the pipeline. In such a scenario: any packet modification action to be executed (like SET VLAN, SET IP, etc.) will be executed at a specific stage of the bind point. Non-conflicting actions will be resolved across multiple ACLs derived from different bind points. Any terminal action like DROP/TRAP will be executed right away and no further cascading of ACL takes place. <br>
+The purpose of the group object is to group more than one ACL table and allow the group of ACL group be bound to a binding point (same as the ACL table bind points). Once an unique object id for an ACL group is created, any existing or new ACL table can be updated or created and be bound to this ACL group. Here are the combinatorial use cases and their behavioral expectations: 
+1. One valid ACL table group bound to a bind point: Every ACL table has an table priority. Within an ACL group all ACL tables are looked up in parallel in the order of their priority as well. In case of the multiple table entries hit across various tabls, the action resolution should handle resolving non-conflicting actions.
+2. ACL groups bound to multiple bind points: For a specific flow, there can be multiple valid bind points configured with one or more valid ACL groups and/or tables. These bind points can be cascaded in the pipeline. In such a scenario: any packet modification action to be executed (like SET VLAN, SET IP, etc.) will be executed at a specific stage of the bind point. Non-conflicting actions will be resolved across multiple ACLs derived from different bind points. Any terminal action like DROP/TRAP will be executed right away and no further cascading of ACL takes place. 
 
-Figure 2 shows the relationship between ACL GROUPs and various bind points, it also provides a typical use case of allowing ACL TABLEs and ACL GROUPs to coexist and be bound to various bind points. Example 3 below shows how to create an ACL group and bind this ACL group to a port. Example 4 below shows how to bind the same ACL group to multiple bind points. Example 5 shows that an ACL table part of an ACL group can also be applied individually to any other bind point. The SAI implementation should handle such complex but intuitive scenarios and simplify application logic.<br>
+Figure 2 shows the relationship between ACL GROUPs and various bind points, it also provides a typical use case of allowing ACL TABLEs and ACL GROUPs to coexist and be bound to various bind points. Example 3 below shows how to create an ACL group and bind this ACL group to a port. Example 4 below shows how to bind the same ACL group to multiple bind points. Example 5 shows that an ACL table part of an ACL group can also be applied individually to any other bind point. The SAI implementation should handle such complex but intuitive scenarios and simplify application logic.
 
 ![SAI acl group](figures/sai_aclgroups.png "Figure 2: group ID and ACL ID's relation with several binding points. ")
 __Figure 2: group ID and ACL ID's relation with several binding points.__
 
 ## ACL Stages 
-On creation of any ACL table or ACL table group, it is mandatory to provide one MANDATORY_ON_CREATE attributes to "create_acl_table" and "create_acl_table_group":<br>
-    - SAI_ACL_TABLE_ATTR_STAGE<br>
-    - SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE<br>
-On the same lines to create an ACL table, host adapters can optionally use CREATE_ONLY attributes to validate and reserve (if valid) an ACL table to be applied for a set of binding points identified by the enum sai_acl_bind_point_t:<br>
-    - SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_LIST<br>
-    - SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_LIST<br>
+On creation of any ACL table or ACL table group, it is mandatory to provide one MANDATORY_ON_CREATE attributes to "create_acl_table" and "create_acl_table_group":
+    - SAI_ACL_TABLE_ATTR_STAGE
+    - SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE
+On the same lines to create an ACL table, host adapters can optionally use CREATE_ONLY attributes to validate and reserve (if valid) an ACL table to be applied for a set of binding points identified by the enum sai_acl_bind_point_t:
+    - SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_LIST
+    - SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_LIST
 
-Based on attribute to validate ACL table or ACL table group, allows a SAI implementation to explicitly validate the scope of match fields and actions that can be supported at various bind points. Based on these explicit attributes the scope of ACL stages is restricted to INGRESS and EGRESS (removing the PRE_L2 and POST_L3). Hence, this proposal introduces well defined binding points along with specific stage(s) of the logical pipeline where any ACL table or ACL table group can be applied.<br>
+Based on attribute to validate ACL table or ACL table group, allows a SAI implementation to explicitly validate the scope of match fields and actions that can be supported at various bind points. Based on these explicit attributes the scope of ACL stages is restricted to INGRESS and EGRESS (removing the PRE_L2 and POST_L3). Hence, this proposal introduces well defined binding points along with specific stage(s) of the logical pipeline where any ACL table or ACL table group can be applied.
 
-A new enumeration is added to handle the types of bind points that are currently supported in the ACL specification. This enum currently does not support bridge instance model.<br>
+A new enumeration is added to handle the types of bind points that are currently supported in the ACL specification. This enum currently does not support bridge instance model.
 
     typedef enum _sai_acl_bind_point_t
     {
@@ -122,13 +122,13 @@ A new enumeration is added to handle the types of bind points that are currently
 Metadata is a completely user defined field or an identifier that does not need to be allocated within the SAI implementtaions. The Metadata field(s) in the logical pipeline is to allow users to derive a *metadata* field from any SAI objects (ports, vlans, rifs, bridge ports, Etc.), as well as flow tables (like unicast/multicast FDBs, Neighbor table, acl table entries, route entries). Currently the Metadata field derived at various stages of the pipeline are appended to each other and a specific META_DATA is being used for lookup in the ACL entry. 
 
 ## Terminal and non-conflicting actions
-This section clarifies the ACL actions that can be considered terminal and the ones that can be considered conflicting.<br>
+This section clarifies the ACL actions that can be considered terminal and the ones that can be considered conflicting.
 
-ACL actions that disrupts the normal behavior of a packet flowing through the pipeline like updating the packet command to DROP or TRAP - is termed as terminal.<br>
+ACL actions that disrupts the normal behavior of a packet flowing through the pipeline like updating the packet command to DROP or TRAP - is termed as terminal.
 
     SAI_ACL_ACTION_TYPE_PACKET_ACTION : DROP and TRAP
 
-ACL actions that modify the packet for subsequent ACL stages or pipeline stages : these actions are termed immediate and the non-conflicting action resolution happens right away. This means the action of following SET operations are available to the next stage(s):<br>
+ACL actions that modify the packet for subsequent ACL stages or pipeline stages : these actions are termed immediate and the non-conflicting action resolution happens right away. This means the action of following SET operations are available to the next stage(s):
 
     SAI_ACL_ACTION_TYPE_REDIRECT,               
     SAI_ACL_ACTION_TYPE_REDIRECT_LIST,      
@@ -146,7 +146,7 @@ ACL actions that modify the packet for subsequent ACL stages or pipeline stages 
 
 ## Examples ##
 ### Example 1 - Binding an ACL to a port
-The following example creates an ACL table and one ACL entry to denys a specific SMAC received on a port.<br>
+The following example creates an ACL table and one ACL entry to denys a specific SMAC received on a port.
 
     // Create an ACL table
     sai_object_id_t acl_table_id1 = 0ULL;
@@ -190,7 +190,7 @@ The following example creates an ACL table and one ACL entry to denys a specific
     }
 
 ### Example 2 - Binding an ACL to a router interface
-The following example creates an Layer3 ACL and one ACL entry to deny SIP and SPORT received on a router interface.<br>
+The following example creates an Layer3 ACL and one ACL entry to deny SIP and SPORT received on a router interface.
 
     // Create an ACL table with IP keys configured 
     sai_object_id_t acl_table_id2 = 0ULL;
@@ -344,7 +344,7 @@ This example creates an ACL group and binds it to multiple ports.
     }
 
 ### Example 5 - Binding an ACL table part of the ACL table group to a specific bind point.
-This example shows how to bind an ACL table to a port, especially that ACL table is part of an ACL group.<br>
+This example shows how to bind an ACL table to a port, especially that ACL table is part of an ACL group.
 
     // ACL table *acl_table_id3*, which participates in acl group *acl_grp_id1* 
     // This example shows that SAI should allow them to be bound to any of the logical interfaces
