@@ -76,50 +76,61 @@ Figure 1 shows the relationship between an ACL table and various bind points. Ex
 __Figure 1: Relationship between ACL table ID and various binding points.__
 
 ## ACL group management 
-Grouping of ACL tables was supported in the previous version. This specification enhances the ACL table grouping model and primarily the management of ACL groups - for scalability and flexibility. Two new APIs are introduced in saiacl.h object to manage group ID creation and removal. create_acl_table_group - allocates a unique object ID based ACL group table ID and remove_acl_table_group API removes the unique object ID for recycle. This proposal introduces a new ACL group object. ACL groupid is bound to all the previously discussed bind points that are valid for ACL tables.
+Grouping of ACL tables was supported in the previous version, but the model and managmenet of ACL group is different. This proposal introduces two new objects ACL Group and ACL Members. Both these new objects are managed using UOIDs allocated by their APIs. An ACL group is a group of ACL table(s) that is bound to the bind points previously discussed in this proposal. The following APIs are introduced for ACL Group and ACL Group Member management: 
+
+    create_acl_table_group: creates an acl group (UOID managed: acl_group_id) , that can be bound to any of the bind points pretty much like an acl table.
+    remove_acl_table_group: removes an allocated acl group (acl_group_id) for recycle of that id
+    set_acl_table_group_attribute: add/udpate/delete acl group members to this acl group, or acl group type, or any other acl group attributes
+    get_acl_table_group_attribute; retrieve acl group attributes previously configured
+    create_acl_table_group_member: creates an acl table group member (UOID managed: acl_group_member_id) , that is associated with an ACL table and ACL group
+    remove_acl_table_group_member: removes an acl table group member 
+    set_acl_table_group_member_attribute: add/udpate/delete acl group member attribute - ACL table id associated or the ACL member priority
+    get_acl_table_group_member_attribute: retrieve acl group attributes previously configured , and recycle the id
+
+### ACL group type
+There are two primary types of ACL groups introduced in this specification - sequential and parallel. The ACL group type configuration is per group object attribute and it defines the packet matching behavior across the ACL tables within a specific ACL group. 
+1. Sequential - each ACL table is assigned with a unique priority within that group. With a packet matching multiple ACL entries within the ACL group, only one with the highest table priority within the group and highest entry priority within the acl table wins. 
+2. Parallel - all ACL tables are matched and non-conflicting actions are executed.
 
 ## ACL group bind/unbind model and match behavior
-The purpose of the group object is to group more than one ACL table and allow the group of ACL group be bound to a binding point (same as the ACL table bind points). Once an unique object id for an ACL group is created, any existing or new ACL table can be updated or created and be bound to this ACL group. Here are the combinatorial use cases and their behavioral expectations: 
-1. One valid ACL table group bound to a bind point: Every ACL table has an table priority. Within an ACL group all ACL tables are looked up in parallel in the order of their priority as well. In case of the multiple table entries hit across various tabls, the action resolution should handle resolving non-conflicting actions.
+The purpose of the group object is to group more than one ACL table and allow the group of ACL group be bound to a binding point (same as the ACL table bind points). Once an unique object id for an ACL group is created it can be bound to any of the previously described bind points. ACL group member objects are allocated and associated with a group independent of where the groups are bound to. This gives users flexibility and scalability to manage acl tables associated to acl group members. Existing or new ACL group members can be updated or created and be bound to this ACL groups. Here are the combinatorial use cases and their behavioral expectations: 
+1. One valid ACL table group bound to a bind point: Every ACL group member has a priority. Within an ACL group all ACL tables are looked up in parallel or sequentially based on the acl group type attribute configured. 
 2. ACL groups bound to multiple bind points: For a specific flow, there can be multiple valid bind points configured with one or more valid ACL groups and/or tables. These bind points can be cascaded in the pipeline. In such a scenario: any packet modification action to be executed (like SET VLAN, SET IP, etc.) will be executed at a specific stage of the bind point. Non-conflicting actions will be resolved across multiple ACLs derived from different bind points. Any terminal action like DROP/TRAP will be executed right away and no further cascading of ACL takes place. 
 
 Figure 2 shows the relationship between ACL GROUPs and various bind points, it also provides a typical use case of allowing ACL TABLEs and ACL GROUPs to coexist and be bound to various bind points. Example 3 below shows how to create an ACL group and bind this ACL group to a port. Example 4 below shows how to bind the same ACL group to multiple bind points. Example 5 shows that an ACL table part of an ACL group can also be applied individually to any other bind point. The SAI implementation should handle such complex but intuitive scenarios and simplify application logic.
 
 ![SAI acl group](figures/sai_aclgroups.png "Figure 2: group ID and ACL ID's relation with several binding points. ")
-__Figure 2: group ID and ACL ID's relation with several binding points.__
+__Figure 2: group ID and ACL IDs relation with several binding points.__
 
 ## ACL Stages 
 On creation of any ACL table or ACL table group, it is mandatory to provide one MANDATORY_ON_CREATE attributes to "create_acl_table" and "create_acl_table_group":
-    - SAI_ACL_TABLE_ATTR_STAGE
+    - SAI_ACL_TABLE_ATTR_ACL_STAGE
     - SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE
-On the same lines to create an ACL table, host adapters can optionally use CREATE_ONLY attributes to validate and reserve (if valid) an ACL table to be applied for a set of binding points identified by the enum sai_acl_bind_point_t:
-    - SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_LIST
-    - SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_LIST
+On the same lines to create an ACL table, host adapters can optionally use CREATE_ONLY attributes to validate and reserve (if valid) an ACL table to be applied for a set of binding points identified by the enum sai_acl_bind_point_type_t:
+    - SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST
+    - SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST
 
 Based on attribute to validate ACL table or ACL table group, allows a SAI implementation to explicitly validate the scope of match fields and actions that can be supported at various bind points. Based on these explicit attributes the scope of ACL stages is restricted to INGRESS and EGRESS (removing the PRE_L2 and POST_L3). Hence, this proposal introduces well defined binding points along with specific stage(s) of the logical pipeline where any ACL table or ACL table group can be applied.
 
 A new enumeration is added to handle the types of bind points that are currently supported in the ACL specification. This enum currently does not support bridge instance model.
 
-    typedef enum _sai_acl_bind_point_t
+    typedef enum _sai_acl_bind_point_type_t
     {
         /** Port Bind Point */
-        SAI_ACL_BIND_POINT_PORT,
+        SAI_ACL_BIND_POINT_TYPE_PORT,
     
         /** LAG Bind Point */
-        SAI_ACL_BIND_POINT_LAG,
+        SAI_ACL_BIND_POINT_TYPE_LAG,
     
         /** VLAN Bind Point */
-        SAI_ACL_BIND_POINT_VLAN,
+        SAI_ACL_BIND_POINT_TYPE_VLAN,
     
         /** RIF Bind Point */
-        SAI_ACL_BIND_POINT_ROUTER_INTF,
+        SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF,
     
         /** Port Bind Point */
-        SAI_ACL_BIND_POINT_SWITCH
-    } sai_acl_bind_point_t;
-
-## Metadata Usage Model
-Metadata is a completely user defined field or an identifier that does not need to be allocated within the SAI implementtaions. The Metadata field(s) in the logical pipeline is to allow users to derive a *metadata* field from any SAI objects (ports, vlans, rifs, bridge ports, Etc.), as well as flow tables (like unicast/multicast FDBs, Neighbor table, acl table entries, route entries). Currently the Metadata field derived at various stages of the pipeline are appended to each other and a specific META_DATA is being used for lookup in the ACL entry. 
+        SAI_ACL_BIND_POINT_TYPE_SWITCH
+    } sai_acl_bind_point_type_t;
 
 ## Terminal and non-conflicting actions
 This section clarifies the ACL actions that can be considered terminal and the ones that can be considered conflicting.
@@ -153,13 +164,10 @@ The following example creates an ACL table and one ACL entry to denys a specific
     acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
     acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;
 
-    acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_LIST;
+    acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST;
     acl_attr_list[1].value.objlist.count = 1;
-    acl_attr_list[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_PORT;
+    acl_attr_list[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_TYPE_PORT;
  
-    acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_PRIORITY;
-    acl_attr_list[2].value.s32 = 100;
-
     acl_attr_list[3].id = SAI_ACL_TABLE_ATTR_FIELD_SRC_MAC;
     acl_attr_list[3].value.booldata = True;
 
@@ -180,7 +188,7 @@ The following example creates an ACL table and one ACL entry to denys a specific
         return saistatus;
     }
 
-    // Bind this ACL table to port1's object id
+    // Bind this ACL table to port1s object id
     port_attr_list.count = 1;
     port_attr_list.list[0].id = SAI_PORT_ATTR_INGRESS_ACL;
     port_attr_list.list[0].value.oid = acl_table_id1;
@@ -194,15 +202,12 @@ The following example creates an Layer3 ACL and one ACL entry to deny SIP and SP
 
     // Create an ACL table with IP keys configured 
     sai_object_id_t acl_table_id2 = 0ULL;
-    acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_STAGE;
+    acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
     acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;
 
-    acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_LIST;
+    acl_attr_list[1].id = SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST;
     acl_attr_list[1].value.objlist.count = 1;
-    acl_attr_list[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_ROUTER_INTF;
-
-    acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_PRIORITY;
-    acl_attr_list[2].value.s32 = 100;
+    acl_attr_list[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF;
 
     acl_attr_list[3].id = SAI_ACL_TABLE_ATTR_FIELD_SRC_IP;
     acl_attr_list[3].value.booldata = True;
@@ -256,52 +261,40 @@ The following example creates an Layer3 ACL and one ACL entry to deny SIP and SP
 ### Example 3 - Create an ACL group 
 This example creates and ACL group with more than one ACL table and bind it to a port, the very same way an ACL table was bound to a port in Example 1. 
 
-    // Create an ingress acl table group 
+    // CREATE AN INGRESS ACL TABLE GROUP
     sai_object_id_t acl_grp_id1 = 0ULL;
-    acl_grp_attr[0].id = SAI_ACL_TABLE_GROUP_STAGE;
+    acl_grp_attr[0].id = SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE;
     acl_grp_attr[0].value.s32 = SAI_ACL_STAGE_INGRESS;
 
-    acl_attr_list[1].id = SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT_LIST;
-    acl_attr_list[1].value.objlist.count = 1;
-    acl_attr_list[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_PORT;
+    acl_grp_attr[1].id = SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST;
+    acl_grp_attr[1].value.objlist.count = 1;
+    acl_grp_attr[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_TYPE_PORT;
 
-    acl_grp_attr[2].id = SAI_ACL_TABLE_GROUP_ATTR_PRIORITY;
-    acl_grp_attr[2].value.s32 = 100;
+    acl_grp_attr[2].id = SAI_ACL_TABLE_GROUP_ATTR_TYPE;
+    acl_grp_attr[2].value.s32 = SAI_ACL_TABLE_GROUP_SEQUENTIAL;
+
     saistatus = sai_acl_api->create_acl_table_group(&acl_grp_id1, 2, acl_grp_attr);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }
-    
-    // Update the ACL table created in Example 1, to be part of this group
-    acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_GROUP_ID;
-    acl_attr_list[0].value.oid = acl_grp_id1;
-    saistatus = sai_acl_api->set_acl_table_attribute(acl_table_id1, acl_attr_list[0]);
-    if (saistatus != SAI_STATUS_SUCCESS) {
-        return saistatus;
-    }
-    
+
     // Create an ACL table *acl_table_id3* , to be part of this group *acl_grp_id1*
     sai_object_id_t acl_table_id3 = 0ULL;
-    acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_STAGE;
+    acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
     acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;
 
-    acl_attr_list[1].id = SAI_ACL_TABLE_GROUP_ATTR_BIND_POINT_LIST;
+    acl_attr_list[1].id = SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST;
     acl_attr_list[1].value.objlist.count = 1;
-    acl_attr_list[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_PORT;
+    acl_attr_list[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_TYPE_PORT;
 
-    acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_PRIORITY;
-    acl_attr_list[2].value.s32 = 101;
-    acl_attr_list[3].id = SAI_ACL_TABLE_ATTR_FIELD_SRC_MAC;
-    acl_attr_list[3].value.booldata = True;
-    
-    acl_attr_list[4].id = SAI_ACL_TABLE_ATTR_GROUP_ID;
-    acl_attr_list[4].value.oid = acl_grp_id1;
-    
+    acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_FIELD_SRC_MAC;
+    acl_attr_list[2].value.booldata = True;
+
     saistatus = sai_acl_api->create_acl_table(&acl_table_id3, 4, acl_attr_list);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }
-    
+   
     // Create an ACL table entry to deny *src_mac_to_suppress2*
     acl_entry_attrs[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
     acl_entry_attrs[0].value.oid = acl_table_id3;
@@ -313,8 +306,24 @@ This example creates and ACL group with more than one ACL table and bind it to a
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }
+  
+    // Create an acl group member with acl_table_id3 and acl_grp_id1
+    sai_object_id_t acl_grp_mem1 = 0ULL;
+    acl_mem_attr[0].id = SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_GROUP_ID;
+    acl_mem_attr[0].value.s32 = acl_grp_id1;
+
+    acl_mem_attr[1].id = SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_ID;
+    acl_mem_attr[1].value.s32 = acl_table_id3;
+
+    acl_mem_attr[1].id = SAI_ACL_TABLE_GROUP_MEMBER_ATTR_PRIORITY;
+    acl_mem_attr[1].value.s32 = 100;
+
+    saistatus = sai_acl_api->create_acl_table_group_member(&acl_grp_mem1, 2, acl_grp_attr);
+    if (saistatus != SAI_STATUS_SUCCESS) {
+        return saistatus;
+    }
     
-    // Bind this ACL group to port1's OID (in the same way we bound ACL table in Example 1)
+    // Bind this ACL group to port1s OID (in the same way we bound ACL table in Example 1)
     port_attr_list.count = 1;
     port_attr_list.list[0].id = SAI_PORT_ATTR_INGRESS_ACL;
     port_attr_list.list[0].value.oid = acl_grp_id1;
@@ -325,11 +334,10 @@ This example creates and ACL group with more than one ACL table and bind it to a
 
 ### Example 4 - Binding an ACL group to a set of ports
 This example creates an ACL group and binds it to multiple ports.
-    // Bind this ACL group *acl_grp_id1* to port2, and port20's OID.
+    // Bind this ACL group *acl_grp_id1* to port2, and port20s OID.
     port_attr_list.count = 1;
     port_attr_list.list[0].id = SAI_PORT_ATTR_INGRESS_ACL;
     port_attr_list.list[0].value.oid = acl_grp_id1;
-    
     
     //port2
     sai_port_api->set_port_attribute(port2, port_attr_list);
@@ -343,7 +351,7 @@ This example creates an ACL group and binds it to multiple ports.
         return saistatus;
     }
 
-### Example 5 - Binding an ACL table part of the ACL table group to a specific bind point.
+### Example 5 - Binding an ACL table individually to a specific bind point, even though the acl table was part of an ACL group 
 This example shows how to bind an ACL table to a port, especially that ACL table is part of an ACL group.
 
     // ACL table *acl_table_id3*, which participates in acl group *acl_grp_id1* 

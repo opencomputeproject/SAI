@@ -49,24 +49,24 @@ typedef enum _sai_acl_stage_t
 /**
  * @brief Attribute data for SAI_ACL_TABLE_ATTR_BIND_POINT
  */
-typedef enum _sai_acl_bind_point_t
+typedef enum _sai_acl_bind_point_type_t
 {
-    /** Port Bind Point */
-    SAI_ACL_BIND_POINT_PORT,
+    /** Bind Point Type Port */
+    SAI_ACL_BIND_POINT_TYPE_PORT,
 
-    /** LAG Bind Point */
-    SAI_ACL_BIND_POINT_LAG,
+    /** Bind Point Type LAG */
+    SAI_ACL_BIND_POINT_TYPE_LAG,
 
-    /** VLAN Bind Point */
-    SAI_ACL_BIND_POINT_VLAN,
+    /** Bind Point Type VLAN */
+    SAI_ACL_BIND_POINT_TYPE_VLAN,
 
-    /** RIF Bind Point */
-    SAI_ACL_BIND_POINT_ROUTER_INTF,
+    /** Bind Point Type RIF */
+    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF,
 
-    /** SWITCH Bind Point */
-    SAI_ACL_BIND_POINT_SWITCH
+    /** Bind Point Type Switch */
+    SAI_ACL_BIND_POINT_TYPE_SWITCH
 
-} sai_acl_bind_point_t;
+} sai_acl_bind_point_type_t;
 
 /**
  * @brief ACL IP Type
@@ -262,13 +262,19 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE = SAI_ACL_TABLE_GROUP_ATTR_START,
 
     /**
-     * @brief List of ACL bind points where this group will be applied
+     * @brief List of ACL bind points where this group will be applied. 
      *
-     * @type sai_s32_list_t sai_acl_bind_point_t
+     * ACL group bind point list - is a create only attribute required for ACL 
+     * groups to let the user specific his intention to allow further error 
+     * checks and optimizations based on a specific ASIC's SAI implementation. 
+     * ACL members being added to this group SHOULD be a subset of the bind 
+     * point list that acl group was created with.
+     *
+     * @type sai_s32_list_t sai_acl_bind_point_type_t
      * @flags CREATE_ONLY
      * @default empty
      */
-    SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_LIST,
+    SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST,
 
     /**
      * @brief ACL table group type
@@ -422,11 +428,11 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief List of ACL bind point where this ACL can be applied
      *
-     * @type sai_s32_list_t sai_acl_bind_point_t
+     * @type sai_s32_list_t sai_acl_bind_point_type_t
      * @flags CREATE_ONLY
      * @default empty
      */
-    SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_LIST,
+    SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST,
 
     /**
      * @brief Table size
