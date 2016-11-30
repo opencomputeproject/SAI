@@ -994,7 +994,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_EEE_WAKE_TIME,
 
     /**
-    * @brief Query/Configure Port's Advertised flow control mode
+    * @brief Port bind mode
     *
     * @type sai_port_bind_mode_t
     * @flags CREATE_AND_SET
