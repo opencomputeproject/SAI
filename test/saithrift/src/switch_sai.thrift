@@ -126,6 +126,26 @@ struct sai_thrift_u32_list_t {
     2: list<i32> u32list;
 }
 
+struct sai_thrift_qos_map_params_t {
+    1: byte tc;
+    2: byte dscp;
+    3: byte dot1p;
+    4: byte prio;
+    5: byte pg;
+    6: byte queue_index;
+    7: byte color;
+}
+
+struct sai_thrift_qos_map_t {
+    1: sai_thrift_qos_map_params_t key;
+    2: sai_thrift_qos_map_params_t value;
+}
+
+struct sai_thrift_qos_map_list_t {
+    1: i32 count;
+    2: list<sai_thrift_qos_map_t> map_list;
+}
+
 union sai_thrift_attribute_value_t {
     1:  bool booldata;
     2:  string chardata;
@@ -147,6 +167,7 @@ union sai_thrift_attribute_value_t {
     18: sai_thrift_acl_field_data_t aclfield;
     19: sai_thrift_acl_action_data_t aclaction;
     20: sai_thrift_u32_list_t u32list;
+    21: sai_thrift_qos_map_list_t qosmap;
 }
 
 struct sai_thrift_attribute_t {
@@ -312,4 +333,7 @@ service switch_sai_rpc {
     sai_thrift_object_id_t sai_thrift_create_tunnel_term_table_entry(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_tunnel_term_table_entry(1: sai_thrift_object_id_t thrift_tunnel_entry_id);
 
+    // QoS Map API
+    sai_thrift_object_id_t sai_thrift_create_qos_map(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_qos_map(1: sai_thrift_object_id_t qos_map_id);
 }

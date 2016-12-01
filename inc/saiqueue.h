@@ -113,6 +113,7 @@ typedef enum _sai_queue_attr_t
      * @objects SAI_OBJECT_TYPE_WRED
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000004,
 
@@ -124,6 +125,7 @@ typedef enum _sai_queue_attr_t
      * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000005,
 
@@ -134,6 +136,7 @@ typedef enum _sai_queue_attr_t
      * @objects SAI_OBJECT_TYPE_SCHEDULER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000006,
 

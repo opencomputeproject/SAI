@@ -424,6 +424,7 @@ def sai_thrift_create_acl_table(client, addr_family,
                                 ip_proto,
                                 in_ports, out_ports,
                                 in_port, out_port):
+    #print "aaa"
     acl_attr_list = []
     if ip_src != None:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
@@ -461,7 +462,13 @@ def sai_thrift_create_acl_table(client, addr_family,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
+    attribute_value = sai_thrift_attribute_value_t(u32=0)   #TODO: Expose stage as function parameter
+    attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_STAGE, value=attribute_value)
+    acl_attr_list.append(attribute)
+    
+    #print "bbb"    
     acl_table_id = client.sai_thrift_create_acl_table(acl_attr_list)
+    #print acl_table_id
     return acl_table_id
 
 def sai_thrift_create_acl_entry(client, acl_table_id,
@@ -475,7 +482,7 @@ def sai_thrift_create_acl_entry(client, acl_table_id,
     acl_attr_list = []
 
     #OID
-    attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=acl_table_id)))
+    attribute_value = sai_thrift_attribute_value_t(oid=acl_table_id)
     attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_TABLE_ID,
                                        value=attribute_value)
     acl_attr_list.append(attribute)
@@ -524,18 +531,18 @@ def sai_thrift_create_acl_entry(client, acl_table_id,
     #Packet action
     if action == 1:
         #Drop
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u8=0)))
+        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(u32=0)))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
     elif action == 2:
         #Ingress mirroring
         if ingress_mirror != None:
-            attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=ingress_mirror)))
+            attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(oid=ingress_mirror)))
             attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS, value=attribute_value)
             acl_attr_list.append(attribute)
         elif egress_mirror != None:
-            attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=egress_mirror)))
+            attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(oid=egress_mirror)))
             attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS, value=attribute_value)
             acl_attr_list.append(attribute)
 
