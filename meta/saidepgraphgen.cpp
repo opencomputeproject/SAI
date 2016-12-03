@@ -38,7 +38,32 @@ void process_object_type_attributes(
             continue;
         }
 
+        std::string style;
+
+        switch (meta->attrvaluetype)
+        {
+            case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+
+                // we can miss some objects if same object can be set
+                // as list in one attribute and as single object in
+                // another attribute
+                style = "style=bold";
+
+                break;
+
+            default:
+                break;
+        }
+
         // this attribute supports objects
+
+        if (meta->allowedobjecttypeslength > 1)
+        {
+            // point arrows to the same point origin when this is single attribute
+            style += " samehead=" + std::string(meta->attridname);
+        }
 
         for (uint32_t j = 0; j < meta->allowedobjecttypeslength; j++)
         {
@@ -52,24 +77,6 @@ void process_object_type_attributes(
 
             const char* current = NN(current_object_type);
             const char* dep = NN(ot);
-
-            std::string style;
-
-            switch (meta->attrvaluetype)
-            {
-                case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
-                case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
-                case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
-
-                    // we can miss some objects if same object can be set
-                    // as list in one attribute and as single object in
-                    // another attribute
-                    style = "style=bold";
-                    break;
-
-                default:
-                    break;
-            }
 
             std::cout << dep << " -> " << current << " [ " << style << " color=\"0.650 0.700 0.700\"];\n";
 
@@ -144,7 +151,7 @@ void process_manual_connections()
 int main()
 {
     std::cout << "digraph \"SAI Object Dependency Graph\" {\n";
-    std::cout << "size=\"6,4\"; ratio = fill;\n";
+    std::cout << "size=\"18,10\"; ratio = fill;\n";
     std::cout << "node [style=filled];\n";
 
     process_object_types();
