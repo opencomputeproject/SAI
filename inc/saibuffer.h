@@ -91,7 +91,7 @@ typedef enum _sai_ingress_priority_group_stat_t
     /** get watermark pg xoff room occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
 
-    /** get/set rx bytes count [uint64_t] */
+    /** get rx bytes count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_BYTES = 0x00000009,
 
     /** Custom range base value */
