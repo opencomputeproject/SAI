@@ -40,6 +40,7 @@ my %TAGS = (
         "objects"   , \&ProcessTagObjects,
         "allownull" , \&ProcessTagAllowNull,
         "condition" , \&ProcessTagCondition,
+        "validonly" , \&ProcessTagValidOnly,
         "default"   , \&ProcessTagDefault,
         "ignore"    , \&ProcessTagIgnore,
         "isvlan"    , \&ProcessTagIsVlan,
@@ -346,6 +347,24 @@ sub ProcessTagAllowNull
     }
 
     return $val;
+}
+
+sub ProcessTagValidOnly
+{
+    my ($type, $value, $val) = @_;
+
+    my @conditions = split/\s+or\s+/,$val;
+
+    for my $cond (@conditions)
+    {
+        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        {
+            LogError "invalid validonly tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM";
+            return undef;
+        }
+    }
+
+    return \@conditions;
 }
 
 sub ProcessTagCondition
@@ -1105,6 +1124,85 @@ sub ProcessConditionsLen
     return $#conditions + 1;
 }
 
+sub ProcessValidOnlyType
+{
+    my ($attr, $value) = @_;
+
+    return "SAI_ATTR_CONDITION_TYPE_NONE" if not defined $value;
+
+    return "SAI_ATTR_CONDITION_TYPE_OR";
+}
+
+sub ProcessValidOnly
+{
+    my ($attr, $conditions, $enumtype) = @_;
+
+    return "NULL" if not defined $conditions;
+
+    my @conditions = @{ $conditions };
+
+    my $count = 0;
+
+    my @values = ();
+
+    for my $cond (@conditions)
+    {
+        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        {
+            LogError "invalid condition '$cond' on $attr";
+            return "";
+        }
+
+        my $attrid = $1;
+        my $val = $2;
+
+        WriteSource "const sai_attr_condition_t metadata_validonly_${attr}_$count = {";
+
+        if ($val eq "true" or $val eq "false")
+        {
+            WriteSource "    .attrid = $attrid,";
+            WriteSource "    .condition = { .booldata = $val }";
+        }
+        else
+        {
+            WriteSource "    .attrid = $attrid,";
+            WriteSource "    .condition = { .s32 = $val }";
+        }
+
+        WriteSource "};";
+
+        $count++;
+    }
+
+    WriteSource "const sai_attr_condition_t* metadata_validonly_${attr}\[\] = {";
+
+    $count = 0;
+
+    for my $cond (@conditions)
+    {
+        WriteSource "    &metadata_validonly_${attr}_$count,";
+
+        $count++;
+    }
+
+    WriteSource "    NULL";
+
+    WriteSource "};";
+
+    return "metadata_validonly_${attr}";
+}
+
+sub ProcessValidOnlyLen
+{
+    my ($attr, $value) = @_;
+
+    return "0" if not defined $value;
+
+    my @conditions = @{ $value };
+
+    return $#conditions + 1;
+}
+
 sub ProcessAllowRepeat
 {
     my ($attr, $value) = @_;
@@ -1178,6 +1276,9 @@ sub ProcessSingleObjectType
         my $conditiontype   = ProcessConditionType($attr, $meta{condition});
         my $conditions      = ProcessConditions($attr, $meta{condition}, $meta{type});
         my $conditionslen   = ProcessConditionsLen($attr, $meta{condition});
+        my $validonlytype   = ProcessValidOnlyType($attr, $meta{validonly});
+        my $validonly       = ProcessValidOnly($attr, $meta{validonly}, $meta{type});
+        my $validonlylen    = ProcessValidOnlyLen($attr, $meta{validonly});
         my $isvlan          = ProcessIsVlan($attr, $meta{isvlan});
         my $getsave         = ProcessGetSave($attr, $meta{getsave});
 
@@ -1204,8 +1305,9 @@ sub ProcessSingleObjectType
         WriteSource "    .conditiontype                 = $conditiontype,";
         WriteSource "    .conditions                    = $conditions,";
         WriteSource "    .conditionslength              = $conditionslen,";
-        WriteSource "    .validonlywhen                 = NULL,";           # TODO
-        WriteSource "    .validonlywhenlength           = 0,";              # TODO
+        WriteSource "    .validonlytype                 = $validonlytype,";
+        WriteSource "    .validonly                     = $validonly,";
+        WriteSource "    .validonlylength               = $validonlylen,";
         WriteSource "    .getsave                       = $getsave,";
         WriteSource "    .isvlan                        = $isvlan,";
 
