@@ -67,10 +67,10 @@ typedef enum _sai_ingress_priority_group_attr_t
  */
 typedef enum _sai_ingress_priority_group_stat_t
 {
-    /** get/set rx packets count [uint64_t] */
+    /** get rx packets count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS = 0x00000000,
 
-    /** get/set rx bytes count [uint64_t] */
+    /** get rx bytes count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_BYTES = 0x00000001,
 
     /** get current pg occupancy in bytes [uint64_t] */
@@ -91,7 +91,7 @@ typedef enum _sai_ingress_priority_group_stat_t
     /** get watermark pg xoff room occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
 
-    /** get rx bytes count [uint64_t] */
+    /** get dropped bytes count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_BYTES = 0x00000008,
 
     /** Custom range base value */
@@ -245,10 +245,10 @@ typedef enum _sai_buffer_pool_stat_t
     /** get watermark pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
 
-    /** get count of bytes passed pool [uint64_t] */
+    /** get count of bytes uses pool [uint64_t] */
     SAI_BUFFER_POOL_STAT_BYTES  = 0x00000002,
 
-    /** get count of bytes dropped by pool limits [uint64_t] */
+    /** get count of bytes dropped in this pool [uint64_t] */
     SAI_BUFFER_POOL_STAT_DROPPED_BYTES  = 0x00000003,
 
     /** Custom range base value */
