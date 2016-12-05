@@ -151,7 +151,7 @@ void process_manual_connections()
 int main()
 {
     std::cout << "digraph \"SAI Object Dependency Graph\" {\n";
-    std::cout << "size=\"18,10\"; ratio = fill;\n";
+    std::cout << "size=\"20,10\"; ratio = fill;\n";
     std::cout << "node [style=filled];\n";
 
     process_object_types();
