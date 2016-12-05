@@ -136,33 +136,14 @@ typedef enum _sai_port_fdb_learning_mode_t
     /** Trap packets with unknown source MAC to CPU. Do not learn. Forward based on destination MAC */
     SAI_PORT_FDB_LEARNING_MODE_CPU_LOG,
 
+    /** Notify unknown source MAC using FDB callback. Do not learn in hardware. Do not forward.
+      * When a packet from unknown source MAC comes this mode will trigger a new learn notification
+      * via FDB callback for the MAC address. This mode will generate only one notification
+      * per unknown source MAC to FDB callback.
+      */
+    SAI_PORT_FDB_LEARNING_MODE_FDB_NOTIFICATION,
+
 } sai_port_fdb_learning_mode_t;
-
-/**
- * @brief Port Add/Delete Event
- */
-typedef enum _sai_port_event_t
-{
-    /** Create a new active port */
-    SAI_PORT_EVENT_ADD,
-
-    /** Delete/Invalidate an existing port */
-    SAI_PORT_EVENT_DELETE,
-
-} sai_port_event_t;
-
-/**
- * @brief Defines the port event notification
- */
-typedef struct _sai_port_event_notification_t
-{
-    /** Port id */
-    sai_object_id_t port_id;
-
-    /** Port event */
-    sai_port_event_t port_event;
-
-} sai_port_event_notification_t;
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_MEDIA_TYPE
@@ -642,6 +623,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID,
 
@@ -653,6 +635,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_BROADCAST_STORM_CONTROL_POLICER_ID,
 
@@ -664,6 +647,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_MULTICAST_STORM_CONTROL_POLICER_ID,
 
@@ -734,6 +718,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_INGRESS_SAMPLEPACKET_ENABLE,
 
@@ -748,6 +733,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE,
 
@@ -760,6 +746,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_POLICER_ID,
 
@@ -783,6 +770,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_DOT1P_TO_TC_MAP,
 
@@ -796,6 +784,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_DOT1P_TO_COLOR_MAP,
 
@@ -810,6 +799,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_DSCP_TO_TC_MAP,
 
@@ -823,6 +813,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
@@ -836,6 +827,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_TC_TO_QUEUE_MAP,
 
@@ -849,6 +841,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
 
@@ -862,6 +855,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
@@ -875,6 +869,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_TC_TO_PRIORITY_GROUP_MAP,
 
@@ -888,6 +883,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP,
 
@@ -900,6 +896,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP,
 
@@ -912,6 +909,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_WRED
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
 
@@ -925,6 +923,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SCHEDULER
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID,
 
@@ -1001,6 +1000,42 @@ typedef enum _sai_port_attr_t
      * @default vendor
      */
     SAI_PORT_ATTR_HW_PROFILE_ID,
+
+    /**
+     * @brief Port EEE Configuration
+     *
+     * Energy Efficient Ethernet(EEE) is an IEEE 802.3 az standard aiming to 
+     * reduce power consumptions on Ethernet ports (native copper ports). 
+     * Enable the EEE on port level
+     *
+     * @type bool 
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_EEE_ENABLE,
+
+    /**
+     * @brief Port EEE IDLE time configuration
+     *
+     * Time (in microsecs) to move to Low power state (No traffic), at the end of which MAC transitions to Low power state.
+     * MAX value set more benefit.
+     *
+     * @type sai_uint16_t 
+     * @flags CREATE_AND_SET
+     * @default 2500
+     */
+    SAI_PORT_ATTR_EEE_IDLE_TIME,
+    
+    /**
+     * @brief Port EEE Wakeup time configuration
+     * 
+     * Time(in microsecs) to wait before transmitter is leaving Low Power Mode State. Min value set avoid latency.
+     *
+     * @type sai_uint16_t 
+     * @flags CREATE_AND_SET
+     * @default 5 
+     */
+    SAI_PORT_ATTR_EEE_WAKE_TIME,
 
     /**
      * @brief End of attributes
@@ -1377,6 +1412,22 @@ typedef enum _sai_port_stat_t
     /** sai port stat pfc 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
+    /** Number of times port state changed from 
+     * high power mode to low power mode in TX direction [uint64_t] */
+    SAI_PORT_STAT_EEE_TX_EVENT_COUNT,
+
+    /** Number of times port state changed from 
+     * high power mode to low power mode in RX direction [uint64_t] */
+    SAI_PORT_STAT_EEE_RX_EVENT_COUNT,
+
+    /** Port Low power mode duration(micro secs) in TX direction [uint64_t].
+     * This Duration is accumulative since EEE enable on port/from last clear stats*/
+    SAI_PORT_STAT_EEE_TX_DURATION,
+
+    /** Port Low power mode duration(micro secs) in RX direction [uint64_t] 
+     * This Duration is accumulative since EEE enable on port/from last clear stats*/
+    SAI_PORT_STAT_EEE_RX_DURATION,
+
 } sai_port_stat_t;
 
 /**
@@ -1394,7 +1445,6 @@ typedef sai_status_t (*sai_create_port_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
-
 /**
  * @brief Remove port
  *
@@ -1482,16 +1532,6 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
 typedef void (*sai_port_state_change_notification_fn)(
         _In_ uint32_t count,
         _In_ sai_port_oper_status_notification_t *data);
-
-/**
- * @brief Port event notification
- *
- * @param[in] count Number of notifications
- * @param[in] data Array of port events
- */
-typedef void (*sai_port_event_notification_fn)(
-       _In_ uint32_t count,
-       _In_ sai_port_event_notification_t *data);
 
 /**
  * @brief Port methods table retrieved with sai_api_query()

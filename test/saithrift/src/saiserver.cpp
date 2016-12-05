@@ -170,6 +170,7 @@ struct cmdOptions
 {
     std::string profileMapFile;
     std::string portMapFile;
+    std::string initScript;
 };
 
 cmdOptions handleCmdLine(int argc, char **argv)
@@ -183,12 +184,13 @@ cmdOptions handleCmdLine(int argc, char **argv)
         {
             { "profile",          required_argument, 0, 'p' },
             { "portmap",          required_argument, 0, 'f' },
+            { "init-script",      required_argument, 0, 'S' },
             { 0,                  0,                 0,  0  }
         };
 
         int option_index = 0;
 
-        int c = getopt_long(argc, argv, "p:f:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "p:f:S:", long_options, &option_index);
 
         if (c == -1)
             break;
@@ -196,17 +198,22 @@ cmdOptions handleCmdLine(int argc, char **argv)
         switch (c)
         {
             case 'p':
-                printf("profile map file: %s", optarg);
+                printf("profile map file: %s\n", optarg);
                 options.profileMapFile = std::string(optarg);
                 break;
 
             case 'f':
-                printf("port map file: %s", optarg);
+                printf("port map file: %s\n", optarg);
                 options.portMapFile = std::string(optarg);
                 break;
 
+            case 'S':
+                printf("init script: %s\n", optarg);
+                options.initScript = std::string(optarg);
+                break;
+
             default:
-                printf("getopt_long failure");
+                printf("getopt_long failure\n");
                 exit(EXIT_FAILURE);
         }
     }
@@ -298,6 +305,16 @@ void handlePortMap(const std::string& portMapFile)
     }
 }
 
+void handleInitScript(const std::string& initScript)
+{
+
+    if (initScript.size() == 0)
+        return;
+
+    printf("Running %s ...\n", initScript.c_str());
+    system(initScript.c_str());
+}
+
 int
 main(int argc, char* argv[])
 {
@@ -315,6 +332,8 @@ main(int argc, char* argv[])
     {
         exit(EXIT_FAILURE);
     }
+
+    handleInitScript(options.initScript);
 
 #ifdef BRCMSAI
     std::thread bcm_diag_shell_thread = std::thread(sai_diag_shell);
@@ -338,6 +357,8 @@ main(int argc, char* argv[])
     sai_log_set(SAI_API_LAG, SAI_LOG_NOTICE);
     sai_log_set(SAI_API_BUFFERS, SAI_LOG_NOTICE);
     sai_log_set(SAI_API_POLICER, SAI_LOG_NOTICE);
+    sai_log_set(SAI_API_WRED, SAI_LOG_NOTICE);
+    sai_log_set(SAI_API_QOS_MAPS, SAI_LOG_NOTICE);
 
     while (1) pause();
 

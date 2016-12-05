@@ -897,6 +897,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_DOT1P_TO_TC_MAP,
 
@@ -911,6 +912,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_DOT1P_TO_COLOR_MAP,
 
@@ -925,6 +927,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_DSCP_TO_TC_MAP,
 
@@ -939,6 +942,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_DSCP_TO_COLOR_MAP,
 
@@ -953,6 +957,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_TC_TO_QUEUE_MAP,
 
@@ -966,6 +971,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
 
@@ -979,6 +985,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
@@ -1085,18 +1092,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
 
     /**
-     * @brief Set Switch Port event notification callback function passed to the adapter.
-     *
-     * Use sai_port_event_notification_fn as notification function.
-     *
-     * @type sai_pointer_t
-     * @flags CREATE_AND_SET
-     * @default NULL
-     */
-    SAI_SWITCH_ATTR_PORT_EVENT_NOTIFY,
-
-    /**
-     * @brief Set Switch Port event notification callback function passed to the adapter.
+     * @brief Set Switch Received packet event notification callback function passed to the adapter.
      *
      * Use sai_packet_event_notification_fn as notification function.
      *

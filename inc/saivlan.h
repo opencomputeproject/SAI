@@ -99,6 +99,7 @@ typedef enum _sai_vlan_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_STP
      * @flags CREATE_AND_SET
+     * @default attrvalue SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID
      */
     SAI_VLAN_ATTR_STP_INSTANCE,
 
