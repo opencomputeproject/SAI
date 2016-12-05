@@ -452,6 +452,16 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE,
 
     /**
+     * @brief Default SAI VLAN ID
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_VLAN
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_DEFAULT_VLAN_ID,
+
+
+    /**
      * @brief Default SAI STP instance ID
      *
      * @type sai_object_id_t
