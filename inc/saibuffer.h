@@ -92,7 +92,7 @@ typedef enum _sai_ingress_priority_group_stat_t
     SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
 
     /** get rx bytes count [uint64_t] */
-    SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_BYTES = 0x00000009,
+    SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_BYTES = 0x00000008,
 
     /** Custom range base value */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
@@ -246,10 +246,10 @@ typedef enum _sai_buffer_pool_stat_t
     SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
 
     /** get count of bytes passed pool [uint64_t] */
-    SAI_BUFFER_POOL_STAT_BYTES  = 0x00000003,
+    SAI_BUFFER_POOL_STAT_BYTES  = 0x00000002,
 
     /** get count of bytes dropped by pool limits [uint64_t] */
-    SAI_BUFFER_POOL_STAT_DROPPED_BYTES  = 0x00000004,
+    SAI_BUFFER_POOL_STAT_DROPPED_BYTES  = 0x00000003,
 
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
