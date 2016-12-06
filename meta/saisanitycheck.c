@@ -321,6 +321,11 @@ void check_attr_flags(
                         sai_metadata_get_default_value_type_name(md->defaultvaluetype));
             }
 
+            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
+            }
+
             break;
 
         case SAI_ATTR_FLAGS_CREATE_ONLY:
@@ -340,7 +345,7 @@ void check_attr_flags(
                 if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
                 {
                     /*
-                     * String  or Pointer may not provide default value, 
+                     * String  or Pointer may not provide default value,
                      * which will mean it can be NULL.
                      */
                     break;
@@ -366,7 +371,12 @@ void check_attr_flags(
 
             if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
             {
-                META_ASSERT_FAIL(md, "read only can't be conditional");
+                META_ASSERT_FAIL(md, "read only attribute can't be conditional");
+            }
+
+            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "read only attribute can't be valid only");
             }
 
             break;
@@ -950,6 +960,171 @@ void check_attr_conditions(
     }
 }
 
+void check_attr_validonly(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    switch (md->validonlytype)
+    {
+        case SAI_ATTR_CONDITION_TYPE_NONE:
+        case SAI_ATTR_CONDITION_TYPE_OR:
+            break;
+
+        default:
+
+            META_ASSERT_FAIL(md, "invalid validonly type specified: %d", md->validonlytype);
+    }
+
+    bool conditional = md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE;
+
+    if (!conditional && md->validonly != NULL)
+    {
+        META_ASSERT_FAIL(md, "not validonly but validonly specified");
+    }
+
+    if (!conditional)
+    {
+        return;
+    }
+
+    if (md->validonly == NULL)
+    {
+        META_ASSERT_FAIL(md, "marked as validonly but no validonly specified");
+    }
+
+    switch ((int)md->flags)
+    {
+        case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
+        case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
+        case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
+
+            META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
+            break;
+
+        case SAI_ATTR_FLAGS_CREATE_ONLY:
+        case SAI_ATTR_FLAGS_CREATE_AND_SET:
+
+            /* ok */
+
+            break;
+
+        case SAI_ATTR_FLAGS_READ_ONLY:
+
+            META_ASSERT_FAIL(md, "read only attribute can't be valid only");
+            break;
+
+        default:
+
+            META_ASSERT_FAIL(md, "marked as validonly, but invalid creation flags: 0x%u", md->flags);
+    }
+
+    if ((md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE) ||
+            (md->defaultvalue == NULL))
+    {
+        META_ASSERT_FAIL(md, "expected default value on vlaid only attribute, but none provided");
+    }
+
+    /* condition must be the same object type as attribue we check */
+
+    size_t index = 0;
+
+    for (; index < md->validonlylength; ++index)
+    {
+        const sai_attr_condition_t* c = md->validonly[index];
+
+        if (c->attrid == md->attrid)
+        {
+            META_ASSERT_FAIL(md, "validonly attr id %d is the same as validonly attribute", c->attrid);
+        }
+
+        const sai_attr_metadata_t* cmd = sai_metadata_get_attr_metadata(md->objecttype, c->attrid);
+
+        if (cmd == NULL)
+        {
+            META_ASSERT_FAIL(md, "validonly attribute id %d was not defined yet in metadata", c->attrid);
+        }
+
+        switch (cmd->attrvaluetype)
+        {
+            case SAI_ATTR_VALUE_TYPE_BOOL:
+
+                META_LOG_INFO("attr id: %d cond.bool: %d", c->attrid, c->condition.booldata);
+
+                break;
+
+            case SAI_ATTR_VALUE_TYPE_INT32:
+
+                if (!cmd->isenum)
+                {
+                    META_ASSERT_FAIL(md, "validonly attribute %d is not enum type", cmd->attrid);
+                }
+
+                META_LOG_INFO("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
+
+                /* check if condition enum is in condition attribute range */
+
+                if (sai_metadata_get_enum_value_name(cmd->enummetadata, c->condition.s32) == NULL)
+                {
+                    META_ASSERT_FAIL(md, "validonly enum %d not found on validonly attribute enum range", c->condition.s32);
+                }
+
+                break;
+
+            default:
+
+                META_ASSERT_FAIL(md, "attr value type %d of validonly attribute is not supported yet", cmd->attrvaluetype);
+
+        }
+
+        /*
+         * TODO can validonly attribute depend on condition attribute which is not provided?
+         * TODO can validonly depend on other validonly?
+         */
+
+        if (cmd->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+        {
+            META_ASSERT_FAIL(md, "validonly attibute is also validonly attribute, not allowed");
+        }
+
+        if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
+        {
+            if (cmd->flags == SAI_ATTR_FLAGS_CREATE_ONLY &&
+                    cmd->attrvaluetype == SAI_ATTR_VALUE_TYPE_BOOL)
+            {
+                /* ok, that means there is default value (it may be depending on switch intenal) */
+            }
+            else
+            {
+                META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
+            }
+        }
+
+        switch ((int)cmd->flags)
+        {
+            case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
+            case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
+            case SAI_ATTR_FLAGS_CREATE_ONLY:
+                /*
+                 * condition attribute must be create only since
+                 * if it could change then other object may be required to pass
+                 * on creation time that was not passed
+                 */
+                break;
+
+            default:
+
+                META_ASSERT_FAIL(md, "conditional attribute must be create only");
+        }
+    }
+
+    if ((md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE ) &&
+            (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE ))
+    {
+        META_ASSERT_FAIL(md, "attribute is conditional and valid only, not supported");
+    }
+}
+
 void check_attr_enum_list_condition(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -965,6 +1140,25 @@ void check_attr_enum_list_condition(
         if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
             META_ASSERT_FAIL(md, "conditional enum list not supported yet");
+        }
+    }
+}
+
+void check_attr_enum_list_validonly(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->isenumlist)
+    {
+        if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_INT32_LIST)
+        {
+            META_ASSERT_FAIL(md, "marked as enum list but wrong attr value type");
+        }
+
+        if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+        {
+            META_ASSERT_FAIL(md, "validonly enum list not supported yet");
         }
     }
 }
@@ -1267,6 +1461,8 @@ void check_single_attribute(
     check_attr_default_value_type(md);
     check_attr_conditions(md);
     check_attr_enum_list_condition(md);
+    check_attr_validonly(md);
+    check_attr_enum_list_validonly(md);
     check_attr_allow_flags(md);
     check_attr_get_save(md);
     check_attr_key(md);
