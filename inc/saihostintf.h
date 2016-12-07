@@ -303,7 +303,6 @@ typedef enum _sai_hostif_trap_type_t
     /**
      * @brief End of trap types
      */
-    SAI_HOSTIF_TRAP_TYPE_END,
 
 } sai_hostif_trap_type_t;
 
