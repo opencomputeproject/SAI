@@ -90,7 +90,7 @@ typedef enum _sai_scheduler_group_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_SCHEDULER
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID = 0x00000005,
 
