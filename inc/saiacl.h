@@ -49,24 +49,24 @@ typedef enum _sai_acl_stage_t
 /**
  * @brief Attribute data for SAI_ACL_TABLE_ATTR_BIND_POINT
  */
-typedef enum _sai_acl_bind_point_t
+typedef enum _sai_acl_bind_point_type_t
 {
-    /** Port Bind Point */
-    SAI_ACL_BIND_POINT_PORT,
+    /** Bind Point Type Port */
+    SAI_ACL_BIND_POINT_TYPE_PORT,
 
-    /** LAG Bind Point */
-    SAI_ACL_BIND_POINT_LAG,
+    /** Bind Point Type LAG */
+    SAI_ACL_BIND_POINT_TYPE_LAG,
 
-    /** VLAN Bind Point */
-    SAI_ACL_BIND_POINT_VLAN,
+    /** Bind Point Type VLAN */
+    SAI_ACL_BIND_POINT_TYPE_VLAN,
 
-    /** RIF Bind Point */
-    SAI_ACL_BIND_POINT_ROUTER_INTF,
+    /** Bind Point Type RIF */
+    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF,
 
-    /** SWITCH Bind Point */
-    SAI_ACL_BIND_POINT_SWITCH
+    /** Bind Point Type Switch */
+    SAI_ACL_BIND_POINT_TYPE_SWITCH
 
-} sai_acl_bind_point_t;
+} sai_acl_bind_point_type_t;
 
 /**
  * @brief ACL IP Type
@@ -231,7 +231,20 @@ typedef enum _sai_acl_action_type_t
 } sai_acl_action_type_t;
 
 /**
- * @brief Attribute Id for sai_acl_table_group
+ * @brief Attribute data for SAI_ACL_TABLE_GROUP_ATTR_TYPE
+ */
+typedef enum _sai_acl_table_group_type_t
+{
+    /** SEQUENTIAL */
+    SAI_ACL_TABLE_GROUP_TYPE_SEQUENTIAL,
+
+    /** PARALLEL */
+    SAI_ACL_TABLE_GROUP_TYPE_PARALLEL,
+
+} sai_acl_table_group_type_t;
+
+/**
+ * @brief Attribute Id for acl_table_group
  */
 typedef enum _sai_acl_table_group_attr_t
 {
@@ -249,13 +262,38 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE = SAI_ACL_TABLE_GROUP_ATTR_START,
 
     /**
-     * @brief List of ACL bind points where this group will be applied
+     * @brief List of ACL bind points where this group will be applied. 
      *
-     * @type sai_s32_list_t sai_acl_bind_point_t
+     * ACL group bind point list - is a create only attribute required for ACL 
+     * groups to let the user specific his intention to allow further error 
+     * checks and optimizations based on a specific ASIC's SAI implementation. 
+     * ACL members being added to this group SHOULD be a subset of the bind 
+     * point list that acl group was created with.
+     *
+     * @type sai_s32_list_t sai_acl_bind_point_type_t
      * @flags CREATE_ONLY
      * @default empty
      */
-    SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_LIST,
+    SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST,
+
+    /**
+     * @brief ACL table group type
+     *
+     * ACL table group type represents the way various ACL tables within this 
+     * ACL table group perform their lookups. There are two optional values : 
+     * Sequential - All the ACL tables are looked up in a sequential order , 
+     * which is based on the ACL table priorities and only one acl entry is matched
+     * with its corresponding acl entry action applied. In case two ACL tables
+     * have the same priority they are looked up on a first come basis.
+     * Parallel - All the ACL tables within the ACL table groups are looked up 
+     * in parallel and non-conflicting actions are resolved and applied from 
+     * multiple matched ACL entries (each from different ACL tables of this group).
+     *
+     * @type sai_acl_table_group_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_ACL_TABLE_GROUP_TYPE_SEQUENTIAL
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_TYPE,
 
     /**
      * @brief End of attributes
@@ -265,14 +303,83 @@ typedef enum _sai_acl_table_group_attr_t
     /**
      * @brief Custom range base value start
      */
-    SAI_ACL_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_ACL_TABLE_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /**
      * @brief End of Custom range base
      */
-    SAI_ACL_GROUP_ATTR_CUSTOM_RANGE_END
+    SAI_ACL_TABLE_GROUP_ATTR_CUSTOM_RANGE_END
 
 } sai_acl_table_group_attr_t;
+
+/**
+ * @brief Attribute Id for acl_table_group_member
+ */
+typedef enum _sai_acl_table_group_member_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_START,
+
+    /**
+     * @brief ACL table group id
+     *
+     * This attribute is required to bind a member object (acl_table_id) to a
+     * acl table group id allocated by the create acl group api.
+     *
+     * User should always use the group id returned by SAI create_acl_group api, 
+     * to group the tables else Invalid attribute value error code will be returned.
+     *
+     * The ACL Table lookup could be done serially or in parallel. In both the
+     * cases there could be a need to group multiple tables so that only single
+     * ACL rule entry actions are performed in case of serial, or non-conflicting
+     * actions are resolved in case of parallel.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_GROUP_ID = SAI_ACL_TABLE_GROUP_MEMBER_ATTR_START,
+
+    /**
+     * @brief ACL table id
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_ID,
+ 
+    /**
+     * @brief Priority
+     *
+     * Value must be in the range defined in
+     * [SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
+     * SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY]
+     * This priority attribute is only valid for SEQUENTIAL type of ACL groups
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_PRIORITY,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_CUSTOM_RANGE_END
+
+} sai_acl_table_group_member_attr_t; 
 
 /**
  * @brief ACL User Defined Field Attribute ID Range
@@ -300,23 +407,11 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief List of ACL bind point where this ACL can be applied
      *
-     * @type sai_s32_list_t sai_acl_bind_point_t
+     * @type sai_s32_list_t sai_acl_bind_point_type_t
      * @flags CREATE_ONLY
      * @default empty
      */
-    SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_LIST,
-
-    /**
-     * @brief Priority
-     *
-     * Value must be in the range defined in
-     * [SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
-     * SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY]
-     *
-     * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_ACL_TABLE_ATTR_PRIORITY,
+    SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST,
 
     /**
      * @brief Table size
@@ -345,48 +440,6 @@ typedef enum _sai_acl_table_attr_t
      * @default 0
      */
     SAI_ACL_TABLE_ATTR_SIZE,
-
-    /**
-     * @brief Table Group Id
-     *
-     * By default, if the attribute is not present during table creation, SAI
-     * will internally allocate a unique group id which can be used to group
-     * tables which are created later. User would perform get operation for the
-     * already created ACL Table to fetch the group id created by SAI and use
-     * it for grouping the next table at the time of its creation.
-     * Group Id will be deleted from SAI once all the ACL Tables referencing
-     * the group are removed.
-     *
-     * In case none of the tables require grouping, SAI will assign unique group
-     * ids equal to the number of ACL Tables created and all will be independently
-     * looked up.
-     *
-     * User should always use the group id returned by SAI in the get operation
-     * to group the tables else Invalid attribute value error code will be returned.
-     *
-     * The ACL Table lookup could be done serially or in parallel. In both the
-     * cases there could be a need to group multiple tables so that only single
-     * ACL rule entry actions are performed.
-     *
-     * Within one ACL group, only one ACL entry will be hit which is based on the
-     * table priority as well as ACL entry priority within the table. Every ACL
-     * Table is associated to a priority which is a mandatory attribute needed at
-     * the time of table creation. The order of lookup within the ACL table group
-     * will be based on individual table priority. Action(s) from the ACL entry
-     * residing in the higher priority table within the group will be performed.
-     *
-     * Across the ACL groups, one hit ACL entry from each group will be selected
-     * and all non-conflicting actions from them will be performed.
-     *
-     * Without grouping, all non-conflicting actions from different ACL entry
-     * hits across the tables will be performed.
-     *
-     * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
-     * @flags CREATE_ONLY
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_ACL_TABLE_ATTR_GROUP_ID,
 
     /**
      * @brief End of ACL Table attributes
@@ -2078,30 +2131,84 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
         _Out_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Create an ACL Table Group Member 
+ *
+ * @param[out] acl_table_group_member_id The ACL table group member id 
+ * @param[in] attr_count number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
+        _Out_ sai_object_id_t *acl_table_group_member_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Delete an ACL Group Member 
+ *
+ * @param[in] acl_table_group_member_id The ACL table group member id
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_acl_table_group_member_fn)(
+        _In_ sai_object_id_t acl_table_group_member_id);
+
+/**
+ * @brief Set ACL table group member attribute
+ *
+ * @param[in] acl_table_group_member_id The ACL table group member id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_set_acl_table_group_member_attribute_fn)(
+        _In_ sai_object_id_t acl_table_group_member_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get ACL table group member attribute
+ *
+ * @param[in] acl_table_group_id ACL table group member id
+ * @param[in] attr_count Number of attributes
+ * @param[out] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
+        _In_ sai_object_id_t acl_table_group_member_id,
+        _In_ uint32_t attr_count,
+        _Out_ sai_attribute_t *attr_list);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_acl_api_t
 {
-    sai_create_acl_table_fn                 create_acl_table;
-    sai_remove_acl_table_fn                 remove_acl_table;
-    sai_set_acl_table_attribute_fn          set_acl_table_attribute;
-    sai_get_acl_table_attribute_fn          get_acl_table_attribute;
-    sai_create_acl_entry_fn                 create_acl_entry;
-    sai_remove_acl_entry_fn                 remove_acl_entry;
-    sai_set_acl_entry_attribute_fn          set_acl_entry_attribute;
-    sai_get_acl_entry_attribute_fn          get_acl_entry_attribute;
-    sai_create_acl_counter_fn               create_acl_counter;
-    sai_remove_acl_counter_fn               remove_acl_counter;
-    sai_set_acl_counter_attribute_fn        set_acl_counter_attribute;
-    sai_get_acl_counter_attribute_fn        get_acl_counter_attribute;
-    sai_create_acl_range_fn                 create_acl_range;
-    sai_remove_acl_range_fn                 remove_acl_range;
-    sai_set_acl_range_attribute_fn          set_acl_range_attribute;
-    sai_get_acl_range_attribute_fn          get_acl_range_attribute;
-    sai_create_acl_table_group_fn           create_acl_table_group;
-    sai_remove_acl_table_group_fn           remove_acl_table_group;
-    sai_set_acl_table_group_attribute_fn    set_acl_table_group_attribute;
-    sai_get_acl_table_group_attribute_fn    get_acl_table_group_attribute;
+    sai_create_acl_table_fn                     create_acl_table;
+    sai_remove_acl_table_fn                     remove_acl_table;
+    sai_set_acl_table_attribute_fn              set_acl_table_attribute;
+    sai_get_acl_table_attribute_fn              get_acl_table_attribute;
+    sai_create_acl_entry_fn                     create_acl_entry;
+    sai_remove_acl_entry_fn                     remove_acl_entry;
+    sai_set_acl_entry_attribute_fn              set_acl_entry_attribute;
+    sai_get_acl_entry_attribute_fn              get_acl_entry_attribute;
+    sai_create_acl_counter_fn                   create_acl_counter;
+    sai_remove_acl_counter_fn                   remove_acl_counter;
+    sai_set_acl_counter_attribute_fn            set_acl_counter_attribute;
+    sai_get_acl_counter_attribute_fn            get_acl_counter_attribute;
+    sai_create_acl_range_fn                     create_acl_range;
+    sai_remove_acl_range_fn                     remove_acl_range;
+    sai_set_acl_range_attribute_fn              set_acl_range_attribute;
+    sai_get_acl_range_attribute_fn              get_acl_range_attribute;
+    sai_create_acl_table_group_fn               create_acl_table_group;
+    sai_remove_acl_table_group_fn               remove_acl_table_group;
+    sai_set_acl_table_group_attribute_fn        set_acl_table_group_attribute;
+    sai_get_acl_table_group_attribute_fn        get_acl_table_group_attribute;
+    sai_create_acl_table_group_member_fn        create_acl_table_group_member;
+    sai_remove_acl_table_group_member_fn        remove_acl_table_group_member;
+    sai_set_acl_table_group_member_attribute_fn set_acl_table_group_member_attribute;
+    sai_get_acl_table_group_member_attribute_fn get_acl_table_group_member_attribute;
 } sai_acl_api_t;
 
 /**

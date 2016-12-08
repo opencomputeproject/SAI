@@ -500,7 +500,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_SWITCH_ATTR_DEFAULT_INGRESS_ACL,
+    SAI_SWITCH_ATTR_INGRESS_ACL,
 
     /** 
      * @brief Switch/Global bind point for egress ACL object
@@ -515,7 +515,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_SWITCH_ATTR_DEFAULT_EGRESS_ACL,
+    SAI_SWITCH_ATTR_EGRESS_ACL,
 
     /** Maximum traffic classes limit [sai_uint8_t] */
     /**
