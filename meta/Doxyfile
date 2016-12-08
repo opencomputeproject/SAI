@@ -223,6 +223,7 @@ ALIASES                += "flags        =@par Flags:\n                  @xmlonly
 ALIASES                += "objects      =@par Allowed object types\n    @xmlonly @@objects       @endxmlonly"
 ALIASES                += "allownull    =@par Allows NULL object ID\n   @xmlonly @@allownull     @endxmlonly"
 ALIASES                += "condition    =@par Condition:\n              @xmlonly @@condition     @endxmlonly"
+ALIASES                += "validonly    =@par Valid only when:\n        @xmlonly @@validonly     @endxmlonly"
 ALIASES                += "default      =@par Default value:\n          @xmlonly @@default       @endxmlonly"
 ALIASES                += "ignore       =@par Ignored:\n                @xmlonly @@ignore        @endxmlonly"
 ALIASES                += "isvlan       =@par IsVlan:\n                 @xmlonly @@isvlan        @endxmlonly"

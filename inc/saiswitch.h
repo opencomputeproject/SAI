@@ -396,6 +396,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY,
 
     /**
+     * @brief Minimum priority for ACL table group
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MINIMUM_PRIORITY,
+
+    /**
+     * @brief Maximum priority for ACL table group
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MAXIMUM_PRIORITY,
+
+    /**
      * @brief FDB DST user-based meta data range
      *
      * @type sai_u32_range_t
@@ -452,6 +468,16 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE,
 
     /**
+     * @brief Default SAI VLAN ID
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_VLAN
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_DEFAULT_VLAN_ID,
+
+
+    /**
      * @brief Default SAI STP instance ID
      *
      * @type sai_object_id_t
@@ -471,6 +497,37 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
+    /** 
+     * @brief Switch/Global bind point for ingress ACL object
+     *
+     * Bind (or unbind) an ingress acl table or acl group globally. Enable/Update 
+     * ingress ACL table or ACL group filtering by assigning the list of valid 
+     * object id . Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_INGRESS_ACL,
+
+    /** 
+     * @brief Switch/Global bind point for egress ACL object
+     *
+     * Bind (or unbind) an egress acl tables or acl group globally. Enable/Update 
+     * egress ACL table or ACL group filtering by assigning the list of valid 
+     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
+     * in the attribute value. 
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_EGRESS_ACL,
+
+    /** Maximum traffic classes limit [sai_uint8_t] */
     /**
      * @brief Maximum traffic classes limit
      *

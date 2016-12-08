@@ -778,6 +778,15 @@ typedef struct _sai_attr_metadata_t
     size_t                              conditionslength;
 
     /**
+     * @brief Specifies valid only type of attribute.
+     *
+     * @note Currently all valid only are "OR" conditions
+     * so we can deduce if this is conditional type
+     * if any conditions are defined.
+     */
+    sai_attr_condition_type_t           validonlytype;
+
+    /**
      * @brief Provides conditions when this attribute is valid.
      *
      * If conditions are specified (OR condition assumed)
@@ -791,12 +800,12 @@ typedef struct _sai_attr_metadata_t
      * valid only mark. For now we will check that in
      * specific attribute logic.
      */
-    const sai_attr_condition_t* const   validonlywhen;
+    const sai_attr_condition_t** const  validonly;
 
     /**
      * @brief Length of the valid only when conditions.
      */
-    size_t                              validonlywhenlength;
+    size_t                              validonlylength;
 
     /**
      * @brief When calling GET api result will be put
