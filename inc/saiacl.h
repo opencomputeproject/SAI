@@ -339,7 +339,6 @@ typedef enum _sai_acl_table_group_member_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @default SAI_NULL_OBJECT_ID
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_GROUP_ID = SAI_ACL_TABLE_GROUP_MEMBER_ATTR_START,
 
