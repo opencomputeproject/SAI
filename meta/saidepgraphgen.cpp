@@ -26,15 +26,24 @@ void process_object_type_attributes(
     {
         const sai_attr_metadata_t* meta = meta_attr_list[i];
 
-        if (meta->allowedobjecttypeslength == 0)
-        {
-            // skip attributes that don't contain object id's
-            continue;
-        }
-
         if (HAS_FLAG_READ_ONLY(meta->flags))
         {
             // skip attributes that are read only
+            continue;
+        }
+
+        if (meta->allowedobjecttypeslength == 0)
+        {
+            if (meta->isvlan)
+            {
+                // draw vlan dependencies since this is not object id
+                const char* current = NN(current_object_type);
+                const char* dep = NN(SAI_OBJECT_TYPE_VLAN);
+
+                std::cout << dep << " -> " << current << " [ color=\"0.950 0.700 0.700\"];\n";
+            }
+
+            // skip attributes that don't contain object id's
             continue;
         }
 
@@ -151,8 +160,9 @@ void process_manual_connections()
 int main()
 {
     std::cout << "digraph \"SAI Object Dependency Graph\" {\n";
-    std::cout << "size=\"20,10\"; ratio = fill;\n";
+    std::cout << "size=\"30,10\"; ratio = fill;\n";
     std::cout << "node [style=filled];\n";
+    std::cout << "rankdir=TB;\n";
 
     process_object_types();
 
