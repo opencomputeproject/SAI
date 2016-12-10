@@ -388,6 +388,7 @@ typedef enum _sai_tunnel_attr_t
      */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
+    /** tunnel decap attribute **/
     /* Tunnel decap attributes */
 
     /**
