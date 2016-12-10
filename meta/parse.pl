@@ -9,7 +9,6 @@ use Getopt::Std;
 use Data::Dumper;
 
 # COLOR DEFINITIONS
-
 my $colorDefault       = "\033[01;00m";
 my $colorGreenBlue     = "\033[104;92m";
 my $colorBlackYellow   = "\033[103;30m";
@@ -23,6 +22,7 @@ my $colorAqua          = "\033[66;96m";
 my $errors = 0;
 my $warnings = 0;
 my $XMLDIR = "xml";
+my $INCLUDEDIR = "../inc/";
 my %SAI_ENUMS = ();
 my %METADATA = ();
 my %options =();
@@ -1548,6 +1548,27 @@ sub CreateObjectInfo
     WriteSource "};";
 }
 
+sub GetHeaderFiles
+{
+    opendir(my $dh, $INCLUDEDIR) || die "Can't opendir $INCLUDEDIR: $!";
+    my @headers = grep { /^sai\S+\.h$/ && -f "$INCLUDEDIR/$_" } readdir($dh);
+    closedir $dh;
+
+    return @headers;
+}
+
+sub ReadHeaderFile
+{
+    my $filename = shift;
+    local $/ = undef;
+    open FILE, "$INCLUDEDIR/$filename" or die "Couldn't open file $INCLUDEDIR/$filename: $!";
+    binmode FILE;
+    my $string = <FILE>;
+    close FILE;
+
+    return $string;
+}
+
 sub CreateNonObjectIdTest
 {
     WriteSource "void non_object_id_test(void)";
@@ -1556,18 +1577,17 @@ sub CreateNonObjectIdTest
     WriteSource "    sai_object_key_t ok;";
     WriteSource "    void *p;";
 
-    my @lines = `/usr/bin/grep sai_create_ ../inc/*.h -A 1 | /usr/bin/grep _In_ -B 1`;
+    my @headers = GetHeaderFiles();
 
-    # find non object id objects and see if they are
-    # declared in sai_object_key_t
-
-    for my $line (@lines)
+    for my $header (@headers)
     {
-        next if not $line =~ /const\s+(sai_(\w+)_t)/i;
+        my $data = ReadHeaderFile($header);
 
-        # just check if member is present
-        WriteSource "    p = &ok.key.$2;";
-        WriteSource "    printf(\"%p\",p);";
+        while ($data =~ /sai_create_\S+.+?\n.+const\s+sai_(\w+)_t/gim)
+        {
+            WriteSource "    p = &ok.key.$1;";
+            WriteSource "    printf(\"%p\",p);";
+        }
     }
 
     WriteSource "}";
