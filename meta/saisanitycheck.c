@@ -1104,17 +1104,19 @@ void check_attr_validonly(
         {
             case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
             case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
+            case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
             case SAI_ATTR_FLAGS_CREATE_ONLY:
+            case SAI_ATTR_FLAGS_CREATE_AND_SET:
                 /*
-                 * condition attribute must be create only since
-                 * if it could change then other object may be required to pass
-                 * on creation time that was not passed
+                 * valid only attribute can be create_only or create_and_set
+                 * conditional attribute can change during runtime and it may
+                 * have impact on valid only attribute (it may or may not be used)
                  */
                 break;
 
             default:
 
-                META_ASSERT_FAIL(md, "conditional attribute must be create only");
+                META_ASSERT_FAIL(cmd, "valid only condition attribute has invalid flags");
         }
     }
 
