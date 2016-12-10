@@ -1108,7 +1108,7 @@ void check_attr_validonly(
             case SAI_ATTR_FLAGS_CREATE_ONLY:
             case SAI_ATTR_FLAGS_CREATE_AND_SET:
                 /*
-                 * valid only attribute can be create_only ot create_and_set
+                 * valid only attribute can be create_only or create_and_set
                  * conditional attribute can change during runtime and it may
                  * have impact on valid only attribute (it may or may not be used)
                  */
@@ -1116,7 +1116,7 @@ void check_attr_validonly(
 
             default:
 
-                META_ASSERT_FAIL(cmd, "conditional attribute must be create only");
+                META_ASSERT_FAIL(cmd, "valid only condition attribute has invalid flags");
         }
     }
 
