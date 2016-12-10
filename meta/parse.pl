@@ -1548,6 +1548,31 @@ sub CreateObjectInfo
     WriteSource "};";
 }
 
+sub CreateNonObjectIdTest
+{
+    WriteSource "void non_object_id_test(void)";
+    WriteSource "{";
+
+    WriteSource "    sai_object_key_t ok;";
+    WriteSource "    void *p;";
+
+    my @lines = `/usr/bin/grep sai_create_ ../inc/*.h -A 1 | /usr/bin/grep _In_ -B 1`;
+
+    # find non object id objects and see if they are
+    # declared in sai_object_key_t
+
+    for my $line (@lines)
+    {
+        next if not $line =~ /const\s+(sai_(\w+)_t)/i;
+
+        # just check if member is present
+        WriteSource "    p = &ok.key.$2;";
+        WriteSource "    printf(\"%p\",p);";
+    }
+
+    WriteSource "}";
+}
+
 #
 # MAIN
 #
@@ -1574,6 +1599,8 @@ CreateMetadataForAttributes();
 CreateEnumHelperMethods();
 
 CreateObjectInfo();
+
+CreateNonObjectIdTest();
 
 WriteHeader "#endif /* __SAI_METADATA_TYPES__ */";
 

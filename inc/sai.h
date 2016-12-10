@@ -37,6 +37,7 @@
 #include "saineighbor.h"
 #include "sainexthopgroup.h"
 #include "sainexthop.h"
+#include "saiobject.h"
 #include "saipolicer.h"
 #include "saiport.h"
 #include "saiqosmaps.h"
