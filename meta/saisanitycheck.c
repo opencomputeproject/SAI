@@ -387,6 +387,57 @@ void check_attr_flags(
     }
 }
 
+void check_attr_object_id_allownull(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+    {
+        /* we don't care about ACL entry data/field */
+        return;
+    }
+
+    /* attribute is object id type */
+
+    switch ((int)md->flags)
+    {
+        case SAI_ATTR_FLAGS_CREATE_ONLY:
+        case SAI_ATTR_FLAGS_CREATE_AND_SET:
+
+            /* default value is required */
+
+            switch (md->defaultvaluetype)
+            {
+                case SAI_DEFAULT_VALUE_TYPE_CONST:
+
+                    if (md->allownullobjectid == false)
+                    {
+                        /*
+                         * since attribute require default value and default value is
+                         * set to SAI_NULL_OBJECT_ID then allownull should be true
+                         */
+                        META_ASSERT_FAIL(md, "allow null object id should be set to true since default value is required");
+                    }
+
+                    break;
+
+                case SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE:
+                    /* default attr value from another attr may not support null */
+                    break;
+
+                default:
+                    META_ASSERT_FAIL(md, "invalid default value type on object id when default is required");
+                    break;
+            }
+
+            break;
+
+        default:
+            break;
+    }
+}
+
 void check_attr_object_type_provided(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1470,6 +1521,7 @@ void check_single_attribute(
     check_attr_key(md);
     check_attr_acl_fields(md);
     check_attr_vlan(md);
+    check_attr_object_id_allownull(md);
 
     define_attr(md);
 }
@@ -1563,7 +1615,7 @@ void check_object_infos()
             else
             {
                 META_ENUM_ASSERT_FAIL(info->enummetadata, "end of attributes don't match attr count on %s",
-                    sai_metadata_get_object_type_name((sai_object_type_t)i));
+                        sai_metadata_get_object_type_name((sai_object_type_t)i));
             }
         }
     }
