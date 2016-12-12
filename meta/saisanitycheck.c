@@ -417,8 +417,7 @@ void check_attr_object_id_allownull(
                          * since attribute require default value and default value is
                          * set to SAI_NULL_OBJECT_ID then allownull should be true
                          */
-                        /*META_ASSERT_FAIL(md, "allow null object id should be set to true since default value is required"); */
-                        META_WARN(md, "allow null object id should be set to true since default value is required");
+                        META_ASSERT_FAIL(md, "allow null object id should be set to true since default value is required");
                     }
 
                     break;
@@ -428,7 +427,7 @@ void check_attr_object_id_allownull(
                     break;
 
                 default:
-                    META_WARN(md, "invalid default value type on object id when default is required");
+                    META_ASSERT_FAIL(md, "invalid default value type on object id when default is required");
                     break;
             }
 
