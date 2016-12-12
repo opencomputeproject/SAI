@@ -508,6 +508,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_INGRESS_ACL,
@@ -523,6 +524,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_EGRESS_ACL,

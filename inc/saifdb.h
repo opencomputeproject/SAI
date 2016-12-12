@@ -195,6 +195,7 @@ typedef enum _sai_fdb_flush_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_ONLY
+     * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
