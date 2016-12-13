@@ -1593,6 +1593,58 @@ sub CreateNonObjectIdTest
     WriteSource "}";
 }
 
+sub CreateListOfAllAttributes
+{
+    # list will be used to find attribute metadata
+    # based on attribute string name
+
+    my %ATTRIBUTES = ();
+
+    for my $key (sort keys %SAI_ENUMS)
+    {
+        next if not $key =~ /^(sai_(\w+)_attr_t)$/;
+
+        my $typedef = $1;
+
+        my $enum = $SAI_ENUMS{$typedef};
+
+        my @values = @{ $enum->{values} };
+
+        for my $attr (@values)
+        {
+            if (not defined $METADATA{$typedef} or not defined $METADATA{$typedef}{$attr})
+            {
+                LogError "metadata is missing for $attr";
+                next;
+            }
+
+            my %meta = %{ $METADATA{$typedef}{$attr} };
+
+            next if defined $meta{ignore};
+
+            $ATTRIBUTES{$attr} = 1; #"const sai_attr_metadata_t  = {";
+        }
+    }
+
+    WriteSource "const sai_attr_metadata_t* metadata_attr_sorted_by_id_name[] = {";
+    WriteHeader "extern const sai_attr_metadata_t* metadata_attr_sorted_by_id_name[];";
+
+    my @keys = sort keys %ATTRIBUTES;
+
+    for my $attr (@keys)
+    {
+        WriteSource "    &metadata_attr_$attr,";
+    }
+
+    my $count = @keys;
+
+    WriteSource "    NULL";
+    WriteSource "};";
+
+    WriteSource "const size_t metadata_attr_sorted_by_id_name_count = $count;";
+    WriteHeader "extern const size_t metadata_attr_sorted_by_id_name_count;";
+}
+
 #
 # MAIN
 #
@@ -1619,6 +1671,8 @@ CreateMetadataForAttributes();
 CreateEnumHelperMethods();
 
 CreateObjectInfo();
+
+CreateListOfAllAttributes();
 
 CreateNonObjectIdTest();
 

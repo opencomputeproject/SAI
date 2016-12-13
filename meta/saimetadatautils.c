@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <sai.h>
 #include "saimetadatautils.h"
 #include "saimetadata.h"
@@ -68,6 +69,46 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
             }
         }
     }
+
+    return NULL;
+}
+
+const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
+        _In_ const char *attr_id_name)
+{
+    if (attr_id_name == NULL)
+    {
+        return NULL;
+    }
+
+    /* use binary search */
+
+    ssize_t first = 0;
+    ssize_t last = (ssize_t)(metadata_attr_sorted_by_id_name_count - 1);
+
+    while (first <= last)
+    {
+        ssize_t middle = (first + last) / 2;
+
+        int res = strcmp(attr_id_name, metadata_attr_sorted_by_id_name[middle]->attridname);
+
+        if (res > 0)
+        {
+            first = middle + 1;
+        }
+        else if (res < 0)
+        {
+            last = middle - 1;
+        }
+        else
+        {
+            /* found */
+
+            return metadata_attr_sorted_by_id_name[middle];
+        }
+    }
+
+    /* not found */
 
     return NULL;
 }

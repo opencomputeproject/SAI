@@ -1621,6 +1621,60 @@ void check_object_infos()
     }
 }
 
+void check_attr_sorted_by_id_name()
+{
+    META_LOG_ENTER();
+
+    size_t i = 0;
+
+    const char *last = "AAA";
+
+    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500,
+            "there should be at least 500 attributes in total");
+
+    for (; i < metadata_attr_sorted_by_id_name_count; ++i)
+    {
+        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+
+        META_ASSERT_NOT_NULL(am);
+
+        const char *name = am->attridname;
+
+        if (strcmp(last, name) >= 0)
+        {
+            META_ASSERT_FAIL(am, "attribute id name in not sorted alphabetical");
+        }
+
+        META_ASSERT_TRUE(strncmp(name, "SAI_", 4) == 0, "all attributes should start with SAI_");
+
+        last = name;
+    }
+
+    META_ASSERT_NULL(metadata_attr_sorted_by_id_name[i]);
+
+    /* check search */
+
+    for (i = 0; i < metadata_attr_sorted_by_id_name_count; ++i)
+    {
+        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+
+        META_LOG_INFO("search for %s", am->attridname);
+
+        const sai_attr_metadata_t *found = sai_metadata_get_attr_metadata_by_attr_id_name(am->attridname);
+
+        META_ASSERT_NOT_NULL(found);
+
+        META_ASSERT_TRUE(strcmp(found->attridname, am->attridname) == 0, "search attr by id name failed to find");
+    }
+
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name(NULL));     /* null pointer */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("AAA"));    /* before all attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_B"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_P"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_W"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("ZZZ"));    /* after all attr names */
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -1639,6 +1693,7 @@ int main(int argc, char **argv)
     }
 
     check_object_infos();
+    check_attr_sorted_by_id_name();
 
     printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 
