@@ -204,7 +204,7 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_FDB_FLUSH                = 44,
     SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER    = 45,
     SAI_OBJECT_TYPE_STP_PORT                 = 46,
-    SAI_OBJECT_TYPE_MAX                      = 57
+    SAI_OBJECT_TYPE_MAX                      = 47
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
