@@ -164,6 +164,7 @@ typedef enum _sai_vlan_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
      * @default SAI_NULL_OBJECT_ID
+     * @allownull true
      */
     SAI_VLAN_ATTR_UNKNOWN_NON_IP_MCAST_OUTPUT_GROUP_ID,
 
@@ -180,6 +181,7 @@ typedef enum _sai_vlan_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
      * @default SAI_NULL_OBJECT_ID
+     * @allownull true
      */
     SAI_VLAN_ATTR_UNKNOWN_IPV4_MCAST_OUTPUT_GROUP_ID,
 
@@ -196,6 +198,7 @@ typedef enum _sai_vlan_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
      * @default SAI_NULL_OBJECT_ID
+     * @allownull true
      */
     SAI_VLAN_ATTR_UNKNOWN_IPV6_MCAST_OUTPUT_GROUP_ID,
 
@@ -213,6 +216,7 @@ typedef enum _sai_vlan_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
      * @default SAI_NULL_OBJECT_ID
+     * @allownull true
      */
     SAI_VLAN_ATTR_UNKNOWN_LINKLOCAL_MCAST_OUTPUT_GROUP_ID,
 
