@@ -52,6 +52,21 @@ typedef enum _sai_vlan_tagging_mode_t
 } sai_vlan_tagging_mode_t;
 
 /**
+ * @brief Attribute data for multicast_lookup_key_type parameter
+ */
+typedef enum _sai_vlan_mcast_lookup_key_type_t
+{
+    SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_MAC_DA,
+
+    SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_XG,
+
+    SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_SG,
+
+    SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_XG_AND_SG
+
+} sai_vlan_mcast_lookup_key_type_t;
+
+/**
  * @brief Attribute Id in sai_set_vlan_attribute() and
  * sai_get_vlan_attribute() calls
  */
@@ -115,6 +130,91 @@ typedef enum _sai_vlan_attr_t
      * @default false
      */
     SAI_VLAN_ATTR_LEARN_DISABLE,
+
+    /**
+     * @brief To set IPv4 multicast lookup key on a VLAN
+     *
+     * @type sai_vlan_mcast_lookup_key_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_MAC_DA
+     */
+    SAI_VLAN_ATTR_IPV4_MCAST_LOOKUP_KEY_TYPE, 
+
+    /**
+     * @brief To set IPv6 multicast lookup key on a VLAN
+     *
+     * @type sai_vlan_mcast_lookup_key_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_MAC_DA
+     */
+    SAI_VLAN_ATTR_IPV6_MCAST_LOOKUP_KEY_TYPE,
+
+    /**
+     * @brief L2MC Group ID that unknown non-ip MACST packets forwarded to
+     *
+     * Indicating the output ports/LAGs for unknown non-ip multicast packets.
+     * This attribute only takes effect when one of the following conditions is met:
+     * (1)non-ip multicast packet
+     * (2)IPv4 multicast packet && not linklocal && IPv4 mcast snooping disabled for vlan
+     * (3)IPv6 multicast packet && not linklocal && IPv6 mcast snooping disabled for vlan
+     * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
+     * If the group has no member, unknown multicast packets will be discarded.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_VLAN_ATTR_UNKNOWN_NON_IP_MCAST_OUTPUT_GROUP_ID,
+
+    /**
+     * @brief L2MC Group ID that unknown ipv4 MACST packets forwarded to
+     *
+     * Indicating the output ports/LAGs for unknown IPv4 multicast packets.
+     * This attribute only takes effect when the following condition is met:
+     * (1)IPv4 multicast packet && not linklocal && IPv4 mcast snooping enabled for vlan
+     * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
+     * If the group has no member, unknown multicast packets will be discarded.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_VLAN_ATTR_UNKNOWN_IPV4_MCAST_OUTPUT_GROUP_ID,
+
+    /**
+     * @brief L2MC Group ID that unknown ipv6 MACST packets forwarded to
+     *
+     * Indicating the output ports/LAGs for unknown IPv6 multicast packets.
+     * This attribute only takes effect when the following condition is met:
+     * (1)IPv6 multicast packet && not linklocal && IPv6 mcast snooping enabled for vlan
+     * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
+     * If the group has no member, unknown multicast packets will be discarded. 
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_VLAN_ATTR_UNKNOWN_IPV6_MCAST_OUTPUT_GROUP_ID,
+
+    /**
+     * @brief L2MC Group ID that unknown linklocal MACST packets forwarded to
+     *
+     * Indicating the output ports/LAGs for unknown linklocal multicast packets.
+     * This attribute only takes effect when the following condition is met:
+     * (1) IPv4 multicast packet && linklocal address && IPv4 mcast snooping enabled for vlan
+     * (2) IPv6 multicast packet && linklocal address && IPv6 mcast snooping enabled for vlan
+     * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
+     * If the group has no member, unknown multicast packets will be discarded. 
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_VLAN_ATTR_UNKNOWN_LINKLOCAL_MCAST_OUTPUT_GROUP_ID,
 
     /** 
      * @brief VLAN bind point for ingress ACL object

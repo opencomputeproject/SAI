@@ -27,6 +27,9 @@
 
 #include <saitypes.h>
 #include <saifdb.h>
+#include <saimcfdb.h>
+#include <sail2mc.h>
+#include <saiipmc.h>
 #include <saineighbor.h>
 #include <sairoute.h>
 
@@ -49,6 +52,9 @@ typedef struct _sai_object_key_t
         sai_fdb_entry_t           fdb_entry;
         sai_neighbor_entry_t      neighbor_entry;
         sai_route_entry_t         route_entry;
+		sai_mcast_fdb_entry_t     mcast_fdb_entry;
+		sai_l2mc_entry_t          l2mc_entry;
+		sai_ipmc_entry_t          ipmc_entry;
 
     } key;
 
