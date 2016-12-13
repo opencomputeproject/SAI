@@ -91,10 +91,10 @@ typedef enum _sai_router_interface_attr_t
     /**
      * @brief Assosiated Vlan
      *
-     * @type sai_uint16_t
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_VLAN
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN
-     * @isvlan true
      */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
 
