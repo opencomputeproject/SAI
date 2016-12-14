@@ -51,7 +51,11 @@ typedef enum _sai_l2mc_entry_type_t
  */
 typedef struct _sai_l2mc_entry_t
 {
-    /** Switch ID */
+    /**
+     * @brief Switch ID
+     *
+     * @objects SAI_OBJECT_TYPE_SWITCH
+     */
     sai_object_id_t switch_id;
 
     /** Vlan ID */
@@ -70,7 +74,7 @@ typedef struct _sai_l2mc_entry_t
 /**
  * @brief Attribute Id for l2mc entry
  */
-typedef enum _sai_l2mc_entry_attr_t 
+typedef enum _sai_l2mc_entry_attr_t
 {
     /**
      * @brief Start of attributes
@@ -91,7 +95,7 @@ typedef enum _sai_l2mc_entry_attr_t
      *
      * This attribute only takes effect when ATTR_PACKET_ACTION is set to FORWARD.
      * If the group has no member, packets will be discarded.
-     * (MANDATORY_ON_CREATE when SAI_L2MC_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD) 
+     * (MANDATORY_ON_CREATE when SAI_L2MC_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD)
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
