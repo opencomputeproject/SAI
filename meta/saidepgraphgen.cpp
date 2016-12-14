@@ -144,6 +144,9 @@ void process_manual_connections()
     PRINT_NN(VIRTUAL_ROUTER, ROUTE_ENTRY, c);
     PRINT_NN(ROUTER_INTERFACE, NEIGHBOR_ENTRY, c);
     PRINT_NN(VLAN, FDB_ENTRY, c);
+    PRINT_NN(VLAN, MCAST_FDB_ENTRY, c);
+    PRINT_NN(VIRTUAL_ROUTER, IPMC_ENTRY, c);
+    PRINT_NN(VLAN, L2MC_ENTRY, c);
 
     PRINT_NN(PORT, SWITCH, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
 }
@@ -151,7 +154,7 @@ void process_manual_connections()
 int main()
 {
     std::cout << "digraph \"SAI Object Dependency Graph\" {\n";
-    std::cout << "size=\"20,10\"; ratio = fill;\n";
+    std::cout << "size=\"30,12\"; ratio = fill;\n";
     std::cout << "node [style=filled];\n";
 
     process_object_types();
