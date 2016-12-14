@@ -61,6 +61,9 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ASSERT_FALSE(x, msg)\
     if ((x) == true) { fprintf(stderr, "assert false failed: '%s' on line %d: %s\n", #x, __LINE__, msg); exit(1); }
 
+#define META_FAIL(format, ...)\
+    { fprintf(stderr, "assert failed on line %d: " format "\n", __LINE__, ##__VA_ARGS__); exit(1);}
+
 #define META_LOG_ENTER() \
     if (debug) { printf(":> %s\n", __FUNCTION__); }
 
@@ -1621,6 +1624,97 @@ void check_object_infos()
     }
 }
 
+void check_non_object_id_object_types()
+{
+    META_LOG_ENTER();
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        if (!info->isnonobjectid)
+        {
+            if (info->structmemberscount != 0 ||
+                    info->structmembers != NULL)
+            {
+                META_FAIL("object type %zu is non object id but struct members defined", i);
+            }
+
+            continue;
+        }
+
+        META_ASSERT_TRUE(info->structmemberscount != 0, "non object id should have members defined");
+        META_ASSERT_NOT_NULL(info->structmembers);
+
+        /* check each member of the struct */
+
+        size_t j = 0;
+
+        for (; j < info->structmemberscount; ++j)
+        {
+            META_ASSERT_NOT_NULL(info->structmembers[j]);
+
+            const sai_struct_member_info_t  *m = info->structmembers[j];
+
+            META_ASSERT_NOT_NULL(m->membername);
+
+            switch (m->membervaluetype)
+            {
+                case SAI_ATTR_VALUE_TYPE_MAC:
+                case SAI_ATTR_VALUE_TYPE_INT32:
+                case SAI_ATTR_VALUE_TYPE_UINT16:
+                case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
+                case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
+                case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+                    break;
+
+                default:
+
+                    META_FAIL("struct member %s have invalid value type %d", m->membername, m->membervaluetype);
+            }
+
+            if (m->isvlan)
+            {
+                META_ASSERT_TRUE(m->membervaluetype == SAI_ATTR_VALUE_TYPE_UINT16, "member marked as vlan, but wrong type specified");
+            }
+
+            if (m->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+            {
+                META_ASSERT_NOT_NULL(m->allowedobjecttypes);
+                META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "member is object id, should specify some object types");
+
+                size_t k = 0;
+
+                for (; k < m->allowedobjecttypeslength; k++)
+                {
+                    sai_object_type_t ot = m->allowedobjecttypes[k];
+
+                    if (ot >= SAI_OBJECT_TYPE_NULL && ot <= SAI_OBJECT_TYPE_MAX)
+                    {
+                        continue;
+                    }
+
+                    META_FAIL("invalid object type specified on file %s: %d", m->membername, ot);
+                }
+            }
+            else
+            {
+                META_ASSERT_NULL(m->allowedobjecttypes);
+                META_ASSERT_TRUE(m->allowedobjecttypeslength == 0, "member is not object id, should not specify object types");
+            }
+        }
+
+        META_ASSERT_NULL(info->structmembers[j]);
+    }
+}
+
 void check_attr_sorted_by_id_name()
 {
     META_LOG_ENTER();
@@ -1694,6 +1788,7 @@ int main(int argc, char **argv)
 
     check_object_infos();
     check_attr_sorted_by_id_name();
+    check_non_object_id_object_types();
 
     printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 

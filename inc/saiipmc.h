@@ -51,11 +51,19 @@ typedef enum _sai_ipmc_entry_type_t
  */
 typedef struct _sai_ipmc_entry_t
 {
-    /** Switch ID */
+    /**
+     * @brief Switch ID
+     *
+     * @objects SAI_OBJECT_TYPE_SWITCH
+     */
     sai_object_id_t switch_id;
 
-    /** VRF ID */
-    sai_object_id_t vrf_id;
+    /**
+     * @brief Virtual Router ID
+     *
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     */
+    sai_object_id_t vr_id;
 
     /** IPMC entry type */
     sai_ipmc_entry_type_t type;
@@ -70,7 +78,7 @@ typedef struct _sai_ipmc_entry_t
 /**
  * @brief Attribute Id for ipmc entry
  */
-typedef enum _sai_ipmc_entry_attr_t 
+typedef enum _sai_ipmc_entry_attr_t
 {
     /**
      * @brief Start of attributes
@@ -91,7 +99,7 @@ typedef enum _sai_ipmc_entry_attr_t
      *
      * This attribute only takes effect when ATTR_PACKET_ACTION is set to FORWARD
      * If the group has no member, packets will be discarded
-     * (MANDATORY_ON_CREATE when SAI_IPMC_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD) 
+     * (MANDATORY_ON_CREATE when SAI_IPMC_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD)
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_IPMC_GROUP
