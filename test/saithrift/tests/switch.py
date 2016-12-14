@@ -400,59 +400,78 @@ def sai_thrift_create_hostif(client, rif_or_port_id, intf_name):
     hif_id = client.sai_thrift_create_hostif(attr_list)
     return hif_id
 
-def sai_thrift_create_acl_table(client, addr_family,
+def sai_thrift_create_acl_table(client,
+                                table_stage,
+                                table_bind_point_list,
+                                addr_family,
                                 ip_src, ip_dst,
                                 ip_proto,
                                 in_ports, out_ports,
                                 in_port, out_port):
-    #print "aaa"
+
     acl_attr_list = []
+
+    if table_stage != None:
+        attribute_value = sai_thrift_attribute_value_t(s32=table_stage)
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_STAGE,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+
+    if table_bind_point_list != None:
+        acl_table_bind_point_list = sai_thrift_s32_list_t(count=len(table_bind_point_list), s32list=table_bind_point_list)
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(bind_point_list=acl_table_bind_point_list)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+
     if ip_src != None:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_SRC_IP,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
+
     if ip_dst != None:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_DST_IP,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
+
     if ip_proto != None:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
+
     if in_ports:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_IN_PORTS,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
+
     if out_ports:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_OUT_PORTS,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
+
     if in_port != None:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_IN_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
+
     if out_port != None:
         attribute_value = sai_thrift_attribute_value_t(booldata=1)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_FIELD_OUT_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
-    attribute_value = sai_thrift_attribute_value_t(u32=0)   #TODO: Expose stage as function parameter
-    attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_STAGE, value=attribute_value)
-    acl_attr_list.append(attribute)
-    
-    #print "bbb"    
     acl_table_id = client.sai_thrift_create_acl_table(acl_attr_list)
-    #print acl_table_id
     return acl_table_id
 
-def sai_thrift_create_acl_entry(client, acl_table_id,
+def sai_thrift_create_acl_entry(client,
+                                acl_table_id,
+                                entry_priority,
                                 action, addr_family,
                                 ip_src, ip_src_mask,
                                 ip_dst, ip_dst_mask,
@@ -462,17 +481,18 @@ def sai_thrift_create_acl_entry(client, acl_table_id,
                                 ingress_mirror, egress_mirror):
     acl_attr_list = []
 
-    #OID
+    #ACL table OID
     attribute_value = sai_thrift_attribute_value_t(oid=acl_table_id)
     attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_TABLE_ID,
                                        value=attribute_value)
     acl_attr_list.append(attribute)
 
     #Priority
-    attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u32=10)))
-    attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PRIORITY,
-                                       value=attribute_value)
-    acl_attr_list.append(attribute)
+    if entry_priority != None:
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u32=entry_priority)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PRIORITY,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
 
     #Ip source
     if ip_src != None:
@@ -497,12 +517,14 @@ def sai_thrift_create_acl_entry(client, acl_table_id,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
+    #Input port
     if in_port != None:
         attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=in_port)))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
+    #Output port
     if out_port != None:
         attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=out_port)))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
@@ -510,22 +532,23 @@ def sai_thrift_create_acl_entry(client, acl_table_id,
         acl_attr_list.append(attribute)
 
     #Packet action
-    if action == 1:
-        #Drop
-        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(u32=0)))
-        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
+    if action != None:
+        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(u32=action)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
-    elif action == 2:
-        #Ingress mirroring
-        if ingress_mirror != None:
-            attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(oid=ingress_mirror)))
-            attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS, value=attribute_value)
-            acl_attr_list.append(attribute)
-        elif egress_mirror != None:
-            attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(oid=egress_mirror)))
-            attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS, value=attribute_value)
-            acl_attr_list.append(attribute)
+
+    #Ingress mirroring
+    if ingress_mirror != None:
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=ingress_mirror)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS, value=attribute_value)
+        acl_attr_list.append(attribute)
+
+    #Egress mirroring
+    if egress_mirror != None:
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=egress_mirror)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS, value=attribute_value)
+        acl_attr_list.append(attribute)
 
     acl_entry_id = client.sai_thrift_create_acl_entry(acl_attr_list)
     return acl_entry_id
@@ -569,7 +592,7 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
 
         #vlan priority
         attribute5_value = sai_thrift_attribute_value_t(u16=vlan_priority)
-        attribute4 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
+        attribute5 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
                                             value=attribute5_value)
         mirror_attr_list.append(attribute5)
     elif mirror_type == SAI_MIRROR_TYPE_ENHANCED_REMOTE:
