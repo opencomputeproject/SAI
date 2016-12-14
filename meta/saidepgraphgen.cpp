@@ -132,21 +132,72 @@ void process_colors()
             std::cout << NN(ot) << " [color=plum, shape = rect];\n";
         }
     }
+
+    for (size_t i = SAI_OBJECT_TYPE_NULL; i < SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* oi =  sai_all_object_type_infos[i];
+
+        if (oi == NULL)
+        {
+            continue;
+        }
+
+        if (!oi->isnonobjectid)
+        {
+            continue;
+        }
+
+        std::cout << NN(i) << " [color=plum, shape = rect];\n";
+    }
 }
 
 #define PRINT_NN(x,y,c)\
     std::cout << NN(SAI_OBJECT_TYPE_ ## x) << " -> " << NN(SAI_OBJECT_TYPE_ ## y) << c;
 
-void process_manual_connections()
+void process_nonobjectid_connections()
 {
     const char* c = " [color=\"0.650 0.700 0.700\", style = dashed, penwidth=2];\n";
 
-    PRINT_NN(VIRTUAL_ROUTER, ROUTE_ENTRY, c);
-    PRINT_NN(ROUTER_INTERFACE, NEIGHBOR_ENTRY, c);
-    PRINT_NN(VLAN, FDB_ENTRY, c);
-    PRINT_NN(VLAN, MCAST_FDB_ENTRY, c);
-    PRINT_NN(VIRTUAL_ROUTER, IPMC_ENTRY, c);
-    PRINT_NN(VLAN, L2MC_ENTRY, c);
+    for (size_t i = SAI_OBJECT_TYPE_NULL; i < SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* oi =  sai_all_object_type_infos[i];
+
+        if (oi == NULL)
+        {
+            continue;
+        }
+
+        if (!oi->isnonobjectid)
+        {
+            continue;
+        }
+
+        for (size_t j = 0; j < oi->structmemberscount; ++j)
+        {
+            const sai_struct_member_info_t* sm = oi->structmembers[j];
+
+            if (sm->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+            {
+                for (size_t k = 0; k < sm->allowedobjecttypeslength; ++k)
+                {
+                    sai_object_type_t ot = sm->allowedobjecttypes[k];
+
+                    if (ot == SAI_OBJECT_TYPE_SWITCH)
+                    {
+                        // skip switch dependency since switch
+                        // is used everywhere and will pollute graph
+                        continue;
+                    }
+
+                    std::cout << NN(ot) << " -> " << NN((sai_object_type_t)i) << c;
+                }
+            }
+            else if (sm->isvlan)
+            {
+                std::cout << NN(SAI_OBJECT_TYPE_VLAN) << " -> " << NN((sai_object_type_t)i) << c;
+            }
+        }
+    }
 
     PRINT_NN(PORT, SWITCH, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
 }
@@ -159,7 +210,7 @@ int main()
 
     process_object_types();
 
-    process_manual_connections();
+    process_nonobjectid_connections();
 
     process_colors();
 
