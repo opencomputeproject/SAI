@@ -262,12 +262,12 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE = SAI_ACL_TABLE_GROUP_ATTR_START,
 
     /**
-     * @brief List of ACL bind points where this group will be applied. 
+     * @brief List of ACL bind points where this group will be applied.
      *
-     * ACL group bind point list - is a create only attribute required for ACL 
-     * groups to let the user specific his intention to allow further error 
-     * checks and optimizations based on a specific ASIC's SAI implementation. 
-     * ACL members being added to this group SHOULD be a subset of the bind 
+     * ACL group bind point list - is a create only attribute required for ACL
+     * groups to let the user specific his intention to allow further error
+     * checks and optimizations based on a specific ASIC's SAI implementation.
+     * ACL members being added to this group SHOULD be a subset of the bind
      * point list that acl group was created with.
      *
      * @type sai_s32_list_t sai_acl_bind_point_type_t
@@ -279,14 +279,14 @@ typedef enum _sai_acl_table_group_attr_t
     /**
      * @brief ACL table group type
      *
-     * ACL table group type represents the way various ACL tables within this 
-     * ACL table group perform their lookups. There are two optional values : 
-     * Sequential - All the ACL tables are looked up in a sequential order , 
+     * ACL table group type represents the way various ACL tables within this
+     * ACL table group perform their lookups. There are two optional values :
+     * Sequential - All the ACL tables are looked up in a sequential order ,
      * which is based on the ACL table priorities and only one acl entry is matched
      * with its corresponding acl entry action applied. In case two ACL tables
      * have the same priority they are looked up on a first come basis.
-     * Parallel - All the ACL tables within the ACL table groups are looked up 
-     * in parallel and non-conflicting actions are resolved and applied from 
+     * Parallel - All the ACL tables within the ACL table groups are looked up
+     * in parallel and non-conflicting actions are resolved and applied from
      * multiple matched ACL entries (each from different ACL tables of this group).
      *
      * @type sai_acl_table_group_type_t
@@ -328,7 +328,7 @@ typedef enum _sai_acl_table_group_member_attr_t
      * This attribute is required to bind a member object (acl_table_id) to a
      * acl table group id allocated by the create acl group api.
      *
-     * User should always use the group id returned by SAI create_acl_group api, 
+     * User should always use the group id returned by SAI create_acl_group api,
      * to group the tables else Invalid attribute value error code will be returned.
      *
      * The ACL Table lookup could be done serially or in parallel. In both the
@@ -349,7 +349,7 @@ typedef enum _sai_acl_table_group_member_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_ID,
- 
+
     /**
      * @brief Priority
      *
@@ -378,7 +378,7 @@ typedef enum _sai_acl_table_group_member_attr_t
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_CUSTOM_RANGE_END
 
-} sai_acl_table_group_member_attr_t; 
+} sai_acl_table_group_member_attr_t;
 
 /**
  * @brief ACL User Defined Field Attribute ID Range
@@ -2082,7 +2082,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
 /**
  * @brief Create an ACL Table Group
  *
- * @param[out] acl_table_group_id The ACL group id 
+ * @param[out] acl_table_group_id The ACL group id
  * @param[in] attr_count number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -2094,7 +2094,7 @@ typedef sai_status_t (*sai_create_acl_table_group_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Delete an ACL Group 
+ * @brief Delete an ACL Group
  *
  * @param[in] acl_table_group_id The ACL group id
  *
@@ -2130,9 +2130,9 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
         _Out_ sai_attribute_t *attr_list);
 
 /**
- * @brief Create an ACL Table Group Member 
+ * @brief Create an ACL Table Group Member
  *
- * @param[out] acl_table_group_member_id The ACL table group member id 
+ * @param[out] acl_table_group_member_id The ACL table group member id
  * @param[in] attr_count number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -2144,7 +2144,7 @@ typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Delete an ACL Group Member 
+ * @brief Delete an ACL Group Member
  *
  * @param[in] acl_table_group_member_id The ACL table group member id
  *

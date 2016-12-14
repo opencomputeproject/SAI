@@ -88,7 +88,6 @@ typedef enum _sai_ipmc_entry_attr_t
     /**
      * @brief IPMC entry type
      *
-     *
      * @type sai_packet_action_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
@@ -99,11 +98,13 @@ typedef enum _sai_ipmc_entry_attr_t
      *
      * This attribute only takes effect when ATTR_PACKET_ACTION is set to FORWARD
      * If the group has no member, packets will be discarded
-     * (MANDATORY_ON_CREATE when SAI_IPMC_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD)
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_IPMC_GROUP
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags CREATE_AND_SET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_IPMC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD
      */
     SAI_IPMC_ENTRY_ATTR_OUTPUT_GROUP_ID,
 

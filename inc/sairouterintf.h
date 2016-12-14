@@ -139,29 +139,29 @@ typedef enum _sai_router_interface_attr_t
      */
     SAI_ROUTER_INTERFACE_ATTR_MTU,
 
-    /** 
+    /**
      * @brief RIF bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a RIF. Enable/Update 
+     * Bind (or unbind) an ingress acl table or acl group on a RIF. Enable/Update
      * ingress ACL table or ACL group filtering by assigning a valid object id.
-     * Disable ingress filtering by assigning SAI_NULL_OBJECT_ID in the 
-     * attribute value. 
+     * Disable ingress filtering by assigning SAI_NULL_OBJECT_ID in the
+     * attribute value.
      *
-     * @type sai_object_id_t 
+     * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID 
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL,
 
-    /** 
+    /**
      * @brief RIF bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl table or acl group on a RIF. Enable/Update 
+     * Bind (or unbind) an egress acl table or acl group on a RIF. Enable/Update
      * egress ACL table or ACL group filtering by assigning a valid object id.
-     * Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
-     * in the attribute value. 
+     * Disable egress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
