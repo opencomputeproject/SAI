@@ -152,8 +152,8 @@ typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
  */
 typedef sai_status_t(*sai_clear_ingress_priority_group_stats_fn)(
         _In_ sai_object_id_t ingress_pg_id,
-        _In_ const sai_ingress_priority_group_stat_t *counter_ids,
-        _In_ uint32_t number_of_counters);
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_ingress_priority_group_stat_t *counter_ids);
 
 /**
  * @brief Enum defining buffer pool types.
@@ -337,15 +337,15 @@ typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
  * @brief Clear buffer pool statistics counters.
  *
  * @param[in] pool_id Buffer pool id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_clear_buffer_pool_stats_fn)(
         _In_ sai_object_id_t pool_id,
-        _In_ const sai_buffer_pool_stat_t *counter_ids,
-        _In_ uint32_t number_of_counters);
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_buffer_pool_stat_t *counter_ids);
 
 /**
  * @brief Enum defining buffer profile threshold modes
