@@ -321,6 +321,11 @@ void check_attr_flags(
                         sai_metadata_get_default_value_type_name(md->defaultvaluetype));
             }
 
+            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
+            }
+
             break;
 
         case SAI_ATTR_FLAGS_CREATE_ONLY:
@@ -340,7 +345,7 @@ void check_attr_flags(
                 if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
                 {
                     /*
-                     * String  or Pointer may not provide default value, 
+                     * String  or Pointer may not provide default value,
                      * which will mean it can be NULL.
                      */
                     break;
@@ -366,7 +371,12 @@ void check_attr_flags(
 
             if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
             {
-                META_ASSERT_FAIL(md, "read only can't be conditional");
+                META_ASSERT_FAIL(md, "read only attribute can't be conditional");
+            }
+
+            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "read only attribute can't be valid only");
             }
 
             break;
@@ -374,6 +384,57 @@ void check_attr_flags(
         default:
 
             META_ASSERT_FAIL(md, "invalid creation flags: 0x%u", md->flags);
+    }
+}
+
+void check_attr_object_id_allownull(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+    {
+        /* we don't care about ACL entry data/field */
+        return;
+    }
+
+    /* attribute is object id type */
+
+    switch ((int)md->flags)
+    {
+        case SAI_ATTR_FLAGS_CREATE_ONLY:
+        case SAI_ATTR_FLAGS_CREATE_AND_SET:
+
+            /* default value is required */
+
+            switch (md->defaultvaluetype)
+            {
+                case SAI_DEFAULT_VALUE_TYPE_CONST:
+
+                    if (md->allownullobjectid == false)
+                    {
+                        /*
+                         * since attribute require default value and default value is
+                         * set to SAI_NULL_OBJECT_ID then allownull should be true
+                         */
+                        META_ASSERT_FAIL(md, "allow null object id should be set to true since default value is required");
+                    }
+
+                    break;
+
+                case SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE:
+                    /* default attr value from another attr may not support null */
+                    break;
+
+                default:
+                    META_ASSERT_FAIL(md, "invalid default value type on object id when default is required");
+                    break;
+            }
+
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -950,6 +1011,173 @@ void check_attr_conditions(
     }
 }
 
+void check_attr_validonly(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    switch (md->validonlytype)
+    {
+        case SAI_ATTR_CONDITION_TYPE_NONE:
+        case SAI_ATTR_CONDITION_TYPE_OR:
+            break;
+
+        default:
+
+            META_ASSERT_FAIL(md, "invalid validonly type specified: %d", md->validonlytype);
+    }
+
+    bool conditional = md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE;
+
+    if (!conditional && md->validonly != NULL)
+    {
+        META_ASSERT_FAIL(md, "not validonly but validonly specified");
+    }
+
+    if (!conditional)
+    {
+        return;
+    }
+
+    if (md->validonly == NULL)
+    {
+        META_ASSERT_FAIL(md, "marked as validonly but no validonly specified");
+    }
+
+    switch ((int)md->flags)
+    {
+        case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
+        case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
+        case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
+
+            META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
+            break;
+
+        case SAI_ATTR_FLAGS_CREATE_ONLY:
+        case SAI_ATTR_FLAGS_CREATE_AND_SET:
+
+            /* ok */
+
+            break;
+
+        case SAI_ATTR_FLAGS_READ_ONLY:
+
+            META_ASSERT_FAIL(md, "read only attribute can't be valid only");
+            break;
+
+        default:
+
+            META_ASSERT_FAIL(md, "marked as validonly, but invalid creation flags: 0x%u", md->flags);
+    }
+
+    if ((md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE) ||
+            (md->defaultvalue == NULL))
+    {
+        META_ASSERT_FAIL(md, "expected default value on vlaid only attribute, but none provided");
+    }
+
+    /* condition must be the same object type as attribue we check */
+
+    size_t index = 0;
+
+    for (; index < md->validonlylength; ++index)
+    {
+        const sai_attr_condition_t* c = md->validonly[index];
+
+        if (c->attrid == md->attrid)
+        {
+            META_ASSERT_FAIL(md, "validonly attr id %d is the same as validonly attribute", c->attrid);
+        }
+
+        const sai_attr_metadata_t* cmd = sai_metadata_get_attr_metadata(md->objecttype, c->attrid);
+
+        if (cmd == NULL)
+        {
+            META_ASSERT_FAIL(md, "validonly attribute id %d was not defined yet in metadata", c->attrid);
+        }
+
+        switch (cmd->attrvaluetype)
+        {
+            case SAI_ATTR_VALUE_TYPE_BOOL:
+
+                META_LOG_INFO("attr id: %d cond.bool: %d", c->attrid, c->condition.booldata);
+
+                break;
+
+            case SAI_ATTR_VALUE_TYPE_INT32:
+
+                if (!cmd->isenum)
+                {
+                    META_ASSERT_FAIL(md, "validonly attribute %d is not enum type", cmd->attrid);
+                }
+
+                META_LOG_INFO("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
+
+                /* check if condition enum is in condition attribute range */
+
+                if (sai_metadata_get_enum_value_name(cmd->enummetadata, c->condition.s32) == NULL)
+                {
+                    META_ASSERT_FAIL(md, "validonly enum %d not found on validonly attribute enum range", c->condition.s32);
+                }
+
+                break;
+
+            default:
+
+                META_ASSERT_FAIL(md, "attr value type %d of validonly attribute is not supported yet", cmd->attrvaluetype);
+
+        }
+
+        /*
+         * TODO can validonly attribute depend on condition attribute which is not provided?
+         * TODO can validonly depend on other validonly?
+         */
+
+        if (cmd->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+        {
+            META_ASSERT_FAIL(md, "validonly attibute is also validonly attribute, not allowed");
+        }
+
+        if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
+        {
+            if (cmd->flags == SAI_ATTR_FLAGS_CREATE_ONLY &&
+                    cmd->attrvaluetype == SAI_ATTR_VALUE_TYPE_BOOL)
+            {
+                /* ok, that means there is default value (it may be depending on switch intenal) */
+            }
+            else
+            {
+                META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
+            }
+        }
+
+        switch ((int)cmd->flags)
+        {
+            case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
+            case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
+            case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
+            case SAI_ATTR_FLAGS_CREATE_ONLY:
+            case SAI_ATTR_FLAGS_CREATE_AND_SET:
+                /*
+                 * valid only attribute can be create_only or create_and_set
+                 * conditional attribute can change during runtime and it may
+                 * have impact on valid only attribute (it may or may not be used)
+                 */
+                break;
+
+            default:
+
+                META_ASSERT_FAIL(cmd, "valid only condition attribute has invalid flags");
+        }
+    }
+
+    if ((md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE ) &&
+            (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE ))
+    {
+        META_ASSERT_FAIL(md, "attribute is conditional and valid only, not supported");
+    }
+}
+
 void check_attr_enum_list_condition(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -965,6 +1193,25 @@ void check_attr_enum_list_condition(
         if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
             META_ASSERT_FAIL(md, "conditional enum list not supported yet");
+        }
+    }
+}
+
+void check_attr_enum_list_validonly(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->isenumlist)
+    {
+        if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_INT32_LIST)
+        {
+            META_ASSERT_FAIL(md, "marked as enum list but wrong attr value type");
+        }
+
+        if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+        {
+            META_ASSERT_FAIL(md, "validonly enum list not supported yet");
         }
     }
 }
@@ -1267,11 +1514,14 @@ void check_single_attribute(
     check_attr_default_value_type(md);
     check_attr_conditions(md);
     check_attr_enum_list_condition(md);
+    check_attr_validonly(md);
+    check_attr_enum_list_validonly(md);
     check_attr_allow_flags(md);
     check_attr_get_save(md);
     check_attr_key(md);
     check_attr_acl_fields(md);
     check_attr_vlan(md);
+    check_attr_object_id_allownull(md);
 
     define_attr(md);
 }
@@ -1365,10 +1615,64 @@ void check_object_infos()
             else
             {
                 META_ENUM_ASSERT_FAIL(info->enummetadata, "end of attributes don't match attr count on %s",
-                    sai_metadata_get_object_type_name((sai_object_type_t)i));
+                        sai_metadata_get_object_type_name((sai_object_type_t)i));
             }
         }
     }
+}
+
+void check_attr_sorted_by_id_name()
+{
+    META_LOG_ENTER();
+
+    size_t i = 0;
+
+    const char *last = "AAA";
+
+    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500,
+            "there should be at least 500 attributes in total");
+
+    for (; i < metadata_attr_sorted_by_id_name_count; ++i)
+    {
+        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+
+        META_ASSERT_NOT_NULL(am);
+
+        const char *name = am->attridname;
+
+        if (strcmp(last, name) >= 0)
+        {
+            META_ASSERT_FAIL(am, "attribute id name in not sorted alphabetical");
+        }
+
+        META_ASSERT_TRUE(strncmp(name, "SAI_", 4) == 0, "all attributes should start with SAI_");
+
+        last = name;
+    }
+
+    META_ASSERT_NULL(metadata_attr_sorted_by_id_name[i]);
+
+    /* check search */
+
+    for (i = 0; i < metadata_attr_sorted_by_id_name_count; ++i)
+    {
+        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+
+        META_LOG_INFO("search for %s", am->attridname);
+
+        const sai_attr_metadata_t *found = sai_metadata_get_attr_metadata_by_attr_id_name(am->attridname);
+
+        META_ASSERT_NOT_NULL(found);
+
+        META_ASSERT_TRUE(strcmp(found->attridname, am->attridname) == 0, "search attr by id name failed to find");
+    }
+
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name(NULL));     /* null pointer */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("AAA"));    /* before all attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_B"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_P"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_W"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("ZZZ"));    /* after all attr names */
 }
 
 int main(int argc, char **argv)
@@ -1389,6 +1693,7 @@ int main(int argc, char **argv)
     }
 
     check_object_infos();
+    check_attr_sorted_by_id_name();
 
     printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 
