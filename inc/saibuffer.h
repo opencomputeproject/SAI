@@ -145,8 +145,8 @@ typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
  * @brief Clear ingress priority group statistics counters.
  *
  * @param[in] ingress_pg_id Ingress priority group id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
