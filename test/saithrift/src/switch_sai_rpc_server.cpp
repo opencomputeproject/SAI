@@ -306,6 +306,8 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               case SAI_ROUTER_INTERFACE_ATTR_ADMIN_V6_STATE:
                   attr_list[i].value.booldata = attribute.value.booldata;
                   break;
+              case SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL:
+                  attr_list[i].value.oid = attribute.value.oid;
               default:
                   break;
           }
@@ -509,6 +511,24 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       sai_attribute_t attr;
       sai_thrift_parse_port_attributes(thrift_attr_list, &attr, &buffer_profile_list);
       status = port_api->set_port_attribute((sai_object_id_t)port_id, &attr);
+      if (buffer_profile_list) free(buffer_profile_list);
+      return status;
+  }
+
+  sai_thrift_status_t sai_thrift_set_router_interface_attribute(const sai_thrift_object_id_t rif_id, const sai_thrift_attribute_t &thrift_attr) {
+      printf("sai_thrift_set_router_interface\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_router_interface_api_t *rif_api;
+      status = sai_api_query(SAI_API_ROUTER_INTERFACE, (void **) &rif_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_object_id_t *buffer_profile_list = NULL;
+      std::vector<sai_thrift_attribute_t> thrift_attr_list;
+      thrift_attr_list.push_back(thrift_attr);
+      sai_attribute_t attr;
+      sai_thrift_parse_router_interface_attributes(thrift_attr_list, &attr, &buffer_profile_list);
+      status = rif_api->set_router_interface_attribute((sai_object_id_t)rif_id, &attr);
       if (buffer_profile_list) free(buffer_profile_list);
       return status;
   }
