@@ -224,7 +224,7 @@ typedef struct _sai_u8_list_t {
 
 /**
  * @brief Defines a s8 list or string.
- * string should be null terminated and count should include '\0'    
+ * string should be null terminated and count should include '\0'
  */
 typedef struct _sai_s8_list_t {
     uint32_t count;
@@ -538,7 +538,7 @@ typedef union {
     sai_int32_t s32;
     sai_uint64_t u64;
     sai_int64_t s64;
-    sai_pointer_t ptr; 
+    sai_pointer_t ptr;
     sai_mac_t mac;
     sai_ip4_t ip4;
     sai_ip6_t ip6;

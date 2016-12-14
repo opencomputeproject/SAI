@@ -1945,6 +1945,30 @@ sub CreateListOfAllAttributes
     WriteHeader "extern const size_t metadata_attr_sorted_by_id_name_count;";
 }
 
+sub CheckWhiteSpaceInHeaders
+{
+    my @headers = GetHeaderFiles();
+
+    for my $header (@headers)
+    {
+        my $data = ReadHeaderFile($header);
+
+        my @lines = split/\n/,$data;
+
+        my $n = 0;
+
+        for my $line (@lines)
+        {
+            $n++;
+            chomp $line;
+
+            next if not $line =~/\s+$/;
+
+            LogError "line ends in whitespace $header $n: $line";
+        }
+    }
+}
+
 #
 # MAIN
 #
@@ -1977,6 +2001,8 @@ ProcessNonObjectIdObjects();
 CreateObjectInfo();
 
 CreateListOfAllAttributes();
+
+CheckWhiteSpaceInHeaders();
 
 WriteHeader "#endif /* __SAI_METADATA_TYPES__ */";
 
