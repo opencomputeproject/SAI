@@ -395,7 +395,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    if ($val =~/^(inherit|attrvalue) SAI_\w+_ATTR_\w+$/)
+    if ($val =~/^(attrvalue) SAI_\w+_ATTR_\w+$/)
     {
         return $val;
     }
@@ -901,8 +901,6 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
-    return "SAI_DEFAULT_VALUE_TYPE_INHERIT" if $default =~ /^inherit SAI_\w+$/ and $default =~ /_ATTR_/;
-
     return "SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST" if $default =~ /^empty$/;
 
     return "SAI_DEFAULT_VALUE_TYPE_VENDOR_SPECIFIC" if $default =~ /^vendor$/;
@@ -952,10 +950,6 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
-    elsif ($default =~ /^inherit/)
-    {
-        WriteSource "$val = { };";
-    }
     elsif ($default =~ /^(attrvalue|attrrange|vendor|empty|const)/)
     {
         return "NULL";
@@ -974,7 +968,7 @@ sub ProcessDefaultValueObjectType
 
     $value = "" if not defined $value;
 
-    return "SAI_OBJECT_TYPE_$2" if $value =~ /^(inherit|attrvalue|attrrange) SAI_(\w+)_ATTR_\w+$/;
+    return "SAI_OBJECT_TYPE_$2" if $value =~ /^(attrvalue|attrrange) SAI_(\w+)_ATTR_\w+$/;
 
     return "SAI_OBJECT_TYPE_NULL";
 }
@@ -985,7 +979,7 @@ sub ProcessDefaultValueAttrId
 
     $value = "" if not defined $value;
 
-    return $2 if $value =~ /^(inherit|attrvalue|attrrange) ((SAI_\w+)_ATTR_\w+)$/;
+    return $2 if $value =~ /^(attrvalue|attrrange) ((SAI_\w+)_ATTR_\w+)$/;
 
     return "SAI_INVALID_ATTRIBUTE_ID";
 }
