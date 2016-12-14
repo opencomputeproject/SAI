@@ -567,6 +567,27 @@ void check_attr_allowed_object_types(
         {
             META_ASSERT_FAIL(md, "invalid allowed object type: %d", ot);
         }
+
+        const sai_object_type_info_t* info = sai_all_object_type_infos[ot];
+
+        META_ASSERT_NOT_NULL(info);
+
+        if (info->isnonobjectid)
+        {
+            META_ASSERT_FAIL(md, "non object id can't be used as object id: %d", ot);
+        }
+
+        if (ot == SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP)
+        {
+            META_ASSERT_FAIL(md, "user defined is non object id, can't be used as allowed object");
+        }
+
+        if (ot == SAI_OBJECT_TYPE_SWITCH)
+        {
+            /* switch object type is ment to be used only in non object id struct types */
+
+            META_ASSERT_FAIL(md, "switch object type can't be used as object type in any attribute");
+        }
     }
 }
 
@@ -595,7 +616,6 @@ void check_attr_default_required(
 
     switch (md->defaultvaluetype)
     {
-        case SAI_DEFAULT_VALUE_TYPE_INHERIT:
         case SAI_DEFAULT_VALUE_TYPE_CONST:
 
             if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT8_LIST)
@@ -789,16 +809,6 @@ void check_attr_default_value_type(
 
             /* check conditions/cretion flags? */
             break;
-
-        case SAI_DEFAULT_VALUE_TYPE_INHERIT:
-
-            if (md->objecttype == SAI_OBJECT_TYPE_BUFFER_PROFILE &&
-                    md->attrid == SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE)
-            {
-                break;
-            }
-
-            META_ASSERT_FAIL(md, "inherit default value type not allowed");
 
         case SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE:
 
@@ -1657,6 +1667,8 @@ void check_non_object_id_object_types()
 
         size_t j = 0;
 
+        bool member_supports_switch_id = false;
+
         for (; j < info->structmemberscount; ++j)
         {
             META_ASSERT_NOT_NULL(info->structmembers[j]);
@@ -1698,6 +1710,16 @@ void check_non_object_id_object_types()
 
                     if (ot >= SAI_OBJECT_TYPE_NULL && ot <= SAI_OBJECT_TYPE_MAX)
                     {
+                        if (ot == SAI_OBJECT_TYPE_SWITCH)
+                        {
+                            /*
+                             * to make struct object type complete, at least
+                             * one struct member should be type of switch
+                             */
+
+                            member_supports_switch_id = true;
+                        }
+
                         continue;
                     }
 
@@ -1710,6 +1732,8 @@ void check_non_object_id_object_types()
                 META_ASSERT_TRUE(m->allowedobjecttypeslength == 0, "member is not object id, should not specify object types");
             }
         }
+
+        META_ASSERT_TRUE(member_supports_switch_id, "none of struct members support switch id object type");
 
         META_ASSERT_NULL(info->structmembers[j]);
     }

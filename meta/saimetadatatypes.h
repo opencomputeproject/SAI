@@ -542,14 +542,6 @@ typedef enum _sai_default_value_type_t {
      */
     SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL,
 
-    /**
-     * @brief Default value is inherited from other attribute.
-     *
-     * If attribute is not specified, then default value
-     * is inherited from other object (type + attr).
-     */
-    SAI_DEFAULT_VALUE_TYPE_INHERIT,
-
 } sai_default_value_type_t;
 
 /**
