@@ -1877,7 +1877,7 @@ typedef enum _sai_acl_range_attr_t
  *
  * @param[out] acl_table_id The the ACL table id
  * @param[in] attr_count number of attributes
- * @param[in] switch_id  Switch Object id
+ * @param[in] switch_id Switch Object id
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
