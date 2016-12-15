@@ -3,6 +3,7 @@
 #include <set>
 
 #include <stdlib.h>
+#include <string.h>
 
 extern "C" {
 #include <sai.h>
@@ -16,11 +17,15 @@ extern "C" {
 std::set<sai_object_type_t> source;
 std::set<sai_object_type_t> target;
 
+bool show_switch_links = false;
+bool show_read_only_links = false;
+
 void process_object_type_attributes(
         _In_ const sai_attr_metadata_t** meta_attr_list,
         _In_ sai_object_type_t current_object_type)
 {
     std::set<sai_object_type_t> otset;
+    std::set<sai_object_type_t> rotset;
 
     for (int i = 0; meta_attr_list[i] != NULL; ++i)
     {
@@ -32,7 +37,9 @@ void process_object_type_attributes(
             continue;
         }
 
-        if (HAS_FLAG_READ_ONLY(meta->flags))
+        bool ro = HAS_FLAG_READ_ONLY(meta->flags);
+
+        if (ro && !show_read_only_links)
         {
             // skip attributes that are read only
             continue;
@@ -77,6 +84,18 @@ void process_object_type_attributes(
 
             const char* current = NN(current_object_type);
             const char* dep = NN(ot);
+
+            if (ro)
+            {
+                if (rotset.find(ot) != rotset.end())
+                {
+                    continue;
+                }
+
+                rotset.insert(ot);
+                std::cout << dep << " -> " << current << " [ " << style << " color=\"red\" ];\n";
+                continue;
+            }
 
             std::cout << dep << " -> " << current << " [ " << style << " color=\"0.650 0.700 0.700\"];\n";
 
@@ -182,7 +201,7 @@ void process_nonobjectid_connections()
                 {
                     sai_object_type_t ot = sm->allowedobjecttypes[k];
 
-                    if (ot == SAI_OBJECT_TYPE_SWITCH)
+                    if (ot == SAI_OBJECT_TYPE_SWITCH && !show_switch_links)
                     {
                         // skip switch dependency since switch
                         // is used everywhere and will pollute graph
@@ -202,8 +221,14 @@ void process_nonobjectid_connections()
     PRINT_NN(PORT, SWITCH, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
 }
 
-int main()
+int main(int argc, char** argv)
 {
+    for (int i = 1; i < argc; ++i)
+    {
+        show_switch_links       |= strcmp(argv[i], "-s") == 0;
+        show_read_only_links    |= strcmp(argv[i], "-r") == 0;
+    }
+
     std::cout << "digraph \"SAI Object Dependency Graph\" {\n";
     std::cout << "size=\"30,12\"; ratio = fill;\n";
     std::cout << "node [style=filled];\n";
