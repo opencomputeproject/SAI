@@ -348,7 +348,7 @@ void check_attr_flags(
                 if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
                 {
                     /*
-                     * String  or Pointer may not provide default value,
+                     * Pointer may not provide default value,
                      * which will mean it can be NULL.
                      */
                     break;
@@ -988,6 +988,8 @@ void check_attr_conditions(
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
+            /* this is provieded for SAI_TUNNEL_ATTR_ENCAP_GRE_KEY and needs to be converted to validonly */
+
             if (cmd->flags == SAI_ATTR_FLAGS_CREATE_ONLY &&
                     cmd->attrvaluetype == SAI_ATTR_VALUE_TYPE_BOOL)
             {
@@ -1132,7 +1134,6 @@ void check_attr_validonly(
             default:
 
                 META_ASSERT_FAIL(md, "attr value type %d of validonly attribute is not supported yet", cmd->attrvaluetype);
-
         }
 
         /*
@@ -1147,15 +1148,7 @@ void check_attr_validonly(
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            if (cmd->flags == SAI_ATTR_FLAGS_CREATE_ONLY &&
-                    cmd->attrvaluetype == SAI_ATTR_VALUE_TYPE_BOOL)
-            {
-                /* ok, that means there is default value (it may be depending on switch intenal) */
-            }
-            else
-            {
-                META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
-            }
+            META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
         }
 
         switch ((int)cmd->flags)
@@ -1733,6 +1726,49 @@ void check_non_object_id_object_types()
     }
 }
 
+void check_non_object_id_object_attrs()
+{
+    META_LOG_ENTER();
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL || !info->isnonobjectid)
+        {
+            continue;
+        }
+
+        const sai_attr_metadata_t** meta = info->attrmetadata;
+
+        META_ASSERT_NOT_NULL(meta);
+
+        size_t idx = 0;
+
+        /* iterate all attributes on non object id type */
+
+        for (; meta[idx] != NULL; ++idx)
+        {
+            const sai_attr_metadata_t* m = meta[idx];
+
+            META_ASSERT_NOT_NULL(m);
+
+            switch ((int)m->flags)
+            {
+                case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
+                case SAI_ATTR_FLAGS_CREATE_AND_SET:
+                    break;
+
+                default:
+
+                    META_WARN(m, "non object id attribute has invalid flags: 0x%x (should be CREATE_AND_SET)", m->flags);
+            }
+        }
+    }
+}
+
 void check_attr_sorted_by_id_name()
 {
     META_LOG_ENTER();
@@ -1807,6 +1843,7 @@ int main(int argc, char **argv)
     check_object_infos();
     check_attr_sorted_by_id_name();
     check_non_object_id_object_types();
+    check_non_object_id_object_attrs();
 
     printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 

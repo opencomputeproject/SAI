@@ -71,7 +71,7 @@ typedef enum _sai_mcast_fdb_entry_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_MCAST_FDB_ENTRY_ATTR_GROUP_ID = SAI_MCAST_FDB_ENTRY_ATTR_START,
 
@@ -79,7 +79,7 @@ typedef enum _sai_mcast_fdb_entry_attr_t
      * @brief Multicast FDB entry packet action
      *
      * @type sai_packet_action_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_MCAST_FDB_ENTRY_ATTR_PACKET_ACTION,
 
