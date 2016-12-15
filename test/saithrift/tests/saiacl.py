@@ -121,7 +121,7 @@ class IPAclTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_delete_acl_entry(acl_entry_id)
             self.client.sai_thrift_delete_acl_table(acl_table_id)
             # cleanup
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
             self.client.sai_thrift_remove_router_interface(rif_id1)

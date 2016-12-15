@@ -106,13 +106,17 @@ typedef enum _sai_neighbor_entry_attr_t
  */
 typedef struct _sai_neighbor_entry_t
 {
-     /**
+    /**
      * @brief Switch ID
+     *
+     * @objects SAI_OBJECT_TYPE_SWITCH
      */
     sai_object_id_t switch_id;
-    
+
     /**
      * @brief Router interface ID
+     *
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      */
     sai_object_id_t rif_id;
 
