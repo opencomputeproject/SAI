@@ -1720,7 +1720,7 @@ typedef enum _sai_acl_entry_attr_t
      * Value Range #SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
      * @flags CREATE_AND_SET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID,

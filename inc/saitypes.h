@@ -213,7 +213,8 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_L2MC_ENTRY               = 53,
     SAI_OBJECT_TYPE_IPMC_ENTRY               = 54,
     SAI_OBJECT_TYPE_MCAST_FDB_ENTRY          = 55,
-    SAI_OBJECT_TYPE_MAX                      = 56
+    SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP = 56,
+    SAI_OBJECT_TYPE_MAX                      = 57
 
 } sai_object_type_t;
 

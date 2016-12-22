@@ -577,11 +577,6 @@ void check_attr_allowed_object_types(
             META_ASSERT_FAIL(md, "non object id can't be used as object id: %d", ot);
         }
 
-        if (ot == SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP)
-        {
-            META_ASSERT_FAIL(md, "user defined is non object id, can't be used as allowed object");
-        }
-
         if (ot == SAI_OBJECT_TYPE_SWITCH)
         {
             /* switch object type is ment to be used only in non object id struct types */
@@ -929,7 +924,7 @@ void check_attr_conditions(
             }
 
             break;
-        case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
+
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
         case SAI_ATTR_FLAGS_CREATE_ONLY: /* will require default value, on some cases may be dynamic */
             break;
