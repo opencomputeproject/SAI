@@ -192,7 +192,7 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_FDB_ENTRY                = 32,
     SAI_OBJECT_TYPE_SWITCH                   = 33,
     SAI_OBJECT_TYPE_HOSTIF_TRAP              = 34,
-    SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP = 35,
+    SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY       = 35,
     SAI_OBJECT_TYPE_NEIGHBOR_ENTRY           = 36,
     SAI_OBJECT_TYPE_ROUTE_ENTRY              = 37,
     SAI_OBJECT_TYPE_VLAN                     = 38,
@@ -213,7 +213,8 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_L2MC_ENTRY               = 53,
     SAI_OBJECT_TYPE_IPMC_ENTRY               = 54,
     SAI_OBJECT_TYPE_MCAST_FDB_ENTRY          = 55,
-    SAI_OBJECT_TYPE_MAX                      = 56
+    SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP = 56,
+    SAI_OBJECT_TYPE_MAX                      = 57
 
 } sai_object_type_t;
 

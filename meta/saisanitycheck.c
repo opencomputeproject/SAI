@@ -188,7 +188,7 @@ void check_all_enums_values()
 
             last = emd->values[j];
 
-            META_ASSERT_TRUE(value < 0x6000, "enum value is too big, range?");
+            META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
         }
     }
 }
@@ -577,11 +577,6 @@ void check_attr_allowed_object_types(
             META_ASSERT_FAIL(md, "non object id can't be used as object id: %d", ot);
         }
 
-        if (ot == SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP)
-        {
-            META_ASSERT_FAIL(md, "user defined is non object id, can't be used as allowed object");
-        }
-
         if (ot == SAI_OBJECT_TYPE_SWITCH)
         {
             /* switch object type is ment to be used only in non object id struct types */
@@ -923,8 +918,7 @@ void check_attr_conditions(
             /* condition needs to be changed to validonly since flags should be CREATE_AND_SET */
 
             if (md->objecttype != SAI_OBJECT_TYPE_MIRROR_SESSION &&
-                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_TRAP &&
-                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP)
+                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_TRAP)
             {
                 META_ASSERT_FAIL(md, "marked as conditional on non mirror session /hostif_trap/hostif_user_defined_trap, but invalid creation flags: 0x%u", md->flags);
             }
