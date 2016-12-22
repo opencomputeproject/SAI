@@ -37,6 +37,7 @@
 #include "saineighbor.h"
 #include "sainexthopgroup.h"
 #include "sainexthop.h"
+#include "saiobject.h"
 #include "saipolicer.h"
 #include "saiport.h"
 #include "saiqosmaps.h"
@@ -54,6 +55,12 @@
 #include "saivlan.h"
 #include "saiwred.h"
 #include "saibridge.h"
+#include "sail2mc.h"
+#include "saiipmc.h"
+#include "sairpfgroup.h"
+#include "sail2mcgroup.h"
+#include "saiipmcgroup.h"
+#include "saimcfdb.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -97,7 +104,13 @@ typedef enum _sai_api_t
     SAI_API_HASH             = 24, /**< sai_hash_api_t */
     SAI_API_UDF              = 25, /**< sai_udf_api_t */
     SAI_API_TUNNEL           = 26, /**< sai_tunnel_api_t */
-    SAI_API_BRIDGE           = 27, /**< sai_bridge_api_t */
+    SAI_API_L2MC             = 27, /**< sai_l2mc_api_t */
+    SAI_API_IPMC             = 28, /**< sai_ipmc_api_t */
+    SAI_API_RPF_GROUP        = 29, /**< sai_rpf_group_api_t */
+    SAI_API_L2MC_GROUP       = 30, /**< sai_l2mc_group_api_t */
+    SAI_API_IPMC_GROUP       = 31, /**< sai_ipmc_group_api_t */
+    SAI_API_MCAST_FDB        = 32, /**< sai_mcast_fdb_api_t */
+    SAI_API_BRIDGE           = 33, /**< sai_bridge_api_t */
 } sai_api_t;
 
 /**

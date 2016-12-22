@@ -356,6 +356,11 @@ typedef enum _sai_attr_value_type_t {
      */
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
 
+    /**
+     * @brief Attribute value is ip prefix
+     */
+    SAI_ATTR_VALUE_TYPE_IP_PREFIX,
+
 } sai_attr_value_type_t;
 
 /**
@@ -537,14 +542,6 @@ typedef enum _sai_default_value_type_t {
      */
     SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL,
 
-    /**
-     * @brief Default value is inherited from other attribute.
-     *
-     * If attribute is not specified, then default value
-     * is inherited from other object (type + attr).
-     */
-    SAI_DEFAULT_VALUE_TYPE_INHERIT,
-
 } sai_default_value_type_t;
 
 /**
@@ -640,7 +637,7 @@ typedef struct _sai_attr_metadata_t
     /**
      * @brief Specifies valid attribute id name for this object type.
      */
-    const char*                         attridname;
+    const char* const                   attridname;
 
     /**
      * @brief Specifies attribute value type for this attribute.
@@ -713,7 +710,7 @@ typedef struct _sai_attr_metadata_t
      * @note Default value may not apply for acl field
      * or acl entry, need special care.
      */
-    const sai_attribute_value_t*        defaultvalue;
+    const sai_attribute_value_t* const  defaultvalue;
 
     /**
      * @brief Default value object type.
@@ -778,6 +775,15 @@ typedef struct _sai_attr_metadata_t
     size_t                              conditionslength;
 
     /**
+     * @brief Specifies valid only type of attribute.
+     *
+     * @note Currently all valid only are "OR" conditions
+     * so we can deduce if this is conditional type
+     * if any conditions are defined.
+     */
+    sai_attr_condition_type_t           validonlytype;
+
+    /**
      * @brief Provides conditions when this attribute is valid.
      *
      * If conditions are specified (OR condition assumed)
@@ -791,12 +797,12 @@ typedef struct _sai_attr_metadata_t
      * valid only mark. For now we will check that in
      * specific attribute logic.
      */
-    const sai_attr_condition_t* const   validonlywhen;
+    const sai_attr_condition_t** const  validonly;
 
     /**
      * @brief Length of the valid only when conditions.
      */
-    size_t                              validonlywhenlength;
+    size_t                              validonlylength;
 
     /**
      * @brief When calling GET api result will be put
@@ -819,6 +825,42 @@ typedef struct _sai_attr_metadata_t
 } sai_attr_metadata_t;
 
 /**
+ * @brief Defines struct member info for
+ * non object id object type
+ */
+typedef struct _sai_struct_member_info_t
+{
+    /**
+     * @brief Member vlaue type
+     */
+    sai_attr_value_type_t               membervaluetype;
+
+    /**
+     * @brief Member name
+     */
+    const char*                         membername;
+
+    /**
+     * @brief Indicates whether field is vlan
+     */
+    bool                                isvlan;
+
+    /**
+     * @brief Specified allowed object types.
+     *
+     * If object attr value type is OBJECT_ID
+     * this list specifies what object type can be used.
+     */
+    const sai_object_type_t* const      allowedobjecttypes;
+
+    /**
+     * @brief Length of allowed object types.
+     */
+    size_t                              allowedobjecttypeslength;
+
+} sai_struct_member_info_t;
+
+/**
  * @brief SAI object type information
  */
 typedef struct _sai_object_type_info_t
@@ -826,28 +868,44 @@ typedef struct _sai_object_type_info_t
     /**
      * @brief Object Type
      */
-    sai_object_type_t                   objecttype;
+    sai_object_type_t                       objecttype;
 
     /**
      * @brief Start of attributes *_START
      */
-    sai_attr_id_t                       attridstart;
+    sai_attr_id_t                           attridstart;
 
     /**
      * @brief End of attributes *_END
      */
-    sai_attr_id_t                       attridend;
+    sai_attr_id_t                           attridend;
 
     /**
      * @brief Provides enum metadata if attribute
      * is enum or enum list.
      */
-    const sai_enum_metadata_t* const    enummetadata;
+    const sai_enum_metadata_t* const        enummetadata;
 
     /**
      * @brief Attributes metadata
      */
-    const sai_attr_metadata_t** const   attrmetadata;
+    const sai_attr_metadata_t** const       attrmetadata;
+
+    /**
+     * @brief Indicates if object is using struct
+     * instead od actual object id
+     */
+    bool                                    isnonobjectid;
+
+    /**
+     * @brief Defines all struct members
+     */
+    const sai_struct_member_info_t** const  structmembers;
+
+    /**
+     * @brief Defines count of struct members
+     */
+    size_t                                  structmemberscount;
 
 } sai_object_type_info_t;
 

@@ -64,7 +64,11 @@ typedef enum _sai_fdb_entry_bridge_type_t
  */
 typedef struct _sai_fdb_entry_t
 {
-    /** Switch ID */
+    /**
+     * @brief Switch ID
+     *
+     * @objects SAI_OBJECT_TYPE_SWITCH
+     */
     sai_object_id_t switch_id;
 
     /** Mac address */
@@ -76,7 +80,11 @@ typedef struct _sai_fdb_entry_t
     /** Vlan ID. Valid for .1Q */
     sai_vlan_id_t vlan_id;
 
-    /** Bridge ID. Valid for .1D */
+    /**
+     * Bridge ID. Valid for .1D
+     *
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     */
     sai_object_id_t bridge_id;
 
 } sai_fdb_entry_t;
@@ -120,21 +128,29 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_TYPE = SAI_FDB_ENTRY_ATTR_START,
 
     /**
-     * @brief FDB entry bridge port id
-     *
-     * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
-
-    /**
      * @brief FDB entry packet action
      *
      * @type sai_packet_action_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_FDB_ENTRY_ATTR_PACKET_ACTION,
+
+    /**
+     * @brief FDB entry bridge port id
+     *
+     * The port id is only effective when the packet action is one of the following:
+     *  FORWARD, COPY, LOG, TRANSIT
+     *
+     * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
+     * @default SAI_NULL_OBJECT_ID
+     * @flags CREATE_AND_SET
+     * @allownull true
+     */
+    SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
 
     /**
      * @brief User based Meta Data
@@ -202,6 +218,7 @@ typedef enum _sai_fdb_flush_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_ONLY
+     * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,

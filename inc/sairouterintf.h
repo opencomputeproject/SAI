@@ -97,10 +97,10 @@ typedef enum _sai_router_interface_attr_t
     /**
      * @brief Assosiated Vlan
      *
-     * @type sai_uint16_t
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_VLAN
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
-     * @isvlan true
      */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
 
@@ -146,6 +146,40 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_MTU,
 
     /**
+     * @brief RIF bind point for ingress ACL object
+     *
+     * Bind (or unbind) an ingress acl table or acl group on a RIF. Enable/Update
+     * ingress ACL table or ACL group filtering by assigning a valid object id.
+     * Disable ingress filtering by assigning SAI_NULL_OBJECT_ID in the
+     * attribute value.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL,
+
+    /**
+     * @brief RIF bind point for egress ACL object
+     *
+     * Bind (or unbind) an egress acl table or acl group on a RIF. Enable/Update
+     * egress ACL table or ACL group filtering by assigning a valid object id.
+     * Disable egress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_EGRESS_ACL,
+
+    /** Packet action when neighbor table lookup miss for this router interface [sai_packet_action_t]
+     * (CREATE_AND_SET) (default to SAI_PACKET_ACTION_TRAP) */
+    /**
      * @brief Packet action when neighbor table lookup miss for this router interface
      *
      * @type sai_packet_action_t
@@ -153,6 +187,24 @@ typedef enum _sai_router_interface_attr_t
      * @default SAI_PACKET_ACTION_TRAP
      */
     SAI_ROUTER_INTERFACE_ATTR_NEIGHBOR_MISS_PACKET_ACTION,
+
+    /**
+     * @brief V4 Mcast enable
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ROUTER_INTERFACE_ATTR_V4_MCAST_ENABLE,
+
+    /**
+     * @brief V6 Mcast enable
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ROUTER_INTERFACE_ATTR_V6_MCAST_ENABLE,
 
     /**
      * @brief End of attributes

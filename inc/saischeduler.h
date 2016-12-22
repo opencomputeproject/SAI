@@ -146,7 +146,7 @@ typedef enum _sai_scheduler_attr_t
  * @brief Create Scheduler Profile
  *
  * @param[out] scheduler_id Scheduler id
- * @param[in] switch_id  Switch id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *

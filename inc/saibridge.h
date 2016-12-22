@@ -124,7 +124,7 @@ typedef enum _sai_bridge_port_attr_t
 
     /**
      * @brief Assosiated rouer inerface object id
-     * Please note that for SAI_BRIDGE_PORT_TYPE_1Q_ROUTER, 
+     * Please note that for SAI_BRIDGE_PORT_TYPE_1Q_ROUTER,
      * all vlan interfaces are auto bounded for the bridge port.
      *
      * @type sai_object_id_t
@@ -151,6 +151,7 @@ typedef enum _sai_bridge_port_attr_t
      * @objects SAI_OBJECT_TYPE_BRIDGE
      * @flags CREATE_AND_SET
      * @default SAI_NULL_OBJECT_ID
+     * @allownull true
      */
     SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
 
