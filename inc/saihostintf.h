@@ -244,6 +244,12 @@ typedef enum _sai_hostif_trap_type_t
     /** default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_MLD_V2_REPORT = 0x0000200d,
 
+    /** 
+     * Unknown L3 multicast packets 
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_UNKNOWN_L3_MULTICAST = 0x0000200e,
+
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x0003000,
 
@@ -861,8 +867,7 @@ typedef enum _sai_hostif_packet_attr_t
     SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE,
 
     /**
-     * @brief Egress port or
-     * (MANDATORY_ON_SEND when #SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == #SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS)
+     * @brief Egress port
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
      * Applicable for use-case like SAMPLEPACKET traps
@@ -925,7 +930,7 @@ typedef sai_status_t(*sai_send_hostif_packet_fn)(
 /**
  * @brief Hostif receive callback
  *
- * @param[in] switch_id Switch Object ID 
+ * @param[in] switch_id Switch Object ID
  * @param[in] buffer Packet buffer
  * @param[in] buffer_size Actual packet size in bytes
  * @param[in] attr_count Nnumber of attributes

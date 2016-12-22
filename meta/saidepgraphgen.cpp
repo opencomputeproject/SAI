@@ -3,6 +3,7 @@
 #include <set>
 
 #include <stdlib.h>
+#include <string.h>
 
 extern "C" {
 #include <sai.h>
@@ -16,11 +17,15 @@ extern "C" {
 std::set<sai_object_type_t> source;
 std::set<sai_object_type_t> target;
 
+bool show_switch_links = false;
+bool show_read_only_links = false;
+
 void process_object_type_attributes(
         _In_ const sai_attr_metadata_t** meta_attr_list,
         _In_ sai_object_type_t current_object_type)
 {
     std::set<sai_object_type_t> otset;
+    std::set<sai_object_type_t> rotset;
 
     for (int i = 0; meta_attr_list[i] != NULL; ++i)
     {
@@ -32,7 +37,9 @@ void process_object_type_attributes(
             continue;
         }
 
-        if (HAS_FLAG_READ_ONLY(meta->flags))
+        bool ro = HAS_FLAG_READ_ONLY(meta->flags);
+
+        if (ro && !show_read_only_links)
         {
             // skip attributes that are read only
             continue;
@@ -77,6 +84,18 @@ void process_object_type_attributes(
 
             const char* current = NN(current_object_type);
             const char* dep = NN(ot);
+
+            if (ro)
+            {
+                if (rotset.find(ot) != rotset.end())
+                {
+                    continue;
+                }
+
+                rotset.insert(ot);
+                std::cout << dep << " -> " << current << " [ " << style << " color=\"red\" ];\n";
+                continue;
+            }
 
             std::cout << dep << " -> " << current << " [ " << style << " color=\"0.650 0.700 0.700\"];\n";
 
@@ -132,31 +151,91 @@ void process_colors()
             std::cout << NN(ot) << " [color=plum, shape = rect];\n";
         }
     }
+
+    for (size_t i = SAI_OBJECT_TYPE_NULL; i < SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* oi =  sai_all_object_type_infos[i];
+
+        if (oi == NULL)
+        {
+            continue;
+        }
+
+        if (!oi->isnonobjectid)
+        {
+            continue;
+        }
+
+        std::cout << NN(i) << " [color=plum, shape = rect];\n";
+    }
 }
 
 #define PRINT_NN(x,y,c)\
     std::cout << NN(SAI_OBJECT_TYPE_ ## x) << " -> " << NN(SAI_OBJECT_TYPE_ ## y) << c;
 
-void process_manual_connections()
+void process_nonobjectid_connections()
 {
     const char* c = " [color=\"0.650 0.700 0.700\", style = dashed, penwidth=2];\n";
 
-    PRINT_NN(VIRTUAL_ROUTER, ROUTE_ENTRY, c);
-    PRINT_NN(ROUTER_INTERFACE, NEIGHBOR_ENTRY, c);
-    PRINT_NN(VLAN, FDB_ENTRY, c);
+    for (size_t i = SAI_OBJECT_TYPE_NULL; i < SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* oi =  sai_all_object_type_infos[i];
+
+        if (oi == NULL)
+        {
+            continue;
+        }
+
+        if (!oi->isnonobjectid)
+        {
+            continue;
+        }
+
+        for (size_t j = 0; j < oi->structmemberscount; ++j)
+        {
+            const sai_struct_member_info_t* sm = oi->structmembers[j];
+
+            if (sm->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+            {
+                for (size_t k = 0; k < sm->allowedobjecttypeslength; ++k)
+                {
+                    sai_object_type_t ot = sm->allowedobjecttypes[k];
+
+                    if (ot == SAI_OBJECT_TYPE_SWITCH && !show_switch_links)
+                    {
+                        // skip switch dependency since switch
+                        // is used everywhere and will pollute graph
+                        continue;
+                    }
+
+                    std::cout << NN(ot) << " -> " << NN((sai_object_type_t)i) << c;
+                }
+            }
+            else if (sm->isvlan)
+            {
+                std::cout << NN(SAI_OBJECT_TYPE_VLAN) << " -> " << NN((sai_object_type_t)i) << c;
+            }
+        }
+    }
 
     PRINT_NN(PORT, SWITCH, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
 }
 
-int main()
+int main(int argc, char** argv)
 {
+    for (int i = 1; i < argc; ++i)
+    {
+        show_switch_links       |= strcmp(argv[i], "-s") == 0;
+        show_read_only_links    |= strcmp(argv[i], "-r") == 0;
+    }
+
     std::cout << "digraph \"SAI Object Dependency Graph\" {\n";
-    std::cout << "size=\"20,10\"; ratio = fill;\n";
+    std::cout << "size=\"30,12\"; ratio = fill;\n";
     std::cout << "node [style=filled];\n";
 
     process_object_types();
 
-    process_manual_connections();
+    process_nonobjectid_connections();
 
     process_colors();
 

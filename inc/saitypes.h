@@ -204,7 +204,17 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_FDB_FLUSH                = 44,
     SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER    = 45,
     SAI_OBJECT_TYPE_STP_PORT                 = 46,
-    SAI_OBJECT_TYPE_MAX                      = 47
+    SAI_OBJECT_TYPE_RPF_GROUP                = 47,
+    SAI_OBJECT_TYPE_RPF_GROUP_MEMBER         = 48,
+    SAI_OBJECT_TYPE_L2MC_GROUP               = 49,
+    SAI_OBJECT_TYPE_L2MC_GROUP_MEMBER        = 50,
+    SAI_OBJECT_TYPE_IPMC_GROUP               = 51,
+    SAI_OBJECT_TYPE_IPMC_GROUP_MEMBER        = 52,
+    SAI_OBJECT_TYPE_L2MC_ENTRY               = 53,
+    SAI_OBJECT_TYPE_IPMC_ENTRY               = 54,
+    SAI_OBJECT_TYPE_MCAST_FDB_ENTRY          = 55,
+    SAI_OBJECT_TYPE_MAX                      = 56
+
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -214,7 +224,7 @@ typedef struct _sai_u8_list_t {
 
 /**
  * @brief Defines a s8 list or string.
- * string should be null terminated and count should include '\0'    
+ * string should be null terminated and count should include '\0'
  */
 typedef struct _sai_s8_list_t {
     uint32_t count;
@@ -528,7 +538,7 @@ typedef union {
     sai_int32_t s32;
     sai_uint64_t u64;
     sai_int64_t s64;
-    sai_pointer_t ptr; 
+    sai_pointer_t ptr;
     sai_mac_t mac;
     sai_ip4_t ip4;
     sai_ip6_t ip6;

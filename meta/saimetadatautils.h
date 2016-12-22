@@ -78,6 +78,17 @@ bool sai_metadata_is_acl_field_or_action(
 extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
         _In_ sai_object_type_t objecttype,
         _In_ sai_attr_id_t attrid);
+
+/**
+ * @brief Gets attribute metadata based on attribute id name
+ *
+ * @param[in] attr_id_name Attribute id name
+ *
+ * @return Poionter to object metadata or NULL in case of failure
+ */
+extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
+        _In_ const char *attr_id_name);
+
 /**
  * @}
  */

@@ -679,32 +679,34 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION_PACKET_ACTION,
 
-    /** 
+    /**
      * @brief Port bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a port. Enable/Update 
-     * ingress ACL table or ACL group filtering by assigning the list of valid 
-     * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
-     * in the attribute value. 
+     * Bind (or unbind) an ingress acl table or acl group on a port. Enable/Update
+     * ingress ACL table or ACL group filtering by assigning the list of valid
+     * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_INGRESS_ACL,
 
-    /** 
+    /**
      * @brief Port bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl tables or acl group on a port. Enable/Update 
-     * egress ACL table or ACL group filtering by assigning the list of valid 
-     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
-     * in the attribute value. 
+     * Bind (or unbind) an egress acl tables or acl group on a port. Enable/Update
+     * egress ACL table or ACL group filtering by assigning the list of valid
+     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_EGRESS_ACL,
@@ -1034,11 +1036,11 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port EEE Configuration
      *
-     * Energy Efficient Ethernet(EEE) is an IEEE 802.3 az standard aiming to 
-     * reduce power consumptions on Ethernet ports (native copper ports). 
+     * Energy Efficient Ethernet(EEE) is an IEEE 802.3 az standard aiming to
+     * reduce power consumptions on Ethernet ports (native copper ports).
      * Enable the EEE on port level
      *
-     * @type bool 
+     * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
@@ -1050,20 +1052,20 @@ typedef enum _sai_port_attr_t
      * Time (in microsecs) to move to Low power state (No traffic), at the end of which MAC transitions to Low power state.
      * MAX value set more benefit.
      *
-     * @type sai_uint16_t 
+     * @type sai_uint16_t
      * @flags CREATE_AND_SET
      * @default 2500
      */
     SAI_PORT_ATTR_EEE_IDLE_TIME,
-    
+
     /**
      * @brief Port EEE Wakeup time configuration
-     * 
+     *
      * Time(in microsecs) to wait before transmitter is leaving Low Power Mode State. Min value set avoid latency.
      *
-     * @type sai_uint16_t 
+     * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @default 5 
+     * @default 5
      */
     SAI_PORT_ATTR_EEE_WAKE_TIME,
 
@@ -1424,11 +1426,11 @@ typedef enum _sai_port_stat_t
     /** sai port stat pfc 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
-    /** Number of times port state changed from 
+    /** Number of times port state changed from
      * high power mode to low power mode in TX direction [uint64_t] */
     SAI_PORT_STAT_EEE_TX_EVENT_COUNT,
 
-    /** Number of times port state changed from 
+    /** Number of times port state changed from
      * high power mode to low power mode in RX direction [uint64_t] */
     SAI_PORT_STAT_EEE_RX_EVENT_COUNT,
 
@@ -1436,7 +1438,7 @@ typedef enum _sai_port_stat_t
      * This Duration is accumulative since EEE enable on port/from last clear stats*/
     SAI_PORT_STAT_EEE_TX_DURATION,
 
-    /** Port Low power mode duration(micro secs) in RX direction [uint64_t] 
+    /** Port Low power mode duration(micro secs) in RX direction [uint64_t]
      * This Duration is accumulative since EEE enable on port/from last clear stats*/
     SAI_PORT_STAT_EEE_RX_DURATION,
 
