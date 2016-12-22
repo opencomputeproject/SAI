@@ -195,6 +195,25 @@ typedef enum _sai_switch_restart_type_t
 } sai_switch_restart_type_t;
 
 /**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_MCAST_SNOOPING_CAPABILITY
+ */
+typedef enum _sai_switch_mcast_snooping_capability_t
+{
+    /** NPU doesn't support IP based L2MC */
+    SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_NONE = 0,
+
+    /** *G lookup only */
+    SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_XG = 1,
+
+    /** SG lookup only */
+    SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_SG = 2,
+
+    /** both *G/SG lookup supported */
+    SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_XG_AND_SG = 3,
+
+} sai_switch_mcast_snooping_capability_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
  */
@@ -468,6 +487,16 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE,
 
     /**
+     * @brief Default SAI VLAN ID
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_VLAN
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_DEFAULT_VLAN_ID,
+
+
+    /**
      * @brief Default SAI STP instance ID
      *
      * @type sai_object_id_t
@@ -513,6 +542,39 @@ typedef enum _sai_switch_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_EGRESS_ACL,
+
+    /** Maximum traffic classes limit [sai_uint8_t] */
+    /**
+     * @brief Switch/Global bind point for ingress ACL object
+     *
+     * Bind (or unbind) an ingress acl table or acl group globally. Enable/Update
+     * ingress ACL table or ACL group filtering by assigning the list of valid
+     * object id . Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_INGRESS_ACL,
+
+    /**
+     * @brief Switch/Global bind point for egress ACL object
+     *
+     * Bind (or unbind) an egress acl tables or acl group globally. Enable/Update
+     * egress ACL table or ACL group filtering by assigning the list of valid
+     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @flags CREATE_AND_SET
+     * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_EGRESS_ACL,
@@ -638,7 +700,7 @@ typedef enum _sai_switch_attr_t
      * Since warm restart can be caused by crash
      * (therefore there are no guarantees for this call),
      * this hint is really a performance optimization.
-     * TRUE - Warm Reboot 
+     * TRUE - Warm Reboot
      * FALSE - Cold Reboot
      *
      * @type bool
@@ -646,7 +708,7 @@ typedef enum _sai_switch_attr_t
      * @default false
      */
     SAI_SWITCH_ATTR_RESTART_WARM,
-    
+
     /**
      * @brief Type of restart supported
      *
@@ -692,6 +754,14 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ACL_CAPABILITY,
+
+    /**
+     * @brief Multicast snooping capability supported by the NPU
+     *
+     * @type sai_switch_mcast_snooping_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MCAST_SNOOPING_CAPABILITY,
 
     /**
      * @brief Switching mode
@@ -1044,12 +1114,12 @@ typedef enum _sai_switch_attr_t
      * @default false
      */
     SAI_SWITCH_ATTR_SWITCH_SHELL_ENABLE,
-    
+
     /**
      * @brief Handle for switch profile id.
      *
-     * Use this to retrive the Key-Vlaue pairs as part of switch 
-     * initialization. 
+     * Use this to retrive the Key-Vlaue pairs as part of switch
+     * initialization.
      * @type sai_uint32_t
      * @flags CREATE_ONLY
      * @default 0
@@ -1058,9 +1128,9 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief Device Information for switch initialization.
-     * 
+     *
      * Hardware information format is based on SAI implementations by vendors.
-     * String is NULL terminated. Format is vendor specific. 
+     * String is NULL terminated. Format is vendor specific.
      *   Example: Like PCI location, I2C adddress etc.
      * In case of NULL, First NPU attached to CPU will be initialized.
      * Single NPU case this attribute is optional.
@@ -1073,7 +1143,7 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief Vendor specific path name of the firmware to load.
-     * 
+     *
      * @type sai_s8_list_t
      * @flags CREATE_ONLY
      * @default empty
@@ -1083,7 +1153,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Set to switch initialization or connect to NPU/SDK.
      *
-     * TRUE - Initialize switch/SDK. 
+     * TRUE - Initialize switch/SDK.
      * FALSE - Connect to SDK. This will connects library to the initialized SDK.
      * After this call the capability attributes should be ready for retrieval
      * via sai_get_switch_attribute()
@@ -1094,7 +1164,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_INIT_SWITCH,
 
     /**
-     * @brief Set Switch oper status change notification callback 
+     * @brief Set Switch oper status change notification callback
      * function passed to the adapter.
      *
      * Use sai_switch_state_change_notification_fn as notification function.
@@ -1126,7 +1196,7 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY,
-    
+
     /**
      * @brief Set Switch Port state change notification callback function passed to the adapter.
      *
@@ -1148,7 +1218,7 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
-    
+
     /**
     * @brief Enable SAI function call fast mode, which executes calls very quickly
     *
@@ -1305,8 +1375,8 @@ typedef void (*sai_switch_state_change_notification_fn)(
  * @brief Create switch
  *
  *   SDK initialization/connect to SDK. After the call the capability attributes should be
- *   ready for retrieval via sai_get_switch_attribute(). Same Switch Object id should be 
- *   given for create/connect for each NPU.  
+ *   ready for retrieval via sai_get_switch_attribute(). Same Switch Object id should be
+ *   given for create/connect for each NPU.
  *
  * @param[out] switch_id The Switch Object ID
  * @param[in] attr_count number of attributes

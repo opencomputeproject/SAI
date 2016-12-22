@@ -61,6 +61,9 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ASSERT_FALSE(x, msg)\
     if ((x) == true) { fprintf(stderr, "assert false failed: '%s' on line %d: %s\n", #x, __LINE__, msg); exit(1); }
 
+#define META_FAIL(format, ...)\
+    { fprintf(stderr, "assert failed on line %d: " format "\n", __LINE__, ##__VA_ARGS__); exit(1);}
+
 #define META_LOG_ENTER() \
     if (debug) { printf(":> %s\n", __FUNCTION__); }
 
@@ -387,6 +390,57 @@ void check_attr_flags(
     }
 }
 
+void check_attr_object_id_allownull(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+    {
+        /* we don't care about ACL entry data/field */
+        return;
+    }
+
+    /* attribute is object id type */
+
+    switch ((int)md->flags)
+    {
+        case SAI_ATTR_FLAGS_CREATE_ONLY:
+        case SAI_ATTR_FLAGS_CREATE_AND_SET:
+
+            /* default value is required */
+
+            switch (md->defaultvaluetype)
+            {
+                case SAI_DEFAULT_VALUE_TYPE_CONST:
+
+                    if (md->allownullobjectid == false)
+                    {
+                        /*
+                         * since attribute require default value and default value is
+                         * set to SAI_NULL_OBJECT_ID then allownull should be true
+                         */
+                        META_ASSERT_FAIL(md, "allow null object id should be set to true since default value is required");
+                    }
+
+                    break;
+
+                case SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE:
+                    /* default attr value from another attr may not support null */
+                    break;
+
+                default:
+                    META_ASSERT_FAIL(md, "invalid default value type on object id when default is required");
+                    break;
+            }
+
+            break;
+
+        default:
+            break;
+    }
+}
+
 void check_attr_object_type_provided(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -513,6 +567,27 @@ void check_attr_allowed_object_types(
         {
             META_ASSERT_FAIL(md, "invalid allowed object type: %d", ot);
         }
+
+        const sai_object_type_info_t* info = sai_all_object_type_infos[ot];
+
+        META_ASSERT_NOT_NULL(info);
+
+        if (info->isnonobjectid)
+        {
+            META_ASSERT_FAIL(md, "non object id can't be used as object id: %d", ot);
+        }
+
+        if (ot == SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP)
+        {
+            META_ASSERT_FAIL(md, "user defined is non object id, can't be used as allowed object");
+        }
+
+        if (ot == SAI_OBJECT_TYPE_SWITCH)
+        {
+            /* switch object type is ment to be used only in non object id struct types */
+
+            META_ASSERT_FAIL(md, "switch object type can't be used as object type in any attribute");
+        }
     }
 }
 
@@ -541,7 +616,6 @@ void check_attr_default_required(
 
     switch (md->defaultvaluetype)
     {
-        case SAI_DEFAULT_VALUE_TYPE_INHERIT:
         case SAI_DEFAULT_VALUE_TYPE_CONST:
 
             if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT8_LIST)
@@ -735,16 +809,6 @@ void check_attr_default_value_type(
 
             /* check conditions/cretion flags? */
             break;
-
-        case SAI_DEFAULT_VALUE_TYPE_INHERIT:
-
-            if (md->objecttype == SAI_OBJECT_TYPE_BUFFER_PROFILE &&
-                    md->attrid == SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE)
-            {
-                break;
-            }
-
-            META_ASSERT_FAIL(md, "inherit default value type not allowed");
 
         case SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE:
 
@@ -1104,17 +1168,19 @@ void check_attr_validonly(
         {
             case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
             case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
+            case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
             case SAI_ATTR_FLAGS_CREATE_ONLY:
+            case SAI_ATTR_FLAGS_CREATE_AND_SET:
                 /*
-                 * condition attribute must be create only since
-                 * if it could change then other object may be required to pass
-                 * on creation time that was not passed
+                 * valid only attribute can be create_only or create_and_set
+                 * conditional attribute can change during runtime and it may
+                 * have impact on valid only attribute (it may or may not be used)
                  */
                 break;
 
             default:
 
-                META_ASSERT_FAIL(md, "conditional attribute must be create only");
+                META_ASSERT_FAIL(cmd, "valid only condition attribute has invalid flags");
         }
     }
 
@@ -1468,6 +1534,7 @@ void check_single_attribute(
     check_attr_key(md);
     check_attr_acl_fields(md);
     check_attr_vlan(md);
+    check_attr_object_id_allownull(md);
 
     define_attr(md);
 }
@@ -1561,10 +1628,169 @@ void check_object_infos()
             else
             {
                 META_ENUM_ASSERT_FAIL(info->enummetadata, "end of attributes don't match attr count on %s",
-                    sai_metadata_get_object_type_name((sai_object_type_t)i));
+                        sai_metadata_get_object_type_name((sai_object_type_t)i));
             }
         }
     }
+}
+
+void check_non_object_id_object_types()
+{
+    META_LOG_ENTER();
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        if (!info->isnonobjectid)
+        {
+            if (info->structmemberscount != 0 ||
+                    info->structmembers != NULL)
+            {
+                META_FAIL("object type %zu is non object id but struct members defined", i);
+            }
+
+            continue;
+        }
+
+        META_ASSERT_TRUE(info->structmemberscount != 0, "non object id should have members defined");
+        META_ASSERT_NOT_NULL(info->structmembers);
+
+        /* check each member of the struct */
+
+        size_t j = 0;
+
+        bool member_supports_switch_id = false;
+
+        for (; j < info->structmemberscount; ++j)
+        {
+            META_ASSERT_NOT_NULL(info->structmembers[j]);
+
+            const sai_struct_member_info_t  *m = info->structmembers[j];
+
+            META_ASSERT_NOT_NULL(m->membername);
+
+            switch (m->membervaluetype)
+            {
+                case SAI_ATTR_VALUE_TYPE_MAC:
+                case SAI_ATTR_VALUE_TYPE_INT32:
+                case SAI_ATTR_VALUE_TYPE_UINT16:
+                case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
+                case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
+                case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+                    break;
+
+                default:
+
+                    META_FAIL("struct member %s have invalid value type %d", m->membername, m->membervaluetype);
+            }
+
+            if (m->isvlan)
+            {
+                META_ASSERT_TRUE(m->membervaluetype == SAI_ATTR_VALUE_TYPE_UINT16, "member marked as vlan, but wrong type specified");
+            }
+
+            if (m->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+            {
+                META_ASSERT_NOT_NULL(m->allowedobjecttypes);
+                META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "member is object id, should specify some object types");
+
+                size_t k = 0;
+
+                for (; k < m->allowedobjecttypeslength; k++)
+                {
+                    sai_object_type_t ot = m->allowedobjecttypes[k];
+
+                    if (ot >= SAI_OBJECT_TYPE_NULL && ot <= SAI_OBJECT_TYPE_MAX)
+                    {
+                        if (ot == SAI_OBJECT_TYPE_SWITCH)
+                        {
+                            /*
+                             * to make struct object type complete, at least
+                             * one struct member should be type of switch
+                             */
+
+                            member_supports_switch_id = true;
+                        }
+
+                        continue;
+                    }
+
+                    META_FAIL("invalid object type specified on file %s: %d", m->membername, ot);
+                }
+            }
+            else
+            {
+                META_ASSERT_NULL(m->allowedobjecttypes);
+                META_ASSERT_TRUE(m->allowedobjecttypeslength == 0, "member is not object id, should not specify object types");
+            }
+        }
+
+        META_ASSERT_TRUE(member_supports_switch_id, "none of struct members support switch id object type");
+
+        META_ASSERT_NULL(info->structmembers[j]);
+    }
+}
+
+void check_attr_sorted_by_id_name()
+{
+    META_LOG_ENTER();
+
+    size_t i = 0;
+
+    const char *last = "AAA";
+
+    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500,
+            "there should be at least 500 attributes in total");
+
+    for (; i < metadata_attr_sorted_by_id_name_count; ++i)
+    {
+        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+
+        META_ASSERT_NOT_NULL(am);
+
+        const char *name = am->attridname;
+
+        if (strcmp(last, name) >= 0)
+        {
+            META_ASSERT_FAIL(am, "attribute id name in not sorted alphabetical");
+        }
+
+        META_ASSERT_TRUE(strncmp(name, "SAI_", 4) == 0, "all attributes should start with SAI_");
+
+        last = name;
+    }
+
+    META_ASSERT_NULL(metadata_attr_sorted_by_id_name[i]);
+
+    /* check search */
+
+    for (i = 0; i < metadata_attr_sorted_by_id_name_count; ++i)
+    {
+        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+
+        META_LOG_INFO("search for %s", am->attridname);
+
+        const sai_attr_metadata_t *found = sai_metadata_get_attr_metadata_by_attr_id_name(am->attridname);
+
+        META_ASSERT_NOT_NULL(found);
+
+        META_ASSERT_TRUE(strcmp(found->attridname, am->attridname) == 0, "search attr by id name failed to find");
+    }
+
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name(NULL));     /* null pointer */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("AAA"));    /* before all attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_B"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_P"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_W"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("ZZZ"));    /* after all attr names */
 }
 
 int main(int argc, char **argv)
@@ -1585,6 +1811,8 @@ int main(int argc, char **argv)
     }
 
     check_object_infos();
+    check_attr_sorted_by_id_name();
+    check_non_object_id_object_types();
 
     printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 

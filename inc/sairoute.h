@@ -118,11 +118,15 @@ typedef struct _sai_route_entry_t
 {
     /**
      * @brief Switch ID
+     *
+     * @objects SAI_OBJECT_TYPE_SWITCH
      */
     sai_object_id_t switch_id;
 
     /**
      * @brief Virtual Router ID
+     *
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
      */
     sai_object_id_t vr_id;
 
