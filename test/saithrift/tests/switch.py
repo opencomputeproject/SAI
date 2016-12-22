@@ -612,6 +612,61 @@ def sai_thrift_create_acl_entry(client,
     acl_entry_id = client.sai_thrift_create_acl_entry(acl_attr_list)
     return acl_entry_id
 
+def sai_thrift_create_acl_table_group(client,
+                                      group_stage,
+                                      group_bind_point_list,
+                                      group_type):
+    acl_attr_list = []
+
+    if group_stage != None:
+        attribute_value = sai_thrift_attribute_value_t(s32=group_stage)
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+
+    if group_bind_point_list != None:
+        acl_group_bind_point_list = sai_thrift_s32_list_t(count=len(group_bind_point_list), s32list=group_bind_point_list)
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(bind_point_list=acl_group_bind_point_list)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+
+    if group_type != None:
+        attribute_value = sai_thrift_attribute_value_t(s32=group_type)
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_GROUP_ATTR_TYPE,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+
+    acl_table_group_id = client.sai_thrift_create_acl_table_group(acl_attr_list)
+    return acl_table_group_id
+
+def sai_thrift_create_acl_table_group_member(client,
+                                             acl_table_group_id,
+                                             acl_table_id,
+                                             group_member_priority):
+    acl_attr_list = []
+
+    if acl_table_group_id != None:
+        attribute_value = sai_thrift_attribute_value_t(oid=acl_table_group_id)
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_GROUP_ID,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+
+    if acl_table_id != None:
+        attribute_value = sai_thrift_attribute_value_t(oid=acl_table_id)
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_ID,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+
+    if group_member_priority != None:
+        attribute_value = sai_thrift_attribute_value_t(u32=group_member_priority)
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_GROUP_MEMBER_ATTR_PRIORITY,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+
+    acl_table_group_member_id = client.sai_thrift_create_acl_table_group_member(acl_attr_list)
+    return acl_table_group_member_id
+
 def sai_thrift_create_mirror_session(client, mirror_type, port,
                                      vlan, vlan_priority, vlan_tpid,
                                      src_mac, dst_mac,

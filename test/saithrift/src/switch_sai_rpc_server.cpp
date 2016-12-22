@@ -1602,6 +1602,59 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
       }
   }
 
+  void sai_thrift_parse_acl_table_group_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+            case SAI_ACL_TABLE_GROUP_ATTR_ACL_STAGE:
+                attr_list[i].value.s32 = attribute.value.s32;
+                break;
+            case SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST:
+                {
+                    int count = attribute.value.aclfield.data.bind_point_list.s32list.size();
+                    sai_int32_t *s32_list = NULL;
+                    std::vector<sai_thrift_acl_bind_point_type_t>::const_iterator it = attribute.value.aclfield.data.bind_point_list.s32list.begin();
+                    s32_list = (sai_int32_t *) malloc(sizeof(sai_int32_t) * count);
+                    for(int j = 0; j < count; j++, it++)
+                        *(s32_list + j) = (sai_int32_t) *it;
+                    attr_list[i].value.aclfield.data.bind_point_list.s32list = s32_list;
+                    attr_list[i].value.aclfield.data.bind_point_list.count = count;
+                }
+                break;
+            case SAI_ACL_TABLE_GROUP_ATTR_TYPE:
+                attr_list[i].value.s32 = attribute.value.s32;
+                break;
+            default:
+                break;
+          }
+      }
+  }
+
+  void sai_thrift_parse_acl_table_group_member_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+            case SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_GROUP_ID:
+                attr_list[i].value.oid = attribute.value.oid;
+                break;
+            case SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_ID:
+                attr_list[i].value.oid = attribute.value.oid;
+                break;
+            case SAI_ACL_TABLE_GROUP_MEMBER_ATTR_PRIORITY:
+                attr_list[i].value.u32 = attribute.value.u32;
+                break;
+            default:
+                break;
+          }
+      }
+  }
+
   void sai_thrift_convert_to_acl_counter_attributes(
           const std::vector<sai_thrift_attribute_t> &thrift_attr_list,
           sai_attribute_t *attr_list) {
@@ -1712,6 +1765,62 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
           return status;
       }
       status = acl_api->remove_acl_entry(acl_entry);
+      return status;
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_acl_table_group(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      sai_object_id_t acl_table_group = 0ULL;
+      sai_acl_api_t *acl_api;
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      status = sai_api_query(SAI_API_ACL, (void **) &acl_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_acl_table_group_attributes(thrift_attr_list, attr_list);
+      uint32_t attr_count = thrift_attr_list.size();
+      status = acl_api->create_acl_table_group(&acl_table_group, attr_count, attr_list);
+      free(attr_list);
+      return acl_table_group_id;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_acl_table_group(const sai_thrift_object_id_t acl_table_group_id) {
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_acl_api_t *acl_api;
+      status = sai_api_query(SAI_API_ACL, (void **) &acl_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      status = acl_api->remove_acl_table_group(acl_table_group_id);
+      return status;
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_acl_table_group_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      sai_object_id_t acl_table_group_member = 0ULL;
+      sai_acl_api_t *acl_api;
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      status = sai_api_query(SAI_API_ACL, (void **) &acl_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_acl_table_group_member_attributes(thrift_attr_list, attr_list);
+      uint32_t attr_count = thrift_attr_list.size();
+      status = acl_api->create_acl_table_group_member(&acl_table_group_member, attr_count, attr_list);
+      free(attr_list);
+      return acl_table_group_member_id;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_acl_table_group_member(const sai_thrift_object_id_t acl_table_group_member_id) {
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_acl_api_t *acl_api;
+      status = sai_api_query(SAI_API_ACL, (void **) &acl_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      status = acl_api->remove_acl_table_group_member(acl_table_group_member_id);
       return status;
   }
 
