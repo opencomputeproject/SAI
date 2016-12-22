@@ -194,6 +194,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
+              case SAI_PORT_ATTR_INGRESS_ACL:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
               default:
                   break;
           }
@@ -1423,9 +1426,20 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
           attribute = (sai_thrift_attribute_t)*it;
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
-            case SAI_ACL_TABLE_ATTR_STAGE:
-            case SAI_ACL_TABLE_ATTR_PRIORITY:
-                attr_list[i].value.u32 = attribute.value.u32;
+            case SAI_ACL_TABLE_ATTR_ACL_STAGE:
+                attr_list[i].value.s32 = attribute.value.s32;
+                break;
+            case SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST:
+                {
+                    int count = attribute.value.aclfield.data.bind_point_list.s32list.size();
+                    sai_int32_t *s32_list = NULL;
+                    std::vector<sai_thrift_acl_bind_point_type_t>::const_iterator it = attribute.value.aclfield.data.bind_point_list.s32list.begin();
+                    s32_list = (sai_int32_t *) malloc(sizeof(sai_int32_t) * count);
+                    for(int j = 0; j < count; j++, it++)
+                        *(s32_list + j) = (sai_int32_t) *it;
+                    attr_list[i].value.aclfield.data.bind_point_list.s32list = s32_list;
+                    attr_list[i].value.aclfield.data.bind_point_list.count = count;
+                }
                 break;
             case SAI_ACL_TABLE_ATTR_FIELD_SRC_IPv6:
             case SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6:
@@ -1559,7 +1573,7 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
             case SAI_ACL_ENTRY_ATTR_ACTION_COUNTER:
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
-            case SAI_ACL_ENTRY_ATTR_PACKET_ACTION:
+            case SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION:
                 attr_list[i].value.aclaction.parameter.u32 = attribute.value.aclaction.parameter.u32;
                 break;
               default:
@@ -1642,14 +1656,14 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
       return acl_table;
   }
 
-  sai_thrift_status_t sai_thrift_delete_acl_table(const sai_thrift_object_id_t acl_table_id) {
+  sai_thrift_status_t sai_thrift_remove_acl_table(const sai_thrift_object_id_t acl_table_id) {
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_acl_api_t *acl_api;
       status = sai_api_query(SAI_API_ACL, (void **) &acl_api);
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      status = acl_api->delete_acl_table(acl_table_id);
+      status = acl_api->remove_acl_table(acl_table_id);
       return status;
   }
 
@@ -1670,14 +1684,14 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
       return acl_entry;
   }
 
-  sai_thrift_status_t sai_thrift_delete_acl_entry(const sai_thrift_object_id_t acl_entry) {
+  sai_thrift_status_t sai_thrift_remove_acl_entry(const sai_thrift_object_id_t acl_entry) {
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_acl_api_t *acl_api;
       status = sai_api_query(SAI_API_ACL, (void **) &acl_api);
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      status = acl_api->delete_acl_entry(acl_entry);
+      status = acl_api->remove_acl_entry(acl_entry);
       return status;
   }
 
@@ -1697,7 +1711,7 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
       return acl_counter_id;
   }
 
-  sai_thrift_status_t sai_thrift_delete_acl_counter(const sai_thrift_object_id_t acl_counter_id) {
+  sai_thrift_status_t sai_thrift_remove_acl_counter(const sai_thrift_object_id_t acl_counter_id) {
       sai_object_id_t acl_entry = 0ULL;
       sai_acl_api_t *acl_api;
       sai_status_t status = SAI_STATUS_SUCCESS;
@@ -1705,7 +1719,7 @@ sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      status = acl_api->delete_acl_counter(acl_counter_id);
+      status = acl_api->remove_acl_counter(acl_counter_id);
       return status;
   }
 
