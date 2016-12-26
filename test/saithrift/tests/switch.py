@@ -210,10 +210,10 @@ def sai_thrift_create_route(client, vr_id, addr_family, ip_addr, ip_mask, nhop, 
         mask = sai_thrift_ip_t(ip6=ip_mask)
         ip_prefix = sai_thrift_ip_prefix_t(addr_family=SAI_IP_ADDR_FAMILY_IPV6, addr=addr, mask=mask)
     route_attribute1_value = sai_thrift_attribute_value_t(oid=nhop)
-    route_attribute1 = sai_thrift_attribute_t(id=SAI_ROUTE_ATTR_NEXT_HOP_ID,
+    route_attribute1 = sai_thrift_attribute_t(id=SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID,
                                               value=route_attribute1_value)
 
-    route = sai_thrift_unicast_route_entry_t(vr_id, ip_prefix)
+    route = sai_thrift_route_entry_t(vr_id, ip_prefix)
     route_attr_list = [route_attribute1]
 
     if packet_action != None:
@@ -221,7 +221,7 @@ def sai_thrift_create_route(client, vr_id, addr_family, ip_addr, ip_mask, nhop, 
         route_packet_action_attr = sai_thrift_attribute_t(id=SAI_ROUTE_ATTR_PACKET_ACTION, value=route_packet_action_value)
         route_attr_list.append(route_packet_action_attr)
 
-    client.sai_thrift_create_route(thrift_unicast_route_entry=route, thrift_attr_list=route_attr_list)
+    client.sai_thrift_create_route(thrift_route_entry=route, thrift_attr_list=route_attr_list)
     return
 
 def sai_thrift_remove_route(client, vr_id, addr_family, ip_addr, ip_mask, nhop):
@@ -233,8 +233,8 @@ def sai_thrift_remove_route(client, vr_id, addr_family, ip_addr, ip_mask, nhop):
         addr = sai_thrift_ip_t(ip6=ip_addr)
         mask = sai_thrift_ip_t(ip6=ip_mask)
         ip_prefix = sai_thrift_ip_prefix_t(addr_family=SAI_IP_ADDR_FAMILY_IPV6, addr=addr, mask=mask)
-    route = sai_thrift_unicast_route_entry_t(vr_id, ip_prefix)
-    client.sai_thrift_remove_route(thrift_unicast_route_entry=route)
+    route = sai_thrift_route_entry_t(vr_id, ip_prefix)
+    client.sai_thrift_remove_route(thrift_route_entry=route)
 
 def sai_thrift_create_nhop(client, addr_family, ip_addr, rif_id):
     if addr_family == SAI_IP_ADDR_FAMILY_IPV4:
@@ -249,7 +249,7 @@ def sai_thrift_create_nhop(client, addr_family, ip_addr, rif_id):
     nhop_attribute2_value = sai_thrift_attribute_value_t(oid=rif_id)
     nhop_attribute2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
                                              value=nhop_attribute2_value)
-    nhop_attribute3_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_IP)
+    nhop_attribute3_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_ATTR_IP)
     nhop_attribute3 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_TYPE,
                                              value=nhop_attribute3_value)
     nhop_attr_list = [nhop_attribute1, nhop_attribute2, nhop_attribute3]
@@ -264,7 +264,7 @@ def sai_thrift_create_neighbor(client, addr_family, rif_id, ip_addr, dmac):
         addr = sai_thrift_ip_t(ip6=ip_addr)
         ipaddr = sai_thrift_ip_address_t(addr_family=SAI_IP_ADDR_FAMILY_IPV6, addr=addr)
     neighbor_attribute1_value = sai_thrift_attribute_value_t(mac=dmac)
-    neighbor_attribute1 = sai_thrift_attribute_t(id=SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS,
+    neighbor_attribute1 = sai_thrift_attribute_t(id=SAI_NEIGHBOR_ENTRY_ATTR_DST_MAC_ADDRESS,
                                                  value=neighbor_attribute1_value)
     neighbor_attr_list = [neighbor_attribute1]
     neighbor_entry = sai_thrift_neighbor_entry_t(rif_id=rif_id, ip_address=ipaddr)
@@ -444,10 +444,10 @@ def sai_thrift_create_acl_table(client, addr_family,
         acl_attr_list.append(attribute)
 
     attribute_value = sai_thrift_attribute_value_t(u32=0)   #TODO: Expose stage as function parameter
-    attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_STAGE, value=attribute_value)
+    attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_ACL_STAGE, value=attribute_value)
     acl_attr_list.append(attribute)
-    
-    #print "bbb"    
+
+    #print "bbb"
     acl_table_id = client.sai_thrift_create_acl_table(acl_attr_list)
     #print acl_table_id
     return acl_table_id
@@ -513,7 +513,7 @@ def sai_thrift_create_acl_entry(client, acl_table_id,
     if action == 1:
         #Drop
         attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(u32=0)))
-        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PACKET_ACTION,
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
     elif action == 2:
