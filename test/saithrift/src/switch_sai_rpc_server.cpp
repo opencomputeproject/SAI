@@ -915,37 +915,73 @@ public:
       return status;
   }
 
-  sai_thrift_status_t sai_thrift_add_next_hop_to_group(const sai_thrift_object_id_t next_hop_group_id, const std::vector<sai_thrift_object_id_t> & thrift_nexthops) {
-      printf("sai_thrift_add_next_hop_to_group\n");
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      /*sai_next_hop_group_api_t *nhop_group_api;
-      sai_object_id_t *nhop_list;
-      status = sai_api_query(SAI_API_NEXT_HOP_GROUP, (void **) &nhop_group_api);
-      if (status != SAI_STATUS_SUCCESS) {
-          return status;
+  void sai_thrift_parse_next_hop_group_member_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list) {
+      XP_SAI_THRIFT_LOG_DBG("Called.");
+
+      std_sai_thrift_attr_vctr_t::const_iterator cit = thrift_attr_list.begin();
+
+      for (sai_uint32_t i = 0; i < thrift_attr_list.size(); i++, cit++)
+      {
+          sai_thrift_attribute_t attribute = *cit;
+          attr_list[i].id = attribute.id;
+
+          switch (attribute.id)
+          {
+              case SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+
+              case SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+
+              default:
+                  XP_SAI_THRIFT_LOG_ERR("Failed to parse Next Hop Group Member attributes.");
+                  break;
+          }
       }
-      nhop_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * thrift_nexthops.size());
-      sai_thrift_parse_object_id_list(thrift_nexthops, nhop_list);
-      uint32_t nhop_count = thrift_nexthops.size();
-      status = nhop_group_api->create_next_hop_group_member(next_hop_group_id, nhop_count, nhop_list);
-      free(nhop_list);*/
-      return status;
   }
 
-  sai_thrift_status_t sai_thrift_remove_next_hop_from_group(const sai_thrift_object_id_t next_hop_group_id, const std::vector<sai_thrift_object_id_t> & thrift_nexthops) {
+  void sai_thrift_add_next_hop_to_group(sai_thrift_result_t &_return,
+                                        const std::vector<sai_thrift_attribute_t> &thrift_attr_list) {
+      XP_SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_next_hop_group_api_t *nhop_group_api = nullptr;
+      auto status = sai_api_query(SAI_API_NEXT_HOP_GROUP, reinterpret_cast<void**>(&nhop_group_api));
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_uint32_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_next_hop_group_member_attributes(thrift_attr_list, attr_list);
+
+      sai_object_id_t nextHopGroupMbrObjId = 0;
+      status = nhop_group_api->create_next_hop_group_member(&nextHopGroupMbrObjId, attr_size, attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      {
+          _return.data.oid = nextHopGroupMbrObjId;
+          _return.status = status;
+      }
+      else
+      {
+          XP_SAI_THRIFT_LOG_ERR("Failed to create Next Hop Group Member.");
+
+          _return.data.oid = 0;
+          _return.status = status;
+      }
+
+      sai_thrift_free_attr(attr_list);
+  }
+
+  sai_thrift_status_t sai_thrift_remove_next_hop_from_group(const sai_thrift_object_id_t next_hop_group_member_id) {
       printf("sai_thrift_remove_next_hop_from_group\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
-      /*sai_next_hop_group_api_t *nhop_group_api;
-      sai_object_id_t *nhop_list;
+      sai_next_hop_group_api_t *nhop_group_api;
       status = sai_api_query(SAI_API_NEXT_HOP_GROUP, (void **) &nhop_group_api);
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      nhop_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * thrift_nexthops.size());
-      sai_thrift_parse_object_id_list(thrift_nexthops, nhop_list);
-      uint32_t nhop_count = thrift_nexthops.size();
-      status = nhop_group_api->remove_next_hop_from_group(next_hop_group_id, nhop_count, nhop_list);
-      free(nhop_list);*/
+      status = nhop_group_api->remove_next_hop_group_member(next_hop_group_member_id);
       return status;
   }
 
