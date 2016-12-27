@@ -32,8 +32,6 @@ class IngressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
         port1 = port_list[1]
         port2 = port_list[2]
         port3 = port_list[3]
-        v4_enabled = 1
-        v6_enabled = 1
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
         mac_action = SAI_PACKET_ACTION_FORWARD
