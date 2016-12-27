@@ -1489,7 +1489,7 @@ public:
     return 0;
   }
 
-  sai_thrift_status_t sai_thrift_set_hostif_trap(const sai_thrift_object_id_t trap_oid, const sai_thrift_attribute_t& thrift_attr) {
+  sai_thrift_status_t sai_thrift_set_hostif_trap(const sai_thrift_object_id_t trap_id, const sai_thrift_attribute_t& thrift_attr) {
       printf("sai_thrift_set_hostif_trap\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_hostif_api_t *hostif_api;
@@ -1499,7 +1499,7 @@ public:
           return status;
       }
       sai_thrift_parse_hostif_trap_attribute(thrift_attr, &attr);
-      status = hostif_api->set_trap_attribute((sai_object_id_t) trap_oid, &attr);
+      status = hostif_api->set_trap_attribute((sai_object_id_t) trap_id, &attr);
       return status;
   }
 
