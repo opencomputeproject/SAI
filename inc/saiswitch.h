@@ -181,13 +181,13 @@ typedef enum _sai_hash_algorithm_t
 
     /** Higher 16-bits of CRC32-based hash algorithm */
     SAI_HASH_ALGORITHM_CRC_32HI = 4,
-    
+
     /** CRC using CCITT polynomial based hash algorithm */
     SAI_HASH_ALGORITHM_CRC_CCITT = 5,
-    
+
     /** Combination of CRC and XOR based hash algorithm */
     SAI_HASH_ALGORITHM_CRC_XOR = 6,
-    
+
 } sai_hash_algorithm_t;
 
 /**
