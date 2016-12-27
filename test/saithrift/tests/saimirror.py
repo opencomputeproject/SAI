@@ -53,7 +53,7 @@ class IngressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
         mirror_type = SAI_MIRROR_SESSION_TYPE_LOCAL
         monitor_port = port3
         print "Create mirror session: mirror_type = SAI_MIRROR_TYPE_LOCAL, monitor_port = ptf_intf 3 "
-        ingress_mirror_id = sai_thrift_create_mirror_session(self.client, 
+        ingress_mirror_id = sai_thrift_create_mirror_session(self.client,
             mirror_type,
             monitor_port,
             None, None, None,
@@ -129,5 +129,5 @@ class IngressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_set_port_attribute(port2, attr)
 
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
-            self.client.sai_thrift_remove_vlan_member(vlan_member2)            
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_delete_vlan(vlan_id)
