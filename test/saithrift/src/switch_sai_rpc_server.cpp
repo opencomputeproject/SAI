@@ -168,7 +168,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               case SAI_PORT_ATTR_QOS_DEFAULT_TC:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
-	          case SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST:
+              case SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST:
               case SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST:
                   {
                   *buffer_profile_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * attribute.value.objlist.count);
@@ -192,6 +192,9 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
               case SAI_PORT_ATTR_QOS_TC_TO_PRIORITY_GROUP_MAP:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_PORT_ATTR_INGRESS_MIRROR_SESSION:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
               default:

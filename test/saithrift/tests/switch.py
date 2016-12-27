@@ -549,12 +549,12 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
                                         value=attribute2_value)
     mirror_attr_list.append(attribute2)
 
-    if mirror_type == SAI_MIRROR_TYPE_LOCAL:
+    if mirror_type == SAI_MIRROR_SESSION_TYPE_LOCAL:
         attribute4_value = sai_thrift_attribute_value_t(u16=vlan)
         attribute4 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_ID,
                                             value=attribute4_value)
         mirror_attr_list.append(attribute4)
-    elif mirror_type == SAI_MIRROR_TYPE_REMOTE:
+    elif mirror_type == SAI_MIRROR_SESSION_TYPE_REMOTE:
         #vlan tpid
         attribute3_value = sai_thrift_attribute_value_t(u16=vlan_tpid)
         attribute3 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_TPID,
@@ -569,10 +569,10 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
 
         #vlan priority
         attribute5_value = sai_thrift_attribute_value_t(u16=vlan_priority)
-        attribute4 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
+        attribute5 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
                                             value=attribute5_value)
         mirror_attr_list.append(attribute5)
-    elif mirror_type == SAI_MIRROR_TYPE_ENHANCED_REMOTE:
+    elif mirror_type == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE:
         #encap type
         attribute3_value = sai_thrift_attribute_value_t(u8=encap_type)
         attribute3 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_ENCAP_TYPE,
