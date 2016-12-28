@@ -642,7 +642,7 @@ class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
       thrift_vlan_member_list_attribute.value.objlist.count = vlan_member_list_object_attribute.value.objlist.count;
       std::vector<sai_thrift_object_id_t>& vlan_member_list = thrift_vlan_member_list_attribute.value.objlist.object_id_list;
       vlan_member_list_object = &vlan_member_list_object_attribute.value.objlist;
-      for (int index = 0; index < vlan_member_list_object_attribute.value.objlist.count; index) {
+      for (int index = 0; index < vlan_member_list_object_attribute.value.objlist.count; index++) {
           vlan_member_list.push_back((sai_thrift_object_id_t) vlan_member_list_object->list[index]);
       }
       attr_list.push_back(thrift_vlan_member_list_attribute);
