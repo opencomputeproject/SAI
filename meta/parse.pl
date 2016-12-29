@@ -25,6 +25,7 @@ my $XMLDIR = "xml";
 my $INCLUDEDIR = "../inc/";
 my %SAI_ENUMS = ();
 my %METADATA = ();
+my %STRUCTS = ();
 my %options =();
 
 my $HEADER_CONTENT = "";
@@ -394,7 +395,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    if ($val =~/^(inherit|attrvalue) SAI_\w+_ATTR_\w+$/)
+    if ($val =~/^(attrvalue) SAI_\w+_ATTR_\w+$/)
     {
         return $val;
     }
@@ -900,8 +901,6 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
-    return "SAI_DEFAULT_VALUE_TYPE_INHERIT" if $default =~ /^inherit SAI_\w+$/ and $default =~ /_ATTR_/;
-
     return "SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST" if $default =~ /^empty$/;
 
     return "SAI_DEFAULT_VALUE_TYPE_VENDOR_SPECIFIC" if $default =~ /^vendor$/;
@@ -951,10 +950,6 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
-    elsif ($default =~ /^inherit/)
-    {
-        WriteSource "$val = { };";
-    }
     elsif ($default =~ /^(attrvalue|attrrange|vendor|empty|const)/)
     {
         return "NULL";
@@ -973,7 +968,7 @@ sub ProcessDefaultValueObjectType
 
     $value = "" if not defined $value;
 
-    return "SAI_OBJECT_TYPE_$2" if $value =~ /^(inherit|attrvalue|attrrange) SAI_(\w+)_ATTR_\w+$/;
+    return "SAI_OBJECT_TYPE_$2" if $value =~ /^(attrvalue|attrrange) SAI_(\w+)_ATTR_\w+$/;
 
     return "SAI_OBJECT_TYPE_NULL";
 }
@@ -984,7 +979,7 @@ sub ProcessDefaultValueAttrId
 
     $value = "" if not defined $value;
 
-    return $2 if $value =~ /^(inherit|attrvalue|attrrange) ((SAI_\w+)_ATTR_\w+)$/;
+    return $2 if $value =~ /^(attrvalue|attrrange) ((SAI_\w+)_ATTR_\w+)$/;
 
     return "SAI_INVALID_ATTRIBUTE_ID";
 }
@@ -1491,6 +1486,132 @@ sub CreateEnumHelperMethods
     WriteHeader "        _In_ int value);";
 }
 
+sub ProcessIsNonObjectId
+{
+    my $struct = shift;
+
+    return "false" if not defined $struct;
+
+    return "true";
+}
+
+sub ProcessStructValueType
+{
+    my $type = shift;
+
+    return "SAI_ATTR_VALUE_TYPE_OBJECT_ID"      if $type eq "sai_object_id_t";
+    return "SAI_ATTR_VALUE_TYPE_MAC"            if $type eq "sai_mac_t";
+    return "SAI_ATTR_VALUE_TYPE_IP_ADDRESS"     if $type eq "sai_ip_address_t";
+    return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"      if $type eq "sai_ip_prefix_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT16"         if $type eq "sai_vlan_id_t";
+    return "SAI_ATTR_VALUE_TYPE_INT32"          if $type =~ /^sai_\w+_type_t$/; # enum
+
+    LogError "invalid struct member value type $type";
+
+    return -1;
+}
+
+sub ProcessStructIsVlan
+{
+    my $type = shift;
+
+    return "true" if $type eq "sai_vlan_id_t";
+
+    return "false";
+}
+
+sub ProcessStructObjects
+{
+    my ($rawname, $key, $struct) = @_;
+
+    my $type = $struct->{type};
+
+    return "NULL" if not $type eq "sai_object_id_t";
+
+
+    WriteSource "const sai_object_type_t metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects[] = {";
+
+    my $objects = $struct->{objects};
+
+    for my $obj (@{ $objects })
+    {
+        WriteSource "    $obj,";
+    }
+
+    WriteSource "};";
+
+    return "metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects";
+}
+
+sub ProcessStructObjectLen
+{
+    my ($rawname, $key, $struct) = @_;
+
+    my $type = $struct->{type};
+
+    return 0 if not $type eq "sai_object_id_t";
+
+    my @objects = @{ $struct->{objects} };
+
+    my $count = @objects;
+
+    return $count;
+}
+
+sub ProcessStructMembers
+{
+    my ($struct, $ot, $rawname) = @_;
+
+    return "NULL" if not defined $struct;
+
+    my @keys = keys $struct;
+
+    for my $key (@keys)
+    {
+        my $valuetype   = ProcessStructValueType($struct->{$key}{type});
+        my $isvlan      = ProcessStructIsVlan($struct->{$key}{type});
+        my $objects     = ProcessStructObjects($rawname, $key, $struct->{$key});
+        my $objectlen   = ProcessStructObjectLen($rawname, $key, $struct->{$key});
+
+        WriteSource "const sai_struct_member_info_t struct_member_sai_${rawname}_t_$key = {";
+
+        WriteSource "    .membervaluetype           = $valuetype,";
+        WriteSource "    .membername                = \"$key\",";
+        WriteSource "    .isvlan                    = $isvlan,";
+        WriteSource "    .allowedobjecttypes        = $objects,";
+        WriteSource "    .allowedobjecttypeslength  = $objectlen,";
+
+        # TODO add enum type is value is enum
+        # TODO allow null
+
+        WriteSource "};";
+    }
+
+    WriteSource "const sai_struct_member_info_t* struct_members_sai_${rawname}_t[] = {";
+
+    for my $key (@keys)
+    {
+        WriteSource "    &struct_member_sai_${rawname}_t_$key,";
+    }
+
+    WriteSource "    NULL";
+    WriteSource "};";
+
+    return "struct_members_sai_${rawname}_t";
+}
+
+sub ProcessStructMembersCount
+{
+    my $struct = shift;
+
+    return "0" if not defined $struct;
+
+    my @keys = keys $struct;
+    my $count = @keys;
+
+    return $count;
+}
+
 sub CreateObjectInfo
 {
     my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
@@ -1512,6 +1633,12 @@ sub CreateObjectInfo
 
         my $enum  = "&metadata_enum_${type}";
 
+        my $struct = $STRUCTS{$ot};
+
+        my $isnonobjectid = ProcessIsNonObjectId($struct, $ot);
+        my $structmembers = ProcessStructMembers($struct, $ot ,lc($1));
+        my $structmemberscount = ProcessStructMembersCount($struct, $ot);
+
         WriteHeader "extern const sai_object_type_info_t sai_object_type_info_$ot;";
 
         WriteSource "const sai_object_type_info_t sai_object_type_info_$ot = {";
@@ -1520,6 +1647,9 @@ sub CreateObjectInfo
         WriteSource "    .attridend          = $end,";
         WriteSource "    .enummetadata       = $enum,";
         WriteSource "    .attrmetadata       = metadata_object_type_$type,";
+        WriteSource "    .isnonobjectid      = $isnonobjectid,";
+        WriteSource "    .structmembers      = $structmembers,";
+        WriteSource "    .structmemberscount = $structmemberscount,";
         WriteSource "};";
     }
 
@@ -1569,6 +1699,36 @@ sub ReadHeaderFile
     return $string;
 }
 
+sub GetNonObjectIdStructNames
+{
+    my %structs;
+
+    my @headers = GetHeaderFiles();
+
+    for my $header (@headers)
+    {
+        my $data = ReadHeaderFile($header);
+
+        # TODO there should be better way to extract those
+
+        while ($data =~ /sai_(?:create|set)_\S+.+?\n.+const\s+(sai_(\w+)_t)/gim)
+        {
+            my $name = $1;
+            my $rawname = $2;
+
+            $structs{$name} = $rawname;
+
+            if (not $name =~ /_entry_t$/)
+            {
+                LogError "non object id struct name '$name'; should end on _entry_t";
+                next;
+            }
+        }
+    }
+
+    return values %structs;
+}
+
 sub CreateNonObjectIdTest
 {
     WriteSource "void non_object_id_test(void)";
@@ -1577,20 +1737,154 @@ sub CreateNonObjectIdTest
     WriteSource "    sai_object_key_t ok;";
     WriteSource "    void *p;";
 
-    my @headers = GetHeaderFiles();
+    my @rawnames = GetNonObjectIdStructNames();
 
-    for my $header (@headers)
+    WriteSource "    p = &ok.key.object_id;";
+    WriteSource "    printf(\"%p\",p);";
+
+    for my $rawname (@rawnames)
     {
-        my $data = ReadHeaderFile($header);
-
-        while ($data =~ /sai_create_\S+.+?\n.+const\s+sai_(\w+)_t/gim)
-        {
-            WriteSource "    p = &ok.key.$1;";
-            WriteSource "    printf(\"%p\",p);";
-        }
+        WriteSource "    p = &ok.key.$rawname;";
+        WriteSource "    printf(\"%p\",p);";
     }
 
     WriteSource "}";
+}
+
+sub ExtractStructInfo
+{
+    my $struct = shift;
+
+    my %S = ();
+
+    my $filename = "struct_${struct}.xml";
+
+    $filename =~ s/_/__/g;
+
+    my $file = "$XMLDIR/$filename"; # example: xml/struct__sai__fdb__entry__t.xml
+
+    # read xml, we need to get each struct field and it's type and description
+
+    my $xs = XML::Simple->new();
+
+    my $ref = $xs->XMLin($file, KeyAttr => { }, ForceArray => 1);
+
+    my @sections = @{ $ref->{compounddef}[0]->{sectiondef} };
+
+    my $count = @sections;
+
+    if ($count != 1)
+    {
+        LogError "expected only 1 section in $file for $struct";
+        return %S;
+    }
+
+    my @members = @{ $sections[0]->{memberdef} };
+
+    $count = @members;
+
+    if ($count < 2)
+    {
+        LogError "there must be at least 2 members in struct $struct";
+        return %S;
+    }
+
+    for my $member (@members)
+    {
+        my $name = $member->{name}[0];
+        my $type = $1 if $member->{definition}[0] =~ /^(\S+)/;
+
+        my $desc = ExtractDescription($struct, $struct, $member->{detaileddescription}[0]);
+
+        $S{$name}{type} = $type;
+        $S{$name}{desc} = $desc;
+    }
+
+    return %S;
+}
+
+sub ExtractObjectsFromDesc
+{
+    my ($struct, $member, $desc) = @_;
+
+    $desc =~ s/@@/\n@@/g;
+
+    while ($desc =~ /@@(\w+)(.+)/g)
+    {
+        my $tag = $1;
+        my $val = $2;
+
+        $val =~ s/\s+/ /g;
+        $val =~ s/^\s*//;
+        $val =~ s/\s*$//;
+
+        next if not $tag eq "objects";
+
+        return ProcessTagObjects($struct, $member, $val);
+    }
+
+    return undef;
+}
+
+sub ProcessSingleNonObjectId
+{
+    my $rawname = shift;
+
+    my @types = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    my $structname = "sai_${rawname}_t";
+
+    my $ot = "SAI_OBJECT_TYPE_" .uc(${rawname});
+
+    if (not grep(/$ot/,@types))
+    {
+        LogError "struct $structname does not correspont to known object type";
+        return undef;
+    }
+
+    my %struct = ExtractStructInfo($structname);
+
+    for my $member (keys %struct)
+    {
+        my $type = $struct{$member}{type};
+        my $desc = $struct{$member}{desc};
+
+        # allowed entries on object structs
+
+        if (not $type =~ /^sai_(mac|object_id|vlan_id|ip_address|ip_prefix|\w+_type)_t$/)
+        {
+            LogError "struct member $member type '$type' is not allowed on struct $structname";
+            next;
+        }
+
+        next if not $type eq "sai_object_id_t";
+
+        my $objects = ExtractObjectsFromDesc($structname, $member, $desc);
+
+        if (not defined $objects)
+        {
+            LogError "no object type defined on $structname $member";
+            next;
+        }
+
+        $struct{$member}{objects} = $objects;
+    }
+
+    return %struct;
+}
+
+sub ProcessNonObjectIdObjects
+{
+    my @rawnames = GetNonObjectIdStructNames();
+
+    for my $rawname (@rawnames)
+    {
+        my %struct = ProcessSingleNonObjectId($rawname);
+
+        my $objecttype = "SAI_OBJECT_TYPE_" . uc($rawname);
+
+        $STRUCTS{$objecttype} = \%struct;
+    }
 }
 
 sub CreateListOfAllAttributes
@@ -1645,6 +1939,30 @@ sub CreateListOfAllAttributes
     WriteHeader "extern const size_t metadata_attr_sorted_by_id_name_count;";
 }
 
+sub CheckWhiteSpaceInHeaders
+{
+    my @headers = GetHeaderFiles();
+
+    for my $header (@headers)
+    {
+        my $data = ReadHeaderFile($header);
+
+        my @lines = split/\n/,$data;
+
+        my $n = 0;
+
+        for my $line (@lines)
+        {
+            $n++;
+            chomp $line;
+
+            next if not $line =~/\s+$/;
+
+            LogError "line ends in whitespace $header $n: $line";
+        }
+    }
+}
+
 #
 # MAIN
 #
@@ -1670,11 +1988,15 @@ CreateMetadataForAttributes();
 
 CreateEnumHelperMethods();
 
+CreateNonObjectIdTest();
+
+ProcessNonObjectIdObjects();
+
 CreateObjectInfo();
 
 CreateListOfAllAttributes();
 
-CreateNonObjectIdTest();
+CheckWhiteSpaceInHeaders();
 
 WriteHeader "#endif /* __SAI_METADATA_TYPES__ */";
 

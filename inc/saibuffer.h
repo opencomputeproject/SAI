@@ -277,7 +277,7 @@ typedef enum _sai_buffer_pool_stat_t
  */
 typedef sai_status_t(*sai_create_buffer_pool_fn)(
         _Out_ sai_object_id_t* pool_id,
-        _In_ sai_object_id_t  switch_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

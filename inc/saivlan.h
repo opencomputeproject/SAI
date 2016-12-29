@@ -76,7 +76,7 @@ typedef enum _sai_vlan_attr_t
      * @brief Start of attributes
      */
     SAI_VLAN_ATTR_START,
-   
+
     /**
      * @brief Vlan Id
      *
@@ -138,7 +138,7 @@ typedef enum _sai_vlan_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_VLAN_MCAST_LOOKUP_KEY_TYPE_MAC_DA
      */
-    SAI_VLAN_ATTR_IPV4_MCAST_LOOKUP_KEY_TYPE, 
+    SAI_VLAN_ATTR_IPV4_MCAST_LOOKUP_KEY_TYPE,
 
     /**
      * @brief To set IPv6 multicast lookup key on a VLAN
@@ -192,7 +192,7 @@ typedef enum _sai_vlan_attr_t
      * This attribute only takes effect when the following condition is met:
      * (1)IPv6 multicast packet && not linklocal && IPv6 mcast snooping enabled for vlan
      * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
-     * If the group has no member, unknown multicast packets will be discarded. 
+     * If the group has no member, unknown multicast packets will be discarded.
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
@@ -210,7 +210,7 @@ typedef enum _sai_vlan_attr_t
      * (1) IPv4 multicast packet && linklocal address && IPv4 mcast snooping enabled for vlan
      * (2) IPv6 multicast packet && linklocal address && IPv6 mcast snooping enabled for vlan
      * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
-     * If the group has no member, unknown multicast packets will be discarded. 
+     * If the group has no member, unknown multicast packets will be discarded.
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
@@ -220,13 +220,13 @@ typedef enum _sai_vlan_attr_t
      */
     SAI_VLAN_ATTR_UNKNOWN_LINKLOCAL_MCAST_OUTPUT_GROUP_ID,
 
-    /** 
+    /**
      * @brief VLAN bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a VLAN. Enable/Update 
-     * ingress ACL table or ACL group filtering by assigning the list of valid 
-     * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID 
-     * in the attribute value. 
+     * Bind (or unbind) an ingress acl table or acl group on a VLAN. Enable/Update
+     * ingress ACL table or ACL group filtering by assigning the list of valid
+     * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
@@ -236,13 +236,13 @@ typedef enum _sai_vlan_attr_t
      */
     SAI_VLAN_ATTR_INGRESS_ACL,
 
-    /** 
+    /**
      * @brief VLAN bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl table or acl group on a VLAN. Enable/Update 
-     * egress ACL table or ACL group filtering by assigning the list of valid 
-     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID 
-     * in the attribute value. 
+     * Bind (or unbind) an egress acl table or acl group on a VLAN. Enable/Update
+     * egress ACL table or ACL group filtering by assigning the list of valid
+     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP

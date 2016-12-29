@@ -51,7 +51,11 @@ typedef enum _sai_fdb_entry_type_t
  */
 typedef struct _sai_fdb_entry_t
 {
-    /** Switch ID */
+    /**
+     * @brief Switch ID
+     *
+     * @objects SAI_OBJECT_TYPE_SWITCH
+     */
     sai_object_id_t switch_id;
 
     /** Mac address */

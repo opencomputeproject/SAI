@@ -191,8 +191,8 @@ typedef sai_status_t (*sai_get_stp_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_stp_port_fn)(
     _Out_ sai_object_id_t *stp_port_id,
-    _In_  uint32_t attr_count,
-    _In_  const sai_attribute_t *attr_list);
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list);
 
 
 /**

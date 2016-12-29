@@ -61,6 +61,9 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ASSERT_FALSE(x, msg)\
     if ((x) == true) { fprintf(stderr, "assert false failed: '%s' on line %d: %s\n", #x, __LINE__, msg); exit(1); }
 
+#define META_FAIL(format, ...)\
+    { fprintf(stderr, "assert failed on line %d: " format "\n", __LINE__, ##__VA_ARGS__); exit(1);}
+
 #define META_LOG_ENTER() \
     if (debug) { printf(":> %s\n", __FUNCTION__); }
 
@@ -185,7 +188,7 @@ void check_all_enums_values()
 
             last = emd->values[j];
 
-            META_ASSERT_TRUE(value < 0x6000, "enum value is too big, range?");
+            META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
         }
     }
 }
@@ -564,6 +567,22 @@ void check_attr_allowed_object_types(
         {
             META_ASSERT_FAIL(md, "invalid allowed object type: %d", ot);
         }
+
+        const sai_object_type_info_t* info = sai_all_object_type_infos[ot];
+
+        META_ASSERT_NOT_NULL(info);
+
+        if (info->isnonobjectid)
+        {
+            META_ASSERT_FAIL(md, "non object id can't be used as object id: %d", ot);
+        }
+
+        if (ot == SAI_OBJECT_TYPE_SWITCH)
+        {
+            /* switch object type is ment to be used only in non object id struct types */
+
+            META_ASSERT_FAIL(md, "switch object type can't be used as object type in any attribute");
+        }
     }
 }
 
@@ -592,7 +611,6 @@ void check_attr_default_required(
 
     switch (md->defaultvaluetype)
     {
-        case SAI_DEFAULT_VALUE_TYPE_INHERIT:
         case SAI_DEFAULT_VALUE_TYPE_CONST:
 
             if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT8_LIST)
@@ -787,16 +805,6 @@ void check_attr_default_value_type(
             /* check conditions/cretion flags? */
             break;
 
-        case SAI_DEFAULT_VALUE_TYPE_INHERIT:
-
-            if (md->objecttype == SAI_OBJECT_TYPE_BUFFER_PROFILE &&
-                    md->attrid == SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE)
-            {
-                break;
-            }
-
-            META_ASSERT_FAIL(md, "inherit default value type not allowed");
-
         case SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE:
 
             {
@@ -910,8 +918,7 @@ void check_attr_conditions(
             /* condition needs to be changed to validonly since flags should be CREATE_AND_SET */
 
             if (md->objecttype != SAI_OBJECT_TYPE_MIRROR_SESSION &&
-                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_TRAP &&
-                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP)
+                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_TRAP)
             {
                 META_ASSERT_FAIL(md, "marked as conditional on non mirror session /hostif_trap/hostif_user_defined_trap, but invalid creation flags: 0x%u", md->flags);
             }
@@ -1621,6 +1628,111 @@ void check_object_infos()
     }
 }
 
+void check_non_object_id_object_types()
+{
+    META_LOG_ENTER();
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        if (!info->isnonobjectid)
+        {
+            if (info->structmemberscount != 0 ||
+                    info->structmembers != NULL)
+            {
+                META_FAIL("object type %zu is non object id but struct members defined", i);
+            }
+
+            continue;
+        }
+
+        META_ASSERT_TRUE(info->structmemberscount != 0, "non object id should have members defined");
+        META_ASSERT_NOT_NULL(info->structmembers);
+
+        /* check each member of the struct */
+
+        size_t j = 0;
+
+        bool member_supports_switch_id = false;
+
+        for (; j < info->structmemberscount; ++j)
+        {
+            META_ASSERT_NOT_NULL(info->structmembers[j]);
+
+            const sai_struct_member_info_t  *m = info->structmembers[j];
+
+            META_ASSERT_NOT_NULL(m->membername);
+
+            switch (m->membervaluetype)
+            {
+                case SAI_ATTR_VALUE_TYPE_MAC:
+                case SAI_ATTR_VALUE_TYPE_INT32:
+                case SAI_ATTR_VALUE_TYPE_UINT16:
+                case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
+                case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
+                case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+                    break;
+
+                default:
+
+                    META_FAIL("struct member %s have invalid value type %d", m->membername, m->membervaluetype);
+            }
+
+            if (m->isvlan)
+            {
+                META_ASSERT_TRUE(m->membervaluetype == SAI_ATTR_VALUE_TYPE_UINT16, "member marked as vlan, but wrong type specified");
+            }
+
+            if (m->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+            {
+                META_ASSERT_NOT_NULL(m->allowedobjecttypes);
+                META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "member is object id, should specify some object types");
+
+                size_t k = 0;
+
+                for (; k < m->allowedobjecttypeslength; k++)
+                {
+                    sai_object_type_t ot = m->allowedobjecttypes[k];
+
+                    if (ot >= SAI_OBJECT_TYPE_NULL && ot <= SAI_OBJECT_TYPE_MAX)
+                    {
+                        if (ot == SAI_OBJECT_TYPE_SWITCH)
+                        {
+                            /*
+                             * to make struct object type complete, at least
+                             * one struct member should be type of switch
+                             */
+
+                            member_supports_switch_id = true;
+                        }
+
+                        continue;
+                    }
+
+                    META_FAIL("invalid object type specified on file %s: %d", m->membername, ot);
+                }
+            }
+            else
+            {
+                META_ASSERT_NULL(m->allowedobjecttypes);
+                META_ASSERT_TRUE(m->allowedobjecttypeslength == 0, "member is not object id, should not specify object types");
+            }
+        }
+
+        META_ASSERT_TRUE(member_supports_switch_id, "none of struct members support switch id object type");
+
+        META_ASSERT_NULL(info->structmembers[j]);
+    }
+}
+
 void check_attr_sorted_by_id_name()
 {
     META_LOG_ENTER();
@@ -1694,6 +1806,7 @@ int main(int argc, char **argv)
 
     check_object_infos();
     check_attr_sorted_by_id_name();
+    check_non_object_id_object_types();
 
     printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 
