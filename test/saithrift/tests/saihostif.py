@@ -28,8 +28,6 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 import time
 
-
-
 import pprint
 
 class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):

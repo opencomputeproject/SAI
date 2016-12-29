@@ -111,7 +111,7 @@ def sai_thrift_get_default_router_id(client):
 def sai_thrift_create_fdb(client, vlan_id, mac, port, mac_action):
     fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, vlan_id=vlan_id)
     #value 0 represents static entry, id=0, represents entry type
-    fdb_attribute1_value = sai_thrift_attribute_value_t(s32=SAI_FDB_ENTRY_STATIC)
+    fdb_attribute1_value = sai_thrift_attribute_value_t(s32=SAI_FDB_ENTRY_TYPE_STATIC)
     fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_ENTRY_ATTR_TYPE,
                                             value=fdb_attribute1_value)
     #value oid represents object id, id=1 represents port id
@@ -133,7 +133,7 @@ def sai_thrift_flush_fdb_by_vlan(client, vlan_id):
     fdb_attribute1_value = sai_thrift_attribute_value_t(u16=vlan_id)
     fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_VLAN_ID,
                                             value=fdb_attribute1_value)
-    fdb_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_FDB_FLUSH_ENTRY_DYNAMIC)
+    fdb_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
     fdb_attribute2 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
                                             value=fdb_attribute2_value)
     fdb_attr_list = [fdb_attribute1, fdb_attribute2]
@@ -218,7 +218,8 @@ def sai_thrift_create_route(client, vr_id, addr_family, ip_addr, ip_mask, nhop, 
 
     if packet_action != None:
         route_packet_action_value = sai_thrift_attribute_value_t(s32=packet_action)
-        route_packet_action_attr = sai_thrift_attribute_t(id=SAI_ROUTE_ATTR_PACKET_ACTION, value=route_packet_action_value)
+        route_packet_action_attr = sai_thrift_attribute_t(id=SAI_ROUTE_ENTRY_ATTR_PACKET_ACTION,
+                                                          value=route_packet_action_value)
         route_attr_list.append(route_packet_action_attr)
 
     client.sai_thrift_create_route(thrift_route_entry=route, thrift_attr_list=route_attr_list)
@@ -281,16 +282,20 @@ def sai_thrift_remove_neighbor(client, addr_family, rif_id, ip_addr, dmac):
     client.sai_thrift_remove_neighbor_entry(neighbor_entry)
 
 def sai_thrift_create_next_hop_group(client, nhop_list):
-    nhop_group_attribute1_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_GROUP_ECMP)
+    nhop_group_attribute1_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
     nhop_group_attribute1 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_ATTR_TYPE,
                                                    value=nhop_group_attribute1_value)
     nhop_objlist = sai_thrift_object_list_t(count=len(nhop_list), object_id_list=nhop_list)
     nhop_group_attribute2_value = sai_thrift_attribute_value_t(objlist=nhop_objlist)
-    nhop_group_attribute2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_LIST,
+    nhop_group_attribute2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_MEMBER_LIST,
                                                    value=nhop_group_attribute2_value)
     nhop_group_attr_list = [nhop_group_attribute1, nhop_group_attribute2]
     nhop_group = client.sai_thrift_create_next_hop_group(thrift_attr_list=nhop_group_attr_list)
     return nhop_group
+
+def sai_thrift_remove_next_hop_from_group(client, nhop_list):
+    for hnop in nhop_list:
+        client.sai_thrift_remove_next_hop_from_group(hnop)
 
 def sai_thrift_create_lag(client, port_list):
     lag_port_list = sai_thrift_object_list_t(count=len(port_list), object_id_list=port_list)
@@ -320,7 +325,6 @@ def sai_thrift_create_stp_entry(client, vlan_list):
     stp_attr_list = [stp_attribute1]
     stp_id = client.sai_thrift_create_stp_entry(stp_attr_list)
     return stp_id
-
 
 def sai_thrift_set_hostif_trap_group(client, trap_group_id, policer_id):
     policer_attr_value = sai_thrift_attribute_value_t(oid=policer_id)
@@ -724,20 +728,28 @@ def sai_thrift_read_port_counters(client,port):
             queue1+=1
     return (counters_results, queue_counters_results)
 
-def sai_thrift_create_vlan_member(client, vlan_id, port_id, tagging_mode):
+def sai_thrift_create_vlan(client, vlan_id):
+    vlan_attr_list = []
+    attribute_value = sai_thrift_attribute_value_t(u16=vlan_id)
+    attribute = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_VLAN_ID, value=attribute_value)
+    vlan_attr_list.append(attribute)
+    vlan_oid = client.sai_thrift_create_vlan(vlan_attr_list)
+    return vlan_oid
+
+def sai_thrift_create_vlan_member(client, vlan_oid, port_oid, tagging_mode):
     vlan_member_attr_list = []
-    attribute_value = sai_thrift_attribute_value_t(s32=vlan_id)
+    attribute_value = sai_thrift_attribute_value_t(oid=vlan_oid)
     attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_VLAN_ID,
                                            value=attribute_value)
     vlan_member_attr_list.append(attribute)
 
-    attribute_value = sai_thrift_attribute_value_t(oid=port_id)
+    attribute_value = sai_thrift_attribute_value_t(oid=port_oid)
     attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_PORT_ID,
                                            value=attribute_value)
     vlan_member_attr_list.append(attribute)
 
     attribute_value = sai_thrift_attribute_value_t(s32=tagging_mode)
-    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_TAGGING_MODE,
+    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE,
                                            value=attribute_value)
     vlan_member_attr_list.append(attribute)
     vlan_member_id = client.sai_thrift_create_vlan_member(vlan_member_attr_list)

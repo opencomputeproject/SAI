@@ -596,57 +596,55 @@ public:
       return status;
   }
 
-    void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list)
-    {
-        XP_SAI_THRIFT_LOG_DBG("Called.");
+  void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list) {
+      XP_SAI_THRIFT_LOG_DBG("Called.");
 
-        std_sai_thrift_attr_vctr_t::const_iterator cit = thrift_attr_list.begin();
+      std_sai_thrift_attr_vctr_t::const_iterator cit = thrift_attr_list.begin();
 
-        for (sai_uint32_t i = 0; i < thrift_attr_list.size(); i++, cit++)
-        {
-            sai_thrift_attribute_t attribute = *cit;
-            attr_list[i].id = attribute.id;
+      for (sai_uint32_t i = 0; i < thrift_attr_list.size(); i++, cit++)
+      {
+          sai_thrift_attribute_t attribute = *cit;
+          attr_list[i].id = attribute.id;
 
-            switch (attribute.id)
-            {
-                case SAI_VLAN_ATTR_VLAN_ID:
-                    attr_list[i].value.u16 = attribute.value.u16;
-                    break;
+          switch (attribute.id)
+          {
+              case SAI_VLAN_ATTR_VLAN_ID:
+                  attr_list[i].value.u16 = attribute.value.u16;
+                  break;
 
-                default:
-                    XP_SAI_THRIFT_LOG_ERR("Failed to parse VLAN attributes.");
-                    break;
-            }
-        }
-    }
+              default:
+                  XP_SAI_THRIFT_LOG_ERR("Failed to parse VLAN attributes.");
+                  break;
+          }
+      }
+  }
 
-    void sai_thrift_create_vlan(sai_thrift_result_t &_return, const std_sai_thrift_attr_vctr_t &thrift_attr_list)
-    {
-        XP_SAI_THRIFT_LOG_DBG("Called.");
+  sai_thrift_object_id_t sai_thrift_create_vlan(const std_sai_thrift_attr_vctr_t &thrift_attr_list) {
+      XP_SAI_THRIFT_LOG_DBG("Called.");
 
-        sai_vlan_api_t *vlan_api = nullptr;
-        auto status = sai_api_query(SAI_API_VLAN, reinterpret_cast<void**>(&vlan_api));
+      sai_vlan_api_t *vlan_api = nullptr;
+      auto status = sai_api_query(SAI_API_VLAN, reinterpret_cast<void**>(&vlan_api));
 
-        if (status != SAI_STATUS_SUCCESS)
-        { XP_SAI_THRIFT_LOG_ERR("Failed to get VLAN API."); _return.data.oid = 0; _return.status = status; return; }
+      if (status != SAI_STATUS_SUCCESS)
+      { XP_SAI_THRIFT_LOG_ERR("Failed to get VLAN API."); return SAI_NULL_OBJECT_ID; }
 
-        sai_attribute_t *attr_list = nullptr;
-        sai_uint32_t attr_size = thrift_attr_list.size();
-        sai_thrift_alloc_attr(attr_list, attr_size);
-        sai_thrift_parse_vlan_attributes(thrift_attr_list, attr_list);
+      sai_attribute_t *attr_list = nullptr;
+      sai_uint32_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_vlan_attributes(thrift_attr_list, attr_list);
 
-        sai_object_id_t vlanObjId = 0;
-        status = vlan_api->create_vlan(&vlanObjId, gSwitchId, attr_size, attr_list);
+      sai_object_id_t vlanObjId = 0;
+      status = vlan_api->create_vlan(&vlanObjId, gSwitchId, attr_size, attr_list);
+      sai_thrift_free_attr(attr_list);
 
-        if (status == SAI_STATUS_SUCCESS)
-        { _return.data.oid = vlanObjId; _return.status = status; }
-        else
-        { XP_SAI_THRIFT_LOG_ERR("Failed to create VLAN."); _return.data.oid = 0; _return.status = status; }
+      if (status == SAI_STATUS_SUCCESS) { return vlanObjId; }
 
-        sai_thrift_free_attr(attr_list);
-    }
+      XP_SAI_THRIFT_LOG_ERR("Failed to create VLAN.");
 
-  sai_thrift_status_t sai_thrift_delete_vlan(const sai_thrift_object_id_t vlan_oid) {
+      return SAI_NULL_OBJECT_ID;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_vlan(const sai_thrift_object_id_t vlan_oid) {
       printf("sai_thrift_delete_vlan\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_vlan_api_t *vlan_api;
@@ -744,7 +742,7 @@ public:
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
               case SAI_VLAN_MEMBER_ATTR_VLAN_ID:
-                  attr_list[i].value.s32 = attribute.value.s32;
+                  attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_VLAN_MEMBER_ATTR_PORT_ID:
                   attr_list[i].value.oid = attribute.value.oid;

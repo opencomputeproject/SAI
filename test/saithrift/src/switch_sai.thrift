@@ -215,8 +215,8 @@ service switch_sai_rpc {
     sai_thrift_status_t sai_thrift_flush_fdb_entries(1: list <sai_thrift_attribute_t> thrift_attr_list);
 
     //vlan API
-    sai_thrift_result_t sai_thrift_create_vlan(1: list<sai_thrift_attribute_t> thrift_attr_list);
-    sai_thrift_status_t sai_thrift_delete_vlan(1: sai_thrift_object_id_t vlan_oid);
+    sai_thrift_object_id_t sai_thrift_create_vlan(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_vlan(1: sai_thrift_object_id_t vlan_oid);
     list<i64> sai_thrift_get_vlan_stats(
                              1: sai_thrift_vlan_id_t vlan_id,
                              2: list<sai_thrift_vlan_stat_counter_t> counter_ids,
