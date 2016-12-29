@@ -645,7 +645,7 @@ typedef enum _sai_hostif_attr_t
      * @default false
      */
     SAI_HOSTIF_ATTR_OPER_STATUS,
-    
+
     /**
      * @brief Set the queue index to be used for packets going out through this interface
      *
