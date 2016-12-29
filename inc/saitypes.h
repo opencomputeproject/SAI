@@ -530,6 +530,19 @@ typedef struct _sai_acl_capability_t
 }sai_acl_capability_t;
 
 /**
+ * @brief FDB entry type.
+ */
+typedef enum _sai_fdb_entry_bridge_type_t
+{
+    /** .1Q FDB Entry */
+    SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
+
+    /** .1D FDB Entry */
+    SAI_FDB_ENTRY_BRIDGE_TYPE_1D,
+
+} sai_fdb_entry_bridge_type_t;
+
+/**
  * @brief Data Type to use enum's as attribute value is sai_int32_t s32
  */
 typedef union {

@@ -47,19 +47,6 @@ typedef enum _sai_fdb_entry_type_t
 } sai_fdb_entry_type_t;
 
 /**
-* @brief FDB entry type.
-*/
-typedef enum _sai_fdb_entry_bridge_type_t
-{
-    /** .1Q FDB Entry */
-    SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
-
-    /** .1D FDB Entry */
-    SAI_FDB_ENTRY_BRIDGE_TYPE_1D,
-
-} sai_fdb_entry_bridge_type_t;
-
-/**
  * @brief FDB entry key
  */
 typedef struct _sai_fdb_entry_t

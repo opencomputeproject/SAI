@@ -90,7 +90,7 @@ typedef enum _sai_l2mc_group_member_attr_t
     /**
      * @brief L2MC output id
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_TUNNEL
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_L2MC_GROUP_MEMBER_ATTR_L2MC_OUTPUT_ID,

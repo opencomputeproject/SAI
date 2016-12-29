@@ -58,8 +58,18 @@ typedef struct _sai_l2mc_entry_t
      */
     sai_object_id_t switch_id;
 
-    /** Vlan ID */
+    /** Bridge type */
+    sai_fdb_entry_bridge_type_t bridge_type;
+
+    /** Vlan ID. Valid for .1Q */
     sai_vlan_id_t vlan_id;
+
+    /**
+     * Bridge ID. Valid for .1D
+     *
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     */
+    sai_object_id_t bridge_id;
 
     /** L2MC entry type */
     sai_l2mc_entry_type_t type;

@@ -290,6 +290,26 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_PORT_LIST,
 
     /**
+     * @brief Maximum number of learned MAC addresses
+     *
+     * Zero means learning limit disable
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_BRIDGE_ATTR_MAX_LEARNED_ADDRESSES,
+
+    /**
+     * @brief To disable learning on a bridge
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_BRIDGE_ATTR_LEARN_DISABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_BRIDGE_ATTR_END,
