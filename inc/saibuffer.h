@@ -255,7 +255,7 @@ typedef enum _sai_buffer_pool_stat_t
     SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
 
     /** get count of packest dropped in this pool [uint64_t] */
-    SAI_BUFFER_POOL_STAT_DROPPED_PACKETS = 0x00000003,
+    SAI_BUFFER_POOL_STAT_DROPPED_PACKETS = 0x00000002,
 
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
