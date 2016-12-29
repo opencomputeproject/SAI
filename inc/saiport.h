@@ -1385,10 +1385,10 @@ typedef enum _sai_port_stat_t
     SAI_PORT_STAT_OUT_SHARED_WATERMARK_BYTES,
 
     /** get in port packet drops due to buffers [uint64_t] */
-    SAI_PORT_STAT_IN_DROPPED_BYTES,
+    SAI_PORT_STAT_IN_DROPPED_PKTS,
 
     /** get out port packet drops due to buffers [uint64_t] */
-    SAI_PORT_STAT_OUT_DROPPED_BYTES,
+    SAI_PORT_STAT_OUT_DROPPED_PKTS,
 
     /** get the number of pause frames received on the port [uint64_t] */
     SAI_PORT_STAT_PAUSE_RX_PKTS,
