@@ -498,6 +498,8 @@ typedef struct _sai_vlan_api_t
     sai_remove_vlan_member_fn           remove_vlan_member;
     sai_set_vlan_member_attribute_fn    set_vlan_member_attribute;
     sai_get_vlan_member_attribute_fn    get_vlan_member_attribute;
+    sai_bulk_object_create_fn           create_vlan_members;
+    sai_bulk_object_remove_fn           remove_vlan_members;
     sai_get_vlan_stats_fn               get_vlan_stats;
     sai_clear_vlan_stats_fn             clear_vlan_stats;
 

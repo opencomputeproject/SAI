@@ -243,6 +243,8 @@ typedef struct _sai_stp_api_t {
     sai_remove_stp_port_fn          remove_stp_port;
     sai_set_stp_port_attribute_fn   set_stp_port_attribute;
     sai_get_stp_port_attribute_fn   get_stp_port_attribute;
+    sai_bulk_object_create_fn       create_stp_ports;
+    sai_bulk_object_remove_fn       remove_stp_ports;
 } sai_stp_api_t;
 
 /**

@@ -167,6 +167,11 @@
 #define SAI_STATUS_SW_UPGRADE_VERSION_MISMATCH      SAI_STATUS_CODE(0x00000016L)
 
 /**
+ * @brief Operation not executed
+ */
+#define SAI_STATUS_NOT_EXECUTED                     SAI_STATUS_CODE(0x00000017L)
+
+/**
  * @brief Attribute is invalid (range from 0x00010000L to 0x0001FFFFL).
  *
  * Return this when the property attached to the attribute does not match
