@@ -90,6 +90,18 @@ extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name
         _In_ const char *attr_id_name);
 
 /**
+ * @brief Gets string representation of enum value
+ *
+ * @param[in] metadata Enum metadata
+ * @param[in] value Enum value to bo converted to string
+ *
+ * @return String representation of enum value or NULL if value was not found
+ */
+extern const char* sai_metadata_get_enum_value_name(
+        _In_ const sai_enum_metadata_t* metadata,
+        _In_ int value);
+
+/**
  * @}
  */
-#endif /** __SAI_METADATA_UTILS__ */
+#endif /** __SAI_METADATA_UTILS_H_ */

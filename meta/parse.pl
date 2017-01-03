@@ -648,6 +648,7 @@ sub CreateMetadataHeaderAndSource
     WriteHeader $HEAD;
     WriteHeader "#include <sai.h>";
     WriteHeader "#include \"saimetadatatypes.h\"";
+    WriteHeader "#include \"saimetadatautils.h\"";
 
     WriteSource $HEAD;
     WriteSource "#include <stdio.h>";
@@ -1480,10 +1481,6 @@ sub CreateEnumHelperMethods
         WriteHeader "extern const char* sai_metadata_get_$1_name(";
         WriteHeader "        _In_ $key value);";
     }
-
-    WriteHeader "extern const char* sai_metadata_get_enum_value_name(";
-    WriteHeader "        _In_ const sai_enum_metadata_t* metadata,";
-    WriteHeader "        _In_ int value);";
 }
 
 sub ProcessIsNonObjectId
@@ -1956,9 +1953,15 @@ sub CheckWhiteSpaceInHeaders
             $n++;
             chomp $line;
 
-            next if not $line =~/\s+$/;
+            if ($line =~/\s+$/)
+            {
+                LogError "line ends in whitespace $header $n: $line";
+            }
 
-            LogError "line ends in whitespace $header $n: $line";
+            if ($line =~ /[^\x20-\x7e]/)
+            {
+                LogError "line contains non ascii characters $header $n: $line";
+            }
         }
     }
 }
@@ -1977,8 +1980,8 @@ for my $file (GetXmlFiles($XMLDIR))
 # since sai_status is not enum
 ProcessSaiStatus();
 
-WriteHeader "#ifndef __SAI_METADATA_TYPES__";
-WriteHeader "#define __SAI_METADATA_TYPES__";
+WriteHeader "#ifndef __SAI_METADATA_H__";
+WriteHeader "#define __SAI_METADATA_H__";
 
 CreateMetadataHeaderAndSource();
 
@@ -1998,6 +2001,6 @@ CreateListOfAllAttributes();
 
 CheckWhiteSpaceInHeaders();
 
-WriteHeader "#endif /* __SAI_METADATA_TYPES__ */";
+WriteHeader "#endif /* __SAI_METADATA_H__ */";
 
 WriteMetaDataFiles();
