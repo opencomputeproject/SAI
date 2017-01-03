@@ -381,13 +381,13 @@ typedef sai_status_t(*sai_get_bridge_attribute_fn)(
 */
 typedef struct _sai_bridge_api_t
 {
-    sai_create_bridge_fn         		create_bridge;
-    sai_remove_bridge_fn 				remove_bridge;
-    sai_set_bridge_attribute_fn  		set_bridge_attribute;
-    sai_get_bridge_attribute_fn  		get_bridge_attribute;
-    sai_create_bridge_port_fn         	create_bridge_port;
-    sai_remove_bridge_port_fn 			remove_bridge_port;
-    sai_set_bridge_port_attribute_fn  	set_bridge_port_attribute;
+    sai_create_bridge_fn                create_bridge;
+    sai_remove_bridge_fn                remove_bridge;
+    sai_set_bridge_attribute_fn         set_bridge_attribute;
+    sai_get_bridge_attribute_fn         get_bridge_attribute;
+    sai_create_bridge_port_fn           create_bridge_port;
+    sai_remove_bridge_port_fn           remove_bridge_port;
+    sai_set_bridge_port_attribute_fn    set_bridge_port_attribute;
     sai_get_bridge_port_attribute_fn    get_bridge_port_attribute;
 } sai_bridge_api_t;
 
