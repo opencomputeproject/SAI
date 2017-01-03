@@ -49,39 +49,7 @@ typedef struct _sai_object_meta_key_t {
     /**
      * @brief The key.
      */
-    union
-    {
-        /**
-         * @brief Key is object id when none
-         * of below conditions are met.
-         */
-        sai_object_id_t         objectid;
-
-        /**
-         * @brief Key is vlan id when
-         * #objecttype == SAI_OBJECT_TYPE_VLAN.
-         */
-        sai_vlan_id_t           vlanid;
-
-        /**
-         * @brief Key is fdb entry when
-         * #objecttype == SAI_OBJECT_TYPE_FDB_ENTRY.
-         */
-        sai_fdb_entry_t         fdbentry;
-
-        /**
-         * @brief Key is neighbor entry when
-         * #objecttype == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY.
-         */
-        sai_neighbor_entry_t    neighborentry;
-
-        /**
-         * @brief Key is route entry when
-         * #objecttype == SAI_OBJECT_TYPE_ROUTE_ENTRY.
-         */
-        sai_route_entry_t       routeentry;
-
-    } key;
+    sai_object_key_t            objectkey;
 
 } sai_object_meta_key_t;
 
@@ -447,37 +415,37 @@ typedef enum _sai_attr_flags_t {
 /**
  * @def Defines helper to chek if mandatory on create falg is set.
  */
-#define HAS_FLAG_MANDATORY_ON_CREATE(x)   ((x & SAI_ATTR_FLAGS_MANDATORY_ON_CREATE) == SAI_ATTR_FLAGS_MANDATORY_ON_CREATE)
+#define HAS_FLAG_MANDATORY_ON_CREATE(x)   (((x) & SAI_ATTR_FLAGS_MANDATORY_ON_CREATE) == SAI_ATTR_FLAGS_MANDATORY_ON_CREATE)
 
 /**
  * @def Defines helper to chek if create only falg is set.
  */
-#define HAS_FLAG_CREATE_ONLY(x)           ((x & SAI_ATTR_FLAGS_CREATE_ONLY) == SAI_ATTR_FLAGS_CREATE_ONLY)
+#define HAS_FLAG_CREATE_ONLY(x)           (((x) & SAI_ATTR_FLAGS_CREATE_ONLY) == SAI_ATTR_FLAGS_CREATE_ONLY)
 
 /**
  * @def Defines helper to chek if create and set falg is set.
  */
-#define HAS_FLAG_CREATE_AND_SET(x)        ((x & SAI_ATTR_FLAGS_CREATE_AND_SET) == SAI_ATTR_FLAGS_CREATE_AND_SET)
+#define HAS_FLAG_CREATE_AND_SET(x)        (((x) & SAI_ATTR_FLAGS_CREATE_AND_SET) == SAI_ATTR_FLAGS_CREATE_AND_SET)
 
 /**
  * @def Defines helper to chek if read only falg is set.
  */
-#define HAS_FLAG_READ_ONLY(x)             ((x & SAI_ATTR_FLAGS_READ_ONLY) == SAI_ATTR_FLAGS_READ_ONLY)
+#define HAS_FLAG_READ_ONLY(x)             (((x) & SAI_ATTR_FLAGS_READ_ONLY) == SAI_ATTR_FLAGS_READ_ONLY)
 
 /**
  * @def Defines helper to chek if key falg is set.
  */
-#define HAS_FLAG_KEY(x)                   ((x & SAI_ATTR_FLAGS_KEY) == SAI_ATTR_FLAGS_KEY)
+#define HAS_FLAG_KEY(x)                   (((x) & SAI_ATTR_FLAGS_KEY) == SAI_ATTR_FLAGS_KEY)
 
 /**
  * @def Defines helper to chek if dynamic falg is set.
  */
-#define HAS_FLAG_DYNAMIC(x)               ((x & SAI_ATTR_FLAGS_DYNAMIC) == SAI_ATTR_FLAGS_DYNAMIC)
+#define HAS_FLAG_DYNAMIC(x)               (((x) & SAI_ATTR_FLAGS_DYNAMIC) == SAI_ATTR_FLAGS_DYNAMIC)
 
 /**
  * @def Defines helper to chek if special falg is set.
  */
-#define HAS_FLAG_SPECIAL(x)               ((x & SAI_ATTR_FLAGS_SPECIAL) == SAI_ATTR_FLAGS_SPECIAL)
+#define HAS_FLAG_SPECIAL(x)               (((x) & SAI_ATTR_FLAGS_SPECIAL) == SAI_ATTR_FLAGS_SPECIAL)
 
 /**
  * @brief Defines default value type.
