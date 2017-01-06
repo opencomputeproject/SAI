@@ -45,7 +45,13 @@ typedef enum _sai_router_interface_type_t
     SAI_ROUTER_INTERFACE_TYPE_VLAN,
 
     /** Loopback Router Interface Type */
-    SAI_ROUTER_INTERFACE_TYPE_LOOPBACK
+    SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
+
+    /** Sub port Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+
+    /** .1D Bridge Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_BRIDGE
 
 } sai_router_interface_type_t;
 
@@ -84,7 +90,7 @@ typedef enum _sai_router_interface_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
      */
     SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
 
@@ -94,7 +100,7 @@ typedef enum _sai_router_interface_attr_t
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_VLAN
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
      */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
 

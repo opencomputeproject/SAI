@@ -299,13 +299,13 @@ typedef enum _sai_vlan_member_attr_t
     SAI_VLAN_MEMBER_ATTR_VLAN_ID = SAI_VLAN_MEMBER_ATTR_START,
 
     /**
-     * @brief Logical port ID
+     * @brief Bridge port ID. Valid only for .1Q Bridge ports
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_VLAN_MEMBER_ATTR_PORT_ID,
+    SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID,
 
     /**
      * @brief VLAN tagging mode

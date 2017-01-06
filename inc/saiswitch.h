@@ -517,6 +517,26 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
     /**
+     * @brief Default .1Q Bridge ID
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID,
+
+    /**
+     * @brief Default .1Q bridge router port ID
+     * This bridge router port is associated with the default .1Q Bridge
+     * #SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_PORT_ID,
+
+    /**
      * @brief Switch/Global bind point for ingress ACL object
      *
      * Bind (or unbind) an ingress acl table or acl group globally. Enable/Update
@@ -548,7 +568,6 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_EGRESS_ACL,
 
-    /** Maximum traffic classes limit [sai_uint8_t] */
     /**
      * @brief Maximum traffic classes limit
      *

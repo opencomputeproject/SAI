@@ -68,6 +68,15 @@ typedef enum _sai_stp_attr_t
     SAI_STP_ATTR_VLAN_LIST = SAI_STP_ATTR_START,
 
     /**
+    * @brief Bridge attached to STP instance
+    *
+    * @type sai_object_id_t
+    * @objects SAI_OBJECT_TYPE_BRIDGE
+    * @flags READ_ONLY
+    */
+    SAI_STP_ATTR_BRIDGE_ID,
+
+    /**
      * @brief Port member list
      *
      * When a stp is created, this list is empty, all ports state as blocking.
@@ -105,12 +114,12 @@ typedef enum _sai_stp_port_attr_t
     SAI_STP_PORT_ATTR_STP = SAI_STP_PORT_ATTR_START,
 
     /**
-     * @brief Port id
+     * @brief Bridge Port id
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_STP_PORT_ATTR_PORT,
+    SAI_STP_PORT_ATTR_BRIDGE_PORT,
 
     /**
      * @brief STP port state
