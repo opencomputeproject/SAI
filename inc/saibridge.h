@@ -103,7 +103,7 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_TYPE = SAI_BRIDGE_PORT_ATTR_START,
 
     /**
-     * @brief Assosiated Port or Lag object id
+     * @brief Associated Port or Lag object id
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
@@ -113,7 +113,7 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_PORT_ID,
 
     /**
-     * @brief Assosiated Vlan
+     * @brief Associated Vlan
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -123,7 +123,7 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_VLAN_ID,
 
     /**
-     * @brief Assosiated rouer inerface object id
+     * @brief Associated router inerface object id
      * Please note that for SAI_BRIDGE_PORT_TYPE_1Q_ROUTER,
      * all vlan interfaces are auto bounded for the bridge port.
      *
@@ -135,7 +135,7 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_RIF_ID,
 
     /**
-     * @brief Assosiated tunnel id
+     * @brief Associated tunnel id
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_TUNNEL
@@ -145,7 +145,7 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_TUNNEL_ID,
 
     /**
-     * @brief Assosiated bridge id
+     * @brief Associated bridge id
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_BRIDGE

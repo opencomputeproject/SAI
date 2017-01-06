@@ -519,13 +519,22 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Default .1Q Bridge ID
      *
-     * Must return #SAI_STATUS_OBJECT_IN_USE when try to delete this Bridge ID.
-     *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_BRIDGE
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID,
+
+    /**
+     * @brief Default .1Q bridge router port ID
+     * This bridge router port is associated with the default .1Q Bridge
+     * #SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_PORT_ID,
 
     /**
      * @brief Switch/Global bind point for ingress ACL object
