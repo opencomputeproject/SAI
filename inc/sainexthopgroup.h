@@ -256,7 +256,8 @@ typedef struct _sai_next_hop_group_api_t
     sai_remove_next_hop_group_member_fn        remove_next_hop_group_member;
     sai_set_next_hop_group_member_attribute_fn set_next_hop_group_member_attribute;
     sai_get_next_hop_group_member_attribute_fn get_next_hop_group_member_attribute;
-
+    sai_bulk_object_create_fn                  create_next_hop_group_members;
+    sai_bulk_object_remove_fn                  remove_next_hop_group_members;
 } sai_next_hop_group_api_t;
 
 /**
