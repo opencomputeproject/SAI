@@ -61,6 +61,137 @@ typedef enum _sai_tunnel_map_type_t
 
 } sai_tunnel_map_type_t;
 
+typedef enum _sai_tunnel_map_item_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_START = 0x00000000,
+
+    /**
+     * @brief Tunnel Map type
+     *
+     * @type sai_tunnel_map_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE = SAI_TUNNEL_MAP_ITEM_ATTR_START,
+
+    /**
+     * @brief Tunnel map ex
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP = 0x00000001,
+
+    /**
+     * @brief Inner ECN key
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_OECN_KEY = 0x00000002,
+
+    /**
+     * @brief Inner ECN value
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_OECN_VALUE = 0x00000003,
+
+    /**
+     * @brief Outer ECN key
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_UECN_KEY = 0x00000004,
+
+    /**
+     * @brief Outer ECN value
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_UECN_VALUE = 0x00000005,
+
+    /**
+     * @brief Vlan ID key
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan true
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VLAN_ID or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_VLAN_ID_KEY = 0x00000006,
+
+    /**
+     * @brief Vlan ID value
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan true
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VLAN_ID or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_VLAN_ID_VALUE = 0x00000007,
+
+    /**
+     * @brief VNI ID key
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VLAN_ID or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_VNI_ID_KEY = 0x00000008,
+
+    /**
+     * @brief VNI ID value
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VLAN_ID or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_VNI_ID_VALUE = 0x00000009,
+
+    /**
+     * @brief Bridge ID key
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_BRIDGE_ID_KEY = 0x0000000a,
+
+    /**
+     * @brief Bridge ID value
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF or SAI_TUNNEL_MAP_ITEM_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_BRIDGE_ID_VALUE = 0x0000000b,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_TUNNEL_MAP_ITEM_ATTR_END,
+
+    /** Custom range base value */
+    SAI_TUNNEL_MAP_ITEM_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_TUNNEL_MAP_ITEM_ATTR_CUSTOM_RANGE_END
+
+} sai_tunnel_map_item_attr_t;
+
 /**
  * @brief Defines tunnel map attributes
  */
@@ -81,6 +212,9 @@ typedef enum _sai_tunnel_map_attr_t
 
     /**
      * @brief Tunnel mapper
+     *
+     * If list is empty, TUNNEL_MAP can be used to assign
+     * TUNNEL_MAP_ITEM objects.
      *
      * @type sai_tunnel_map_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
