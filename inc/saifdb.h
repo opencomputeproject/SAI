@@ -185,12 +185,12 @@ typedef enum _sai_fdb_flush_entry_type_t
  * The API uses AND operation when multiple attributes are specified. For
  * exmaple,
  * 1) Flush all entries in fdb table - Do not specify any attribute
- * 2) Flush all entries by port - Set #SAI_FDB_FLUSH_ATTR_PORT_ID
+ * 2) Flush all entries by bridge port - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
  * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_VLAN_ID
- * 4) Flush all entries by port and VLAN - Set #SAI_FDB_FLUSH_ATTR_PORT_ID and
- *    #SAI_FDB_FLUSH_ATTR_VLAN_ID
- * 5) Flush all static entries by port and VLAN - Set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
- *    #SAI_FDB_FLUSH_ATTR_PORT_ID, and #SAI_FDB_FLUSH_ATTR_VLAN_ID
+ * 4) Flush all entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
+ *    and #SAI_FDB_FLUSH_ATTR_VLAN_ID
+ * 5) Flush all static entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
+ *    #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID, and #SAI_FDB_FLUSH_ATTR_VLAN_ID
  */
 typedef enum _sai_fdb_flush_attr_t
 {
@@ -200,15 +200,15 @@ typedef enum _sai_fdb_flush_attr_t
     SAI_FDB_FLUSH_ATTR_START,
 
     /**
-     * @brief Flush based on port
+     * @brief Flush based on bridge port
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags CREATE_ONLY
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
+    SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
 
     /**
      * @brief Flush based on VLAN
