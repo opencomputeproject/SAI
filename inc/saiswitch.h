@@ -655,11 +655,10 @@ typedef enum _sai_switch_attr_t
      * #SAI_NATIVE_HASH_FIELD_ETHERTYPE\]
      * #SAI_HASH_ATTR_UDF_GROUP_LIST empty list
      *
-     * The object id is read only, while the object attributes can be modified
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      */
     SAI_SWITCH_ATTR_ECMP_HASH,
 
@@ -673,11 +672,10 @@ typedef enum _sai_switch_attr_t
      * #SAI_NATIVE_HASH_FIELD_ETHERTYPE\]
      * #SAI_HASH_ATTR_UDF_GROUP_LIST empty list)
      *
-     * The object id is read only, while the object attributes can be modified
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      */
     SAI_SWITCH_ATTR_LAG_HASH,
 
@@ -873,7 +871,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4,
 
@@ -882,7 +880,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4_IN_IPV4,
 
@@ -891,7 +889,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV6,
 
@@ -931,7 +929,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4,
 
@@ -939,7 +937,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4_IN_IPV4,
 
@@ -948,7 +946,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV6,
 
