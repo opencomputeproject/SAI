@@ -390,7 +390,7 @@ sub ProcessTagDefault
 {
     my ($type, $value, $val) = @_;
 
-    if ($val =~/^(empty|special|vendor|const)/)
+    if ($val =~/^(empty|internal|vendor|const)/)
     {
         return $val;
     }
@@ -900,6 +900,8 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^SAI_NULL_OBJECT_ID$/;
 
+    return "SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL" if $default =~ /^internal$/;
+
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST" if $default =~ /^empty$/;
@@ -951,7 +953,7 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
-    elsif ($default =~ /^(attrvalue|attrrange|vendor|empty|const)/)
+    elsif ($default =~ /^(attrvalue|attrrange|vendor|empty|const|internal)/)
     {
         return "NULL";
     }
