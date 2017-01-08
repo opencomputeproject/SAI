@@ -893,6 +893,11 @@ void check_attr_default_value_type(
                 META_ASSERT_FAIL(md, "default internal currently can be set only on read only objects");
             }
 
+            if (md->objecttype != SAI_OBJECT_TYPE_SWITCH)
+            {
+                META_ASSERT_FAIL(md, "default internal can be only set on switch object type");
+            }
+
             switch (md->attrvaluetype)
             {
                 case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
