@@ -366,6 +366,20 @@ void check_attr_flags(
 
         case SAI_ATTR_FLAGS_READ_ONLY:
 
+            if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
+            {
+                if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID ||
+                    md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_LIST)
+                {
+                    /*
+                     * Read only object id/list can be marked as internal
+                     * like default virtual router, cpu port id, etc.
+                     */
+
+                    break;
+                }
+            }
+
             if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_NONE)
             {
                 META_ASSERT_FAIL(md, "no default value expected, but type provided: %s",
@@ -868,6 +882,31 @@ void check_attr_default_value_type(
                 default:
 
                     META_ASSERT_FAIL(md, "vendor specific not allowed on this type");
+            }
+
+            break;
+
+        case SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL:
+
+            if (md->flags != SAI_ATTR_FLAGS_READ_ONLY)
+            {
+                META_ASSERT_FAIL(md, "default internal currently can be set only on read only objects");
+            }
+
+            if (md->objecttype != SAI_OBJECT_TYPE_SWITCH)
+            {
+                META_ASSERT_FAIL(md, "default internal can be only set on switch object type");
+            }
+
+            switch (md->attrvaluetype)
+            {
+                case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+                case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+                    break;
+
+                default:
+
+                    META_ASSERT_FAIL(md, "invalid attribute value type specified: %d", md->attrvaluetype);
             }
 
             break;

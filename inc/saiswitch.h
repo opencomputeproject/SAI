@@ -237,6 +237,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_list_t
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_PORT_LIST,
@@ -254,6 +255,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_CPU_PORT,
@@ -491,6 +493,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_VLAN
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_DEFAULT_VLAN_ID,
@@ -501,6 +504,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_STP
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
@@ -512,6 +516,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
@@ -521,6 +526,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID,
@@ -532,6 +538,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_PORT_ID,
@@ -641,6 +648,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP,
@@ -659,6 +667,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ECMP_HASH,
@@ -677,6 +686,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_LAG_HASH,
@@ -873,6 +883,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4,
@@ -882,6 +893,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4_IN_IPV4,
@@ -891,6 +903,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV6,
@@ -931,6 +944,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4,
@@ -939,6 +953,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4_IN_IPV4,
@@ -948,6 +963,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
+     * @default internal
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV6,
