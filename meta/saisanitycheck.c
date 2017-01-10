@@ -1862,6 +1862,193 @@ void check_attr_sorted_by_id_name()
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("ZZZ"));    /* after all attr names */
 }
 
+void list_loop(
+        _In_ const sai_object_type_info_t* info,
+        _In_ const sai_object_type_t *visited,
+        _In_ const uint32_t *attributes,
+        _In_ int levelidx,
+        _In_ int level)
+{
+    META_LOG_ENTER();
+
+    META_WARN_LOG("LOOP DETECTED on object type: %s",
+            metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
+
+    for (; levelidx < level; ++levelidx)
+    {
+        sai_object_type_t ot = visited[levelidx];
+
+        const char* ot_name = metadata_enum_sai_object_type_t.valuesnames[ot];
+
+        const sai_attr_metadata_t* m = sai_metadata_get_attr_metadata(ot, attributes[levelidx]);
+
+        META_WARN_LOG(" %s: %s", ot_name, m->attridname);
+    }
+
+    META_WARN_LOG(" -> %s", metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
+
+    if (level >= 0)
+    {
+        META_FAIL("LOOP is detected, we can't have loops in graph, please fix attributes");
+    }
+}
+
+void check_objects_for_loops_recursive(
+        _In_ const sai_object_type_info_t* info,
+        _Inout_ sai_object_type_t *visited,
+        _Inout_ uint32_t *attributes,
+        _In_ int level)
+{
+    META_LOG_ENTER();
+
+    visited[level] = info->objecttype;
+
+    int levelidx = 0;
+
+    for (; levelidx < level; ++levelidx)
+    {
+        if (visited[levelidx] == info->objecttype)
+        {
+            /* object type is already defined, so we have a loop */
+
+            list_loop(info, visited, attributes, levelidx, level);
+
+            return;
+        }
+    }
+
+    const sai_attr_metadata_t** meta = info->attrmetadata;
+
+    META_ASSERT_NOT_NULL(meta);
+
+    size_t idx = 0;
+
+    /* iterate all attributes on non object id type */
+
+    for (; meta[idx] != NULL; ++idx)
+    {
+        const sai_attr_metadata_t* m = meta[idx];
+
+        META_ASSERT_NOT_NULL(m);
+
+        if (HAS_FLAG_READ_ONLY(m->flags))
+        {
+            /* skip read only attributes since with those we will have loops for sure */
+
+            continue;
+        }
+
+        /* skip known loops */
+
+        if (m->objecttype == SAI_OBJECT_TYPE_PORT)
+        {
+            if (m->attrid == SAI_PORT_ATTR_EGRESS_MIRROR_SESSION ||
+                m->attrid == SAI_PORT_ATTR_INGRESS_MIRROR_SESSION ||
+                m->attrid == SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST)
+            {
+                continue;
+            }
+        }
+
+        if (m->objecttype == SAI_OBJECT_TYPE_SCHEDULER_GROUP &&
+            m->attrid == SAI_SCHEDULER_GROUP_ATTR_PARENT_NODE)
+        {
+            continue;
+        }
+
+        attributes[level] = m->attrid;
+
+        switch (m->attrvaluetype)
+        {
+            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID:
+            case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
+            case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+
+                {
+                    size_t j = 0;
+
+                    for (; j < m->allowedobjecttypeslength; ++j)
+                    {
+                        const sai_object_type_info_t* next = sai_all_object_type_infos[ m->allowedobjecttypes[j] ];
+
+                        check_objects_for_loops_recursive(next, visited, attributes, level + 1);
+                    }
+                }
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    /* iterate for struct members on non object id object types */
+
+    if (info->isnonobjectid)
+    {
+        size_t j = 0;
+
+        for (; j < info->structmemberscount; ++j)
+        {
+            const sai_struct_member_info_t *m = info->structmembers[j];
+
+            if (m->membervaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+            {
+                continue;
+            }
+
+            size_t k = 0;
+
+            for (; k < m->allowedobjecttypeslength; k++)
+            {
+                const sai_object_type_info_t* next = sai_all_object_type_infos[ m->allowedobjecttypes[k] ];
+
+                check_objects_for_loops_recursive(next, visited, attributes, level + 1);
+            }
+        }
+    }
+
+    /* clear level on exit */
+
+    visited[level] = SAI_OBJECT_TYPE_NULL;
+    attributes[level] = 0;
+}
+
+void check_objects_for_loops()
+{
+    META_LOG_ENTER();
+
+    sai_object_type_t visited_objects[SAI_OBJECT_TYPE_MAX];
+    uint32_t visited_attributes[SAI_OBJECT_TYPE_MAX];
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        memset(visited_objects, 0, SAI_OBJECT_TYPE_MAX * sizeof(sai_object_type_t));
+        memset(visited_attributes, 0, SAI_OBJECT_TYPE_MAX * sizeof(uint32_t));
+
+        check_objects_for_loops_recursive(info, visited_objects, visited_attributes, 0);
+    }
+}
+
+void check_null_object_id()
+{
+    META_LOG_ENTER();
+
+    META_ASSERT_TRUE(SAI_NULL_OBJECT_ID == 0, "SAI_NULL_OBJECT_ID must be zero");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -1883,6 +2070,8 @@ int main(int argc, char **argv)
     check_attr_sorted_by_id_name();
     check_non_object_id_object_types();
     check_non_object_id_object_attrs();
+    check_objects_for_loops();
+    check_null_object_id();
 
     printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 
