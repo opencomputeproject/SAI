@@ -149,9 +149,8 @@ typedef enum _sai_bridge_port_attr_t
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_BRIDGE
-     * @flags CREATE_AND_SET
-     * @default SAI_NULL_OBJECT_ID
-     * @allownull true
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER
      */
     SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
 
