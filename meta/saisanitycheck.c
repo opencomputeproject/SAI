@@ -953,17 +953,6 @@ void check_attr_conditions(
     switch ((int)md->flags)
     {
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
-
-            /* condition needs to be changed to validonly since flags should be CREATE_AND_SET */
-
-            if (md->objecttype != SAI_OBJECT_TYPE_MIRROR_SESSION &&
-                    md->objecttype != SAI_OBJECT_TYPE_HOSTIF_TRAP)
-            {
-                META_ASSERT_FAIL(md, "marked as conditional on non mirror session /hostif_trap/hostif_user_defined_trap, but invalid creation flags: 0x%u", md->flags);
-            }
-
-            break;
-
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
         case SAI_ATTR_FLAGS_CREATE_ONLY: /* will require default value, on some cases may be dynamic */
             break;
