@@ -1245,6 +1245,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FAST_API_ENABLE,
 
     /**
+     * @brief Ingress acl stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_INGRESS,
+
+    /**
+     * @brief Egress acl stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
