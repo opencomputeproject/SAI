@@ -758,14 +758,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
 
     /**
-     * @brief Acl capabilities supported by the NPU
-     *
-     * @type sai_acl_capability_t
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_ACL_CAPABILITY,
-
-    /**
      * @brief Multicast snooping capability supported by the NPU
      *
      * @type sai_switch_mcast_snooping_capability_t

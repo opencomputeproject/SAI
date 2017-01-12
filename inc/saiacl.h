@@ -920,8 +920,8 @@ typedef enum _sai_acl_table_attr_t
      * @brief List of actions in sai_acl_table_action_list_t [sai_s32_list_t]
      *
      * Based on the ACL capability per stage obtained from the switch
-     * attribute #SAI_SWITCH_ATTR_ACL_CAPABILITY application should
-     * pass the action list if its mandatory per stage.
+     * attributes #SAI_SWITCH_ATTR_ACL_STAGE_INGRESS and #SAI_SWITCH_ATTR_ACL_STAGE_EGRESS
+     * application should pass the action list if its mandatory per stage.
      * If its not mandatory application can either pass the action list
      * or ignore it.
      *
