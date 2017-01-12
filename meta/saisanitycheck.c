@@ -1682,7 +1682,7 @@ void check_non_object_id_object_types()
 
         size_t j = 0;
 
-        bool member_supports_switch_id = false;
+        int member_supports_switch_id = 0;
 
         for (; j < info->structmemberscount; ++j)
         {
@@ -1715,7 +1715,14 @@ void check_non_object_id_object_types()
             if (m->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
             {
                 META_ASSERT_NOT_NULL(m->allowedobjecttypes);
-                META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "member is object id, should specify some object types");
+                META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "struct member object id, should specify some object types");
+
+                /*
+                 * this check can be relaxed in the future, but currently
+                 * supporting only one object type in non object id make sense
+                 */
+
+                META_ASSERT_TRUE(m->allowedobjecttypeslength == 1, "currently struct member object id, should specify only one object type");
 
                 size_t k = 0;
 
@@ -1732,7 +1739,20 @@ void check_non_object_id_object_types()
                              * one struct member should be type of switch
                              */
 
-                            member_supports_switch_id = true;
+                            member_supports_switch_id++;
+                        }
+
+                        /* non object id struct can't contain object id which is also non object id */
+
+                        const sai_object_type_info_t* sinfo = sai_all_object_type_infos[ot];
+
+                        META_ASSERT_NOT_NULL(sinfo);
+
+                        if (sinfo->isnonobjectid)
+                        {
+                            META_FAIL("struct member %s of non object id type can't be used as object id in non object id struct: %s",
+                                    m->membername,
+                                    sai_metadata_get_object_type_name(ot));
                         }
 
                         continue;
@@ -1748,7 +1768,7 @@ void check_non_object_id_object_types()
             }
         }
 
-        META_ASSERT_TRUE(member_supports_switch_id, "none of struct members support switch id object type");
+        META_ASSERT_TRUE(member_supports_switch_id == 1, "there should be only one struct member that support switch id object type");
 
         META_ASSERT_NULL(info->structmembers[j]);
     }
