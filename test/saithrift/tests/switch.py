@@ -538,7 +538,7 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
     mirror_attr_list = []
 
     #Mirror type
-    attribute1_value = sai_thrift_attribute_value_t(u8=mirror_type)
+    attribute1_value = sai_thrift_attribute_value_t(s32=mirror_type)
     attribute1 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_TYPE,
                                         value=attribute1_value)
     mirror_attr_list.append(attribute1)
@@ -549,63 +549,54 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
                                         value=attribute2_value)
     mirror_attr_list.append(attribute2)
 
-    if mirror_type == SAI_MIRROR_SESSION_TYPE_LOCAL:
-        attribute4_value = sai_thrift_attribute_value_t(u16=vlan)
-        attribute4 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_ID,
-                                            value=attribute4_value)
-        mirror_attr_list.append(attribute4)
-    elif mirror_type == SAI_MIRROR_SESSION_TYPE_REMOTE:
-        #vlan tpid
-        attribute3_value = sai_thrift_attribute_value_t(u16=vlan_tpid)
-        attribute3 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_TPID,
+    if mirror_type == SAI_MIRROR_SESSION_TYPE_REMOTE:
+        #vlan
+        attribute3_value = sai_thrift_attribute_value_t(u16=vlan)
+        attribute3 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_ID,
                                             value=attribute3_value)
         mirror_attr_list.append(attribute3)
+
+    elif mirror_type == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE:
 
         #vlan
-        attribute4_value = sai_thrift_attribute_value_t(u16=vlan)
-        attribute4 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_ID,
-                                            value=attribute4_value)
-        mirror_attr_list.append(attribute4)
-
-        #vlan priority
-        attribute5_value = sai_thrift_attribute_value_t(u16=vlan_priority)
-        attribute5 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
-                                            value=attribute5_value)
-        mirror_attr_list.append(attribute5)
-    elif mirror_type == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE:
-        #encap type
-        attribute3_value = sai_thrift_attribute_value_t(u8=encap_type)
-        attribute3 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_ENCAP_TYPE,
+        attribute3_value = sai_thrift_attribute_value_t(u16=vlan)
+        attribute3 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_ID,
                                             value=attribute3_value)
         mirror_attr_list.append(attribute3)
+
+        #ip header version
+        attribute4_value = sai_thrift_attribute_value_t(u8=addr_family)
+        attribute4 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_IPHDR_VERSION,
+                                            value=attribute4_value)
+        mirror_attr_list.append(attribute4)
 
         #source ip
         addr = sai_thrift_ip_t(ip4=src_ip)
         src_ip_addr = sai_thrift_ip_address_t(addr_family=addr_family, addr=addr)
-        attribute4_value = sai_thrift_attribute_value_t(ipaddr=src_ip_addr)
-        attribute4 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_SRC_IP_ADDRESS,
-                                            value=attribute4_value)
-        mirror_attr_list.append(attribute4)
+        attribute5_value = sai_thrift_attribute_value_t(ipaddr=src_ip_addr)
+        attribute5 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_SRC_IP_ADDRESS,
+                                            value=attribute5_value)
+        mirror_attr_list.append(attribute5)
 
         #dst ip
         addr = sai_thrift_ip_t(ip4=dst_ip)
         dst_ip_addr = sai_thrift_ip_address_t(addr_family=addr_family, addr=addr)
-        attribute5_value = sai_thrift_attribute_value_t(ipaddr=dst_ip_addr)
-        attribute5 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_DST_IP_ADDRESS,
-                                            value=attribute5_value)
-        mirror_attr_list.append(attribute5)
-
-        #source mac
-        attribute6_value = sai_thrift_attribute_value_t(mac=src_mac)
-        attribute6 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_SRC_MAC_ADDRESS,
+        attribute6_value = sai_thrift_attribute_value_t(ipaddr=dst_ip_addr)
+        attribute6 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_DST_IP_ADDRESS,
                                             value=attribute6_value)
         mirror_attr_list.append(attribute6)
 
-        #dst mac
-        attribute7_value = sai_thrift_attribute_value_t(mac=dst_mac)
-        attribute7 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_DST_MAC_ADDRESS,
+        #source mac
+        attribute7_value = sai_thrift_attribute_value_t(mac=src_mac)
+        attribute7 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_SRC_MAC_ADDRESS,
                                             value=attribute7_value)
         mirror_attr_list.append(attribute7)
+
+        #dst mac
+        attribute8_value = sai_thrift_attribute_value_t(mac=dst_mac)
+        attribute8 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_DST_MAC_ADDRESS,
+                                            value=attribute8_value)
+        mirror_attr_list.append(attribute8)
 
     mirror_id = client.sai_thrift_create_mirror_session(mirror_attr_list)
     return mirror_id
