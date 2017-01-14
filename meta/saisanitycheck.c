@@ -1811,7 +1811,7 @@ void check_non_object_id_object_attrs()
 
                 default:
 
-                    META_WARN(m, "non object id attribute has invalid flags: 0x%x (should be CREATE_AND_SET)", m->flags);
+                    META_ASSERT_FAIL(m, "non object id attribute has invalid flags: 0x%x (should be CREATE_AND_SET)", m->flags);
             }
         }
     }
