@@ -107,6 +107,8 @@ void check_all_enums_name_pointers()
 
 bool is_flag_enum(const sai_enum_metadata_t* emd)
 {
+    META_LOG_ENTER();
+
     const char* flagenums[] = {
         "sai_acl_entry_attr_t",
         "sai_acl_table_attr_t",
@@ -286,6 +288,8 @@ void check_attr_by_object_type()
 void check_attr_object_type(
         _In_ const sai_attr_metadata_t* md)
 {
+    META_LOG_ENTER();
+
     if ((md->objecttype <= SAI_OBJECT_TYPE_NULL) ||
             (md->objecttype >= SAI_OBJECT_TYPE_MAX))
     {
@@ -312,6 +316,11 @@ void check_attr_flags(
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
 
+            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
+            }
+
             if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT32 &&
                     md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_ATTR_RANGE)
             {
@@ -322,11 +331,6 @@ void check_attr_flags(
             {
                 META_ASSERT_FAIL(md, "no default value expected, but type provided: %s",
                         sai_metadata_get_default_value_type_name(md->defaultvaluetype));
-            }
-
-            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
-            {
-                META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
             }
 
             break;
@@ -366,6 +370,16 @@ void check_attr_flags(
 
         case SAI_ATTR_FLAGS_READ_ONLY:
 
+            if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "read only attribute can't be conditional");
+            }
+
+            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "read only attribute can't be valid only");
+            }
+
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
             {
                 if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID ||
@@ -384,16 +398,6 @@ void check_attr_flags(
             {
                 META_ASSERT_FAIL(md, "no default value expected, but type provided: %s",
                         sai_metadata_get_default_value_type_name(md->defaultvaluetype));
-            }
-
-            if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
-            {
-                META_ASSERT_FAIL(md, "read only attribute can't be conditional");
-            }
-
-            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
-            {
-                META_ASSERT_FAIL(md, "read only attribute can't be valid only");
             }
 
             break;
@@ -468,6 +472,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+
             if (md->allowedobjecttypes == NULL)
             {
                 META_ASSERT_FAIL(md, "object types list is required but it's empty");
@@ -647,7 +652,7 @@ void check_attr_default_required(
 
             if (md->defaultvalue != NULL)
             {
-                META_ASSERT_FAIL(md, "default value type is provided, but default value pointer is NULL");
+                META_ASSERT_FAIL(md, "default value type is provided, but default value pointer is not NULL");
             }
             break;
 
@@ -659,7 +664,6 @@ void check_attr_default_required(
 
     switch (md->attrvaluetype)
     {
-
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT8:
@@ -693,6 +697,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
             break;
+
         case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
@@ -700,6 +705,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
+
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
                 break;
@@ -751,7 +757,6 @@ void check_attr_enums(
             default:
                 META_ASSERT_FAIL(md, "attribute is marked as enum, but attr value type is not enum compatible");
         }
-
     }
 
     if (md->isenum && md->isenumlist)
@@ -831,7 +836,7 @@ void check_attr_default_value_type(
 
                 if (md->attrvaluetype != def->attrvaluetype)
                 {
-                    META_ASSERT_FAIL(md, "attr value attribute value value type is different");
+                    META_ASSERT_FAIL(md, "default attr value type is different");
                 }
 
                 break;
@@ -1247,6 +1252,8 @@ void check_attr_enum_list_validonly(
 void check_attr_allow_flags(
         _In_ const sai_attr_metadata_t* md)
 {
+    META_LOG_ENTER();
+
     if (md->allownullobjectid)
     {
         switch (md->attrvaluetype)
@@ -1344,6 +1351,7 @@ void check_attr_key(
                 META_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (list)");
 
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+
                 if (md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT)
                 {
                     break;
@@ -1688,7 +1696,7 @@ void check_non_object_id_object_types()
         {
             META_ASSERT_NOT_NULL(info->structmembers[j]);
 
-            const sai_struct_member_info_t  *m = info->structmembers[j];
+            const sai_struct_member_info_t *m = info->structmembers[j];
 
             META_ASSERT_NOT_NULL(m->membername);
 
@@ -2062,7 +2070,7 @@ int main(int argc, char **argv)
     check_objects_for_loops();
     check_null_object_id();
 
-    printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
+    printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 
     return 0;
 }
