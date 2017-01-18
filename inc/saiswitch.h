@@ -1245,6 +1245,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FAST_API_ENABLE,
 
     /**
+     * @brief Set TC of mirrored packets
+     * 
+     * This setting will apply to all mirror sessions.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_MIRROR_TC,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
