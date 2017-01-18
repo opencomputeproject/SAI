@@ -1246,7 +1246,7 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief Set TC of mirrored packets
-     * 
+     *
      * This setting will apply to all mirror sessions.
      *
      * @type sai_uint8_t
