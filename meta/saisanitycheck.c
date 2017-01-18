@@ -2046,6 +2046,69 @@ void check_null_object_id()
     META_ASSERT_TRUE(SAI_NULL_OBJECT_ID == 0, "SAI_NULL_OBJECT_ID must be zero");
 }
 
+void check_mixed_object_list_types()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if any of object id lists supports
+     * multiple object types at the same time.  For now this abbility will not
+     * be supported.
+     */
+
+    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500, "there should be at least 500 attributes in total");
+
+    size_t idx = 0;
+
+    for (; idx < metadata_attr_sorted_by_id_name_count; ++idx)
+    {
+        const sai_attr_metadata_t* meta = metadata_attr_sorted_by_id_name[idx];
+
+        switch (meta->attrvaluetype)
+        {
+            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+
+                META_ASSERT_TRUE(meta->allowedobjecttypeslength > 0, "allowed object types on list can't be zero");
+
+                if (meta->allowedobjecttypeslength == 1)
+                {
+                    continue;
+                }
+
+                if (meta->flags == SAI_ATTR_FLAGS_READ_ONLY)
+                {
+                    /*
+                     * If attribute flag is READ_ONLY, then object can support
+                     * mixed object types returned on list, for example
+                     * SAI_SCHEDULER_GROUP_ATTR_CHILD_LIST when it returns
+                     * schedulers and queues.
+                     */
+                }
+                else
+                {
+                    /*
+                     * For non read only attributes, there should be a good
+                     * reason why object list should support mixed object
+                     * types on that list. Then this restriction can be
+                     * relaxed and description should be added why mixed
+                     * object types should be possible.
+                     */
+
+                    META_ASSERT_FAIL(meta, "allowed object types on object id list is more then 1, not supported yet");
+                }
+
+                break;
+
+            default:
+
+                META_ASSERT_FALSE(meta->allowmixedobjecttypes, "allow mixed object types should be false on non object id list");
+                break;
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -2069,6 +2132,7 @@ int main(int argc, char **argv)
     check_non_object_id_object_attrs();
     check_objects_for_loops();
     check_null_object_id();
+    check_mixed_object_list_types();
 
     printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 
