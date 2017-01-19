@@ -142,8 +142,8 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
                                 )
         #masking packet 
         m=Mask(exp_pkt)
-        m.set_do_not_care_scapy(IP, 'id')
-        m.set_do_not_care_scapy(IP, 'chksum')
+        m.set_do_not_care_scapy(ptf.packet.IP, 'id')
+        m.set_do_not_care_scapy(ptf.packet.IP, 'chksum')
         
         try:
             # in tuple: 0 is device number, 1 is port number
