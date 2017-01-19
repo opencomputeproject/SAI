@@ -177,8 +177,8 @@ typedef sai_status_t (*sai_get_samplepacket_attribute_fn)(
  */
 typedef struct _sai_samplepacket_api_t
 {
-    sai_create_samplepacket_session_fn  create_samplepacket_session;
-    sai_remove_samplepacket_session_fn  remove_samplepacket_session;
+    sai_create_samplepacket_session_fn  create_samplepacket;
+    sai_remove_samplepacket_session_fn  remove_samplepacket;
     sai_set_samplepacket_attribute_fn   set_samplepacket_attribute;
     sai_get_samplepacket_attribute_fn   get_samplepacket_attribute;
 

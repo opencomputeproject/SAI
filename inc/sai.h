@@ -222,14 +222,14 @@ sai_object_type_t sai_object_type_query(
         _In_ sai_object_id_t sai_object_id);
 
 /**
-* @brief Generate dump file. The dump file may include SAI state information and vendor SDK information.
-*
-* @param[in] dump_file_name Full path for dump file
-*
-* @return #SAI_STATUS_SUCCESS on success Failure status code on error
-*/
+ * @brief Generate dump file. The dump file may include SAI state information and vendor SDK information.
+ *
+ * @param[in] dump_file_name Full path for dump file
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
 sai_status_t sai_dbg_generate_dump(
-    _In_ const char *dump_file_name);
+        _In_ const char *dump_file_name);
 
 /**
  * @}

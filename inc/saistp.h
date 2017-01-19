@@ -68,12 +68,12 @@ typedef enum _sai_stp_attr_t
     SAI_STP_ATTR_VLAN_LIST = SAI_STP_ATTR_START,
 
     /**
-    * @brief Bridge attached to STP instance
-    *
-    * @type sai_object_id_t
-    * @objects SAI_OBJECT_TYPE_BRIDGE
-    * @flags READ_ONLY
-    */
+     * @brief Bridge attached to STP instance
+     *
+     * @type sai_object_id_t
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @flags READ_ONLY
+     */
     SAI_STP_ATTR_BRIDGE_ID,
 
     /**
@@ -172,8 +172,8 @@ typedef sai_status_t (*sai_remove_stp_fn)(
  *  error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_attribute_fn)(
-    _In_ sai_object_id_t stp_id,
-    _In_ const sai_attribute_t *attr);
+        _In_ sai_object_id_t stp_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get the attribute of STP instance.
@@ -185,9 +185,9 @@ typedef sai_status_t (*sai_set_stp_attribute_fn)(
  *  error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_attribute_fn)(
-    _In_ sai_object_id_t stp_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list);
+        _In_ sai_object_id_t stp_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create stp port object
@@ -199,10 +199,10 @@ typedef sai_status_t (*sai_get_stp_attribute_fn)(
  *  error code is returned.
  */
 typedef sai_status_t (*sai_create_stp_port_fn)(
-    _Out_ sai_object_id_t *stp_port_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list);
-
+        _Out_ sai_object_id_t *stp_port_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove stp port object.
@@ -212,7 +212,7 @@ typedef sai_status_t (*sai_create_stp_port_fn)(
  *  error code is returned.
  */
 typedef sai_status_t (*sai_remove_stp_port_fn)(
-    _In_ sai_object_id_t stp_port_id);
+        _In_ sai_object_id_t stp_port_id);
 
 /**
  * @brief Set the attribute of STP port.
@@ -223,8 +223,8 @@ typedef sai_status_t (*sai_remove_stp_port_fn)(
  *  error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_port_attribute_fn)(
-    _In_ sai_object_id_t stp_port_id,
-    _In_ const sai_attribute_t *attr);
+        _In_ sai_object_id_t stp_port_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get the attribute of STP port.
@@ -236,9 +236,9 @@ typedef sai_status_t (*sai_set_stp_port_attribute_fn)(
  *  error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_port_attribute_fn)(
-    _In_ sai_object_id_t stp_port_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list);
+        _In_ sai_object_id_t stp_port_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief STP method table retrieved with sai_api_query()

@@ -301,8 +301,8 @@ typedef sai_status_t (*sai_get_wred_attribute_fn)(
  */
 typedef struct _sai_wred_api_t
 {
-    sai_create_wred_fn          create_wred_profile;
-    sai_remove_wred_fn          remove_wred_profile;
+    sai_create_wred_fn          create_wred;
+    sai_remove_wred_fn          remove_wred;
     sai_set_wred_attribute_fn   set_wred_attribute;
     sai_get_wred_attribute_fn   get_wred_attribute;
 
