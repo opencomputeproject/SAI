@@ -107,6 +107,8 @@ void check_all_enums_name_pointers()
 
 bool is_flag_enum(const sai_enum_metadata_t* emd)
 {
+    META_LOG_ENTER();
+
     const char* flagenums[] = {
         "sai_acl_entry_attr_t",
         "sai_acl_table_attr_t",
@@ -286,6 +288,8 @@ void check_attr_by_object_type()
 void check_attr_object_type(
         _In_ const sai_attr_metadata_t* md)
 {
+    META_LOG_ENTER();
+
     if ((md->objecttype <= SAI_OBJECT_TYPE_NULL) ||
             (md->objecttype >= SAI_OBJECT_TYPE_MAX))
     {
@@ -312,6 +316,11 @@ void check_attr_flags(
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
 
+            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
+            }
+
             if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT32 &&
                     md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_ATTR_RANGE)
             {
@@ -322,11 +331,6 @@ void check_attr_flags(
             {
                 META_ASSERT_FAIL(md, "no default value expected, but type provided: %s",
                         sai_metadata_get_default_value_type_name(md->defaultvaluetype));
-            }
-
-            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
-            {
-                META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
             }
 
             break;
@@ -366,6 +370,16 @@ void check_attr_flags(
 
         case SAI_ATTR_FLAGS_READ_ONLY:
 
+            if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "read only attribute can't be conditional");
+            }
+
+            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_FAIL(md, "read only attribute can't be valid only");
+            }
+
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
             {
                 if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID ||
@@ -384,16 +398,6 @@ void check_attr_flags(
             {
                 META_ASSERT_FAIL(md, "no default value expected, but type provided: %s",
                         sai_metadata_get_default_value_type_name(md->defaultvaluetype));
-            }
-
-            if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
-            {
-                META_ASSERT_FAIL(md, "read only attribute can't be conditional");
-            }
-
-            if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
-            {
-                META_ASSERT_FAIL(md, "read only attribute can't be valid only");
             }
 
             break;
@@ -468,6 +472,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+
             if (md->allowedobjecttypes == NULL)
             {
                 META_ASSERT_FAIL(md, "object types list is required but it's empty");
@@ -647,7 +652,7 @@ void check_attr_default_required(
 
             if (md->defaultvalue != NULL)
             {
-                META_ASSERT_FAIL(md, "default value type is provided, but default value pointer is NULL");
+                META_ASSERT_FAIL(md, "default value type is provided, but default value pointer is not NULL");
             }
             break;
 
@@ -659,7 +664,6 @@ void check_attr_default_required(
 
     switch (md->attrvaluetype)
     {
-
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT8:
@@ -693,6 +697,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
             break;
+
         case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
@@ -700,6 +705,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
+
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
                 break;
@@ -751,7 +757,6 @@ void check_attr_enums(
             default:
                 META_ASSERT_FAIL(md, "attribute is marked as enum, but attr value type is not enum compatible");
         }
-
     }
 
     if (md->isenum && md->isenumlist)
@@ -831,7 +836,7 @@ void check_attr_default_value_type(
 
                 if (md->attrvaluetype != def->attrvaluetype)
                 {
-                    META_ASSERT_FAIL(md, "attr value attribute value value type is different");
+                    META_ASSERT_FAIL(md, "default attr value type is different");
                 }
 
                 break;
@@ -1247,6 +1252,8 @@ void check_attr_enum_list_validonly(
 void check_attr_allow_flags(
         _In_ const sai_attr_metadata_t* md)
 {
+    META_LOG_ENTER();
+
     if (md->allownullobjectid)
     {
         switch (md->attrvaluetype)
@@ -1344,6 +1351,7 @@ void check_attr_key(
                 META_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (list)");
 
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+
                 if (md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT)
                 {
                     break;
@@ -1682,13 +1690,13 @@ void check_non_object_id_object_types()
 
         size_t j = 0;
 
-        bool member_supports_switch_id = false;
+        int member_supports_switch_id = 0;
 
         for (; j < info->structmemberscount; ++j)
         {
             META_ASSERT_NOT_NULL(info->structmembers[j]);
 
-            const sai_struct_member_info_t  *m = info->structmembers[j];
+            const sai_struct_member_info_t *m = info->structmembers[j];
 
             META_ASSERT_NOT_NULL(m->membername);
 
@@ -1715,7 +1723,14 @@ void check_non_object_id_object_types()
             if (m->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
             {
                 META_ASSERT_NOT_NULL(m->allowedobjecttypes);
-                META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "member is object id, should specify some object types");
+                META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "struct member object id, should specify some object types");
+
+                /*
+                 * this check can be relaxed in the future, but currently
+                 * supporting only one object type in non object id make sense
+                 */
+
+                META_ASSERT_TRUE(m->allowedobjecttypeslength == 1, "currently struct member object id, should specify only one object type");
 
                 size_t k = 0;
 
@@ -1732,7 +1747,20 @@ void check_non_object_id_object_types()
                              * one struct member should be type of switch
                              */
 
-                            member_supports_switch_id = true;
+                            member_supports_switch_id++;
+                        }
+
+                        /* non object id struct can't contain object id which is also non object id */
+
+                        const sai_object_type_info_t* sinfo = sai_all_object_type_infos[ot];
+
+                        META_ASSERT_NOT_NULL(sinfo);
+
+                        if (sinfo->isnonobjectid)
+                        {
+                            META_FAIL("struct member %s of non object id type can't be used as object id in non object id struct: %s",
+                                    m->membername,
+                                    sai_metadata_get_object_type_name(ot));
                         }
 
                         continue;
@@ -1748,7 +1776,7 @@ void check_non_object_id_object_types()
             }
         }
 
-        META_ASSERT_TRUE(member_supports_switch_id, "none of struct members support switch id object type");
+        META_ASSERT_TRUE(member_supports_switch_id == 1, "there should be only one struct member that support switch id object type");
 
         META_ASSERT_NULL(info->structmembers[j]);
     }
@@ -1791,7 +1819,7 @@ void check_non_object_id_object_attrs()
 
                 default:
 
-                    META_WARN(m, "non object id attribute has invalid flags: 0x%x (should be CREATE_AND_SET)", m->flags);
+                    META_ASSERT_FAIL(m, "non object id attribute has invalid flags: 0x%x (should be CREATE_AND_SET)", m->flags);
             }
         }
     }
@@ -2110,6 +2138,69 @@ void check_read_only_attributes()
     }
 }
 
+void check_mixed_object_list_types()
+{
+    META_LOG_ENTER(); 
+
+    /*
+     * Purpose of this check is to find out if any of object id lists supports
+     * multiple object types at the same time.  For now this abbility will not
+     * be supported.
+     */
+
+    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500, "there should be at least 500 attributes in total");
+
+    size_t idx = 0;
+
+    for (; idx < metadata_attr_sorted_by_id_name_count; ++idx)
+    {
+        const sai_attr_metadata_t* meta = metadata_attr_sorted_by_id_name[idx];
+
+        switch (meta->attrvaluetype)
+        {
+            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+
+                META_ASSERT_TRUE(meta->allowedobjecttypeslength > 0, "allowed object types on list can't be zero");
+
+                if (meta->allowedobjecttypeslength == 1)
+                {
+                    continue;
+                }
+
+                if (meta->flags == SAI_ATTR_FLAGS_READ_ONLY)
+                {
+                    /*
+                     * If attribute flag is READ_ONLY, then object can support
+                     * mixed object types returned on list, for example
+                     * SAI_SCHEDULER_GROUP_ATTR_CHILD_LIST when it returns
+                     * schedulers and queues.
+                     */
+                }
+                else
+                {
+                    /*
+                     * For non read only attributes, there should be a good
+                     * reason why object list should support mixed object
+                     * types on that list. Then this restriction can be
+                     * relaxed and description should be added why mixed
+                     * object types should be possible.
+                     */
+
+                    META_ASSERT_FAIL(meta, "allowed object types on object id list is more then 1, not supported yet");
+                }
+
+                break;
+
+            default:
+
+                META_ASSERT_FALSE(meta->allowmixedobjecttypes, "allow mixed object types should be false on non object id list");
+                break;
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -2134,8 +2225,9 @@ int main(int argc, char **argv)
     check_objects_for_loops();
     check_null_object_id();
     check_read_only_attributes();
+    check_mixed_object_list_types();
 
-    printf("\n [ %s ]\n\n",  sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
+    printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 
     return 0;
 }
