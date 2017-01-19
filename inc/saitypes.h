@@ -595,7 +595,7 @@ typedef enum _sai_bulk_op_type_t {
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_count Number of objects to create
  * @param[in] attr_count List of attr_count. Caller passes the number
- *         of attribute for each object to create.
+ *    of attribute for each object to create.
  * @param[in] attrs List of attributes for every object.
  * @param[in] type bulk operation type.
  *

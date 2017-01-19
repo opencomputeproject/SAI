@@ -85,7 +85,6 @@ typedef enum _sai_vlan_attr_t
      */
     SAI_VLAN_ATTR_VLAN_ID = SAI_VLAN_ATTR_START,
 
-
     /**
      * @brief List of vlan members in a VLAN
      *

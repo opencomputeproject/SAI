@@ -67,19 +67,19 @@ typedef enum _sai_bridge_port_fdb_learning_mode_t
  */
 typedef enum _sai_bridge_port_type_t
 {
-    /** Port or Lag   */
+    /** Port or Lag */
     SAI_BRIDGE_PORT_TYPE_PORT,
 
-    /** {Port or Lag.vlan}   */
+    /** {Port or Lag.vlan} */
     SAI_BRIDGE_PORT_TYPE_SUB_PORT,
 
-    /**  bridge router port  */
+    /** bridge router port */
     SAI_BRIDGE_PORT_TYPE_1Q_ROUTER,
 
-    /**  bridge router port  */
+    /** bridge router port */
     SAI_BRIDGE_PORT_TYPE_1D_ROUTER,
 
-    /**  bridge tunnel  port  */
+    /** bridge tunnel port */
     SAI_BRIDGE_PORT_TYPE_TUNNEL,
 
 } sai_bridge_port_type_t;
@@ -195,7 +195,6 @@ typedef enum _sai_bridge_port_attr_t
 
 } sai_bridge_port_attr_t;
 
-
 /**
  * @brief Create bridge port
  *
@@ -220,7 +219,7 @@ typedef sai_status_t(*sai_create_bridge_port_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_bridge_port_fn) (
-        _In_  sai_object_id_t bridge_port_id);
+        _In_ sai_object_id_t bridge_port_id);
 
 /**
  * @brief Set attribute for bridge port
@@ -356,7 +355,7 @@ typedef sai_status_t(*sai_remove_bridge_fn) (
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_bridge_attribute_fn)(
-        _In_ sai_object_id_t  bridge_id,
+        _In_ sai_object_id_t bridge_id,
         _In_ const sai_attribute_t *attr);
 
 /**
@@ -369,7 +368,7 @@ typedef sai_status_t(*sai_set_bridge_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_bridge_attribute_fn)(
-        _In_ sai_object_id_t   bridge_id,
+        _In_ sai_object_id_t bridge_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 

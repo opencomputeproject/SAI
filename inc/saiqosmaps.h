@@ -99,7 +99,6 @@ typedef enum _sai_qos_map_attr_t
      * - All Dot1p/DSCP maps to color #SAI_PACKET_COLOR_GREEN
      * - All traffic class maps to queue 0
      *
-     *
      * @type sai_qos_map_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */

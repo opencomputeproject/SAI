@@ -191,7 +191,7 @@ typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(
         _In_ sai_object_id_t switch_id);
 
 /**
- *  @brief neighbor table methods, retrieved via sai_api_query()
+ * @brief neighbor table methods, retrieved via sai_api_query()
  */
 typedef struct _sai_neighbor_api_t
 {

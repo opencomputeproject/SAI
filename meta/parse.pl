@@ -2062,9 +2062,103 @@ sub CheckApiStructNames
     }
 }
 
+sub CheckHeadersStyle
+{
+    #
+    # Purpose of this check is to find out
+    # whether header files are correctly formated
+    #
+    # Wrong formating includes:
+    # - multiple empty lines
+    # - double spaces
+    # - wrong spacing idient
+    #
+
+    my @headers = GetHeaderFiles();
+
+    for my $header (@headers)
+    {
+        my $data = ReadHeaderFile($header);
+
+        my @lines = split/\n/,$data;
+
+        my $n = 0;
+
+        my $empty = 0;
+        my $emptydoxy = 0;
+
+        for my $line (@lines)
+        {
+            $n++;
+
+            # detect multiple empty lines
+
+            if ($line =~ /^$/)
+            {
+                $empty++;
+
+                if ($empty > 1)
+                {
+                    LogWarning "header contains two empty lines one after another $header $n";
+                }
+            }
+            else { $empty = 0 }
+
+            # detect multiple empty lines in doxygen comments
+
+            if ($line =~ /^\s+\*\s*$/)
+            {
+                $emptydoxy++;
+
+                if ($emptydoxy > 1)
+                {
+                    LogWarning "header contains two empty lines in doxygen $header $n";
+                }
+            }
+            else { $emptydoxy = 0 }
+
+            if ($line =~ /^\s+\* / and not $line =~ /\*( {4}| {8}| )[^ ]/)
+            {
+                LogWarning "not expected number of spaces after * (1,4,8) $header $n:$line";
+            }
+
+            if ($line =~ /\*\s+[^ ].*  / and not $line =~ /\* \@(brief|file)/)
+            {
+                LogWarning "too many spaces after *\\s+ $header $n:$line";
+            }
+
+            if ($line =~ /(typedef|{|}|_In\w+|_Out\w+)( [^ ].*  |  )/ and not $line =~ /typedef\s+u?int/i)
+            {
+                LogWarning "too many spaces $header $n:$line";
+            }
+
+            next if $line =~ /^ \*/;                # doxygen comment
+            next if $line =~ /^$/;                  # empty line
+            next if $line =~ /^typedef /;           # type definition
+            next if $line =~ /^sai_status/;         # return codes
+            next if $line =~ /^[{}#\/]/;            # start end of struct, define, start of comment
+            next if $line =~ /^ {8}(_In|_Out)/;     # function arguments
+            next if $line =~ /^ {4}(sai_)/i;        # sai struct entry or SAI enum
+            next if $line =~ /^ {4}\/\*/;           # doxygen start
+            next if $line =~ /^ {5}\*/;             # doxygen comment continue
+            next if $line =~ /^ {8}sai_/;           # union entry
+            next if $line =~ /^ {4}union/;          # union
+            next if $line =~ /^ {4}[{}]/;           # start or end of union
+            next if $line =~ /^ {4}(u?int)/;        # union entries
+            next if $line =~ /^ {4}(char|bool)/;    # union entries
+            next if $line =~ /^ {8}bool booldata/;  # union bool
+            next if $line =~ /^ {4}(true|false)/;   # bool definition
+
+            LogWarning "header don't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
+        }
+    }
+}
+
 #
 # MAIN
 #
+
+CheckHeadersStyle();
 
 for my $file (GetXmlFiles($XMLDIR))
 {

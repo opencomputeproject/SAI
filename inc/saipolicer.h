@@ -321,7 +321,7 @@ typedef sai_status_t (*sai_get_policer_stats_fn)(
  * @param[in] counter_ids specifies the array of counter ids
  *
  * @return SAI_STATUS_SUCCESS on success
- *         Failure status code on error
+ *    Failure status code on error
  */
 typedef sai_status_t (*sai_clear_policer_stats_fn)(
         _In_ sai_object_id_t policer_id,

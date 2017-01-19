@@ -108,7 +108,6 @@ typedef enum _sai_fdb_entry_attr_t
     /**
      * @brief FDB entry type
      *
-     *
      * @type sai_fdb_entry_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
@@ -127,7 +126,7 @@ typedef enum _sai_fdb_entry_attr_t
      * @brief FDB entry bridge port id
      *
      * The port id is only effective when the packet action is one of the following:
-     *  FORWARD, COPY, LOG, TRANSIT
+     * FORWARD, COPY, LOG, TRANSIT
      *
      * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
      *

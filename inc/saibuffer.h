@@ -479,7 +479,7 @@ typedef enum _sai_buffer_profile_attr_t
      * and the total buffer limit minus XON_OFFSET_TH, and available buffer in the PG buffer
      * is larger than the XOFF_TH.
      * The XON trigger condition is governed by:
-     *     total buffer usage <= max(XON_TH, total buffer limit - XON_OFFSET_TH)
+     * total buffer usage <= max(XON_TH, total buffer limit - XON_OFFSET_TH)
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -495,7 +495,7 @@ typedef enum _sai_buffer_profile_attr_t
      * and the total buffer limit minus XON_OFFSET_TH, and available buffer in the PG buffer
      * is larger than the XOFF_TH.
      * The XON trigger condition is governed by:
-     *     total buffer usage <= max(XON_TH, total buffer limit - XON_OFFSET_TH)
+     * total buffer usage <= max(XON_TH, total buffer limit - XON_OFFSET_TH)
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
