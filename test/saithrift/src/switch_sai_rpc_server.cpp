@@ -93,39 +93,6 @@ public:
         std::printf("%02d:%02d:%02d ", tm->tm_hour, tm->tm_min, tm->tm_sec);
     }
 
-    inline std::string sai_thrift_hex_to_str(const std::uint8_t *data, const std::size_t &size) const noexcept
-    {
-        if ((data == nullptr) || (size == 0))
-        { SAI_THRIFT_LOG_ERR("Invalid input arguments."); return std::string(); }
-
-        std::string str;
-
-        try
-        {
-            const std::vector<std::uint8_t> arr(data, data + size);
-
-            std::stringstream ss;
-
-            for (const auto& it : arr)
-            {
-                ss << std::setfill('0') << std::setw(2) << std::hex << std::uppercase;
-                ss << static_cast<std::uint16_t>(it) << " ";
-            }
-
-            str = ss.str();
-
-            str.erase(str.end() - 1);
-            str.insert(str.begin(), '[');
-            str.insert(str.end(), ']');
-        }
-        catch (const std::exception &e)
-        { SAI_THRIFT_LOG_ERR("Exception: %s.", e.what()); return std::string(); }
-        catch (...)
-        { SAI_THRIFT_LOG_ERR("Unexpected exception."); return std::string(); }
-
-        return str;
-    }
-
   unsigned int sai_thrift_string_to_mac(const std::string s, unsigned char *m) {
       unsigned int i, j=0;
       memset(m, 0, 6);
