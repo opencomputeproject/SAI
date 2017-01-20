@@ -758,6 +758,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
 
     /**
+     * @brief Count of the total number of ranges supported by NPU
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_ACL_RANGE_COUNT,
+
+    /**
      * @brief Acl capabilities supported by the NPU
      *
      * @type sai_acl_capability_t
