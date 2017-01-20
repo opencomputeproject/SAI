@@ -2129,6 +2129,153 @@ void check_mixed_object_list_types()
     }
 }
 
+void check_acl_table_fields_and_acl_entry_fields()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if acl table fields and acl entry
+     * fields correspond to each other. We also make check if they have the
+     * same attribute id which is not required but it is nice to have. We also
+     * check if those attributes have right flags and right attribute values.
+     */
+
+    META_ASSERT_TRUE(SAI_ACL_ENTRY_ATTR_FIELD_START == 0x1000, "acl entry field start value should be 0x1000");
+    META_ASSERT_TRUE(SAI_ACL_TABLE_ATTR_FIELD_START == 0x1000, "acl table field start value should be 0x1000");
+
+    META_ASSERT_TRUE((int)SAI_ACL_ENTRY_ATTR_FIELD_START == (int)SAI_ACL_TABLE_ATTR_FIELD_START,
+            "acl entry and table fields start should be the same");
+
+    /*
+     * We are using volatile here since if we use enum directly and values are
+     * different, compiler will optimize this to true and throw error on
+     * candidate for non return which in this case is confusing.
+     */
+
+    volatile int table_end = SAI_ACL_TABLE_ATTR_FIELD_END;
+    volatile int entry_end = SAI_ACL_ENTRY_ATTR_FIELD_END;
+
+    if (table_end != entry_end)
+    {
+        META_FAIL("SAI_ACL_TABLE_ATTR_FIELD_END 0x%x is not equal to SAI_ACL_ENTRY_ATTR_FIELD_END 0x%x",
+                SAI_ACL_TABLE_ATTR_FIELD_END, SAI_ACL_ENTRY_ATTR_FIELD_END);
+    }
+
+    /*
+     * find bot attribute fields start for entry and table
+     */
+
+    const sai_attr_metadata_t **meta_acl_table = sai_object_type_info_SAI_OBJECT_TYPE_ACL_TABLE.attrmetadata;
+    const sai_attr_metadata_t **meta_acl_entry = sai_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+
+    int acl_table_field_index = 0;
+
+    for (; meta_acl_table[acl_table_field_index] != NULL; acl_table_field_index++)
+    {
+        if (meta_acl_table[acl_table_field_index]->attrid == SAI_ACL_TABLE_ATTR_FIELD_START)
+        {
+            break;
+        }
+    }
+
+    META_ASSERT_NOT_NULL(meta_acl_table[acl_table_field_index]);
+
+    int acl_entry_field_index = 0;
+
+    for (; meta_acl_entry[acl_entry_field_index] != NULL; acl_entry_field_index++)
+    {
+        if (meta_acl_entry[acl_entry_field_index]->attrid == SAI_ACL_ENTRY_ATTR_FIELD_START)
+        {
+            break;
+        }
+    }
+
+    META_ASSERT_NOT_NULL(meta_acl_entry[acl_entry_field_index]);
+
+    /*
+     * we found our attribute indexes, now let's compare attributes
+     */
+
+    while (true)
+    {
+        const sai_attr_metadata_t *mtable = meta_acl_table[acl_table_field_index];
+        const sai_attr_metadata_t *mentry = meta_acl_entry[acl_entry_field_index];
+
+        if (mentry == NULL || mtable == NULL)
+        {
+            break;
+        }
+
+        if (mtable->attrid > SAI_ACL_TABLE_ATTR_FIELD_END ||
+            mentry->attrid > SAI_ACL_ENTRY_ATTR_FIELD_END)
+        {
+            break;
+        }
+
+        META_LOG_INFO("processing acl fields: %s %s", mtable->attridname, mentry->attridname);
+
+        /*
+         * check acl table flags and attr value type
+         */
+
+        if (mtable->attrid == SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE)
+        {
+            /*
+             * This field is exception, it's not bool, it's a list and it's
+             * designed in this way to save resources on device to not support
+             * all ranges on each acl table when it's not necessary.
+             */
+        }
+        else
+        {
+            if (mtable->flags != SAI_ATTR_FLAGS_CREATE_ONLY)
+            {
+                META_ASSERT_FAIL(mtable, "acl table field flags should be CREATE_ONLY");
+            }
+
+            if (mtable->attrvaluetype != SAI_ATTR_VALUE_TYPE_BOOL)
+            {
+                META_ASSERT_FAIL(mtable, "acl table attr value type should be bool");
+            }
+        }
+
+        /*
+         * check acl entry flags
+         */
+
+        if (mentry->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
+        {
+            META_ASSERT_FAIL(mentry, "acl entry field flags should be CREATE_ONLY");
+        }
+
+        if (mentry->attrid != mtable->attrid)
+        {
+            META_ASSERT_FAIL(mentry, "acl entry attr id %d is different than acl table field %d", mentry->attrid, mtable->attrid);
+        }
+
+        /*
+         * check acl fields attribute if endings are the same
+         */
+
+        const char * attr_table_pos = strstr(mtable->attridname, "_ATTR_");
+
+        META_ASSERT_NOT_NULL(attr_table_pos);
+
+        const char * attr_entry_pos = strstr(mentry->attridname, "_ATTR_");
+
+        META_ASSERT_NOT_NULL(attr_entry_pos);
+
+        if (strcmp(attr_table_pos, attr_entry_pos) != 0)
+        {
+            META_FAIL("attr entry field name %s is not ending at the same name as acl table field %s",
+                    mentry->attridname, mtable->attridname);
+        }
+
+        acl_table_field_index++;
+        acl_entry_field_index++;
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -2153,6 +2300,7 @@ int main(int argc, char **argv)
     check_objects_for_loops();
     check_null_object_id();
     check_mixed_object_list_types();
+    check_acl_table_fields_and_acl_entry_fields();
 
     printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 
