@@ -2162,7 +2162,7 @@ void check_acl_table_fields_and_acl_entry_fields()
     }
 
     /*
-     * find bot attribute fields start for entry and table
+     * find both attribute fields start for entry and table
      */
 
     const sai_attr_metadata_t **meta_acl_table = sai_object_type_info_SAI_OBJECT_TYPE_ACL_TABLE.attrmetadata;
@@ -2276,6 +2276,86 @@ void check_acl_table_fields_and_acl_entry_fields()
     }
 }
 
+void check_acl_entry_actions()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if acl entry actions correspond to
+     * sai_acl_action_type_t enum type and contain all actions in the same
+     * order.
+     */
+
+    META_ASSERT_TRUE(SAI_ACL_ENTRY_ATTR_ACTION_START == 0x2000, "acl entry action start value should be 0x2000");
+
+    /*
+     * find both attribute fields start for entry and table
+     */
+
+    const sai_attr_metadata_t **meta_acl_entry = sai_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+
+    size_t index = 0;
+
+    for (; meta_acl_entry[index] != NULL; index++)
+    {
+        if (meta_acl_entry[index]->attrid == SAI_ACL_ENTRY_ATTR_ACTION_START)
+        {
+            break;
+        }
+    }
+
+    /*
+     * lets compare all action attributes with enum names
+     */
+
+    size_t enum_index = 0;
+
+    while (true)
+    {
+        const sai_attr_metadata_t *meta = meta_acl_entry[index];
+
+        if (meta == NULL)
+        {
+            break;
+        }
+
+        if (meta->attrid > SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            break;
+        }
+
+        const char* enum_name = metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
+
+        META_ASSERT_NOT_NULL(enum_name);
+
+        META_LOG_INFO("processing acl action: %s %s", meta->attridname, enum_name);
+
+        /*
+         * check acl fields attribute if endings are the same
+         */
+
+        const char * enum_name_pos = strstr(enum_name, "_ACTION_TYPE_");
+
+        META_ASSERT_NOT_NULL(enum_name_pos);
+
+        const char * attr_entry_pos = strstr(meta->attridname, "_ATTR_ACTION_");
+
+        META_ASSERT_NOT_NULL(attr_entry_pos);
+
+        if (strcmp(enum_name_pos + strlen("_ACTION_TYPE_"), attr_entry_pos + strlen("_ATTR_ACTION_")) != 0)
+        {
+            META_FAIL("attr entry action name %s is not ending at the same enum name %s",
+                    meta->attridname, enum_name);
+        }
+
+        index++;
+        enum_index++;
+    }
+
+    META_ASSERT_TRUE(enum_index == metadata_enum_sai_acl_action_type_t.valuescount,
+            "number of acl entry action mismatch vs number of enums in sai_acl_action_type_t");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -2301,6 +2381,7 @@ int main(int argc, char **argv)
     check_null_object_id();
     check_mixed_object_list_types();
     check_acl_table_fields_and_acl_entry_fields();
+    check_acl_entry_actions();
 
     printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 
