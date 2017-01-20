@@ -2245,7 +2245,7 @@ void check_acl_table_fields_and_acl_entry_fields()
 
         if (mentry->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
         {
-            META_ASSERT_FAIL(mentry, "acl entry field flags should be CREATE_ONLY");
+            META_ASSERT_FAIL(mentry, "acl entry field flags should be CREATE_AND_SET");
         }
 
         if (mentry->attrid != mtable->attrid)
@@ -2304,6 +2304,8 @@ void check_acl_entry_actions()
         }
     }
 
+    META_ASSERT_NOT_NULL(meta_acl_entry[index]);
+
     /*
      * lets compare all action attributes with enum names
      */
@@ -2322,6 +2324,11 @@ void check_acl_entry_actions()
         if (meta->attrid > SAI_ACL_ENTRY_ATTR_ACTION_END)
         {
             break;
+        }
+
+        if (meta->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
+        {
+            META_ASSERT_FAIL(meta, "acl entry action flags should be CREATE_AND_SET");
         }
 
         const char* enum_name = metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
