@@ -299,14 +299,14 @@ typedef sai_status_t (*sai_get_mirror_session_attribute_fn)(
 /**
  * @brief MIRROR method table retrieved with sai_api_query()
  */
-typedef struct _sai_mirror_session_api_t
+typedef struct _sai_mirror_api_t
 {
     sai_create_mirror_session_fn            create_mirror_session;
     sai_remove_mirror_session_fn            remove_mirror_session;
     sai_set_mirror_session_attribute_fn     set_mirror_session_attribute;
     sai_get_mirror_session_attribute_fn     get_mirror_session_attribute;
 
-} sai_mirror_session_api_t;
+} sai_mirror_api_t;
 
 /**
  * @}

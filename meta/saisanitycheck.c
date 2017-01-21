@@ -2208,7 +2208,7 @@ void check_api_names()
     CHECK_API(acl, acl_table_group, SAI_OBJECT_TYPE_ACL_TABLE_GROUP);
     CHECK_API(acl, acl_table_group_member, SAI_OBJECT_TYPE_ACL_TABLE_GROUP_MEMBER);
     CHECK_API(hostif, hostif, SAI_OBJECT_TYPE_HOSTIF);
-    CHECK_API(mirror_session, mirror_session, SAI_OBJECT_TYPE_MIRROR_SESSION);
+    CHECK_API(mirror, mirror_session, SAI_OBJECT_TYPE_MIRROR_SESSION);
     CHECK_API(samplepacket, samplepacket, SAI_OBJECT_TYPE_SAMPLEPACKET);
     CHECK_API(stp, stp, SAI_OBJECT_TYPE_STP);
     CHECK_API(hostif, hostif_trap_group, SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP);
