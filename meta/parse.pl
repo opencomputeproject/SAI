@@ -1075,6 +1075,15 @@ sub ProcessConditions
         my $attrid = $1;
         my $val = $2;
 
+        my $main_attr = $1 if $attr =~ /^SAI_(\w+?)_ATTR_/;
+        my $cond_attr = $1 if $attrid =~ /^SAI_(\w+?)_ATTR_/;
+
+        if ($main_attr ne $cond_attr)
+        {
+            LogError "conditional attribute $attr has condition from different object $attrid";
+            return "";
+        }
+
         WriteSource "const sai_attr_condition_t metadata_condition_${attr}_$count = {";
 
         if ($val eq "true" or $val eq "false")
@@ -1153,6 +1162,15 @@ sub ProcessValidOnly
 
         my $attrid = $1;
         my $val = $2;
+
+        my $main_attr = $1 if $attr =~ /^SAI_(\w+?)_ATTR_/;
+        my $cond_attr = $1 if $attrid =~ /^SAI_(\w+?)_ATTR_/;
+
+        if ($main_attr ne $cond_attr)
+        {
+            LogError "validonly attribute $attr has condition from different object $attrid";
+            return "";
+        }
 
         WriteSource "const sai_attr_condition_t metadata_validonly_${attr}_$count = {";
 
