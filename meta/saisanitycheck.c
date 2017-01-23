@@ -1631,12 +1631,6 @@ void check_object_infos()
                 continue;
             }
 
-            if (info->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY ||
-                    info->objecttype == SAI_OBJECT_TYPE_ACL_TABLE)
-            {
-                continue;
-            }
-
             META_ASSERT_FAIL(am, "attr is is not in start .. end range");
         }
 
