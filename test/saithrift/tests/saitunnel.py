@@ -70,6 +70,8 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
         #Creating Virtual router 
         #######################################################################
         vr_id=sai_thrift_create_virtual_router(self.client, 1, 1, vr_mac)
+        # Create default route
+        sai_thrift_create_route(self.client, vr_id, addr_family, '0.0.0.0', '0.0.0.0', 0)
             
         #creating a underlay interface in loopback
         underlay_if = sai_thrift_create_router_interface(self.client, is_port=1, port_id=0, vr_id=vr_id, vlan_id=vlan_id, v4_enabled=1, v6_enabled=1, mac='', is_lb=1)
@@ -77,7 +79,7 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
         overlay_if = sai_thrift_create_router_interface(self.client, is_port=1, port_id=0, vr_id=vr_id, vlan_id=vlan_id, v4_enabled=1, v6_enabled=1, mac='', is_lb=1)
         #creating a tunnel
         tunnel_id=sai_thrift_create_tunnel(self.client, addr_family=addr_family, ip_addr=tunnel_src_ip_addr, underlay_if=underlay_if, overlay_if=overlay_if)
-      
+     
         ##############################################################################
         #  Egress configurations
         #  create router interface,
@@ -162,6 +164,9 @@ class IpIpEncapTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_remove_route(self.client,vr_id,addr_family,ip_addr_ingress_route,ip_mask_ingress_route,ingress_nhop) 
             self.client.sai_thrift_remove_next_hop(ingress_nhop)
 
+            # Remove default route
+            sai_thrift_remove_route(self.client, vr_id, addr_family, '0.0.0.0', '0.0.0.0', 0)
+
             sai_thrift_remove_neighbor(self.client,addr_family,rif_id=ingress_if_id,ip_addr=ingress_ip_addr,dmac=neighbor_mac_ingress)
             
             sai_thrift_remove_neighbor(self.client,addr_family,rif_id=encap_if_id,ip_addr=encap_ip_addr,dmac=neighbor_mac_encap)
@@ -217,6 +222,8 @@ class IpIpP2PTunnelDecapTest(sai_base_test.ThriftInterfaceDataPlane):
         ip_addr_decap_dst='2.2.2.2'   #tunnel table decap dest to match
          
         vr_id=0 #using default vr id
+        # Create default route
+        sai_thrift_create_route(self.client, vr_id, addr_family, '0.0.0.0', '0.0.0.0', 0)
                 
         #creating a underlay interface in loopback
         underlay_if = sai_thrift_create_router_interface(self.client, is_port=1, port_id=0, vr_id=vr_id, vlan_id=vlan_id, v4_enabled=1, v6_enabled=1, mac='', is_lb=1)
@@ -305,6 +312,7 @@ class IpIpP2PTunnelDecapTest(sai_base_test.ThriftInterfaceDataPlane):
 
         finally:
             self.client.sai_thrift_remove_tunnel_term_table_entry(tunnel_entry_id)
+
             sai_thrift_remove_route(self.client,vr_id,addr_family,tunnel_ip_addr_route,tunnel_ip_mask_route,initiator_id) 
             self.client.sai_thrift_remove_next_hop(initiator_id)
 
@@ -313,6 +321,9 @@ class IpIpP2PTunnelDecapTest(sai_base_test.ThriftInterfaceDataPlane):
 
             sai_thrift_remove_route(self.client,vr_id,addr_family,ip_addr_egress_route,ip_mask_egress_route,egress_nhop) 
             self.client.sai_thrift_remove_next_hop(egress_nhop)
+
+            # Remove default route
+            sai_thrift_remove_route(self.client, vr_id, addr_family, '0.0.0.0', '0.0.0.0', 0)
 
             sai_thrift_remove_neighbor(self.client,addr_family,rif_id=egress_if_id,ip_addr=egress_ip_addr,dmac=neighbor_mac_egress)
             
