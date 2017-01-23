@@ -414,7 +414,7 @@ class L3IPv4EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id2)
-            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2])
+            sai_thrift_remove_next_hop_from_group(self.client, [nhop1, nhop2])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             self.client.sai_thrift_remove_next_hop(nhop2)
@@ -515,7 +515,7 @@ class L3IPv6EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [0, 1])
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
-            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2])
+            sai_thrift_remove_next_hop_from_group(self.client, [nhop1, nhop2])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             self.client.sai_thrift_remove_next_hop(nhop2)
@@ -625,7 +625,7 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip2_subnet, ip_mask2, rif_id2)
             sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip3_subnet, ip_mask2, rif_id3)
-            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2, nhop3])
+            sai_thrift_remove_next_hop_from_group(self.client, [nhop1, nhop2, nhop3])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             self.client.sai_thrift_remove_next_hop(nhop2)
@@ -751,7 +751,7 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
                         "Not all paths are equally balanced")
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
-            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2, nhop3])
+            sai_thrift_remove_next_hop_from_group(self.client, [nhop1, nhop2, nhop3])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             self.client.sai_thrift_remove_next_hop(nhop2)
@@ -997,7 +997,7 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask1, nhop_group1)
 
-            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2, nhop3])
+            sai_thrift_remove_next_hop_from_group(self.client, [nhop1, nhop2, nhop3])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
 
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -1121,7 +1121,7 @@ class L3EcmpLagTestMini(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip1_subnet, ip_mask2, rif_id1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, nhop_ip2_subnet, ip_mask2, rif_id2)
 
-            self.client.sai_thrift_remove_next_hop_from_group(nhop_group1, [nhop1, nhop2])
+            sai_thrift_remove_next_hop_from_group(self.client, [nhop1, nhop2])
             self.client.sai_thrift_remove_next_hop_group(nhop_group1)
 
             self.client.sai_thrift_remove_next_hop(nhop1)
@@ -1165,8 +1165,8 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         mac1 = ''
         mac2 = ''
 
-        self.client.sai_thrift_create_vlan(vlan_id)
-        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_id, port1, SAI_VLAN_PORT_UNTAGGED)
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
         attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -1232,7 +1232,7 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
-            self.client.sai_thrift_delete_vlan(vlan_id)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
@@ -1335,10 +1335,10 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
         mac_port3 = '00:0b:00:00:00:01'
         mac1 = ''
         mac2 = ''
-        self.client.sai_thrift_create_vlan(vlan_id)
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
         
-        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_id, port1, SAI_VLAN_PORT_TAGGED)
-        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_id, port2, SAI_VLAN_PORT_TAGGED)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
         attr_value1 = sai_thrift_attribute_value_t(u16=vlan_id)
         attr1 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value1)
         self.client.sai_thrift_set_port_attribute(port1, attr1)
@@ -1348,8 +1348,8 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
         rif_vlan_id = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id, v4_enabled, v6_enabled, mac1)
         rif_port_id = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac2)
 
-        attr_value2 = sai_thrift_attribute_value_t(s32=SAI_PORT_LEARN_MODE_HW)
-        attr2 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_FDB_LEARNING, value=attr_value2)
+        attr_value2 = sai_thrift_attribute_value_t(s32=SAI_PORT_FDB_LEARNING_MODE_HW)
+        attr2 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_FDB_LEARNING_MODE, value=attr_value2)
         self.client.sai_thrift_set_port_attribute(port1, attr2)
         self.client.sai_thrift_set_port_attribute(port2, attr2)
         
@@ -1393,20 +1393,21 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_vlan_id)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_vlan_id, ip_port1, mac_port1)
-            
+
             self.client.sai_thrift_remove_router_interface(rif_vlan_id)
             self.client.sai_thrift_remove_router_interface(rif_port_id)
             
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
-            self.client.sai_thrift_delete_vlan(vlan_id)
-            
+            self.client.sai_thrift_remove_vlan(vlan_oid)
+
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
+
 @group('lag')
 @group('l3')
 class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -1583,8 +1584,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     mac_action = SAI_PACKET_ACTION_FORWARD
     src_port = 0
     mac_pool = []
-    
-    
+
     def setup_ecmp_lag_group(self, first_rif_port):
         self.lag = self.client.sai_thrift_create_lag([])
         #adding lag members
@@ -1603,15 +1603,13 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.1" % str(i+1), '255.255.255.0', self.port_rifs[i])
         self.nhop_group = sai_thrift_create_next_hop_group(self.client, self.nhops)
         sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.20.0.0", self.ip_mask, self.nhop_group)
-        
-
 
     def teardown_ecmp_lag_group(self, first_rif_port):
         sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.20.0.0", self.ip_mask, self.nhop_group)
         sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.0.1", '255.255.255.0', self.lag_rif)        
         for i in range(self.total_changing_ports - first_rif_port):
             sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.%s.1" % str(i+1), '255.255.255.0', self.port_rifs[i])
-        self.client.sai_thrift_remove_next_hop_from_group(self.nhop_group, self.nhops)
+        sai_thrift_remove_next_hop_from_group(self.client, self.nhops)
         self.client.sai_thrift_remove_next_hop_group(self.nhop_group)
         for nhop in self.nhops:
             self.client.sai_thrift_remove_next_hop(nhop)
@@ -1629,9 +1627,6 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         self.client.sai_thrift_remove_router_interface(self.lag_rif)
         self.client.sai_thrift_remove_lag(self.lag)
 
-
-    
-
     def polarizationCheck(self,packets,avg):
         if (avg < 150):
             self.assertTrue((packets >= (avg * 0.65)),"Not all paths are equally balanced, %s" % packets)
@@ -1639,7 +1634,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         else:
             self.assertTrue((packets >= (avg * 0.8)),"Not all paths are equally balanced, %s" % packets)
             self.assertTrue((packets <= (avg * 1.2)),"Not all paths are equally balanced, %s" % packets)
-        
+
     def send_and_verify_packets(self, first_rif_port):
         exp_pkts = [0]*self.total_dst_port
         pkt_counter = [0] * self.total_dst_port
@@ -1681,7 +1676,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
                     pkt_counter[match_index] += 1
                     sport = random.randint(0,0xffff)
                     dport = random.randint(0,0xffff)
-                        
+
         #final uniform distribution check
         logging.debug(pkt_counter)
         logging.debug(first_rif_port)
@@ -1700,8 +1695,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             logging.debug( "PORT #"+str(stat_port)+":")
             logging.debug(str(pkt_counter[stat_port]))
             self.polarizationCheck(pkt_counter[stat_port],rifs_average)
-    
-                 
+
     def runTest(self):
         """
         For sai server, testing different lags with router
@@ -1717,8 +1711,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         8. repeat steps 3-7 with differnt numbers of lag members and rifs
         8. clean up.
         """
-       
-          
+
         print
         print "L3MultipleEcmpLagTest"
         #general configuration 
