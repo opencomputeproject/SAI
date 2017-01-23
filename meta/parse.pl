@@ -292,6 +292,11 @@ sub ProcessTagType
         return $val;
     }
 
+    if ($val =~/^sai_pointer_t sai_\w+_fn$/)
+    {
+        return $val;
+    }
+
     LogError "invalid type tag value '$val' expected sai type or enum";
 
     return undef;
@@ -826,6 +831,11 @@ sub ProcessType
         return "SAI_ATTR_VALUE_TYPE_CHARDATA";
     }
 
+    if ($type =~ /^sai_pointer_t sai_\w+_fn$/)
+    {
+        return "SAI_ATTR_VALUE_TYPE_POINTER";
+    }
+
     LogError "invalid type '$type' for $attr";
     return "";
 }
@@ -949,13 +959,19 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
-    elsif ($default =~ /^NULL$/ and $type =~ /sai_pointer_t/)
+    elsif ($default =~ /^NULL$/ and $type =~ /^(sai_pointer_t) (sai_\w+_fn)$/)
     {
-        WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
+        WriteSource "$val = { .$VALUE_TYPES{$1} = $default };";
+
+        WriteSource "$2 var_$2 = NULL;";
     }
     elsif ($default =~ /^(attrvalue|attrrange|vendor|empty|const|internal)/)
     {
         return "NULL";
+    }
+    elsif ($default =~ /^NULL$/ and $type =~ /^sai_pointer_t/)
+    {
+        LogError "missing typedef function in format 'sai_\\w+_fn' on $attr ($type)";
     }
     else
     {
