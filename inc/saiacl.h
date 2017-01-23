@@ -441,9 +441,19 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_SIZE,
 
     /**
-     * @brief End of ACL Table attributes
+     * @brief List of actions in sai_acl_action_type_t
+     *
+     * Based on the ACL capability per stage obtained from the switch
+     * attribute #SAI_SWITCH_ATTR_ACL_CAPABILITY application should
+     * pass the action list if its mandatory per stage.
+     * If its not mandatory application can either pass the action list
+     * or ignore it.
+     *
+     * @type sai_s32_list_t sai_acl_action_type_t
+     * @flags CREATE_ONLY
+     * @default empty
      */
-    SAI_ACL_TABLE_ATTR_END,
+    SAI_ACL_TABLE_ATTR_ACL_ACTION_TYPE_LIST,
 
     /*
      * Match fields [bool]
@@ -917,22 +927,14 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE,
 
     /**
-     * @brief List of actions in sai_acl_table_action_list_t [sai_s32_list_t]
-     *
-     * Based on the ACL capability per stage obtained from the switch
-     * attribute #SAI_SWITCH_ATTR_ACL_CAPABILITY application should
-     * pass the action list if its mandatory per stage.
-     * If its not mandatory application can either pass the action list
-     * or ignore it.
-     *
-     * @ignore
-     */
-    SAI_ACL_TABLE_ATTR_ACTION_LIST,
-
-    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_ACTION_LIST,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE,
+
+    /**
+     * @brief End of ACL Table attributes
+     */
+    SAI_ACL_TABLE_ATTR_END,
 
     /**
      * @brief Custom range base value start
@@ -987,11 +989,6 @@ typedef enum _sai_acl_entry_attr_t
      * @default true
      */
     SAI_ACL_ENTRY_ATTR_ADMIN_STATE,
-
-    /**
-     * @brief End of ACL Entry attributes
-     */
-    SAI_ACL_ENTRY_ATTR_END,
 
     /*
      * Match fields [sai_acl_field_data_t]
@@ -1737,7 +1734,12 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
+
+    /**
+     * @brief End of ACL Entry attributes
+     */
+    SAI_ACL_ENTRY_ATTR_END,
 
 } sai_acl_entry_attr_t;
 
