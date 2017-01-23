@@ -1495,6 +1495,93 @@ void check_attr_vlan(
     }
 }
 
+void check_condition_in_range(
+        _In_ const sai_attr_metadata_t* md,
+        _In_ size_t length,
+        _In_ const sai_attr_condition_t **conditions,
+        _In_ sai_attr_id_t start,
+        _In_ sai_attr_id_t end)
+{
+    META_LOG_ENTER();
+
+    size_t index = 0;
+
+    for (; index < length; ++index)
+    {
+        const sai_attr_condition_t* c = conditions[index];
+
+        if (c->attrid < start || c->attrid > end)
+        {
+            continue;
+        }
+
+        META_ASSERT_FAIL(md, "has condition depending on acl field / action, not allowed");
+    }
+}
+
+void check_attr_acl_conditions(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if there is any condition in
+     * attributes that depends on acl entry object field or actions since such
+     * dependency has no sense.
+     */
+
+    if (md->objecttype == SAI_OBJECT_TYPE_ACL_TABLE)
+    {
+        check_condition_in_range(md, md->validonlylength, md->validonly,
+                SAI_ACL_TABLE_ATTR_FIELD_START, SAI_ACL_TABLE_ATTR_FIELD_END);
+
+        check_condition_in_range(md, md->conditionslength, md->conditions,
+                SAI_ACL_TABLE_ATTR_FIELD_START, SAI_ACL_TABLE_ATTR_FIELD_END);
+
+        if (md->attrid >= SAI_ACL_TABLE_ATTR_FIELD_START &&
+            md->attrid >= SAI_ACL_TABLE_ATTR_FIELD_END)
+        {
+            if (md->conditionslength != 0 || md->validonlylength != 0)
+            {
+                META_ASSERT_FAIL(md, "acl table field has conditions, not allowed");
+            }
+        }
+    }
+
+    if (md->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
+    {
+        check_condition_in_range(md, md->validonlylength, md->validonly,
+                SAI_ACL_ENTRY_ATTR_FIELD_START, SAI_ACL_ENTRY_ATTR_FIELD_END);
+
+        check_condition_in_range(md, md->conditionslength, md->conditions,
+                SAI_ACL_ENTRY_ATTR_FIELD_START, SAI_ACL_ENTRY_ATTR_FIELD_END);
+
+        check_condition_in_range(md, md->validonlylength, md->validonly,
+                SAI_ACL_ENTRY_ATTR_ACTION_START, SAI_ACL_ENTRY_ATTR_ACTION_END);
+
+        check_condition_in_range(md, md->conditionslength, md->conditions,
+                SAI_ACL_ENTRY_ATTR_ACTION_START, SAI_ACL_ENTRY_ATTR_ACTION_END);
+
+        if (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+            md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_END)
+        {
+            if (md->conditionslength != 0 || md->validonlylength != 0)
+            {
+                META_ASSERT_FAIL(md, "acl entry field has conditions, not allowed");
+            }
+        }
+
+        if (md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
+            md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            if (md->conditionslength != 0 || md->validonlylength != 0)
+            {
+                META_ASSERT_FAIL(md, "acl entry action has conditions, not allowed");
+            }
+        }
+    }
+}
+
 void check_if_attr_was_already_defined(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1558,6 +1645,7 @@ void check_single_attribute(
     check_attr_acl_fields(md);
     check_attr_vlan(md);
     check_attr_object_id_allownull(md);
+    check_attr_acl_conditions(md);
 
     define_attr(md);
 }
@@ -1627,12 +1715,6 @@ void check_object_infos()
 
             if (am->attrid >= info->attridstart &&
                     am->attrid < info->attridend)
-            {
-                continue;
-            }
-
-            if (info->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY ||
-                    info->objecttype == SAI_OBJECT_TYPE_ACL_TABLE)
             {
                 continue;
             }
@@ -2063,12 +2145,84 @@ void check_null_object_id()
 {
     META_LOG_ENTER();
 
+    /*
+     * Purpose of this check is to make sure that
+     * SAI_NULL_OBJECT_ID is always ZERO.
+     */
+
     META_ASSERT_TRUE(SAI_NULL_OBJECT_ID == 0, "SAI_NULL_OBJECT_ID must be zero");
+}
+
+void check_read_only_attributes()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if there is any
+     * object that has only READ_ONLY attributes.
+     *
+     * If given object has only read only attributes
+     * there should be no purpose of such object.
+     * With only read only attributes there is no
+     * way to compare 2 objects of the same type
+     * sine we don't track read only attributes.
+     *
+     * As additional check we will also check if given
+     * object type defines at least 1 attribute.
+     */
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        size_t index = 0;
+
+        /* check all listed attributes under this object type */
+
+        int non_read_only_count = 0;
+
+        const sai_attr_metadata_t** const meta = info->attrmetadata;
+
+        for (; meta[index] != NULL; ++index)
+        {
+            const sai_attr_metadata_t* m = meta[index];
+
+            if (!HAS_FLAG_READ_ONLY(m->flags))
+            {
+                non_read_only_count++;
+            }
+        }
+
+        if (index < 1)
+        {
+            META_FAIL("object %s must define at least 1 attribute",
+                    sai_metadata_get_object_type_name((sai_object_type_t)i));
+        }
+
+        if (non_read_only_count == 0)
+        {
+            /*
+             * currently we have some objects with only read only
+             * attributes, we for now we just warn here until this
+             * issue will be resolved.
+             */
+
+            META_WARN_LOG("object %s has only READ_ONLY attributes",
+                    metadata_enum_sai_object_type_t.valuesnames[i]);
+        }
+    }
 }
 
 void check_mixed_object_list_types()
 {
-    META_LOG_ENTER();
+    META_LOG_ENTER(); 
 
     /*
      * Purpose of this check is to find out if any of object id lists supports
@@ -2386,6 +2540,7 @@ int main(int argc, char **argv)
     check_non_object_id_object_attrs();
     check_objects_for_loops();
     check_null_object_id();
+    check_read_only_attributes();
     check_mixed_object_list_types();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
