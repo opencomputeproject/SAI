@@ -778,6 +778,58 @@ typedef sai_status_t (*sai_get_tunnel_term_table_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Create tunnel map item
+ *
+ * @param[out] tunnel_map_item_id Tunnel map item id
+ * @param[in] switch_id Switch Id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_create_tunnel_map_item_fn)(
+        _Out_ sai_object_id_t *tunnel_map_item_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove tunnel map item
+ *
+ * @param[in] tunnel_map_item_id Tunnel map item id
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_tunnel_map_item_fn)(
+        _In_ sai_object_id_t tunnel_map_item_id);
+
+/**
+ * @brief Set tunnel map item attribute
+ *
+ * @param[in] tunnel_map_item_id Tunnel map item id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_set_tunnel_map_item_attribute_fn)(
+        _In_ sai_object_id_t tunnel_map_item_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get tunnel map item attributes
+ *
+ * @param[in] tunnel_map_item_id Tunnel map item id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_get_tunnel_map_item_attribute_fn)(
+        _In_ sai_object_id_t tunnel_map_item_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief tunnel methods table retrieved with sai_api_query()
  */
 typedef struct _sai_tunnel_api_t
@@ -794,6 +846,10 @@ typedef struct _sai_tunnel_api_t
     sai_remove_tunnel_term_table_entry_fn        remove_tunnel_term_table_entry;
     sai_set_tunnel_term_table_entry_attribute_fn set_tunnel_term_table_entry_attribute;
     sai_get_tunnel_term_table_entry_attribute_fn get_tunnel_term_table_entry_attribute;
+    sai_create_tunnel_map_item_fn                create_tunnel_map_item;
+    sai_remove_tunnel_map_item_fn                remove_tunnel_map_item;
+    sai_set_tunnel_map_item_attribute_fn         set_tunnel_map_item_attribute;
+    sai_get_tunnel_map_item_attribute_fn         get_tunnel_map_item_attribute;
 
 } sai_tunnel_api_t;
 
