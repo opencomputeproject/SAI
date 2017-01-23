@@ -2145,12 +2145,84 @@ void check_null_object_id()
 {
     META_LOG_ENTER();
 
+    /*
+     * Purpose of this check is to make sure that
+     * SAI_NULL_OBJECT_ID is always ZERO.
+     */
+
     META_ASSERT_TRUE(SAI_NULL_OBJECT_ID == 0, "SAI_NULL_OBJECT_ID must be zero");
+}
+
+void check_read_only_attributes()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if there is any
+     * object that has only READ_ONLY attributes.
+     *
+     * If given object has only read only attributes
+     * there should be no purpose of such object.
+     * With only read only attributes there is no
+     * way to compare 2 objects of the same type
+     * sine we don't track read only attributes.
+     *
+     * As additional check we will also check if given
+     * object type defines at least 1 attribute.
+     */
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        size_t index = 0;
+
+        /* check all listed attributes under this object type */
+
+        int non_read_only_count = 0;
+
+        const sai_attr_metadata_t** const meta = info->attrmetadata;
+
+        for (; meta[index] != NULL; ++index)
+        {
+            const sai_attr_metadata_t* m = meta[index];
+
+            if (!HAS_FLAG_READ_ONLY(m->flags))
+            {
+                non_read_only_count++;
+            }
+        }
+
+        if (index < 1)
+        {
+            META_FAIL("object %s must define at least 1 attribute",
+                    sai_metadata_get_object_type_name((sai_object_type_t)i));
+        }
+
+        if (non_read_only_count == 0)
+        {
+            /*
+             * currently we have some objects with only read only
+             * attributes, we for now we just warn here until this
+             * issue will be resolved.
+             */
+
+            META_WARN_LOG("object %s has only READ_ONLY attributes",
+                    metadata_enum_sai_object_type_t.valuesnames[i]);
+        }
+    }
 }
 
 void check_mixed_object_list_types()
 {
-    META_LOG_ENTER();
+    META_LOG_ENTER(); 
 
     /*
      * Purpose of this check is to find out if any of object id lists supports
@@ -2234,6 +2306,7 @@ int main(int argc, char **argv)
     check_non_object_id_object_attrs();
     check_objects_for_loops();
     check_null_object_id();
+    check_read_only_attributes();
     check_mixed_object_list_types();
 
     printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
