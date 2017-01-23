@@ -440,11 +440,6 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_SIZE,
 
-    /**
-     * @brief End of ACL Table attributes
-     */
-    SAI_ACL_TABLE_ATTR_END,
-
     /*
      * Match fields [bool]
      * Mandatory to pass at least one field during ACL Table creation.
@@ -935,6 +930,11 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_ACTION_LIST,
 
     /**
+     * @brief End of ACL Table attributes
+     */
+    SAI_ACL_TABLE_ATTR_END,
+
+    /**
      * @brief Custom range base value start
      */
     SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_START = 0x10000000,
@@ -987,11 +987,6 @@ typedef enum _sai_acl_entry_attr_t
      * @default true
      */
     SAI_ACL_ENTRY_ATTR_ADMIN_STATE,
-
-    /**
-     * @brief End of ACL Entry attributes
-     */
-    SAI_ACL_ENTRY_ATTR_END,
 
     /*
      * Match fields [sai_acl_field_data_t]
@@ -1737,7 +1732,12 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
+
+    /**
+     * @brief End of ACL Entry attributes
+     */
+    SAI_ACL_ENTRY_ATTR_END,
 
 } sai_acl_entry_attr_t;
 

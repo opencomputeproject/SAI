@@ -1177,7 +1177,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_switch_state_change_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_switch_state_change_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1188,7 +1188,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_switch_shutdown_request_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_switch_shutdown_request_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1199,7 +1199,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_fdb_event_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_fdb_event_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1210,7 +1210,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_port_state_change_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_port_state_change_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1221,7 +1221,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_packet_event_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_packet_event_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
