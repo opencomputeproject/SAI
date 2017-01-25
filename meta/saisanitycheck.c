@@ -2530,6 +2530,50 @@ void check_api_names()
     }
 }
 
+void check_vlan_attributes()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to make sure there in vlan object there is only
+     * one attribute marked as a KEY and it's a VLAN_ID and it's value type is
+     * UINT16. This will be helpful later on on comparison logic since we can
+     * have so many vlan's then searching them in hash will be much faster than
+     * iterating each time.
+     */
+
+    const sai_attr_metadata_t** const meta = sai_object_type_info_SAI_OBJECT_TYPE_VLAN.attrmetadata;
+
+    size_t index = 0;
+
+    int keys = 0;
+
+    for (; meta[index] != NULL; index++)
+    {
+        const sai_attr_metadata_t *md = meta[index];
+
+        if (HAS_FLAG_KEY(md->flags))
+        {
+            keys++;
+        }
+
+
+        if (md->attrid == SAI_VLAN_ATTR_VLAN_ID)
+        {
+            int expected_flags = (SAI_ATTR_FLAGS_MANDATORY_ON_CREATE|SAI_ATTR_FLAGS_CREATE_ONLY|SAI_ATTR_FLAGS_KEY);
+
+            if ((int)md->flags != expected_flags)
+            {
+                META_ASSERT_FAIL(md, "vlan id should have flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY, but has: %d", md->flags);
+            }
+
+            META_ASSERT_TRUE(md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT16, "VLAN_ID should be UINT16");
+        }
+    }
+
+    META_ASSERT_TRUE(keys == 1, "vlan object type should have only 1 attribute marked as key which is vlan id");
+}
+
 void check_acl_table_fields_and_acl_entry_fields()
 {
     META_LOG_ENTER();
@@ -2789,6 +2833,7 @@ int main(int argc, char **argv)
     check_null_object_id();
     check_read_only_attributes();
     check_mixed_object_list_types();
+    check_vlan_attributes();
     check_api_names();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
