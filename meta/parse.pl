@@ -1591,6 +1591,24 @@ sub ProcessStructObjectLen
     return $count;
 }
 
+sub ProcessStructEnumData
+{
+    my $type = shift;
+
+    return "&metadata_enum_$type" if $type =~ /^sai_\w+_type_t$/; # enum
+
+    return "NULL";
+}
+
+sub ProcessStructIsEnum
+{
+    my $type = shift;
+
+    return "true" if $type =~ /^sai_\w+_type_t$/; # enum
+
+    return "false";
+}
+
 sub ProcessStructMembers
 {
     my ($struct, $ot, $rawname) = @_;
@@ -1605,6 +1623,8 @@ sub ProcessStructMembers
         my $isvlan      = ProcessStructIsVlan($struct->{$key}{type});
         my $objects     = ProcessStructObjects($rawname, $key, $struct->{$key});
         my $objectlen   = ProcessStructObjectLen($rawname, $key, $struct->{$key});
+        my $isenum      = ProcessStructIsEnum($struct->{$key}{type});
+        my $enumdata    = ProcessStructEnumData($struct->{$key}{type});
 
         WriteSource "const sai_struct_member_info_t struct_member_sai_${rawname}_t_$key = {";
 
@@ -1613,8 +1633,9 @@ sub ProcessStructMembers
         WriteSource "    .isvlan                    = $isvlan,";
         WriteSource "    .allowedobjecttypes        = $objects,";
         WriteSource "    .allowedobjecttypeslength  = $objectlen,";
+        WriteSource "    .isenum                    = $isenum,";
+        WriteSource "    .enummetadata              = $enumdata,";
 
-        # TODO add enum type is value is enum
         # TODO allow null
 
         WriteSource "};";
