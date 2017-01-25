@@ -89,7 +89,7 @@ typedef enum _sai_api_t
     SAI_API_ROUTER_INTERFACE =  9, /**< sai_router_interface_api_t */
     SAI_API_NEIGHBOR         = 10, /**< sai_neighbor_api_t */
     SAI_API_ACL              = 11, /**< sai_acl_api_t */
-    SAI_API_HOST_INTERFACE   = 12, /**< sai_host_interface_api_t */
+    SAI_API_HOST_INTERFACE   = 12, /**< sai_hostif_api_t */
     SAI_API_MIRROR           = 13, /**< sai_mirror_api_t */
     SAI_API_SAMPLEPACKET     = 14, /**< sai_samplepacket_api_t */
     SAI_API_STP              = 15, /**< sai_stp_api_t */
