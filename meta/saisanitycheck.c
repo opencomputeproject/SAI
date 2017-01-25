@@ -2368,10 +2368,18 @@ void check_api_names()
         generic_remove_fn remove = apiname ## _api.remove_ ## short_object_type;\
         generic_set_fn set = apiname ## _api.set_ ## short_object_type ## _attribute;\
         generic_get_fn get =  apiname ## _api.get_ ## short_object_type ## _attribute;\
+        sai_create_ ## short_object_type ## _fn cr = NULL;\
+        sai_remove_ ## short_object_type ## _fn re = NULL;\
+        sai_set_ ## short_object_type ## _attribute_fn se = NULL;\
+        sai_get_ ## short_object_type ## _attribute_fn ge = NULL;\
         dummy = &create;\
         dummy = &remove;\
         dummy = &set;\
         dummy = &get;\
+        dummy = &cr;\
+        dummy = &re;\
+        dummy = &se;\
+        dummy = &ge;\
     }
 
     /*
@@ -2468,10 +2476,18 @@ void check_api_names()
         entry_name ## _remove_fn remove = apiname ## _api.remove_ ## entry_name;\
         entry_name ## _set_fn set = apiname ## _api.set_ ## entry_name ## _attribute;\
         entry_name ## _get_fn get =  apiname ## _api.get_ ## entry_name ## _attribute;\
+        sai_create_ ## entry_name ## _fn cr = NULL;\
+        sai_remove_ ## entry_name ## _fn re = NULL;\
+        sai_set_ ## entry_name ## _attribute_fn se = NULL;\
+        sai_get_ ## entry_name ## _attribute_fn ge = NULL;\
         dummy = &create;\
         dummy = &remove;\
         dummy = &set;\
         dummy = &get;\
+        dummy = &cr;\
+        dummy = &re;\
+        dummy = &se;\
+        dummy = &ge;\
     }
 
     /*
@@ -2500,10 +2516,18 @@ void check_api_names()
         generic_remove_fn remove = switch_api.remove_switch;
         generic_set_fn set = switch_api.set_switch_attribute;
         generic_get_fn get = switch_api.get_switch_attribute;
+        sai_create_switch_fn cr = NULL;
+        sai_remove_switch_fn re = NULL;
+        sai_set_switch_attribute_fn se = NULL;
+        sai_get_switch_attribute_fn ge = NULL;
         dummy = &create;
         dummy = &remove;
         dummy = &set;
         dummy = &get;
+        dummy = &cr;
+        dummy = &re;
+        dummy = &se;
+        dummy = &ge;
     }
 
     if (debug)
