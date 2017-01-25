@@ -55,7 +55,7 @@ typedef enum _sai_scheduler_group_attr_t
      * @brief Scheduler Group child obejct id list
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER
+     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP, SAI_OBJECT_TYPE_QUEUE
      * @flags READ_ONLY
      */
     SAI_SCHEDULER_GROUP_ATTR_CHILD_LIST = 0x00000001,
@@ -100,7 +100,7 @@ typedef enum _sai_scheduler_group_attr_t
      * This is conditional when the level > 0, when level == 0, the parent is the port.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP
+     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP, SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_SCHEDULER_GROUP_ATTR_PARENT_NODE = 0x00000006,

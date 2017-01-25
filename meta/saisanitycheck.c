@@ -1495,6 +1495,93 @@ void check_attr_vlan(
     }
 }
 
+void check_condition_in_range(
+        _In_ const sai_attr_metadata_t* md,
+        _In_ size_t length,
+        _In_ const sai_attr_condition_t **conditions,
+        _In_ sai_attr_id_t start,
+        _In_ sai_attr_id_t end)
+{
+    META_LOG_ENTER();
+
+    size_t index = 0;
+
+    for (; index < length; ++index)
+    {
+        const sai_attr_condition_t* c = conditions[index];
+
+        if (c->attrid < start || c->attrid > end)
+        {
+            continue;
+        }
+
+        META_ASSERT_FAIL(md, "has condition depending on acl field / action, not allowed");
+    }
+}
+
+void check_attr_acl_conditions(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if there is any condition in
+     * attributes that depends on acl entry object field or actions since such
+     * dependency has no sense.
+     */
+
+    if (md->objecttype == SAI_OBJECT_TYPE_ACL_TABLE)
+    {
+        check_condition_in_range(md, md->validonlylength, md->validonly,
+                SAI_ACL_TABLE_ATTR_FIELD_START, SAI_ACL_TABLE_ATTR_FIELD_END);
+
+        check_condition_in_range(md, md->conditionslength, md->conditions,
+                SAI_ACL_TABLE_ATTR_FIELD_START, SAI_ACL_TABLE_ATTR_FIELD_END);
+
+        if (md->attrid >= SAI_ACL_TABLE_ATTR_FIELD_START &&
+            md->attrid >= SAI_ACL_TABLE_ATTR_FIELD_END)
+        {
+            if (md->conditionslength != 0 || md->validonlylength != 0)
+            {
+                META_ASSERT_FAIL(md, "acl table field has conditions, not allowed");
+            }
+        }
+    }
+
+    if (md->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
+    {
+        check_condition_in_range(md, md->validonlylength, md->validonly,
+                SAI_ACL_ENTRY_ATTR_FIELD_START, SAI_ACL_ENTRY_ATTR_FIELD_END);
+
+        check_condition_in_range(md, md->conditionslength, md->conditions,
+                SAI_ACL_ENTRY_ATTR_FIELD_START, SAI_ACL_ENTRY_ATTR_FIELD_END);
+
+        check_condition_in_range(md, md->validonlylength, md->validonly,
+                SAI_ACL_ENTRY_ATTR_ACTION_START, SAI_ACL_ENTRY_ATTR_ACTION_END);
+
+        check_condition_in_range(md, md->conditionslength, md->conditions,
+                SAI_ACL_ENTRY_ATTR_ACTION_START, SAI_ACL_ENTRY_ATTR_ACTION_END);
+
+        if (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+            md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_END)
+        {
+            if (md->conditionslength != 0 || md->validonlylength != 0)
+            {
+                META_ASSERT_FAIL(md, "acl entry field has conditions, not allowed");
+            }
+        }
+
+        if (md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
+            md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            if (md->conditionslength != 0 || md->validonlylength != 0)
+            {
+                META_ASSERT_FAIL(md, "acl entry action has conditions, not allowed");
+            }
+        }
+    }
+}
+
 void check_if_attr_was_already_defined(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1514,6 +1601,22 @@ void check_if_attr_was_already_defined(
         }
 
         p = p->next;
+    }
+}
+
+void check_attr_acl_capability(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY)
+    {
+        return;
+    }
+
+    if (md->flags != SAI_ATTR_FLAGS_READ_ONLY)
+    {
+        META_ASSERT_FAIL(md, "attribute marked as acl capability should be READ_ONLY");
     }
 }
 
@@ -1558,6 +1661,8 @@ void check_single_attribute(
     check_attr_acl_fields(md);
     check_attr_vlan(md);
     check_attr_object_id_allownull(md);
+    check_attr_acl_capability(md);
+    check_attr_acl_conditions(md);
 
     define_attr(md);
 }
@@ -1631,12 +1736,6 @@ void check_object_infos()
                 continue;
             }
 
-            if (info->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY ||
-                    info->objecttype == SAI_OBJECT_TYPE_ACL_TABLE)
-            {
-                continue;
-            }
-
             META_ASSERT_FAIL(am, "attr is is not in start .. end range");
         }
 
@@ -1690,7 +1789,7 @@ void check_non_object_id_object_types()
 
         size_t j = 0;
 
-        bool member_supports_switch_id = false;
+        int member_supports_switch_id = 0;
 
         for (; j < info->structmemberscount; ++j)
         {
@@ -1723,7 +1822,14 @@ void check_non_object_id_object_types()
             if (m->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
             {
                 META_ASSERT_NOT_NULL(m->allowedobjecttypes);
-                META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "member is object id, should specify some object types");
+                META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "struct member object id, should specify some object types");
+
+                /*
+                 * this check can be relaxed in the future, but currently
+                 * supporting only one object type in non object id make sense
+                 */
+
+                META_ASSERT_TRUE(m->allowedobjecttypeslength == 1, "currently struct member object id, should specify only one object type");
 
                 size_t k = 0;
 
@@ -1740,7 +1846,20 @@ void check_non_object_id_object_types()
                              * one struct member should be type of switch
                              */
 
-                            member_supports_switch_id = true;
+                            member_supports_switch_id++;
+                        }
+
+                        /* non object id struct can't contain object id which is also non object id */
+
+                        const sai_object_type_info_t* sinfo = sai_all_object_type_infos[ot];
+
+                        META_ASSERT_NOT_NULL(sinfo);
+
+                        if (sinfo->isnonobjectid)
+                        {
+                            META_FAIL("struct member %s of non object id type can't be used as object id in non object id struct: %s",
+                                    m->membername,
+                                    sai_metadata_get_object_type_name(ot));
                         }
 
                         continue;
@@ -1756,7 +1875,7 @@ void check_non_object_id_object_types()
             }
         }
 
-        META_ASSERT_TRUE(member_supports_switch_id, "none of struct members support switch id object type");
+        META_ASSERT_TRUE(member_supports_switch_id == 1, "there should be only one struct member that support switch id object type");
 
         META_ASSERT_NULL(info->structmembers[j]);
     }
@@ -1799,7 +1918,7 @@ void check_non_object_id_object_attrs()
 
                 default:
 
-                    META_WARN(m, "non object id attribute has invalid flags: 0x%x (should be CREATE_AND_SET)", m->flags);
+                    META_ASSERT_FAIL(m, "non object id attribute has invalid flags: 0x%x (should be CREATE_AND_SET)", m->flags);
             }
         }
     }
@@ -2043,7 +2162,376 @@ void check_null_object_id()
 {
     META_LOG_ENTER();
 
+    /*
+     * Purpose of this check is to make sure that
+     * SAI_NULL_OBJECT_ID is always ZERO.
+     */
+
     META_ASSERT_TRUE(SAI_NULL_OBJECT_ID == 0, "SAI_NULL_OBJECT_ID must be zero");
+}
+
+void check_read_only_attributes()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if there is any
+     * object that has only READ_ONLY attributes.
+     *
+     * If given object has only read only attributes
+     * there should be no purpose of such object.
+     * With only read only attributes there is no
+     * way to compare 2 objects of the same type
+     * sine we don't track read only attributes.
+     *
+     * As additional check we will also check if given
+     * object type defines at least 1 attribute.
+     */
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        size_t index = 0;
+
+        /* check all listed attributes under this object type */
+
+        int non_read_only_count = 0;
+
+        const sai_attr_metadata_t** const meta = info->attrmetadata;
+
+        for (; meta[index] != NULL; ++index)
+        {
+            const sai_attr_metadata_t* m = meta[index];
+
+            if (!HAS_FLAG_READ_ONLY(m->flags))
+            {
+                non_read_only_count++;
+            }
+        }
+
+        if (index < 1)
+        {
+            META_FAIL("object %s must define at least 1 attribute",
+                    sai_metadata_get_object_type_name((sai_object_type_t)i));
+        }
+
+        if (non_read_only_count == 0)
+        {
+            /*
+             * currently we have some objects with only read only
+             * attributes, we for now we just warn here until this
+             * issue will be resolved.
+             */
+
+            META_WARN_LOG("object %s has only READ_ONLY attributes",
+                    metadata_enum_sai_object_type_t.valuesnames[i]);
+        }
+    }
+}
+
+void check_mixed_object_list_types()
+{
+    META_LOG_ENTER(); 
+
+    /*
+     * Purpose of this check is to find out if any of object id lists supports
+     * multiple object types at the same time.  For now this abbility will not
+     * be supported.
+     */
+
+    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500, "there should be at least 500 attributes in total");
+
+    size_t idx = 0;
+
+    for (; idx < metadata_attr_sorted_by_id_name_count; ++idx)
+    {
+        const sai_attr_metadata_t* meta = metadata_attr_sorted_by_id_name[idx];
+
+        switch (meta->attrvaluetype)
+        {
+            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+
+                META_ASSERT_TRUE(meta->allowedobjecttypeslength > 0, "allowed object types on list can't be zero");
+
+                if (meta->allowedobjecttypeslength == 1)
+                {
+                    continue;
+                }
+
+                if (meta->flags == SAI_ATTR_FLAGS_READ_ONLY)
+                {
+                    /*
+                     * If attribute flag is READ_ONLY, then object can support
+                     * mixed object types returned on list, for example
+                     * SAI_SCHEDULER_GROUP_ATTR_CHILD_LIST when it returns
+                     * schedulers and queues.
+                     */
+                }
+                else
+                {
+                    /*
+                     * For non read only attributes, there should be a good
+                     * reason why object list should support mixed object
+                     * types on that list. Then this restriction can be
+                     * relaxed and description should be added why mixed
+                     * object types should be possible.
+                     */
+
+                    META_ASSERT_FAIL(meta, "allowed object types on object id list is more then 1, not supported yet");
+                }
+
+                break;
+
+            default:
+
+                META_ASSERT_FALSE(meta->allowmixedobjecttypes, "allow mixed object types should be false on non object id list");
+                break;
+        }
+    }
+}
+
+void check_acl_table_fields_and_acl_entry_fields()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if acl table fields and acl entry
+     * fields correspond to each other. We also make check if they have the
+     * same attribute id which is not required but it is nice to have. We also
+     * check if those attributes have right flags and right attribute values.
+     */
+
+    META_ASSERT_TRUE(SAI_ACL_ENTRY_ATTR_FIELD_START == 0x1000, "acl entry field start value should be 0x1000");
+    META_ASSERT_TRUE(SAI_ACL_TABLE_ATTR_FIELD_START == 0x1000, "acl table field start value should be 0x1000");
+
+    META_ASSERT_TRUE((int)SAI_ACL_ENTRY_ATTR_FIELD_START == (int)SAI_ACL_TABLE_ATTR_FIELD_START,
+            "acl entry and table fields start should be the same");
+
+    /*
+     * We are using volatile here since if we use enum directly and values are
+     * different, compiler will optimize this to true and throw error on
+     * candidate for non return which in this case is confusing.
+     */
+
+    volatile int table_end = SAI_ACL_TABLE_ATTR_FIELD_END;
+    volatile int entry_end = SAI_ACL_ENTRY_ATTR_FIELD_END;
+
+    if (table_end != entry_end)
+    {
+        META_FAIL("SAI_ACL_TABLE_ATTR_FIELD_END 0x%x is not equal to SAI_ACL_ENTRY_ATTR_FIELD_END 0x%x",
+                SAI_ACL_TABLE_ATTR_FIELD_END, SAI_ACL_ENTRY_ATTR_FIELD_END);
+    }
+
+    /*
+     * find both attribute fields start for entry and table
+     */
+
+    const sai_attr_metadata_t **meta_acl_table = sai_object_type_info_SAI_OBJECT_TYPE_ACL_TABLE.attrmetadata;
+    const sai_attr_metadata_t **meta_acl_entry = sai_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+
+    int acl_table_field_index = 0;
+
+    for (; meta_acl_table[acl_table_field_index] != NULL; acl_table_field_index++)
+    {
+        if (meta_acl_table[acl_table_field_index]->attrid == SAI_ACL_TABLE_ATTR_FIELD_START)
+        {
+            break;
+        }
+    }
+
+    META_ASSERT_NOT_NULL(meta_acl_table[acl_table_field_index]);
+
+    int acl_entry_field_index = 0;
+
+    for (; meta_acl_entry[acl_entry_field_index] != NULL; acl_entry_field_index++)
+    {
+        if (meta_acl_entry[acl_entry_field_index]->attrid == SAI_ACL_ENTRY_ATTR_FIELD_START)
+        {
+            break;
+        }
+    }
+
+    META_ASSERT_NOT_NULL(meta_acl_entry[acl_entry_field_index]);
+
+    /*
+     * we found our attribute indexes, now let's compare attributes
+     */
+
+    while (true)
+    {
+        const sai_attr_metadata_t *mtable = meta_acl_table[acl_table_field_index];
+        const sai_attr_metadata_t *mentry = meta_acl_entry[acl_entry_field_index];
+
+        if (mentry == NULL || mtable == NULL)
+        {
+            break;
+        }
+
+        if (mtable->attrid > SAI_ACL_TABLE_ATTR_FIELD_END ||
+            mentry->attrid > SAI_ACL_ENTRY_ATTR_FIELD_END)
+        {
+            break;
+        }
+
+        META_LOG_INFO("processing acl fields: %s %s", mtable->attridname, mentry->attridname);
+
+        /*
+         * check acl table flags and attr value type
+         */
+
+        if (mtable->attrid == SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE)
+        {
+            /*
+             * This field is exception, it's not bool, it's a list and it's
+             * designed in this way to save resources on device to not support
+             * all ranges on each acl table when it's not necessary.
+             */
+        }
+        else
+        {
+            if (mtable->flags != SAI_ATTR_FLAGS_CREATE_ONLY)
+            {
+                META_ASSERT_FAIL(mtable, "acl table field flags should be CREATE_ONLY");
+            }
+
+            if (mtable->attrvaluetype != SAI_ATTR_VALUE_TYPE_BOOL)
+            {
+                META_ASSERT_FAIL(mtable, "acl table attr value type should be bool");
+            }
+        }
+
+        /*
+         * check acl entry flags
+         */
+
+        if (mentry->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
+        {
+            META_ASSERT_FAIL(mentry, "acl entry field flags should be CREATE_AND_SET");
+        }
+
+        if (mentry->attrid != mtable->attrid)
+        {
+            META_ASSERT_FAIL(mentry, "acl entry attr id %d is different than acl table field %d", mentry->attrid, mtable->attrid);
+        }
+
+        /*
+         * check acl fields attribute if endings are the same
+         */
+
+        const char * attr_table_pos = strstr(mtable->attridname, "_ATTR_");
+
+        META_ASSERT_NOT_NULL(attr_table_pos);
+
+        const char * attr_entry_pos = strstr(mentry->attridname, "_ATTR_");
+
+        META_ASSERT_NOT_NULL(attr_entry_pos);
+
+        if (strcmp(attr_table_pos, attr_entry_pos) != 0)
+        {
+            META_FAIL("attr entry field name %s is not ending at the same name as acl table field %s",
+                    mentry->attridname, mtable->attridname);
+        }
+
+        acl_table_field_index++;
+        acl_entry_field_index++;
+    }
+}
+
+void check_acl_entry_actions()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if acl entry actions correspond to
+     * sai_acl_action_type_t enum type and contain all actions in the same
+     * order.
+     */
+
+    META_ASSERT_TRUE(SAI_ACL_ENTRY_ATTR_ACTION_START == 0x2000, "acl entry action start value should be 0x2000");
+
+    /*
+     * find both attribute fields start for entry and table
+     */
+
+    const sai_attr_metadata_t **meta_acl_entry = sai_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+
+    size_t index = 0;
+
+    for (; meta_acl_entry[index] != NULL; index++)
+    {
+        if (meta_acl_entry[index]->attrid == SAI_ACL_ENTRY_ATTR_ACTION_START)
+        {
+            break;
+        }
+    }
+
+    META_ASSERT_NOT_NULL(meta_acl_entry[index]);
+
+    /*
+     * lets compare all action attributes with enum names
+     */
+
+    size_t enum_index = 0;
+
+    while (true)
+    {
+        const sai_attr_metadata_t *meta = meta_acl_entry[index];
+
+        if (meta == NULL)
+        {
+            break;
+        }
+
+        if (meta->attrid > SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            break;
+        }
+
+        if (meta->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
+        {
+            META_ASSERT_FAIL(meta, "acl entry action flags should be CREATE_AND_SET");
+        }
+
+        const char* enum_name = metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
+
+        META_ASSERT_NOT_NULL(enum_name);
+
+        META_LOG_INFO("processing acl action: %s %s", meta->attridname, enum_name);
+
+        /*
+         * check acl fields attribute if endings are the same
+         */
+
+        const char * enum_name_pos = strstr(enum_name, "_ACTION_TYPE_");
+
+        META_ASSERT_NOT_NULL(enum_name_pos);
+
+        const char * attr_entry_pos = strstr(meta->attridname, "_ATTR_ACTION_");
+
+        META_ASSERT_NOT_NULL(attr_entry_pos);
+
+        if (strcmp(enum_name_pos + strlen("_ACTION_TYPE_"), attr_entry_pos + strlen("_ATTR_ACTION_")) != 0)
+        {
+            META_FAIL("attr entry action name %s is not ending at the same enum name %s",
+                    meta->attridname, enum_name);
+        }
+
+        index++;
+        enum_index++;
+    }
+
+    META_ASSERT_TRUE(enum_index == metadata_enum_sai_acl_action_type_t.valuescount,
+            "number of acl entry action mismatch vs number of enums in sai_acl_action_type_t");
 }
 
 int main(int argc, char **argv)
@@ -2069,6 +2557,10 @@ int main(int argc, char **argv)
     check_non_object_id_object_attrs();
     check_objects_for_loops();
     check_null_object_id();
+    check_read_only_attributes();
+    check_mixed_object_list_types();
+    check_acl_table_fields_and_acl_entry_fields();
+    check_acl_entry_actions();
 
     printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
 

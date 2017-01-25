@@ -758,14 +758,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
 
     /**
-     * @brief Acl capabilities supported by the NPU
-     *
-     * @type sai_acl_capability_t
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_ACL_CAPABILITY,
-
-    /**
      * @brief Multicast snooping capability supported by the NPU
      *
      * @type sai_switch_mcast_snooping_capability_t
@@ -1185,7 +1177,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_switch_state_change_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_switch_state_change_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1196,7 +1188,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_switch_shutdown_request_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_switch_shutdown_request_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1207,7 +1199,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_fdb_event_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_fdb_event_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1218,7 +1210,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_port_state_change_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_port_state_change_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1229,7 +1221,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_packet_event_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_packet_event_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1249,11 +1241,29 @@ typedef enum _sai_switch_attr_t
      *
      * This setting will apply to all mirror sessions.
      *
+     * Default of 0xff = disabled.
+     *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default 0xff
      */
     SAI_SWITCH_ATTR_MIRROR_TC,
+
+    /**
+     * @brief Ingress acl stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_INGRESS,
+
+    /**
+     * @brief Egress acl stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
 
     /**
      * @brief End of attributes

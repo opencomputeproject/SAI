@@ -509,12 +509,6 @@ typedef struct _sai_tunnel_map_list_t
 typedef struct _sai_acl_capability_t
 {
     /**
-     * @brief Type of acl stage. Input to get the action list
-     * Failure to pass the stage as input will be treated as error
-     */
-    sai_int32_t stage;
-
-    /**
      * @brief Output from get function.
      * boolean indicating whether action list is mandatory for table creation
      */
