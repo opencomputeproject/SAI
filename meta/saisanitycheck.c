@@ -2764,6 +2764,32 @@ void check_acl_entry_actions()
             "number of acl entry action mismatch vs number of enums in sai_acl_action_type_t");
 }
 
+void check_switch_create_only_objects()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out whether switch object has some
+     * attributes that are object id type and are marked as CREATE_ONLY.  Such
+     * attribute has no sense since, you need first switch_id to create any
+     * other object so setting that object on create will be impossible.
+     */
+
+    const sai_attr_metadata_t** const meta = sai_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
+
+    size_t index = 0;
+
+    for (; meta[index] != NULL; index++)
+    {
+        const sai_attr_metadata_t *md = meta[index];
+
+        if (HAS_FLAG_CREATE_ONLY(md->flags) && md->allowedobjecttypeslength > 0)
+        {
+            META_ASSERT_FAIL(md, "attribute is create_only and it's an object id, this is not allowed");
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -2790,6 +2816,7 @@ int main(int argc, char **argv)
     check_read_only_attributes();
     check_mixed_object_list_types();
     check_api_names();
+    check_switch_create_only_objects();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
 
