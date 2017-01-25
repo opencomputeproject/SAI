@@ -1241,11 +1241,11 @@ typedef enum _sai_switch_attr_t
      *
      * This setting will apply to all mirror sessions.
      *
-     * Default of 0xff = disabled.
+     * Default of 255 = disabled.
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @default 0xff
+     * @default 255
      */
     SAI_SWITCH_ATTR_MIRROR_TC,
 
