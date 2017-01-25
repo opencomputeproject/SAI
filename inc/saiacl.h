@@ -486,21 +486,21 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6,
 
     /**
-    * @brief Inner Src IPv6 Address
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief Inner Src IPv6 Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IPv6,
 
     /**
-    * @brief Inner Dst IPv6 Address
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief Inner Dst IPv6 Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IPv6,
 
     /**
@@ -541,21 +541,21 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_DST_IP,
 
     /**
-    * @brief Inner Src IPv4 Address
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief Inner Src IPv4 Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IP,
 
     /**
-    * @brief Inner Dst IPv4 Address
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief Inner Dst IPv4 Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IP,
 
     /**
@@ -694,12 +694,12 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL,
 
     /**
-    * @brief IP Identification
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief IP Identification
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_IP_IDENTIFICATION,
 
     /**
@@ -1021,19 +1021,19 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6,
 
     /**
-    * @brief Inner Src IPv6 Address
-    *
-    * @type sai_acl_field_data_t sai_ip6_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief Inner Src IPv6 Address
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IPv6,
 
     /**
-    * @brief Inner Dst IPv6 Address
-    *
-    * @type sai_acl_field_data_t sai_ip6_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief Inner Dst IPv6 Address
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IPv6,
 
     /**
@@ -1069,19 +1069,19 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IP,
 
     /**
-    * @brief Inner Src IPv4 Address
-    *
-    * @type sai_acl_field_data_t sai_ip4_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief Inner Src IPv4 Address
+     *
+     * @type sai_acl_field_data_t sai_ip4_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IP,
 
     /**
-    * @brief Inner Dst IPv4 Address
-    *
-    * @type sai_acl_field_data_t sai_ip4_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief Inner Dst IPv4 Address
+     *
+     * @type sai_acl_field_data_t sai_ip4_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IP,
 
     /**
@@ -1211,11 +1211,11 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL,
 
     /**
-    * @brief IP Identification
-    *
-    * @type sai_acl_field_data_t sai_uint16_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief IP Identification
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_IDENTIFICATION,
 
     /**
@@ -2094,6 +2094,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_table_group_fn)(
         _Out_ sai_object_id_t *acl_table_group_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -2144,6 +2145,7 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
         _Out_ sai_object_id_t *acl_table_group_member_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

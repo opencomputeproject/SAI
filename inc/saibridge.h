@@ -54,10 +54,10 @@ typedef enum _sai_bridge_port_fdb_learning_mode_t
     SAI_BRIDGE_PORT_FDB_LEARNING_MODE_CPU_LOG,
 
     /** Notify unknown source MAC using FDB callback. Do not learn in hardware. Do not forward.
-    * When a packet from unknown source MAC comes this mode will trigger a new learn notification
-    * via FDB callback for the MAC address. This mode will generate only one notification
-    * per unknown source MAC to FDB callback.
-    */
+     * When a packet from unknown source MAC comes this mode will trigger a new learn notification
+     * via FDB callback for the MAC address. This mode will generate only one notification
+     * per unknown source MAC to FDB callback.
+     */
     SAI_BRIDGE_PORT_FDB_LEARNING_MODE_FDB_NOTIFICATION,
 
 } sai_bridge_port_fdb_learning_mode_t;
@@ -85,8 +85,8 @@ typedef enum _sai_bridge_port_type_t
 } sai_bridge_port_type_t;
 
 /**
-* @brief SAI attributes for Bridge Port
-*/
+ * @brief SAI attributes for Bridge Port
+ */
 typedef enum _sai_bridge_port_attr_t
 {
     /**
@@ -207,10 +207,10 @@ typedef enum _sai_bridge_port_attr_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_bridge_port_fn)(
-    _Out_ sai_object_id_t* bridge_port_id,
-    _In_ sai_object_id_t switch_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list);
+        _Out_ sai_object_id_t* bridge_port_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove bridge port
@@ -220,7 +220,7 @@ typedef sai_status_t(*sai_create_bridge_port_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_bridge_port_fn) (
-    _In_  sai_object_id_t bridge_port_id);
+        _In_  sai_object_id_t bridge_port_id);
 
 /**
  * @brief Set attribute for bridge port
@@ -231,8 +231,8 @@ typedef sai_status_t(*sai_remove_bridge_port_fn) (
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_bridge_port_attribute_fn)(
-    _In_ sai_object_id_t bridge_port_id,
-    _In_ const sai_attribute_t *attr);
+        _In_ sai_object_id_t bridge_port_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get attributes of bridge port
@@ -244,9 +244,9 @@ typedef sai_status_t(*sai_set_bridge_port_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_bridge_port_attribute_fn)(
-    _In_ sai_object_id_t bridge_port_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list);
+        _In_ sai_object_id_t bridge_port_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Attribute data for #SAI_BRIDGE_ATTR_TYPE
@@ -332,11 +332,10 @@ typedef enum _sai_bridge_attr_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_bridge_fn)(
-    _Out_ sai_object_id_t* bridge_id,
-    _In_ sai_object_id_t switch_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list
-    );
+        _Out_ sai_object_id_t* bridge_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove bridge
@@ -346,8 +345,7 @@ typedef sai_status_t(*sai_create_bridge_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_bridge_fn) (
-    _In_  sai_object_id_t bridge_id
-    );
+        _In_ sai_object_id_t bridge_id);
 
 /**
  * @brief Set attribute for bridge
@@ -358,8 +356,8 @@ typedef sai_status_t(*sai_remove_bridge_fn) (
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_bridge_attribute_fn)(
-    _In_ sai_object_id_t  bridge_id,
-    _In_ const sai_attribute_t *attr);
+        _In_ sai_object_id_t  bridge_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get attributes of bridge
@@ -371,13 +369,13 @@ typedef sai_status_t(*sai_set_bridge_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_bridge_attribute_fn)(
-    _In_ sai_object_id_t   bridge_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list);
+        _In_ sai_object_id_t   bridge_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
-* @brief bridge methods table retrieved with sai_api_query()
-*/
+ * @brief bridge methods table retrieved with sai_api_query()
+ */
 typedef struct _sai_bridge_api_t
 {
     sai_create_bridge_fn                create_bridge;

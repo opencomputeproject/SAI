@@ -1714,7 +1714,7 @@ sub CreateObjectInfo
 sub GetHeaderFiles
 {
     opendir(my $dh, $INCLUDEDIR) || die "Can't opendir $INCLUDEDIR: $!";
-    my @headers = grep { /^sai\S+\.h$/ && -f "$INCLUDEDIR/$_" } readdir($dh);
+    my @headers = grep { /^sai\S+\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
     closedir $dh;
 
     return @headers;
@@ -2002,6 +2002,45 @@ sub CheckWhiteSpaceInHeaders
     }
 }
 
+sub CheckApiStructNames
+{
+    #
+    # purpose of this check is to find out
+    # whether sai_api_t enums match actual
+    # struct of api declarations
+    #
+
+    my @values = @{ $SAI_ENUMS{"sai_api_t"}{values} };
+
+    for my $value (@values)
+    {
+        next if $value eq "SAI_API_UNSPECIFIED";
+
+        if (not $value =~ /^SAI_API_(\S+)$/)
+        {
+            LogError "invalie api name $value";
+            next;
+        }
+
+        my $api = lc($1);
+
+        my $structName = "sai_${api}_api_t";
+
+        my $structFile = "struct_$structName.xml";
+
+        # doxygen doubles underscores
+
+        $structFile =~ s/_/__/g;
+
+        my $file = "$XMLDIR/$structFile";
+
+        if (not -e $file)
+        {
+            LogError "there is no struct $structName corresponding to api name $value";
+        }
+    }
+}
+
 #
 # MAIN
 #
@@ -2036,6 +2075,8 @@ CreateObjectInfo();
 CreateListOfAllAttributes();
 
 CheckWhiteSpaceInHeaders();
+
+CheckApiStructNames();
 
 WriteHeader "#endif /* __SAI_METADATA_H__ */";
 

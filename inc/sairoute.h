@@ -196,10 +196,10 @@ typedef sai_status_t (*sai_get_route_attribute_fn)(
  */
 typedef struct _sai_route_api_t
 {
-    sai_create_route_fn         create_route;
-    sai_remove_route_fn         remove_route;
-    sai_set_route_attribute_fn  set_route_attribute;
-    sai_get_route_attribute_fn  get_route_attribute;
+    sai_create_route_fn         create_route_entry;
+    sai_remove_route_fn         remove_route_entry;
+    sai_set_route_attribute_fn  set_route_entry_attribute;
+    sai_get_route_attribute_fn  get_route_entry_attribute;
 
 } sai_route_api_t;
 

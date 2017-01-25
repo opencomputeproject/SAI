@@ -1228,12 +1228,12 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
 
     /**
-    * @brief Enable SAI function call fast mode, which executes calls very quickly
-    *
-    * @type bool
-    * @flags CREATE_AND_SET
-    * @default false
-    */
+     * @brief Enable SAI function call fast mode, which executes calls very quickly
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
     SAI_SWITCH_ATTR_FAST_API_ENABLE,
 
     /**
@@ -1383,7 +1383,7 @@ typedef enum _sai_switch_attr_t
  * @param[in] switch_id Switch Id
  */
 typedef void (*sai_switch_shutdown_request_fn)(
-              _In_ sai_object_id_t switch_id);
+        _In_ sai_object_id_t switch_id);
 
 /**
  * @brief Switch oper state change notification
@@ -1421,8 +1421,8 @@ typedef sai_status_t(*sai_create_switch_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef void (*sai_remove_switch_fn)(
-              _In_ sai_object_id_t switch_id);
+typedef sai_status_t (*sai_remove_switch_fn)(
+        _In_ sai_object_id_t switch_id);
 
 /**
  * @brief Set switch attribute value

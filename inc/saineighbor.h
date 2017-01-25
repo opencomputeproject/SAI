@@ -197,8 +197,8 @@ typedef struct _sai_neighbor_api_t
 {
     sai_create_neighbor_entry_fn        create_neighbor_entry;
     sai_remove_neighbor_entry_fn        remove_neighbor_entry;
-    sai_set_neighbor_attribute_fn       set_neighbor_attribute;
-    sai_get_neighbor_attribute_fn       get_neighbor_attribute;
+    sai_set_neighbor_attribute_fn       set_neighbor_entry_attribute;
+    sai_get_neighbor_attribute_fn       get_neighbor_entry_attribute;
     sai_remove_all_neighbor_entries_fn  remove_all_neighbor_entries;
 
 } sai_neighbor_api_t;

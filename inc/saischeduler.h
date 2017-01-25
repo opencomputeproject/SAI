@@ -199,8 +199,8 @@ typedef sai_status_t (*sai_get_scheduler_attribute_fn)(
  */
 typedef struct _sai_scheduler_api_t
 {
-    sai_create_scheduler_fn        create_scheduler_profile;
-    sai_remove_scheduler_fn        remove_scheduler_profile;
+    sai_create_scheduler_fn        create_scheduler;
+    sai_remove_scheduler_fn        remove_scheduler;
     sai_set_scheduler_attribute_fn set_scheduler_attribute;
     sai_get_scheduler_attribute_fn get_scheduler_attribute;
 

@@ -198,10 +198,10 @@ typedef sai_status_t (*sai_get_next_hop_group_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_create_next_hop_group_member_fn)(
-    _Out_ sai_object_id_t* next_hop_group_member_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list
-    );
+        _Out_ sai_object_id_t* next_hop_group_member_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove next hop group member
@@ -211,8 +211,7 @@ typedef sai_status_t (*sai_create_next_hop_group_member_fn)(
  * @return SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_next_hop_group_member_fn)(
-    _In_ sai_object_id_t next_hop_group_member_id
-    );
+        _In_ sai_object_id_t next_hop_group_member_id);
 
 /**
  * @brief Set Next Hop Group attribute
@@ -223,10 +222,8 @@ typedef sai_status_t (*sai_remove_next_hop_group_member_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_set_next_hop_group_member_attribute_fn)(
-    _In_ sai_object_id_t next_hop_group_member_id,
-    _In_ const sai_attribute_t *attr
-    );
-
+        _In_ sai_object_id_t next_hop_group_member_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get Next Hop Group attribute
@@ -238,10 +235,9 @@ typedef sai_status_t (*sai_set_next_hop_group_member_attribute_fn)(
  * @return SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_next_hop_group_member_attribute_fn)(
-    _In_ sai_object_id_t next_hop_group_member_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list
-    );
+        _In_ sai_object_id_t next_hop_group_member_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  *  @brief Next Hop methods table retrieved with sai_api_query()

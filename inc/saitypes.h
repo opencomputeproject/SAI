@@ -497,7 +497,7 @@ typedef struct _sai_tunnel_map_list_t
     uint32_t count;
 
     /** Map list */
-    sai_tunnel_map_t * list;
+    sai_tunnel_map_t *list;
 
 } sai_tunnel_map_list_t;
 
@@ -634,7 +634,6 @@ typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ sai_object_id_t *object_id,
         _In_ sai_bulk_op_type_t type,
         _Out_ sai_status_t *object_statuses);
-
 
 /**
  * @}

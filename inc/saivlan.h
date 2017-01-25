@@ -252,9 +252,6 @@ typedef enum _sai_vlan_attr_t
      */
     SAI_VLAN_ATTR_EGRESS_ACL,
 
-    /** User based Meta Data
-      * [sai_uint32_t] (CREATE_AND_SET)
-      * Value Range SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE */
     /**
      * @brief User based Meta Data
      *
