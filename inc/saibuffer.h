@@ -133,7 +133,7 @@ typedef sai_status_t(*sai_remove_ingress_priority_group_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_set_ingress_priority_group_attr_fn)(
+typedef sai_status_t(*sai_set_ingress_priority_group_attribute_fn)(
         _In_ sai_object_id_t ingress_pg_id,
         _In_ const sai_attribute_t *attr);
 
@@ -146,7 +146,7 @@ typedef sai_status_t(*sai_set_ingress_priority_group_attr_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_get_ingress_priority_group_attr_fn)(
+typedef sai_status_t(*sai_get_ingress_priority_group_attribute_fn)(
         _In_ sai_object_id_t ingress_pg_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -322,7 +322,7 @@ typedef sai_status_t(*sai_remove_buffer_pool_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_set_buffer_pool_attr_fn)(
+typedef sai_status_t(*sai_set_buffer_pool_attribute_fn)(
         _In_ sai_object_id_t pool_id,
         _In_ const sai_attribute_t *attr);
 
@@ -335,7 +335,7 @@ typedef sai_status_t(*sai_set_buffer_pool_attr_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_get_buffer_pool_attr_fn)(
+typedef sai_status_t(*sai_get_buffer_pool_attribute_fn)(
         _In_ sai_object_id_t pool_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -544,7 +544,7 @@ typedef sai_status_t(*sai_remove_buffer_profile_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_set_buffer_profile_attr_fn)(
+typedef sai_status_t(*sai_set_buffer_profile_attribute_fn)(
         _In_ sai_object_id_t buffer_profile_id,
         _In_ const sai_attribute_t *attr);
 
@@ -557,7 +557,7 @@ typedef sai_status_t(*sai_set_buffer_profile_attr_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_get_buffer_profile_attr_fn)(
+typedef sai_status_t(*sai_get_buffer_profile_attribute_fn)(
         _In_ sai_object_id_t buffer_profile_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -567,22 +567,22 @@ typedef sai_status_t(*sai_get_buffer_profile_attr_fn)(
  */
 typedef struct _sai_buffer_api_t
 {
-    sai_create_buffer_pool_fn                  create_buffer_pool;
-    sai_remove_buffer_pool_fn                  remove_buffer_pool;
-    sai_set_buffer_pool_attr_fn                set_buffer_pool_attribute;
-    sai_get_buffer_pool_attr_fn                get_buffer_pool_attribute;
-    sai_get_buffer_pool_stats_fn               get_buffer_pool_stats;
-    sai_clear_buffer_pool_stats_fn             clear_buffer_pool_stats;
-    sai_create_ingress_priority_group_fn       create_ingress_priority_group;
-    sai_remove_ingress_priority_group_fn       remove_ingress_priority_group;
-    sai_set_ingress_priority_group_attr_fn     set_ingress_priority_group_attribute;
-    sai_get_ingress_priority_group_attr_fn     get_ingress_priority_group_attribute;
-    sai_get_ingress_priority_group_stats_fn    get_ingress_priority_group_stats;
-    sai_clear_ingress_priority_group_stats_fn  clear_ingress_priority_group_stats;
-    sai_create_buffer_profile_fn               create_buffer_profile;
-    sai_remove_buffer_profile_fn               remove_buffer_profile;
-    sai_set_buffer_profile_attr_fn             set_buffer_profile_attribute;
-    sai_get_buffer_profile_attr_fn             get_buffer_profile_attribute;
+    sai_create_buffer_pool_fn                       create_buffer_pool;
+    sai_remove_buffer_pool_fn                       remove_buffer_pool;
+    sai_set_buffer_pool_attribute_fn                set_buffer_pool_attribute;
+    sai_get_buffer_pool_attribute_fn                get_buffer_pool_attribute;
+    sai_get_buffer_pool_stats_fn                    get_buffer_pool_stats;
+    sai_clear_buffer_pool_stats_fn                  clear_buffer_pool_stats;
+    sai_create_ingress_priority_group_fn            create_ingress_priority_group;
+    sai_remove_ingress_priority_group_fn            remove_ingress_priority_group;
+    sai_set_ingress_priority_group_attribute_fn     set_ingress_priority_group_attribute;
+    sai_get_ingress_priority_group_attribute_fn     get_ingress_priority_group_attribute;
+    sai_get_ingress_priority_group_stats_fn         get_ingress_priority_group_stats;
+    sai_clear_ingress_priority_group_stats_fn       clear_ingress_priority_group_stats;
+    sai_create_buffer_profile_fn                    create_buffer_profile;
+    sai_remove_buffer_profile_fn                    remove_buffer_profile;
+    sai_set_buffer_profile_attribute_fn             set_buffer_profile_attribute;
+    sai_get_buffer_profile_attribute_fn             get_buffer_profile_attribute;
 } sai_buffer_api_t;
 
 /**

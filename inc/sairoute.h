@@ -148,7 +148,7 @@ typedef struct _sai_route_entry_t
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_create_route_fn)(
+typedef sai_status_t (*sai_create_route_entry_fn)(
         _In_ const sai_route_entry_t *route_entry,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -162,7 +162,7 @@ typedef sai_status_t (*sai_create_route_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_remove_route_fn)(
+typedef sai_status_t (*sai_remove_route_entry_fn)(
         _In_ const sai_route_entry_t *route_entry);
 
 /**
@@ -173,7 +173,7 @@ typedef sai_status_t (*sai_remove_route_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_set_route_attribute_fn)(
+typedef sai_status_t (*sai_set_route_entry_attribute_fn)(
         _In_ const sai_route_entry_t *route_entry,
         _In_ const sai_attribute_t *attr);
 
@@ -186,7 +186,7 @@ typedef sai_status_t (*sai_set_route_attribute_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_get_route_attribute_fn)(
+typedef sai_status_t (*sai_get_route_entry_attribute_fn)(
         _In_ const sai_route_entry_t *route_entry,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -196,10 +196,10 @@ typedef sai_status_t (*sai_get_route_attribute_fn)(
  */
 typedef struct _sai_route_api_t
 {
-    sai_create_route_fn         create_route_entry;
-    sai_remove_route_fn         remove_route_entry;
-    sai_set_route_attribute_fn  set_route_entry_attribute;
-    sai_get_route_attribute_fn  get_route_entry_attribute;
+    sai_create_route_entry_fn         create_route_entry;
+    sai_remove_route_entry_fn         remove_route_entry;
+    sai_set_route_entry_attribute_fn  set_route_entry_attribute;
+    sai_get_route_entry_attribute_fn  get_route_entry_attribute;
 
 } sai_route_api_t;
 
