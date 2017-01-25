@@ -1241,7 +1241,9 @@ typedef enum _sai_switch_attr_t
      *
      * This setting will apply to all mirror sessions.
      *
-     * Default of 255 = disabled.
+     * Default of 255 = disabled. When this attribute is disabled,
+     * the TC of the mirrored frame will be derived from the packet
+     * (the DOT1P priority in the VLAN Tag, for example).
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
