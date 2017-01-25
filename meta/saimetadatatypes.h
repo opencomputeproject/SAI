@@ -826,6 +826,21 @@ typedef struct _sai_struct_member_info_t
      */
     size_t                              allowedobjecttypeslength;
 
+    /**
+     * @brief Indicates wheter member is enum value.
+     *
+     * Type must be set as INT32.
+     *
+     * @note Could be deduced from enum type string or
+     * enum vector values and attr value type.
+     */
+    bool                                isenum;
+
+    /**
+     * @brief Provides enum metadata if member is enum
+     */
+    const sai_enum_metadata_t* const    enummetadata;
+
 } sai_struct_member_info_t;
 
 /**

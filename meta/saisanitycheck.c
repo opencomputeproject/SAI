@@ -1814,6 +1814,18 @@ void check_non_object_id_object_types()
                     META_FAIL("struct member %s have invalid value type %d", m->membername, m->membervaluetype);
             }
 
+            if (m->isenum)
+            {
+                META_ASSERT_NOT_NULL(m->enummetadata);
+
+                META_ASSERT_TRUE(m->membervaluetype == SAI_ATTR_VALUE_TYPE_INT32,
+                        "when enum is defined in struct member non objectid its type must be INT32");
+            }
+            else
+            {
+                META_ASSERT_NULL(m->enummetadata);
+            }
+
             if (m->isvlan)
             {
                 META_ASSERT_TRUE(m->membervaluetype == SAI_ATTR_VALUE_TYPE_UINT16, "member marked as vlan, but wrong type specified");
@@ -2239,7 +2251,7 @@ void check_read_only_attributes()
 
 void check_mixed_object_list_types()
 {
-    META_LOG_ENTER(); 
+    META_LOG_ENTER();
 
     /*
      * Purpose of this check is to find out if any of object id lists supports
