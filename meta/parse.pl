@@ -1269,6 +1269,24 @@ sub ProcessAttrName
     return "\"$attr\"";
 }
 
+sub  ProcessIsAclField
+{
+    my $attr = shift;
+
+    return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_FIELD_\w+$/;
+
+    return "false";
+}
+
+sub  ProcessIsAclAction
+{
+    my $attr = shift;
+
+    return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_ACTION_\w+$/;
+
+    return "false";
+}
+
 sub ProcessSingleObjectType
 {
     my ($typedef, $objecttype) = @_;
@@ -1313,6 +1331,8 @@ sub ProcessSingleObjectType
         my $validonlylen    = ProcessValidOnlyLen($attr, $meta{validonly});
         my $isvlan          = ProcessIsVlan($attr, $meta{isvlan});
         my $getsave         = ProcessGetSave($attr, $meta{getsave});
+        my $isaclfield      = ProcessIsAclField($attr);
+        my $isaclaction     = ProcessIsAclAction($attr);
 
         WriteSource "const sai_attr_metadata_t metadata_attr_$attr = {";
 
@@ -1342,6 +1362,8 @@ sub ProcessSingleObjectType
         WriteSource "    .validonlylength               = $validonlylen,";
         WriteSource "    .getsave                       = $getsave,";
         WriteSource "    .isvlan                        = $isvlan,";
+        WriteSource "    .isaclfield                    = $isaclfield,";
+        WriteSource "    .isaclaction                   = $isaclaction,";
 
         WriteSource "};";
 

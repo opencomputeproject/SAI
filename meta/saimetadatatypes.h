@@ -790,6 +790,22 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                isvlan;
 
+    /**
+     * @brief Determines whether attribute is ACL field
+     *
+     * This will become handy for fast detrmination whether
+     * default value is present.
+     */
+    bool                                isaclfield;
+
+    /*
+     * @brief Determines whether attribute is ACL action
+     *
+     * This will become handy for fast detrmination whether
+     * default value is present.
+     */
+    bool                                isaclaction;
+
 } sai_attr_metadata_t;
 
 /**
