@@ -1582,6 +1582,109 @@ void check_attr_acl_conditions(
     }
 }
 
+void check_attr_reverse_graph(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this method is to check whether any defined attribute with is
+     * object id type is defined in reverse graph correctly. Read only objects
+     * are also included.
+     */
+
+    size_t index = 0;
+
+    for (; index < md->allowedobjecttypeslength; index++)
+    {
+        /*
+         * for each defined object id on that list we need to check
+         * if its defined correctly in reverse graph
+         */
+
+        sai_object_type_t depobjecttype = md->allowedobjecttypes[index];
+
+        const sai_object_type_info_t *oi = sai_all_object_type_infos[depobjecttype];
+
+        META_ASSERT_NOT_NULL(oi->revgraphmembers);
+
+        size_t revidx = 0;
+
+        bool defined = false;
+
+        for (; oi->revgraphmembers[revidx] != NULL; revidx++)
+        {
+            /*
+             * now let's search for graph member which defines
+             * this object and the same attribute value
+             */
+
+            const sai_rev_graph_member_t *rm = oi->revgraphmembers[revidx];
+
+            META_ASSERT_TRUE(rm->objecttype == depobjecttype, "invalid objecttype definition");
+
+            if (rm->depobjecttype != md->objecttype)
+            {
+                /*
+                 * this is not the member we are looking for
+                 */
+
+                continue;
+            }
+
+            if (rm->attrmetadata == NULL)
+            {
+                META_ASSERT_NOT_NULL(rm->structmember);
+
+                /*
+                 * object is defined on non object id,
+                 * this will require different method to check
+                 */
+
+                META_ASSERT_FAIL(md, "This is attribute, it can't be defined in struct member");
+            }
+            else
+            {
+                /*
+                 * object is attribute
+                 */
+
+                META_ASSERT_NOT_NULL(rm->attrmetadata);
+                META_ASSERT_NULL(rm->structmember);
+
+                size_t i = 0;
+
+                for (; i < rm->attrmetadata->allowedobjecttypeslength; i++)
+                {
+                    /*
+                     * Object type of graph member must match and also
+                     * attribute id must match.
+                     */
+
+                    if (rm->attrmetadata->allowedobjecttypes[i] == depobjecttype &&
+                            rm->attrmetadata->attrid == md->attrid)
+                    {
+                        META_LOG_INFO("dep %s ot %s attr %s\n",
+                                metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
+                                metadata_enum_sai_object_type_t.valuesnames[md->objecttype],
+                                md->attridname);
+
+                        defined = true;
+                        break;
+                    }
+                }
+
+                if (defined)
+                {
+                    break;
+                }
+            }
+        }
+
+        META_ASSERT_TRUE(defined, "reverse graph object is not defined anywhere");
+    }
+}
+
 void check_if_attr_was_already_defined(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1662,6 +1765,7 @@ void check_single_attribute(
     check_attr_vlan(md);
     check_attr_object_id_allownull(md);
     check_attr_acl_capability(md);
+    check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
 
     define_attr(md);
@@ -2530,6 +2634,177 @@ void check_api_names()
     }
 }
 
+void check_single_non_object_id_for_rev_graph(
+        _In_ const sai_struct_member_info_t *sm,
+        _In_ sai_object_type_t objecttype,
+        _In_ sai_object_type_t depobjecttype)
+{
+    META_LOG_ENTER();
+
+    /*
+     * This method checks single non object id struct
+     * member.
+     */
+
+    const sai_object_type_info_t *oi = sai_all_object_type_infos[depobjecttype];
+
+    META_ASSERT_NOT_NULL(oi->revgraphmembers);
+
+    size_t revidx = 0;
+
+    bool defined = false;
+
+    for (; oi->revgraphmembers[revidx] != NULL; revidx++)
+    {
+        /*
+         * now let's search for graph member which defines
+         * this object and the same attribute value
+         */
+
+        const sai_rev_graph_member_t *rm = oi->revgraphmembers[revidx];
+
+        META_ASSERT_TRUE(rm->objecttype == depobjecttype, "invalid objecttype definition");
+
+        if (rm->depobjecttype != objecttype)
+        {
+            /*
+             * this is not the member we are looking for
+             */
+
+            continue;
+        }
+
+        if (rm->attrmetadata == NULL)
+        {
+            META_ASSERT_NOT_NULL(rm->structmember);
+
+            /*
+             * This graph entry is struct memner, maybe this i the
+             * one we are looking for, since graph can have multiple
+             * entries for the same object.
+             */
+
+            if (strcmp(rm->structmember->membername, sm->membername) != 0)
+            {
+                /* this is the member we are not looking for */
+
+                continue;
+            }
+
+            /*
+             * We found out member name, so our object must be on the object list
+             */
+
+            size_t i = 0;
+
+            for (; i < rm->structmember->allowedobjecttypeslength; i++)
+            {
+                /*
+                 * Object type of graph member must match and also
+                 * attribute id must match.
+                 */
+
+                if (rm->structmember->allowedobjecttypes[i] == depobjecttype)
+                {
+                    META_LOG_INFO("dep %s ot %s attr %s\n",
+                            metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
+                            metadata_enum_sai_object_type_t.valuesnames[objecttype],
+                            sm->membername);
+
+                    defined = true;
+                    break;
+                }
+            }
+
+            if (defined)
+            {
+                break;
+            }
+
+        }
+        else
+        {
+            /*
+             * object is attribute
+             */
+
+            META_ASSERT_NOT_NULL(rm->attrmetadata);
+            META_ASSERT_NULL(rm->structmember);
+
+            /*
+             * we are not looking for attribute object
+             * we are looking for struct member
+             */
+
+            continue;
+        }
+    }
+
+    META_ASSERT_TRUE(defined, "reverse graph object is not defined anywhere");
+}
+
+void check_reverse_graph_for_non_object_id()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out whether non object id structmembers
+     * which are object id are well defined inside reverse graph. Attribute
+     * values are checked during standard loop of attribute above.
+     */
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        sai_object_type_t objecttype = (sai_object_type_t)i;
+
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL || !info->isnonobjectid)
+        {
+            continue;
+        }
+
+        /*
+         * This is non object id and they can't have graph members
+         * since non object id can't be used as any object id.
+         */
+
+        META_ASSERT_NULL(info->revgraphmembers);
+
+        /*
+         * Now for each struct member check if it's object id member
+         * and process it.
+         */
+
+        size_t j = 0;
+
+        for (; j < info->structmemberscount; ++j)
+        {
+            const sai_struct_member_info_t *m = info->structmembers[j];
+
+            if (m->membervaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+            {
+                continue;
+            }
+
+            size_t k = 0;
+
+            for (; k < m->allowedobjecttypeslength; k++)
+            {
+                /*
+                 * For each object type check it's location in graph
+                 */
+
+                 sai_object_type_t depobjecttype = m->allowedobjecttypes[k];
+
+                 check_single_non_object_id_for_rev_graph(m, objecttype, depobjecttype);
+            }
+        }
+    }
+}
+
 void check_vlan_attributes()
 {
     META_LOG_ENTER();
@@ -2556,7 +2831,6 @@ void check_vlan_attributes()
         {
             keys++;
         }
-
 
         if (md->attrid == SAI_VLAN_ATTR_VLAN_ID)
         {
@@ -2862,6 +3136,7 @@ int main(int argc, char **argv)
     check_vlan_attributes();
     check_api_names();
     check_switch_create_only_objects();
+    check_reverse_graph_for_non_object_id();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
 
