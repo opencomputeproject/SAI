@@ -109,6 +109,7 @@ typedef enum _sai_api_t
     SAI_API_L2MC_GROUP       = 30, /**< sai_l2mc_group_api_t */
     SAI_API_IPMC_GROUP       = 31, /**< sai_ipmc_group_api_t */
     SAI_API_MCAST_FDB        = 32, /**< sai_mcast_fdb_api_t */
+    SAI_API_MAX              = 33
 } sai_api_t;
 
 /**
