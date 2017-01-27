@@ -1735,7 +1735,7 @@ sub CreateObjectInfo
 sub GetHeaderFiles
 {
     opendir(my $dh, $INCLUDEDIR) || die "Can't opendir $INCLUDEDIR: $!";
-    my @headers = grep { /^sai\S+\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
+    my @headers = grep { /^sai\S*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
     closedir $dh;
 
     return @headers;
@@ -2136,6 +2136,7 @@ sub CheckHeadersStyle
             next if $line =~ /^$/;                  # empty line
             next if $line =~ /^typedef /;           # type definition
             next if $line =~ /^sai_status/;         # return codes
+            next if $line =~ /^sai_object_type/;    # return codes
             next if $line =~ /^[{}#\/]/;            # start end of struct, define, start of comment
             next if $line =~ /^ {8}(_In|_Out)/;     # function arguments
             next if $line =~ /^ {4}(sai_)/i;        # sai struct entry or SAI enum
