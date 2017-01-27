@@ -2020,13 +2020,13 @@ sub CheckWhiteSpaceInHeaders
                 LogError "line contains non ascii characters $header $n: $line";
             }
 
-            if ($line =~ /typedef.+?(\w+_fn)/)
+            if ($line =~ /typedef .+?\(\s*\*\s*(\w+)\s*\)/)
             {
                 my $fname = $1;
 
-                if (not $fname =~ /^sai_/)
+                if (not $fname =~ /^sai_\w+_fn$/)
                 {
-                    LogError "all function declarations should begin with sai_ $header $n: $line";
+                    LogError "all function declarations should be in format sai_\\w+_fn $header $n: $line";
                 }
             }
         }
