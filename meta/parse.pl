@@ -1880,7 +1880,7 @@ sub CreateObjectInfo
 sub GetHeaderFiles
 {
     opendir(my $dh, $INCLUDEDIR) || die "Can't opendir $INCLUDEDIR: $!";
-    my @headers = grep { /^sai\S+\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
+    my @headers = grep { /^sai\S*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
     closedir $dh;
 
     return @headers;
@@ -2163,6 +2163,16 @@ sub CheckWhiteSpaceInHeaders
             if ($line =~ /[^\x20-\x7e]/)
             {
                 LogError "line contains non ascii characters $header $n: $line";
+            }
+
+            if ($line =~ /typedef .+?\(\s*\*\s*(\w+)\s*\)/)
+            {
+                my $fname = $1;
+
+                if (not $fname =~ /^sai_\w+_fn$/)
+                {
+                    LogError "all function declarations should be in format sai_\\w+_fn $header $n: $line";
+                }
             }
         }
     }
