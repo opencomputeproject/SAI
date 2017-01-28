@@ -321,11 +321,17 @@ void check_attr_flags(
                 META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
             }
 
-            if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT32 &&
-                    md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_ATTR_RANGE)
-            {
-                break;
-            }
+            /*
+             * Currently we don't use RANGE type so this check can be disabled.
+             * Range idea was introduces so attribute can be in specific range
+             * of other MIN/MAX attributes. This is not supported yet.
+             *
+             * if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT32 &&
+             *         md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_ATTR_RANGE)
+             * {
+             *     break;
+             * }
+             */
 
             if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_NONE)
             {
@@ -340,26 +346,25 @@ void check_attr_flags(
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
             {
-                if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
-                {
-                    /*
-                     * Object id's may not provide default value, which will mean it can
-                     * be NULL or assigned by switch by default.
-                     */
-                    break;
-                }
+                /*
+                 * Default value of object id can be internal or NULL and it
+                 * needs to be specified explicitly.
+                 */
 
-                if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
-                {
-                    /*
-                     * Pointer may not provide default value,
-                     * which will mean it can be NULL.
-                     */
-                    break;
-                }
+                /*
+                 * Default value for pointer must be specified and must be NULL.
+                 */
 
                 if (sai_metadata_is_acl_field_or_action(md))
                 {
+                    /*
+                     * Default value for acl field or action is not provided
+                     * since by default they are disabled, but as TODO we can
+                     * add this support and provide default value inside
+                     * metadata with disabled parameter and remove this check
+                     * here.
+                     */
+
                     break;
                 }
 
@@ -386,8 +391,9 @@ void check_attr_flags(
                     md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_LIST)
                 {
                     /*
-                     * Read only object id/list can be marked as internal
-                     * like default virtual router, cpu port id, etc.
+                     * Read only object id/list can be marked as internal like
+                     * default virtual router, cpu port id, default queues on
+                     * ports, etc.
                      */
 
                     break;
@@ -415,7 +421,12 @@ void check_attr_object_id_allownull(
 
     if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
     {
-        /* we don't care about ACL entry data/field */
+        /*
+         * We don't care about ACL entry data/field, in that when we set NULL
+         * as object id on acl data/field it should mean as disable, or it
+         * should be not allowed at all.
+         */
+
         return;
     }
 
@@ -438,6 +449,7 @@ void check_attr_object_id_allownull(
                          * since attribute require default value and default value is
                          * set to SAI_NULL_OBJECT_ID then allownull should be true
                          */
+
                         META_ASSERT_FAIL(md, "allow null object id should be set to true since default value is required");
                     }
 
@@ -531,7 +543,7 @@ void check_attr_object_type_provided(
             break;
 
         default:
-            META_ASSERT_FAIL(md, "attr value type is not supported)");
+            META_ASSERT_FAIL(md, "attr value type is not supported, FIXME");
     }
 }
 
@@ -622,6 +634,11 @@ void check_attr_default_required(
     {
         if (sai_metadata_is_acl_field_or_action(md))
         {
+            /*
+             * By default we assume that default acl field or action is
+             * disabled and default value is not provided.
+             */
+
             return;
         }
 
@@ -632,16 +649,25 @@ void check_attr_default_required(
     {
         case SAI_DEFAULT_VALUE_TYPE_CONST:
 
-            if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT8_LIST)
+            if (md->objecttype == SAI_OBJECT_TYPE_UDF && md->attrid == SAI_UDF_ATTR_HASH_MASK)
             {
-                /* const on list */
-                break;
+                if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT8_LIST)
+                {
+                    /*
+                     * Const on list, this is exception for UDF object since
+                     * it's default value is 2 bytes 0xFF,0xFF and it's special
+                     * calse.
+                     */
+
+                    break;
+                }
             }
 
             if (md->defaultvalue == NULL)
             {
                 META_ASSERT_FAIL(md, "default value type is provided, but default value pointer is NULL");
             }
+
             break;
 
         case SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE:
@@ -654,9 +680,11 @@ void check_attr_default_required(
             {
                 META_ASSERT_FAIL(md, "default value type is provided, but default value pointer is not NULL");
             }
+
             break;
 
         default:
+
             META_ASSERT_FAIL(md, "unknown default value type %d", md->defaultvaluetype);
     }
 
@@ -722,9 +750,17 @@ void check_attr_default_required(
                 break;
             }
 
-            if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_CONST)
+            if (md->objecttype == SAI_OBJECT_TYPE_UDF && md->attrid == SAI_UDF_ATTR_HASH_MASK)
             {
-                break;
+                if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_CONST)
+                {
+                    /*
+                     * Again this is exception only for this one UDF attribute
+                     * to support CONST on list.
+                     */
+
+                    break;
+                }
             }
 
             META_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
@@ -788,6 +824,11 @@ void check_attr_enums(
         {
             if (sai_metadata_is_acl_field_or_action(md))
             {
+                /*
+                 * Default value on acl field or action is by default disabled
+                 * so we just skip it here.
+                 */
+
                 return;
             }
 
@@ -853,6 +894,7 @@ void check_attr_default_value_type(
                 }
 
                 META_ASSERT_FAIL(md, "attr value attribute value range not supported yet");
+
                 break;
             }
 
@@ -886,6 +928,11 @@ void check_attr_default_value_type(
 
                 default:
 
+                    /*
+                     * Vendor specific attribute should be used only on
+                     * primitive types and not on object id types (OIDs).
+                     */
+
                     META_ASSERT_FAIL(md, "vendor specific not allowed on this type");
             }
 
@@ -900,6 +947,11 @@ void check_attr_default_value_type(
 
             if (md->objecttype != SAI_OBJECT_TYPE_SWITCH)
             {
+                /*
+                 * This can be later relaxed to be set on PORTs since they have
+                 * by default queues created.
+                 */
+
                 META_ASSERT_FAIL(md, "default internal can be only set on switch object type");
             }
 
@@ -959,7 +1011,12 @@ void check_attr_conditions(
     {
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
-        case SAI_ATTR_FLAGS_CREATE_ONLY: /* will require default value, on some cases may be dynamic */
+
+            /*
+             * If attribute is marked as conditional then it must have flags
+             * mandatory on create, otherwise use validonly condition.
+             */
+
             break;
 
         default:
@@ -1021,17 +1078,7 @@ void check_attr_conditions(
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            /* this is provieded for SAI_TUNNEL_ATTR_ENCAP_GRE_KEY and needs to be converted to validonly */
-
-            if (cmd->flags == SAI_ATTR_FLAGS_CREATE_ONLY &&
-                    cmd->attrvaluetype == SAI_ATTR_VALUE_TYPE_BOOL)
-            {
-                /* ok, that means there is default value (it may be depending on switch intenal) */
-            }
-            else
-            {
-                META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
-            }
+            META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
         }
 
         switch ((int)cmd->flags)
@@ -1039,11 +1086,13 @@ void check_attr_conditions(
             case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
             case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
             case SAI_ATTR_FLAGS_CREATE_ONLY:
+
                 /*
-                 * condition attribute must be create only since
-                 * if it could change then other object may be required to pass
-                 * on creation time that was not passed
+                 * Condition attribute must be create only since if it could
+                 * change then other object may be required to pass on creation
+                 * time that was not passed.
                  */
+
                 break;
 
             default:
@@ -1096,7 +1145,22 @@ void check_attr_validonly(
             break;
 
         case SAI_ATTR_FLAGS_CREATE_ONLY:
+
+            /*
+             * In generral valid only attribute should be used only on
+             * CREATE_AND_SET flags, since when attribute is CREATE_ONLY it has
+             * default value and it can't be changed anywa, and entire purpose
+             * of valid only attribute is to allow change during runtime.
+             *
+             * Wthen attribute CREATE_ONLY is marked as valid only is more like
+             * indication that this value will be used in that specific case
+             * but you won't be able to change it anyway.
+             */
+
+            META_WARN(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
+
         case SAI_ATTR_FLAGS_CREATE_AND_SET:
+
 
             /* ok */
 
@@ -1176,7 +1240,19 @@ void check_attr_validonly(
 
         if (cmd->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_ASSERT_FAIL(md, "validonly attibute is also validonly attribute, not allowed");
+            if (md->objecttype == SAI_OBJECT_TYPE_TUNNEL && md->attrid == SAI_TUNNEL_ATTR_ENCAP_GRE_KEY)
+            {
+                /*
+                 * For this case GRE_KEY is depending on GRE_KEY_VALID which is
+                 * also valid only for other cases we don't allow valid only to
+                 * be depending on valid only but maybe this is false
+                 * assumption.
+                 */
+            }
+            else
+            {
+                META_ASSERT_FAIL(md, "validonly attibute is also validonly attribute, not allowed");
+            }
         }
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
@@ -1191,11 +1267,14 @@ void check_attr_validonly(
             case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
             case SAI_ATTR_FLAGS_CREATE_ONLY:
             case SAI_ATTR_FLAGS_CREATE_AND_SET:
+
                 /*
-                 * valid only attribute can be create_only or create_and_set
+                 * Valid only attribute can be create_only or create_and_set
                  * conditional attribute can change during runtime and it may
-                 * have impact on valid only attribute (it may or may not be used)
+                 * have impact on valid only attribute (it may or may not be
+                 * used).
                  */
+
                 break;
 
             default:
@@ -1244,6 +1323,11 @@ void check_attr_enum_list_validonly(
 
         if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
+            /*
+             * This restriction can be removed if necessary so far i don't see
+             * any enum list that are marked as valid only.
+             */
+
             META_ASSERT_FAIL(md, "validonly enum list not supported yet");
         }
     }
@@ -1263,13 +1347,18 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
-            case SAI_ATTR_VALUE_TYPE_POINTER:
+
                 break;
 
             default:
 
                 META_ASSERT_FAIL(md, "allow null object is set but attr value type is wrong");
         }
+
+        /*
+         * Object SAI_ATTR_VALUE_TYPE_POINTER should be allowed null pointer by
+         * default pointers received from SAI should be only via query api.
+         */
 
         if (md->allowedobjecttypeslength == 0)
         {
@@ -1345,6 +1434,13 @@ void check_attr_key(
 
                 if (md->objecttype == SAI_OBJECT_TYPE_PORT && md->attrid == SAI_PORT_ATTR_HW_LANE_LIST)
                 {
+                    /*
+                     * This is special case when HW_LANE_LIST is actual KEY for
+                     * port, and it's more complicated because order don't
+                     * matter and same lane can't be used on different port if
+                     * some ports are splitted.
+                     */
+
                     break;
                 }
 
@@ -1354,6 +1450,12 @@ void check_attr_key(
 
                 if (md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT)
                 {
+                    /*
+                     * This is also special case, OBJECT_ID at should not be a
+                     * KEY in any attribute, this is TODO action to get rid of
+                     * this kind of dependency.
+                     */
+
                     break;
                 }
 
@@ -1392,15 +1494,42 @@ void check_attr_acl_fields(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
 
-            if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY ||
-                    md->attrid < SAI_ACL_ENTRY_ATTR_FIELD_START ||
-                    md->attrid > SAI_ACL_ENTRY_ATTR_FIELD_END)
+            if (md->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY &&
+                    md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+                    md->attrid  <= SAI_ACL_ENTRY_ATTR_FIELD_END)
             {
-                if (md->objecttype != SAI_OBJECT_TYPE_UDF_MATCH)
-                {
-                    META_ASSERT_FAIL(md, "acl field may only be set on acl field and udf match");
-                }
+                break;
+
             }
+
+            if (md->objecttype == SAI_OBJECT_TYPE_UDF_MATCH)
+            {
+                /*
+                 * This is special case, object for UDF MATCH can use acl field
+                 * attribute values since it's easier to maintain since this
+                 * match also need a mask parameter. But restriction is that
+                 * only primitive types can be used, no object id;
+                 */
+
+                switch (md->attrvaluetype)
+                {
+                    case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
+                    case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT8:
+                    case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT16:
+                    case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT16:
+                    case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32:
+                    case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT32:
+                        break;
+
+                    default:
+
+                        META_ASSERT_FAIL(md, "acl field data used on udf match can be only primitive type");
+                }
+
+                break;
+            }
+
+            META_ASSERT_FAIL(md, "acl field may only be set on acl field and udf match");
 
             break;
 
@@ -1582,6 +1711,109 @@ void check_attr_acl_conditions(
     }
 }
 
+void check_attr_reverse_graph(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this method is to check whether any defined attribute with is
+     * object id type is defined in reverse graph correctly. Read only objects
+     * are also included.
+     */
+
+    size_t index = 0;
+
+    for (; index < md->allowedobjecttypeslength; index++)
+    {
+        /*
+         * for each defined object id on that list we need to check
+         * if its defined correctly in reverse graph
+         */
+
+        sai_object_type_t depobjecttype = md->allowedobjecttypes[index];
+
+        const sai_object_type_info_t *oi = sai_all_object_type_infos[depobjecttype];
+
+        META_ASSERT_NOT_NULL(oi->revgraphmembers);
+
+        size_t revidx = 0;
+
+        bool defined = false;
+
+        for (; oi->revgraphmembers[revidx] != NULL; revidx++)
+        {
+            /*
+             * now let's search for graph member which defines
+             * this object and the same attribute value
+             */
+
+            const sai_rev_graph_member_t *rm = oi->revgraphmembers[revidx];
+
+            META_ASSERT_TRUE(rm->objecttype == depobjecttype, "invalid objecttype definition");
+
+            if (rm->depobjecttype != md->objecttype)
+            {
+                /*
+                 * this is not the member we are looking for
+                 */
+
+                continue;
+            }
+
+            if (rm->attrmetadata == NULL)
+            {
+                META_ASSERT_NOT_NULL(rm->structmember);
+
+                /*
+                 * object is defined on non object id,
+                 * this will require different method to check
+                 */
+
+                META_ASSERT_FAIL(md, "This is attribute, it can't be defined in struct member");
+            }
+            else
+            {
+                /*
+                 * object is attribute
+                 */
+
+                META_ASSERT_NOT_NULL(rm->attrmetadata);
+                META_ASSERT_NULL(rm->structmember);
+
+                size_t i = 0;
+
+                for (; i < rm->attrmetadata->allowedobjecttypeslength; i++)
+                {
+                    /*
+                     * Object type of graph member must match and also
+                     * attribute id must match.
+                     */
+
+                    if (rm->attrmetadata->allowedobjecttypes[i] == depobjecttype &&
+                            rm->attrmetadata->attrid == md->attrid)
+                    {
+                        META_LOG_INFO("dep %s ot %s attr %s\n",
+                                metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
+                                metadata_enum_sai_object_type_t.valuesnames[md->objecttype],
+                                md->attridname);
+
+                        defined = true;
+                        break;
+                    }
+                }
+
+                if (defined)
+                {
+                    break;
+                }
+            }
+        }
+
+        META_ASSERT_TRUE(defined, "reverse graph object is not defined anywhere");
+    }
+}
+
 void check_if_attr_was_already_defined(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1633,6 +1865,44 @@ void define_attr(
     defined_attributes = p;
 }
 
+void check_attr_acl_field_or_action(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this test is to check if respective flags are set to true on
+     * acl field or action.
+     */
+
+    if ((md->isaclfield | md->isaclaction) != sai_metadata_is_acl_field_or_action(md))
+    {
+        META_ASSERT_FAIL(md, "isaclfield or isaclaction don't match utils method");
+    }
+
+    if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY)
+    {
+        META_ASSERT_FALSE(md->isaclfield, "field should be not marked as acl field");
+        META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+
+        return;
+    }
+
+    if (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+            md->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+    {
+        META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
+        META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+    }
+
+    if (md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
+            md->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+    {
+        META_ASSERT_FALSE(md->isaclfield, "field should not be marked as acl field");
+        META_ASSERT_TRUE(md->isaclaction, "field should be marked as acl action");
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1662,7 +1932,9 @@ void check_single_attribute(
     check_attr_vlan(md);
     check_attr_object_id_allownull(md);
     check_attr_acl_capability(md);
+    check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
+    check_attr_acl_field_or_action(md);
 
     define_attr(md);
 }
@@ -1810,6 +2082,11 @@ void check_non_object_id_object_types()
                     break;
 
                 default:
+
+                    /*
+                     * On struct members only primitive types should be
+                     * supported so no other structs or lists.
+                     */
 
                     META_FAIL("struct member %s have invalid value type %d", m->membername, m->membervaluetype);
             }
@@ -2530,6 +2807,177 @@ void check_api_names()
     }
 }
 
+void check_single_non_object_id_for_rev_graph(
+        _In_ const sai_struct_member_info_t *sm,
+        _In_ sai_object_type_t objecttype,
+        _In_ sai_object_type_t depobjecttype)
+{
+    META_LOG_ENTER();
+
+    /*
+     * This method checks single non object id struct
+     * member.
+     */
+
+    const sai_object_type_info_t *oi = sai_all_object_type_infos[depobjecttype];
+
+    META_ASSERT_NOT_NULL(oi->revgraphmembers);
+
+    size_t revidx = 0;
+
+    bool defined = false;
+
+    for (; oi->revgraphmembers[revidx] != NULL; revidx++)
+    {
+        /*
+         * now let's search for graph member which defines
+         * this object and the same attribute value
+         */
+
+        const sai_rev_graph_member_t *rm = oi->revgraphmembers[revidx];
+
+        META_ASSERT_TRUE(rm->objecttype == depobjecttype, "invalid objecttype definition");
+
+        if (rm->depobjecttype != objecttype)
+        {
+            /*
+             * this is not the member we are looking for
+             */
+
+            continue;
+        }
+
+        if (rm->attrmetadata == NULL)
+        {
+            META_ASSERT_NOT_NULL(rm->structmember);
+
+            /*
+             * This graph entry is struct memner, maybe this i the
+             * one we are looking for, since graph can have multiple
+             * entries for the same object.
+             */
+
+            if (strcmp(rm->structmember->membername, sm->membername) != 0)
+            {
+                /* this is the member we are not looking for */
+
+                continue;
+            }
+
+            /*
+             * We found out member name, so our object must be on the object list
+             */
+
+            size_t i = 0;
+
+            for (; i < rm->structmember->allowedobjecttypeslength; i++)
+            {
+                /*
+                 * Object type of graph member must match and also
+                 * attribute id must match.
+                 */
+
+                if (rm->structmember->allowedobjecttypes[i] == depobjecttype)
+                {
+                    META_LOG_INFO("dep %s ot %s attr %s\n",
+                            metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
+                            metadata_enum_sai_object_type_t.valuesnames[objecttype],
+                            sm->membername);
+
+                    defined = true;
+                    break;
+                }
+            }
+
+            if (defined)
+            {
+                break;
+            }
+
+        }
+        else
+        {
+            /*
+             * object is attribute
+             */
+
+            META_ASSERT_NOT_NULL(rm->attrmetadata);
+            META_ASSERT_NULL(rm->structmember);
+
+            /*
+             * we are not looking for attribute object
+             * we are looking for struct member
+             */
+
+            continue;
+        }
+    }
+
+    META_ASSERT_TRUE(defined, "reverse graph object is not defined anywhere");
+}
+
+void check_reverse_graph_for_non_object_id()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out whether non object id structmembers
+     * which are object id are well defined inside reverse graph. Attribute
+     * values are checked during standard loop of attribute above.
+     */
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        sai_object_type_t objecttype = (sai_object_type_t)i;
+
+        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+
+        if (info == NULL || !info->isnonobjectid)
+        {
+            continue;
+        }
+
+        /*
+         * This is non object id and they can't have graph members
+         * since non object id can't be used as any object id.
+         */
+
+        META_ASSERT_NULL(info->revgraphmembers);
+
+        /*
+         * Now for each struct member check if it's object id member
+         * and process it.
+         */
+
+        size_t j = 0;
+
+        for (; j < info->structmemberscount; ++j)
+        {
+            const sai_struct_member_info_t *m = info->structmembers[j];
+
+            if (m->membervaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+            {
+                continue;
+            }
+
+            size_t k = 0;
+
+            for (; k < m->allowedobjecttypeslength; k++)
+            {
+                /*
+                 * For each object type check it's location in graph
+                 */
+
+                 sai_object_type_t depobjecttype = m->allowedobjecttypes[k];
+
+                 check_single_non_object_id_for_rev_graph(m, objecttype, depobjecttype);
+            }
+        }
+    }
+}
+
 void check_vlan_attributes()
 {
     META_LOG_ENTER();
@@ -2556,7 +3004,6 @@ void check_vlan_attributes()
         {
             keys++;
         }
-
 
         if (md->attrid == SAI_VLAN_ATTR_VLAN_ID)
         {
@@ -2862,6 +3309,7 @@ int main(int argc, char **argv)
     check_vlan_attributes();
     check_api_names();
     check_switch_create_only_objects();
+    check_reverse_graph_for_non_object_id();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
 

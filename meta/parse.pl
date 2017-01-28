@@ -1269,6 +1269,24 @@ sub ProcessAttrName
     return "\"$attr\"";
 }
 
+sub  ProcessIsAclField
+{
+    my $attr = shift;
+
+    return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_FIELD_\w+$/;
+
+    return "false";
+}
+
+sub  ProcessIsAclAction
+{
+    my $attr = shift;
+
+    return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_ACTION_\w+$/;
+
+    return "false";
+}
+
 sub ProcessSingleObjectType
 {
     my ($typedef, $objecttype) = @_;
@@ -1313,6 +1331,8 @@ sub ProcessSingleObjectType
         my $validonlylen    = ProcessValidOnlyLen($attr, $meta{validonly});
         my $isvlan          = ProcessIsVlan($attr, $meta{isvlan});
         my $getsave         = ProcessGetSave($attr, $meta{getsave});
+        my $isaclfield      = ProcessIsAclField($attr);
+        my $isaclaction     = ProcessIsAclAction($attr);
 
         WriteSource "const sai_attr_metadata_t metadata_attr_$attr = {";
 
@@ -1342,6 +1362,8 @@ sub ProcessSingleObjectType
         WriteSource "    .validonlylength               = $validonlylen,";
         WriteSource "    .getsave                       = $getsave,";
         WriteSource "    .isvlan                        = $isvlan,";
+        WriteSource "    .isaclfield                    = $isaclfield,";
+        WriteSource "    .isaclaction                   = $isaclaction,";
 
         WriteSource "};";
 
@@ -1666,6 +1688,121 @@ sub ProcessStructMembersCount
     return $count;
 }
 
+sub ProcessRevGraph
+{
+    #
+    # Purpose of this method is to generate metadata where current object type
+    # is used since currentrly if we have attribute metadata we can easly scan
+    # attributes with oids values and extract information of object being used
+    # on that attribute, scanning all attributes of that object type we have
+    # dependency graph
+    #
+    # but what we create here is reverse dependency graph it will tell us on
+    # which object and which attrubute current object type is used
+    #
+    # we can of course create both graphs right at the same time
+    #
+
+    my %REVGRAPH = GetReverseDependencyGraph();
+
+    my $objectType = shift;
+
+    if (not defined $REVGRAPH{$objectType})
+    {
+        # some objects are not used, so they will be not defined
+        return "NULL";
+    }
+
+    my @dep = @{ $REVGRAPH{$objectType} };
+
+    @dep = sort @dep;
+
+    my $index = 0;
+
+    my @membernames = ();;
+
+    for my $dep (@dep)
+    {
+        my ($depObjectType, $attrId) = split/,/,$dep;
+
+        my $membername = "metadata_${objectType}_rev_graph_member_$index";
+
+        push@membernames,$membername;
+
+        WriteSource "const sai_rev_graph_member_t $membername = {";
+
+        WriteSource "    .objecttype          = $objectType,";
+        WriteSource "    .depobjecttype       = $depObjectType,";
+
+        if ($attrId =~ /^SAI_\w+_ATTR_\w+/)
+        {
+            # this is attribute
+
+            WriteSource "    .attrmetadata        = &metadata_attr_$attrId,";
+            WriteSource "    .structmember        = NULL,";
+        }
+        else
+        {
+            # this is struct member inside non object id struct
+
+            my $DEPOT = lc ($1) if $depObjectType =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+            WriteSource "    .attrmetadata        = NULL,";
+            WriteSource "    .structmember        = &struct_member_sai_${DEPOT}_t_$attrId,";
+        }
+
+        WriteSource "};";
+
+        $index++;
+    }
+
+    WriteSource "const sai_rev_graph_member_t* metadata_${objectType}_rev_graph_members[] = {";
+
+    for my $mn (@membernames)
+    {
+        WriteSource "    &$mn,";
+    }
+
+    WriteSource "    NULL,";
+
+    WriteSource "};";
+
+    return "metadata_${objectType}_rev_graph_members";
+}
+
+sub CreateStructNonObjectId
+{
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        next if $1 eq "NULL" or $1 eq "MAX";
+
+        my $type = "sai_" . lc($1) . "_attr_t";
+
+        my $enum  = "&metadata_enum_${type}";
+
+        my $struct = $STRUCTS{$ot};
+
+        my $structmembers = ProcessStructMembers($struct, $ot ,lc($1));
+    }
+}
+
+sub ProcessStructMembersName
+{
+    my ($struct, $ot, $rawname) = @_;
+
+    return "NULL" if not defined $struct;
+
+    return "struct_members_sai_${rawname}_t";
+}
+
 sub CreateObjectInfo
 {
     my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
@@ -1689,9 +1826,16 @@ sub CreateObjectInfo
 
         my $struct = $STRUCTS{$ot};
 
+        #
+        # here we need to only generate struct member names
+        # since we use those members in rev graph entries
+        # so struct members must be generated previously
+        #
+
         my $isnonobjectid = ProcessIsNonObjectId($struct, $ot);
-        my $structmembers = ProcessStructMembers($struct, $ot ,lc($1));
+        my $structmembers = ProcessStructMembersName($struct, $ot ,lc($1));
         my $structmemberscount = ProcessStructMembersCount($struct, $ot);
+        my $revgraph = ProcessRevGraph($ot);
 
         WriteHeader "extern const sai_object_type_info_t sai_object_type_info_$ot;";
 
@@ -1704,6 +1848,7 @@ sub CreateObjectInfo
         WriteSource "    .isnonobjectid      = $isnonobjectid,";
         WriteSource "    .structmembers      = $structmembers,";
         WriteSource "    .structmemberscount = $structmemberscount,";
+        WriteSource "    .revgraphmembers    = $revgraph,";
         WriteSource "};";
     }
 
@@ -2019,6 +2164,16 @@ sub CheckWhiteSpaceInHeaders
             {
                 LogError "line contains non ascii characters $header $n: $line";
             }
+
+            if ($line =~ /typedef .+?\(\s*\*\s*(\w+)\s*\)/)
+            {
+                my $fname = $1;
+
+                if (not $fname =~ /^sai_\w+_fn$/)
+                {
+                    LogError "all function declarations should be in format sai_\\w+_fn $header $n: $line";
+                }
+            }
         }
     }
 }
@@ -2155,6 +2310,93 @@ sub CheckHeadersStyle
     }
 }
 
+sub GetReverseDependencyGraph
+{
+    #
+    # Purpose of this method is to generate reverse
+    # dependency graph of where object ID are used
+    #
+
+    my %REVGRAPH = ();
+
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        my $otname = $1;
+
+        my $typedef = lc("sai_${otname}_attr_t");
+
+        next if $ot =~ /^SAI_OBJECT_TYPE_(MAX|NULL)$/;
+
+        # for each objec types we need to scann all objects
+        # also non object id structs
+
+        my $enum = $SAI_ENUMS{$typedef};
+
+        my @values = @{ $enum->{values} };
+
+        for my $attr (@values)
+        {
+            # metadata of single attribute of this object type
+
+            my %meta = %{ $METADATA{$typedef}{$attr} };
+
+            next if not defined $meta{objects};
+
+            # we will also include RO attributes
+
+            my @objects = @{ $meta{objects} };
+
+            my $attrid = $meta{attrid};
+
+            for my $usedot (@objects)
+            {
+                if (not defined $REVGRAPH{$usedot})
+                {
+                    my @arr = ();
+                    $REVGRAPH{$usedot} = \@arr;
+                }
+
+                push$REVGRAPH{$usedot},"$ot,$attrid";
+            }
+        }
+
+        next if not defined $STRUCTS{$ot};
+
+        # handle non object id types
+
+        my %struct = %{ $STRUCTS{$ot} };
+
+        for my $key(keys %struct)
+        {
+            next if not defined $struct{$key}{objects};
+
+            my @objs = @{ $struct{$key}{objects} };
+
+            for my $usedot (@objs)
+            {
+                if (not defined $REVGRAPH{$usedot})
+                {
+                    my @arr = ();
+                    $REVGRAPH{$usedot} = \@arr;
+                }
+
+                push$REVGRAPH{$usedot},"$ot,$key";
+            }
+
+        }
+    }
+
+    return %REVGRAPH;
+}
+
 #
 # MAIN
 #
@@ -2185,6 +2427,8 @@ CreateEnumHelperMethods();
 CreateNonObjectIdTest();
 
 ProcessNonObjectIdObjects();
+
+CreateStructNonObjectId();
 
 CreateObjectInfo();
 

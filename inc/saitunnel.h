@@ -362,7 +362,6 @@ typedef enum _sai_tunnel_attr_t
      * @type bool
      * @flags CREATE_ONLY
      * @default false
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_ENCAP_GRE_KEY_VALID,
 
@@ -370,8 +369,9 @@ typedef enum _sai_tunnel_attr_t
      * @brief Tunnel GRE key
      *
      * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_ATTR_ENCAP_GRE_KEY_VALID == true
+     * @flags CREATE_AND_SET
+     * @validonly SAI_TUNNEL_ATTR_ENCAP_GRE_KEY_VALID == true
+     * @default 0
      */
     SAI_TUNNEL_ATTR_ENCAP_GRE_KEY,
 
@@ -394,7 +394,6 @@ typedef enum _sai_tunnel_attr_t
      */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
-    /** tunnel decap attribute **/
     /* Tunnel decap attributes */
 
     /**
