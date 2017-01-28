@@ -1865,6 +1865,44 @@ void define_attr(
     defined_attributes = p;
 }
 
+void check_attr_acl_field_or_action(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this test is to check if respective flags are set to true on
+     * acl field or action.
+     */
+
+    if ((md->isaclfield | md->isaclaction) != sai_metadata_is_acl_field_or_action(md))
+    {
+        META_ASSERT_FAIL(md, "isaclfield or isaclaction don't match utils method");
+    }
+
+    if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY)
+    {
+        META_ASSERT_FALSE(md->isaclfield, "field should be not marked as acl field");
+        META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+
+        return;
+    }
+
+    if (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+            md->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+    {
+        META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
+        META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+    }
+
+    if (md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
+            md->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+    {
+        META_ASSERT_FALSE(md->isaclfield, "field should not be marked as acl field");
+        META_ASSERT_TRUE(md->isaclaction, "field should be marked as acl action");
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1896,6 +1934,7 @@ void check_single_attribute(
     check_attr_acl_capability(md);
     check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
+    check_attr_acl_field_or_action(md);
 
     define_attr(md);
 }
