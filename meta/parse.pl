@@ -492,6 +492,18 @@ sub ProcessEnumSection
         my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(CUSTOM_RANGE_BASE)$/, @values);
+
+        if ($enumtypename =~ /^(sai_\w+)_t$/)
+        {
+            my $last = $values[$#values];
+
+            if ($last eq uc("$1_MAX"))
+            {
+                $last =  pop @values;
+                LogInfo "Removing last element $last";
+            }
+        }
+
         $SAI_ENUMS{$enumtypename}{values} = \@values;
 
         next if not $enumtypename =~ /^(sai_(\w+)_attr_)t$/;

@@ -251,7 +251,7 @@ void check_attr_by_object_type()
 {
     META_LOG_ENTER();
 
-    META_ASSERT_TRUE(metadata_attr_by_object_type_count == SAI_OBJECT_TYPE_MAX + 1, "invalid object type count in metadata");
+    META_ASSERT_TRUE(metadata_attr_by_object_type_count == SAI_OBJECT_TYPE_MAX, "invalid object type count in metadata");
 
     size_t i = 0;
 
@@ -279,7 +279,7 @@ void check_attr_by_object_type()
             index++;
         }
 
-        META_LOG_INFO("attr index %3zu for %s", index, sai_metadata_get_object_type_name((sai_object_type_t)i));
+        META_LOG_INFO("attr index %zu for %s", index, sai_metadata_get_object_type_name((sai_object_type_t)i));
     }
 
     META_ASSERT_NULL(metadata_attr_by_object_type[i]);
