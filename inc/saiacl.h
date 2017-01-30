@@ -515,7 +515,6 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief Dst MAC Address
      *
-     *
      * @type bool
      * @flags CREATE_ONLY
      * @default false

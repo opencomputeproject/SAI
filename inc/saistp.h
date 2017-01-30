@@ -87,7 +87,6 @@ typedef enum _sai_stp_attr_t
      */
     SAI_STP_ATTR_PORT_LIST,
 
-
     /**
      * @brief End of attributes
      */
@@ -169,7 +168,7 @@ typedef sai_status_t (*sai_remove_stp_fn)(
  * @param[in] stp_id Stp instance id
  * @param[in] attr attribute value
  * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *    error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_attribute_fn)(
         _In_ sai_object_id_t stp_id,
@@ -182,7 +181,7 @@ typedef sai_status_t (*sai_set_stp_attribute_fn)(
  * @param[in] attr_count number of the attribute
  * @param[in] attr_list attribute value
  * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *    error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_attribute_fn)(
         _In_ sai_object_id_t stp_id,
@@ -196,7 +195,7 @@ typedef sai_status_t (*sai_get_stp_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
  * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *    error code is returned.
  */
 typedef sai_status_t (*sai_create_stp_port_fn)(
         _Out_ sai_object_id_t *stp_port_id,
@@ -209,7 +208,7 @@ typedef sai_status_t (*sai_create_stp_port_fn)(
  *
  * @param[in] stp_port_id stp object id
  * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *    error code is returned.
  */
 typedef sai_status_t (*sai_remove_stp_port_fn)(
         _In_ sai_object_id_t stp_port_id);
@@ -220,7 +219,7 @@ typedef sai_status_t (*sai_remove_stp_port_fn)(
  * @param[in] stp_port_id stp port id
  * @param[in] attr attribute value
  * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *    error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_port_attribute_fn)(
         _In_ sai_object_id_t stp_port_id,
@@ -233,7 +232,7 @@ typedef sai_status_t (*sai_set_stp_port_attribute_fn)(
  * @param[in] attr_count number of the attribute
  * @param[in] attr_list attribute value
  * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
- *  error code is returned.
+ *    error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_port_attribute_fn)(
         _In_ sai_object_id_t stp_port_id,

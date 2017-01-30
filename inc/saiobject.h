@@ -113,23 +113,23 @@ sai_status_t sai_get_object_key(
  * @param[in] object_count Number of objects
  * @param[in] object_key List of object keys
  * @param[inout] attr_count List of attr_count. Caller passes the number
- *         of attribute allocated in. Callee returns with the actual
- *         number of attributes filled in. If the count is less than
- *         needed, callee fills with the needed count and do not fill
- *         the attributes. Callee also set the corresponding status to
- *         #SAI_STATUS_BUFFER_OVERFLOW.
+ *    of attribute allocated in. Callee returns with the actual
+ *    number of attributes filled in. If the count is less than
+ *    needed, callee fills with the needed count and do not fill
+ *    the attributes. Callee also set the corresponding status to
+ *    #SAI_STATUS_BUFFER_OVERFLOW.
  *
  * @param[inout] attrs Nist of attributes for every object. Caller is
- *         responsible for allocating and freeing buffer for the attributes.
- *         For list based attribute, e.g., s32list, oidlist, callee should
- *         assume the caller has not allocate the memory for the list and
- *         should only to fill the count but not list. Then, caller
- *         can use corresponding get_attribute to get the list.
+ *    responsible for allocating and freeing buffer for the attributes.
+ *    For list based attribute, e.g., s32list, oidlist, callee should
+ *    assume the caller has not allocate the memory for the list and
+ *    should only to fill the count but not list. Then, caller
+ *    can use corresponding get_attribute to get the list.
  *
  * @param[inout] object_statuses Status for each object. If the object does
- *         not exist, callee sets the correpsonding status to #SAI_STATUS_INVALID_OBJECT_ID.
- *         If the allocated attribute count is not large enough,
- *         set the status to #SAI_STATUS_BUFFER_OVERFLOW.
+ *    not exist, callee sets the correpsonding status to #SAI_STATUS_INVALID_OBJECT_ID.
+ *    If the allocated attribute count is not large enough,
+ *    set the status to #SAI_STATUS_BUFFER_OVERFLOW.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */

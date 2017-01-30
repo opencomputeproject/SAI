@@ -212,7 +212,7 @@ typedef sai_status_t (*sai_get_rpf_group_member_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- *  @brief RPF group methods table retrieved with sai_api_query()
+ * @brief RPF group methods table retrieved with sai_api_query()
  */
 typedef struct _sai_rpf_group_api_t
 {

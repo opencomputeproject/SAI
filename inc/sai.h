@@ -138,11 +138,11 @@ typedef enum _sai_log_level_t
 
 } sai_log_level_t;
 
-typedef const char* (*profile_get_value_fn)(
+typedef const char* (*sai_profile_get_value_fn)(
         _In_ sai_switch_profile_id_t profile_id,
         _In_ const char *variable);
 
-typedef int (*profile_get_next_value_fn)(
+typedef int (*sai_profile_get_next_value_fn)(
         _In_ sai_switch_profile_id_t profile_id,
         _Out_ const char** variable,
         _Out_ const char** value);
@@ -156,7 +156,7 @@ typedef struct _service_method_table_t
     /**
      * @brief Get variable value given its name
      */
-    profile_get_value_fn        profile_get_value;
+    sai_profile_get_value_fn        profile_get_value;
 
     /**
      * @brief Enumerate all the K/V pairs in a profile.
@@ -164,7 +164,7 @@ typedef struct _service_method_table_t
      * Pointer to NULL passed as variable restarts enumeration. Function
      * returns 0 if next value exists, -1 at the end of the list.
      */
-    profile_get_next_value_fn   profile_get_next_value;
+    sai_profile_get_next_value_fn   profile_get_next_value;
 
 } service_method_table_t;
 

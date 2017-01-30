@@ -510,7 +510,6 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_DEFAULT_VLAN_ID,
 
-
     /**
      * @brief Default SAI STP instance ID
      *
@@ -1077,7 +1076,6 @@ typedef enum _sai_switch_attr_t
      * Map id = #SAI_NULL_OBJECT_ID to disable map on switch.
      * Default no map i.e All packets to queue 0.
      *
-     *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
@@ -1139,7 +1137,7 @@ typedef enum _sai_switch_attr_t
      *
      * Hardware information format is based on SAI implementations by vendors.
      * String is NULL terminated. Format is vendor specific.
-     *   Example: Like PCI location, I2C adddress etc.
+     * Example: Like PCI location, I2C adddress etc.
      * In case of NULL, First NPU attached to CPU will be initialized.
      * Single NPU case this attribute is optional.
      *
@@ -1350,7 +1348,7 @@ typedef enum _sai_switch_attr_t
  * 0: cold boot. Initialize NPU and external phys.
  * 1: warm boot. Do not re-initialize NPU or external phys, reconstruct SAI/SDK state from stored state.
  * 2: fast boot. Only initilize NPU. SAI/SDK state should not be persisted except for those related
- *                to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status.
+ *    to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status.
  */
 #define SAI_KEY_BOOT_TYPE                         "SAI_BOOT_TYPE"
 
@@ -1398,9 +1396,9 @@ typedef void (*sai_switch_state_change_notification_fn)(
 /**
  * @brief Create switch
  *
- *   SDK initialization/connect to SDK. After the call the capability attributes should be
- *   ready for retrieval via sai_get_switch_attribute(). Same Switch Object id should be
- *   given for create/connect for each NPU.
+ * SDK initialization/connect to SDK. After the call the capability attributes should be
+ * ready for retrieval via sai_get_switch_attribute(). Same Switch Object id should be
+ * given for create/connect for each NPU.
  *
  * @param[out] switch_id The Switch Object ID
  * @param[in] attr_count number of attributes
@@ -1415,7 +1413,8 @@ typedef sai_status_t(*sai_create_switch_fn)(
 
 /**
  * @brief Remove/disconnect Switch
- *   Release all resources associated with currently opened switch
+ *
+ * Release all resources associated with currently opened switch
  *
  * @param[in] switch_id The Switch id
  *

@@ -130,8 +130,8 @@ typedef enum _sai_virtual_router_attr_t
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success
- *         #SAI_STATUS_ADDR_NOT_FOUND if neither #SAI_SWITCH_ATTR_SRC_MAC_ADDRESS nor
- *         #SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS is set.
+ *    #SAI_STATUS_ADDR_NOT_FOUND if neither #SAI_SWITCH_ATTR_SRC_MAC_ADDRESS nor
+ *    #SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS is set.
  */
 typedef sai_status_t (*sai_create_virtual_router_fn)(
         _Out_ sai_object_id_t *vr_id,

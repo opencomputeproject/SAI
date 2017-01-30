@@ -240,7 +240,7 @@ typedef sai_status_t (*sai_get_next_hop_group_member_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- *  @brief Next Hop methods table retrieved with sai_api_query()
+ * @brief Next Hop methods table retrieved with sai_api_query()
  */
 typedef struct _sai_next_hop_group_api_t
 {

@@ -212,7 +212,7 @@ typedef sai_status_t (*sai_get_ipmc_group_member_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- *  @brief IPMC group methods table retrieved with sai_api_query()
+ * @brief IPMC group methods table retrieved with sai_api_query()
  */
 typedef struct _sai_ipmc_group_api_t
 {
