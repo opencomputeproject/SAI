@@ -2287,6 +2287,11 @@ sub CheckHeadersStyle
                 LogWarning "too many spaces $header $n:$line";
             }
 
+            if ($line =~ m!/\*\*! and not $line =~ m!/\*\*\s*$! and not $line =~ m!/\*\*.+\*/!)
+            {
+                LogWarning "multiline doxygen comment should start '/**' $header $n:$line";
+            }
+
             next if $line =~ /^ \*/;                # doxygen comment
             next if $line =~ /^$/;                  # empty line
             next if $line =~ /^typedef /;           # type definition

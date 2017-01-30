@@ -53,10 +53,13 @@ typedef enum _sai_bridge_port_fdb_learning_mode_t
     /** Trap packets with unknown source MAC to CPU. Do not learn. Forward based on destination MAC */
     SAI_BRIDGE_PORT_FDB_LEARNING_MODE_CPU_LOG,
 
-    /** Notify unknown source MAC using FDB callback. Do not learn in hardware. Do not forward.
-     * When a packet from unknown source MAC comes this mode will trigger a new learn notification
-     * via FDB callback for the MAC address. This mode will generate only one notification
-     * per unknown source MAC to FDB callback.
+    /**
+     * @brief Notify unknown source MAC using FDB callback.
+     *
+     * Do not learn in hardware. Do not forward. When a packet from unknown
+     * source MAC comes this mode will trigger a new learn notification via FDB
+     * callback for the MAC address. This mode will generate only one
+     * notification per unknown source MAC to FDB callback.
      */
     SAI_BRIDGE_PORT_FDB_LEARNING_MODE_FDB_NOTIFICATION,
 

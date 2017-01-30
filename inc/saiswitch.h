@@ -952,7 +952,8 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4,
 
-    /** @brief The hash object for IPv4 in IPv4 packets going through LAG
+    /**
+     * @brief The hash object for IPv4 in IPv4 packets going through LAG
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
