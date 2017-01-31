@@ -2729,6 +2729,7 @@ void check_api_names()
     CHECK_API(hostif, hostif_user_defined_trap, SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP);
     CHECK_API(bridge, bridge, SAI_OBJECT_TYPE_BRIDGE);
     CHECK_API(bridge, bridge_port, SAI_OBJECT_TYPE_BRIDGE_PORT);
+    CHECK_API(tunnel, tunnel_map_item, SAI_OBJECT_TYPE_TUNNEL_MAP_ITEM);
 
 #define CHECK_ENTRY_API(apiname, entry_name, object_type)\
     {\
