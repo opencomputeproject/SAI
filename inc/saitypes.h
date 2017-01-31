@@ -434,8 +434,10 @@ typedef struct _sai_qos_map_params_t
     /** Priority group value */
     sai_uint8_t pg;
 
-    /** Egress port queue UOID is not known at the time of map creation.
-     * Using queue index for maps. */
+    /**
+     * @brief Egress port queue UOID is not known at the time of map creation.
+     * Using queue index for maps.
+     */
     sai_queue_index_t queue_index;
 
     /** Color of the packet */

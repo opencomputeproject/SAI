@@ -253,7 +253,8 @@ typedef enum _sai_buffer_pool_attr_t
      */
     SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE,
 
-    /** @brief shared headroom pool size in bytes for lossless traffic
+    /**
+     * @brief shared headroom pool size in bytes for lossless traffic
      *
      * Only valid for the ingress buffer pool
      * @type sai_uint32_t

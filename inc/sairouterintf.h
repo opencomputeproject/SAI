@@ -177,8 +177,6 @@ typedef enum _sai_router_interface_attr_t
      */
     SAI_ROUTER_INTERFACE_ATTR_EGRESS_ACL,
 
-    /** Packet action when neighbor table lookup miss for this router interface [sai_packet_action_t]
-     * (CREATE_AND_SET) (default to SAI_PACKET_ACTION_TRAP) */
     /**
      * @brief Packet action when neighbor table lookup miss for this router interface
      *
