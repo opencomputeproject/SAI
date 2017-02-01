@@ -1236,6 +1236,21 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FAST_API_ENABLE,
 
     /**
+     * @brief Set TC of mirrored packets
+     *
+     * This setting will apply to all mirror sessions.
+     *
+     * Default of 255 = disabled. When this attribute is disabled,
+     * the TC of the mirrored frame will be derived from the packet
+     * (the DOT1P priority in the VLAN Tag, for example).
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     */
+    SAI_SWITCH_ATTR_MIRROR_TC,
+
+    /**
      * @brief Ingress acl stage.
      *
      * @type sai_acl_capability_t
