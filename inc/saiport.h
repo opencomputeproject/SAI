@@ -167,6 +167,21 @@ typedef enum _sai_port_breakout_mode_type_t
 } sai_port_breakout_mode_type_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_FEC_MODE
+ */
+typedef enum _sai_port_fec_mode_t
+{
+    /** No FEC */
+    SAI_PORT_FEC_MODE_NONE,
+
+    /** Enable RS-FEC - 25G, 50G, 100G ports */
+    SAI_PORT_FEC_MODE_RS,
+
+    /** Enable FC-FEC - 10G, 40G, 25G, 50G ports */
+    SAI_PORT_FEC_MODE_FC,
+} sai_port_fec_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -570,6 +585,15 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_INTERNAL_LOOPBACK_MODE_NONE
      */
     SAI_PORT_ATTR_INTERNAL_LOOPBACK_MODE,
+
+    /**
+     * @brief Forward Error Correction (FEC) control
+     *
+     * @type sai_port_fec_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_FEC_MODE_NONE
+     */
+    SAI_PORT_ATTR_FEC_MODE,
 
     /**
      * @brief Update DSCP of outgoing packets
