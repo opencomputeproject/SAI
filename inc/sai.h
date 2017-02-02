@@ -226,6 +226,19 @@ sai_object_type_t sai_object_type_query(
         _In_ sai_object_id_t sai_object_id);
 
 /**
+ * @brief Query sai switch id.
+ *
+ * @param[in] sai_object_id Object id
+ *
+ * @return Return #SAI_NULL_OBJECT_ID when sai_object_id is not valid.
+ * Otherwise, return a valid SAI_OBJECT_TYPE_SWITCH object on which
+ * provided object id belongs. If valid switch id object is provided
+ * as input parameter it should returin itself.
+ */
+sai_object_id_t sai_switch_id_query(
+        _In_ sai_object_id_t sai_object_id);
+
+/**
  * @brief Generate dump file. The dump file may include SAI state information and vendor SDK information.
  *
  * @param[in] dump_file_name Full path for dump file
