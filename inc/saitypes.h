@@ -216,7 +216,8 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP = 56,
     SAI_OBJECT_TYPE_BRIDGE                   = 57,
     SAI_OBJECT_TYPE_BRIDGE_PORT              = 58,
-    SAI_OBJECT_TYPE_MAX                      = 59
+    SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY         = 59,
+    SAI_OBJECT_TYPE_MAX                      = 60,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -477,9 +478,6 @@ typedef struct _sai_tunnel_map_params_t
 
     /** VNI id */
     sai_uint32_t vni_id;
-
-    /** Bridge IF */
-    sai_object_id_t bridge_if;
 
 } sai_tunnel_map_params_t;
 
