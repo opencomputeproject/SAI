@@ -216,7 +216,7 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP = 56,
     SAI_OBJECT_TYPE_BRIDGE                   = 57,
     SAI_OBJECT_TYPE_BRIDGE_PORT              = 58,
-    SAI_OBJECT_TYPE_TUNNEL_MAP_ITEM          = 59,
+    SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY         = 59,
     SAI_OBJECT_TYPE_MAX                      = 60,
 } sai_object_type_t;
 
