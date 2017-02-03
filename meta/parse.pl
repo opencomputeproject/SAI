@@ -2232,6 +2232,30 @@ sub CheckApiStructNames
     }
 }
 
+sub CheckApiDefines
+{
+    #
+    # purpose of this check is to check whether
+    # all enum entries defined in sai_api_t
+    # have corresponding structs defined for each
+    # defined object like sai_fdb_api_t
+    #
+
+    my @apis = @{ $SAI_ENUMS{sai_api_t}{values} };
+
+    for my $api (@apis)
+    {
+        my $short = lc($1) if $api =~/SAI_API_(\w+)/;
+
+        next if $short eq "unspecified";
+
+        if (not defined $APITOOBJMAP{$short})
+        {
+            LogError "$api is defined in sai.h but no corresponding struct for objects found";
+        }
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -2521,6 +2545,8 @@ CreateListOfAllAttributes();
 CheckWhiteSpaceInHeaders();
 
 CheckApiStructNames();
+
+CheckApiDefines();
 
 WriteHeader "#endif /* __SAI_METADATA_H__ */";
 
