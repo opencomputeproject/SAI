@@ -28,6 +28,9 @@ my %METADATA = ();
 my %STRUCTS = ();
 my %options =();
 
+my %OBJTOAPIMAP = ();
+my %APITOOBJMAP = ();
+
 my $HEADER_CONTENT = "";
 my $SOURCE_CONTENT = "";
 
@@ -2229,6 +2232,30 @@ sub CheckApiStructNames
     }
 }
 
+sub CheckApiDefines
+{
+    #
+    # purpose of this check is to check whether
+    # all enum entries defined in sai_api_t
+    # have corresponding structs defined for each
+    # defined object like sai_fdb_api_t
+    #
+
+    my @apis = @{ $SAI_ENUMS{sai_api_t}{values} };
+
+    for my $api (@apis)
+    {
+        my $short = lc($1) if $api =~/SAI_API_(\w+)/;
+
+        next if $short eq "unspecified";
+
+        if (not defined $APITOOBJMAP{$short})
+        {
+            LogError "$api is defined in sai.h but no corresponding struct for objects found";
+        }
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -2327,6 +2354,68 @@ sub CheckHeadersStyle
     }
 }
 
+sub ExtractApiToObjectMap
+{
+    #
+    # Purpose is to get which object type
+    # maps to which API, since multiple object types like acl
+    # can map to one api structure
+    #
+
+    my @headers = GetHeaderFiles();
+
+    for my $header (@headers)
+    {
+        my $data = ReadHeaderFile($header);
+
+        my @lines = split/\n/,$data;
+
+        my $n = 0;
+
+        my $empty = 0;
+        my $emptydoxy = 0;
+
+        my @objects = ();
+        my $api = undef;
+
+        for my $line (@lines)
+        {
+            $n++;
+
+            if ($line =~ /typedef\s+enum\s+_sai_(\w+)_attr_t/)
+            {
+                push@objects,uc("SAI_OBJECT_TYPE_$1");
+            }
+
+            if ($line =~ /typedef\s+struct\s+_sai_(\w+)_api_t/)
+            {
+                $api = $1;
+                last;
+            }
+        }
+
+        if (not defined $api)
+        {
+            my $len = @objects;
+
+            if ($len > 0)
+            {
+                LogError "api struct was not found in file $header, but objects are defined @objects";
+                next;
+            }
+
+            next;
+        }
+
+        for my $obj(@objects)
+        {
+            $OBJTOAPIMAP{$obj} = $api;
+        }
+
+        $APITOOBJMAP{$api} = \@objects;
+    }
+}
+
 sub GetReverseDependencyGraph
 {
     #
@@ -2420,6 +2509,8 @@ sub GetReverseDependencyGraph
 
 CheckHeadersStyle();
 
+ExtractApiToObjectMap();
+
 for my $file (GetXmlFiles($XMLDIR))
 {
     LogInfo "Processing $file";
@@ -2454,6 +2545,8 @@ CreateListOfAllAttributes();
 CheckWhiteSpaceInHeaders();
 
 CheckApiStructNames();
+
+CheckApiDefines();
 
 WriteHeader "#endif /* __SAI_METADATA_H__ */";
 
