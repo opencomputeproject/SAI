@@ -28,11 +28,14 @@ my %METADATA = ();
 my %STRUCTS = ();
 my %options =();
 
+my @TESTNAMES= ();
+
 my %OBJTOAPIMAP = ();
 my %APITOOBJMAP = ();
 
 my $HEADER_CONTENT = "";
 my $SOURCE_CONTENT = "";
+my $TEST_CONTENT = "";
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY|DYNAMIC|SPECIAL";
 
@@ -599,6 +602,13 @@ sub WriteSource
     my $content = shift;
 
     $SOURCE_CONTENT .= $content . "\n";
+}
+
+sub WriteTest
+{
+    my $content = shift;
+
+    $TEST_CONTENT .= $content . "\n";
 }
 
 sub ProcessSingleEnum
@@ -1433,6 +1443,7 @@ sub WriteMetaDataFiles
 
     WriteFile("saimetadata.h", $HEADER_CONTENT);
     WriteFile("saimetadata.c", $SOURCE_CONTENT);
+    WriteFile("saimetadatatest.c", $TEST_CONTENT);
 }
 
 sub ProcessAttrValueType
@@ -1943,26 +1954,43 @@ sub GetNonObjectIdStructNames
     return values %structs;
 }
 
+sub DefineTestName
+{
+    my $name = shift;
+
+    push @TESTNAMES,$name;
+
+    WriteTest "void $name(void)"
+}
+
 sub CreateNonObjectIdTest
 {
-    WriteSource "void non_object_id_test(void)";
-    WriteSource "{";
+    DefineTestName "non_object_id_test";
 
-    WriteSource "    sai_object_key_t ok;";
-    WriteSource "    void *p;";
+    WriteTest "{";
+
+    WriteTest "    sai_object_key_t ok;";
+    WriteTest "    volatile void *p;";
 
     my @rawnames = GetNonObjectIdStructNames();
 
-    WriteSource "    p = &ok.key.object_id;";
-    WriteSource "    printf(\"%p\",p);";
+    # add object id since it should be in the struct also
+
+    push @rawnames, "object_id";
 
     for my $rawname (@rawnames)
     {
-        WriteSource "    p = &ok.key.$rawname;";
-        WriteSource "    printf(\"%p\",p);";
+        # we are getting pointers for each member of non object id
+        # to make sure its declared in the struct, if its not then
+        # it will fail to compile
+
+        WriteTest "    p = &ok.key.$rawname;";
+        WriteTest "    printf(\"$rawname: \"); PP(p);";
+
+        WriteTest "    TEST_ASSERT_TRUE(&ok.key == (void*)&ok.key.$rawname, \"member $rawname don't start at union begin! Standard C fail\");";
     }
 
-    WriteSource "}";
+    WriteTest "}";
 }
 
 sub ExtractStructInfo
@@ -2503,6 +2531,45 @@ sub GetReverseDependencyGraph
     return %REVGRAPH;
 }
 
+sub WriteTestHeader
+{
+    #
+    # Purpose is to write saimedatatest.c header
+    #
+
+    WriteTest "#include <stdio.h>";
+    WriteTest "#include <stdlib.h>";
+    WriteTest "#include \"saimetadata.h\"";
+    WriteTest "#define PP(x) printf(\"%p\\n\", (x));";
+    WriteTest "#define TEST_ASSERT_TRUE(x,msg) if (!(x)){ fprintf(stderr, \"ASSERT TRUE FAILED(%d): %s: %s\\n\", __LINE__, #x, msg); exit(1);}";
+}
+
+sub WriteTestMain
+{
+    #
+    # Purpose is to write saimedatatest.c main funcion
+    # and all test names
+    #
+
+    WriteTest "int main()";
+    WriteTest "{";
+
+    my $count = @TESTNAMES;
+
+    my $n = 0;
+
+    for my $name (@TESTNAMES)
+    {
+        $n++;
+
+        WriteTest "    printf(\"Executing Test [$n/$count]: $name\\n\");";
+        WriteTest "    $name();";
+    }
+
+    WriteTest "    return 0;";
+    WriteTest "}";
+}
+
 #
 # MAIN
 #
@@ -2532,8 +2599,6 @@ CreateMetadataForAttributes();
 
 CreateEnumHelperMethods();
 
-CreateNonObjectIdTest();
-
 ProcessNonObjectIdObjects();
 
 CreateStructNonObjectId();
@@ -2549,5 +2614,13 @@ CheckApiStructNames();
 CheckApiDefines();
 
 WriteHeader "#endif /* __SAI_METADATA_H__ */";
+
+# Test Section
+
+WriteTestHeader();
+
+CreateNonObjectIdTest();
+
+WriteTestMain();
 
 WriteMetaDataFiles();

@@ -47,7 +47,8 @@ XMLDEPS = $(wildcard xml/*.xml)
 %.o: %.c $(DEPS)
 	gcc -c -o $@ $< $(CFLAGS) $(WARNINGS)
 
-all: saisanitycheck saidepgraph.svg
+all: saisanitycheck saimetadatatest saidepgraph.svg
+	./saimetadatatest > /dev/null
 	./saisanitycheck
 
 xml: $(DEPS) Doxyfile saimetadatatypes.h
@@ -63,6 +64,9 @@ saisanitycheck: saisanitycheck.c saimetadata.c saimetadata.h saimetadatatypes.h 
 	g++ -c saimetadata.c -o /dev/null $(CFLAGS) $(WARNINGS)
 	gcc -o $@ saisanitycheck.c saimetadata.c saimetadatautils.c $(CFLAGS) $(WARNINGS)
 
+saimetadatatest: saimetadatatest.c saimetadata.c saimetadata.h saimetadatatypes.h saimetadatautils.c saimetadatautils.h
+	gcc -o $@ saimetadatatest.c saimetadata.c saimetadatautils.c $(CFLAGS) $(WARNINGS)
+
 saidepgraphgen: saidepgraphgen.cpp
 	g++ -o $@ saidepgraphgen.cpp saimetadata.c saimetadatautils.c $(CFLAGS) $(WARNINGS)
 
@@ -75,5 +79,7 @@ saidepgraph.svg: saidepgraph.gv
 .PHONY: clean
 
 clean:
-	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak saisanitycheck saimetadata.h saimetadata.c
-	rm -rf xml html dist saidepgraphgen sai*.gv sai*.svg
+	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg
+	rm -f saimetadata.h saimetadata.c saimetadatatest.c
+	rm -f saisanitycheck saimetadatatest saidepgraphgen
+	rm -rf xml html dist
