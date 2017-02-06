@@ -555,6 +555,7 @@ typedef union {
     sai_ip4_t ip4;
     sai_ip6_t ip6;
     sai_ip_address_t ipaddr;
+    sai_ip_prefix_t ipprefix;
     sai_object_id_t oid;
     sai_object_list_t objlist;
     sai_u8_list_t u8list;

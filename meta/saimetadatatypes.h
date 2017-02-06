@@ -135,6 +135,11 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_IP_ADDRESS,
 
     /**
+     * @brief Attribute value is ip prefix
+     */
+    SAI_ATTR_VALUE_TYPE_IP_PREFIX,
+
+    /**
      * @brief Attribute value is object id.
      */
     SAI_ATTR_VALUE_TYPE_OBJECT_ID,
@@ -323,11 +328,6 @@ typedef enum _sai_attr_value_type_t {
      * @brief Attribute value is acl capability.
      */
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
-
-    /**
-     * @brief Attribute value is ip prefix
-     */
-    SAI_ATTR_VALUE_TYPE_IP_PREFIX,
 
 } sai_attr_value_type_t;
 

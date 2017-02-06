@@ -221,6 +221,7 @@ sai_mac_t               mac
 sai_ip4_t               ip4
 sai_ip6_t               ip6
 sai_ip_address_t        ipaddr
+sai_ip_prefix_t         ipprefix
 sai_object_id_t         oid
 sai_object_list_t       objlist
 sai_u8_list_t           u8list
@@ -253,6 +254,7 @@ sai_mac_t               MAC
 sai_ip4_t               IPV4
 sai_ip6_t               IPV6
 sai_ip_address_t        IP_ADDRESS
+sai_ip_prefix_t         IP_PREFIX
 sai_object_id_t         OBJECT_ID
 sai_object_list_t       OBJECT_LIST
 sai_u8_list_t           UINT8_LIST
