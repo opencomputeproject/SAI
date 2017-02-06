@@ -1609,7 +1609,6 @@ sub ProcessStructObjects
 
     return "NULL" if not $type eq "sai_object_id_t";
 
-
     WriteSource "const sai_object_type_t metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects[] = {";
 
     my $objects = $struct->{objects};
@@ -1657,6 +1656,41 @@ sub ProcessStructIsEnum
     return "false";
 }
 
+sub ProcessStructGetOid
+{
+    my ($type, $key, $rawname) = @_;
+
+    return "NULL" if $type ne "sai_object_id_t";
+
+    my $fname = "struct_member_get_sai_${rawname}_t_${key}";
+
+    WriteSource "sai_object_id_t $fname(";
+    WriteSource "        _In_ const sai_object_meta_key_t *object_meta_key)";
+    WriteSource "{";
+    WriteSource "    return object_meta_key->objectkey.key.${rawname}.${key};";
+    WriteSource "}";
+
+    return $fname;
+}
+
+sub ProcessStructSetOid
+{
+    my ($type, $key, $rawname) = @_;
+
+    return "NULL" if $type ne "sai_object_id_t";
+
+    my $fname = "struct_member_set_sai_${rawname}_t_${key}";
+
+    WriteSource "void $fname(";
+    WriteSource "        _Inout_ sai_object_meta_key_t *object_meta_key,";
+    WriteSource "        _In_ sai_object_id_t oid)";
+    WriteSource "{";
+    WriteSource "    object_meta_key->objectkey.key.${rawname}.${key} = oid;";
+    WriteSource "}";
+
+    return $fname;
+}
+
 sub ProcessStructMembers
 {
     my ($struct, $ot, $rawname) = @_;
@@ -1673,6 +1707,8 @@ sub ProcessStructMembers
         my $objectlen   = ProcessStructObjectLen($rawname, $key, $struct->{$key});
         my $isenum      = ProcessStructIsEnum($struct->{$key}{type});
         my $enumdata    = ProcessStructEnumData($struct->{$key}{type});
+        my $getoid      = ProcessStructGetOid($struct->{$key}{type}, $key, $rawname);
+        my $setoid      = ProcessStructSetOid($struct->{$key}{type}, $key, $rawname);
 
         WriteSource "const sai_struct_member_info_t struct_member_sai_${rawname}_t_$key = {";
 
@@ -1683,6 +1719,8 @@ sub ProcessStructMembers
         WriteSource "    .allowedobjecttypeslength  = $objectlen,";
         WriteSource "    .isenum                    = $isenum,";
         WriteSource "    .enummetadata              = $enumdata,";
+        WriteSource "    .getoid                    = $getoid,";
+        WriteSource "    .setoid                    = $setoid,";
 
         # TODO allow null
 
@@ -1960,7 +1998,7 @@ sub DefineTestName
 
     push @TESTNAMES,$name;
 
-    WriteTest "void $name(void)"
+    WriteTest "void $name(void)";
 }
 
 sub CreateNonObjectIdTest

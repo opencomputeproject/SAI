@@ -2110,6 +2110,8 @@ void check_non_object_id_object_types()
 
             if (m->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
             {
+                META_ASSERT_NOT_NULL(m->getoid);
+                META_ASSERT_NOT_NULL(m->setoid);
                 META_ASSERT_NOT_NULL(m->allowedobjecttypes);
                 META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "struct member object id, should specify some object types");
 
@@ -2159,6 +2161,8 @@ void check_non_object_id_object_types()
             }
             else
             {
+                META_ASSERT_NULL(m->getoid);
+                META_ASSERT_NULL(m->setoid);
                 META_ASSERT_NULL(m->allowedobjecttypes);
                 META_ASSERT_TRUE(m->allowedobjecttypeslength == 0, "member is not object id, should not specify object types");
             }

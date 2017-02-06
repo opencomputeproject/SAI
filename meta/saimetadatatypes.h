@@ -808,6 +808,30 @@ typedef struct _sai_attr_metadata_t
 
 } sai_attr_metadata_t;
 
+/*
+ * TODO since non object id members can have different type and can be localed
+ * at different object_key union position, we need to find a way to extract
+ * those for automatic serialize/deserialize for example extracting value as
+ * sai_attribute_value_t and pointing to right serialize/deserialize functions.
+ * Also a automatic generated functions for serialize/deserialize for those non
+ * object id structs must be generated, we don't want to update them manually.
+ */
+
+/**
+ * @brief Function definition for getting OID from non obeject
+ * id struct member.
+ */
+typedef sai_object_id_t (*sai_meta_get_struct_member_oid_fn)(
+        _In_ const sai_object_meta_key_t *object_meta_key);
+
+/**
+ * @brief Function definition for setting OID from non obeject
+ * id struct member.
+ */
+typedef void (*sai_meta_set_struct_member_oid_fn)(
+        _Inout_ sai_object_meta_key_t *object_meta_key,
+        _In_ sai_object_id_t oid);
+
 /**
  * @brief Defines struct member info for
  * non object id object type
@@ -817,17 +841,17 @@ typedef struct _sai_struct_member_info_t
     /**
      * @brief Member vlaue type
      */
-    sai_attr_value_type_t               membervaluetype;
+    sai_attr_value_type_t                               membervaluetype;
 
     /**
      * @brief Member name
      */
-    const char*                         membername;
+    const char*                                         membername;
 
     /**
      * @brief Indicates whether field is vlan
      */
-    bool                                isvlan;
+    bool                                                isvlan;
 
     /**
      * @brief Specified allowed object types.
@@ -835,12 +859,12 @@ typedef struct _sai_struct_member_info_t
      * If object attr value type is OBJECT_ID
      * this list specifies what object type can be used.
      */
-    const sai_object_type_t* const      allowedobjecttypes;
+    const sai_object_type_t* const                      allowedobjecttypes;
 
     /**
      * @brief Length of allowed object types.
      */
-    size_t                              allowedobjecttypeslength;
+    size_t                                              allowedobjecttypeslength;
 
     /**
      * @brief Indicates wheter member is enum value.
@@ -850,12 +874,24 @@ typedef struct _sai_struct_member_info_t
      * @note Could be deduced from enum type string or
      * enum vector values and attr value type.
      */
-    bool                                isenum;
+    bool                                                isenum;
 
     /**
      * @brief Provides enum metadata if member is enum
      */
-    const sai_enum_metadata_t* const    enummetadata;
+    const sai_enum_metadata_t* const                    enummetadata;
+
+    /**
+     * @brief If struct member is OID this function
+     * will get it's value.
+     */
+    const sai_meta_get_struct_member_oid_fn             getoid;
+
+    /**
+     * @brief If struct member is OID this function
+     * will set it's value.
+     */
+    const sai_meta_set_struct_member_oid_fn             setoid;
 
 } sai_struct_member_info_t;
 
