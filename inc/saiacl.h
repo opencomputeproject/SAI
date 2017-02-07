@@ -265,7 +265,7 @@ typedef enum _sai_acl_table_group_attr_t
      * @brief List of ACL bind points where this group will be applied.
      *
      * ACL group bind point list - is a create only attribute required for ACL
-     * groups to let the user specific his intention to allow further error
+     * groups to let the user specify his intention to allow further error
      * checks and optimizations based on a specific ASIC's SAI implementation.
      * ACL members being added to this group SHOULD be a subset of the bind
      * point list that acl group was created with.
@@ -325,8 +325,8 @@ typedef enum _sai_acl_table_group_member_attr_t
     /**
      * @brief ACL table group id
      *
-     * This attribute is required to bind a member object (acl_table_id) to a
-     * acl table group id allocated by the create acl group api.
+     * This attribute is required to associate or attach a member object (acl_table_id)
+     * to a acl table group id allocated by the create acl group api.
      *
      * User should always use the group id returned by SAI create_acl_group api,
      * to group the tables else Invalid attribute value error code will be returned.
