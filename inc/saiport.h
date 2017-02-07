@@ -701,6 +701,16 @@ typedef enum _sai_port_stat_counter_t
     SAI_PORT_STAT_PFC_7_RX_PKTS,
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
+    /** PFC based ON to OFF pause transitions counter per PFC priority [uint64_t] */
+    SAI_PORT_STAT_PFC_0_ON2OFF_RX_PKTS,
+    SAI_PORT_STAT_PFC_1_ON2OFF_RX_PKTS,
+    SAI_PORT_STAT_PFC_2_ON2OFF_RX_PKTS,
+    SAI_PORT_STAT_PFC_3_ON2OFF_RX_PKTS,
+    SAI_PORT_STAT_PFC_4_ON2OFF_RX_PKTS,
+    SAI_PORT_STAT_PFC_5_ON2OFF_RX_PKTS,
+    SAI_PORT_STAT_PFC_6_ON2OFF_RX_PKTS,
+    SAI_PORT_STAT_PFC_7_ON2OFF_RX_PKTS
+
 } sai_port_stat_counter_t;
 
 
