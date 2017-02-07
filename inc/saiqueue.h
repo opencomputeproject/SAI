@@ -70,6 +70,9 @@ typedef enum _sai_queue_attr_t
     /** Attach scheduler to Queue [sai_object_id_t]*/
     SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000003,
 
+    /** Queue pause state [bool] (READ-ONLY) */
+    SAI_QUEUE_ATTR_PAUSE_STATUS = 0x00000004,
+
     /* -- */
     /* Custom range base value */
     SAI_QUEUE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
