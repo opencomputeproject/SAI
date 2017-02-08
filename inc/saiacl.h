@@ -2084,6 +2084,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  * @brief Create an ACL Table Group
  *
  * @param[out] acl_table_group_id The ACL group id
+ * @param[in] switch_id Switch Object id
  * @param[in] attr_count number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -2091,6 +2092,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_table_group_fn)(
         _Out_ sai_object_id_t *acl_table_group_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -2134,6 +2136,7 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  * @brief Create an ACL Table Group Member
  *
  * @param[out] acl_table_group_member_id The ACL table group member id
+ * @param[in] switch_id Switch Object id
  * @param[in] attr_count number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -2141,6 +2144,7 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
         _Out_ sai_object_id_t *acl_table_group_member_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
