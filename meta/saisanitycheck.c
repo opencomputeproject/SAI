@@ -2349,7 +2349,11 @@ void check_objects_for_loops_recursive(
         {
             if (m->attrid == SAI_PORT_ATTR_EGRESS_MIRROR_SESSION ||
                 m->attrid == SAI_PORT_ATTR_INGRESS_MIRROR_SESSION ||
-                m->attrid == SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST)
+                m->attrid == SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST ||
+                m->attrid == SAI_PORT_ATTR_EGRESS_FLOOD_BLOCK_BCAST_PORT_LIST ||
+                m->attrid == SAI_PORT_ATTR_EGRESS_FLOOD_BLOCK_UNKNOWN_UCAST_PORT_LIST ||
+                m->attrid == SAI_PORT_ATTR_EGRESS_FLOOD_BLOCK_UNKNOWN_MCAST_PORT_LIST ||
+                m->attrid == SAI_PORT_ATTR_EGRESS_FLOOD_BLOCK_ALL_PORT_LIST)
             {
                 continue;
             }
