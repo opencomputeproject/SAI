@@ -297,8 +297,7 @@ typedef sai_status_t (*sai_set_queue_attribute_fn)(
 typedef sai_status_t (*sai_get_queue_attribute_fn)(
         _In_ sai_object_id_t queue_id,
         _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list
-        );
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Get queue statistics counters.

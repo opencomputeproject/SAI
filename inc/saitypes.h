@@ -434,8 +434,10 @@ typedef struct _sai_qos_map_params_t
     /** Priority group value */
     sai_uint8_t pg;
 
-    /** Egress port queue UOID is not known at the time of map creation.
-     * Using queue index for maps. */
+    /**
+     * @brief Egress port queue UOID is not known at the time of map creation.
+     * Using queue index for maps.
+     */
     sai_queue_index_t queue_index;
 
     /** Color of the packet */
@@ -497,7 +499,7 @@ typedef struct _sai_tunnel_map_list_t
     uint32_t count;
 
     /** Map list */
-    sai_tunnel_map_t * list;
+    sai_tunnel_map_t *list;
 
 } sai_tunnel_map_list_t;
 
@@ -508,12 +510,6 @@ typedef struct _sai_tunnel_map_list_t
  */
 typedef struct _sai_acl_capability_t
 {
-    /**
-     * @brief Type of acl stage. Input to get the action list
-     * Failure to pass the stage as input will be treated as error
-     */
-    sai_int32_t stage;
-
     /**
      * @brief Output from get function.
      * boolean indicating whether action list is mandatory for table creation
@@ -601,7 +597,7 @@ typedef enum _sai_bulk_op_type_t {
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_count Number of objects to create
  * @param[in] attr_count List of attr_count. Caller passes the number
- *         of attribute for each object to create.
+ *    of attribute for each object to create.
  * @param[in] attrs List of attributes for every object.
  * @param[in] type bulk operation type.
  *
@@ -640,7 +636,6 @@ typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ sai_object_id_t *object_id,
         _In_ sai_bulk_op_type_t type,
         _Out_ sai_status_t *object_statuses);
-
 
 /**
  * @}

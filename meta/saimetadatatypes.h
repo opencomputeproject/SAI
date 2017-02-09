@@ -790,6 +790,22 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                isvlan;
 
+    /**
+     * @brief Determines whether attribute is ACL field
+     *
+     * This will become handy for fast detrmination whether
+     * default value is present.
+     */
+    bool                                isaclfield;
+
+    /*
+     * @brief Determines whether attribute is ACL action
+     *
+     * This will become handy for fast detrmination whether
+     * default value is present.
+     */
+    bool                                isaclaction;
+
 } sai_attr_metadata_t;
 
 /**
@@ -826,7 +842,61 @@ typedef struct _sai_struct_member_info_t
      */
     size_t                              allowedobjecttypeslength;
 
+    /**
+     * @brief Indicates wheter member is enum value.
+     *
+     * Type must be set as INT32.
+     *
+     * @note Could be deduced from enum type string or
+     * enum vector values and attr value type.
+     */
+    bool                                isenum;
+
+    /**
+     * @brief Provides enum metadata if member is enum
+     */
+    const sai_enum_metadata_t* const    enummetadata;
+
 } sai_struct_member_info_t;
+
+/**
+ * @brief SAI reverse graph member
+ */
+typedef struct _sai_rev_graph_member_t
+{
+    /**
+     * @brief Defines main object type which is used
+     * by dependency object type.
+     */
+    sai_object_type_t                       objecttype;
+
+    /**
+     * @brief Defines dependency object type on which
+     * is object type defined above is used.
+     */
+    sai_object_type_t                       depobjecttype;
+
+    /**
+     * @brief Defines attribute metadata for object type
+     *
+     * This can be NULL if dependency objec type
+     * is non object id type and dependency is on
+     * defined struct.
+     */
+    const sai_attr_metadata_t* const        attrmetadata;
+
+    /**
+     * @brief Defines struct member for non object
+     * id object type.
+     *
+     * This member can be NULL if dependency object type
+     * is object attribute, and is not NULL id object
+     * dependency is non object id struct member.
+     */
+    const sai_struct_member_info_t* const   structmember;
+
+} sai_rev_graph_member_t;
+
 
 /**
  * @brief SAI object type information
@@ -874,6 +944,11 @@ typedef struct _sai_object_type_info_t
      * @brief Defines count of struct members
      */
     size_t                                  structmemberscount;
+
+    /**
+     * @brief Defines reverse dependency graph members
+     */
+    const sai_rev_graph_member_t** const    revgraphmembers;
 
 } sai_object_type_info_t;
 

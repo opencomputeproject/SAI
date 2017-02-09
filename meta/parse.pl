@@ -292,6 +292,11 @@ sub ProcessTagType
         return $val;
     }
 
+    if ($val =~/^sai_pointer_t sai_\w+_fn$/)
+    {
+        return $val;
+    }
+
     LogError "invalid type tag value '$val' expected sai type or enum";
 
     return undef;
@@ -487,6 +492,18 @@ sub ProcessEnumSection
         my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(CUSTOM_RANGE_BASE)$/, @values);
+
+        if ($enumtypename =~ /^(sai_\w+)_t$/)
+        {
+            my $last = $values[$#values];
+
+            if ($last eq uc("$1_MAX"))
+            {
+                $last =  pop @values;
+                LogInfo "Removing last element $last";
+            }
+        }
+
         $SAI_ENUMS{$enumtypename}{values} = \@values;
 
         next if not $enumtypename =~ /^(sai_(\w+)_attr_)t$/;
@@ -826,6 +843,11 @@ sub ProcessType
         return "SAI_ATTR_VALUE_TYPE_CHARDATA";
     }
 
+    if ($type =~ /^sai_pointer_t sai_\w+_fn$/)
+    {
+        return "SAI_ATTR_VALUE_TYPE_POINTER";
+    }
+
     LogError "invalid type '$type' for $attr";
     return "";
 }
@@ -949,13 +971,19 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
-    elsif ($default =~ /^NULL$/ and $type =~ /sai_pointer_t/)
+    elsif ($default =~ /^NULL$/ and $type =~ /^(sai_pointer_t) (sai_\w+_fn)$/)
     {
-        WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
+        WriteSource "$val = { .$VALUE_TYPES{$1} = $default };";
+
+        WriteSource "$2 var_$2 = NULL;";
     }
     elsif ($default =~ /^(attrvalue|attrrange|vendor|empty|const|internal)/)
     {
         return "NULL";
+    }
+    elsif ($default =~ /^NULL$/ and $type =~ /^sai_pointer_t/)
+    {
+        LogError "missing typedef function in format 'sai_\\w+_fn' on $attr ($type)";
     }
     else
     {
@@ -1075,6 +1103,15 @@ sub ProcessConditions
         my $attrid = $1;
         my $val = $2;
 
+        my $main_attr = $1 if $attr =~ /^SAI_(\w+?)_ATTR_/;
+        my $cond_attr = $1 if $attrid =~ /^SAI_(\w+?)_ATTR_/;
+
+        if ($main_attr ne $cond_attr)
+        {
+            LogError "conditional attribute $attr has condition from different object $attrid";
+            return "";
+        }
+
         WriteSource "const sai_attr_condition_t metadata_condition_${attr}_$count = {";
 
         if ($val eq "true" or $val eq "false")
@@ -1153,6 +1190,15 @@ sub ProcessValidOnly
 
         my $attrid = $1;
         my $val = $2;
+
+        my $main_attr = $1 if $attr =~ /^SAI_(\w+?)_ATTR_/;
+        my $cond_attr = $1 if $attrid =~ /^SAI_(\w+?)_ATTR_/;
+
+        if ($main_attr ne $cond_attr)
+        {
+            LogError "validonly attribute $attr has condition from different object $attrid";
+            return "";
+        }
 
         WriteSource "const sai_attr_condition_t metadata_validonly_${attr}_$count = {";
 
@@ -1235,6 +1281,24 @@ sub ProcessAttrName
     return "\"$attr\"";
 }
 
+sub  ProcessIsAclField
+{
+    my $attr = shift;
+
+    return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_FIELD_\w+$/;
+
+    return "false";
+}
+
+sub  ProcessIsAclAction
+{
+    my $attr = shift;
+
+    return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_ACTION_\w+$/;
+
+    return "false";
+}
+
 sub ProcessSingleObjectType
 {
     my ($typedef, $objecttype) = @_;
@@ -1279,6 +1343,8 @@ sub ProcessSingleObjectType
         my $validonlylen    = ProcessValidOnlyLen($attr, $meta{validonly});
         my $isvlan          = ProcessIsVlan($attr, $meta{isvlan});
         my $getsave         = ProcessGetSave($attr, $meta{getsave});
+        my $isaclfield      = ProcessIsAclField($attr);
+        my $isaclaction     = ProcessIsAclAction($attr);
 
         WriteSource "const sai_attr_metadata_t metadata_attr_$attr = {";
 
@@ -1308,6 +1374,8 @@ sub ProcessSingleObjectType
         WriteSource "    .validonlylength               = $validonlylen,";
         WriteSource "    .getsave                       = $getsave,";
         WriteSource "    .isvlan                        = $isvlan,";
+        WriteSource "    .isaclfield                    = $isaclfield,";
+        WriteSource "    .isaclaction                   = $isaclaction,";
 
         WriteSource "};";
 
@@ -1557,6 +1625,24 @@ sub ProcessStructObjectLen
     return $count;
 }
 
+sub ProcessStructEnumData
+{
+    my $type = shift;
+
+    return "&metadata_enum_$type" if $type =~ /^sai_\w+_type_t$/; # enum
+
+    return "NULL";
+}
+
+sub ProcessStructIsEnum
+{
+    my $type = shift;
+
+    return "true" if $type =~ /^sai_\w+_type_t$/; # enum
+
+    return "false";
+}
+
 sub ProcessStructMembers
 {
     my ($struct, $ot, $rawname) = @_;
@@ -1571,6 +1657,8 @@ sub ProcessStructMembers
         my $isvlan      = ProcessStructIsVlan($struct->{$key}{type});
         my $objects     = ProcessStructObjects($rawname, $key, $struct->{$key});
         my $objectlen   = ProcessStructObjectLen($rawname, $key, $struct->{$key});
+        my $isenum      = ProcessStructIsEnum($struct->{$key}{type});
+        my $enumdata    = ProcessStructEnumData($struct->{$key}{type});
 
         WriteSource "const sai_struct_member_info_t struct_member_sai_${rawname}_t_$key = {";
 
@@ -1579,8 +1667,9 @@ sub ProcessStructMembers
         WriteSource "    .isvlan                    = $isvlan,";
         WriteSource "    .allowedobjecttypes        = $objects,";
         WriteSource "    .allowedobjecttypeslength  = $objectlen,";
+        WriteSource "    .isenum                    = $isenum,";
+        WriteSource "    .enummetadata              = $enumdata,";
 
-        # TODO add enum type is value is enum
         # TODO allow null
 
         WriteSource "};";
@@ -1611,6 +1700,121 @@ sub ProcessStructMembersCount
     return $count;
 }
 
+sub ProcessRevGraph
+{
+    #
+    # Purpose of this method is to generate metadata where current object type
+    # is used since currentrly if we have attribute metadata we can easly scan
+    # attributes with oids values and extract information of object being used
+    # on that attribute, scanning all attributes of that object type we have
+    # dependency graph
+    #
+    # but what we create here is reverse dependency graph it will tell us on
+    # which object and which attrubute current object type is used
+    #
+    # we can of course create both graphs right at the same time
+    #
+
+    my %REVGRAPH = GetReverseDependencyGraph();
+
+    my $objectType = shift;
+
+    if (not defined $REVGRAPH{$objectType})
+    {
+        # some objects are not used, so they will be not defined
+        return "NULL";
+    }
+
+    my @dep = @{ $REVGRAPH{$objectType} };
+
+    @dep = sort @dep;
+
+    my $index = 0;
+
+    my @membernames = ();;
+
+    for my $dep (@dep)
+    {
+        my ($depObjectType, $attrId) = split/,/,$dep;
+
+        my $membername = "metadata_${objectType}_rev_graph_member_$index";
+
+        push@membernames,$membername;
+
+        WriteSource "const sai_rev_graph_member_t $membername = {";
+
+        WriteSource "    .objecttype          = $objectType,";
+        WriteSource "    .depobjecttype       = $depObjectType,";
+
+        if ($attrId =~ /^SAI_\w+_ATTR_\w+/)
+        {
+            # this is attribute
+
+            WriteSource "    .attrmetadata        = &metadata_attr_$attrId,";
+            WriteSource "    .structmember        = NULL,";
+        }
+        else
+        {
+            # this is struct member inside non object id struct
+
+            my $DEPOT = lc ($1) if $depObjectType =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+            WriteSource "    .attrmetadata        = NULL,";
+            WriteSource "    .structmember        = &struct_member_sai_${DEPOT}_t_$attrId,";
+        }
+
+        WriteSource "};";
+
+        $index++;
+    }
+
+    WriteSource "const sai_rev_graph_member_t* metadata_${objectType}_rev_graph_members[] = {";
+
+    for my $mn (@membernames)
+    {
+        WriteSource "    &$mn,";
+    }
+
+    WriteSource "    NULL,";
+
+    WriteSource "};";
+
+    return "metadata_${objectType}_rev_graph_members";
+}
+
+sub CreateStructNonObjectId
+{
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        next if $1 eq "NULL" or $1 eq "MAX";
+
+        my $type = "sai_" . lc($1) . "_attr_t";
+
+        my $enum  = "&metadata_enum_${type}";
+
+        my $struct = $STRUCTS{$ot};
+
+        my $structmembers = ProcessStructMembers($struct, $ot ,lc($1));
+    }
+}
+
+sub ProcessStructMembersName
+{
+    my ($struct, $ot, $rawname) = @_;
+
+    return "NULL" if not defined $struct;
+
+    return "struct_members_sai_${rawname}_t";
+}
+
 sub CreateObjectInfo
 {
     my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
@@ -1634,9 +1838,16 @@ sub CreateObjectInfo
 
         my $struct = $STRUCTS{$ot};
 
+        #
+        # here we need to only generate struct member names
+        # since we use those members in rev graph entries
+        # so struct members must be generated previously
+        #
+
         my $isnonobjectid = ProcessIsNonObjectId($struct, $ot);
-        my $structmembers = ProcessStructMembers($struct, $ot ,lc($1));
+        my $structmembers = ProcessStructMembersName($struct, $ot ,lc($1));
         my $structmemberscount = ProcessStructMembersCount($struct, $ot);
+        my $revgraph = ProcessRevGraph($ot);
 
         WriteHeader "extern const sai_object_type_info_t sai_object_type_info_$ot;";
 
@@ -1649,6 +1860,7 @@ sub CreateObjectInfo
         WriteSource "    .isnonobjectid      = $isnonobjectid,";
         WriteSource "    .structmembers      = $structmembers,";
         WriteSource "    .structmemberscount = $structmemberscount,";
+        WriteSource "    .revgraphmembers    = $revgraph,";
         WriteSource "};";
     }
 
@@ -1680,7 +1892,7 @@ sub CreateObjectInfo
 sub GetHeaderFiles
 {
     opendir(my $dh, $INCLUDEDIR) || die "Can't opendir $INCLUDEDIR: $!";
-    my @headers = grep { /^sai\S+\.h$/ && -f "$INCLUDEDIR/$_" } readdir($dh);
+    my @headers = grep { /^sai\S*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
     closedir $dh;
 
     return @headers;
@@ -1964,13 +2176,249 @@ sub CheckWhiteSpaceInHeaders
             {
                 LogError "line contains non ascii characters $header $n: $line";
             }
+
+            if ($line =~ /typedef .+?\(\s*\*\s*(\w+)\s*\)/)
+            {
+                my $fname = $1;
+
+                if (not $fname =~ /^sai_\w+_fn$/)
+                {
+                    LogError "all function declarations should be in format sai_\\w+_fn $header $n: $line";
+                }
+            }
         }
     }
+}
+
+sub CheckApiStructNames
+{
+    #
+    # purpose of this check is to find out
+    # whether sai_api_t enums match actual
+    # struct of api declarations
+    #
+
+    my @values = @{ $SAI_ENUMS{"sai_api_t"}{values} };
+
+    for my $value (@values)
+    {
+        next if $value eq "SAI_API_UNSPECIFIED";
+
+        if (not $value =~ /^SAI_API_(\S+)$/)
+        {
+            LogError "invalie api name $value";
+            next;
+        }
+
+        my $api = lc($1);
+
+        my $structName = "sai_${api}_api_t";
+
+        my $structFile = "struct_$structName.xml";
+
+        # doxygen doubles underscores
+
+        $structFile =~ s/_/__/g;
+
+        my $file = "$XMLDIR/$structFile";
+
+        if (not -e $file)
+        {
+            LogError "there is no struct $structName corresponding to api name $value";
+        }
+    }
+}
+
+sub CheckHeadersStyle
+{
+    #
+    # Purpose of this check is to find out
+    # whether header files are correctly formated
+    #
+    # Wrong formating includes:
+    # - multiple empty lines
+    # - double spaces
+    # - wrong spacing idient
+    #
+
+    my @headers = GetHeaderFiles();
+
+    for my $header (@headers)
+    {
+        my $data = ReadHeaderFile($header);
+
+        my @lines = split/\n/,$data;
+
+        my $n = 0;
+
+        my $empty = 0;
+        my $emptydoxy = 0;
+
+        for my $line (@lines)
+        {
+            $n++;
+
+            # detect multiple empty lines
+
+            if ($line =~ /^$/)
+            {
+                $empty++;
+
+                if ($empty > 1)
+                {
+                    LogWarning "header contains two empty lines one after another $header $n";
+                }
+            }
+            else { $empty = 0 }
+
+            # detect multiple empty lines in doxygen comments
+
+            if ($line =~ /^\s+\*\s*$/)
+            {
+                $emptydoxy++;
+
+                if ($emptydoxy > 1)
+                {
+                    LogWarning "header contains two empty lines in doxygen $header $n";
+                }
+            }
+            else { $emptydoxy = 0 }
+
+            if ($line =~ /^\s+\* / and not $line =~ /\*( {4}| {8}| )[^ ]/)
+            {
+                LogWarning "not expected number of spaces after * (1,4,8) $header $n:$line";
+            }
+
+            if ($line =~ /\*\s+[^ ].*  / and not $line =~ /\* \@(brief|file)/)
+            {
+                LogWarning "too many spaces after *\\s+ $header $n:$line";
+            }
+
+            if ($line =~ /(typedef|{|}|_In\w+|_Out\w+)( [^ ].*  |  )/ and not $line =~ /typedef\s+u?int/i)
+            {
+                LogWarning "too many spaces $header $n:$line";
+            }
+
+            if ($line =~ m!/\*\*! and not $line =~ m!/\*\*\s*$! and not $line =~ m!/\*\*.+\*/!)
+            {
+                LogWarning "multiline doxygen comment should start '/**' $header $n:$line";
+            }
+
+            next if $line =~ /^ \*/;                # doxygen comment
+            next if $line =~ /^$/;                  # empty line
+            next if $line =~ /^typedef /;           # type definition
+            next if $line =~ /^sai_status/;         # return codes
+            next if $line =~ /^sai_object_type/;    # return codes
+            next if $line =~ /^[{}#\/]/;            # start end of struct, define, start of comment
+            next if $line =~ /^ {8}(_In|_Out)/;     # function arguments
+            next if $line =~ /^ {4}(sai_)/i;        # sai struct entry or SAI enum
+            next if $line =~ /^ {4}\/\*/;           # doxygen start
+            next if $line =~ /^ {5}\*/;             # doxygen comment continue
+            next if $line =~ /^ {8}sai_/;           # union entry
+            next if $line =~ /^ {4}union/;          # union
+            next if $line =~ /^ {4}[{}]/;           # start or end of union
+            next if $line =~ /^ {4}(u?int)/;        # union entries
+            next if $line =~ /^ {4}(char|bool)/;    # union entries
+            next if $line =~ /^ {8}bool booldata/;  # union bool
+            next if $line =~ /^ {4}(true|false)/;   # bool definition
+
+            LogWarning "header don't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
+        }
+    }
+}
+
+sub GetReverseDependencyGraph
+{
+    #
+    # Purpose of this method is to generate reverse
+    # dependency graph of where object ID are used
+    #
+
+    my %REVGRAPH = ();
+
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        my $otname = $1;
+
+        my $typedef = lc("sai_${otname}_attr_t");
+
+        next if $ot =~ /^SAI_OBJECT_TYPE_(MAX|NULL)$/;
+
+        # for each objec types we need to scann all objects
+        # also non object id structs
+
+        my $enum = $SAI_ENUMS{$typedef};
+
+        my @values = @{ $enum->{values} };
+
+        for my $attr (@values)
+        {
+            # metadata of single attribute of this object type
+
+            my %meta = %{ $METADATA{$typedef}{$attr} };
+
+            next if not defined $meta{objects};
+
+            # we will also include RO attributes
+
+            my @objects = @{ $meta{objects} };
+
+            my $attrid = $meta{attrid};
+
+            for my $usedot (@objects)
+            {
+                if (not defined $REVGRAPH{$usedot})
+                {
+                    my @arr = ();
+                    $REVGRAPH{$usedot} = \@arr;
+                }
+
+                push$REVGRAPH{$usedot},"$ot,$attrid";
+            }
+        }
+
+        next if not defined $STRUCTS{$ot};
+
+        # handle non object id types
+
+        my %struct = %{ $STRUCTS{$ot} };
+
+        for my $key(keys %struct)
+        {
+            next if not defined $struct{$key}{objects};
+
+            my @objs = @{ $struct{$key}{objects} };
+
+            for my $usedot (@objs)
+            {
+                if (not defined $REVGRAPH{$usedot})
+                {
+                    my @arr = ();
+                    $REVGRAPH{$usedot} = \@arr;
+                }
+
+                push$REVGRAPH{$usedot},"$ot,$key";
+            }
+
+        }
+    }
+
+    return %REVGRAPH;
 }
 
 #
 # MAIN
 #
+
+CheckHeadersStyle();
 
 for my $file (GetXmlFiles($XMLDIR))
 {
@@ -1997,11 +2445,15 @@ CreateNonObjectIdTest();
 
 ProcessNonObjectIdObjects();
 
+CreateStructNonObjectId();
+
 CreateObjectInfo();
 
 CreateListOfAllAttributes();
 
 CheckWhiteSpaceInHeaders();
+
+CheckApiStructNames();
 
 WriteHeader "#endif /* __SAI_METADATA_H__ */";
 

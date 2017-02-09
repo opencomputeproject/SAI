@@ -510,7 +510,6 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_DEFAULT_VLAN_ID,
 
-
     /**
      * @brief Default SAI STP instance ID
      *
@@ -758,14 +757,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
 
     /**
-     * @brief Acl capabilities supported by the NPU
-     *
-     * @type sai_acl_capability_t
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_ACL_CAPABILITY,
-
-    /**
      * @brief Multicast snooping capability supported by the NPU
      *
      * @type sai_switch_mcast_snooping_capability_t
@@ -961,7 +952,8 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4,
 
-    /** @brief The hash object for IPv4 in IPv4 packets going through LAG
+    /**
+     * @brief The hash object for IPv4 in IPv4 packets going through LAG
      *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_HASH
@@ -1085,7 +1077,6 @@ typedef enum _sai_switch_attr_t
      * Map id = #SAI_NULL_OBJECT_ID to disable map on switch.
      * Default no map i.e All packets to queue 0.
      *
-     *
      * @type sai_object_id_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
@@ -1147,7 +1138,7 @@ typedef enum _sai_switch_attr_t
      *
      * Hardware information format is based on SAI implementations by vendors.
      * String is NULL terminated. Format is vendor specific.
-     *   Example: Like PCI location, I2C adddress etc.
+     * Example: Like PCI location, I2C adddress etc.
      * In case of NULL, First NPU attached to CPU will be initialized.
      * Single NPU case this attribute is optional.
      *
@@ -1185,7 +1176,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_switch_state_change_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_switch_state_change_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1196,7 +1187,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_switch_shutdown_request_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_switch_shutdown_request_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1207,7 +1198,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_fdb_event_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_fdb_event_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1218,7 +1209,7 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_port_state_change_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_port_state_change_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1229,20 +1220,36 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_packet_event_notification_fn as notification function.
      *
-     * @type sai_pointer_t
+     * @type sai_pointer_t sai_packet_event_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
 
     /**
-    * @brief Enable SAI function call fast mode, which executes calls very quickly
-    *
-    * @type bool
-    * @flags CREATE_AND_SET
-    * @default false
-    */
+     * @brief Enable SAI function call fast mode, which executes calls very quickly
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
     SAI_SWITCH_ATTR_FAST_API_ENABLE,
+
+    /**
+     * @brief Ingress acl stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_INGRESS,
+
+    /**
+     * @brief Egress acl stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
 
     /**
      * @brief End of attributes
@@ -1342,7 +1349,7 @@ typedef enum _sai_switch_attr_t
  * 0: cold boot. Initialize NPU and external phys.
  * 1: warm boot. Do not re-initialize NPU or external phys, reconstruct SAI/SDK state from stored state.
  * 2: fast boot. Only initilize NPU. SAI/SDK state should not be persisted except for those related
- *                to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status.
+ *    to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status.
  */
 #define SAI_KEY_BOOT_TYPE                         "SAI_BOOT_TYPE"
 
@@ -1375,7 +1382,7 @@ typedef enum _sai_switch_attr_t
  * @param[in] switch_id Switch Id
  */
 typedef void (*sai_switch_shutdown_request_fn)(
-              _In_ sai_object_id_t switch_id);
+        _In_ sai_object_id_t switch_id);
 
 /**
  * @brief Switch oper state change notification
@@ -1390,9 +1397,9 @@ typedef void (*sai_switch_state_change_notification_fn)(
 /**
  * @brief Create switch
  *
- *   SDK initialization/connect to SDK. After the call the capability attributes should be
- *   ready for retrieval via sai_get_switch_attribute(). Same Switch Object id should be
- *   given for create/connect for each NPU.
+ * SDK initialization/connect to SDK. After the call the capability attributes should be
+ * ready for retrieval via sai_get_switch_attribute(). Same Switch Object id should be
+ * given for create/connect for each NPU.
  *
  * @param[out] switch_id The Switch Object ID
  * @param[in] attr_count number of attributes
@@ -1407,14 +1414,15 @@ typedef sai_status_t(*sai_create_switch_fn)(
 
 /**
  * @brief Remove/disconnect Switch
- *   Release all resources associated with currently opened switch
+ *
+ * Release all resources associated with currently opened switch
  *
  * @param[in] switch_id The Switch id
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef void (*sai_remove_switch_fn)(
-              _In_ sai_object_id_t switch_id);
+typedef sai_status_t (*sai_remove_switch_fn)(
+        _In_ sai_object_id_t switch_id);
 
 /**
  * @brief Set switch attribute value

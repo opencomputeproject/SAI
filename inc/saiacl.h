@@ -441,9 +441,20 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_SIZE,
 
     /**
-     * @brief End of ACL Table attributes
+     * @brief List of actions in sai_acl_action_type_t
+     *
+     * Based on the ACL capability per stage obtained from the switch
+     * attributes #SAI_SWITCH_ATTR_ACL_STAGE_INGRESS and #SAI_SWITCH_ATTR_ACL_STAGE_EGRESS
+     * application should pass the action list if its mandatory per stage.
+     * pass the action list if its mandatory per stage.
+     * If its not mandatory application can either pass the action list
+     * or ignore it.
+     *
+     * @type sai_s32_list_t sai_acl_action_type_t
+     * @flags CREATE_ONLY
+     * @default empty
      */
-    SAI_ACL_TABLE_ATTR_END,
+    SAI_ACL_TABLE_ATTR_ACL_ACTION_TYPE_LIST,
 
     /*
      * Match fields [bool]
@@ -475,21 +486,21 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6,
 
     /**
-    * @brief Inner Src IPv6 Address
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief Inner Src IPv6 Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IPv6,
 
     /**
-    * @brief Inner Dst IPv6 Address
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief Inner Dst IPv6 Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IPv6,
 
     /**
@@ -503,7 +514,6 @@ typedef enum _sai_acl_table_attr_t
 
     /**
      * @brief Dst MAC Address
-     *
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -530,21 +540,21 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_DST_IP,
 
     /**
-    * @brief Inner Src IPv4 Address
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief Inner Src IPv4 Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IP,
 
     /**
-    * @brief Inner Dst IPv4 Address
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief Inner Dst IPv4 Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IP,
 
     /**
@@ -683,12 +693,12 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL,
 
     /**
-    * @brief IP Identification
-    *
-    * @type bool
-    * @flags CREATE_ONLY
-    * @default false
-    */
+     * @brief IP Identification
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
     SAI_ACL_TABLE_ATTR_FIELD_IP_IDENTIFICATION,
 
     /**
@@ -917,22 +927,14 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE,
 
     /**
-     * @brief List of actions in sai_acl_table_action_list_t [sai_s32_list_t]
-     *
-     * Based on the ACL capability per stage obtained from the switch
-     * attribute #SAI_SWITCH_ATTR_ACL_CAPABILITY application should
-     * pass the action list if its mandatory per stage.
-     * If its not mandatory application can either pass the action list
-     * or ignore it.
-     *
-     * @ignore
-     */
-    SAI_ACL_TABLE_ATTR_ACTION_LIST,
-
-    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_ACTION_LIST,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE,
+
+    /**
+     * @brief End of ACL Table attributes
+     */
+    SAI_ACL_TABLE_ATTR_END,
 
     /**
      * @brief Custom range base value start
@@ -988,11 +990,6 @@ typedef enum _sai_acl_entry_attr_t
      */
     SAI_ACL_ENTRY_ATTR_ADMIN_STATE,
 
-    /**
-     * @brief End of ACL Entry attributes
-     */
-    SAI_ACL_ENTRY_ATTR_END,
-
     /*
      * Match fields [sai_acl_field_data_t]
      * - Mandatory to pass at least one field during ACL Rule creation.
@@ -1023,19 +1020,19 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6,
 
     /**
-    * @brief Inner Src IPv6 Address
-    *
-    * @type sai_acl_field_data_t sai_ip6_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief Inner Src IPv6 Address
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IPv6,
 
     /**
-    * @brief Inner Dst IPv6 Address
-    *
-    * @type sai_acl_field_data_t sai_ip6_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief Inner Dst IPv6 Address
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IPv6,
 
     /**
@@ -1071,19 +1068,19 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IP,
 
     /**
-    * @brief Inner Src IPv4 Address
-    *
-    * @type sai_acl_field_data_t sai_ip4_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief Inner Src IPv4 Address
+     *
+     * @type sai_acl_field_data_t sai_ip4_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IP,
 
     /**
-    * @brief Inner Dst IPv4 Address
-    *
-    * @type sai_acl_field_data_t sai_ip4_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief Inner Dst IPv4 Address
+     *
+     * @type sai_acl_field_data_t sai_ip4_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IP,
 
     /**
@@ -1213,11 +1210,11 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL,
 
     /**
-    * @brief IP Identification
-    *
-    * @type sai_acl_field_data_t sai_uint16_t
-    * @flags CREATE_AND_SET
-    */
+     * @brief IP Identification
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_IDENTIFICATION,
 
     /**
@@ -1737,7 +1734,12 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
+
+    /**
+     * @brief End of ACL Entry attributes
+     */
+    SAI_ACL_ENTRY_ATTR_END,
 
 } sai_acl_entry_attr_t;
 
@@ -2091,6 +2093,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_table_group_fn)(
         _Out_ sai_object_id_t *acl_table_group_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -2141,6 +2144,7 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
         _Out_ sai_object_id_t *acl_table_group_member_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
