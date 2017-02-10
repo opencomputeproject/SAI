@@ -1829,6 +1829,135 @@ sub ProcessStructMembersName
     return "struct_members_sai_${rawname}_t";
 }
 
+sub ProcessCreate
+{
+    my $struct = shift;
+    my $ot = shift;
+
+    my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+    my $api = $OBJTOAPIMAP{$ot};
+
+    WriteSource "sai_status_t sai_meta_generic_create_$ot(";
+    WriteSource "        _Inout_ sai_object_meta_key_t *meta_key,";
+    WriteSource "        _In_ sai_object_id_t switch_id,";
+    WriteSource "        _In_ uint32_t attr_count,";
+    WriteSource "        _In_ const sai_attribute_t *attr_list)";
+    WriteSource "{";
+
+    if (not defined $struct)
+    {
+        if ($small eq "switch")
+        {
+            WriteSource "    return g_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, attr_count, attr_list);";
+        }
+        else
+        {
+            WriteSource "    return g_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, switch_id, attr_count, attr_list);";
+        }
+    }
+    else
+    {
+        WriteSource "    return g_sai_${api}_api->create_$small(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+    }
+
+    WriteSource "}";
+
+    return "sai_meta_generic_create_$ot";
+}
+
+sub ProcessRemove
+{
+    my $struct = shift;
+    my $ot = shift;
+
+    my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+    my $api = $OBJTOAPIMAP{$ot};
+
+    WriteSource "sai_status_t sai_meta_generic_remove_$ot(";
+    WriteSource "        _In_ const sai_object_meta_key_t *meta_key)";
+    WriteSource "{";
+
+    if (not defined $struct)
+    {
+        WriteSource "    return g_sai_${api}_api->remove_$small(meta_key->objectkey.key.object_id);";
+    }
+    else
+    {
+        WriteSource "    return g_sai_${api}_api->remove_$small(&meta_key->objectkey.key.$small);";
+    }
+
+    WriteSource "}";
+
+    return "sai_meta_generic_remove_$ot";
+}
+
+sub ProcessSet
+{
+    my $struct = shift;
+    my $ot = shift;
+
+    my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+    my $api = $OBJTOAPIMAP{$ot};
+
+    WriteSource "sai_status_t sai_meta_generic_set_$ot(";
+    WriteSource "        _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "        _In_ const sai_attribute_t *attr)";
+    WriteSource "{";
+
+    if (not defined $struct)
+    {
+        WriteSource "    return g_sai_${api}_api->set_${small}_attribute(meta_key->objectkey.key.object_id, attr);";
+    }
+    else
+    {
+        WriteSource "    return g_sai_${api}_api->set_${small}_attribute(&meta_key->objectkey.key.$small, attr);";
+    }
+
+    WriteSource "}";
+
+    return "sai_meta_generic_set_$ot";
+}
+
+sub ProcessGet
+{
+    my $struct = shift;
+    my $ot = shift;
+
+    my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+    my $api = $OBJTOAPIMAP{$ot};
+
+    WriteSource "sai_status_t sai_meta_generic_get_$ot(";
+    WriteSource "        _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "        _In_ uint32_t attr_count,";
+    WriteSource "        _Inout_ sai_attribute_t *attr_list)";
+    WriteSource "{";
+
+    if (not defined $struct)
+    {
+        WriteSource "    return g_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
+    }
+    else
+    {
+        WriteSource "    return g_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+    }
+
+    WriteSource "}";
+
+    return "sai_meta_generic_get_$ot";
+}
+
+sub CreateApis
+{
+    for my $key(sort keys %APITOOBJMAP)
+    {
+        WriteSource "static sai_${key}_api_t *g_sai_${key}_api = NULL;";
+    }
+}
+
 sub CreateObjectInfo
 {
     my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
@@ -1862,6 +1991,22 @@ sub CreateObjectInfo
         my $structmembers = ProcessStructMembersName($struct, $ot ,lc($1));
         my $structmemberscount = ProcessStructMembersCount($struct, $ot);
         my $revgraph = ProcessRevGraph($ot);
+        my $create = "NULL";
+        my $remove = "NULL";
+        my $set = "NULL";
+        my $get = "NULL";
+
+        if ($ot eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $ot eq "SAI_OBJECT_TYPE_HOSTIF_PACKET")
+        {
+            # ok
+        }
+        else
+        {
+            $create = ProcessCreate($struct, $ot);
+            $remove = ProcessRemove($struct, $ot);
+            $set = ProcessSet($struct, $ot);
+            $get = ProcessGet($struct, $ot);
+        }
 
         WriteHeader "extern const sai_object_type_info_t sai_object_type_info_$ot;";
 
@@ -1875,6 +2020,10 @@ sub CreateObjectInfo
         WriteSource "    .structmembers      = $structmembers,";
         WriteSource "    .structmemberscount = $structmemberscount,";
         WriteSource "    .revgraphmembers    = $revgraph,";
+        WriteSource "    .create             = $create,";
+        WriteSource "    .remove             = $remove,";
+        WriteSource "    .set                = $set,";
+        WriteSource "    .get                = $get,";
         WriteSource "};";
     }
 
@@ -2602,6 +2751,8 @@ CreateEnumHelperMethods();
 ProcessNonObjectIdObjects();
 
 CreateStructNonObjectId();
+
+CreateApis();
 
 CreateObjectInfo();
 
