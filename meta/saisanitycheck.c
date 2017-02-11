@@ -632,6 +632,12 @@ void check_attr_default_required(
 
     if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
     {
+        /*
+         * If default value type is NONE, then default value must be NULL.
+         */
+
+        META_ASSERT_NULL(md->defaultvalue);
+
         if (sai_metadata_is_acl_field_or_action(md))
         {
             /*
@@ -1176,9 +1182,14 @@ void check_attr_validonly(
             META_ASSERT_FAIL(md, "marked as validonly, but invalid creation flags: 0x%u", md->flags);
     }
 
-    if ((md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE) ||
-            (md->defaultvalue == NULL))
+    if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
     {
+        /*
+         * In struct defaultvalue member can be NULL for some other default
+         * value types like empty list or internal etc. Default value is
+         * provided for CONST only.
+         */
+
         META_ASSERT_FAIL(md, "expected default value on vlaid only attribute, but none provided");
     }
 
