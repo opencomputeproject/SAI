@@ -507,6 +507,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
+        case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
@@ -731,6 +732,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
+        case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
             break;
 
         case SAI_ATTR_VALUE_TYPE_INT8_LIST:
