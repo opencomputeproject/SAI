@@ -492,6 +492,10 @@ sub ProcessEnumSection
 
             push$SAI_ENUMS{$enumtypename}{values},$enumvaluename;
 
+            if (not $enumvaluename =~/^[A-Z0-9_]+$/)
+            {
+                LogError "enum $enumvaluename uses characters outside [A-Z0-9_]+";
+            }
         }
 
         # remove unnecessary attributes
