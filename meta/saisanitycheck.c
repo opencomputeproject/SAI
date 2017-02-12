@@ -4,6 +4,7 @@
 #include <sai.h>
 #include "saimetadatautils.h"
 #include "saimetadata.h"
+#include "saimetadatalogger.h"
 
 typedef struct _defined_attr_t {
 
@@ -3310,6 +3311,8 @@ int main(int argc, char **argv)
 {
     debug = (argc > 1);
 
+    SAI_META_LOG_ENTER();
+
     check_all_enums_name_pointers();
     check_all_enums_values();
     check_sai_status();
@@ -3338,7 +3341,11 @@ int main(int argc, char **argv)
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
 
+    SAI_META_LOG_DEBUG("log test");
+
     printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
+
+    SAI_META_LOG_EXIT();
 
     return 0;
 }
