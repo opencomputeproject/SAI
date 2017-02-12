@@ -4,6 +4,7 @@
 #include <sai.h>
 #include "saimetadatautils.h"
 #include "saimetadata.h"
+#include "saimetadatalogger.h"
 
 typedef struct _defined_attr_t {
 
@@ -632,6 +633,12 @@ void check_attr_default_required(
 
     if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
     {
+        /*
+         * If default value type is NONE, then default value must be NULL.
+         */
+
+        META_ASSERT_NULL(md->defaultvalue);
+
         if (sai_metadata_is_acl_field_or_action(md))
         {
             /*
@@ -1176,9 +1183,14 @@ void check_attr_validonly(
             META_ASSERT_FAIL(md, "marked as validonly, but invalid creation flags: 0x%u", md->flags);
     }
 
-    if ((md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE) ||
-            (md->defaultvalue == NULL))
+    if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
     {
+        /*
+         * In struct defaultvalue member can be NULL for some other default
+         * value types like empty list or internal etc. Default value is
+         * provided for CONST only.
+         */
+
         META_ASSERT_FAIL(md, "expected default value on vlaid only attribute, but none provided");
     }
 
@@ -3345,6 +3357,8 @@ int main(int argc, char **argv)
 {
     debug = (argc > 1);
 
+    SAI_META_LOG_ENTER();
+
     check_all_enums_name_pointers();
     check_all_enums_values();
     check_sai_status();
@@ -3380,7 +3394,11 @@ int main(int argc, char **argv)
         check_single_object_info(sai_all_object_type_infos[i]);
     }
 
+    SAI_META_LOG_DEBUG("log test");
+
     printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
+
+    SAI_META_LOG_EXIT();
 
     return 0;
 }

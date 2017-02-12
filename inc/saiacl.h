@@ -83,16 +83,16 @@ typedef enum _sai_acl_ip_type_t
     SAI_ACL_IP_TYPE_NON_IP,
 
     /** Any IPv4 packet */
-    SAI_ACL_IP_TYPE_IPv4ANY,
+    SAI_ACL_IP_TYPE_IPV4ANY,
 
     /** Anything but IPv4 packets */
-    SAI_ACL_IP_TYPE_NON_IPv4,
+    SAI_ACL_IP_TYPE_NON_IPV4,
 
     /** IPv6 packet */
-    SAI_ACL_IP_TYPE_IPv6ANY,
+    SAI_ACL_IP_TYPE_IPV6ANY,
 
     /** Anything but IPv6 packets */
-    SAI_ACL_IP_TYPE_NON_IPv6,
+    SAI_ACL_IP_TYPE_NON_IPV6,
 
     /** ARP/RARP */
     SAI_ACL_IP_TYPE_ARP,
@@ -190,10 +190,10 @@ typedef enum _sai_acl_action_type_t
     SAI_ACL_ACTION_TYPE_SET_DST_IP,
 
     /** Set Packet Src IPv6 Address */
-    SAI_ACL_ACTION_TYPE_SET_SRC_IPv6,
+    SAI_ACL_ACTION_TYPE_SET_SRC_IPV6,
 
     /** Set Packet Src IPv6 Address */
-    SAI_ACL_ACTION_TYPE_SET_DST_IPv6,
+    SAI_ACL_ACTION_TYPE_SET_DST_IPV6,
 
     /** Set Packet DSCP */
     SAI_ACL_ACTION_TYPE_SET_DSCP,
@@ -474,7 +474,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPv6 = SAI_ACL_TABLE_ATTR_FIELD_START,
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6 = SAI_ACL_TABLE_ATTR_FIELD_START,
 
     /**
      * @brief Dst IPv6 Address
@@ -483,7 +483,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6,
+    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6,
 
     /**
      * @brief Inner Src IPv6 Address
@@ -492,7 +492,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IPv6,
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IPV6,
 
     /**
      * @brief Inner Dst IPv6 Address
@@ -501,7 +501,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IPv6,
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IPV6,
 
     /**
      * @brief Src MAC Address
@@ -780,7 +780,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_IPv6_FLOW_LABEL,
+    SAI_ACL_TABLE_ATTR_FIELD_IPV6_FLOW_LABEL,
 
     /**
      * @brief Class-of-Service (Traffic Class)
@@ -1009,7 +1009,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPv6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
 
     /**
      * @brief Dst IPv6 Address
@@ -1017,7 +1017,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6,
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6,
 
     /**
      * @brief Inner Src IPv6 Address
@@ -1025,7 +1025,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IPv6,
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IPV6,
 
     /**
      * @brief Inner Dst IPv6 Address
@@ -1033,7 +1033,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IPv6,
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IPV6,
 
     /**
      * @brief Src MAC Address
@@ -1287,7 +1287,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_IPv6_FLOW_LABEL,
+    SAI_ACL_ENTRY_ATTR_FIELD_IPV6_FLOW_LABEL,
 
     /**
      * @brief Class-of-Service (Traffic Class)
@@ -1617,7 +1617,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IPv6,
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IPV6,
 
     /**
      * @brief Set Packet Src IPv6 Address
@@ -1625,7 +1625,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IPv6,
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IPV6,
 
     /**
      * @brief Set Packet DSCP (6 bits)

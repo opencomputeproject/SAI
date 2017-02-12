@@ -335,16 +335,9 @@ typedef enum _sai_hostif_trap_attr_t
      * @brief Trap action
      *
      * @type sai_packet_action_t
-     * @flags CREATE_AND_SET | MANDATORY_ON_CREATE
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
-
-    /*
-     * Below attributes are only valid when
-     *
-     * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or
-     * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
-     */
 
     /**
      * @brief Trap priority. This is equivalent to ACL entry priority
@@ -353,6 +346,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default attrvalue SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
 
@@ -363,6 +357,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
      * @default empty
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
      */
     SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
 
@@ -373,6 +368,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @flags CREATE_AND_SET
      * @default attrvalue SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
 
