@@ -679,6 +679,7 @@ sub CreateMetadataHeaderAndSource
     WriteHeader "#include <sai.h>";
     WriteHeader "#include \"saimetadatatypes.h\"";
     WriteHeader "#include \"saimetadatautils.h\"";
+    WriteHeader "#include \"saimetadatalogger.h\"";
 
     WriteSource $HEAD;
     WriteSource "#include <stdio.h>";
@@ -2570,6 +2571,21 @@ sub WriteTestMain
     WriteTest "}";
 }
 
+sub WriteLoggerVariables
+{
+    #
+    # logger requires 2 variables
+    # - log level
+    # - log function
+    #
+    # we can extract this to another source file saimetadatalogger.c
+    # but now seems to be unnecessary
+    #
+
+    WriteSource "volatile sai_log_level_t sai_meta_log_level = SAI_LOG_LEVEL_NOTICE;";
+    WriteSource "volatile sai_meta_log_fn sai_meta_log = NULL;";
+}
+
 #
 # MAIN
 #
@@ -2622,5 +2638,7 @@ WriteTestHeader();
 CreateNonObjectIdTest();
 
 WriteTestMain();
+
+WriteLoggerVariables();
 
 WriteMetaDataFiles();
