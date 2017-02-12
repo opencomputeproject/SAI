@@ -3318,6 +3318,41 @@ void check_switch_create_only_objects()
     }
 }
 
+void check_quad_api_pointers(
+    _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Check if quad api pointers are not NULL except hostif packet and fdb
+     * flush which are special.
+     */
+
+    if (oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
+        oi->objecttype == SAI_OBJECT_TYPE_FDB_FLUSH)
+    {
+        META_ASSERT_NULL(oi->create);
+        META_ASSERT_NULL(oi->remove);
+        META_ASSERT_NULL(oi->set);
+        META_ASSERT_NULL(oi->get);
+    }
+    else
+    {
+        META_ASSERT_NOT_NULL(oi->create);
+        META_ASSERT_NOT_NULL(oi->remove);
+        META_ASSERT_NOT_NULL(oi->set);
+        META_ASSERT_NOT_NULL(oi->get);
+    }
+}
+
+void check_single_object_info(
+    _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    check_quad_api_pointers(oi);
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -3351,6 +3386,13 @@ int main(int argc, char **argv)
     check_reverse_graph_for_non_object_id();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
+
+    i = SAI_OBJECT_TYPE_NULL + 1;
+
+    for (; i < SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        check_single_object_info(sai_all_object_type_infos[i]);
+    }
 
     SAI_META_LOG_DEBUG("log test");
 

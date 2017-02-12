@@ -897,6 +897,41 @@ typedef struct _sai_rev_graph_member_t
 
 } sai_rev_graph_member_t;
 
+/*
+ * Generic QUAD api definitions. All apis can be called using this quad genric
+ * functions.
+ *
+ * When creating switch object or non object id switch_id parameter is ignored,
+ * and can be NULL. Currently objecttype inside sai_object_meta_key_t is
+ * ignored and can be skipped.
+ *
+ * This generic quad api will help us later to call any api, without doind any
+ * switch cases for calling differen signature functions including non object
+ * id structs. Also later we will generate automatic serialize and deserialize
+ * methods for non object id which will deserialize data to object union in
+ * sai_object_meta_key_t to right place.
+ *
+ * TODO add medatada init function which will populate global api function
+ * pointers which will be used when calling each api.
+ */
+
+typedef sai_status_t (*sai_meta_generic_create_fn)(
+        _Inout_ sai_object_meta_key_t *meta_key,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_meta_generic_remove_fn)(
+        _In_ const sai_object_meta_key_t *meta_key);
+
+typedef sai_status_t (*sai_meta_generic_set_fn)(
+        _In_ const sai_object_meta_key_t *meta_key,
+        _In_ const sai_attribute_t *attr);
+
+typedef sai_status_t (*sai_meta_generic_get_fn)(
+        _In_ const sai_object_meta_key_t *meta_key,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief SAI object type information
@@ -949,6 +984,26 @@ typedef struct _sai_object_type_info_t
      * @brief Defines reverse dependency graph members
      */
     const sai_rev_graph_member_t** const    revgraphmembers;
+
+    /**
+     * @brief Create function pointer.
+     */
+    const sai_meta_generic_create_fn        create;
+
+    /**
+     * @brief Remove function pointer.
+     */
+    const sai_meta_generic_remove_fn        remove;
+
+    /**
+     * @brief Set function pointer.
+     */
+    const sai_meta_generic_set_fn           set;
+
+    /**
+     * @brief Get function pointer
+     */
+    const sai_meta_generic_get_fn           get;
 
 } sai_object_type_info_t;
 
