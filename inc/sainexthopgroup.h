@@ -65,9 +65,10 @@ typedef enum _sai_next_hop_group_attr_t
 
     /**
      * @brief Next hop member list
+     *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER
      */
     SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_MEMBER_LIST,
 
@@ -101,22 +102,25 @@ typedef enum _sai_next_hop_group_member_attr_t
 
     /**
      * @brief Next hop group id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_START,
 
     /**
      * @brief Next hop id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_NEXT_HOP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID,
 
     /**
      * @brief Member weights
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 1

@@ -80,8 +80,8 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @brief Tunnel map ex
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP = 0x00000001,
 
@@ -163,8 +163,8 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @brief Bridge ID key
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_BRIDGE_ID_KEY = 0x0000000a,
@@ -173,8 +173,8 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @brief Bridge ID value
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_BRIDGE_ID_VALUE = 0x0000000b,
@@ -351,7 +351,8 @@ typedef enum _sai_tunnel_dscp_mode_t
      * with nodes along the tunnel.
      *
      * DSCP field is user-defined for outer header on encapsulation. DSCP
-     * field of inner header remains the same on decapsulation. */
+     * field of inner header remains the same on decapsulation.
+     */
     SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
 
 } sai_tunnel_dscp_mode_t;
@@ -424,8 +425,8 @@ typedef enum _sai_tunnel_attr_t
      * Underlay interface is router interface when conditions are met
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
@@ -436,8 +437,8 @@ typedef enum _sai_tunnel_attr_t
      * Overlay interface is router interface when conditions are met
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_OVERLAY_INTERFACE,
@@ -504,8 +505,8 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @validonly SAI_TUNNEL_ATTR_ENCAP_GRE_KEY_VALID == true
      * @default 0
+     * @validonly SAI_TUNNEL_ATTR_ENCAP_GRE_KEY_VALID == true
      */
     SAI_TUNNEL_ATTR_ENCAP_GRE_KEY,
 
@@ -522,8 +523,8 @@ typedef enum _sai_tunnel_attr_t
      * @brief Tunnel encap mappers
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
      * @condition SAI_TUNNEL_ATTR_ENCAP_ECN_MODE == SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
      */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
@@ -543,8 +544,8 @@ typedef enum _sai_tunnel_attr_t
      * @brief Tunnel decap mappers
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
      * @condition SAI_TUNNEL_ATTR_DECAP_ECN_MODE == SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
      */
     SAI_TUNNEL_ATTR_DECAP_MAPPERS,
@@ -663,8 +664,8 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * @brief Tunnel virtual router id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_VR_ID = SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_START,
 
@@ -706,8 +707,8 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * @brief Tunnel id to be use for decap
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_ACTION_TUNNEL_ID,
 

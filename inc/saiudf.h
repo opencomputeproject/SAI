@@ -63,8 +63,8 @@ typedef enum _sai_udf_attr_t
      * @brief UDF match ID
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_UDF_MATCH
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_UDF_MATCH
      */
     SAI_UDF_ATTR_MATCH_ID = SAI_UDF_ATTR_START,
 
@@ -72,8 +72,8 @@ typedef enum _sai_udf_attr_t
      * @brief UDF group id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_UDF_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_UDF_GROUP
      */
     SAI_UDF_ATTR_GROUP_ID,
 
@@ -208,8 +208,8 @@ typedef enum _sai_udf_group_attr_t
      * @brief UDF list
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_UDF
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_UDF
      */
     SAI_UDF_GROUP_ATTR_UDF_LIST = SAI_UDF_GROUP_ATTR_START,
 

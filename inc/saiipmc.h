@@ -100,8 +100,8 @@ typedef enum _sai_ipmc_entry_attr_t
      * If the group has no member, packets will be discarded
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_IPMC_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_IPMC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_IPMC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD
@@ -114,8 +114,8 @@ typedef enum _sai_ipmc_entry_attr_t
      * If not set or the group has no member, RPF checking will be disabled
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_RPF_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_RPF_GROUP
      */
     SAI_IPMC_ENTRY_ATTR_RPF_GROUP_ID,
 

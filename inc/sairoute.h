@@ -80,10 +80,10 @@ typedef enum _sai_route_entry_attr_t
      * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_PORT
-     * @default SAI_NULL_OBJECT_ID
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_PORT
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID,
 

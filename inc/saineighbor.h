@@ -68,8 +68,10 @@ typedef enum _sai_neighbor_entry_attr_t
 
     /**
      * @brief Neighbor not to be programmed as a host route entry in ASIC and
-     * to be only used to setup next-hop purpose. Typical use-case is to set
-     * this true for neighbor with IPv6 link-local addresses.
+     * to be only used to setup next-hop purpose.
+     *
+     * Typical use-case is to set this true for neighbor with IPv6 link-local
+     * addresses.
      *
      * @type bool
      * @flags CREATE_AND_SET

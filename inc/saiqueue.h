@@ -76,8 +76,8 @@ typedef enum _sai_queue_attr_t
      * @brief Pord id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_QUEUE_ATTR_PORT = 0x00000001,
 
@@ -97,8 +97,8 @@ typedef enum _sai_queue_attr_t
      * the MANDATORY_ON_CREATE FLAG when HQoS is introduced
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP, SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP, SAI_OBJECT_TYPE_PORT
      */
     SAI_QUEUE_ATTR_PARENT_SCHEDULER_NODE = 0x00000003,
 
@@ -110,8 +110,8 @@ typedef enum _sai_queue_attr_t
      * ID = #SAI_NULL_OBJECT_ID to disable WRED
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_WRED
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_WRED
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -119,11 +119,12 @@ typedef enum _sai_queue_attr_t
 
     /**
      * @brief Attach buffer profile to Queue
+     *
      * Default no profile
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -133,8 +134,8 @@ typedef enum _sai_queue_attr_t
      * @brief Attach scheduler to Queue
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SCHEDULER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
