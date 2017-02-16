@@ -2190,10 +2190,11 @@ sub CreateNonObjectIdTest
 sub ExtractStructInfo
 {
     my $struct = shift;
+    my $prefix = shift;
 
     my %S = ();
 
-    my $filename = "struct_${struct}.xml";
+    my $filename = "${prefix}${struct}.xml";
 
     $filename =~ s/_/__/g;
 
@@ -2278,7 +2279,7 @@ sub ProcessSingleNonObjectId
         return undef;
     }
 
-    my %struct = ExtractStructInfo($structname);
+    my %struct = ExtractStructInfo($structname, "struct_");
 
     for my $member (keys %struct)
     {
@@ -2779,6 +2780,74 @@ sub WriteLoggerVariables
     WriteSource "volatile sai_meta_log_fn sai_meta_log = NULL;";
 }
 
+my %ProcessedItems = ();
+
+sub ProcessStructItem
+{
+    my $type = shift;
+    my $struct = shift;
+
+    $type = $1 if $type =~/^(\w+)\*$/; # handle pointers
+
+    return if defined $ProcessedItems{$type};
+
+    return if defined $SAI_ENUMS{$type}; # struct entry is enum
+
+    return if $type eq "union"; # union is special, but all union members are flattened anyway
+    return if $type eq "bool";
+
+    return if $type =~/^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
+    return if $type =~/^u?int\d+_t/;
+    return if $type =~/^sai_[su]\d+_list_t/;
+
+    if ($type eq "sai_object_id_t" or $type eq "sai_object_list_t")
+    {
+        # NOTE: don't change that, we can't have object id's inside complicated structures
+
+        LogError "type $type in $struct can't be used, please convert struct to new object type and this item to an attribute";
+        return;
+    }
+
+    my %S = ExtractStructInfo($type, "struct_");
+
+    for my $key (keys %S)
+    {
+        my $item = $S{$key}{type};
+
+        ProcessStructItem($item, $type);
+
+        $ProcessedItems{$item} = 1;
+    }
+}
+
+sub CheckAttributeValueUnion
+{
+    #
+    # purpose of this test is to find out if attribute
+    # union contains complex structures members that also contain
+    # object id, all object ids should be simple object id member oid
+    # or object list objlist, other complext structures containing
+    # objects are NOT supported since it will be VERY HARD to track
+    # object dependencies via metadata and comparison logic
+    #
+
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union");
+
+    my @primitives = qw/sai_acl_action_data_t sai_acl_field_data_t sai_pointer_t sai_object_id_t sai_object_list_t char/;
+
+    for my $key (keys %Union)
+    {
+        my $type = $Union{$key}{type};
+
+        next if $type =~/sai_u?int\d+_t/;
+        next if $type =~/sai_[su]\d+_list_t/;
+
+        next if grep(/^$type$/, @primitives);
+
+        ProcessStructItem($type, "sai_attribute_value_t");
+    }
+}
+
 #
 # MAIN
 #
@@ -2823,6 +2892,8 @@ CheckWhiteSpaceInHeaders();
 CheckApiStructNames();
 
 CheckApiDefines();
+
+CheckAttributeValueUnion();
 
 WriteHeader "#endif /* __SAI_METADATA_H__ */";
 
