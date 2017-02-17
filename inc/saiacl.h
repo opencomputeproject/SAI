@@ -1446,7 +1446,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief IPv6 Next Header (8 bits)
-     * This is to qualify 7th Byte value in IPv6 header.
+     * This is to qualify 6th Byte value in IPv6 header.
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
