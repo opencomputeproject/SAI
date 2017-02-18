@@ -199,6 +199,7 @@ typedef sai_status_t (*sai_get_next_hop_group_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_next_hop_group_member_fn)(
     _Out_ sai_object_id_t* next_hop_group_member_id,
+    _In_ sai_object_id_t switch_id,
     _In_ uint32_t attr_count,
     _In_ const sai_attribute_t *attr_list
     );
