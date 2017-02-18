@@ -1409,6 +1409,30 @@ typedef enum _sai_port_stat_t
     /** sai port stat pfc 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
+    /** PFC based ON to OFF pause transitions counter per PFC priority [uint64_t] */
+    SAI_PORT_STAT_PFC_0_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 1 on to off rx pkts */
+    SAI_PORT_STAT_PFC_1_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 2 on to off rx pkts */
+    SAI_PORT_STAT_PFC_2_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 3 on to off rx pkts */
+    SAI_PORT_STAT_PFC_3_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 4 on to off rx pkts */
+    SAI_PORT_STAT_PFC_4_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 5 on to off rx pkts */
+    SAI_PORT_STAT_PFC_5_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 6 on to off rx pkts */
+    SAI_PORT_STAT_PFC_6_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 7 on to off rx pkts */
+    SAI_PORT_STAT_PFC_7_ON2OFF_RX_PKTS,
+
     /**
      * @brief Number of times port state changed from
      * high power mode to low power mode in TX direction [uint64_t]
