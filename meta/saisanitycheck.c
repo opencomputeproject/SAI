@@ -1917,6 +1917,117 @@ void check_attr_acl_field_or_action(
     }
 }
 
+void check_attr_existing_objects(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this test it to find attributes on objects exisring already
+     * on the switch with attributes that are mandatory on create and create
+     * and set.  Those attributes can be changed by user fro previous value,
+     * and this causes problem for comparison logic to bring those objects to
+     * default value. We need to store those initial values of created objects
+     * somewhere.
+     */
+
+    if (sai_all_object_type_infos[md->objecttype]->isnonobjectid)
+    {
+        return;
+    }
+
+    switch (md->objecttype)
+    {
+        /*
+         * Those objects are not existing on the switch by default user needs
+         * to crete them.
+         */
+
+        case SAI_OBJECT_TYPE_SAMPLEPACKET:
+        case SAI_OBJECT_TYPE_HOSTIF_TRAP:
+        case SAI_OBJECT_TYPE_MIRROR_SESSION:
+            return;
+
+            /*
+             * Those objects are objects which exist already on the switch, to bring
+             * back them to default state by comparison logic, we should not have any
+             * MANDATORY_ON_CREATE attributes on them.
+             */
+
+        case SAI_OBJECT_TYPE_VLAN_MEMBER:
+        case SAI_OBJECT_TYPE_VLAN:
+        case SAI_OBJECT_TYPE_HASH:
+        case SAI_OBJECT_TYPE_STP:
+        case SAI_OBJECT_TYPE_VIRTUAL_ROUTER:
+        case SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP:
+        case SAI_OBJECT_TYPE_SWITCH:
+        case SAI_OBJECT_TYPE_PORT:
+        case SAI_OBJECT_TYPE_QUEUE:
+        case SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP:
+        case SAI_OBJECT_TYPE_SCHEDULER_GROUP:
+        default:
+            break;
+    }
+
+    if (!HAS_FLAG_MANDATORY_ON_CREATE(md->flags) || !HAS_FLAG_CREATE_AND_SET(md->flags))
+    {
+        return;
+    }
+
+    /*
+     * If attribute is mandatory on create and create and set then there is no
+     * default value on created object, and user can change it's value so in
+     * comparison logic we will need to mantain this state somewhere as
+     * default.
+     */
+
+    /*
+     * Currently we are limiting value types on existing objects that are
+     * mandatory on create to primitive values.
+     */
+
+    switch (md->attrvaluetype)
+    {
+        case SAI_ATTR_VALUE_TYPE_UINT32:
+        case SAI_ATTR_VALUE_TYPE_INT32:
+        case SAI_ATTR_VALUE_TYPE_INT8:
+
+            /*
+             * Primitives we can skip for now, just left as was set by user
+             * with warning in syslog.
+             */
+
+            break;
+
+        case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+
+            if (md->allownullobjectid)
+            {
+                /*
+                 * If object allows NULL object id then we assume that this can
+                 * be used as default value.
+                 */
+
+                return;
+            }
+
+            /*
+             * When type is object id we need to store it's previous value
+             * since we will not be albe to bring it to default.
+             */
+
+            META_WARN_LOG("Default value needs to be stored %s", md->attridname);
+
+            break;
+
+        default:
+
+            META_ASSERT_FAIL(md, "not supported attr value type on existing object");
+    }
+
+    /* TODO there is default .1Q Bridge present */
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1949,6 +2060,7 @@ void check_single_attribute(
     check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
     check_attr_acl_field_or_action(md);
+    check_attr_existing_objects(md);
 
     define_attr(md);
 }
