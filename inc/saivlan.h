@@ -89,8 +89,8 @@ typedef enum _sai_vlan_attr_t
      * @brief List of vlan members in a VLAN
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_VLAN_MEMBER
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_VLAN_MEMBER
      */
     SAI_VLAN_ATTR_MEMBER_LIST,
 
@@ -111,8 +111,8 @@ typedef enum _sai_vlan_attr_t
      * Ddefault to default stp instance id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_STP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_STP
      * @default attrvalue SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID
      */
     SAI_VLAN_ATTR_STP_INSTANCE,
@@ -160,10 +160,10 @@ typedef enum _sai_vlan_attr_t
      * If the group has no member, unknown multicast packets will be discarded.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
-     * @default SAI_NULL_OBJECT_ID
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_VLAN_ATTR_UNKNOWN_NON_IP_MCAST_OUTPUT_GROUP_ID,
 
@@ -177,10 +177,10 @@ typedef enum _sai_vlan_attr_t
      * If the group has no member, unknown multicast packets will be discarded.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
-     * @default SAI_NULL_OBJECT_ID
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_VLAN_ATTR_UNKNOWN_IPV4_MCAST_OUTPUT_GROUP_ID,
 
@@ -194,10 +194,10 @@ typedef enum _sai_vlan_attr_t
      * If the group has no member, unknown multicast packets will be discarded.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
-     * @default SAI_NULL_OBJECT_ID
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_VLAN_ATTR_UNKNOWN_IPV6_MCAST_OUTPUT_GROUP_ID,
 
@@ -212,10 +212,10 @@ typedef enum _sai_vlan_attr_t
      * If the group has no member, unknown multicast packets will be discarded.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
-     * @default SAI_NULL_OBJECT_ID
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_VLAN_ATTR_UNKNOWN_LINKLOCAL_MCAST_OUTPUT_GROUP_ID,
 
@@ -228,8 +228,8 @@ typedef enum _sai_vlan_attr_t
      * in the attribute value.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -244,8 +244,8 @@ typedef enum _sai_vlan_attr_t
      * in the attribute value.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -289,8 +289,8 @@ typedef enum _sai_vlan_member_attr_t
      * @brief VLAN ID
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_VLAN
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_VLAN
      */
     SAI_VLAN_MEMBER_ATTR_VLAN_ID = SAI_VLAN_MEMBER_ATTR_START,
 
@@ -298,8 +298,8 @@ typedef enum _sai_vlan_member_attr_t
      * @brief Bridge port ID. Valid only for .1Q Bridge ports
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      */
     SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID,
 

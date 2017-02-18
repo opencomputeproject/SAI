@@ -106,8 +106,8 @@ typedef enum _sai_l2mc_entry_attr_t
      * If the group has no member, packets will be discarded.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_L2MC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD

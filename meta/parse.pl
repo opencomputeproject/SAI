@@ -443,12 +443,16 @@ sub ProcessDescription
 {
     my ($type, $value, $desc) = @_;
 
+    my @order = ();
+
     $desc =~ s/@@/\n@@/g;
 
     while ($desc =~ /@@(\w+)(.+)/g)
     {
         my $tag = $1;
         my $val = $2;
+
+        push @order,$tag;
 
         $val =~ s/\s+/ /g;
         $val =~ s/^\s*//;
@@ -466,6 +470,17 @@ sub ProcessDescription
         $METADATA{$type}{$value}{objecttype}    = $type;
         $METADATA{$type}{$value}{attrid}        = $value;
     }
+
+    my $count = @order;
+
+    return if $count == 0;
+
+    my $order = join(":",@order);
+
+    return if $order =~/^type(:flags)?(:objects)?(:allownull)?(:isvlan)?(:default)?(:condition|:validonly)?$/;
+    return if $order =~/^ignore$/;
+
+    LogWarning "metadata tags are not in right order: $order on $value";
 }
 
 sub ProcessEnumSection

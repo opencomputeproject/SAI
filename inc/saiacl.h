@@ -337,16 +337,17 @@ typedef enum _sai_acl_table_group_member_attr_t
      * actions are resolved in case of parallel.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_GROUP_ID = SAI_ACL_TABLE_GROUP_MEMBER_ATTR_START,
 
     /**
      * @brief ACL table id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_ID,
 
@@ -962,8 +963,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief SAI ACL table object id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      */
     SAI_ACL_ENTRY_ATTR_TABLE_ID = SAI_ACL_ENTRY_ATTR_START,
 
@@ -1087,8 +1088,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief In-Ports (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS,
 
@@ -1096,8 +1097,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Out-Ports (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS,
 
@@ -1105,8 +1106,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief In-Port (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
 
@@ -1114,8 +1115,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Out-Port (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
@@ -1124,8 +1125,8 @@ typedef enum _sai_acl_entry_attr_t
      * (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_PORT,
 
@@ -1325,6 +1326,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief DST MAC address match user meta data in FDB
+     *
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE
      *
@@ -1335,6 +1337,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief DST IP address match user meta data in Route Table
+     *
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_ROUTE_DST_USER_META_DATA_RANGE
      *
@@ -1345,6 +1348,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief DST IP address match user meta data in Neighbor Table
+     *
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE
      *
@@ -1355,6 +1359,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Port User Meta Data
+     *
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE
      *
@@ -1365,6 +1370,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Vlan User Meta Data
+     *
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE
      *
@@ -1375,6 +1381,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Meta Data carried from previous ACL Stage.
+     *
      * When an ACL entry set the meta data, the ACL meta data
      * form previous stages are overriden.
      * Value must be in the range defined in
@@ -1427,11 +1434,12 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Range Type defined in sai_acl_range_type_t
+     *
      * List of SAI ACL Range Object Id
      *
      * @type sai_acl_field_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_ACL_RANGE
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_RANGE
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_RANGE_TYPE,
 
@@ -1456,8 +1464,8 @@ typedef enum _sai_acl_entry_attr_t
      * lag, nexthop, nexthopgroup
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
 
@@ -1466,8 +1474,8 @@ typedef enum _sai_acl_entry_attr_t
      * a port list.
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
 
@@ -1491,8 +1499,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Attach/detach counter id to the entry
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_COUNTER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_COUNTER
      */
     SAI_ACL_ENTRY_ATTR_ACTION_COUNTER,
 
@@ -1500,8 +1508,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Ingress Mirror (mirror session id list)
      *
      * @type sai_acl_action_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS,
 
@@ -1509,8 +1517,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Egress Mirror (mirror session id list)
      *
      * @type sai_acl_action_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS,
 
@@ -1518,8 +1526,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Assosiate with policer (policer id)
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER,
 
@@ -1663,8 +1671,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Set ingress packet sampling (samplepacket session id)
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
 
@@ -1672,8 +1680,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Set egress packet sampling (samplepacket session id)
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
 
@@ -1685,13 +1693,14 @@ typedef enum _sai_acl_entry_attr_t
      * to CPU (Trap/Log) or the destination port points to CPU.
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QUEUE
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QUEUE
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
 
     /**
      * @brief Set Meta Data to carry forward to next ACL Stage
+     *
      * Value Range #SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE
      *
      * @type sai_acl_action_data_t sai_uint32_t
@@ -1701,12 +1710,13 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Egress block port list
+     *
      * Packets matching the ACL entry and egressing out of the ports in the
      * given port list will be dropped.
      *
      * @type sai_acl_action_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
 
@@ -1717,8 +1727,8 @@ typedef enum _sai_acl_entry_attr_t
      * Value Range #SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID,
 
@@ -1757,8 +1767,8 @@ typedef enum _sai_acl_counter_attr_t
      * @brief SAI ACL table object id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      */
     SAI_ACL_COUNTER_ATTR_TABLE_ID = SAI_ACL_COUNTER_ATTR_START,
 
