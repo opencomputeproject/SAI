@@ -317,62 +317,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SUPPORTED_MEDIA_TYPE,
 
     /**
-     * @brief Query list of supported remote port speed (Full-Duplex) in Mbps
-     *
-     * @type sai_u32_list_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_SPEED,
-
-    /**
-     * @brief Query list of supported remote port FEC Mode
-     *
-     * @type sai_u32_list_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_FEC_MODE,
-
-    /**
-     * @brief Query list of Remote Port's Supported HALF-Duplex speed in Mbps
-     *
-     * @type sai_u32_list_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_HALF_DUPLEX_SPEED,
-
-    /**
-     * @brief Query Remote Port's auto-negotiation support
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_AUTO_NEG_MODE,
-
-    /**
-     * @brief Query Remote port supported flow control mode
-     *
-     * @type sai_port_flow_control_mode_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_FLOW_CONTROL_MODE,
-
-    /**
-     * @brief Query Remote port supported asymmetric pause mode
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_ASYMMETRIC_PAUSE_MODE,
-
-    /**
-     * @brief Query Remote port MEDIA type
-     *
-     * @type sai_port_media_type_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_MEDIA_TYPE,
-
-    /**
      * @brief Query list of Advertised remote port speed (Full-Duplex) in Mbps
      *
      * @type sai_u32_list_t
