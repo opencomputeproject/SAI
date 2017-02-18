@@ -71,8 +71,8 @@ typedef enum _sai_stp_attr_t
      * @brief Bridge attached to STP instance
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE
      */
     SAI_STP_ATTR_BRIDGE_ID,
 
@@ -82,8 +82,8 @@ typedef enum _sai_stp_attr_t
      * When a stp is created, this list is empty, all ports state as blocking.
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_STP_PORT
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_STP_PORT
      */
     SAI_STP_ATTR_PORT_LIST,
 
@@ -106,22 +106,25 @@ typedef enum _sai_stp_port_attr_t
 
     /**
      * @brief STP id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_STP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_STP
      */
     SAI_STP_PORT_ATTR_STP = SAI_STP_PORT_ATTR_START,
 
     /**
      * @brief Bridge Port id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      */
     SAI_STP_PORT_ATTR_BRIDGE_PORT,
 
     /**
      * @brief STP port state
+     *
      * @type sai_stp_port_state_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */

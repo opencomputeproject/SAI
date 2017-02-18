@@ -78,8 +78,8 @@ typedef enum _sai_hostif_trap_group_attr_t
      * @brief Sai policer object id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -324,7 +324,7 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_START,
 
     /**
-     * @brief Host interface trap type []
+     * @brief Host interface trap type
      *
      * @type sai_hostif_trap_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
@@ -335,16 +335,9 @@ typedef enum _sai_hostif_trap_attr_t
      * @brief Trap action
      *
      * @type sai_packet_action_t
-     * @flags CREATE_AND_SET | MANDATORY_ON_CREATE
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
-
-    /*
-     * Below attributes are only valid when
-     *
-     * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or
-     * SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
-     */
 
     /**
      * @brief Trap priority. This is equivalent to ACL entry priority
@@ -353,6 +346,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default attrvalue SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
 
@@ -360,9 +354,10 @@ typedef enum _sai_hostif_trap_attr_t
      * @brief List of SAI ports to be excluded (disabled) from the trap generation
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      * @default empty
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
      */
     SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
 
@@ -370,9 +365,10 @@ typedef enum _sai_hostif_trap_attr_t
      * @brief Trap-group ID for the trap
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @default attrvalue SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
 
@@ -484,7 +480,8 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_START,
 
     /**
-     * @brief Host interface user defined trap type [].
+     * @brief Host interface user defined trap type
+     *
      * It is valid to create multiple instances of the same user defined type
      *
      * @type sai_hostif_user_defined_trap_type_t
@@ -506,8 +503,8 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      * @brief Trap-group ID for the trap
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @default attrvalue SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP
      */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_GROUP,
@@ -617,8 +614,8 @@ typedef enum _sai_hostif_attr_t
      * VLAN netdev will be created when object type is SAI_OBJECT_TYPE_VLAN
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_VLAN
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_VLAN
      * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
      */
     SAI_HOSTIF_ATTR_OBJ_ID,
@@ -792,8 +789,8 @@ typedef enum _sai_hostif_table_entry_attr_t
      * should be VLAN ID object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG
      */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_OBJ_ID,
@@ -804,9 +801,10 @@ typedef enum _sai_hostif_table_entry_attr_t
      * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT ||
      * #SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG || #SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN ||
      * #SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP, SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP, SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
      * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG or SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID
      */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID,
@@ -823,9 +821,10 @@ typedef enum _sai_hostif_table_entry_attr_t
      * @brief Host interface table entry action target host interface object
      *
      * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE = #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_HOSTIF
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_HOSTIF
      * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
      */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
@@ -928,8 +927,8 @@ typedef enum _sai_hostif_packet_attr_t
      * @brief Trap ID (for receive-only)
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP, SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP, SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
      */
     SAI_HOSTIF_PACKET_ATTR_HOSTIF_TRAP_ID = SAI_HOSTIF_PACKET_ATTR_START,
 
@@ -937,8 +936,8 @@ typedef enum _sai_hostif_packet_attr_t
      * @brief Ingress port (for receive-only)
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_HOSTIF_PACKET_ATTR_INGRESS_PORT,
 
@@ -946,8 +945,8 @@ typedef enum _sai_hostif_packet_attr_t
      * @brief Ingress LAG (for receive-only)
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_LAG
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_LAG
      */
     SAI_HOSTIF_PACKET_ATTR_INGRESS_LAG,
 
@@ -961,13 +960,14 @@ typedef enum _sai_hostif_packet_attr_t
 
     /**
      * @brief Egress port
+     *
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
      * Applicable for use-case like SAMPLEPACKET traps
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
      * @condition SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
      */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,

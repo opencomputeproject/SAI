@@ -107,8 +107,8 @@ typedef enum _sai_hash_attr_t
      * @brief Hash UDF group
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_UDF_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_UDF_GROUP
      * @default empty
      */
     SAI_HASH_ATTR_UDF_GROUP_LIST,

@@ -53,9 +53,10 @@ typedef enum _sai_l2mc_group_attr_t
 
     /**
      * @brief L2MC member list
+     *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_L2MC_GROUP_MEMBER
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP_MEMBER
      */
     SAI_L2MC_GROUP_ATTR_L2MC_MEMBER_LIST,
 
@@ -81,17 +82,19 @@ typedef enum _sai_l2mc_group_member_attr_t
 
     /**
      * @brief L2MC group id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      */
     SAI_L2MC_GROUP_MEMBER_ATTR_L2MC_GROUP_ID = SAI_L2MC_GROUP_MEMBER_ATTR_START,
 
     /**
      * @brief L2MC output id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      */
     SAI_L2MC_GROUP_MEMBER_ATTR_L2MC_OUTPUT_ID,
 
