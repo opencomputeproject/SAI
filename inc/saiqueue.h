@@ -118,9 +118,7 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000004,
 
     /**
-     * @brief Attach buffer profile to Queue
-     *
-     * Default no profile
+     * @brief Attach buffer profile to queue
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -131,7 +129,7 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000005,
 
     /**
-     * @brief Attach scheduler to Queue
+     * @brief Attach scheduler to queue
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -140,6 +138,17 @@ typedef enum _sai_queue_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000006,
+
+    /**
+     * @brief Queue pause status
+     *
+     * This attribute represents the queue internal hardware state and is
+     * updated upon receiving PFC frames. True indicates the queue is paused.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_QUEUE_ATTR_PAUSE_STATUS = 0x00000007,
 
     /**
      * @brief End of attributes
