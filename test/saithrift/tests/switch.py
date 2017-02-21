@@ -395,7 +395,7 @@ def sai_thrift_create_hostif(client, rif_or_port_id, intf_name):
     attribute1 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_TYPE,
                                         value=attribute1_value)
     attribute2_value = sai_thrift_attribute_value_t(oid=rif_or_port_id)
-    attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_RIF_OR_PORT_ID,
+    attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_OBJ_ID,
                                         value=attribute2_value)
     attribute3_value = sai_thrift_attribute_value_t(chardata=intf_name)
     attribute3 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_NAME,

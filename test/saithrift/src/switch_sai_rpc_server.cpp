@@ -458,7 +458,7 @@ public:
               case SAI_HOSTIF_ATTR_TYPE:
                   attr_list[i].value.s32 = attribute.value.s32;
                   break;
-              case SAI_HOSTIF_ATTR_RIF_OR_PORT_ID:
+              case SAI_HOSTIF_ATTR_OBJ_ID:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_HOSTIF_ATTR_NAME:
@@ -953,7 +953,7 @@ public:
       sai_thrift_parse_next_hop_group_member_attributes(thrift_attr_list, attr_list);
 
       sai_object_id_t nextHopGroupMbrObjId = 0;
-      status = nhop_group_api->create_next_hop_group_member(&nextHopGroupMbrObjId, attr_size, attr_list);
+      status = nhop_group_api->create_next_hop_group_member(&nextHopGroupMbrObjId, gSwitchId, attr_size, attr_list);
 
       if (status == SAI_STATUS_SUCCESS)
       {
