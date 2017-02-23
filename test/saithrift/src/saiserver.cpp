@@ -146,7 +146,7 @@ void sai_diag_shell()
         sai_attribute_t attr;
         attr.id = SAI_SWITCH_ATTR_SWITCH_SHELL_ENABLE;
         attr.value.booldata = true;
-        status = sai_switch_api->set_switch_attribute(&attr);
+        status = sai_switch_api->set_switch_attribute(gSwitchId, &attr);
         if (status != SAI_STATUS_SUCCESS)
         {
             return;
