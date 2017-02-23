@@ -541,11 +541,12 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Query/Configure Port's Advertised OUI code
      *
-     * Organizationally Unique Identifier for 25G/50G auto negotiation
+     * Organizationally Unique Identifier for 25G/50G auto negotiation.
+     * Default is 0x6A737D for 25G Ethernet Consortium
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0x6A737D
      */
     SAI_PORT_ATTR_ADVERTISED_OUI_CODE,
 
