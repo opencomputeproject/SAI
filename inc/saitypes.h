@@ -217,7 +217,11 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_BRIDGE                   = 57,
     SAI_OBJECT_TYPE_BRIDGE_PORT              = 58,
     SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY         = 59,
-    SAI_OBJECT_TYPE_MAX                      = 60,
+    SAI_OBJECT_TYPE_TAM                      = 60,
+    SAI_OBJECT_TYPE_TAM_SNAPSHOT             = 61,
+    SAI_OBJECT_TYPE_TAM_TRANSPORTER          = 62,
+    SAI_OBJECT_TYPE_TAM_THRESHOLD            = 63
+    SAI_OBJECT_TYPE_MAX                      = 64,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
