@@ -1232,7 +1232,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Set Switch TAM event notification callback function passed to the adapter.
      *
-     * Use sai_packet_event_notification_fn as notification function.
+     * Use sai_tam_event_notification_fn as notification function.
      *
      * @type sai_pointer_t sai_tam_event_notification_fn
      * @flags CREATE_AND_SET
