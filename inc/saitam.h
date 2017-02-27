@@ -197,7 +197,7 @@ typedef enum _sai_tam_attr_t
      */
     SAI_TAM_ATTR_START,
 
-    /*
+    /**
      * @brief Operational State for the Buffer Tracking
      *
      * @type bool
@@ -206,7 +206,7 @@ typedef enum _sai_tam_attr_t
      */
     SAI_TAM_ATTR_BUFFER_TRACKING_ADMIN_STATE,
 
-    /*
+    /**
      * @brief Statistics reporting mode.
      * When not specified, reports in number of bytes (DEFAULT)
      *
@@ -261,7 +261,7 @@ typedef enum _sai_tam_attr_t
      */
     SAI_TAM_ATTR_TRANSPORTER,
 
-    /*
+    /**
      * @brief Clear all Thresholds
      * If this attribute is specified and set to true, then
      * the following actions take place for each of the created threshold objects
@@ -275,7 +275,7 @@ typedef enum _sai_tam_attr_t
      */
     SAI_TAM_ATTR_CLEAR_ALL_THRESHOLDS,
 
-    /*
+    /**
      * @brief Total Number of counters supported
      *
      * @type sai_uint32_t
@@ -284,7 +284,7 @@ typedef enum _sai_tam_attr_t
      */
     SAI_TAM_ATTR_TOTAL_NUM_STATISTICS,
 
-    /*
+    /**
      * @brief Latest Snapshot ID
      *
      * @type sai_object_id_t
@@ -294,7 +294,7 @@ typedef enum _sai_tam_attr_t
      */
     SAI_TAM_ATTR_LATEST_SNAPSHOT_ID,
 
-    /*
+    /**
      * @brief Maximum Number of snapshots that can be created.
      * If the number of currently created snapshots already reach this limit, any
      * attempt to create more snapshots return error.
