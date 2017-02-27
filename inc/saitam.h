@@ -112,7 +112,7 @@ typedef sai_status_t(*sai_tam_stat_create_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_tam_stat_remove_fn)(
-        _In_ sai_object_id_t *stat_id);
+        _In_ sai_object_id_t stat_id);
 
 /**
  * @brief Set TAM stat id object attribute value(s).
@@ -349,7 +349,7 @@ typedef sai_status_t(*sai_tam_create_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_tam_remove_fn)(
-        _In_ sai_object_id_t *tam_id);
+        _In_ sai_object_id_t tam_id);
 
 /**
  * @brief Set TAM attribute value(s).
@@ -565,7 +565,7 @@ typedef sai_status_t(*sai_tam_threshold_create_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_tam_threshold_remove_fn)(
-        _In_ sai_object_id_t *threshold_id);
+        _In_ sai_object_id_t threshold_id);
 
 /**
  * @brief Set threshold attribute value(s).
@@ -686,7 +686,7 @@ typedef sai_status_t(*sai_tam_snapshot_create_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_tam_snapshot_remove_fn)(
-        _In_ sai_object_id_t *snapshot_id);
+        _In_ sai_object_id_t snapshot_id);
 
 /**
  * @brief Set Snapshot attribute value(s).
@@ -831,7 +831,7 @@ typedef sai_status_t(*sai_tam_transporter_create_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_tam_transporter_remove_fn)(
-        _In_ sai_object_id_t *transporter_id);
+        _In_ sai_object_id_t transporter_id);
 
 /**
  * @brief Set TAM Transporter attribute value(s).
