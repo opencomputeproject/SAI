@@ -34,13 +34,9 @@
  */
 
 /**
- *  @brief TAM Statistic ID
+ * @brief TAM Statistic ID
  *
- *  Identifies a specific counter within the SAI object hierarchy
- *  This typedef will be part of saitypes.h and more specifically added to the
- *  union sai_attribute_value_t so that this statistic id can be sent as attribute
- *  to various API
- *
+ * Identifies a specific counter within the SAI object hierarchy
  */
 
 typedef struct _sai_tam_statistic_id_t {
@@ -66,40 +62,129 @@ typedef struct _sai_tam_statistic_id_t {
 } sai_tam_statistic_id_t;
 
 /**
-*  @brief TAM Statistic ID List
-*/
+ * @brief TAM Statistic ID
+ *
+ * Identifies a specific counter within the SAI object hierarchy
+ */
+typedef enum _sai_tam_stat_attr_t 
+{
+    /**
+  	 * @brief Start of Attributes
+     */
+    SAI_TAM_STAT_ATTR_START,
 
-typedef struct _sai_tam_statistic_id_list_t {
-	/**
-	 * @brief count*/
-	 */
-	uint32_t count;
-	/**
-	 * @brief list*/
-	 */
-	sai_tam_statistic_id_t *list;
+    /**
+     * @brief Monitored object id
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+	SAI_TAM_STAT_ATTR_PARENT_ID,
 
-} sai_tam_statistic_id_list;
+    /**
+     * @brief Monitored object type
+     * Eg.: SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
+     * Not used for input. Optional for output.
+     * 
+     * @type sai_object_type_t
+     * @flags READ_ONLY
+     */
+	SAI_TAM_STAT_ATTR_PARENT_TYPE,
 
+    /**
+     * @brief Counter
+     * Eg.: SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES
+     *
+     * @type uint32_t
+     */
+    SAI_TAM_STAT_ATTR_COUNTER_ID,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_TAM_STAT_ATTR_END,
+    
+    /** Custom range base value */
+    SAI_TAM_STAT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_TAM_STAT_ATTR_CUSTOM_RANGE_END
+	
+} sai_tam_stat_attr_t;
 
 /**
-*  @brief TAM Statistic
-*
-*  Identifies a specific counter within the SAI object hierarchy
-*  and provides the current value of the counter
-*/
+ * @brief Create and return a TAM stat id object
+ *
+ * This creates a TAM stat id object.
+ *
+ * @param[out] tam_id TAM object
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count number of attributes
+ * @param[in] attr_list array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t(*sai_tam_stat_create_fn)(
+	    _Out_ sai_object_id_t *stat_id,
+	    _In_ sai_object_id_t switch_id,
+	    _In_ uint32_t attr_count,
+	    _In_ const sai_attribute_t *attr_list);
 
-typedef struct _sai_tam_statistic_t {
-	/**
-        * @brief Statistic ID*/
-        */
+/**
+ *
+ * @brief Deletes a specified tam stat id object.
+ *
+ * @param[in] stat_id TAM object to be removed.
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t(*sai_tam_stat_remove_fn)(
+        _In_ sai_object_id_t *stat_id);
 
-	sai_tam_statistic_id_t statistic_id;
-	/**
-        * @brief Value*/
-        */
+/**
+ * @brief Set TAM stat id object attribute value(s).
+ *
+ * @param[in] stat_id TAM stat id
+ * @param[in] attr attribute to set
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t(*sai_tam_stat_attribute_set_fn)(
+        _In_ sai_object_id_t stat_id,
+        _In_ const sai_attribute_t *attr);
 
-	uint64_t   value;
+/**
+ * @brief Get values for specified TAM stat id attributes.
+ *
+ * @param[in] stat_id - tam stat id object id
+ * @param[in] attr_count - number of attributes
+ * @param[inout] attr_list - array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t(*sai_tam_stat_attribute_get_fn)(
+        _In_ sai_object_id_t stat_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief TAM Statistic
+ *
+ * Identifies a specific counter within the SAI object hierarchy
+ * and provides the current value of the counter
+ */
+typedef struct _sai_tam_statistic_t 
+{
+    /**
+     * @brief Statistic ID
+     * @objects SAI_OBJECT_TYPE_TAM_STAT
+     */
+    sai_object_id_t statistic_id;
+
+    /**
+     * @brief Value
+     */
+    uint64_t value;
 
 } sai_tam_statistic_t;
 
@@ -158,45 +243,47 @@ typedef enum _sai_tam_attr_t
      */
     SAI_TAM_ATTR_BUFFER_REPORTING_MODE,
 
-	/**
-	* @brief Buffer Tracker Mode
-	*
-	* Specifies whether the Chip should track the peak values of the
-	* buffers or current usage values (DEFAULT)
-	*
-	* @type sai_tam_tracking_options_t
-	* @default SAI_TAM_TRACKING_MODE_CURRENT
-	* @allownull true
-	*/
-	SAI_TAM_ATTR_BUFFER_TRACKING_MODE,
+    /**
+     * @brief Buffer Tracker Mode
+     *
+     * Specifies whether the Chip should track the peak values of the
+     * buffers or current usage values (DEFAULT)
+     *
+     * @type sai_tam_tracking_options_t
+     * @default SAI_TAM_TRACKING_MODE_CURRENT
+     * @allownull true
+     */
+    SAI_TAM_ATTR_BUFFER_TRACKING_MODE,
 
-	/**
-	* @brief Buffers/Statistics for tracking using this object
-	*
-	* Specifies the Statistics/Types for tracking. If not specified, all
-	* supported buffers are included for tracking. (DEFAULT)
-	*
-	* A statistic can't be tracked by more then one TAM Objects
-	*
-	* @type sai_tam_statistic_id_list_t
-	* @allownull true
-	*/
-	SAI_TAM_ATTR_TRACKING_OPTIONS,
+    /**
+     * @brief Buffers/Statistics for tracking using this object
+     *
+     * Specifies the Statistics/Types for tracking. If not specified, all
+     * supported buffers are included for tracking. (DEFAULT)
+     *
+     * A statistic can't be tracked by more then one TAM Objects
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_STAT
+     * @allownull true
+     */
+    SAI_TAM_ATTR_TRACKING_OPTIONS,
 
-	/**
-	* @brief Default Transporter
-	*
-	* Provides a default snapshot transporter object for the Tracker.
-	* When a snapshot is made, this transporter will be used
-	* to 'copy' the data to the 'transporter-desired' location.
-	*
-	* In the absence of a transporter, the tracker will copy the
-	* data to the local CPU transporter.
-	*
-	* @type sai_object_id_t
-	* @allownull true
-	*/
-	SAI_TAM_ATTR_TRANSPORTER,
+    /**
+     * @brief Default Transporter
+     *
+     * Provides a default snapshot transporter object for the Tracker.
+     * When a snapshot is made, this transporter will be used
+     * to 'copy' the data to the 'transporter-desired' location.
+     *
+     * In the absence of a transporter, the tracker will copy the
+     * data to the local CPU transporter.
+     *
+     * @type sai_object_id_t
+     * @allownull true
+     */
+    SAI_TAM_ATTR_TRANSPORTER,
 
     /*
      * @brief Clear all Thresholds
@@ -228,19 +315,19 @@ typedef enum _sai_tam_attr_t
     SAI_TAM_ATTR_LATEST_SNAPSHOT_ID,
 
     /*
-	* @brief Maximum Number of snapshots that can be created.
-	* If the number of currently created snapshots already reach this limit, any
-	* attempt to create more snapshots return error.
-	*
-	* @type uint32_t
-	* @flags READ_ONLY
-	*/
-	SAI_TAM_ATTR_MAX_NUM_SNAPSHOTS,
+     * @brief Maximum Number of snapshots that can be created.
+     * If the number of currently created snapshots already reach this limit, any
+     * attempt to create more snapshots return error.
+     *
+     * @type uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_TAM_ATTR_MAX_NUM_SNAPSHOTS,
 
-	/**
-	* @brief End of Attributes
-	*/
-	SAI_TAM_ATTR_END,
+    /**
+     * @brief End of Attributes
+     */
+    SAI_TAM_ATTR_END,
     
     /** Custom range base value */
     SAI_TAM_ATTR_CUSTOM_RANGE_START = 0x10000000,
@@ -454,7 +541,6 @@ typedef enum _sai_tam_threshold_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_STAT
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_SNAPSHOT_ATTR_STATS,
 
@@ -558,6 +644,7 @@ typedef enum _sai_tam_snapshot_attr_t
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_STAT
      * @allownull true
      */
     SAI_TAM_SNAPSHOT_ATTR_STAT_TYPE,
