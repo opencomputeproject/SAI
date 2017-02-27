@@ -280,7 +280,6 @@ typedef enum _sai_tam_attr_t
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
-     * @default 0
      */
     SAI_TAM_ATTR_TOTAL_NUM_STATISTICS,
 
@@ -290,7 +289,6 @@ typedef enum _sai_tam_attr_t
      * @type sai_object_id_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_TAM_SNAPSHOT
-     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_ATTR_LATEST_SNAPSHOT_ID,
 
@@ -301,7 +299,6 @@ typedef enum _sai_tam_attr_t
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
-     * @default 0
      */
     SAI_TAM_ATTR_MAX_NUM_SNAPSHOTS,
 
