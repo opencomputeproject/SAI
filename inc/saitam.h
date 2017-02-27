@@ -460,7 +460,7 @@ typedef enum _sai_tam_threshold_attr_t
      * any level, which is effectively disabling the threshold monitoring
      * for the statistic
      *
-     * @type uint64_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -516,7 +516,7 @@ typedef enum _sai_tam_threshold_attr_t
      * @objects SAI_OBJECT_TYPE_TAM_STAT
      * @allownull true
      */
-    SAI_TAM_SNAPSHOT_ATTR_STATS,
+    SAI_TAM_THRESHOLD_ATTR_SNAPSHOT_STATS,
 
     /**
      * @brief End of Attributes
@@ -773,7 +773,7 @@ typedef enum _sai_tam_transporter_attr_t {
     SAI_TAM_TRANSPORTER_ATTR_MAX_SNAPSHOT_SIZE,
 
     /**
-     * @type Mirroring session object defining the remote transport capabilities.
+     * @brief Mirroring session object defining the remote transport capabilities.
      *
      * If this attribute is unspecified, Local CPU Transport is used (DEFAULT)
      *
