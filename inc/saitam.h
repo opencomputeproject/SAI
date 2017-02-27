@@ -41,7 +41,7 @@
 typedef enum _sai_tam_stat_attr_t 
 {
     /**
-  	 * @brief Start of Attributes
+     * @brief Start of Attributes
      */
     SAI_TAM_STAT_ATTR_START,
 
@@ -167,11 +167,11 @@ typedef enum _sai_tam_tracking_options_t
 {
     /** Peak value tracking mode */
     SAI_TAM_TRACKING_MODE_PEAK,
-	/** Current value tracking mode */ 
+    /** Current value tracking mode */ 
     SAI_TAM_TRACKING_MODE_CURRENT,
-	/** Average value tracking mode */
+    /** Average value tracking mode */
     SAI_TAM_TRACKING_MODE_AVERAGE,
-	/** Minimum value tracking mode */
+    /** Minimum value tracking mode */
     SAI_TAM_TRACKING_MODE_MINIMUM
 } sai_tam_tracking_options_t;
 
@@ -192,7 +192,7 @@ typedef enum _sai_tam_reporting_options_t
 typedef enum _sai_tam_attr_t 
 {
     /**
-  	 * @brief Start of Attributes
+     * @brief Start of Attributes
      */
     SAI_TAM_ATTR_START,
 
