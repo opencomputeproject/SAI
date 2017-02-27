@@ -1228,7 +1228,7 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
-    
+
     /**
      * @brief Set Switch TAM event notification callback function passed to the adapter.
      *
