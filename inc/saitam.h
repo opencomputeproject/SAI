@@ -38,7 +38,7 @@
  *
  * Identifies a specific counter within the SAI object hierarchy
  */
-typedef enum _sai_tam_stat_attr_t 
+typedef enum _sai_tam_stat_attr_t
 {
     /**
      * @brief Start of Attributes
@@ -55,9 +55,9 @@ typedef enum _sai_tam_stat_attr_t
 
     /**
      * @brief Monitored object type
-     * Eg.: SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP, etc.
+     * Eg.: SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
      * Not used for input. Optional for output.
-     * 
+     *
      * @type sai_object_type_t
      * @flags READ_ONLY
      */
@@ -76,13 +76,13 @@ typedef enum _sai_tam_stat_attr_t
      * @brief End of Attributes
      */
     SAI_TAM_STAT_ATTR_END,
-    
+
     /** Custom range base value */
     SAI_TAM_STAT_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
     SAI_TAM_STAT_ATTR_CUSTOM_RANGE_END
-	
+
 } sai_tam_stat_attr_t;
 
 /**
@@ -146,7 +146,7 @@ typedef sai_status_t(*sai_tam_stat_attribute_get_fn)(
  * Identifies a specific counter within the SAI object hierarchy
  * and provides the current value of the counter
  */
-typedef struct _sai_tam_statistic_t 
+typedef struct _sai_tam_statistic_t
 {
     /**
      * @brief Statistic ID
@@ -164,11 +164,11 @@ typedef struct _sai_tam_statistic_t
 /**
  *  @brief TAM Tracking Options
  */
-typedef enum _sai_tam_tracking_options_t 
+typedef enum _sai_tam_tracking_options_t
 {
     /** Peak value tracking mode */
     SAI_TAM_TRACKING_MODE_PEAK,
-    /** Current value tracking mode */ 
+    /** Current value tracking mode */
     SAI_TAM_TRACKING_MODE_CURRENT,
     /** Average value tracking mode */
     SAI_TAM_TRACKING_MODE_AVERAGE,
@@ -179,7 +179,7 @@ typedef enum _sai_tam_tracking_options_t
 /**
  *  @brief TAM Reporting Options
  */
-typedef enum _sai_tam_reporting_options_t 
+typedef enum _sai_tam_reporting_options_t
 {
     /** Report tracking data in terms of bytes */
     SAI_TAM_REPORTING_MODE_BYTES,
@@ -190,7 +190,7 @@ typedef enum _sai_tam_reporting_options_t
 /**
  * @brief TAM Attributes.
  */
-typedef enum _sai_tam_attr_t 
+typedef enum _sai_tam_attr_t
 {
     /**
      * @brief Start of Attributes
@@ -298,13 +298,13 @@ typedef enum _sai_tam_attr_t
      * @brief End of Attributes
      */
     SAI_TAM_ATTR_END,
-    
+
     /** Custom range base value */
     SAI_TAM_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
     SAI_TAM_ATTR_CUSTOM_RANGE_END
-	
+
 } sai_tam_attr_t;
 
 /**
@@ -408,7 +408,7 @@ typedef struct _sai_tam_threshold_breach_event_t
  * In the absence of a callback function, the event will be ignored (DEFAULT)
  * If neither of callback nor transporter is provided, no snapshot is made.
  * If callback is required but SAI_TAM_THRESHOLD_ATTR_SNAPSHOT_ON_BREACH is
- * set to false,  then the event data passed to the callback function will 
+ * set to false,  then the event data passed to the callback function will
  * have the field is_snapshot_valid set to false.
  *
  * @param[in] count Number of events
@@ -452,8 +452,8 @@ typedef enum _sai_tam_threshold_attr_t
      * If specified, a threshold breach event will be recorded when the buffer
      * usage goes beyond the level.
      *
-     * If not specified, then by default the threshold is created without 
-     * any level, which is effectively disabling the threshold monitoring 
+     * If not specified, then by default the threshold is created without
+     * any level, which is effectively disabling the threshold monitoring
      * for the statistic
      *
      * @type uint64_t
@@ -585,7 +585,7 @@ typedef sai_status_t(*sai_tam_threshold_attribute_get_fn)(
 /**
  * @brief TAM Snapshot Attributes.
  */
-typedef enum _sai_tam_snapshot_attr_t 
+typedef enum _sai_tam_snapshot_attr_t
 {
 
     /**
@@ -724,7 +724,7 @@ typedef sai_status_t(*sai_tam_snapshot_statistics_get_fn)(
 /**
  * @brief TAM type of snapshot transport
  */
-typedef enum _sai_tam_transporter_type_t 
+typedef enum _sai_tam_transporter_type_t
 {
 
     /** Transport local, to the CPU */
@@ -785,7 +785,7 @@ typedef enum _sai_tam_transporter_attr_t {
      * @brief End of Attributes
      */
     SAI_TAM_TRANSPORTER_ATTR_END,
-    
+
     /** Custom range base value */
     SAI_TAM_TRANSPORTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
@@ -849,7 +849,7 @@ typedef sai_status_t(*sai_tam_transporter_attribute_get_fn)(
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
-typedef struct _sai_tam_api_t 
+typedef struct _sai_tam_api_t
 {
     sai_tam_create_fn                       tam_create;
     sai_tam_remove_fn                       tam_remove;
