@@ -68,6 +68,7 @@ typedef enum _sai_tam_stat_attr_t
      * Eg.: SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES
      *
      * @type uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_TAM_STAT_ATTR_COUNTER_ID,
 
@@ -89,7 +90,7 @@ typedef enum _sai_tam_stat_attr_t
  *
  * This creates a TAM stat id object.
  *
- * @param[out] tam_id TAM object
+ * @param[out] tam_id TAM stat id object
  * @param[in] switch_id Switch object id
  * @param[in] attr_count number of attributes
  * @param[in] attr_list array of attributes
@@ -201,7 +202,6 @@ typedef enum _sai_tam_attr_t
      *
      * @type boolean
      * @default true
-     * @allownull true
      */
     SAI_TAM_ATTR_BUFFER_TRACKING_ADMIN_STATE,
 
@@ -211,7 +211,6 @@ typedef enum _sai_tam_attr_t
      *
      * @type sai_tam_reporting_options_t
      * @default SAI_TAM_REPORTING_MODE_BYTES
-     * @allownull true
      */
     SAI_TAM_ATTR_BUFFER_REPORTING_MODE,
 
@@ -223,7 +222,6 @@ typedef enum _sai_tam_attr_t
      *
      * @type sai_tam_tracking_options_t
      * @default SAI_TAM_TRACKING_MODE_CURRENT
-     * @allownull true
      */
     SAI_TAM_ATTR_BUFFER_TRACKING_MODE,
 
