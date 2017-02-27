@@ -67,7 +67,7 @@ typedef enum _sai_tam_stat_attr_t
      * @brief Counter
      * Eg.: SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES
      *
-     * @type uint32_t
+     * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_TAM_STAT_ATTR_COUNTER_ID,
@@ -164,7 +164,7 @@ typedef struct _sai_tam_statistic_t
 /**
  * @brief TAM Tracking Options
  */
-typedef enum _sai_tam_tracking_options_t
+typedef enum _sai_tam_tracking_mode_t
 {
     /** Peak value tracking mode */
     SAI_TAM_TRACKING_MODE_PEAK,
@@ -174,18 +174,18 @@ typedef enum _sai_tam_tracking_options_t
     SAI_TAM_TRACKING_MODE_AVERAGE,
     /** Minimum value tracking mode */
     SAI_TAM_TRACKING_MODE_MINIMUM
-} sai_tam_tracking_options_t;
+} sai_tam_tracking_mode_t;
 
 /**
  * @brief TAM Reporting Options
  */
-typedef enum _sai_tam_reporting_options_t
+typedef enum _sai_tam_reporting_mode_t
 {
     /** Report tracking data in terms of bytes */
     SAI_TAM_REPORTING_MODE_BYTES,
     /** Report tracking data in percentages */
     SAI_TAM_REPORTING_MODE_PERCENTAGE,
-} sai_tam_reporting_options_t;
+} sai_tam_reporting_mode_t;
 
 /**
  * @brief TAM Attributes.
@@ -200,7 +200,8 @@ typedef enum _sai_tam_attr_t
     /*
      * @brief Operational State for the Buffer Tracking
      *
-     * @type boolean
+     * @type bool
+     * @flags CREATE_AND_SET
      * @default true
      */
     SAI_TAM_ATTR_BUFFER_TRACKING_ADMIN_STATE,
@@ -209,7 +210,8 @@ typedef enum _sai_tam_attr_t
      * @brief Statistics reporting mode.
      * When not specified, reports in number of bytes (DEFAULT)
      *
-     * @type sai_tam_reporting_options_t
+     * @type sai_tam_reporting_mode_t
+     * @flags CREATE_AND_SET
      * @default SAI_TAM_REPORTING_MODE_BYTES
      */
     SAI_TAM_ATTR_BUFFER_REPORTING_MODE,
@@ -220,7 +222,8 @@ typedef enum _sai_tam_attr_t
      * Specifies whether the Chip should track the peak values of the
      * buffers or current usage values (DEFAULT)
      *
-     * @type sai_tam_tracking_options_t
+     * @type sai_tam_tracking_mode_t
+     * @flags CREATE_AND_SET
      * @default SAI_TAM_TRACKING_MODE_CURRENT
      */
     SAI_TAM_ATTR_BUFFER_TRACKING_MODE,
@@ -251,6 +254,7 @@ typedef enum _sai_tam_attr_t
      * data to the local CPU transporter.
      *
      * @type sai_object_id_t
+     * @flags CREATE_AND_SET
      * @allownull true
      */
     SAI_TAM_ATTR_TRANSPORTER,
@@ -263,7 +267,7 @@ typedef enum _sai_tam_attr_t
      *    removed
      * 2. Threshold monitoring is disabled
      *
-     * @type Boolean
+     * @type bool
      * @flags WRITE_ONLY | CREATE_AND_SET
      */
     SAI_TAM_ATTR_CLEAR_ALL_THRESHOLDS,
@@ -271,7 +275,7 @@ typedef enum _sai_tam_attr_t
     /*
      * @brief Total Number of counters supported
      *
-     * @type uint32_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
      */
     SAI_TAM_ATTR_TOTAL_NUM_STATISTICS,
@@ -289,7 +293,7 @@ typedef enum _sai_tam_attr_t
      * If the number of currently created snapshots already reach this limit, any
      * attempt to create more snapshots return error.
      *
-     * @type uint32_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
      */
     SAI_TAM_ATTR_MAX_NUM_SNAPSHOTS,
@@ -493,7 +497,7 @@ typedef enum _sai_tam_threshold_attr_t
      * automatically created upon the threshold breach.
      * Otherwise a snapshot is not created.
      *
-     * @type boolean
+     * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
@@ -762,7 +766,7 @@ typedef enum _sai_tam_transporter_attr_t {
      * If this attribute value is zero or unspecified, snapshots are not
      * truncated while transporting. (DEFAULT)
      *
-     * @type uint32_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
