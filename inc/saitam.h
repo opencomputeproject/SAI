@@ -255,6 +255,7 @@ typedef enum _sai_tam_attr_t
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_TRANSPORTER
      * @allownull true
      * @default empty
      */
