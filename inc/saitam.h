@@ -98,10 +98,10 @@ typedef enum _sai_tam_stat_attr_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_tam_stat_create_fn)(
-	    _Out_ sai_object_id_t *stat_id,
-	    _In_ sai_object_id_t switch_id,
-	    _In_ uint32_t attr_count,
-	    _In_ const sai_attribute_t *attr_list);
+        _Out_ sai_object_id_t *stat_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  *
@@ -322,10 +322,10 @@ typedef enum _sai_tam_attr_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_tam_create_fn)(
-	    _Out_ sai_object_id_t *tam_id,
-	    _In_ sai_object_id_t switch_id,
-	    _In_ uint32_t attr_count,
-	    _In_ const sai_attribute_t *attr_list);
+        _Out_ sai_object_id_t *tam_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  *
@@ -462,7 +462,7 @@ typedef enum _sai_tam_threshold_attr_t
      */
     SAI_TAM_THRESHOLD_ATTR_LEVEL,
 
-	/**
+    /**
      * @brief Transporter Object
      *
      * Provides the snapshot transporter object for this threshold.
