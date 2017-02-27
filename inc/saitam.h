@@ -239,7 +239,7 @@ typedef enum _sai_tam_attr_t
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_STAT
-     * @allownull true
+     * @default empty
      */
     SAI_TAM_ATTR_TRACKING_OPTIONS,
 
@@ -520,7 +520,7 @@ typedef enum _sai_tam_threshold_attr_t
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_STAT
-     * @allownull true
+     * @default empty
      */
     SAI_TAM_THRESHOLD_ATTR_SNAPSHOT_STATS,
 
