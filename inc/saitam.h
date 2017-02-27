@@ -61,7 +61,7 @@ typedef enum _sai_tam_stat_attr_t
      * @type sai_object_type_t
      * @flags READ_ONLY
      */
-    SAI_TAM_STAT_ATTR_PARENT_TYPE,
+    SAI_TAM_STAT_ATTR_PARENT_OBJECT_TYPE,
 
     /**
      * @brief Counter
