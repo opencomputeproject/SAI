@@ -55,7 +55,7 @@ typedef enum _sai_tam_stat_attr_t
 
     /**
      * @brief Monitored object type
-     * Eg.: SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
+     * Eg.: SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP, etc.
      * Not used for input. Optional for output.
      * 
      * @type sai_object_type_t
