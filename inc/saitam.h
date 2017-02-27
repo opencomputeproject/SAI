@@ -257,7 +257,7 @@ typedef enum _sai_tam_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_TRANSPORTER
      * @allownull true
-     * @default empty
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_ATTR_TRANSPORTER,
 
@@ -642,6 +642,7 @@ typedef enum _sai_tam_snapshot_attr_t
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_SNAPSHOT_ATTR_TRANSPORTER,
 
@@ -788,6 +789,7 @@ typedef enum _sai_tam_transporter_attr_t {
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_TRANSPORTER
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_TRANSPORTER_ATTR_MONITOR_ID,
 
