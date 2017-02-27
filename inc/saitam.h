@@ -555,7 +555,7 @@ typedef sai_status_t(*sai_tam_threshold_create_fn)(
         _Out_ sai_object_id_t *threshold_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
-        _In_ sai_attribute_t *attr_list);
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Deletes a specified threshold object.
@@ -676,7 +676,7 @@ typedef sai_status_t(*sai_tam_snapshot_create_fn)(
         _Out_ sai_object_id_t *snapshot_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
-        _In_ sai_attribute_t *attr_list);
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Deletes a specified snapshot object and free driver memory.
@@ -821,7 +821,7 @@ typedef sai_status_t(*sai_tam_transporter_create_fn)(
         _Out_ sai_object_id_t *transporter_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
-        _In_ sai_attribute_t *attr_list);
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Deletes a specified Transporter object.
@@ -878,8 +878,8 @@ typedef struct _sai_tam_api_t
     sai_tam_snapshot_attribute_set_fn       set_tam_snapshot_attribute;
     sai_tam_snapshot_attribute_get_fn       get_tam_snapshot_attribute;
     sai_tam_snapshot_statistics_get_fn      get_tam_snapshot_statistics;
-    sai_tam_transporter_create_fn           create_tam_transporter_create;
-    sai_tam_transporter_remove_fn           remove_tam_transporter_remove;
+    sai_tam_transporter_create_fn           create_tam_transporter;
+    sai_tam_transporter_remove_fn           remove_tam_transporter;
     sai_tam_transporter_attribute_set_fn    set_tam_transporter_attribute;
     sai_tam_transporter_attribute_get_fn    get_tam_transporter_attribute;
 } sai_tam_api_t;
