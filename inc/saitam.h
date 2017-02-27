@@ -240,7 +240,6 @@ typedef enum _sai_tam_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_STAT
      * @allownull true
-     * @default empty
      */
     SAI_TAM_ATTR_TRACKING_OPTIONS,
 
