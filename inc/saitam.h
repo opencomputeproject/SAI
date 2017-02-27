@@ -861,27 +861,27 @@ typedef sai_status_t(*sai_tam_transporter_attribute_get_fn)(
 
 typedef struct _sai_tam_api_t
 {
-    sai_tam_create_fn                       tam_create;
-    sai_tam_remove_fn                       tam_remove;
-    sai_tam_attribute_set_fn                tam_attribute_set;
-    sai_tam_attribute_get_fn                tam_attribute_get;
-    sai_tam_stat_create_fn                  tam_stat_create;
-    sai_tam_stat_remove_fn                  tam_stat_remove;
-    sai_tam_stat_attribute_set_fn           tam_stat_attribute_set;
-    sai_tam_stat_attribute_get_fn           tam_stat_attribute_get;
-    sai_tam_threshold_create_fn             tam_threshold_create;
-    sai_tam_threshold_remove_fn             tam_threshold_remove;
-    sai_tam_threshold_attribute_set_fn      tam_threshold_attribute_set;
-    sai_tam_threshold_attribute_get_fn      tam_threshold_attribute_get;
-    sai_tam_snapshot_create_fn              tam_snapshot_create;
-    sai_tam_snapshot_remove_fn              tam_snapshot_remove;
-    sai_tam_snapshot_attribute_set_fn       tam_snapshot_attribute_set;
-    sai_tam_snapshot_attribute_get_fn       tam_snapshot_attribute_get;
-    sai_tam_snapshot_statistics_get_fn      tam_snapshot_statistics_get;
-    sai_tam_transporter_create_fn           tam_transporter_create;
-    sai_tam_transporter_remove_fn           tam_transporter_remove;
-    sai_tam_transporter_attribute_set_fn    tam_transporter_attribute_set;
-    sai_tam_transporter_attribute_get_fn    tam_transporter_attribute_get;
+    sai_tam_create_fn                       create_tam;
+    sai_tam_remove_fn                       remove_tam;
+    sai_tam_attribute_set_fn                set_tam_attribute;
+    sai_tam_attribute_get_fn                get_tam_attribute;
+    sai_tam_stat_create_fn                  create_tam_stat;
+    sai_tam_stat_remove_fn                  remove_tam_stat;
+    sai_tam_stat_attribute_set_fn           set_tam_stat_attribute;
+    sai_tam_stat_attribute_get_fn           get_tam_stat_attribute;
+    sai_tam_threshold_create_fn             create_tam_threshold;
+    sai_tam_threshold_remove_fn             remove_tam_threshold;
+    sai_tam_threshold_attribute_set_fn      set_tam_threshold_attribute;
+    sai_tam_threshold_attribute_get_fn      get_tam_threshold_attribute;
+    sai_tam_snapshot_create_fn              create_tam_snapshot;
+    sai_tam_snapshot_remove_fn              remove_tam_snapshot;
+    sai_tam_snapshot_attribute_set_fn       set_tam_snapshot_attribute;
+    sai_tam_snapshot_attribute_get_fn       get_tam_snapshot_attribute;
+    sai_tam_snapshot_statistics_get_fn      get_tam_snapshot_statistics;
+    sai_tam_transporter_create_fn           create_tam_transporter_create;
+    sai_tam_transporter_remove_fn           remove_tam_transporter_remove;
+    sai_tam_transporter_attribute_set_fn    set_tam_transporter_attribute;
+    sai_tam_transporter_attribute_get_fn    get_tam_transporter_attribute;
 } sai_tam_api_t;
 
 /**
