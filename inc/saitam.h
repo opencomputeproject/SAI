@@ -51,7 +51,7 @@ typedef enum _sai_tam_stat_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
-    SAI_TAM_STAT_ATTR_PARENT_ID,
+    SAI_TAM_STAT_ATTR_PARENT_ID = SAI_TAM_STAT_ATTR_START,
 
     /**
      * @brief Monitored object type
@@ -204,7 +204,7 @@ typedef enum _sai_tam_attr_t
      * @flags CREATE_AND_SET
      * @default true
      */
-    SAI_TAM_ATTR_BUFFER_TRACKING_ADMIN_STATE,
+    SAI_TAM_ATTR_BUFFER_TRACKING_ADMIN_STATE = SAI_TAM_ATTR_START,
 
     /**
      * @brief Statistics reporting mode.
