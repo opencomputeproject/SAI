@@ -38,34 +38,6 @@
  *
  * Identifies a specific counter within the SAI object hierarchy
  */
-
-typedef struct _sai_tam_statistic_id_t {
-
-	/**
-        * @brief Monitored object id*/
-        */
-	sai_object_id_t parent_id;
-
-	/**
-	 * @brief Monitored object type
-	 * Ex : SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
-	 * Not used for input. Optional for output.
-	 */
-	sai_object_type_t parent_type;
-
-/**
-  @brief Counter
-	 * Ex : SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES
-	 */
-	uint32_t   counter_id;
-
-} sai_tam_statistic_id_t;
-
-/**
- * @brief TAM Statistic ID
- *
- * Identifies a specific counter within the SAI object hierarchy
- */
 typedef enum _sai_tam_stat_attr_t 
 {
     /**
