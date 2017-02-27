@@ -240,6 +240,7 @@ typedef enum _sai_tam_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_STAT
      * @allownull true
+     * @default empty
      */
     SAI_TAM_ATTR_TRACKING_OPTIONS,
 
@@ -256,6 +257,7 @@ typedef enum _sai_tam_attr_t
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @allownull true
+     * @default empty
      */
     SAI_TAM_ATTR_TRANSPORTER,
 
@@ -268,7 +270,8 @@ typedef enum _sai_tam_attr_t
      * 2. Threshold monitoring is disabled
      *
      * @type bool
-     * @flags WRITE_ONLY | CREATE_AND_SET
+     * @flags CREATE_AND_SET
+     * @default false
      */
     SAI_TAM_ATTR_CLEAR_ALL_THRESHOLDS,
 
@@ -277,6 +280,7 @@ typedef enum _sai_tam_attr_t
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
+     * @default 0
      */
     SAI_TAM_ATTR_TOTAL_NUM_STATISTICS,
 
@@ -285,6 +289,8 @@ typedef enum _sai_tam_attr_t
      *
      * @type sai_object_id_t
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM_SNAPSHOT
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_ATTR_LATEST_SNAPSHOT_ID,
 
@@ -295,6 +301,7 @@ typedef enum _sai_tam_attr_t
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
+     * @default 0
      */
     SAI_TAM_ATTR_MAX_NUM_SNAPSHOTS,
 
