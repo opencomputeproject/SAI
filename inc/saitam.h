@@ -162,7 +162,7 @@ typedef struct _sai_tam_statistic_t
 } sai_tam_statistic_t;
 
 /**
- *  @brief TAM Tracking Options
+ * @brief TAM Tracking Options
  */
 typedef enum _sai_tam_tracking_options_t
 {
@@ -177,7 +177,7 @@ typedef enum _sai_tam_tracking_options_t
 } sai_tam_tracking_options_t;
 
 /**
- *  @brief TAM Reporting Options
+ * @brief TAM Reporting Options
  */
 typedef enum _sai_tam_reporting_options_t
 {
@@ -408,7 +408,7 @@ typedef struct _sai_tam_threshold_breach_event_t
  * In the absence of a callback function, the event will be ignored (DEFAULT)
  * If neither of callback nor transporter is provided, no snapshot is made.
  * If callback is required but SAI_TAM_THRESHOLD_ATTR_SNAPSHOT_ON_BREACH is
- * set to false,  then the event data passed to the callback function will
+ * set to false, then the event data passed to the callback function will
  * have the field is_snapshot_valid set to false.
  *
  * @param[in] count Number of events
@@ -440,8 +440,8 @@ typedef enum _sai_tam_threshold_attr_t
      * @brief Statistic for this threshold
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TAM_STAT
      * @flags MANDATORY_ON_CREATE
+     * @objects SAI_OBJECT_TYPE_TAM_STAT
      */
     SAI_TAM_THRESHOLD_ATTR_STATISTIC,
 
@@ -533,7 +533,7 @@ typedef enum _sai_tam_threshold_attr_t
  * This creates a threshold in the hardware with the associated statistic
  * passed via the attributes.
  *
- * @param[out] threshold_id  Threshold object
+ * @param[out] threshold_id Threshold object
  * @param[in] switch_id Switch object id
  * @param[in] attr_count number of attributes
  * @param[in] attr_list Preferences for creating a threshold
@@ -549,7 +549,7 @@ typedef sai_status_t(*sai_tam_threshold_create_fn)(
 /**
  * @brief Deletes a specified threshold object.
  *
- * @param[in] threshold_id  - threshold object to be removed.
+ * @param[in] threshold_id Threshold object to be removed.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -756,7 +756,6 @@ typedef enum _sai_tam_transporter_attr_t {
 
     SAI_TAM_TRANSPORTER_ATTR_TYPE = SAI_TAM_TRANSPORTER_ATTR_START,
 
-
     /**
      * @brief Maximum size beyond which it will be truncated.
      *
@@ -800,7 +799,7 @@ typedef enum _sai_tam_transporter_attr_t {
  * This creates a transport object for copying the snapshot data
  * to the desired location
  *
- * @param[out] transporter_id  Transporter object
+ * @param[out] transporter_id Transporter object
  * @param[in] switch_id Switch object id
  * @param[in] attr_count number of attributes
  * @param[in] attr_list array of attributes
