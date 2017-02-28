@@ -2860,6 +2860,11 @@ void check_api_names()
     CHECK_API(bridge, bridge, SAI_OBJECT_TYPE_BRIDGE);
     CHECK_API(bridge, bridge_port, SAI_OBJECT_TYPE_BRIDGE_PORT);
     CHECK_API(tunnel, tunnel_map_entry, SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY);
+    CHECK_API(tam, tam, SAI_OBJECT_TYPE_TAM);
+    CHECK_API(tam, tam_stat, SAI_OBJECT_TYPE_TAM_STAT);
+    CHECK_API(tam, tam_snapshot, SAI_OBJECT_TYPE_TAM_SNAPSHOT);
+    CHECK_API(tam, tam_transporter, SAI_OBJECT_TYPE_TAM_TRANSPORTER);
+    CHECK_API(tam, tam_threshold, SAI_OBJECT_TYPE_TAM_THRESHOLD);
 
 #define CHECK_ENTRY_API(apiname, entry_name, object_type)\
     {\
