@@ -448,6 +448,7 @@ typedef enum _sai_tam_threshold_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
      */
     SAI_TAM_THRESHOLD_ATTR_TAM_ID = SAI_TAM_THRESHOLD_ATTR_START,
 
