@@ -615,6 +615,7 @@ typedef enum _sai_tam_snapshot_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
      */
     SAI_TAM_SNAPSHOT_ATTR_TAM_ID = SAI_TAM_SNAPSHOT_ATTR_START,
 
@@ -630,7 +631,7 @@ typedef enum _sai_tam_snapshot_attr_t
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_STAT
-     * @allownull true
+     * @default empty
      */
     SAI_TAM_SNAPSHOT_ATTR_STAT_TYPE,
 
@@ -645,6 +646,7 @@ typedef enum _sai_tam_snapshot_attr_t
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_TRANSPORTER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -769,7 +771,6 @@ typedef enum _sai_tam_transporter_attr_t {
      * @flags CREATE_AND_SET
      * @default SAI_TAM_TRANSPORTER_TYPE_LOCAL
      */
-
     SAI_TAM_TRANSPORTER_ATTR_TYPE = SAI_TAM_TRANSPORTER_ATTR_START,
 
     /**
