@@ -7,17 +7,7 @@ use diagnostics;
 use XML::Simple qw(:strict);
 use Getopt::Std;
 use Data::Dumper;
-
-# COLOR DEFINITIONS
-my $colorDefault       = "\033[01;00m";
-my $colorGreenBlue     = "\033[104;92m";
-my $colorBlackYellow   = "\033[103;30m";
-my $colorBlackRed      = "\033[31;7m";
-my $colorRed           = "\033[66;91m";
-my $colorGreen         = "\033[66;92m";
-my $colorYellow        = "\033[66;93m";
-my $colorBlue          = "\033[66;94m";
-my $colorAqua          = "\033[66;96m";
+use Term::ANSIColor;
 
 my $errors = 0;
 my $warnings = 0;
@@ -63,28 +53,28 @@ my $optionPrintDebug = 1 if defined $options{d};
 
 sub LogInfo
 {
-    print "${colorGreen}@_${colorDefault}\n";
+    print color('bright_green') . "@_" . color('reset') . "\n";
 }
 
 sub LogWarning
 {
     $warnings++;
-    print "${colorYellow}@_${colorDefault}\n";
+    print color('bright_yellow') . "@_" . color('reset') . "\n";
 }
 sub LogError
 {
     $errors++;
-    print "${colorRed}@_${colorDefault}\n";
+    print color('bright_red') . "@_" . color('reset') . "\n";
 }
 
 sub LogDebug
 {
-    print "${colorBlue}@_${colorDefault}\n" if $optionPrintDebug;
+    print color('bright_blue') . "@_" . color('reset') . "\n" if $optionPrintDebug;
 }
 
 $SIG{__DIE__} = sub
 {
-    LogError "${colorBlackRed} FATAL ERROR === MUST FIX === : @_";
+    LogError "FATAL ERROR === MUST FIX === : @_";
     exit 1;
 };
 
