@@ -793,7 +793,7 @@ typedef enum _sai_tam_transporter_attr_t {
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM_TRANSPORTER
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
