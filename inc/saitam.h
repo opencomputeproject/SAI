@@ -100,7 +100,7 @@ typedef enum _sai_tam_stat_attr_t
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_stat_create_fn)(
+typedef sai_status_t(*sai_create_tam_stat_fn)(
         _Out_ sai_object_id_t *stat_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -114,7 +114,7 @@ typedef sai_status_t(*sai_tam_stat_create_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_stat_remove_fn)(
+typedef sai_status_t(*sai_remove_tam_stat_fn)(
         _In_ sai_object_id_t stat_id);
 
 /**
@@ -125,7 +125,7 @@ typedef sai_status_t(*sai_tam_stat_remove_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_stat_attribute_set_fn)(
+typedef sai_status_t(*sai_set_tam_stat_attribute_fn)(
         _In_ sai_object_id_t stat_id,
         _In_ const sai_attribute_t *attr);
 
@@ -138,7 +138,7 @@ typedef sai_status_t(*sai_tam_stat_attribute_set_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_stat_attribute_get_fn)(
+typedef sai_status_t(*sai_get_tam_stat_attribute_fn)(
         _In_ sai_object_id_t stat_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -336,7 +336,7 @@ typedef enum _sai_tam_attr_t
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_create_fn)(
+typedef sai_status_t(*sai_create_tam_fn)(
         _Out_ sai_object_id_t *tam_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -352,7 +352,7 @@ typedef sai_status_t(*sai_tam_create_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_remove_fn)(
+typedef sai_status_t(*sai_remove_tam_fn)(
         _In_ sai_object_id_t tam_id);
 
 /**
@@ -363,7 +363,7 @@ typedef sai_status_t(*sai_tam_remove_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_attribute_set_fn)(
+typedef sai_status_t(*sai_set_tam_attribute_fn)(
         _In_ sai_object_id_t tam_id,
         _In_ const sai_attribute_t *attr);
 
@@ -376,7 +376,7 @@ typedef sai_status_t(*sai_tam_attribute_set_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_attribute_get_fn)(
+typedef sai_status_t(*sai_get_tam_attribute_fn)(
         _In_ sai_object_id_t tam_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -556,7 +556,7 @@ typedef enum _sai_tam_threshold_attr_t
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_threshold_create_fn)(
+typedef sai_status_t(*sai_create_tam_threshold_fn)(
         _Out_ sai_object_id_t *threshold_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -569,7 +569,7 @@ typedef sai_status_t(*sai_tam_threshold_create_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_threshold_remove_fn)(
+typedef sai_status_t(*sai_remove_tam_threshold_fn)(
         _In_ sai_object_id_t threshold_id);
 
 /**
@@ -580,7 +580,7 @@ typedef sai_status_t(*sai_tam_threshold_remove_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_threshold_attribute_set_fn)(
+typedef sai_status_t(*sai_set_tam_threshold_attribute_fn)(
         _In_ sai_object_id_t threshold_id,
         _In_ const sai_attribute_t *attr);
 
@@ -593,7 +593,7 @@ typedef sai_status_t(*sai_tam_threshold_attribute_set_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_threshold_attribute_get_fn)(
+typedef sai_status_t(*sai_get_tam_threshold_attribute_fn)(
         _In_ sai_object_id_t threshold_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -680,7 +680,7 @@ typedef enum _sai_tam_snapshot_attr_t
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_snapshot_create_fn)(
+typedef sai_status_t(*sai_create_tam_snapshot_fn)(
         _Out_ sai_object_id_t *snapshot_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -693,7 +693,7 @@ typedef sai_status_t(*sai_tam_snapshot_create_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_snapshot_remove_fn)(
+typedef sai_status_t(*sai_remove_tam_snapshot_fn)(
         _In_ sai_object_id_t snapshot_id);
 
 /**
@@ -704,7 +704,7 @@ typedef sai_status_t(*sai_tam_snapshot_remove_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_snapshot_attribute_set_fn)(
+typedef sai_status_t(*sai_set_tam_snapshot_attribute_fn)(
         _In_ sai_object_id_t snapshot_id,
         _In_ const sai_attribute_t *attr);
 
@@ -717,7 +717,7 @@ typedef sai_status_t(*sai_tam_snapshot_attribute_set_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_snapshot_attribute_get_fn)(
+typedef sai_status_t(*sai_get_tam_snapshot_attribute_fn)(
         _In_ sai_object_id_t snapshot_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -825,7 +825,7 @@ typedef enum _sai_tam_transporter_attr_t {
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_transporter_create_fn)(
+typedef sai_status_t(*sai_create_tam_transporter_fn)(
         _Out_ sai_object_id_t *transporter_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -838,7 +838,7 @@ typedef sai_status_t(*sai_tam_transporter_create_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_transporter_remove_fn)(
+typedef sai_status_t(*sai_remove_tam_transporter_fn)(
         _In_ sai_object_id_t transporter_id);
 
 /**
@@ -849,7 +849,7 @@ typedef sai_status_t(*sai_tam_transporter_remove_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_transporter_attribute_set_fn)(
+typedef sai_status_t(*sai_set_tam_transporter_attribute_fn)(
         _In_ sai_object_id_t transporter_id,
         _In_ const sai_attribute_t *attr);
 
@@ -862,34 +862,34 @@ typedef sai_status_t(*sai_tam_transporter_attribute_set_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_transporter_attribute_get_fn)(
+typedef sai_status_t(*sai_get_tam_transporter_attribute_fn)(
         _In_ sai_object_id_t transporter_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 typedef struct _sai_tam_api_t
 {
-    sai_tam_create_fn                       create_tam;
-    sai_tam_remove_fn                       remove_tam;
-    sai_tam_attribute_set_fn                set_tam_attribute;
-    sai_tam_attribute_get_fn                get_tam_attribute;
-    sai_tam_stat_create_fn                  create_tam_stat;
-    sai_tam_stat_remove_fn                  remove_tam_stat;
-    sai_tam_stat_attribute_set_fn           set_tam_stat_attribute;
-    sai_tam_stat_attribute_get_fn           get_tam_stat_attribute;
-    sai_tam_threshold_create_fn             create_tam_threshold;
-    sai_tam_threshold_remove_fn             remove_tam_threshold;
-    sai_tam_threshold_attribute_set_fn      set_tam_threshold_attribute;
-    sai_tam_threshold_attribute_get_fn      get_tam_threshold_attribute;
-    sai_tam_snapshot_create_fn              create_tam_snapshot;
-    sai_tam_snapshot_remove_fn              remove_tam_snapshot;
-    sai_tam_snapshot_attribute_set_fn       set_tam_snapshot_attribute;
-    sai_tam_snapshot_attribute_get_fn       get_tam_snapshot_attribute;
+    sai_create_tam_fn                       create_tam;
+    sai_remove_tam_fn                       remove_tam;
+    sai_set_tam_attribute_fn                set_tam_attribute;
+    sai_get_tam_attribute_fn                get_tam_attribute;
+    sai_create_tam_stat_fn                  create_tam_stat;
+    sai_remove_tam_stat_fn                  remove_tam_stat;
+    sai_set_tam_stat_attribute_fn           set_tam_stat_attribute;
+    sai_get_tam_stat_attribute_fn           get_tam_stat_attribute;
+    sai_create_tam_threshold_fn             create_tam_threshold;
+    sai_remove_tam_threshold_fn             remove_tam_threshold;
+    sai_set_tam_threshold_attribute_fn      set_tam_threshold_attribute;
+    sai_get_tam_threshold_attribute_fn      get_tam_threshold_attribute;
+    sai_create_tam_snapshot_fn              create_tam_snapshot;
+    sai_remove_tam_snapshot_fn              remove_tam_snapshot;
+    sai_set_tam_snapshot_attribute_fn       set_tam_snapshot_attribute;
+    sai_get_tam_snapshot_attribute_fn       get_tam_snapshot_attribute;
     sai_tam_snapshot_statistics_get_fn      get_tam_snapshot_statistics;
-    sai_tam_transporter_create_fn           create_tam_transporter;
-    sai_tam_transporter_remove_fn           remove_tam_transporter;
-    sai_tam_transporter_attribute_set_fn    set_tam_transporter_attribute;
-    sai_tam_transporter_attribute_get_fn    get_tam_transporter_attribute;
+    sai_create_tam_transporter_fn           create_tam_transporter;
+    sai_remove_tam_transporter_fn           remove_tam_transporter;
+    sai_set_tam_transporter_attribute_fn    set_tam_transporter_attribute;
+    sai_get_tam_transporter_attribute_fn    get_tam_transporter_attribute;
 } sai_tam_api_t;
 
 /**
