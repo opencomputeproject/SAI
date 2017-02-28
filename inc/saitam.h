@@ -50,11 +50,13 @@ typedef enum _sai_tam_stat_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
      */
     SAI_TAM_STAT_ATTR_PARENT_ID = SAI_TAM_STAT_ATTR_START,
 
     /**
      * @brief Monitored object type
+     *
      * Eg.: SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
      * Not used for input. Optional for output.
      *
@@ -65,6 +67,7 @@ typedef enum _sai_tam_stat_attr_t
 
     /**
      * @brief Counter
+     *
      * Eg.: SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES
      *
      * @type sai_uint32_t
@@ -150,6 +153,7 @@ typedef struct _sai_tam_statistic_t
 {
     /**
      * @brief Statistic ID
+     *
      * @objects SAI_OBJECT_TYPE_TAM_STAT
      */
     sai_object_id_t statistic_id;
@@ -208,6 +212,7 @@ typedef enum _sai_tam_attr_t
 
     /**
      * @brief Statistics reporting mode.
+     *
      * When not specified, reports in number of bytes (DEFAULT)
      *
      * @type sai_tam_reporting_mode_t
@@ -263,6 +268,7 @@ typedef enum _sai_tam_attr_t
 
     /**
      * @brief Clear all Thresholds
+     *
      * If this attribute is specified and set to true, then
      * the following actions take place for each of the created threshold objects
      * 1. The values specified via the SAI_TAM_THRESHOLD_ATTR_LEVEL attribute are
@@ -294,6 +300,7 @@ typedef enum _sai_tam_attr_t
 
     /**
      * @brief Maximum Number of snapshots that can be created.
+     *
      * If the number of currently created snapshots already reach this limit, any
      * attempt to create more snapshots return error.
      *
@@ -440,7 +447,7 @@ typedef enum _sai_tam_threshold_attr_t
      * @brief TAM Object
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_TAM_THRESHOLD_ATTR_TAM_ID = SAI_TAM_THRESHOLD_ATTR_START,
 
@@ -448,18 +455,17 @@ typedef enum _sai_tam_threshold_attr_t
      * @brief Statistic for this threshold
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_STAT
      */
     SAI_TAM_THRESHOLD_ATTR_STATISTIC,
 
     /**
      * @brief Threshold Level
-     * Breach level for this threshold in number of bytes
      *
+     * Breach level for this threshold in number of bytes
      * If specified, a threshold breach event will be recorded when the buffer
      * usage goes beyond the level.
-     *
      * If not specified, then by default the threshold is created without
      * any level, which is effectively disabling the threshold monitoring
      * for the statistic
@@ -509,6 +515,7 @@ typedef enum _sai_tam_threshold_attr_t
 
     /**
      * @brief Buffers/Statistics for inclusion in the snapshot
+     *
      * Specifies the Statistics/Types for the snapshot.
      * If not specified, all buffers tracked by
      * the associated TAM object are included in the snapshot.
@@ -607,7 +614,7 @@ typedef enum _sai_tam_snapshot_attr_t
      * Specifies the TAM object for this snapshot.
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_TAM_SNAPSHOT_ATTR_TAM_ID = SAI_TAM_SNAPSHOT_ATTR_START,
 
