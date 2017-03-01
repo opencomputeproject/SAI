@@ -150,6 +150,15 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_META_DATA,
 
     /**
+    * @brief Tunnel Endpoint IP, valid for SAI_BRIDGE_PORT_TYPE_TUNNEL
+    *
+    * @type sai_ip_address_t
+    * @flags CREATE_AND_SET
+    * @allownull true
+    */
+    SAI_FDB_ENTRY_ATTR_ENDPOINT_IP,
+
+    /**
      * @brief End of attributes
      */
     SAI_FDB_ENTRY_ATTR_END,
