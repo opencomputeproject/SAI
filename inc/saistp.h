@@ -38,7 +38,7 @@
  */
 typedef enum _sai_stp_port_state_t
 {
-    /** Port is in Learning mode*/
+    /** Port is in Learning mode */
     SAI_STP_PORT_STATE_LEARNING,
 
     /** Port is in Forwarding mode */

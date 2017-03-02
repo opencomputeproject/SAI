@@ -38,16 +38,16 @@
  */
 typedef enum _sai_qos_map_type_t
 {
-    /** Qos Map to set DOT1P to Traffic class*/
+    /** Qos Map to set DOT1P to Traffic class */
     SAI_QOS_MAP_TYPE_DOT1P_TO_TC = 0x00000000,
 
-    /** Qos Map to set DOT1P to color*/
+    /** Qos Map to set DOT1P to color */
     SAI_QOS_MAP_TYPE_DOT1P_TO_COLOR = 0x00000001,
 
-    /** Qos Map to set DSCP to Traffic class*/
+    /** Qos Map to set DSCP to Traffic class */
     SAI_QOS_MAP_TYPE_DSCP_TO_TC = 0x00000002,
 
-    /** Qos Map to set DSCP to color*/
+    /** Qos Map to set DSCP to color */
     SAI_QOS_MAP_TYPE_DSCP_TO_COLOR = 0x00000003,
 
     /** Qos Map to set traffic class to queue */

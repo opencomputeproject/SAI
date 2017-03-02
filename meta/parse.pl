@@ -2573,6 +2573,11 @@ sub CheckHeadersStyle
                 LogWarning "multiline doxygen comment should start '/**' $header $n:$line";
             }
 
+            if ($line =~ m![^ ]\*/!)
+            {
+                LogWarning "coment is ending without space $header $n:$line";
+            }
+
             next if $line =~ /^ \*/;                # doxygen comment
             next if $line =~ /^$/;                  # empty line
             next if $line =~ /^typedef /;           # type definition
