@@ -154,7 +154,7 @@ typedef enum _sai_fdb_entry_attr_t
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
-     * @allownull true
+     * @default 0.0.0.0
      */
     SAI_FDB_ENTRY_ATTR_ENDPOINT_IP,
 
