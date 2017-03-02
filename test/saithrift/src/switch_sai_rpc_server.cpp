@@ -63,6 +63,8 @@ extern "C" {
 #define XP_SAI_THRIFT_LOG_ERR(msg, ...) sai_thrift_timestamp_print(); \
     printf("SAI THRIFT ERROR: %s(): " msg "\n", __FUNCTION__, ##__VA_ARGS__);
 
+#define SAI_THRIFT_FUNC_LOG() XP_SAI_THRIFT_LOG_DBG("Called.")
+
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -766,6 +768,29 @@ public:
       return status;
   }
 
+  void sai_thrift_get_vlan_id(sai_thrift_result_t &ret, sai_thrift_object_id_t vlan_id)
+  {
+      sai_attribute_t vlan_attr;
+      sai_vlan_api_t *vlan_api;
+
+      SAI_THRIFT_FUNC_LOG();
+
+      ret.status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          XP_SAI_THRIFT_LOG_ERR("failed to obtain vlan_api, status:%d", ret.status);
+          return;
+      }
+
+      vlan_attr.id = SAI_VLAN_ATTR_VLAN_ID;
+      ret.status = vlan_api->get_vlan_attribute((sai_object_id_t)vlan_id, 1, &vlan_attr);
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          XP_SAI_THRIFT_LOG_ERR("failed to get vlan ID, status:%d", ret.status);
+          return;
+      }
+
+      ret.data.u16 = vlan_attr.value.u16;
+  }
+
   sai_thrift_object_id_t sai_thrift_create_virtual_router(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_create_virtual_router\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
@@ -1176,6 +1201,29 @@ public:
       }
       default_router_id = (sai_thrift_object_id_t)attr.value.oid;
       return default_router_id;
+  }
+
+  void sai_thrift_get_default_vlan_id(sai_thrift_result_t &ret) {
+      sai_switch_api_t *switch_api;
+      sai_attribute_t attr;
+
+      SAI_THRIFT_FUNC_LOG();
+
+      ret.status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          XP_SAI_THRIFT_LOG_ERR("failed to obtain switch_api, status:%d", ret.status);
+          return;
+      }
+
+      attr.id = SAI_SWITCH_ATTR_DEFAULT_VLAN_ID;
+      ret.status = switch_api->get_switch_attribute(gSwitchId, 1, &attr);
+      if (ret.status != SAI_STATUS_SUCCESS)
+      {
+          XP_SAI_THRIFT_LOG_ERR("failed to get switch default vlan ID, status:%d", ret.status);
+          return;
+      }
+
+      ret.data.oid = (sai_thrift_object_id_t)attr.value.oid;
   }
 
   sai_thrift_object_id_t sai_thrift_get_default_trap_group() {

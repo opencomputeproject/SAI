@@ -40,6 +40,11 @@ from switch_sai_thrift.sai_headers import  *
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
+class VlanObj:
+    def __init__(self):
+        self.oid = 0
+        self.vid = 0
+
 switch_inited=0
 port_list = {}
 sai_port_list = []
@@ -48,13 +53,23 @@ table_attr_list = []
 router_mac='00:77:66:55:44:00'
 rewrite_mac1='00:77:66:55:44:01'
 rewrite_mac2='00:77:66:55:44:02'
+default_vlan = VlanObj()
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
 
 def switch_init(client):
     global switch_inited
+
     if switch_inited:
         return
+
+    ret = client.sai_thrift_get_default_vlan_id()
+    assert (ret.status == SAI_STATUS_SUCCESS), "Failed to get default vlan"
+    default_vlan.oid = ret.data.oid
+
+    ret = client.sai_thrift_get_vlan_id(default_vlan.oid)
+    assert (ret.status == SAI_STATUS_SUCCESS), "Failed obtain default vlan id"
+    default_vlan.vid = ret.data.u16
 
     switch_attr_list = client.sai_thrift_get_switch_attribute()
     attr_list = switch_attr_list.attr_list
@@ -103,6 +118,10 @@ def switch_init(client):
 def sai_thrift_get_cpu_port_id(client):
     cpu_port = client.sai_thrift_get_cpu_port_id()
     return cpu_port
+
+def sai_thrift_get_default_vlan_id(client):
+    vlan_id = client.sai_thrift_get_default_vlan_id()
+    return vlan_id
 
 def sai_thrift_get_default_router_id(client):
     default_router_id = client.sai_thrift_get_default_router_id()
@@ -755,10 +774,10 @@ def sai_thrift_create_vlan_member(client, vlan_oid, port_oid, tagging_mode):
     vlan_member_id = client.sai_thrift_create_vlan_member(vlan_member_attr_list)
     return vlan_member_id
 
-def sai_thrift_vlan_remove_all_ports(client, vid):
+def sai_thrift_vlan_remove_all_ports(client, vlan_oid):
         vlan_members_list = []
 
-        vlan_attr_list = client.sai_thrift_get_vlan_attribute(vid)
+        vlan_attr_list = client.sai_thrift_get_vlan_attribute(vlan_oid)
         attr_list = vlan_attr_list.attr_list
         for attribute in attr_list:
             if attribute.id == SAI_VLAN_ATTR_MEMBER_LIST:
