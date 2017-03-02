@@ -408,6 +408,12 @@ sub ProcessTagDefault
         return $val;
     }
 
+    if ($val =~/^0\.0\.0\.0$/)
+    {
+        # currently we only support default ip address
+        return $val;
+    }
+
     LogError "invalid default tag value '$val', on $type $value";
     return undef;
 }
@@ -959,6 +965,8 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_ATTR_RANGE" if $default =~ /^attrrange SAI_\w+$/ and $default =~ /_ATTR_/;
 
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^0\.0\.0\.0$/;
+
     LogError "invalid default value type '$default' on $attr";
 
     return "";
@@ -1009,6 +1017,12 @@ sub ProcessDefaultValue
     elsif ($default =~ /^NULL$/ and $type =~ /^sai_pointer_t/)
     {
         LogError "missing typedef function in format 'sai_\\w+_fn' on $attr ($type)";
+    }
+    elsif ($default =~ /^0\.0\.0\.0$/ and $type =~ /^(sai_ip_address_t)/)
+    {
+        # ipv4 address needs to be converted to uint32 number so we support now only 0.0.0.0
+
+        WriteSource "$val = { .$VALUE_TYPES{$1} = { .addr_family = SAI_IP_ADDR_FAMILY_IPV4, .addr = { .ip4 = 0 } } };";
     }
     else
     {
