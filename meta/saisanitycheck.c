@@ -1631,7 +1631,9 @@ void check_attr_vlan(
 
     if (md->isvlan)
     {
-        if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_UINT16)
+        if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_UINT16 &&
+                md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT16 &&
+                md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16)
         {
             META_ASSERT_FAIL(md, "marked as vlan, but fiels has wrong attr value type");
         }
