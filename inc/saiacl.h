@@ -930,9 +930,18 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_ACTION_LIST,
 
     /**
+     * @brief IPv6 Next Header
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_ACTION_LIST,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
      * @brief Custom range base value start
@@ -1439,9 +1448,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_RANGE_TYPE,
 
     /**
+     * @brief IPv6 Next Header (8 bits)
+     * This is to qualify 6th Byte value in IPv6 header.
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_ACL_RANGE_TYPE,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /*
      * Actions [sai_acl_action_data_t]
@@ -2084,6 +2102,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  * @brief Create an ACL Table Group
  *
  * @param[out] acl_table_group_id The ACL group id
+ * @param[in] switch_id Switch Object id
  * @param[in] attr_count number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -2091,6 +2110,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_table_group_fn)(
         _Out_ sai_object_id_t *acl_table_group_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -2134,6 +2154,7 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  * @brief Create an ACL Table Group Member
  *
  * @param[out] acl_table_group_member_id The ACL table group member id
+ * @param[in] switch_id Switch Object id
  * @param[in] attr_count number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -2141,6 +2162,7 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
         _Out_ sai_object_id_t *acl_table_group_member_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

@@ -1366,7 +1366,7 @@ typedef sai_status_t(*sai_create_switch_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef void (*sai_remove_switch_fn)(
+typedef sai_status_t(*sai_remove_switch_fn)(
               _In_ sai_object_id_t switch_id);
 
 /**
