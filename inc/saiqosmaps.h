@@ -79,7 +79,7 @@ typedef enum _sai_qos_map_type_t
 typedef enum _sai_qos_map_attr_t
 {
     /**
-     * Start of attributes
+     * @brief Start of attributes
      */
     SAI_QOS_MAP_ATTR_START,
 

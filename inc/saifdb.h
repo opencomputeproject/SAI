@@ -68,7 +68,7 @@ typedef struct _sai_fdb_entry_t
     sai_vlan_id_t vlan_id;
 
     /**
-     * Bridge ID. Valid for .1D
+     * @brief Bridge ID. Valid for .1D
      *
      * @objects SAI_OBJECT_TYPE_BRIDGE
      */

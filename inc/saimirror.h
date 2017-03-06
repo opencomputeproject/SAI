@@ -180,7 +180,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TOS,
 
     /**
-     * Tunnel header TTL
+     * @brief Tunnel header TTL
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET

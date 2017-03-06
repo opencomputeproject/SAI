@@ -245,7 +245,7 @@ typedef enum _sai_hostif_trap_type_t
     SAI_HOSTIF_TRAP_TYPE_MLD_V2_REPORT = 0x0000200d,
 
     /**
-     * Unknown L3 multicast packets
+     * @brief Unknown L3 multicast packets
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_UNKNOWN_L3_MULTICAST = 0x0000200e,

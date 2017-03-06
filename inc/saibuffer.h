@@ -589,6 +589,6 @@ typedef struct _sai_buffer_api_t
 } sai_buffer_api_t;
 
 /**
- *@}
+ * @}
  */
 #endif /** __SAIBUFFER_H_ */

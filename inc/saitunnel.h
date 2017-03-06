@@ -492,7 +492,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL,
 
     /**
-     * Tunnel GRE key valid
+     * @brief Tunnel GRE key valid
      *
      * @type bool
      * @flags CREATE_ONLY
