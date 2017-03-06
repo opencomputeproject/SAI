@@ -122,7 +122,7 @@ typedef void *sai_pointer_t;
 #define SAI_NULL_OBJECT_ID 0L
 
 /**
- * Defines a list of sai object ids used as sai attribute value.
+ * @brief Defines a list of sai object ids used as sai attribute value.
  *
  * In set attribute function call, the count member defines the number of
  * objects.
@@ -313,7 +313,7 @@ typedef struct _sai_ip_prefix_t {
 typedef struct _sai_acl_field_data_t
 {
     /**
-     * match enable/disable
+     * @brief Match enable/disable
      */
     bool enable;
 

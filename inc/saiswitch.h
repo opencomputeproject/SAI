@@ -631,7 +631,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE,
 
     /**
-     * Switch number of ingress buffer pool
+     * @brief Switch number of ingress buffer pool
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
