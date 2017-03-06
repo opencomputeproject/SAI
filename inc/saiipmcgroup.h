@@ -53,9 +53,10 @@ typedef enum _sai_ipmc_group_attr_t
 
     /**
      * @brief IPMC member list
+     *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_IPMC_GROUP_MEMBER
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_IPMC_GROUP_MEMBER
      */
     SAI_IPMC_GROUP_ATTR_IPMC_MEMBER_LIST,
 
@@ -81,17 +82,19 @@ typedef enum _sai_ipmc_group_member_attr_t
 
     /**
      * @brief IPMC group id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_IPMC_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_IPMC_GROUP
      */
     SAI_IPMC_GROUP_MEMBER_ATTR_IPMC_GROUP_ID = SAI_IPMC_GROUP_MEMBER_ATTR_START,
 
     /**
      * @brief IPMC output id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_TUNNEL
      */
     SAI_IPMC_GROUP_MEMBER_ATTR_IPMC_OUTPUT_ID,
 

@@ -68,7 +68,7 @@ typedef struct _sai_fdb_entry_t
     sai_vlan_id_t vlan_id;
 
     /**
-     * Bridge ID. Valid for .1D
+     * @brief Bridge ID. Valid for .1D
      *
      * @objects SAI_OBJECT_TYPE_BRIDGE
      */
@@ -131,10 +131,10 @@ typedef enum _sai_fdb_entry_attr_t
      * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
-     * @default SAI_NULL_OBJECT_ID
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
 
@@ -148,6 +148,15 @@ typedef enum _sai_fdb_entry_attr_t
      * @default 0
      */
     SAI_FDB_ENTRY_ATTR_META_DATA,
+
+    /**
+     * @brief Tunnel Endpoint IP. valid for SAI_BRIDGE_PORT_TYPE_TUNNEL
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_FDB_ENTRY_ATTR_ENDPOINT_IP,
 
     /**
      * @brief End of attributes
@@ -202,8 +211,8 @@ typedef enum _sai_fdb_flush_attr_t
      * @brief Flush based on bridge port
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */

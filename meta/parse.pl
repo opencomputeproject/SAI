@@ -7,17 +7,7 @@ use diagnostics;
 use XML::Simple qw(:strict);
 use Getopt::Std;
 use Data::Dumper;
-
-# COLOR DEFINITIONS
-my $colorDefault       = "\033[01;00m";
-my $colorGreenBlue     = "\033[104;92m";
-my $colorBlackYellow   = "\033[103;30m";
-my $colorBlackRed      = "\033[31;7m";
-my $colorRed           = "\033[66;91m";
-my $colorGreen         = "\033[66;92m";
-my $colorYellow        = "\033[66;93m";
-my $colorBlue          = "\033[66;94m";
-my $colorAqua          = "\033[66;96m";
+use Term::ANSIColor;
 
 my $errors = 0;
 my $warnings = 0;
@@ -28,8 +18,14 @@ my %METADATA = ();
 my %STRUCTS = ();
 my %options =();
 
+my @TESTNAMES= ();
+
+my %OBJTOAPIMAP = ();
+my %APITOOBJMAP = ();
+
 my $HEADER_CONTENT = "";
 my $SOURCE_CONTENT = "";
+my $TEST_CONTENT = "";
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY|DYNAMIC|SPECIAL";
 
@@ -57,28 +53,28 @@ my $optionPrintDebug = 1 if defined $options{d};
 
 sub LogInfo
 {
-    print "${colorGreen}@_${colorDefault}\n";
+    print color('bright_green') . "@_" . color('reset') . "\n";
 }
 
 sub LogWarning
 {
     $warnings++;
-    print "${colorYellow}@_${colorDefault}\n";
+    print color('bright_yellow') . "@_" . color('reset') . "\n";
 }
 sub LogError
 {
     $errors++;
-    print "${colorRed}@_${colorDefault}\n";
+    print color('bright_red') . "@_" . color('reset') . "\n";
 }
 
 sub LogDebug
 {
-    print "${colorBlue}@_${colorDefault}\n" if $optionPrintDebug;
+    print color('bright_blue') . "@_" . color('reset') . "\n" if $optionPrintDebug;
 }
 
 $SIG{__DIE__} = sub
 {
-    LogError "${colorBlackRed} FATAL ERROR === MUST FIX === : @_";
+    LogError "FATAL ERROR === MUST FIX === : @_";
     exit 1;
 };
 
@@ -215,6 +211,7 @@ sai_mac_t               mac
 sai_ip4_t               ip4
 sai_ip6_t               ip6
 sai_ip_address_t        ipaddr
+sai_ip_prefix_t         ipprefix
 sai_object_id_t         oid
 sai_object_list_t       objlist
 sai_u8_list_t           u8list
@@ -247,6 +244,7 @@ sai_mac_t               MAC
 sai_ip4_t               IPV4
 sai_ip6_t               IPV6
 sai_ip_address_t        IP_ADDRESS
+sai_ip_prefix_t         IP_PREFIX
 sai_object_id_t         OBJECT_ID
 sai_object_list_t       OBJECT_LIST
 sai_u8_list_t           UINT8_LIST
@@ -405,8 +403,14 @@ sub ProcessTagDefault
         return $val;
     }
 
-    if ($val =~/^(true|false|NULL|SAI_\w+|\d+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
+    if ($val =~/^(true|false|NULL|SAI_\w+|-?\d+|0x[0-9A-F]+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
     {
+        return $val;
+    }
+
+    if ($val =~/^0\.0\.0\.0$/)
+    {
+        # currently we only support default ip address
         return $val;
     }
 
@@ -435,12 +439,16 @@ sub ProcessDescription
 {
     my ($type, $value, $desc) = @_;
 
+    my @order = ();
+
     $desc =~ s/@@/\n@@/g;
 
     while ($desc =~ /@@(\w+)(.+)/g)
     {
         my $tag = $1;
         my $val = $2;
+
+        push @order,$tag;
 
         $val =~ s/\s+/ /g;
         $val =~ s/^\s*//;
@@ -458,6 +466,17 @@ sub ProcessDescription
         $METADATA{$type}{$value}{objecttype}    = $type;
         $METADATA{$type}{$value}{attrid}        = $value;
     }
+
+    my $count = @order;
+
+    return if $count == 0;
+
+    my $order = join(":",@order);
+
+    return if $order =~/^type:flags(:objects)?(:allownull)?(:isvlan)?(:default)?(:condition|:validonly)?$/;
+    return if $order =~/^ignore$/;
+
+    LogWarning "metadata tags are not in right order: $order on $value";
 }
 
 sub ProcessEnumSection
@@ -486,6 +505,10 @@ sub ProcessEnumSection
 
             push$SAI_ENUMS{$enumtypename}{values},$enumvaluename;
 
+            if (not $enumvaluename =~/^[A-Z0-9_]+$/)
+            {
+                LogError "enum $enumvaluename uses characters outside [A-Z0-9_]+";
+            }
         }
 
         # remove unnecessary attributes
@@ -598,6 +621,13 @@ sub WriteSource
     $SOURCE_CONTENT .= $content . "\n";
 }
 
+sub WriteTest
+{
+    my $content = shift;
+
+    $TEST_CONTENT .= $content . "\n";
+}
+
 sub ProcessSingleEnum
 {
     my ($key, $typedef, $prefix) = @_;
@@ -666,6 +696,7 @@ sub CreateMetadataHeaderAndSource
     WriteHeader "#include <sai.h>";
     WriteHeader "#include \"saimetadatatypes.h\"";
     WriteHeader "#include \"saimetadatautils.h\"";
+    WriteHeader "#include \"saimetadatalogger.h\"";
 
     WriteSource $HEAD;
     WriteSource "#include <stdio.h>";
@@ -924,7 +955,7 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL" if $default =~ /^internal$/;
 
-    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|-?\d+|0x[0-9A-F]+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST" if $default =~ /^empty$/;
 
@@ -933,6 +964,8 @@ sub ProcessDefaultValueType
     return "SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE" if $default =~ /^attrvalue SAI_\w+$/ and $default =~ /_ATTR_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_ATTR_RANGE" if $default =~ /^attrrange SAI_\w+$/ and $default =~ /_ATTR_/;
+
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^0\.0\.0\.0$/;
 
     LogError "invalid default value type '$default' on $attr";
 
@@ -967,7 +1000,7 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { };";
     }
-    elsif ($default =~ /^\d+$/ and $type =~ /sai_u?int\d+_t/)
+    elsif ($default =~ /^(-?\d+|0x[0-9A-F]+)$/ and $type =~ /sai_u?int\d+_t/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
@@ -984,6 +1017,12 @@ sub ProcessDefaultValue
     elsif ($default =~ /^NULL$/ and $type =~ /^sai_pointer_t/)
     {
         LogError "missing typedef function in format 'sai_\\w+_fn' on $attr ($type)";
+    }
+    elsif ($default =~ /^0\.0\.0\.0$/ and $type =~ /^(sai_ip_address_t)/)
+    {
+        # ipv4 address needs to be converted to uint32 number so we support now only 0.0.0.0
+
+        WriteSource "$val = { .$VALUE_TYPES{$1} = { .addr_family = SAI_IP_ADDR_FAMILY_IPV4, .addr = { .ip4 = 0 } } };";
     }
     else
     {
@@ -1430,6 +1469,7 @@ sub WriteMetaDataFiles
 
     WriteFile("saimetadata.h", $HEADER_CONTENT);
     WriteFile("saimetadata.c", $SOURCE_CONTENT);
+    WriteFile("saimetadatatest.c", $TEST_CONTENT);
 }
 
 sub ProcessAttrValueType
@@ -1595,7 +1635,6 @@ sub ProcessStructObjects
 
     return "NULL" if not $type eq "sai_object_id_t";
 
-
     WriteSource "const sai_object_type_t metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects[] = {";
 
     my $objects = $struct->{objects};
@@ -1643,6 +1682,41 @@ sub ProcessStructIsEnum
     return "false";
 }
 
+sub ProcessStructGetOid
+{
+    my ($type, $key, $rawname) = @_;
+
+    return "NULL" if $type ne "sai_object_id_t";
+
+    my $fname = "struct_member_get_sai_${rawname}_t_${key}";
+
+    WriteSource "sai_object_id_t $fname(";
+    WriteSource "        _In_ const sai_object_meta_key_t *object_meta_key)";
+    WriteSource "{";
+    WriteSource "    return object_meta_key->objectkey.key.${rawname}.${key};";
+    WriteSource "}";
+
+    return $fname;
+}
+
+sub ProcessStructSetOid
+{
+    my ($type, $key, $rawname) = @_;
+
+    return "NULL" if $type ne "sai_object_id_t";
+
+    my $fname = "struct_member_set_sai_${rawname}_t_${key}";
+
+    WriteSource "void $fname(";
+    WriteSource "        _Inout_ sai_object_meta_key_t *object_meta_key,";
+    WriteSource "        _In_ sai_object_id_t oid)";
+    WriteSource "{";
+    WriteSource "    object_meta_key->objectkey.key.${rawname}.${key} = oid;";
+    WriteSource "}";
+
+    return $fname;
+}
+
 sub ProcessStructMembers
 {
     my ($struct, $ot, $rawname) = @_;
@@ -1659,6 +1733,8 @@ sub ProcessStructMembers
         my $objectlen   = ProcessStructObjectLen($rawname, $key, $struct->{$key});
         my $isenum      = ProcessStructIsEnum($struct->{$key}{type});
         my $enumdata    = ProcessStructEnumData($struct->{$key}{type});
+        my $getoid      = ProcessStructGetOid($struct->{$key}{type}, $key, $rawname);
+        my $setoid      = ProcessStructSetOid($struct->{$key}{type}, $key, $rawname);
 
         WriteSource "const sai_struct_member_info_t struct_member_sai_${rawname}_t_$key = {";
 
@@ -1669,6 +1745,8 @@ sub ProcessStructMembers
         WriteSource "    .allowedobjecttypeslength  = $objectlen,";
         WriteSource "    .isenum                    = $isenum,";
         WriteSource "    .enummetadata              = $enumdata,";
+        WriteSource "    .getoid                    = $getoid,";
+        WriteSource "    .setoid                    = $setoid,";
 
         # TODO allow null
 
@@ -1815,6 +1893,135 @@ sub ProcessStructMembersName
     return "struct_members_sai_${rawname}_t";
 }
 
+sub ProcessCreate
+{
+    my $struct = shift;
+    my $ot = shift;
+
+    my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+    my $api = $OBJTOAPIMAP{$ot};
+
+    WriteSource "sai_status_t sai_meta_generic_create_$ot(";
+    WriteSource "        _Inout_ sai_object_meta_key_t *meta_key,";
+    WriteSource "        _In_ sai_object_id_t switch_id,";
+    WriteSource "        _In_ uint32_t attr_count,";
+    WriteSource "        _In_ const sai_attribute_t *attr_list)";
+    WriteSource "{";
+
+    if (not defined $struct)
+    {
+        if ($small eq "switch")
+        {
+            WriteSource "    return g_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, attr_count, attr_list);";
+        }
+        else
+        {
+            WriteSource "    return g_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, switch_id, attr_count, attr_list);";
+        }
+    }
+    else
+    {
+        WriteSource "    return g_sai_${api}_api->create_$small(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+    }
+
+    WriteSource "}";
+
+    return "sai_meta_generic_create_$ot";
+}
+
+sub ProcessRemove
+{
+    my $struct = shift;
+    my $ot = shift;
+
+    my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+    my $api = $OBJTOAPIMAP{$ot};
+
+    WriteSource "sai_status_t sai_meta_generic_remove_$ot(";
+    WriteSource "        _In_ const sai_object_meta_key_t *meta_key)";
+    WriteSource "{";
+
+    if (not defined $struct)
+    {
+        WriteSource "    return g_sai_${api}_api->remove_$small(meta_key->objectkey.key.object_id);";
+    }
+    else
+    {
+        WriteSource "    return g_sai_${api}_api->remove_$small(&meta_key->objectkey.key.$small);";
+    }
+
+    WriteSource "}";
+
+    return "sai_meta_generic_remove_$ot";
+}
+
+sub ProcessSet
+{
+    my $struct = shift;
+    my $ot = shift;
+
+    my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+    my $api = $OBJTOAPIMAP{$ot};
+
+    WriteSource "sai_status_t sai_meta_generic_set_$ot(";
+    WriteSource "        _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "        _In_ const sai_attribute_t *attr)";
+    WriteSource "{";
+
+    if (not defined $struct)
+    {
+        WriteSource "    return g_sai_${api}_api->set_${small}_attribute(meta_key->objectkey.key.object_id, attr);";
+    }
+    else
+    {
+        WriteSource "    return g_sai_${api}_api->set_${small}_attribute(&meta_key->objectkey.key.$small, attr);";
+    }
+
+    WriteSource "}";
+
+    return "sai_meta_generic_set_$ot";
+}
+
+sub ProcessGet
+{
+    my $struct = shift;
+    my $ot = shift;
+
+    my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+    my $api = $OBJTOAPIMAP{$ot};
+
+    WriteSource "sai_status_t sai_meta_generic_get_$ot(";
+    WriteSource "        _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "        _In_ uint32_t attr_count,";
+    WriteSource "        _Inout_ sai_attribute_t *attr_list)";
+    WriteSource "{";
+
+    if (not defined $struct)
+    {
+        WriteSource "    return g_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
+    }
+    else
+    {
+        WriteSource "    return g_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+    }
+
+    WriteSource "}";
+
+    return "sai_meta_generic_get_$ot";
+}
+
+sub CreateApis
+{
+    for my $key(sort keys %APITOOBJMAP)
+    {
+        WriteSource "static sai_${key}_api_t *g_sai_${key}_api = NULL;";
+    }
+}
+
 sub CreateObjectInfo
 {
     my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
@@ -1848,6 +2055,22 @@ sub CreateObjectInfo
         my $structmembers = ProcessStructMembersName($struct, $ot ,lc($1));
         my $structmemberscount = ProcessStructMembersCount($struct, $ot);
         my $revgraph = ProcessRevGraph($ot);
+        my $create = "NULL";
+        my $remove = "NULL";
+        my $set = "NULL";
+        my $get = "NULL";
+
+        if ($ot eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $ot eq "SAI_OBJECT_TYPE_HOSTIF_PACKET")
+        {
+            # ok
+        }
+        else
+        {
+            $create = ProcessCreate($struct, $ot);
+            $remove = ProcessRemove($struct, $ot);
+            $set = ProcessSet($struct, $ot);
+            $get = ProcessGet($struct, $ot);
+        }
 
         WriteHeader "extern const sai_object_type_info_t sai_object_type_info_$ot;";
 
@@ -1861,6 +2084,10 @@ sub CreateObjectInfo
         WriteSource "    .structmembers      = $structmembers,";
         WriteSource "    .structmemberscount = $structmemberscount,";
         WriteSource "    .revgraphmembers    = $revgraph,";
+        WriteSource "    .create             = $create,";
+        WriteSource "    .remove             = $remove,";
+        WriteSource "    .set                = $set,";
+        WriteSource "    .get                = $get,";
         WriteSource "};";
     }
 
@@ -1940,35 +2167,53 @@ sub GetNonObjectIdStructNames
     return values %structs;
 }
 
+sub DefineTestName
+{
+    my $name = shift;
+
+    push @TESTNAMES,$name;
+
+    WriteTest "void $name(void)";
+}
+
 sub CreateNonObjectIdTest
 {
-    WriteSource "void non_object_id_test(void)";
-    WriteSource "{";
+    DefineTestName "non_object_id_test";
 
-    WriteSource "    sai_object_key_t ok;";
-    WriteSource "    void *p;";
+    WriteTest "{";
+
+    WriteTest "    sai_object_key_t ok;";
+    WriteTest "    volatile void *p;";
 
     my @rawnames = GetNonObjectIdStructNames();
 
-    WriteSource "    p = &ok.key.object_id;";
-    WriteSource "    printf(\"%p\",p);";
+    # add object id since it should be in the struct also
+
+    push @rawnames, "object_id";
 
     for my $rawname (@rawnames)
     {
-        WriteSource "    p = &ok.key.$rawname;";
-        WriteSource "    printf(\"%p\",p);";
+        # we are getting pointers for each member of non object id
+        # to make sure its declared in the struct, if its not then
+        # it will fail to compile
+
+        WriteTest "    p = &ok.key.$rawname;";
+        WriteTest "    printf(\"$rawname: \"); PP(p);";
+
+        WriteTest "    TEST_ASSERT_TRUE(&ok.key == (void*)&ok.key.$rawname, \"member $rawname don't start at union begin! Standard C fail\");";
     }
 
-    WriteSource "}";
+    WriteTest "}";
 }
 
 sub ExtractStructInfo
 {
     my $struct = shift;
+    my $prefix = shift;
 
     my %S = ();
 
-    my $filename = "struct_${struct}.xml";
+    my $filename = "${prefix}${struct}.xml";
 
     $filename =~ s/_/__/g;
 
@@ -2053,7 +2298,7 @@ sub ProcessSingleNonObjectId
         return undef;
     }
 
-    my %struct = ExtractStructInfo($structname);
+    my %struct = ExtractStructInfo($structname, "struct_");
 
     for my $member (keys %struct)
     {
@@ -2229,6 +2474,30 @@ sub CheckApiStructNames
     }
 }
 
+sub CheckApiDefines
+{
+    #
+    # purpose of this check is to check whether
+    # all enum entries defined in sai_api_t
+    # have corresponding structs defined for each
+    # defined object like sai_fdb_api_t
+    #
+
+    my @apis = @{ $SAI_ENUMS{sai_api_t}{values} };
+
+    for my $api (@apis)
+    {
+        my $short = lc($1) if $api =~/SAI_API_(\w+)/;
+
+        next if $short eq "unspecified";
+
+        if (not defined $APITOOBJMAP{$short})
+        {
+            LogError "$api is defined in sai.h but no corresponding struct for objects found";
+        }
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -2304,6 +2573,11 @@ sub CheckHeadersStyle
                 LogWarning "multiline doxygen comment should start '/**' $header $n:$line";
             }
 
+            if ($line =~ m![^ ]\*/!)
+            {
+                LogWarning "coment is ending without space $header $n:$line";
+            }
+
             next if $line =~ /^ \*/;                # doxygen comment
             next if $line =~ /^$/;                  # empty line
             next if $line =~ /^typedef /;           # type definition
@@ -2324,6 +2598,68 @@ sub CheckHeadersStyle
 
             LogWarning "header don't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
         }
+    }
+}
+
+sub ExtractApiToObjectMap
+{
+    #
+    # Purpose is to get which object type
+    # maps to which API, since multiple object types like acl
+    # can map to one api structure
+    #
+
+    my @headers = GetHeaderFiles();
+
+    for my $header (@headers)
+    {
+        my $data = ReadHeaderFile($header);
+
+        my @lines = split/\n/,$data;
+
+        my $n = 0;
+
+        my $empty = 0;
+        my $emptydoxy = 0;
+
+        my @objects = ();
+        my $api = undef;
+
+        for my $line (@lines)
+        {
+            $n++;
+
+            if ($line =~ /typedef\s+enum\s+_sai_(\w+)_attr_t/)
+            {
+                push@objects,uc("SAI_OBJECT_TYPE_$1");
+            }
+
+            if ($line =~ /typedef\s+struct\s+_sai_(\w+)_api_t/)
+            {
+                $api = $1;
+                last;
+            }
+        }
+
+        if (not defined $api)
+        {
+            my $len = @objects;
+
+            if ($len > 0)
+            {
+                LogError "api struct was not found in file $header, but objects are defined @objects";
+                next;
+            }
+
+            next;
+        }
+
+        for my $obj(@objects)
+        {
+            $OBJTOAPIMAP{$obj} = $api;
+        }
+
+        $APITOOBJMAP{$api} = \@objects;
     }
 }
 
@@ -2414,11 +2750,135 @@ sub GetReverseDependencyGraph
     return %REVGRAPH;
 }
 
+sub WriteTestHeader
+{
+    #
+    # Purpose is to write saimedatatest.c header
+    #
+
+    WriteTest "#include <stdio.h>";
+    WriteTest "#include <stdlib.h>";
+    WriteTest "#include \"saimetadata.h\"";
+    WriteTest "#define PP(x) printf(\"%p\\n\", (x));";
+    WriteTest "#define TEST_ASSERT_TRUE(x,msg) if (!(x)){ fprintf(stderr, \"ASSERT TRUE FAILED(%d): %s: %s\\n\", __LINE__, #x, msg); exit(1);}";
+}
+
+sub WriteTestMain
+{
+    #
+    # Purpose is to write saimedatatest.c main funcion
+    # and all test names
+    #
+
+    WriteTest "int main()";
+    WriteTest "{";
+
+    my $count = @TESTNAMES;
+
+    my $n = 0;
+
+    for my $name (@TESTNAMES)
+    {
+        $n++;
+
+        WriteTest "    printf(\"Executing Test [$n/$count]: $name\\n\");";
+        WriteTest "    $name();";
+    }
+
+    WriteTest "    return 0;";
+    WriteTest "}";
+}
+
+sub WriteLoggerVariables
+{
+    #
+    # logger requires 2 variables
+    # - log level
+    # - log function
+    #
+    # we can extract this to another source file saimetadatalogger.c
+    # but now seems to be unnecessary
+    #
+
+    WriteSource "volatile sai_log_level_t sai_meta_log_level = SAI_LOG_LEVEL_NOTICE;";
+    WriteSource "volatile sai_meta_log_fn sai_meta_log = NULL;";
+}
+
+my %ProcessedItems = ();
+
+sub ProcessStructItem
+{
+    my $type = shift;
+    my $struct = shift;
+
+    $type = $1 if $type =~/^(\w+)\*$/; # handle pointers
+
+    return if defined $ProcessedItems{$type};
+
+    return if defined $SAI_ENUMS{$type}; # struct entry is enum
+
+    return if $type eq "union"; # union is special, but all union members are flattened anyway
+    return if $type eq "bool";
+
+    return if $type =~/^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
+    return if $type =~/^u?int\d+_t/;
+    return if $type =~/^sai_[su]\d+_list_t/;
+
+    if ($type eq "sai_object_id_t" or $type eq "sai_object_list_t")
+    {
+        # NOTE: don't change that, we can't have object id's inside complicated structures
+
+        LogError "type $type in $struct can't be used, please convert struct to new object type and this item to an attribute";
+        return;
+    }
+
+    my %S = ExtractStructInfo($type, "struct_");
+
+    for my $key (keys %S)
+    {
+        my $item = $S{$key}{type};
+
+        ProcessStructItem($item, $type);
+
+        $ProcessedItems{$item} = 1;
+    }
+}
+
+sub CheckAttributeValueUnion
+{
+    #
+    # purpose of this test is to find out if attribute
+    # union contains complex structures members that also contain
+    # object id, all object ids should be simple object id member oid
+    # or object list objlist, other complext structures containing
+    # objects are NOT supported since it will be VERY HARD to track
+    # object dependencies via metadata and comparison logic
+    #
+
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union");
+
+    my @primitives = qw/sai_acl_action_data_t sai_acl_field_data_t sai_pointer_t sai_object_id_t sai_object_list_t char/;
+
+    for my $key (keys %Union)
+    {
+        my $type = $Union{$key}{type};
+
+        next if $type =~/sai_u?int\d+_t/;
+        next if $type =~/sai_[su]\d+_list_t/;
+
+        next if grep(/^$type$/, @primitives);
+
+        ProcessStructItem($type, "sai_attribute_value_t");
+    }
+}
+
 #
 # MAIN
 #
 
 CheckHeadersStyle();
+
+ExtractApiToObjectMap();
 
 for my $file (GetXmlFiles($XMLDIR))
 {
@@ -2441,11 +2901,11 @@ CreateMetadataForAttributes();
 
 CreateEnumHelperMethods();
 
-CreateNonObjectIdTest();
-
 ProcessNonObjectIdObjects();
 
 CreateStructNonObjectId();
+
+CreateApis();
 
 CreateObjectInfo();
 
@@ -2455,6 +2915,20 @@ CheckWhiteSpaceInHeaders();
 
 CheckApiStructNames();
 
+CheckApiDefines();
+
+CheckAttributeValueUnion();
+
 WriteHeader "#endif /* __SAI_METADATA_H__ */";
+
+# Test Section
+
+WriteTestHeader();
+
+CreateNonObjectIdTest();
+
+WriteTestMain();
+
+WriteLoggerVariables();
 
 WriteMetaDataFiles();

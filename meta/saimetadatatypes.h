@@ -135,6 +135,11 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_IP_ADDRESS,
 
     /**
+     * @brief Attribute value is ip prefix
+     */
+    SAI_ATTR_VALUE_TYPE_IP_PREFIX,
+
+    /**
      * @brief Attribute value is object id.
      */
     SAI_ATTR_VALUE_TYPE_OBJECT_ID,
@@ -323,11 +328,6 @@ typedef enum _sai_attr_value_type_t {
      * @brief Attribute value is acl capability.
      */
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
-
-    /**
-     * @brief Attribute value is ip prefix
-     */
-    SAI_ATTR_VALUE_TYPE_IP_PREFIX,
 
 } sai_attr_value_type_t;
 
@@ -808,6 +808,30 @@ typedef struct _sai_attr_metadata_t
 
 } sai_attr_metadata_t;
 
+/*
+ * TODO since non object id members can have different type and can be localed
+ * at different object_key union position, we need to find a way to extract
+ * those for automatic serialize/deserialize for example extracting value as
+ * sai_attribute_value_t and pointing to right serialize/deserialize functions.
+ * Also a automatic generated functions for serialize/deserialize for those non
+ * object id structs must be generated, we don't want to update them manually.
+ */
+
+/**
+ * @brief Function definition for getting OID from non obeject
+ * id struct member.
+ */
+typedef sai_object_id_t (*sai_meta_get_struct_member_oid_fn)(
+        _In_ const sai_object_meta_key_t *object_meta_key);
+
+/**
+ * @brief Function definition for setting OID from non obeject
+ * id struct member.
+ */
+typedef void (*sai_meta_set_struct_member_oid_fn)(
+        _Inout_ sai_object_meta_key_t *object_meta_key,
+        _In_ sai_object_id_t oid);
+
 /**
  * @brief Defines struct member info for
  * non object id object type
@@ -817,17 +841,17 @@ typedef struct _sai_struct_member_info_t
     /**
      * @brief Member vlaue type
      */
-    sai_attr_value_type_t               membervaluetype;
+    sai_attr_value_type_t                               membervaluetype;
 
     /**
      * @brief Member name
      */
-    const char*                         membername;
+    const char*                                         membername;
 
     /**
      * @brief Indicates whether field is vlan
      */
-    bool                                isvlan;
+    bool                                                isvlan;
 
     /**
      * @brief Specified allowed object types.
@@ -835,12 +859,12 @@ typedef struct _sai_struct_member_info_t
      * If object attr value type is OBJECT_ID
      * this list specifies what object type can be used.
      */
-    const sai_object_type_t* const      allowedobjecttypes;
+    const sai_object_type_t* const                      allowedobjecttypes;
 
     /**
      * @brief Length of allowed object types.
      */
-    size_t                              allowedobjecttypeslength;
+    size_t                                              allowedobjecttypeslength;
 
     /**
      * @brief Indicates wheter member is enum value.
@@ -850,12 +874,24 @@ typedef struct _sai_struct_member_info_t
      * @note Could be deduced from enum type string or
      * enum vector values and attr value type.
      */
-    bool                                isenum;
+    bool                                                isenum;
 
     /**
      * @brief Provides enum metadata if member is enum
      */
-    const sai_enum_metadata_t* const    enummetadata;
+    const sai_enum_metadata_t* const                    enummetadata;
+
+    /**
+     * @brief If struct member is OID this function
+     * will get it's value.
+     */
+    const sai_meta_get_struct_member_oid_fn             getoid;
+
+    /**
+     * @brief If struct member is OID this function
+     * will set it's value.
+     */
+    const sai_meta_set_struct_member_oid_fn             setoid;
 
 } sai_struct_member_info_t;
 
@@ -897,6 +933,41 @@ typedef struct _sai_rev_graph_member_t
 
 } sai_rev_graph_member_t;
 
+/*
+ * Generic QUAD api definitions. All apis can be called using this quad genric
+ * functions.
+ *
+ * When creating switch object or non object id switch_id parameter is ignored,
+ * and can be NULL. Currently objecttype inside sai_object_meta_key_t is
+ * ignored and can be skipped.
+ *
+ * This generic quad api will help us later to call any api, without doind any
+ * switch cases for calling differen signature functions including non object
+ * id structs. Also later we will generate automatic serialize and deserialize
+ * methods for non object id which will deserialize data to object union in
+ * sai_object_meta_key_t to right place.
+ *
+ * TODO add medatada init function which will populate global api function
+ * pointers which will be used when calling each api.
+ */
+
+typedef sai_status_t (*sai_meta_generic_create_fn)(
+        _Inout_ sai_object_meta_key_t *meta_key,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_meta_generic_remove_fn)(
+        _In_ const sai_object_meta_key_t *meta_key);
+
+typedef sai_status_t (*sai_meta_generic_set_fn)(
+        _In_ const sai_object_meta_key_t *meta_key,
+        _In_ const sai_attribute_t *attr);
+
+typedef sai_status_t (*sai_meta_generic_get_fn)(
+        _In_ const sai_object_meta_key_t *meta_key,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief SAI object type information
@@ -949,6 +1020,26 @@ typedef struct _sai_object_type_info_t
      * @brief Defines reverse dependency graph members
      */
     const sai_rev_graph_member_t** const    revgraphmembers;
+
+    /**
+     * @brief Create function pointer.
+     */
+    const sai_meta_generic_create_fn        create;
+
+    /**
+     * @brief Remove function pointer.
+     */
+    const sai_meta_generic_remove_fn        remove;
+
+    /**
+     * @brief Set function pointer.
+     */
+    const sai_meta_generic_set_fn           set;
+
+    /**
+     * @brief Get function pointer
+     */
+    const sai_meta_generic_get_fn           get;
 
 } sai_object_type_info_t;
 

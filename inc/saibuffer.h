@@ -45,11 +45,12 @@ typedef enum _sai_ingress_priority_group_attr_t
 
     /**
      * @brief Buffer profile pointer
+     *
      * Default no profile
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -257,6 +258,7 @@ typedef enum _sai_buffer_pool_attr_t
      * @brief shared headroom pool size in bytes for lossless traffic
      *
      * Only valid for the ingress buffer pool
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
@@ -405,8 +407,8 @@ typedef enum _sai_buffer_profile_attr_t
      * to priority group or queue buffer profile.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
      * @allownull true
      */
     SAI_BUFFER_PROFILE_ATTR_POOL_ID = SAI_BUFFER_PROFILE_ATTR_START,
@@ -587,6 +589,6 @@ typedef struct _sai_buffer_api_t
 } sai_buffer_api_t;
 
 /**
- *@}
+ * @}
  */
 #endif /** __SAIBUFFER_H_ */

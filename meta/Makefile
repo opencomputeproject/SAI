@@ -47,24 +47,31 @@ XMLDEPS = $(wildcard xml/*.xml)
 %.o: %.c $(DEPS)
 	gcc -c -o $@ $< $(CFLAGS) $(WARNINGS)
 
-all: saisanitycheck saidepgraph.svg
+all: saisanitycheck saimetadatatest saidepgraph.svg
+	./saimetadatatest > /dev/null
 	./saisanitycheck
 
-xml: $(DEPS) Doxyfile saimetadatatypes.h
+CONSTHEADERS = saimetadatatypes.h saimetadatalogger.h saimetadatautils.h
+
+xml: $(DEPS) Doxyfile $(CONSTHEADERS)
 	doxygen Doxyfile 2>&1 | perl -npe '$$e=1 if /warning/i; END{exit $$e}';
 	touch xml
 
 saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl saimetadatatypes.h
 	perl parse.pl
 
-saisanitycheck: saisanitycheck.c saimetadata.c saimetadata.h saimetadatatypes.h saimetadatautils.c saimetadatautils.h
-	g++ -c saimetadatautils.c -o /dev/null $(CFLAGS) $(WARNINGS)
-	g++ -c saisanitycheck.c -o /dev/null $(CFLAGS) $(WARNINGS)
-	g++ -c saimetadata.c -o /dev/null $(CFLAGS) $(WARNINGS)
-	gcc -o $@ saisanitycheck.c saimetadata.c saimetadatautils.c $(CFLAGS) $(WARNINGS)
+HEADERS = saimetadata.h $(CONSTHEADERS)
 
-saidepgraphgen: saidepgraphgen.cpp
-	g++ -o $@ saidepgraphgen.cpp saimetadata.c saimetadatautils.c $(CFLAGS) $(WARNINGS)
+COMMONSRC = saimetadata.c saimetadatautils.c
+
+saisanitycheck: saisanitycheck.c $(HEADERS)
+	gcc -o $@ saisanitycheck.c $(COMMONSRC) $(CFLAGS) $(WARNINGS)
+
+saimetadatatest: saimetadatatest.c $(COMMONSRC) $(HEADERS)
+	gcc -o $@ saimetadatatest.c $(COMMONSRC) $(CFLAGS) $(WARNINGS)
+
+saidepgraphgen: saidepgraphgen.cpp $(HEADERS)
+	g++ -o $@ saidepgraphgen.cpp $(COMMONSRC) $(CFLAGS) $(WARNINGS)
 
 saidepgraph.gv: saidepgraphgen
 	./saidepgraphgen > $@
@@ -75,5 +82,7 @@ saidepgraph.svg: saidepgraph.gv
 .PHONY: clean
 
 clean:
-	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak saisanitycheck saimetadata.h saimetadata.c
-	rm -rf xml html dist saidepgraphgen sai*.gv sai*.svg
+	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg
+	rm -f saimetadata.h saimetadata.c saimetadatatest.c
+	rm -f saisanitycheck saimetadatatest saidepgraphgen
+	rm -rf xml html dist

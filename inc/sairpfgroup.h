@@ -53,9 +53,10 @@ typedef enum _sai_rpf_group_attr_t
 
     /**
      * @brief RPF member list
+     *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_RPF_GROUP_MEMBER
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_RPF_GROUP_MEMBER
      */
     SAI_RPF_GROUP_ATTR_RPF_MEMBER_LIST,
 
@@ -81,17 +82,19 @@ typedef enum _sai_rpf_group_member_attr_t
 
     /**
      * @brief RPF interface group id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_RPF_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_RPF_GROUP
      */
     SAI_RPF_GROUP_MEMBER_ATTR_RPF_GROUP_ID = SAI_RPF_GROUP_MEMBER_ATTR_START,
 
     /**
      * @brief RPF interface id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      */
     SAI_RPF_GROUP_MEMBER_ATTR_RPF_INTERFACE_ID,
 

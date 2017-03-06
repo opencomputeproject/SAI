@@ -213,7 +213,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Breakout mode(s) supported
      *
-     * @type sai_s32_list_t
+     * @type sai_s32_list_t sai_port_breakout_mode_type_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_SUPPORTED_BREAKOUT_MODE_TYPE,
@@ -238,8 +238,8 @@ typedef enum _sai_port_attr_t
      * @brief List of Queues for the port
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_QUEUE
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_QUEUE
      */
     SAI_PORT_ATTR_QOS_QUEUE_LIST,
 
@@ -255,8 +255,8 @@ typedef enum _sai_port_attr_t
      * @brief List of Scheduler groups for the port
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP
      */
     SAI_PORT_ATTR_QOS_SCHEDULER_GROUP_LIST,
 
@@ -384,8 +384,8 @@ typedef enum _sai_port_attr_t
      * @brief list of ingress priority groups
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
      */
     SAI_PORT_ATTR_INGRESS_PRIORITY_GROUP_LIST,
 
@@ -513,8 +513,8 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @default 1
      * @isvlan true
+     * @default 1
      */
     SAI_PORT_ATTR_PORT_VLAN_ID,
 
@@ -596,8 +596,8 @@ typedef enum _sai_port_attr_t
      * disable policer on port.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -608,8 +608,8 @@ typedef enum _sai_port_attr_t
      * Policer id = #SAI_NULL_OBJECT_ID to disable policer on port
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -620,8 +620,8 @@ typedef enum _sai_port_attr_t
      * policer id = #SAI_NULL_OBJECT_ID to disable policer on port
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -645,8 +645,8 @@ typedef enum _sai_port_attr_t
      * in the attribute value.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -661,8 +661,8 @@ typedef enum _sai_port_attr_t
      * in the attribute value.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -676,8 +676,8 @@ typedef enum _sai_port_attr_t
      * as 0 in objlist
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @default empty
      */
     SAI_PORT_ATTR_INGRESS_MIRROR_SESSION,
@@ -690,8 +690,8 @@ typedef enum _sai_port_attr_t
      * in objlist
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @default empty
      */
     SAI_PORT_ATTR_EGRESS_MIRROR_SESSION,
@@ -704,8 +704,8 @@ typedef enum _sai_port_attr_t
      * attribute value
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -719,8 +719,8 @@ typedef enum _sai_port_attr_t
      * attribute value
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -732,8 +732,8 @@ typedef enum _sai_port_attr_t
      * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -756,8 +756,8 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -770,8 +770,8 @@ typedef enum _sai_port_attr_t
      * To enable/disable trust Dot1p, Map ID should be add/remove on port.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -785,8 +785,8 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -799,8 +799,8 @@ typedef enum _sai_port_attr_t
      * To enable/disable trust DSCP, Map ID should be add/remove on port.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -813,8 +813,8 @@ typedef enum _sai_port_attr_t
      * Default no map i.e All packets to queue 0
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -827,8 +827,8 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -841,8 +841,8 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -855,8 +855,8 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -869,8 +869,8 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -882,8 +882,8 @@ typedef enum _sai_port_attr_t
      * Default no map
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -895,8 +895,8 @@ typedef enum _sai_port_attr_t
      * ID = #SAI_NULL_OBJECT_ID to disable WRED.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_WRED
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_WRED
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -909,8 +909,8 @@ typedef enum _sai_port_attr_t
      * attributes alone valid. Rest will be ignored
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SCHEDULER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -922,8 +922,8 @@ typedef enum _sai_port_attr_t
      * There can be up to #SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM profiles
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @default empty
      */
     SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST,
@@ -934,8 +934,8 @@ typedef enum _sai_port_attr_t
      * There can be up to #SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM profiles
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @default empty
      */
     SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST,
@@ -969,8 +969,8 @@ typedef enum _sai_port_attr_t
      * given port list will be dropped.
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      * @default empty
      */
     SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST,
@@ -1410,6 +1410,30 @@ typedef enum _sai_port_stat_t
     /** sai port stat pfc 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
+    /** PFC based ON to OFF pause transitions counter per PFC priority [uint64_t] */
+    SAI_PORT_STAT_PFC_0_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 1 on to off rx pkts */
+    SAI_PORT_STAT_PFC_1_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 2 on to off rx pkts */
+    SAI_PORT_STAT_PFC_2_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 3 on to off rx pkts */
+    SAI_PORT_STAT_PFC_3_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 4 on to off rx pkts */
+    SAI_PORT_STAT_PFC_4_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 5 on to off rx pkts */
+    SAI_PORT_STAT_PFC_5_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 6 on to off rx pkts */
+    SAI_PORT_STAT_PFC_6_ON2OFF_RX_PKTS,
+
+    /** sai port stat pfc 7 on to off rx pkts */
+    SAI_PORT_STAT_PFC_7_ON2OFF_RX_PKTS,
+
     /**
      * @brief Number of times port state changed from
      * high power mode to low power mode in TX direction [uint64_t]
@@ -1424,12 +1448,14 @@ typedef enum _sai_port_stat_t
 
     /**
      * @brief Port Low power mode duration(micro secs) in TX direction [uint64_t].
+     *
      * This Duration is accumulative since EEE enable on port/from last clear stats
      */
     SAI_PORT_STAT_EEE_TX_DURATION,
 
     /**
      * @brief Port Low power mode duration(micro secs) in RX direction [uint64_t]
+     *
      * This Duration is accumulative since EEE enable on port/from last clear stats
      */
     SAI_PORT_STAT_EEE_RX_DURATION,

@@ -4,6 +4,7 @@
 #include <sai.h>
 #include "saimetadatautils.h"
 #include "saimetadata.h"
+#include "saimetadatalogger.h"
 
 typedef struct _defined_attr_t {
 
@@ -506,6 +507,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
+        case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
@@ -632,6 +634,12 @@ void check_attr_default_required(
 
     if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
     {
+        /*
+         * If default value type is NONE, then default value must be NULL.
+         */
+
+        META_ASSERT_NULL(md->defaultvalue);
+
         if (sai_metadata_is_acl_field_or_action(md))
         {
             /*
@@ -724,6 +732,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
+        case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
             break;
 
         case SAI_ATTR_VALUE_TYPE_INT8_LIST:
@@ -1176,9 +1185,14 @@ void check_attr_validonly(
             META_ASSERT_FAIL(md, "marked as validonly, but invalid creation flags: 0x%u", md->flags);
     }
 
-    if ((md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE) ||
-            (md->defaultvalue == NULL))
+    if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
     {
+        /*
+         * In struct defaultvalue member can be NULL for some other default
+         * value types like empty list or internal etc. Default value is
+         * provided for CONST only.
+         */
+
         META_ASSERT_FAIL(md, "expected default value on vlaid only attribute, but none provided");
     }
 
@@ -1903,6 +1917,117 @@ void check_attr_acl_field_or_action(
     }
 }
 
+void check_attr_existing_objects(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this test it to find attributes on objects exisring already
+     * on the switch with attributes that are mandatory on create and create
+     * and set.  Those attributes can be changed by user fro previous value,
+     * and this causes problem for comparison logic to bring those objects to
+     * default value. We need to store those initial values of created objects
+     * somewhere.
+     */
+
+    if (sai_all_object_type_infos[md->objecttype]->isnonobjectid)
+    {
+        return;
+    }
+
+    switch (md->objecttype)
+    {
+        /*
+         * Those objects are not existing on the switch by default user needs
+         * to crete them.
+         */
+
+        case SAI_OBJECT_TYPE_SAMPLEPACKET:
+        case SAI_OBJECT_TYPE_HOSTIF_TRAP:
+        case SAI_OBJECT_TYPE_MIRROR_SESSION:
+            return;
+
+            /*
+             * Those objects are objects which exist already on the switch, to bring
+             * back them to default state by comparison logic, we should not have any
+             * MANDATORY_ON_CREATE attributes on them.
+             */
+
+        case SAI_OBJECT_TYPE_VLAN_MEMBER:
+        case SAI_OBJECT_TYPE_VLAN:
+        case SAI_OBJECT_TYPE_HASH:
+        case SAI_OBJECT_TYPE_STP:
+        case SAI_OBJECT_TYPE_VIRTUAL_ROUTER:
+        case SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP:
+        case SAI_OBJECT_TYPE_SWITCH:
+        case SAI_OBJECT_TYPE_PORT:
+        case SAI_OBJECT_TYPE_QUEUE:
+        case SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP:
+        case SAI_OBJECT_TYPE_SCHEDULER_GROUP:
+        default:
+            break;
+    }
+
+    if (!HAS_FLAG_MANDATORY_ON_CREATE(md->flags) || !HAS_FLAG_CREATE_AND_SET(md->flags))
+    {
+        return;
+    }
+
+    /*
+     * If attribute is mandatory on create and create and set then there is no
+     * default value on created object, and user can change it's value so in
+     * comparison logic we will need to mantain this state somewhere as
+     * default.
+     */
+
+    /*
+     * Currently we are limiting value types on existing objects that are
+     * mandatory on create to primitive values.
+     */
+
+    switch (md->attrvaluetype)
+    {
+        case SAI_ATTR_VALUE_TYPE_UINT32:
+        case SAI_ATTR_VALUE_TYPE_INT32:
+        case SAI_ATTR_VALUE_TYPE_INT8:
+
+            /*
+             * Primitives we can skip for now, just left as was set by user
+             * with warning in syslog.
+             */
+
+            break;
+
+        case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+
+            if (md->allownullobjectid)
+            {
+                /*
+                 * If object allows NULL object id then we assume that this can
+                 * be used as default value.
+                 */
+
+                return;
+            }
+
+            /*
+             * When type is object id we need to store it's previous value
+             * since we will not be albe to bring it to default.
+             */
+
+            META_WARN_LOG("Default value needs to be stored %s", md->attridname);
+
+            break;
+
+        default:
+
+            META_ASSERT_FAIL(md, "not supported attr value type on existing object");
+    }
+
+    /* TODO there is default .1Q Bridge present */
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1935,6 +2060,7 @@ void check_single_attribute(
     check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
     check_attr_acl_field_or_action(md);
+    check_attr_existing_objects(md);
 
     define_attr(md);
 }
@@ -2110,6 +2236,8 @@ void check_non_object_id_object_types()
 
             if (m->membervaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID)
             {
+                META_ASSERT_NOT_NULL(m->getoid);
+                META_ASSERT_NOT_NULL(m->setoid);
                 META_ASSERT_NOT_NULL(m->allowedobjecttypes);
                 META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "struct member object id, should specify some object types");
 
@@ -2159,6 +2287,8 @@ void check_non_object_id_object_types()
             }
             else
             {
+                META_ASSERT_NULL(m->getoid);
+                META_ASSERT_NULL(m->setoid);
                 META_ASSERT_NULL(m->allowedobjecttypes);
                 META_ASSERT_TRUE(m->allowedobjecttypeslength == 0, "member is not object id, should not specify object types");
             }
@@ -2729,6 +2859,7 @@ void check_api_names()
     CHECK_API(hostif, hostif_user_defined_trap, SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP);
     CHECK_API(bridge, bridge, SAI_OBJECT_TYPE_BRIDGE);
     CHECK_API(bridge, bridge_port, SAI_OBJECT_TYPE_BRIDGE_PORT);
+    CHECK_API(tunnel, tunnel_map_entry, SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY);
 
 #define CHECK_ENTRY_API(apiname, entry_name, object_type)\
     {\
@@ -3305,9 +3436,46 @@ void check_switch_create_only_objects()
     }
 }
 
+void check_quad_api_pointers(
+    _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Check if quad api pointers are not NULL except hostif packet and fdb
+     * flush which are special.
+     */
+
+    if (oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
+        oi->objecttype == SAI_OBJECT_TYPE_FDB_FLUSH)
+    {
+        META_ASSERT_NULL(oi->create);
+        META_ASSERT_NULL(oi->remove);
+        META_ASSERT_NULL(oi->set);
+        META_ASSERT_NULL(oi->get);
+    }
+    else
+    {
+        META_ASSERT_NOT_NULL(oi->create);
+        META_ASSERT_NOT_NULL(oi->remove);
+        META_ASSERT_NOT_NULL(oi->set);
+        META_ASSERT_NOT_NULL(oi->get);
+    }
+}
+
+void check_single_object_info(
+    _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    check_quad_api_pointers(oi);
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
+
+    SAI_META_LOG_ENTER();
 
     check_all_enums_name_pointers();
     check_all_enums_values();
@@ -3337,7 +3505,18 @@ int main(int argc, char **argv)
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
 
+    i = SAI_OBJECT_TYPE_NULL + 1;
+
+    for (; i < SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        check_single_object_info(sai_all_object_type_infos[i]);
+    }
+
+    SAI_META_LOG_DEBUG("log test");
+
     printf("\n [ %s ]\n\n", sai_metadata_get_status_name(SAI_STATUS_SUCCESS));
+
+    SAI_META_LOG_EXIT();
 
     return 0;
 }

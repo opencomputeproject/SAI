@@ -109,8 +109,8 @@ typedef enum _sai_bridge_port_attr_t
      * @brief Associated Port or Lag object id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      */
     SAI_BRIDGE_PORT_ATTR_PORT_ID,
@@ -120,19 +120,20 @@ typedef enum _sai_bridge_port_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      * @isvlan true
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      */
     SAI_BRIDGE_PORT_ATTR_VLAN_ID,
 
     /**
      * @brief Associated router inerface object id
+     *
      * Please note that for SAI_BRIDGE_PORT_TYPE_1Q_ROUTER,
      * all vlan interfaces are auto bounded for the bridge port.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER
      */
     SAI_BRIDGE_PORT_ATTR_RIF_ID,
@@ -141,8 +142,8 @@ typedef enum _sai_bridge_port_attr_t
      * @brief Associated tunnel id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
      */
     SAI_BRIDGE_PORT_ATTR_TUNNEL_ID,
@@ -151,8 +152,8 @@ typedef enum _sai_bridge_port_attr_t
      * @brief Associated bridge id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER
      */
     SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
@@ -285,8 +286,8 @@ typedef enum _sai_bridge_attr_t
      * @brief List of bridge ports associated to this bridge
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      */
     SAI_BRIDGE_ATTR_PORT_LIST,
 
