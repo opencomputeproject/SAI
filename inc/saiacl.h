@@ -225,7 +225,7 @@ typedef enum _sai_acl_action_type_t
     /** Set user defined trap id */
     SAI_ACL_ACTION_TYPE_SET_USER_TRAP_ID,
 
-    /** Set Do Not Learn unknow source MAC*/
+    /** Set Do Not Learn unknow source MAC */
     SAI_ACL_ACTION_TYPE_SET_DO_NOT_LEARN,
 
 } sai_acl_action_type_t;
