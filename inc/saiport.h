@@ -287,7 +287,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Query list of supported port FEC mode
      *
-     * @type sai_u32_list_t
+     * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_SUPPORTED_FEC_MODE,
@@ -343,7 +343,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Query list of Advertised remote port FEC control
      *
-     * @type sai_u32_list_t
+     * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_FEC_MODE,
@@ -471,7 +471,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Query/Configure list of Advertised port FEC Mode
      *
-     * @type sai_u32_list_t
+     * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags CREATE_AND_SET
      * @default empty
      */
