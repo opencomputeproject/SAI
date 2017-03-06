@@ -198,7 +198,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Breakout mode(s) supported
      *
-     * @type sai_s32_list_t
+     * @type sai_s32_list_t sai_port_breakout_mode_type_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_SUPPORTED_BREAKOUT_MODE_TYPE,
