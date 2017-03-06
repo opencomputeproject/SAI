@@ -1408,6 +1408,7 @@ sub ProcessSingleObjectType
         WriteSource "    .conditiontype                 = $conditiontype,";
         WriteSource "    .conditions                    = $conditions,";
         WriteSource "    .conditionslength              = $conditionslen,";
+        WriteSource "    .isconditional                 = ($conditionslen != 0),";
         WriteSource "    .validonlytype                 = $validonlytype,";
         WriteSource "    .validonly                     = $validonly,";
         WriteSource "    .validonlylength               = $validonlylen,";
@@ -2076,6 +2077,7 @@ sub CreateObjectInfo
 
         WriteSource "const sai_object_type_info_t sai_object_type_info_$ot = {";
         WriteSource "    .objecttype         = $ot,";
+        WriteSource "    .objecttypename     = \"$ot\",";
         WriteSource "    .attridstart        = $start,";
         WriteSource "    .attridend          = $end,";
         WriteSource "    .enummetadata       = $enum,";

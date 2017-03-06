@@ -1008,8 +1008,11 @@ void check_attr_conditions(
 
     if (!conditional)
     {
+        META_ASSERT_FALSE(md->isconditional, "marked conditional but is not");
         return;
     }
+
+    META_ASSERT_TRUE(md->isconditional, "marked not conditional but is");
 
     if (md->conditions == NULL)
     {
@@ -2094,6 +2097,8 @@ void check_object_infos()
         }
 
         META_ASSERT_TRUE(info->objecttype == i, "object type mismatch");
+
+        META_ASSERT_NOT_NULL(info->objecttypename);
 
         META_LOG_INFO("processing object type: %s", sai_metadata_get_object_type_name((sai_object_type_t)i));
 
