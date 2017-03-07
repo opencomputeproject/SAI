@@ -743,6 +743,11 @@ typedef struct _sai_attr_metadata_t
     size_t                              conditionslength;
 
     /**
+     * @brief Indicates wheter attribute is conditional.
+     */
+    bool                                isconditional;
+
+    /**
      * @brief Specifies valid only type of attribute.
      *
      * @note Currently all valid only are "OR" conditions
@@ -978,6 +983,11 @@ typedef struct _sai_object_type_info_t
      * @brief Object Type
      */
     sai_object_type_t                       objecttype;
+
+    /**
+     * @brief Object Type name
+     */
+    const char*                             objecttypename;
 
     /**
      * @brief Start of attributes *_START
