@@ -338,7 +338,7 @@ typedef struct _sai_policer_api_t
     sai_remove_policer_fn                 remove_policer;
     sai_set_policer_attribute_fn          set_policer_attribute;
     sai_get_policer_attribute_fn          get_policer_attribute;
-    sai_get_policer_stats_fn              get_policer_statistics;
+    sai_get_policer_stats_fn              get_policer_stats;
     sai_clear_policer_stats_fn            clear_policer_stats;
 
 } sai_policer_api_t;
