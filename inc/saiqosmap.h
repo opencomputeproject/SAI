@@ -17,7 +17,7 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    saiqosmaps.h
+ * @file    saiqosmap.h
  *
  * @brief   This module defines SAI QOS Maps interface
  */

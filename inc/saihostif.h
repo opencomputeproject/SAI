@@ -17,7 +17,7 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    saihostintf.h
+ * @file    saihostif.h
  *
  * @brief   This module defines SAI host interface
  *

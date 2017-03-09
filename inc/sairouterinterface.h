@@ -17,7 +17,7 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    sairouterintf.h
+ * @file    sairouterinterface.h
  *
  * @brief   This module defines SAI Router interface
  */

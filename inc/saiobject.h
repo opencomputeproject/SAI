@@ -27,7 +27,7 @@
 
 #include <saitypes.h>
 #include <saifdb.h>
-#include <saimcfdb.h>
+#include <saimcastfdb.h>
 #include <sail2mc.h>
 #include <saiipmc.h>
 #include <saineighbor.h>

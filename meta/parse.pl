@@ -2656,6 +2656,17 @@ sub ExtractApiToObjectMap
             next;
         }
 
+        my $shortapi = $api;
+
+        $shortapi =~ s/_//g;
+
+        my $correct = "sai$shortapi.h";
+
+        if ($header ne $correct)
+        {
+            LogWarning "File $header should be named $correct";
+        }
+
         for my $obj(@objects)
         {
             $OBJTOAPIMAP{$obj} = $api;

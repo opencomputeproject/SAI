@@ -31,7 +31,7 @@
 #include "saibuffer.h"
 #include "saifdb.h"
 #include "saihash.h"
-#include "saihostintf.h"
+#include "saihostif.h"
 #include "sailag.h"
 #include "saimirror.h"
 #include "saineighbor.h"
@@ -40,11 +40,11 @@
 #include "saiobject.h"
 #include "saipolicer.h"
 #include "saiport.h"
-#include "saiqosmaps.h"
+#include "saiqosmap.h"
 #include "saiqueue.h"
 #include "sairoute.h"
-#include "sairouter.h"
-#include "sairouterintf.h"
+#include "saivirtualrouter.h"
+#include "sairouterinterface.h"
 #include "saisamplepacket.h"
 #include "saischedulergroup.h"
 #include "saischeduler.h"
@@ -60,7 +60,7 @@
 #include "sairpfgroup.h"
 #include "sail2mcgroup.h"
 #include "saiipmcgroup.h"
-#include "saimcfdb.h"
+#include "saimcastfdb.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
