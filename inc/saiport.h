@@ -183,6 +183,21 @@ typedef enum _sai_port_breakout_mode_type_t
 } sai_port_breakout_mode_type_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_FEC_MODE
+ */
+typedef enum _sai_port_fec_mode_t
+{
+    /** No FEC */
+    SAI_PORT_FEC_MODE_NONE,
+
+    /** Enable RS-FEC - 25G, 50G, 100G ports */
+    SAI_PORT_FEC_MODE_RS,
+
+    /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
+    SAI_PORT_FEC_MODE_FC,
+} sai_port_fec_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -270,6 +285,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SUPPORTED_SPEED,
 
     /**
+     * @brief Query list of supported port FEC mode
+     *
+     * @type sai_s32_list_t sai_port_fec_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_FEC_MODE,
+
+    /**
      * @brief Query list of Supported HALF-Duplex speed in Mbps
      *
      * @type sai_u32_list_t
@@ -310,60 +333,20 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SUPPORTED_MEDIA_TYPE,
 
     /**
-     * @brief Query list of supported remote port speed (Full-Duplex) in Mbps
-     *
-     * @type sai_u32_list_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_SPEED,
-
-    /**
-     * @brief Query list of Remote Port's Supported HALF-Duplex speed in Mbps
-     *
-     * @type sai_u32_list_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_HALF_DUPLEX_SPEED,
-
-    /**
-     * @brief Query Remote Port's auto-negotiation support
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_AUTO_NEG_MODE,
-
-    /**
-     * @brief Query Remote port supported flow control mode
-     *
-     * @type sai_port_flow_control_mode_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_FLOW_CONTROL_MODE,
-
-    /**
-     * @brief Query Remote port supported asymmetric pause mode
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_ASYMMETRIC_PAUSE_MODE,
-
-    /**
-     * @brief Query Remote port MEDIA type
-     *
-     * @type sai_port_media_type_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_REMOTE_SUPPORTED_MEDIA_TYPE,
-
-    /**
      * @brief Query list of Advertised remote port speed (Full-Duplex) in Mbps
      *
      * @type sai_u32_list_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_SPEED,
+
+    /**
+     * @brief Query list of Advertised remote port FEC control
+     *
+     * @type sai_s32_list_t sai_port_fec_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_FEC_MODE,
 
     /**
      * @brief Query list of Remote Port's Advertised HALF-Duplex speed in Mbps
@@ -486,6 +469,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ADVERTISED_SPEED,
 
     /**
+     * @brief Query/Configure list of Advertised port FEC Mode
+     *
+     * @type sai_s32_list_t sai_port_fec_mode_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_PORT_ATTR_ADVERTISED_FEC_MODE,
+
+    /**
      * @brief Query/Configure list of Advertised HALF-Duplex speed in Mbps
      *
      * @type sai_u32_list_t
@@ -586,6 +578,15 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_INTERNAL_LOOPBACK_MODE_NONE
      */
     SAI_PORT_ATTR_INTERNAL_LOOPBACK_MODE,
+
+    /**
+     * @brief Forward Error Correction (FEC) control
+     *
+     * @type sai_port_fec_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_FEC_MODE_NONE
+     */
+    SAI_PORT_ATTR_FEC_MODE,
 
     /**
      * @brief FDB Learning mode
