@@ -2619,6 +2619,13 @@ sub CheckHeadersStyle
                 LogWarning "coment is ending without space $header $n:$line";
             }
 
+            if ($line =~ /^\s*sai_(\w+)_fn\s+(\w+);/)
+            {
+                # make struct function members to follow convention
+
+                LogWarning "$1 should be equal to $2" if (($1 ne $2) and not($1 =~ /^bulk/))
+            }
+
             next if $line =~ /^ \*/;                # doxygen comment
             next if $line =~ /^$/;                  # empty line
             next if $line =~ /^typedef /;           # type definition
