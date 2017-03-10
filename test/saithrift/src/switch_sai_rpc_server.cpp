@@ -232,6 +232,12 @@ public:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
+              case SAI_PORT_ATTR_INGRESS_MIRROR_SESSION:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_PORT_ATTR_EGRESS_MIRROR_SESSION:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
               default:
                   break;
           }
