@@ -2023,6 +2023,45 @@ sub CreateApis
     }
 }
 
+sub CreateApisQuery
+{
+    WriteHeader "typedef sai_status_t (*sai_api_query_fn)(";
+    WriteHeader "        _In_ sai_api_t sai_api_id,";
+    WriteHeader "        _Out_ void** api_method_table);";
+
+    WriteSource "int sai_meta_apis_query(";
+    WriteSource "    _In_ const sai_api_query_fn api_query)";
+    WriteSource "{";
+    WriteSource "    sai_status_t status = SAI_STATUS_SUCCESS;";
+    WriteSource "    int count = 0;";
+
+    WriteSource "    if (api_query == NULL)";
+    WriteSource "    {";
+
+    for my $key(sort keys %APITOOBJMAP)
+    {
+        WriteSource "        g_sai_${key}_api = NULL;";
+    }
+
+    WriteSource "    return count;";
+    WriteSource "    }";
+
+    for my $key(sort keys %APITOOBJMAP)
+    {
+        my $api = uc("SAI_API_${key}");
+
+        WriteSource "    status = api_query($api, (void**)&g_sai_${key}_api);";
+        WriteSource "    if (status != SAI_STATUS_SUCCESS) { count++; SAI_META_LOG_ERROR(\"failed to query api $api\"); }";
+    }
+
+    WriteSource "    return count; /* number of unsuccesfull apis */";
+
+    WriteSource "}";
+
+    WriteHeader "extern int sai_meta_apis_query(";
+    WriteHeader "    _In_ const sai_api_query_fn api_query);";
+}
+
 sub CreateObjectInfo
 {
     my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
@@ -2908,6 +2947,8 @@ ProcessNonObjectIdObjects();
 CreateStructNonObjectId();
 
 CreateApis();
+
+CreateApisQuery();
 
 CreateObjectInfo();
 
