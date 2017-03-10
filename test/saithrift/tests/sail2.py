@@ -312,18 +312,20 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
         try:
             count = [0, 0, 0]
             dst_ip = int(socket.inet_aton('10.10.10.1').encode('hex'),16)
+            src_mac_start = '00:22:22:22:22:'
             max_itrs = 200
             for i in range(0, max_itrs):
                 dst_ip_addr = socket.inet_ntoa(hex(dst_ip)[2:].zfill(8).decode('hex'))
+                src_mac = src_mac_start + str(i%99).zfill(2)
                 pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
-                                        eth_src='00:22:22:22:22:22',
+                                        eth_src=src_mac,
                                         ip_dst=dst_ip_addr,
                                         ip_src='192.168.8.1',
                                         ip_id=109,
                                         ip_ttl=64)
 
                 exp_pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
-                                            eth_src='00:22:22:22:22:22',
+                                            eth_src=src_mac,
                                             ip_dst=dst_ip_addr,
                                             ip_src='192.168.8.1',
                                             ip_id=109,

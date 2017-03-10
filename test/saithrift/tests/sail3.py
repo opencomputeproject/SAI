@@ -582,10 +582,12 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
             count = [0, 0, 0]
             dst_ip = int(socket.inet_aton('10.10.10.1').encode('hex'),16)
             max_itrs = 200
+            src_mac_start = '00:22:22:22:22:'
             for i in range(0, max_itrs):
                 dst_ip_addr = socket.inet_ntoa(hex(dst_ip)[2:].zfill(8).decode('hex'))
+                src_mac = src_mac_start + str(i%99).zfill(2)
                 pkt = simple_tcp_packet(eth_dst=router_mac,
-                        eth_src='00:22:22:22:22:22',
+                        eth_src=src_mac,
                         ip_dst=dst_ip_addr,
                         ip_src='192.168.8.1',
                         ip_id=106,
@@ -687,16 +689,18 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
             count = [0, 0, 0]
             dst_ip = socket.inet_pton(socket.AF_INET6, '6000:1:1:0:0:0:0:1')
             dst_ip_arr = list(dst_ip)
+            src_mac_start = '00:22:22:22:22:'
             max_itrs = 200
             sport = 0x1234
             dport = 0x50
             for i in range(0, max_itrs):
                 dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
+                src_mac = src_mac_start + str(i%99).zfill(2)
                 #HACK: sport is a hack for hashing since the ecmp hash does not
                 #include ipv6 sa and da.
                 pkt = simple_tcpv6_packet(
                         eth_dst=router_mac,
-                        eth_src='00:22:22:22:22:22',
+                        eth_src=src_mac,
                         ipv6_dst=dst_ip_addr,
                         ipv6_src='1001:1:1:0:0:0:0:2',
                         tcp_sport=sport,
@@ -944,11 +948,11 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         try:
             count = [0, 0, 0, 0, 0, 0]
             dst_ip = int(socket.inet_aton('10.10.10.1').encode('hex'), 16)
-            src_mac_start = '00:22:22:22:23:'
+            src_mac_start = '00:22:22:22:{0}:{1}'
             max_itrs = 500
             for i in range(0, max_itrs):
                 dst_ip_addr = socket.inet_ntoa(hex(dst_ip)[2:].zfill(8).decode('hex'))
-                src_mac = src_mac_start + str(i%99).zfill(2)
+                src_mac = src_mac_start.format(str(i).zfill(4)[:2], str(i).zfill(4)[2:])
                 pkt = simple_tcp_packet(eth_dst=router_mac,
                         eth_src=src_mac,
                         ip_dst=dst_ip_addr,
