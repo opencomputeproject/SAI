@@ -49,39 +49,7 @@ typedef struct _sai_object_meta_key_t {
     /**
      * @brief The key.
      */
-    union
-    {
-        /**
-         * @brief Key is object id when none
-         * of below conditions are met.
-         */
-        sai_object_id_t         objectid;
-
-        /**
-         * @brief Key is vlan id when
-         * #objecttype == SAI_OBJECT_TYPE_VLAN.
-         */
-        sai_vlan_id_t           vlanid;
-
-        /**
-         * @brief Key is fdb entry when
-         * #objecttype == SAI_OBJECT_TYPE_FDB_ENTRY.
-         */
-        sai_fdb_entry_t         fdbentry;
-
-        /**
-         * @brief Key is neighbor entry when
-         * #objecttype == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY.
-         */
-        sai_neighbor_entry_t    neighborentry;
-
-        /**
-         * @brief Key is route entry when
-         * #objecttype == SAI_OBJECT_TYPE_ROUTE_ENTRY.
-         */
-        sai_route_entry_t       routeentry;
-
-    } key;
+    sai_object_key_t            objectkey;
 
 } sai_object_meta_key_t;
 
@@ -165,6 +133,11 @@ typedef enum _sai_attr_value_type_t {
      * @brief Attribute value is IP address.
      */
     SAI_ATTR_VALUE_TYPE_IP_ADDRESS,
+
+    /**
+     * @brief Attribute value is ip prefix
+     */
+    SAI_ATTR_VALUE_TYPE_IP_PREFIX,
 
     /**
      * @brief Attribute value is object id.
@@ -356,11 +329,6 @@ typedef enum _sai_attr_value_type_t {
      */
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
 
-    /**
-     * @brief Attribute value is ip prefix
-     */
-    SAI_ATTR_VALUE_TYPE_IP_PREFIX,
-
 } sai_attr_value_type_t;
 
 /**
@@ -447,37 +415,37 @@ typedef enum _sai_attr_flags_t {
 /**
  * @def Defines helper to chek if mandatory on create falg is set.
  */
-#define HAS_FLAG_MANDATORY_ON_CREATE(x)   ((x & SAI_ATTR_FLAGS_MANDATORY_ON_CREATE) == SAI_ATTR_FLAGS_MANDATORY_ON_CREATE)
+#define HAS_FLAG_MANDATORY_ON_CREATE(x)   (((x) & SAI_ATTR_FLAGS_MANDATORY_ON_CREATE) == SAI_ATTR_FLAGS_MANDATORY_ON_CREATE)
 
 /**
  * @def Defines helper to chek if create only falg is set.
  */
-#define HAS_FLAG_CREATE_ONLY(x)           ((x & SAI_ATTR_FLAGS_CREATE_ONLY) == SAI_ATTR_FLAGS_CREATE_ONLY)
+#define HAS_FLAG_CREATE_ONLY(x)           (((x) & SAI_ATTR_FLAGS_CREATE_ONLY) == SAI_ATTR_FLAGS_CREATE_ONLY)
 
 /**
  * @def Defines helper to chek if create and set falg is set.
  */
-#define HAS_FLAG_CREATE_AND_SET(x)        ((x & SAI_ATTR_FLAGS_CREATE_AND_SET) == SAI_ATTR_FLAGS_CREATE_AND_SET)
+#define HAS_FLAG_CREATE_AND_SET(x)        (((x) & SAI_ATTR_FLAGS_CREATE_AND_SET) == SAI_ATTR_FLAGS_CREATE_AND_SET)
 
 /**
  * @def Defines helper to chek if read only falg is set.
  */
-#define HAS_FLAG_READ_ONLY(x)             ((x & SAI_ATTR_FLAGS_READ_ONLY) == SAI_ATTR_FLAGS_READ_ONLY)
+#define HAS_FLAG_READ_ONLY(x)             (((x) & SAI_ATTR_FLAGS_READ_ONLY) == SAI_ATTR_FLAGS_READ_ONLY)
 
 /**
  * @def Defines helper to chek if key falg is set.
  */
-#define HAS_FLAG_KEY(x)                   ((x & SAI_ATTR_FLAGS_KEY) == SAI_ATTR_FLAGS_KEY)
+#define HAS_FLAG_KEY(x)                   (((x) & SAI_ATTR_FLAGS_KEY) == SAI_ATTR_FLAGS_KEY)
 
 /**
  * @def Defines helper to chek if dynamic falg is set.
  */
-#define HAS_FLAG_DYNAMIC(x)               ((x & SAI_ATTR_FLAGS_DYNAMIC) == SAI_ATTR_FLAGS_DYNAMIC)
+#define HAS_FLAG_DYNAMIC(x)               (((x) & SAI_ATTR_FLAGS_DYNAMIC) == SAI_ATTR_FLAGS_DYNAMIC)
 
 /**
  * @def Defines helper to chek if special falg is set.
  */
-#define HAS_FLAG_SPECIAL(x)               ((x & SAI_ATTR_FLAGS_SPECIAL) == SAI_ATTR_FLAGS_SPECIAL)
+#define HAS_FLAG_SPECIAL(x)               (((x) & SAI_ATTR_FLAGS_SPECIAL) == SAI_ATTR_FLAGS_SPECIAL)
 
 /**
  * @brief Defines default value type.
@@ -775,6 +743,11 @@ typedef struct _sai_attr_metadata_t
     size_t                              conditionslength;
 
     /**
+     * @brief Indicates wheter attribute is conditional.
+     */
+    bool                                isconditional;
+
+    /**
      * @brief Specifies valid only type of attribute.
      *
      * @note Currently all valid only are "OR" conditions
@@ -822,7 +795,47 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                isvlan;
 
+    /**
+     * @brief Determines whether attribute is ACL field
+     *
+     * This will become handy for fast detrmination whether
+     * default value is present.
+     */
+    bool                                isaclfield;
+
+    /*
+     * @brief Determines whether attribute is ACL action
+     *
+     * This will become handy for fast detrmination whether
+     * default value is present.
+     */
+    bool                                isaclaction;
+
 } sai_attr_metadata_t;
+
+/*
+ * TODO since non object id members can have different type and can be localed
+ * at different object_key union position, we need to find a way to extract
+ * those for automatic serialize/deserialize for example extracting value as
+ * sai_attribute_value_t and pointing to right serialize/deserialize functions.
+ * Also a automatic generated functions for serialize/deserialize for those non
+ * object id structs must be generated, we don't want to update them manually.
+ */
+
+/**
+ * @brief Function definition for getting OID from non obeject
+ * id struct member.
+ */
+typedef sai_object_id_t (*sai_meta_get_struct_member_oid_fn)(
+        _In_ const sai_object_meta_key_t *object_meta_key);
+
+/**
+ * @brief Function definition for setting OID from non obeject
+ * id struct member.
+ */
+typedef void (*sai_meta_set_struct_member_oid_fn)(
+        _Inout_ sai_object_meta_key_t *object_meta_key,
+        _In_ sai_object_id_t oid);
 
 /**
  * @brief Defines struct member info for
@@ -833,17 +846,17 @@ typedef struct _sai_struct_member_info_t
     /**
      * @brief Member vlaue type
      */
-    sai_attr_value_type_t               membervaluetype;
+    sai_attr_value_type_t                               membervaluetype;
 
     /**
      * @brief Member name
      */
-    const char*                         membername;
+    const char*                                         membername;
 
     /**
      * @brief Indicates whether field is vlan
      */
-    bool                                isvlan;
+    bool                                                isvlan;
 
     /**
      * @brief Specified allowed object types.
@@ -851,14 +864,115 @@ typedef struct _sai_struct_member_info_t
      * If object attr value type is OBJECT_ID
      * this list specifies what object type can be used.
      */
-    const sai_object_type_t* const      allowedobjecttypes;
+    const sai_object_type_t* const                      allowedobjecttypes;
 
     /**
      * @brief Length of allowed object types.
      */
-    size_t                              allowedobjecttypeslength;
+    size_t                                              allowedobjecttypeslength;
+
+    /**
+     * @brief Indicates wheter member is enum value.
+     *
+     * Type must be set as INT32.
+     *
+     * @note Could be deduced from enum type string or
+     * enum vector values and attr value type.
+     */
+    bool                                                isenum;
+
+    /**
+     * @brief Provides enum metadata if member is enum
+     */
+    const sai_enum_metadata_t* const                    enummetadata;
+
+    /**
+     * @brief If struct member is OID this function
+     * will get it's value.
+     */
+    const sai_meta_get_struct_member_oid_fn             getoid;
+
+    /**
+     * @brief If struct member is OID this function
+     * will set it's value.
+     */
+    const sai_meta_set_struct_member_oid_fn             setoid;
 
 } sai_struct_member_info_t;
+
+/**
+ * @brief SAI reverse graph member
+ */
+typedef struct _sai_rev_graph_member_t
+{
+    /**
+     * @brief Defines main object type which is used
+     * by dependency object type.
+     */
+    sai_object_type_t                       objecttype;
+
+    /**
+     * @brief Defines dependency object type on which
+     * is object type defined above is used.
+     */
+    sai_object_type_t                       depobjecttype;
+
+    /**
+     * @brief Defines attribute metadata for object type
+     *
+     * This can be NULL if dependency objec type
+     * is non object id type and dependency is on
+     * defined struct.
+     */
+    const sai_attr_metadata_t* const        attrmetadata;
+
+    /**
+     * @brief Defines struct member for non object
+     * id object type.
+     *
+     * This member can be NULL if dependency object type
+     * is object attribute, and is not NULL id object
+     * dependency is non object id struct member.
+     */
+    const sai_struct_member_info_t* const   structmember;
+
+} sai_rev_graph_member_t;
+
+/*
+ * Generic QUAD api definitions. All apis can be called using this quad genric
+ * functions.
+ *
+ * When creating switch object or non object id switch_id parameter is ignored,
+ * and can be NULL. Currently objecttype inside sai_object_meta_key_t is
+ * ignored and can be skipped.
+ *
+ * This generic quad api will help us later to call any api, without doind any
+ * switch cases for calling differen signature functions including non object
+ * id structs. Also later we will generate automatic serialize and deserialize
+ * methods for non object id which will deserialize data to object union in
+ * sai_object_meta_key_t to right place.
+ *
+ * TODO add medatada init function which will populate global api function
+ * pointers which will be used when calling each api.
+ */
+
+typedef sai_status_t (*sai_meta_generic_create_fn)(
+        _Inout_ sai_object_meta_key_t *meta_key,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_meta_generic_remove_fn)(
+        _In_ const sai_object_meta_key_t *meta_key);
+
+typedef sai_status_t (*sai_meta_generic_set_fn)(
+        _In_ const sai_object_meta_key_t *meta_key,
+        _In_ const sai_attribute_t *attr);
+
+typedef sai_status_t (*sai_meta_generic_get_fn)(
+        _In_ const sai_object_meta_key_t *meta_key,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief SAI object type information
@@ -869,6 +983,11 @@ typedef struct _sai_object_type_info_t
      * @brief Object Type
      */
     sai_object_type_t                       objecttype;
+
+    /**
+     * @brief Object Type name
+     */
+    const char*                             objecttypename;
 
     /**
      * @brief Start of attributes *_START
@@ -906,6 +1025,31 @@ typedef struct _sai_object_type_info_t
      * @brief Defines count of struct members
      */
     size_t                                  structmemberscount;
+
+    /**
+     * @brief Defines reverse dependency graph members
+     */
+    const sai_rev_graph_member_t** const    revgraphmembers;
+
+    /**
+     * @brief Create function pointer.
+     */
+    const sai_meta_generic_create_fn        create;
+
+    /**
+     * @brief Remove function pointer.
+     */
+    const sai_meta_generic_remove_fn        remove;
+
+    /**
+     * @brief Set function pointer.
+     */
+    const sai_meta_generic_set_fn           set;
+
+    /**
+     * @brief Get function pointer
+     */
+    const sai_meta_generic_get_fn           get;
 
 } sai_object_type_info_t;
 

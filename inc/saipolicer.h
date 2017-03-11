@@ -190,6 +190,7 @@ typedef enum _sai_policer_attr_t
 
     /**
      * @brief Enable/disable counter
+     *
      * Default disabled. Modify List Needs full new set
      *
      * @type sai_s32_list_t sai_packet_action_t
@@ -314,6 +315,21 @@ typedef sai_status_t (*sai_get_policer_stats_fn)(
         _Out_ uint64_t *counters);
 
 /**
+ * @brief Clear Policer statistics counters.
+ *
+ * @param[in] policer_id Policer id
+ * @param[in] number_of_counters number of counters in the array
+ * @param[in] counter_ids specifies the array of counter ids
+ *
+ * @return SAI_STATUS_SUCCESS on success
+ *    Failure status code on error
+ */
+typedef sai_status_t (*sai_clear_policer_stats_fn)(
+        _In_ sai_object_id_t policer_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_policer_stat_t *counter_ids);
+
+/**
  * @brief Policer methods table retrieved with sai_api_query()
  */
 typedef struct _sai_policer_api_t
@@ -322,7 +338,8 @@ typedef struct _sai_policer_api_t
     sai_remove_policer_fn                 remove_policer;
     sai_set_policer_attribute_fn          set_policer_attribute;
     sai_get_policer_attribute_fn          get_policer_attribute;
-    sai_get_policer_stats_fn              get_policer_statistics;
+    sai_get_policer_stats_fn              get_policer_stats;
+    sai_clear_policer_stats_fn            clear_policer_stats;
 
 } sai_policer_api_t;
 

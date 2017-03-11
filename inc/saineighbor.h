@@ -68,8 +68,10 @@ typedef enum _sai_neighbor_entry_attr_t
 
     /**
      * @brief Neighbor not to be programmed as a host route entry in ASIC and
-     * to be only used to setup next-hop purpose. Typical use-case is to set
-     * this true for neighbor with IPv6 link-local addresses.
+     * to be only used to setup next-hop purpose.
+     *
+     * Typical use-case is to set this true for neighbor with IPv6 link-local
+     * addresses.
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -163,7 +165,7 @@ typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
+typedef sai_status_t (*sai_set_neighbor_entry_attribute_fn)(
         _In_ const sai_neighbor_entry_t *neighbor_entry,
         _In_ const sai_attribute_t *attr);
 
@@ -176,7 +178,7 @@ typedef sai_status_t (*sai_set_neighbor_attribute_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_get_neighbor_attribute_fn)(
+typedef sai_status_t (*sai_get_neighbor_entry_attribute_fn)(
         _In_ const sai_neighbor_entry_t *neighbor_entry,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -191,14 +193,14 @@ typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(
         _In_ sai_object_id_t switch_id);
 
 /**
- *  @brief neighbor table methods, retrieved via sai_api_query()
+ * @brief neighbor table methods, retrieved via sai_api_query()
  */
 typedef struct _sai_neighbor_api_t
 {
     sai_create_neighbor_entry_fn        create_neighbor_entry;
     sai_remove_neighbor_entry_fn        remove_neighbor_entry;
-    sai_set_neighbor_attribute_fn       set_neighbor_attribute;
-    sai_get_neighbor_attribute_fn       get_neighbor_attribute;
+    sai_set_neighbor_entry_attribute_fn set_neighbor_entry_attribute;
+    sai_get_neighbor_entry_attribute_fn get_neighbor_entry_attribute;
     sai_remove_all_neighbor_entries_fn  remove_all_neighbor_entries;
 
 } sai_neighbor_api_t;

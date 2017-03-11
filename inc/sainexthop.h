@@ -80,8 +80,8 @@ typedef enum _sai_next_hop_attr_t
      * @brief Next hop entry router interface id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      */
     SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 
@@ -89,8 +89,8 @@ typedef enum _sai_next_hop_attr_t
      * @brief Next hop entry tunnel-id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
      */
     SAI_NEXT_HOP_ATTR_TUNNEL_ID,

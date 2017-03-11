@@ -28,8 +28,6 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 import time
 
-
-
 import pprint
 
 class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -42,14 +40,14 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
     src_mac_uc = '00:55:55:55:55:00'
 
     trap_list = [
-        SAI_HOSTIF_TRAP_ID_TTL_ERROR,
-        SAI_HOSTIF_TRAP_ID_BGP,
-        SAI_HOSTIF_TRAP_ID_LACP,
-        SAI_HOSTIF_TRAP_ID_ARP_REQUEST,
-        SAI_HOSTIF_TRAP_ID_ARP_RESPONSE,
-        SAI_HOSTIF_TRAP_ID_LLDP,
-        SAI_HOSTIF_TRAP_ID_DHCP,
-        SAI_HOSTIF_TRAP_ID_IP2ME
+        SAI_HOSTIF_TRAP_TYPE_TTL_ERROR,
+        SAI_HOSTIF_TRAP_TYPE_BGP,
+        SAI_HOSTIF_TRAP_TYPE_LACP,
+        SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST,
+        SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE,
+        SAI_HOSTIF_TRAP_TYPE_LLDP,
+        SAI_HOSTIF_TRAP_TYPE_DHCP,
+        SAI_HOSTIF_TRAP_TYPE_IP2ME
         ]
 
     myip = ''

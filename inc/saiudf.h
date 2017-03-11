@@ -63,8 +63,8 @@ typedef enum _sai_udf_attr_t
      * @brief UDF match ID
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_UDF_MATCH
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_UDF_MATCH
      */
     SAI_UDF_ATTR_MATCH_ID = SAI_UDF_ATTR_START,
 
@@ -72,8 +72,8 @@ typedef enum _sai_udf_attr_t
      * @brief UDF group id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_UDF_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_UDF_GROUP
      */
     SAI_UDF_ATTR_GROUP_ID,
 
@@ -91,6 +91,7 @@ typedef enum _sai_udf_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
      */
     SAI_UDF_ATTR_OFFSET,
 
@@ -133,6 +134,7 @@ typedef enum _sai_udf_match_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_UDF_MATCH_ATTR_L2_TYPE = SAI_UDF_MATCH_ATTR_START,
@@ -155,6 +157,7 @@ typedef enum _sai_udf_match_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_UDF_MATCH_ATTR_GRE_TYPE,
@@ -208,8 +211,8 @@ typedef enum _sai_udf_group_attr_t
      * @brief UDF list
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_UDF
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_UDF
      */
     SAI_UDF_GROUP_ATTR_UDF_LIST = SAI_UDF_GROUP_ATTR_START,
 
@@ -227,6 +230,7 @@ typedef enum _sai_udf_group_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
      */
     SAI_UDF_GROUP_ATTR_LENGTH,
 

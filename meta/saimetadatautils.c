@@ -30,7 +30,7 @@ bool sai_metadata_is_allowed_enum_value(
         _In_ const sai_attr_metadata_t* metadata,
         _In_ int value)
 {
-    if (metadata == NULL || metadata->enummetadata == NULL )
+    if (metadata == NULL || metadata->enummetadata == NULL)
     {
         return false;
     }

@@ -91,8 +91,8 @@ typedef enum _sai_wred_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @validonly SAI_WRED_ATTR_GREEN_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      * @default 0
+     * @validonly SAI_WRED_ATTR_GREEN_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      */
     SAI_WRED_ATTR_GREEN_MIN_THRESHOLD = 0x00000001,
 
@@ -102,11 +102,10 @@ typedef enum _sai_wred_attr_t
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
      *
-     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @validonly SAI_WRED_ATTR_GREEN_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      * @default 0
+     * @validonly SAI_WRED_ATTR_GREEN_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      */
     SAI_WRED_ATTR_GREEN_MAX_THRESHOLD = 0x00000002,
 
@@ -136,8 +135,8 @@ typedef enum _sai_wred_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @validonly SAI_WRED_ATTR_YELLOW_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      * @default 0
+     * @validonly SAI_WRED_ATTR_YELLOW_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      */
     SAI_WRED_ATTR_YELLOW_MIN_THRESHOLD = 0x00000005,
 
@@ -147,12 +146,10 @@ typedef enum _sai_wred_attr_t
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
      *
-     *
-     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @validonly SAI_WRED_ATTR_YELLOW_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      * @default 0
+     * @validonly SAI_WRED_ATTR_YELLOW_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      */
     SAI_WRED_ATTR_YELLOW_MAX_THRESHOLD = 0x00000006,
 
@@ -180,11 +177,10 @@ typedef enum _sai_wred_attr_t
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
      *
-     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @validonly SAI_WRED_ATTR_RED_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      * @default 0
+     * @validonly SAI_WRED_ATTR_RED_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      */
     SAI_WRED_ATTR_RED_MIN_THRESHOLD = 0x00000009,
 
@@ -194,11 +190,10 @@ typedef enum _sai_wred_attr_t
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
      *
-     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @validonly SAI_WRED_ATTR_RED_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      * @default 0
+     * @validonly SAI_WRED_ATTR_RED_ENABLE == true or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
      */
     SAI_WRED_ATTR_RED_MAX_THRESHOLD = 0x0000000a,
 
@@ -301,8 +296,8 @@ typedef sai_status_t (*sai_get_wred_attribute_fn)(
  */
 typedef struct _sai_wred_api_t
 {
-    sai_create_wred_fn          create_wred_profile;
-    sai_remove_wred_fn          remove_wred_profile;
+    sai_create_wred_fn          create_wred;
+    sai_remove_wred_fn          remove_wred;
     sai_set_wred_attribute_fn   set_wred_attribute;
     sai_get_wred_attribute_fn   get_wred_attribute;
 

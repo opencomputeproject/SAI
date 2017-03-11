@@ -41,7 +41,7 @@
  *
  * @return True if object is allowed on on this attribute, false otherwise
  */
-extern bool sai_meta_is_allowed_object_type(
+extern bool sai_metadata_is_allowed_object_type(
         _In_ const sai_attr_metadata_t* metadata,
         _In_ sai_object_type_t object_type);
 
@@ -53,7 +53,7 @@ extern bool sai_meta_is_allowed_object_type(
  *
  * @return True if enum value is allowed on this attribute, false otherwise
  */
-extern bool sai_meta_is_allowed_enum_value(
+extern bool sai_metadata_is_allowed_enum_value(
         _In_ const sai_attr_metadata_t* metadata,
         _In_ int value);
 
@@ -64,7 +64,7 @@ extern bool sai_meta_is_allowed_enum_value(
  *
  * @return True if is ACL field or action, false otherwise
  */
-bool sai_metadata_is_acl_field_or_action(
+extern bool sai_metadata_is_acl_field_or_action(
         _In_ const sai_attr_metadata_t* metadata);
 
 /**
@@ -90,6 +90,18 @@ extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name
         _In_ const char *attr_id_name);
 
 /**
+ * @brief Gets string representation of enum value
+ *
+ * @param[in] metadata Enum metadata
+ * @param[in] value Enum value to bo converted to string
+ *
+ * @return String representation of enum value or NULL if value was not found
+ */
+extern const char* sai_metadata_get_enum_value_name(
+        _In_ const sai_enum_metadata_t* metadata,
+        _In_ int value);
+
+/**
  * @}
  */
-#endif /** __SAI_METADATA_UTILS__ */
+#endif /** __SAI_METADATA_UTILS_H_ */

@@ -83,8 +83,8 @@ typedef enum _sai_mirror_session_attr_t
      * @brief Destination/Analyser/Monitor Port
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_MIRROR_SESSION_ATTR_MONITOR_PORT,
 
@@ -95,6 +95,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      * @default 0
      */
     SAI_MIRROR_SESSION_ATTR_TRUNCATE_SIZE,
@@ -115,6 +116,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @isvlan false
      * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_TPID,
@@ -124,8 +126,8 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      * @isvlan true
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_ID,
 
@@ -180,7 +182,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TOS,
 
     /**
-     * Tunnel header TTL
+     * @brief Tunnel header TTL
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -229,6 +231,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @isvlan false
      * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE,

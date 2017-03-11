@@ -76,8 +76,8 @@ typedef enum _sai_queue_attr_t
      * @brief Pord id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_QUEUE_ATTR_PORT = 0x00000001,
 
@@ -97,8 +97,8 @@ typedef enum _sai_queue_attr_t
      * the MANDATORY_ON_CREATE FLAG when HQoS is introduced
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP, SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SCHEDULER_GROUP, SAI_OBJECT_TYPE_PORT
      */
     SAI_QUEUE_ATTR_PARENT_SCHEDULER_NODE = 0x00000003,
 
@@ -110,35 +110,45 @@ typedef enum _sai_queue_attr_t
      * ID = #SAI_NULL_OBJECT_ID to disable WRED
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_WRED
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_WRED
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_QUEUE_ATTR_WRED_PROFILE_ID = 0x00000004,
 
     /**
-     * @brief Attach buffer profile to Queue
-     * Default no profile
+     * @brief Attach buffer profile to queue
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BUFFER_PROFILE
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_QUEUE_ATTR_BUFFER_PROFILE_ID = 0x00000005,
 
     /**
-     * @brief Attach scheduler to Queue
+     * @brief Attach scheduler to queue
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SCHEDULER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SCHEDULER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_QUEUE_ATTR_SCHEDULER_PROFILE_ID = 0x00000006,
+
+    /**
+     * @brief Queue pause status
+     *
+     * This attribute represents the queue internal hardware state and is
+     * updated upon receiving PFC frames. True indicates the queue is paused.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_QUEUE_ATTR_PAUSE_STATUS = 0x00000007,
 
     /**
      * @brief End of attributes
@@ -297,8 +307,7 @@ typedef sai_status_t (*sai_set_queue_attribute_fn)(
 typedef sai_status_t (*sai_get_queue_attribute_fn)(
         _In_ sai_object_id_t queue_id,
         _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list
-        );
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Get queue statistics counters.

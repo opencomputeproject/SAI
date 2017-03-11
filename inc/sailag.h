@@ -47,8 +47,8 @@ typedef enum _sai_lag_attr_t
      * @brief SAI port list
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_LAG_MEMBER
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_LAG_MEMBER
      */
     SAI_LAG_ATTR_PORT_LIST = SAI_LAG_ATTR_START,
 
@@ -63,8 +63,8 @@ typedef enum _sai_lag_attr_t
      * in the attribute value.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -79,8 +79,8 @@ typedef enum _sai_lag_attr_t
      * in the attribute value.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -165,8 +165,8 @@ typedef enum _sai_lag_member_attr_t
      * @brief LAG ID
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_LAG
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_LAG
      */
     SAI_LAG_MEMBER_ATTR_LAG_ID = SAI_LAG_MEMBER_ATTR_START,
 
@@ -174,8 +174,8 @@ typedef enum _sai_lag_member_attr_t
      * @brief Logical port ID
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_LAG_MEMBER_ATTR_PORT_ID,
 
@@ -275,6 +275,8 @@ typedef struct _sai_lag_api_t
     sai_remove_lag_member_fn         remove_lag_member;
     sai_set_lag_member_attribute_fn  set_lag_member_attribute;
     sai_get_lag_member_attribute_fn  get_lag_member_attribute;
+    sai_bulk_object_create_fn        create_lag_members;
+    sai_bulk_object_remove_fn        remove_lag_members;
 } sai_lag_api_t;
 
 /**

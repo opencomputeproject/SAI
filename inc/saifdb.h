@@ -61,8 +61,18 @@ typedef struct _sai_fdb_entry_t
     /** Mac address */
     sai_mac_t mac_address;
 
-    /** Vlan ID */
+    /** Bridge type */
+    sai_fdb_entry_bridge_type_t bridge_type;
+
+    /** Vlan ID. Valid for .1Q */
     sai_vlan_id_t vlan_id;
+
+    /**
+     * @brief Bridge ID. Valid for .1D
+     *
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     */
+    sai_object_id_t bridge_id;
 
 } sai_fdb_entry_t;
 
@@ -98,7 +108,6 @@ typedef enum _sai_fdb_entry_attr_t
     /**
      * @brief FDB entry type
      *
-     *
      * @type sai_fdb_entry_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
@@ -114,24 +123,20 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_PACKET_ACTION,
 
     /**
-     * @brief FDB entry port id
-     *
-     * The port id here can refer to a generic port object such as SAI port object id,
-     * SAI LAG object id and etc. or to a tunnel next hop object in case the entry is
-     * l2 tunnel
+     * @brief FDB entry bridge port id
      *
      * The port id is only effective when the packet action is one of the following:
-     *  FORWARD, COPY, LOG, TRANSIT
+     * FORWARD, COPY, LOG, TRANSIT
      *
      * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_TUNNEL
-     * @default SAI_NULL_OBJECT_ID
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_FDB_ENTRY_ATTR_PORT_ID,
+    SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
 
     /**
      * @brief User based Meta Data
@@ -143,6 +148,15 @@ typedef enum _sai_fdb_entry_attr_t
      * @default 0
      */
     SAI_FDB_ENTRY_ATTR_META_DATA,
+
+    /**
+     * @brief Tunnel Endpoint IP. valid for SAI_BRIDGE_PORT_TYPE_TUNNEL
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_FDB_ENTRY_ATTR_ENDPOINT_IP,
 
     /**
      * @brief End of attributes
@@ -179,12 +193,12 @@ typedef enum _sai_fdb_flush_entry_type_t
  * The API uses AND operation when multiple attributes are specified. For
  * exmaple,
  * 1) Flush all entries in fdb table - Do not specify any attribute
- * 2) Flush all entries by port - Set #SAI_FDB_FLUSH_ATTR_PORT_ID
+ * 2) Flush all entries by bridge port - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
  * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_VLAN_ID
- * 4) Flush all entries by port and VLAN - Set #SAI_FDB_FLUSH_ATTR_PORT_ID and
- *    #SAI_FDB_FLUSH_ATTR_VLAN_ID
- * 5) Flush all static entries by port and VLAN - Set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
- *    #SAI_FDB_FLUSH_ATTR_PORT_ID, and #SAI_FDB_FLUSH_ATTR_VLAN_ID
+ * 4) Flush all entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
+ *    and #SAI_FDB_FLUSH_ATTR_VLAN_ID
+ * 5) Flush all static entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
+ *    #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID, and #SAI_FDB_FLUSH_ATTR_VLAN_ID
  */
 typedef enum _sai_fdb_flush_attr_t
 {
@@ -194,15 +208,15 @@ typedef enum _sai_fdb_flush_attr_t
     SAI_FDB_FLUSH_ATTR_START,
 
     /**
-     * @brief Flush based on port
+     * @brief Flush based on bridge port
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_FDB_FLUSH_ATTR_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
+    SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
 
     /**
      * @brief Flush based on VLAN
