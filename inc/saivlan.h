@@ -82,6 +82,7 @@ typedef enum _sai_vlan_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
+     * @isvlan true
      */
     SAI_VLAN_ATTR_VLAN_ID = SAI_VLAN_ATTR_START,
 

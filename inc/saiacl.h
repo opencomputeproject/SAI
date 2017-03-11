@@ -1144,6 +1144,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan true
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID,
 
@@ -1168,6 +1169,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan true
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_ID,
 
@@ -1192,6 +1194,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT,
 
@@ -1200,6 +1203,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
 
@@ -1208,6 +1212,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ETHER_TYPE,
 
@@ -1224,6 +1229,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_IDENTIFICATION,
 
@@ -1594,6 +1600,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan true
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_ID,
 
@@ -1674,6 +1681,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_SRC_PORT,
 
@@ -1682,6 +1690,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT,
 

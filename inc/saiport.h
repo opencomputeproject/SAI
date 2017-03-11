@@ -1011,6 +1011,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      * @default 2500
      */
     SAI_PORT_ATTR_EEE_IDLE_TIME,
@@ -1022,6 +1023,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      * @default 5
      */
     SAI_PORT_ATTR_EEE_WAKE_TIME,

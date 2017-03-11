@@ -1094,7 +1094,12 @@ sub ProcessEnumMetadata
 
 sub ProcessIsVlan
 {
-    my ($attr, $value) = @_;
+    my ($attr, $value, $type) = @_;
+
+    if (not defined $value and $type =~ /uint16/)
+    {
+        LogWarning "$attr is $type, must define TAG isvlan";
+    }
 
     return "false" if not defined $value;
 
@@ -1380,7 +1385,7 @@ sub ProcessSingleObjectType
         my $validonlytype   = ProcessValidOnlyType($attr, $meta{validonly});
         my $validonly       = ProcessValidOnly($attr, $meta{validonly}, $meta{type});
         my $validonlylen    = ProcessValidOnlyLen($attr, $meta{validonly});
-        my $isvlan          = ProcessIsVlan($attr, $meta{isvlan});
+        my $isvlan          = ProcessIsVlan($attr, $meta{isvlan}, $meta{type});
         my $getsave         = ProcessGetSave($attr, $meta{getsave});
         my $isaclfield      = ProcessIsAclField($attr);
         my $isaclaction     = ProcessIsAclAction($attr);
