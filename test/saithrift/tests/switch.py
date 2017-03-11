@@ -461,13 +461,13 @@ def sai_thrift_create_acl_table(client,
 
     if table_stage != None:
         attribute_value = sai_thrift_attribute_value_t(s32=table_stage)
-        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_STAGE,
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_ACL_STAGE,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
     if table_bind_point_list != None:
         acl_table_bind_point_list = sai_thrift_s32_list_t(count=len(table_bind_point_list), s32list=table_bind_point_list)
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(bind_point_list=acl_table_bind_point_list)))
+        attribute_value = sai_thrift_attribute_value_t(s32list=acl_table_bind_point_list)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST,
                                            value=attribute_value)
         acl_attr_list.append(attribute)

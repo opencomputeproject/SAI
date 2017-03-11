@@ -536,13 +536,14 @@ public:
       if (status != SAI_STATUS_SUCCESS) {
           return status;
       }
-      sai_object_id_t *buffer_profile_list = NULL;
       std::vector<sai_thrift_attribute_t> thrift_attr_list;
       thrift_attr_list.push_back(thrift_attr);
       sai_attribute_t attr;
-      sai_thrift_parse_router_interface_attributes(thrift_attr_list, &attr, &buffer_profile_list);
+      sai_thrift_parse_router_interface_attributes(thrift_attr_list, &attr);
       status = rif_api->set_router_interface_attribute((sai_object_id_t)rif_id, &attr);
-      if (buffer_profile_list) free(buffer_profile_list);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to set router interface attributes.");
+      }
       return status;
   }
 
@@ -1485,14 +1486,14 @@ public:
                 break;
             case SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST:
                 {
-                    int count = attribute.value.aclfield.data.bind_point_list.s32list.size();
-                    sai_int32_t *s32_list = NULL;
-                    std::vector<sai_thrift_acl_bind_point_type_t>::const_iterator it = attribute.value.aclfield.data.bind_point_list.s32list.begin();
-                    s32_list = (sai_int32_t *) malloc(sizeof(sai_int32_t) * count);
+                    int count = attribute.value.s32list.s32list.size();
+                    sai_int32_t *aclbp_list = NULL;
+                    std::vector<sai_int32_t>::const_iterator it = attribute.value.s32list.s32list.begin();
+                    aclbp_list = (sai_int32_t *) malloc(sizeof(sai_int32_t) * count);
                     for(int j = 0; j < count; j++, it++)
-                        *(s32_list + j) = (sai_int32_t) *it;
-                    attr_list[i].value.aclfield.data.bind_point_list.s32list = s32_list;
-                    attr_list[i].value.aclfield.data.bind_point_list.count = count;
+                        *(aclbp_list + j) = (sai_int32_t) *it;
+                    attr_list[i].value.s32list.list = aclbp_list;
+                    attr_list[i].value.s32list.count = count;
                 }
                 break;
             case SAI_ACL_TABLE_ATTR_FIELD_SRC_IPv6:

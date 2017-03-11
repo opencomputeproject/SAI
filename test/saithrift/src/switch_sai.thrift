@@ -33,7 +33,6 @@ typedef i32 sai_thrift_policer_stat_counter_t
 typedef i32 sai_thrift_port_stat_counter_t
 typedef i32 sai_thrift_queue_stat_counter_t
 typedef i32 sai_thrift_pg_stat_counter_t
-typedef i32 sai_thrift_acl_bind_point_type_t
 
 union sai_thrift_result_data_t {
     1: sai_thrift_object_id_t oid;
@@ -110,7 +109,6 @@ union sai_thrift_acl_data_t {
     9: sai_thrift_ip6_t ip6;
     10: sai_thrift_object_id_t oid;
     11: sai_thrift_object_list_t objlist;
-    12: sai_thrift_s32_list_t bind_point_list;
 }
 
 struct sai_thrift_acl_field_data_t
