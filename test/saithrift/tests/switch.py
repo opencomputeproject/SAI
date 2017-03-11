@@ -152,10 +152,10 @@ def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled):
     vr_id = client.sai_thrift_create_virtual_router(thrift_attr_list=vr_attr_list)
     return vr_id
 
-def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id, v4_enabled, v6_enabled, mac):
+def sai_thrift_create_router_interface(client, vr_oid, is_port, port_oid, vlan_oid, v4_enabled, v6_enabled, mac):
     #vrf attribute
     rif_attr_list = []
-    rif_attribute1_value = sai_thrift_attribute_value_t(oid=vr_id)
+    rif_attribute1_value = sai_thrift_attribute_value_t(oid=vr_oid)
     rif_attribute1 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID,
                                             value=rif_attribute1_value)
     rif_attr_list.append(rif_attribute1)
@@ -165,7 +165,7 @@ def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id,
         rif_attribute2 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_TYPE,
                                                 value=rif_attribute2_value)
         rif_attr_list.append(rif_attribute2)
-        rif_attribute3_value = sai_thrift_attribute_value_t(oid=port_id)
+        rif_attribute3_value = sai_thrift_attribute_value_t(oid=port_oid)
         rif_attribute3 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
                                                 value=rif_attribute3_value)
         rif_attr_list.append(rif_attribute3)
@@ -175,7 +175,7 @@ def sai_thrift_create_router_interface(client, vr_id, is_port, port_id, vlan_id,
         rif_attribute2 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_TYPE,
                                                 value=rif_attribute2_value)
         rif_attr_list.append(rif_attribute2)
-        rif_attribute3_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        rif_attribute3_value = sai_thrift_attribute_value_t(oid=vlan_oid)
         rif_attribute3 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
                                                 value=rif_attribute3_value)
         rif_attr_list.append(rif_attribute3)
@@ -250,12 +250,16 @@ def sai_thrift_create_nhop(client, addr_family, ip_addr, rif_id):
     nhop_attribute2_value = sai_thrift_attribute_value_t(oid=rif_id)
     nhop_attribute2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
                                              value=nhop_attribute2_value)
-    nhop_attribute3_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_ATTR_IP)
+    nhop_attribute3_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_TYPE_IP)
     nhop_attribute3 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_ATTR_TYPE,
                                              value=nhop_attribute3_value)
     nhop_attr_list = [nhop_attribute1, nhop_attribute2, nhop_attribute3]
     nhop = client.sai_thrift_create_next_hop(thrift_attr_list=nhop_attr_list)
     return nhop
+
+def sai_thrift_remove_nhop(client, nhop_list):
+    for nhop in nhop_list:
+        client.sai_thrift_remove_next_hop(nhop)
 
 def sai_thrift_create_neighbor(client, addr_family, rif_id, ip_addr, dmac):
     if addr_family == SAI_IP_ADDR_FAMILY_IPV4:
@@ -269,7 +273,7 @@ def sai_thrift_create_neighbor(client, addr_family, rif_id, ip_addr, dmac):
                                                  value=neighbor_attribute1_value)
     neighbor_attr_list = [neighbor_attribute1]
     neighbor_entry = sai_thrift_neighbor_entry_t(rif_id=rif_id, ip_address=ipaddr)
-    client.sai_thrift_create_neighbor_entry(neighbor_entry, neighbor_attr_list)
+    return client.sai_thrift_create_neighbor_entry(neighbor_entry, neighbor_attr_list)
 
 def sai_thrift_remove_neighbor(client, addr_family, rif_id, ip_addr, dmac):
     if addr_family == SAI_IP_ADDR_FAMILY_IPV4:
@@ -281,17 +285,36 @@ def sai_thrift_remove_neighbor(client, addr_family, rif_id, ip_addr, dmac):
     neighbor_entry = sai_thrift_neighbor_entry_t(rif_id=rif_id, ip_address=ipaddr)
     client.sai_thrift_remove_neighbor_entry(neighbor_entry)
 
-def sai_thrift_create_next_hop_group(client, nhop_list):
-    nhop_group_attribute1_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
-    nhop_group_attribute1 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_ATTR_TYPE,
-                                                   value=nhop_group_attribute1_value)
-    nhop_objlist = sai_thrift_object_list_t(count=len(nhop_list), object_id_list=nhop_list)
-    nhop_group_attribute2_value = sai_thrift_attribute_value_t(objlist=nhop_objlist)
-    nhop_group_attribute2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_MEMBER_LIST,
-                                                   value=nhop_group_attribute2_value)
-    nhop_group_attr_list = [nhop_group_attribute1, nhop_group_attribute2]
-    nhop_group = client.sai_thrift_create_next_hop_group(thrift_attr_list=nhop_group_attr_list)
-    return nhop_group
+def sai_thrift_create_next_hop_group(client):
+    nhop_group_atr1_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+    nhop_group_atr1 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_ATTR_TYPE,
+                                             value=nhop_group_atr1_value)
+    nhop_group_attr_list = [nhop_group_atr1]
+    return client.sai_thrift_create_next_hop_group(nhop_group_attr_list)
+
+def sai_thrift_remove_next_hop_group(client, nhop_group_list):
+    for nhop_group in nhop_group_list:
+        client.sai_thrift_remove_next_hop_group(nhop_group)
+
+def sai_thrift_create_next_hop_group_member(client, nhop_group, nhop, weight=None):
+    nhop_gmember_atr1_value = sai_thrift_attribute_value_t(oid=nhop_group)
+    nhop_gmember_atr1 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID,
+                                               value=nhop_gmember_atr1_value)
+    nhop_gmember_atr2_value = sai_thrift_attribute_value_t(oid=nhop)
+    nhop_gmember_atr2 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID,
+                                               value=nhop_gmember_atr2_value)
+    if weight != None:
+        nhop_gmember_atr3_value = sai_thrift_attribute_value_t(u32=weight)
+        nhop_gmember_atr3 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_MEMBER_ATTR_WEIGHT,
+                                                   value=nhop_gmember_atr3_value)
+        nhop_gmember_attr_list = [nhop_gmember_atr1, nhop_gmember_atr2, nhop_gmember_atr3]
+    else:
+        nhop_gmember_attr_list = [nhop_gmember_atr1, nhop_gmember_atr2]
+    return client.sai_thrift_create_next_hop_group_member(nhop_gmember_attr_list)
+
+def sai_thrift_remove_next_hop_group_member(client, nhop_gmember_list):
+    for nhop_gmember in nhop_gmember_list:
+        client.sai_thrift_remove_next_hop_group_member(nhop_gmember)
 
 def sai_thrift_remove_next_hop_from_group(client, nhop_list):
     for hnop in nhop_list:
