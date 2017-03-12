@@ -341,7 +341,7 @@ sai_status_t stub_host_interface_name_set(_In_ const sai_object_key_t      *key,
     return SAI_STATUS_SUCCESS;
 }
 
-sai_status_t stub_set_host_interface_trap_attribute(_In_ sai_hostif_trap_id_t  hostif_trapid,
+sai_status_t stub_set_host_interface_trap_attribute(_In_ sai_hostif_trap_type_t  hostif_trapid,
                                                     _In_ const sai_attribute_t *attr)
 {
     STUB_LOG_ENTER();
