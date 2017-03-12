@@ -1,11 +1,11 @@
-/*
+/**
  * Copyright (c) 2014 Microsoft Open Technologies, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may
  *    not use this file except in compliance with the License. You may obtain
  *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  *
- *    THIS CODE IS PROVIDED ON AN  *AS IS* BASIS, WITHOUT WARRANTIES OR
+ *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
  *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
@@ -17,14 +17,9 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * Module Name:
+ * @file    saihash.h
  *
- *    saihash.h
- *
- * Abstract:
- *
- *    This module defines SAI Hash API
- *
+ * @brief   This module defines SAI Hash interface
  */
 
 #if !defined (__SAIHASH_H_)
@@ -32,24 +27,29 @@
 
 #include <saitypes.h>
 
-/** \defgroup SAIHASH SAI - Hash specific API definitions.
+/**
+ * @defgroup SAIHASH SAI - Hash specific API definitions.
  *
- *  \{
+ * @{
  */
 
 /**
-* brief@ Attribute data for sai native hash fields
-*/
-typedef enum _sai_native_hash_field
+ * @brief Attribute data for sai native hash fields
+ */
+typedef enum _sai_native_hash_field_t
 {
-    /** Native hash field source IP.
-     *  also refers to the outer source IP
-     *  in case for encapsulated packets */
+    /**
+     * @brief Native hash field source IP.
+     * also refers to the outer source IP
+     * in case for encapsulated packets
+     */
     SAI_NATIVE_HASH_FIELD_SRC_IP = 0,
 
-    /** Native hash field destination IP
-     *  also refers to the outer source IP
-     *  in case for encapsulated packets */
+    /**
+     * @brief Native hash field destination IP
+     * also refers to the outer source IP
+     * in case for encapsulated packets
+     */
     SAI_NATIVE_HASH_FIELD_DST_IP = 1,
 
     /** Native hash field inner source IP */
@@ -89,95 +89,91 @@ typedef enum _sai_native_hash_field
  */
 typedef enum _sai_hash_attr_t
 {
-
+    /**
+     * @brief Start of attributes
+     */
     SAI_HASH_ATTR_START,
-    /** READ-ONLY */
 
-    /** READ-WRITE */
+    /**
+     * @brief Hash native fields
+     *
+     * @type sai_s32_list_t sai_native_hash_field_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_HASH_ATTR_NATIVE_HASH_FIELD_LIST = SAI_HASH_ATTR_START,
 
-    /** Hash native fields [sai_s32_list_t(sai_native_hash_field)] (CREATE_AND_SET) (default to an empty list) */
-    SAI_HASH_ATTR_NATIVE_FIELD_LIST = SAI_HASH_ATTR_START,
-
-    /** Hash UDF group [sai_object_list_t(sai_udf_group_t)] (CREATE_AND_SET) (default to an empty list) */
+    /**
+     * @brief Hash UDF group
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_UDF_GROUP
+     * @default empty
+     */
     SAI_HASH_ATTR_UDF_GROUP_LIST,
 
+    /**
+     * @brief End of attributes
+     */
     SAI_HASH_ATTR_END,
 
 } sai_hash_attr_t;
 
 /**
- * Routine Description:
- *    @brief Create hash
+ *@brief Create hash
  *
- * Arguments:
- *    @param[out] hash_id - hash id
- *    @param[in] attr_count - number of attributes
- *    @param[in] attr_list - array of attributes
+ * @param[out] hash_id Hash id
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
- * Return Values:
- *    @return SAI_STATUS_SUCCESS on success
- *            Failure status code on error
- *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_hash_fn)(
-    _Out_ sai_object_id_t* hash_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list
-    );
+        _Out_ sai_object_id_t *hash_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
- * Routine Description:
- *    @brief Remove hash
+ * @brief Remove hash
  *
- * Arguments:
- *    @param[in] hash_id - hash id
+ * @param[in] hash_id Hash id
  *
- * Return Values:
- *    @return SAI_STATUS_SUCCESS on success
- *            Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_hash_fn)(
-    _In_ sai_object_id_t hash_id
-    );
+        _In_ sai_object_id_t hash_id);
 
 /**
- * Routine Description:
- *    @brief Set hash attribute
+ * @brief Set hash attribute
  *
- * Arguments:
- *    @param[in] hash_id - hash id
- *    @param[in] attr - attribute
+ * @param[in] hash_id Hash id
+ * @param[in] attr Attribute
  *
- * Return Values:
- *    @return SAI_STATUS_SUCCESS on success
- *            Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_set_hash_attribute_fn)(
-    _In_ sai_object_id_t hash_id,
-    _In_ const sai_attribute_t *attr
-    );
+        _In_ sai_object_id_t hash_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
- * Routine Description:
- *    @brief Get hash attribute value
+ * @brief Get hash attribute value
  *
- * Arguments:
- *    @param[in] hash_id - hash id
- *    @param[in] attr_count - number of attributes
- *    @param[inout] attrs - array of attributes
+ * @param[in] hash_id Hash id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attrs Aarray of attributes
  *
- * Return Values:
- *    @return SAI_STATUS_SUCCESS on success
- *            Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_hash_attribute_fn)(
-    _In_ sai_object_id_t hash_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list
-    );
+        _In_ sai_object_id_t hash_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
- *  @brief hash methods, retrieved via sai_api_query()
+ * @brief hash methods, retrieved via sai_api_query()
  */
 typedef struct _sai_hash_api_t
 {
@@ -189,6 +185,6 @@ typedef struct _sai_hash_api_t
 } sai_hash_api_t;
 
 /**
- * \}
+ * @}
  */
-#endif  // __SAIHASH_H_
+#endif /** __SAIHASH_H_ */
