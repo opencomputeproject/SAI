@@ -222,7 +222,19 @@ public:
                   attr_list[i].value.objlist.count = attribute.value.objlist.count;
                   attr_list[i].value.objlist.list = *buffer_profile_list;
                   break;
+              }
+              case SAI_PORT_ATTR_INGRESS_MIRROR_SESSION:
+              case SAI_PORT_ATTR_EGRESS_MIRROR_SESSION:
+              {
+                  *buffer_profile_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * attribute.value.objlist.count);
+                  std::vector<sai_thrift_object_id_t>::const_iterator it2 = attribute.value.objlist.object_id_list.begin();
+                  for (uint32_t j = 0; j < attribute.value.objlist.object_id_list.size(); j++, *it2++) {
+                      *buffer_profile_list[j] = (sai_object_id_t) *it2;
                   }
+                  attr_list[i].value.objlist.count = attribute.value.objlist.count;
+                  attr_list[i].value.objlist.list=*buffer_profile_list;
+                  break;
+              }
               case SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID:
               case SAI_PORT_ATTR_QOS_WRED_PROFILE_ID:
               case SAI_PORT_ATTR_QOS_DOT1P_TO_TC_MAP:
@@ -235,8 +247,6 @@ public:
               case SAI_PORT_ATTR_QOS_TC_TO_PRIORITY_GROUP_MAP:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP:
-              case SAI_PORT_ATTR_INGRESS_MIRROR_SESSION:
-              case SAI_PORT_ATTR_EGRESS_MIRROR_SESSION:
               case SAI_PORT_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
@@ -1941,7 +1951,7 @@ public:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_ERSPAN_ENCAPSULATION_TYPE:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_MIRROR_SESSION_ATTR_IPHDR_VERSION:
                   attr_list[i].value.u8 = attribute.value.u8;
