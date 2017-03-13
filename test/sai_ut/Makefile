@@ -26,6 +26,12 @@ nhg_SRCS = $(l3_util_SRCS) ./routing/sai_l3_nexthopgroup_unit_test.cpp
 nbr_SRCS = $(l3_util_SRCS) ./routing/sai_l3_neighbor_unit_test.cpp
 route_SRCS = $(l3_util_SRCS) ./routing/sai_l3_route_unit_test.cpp
 
+switch_SRCS  = ./switch/sai_infra_unit_test.cpp
+switch_SRCS += ./switch/sai_switch_unit_test.cpp
+
+port_SRCS  = ./port/sai_port_unit_test.cpp
+port_SRCS += ./port/sai_port_breakout_test_utils.cpp
+
 ### platform specific Linker/LD Flags
 # add pointers to SAI library
 # by adding -l<sai> and -L<location-to-libsai.so> directives
@@ -42,8 +48,11 @@ nh_EXEC    = sai_ut_nh
 nhg_EXEC   = sai_ut_nhg
 nbr_EXEC   = sai_ut_nbr
 route_EXEC = sai_ut_route
+switch_EXEC = sai_ut_switch
+port_EXEC = sai_ut_port
 
 EXEC_ALL = $(BDIR)/$(vr_EXEC) $(BDIR)/$(rif_EXEC) $(BDIR)/$(nh_EXEC) $(BDIR)/$(nhg_EXEC) $(BDIR)/$(nbr_EXEC) $(BDIR)/$(route_EXEC)
+EXEC_ALL += $(BDIR)/$(switch_EXEC) $(BDIR)/$(port_EXEC)
 
 # what to use for compiling
 CXX=g++
@@ -62,8 +71,10 @@ nh_OBJS = $(nh_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 nhg_OBJS = $(nhg_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 nbr_OBJS = $(nbr_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 route_OBJS = $(route_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+switch_OBJS = $(switch_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+port_OBJS = $(port_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 
-all : $(vr_SRCS) $(rif_SRCS) $(nh_SRCS) $(nhg_SRCS) $(nbr_SRCS) $(route_SRCS) $(EXEC_ALL)
+all : $(vr_SRCS) $(rif_SRCS) $(nh_SRCS) $(nhg_SRCS) $(nbr_SRCS) $(route_SRCS) $(switch_SRCS) $(port_SRCS) $(EXEC_ALL)
 
 # rule for execs
 $(BDIR)/$(vr_EXEC): $(vr_OBJS)
@@ -84,10 +95,16 @@ $(BDIR)/$(nbr_EXEC): $(nbr_OBJS)
 $(BDIR)/$(route_EXEC): $(route_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(route_OBJS) -o $@ $(LDFLAGS)
 
+$(BDIR)/$(switch_EXEC): $(switch_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(switch_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(port_EXEC): $(port_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(port_OBJS) -o $@ $(LDFLAGS)
+
 .cpp.o:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDEFLAGS) -o $@ -c $<
  
 clean :
-	rm -f $(EXEC_ALL) *.o routing/*.o
+	rm -f $(EXEC_ALL) *.o routing/*.o switch/*.o port/*.o
 
 

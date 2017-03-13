@@ -22,7 +22,7 @@ LDIR = ./lib
 MKDIR_P = mkdir -p 
 USER_ODIR = obj
 USER_BDIR = bin
-OUT_DIRS = $(USER_BDIR) $(USER_ODIR) 
+OUT_DIRS = $(USER_BDIR) $(USER_ODIR) $(LDIR)
 TESTS = $(USER_BDIR)/basic_router 
 
 ###########################################################
