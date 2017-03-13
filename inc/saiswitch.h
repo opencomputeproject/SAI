@@ -28,7 +28,7 @@
 #include <saitypes.h>
 #include <saiport.h>
 #include <saifdb.h>
-#include <saihostintf.h>
+#include <saihostif.h>
 
 /**
  * @defgroup SAISWITCH SAI - Switch specific API definitions

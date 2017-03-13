@@ -17,7 +17,7 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    saimcfdb.h
+ * @file    saimcastfdb.h
  *
  * @brief   This module defines SAI multicast FDB interface
  */
