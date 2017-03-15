@@ -1919,16 +1919,16 @@ sub ProcessCreate
     {
         if ($small eq "switch")
         {
-            WriteSource "    return g_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, attr_count, attr_list);";
+            WriteSource "    return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, attr_count, attr_list);";
         }
         else
         {
-            WriteSource "    return g_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, switch_id, attr_count, attr_list);";
+            WriteSource "    return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, switch_id, attr_count, attr_list);";
         }
     }
     else
     {
-        WriteSource "    return g_sai_${api}_api->create_$small(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+        WriteSource "    return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.$small, attr_count, attr_list);";
     }
 
     WriteSource "}";
@@ -1951,11 +1951,11 @@ sub ProcessRemove
 
     if (not defined $struct)
     {
-        WriteSource "    return g_sai_${api}_api->remove_$small(meta_key->objectkey.key.object_id);";
+        WriteSource "    return sai_metadata_sai_${api}_api->remove_$small(meta_key->objectkey.key.object_id);";
     }
     else
     {
-        WriteSource "    return g_sai_${api}_api->remove_$small(&meta_key->objectkey.key.$small);";
+        WriteSource "    return sai_metadata_sai_${api}_api->remove_$small(&meta_key->objectkey.key.$small);";
     }
 
     WriteSource "}";
@@ -1979,11 +1979,11 @@ sub ProcessSet
 
     if (not defined $struct)
     {
-        WriteSource "    return g_sai_${api}_api->set_${small}_attribute(meta_key->objectkey.key.object_id, attr);";
+        WriteSource "    return sai_metadata_sai_${api}_api->set_${small}_attribute(meta_key->objectkey.key.object_id, attr);";
     }
     else
     {
-        WriteSource "    return g_sai_${api}_api->set_${small}_attribute(&meta_key->objectkey.key.$small, attr);";
+        WriteSource "    return sai_metadata_sai_${api}_api->set_${small}_attribute(&meta_key->objectkey.key.$small, attr);";
     }
 
     WriteSource "}";
@@ -2008,11 +2008,11 @@ sub ProcessGet
 
     if (not defined $struct)
     {
-        WriteSource "    return g_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
+        WriteSource "    return sai_metadata_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
     }
     else
     {
-        WriteSource "    return g_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+        WriteSource "    return sai_metadata_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
     }
 
     WriteSource "}";
@@ -2024,7 +2024,8 @@ sub CreateApis
 {
     for my $key(sort keys %APITOOBJMAP)
     {
-        WriteSource "static sai_${key}_api_t *g_sai_${key}_api = NULL;";
+        WriteSource "sai_${key}_api_t *sai_metadata_sai_${key}_api = NULL;";
+        WriteHeader "extern sai_${key}_api_t *sai_metadata_sai_${key}_api;";
     }
 }
 
@@ -2045,17 +2046,17 @@ sub CreateApisQuery
 
     for my $key(sort keys %APITOOBJMAP)
     {
-        WriteSource "        g_sai_${key}_api = NULL;";
+        WriteSource "        sai_metadata_sai_${key}_api = NULL;";
     }
 
-    WriteSource "    return count;";
+    WriteSource "        return count;";
     WriteSource "    }";
 
     for my $key(sort keys %APITOOBJMAP)
     {
         my $api = uc("SAI_API_${key}");
 
-        WriteSource "    status = api_query($api, (void**)&g_sai_${key}_api);";
+        WriteSource "    status = api_query($api, (void**)&sai_metadata_sai_${key}_api);";
         WriteSource "    if (status != SAI_STATUS_SUCCESS) { count++; SAI_META_LOG_ERROR(\"failed to query api $api\"); }";
     }
 
