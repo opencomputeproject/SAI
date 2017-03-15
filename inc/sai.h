@@ -111,6 +111,7 @@ typedef enum _sai_api_t
     SAI_API_IPMC_GROUP       = 31, /**< sai_ipmc_group_api_t */
     SAI_API_MCAST_FDB        = 32, /**< sai_mcast_fdb_api_t */
     SAI_API_BRIDGE           = 33, /**< sai_bridge_api_t */
+    SAI_API_MAX              = 34, /**< total number of apis */
 } sai_api_t;
 
 /**

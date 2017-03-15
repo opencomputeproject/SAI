@@ -3478,6 +3478,14 @@ void check_single_object_info(
     check_quad_api_pointers(oi);
 }
 
+void check_api_max()
+{
+    META_LOG_ENTER();
+
+    META_ASSERT_TRUE(metadata_enum_sai_api_t.valuescount == SAI_API_MAX,
+            "SAI_API_MAX should be equal to number of SAI_API*");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -3511,6 +3519,7 @@ int main(int argc, char **argv)
     check_reverse_graph_for_non_object_id();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
+    check_api_max();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 
