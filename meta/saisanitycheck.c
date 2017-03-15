@@ -2033,6 +2033,27 @@ void check_attr_existing_objects(
     /* TODO there is default .1Q Bridge present */
 }
 
+void check_attr_sai_pointer(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this test is to check whether sai_pointer_t
+     * is only used on SAI_OBJECT_TYPE_SWITCH.
+     */
+
+    if (md->objecttype == SAI_OBJECT_TYPE_SWITCH)
+    {
+        return;
+    }
+
+    if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
+    {
+        META_ASSERT_FAIL(md, "attribute value pointer is only allowed on SAI_OBJECT_TYPE_SWITCH");
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2066,6 +2087,7 @@ void check_single_attribute(
     check_attr_acl_conditions(md);
     check_attr_acl_field_or_action(md);
     check_attr_existing_objects(md);
+    check_attr_sai_pointer(md);
 
     define_attr(md);
 }
