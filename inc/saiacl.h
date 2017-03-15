@@ -213,9 +213,6 @@ typedef enum _sai_acl_action_type_t
     /** Set egress packet sampling */
     SAI_ACL_ACTION_TYPE_EGRESS_SAMPLEPACKET_ENABLE,
 
-    /** Set CPU Queue for CPU bound traffic */
-    SAI_ACL_ACTION_TYPE_SET_CPU_QUEUE,
-
     /** Set Meta Data to carry forward to next ACL Stage */
     SAI_ACL_ACTION_TYPE_SET_ACL_META_DATA,
 
@@ -1711,19 +1708,6 @@ typedef enum _sai_acl_entry_attr_t
      * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
-
-    /**
-     * @brief Set CPU Queue for CPU bound traffic
-     *
-     * Action can be used whenever packet is destined to CPU such as
-     * when packet action specifies the packet needs to be punted
-     * to CPU (Trap/Log) or the destination port points to CPU.
-     *
-     * @type sai_acl_action_data_t sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_QUEUE
-     */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
 
     /**
      * @brief Set Meta Data to carry forward to next ACL Stage
