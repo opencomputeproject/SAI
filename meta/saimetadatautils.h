@@ -102,6 +102,20 @@ extern const char* sai_metadata_get_enum_value_name(
         _In_ int value);
 
 /**
+ * @brief Gets attribute from attribute list by attribyte id
+ *
+ * @param[in] id Attribute id to be found
+ * @param[in] attr_count Total number of attributes
+ * @param[in] attr_list List of attributest to search
+ *
+ * @return Attriute pointer with requested ID or NULL if not found
+ */
+extern const sai_attribute_t* sai_metadata_get_attr_by_id(
+        _In_ sai_attr_id_t id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
  * @}
  */
 #endif /** __SAI_METADATA_UTILS_H_ */
