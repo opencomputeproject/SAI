@@ -795,7 +795,7 @@ public:
           return;
       }
 
-      ret.data.u16 = vlan_attr.value.u16;
+      ret.data.oid = vlan_attr.value.u16;
   }
 
   sai_thrift_object_id_t sai_thrift_create_virtual_router(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
@@ -1659,14 +1659,14 @@ public:
                 break;
             case SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST:
                 {
-                    int count = attribute.value.aclfield.data.bind_point_list.s32list.size();
-                    sai_int32_t *s32_list = NULL;
-                    std::vector<sai_thrift_acl_bind_point_type_t>::const_iterator it = attribute.value.aclfield.data.bind_point_list.s32list.begin();
-                    s32_list = (sai_int32_t *) malloc(sizeof(sai_int32_t) * count);
+                    int count = attribute.value.s32list.s32list.size();
+                    sai_int32_t *aclbp_list = NULL;
+                    std::vector<sai_int32_t>::const_iterator it = attribute.value.s32list.s32list.begin();
+                    aclbp_list = (sai_int32_t *) malloc(sizeof(sai_int32_t) * count);
                     for(int j = 0; j < count; j++, it++)
-                        *(s32_list + j) = (sai_int32_t) *it;
-                    attr_list[i].value.aclfield.data.bind_point_list.s32list = s32_list;
-                    attr_list[i].value.aclfield.data.bind_point_list.count = count;
+                        *(aclbp_list + j) = (sai_int32_t) *it;
+                    attr_list[i].value.s32list.list = aclbp_list;
+                    attr_list[i].value.s32list.count = count;
                 }
                 break;
             case SAI_ACL_TABLE_GROUP_ATTR_TYPE:
@@ -1814,7 +1814,7 @@ public:
   }
 
   sai_thrift_object_id_t sai_thrift_create_acl_table_group(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-      sai_object_id_t acl_table_group = 0ULL;
+      sai_object_id_t acl_table_group_id = 0ULL;
       sai_acl_api_t *acl_api;
       sai_status_t status = SAI_STATUS_SUCCESS;
       status = sai_api_query(SAI_API_ACL, (void **) &acl_api);
@@ -1825,7 +1825,7 @@ public:
       sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
       sai_thrift_parse_acl_table_group_attributes(thrift_attr_list, attr_list);
       uint32_t attr_count = thrift_attr_list.size();
-      status = acl_api->create_acl_table_group(&acl_table_group, attr_count, attr_list);
+      status = acl_api->create_acl_table_group(&acl_table_group_id, gSwitchId, attr_count, attr_list);
       free(attr_list);
       return acl_table_group_id;
   }
@@ -1842,7 +1842,7 @@ public:
   }
 
   sai_thrift_object_id_t sai_thrift_create_acl_table_group_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-      sai_object_id_t acl_table_group_member = 0ULL;
+      sai_object_id_t acl_table_group_member_id = 0ULL;
       sai_acl_api_t *acl_api;
       sai_status_t status = SAI_STATUS_SUCCESS;
       status = sai_api_query(SAI_API_ACL, (void **) &acl_api);
@@ -1853,7 +1853,7 @@ public:
       sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
       sai_thrift_parse_acl_table_group_member_attributes(thrift_attr_list, attr_list);
       uint32_t attr_count = thrift_attr_list.size();
-      status = acl_api->create_acl_table_group_member(&acl_table_group_member, attr_count, attr_list);
+      status = acl_api->create_acl_table_group_member(&acl_table_group_member_id, gSwitchId, attr_count, attr_list);
       free(attr_list);
       return acl_table_group_member_id;
   }
@@ -2783,7 +2783,7 @@ public:
         sai_thrift_parse_next_hop_group_member_attributes(attr_list, thrift_attr_list);
 
         sai_object_id_t nhop_group_member_oid = 0;
-        status = nhop_group_api->create_next_hop_group_member(&nhop_group_member_oid, attr_size, attr_list);
+        status = nhop_group_api->create_next_hop_group_member(&nhop_group_member_oid, gSwitchId, attr_size, attr_list);
         sai_thrift_free_attr(attr_list);
 
         if (status == SAI_STATUS_SUCCESS)

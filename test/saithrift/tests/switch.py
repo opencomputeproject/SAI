@@ -651,8 +651,8 @@ def sai_thrift_create_acl_table_group(client,
         acl_attr_list.append(attribute)
 
     if group_bind_point_list != None:
-        acl_group_bind_point_list = sai_thrift_s32_list_t(count=len(group_bind_point_list), s32list=group_bind_point_list)
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(bind_point_list=acl_group_bind_point_list)))
+        acl_group_bind_point_list = sai_thrift_s32_list_t(count=len(table_bind_point_list), s32list=group_bind_point_list)
+        attribute_value = sai_thrift_attribute_value_t(s32list=acl_group_bind_point_list)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
