@@ -53,9 +53,10 @@ typedef enum _sai_ipmc_group_attr_t
 
     /**
      * @brief IPMC member list
+     *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_IPMC_GROUP_MEMBER
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_IPMC_GROUP_MEMBER
      */
     SAI_IPMC_GROUP_ATTR_IPMC_MEMBER_LIST,
 
@@ -81,17 +82,19 @@ typedef enum _sai_ipmc_group_member_attr_t
 
     /**
      * @brief IPMC group id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_IPMC_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_IPMC_GROUP
      */
     SAI_IPMC_GROUP_MEMBER_ATTR_IPMC_GROUP_ID = SAI_IPMC_GROUP_MEMBER_ATTR_START,
 
     /**
      * @brief IPMC output id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_TUNNEL
      */
     SAI_IPMC_GROUP_MEMBER_ATTR_IPMC_OUTPUT_ID,
 
@@ -170,10 +173,10 @@ typedef sai_status_t (*sai_get_ipmc_group_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_create_ipmc_group_member_fn)(
-    _Out_ sai_object_id_t* ipmc_group_member_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list
-    );
+        _Out_ sai_object_id_t* ipmc_group_member_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove IPMC group member
@@ -183,8 +186,7 @@ typedef sai_status_t (*sai_create_ipmc_group_member_fn)(
  * @return SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_ipmc_group_member_fn)(
-    _In_ sai_object_id_t ipmc_group_member_id
-    );
+        _In_ sai_object_id_t ipmc_group_member_id);
 
 /**
  * @brief Set IPMC Group attribute
@@ -195,9 +197,8 @@ typedef sai_status_t (*sai_remove_ipmc_group_member_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_set_ipmc_group_member_attribute_fn)(
-    _In_ sai_object_id_t ipmc_group_member_id,
-    _In_ const sai_attribute_t *attr
-    );
+        _In_ sai_object_id_t ipmc_group_member_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get IPMC Group attribute
@@ -209,13 +210,12 @@ typedef sai_status_t (*sai_set_ipmc_group_member_attribute_fn)(
  * @return SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_ipmc_group_member_attribute_fn)(
-    _In_ sai_object_id_t ipmc_group_member_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list
-    );
+        _In_ sai_object_id_t ipmc_group_member_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
- *  @brief IPMC group methods table retrieved with sai_api_query()
+ * @brief IPMC group methods table retrieved with sai_api_query()
  */
 typedef struct _sai_ipmc_group_api_t
 {

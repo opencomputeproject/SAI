@@ -160,3 +160,26 @@ const char* sai_metadata_get_enum_value_name(
 
     return NULL;
 }
+
+const sai_attribute_t* sai_metadata_get_attr_by_id(
+        _In_ sai_attr_id_t id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    if (attr_list == NULL)
+    {
+        return NULL;
+    }
+
+    uint32_t i = 0;
+
+    for (; i < attr_count; ++i)
+    {
+        if (attr_list[i].id == id)
+        {
+            return &attr_list[i];
+        }
+    }
+
+    return NULL;
+}

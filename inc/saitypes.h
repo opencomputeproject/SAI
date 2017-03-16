@@ -122,7 +122,7 @@ typedef void *sai_pointer_t;
 #define SAI_NULL_OBJECT_ID 0L
 
 /**
- * Defines a list of sai object ids used as sai attribute value.
+ * @brief Defines a list of sai object ids used as sai attribute value.
  *
  * In set attribute function call, the count member defines the number of
  * objects.
@@ -216,7 +216,8 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP = 56,
     SAI_OBJECT_TYPE_BRIDGE                   = 57,
     SAI_OBJECT_TYPE_BRIDGE_PORT              = 58,
-    SAI_OBJECT_TYPE_MAX                      = 59
+    SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY         = 59,
+    SAI_OBJECT_TYPE_MAX                      = 60,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -268,10 +269,10 @@ typedef struct _sai_s32_range_t {
  */
 typedef struct _sai_vlan_list_t {
 
-    /** Number of Vlans*/
+    /** Number of Vlans */
     uint32_t count;
 
-    /** List of Vlans*/
+    /** List of Vlans */
     sai_vlan_id_t *list;
 
 } sai_vlan_list_t;
@@ -312,7 +313,7 @@ typedef struct _sai_ip_prefix_t {
 typedef struct _sai_acl_field_data_t
 {
     /**
-     * match enable/disable
+     * @brief Match enable/disable
      */
     bool enable;
 
@@ -434,8 +435,10 @@ typedef struct _sai_qos_map_params_t
     /** Priority group value */
     sai_uint8_t pg;
 
-    /** Egress port queue UOID is not known at the time of map creation.
-     * Using queue index for maps. */
+    /**
+     * @brief Egress port queue UOID is not known at the time of map creation.
+     * Using queue index for maps.
+     */
     sai_queue_index_t queue_index;
 
     /** Color of the packet */
@@ -476,9 +479,6 @@ typedef struct _sai_tunnel_map_params_t
     /** VNI id */
     sai_uint32_t vni_id;
 
-    /** Bridge IF */
-    sai_object_id_t bridge_if;
-
 } sai_tunnel_map_params_t;
 
 typedef struct _sai_tunnel_map_t
@@ -497,7 +497,7 @@ typedef struct _sai_tunnel_map_list_t
     uint32_t count;
 
     /** Map list */
-    sai_tunnel_map_t * list;
+    sai_tunnel_map_t *list;
 
 } sai_tunnel_map_list_t;
 
@@ -508,12 +508,6 @@ typedef struct _sai_tunnel_map_list_t
  */
 typedef struct _sai_acl_capability_t
 {
-    /**
-     * @brief Type of acl stage. Input to get the action list
-     * Failure to pass the stage as input will be treated as error
-     */
-    sai_int32_t stage;
-
     /**
      * @brief Output from get function.
      * boolean indicating whether action list is mandatory for table creation
@@ -561,6 +555,7 @@ typedef union {
     sai_ip4_t ip4;
     sai_ip6_t ip6;
     sai_ip_address_t ipaddr;
+    sai_ip_prefix_t ipprefix;
     sai_object_id_t oid;
     sai_object_list_t objlist;
     sai_u8_list_t u8list;
@@ -601,7 +596,7 @@ typedef enum _sai_bulk_op_type_t {
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_count Number of objects to create
  * @param[in] attr_count List of attr_count. Caller passes the number
- *         of attribute for each object to create.
+ *    of attribute for each object to create.
  * @param[in] attrs List of attributes for every object.
  * @param[in] type bulk operation type.
  *
@@ -616,8 +611,8 @@ typedef enum _sai_bulk_op_type_t {
 typedef sai_status_t (*sai_bulk_object_create_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t object_count,
-        _In_ uint32_t *attr_count,
-        _In_ sai_attribute_t **attrs,
+        _In_ const uint32_t *attr_count,
+        _In_ const sai_attribute_t **attrs,
         _In_ sai_bulk_op_type_t type,
         _Out_ sai_object_id_t *object_id,
         _Out_ sai_status_t *object_statuses);
@@ -637,10 +632,9 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
 
 typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ uint32_t object_count,
-        _In_ sai_object_id_t *object_id,
+        _In_ const sai_object_id_t *object_id,
         _In_ sai_bulk_op_type_t type,
         _Out_ sai_status_t *object_statuses);
-
 
 /**
  * @}

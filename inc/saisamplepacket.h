@@ -127,8 +127,8 @@ typedef enum _sai_samplepacket_attr_t
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.
  */
-typedef sai_status_t (*sai_create_samplepacket_session_fn)(
-        _Out_ sai_object_id_t *session_id,
+typedef sai_status_t (*sai_create_samplepacket_fn)(
+        _Out_ sai_object_id_t *samplepacket_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -141,8 +141,8 @@ typedef sai_status_t (*sai_create_samplepacket_session_fn)(
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.
  */
-typedef sai_status_t (*sai_remove_samplepacket_session_fn)(
-        _In_ sai_object_id_t session_id);
+typedef sai_status_t (*sai_remove_samplepacket_fn)(
+        _In_ sai_object_id_t samplepacket_id);
 
 /**
  * @brief Set samplepacket session attributes.
@@ -154,7 +154,7 @@ typedef sai_status_t (*sai_remove_samplepacket_session_fn)(
  * error code is returned.
  */
 typedef sai_status_t (*sai_set_samplepacket_attribute_fn)(
-        _In_ sai_object_id_t session_id,
+        _In_ sai_object_id_t samplepacket_id,
         _In_ const sai_attribute_t *attr);
 
 /**
@@ -168,7 +168,7 @@ typedef sai_status_t (*sai_set_samplepacket_attribute_fn)(
  * error code is returned.
  */
 typedef sai_status_t (*sai_get_samplepacket_attribute_fn)(
-        _In_ sai_object_id_t session_id,
+        _In_ sai_object_id_t sample_packet_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -177,8 +177,8 @@ typedef sai_status_t (*sai_get_samplepacket_attribute_fn)(
  */
 typedef struct _sai_samplepacket_api_t
 {
-    sai_create_samplepacket_session_fn  create_samplepacket_session;
-    sai_remove_samplepacket_session_fn  remove_samplepacket_session;
+    sai_create_samplepacket_fn          create_samplepacket;
+    sai_remove_samplepacket_fn          remove_samplepacket;
     sai_set_samplepacket_attribute_fn   set_samplepacket_attribute;
     sai_get_samplepacket_attribute_fn   get_samplepacket_attribute;
 

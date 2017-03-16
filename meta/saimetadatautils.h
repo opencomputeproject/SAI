@@ -41,7 +41,7 @@
  *
  * @return True if object is allowed on on this attribute, false otherwise
  */
-extern bool sai_meta_is_allowed_object_type(
+extern bool sai_metadata_is_allowed_object_type(
         _In_ const sai_attr_metadata_t* metadata,
         _In_ sai_object_type_t object_type);
 
@@ -53,7 +53,7 @@ extern bool sai_meta_is_allowed_object_type(
  *
  * @return True if enum value is allowed on this attribute, false otherwise
  */
-extern bool sai_meta_is_allowed_enum_value(
+extern bool sai_metadata_is_allowed_enum_value(
         _In_ const sai_attr_metadata_t* metadata,
         _In_ int value);
 
@@ -64,7 +64,7 @@ extern bool sai_meta_is_allowed_enum_value(
  *
  * @return True if is ACL field or action, false otherwise
  */
-bool sai_metadata_is_acl_field_or_action(
+extern bool sai_metadata_is_acl_field_or_action(
         _In_ const sai_attr_metadata_t* metadata);
 
 /**
@@ -100,6 +100,20 @@ extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name
 extern const char* sai_metadata_get_enum_value_name(
         _In_ const sai_enum_metadata_t* metadata,
         _In_ int value);
+
+/**
+ * @brief Gets attribute from attribute list by attribyte id
+ *
+ * @param[in] id Attribute id to be found
+ * @param[in] attr_count Total number of attributes
+ * @param[in] attr_list List of attributest to search
+ *
+ * @return Attriute pointer with requested ID or NULL if not found
+ */
+extern const sai_attribute_t* sai_metadata_get_attr_by_id(
+        _In_ sai_attr_id_t id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @}

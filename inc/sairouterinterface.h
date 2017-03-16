@@ -17,7 +17,7 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    sairouterintf.h
+ * @file    sairouterinterface.h
  *
  * @brief   This module defines SAI Router interface
  */
@@ -71,8 +71,8 @@ typedef enum _sai_router_interface_attr_t
      * @brief Virtual router id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
      */
     SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID = SAI_ROUTER_INTERFACE_ATTR_START,
 
@@ -88,8 +88,8 @@ typedef enum _sai_router_interface_attr_t
      * @brief Assosiated Port or Lag object id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
      * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
      */
     SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
@@ -98,8 +98,8 @@ typedef enum _sai_router_interface_attr_t
      * @brief Assosiated Vlan
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_VLAN
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_VLAN
      * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
      */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
@@ -154,8 +154,8 @@ typedef enum _sai_router_interface_attr_t
      * attribute value.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
@@ -170,15 +170,13 @@ typedef enum _sai_router_interface_attr_t
      * in the attribute value.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_ROUTER_INTERFACE_ATTR_EGRESS_ACL,
 
-    /** Packet action when neighbor table lookup miss for this router interface [sai_packet_action_t]
-     * (CREATE_AND_SET) (default to SAI_PACKET_ACTION_TRAP) */
     /**
      * @brief Packet action when neighbor table lookup miss for this router interface
      *
