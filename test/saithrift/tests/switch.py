@@ -48,7 +48,6 @@ class VlanObj:
 switch_inited=0
 port_list = {}
 sai_port_list = []
-front_port_list = []
 table_attr_list = []
 router_mac='00:77:66:55:44:00'
 rewrite_mac1='00:77:66:55:44:01'
@@ -70,6 +69,10 @@ def switch_init(client):
     ret = client.sai_thrift_get_vlan_id(default_vlan.oid)
     assert (ret.status == SAI_STATUS_SUCCESS), "Failed obtain default vlan id"
     default_vlan.vid = ret.data.u16
+    
+    for interface,front in interface_to_front_mapping.iteritems():
+    	sai_port_id = client.sai_thrift_get_port_id_by_front_port(front);
+    	port_list[int(interface)]=sai_port_id
 
     switch_attr_list = client.sai_thrift_get_switch_attribute()
     attr_list = switch_attr_list.attr_list
@@ -78,10 +81,11 @@ def switch_init(client):
             print "max ports: " + attribute.value.u32
         elif attribute.id == SAI_SWITCH_ATTR_PORT_LIST:
             for port_id in attribute.value.objlist.object_id_list:
-                attr_value = sai_thrift_attribute_value_t(booldata=1)
-                attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_ADMIN_STATE, value=attr_value)
-                client.sai_thrift_set_port_attribute(port_id, attr)
-                sai_port_list.append(port_id)
+                if port_id in port_list.values():
+                    attr_value = sai_thrift_attribute_value_t(booldata=1)
+                    attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_ADMIN_STATE, value=attr_value)
+                    client.sai_thrift_set_port_attribute(port_id, attr)
+                    sai_port_list.append(port_id)
         else:
             print "unknown switch attribute"
     attr_value = sai_thrift_attribute_value_t(mac=router_mac)
@@ -106,13 +110,6 @@ def switch_init(client):
     if not all_ports_are_up:
         raise RuntimeError('Not all of the  ports are up')
 
-    thrift_attr = client.sai_thrift_get_port_list_by_front_port()
-    if thrift_attr.id == SAI_SWITCH_ATTR_PORT_LIST:
-        for port_id in thrift_attr.value.objlist.object_id_list:
-            front_port_list.append(port_id)
-    for interface,front in interface_to_front_mapping.iteritems():
-        sai_port_id = client.sai_thrift_get_port_id_by_front_port(front);
-        port_list[int(interface)]=sai_port_id
     switch_inited = 1
 
 def sai_thrift_get_cpu_port_id(client):
