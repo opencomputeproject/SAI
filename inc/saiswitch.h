@@ -1188,9 +1188,9 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Set Switch shutdown notification callback function passed to the adapter.
      *
-     * Use sai_switch_shutdown_request_fn as notification function.
+     * Use sai_switch_shutdown_request_notification_fn as notification function.
      *
-     * @type sai_pointer_t sai_switch_shutdown_request_fn
+     * @type sai_pointer_t sai_switch_shutdown_request_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
@@ -1399,7 +1399,7 @@ typedef enum _sai_switch_attr_t
  *
  * @param[in] switch_id Switch Id
  */
-typedef void (*sai_switch_shutdown_request_fn)(
+typedef void (*sai_switch_shutdown_request_notification_fn)(
         _In_ sai_object_id_t switch_id);
 
 /**

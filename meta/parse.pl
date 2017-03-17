@@ -290,8 +290,15 @@ sub ProcessTagType
         return $val;
     }
 
-    if ($val =~/^sai_pointer_t sai_\w+_fn$/)
+    if ($val =~/^sai_pointer_t (sai_\w+_fn)$/)
     {
+        my $pointerfn = $1;
+
+        if (not $pointerfn =~ /^sai_\w+_(callback|notification)_fn$/)
+        {
+            LogWarning "function name $pointerfn should be in format sai_\\w+_(callback|notification)_fn";
+        }
+
         return $val;
     }
 
