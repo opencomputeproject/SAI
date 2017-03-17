@@ -400,7 +400,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    if ($val =~/^(true|false|NULL|SAI_\w+|\d+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
+    if ($val =~/^(true|false|NULL|SAI_\w+|-?\d+|0x[0-9A-F]+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
     {
         return $val;
     }
@@ -899,7 +899,7 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^SAI_NULL_OBJECT_ID$/;
 
-    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|\d+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|-?\d+|0x[0-9A-F]+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST" if $default =~ /^empty$/;
 
@@ -942,7 +942,7 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { };";
     }
-    elsif ($default =~ /^\d+$/ and $type =~ /sai_u?int\d+_t/)
+    elsif ($default =~ /^(-?\d+|0x[0-9A-F]+)$/ and $type =~ /sai_u?int\d+_t/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
