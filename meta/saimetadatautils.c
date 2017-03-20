@@ -183,3 +183,14 @@ const sai_attribute_t* sai_metadata_get_attr_by_id(
 
     return NULL;
 }
+
+const sai_object_type_info_t* sai_metadata_get_object_type_info(
+        _In_ sai_object_type_t object_type)
+{
+    if (object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_MAX)
+    {
+        return sai_all_object_type_infos[object_type];
+    }
+
+    return NULL;
+}
