@@ -116,6 +116,16 @@ extern const sai_attribute_t* sai_metadata_get_attr_by_id(
         _In_ const sai_attribute_t *attr_list);
 
 /**
+ * @brief Gets object type info
+ *
+ * @param[in] object_type Object type
+ *
+ * @return Object type info struct or NULL if not found
+ */
+extern const sai_object_type_info_t* sai_metadata_get_object_type_info(
+        _In_ sai_object_type_t object_type);
+
+/**
  * @}
  */
 #endif /** __SAI_METADATA_UTILS_H_ */
