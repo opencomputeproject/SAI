@@ -1538,12 +1538,13 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
         destanation_ports = range(self.total_lag_port)
         sport = 0x1234
         dport = 0x50
-        src_mac = self.dataplane.get_mac(0, self.total_lag_port)
+        src_mac_start = '00:22:22:22:{0}:{1}'
         NUM_OF_PKT_TO_EACH_PORT = 254
         NUM_OF_PKTS_TO_SEND = NUM_OF_PKT_TO_EACH_PORT * self.total_lag_port
         for i in xrange(NUM_OF_PKTS_TO_SEND):
                 ip_src = '10.0.' + str(i % 255) + '.' + str(i % 255)
                 ip_dst = '10.10.' + str((i % num_of_lags) + 1) + '.1'
+                src_mac = src_mac_start.format(str(i).zfill(4)[:2], str(i).zfill(4)[2:])
                 pkt = simple_tcp_packet(eth_dst=router_mac,
                                         eth_src=src_mac,
                                         ip_src=ip_src,
