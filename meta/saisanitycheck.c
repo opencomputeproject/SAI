@@ -2727,6 +2727,16 @@ void check_mixed_object_list_types()
                 }
                 else
                 {
+                    if (meta->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY &&
+                            meta->attrid == SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST)
+                    {
+                        /*
+                         * We make exception for this attribute.
+                         */
+
+                        break;
+                    }
+
                     /*
                      * For non read only attributes, there should be a good
                      * reason why object list should support mixed object

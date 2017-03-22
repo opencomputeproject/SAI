@@ -1497,7 +1497,7 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Redirect Packet to a list of destination which can be
      * a port list.
      *
-     * @type sai_acl_action_data_t sai_object_id_t
+     * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      */
