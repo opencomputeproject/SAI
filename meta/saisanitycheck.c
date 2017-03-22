@@ -2298,6 +2298,8 @@ void check_non_object_id_object_types()
                             {
                                 META_FAIL("struct member %s supports object type SWITCH, should be named switch_id", m->membername);
                             }
+
+                            META_ASSERT_TRUE(m->allowedobjecttypeslength == 1, "switch_id member should only support object type SWITCH");
                         }
 
                         /* non object id struct can't contain object id which is also non object id */
