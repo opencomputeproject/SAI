@@ -1705,16 +1705,16 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         exp_pkts = [0]*self.total_dst_port
         pkt_counter = [0] * self.total_dst_port
         destanation_ports = range(self.total_dst_port + 1)
-        router_mac = '00:02:03:04:05:00'
         sport = 0x1234
         dport = 0x50
-        src_mac = self.dataplane.get_mac(0, 0)
+        src_mac_start = '00:22:22:22:{0}:{1}'
         IP_LAST_WORD_RANGE = 254
         IP_2ND_LAST_WORD_RANGE = 16
         for i in xrange(IP_LAST_WORD_RANGE):
                 for j in xrange(IP_2ND_LAST_WORD_RANGE):
                     ip_src = '10.0.' + str(j) + '.' + str(i+1)
                     ip_dst = '10.20.' + str(j+1) + '.1'
+                    src_mac = src_mac_start.format(str(i).zfill(4)[:2], str(i).zfill(4)[2:])
                     pkt = simple_tcp_packet(
                                             eth_dst=router_mac,
                                             eth_src=src_mac,
