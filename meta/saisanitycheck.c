@@ -2293,6 +2293,11 @@ void check_non_object_id_object_types()
                              */
 
                             member_supports_switch_id++;
+
+                            if (strcmp("switch_id", m->membername) == 1)
+                            {
+                                META_FAIL("struct member %s supports object type SWITCH, should be named switch_id", m->membername);
+                            }
                         }
 
                         /* non object id struct can't contain object id which is also non object id */
