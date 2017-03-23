@@ -1651,7 +1651,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     def setup_ecmp_lag_group(self, first_rif_port):
         self.lag = self.client.sai_thrift_create_lag([])
         #adding lag members
-        sai_thrift_create_lag_member(self.client, self.lag, port_list[1])
+        self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[1]))
         for i in range(self.first_changing_port,first_rif_port):
             self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[i]))
         self.lag_rif = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lag, 0, self.v4_enabled, self.v6_enabled, '')
