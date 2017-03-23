@@ -35,9 +35,9 @@
  * @brief Log level function definition.
  *
  * User can sepcify his own function thah will be called when message log level
- * will be greater or equal to #sai_meta_log_level.
+ * will be greater or equal to #sai_metadata_log_level.
  */
-typedef void (*sai_meta_log_fn)(
+typedef void (*sai_metadata_log_fn)(
         _In_ sai_log_level_t log_level,
         _In_ const char *file,
         _In_ int line,
@@ -50,7 +50,7 @@ typedef void (*sai_meta_log_fn)(
  *
  * TODO: add a set function to update this?
  */
-extern volatile sai_meta_log_fn sai_meta_log;
+extern volatile sai_metadata_log_fn sai_metadata_log;
 
 /**
  * @brief Log level for sai metadat macros.
@@ -59,7 +59,7 @@ extern volatile sai_meta_log_fn sai_meta_log;
  *
  * TODO: add a set function to update this?
  */
-extern volatile sai_log_level_t sai_meta_log_level;
+extern volatile sai_log_level_t sai_metadata_log_level;
 
 /**
  * @brief Helper log macro definition
@@ -68,12 +68,12 @@ extern volatile sai_log_level_t sai_meta_log_level;
  * function will validate parameters at compilation time.
  */
 #define SAI_META_LOG(loglevel,format,...)\
-    if (loglevel >= sai_meta_log_level)\
+    if (loglevel >= sai_metadata_log_level)\
 {\
-    if (sai_meta_log == NULL) /* or syslog? */ \
+    if (sai_metadata_log == NULL) /* or syslog? */ \
         fprintf(stderr, "%s:%d %s: " format "\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__);\
     else\
-        sai_meta_log(loglevel, __FILE__, __LINE__, __func__, format, ##__VA_ARGS__);\
+        sai_metadata_log(loglevel, __FILE__, __LINE__, __func__, format, ##__VA_ARGS__);\
 }
 
 /*

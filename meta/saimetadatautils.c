@@ -57,7 +57,7 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
     if ((objecttype > SAI_OBJECT_TYPE_NULL) &&
             (objecttype < SAI_OBJECT_TYPE_MAX))
     {
-        const sai_attr_metadata_t** md = metadata_attr_by_object_type[objecttype];
+        const sai_attr_metadata_t** md = sai_metadata_attr_by_object_type[objecttype];
 
         size_t index = 0;
 
@@ -84,13 +84,13 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
     /* use binary search */
 
     ssize_t first = 0;
-    ssize_t last = (ssize_t)(metadata_attr_sorted_by_id_name_count - 1);
+    ssize_t last = (ssize_t)(sai_metadata_attr_sorted_by_id_name_count - 1);
 
     while (first <= last)
     {
         ssize_t middle = (first + last) / 2;
 
-        int res = strcmp(attr_id_name, metadata_attr_sorted_by_id_name[middle]->attridname);
+        int res = strcmp(attr_id_name, sai_metadata_attr_sorted_by_id_name[middle]->attridname);
 
         if (res > 0)
         {
@@ -104,7 +104,7 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
         {
             /* found */
 
-            return metadata_attr_sorted_by_id_name[middle];
+            return sai_metadata_attr_sorted_by_id_name[middle];
         }
     }
 
@@ -189,7 +189,7 @@ const sai_object_type_info_t* sai_metadata_get_object_type_info(
 {
     if (object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_MAX)
     {
-        return sai_all_object_type_infos[object_type];
+        return sai_metadata_all_object_type_infos[object_type];
     }
 
     return NULL;

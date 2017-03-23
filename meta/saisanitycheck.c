@@ -74,11 +74,11 @@ void check_all_enums_name_pointers()
 
     size_t i = 0;
 
-    META_ASSERT_TRUE(metadata_all_enums_count > 100, "we need to have some enums");
+    META_ASSERT_TRUE(sai_metadata_all_enums_count > 100, "we need to have some enums");
 
-    for (; i < metadata_all_enums_count; ++i)
+    for (; i < sai_metadata_all_enums_count; ++i)
     {
-        const sai_enum_metadata_t* emd = metadata_all_enums[i];
+        const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
 
         META_ASSERT_NOT_NULL(emd);
 
@@ -136,9 +136,9 @@ void check_all_enums_values()
 
     size_t i = 0;
 
-    for (; i < metadata_all_enums_count; ++i)
+    for (; i < sai_metadata_all_enums_count; ++i)
     {
-        const sai_enum_metadata_t* emd = metadata_all_enums[i];
+        const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
 
         META_LOG_INFO("enum: %s", emd->name);
 
@@ -201,17 +201,17 @@ void check_sai_status()
     META_LOG_ENTER();
 
     META_ASSERT_TRUE(SAI_STATUS_SUCCESS == 0, "success must be zero");
-    META_ASSERT_TRUE(metadata_enum_sai_status_t.valuescount > 1, "there must be error codes");
+    META_ASSERT_TRUE(sai_metadata_enum_sai_status_t.valuescount > 1, "there must be error codes");
 
     size_t i = 0;
 
     int last = 1;
 
-    for (; i < metadata_enum_sai_status_t.valuescount; ++i)
+    for (; i < sai_metadata_enum_sai_status_t.valuescount; ++i)
     {
-        META_LOG_INFO("status: %s", metadata_enum_sai_status_t.valuesnames[i]);
+        META_LOG_INFO("status: %s", sai_metadata_enum_sai_status_t.valuesnames[i]);
 
-        int value = metadata_enum_sai_status_t.values[i];
+        int value = sai_metadata_enum_sai_status_t.values[i];
 
         if (i == 0)
         {
@@ -236,11 +236,11 @@ void check_object_type()
 
     int last = -1; /* will enforce NULL be first */
 
-    for (; i < metadata_enum_sai_object_type_t.valuescount; ++i)
+    for (; i < sai_metadata_enum_sai_object_type_t.valuescount; ++i)
     {
-        META_LOG_INFO("object_type: %s", metadata_enum_sai_object_type_t.valuesnames[i]);
+        META_LOG_INFO("object_type: %s", sai_metadata_enum_sai_object_type_t.valuesnames[i]);
 
-        int value = metadata_enum_sai_object_type_t.values[i];
+        int value = sai_metadata_enum_sai_object_type_t.values[i];
 
         META_ASSERT_TRUE(value == last + 1, "object type values must be consecutive numbers");
 
@@ -252,17 +252,17 @@ void check_attr_by_object_type()
 {
     META_LOG_ENTER();
 
-    META_ASSERT_TRUE(metadata_attr_by_object_type_count == SAI_OBJECT_TYPE_MAX, "invalid object type count in metadata");
+    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == SAI_OBJECT_TYPE_MAX, "invalid object type count in metadata");
 
     size_t i = 0;
 
-    for (; i < metadata_attr_by_object_type_count; ++i)
+    for (; i < sai_metadata_attr_by_object_type_count; ++i)
     {
         META_LOG_INFO("processing %zu, %s", i, sai_metadata_get_object_type_name((sai_object_type_t)i));
 
-        META_ASSERT_NOT_NULL(metadata_attr_by_object_type[i]);
+        META_ASSERT_NOT_NULL(sai_metadata_attr_by_object_type[i]);
 
-        const sai_attr_metadata_t ** ot = metadata_attr_by_object_type[i];
+        const sai_attr_metadata_t ** ot = sai_metadata_attr_by_object_type[i];
 
         size_t index = 0;
 
@@ -283,7 +283,7 @@ void check_attr_by_object_type()
         META_LOG_INFO("attr index %zu for %s", index, sai_metadata_get_object_type_name((sai_object_type_t)i));
     }
 
-    META_ASSERT_NULL(metadata_attr_by_object_type[i]);
+    META_ASSERT_NULL(sai_metadata_attr_by_object_type[i]);
 }
 
 void check_attr_object_type(
@@ -303,7 +303,7 @@ void check_attr_value_type_range(
 {
     META_LOG_ENTER();
 
-    META_ASSERT_NOT_NULL(sai_metadata_get_enum_value_name(&metadata_enum_sai_attr_value_type_t, md->attrvaluetype));
+    META_ASSERT_NOT_NULL(sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_attr_value_type_t, md->attrvaluetype));
 }
 
 void check_attr_flags(
@@ -601,7 +601,7 @@ void check_attr_allowed_object_types(
             META_ASSERT_FAIL(md, "invalid allowed object type: %d", ot);
         }
 
-        const sai_object_type_info_t* info = sai_all_object_type_infos[ot];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[ot];
 
         META_ASSERT_NOT_NULL(info);
 
@@ -1752,7 +1752,7 @@ void check_attr_reverse_graph(
 
         sai_object_type_t depobjecttype = md->allowedobjecttypes[index];
 
-        const sai_object_type_info_t *oi = sai_all_object_type_infos[depobjecttype];
+        const sai_object_type_info_t *oi = sai_metadata_all_object_type_infos[depobjecttype];
 
         META_ASSERT_NOT_NULL(oi->revgraphmembers);
 
@@ -1813,8 +1813,8 @@ void check_attr_reverse_graph(
                             rm->attrmetadata->attrid == md->attrid)
                     {
                         META_LOG_INFO("dep %s ot %s attr %s\n",
-                                metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
-                                metadata_enum_sai_object_type_t.valuesnames[md->objecttype],
+                                sai_metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
+                                sai_metadata_enum_sai_object_type_t.valuesnames[md->objecttype],
                                 md->attridname);
 
                         defined = true;
@@ -1936,7 +1936,7 @@ void check_attr_existing_objects(
      * somewhere.
      */
 
-    if (sai_all_object_type_infos[md->objecttype]->isnonobjectid)
+    if (sai_metadata_all_object_type_infos[md->objecttype]->isnonobjectid)
     {
         return;
     }
@@ -2113,7 +2113,7 @@ void check_object_infos()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL)
         {
@@ -2191,7 +2191,7 @@ void check_non_object_id_object_types()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL)
         {
@@ -2297,7 +2297,7 @@ void check_non_object_id_object_types()
 
                         /* non object id struct can't contain object id which is also non object id */
 
-                        const sai_object_type_info_t* sinfo = sai_all_object_type_infos[ot];
+                        const sai_object_type_info_t* sinfo = sai_metadata_all_object_type_infos[ot];
 
                         META_ASSERT_NOT_NULL(sinfo);
 
@@ -2337,7 +2337,7 @@ void check_non_object_id_object_attrs()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL || !info->isnonobjectid)
         {
@@ -2380,12 +2380,12 @@ void check_attr_sorted_by_id_name()
 
     const char *last = "AAA";
 
-    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500,
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 500,
             "there should be at least 500 attributes in total");
 
-    for (; i < metadata_attr_sorted_by_id_name_count; ++i)
+    for (; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
     {
-        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+        const sai_attr_metadata_t *am = sai_metadata_attr_sorted_by_id_name[i];
 
         META_ASSERT_NOT_NULL(am);
 
@@ -2401,13 +2401,13 @@ void check_attr_sorted_by_id_name()
         last = name;
     }
 
-    META_ASSERT_NULL(metadata_attr_sorted_by_id_name[i]);
+    META_ASSERT_NULL(sai_metadata_attr_sorted_by_id_name[i]);
 
     /* check search */
 
-    for (i = 0; i < metadata_attr_sorted_by_id_name_count; ++i)
+    for (i = 0; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
     {
-        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+        const sai_attr_metadata_t *am = sai_metadata_attr_sorted_by_id_name[i];
 
         META_LOG_INFO("search for %s", am->attridname);
 
@@ -2436,20 +2436,20 @@ void list_loop(
     META_LOG_ENTER();
 
     META_WARN_LOG("LOOP DETECTED on object type: %s",
-            metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
+            sai_metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
 
     for (; levelidx < level; ++levelidx)
     {
         sai_object_type_t ot = visited[levelidx];
 
-        const char* ot_name = metadata_enum_sai_object_type_t.valuesnames[ot];
+        const char* ot_name = sai_metadata_enum_sai_object_type_t.valuesnames[ot];
 
         const sai_attr_metadata_t* m = sai_metadata_get_attr_metadata(ot, attributes[levelidx]);
 
         META_WARN_LOG(" %s: %s", ot_name, m->attridname);
     }
 
-    META_WARN_LOG(" -> %s", metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
+    META_WARN_LOG(" -> %s", sai_metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
 
     if (level >= 0)
     {
@@ -2536,7 +2536,7 @@ void check_objects_for_loops_recursive(
 
                     for (; j < m->allowedobjecttypeslength; ++j)
                     {
-                        const sai_object_type_info_t* next = sai_all_object_type_infos[ m->allowedobjecttypes[j] ];
+                        const sai_object_type_info_t* next = sai_metadata_all_object_type_infos[ m->allowedobjecttypes[j] ];
 
                         check_objects_for_loops_recursive(next, visited, attributes, level + 1);
                     }
@@ -2568,7 +2568,7 @@ void check_objects_for_loops_recursive(
 
             for (; k < m->allowedobjecttypeslength; k++)
             {
-                const sai_object_type_info_t* next = sai_all_object_type_infos[ m->allowedobjecttypes[k] ];
+                const sai_object_type_info_t* next = sai_metadata_all_object_type_infos[ m->allowedobjecttypes[k] ];
 
                 check_objects_for_loops_recursive(next, visited, attributes, level + 1);
             }
@@ -2592,7 +2592,7 @@ void check_objects_for_loops()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL)
         {
@@ -2640,7 +2640,7 @@ void check_read_only_attributes()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL)
         {
@@ -2680,7 +2680,7 @@ void check_read_only_attributes()
              */
 
             META_WARN_LOG("object %s has only READ_ONLY attributes",
-                    metadata_enum_sai_object_type_t.valuesnames[i]);
+                    sai_metadata_enum_sai_object_type_t.valuesnames[i]);
         }
     }
 }
@@ -2695,13 +2695,13 @@ void check_mixed_object_list_types()
      * be supported.
      */
 
-    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500, "there should be at least 500 attributes in total");
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 500, "there should be at least 500 attributes in total");
 
     size_t idx = 0;
 
-    for (; idx < metadata_attr_sorted_by_id_name_count; ++idx)
+    for (; idx < sai_metadata_attr_sorted_by_id_name_count; ++idx)
     {
-        const sai_attr_metadata_t* meta = metadata_attr_sorted_by_id_name[idx];
+        const sai_attr_metadata_t* meta = sai_metadata_attr_sorted_by_id_name[idx];
 
         switch (meta->attrvaluetype)
         {
@@ -2986,7 +2986,7 @@ void check_api_names()
         if (checked[index] != (sai_object_type_t)index)
         {
             META_FAIL("object %s (%d) was not added to check",
-                    metadata_enum_sai_object_type_t.valuesnames[index], index);
+                    sai_metadata_enum_sai_object_type_t.valuesnames[index], index);
         }
     }
 }
@@ -3003,7 +3003,7 @@ void check_single_non_object_id_for_rev_graph(
      * member.
      */
 
-    const sai_object_type_info_t *oi = sai_all_object_type_infos[depobjecttype];
+    const sai_object_type_info_t *oi = sai_metadata_all_object_type_infos[depobjecttype];
 
     META_ASSERT_NOT_NULL(oi->revgraphmembers);
 
@@ -3064,8 +3064,8 @@ void check_single_non_object_id_for_rev_graph(
                 if (rm->structmember->allowedobjecttypes[i] == depobjecttype)
                 {
                     META_LOG_INFO("dep %s ot %s attr %s\n",
-                            metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
-                            metadata_enum_sai_object_type_t.valuesnames[objecttype],
+                            sai_metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
+                            sai_metadata_enum_sai_object_type_t.valuesnames[objecttype],
                             sm->membername);
 
                     defined = true;
@@ -3116,7 +3116,7 @@ void check_reverse_graph_for_non_object_id()
     {
         sai_object_type_t objecttype = (sai_object_type_t)i;
 
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL || !info->isnonobjectid)
         {
@@ -3174,7 +3174,7 @@ void check_vlan_attributes()
      * iterating each time.
      */
 
-    const sai_attr_metadata_t** const meta = sai_object_type_info_SAI_OBJECT_TYPE_VLAN.attrmetadata;
+    const sai_attr_metadata_t** const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_VLAN.attrmetadata;
 
     size_t index = 0;
 
@@ -3241,8 +3241,8 @@ void check_acl_table_fields_and_acl_entry_fields()
      * find both attribute fields start for entry and table
      */
 
-    const sai_attr_metadata_t **meta_acl_table = sai_object_type_info_SAI_OBJECT_TYPE_ACL_TABLE.attrmetadata;
-    const sai_attr_metadata_t **meta_acl_entry = sai_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+    const sai_attr_metadata_t **meta_acl_table = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_TABLE.attrmetadata;
+    const sai_attr_metadata_t **meta_acl_entry = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
 
     int acl_table_field_index = 0;
 
@@ -3368,7 +3368,7 @@ void check_acl_entry_actions()
      * find both attribute fields start for entry and table
      */
 
-    const sai_attr_metadata_t **meta_acl_entry = sai_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+    const sai_attr_metadata_t **meta_acl_entry = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
 
     size_t index = 0;
 
@@ -3407,7 +3407,7 @@ void check_acl_entry_actions()
             META_ASSERT_FAIL(meta, "acl entry action flags should be CREATE_AND_SET");
         }
 
-        const char* enum_name = metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
+        const char* enum_name = sai_metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
 
         META_ASSERT_NOT_NULL(enum_name);
 
@@ -3435,7 +3435,7 @@ void check_acl_entry_actions()
         enum_index++;
     }
 
-    META_ASSERT_TRUE(enum_index == metadata_enum_sai_acl_action_type_t.valuescount,
+    META_ASSERT_TRUE(enum_index == sai_metadata_enum_sai_acl_action_type_t.valuescount,
             "number of acl entry action mismatch vs number of enums in sai_acl_action_type_t");
 }
 
@@ -3450,7 +3450,7 @@ void check_switch_create_only_objects()
      * other object so setting that object on create will be impossible.
      */
 
-    const sai_attr_metadata_t** const meta = sai_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
+    const sai_attr_metadata_t** const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
 
     size_t index = 0;
 
@@ -3504,7 +3504,7 @@ void check_api_max()
 {
     META_LOG_ENTER();
 
-    META_ASSERT_TRUE(metadata_enum_sai_api_t.valuescount == SAI_API_MAX,
+    META_ASSERT_TRUE(sai_metadata_enum_sai_api_t.valuescount == SAI_API_MAX,
             "SAI_API_MAX should be equal to number of SAI_API*");
 }
 
@@ -3522,9 +3522,9 @@ int main(int argc, char **argv)
 
     size_t i = 0;
 
-    for (; i < metadata_attr_by_object_type_count; ++i)
+    for (; i < sai_metadata_attr_by_object_type_count; ++i)
     {
-        check_single_object_type_attributes(metadata_attr_by_object_type[i]);
+        check_single_object_type_attributes(sai_metadata_attr_by_object_type[i]);
     }
 
     check_object_infos();
@@ -3547,7 +3547,7 @@ int main(int argc, char **argv)
 
     for (; i < SAI_OBJECT_TYPE_MAX; ++i)
     {
-        check_single_object_info(sai_all_object_type_infos[i]);
+        check_single_object_info(sai_metadata_all_object_type_infos[i]);
     }
 
     SAI_META_LOG_DEBUG("log test");
