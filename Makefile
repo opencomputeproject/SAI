@@ -25,10 +25,10 @@ doc:
 test:
 	make -C test
 
-saithrift:
+saithrift-build:
 	make -C test/saithrift
 
-saithrift-install: saithrift
+saithrift-install: saithrift-build
 	make -C test/saithrift install
 
 clean:

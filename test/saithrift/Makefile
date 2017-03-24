@@ -80,11 +80,11 @@ saiserver: $(ODIR)/saiserver.o $(ODIR)/librpcserver.a
 		   $(ODIR)/librpcserver.a $(LIBS) -lsai
 
 install-lib: $(ODIR)/librpcserver.a 
-	$(INSTALL) -D $(ODIR)/librpcserver.a $(DESTDIR)/usr/lib
-	$(INSTALL) -D $(SRC)/switch_sai_rpc_server.h $(DESTDIR)/usr/include
+	$(INSTALL) -D $(ODIR)/librpcserver.a $(DESTDIR)/usr/lib/librpcserver.a
+	$(INSTALL) -D $(SRC)/switch_sai_rpc_server.h $(DESTDIR)/usr/include/switch_sai_rpc_server.h
 
 install-pylib: $(PY_SOURCES) $(SAI_PY_HEADERS)
-	python setup.py install
+	python setup.py install --prefix $(DESTDIR)/usr/local$(prefix)
 
 install: install-lib install-pylib
 

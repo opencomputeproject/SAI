@@ -1,14 +1,9 @@
-Source: SAI
+Source: saithrift
 Maintainer: Pavel Shirshov <pavelsh@microsoft.com>
 Section: net
 Priority: optional
 Build-Depends: dh-exec (>=0.3), debhelper (>= 9)
 Standards-Version: 0.9.4
-
-Package: libsaithrift
-Architecture: any
-Depends: ${shlibs:Depends}
-Description: This package contains SAI rpc library.
 
 Package: libsaithrift-dev
 Architecture: any

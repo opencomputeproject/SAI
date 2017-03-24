@@ -20,4 +20,17 @@ include /usr/share/dpkg/default.mk
 
 # main packaging script based on dh7 syntax
 %:
-    dh $@
+	dh $@
+
+override_dh_auto_build:
+	$(MAKE) DESTDIR=$(CURDIR)/debian saithrift-build 
+
+override_dh_auto_install:
+	$(MAKE) DESTDIR=$(CURDIR)/debian saithrift-install
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf *.egg-info
+
