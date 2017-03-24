@@ -44,6 +44,7 @@ SAI_PY_HEADERS = \
                 src/gen-py/switch_sai/sai_headers.py
 
 MKDIR_P = mkdir -p
+INSTALL := /usr/bin/install
 
 all: directories $(ODIR)/librpcserver.a saiserver clientlib
 
@@ -77,6 +78,15 @@ $(ODIR)/librpcserver.a: $(ODIR)/switch_sai_rpc.o $(ODIR)/switch_sai_types.o $(OD
 saiserver: $(ODIR)/saiserver.o $(ODIR)/librpcserver.a
 	$(CXX) $(ODIR)/switch_sai_rpc_server.o $(ODIR)/saiserver.o -o $@ \
 		   $(ODIR)/librpcserver.a $(LIBS) -lsai
+
+install-lib: $(ODIR)/librpcserver.a 
+	$(INSTALL) -D $(ODIR)/librpcserver.a $(DESTDIR)/usr/lib
+	$(INSTALL) -D $(SRC)/switch_sai_rpc_server.h $(DESTDIR)/usr/include
+
+install-pylib: $(PY_SOURCES) $(SAI_PY_HEADERS)
+	python setup.py install
+
+install: install-lib install-pylib
 
 clean:
 	rm -rf $(ODIR) $(SRC)/gen-cpp $(SRC)/gen-py saiserver dist
