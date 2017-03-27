@@ -1234,7 +1234,7 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id, v4_enabled, v6_enabled, mac1)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_oid, v4_enabled, v6_enabled, mac1)
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac2)
 
         sai_thrift_create_fdb(self.client, vlan_id, dmac1, port1, mac_action)
