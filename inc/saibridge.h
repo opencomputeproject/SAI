@@ -108,6 +108,8 @@ typedef enum _sai_bridge_port_attr_t
     /**
      * @brief Associated Port or LAG object id
      *
+     * The CPU port is not a member of any bridge.
+     *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
