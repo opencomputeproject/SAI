@@ -1017,6 +1017,11 @@ typedef struct _sai_object_type_info_t
     bool                                    isnonobjectid;
 
     /**
+     * @brief Indicates if object is oid object id
+     */
+    bool                                    isobjectid;
+
+    /**
      * @brief Defines all struct members
      */
     const sai_struct_member_info_t** const  structmembers;

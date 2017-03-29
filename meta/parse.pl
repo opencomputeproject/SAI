@@ -2135,6 +2135,7 @@ sub CreateObjectInfo
         WriteSource "    .enummetadata       = $enum,";
         WriteSource "    .attrmetadata       = metadata_object_type_$type,";
         WriteSource "    .isnonobjectid      = $isnonobjectid,";
+        WriteSource "    .isobjectid         = !$isnonobjectid,";
         WriteSource "    .structmembers      = $structmembers,";
         WriteSource "    .structmemberscount = $structmemberscount,";
         WriteSource "    .revgraphmembers    = $revgraph,";

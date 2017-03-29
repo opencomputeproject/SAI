@@ -3492,12 +3492,26 @@ void check_quad_api_pointers(
     }
 }
 
+void check_object_id_non_object_id(
+    _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this test is to check whether isobjectid and isnonobject id
+     * have oposite values.
+     */
+
+    META_ASSERT_TRUE(oi->isnonobjectid == !oi->isobjectid, "non object id object id not match");
+}
+
 void check_single_object_info(
     _In_ const sai_object_type_info_t *oi)
 {
     META_LOG_ENTER();
 
     check_quad_api_pointers(oi);
+    check_object_id_non_object_id(oi);
 }
 
 void check_api_max()
