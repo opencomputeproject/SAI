@@ -16,7 +16,10 @@ my $INCLUDEDIR = "../inc/";
 my %SAI_ENUMS = ();
 my %METADATA = ();
 my %STRUCTS = ();
-my %options =();
+my %options = ();
+
+# pointers used in switch object for notifications
+my @pointers = ();
 
 my @TESTNAMES= ();
 
@@ -643,8 +646,8 @@ sub ProcessSingleEnum
 
     my @values = @{$enum->{values}};
 
-    WriteSource "const char metadata_${typedef}_enum_name[] = \"$typedef\";";
-    WriteSource "const $typedef metadata_${typedef}_enum_values[] = {";
+    WriteSource "const char sai_metadata_${typedef}_enum_name[] = \"$typedef\";";
+    WriteSource "const $typedef sai_metadata_${typedef}_enum_values[] = {";
 
     for my $value (@values)
     {
@@ -655,7 +658,7 @@ sub ProcessSingleEnum
 
     WriteSource "};";
 
-    WriteSource "const char* metadata_${typedef}_enum_values_names[] = {";
+    WriteSource "const char* sai_metadata_${typedef}_enum_values_names[] = {";
 
     for my $value (@values)
     {
@@ -665,7 +668,7 @@ sub ProcessSingleEnum
     WriteSource "    NULL";
     WriteSource "};";
 
-    WriteSource "const char* metadata_${typedef}_enum_values_short_names[] = {";
+    WriteSource "const char* sai_metadata_${typedef}_enum_values_short_names[] = {";
 
     for my $value (@values)
     {
@@ -679,7 +682,7 @@ sub ProcessSingleEnum
 
     my $count = $#values + 1;
 
-    WriteSource "const size_t metadata_${typedef}_enum_values_count = $count;";
+    WriteSource "const size_t sai_metadata_${typedef}_enum_values_count = $count;";
 
     return $count;
 }
@@ -710,12 +713,12 @@ sub CreateMetadataHeaderAndSource
     WriteSource "#include \"saimetadata.h\"";
 
     WriteSource "#define DEFINE_ENUM_METADATA(x,count)\\";
-    WriteSource "const sai_enum_metadata_t metadata_enum_ ## x = {\\";
-    WriteSource "    .name              = metadata_ ## x ## _enum_name,\\";
+    WriteSource "const sai_enum_metadata_t sai_metadata_enum_ ## x = {\\";
+    WriteSource "    .name              = sai_metadata_ ## x ## _enum_name,\\";
     WriteSource "    .valuescount       = count,\\";
-    WriteSource "    .values            = (const int*)metadata_ ## x ## _enum_values,\\";
-    WriteSource "    .valuesnames       = metadata_ ## x ## _enum_values_names,\\";
-    WriteSource "    .valuesshortnames  = metadata_ ## x ## _enum_values_short_names,\\";
+    WriteSource "    .values            = (const int*)sai_metadata_ ## x ## _enum_values,\\";
+    WriteSource "    .valuesnames       = sai_metadata_ ## x ## _enum_values_names,\\";
+    WriteSource "    .valuesshortnames  = sai_metadata_ ## x ## _enum_values_short_names,\\";
     WriteSource "};";
 
     for my $key (sort keys %SAI_ENUMS)
@@ -728,14 +731,14 @@ sub CreateMetadataHeaderAndSource
 
         my $count = ProcessSingleEnum($key, $1, uc $2);
 
-        WriteHeader "extern const sai_enum_metadata_t metadata_enum_$1;";
+        WriteHeader "extern const sai_enum_metadata_t sai_metadata_enum_$1;";
         WriteSource "DEFINE_ENUM_METADATA($1, $count);";
     }
 
     # all enums
 
-    WriteHeader "extern const sai_enum_metadata_t* metadata_all_enums[];";
-    WriteSource "const sai_enum_metadata_t* metadata_all_enums[] = {";
+    WriteHeader "extern const sai_enum_metadata_t* sai_metadata_all_enums[];";
+    WriteSource "const sai_enum_metadata_t* sai_metadata_all_enums[] = {";
 
     for my $key (sort keys %SAI_ENUMS)
     {
@@ -747,7 +750,7 @@ sub CreateMetadataHeaderAndSource
 
         my $typedef = $1;
 
-        WriteSource "    &metadata_enum_$typedef,";
+        WriteSource "    &sai_metadata_enum_$typedef,";
     }
 
     WriteSource "    NULL";
@@ -755,11 +758,11 @@ sub CreateMetadataHeaderAndSource
 
     my $count = keys %SAI_ENUMS;
 
-    WriteHeader "extern const size_t metadata_all_enums_count;";
-    WriteSource "const size_t metadata_all_enums_count = $count;";
+    WriteHeader "extern const size_t sai_metadata_all_enums_count;";
+    WriteSource "const size_t sai_metadata_all_enums_count = $count;";
 
-    WriteHeader "extern const sai_enum_metadata_t* metadata_attr_enums[];";
-    WriteSource "const sai_enum_metadata_t* metadata_attr_enums[] = {";
+    WriteHeader "extern const sai_enum_metadata_t* sai_metadata_attr_enums[];";
+    WriteSource "const sai_enum_metadata_t* sai_metadata_attr_enums[] = {";
 
     $count = 0;
 
@@ -772,7 +775,7 @@ sub CreateMetadataHeaderAndSource
 
         my $typedef = $1;
 
-        WriteSource "    &metadata_enum_$typedef,";
+        WriteSource "    &sai_metadata_enum_$typedef,";
 
         $count++;
     }
@@ -780,12 +783,12 @@ sub CreateMetadataHeaderAndSource
     WriteSource "    NULL";
     WriteSource "};";
 
-    WriteHeader "extern const size_t metadata_attr_enums_count;";
-    WriteSource "const size_t metadata_attr_enums_count = $count;";
+    WriteHeader "extern const size_t sai_metadata_attr_enums_count;";
+    WriteSource "const size_t sai_metadata_attr_enums_count = $count;";
 
     # attr enums as object types for sanity check
 
-    WriteSource "const sai_object_type_t metadata_object_types[] = {";
+    WriteSource "const sai_object_type_t sai_metadata_object_types[] = {";
 
     for my $key (sort keys %SAI_ENUMS)
     {
@@ -922,7 +925,7 @@ sub ProcessObjects
 
     return "NULL" if not defined $objects;
 
-    WriteSource "const sai_object_type_t metadata_${attr}_allowed_objects[] = {";
+    WriteSource "const sai_object_type_t sai_metadata_${attr}_allowed_objects[] = {";
 
     my @all = @{ $SAI_ENUMS{sai_object_type_t}{values} };
 
@@ -938,7 +941,7 @@ sub ProcessObjects
 
     WriteSource "};";
 
-    return "metadata_${attr}_allowed_objects";
+    return "sai_metadata_${attr}_allowed_objects";
 }
 
 sub ProcessObjectsLen
@@ -985,7 +988,7 @@ sub ProcessDefaultValue
 
     return "NULL" if not defined $default;
 
-    my $val = "const sai_attribute_value_t metadata_${attr}_default_value";
+    my $val = "const sai_attribute_value_t sai_metadata_${attr}_default_value";
 
     if ($default =~ /^(true|false)$/ and $type eq "bool")
     {
@@ -1015,7 +1018,7 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .$VALUE_TYPES{$1} = $default };";
 
-        WriteSource "$2 var_$2 = NULL;";
+        push @pointers,$2;
     }
     elsif ($default =~ /^(attrvalue|attrrange|vendor|empty|const|internal)/)
     {
@@ -1036,7 +1039,7 @@ sub ProcessDefaultValue
         LogError "invalid default value '$default' on $attr ($type)";
     }
 
-    return "&metadata_${attr}_default_value";
+    return "&sai_metadata_${attr}_default_value";
 }
 
 sub ProcessDefaultValueObjectType
@@ -1091,10 +1094,10 @@ sub ProcessEnumMetadata
 
     return "NULL" if not defined $type;
 
-    return "&metadata_enum_$1" if $type =~ /^(sai_\w+_t)$/ and not defined $VALUE_TYPES{$type};
-    return "&metadata_enum_$1" if $type =~ /^sai_acl_field_data_t (sai_\w+_t)$/ and not defined $ACL_FIELD_TYPES{$1};
-    return "&metadata_enum_$1" if $type =~ /^sai_acl_action_data_t (sai_\w+_t)$/ and not defined $ACL_ACTION_TYPES{$1};
-    return "&metadata_enum_$1" if $type =~ /^sai_s32_list_t (sai_\w+_t)$/;
+    return "&sai_metadata_enum_$1" if $type =~ /^(sai_\w+_t)$/ and not defined $VALUE_TYPES{$type};
+    return "&sai_metadata_enum_$1" if $type =~ /^sai_acl_field_data_t (sai_\w+_t)$/ and not defined $ACL_FIELD_TYPES{$1};
+    return "&sai_metadata_enum_$1" if $type =~ /^sai_acl_action_data_t (sai_\w+_t)$/ and not defined $ACL_ACTION_TYPES{$1};
+    return "&sai_metadata_enum_$1" if $type =~ /^sai_s32_list_t (sai_\w+_t)$/;
 
     return "NULL";
 }
@@ -1163,7 +1166,7 @@ sub ProcessConditions
             return "";
         }
 
-        WriteSource "const sai_attr_condition_t metadata_condition_${attr}_$count = {";
+        WriteSource "const sai_attr_condition_t sai_metadata_condition_${attr}_$count = {";
 
         if ($val eq "true" or $val eq "false")
         {
@@ -1181,13 +1184,13 @@ sub ProcessConditions
         $count++;
     }
 
-    WriteSource "const sai_attr_condition_t* metadata_conditions_${attr}\[\] = {";
+    WriteSource "const sai_attr_condition_t* sai_metadata_conditions_${attr}\[\] = {";
 
     $count = 0;
 
     for my $cond (@conditions)
     {
-        WriteSource "    &metadata_condition_${attr}_$count,";
+        WriteSource "    &sai_metadata_condition_${attr}_$count,";
 
         $count++;
     }
@@ -1196,7 +1199,7 @@ sub ProcessConditions
 
     WriteSource "};";
 
-    return "metadata_conditions_${attr}";
+    return "sai_metadata_conditions_${attr}";
 }
 
 sub ProcessConditionsLen
@@ -1251,7 +1254,7 @@ sub ProcessValidOnly
             return "";
         }
 
-        WriteSource "const sai_attr_condition_t metadata_validonly_${attr}_$count = {";
+        WriteSource "const sai_attr_condition_t sai_metadata_validonly_${attr}_$count = {";
 
         if ($val eq "true" or $val eq "false")
         {
@@ -1269,13 +1272,13 @@ sub ProcessValidOnly
         $count++;
     }
 
-    WriteSource "const sai_attr_condition_t* metadata_validonly_${attr}\[\] = {";
+    WriteSource "const sai_attr_condition_t* sai_metadata_validonly_${attr}\[\] = {";
 
     $count = 0;
 
     for my $cond (@conditions)
     {
-        WriteSource "    &metadata_validonly_${attr}_$count,";
+        WriteSource "    &sai_metadata_validonly_${attr}_$count,";
 
         $count++;
     }
@@ -1284,7 +1287,7 @@ sub ProcessValidOnly
 
     WriteSource "};";
 
-    return "metadata_validonly_${attr}";
+    return "sai_metadata_validonly_${attr}";
 }
 
 sub ProcessValidOnlyLen
@@ -1397,7 +1400,7 @@ sub ProcessSingleObjectType
         my $isaclfield      = ProcessIsAclField($attr);
         my $isaclaction     = ProcessIsAclAction($attr);
 
-        WriteSource "const sai_attr_metadata_t metadata_attr_$attr = {";
+        WriteSource "const sai_attr_metadata_t sai_metadata_attr_$attr = {";
 
         WriteSource "    .objecttype                    = $objecttype,";
         WriteSource "    .attrid                        = $attr,";
@@ -1547,7 +1550,7 @@ sub CreateMetadataForAttributes
             $SAI_ENUMS{$type}{values} = \@empty;
         }
 
-        WriteSource "const sai_attr_metadata_t* metadata_object_type_$type\[\] = {";
+        WriteSource "const sai_attr_metadata_t* sai_metadata_object_type_$type\[\] = {";
 
         my @values = @{ $SAI_ENUMS{$type}{values} };
 
@@ -1555,15 +1558,15 @@ sub CreateMetadataForAttributes
         {
             next if defined $METADATA{$type}{$value}{ignore};
 
-            WriteSource "    &metadata_attr_$value,";
+            WriteSource "    &sai_metadata_attr_$value,";
         }
 
         WriteSource "    NULL";
         WriteSource "};";
     }
 
-    WriteHeader "extern const sai_attr_metadata_t** metadata_attr_by_object_type[];";
-    WriteSource "const sai_attr_metadata_t** metadata_attr_by_object_type[] = {";
+    WriteHeader "extern const sai_attr_metadata_t** sai_metadata_attr_by_object_type[];";
+    WriteSource "const sai_attr_metadata_t** sai_metadata_attr_by_object_type[] = {";
 
     for my $ot (@objects)
     {
@@ -1575,7 +1578,7 @@ sub CreateMetadataForAttributes
 
         my $type = "sai_" . lc($1) . "_attr_t";
 
-        WriteSource "    metadata_object_type_$type,";
+        WriteSource "    sai_metadata_object_type_$type,";
     }
 
     WriteSource "    NULL";
@@ -1583,8 +1586,8 @@ sub CreateMetadataForAttributes
 
     my $count = $#objects + 1;
 
-    WriteHeader "extern const size_t metadata_attr_by_object_type_count;";
-    WriteSource "const size_t metadata_attr_by_object_type_count = $count;";
+    WriteHeader "extern const size_t sai_metadata_attr_by_object_type_count;";
+    WriteSource "const size_t sai_metadata_attr_by_object_type_count = $count;";
 }
 
 sub CreateEnumHelperMethods
@@ -1598,7 +1601,7 @@ sub CreateEnumHelperMethods
         WriteSource "const char* sai_metadata_get_$1_name(";
         WriteSource "        _In_ $key value)";
         WriteSource "{";
-        WriteSource "    return sai_metadata_get_enum_value_name(&metadata_enum_$key, value);";
+        WriteSource "    return sai_metadata_get_enum_value_name(&sai_metadata_enum_$key, value);";
         WriteSource "}";
 
         WriteHeader "extern const char* sai_metadata_get_$1_name(";
@@ -1648,7 +1651,7 @@ sub ProcessStructObjects
 
     return "NULL" if not $type eq "sai_object_id_t";
 
-    WriteSource "const sai_object_type_t metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects[] = {";
+    WriteSource "const sai_object_type_t sai_metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects[] = {";
 
     my $objects = $struct->{objects};
 
@@ -1659,7 +1662,7 @@ sub ProcessStructObjects
 
     WriteSource "};";
 
-    return "metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects";
+    return "sai_metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects";
 }
 
 sub ProcessStructObjectLen
@@ -1681,7 +1684,7 @@ sub ProcessStructEnumData
 {
     my $type = shift;
 
-    return "&metadata_enum_$type" if $type =~ /^sai_\w+_type_t$/; # enum
+    return "&sai_metadata_enum_$type" if $type =~ /^sai_\w+_type_t$/; # enum
 
     return "NULL";
 }
@@ -1701,7 +1704,7 @@ sub ProcessStructGetOid
 
     return "NULL" if $type ne "sai_object_id_t";
 
-    my $fname = "struct_member_get_sai_${rawname}_t_${key}";
+    my $fname = "sai_metadata_struct_member_get_sai_${rawname}_t_${key}";
 
     WriteSource "sai_object_id_t $fname(";
     WriteSource "        _In_ const sai_object_meta_key_t *object_meta_key)";
@@ -1718,7 +1721,7 @@ sub ProcessStructSetOid
 
     return "NULL" if $type ne "sai_object_id_t";
 
-    my $fname = "struct_member_set_sai_${rawname}_t_${key}";
+    my $fname = "sai_metadata_struct_member_set_sai_${rawname}_t_${key}";
 
     WriteSource "void $fname(";
     WriteSource "        _Inout_ sai_object_meta_key_t *object_meta_key,";
@@ -1749,7 +1752,7 @@ sub ProcessStructMembers
         my $getoid      = ProcessStructGetOid($struct->{$key}{type}, $key, $rawname);
         my $setoid      = ProcessStructSetOid($struct->{$key}{type}, $key, $rawname);
 
-        WriteSource "const sai_struct_member_info_t struct_member_sai_${rawname}_t_$key = {";
+        WriteSource "const sai_struct_member_info_t sai_metadata_struct_member_sai_${rawname}_t_$key = {";
 
         WriteSource "    .membervaluetype           = $valuetype,";
         WriteSource "    .membername                = \"$key\",";
@@ -1766,17 +1769,17 @@ sub ProcessStructMembers
         WriteSource "};";
     }
 
-    WriteSource "const sai_struct_member_info_t* struct_members_sai_${rawname}_t[] = {";
+    WriteSource "const sai_struct_member_info_t* sai_metadata_struct_members_sai_${rawname}_t[] = {";
 
     for my $key (@keys)
     {
-        WriteSource "    &struct_member_sai_${rawname}_t_$key,";
+        WriteSource "    &sai_metadata_struct_member_sai_${rawname}_t_$key,";
     }
 
     WriteSource "    NULL";
     WriteSource "};";
 
-    return "struct_members_sai_${rawname}_t";
+    return "sai_metadata_struct_members_sai_${rawname}_t";
 }
 
 sub ProcessStructMembersCount
@@ -1828,7 +1831,7 @@ sub ProcessRevGraph
     {
         my ($depObjectType, $attrId) = split/,/,$dep;
 
-        my $membername = "metadata_${objectType}_rev_graph_member_$index";
+        my $membername = "sai_metadata_${objectType}_rev_graph_member_$index";
 
         push@membernames,$membername;
 
@@ -1841,7 +1844,7 @@ sub ProcessRevGraph
         {
             # this is attribute
 
-            WriteSource "    .attrmetadata        = &metadata_attr_$attrId,";
+            WriteSource "    .attrmetadata        = &sai_metadata_attr_$attrId,";
             WriteSource "    .structmember        = NULL,";
         }
         else
@@ -1851,7 +1854,7 @@ sub ProcessRevGraph
             my $DEPOT = lc ($1) if $depObjectType =~ /SAI_OBJECT_TYPE_(\w+)/;
 
             WriteSource "    .attrmetadata        = NULL,";
-            WriteSource "    .structmember        = &struct_member_sai_${DEPOT}_t_$attrId,";
+            WriteSource "    .structmember        = &sai_metadata_struct_member_sai_${DEPOT}_t_$attrId,";
         }
 
         WriteSource "};";
@@ -1859,7 +1862,7 @@ sub ProcessRevGraph
         $index++;
     }
 
-    WriteSource "const sai_rev_graph_member_t* metadata_${objectType}_rev_graph_members[] = {";
+    WriteSource "const sai_rev_graph_member_t* sai_metadata_${objectType}_rev_graph_members[] = {";
 
     for my $mn (@membernames)
     {
@@ -1870,7 +1873,7 @@ sub ProcessRevGraph
 
     WriteSource "};";
 
-    return "metadata_${objectType}_rev_graph_members";
+    return "sai_metadata_${objectType}_rev_graph_members";
 }
 
 sub CreateStructNonObjectId
@@ -1889,7 +1892,7 @@ sub CreateStructNonObjectId
 
         my $type = "sai_" . lc($1) . "_attr_t";
 
-        my $enum  = "&metadata_enum_${type}";
+        my $enum  = "&sai_metadata_enum_${type}";
 
         my $struct = $STRUCTS{$ot};
 
@@ -1903,7 +1906,7 @@ sub ProcessStructMembersName
 
     return "NULL" if not defined $struct;
 
-    return "struct_members_sai_${rawname}_t";
+    return "sai_metadata_struct_members_sai_${rawname}_t";
 }
 
 sub ProcessCreate
@@ -1915,7 +1918,7 @@ sub ProcessCreate
 
     my $api = $OBJTOAPIMAP{$ot};
 
-    WriteSource "sai_status_t sai_meta_generic_create_$ot(";
+    WriteSource "sai_status_t sai_metadata_generic_create_$ot(";
     WriteSource "        _Inout_ sai_object_meta_key_t *meta_key,";
     WriteSource "        _In_ sai_object_id_t switch_id,";
     WriteSource "        _In_ uint32_t attr_count,";
@@ -1940,7 +1943,7 @@ sub ProcessCreate
 
     WriteSource "}";
 
-    return "sai_meta_generic_create_$ot";
+    return "sai_metadata_generic_create_$ot";
 }
 
 sub ProcessRemove
@@ -1952,7 +1955,7 @@ sub ProcessRemove
 
     my $api = $OBJTOAPIMAP{$ot};
 
-    WriteSource "sai_status_t sai_meta_generic_remove_$ot(";
+    WriteSource "sai_status_t sai_metadata_generic_remove_$ot(";
     WriteSource "        _In_ const sai_object_meta_key_t *meta_key)";
     WriteSource "{";
 
@@ -1967,7 +1970,7 @@ sub ProcessRemove
 
     WriteSource "}";
 
-    return "sai_meta_generic_remove_$ot";
+    return "sai_metadata_generic_remove_$ot";
 }
 
 sub ProcessSet
@@ -1979,7 +1982,7 @@ sub ProcessSet
 
     my $api = $OBJTOAPIMAP{$ot};
 
-    WriteSource "sai_status_t sai_meta_generic_set_$ot(";
+    WriteSource "sai_status_t sai_metadata_generic_set_$ot(";
     WriteSource "        _In_ const sai_object_meta_key_t *meta_key,";
     WriteSource "        _In_ const sai_attribute_t *attr)";
     WriteSource "{";
@@ -1995,7 +1998,7 @@ sub ProcessSet
 
     WriteSource "}";
 
-    return "sai_meta_generic_set_$ot";
+    return "sai_metadata_generic_set_$ot";
 }
 
 sub ProcessGet
@@ -2007,7 +2010,7 @@ sub ProcessGet
 
     my $api = $OBJTOAPIMAP{$ot};
 
-    WriteSource "sai_status_t sai_meta_generic_get_$ot(";
+    WriteSource "sai_status_t sai_metadata_generic_get_$ot(";
     WriteSource "        _In_ const sai_object_meta_key_t *meta_key,";
     WriteSource "        _In_ uint32_t attr_count,";
     WriteSource "        _Inout_ sai_attribute_t *attr_list)";
@@ -2024,7 +2027,7 @@ sub ProcessGet
 
     WriteSource "}";
 
-    return "sai_meta_generic_get_$ot";
+    return "sai_metadata_generic_get_$ot";
 }
 
 sub CreateApis
@@ -2042,7 +2045,7 @@ sub CreateApisQuery
     WriteHeader "        _In_ sai_api_t sai_api_id,";
     WriteHeader "        _Out_ void** api_method_table);";
 
-    WriteSource "int sai_meta_apis_query(";
+    WriteSource "int sai_metadata_apis_query(";
     WriteSource "    _In_ const sai_api_query_fn api_query)";
     WriteSource "{";
     WriteSource "    sai_status_t status = SAI_STATUS_SUCCESS;";
@@ -2071,7 +2074,7 @@ sub CreateApisQuery
 
     WriteSource "}";
 
-    WriteHeader "extern int sai_meta_apis_query(";
+    WriteHeader "extern int sai_metadata_apis_query(";
     WriteHeader "    _In_ const sai_api_query_fn api_query);";
 }
 
@@ -2094,7 +2097,7 @@ sub CreateObjectInfo
         my $start = "SAI_" . uc($1) . "_ATTR_START";
         my $end   = "SAI_" . uc($1) . "_ATTR_END";
 
-        my $enum  = "&metadata_enum_${type}";
+        my $enum  = "&sai_metadata_enum_${type}";
 
         my $struct = $STRUCTS{$ot};
 
@@ -2125,15 +2128,15 @@ sub CreateObjectInfo
             $get = ProcessGet($struct, $ot);
         }
 
-        WriteHeader "extern const sai_object_type_info_t sai_object_type_info_$ot;";
+        WriteHeader "extern const sai_object_type_info_t sai_metadata_object_type_info_$ot;";
 
-        WriteSource "const sai_object_type_info_t sai_object_type_info_$ot = {";
+        WriteSource "const sai_object_type_info_t sai_metadata_object_type_info_$ot = {";
         WriteSource "    .objecttype         = $ot,";
         WriteSource "    .objecttypename     = \"$ot\",";
         WriteSource "    .attridstart        = $start,";
         WriteSource "    .attridend          = $end,";
         WriteSource "    .enummetadata       = $enum,";
-        WriteSource "    .attrmetadata       = metadata_object_type_$type,";
+        WriteSource "    .attrmetadata       = sai_metadata_object_type_$type,";
         WriteSource "    .isnonobjectid      = $isnonobjectid,";
         WriteSource "    .isobjectid         = !$isnonobjectid,";
         WriteSource "    .structmembers      = $structmembers,";
@@ -2146,9 +2149,9 @@ sub CreateObjectInfo
         WriteSource "};";
     }
 
-    WriteHeader "extern const sai_object_type_info_t* sai_all_object_type_infos[];";
+    WriteHeader "extern const sai_object_type_info_t* sai_metadata_all_object_type_infos[];";
 
-    WriteSource "const sai_object_type_info_t* sai_all_object_type_infos[] = {";
+    WriteSource "const sai_object_type_info_t* sai_metadata_all_object_type_infos[] = {";
 
     for my $ot (@objects)
     {
@@ -2164,7 +2167,7 @@ sub CreateObjectInfo
             next;
         }
 
-        WriteSource "    &sai_object_type_info_$ot,";
+        WriteSource "    &sai_metadata_object_type_info_$ot,";
     }
 
     WriteSource "    NULL";
@@ -2229,6 +2232,19 @@ sub DefineTestName
     push @TESTNAMES,$name;
 
     WriteTest "void $name(void)";
+}
+
+sub CreatePointersTest
+{
+    # we don't declare actual test, just global values
+
+    for my $pointer (@pointers)
+    {
+        # make sure taht declared pointer is correct
+        # by testing if it will compile in test
+
+        WriteTest "$pointer var_$pointer = NULL;";
+    }
 }
 
 sub CreateNonObjectIdTest
@@ -2431,14 +2447,14 @@ sub CreateListOfAllAttributes
         }
     }
 
-    WriteSource "const sai_attr_metadata_t* metadata_attr_sorted_by_id_name[] = {";
-    WriteHeader "extern const sai_attr_metadata_t* metadata_attr_sorted_by_id_name[];";
+    WriteSource "const sai_attr_metadata_t* sai_metadata_attr_sorted_by_id_name[] = {";
+    WriteHeader "extern const sai_attr_metadata_t* sai_metadata_attr_sorted_by_id_name[];";
 
     my @keys = sort keys %ATTRIBUTES;
 
     for my $attr (@keys)
     {
-        WriteSource "    &metadata_attr_$attr,";
+        WriteSource "    &sai_metadata_attr_$attr,";
     }
 
     my $count = @keys;
@@ -2446,8 +2462,8 @@ sub CreateListOfAllAttributes
     WriteSource "    NULL";
     WriteSource "};";
 
-    WriteSource "const size_t metadata_attr_sorted_by_id_name_count = $count;";
-    WriteHeader "extern const size_t metadata_attr_sorted_by_id_name_count;";
+    WriteSource "const size_t sai_metadata_attr_sorted_by_id_name_count = $count;";
+    WriteHeader "extern const size_t sai_metadata_attr_sorted_by_id_name_count;";
 }
 
 sub CheckWhiteSpaceInHeaders
@@ -2873,8 +2889,8 @@ sub WriteLoggerVariables
     # but now seems to be unnecessary
     #
 
-    WriteSource "volatile sai_log_level_t sai_meta_log_level = SAI_LOG_LEVEL_NOTICE;";
-    WriteSource "volatile sai_meta_log_fn sai_meta_log = NULL;";
+    WriteSource "volatile sai_log_level_t sai_metadata_log_level = SAI_LOG_LEVEL_NOTICE;";
+    WriteSource "volatile sai_metadata_log_fn sai_metadata_log = NULL;";
 }
 
 my %ProcessedItems = ();
@@ -3001,6 +3017,8 @@ WriteHeader "#endif /* __SAI_METADATA_H__ */";
 WriteTestHeader();
 
 CreateNonObjectIdTest();
+
+CreatePointersTest();
 
 WriteTestMain();
 
