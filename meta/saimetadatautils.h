@@ -126,6 +126,15 @@ extern const sai_object_type_info_t* sai_metadata_get_object_type_info(
         _In_ sai_object_type_t object_type);
 
 /**
+ * @brief Checks if object type is valid
+ *
+ * @param[in] object_type Object type
+ *
+ * @return true if object type is valid, fales otherwise
+ */
+extern bool sai_metadata_is_object_type_valid(
+        _In_ sai_object_type_t object_type);
+/**
  * @}
  */
 #endif /** __SAI_METADATA_UTILS_H_ */
