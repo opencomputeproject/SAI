@@ -2283,7 +2283,7 @@ void check_non_object_id_object_types()
                 {
                     sai_object_type_t ot = m->allowedobjecttypes[k];
 
-                    if (ot > SAI_OBJECT_TYPE_NULL && ot <= SAI_OBJECT_TYPE_MAX)
+                    if (ot > SAI_OBJECT_TYPE_NULL && ot < SAI_OBJECT_TYPE_MAX)
                     {
                         if (ot == SAI_OBJECT_TYPE_SWITCH)
                         {
