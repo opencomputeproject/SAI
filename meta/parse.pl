@@ -1413,6 +1413,7 @@ sub ProcessSingleObjectType
         WriteSource "    .allowmixedobjecttypes         = $allowmixed,";
         WriteSource "    .allowemptylist                = $allowempty,";
         WriteSource "    .allownullobjectid             = $allownull,";
+        WriteSource "    .isoidattribute                = ($objectslen > 0),";
         WriteSource "    .defaultvaluetype              = $defvaltype,";
         WriteSource "    .defaultvalue                  = $defval,";
         WriteSource "    .defaultvalueobjecttype        = $defvalot,";
