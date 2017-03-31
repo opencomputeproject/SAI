@@ -977,6 +977,12 @@ typedef enum _sai_hostif_packet_attr_t
      */
     SAI_HOSTIF_PACKET_ATTR_END,
 
+    /** Custom range base value */
+    SAI_HOSTIF_PACKET_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_HOSTIF_PACKET_ATTR_CUSTOM_RANGE_END
+
 } sai_hostif_packet_attr_t;
 
 /**

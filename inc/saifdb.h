@@ -242,6 +242,12 @@ typedef enum _sai_fdb_flush_attr_t
      */
     SAI_FDB_FLUSH_ATTR_END,
 
+    /** Custom range base value */
+    SAI_FDB_FLUSH_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_FDB_FLUSH_ATTR_CUSTOM_RANGE_END
+
 } sai_fdb_flush_attr_t;
 
 /**

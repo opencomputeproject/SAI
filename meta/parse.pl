@@ -2277,6 +2277,31 @@ sub CreateNonObjectIdTest
     WriteTest "}";
 }
 
+sub CreateCustomRangeTest
+{
+    DefineTestName "custom_range_test";
+
+    # purpose of this test is to make sure
+    # all objects define custom range start and end markers
+
+    WriteTest "{";
+
+    my @all = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $obj (@all)
+    {
+        next if $obj eq "SAI_OBJECT_TYPE_NULL";
+        next if $obj eq "SAI_OBJECT_TYPE_MAX";
+
+        next if not $obj =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+        WriteTest "    TEST_ASSERT_TRUE(SAI_$1_ATTR_CUSTOM_RANGE_START == 0x10000000, \"invalid custom range start for $1\");";
+        WriteTest "    TEST_ASSERT_TRUE(SAI_$1_ATTR_CUSTOM_RANGE_END > 0x10000000, \"invalid custom range end for $1\");";
+    }
+
+    WriteTest "}";
+}
+
 sub ExtractStructInfo
 {
     my $struct = shift;
@@ -3017,6 +3042,8 @@ WriteHeader "#endif /* __SAI_METADATA_H__ */";
 WriteTestHeader();
 
 CreateNonObjectIdTest();
+
+CreateCustomRangeTest();
 
 CreatePointersTest();
 

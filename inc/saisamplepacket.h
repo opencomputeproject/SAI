@@ -114,6 +114,12 @@ typedef enum _sai_samplepacket_attr_t
      */
     SAI_SAMPLEPACKET_ATTR_END,
 
+    /** Custom range base value */
+    SAI_SAMPLEPACKET_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_SAMPLEPACKET_ATTR_CUSTOM_RANGE_END
+
 } sai_samplepacket_attr_t;
 
 /**
