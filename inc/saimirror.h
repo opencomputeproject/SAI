@@ -159,8 +159,9 @@ typedef enum _sai_mirror_session_attr_t
      * @brief Vlan header valid
      *
      * @type bool
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
+     * @flags CREATE_ONLY
+     * @default false
+     * @validonly SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID,
 
