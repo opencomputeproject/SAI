@@ -610,7 +610,9 @@ void check_attr_allowed_object_types(
             META_ASSERT_FAIL(md, "non object id can't be used as object id: %d", ot);
         }
 
-        if (ot == SAI_OBJECT_TYPE_SWITCH)
+        if (ot == SAI_OBJECT_TYPE_SWITCH ||
+                ot == SAI_OBJECT_TYPE_FDB_FLUSH ||
+                ot == SAI_OBJECT_TYPE_HOSTIF_PACKET)
         {
             /* switch object type is ment to be used only in non object id struct types */
 
@@ -2282,6 +2284,11 @@ void check_non_object_id_object_types()
                 for (; k < m->allowedobjecttypeslength; k++)
                 {
                     sai_object_type_t ot = m->allowedobjecttypes[k];
+
+                    if (ot == SAI_OBJECT_TYPE_FDB_FLUSH || ot == SAI_OBJECT_TYPE_HOSTIF_PACKET)
+                    {
+                        META_FAIL("fdb flush or hostif packet can't be used as object in nonobjectid struct");
+                    }
 
                     if (ot >= SAI_OBJECT_TYPE_NULL && ot <= SAI_OBJECT_TYPE_MAX)
                     {
