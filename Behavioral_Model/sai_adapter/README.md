@@ -1,6 +1,6 @@
 # SAI API
 The sai lib (C lib) uses P4 thrift to configure the soft switch as described below:
-![[sai_arch]](https://github.com/Mellanox/SAI-P4-BM/blob/master/p4-softswitch/docs/SAI_arch.PNG)  
+![[sai_arch]](../p4-softswitch/docs/SAI_arch.PNG)  
 
 ## Including the SAI lib
 The sai_api lib is currently under development.
