@@ -803,7 +803,7 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                isaclfield;
 
-    /*
+    /**
      * @brief Determines whether attribute is ACL action
      *
      * This will become handy for fast detrmination whether

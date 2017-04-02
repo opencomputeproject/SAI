@@ -1916,7 +1916,7 @@ typedef enum _sai_acl_range_attr_t
  * @brief Create an ACL table
  *
  * @param[out] acl_table_id The the ACL table id
- * @param[in] attr_count number of attributes
+ * @param[in] attr_count Number of attributes
  * @param[in] switch_id Switch Object id
  * @param[in] attr_list Array of attributes
  *
@@ -2123,7 +2123,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  * @brief Create an ACL Table Group
  *
  * @param[out] acl_table_group_id The ACL group id
- * @param[in] attr_count number of attributes
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -2174,7 +2174,7 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  * @brief Create an ACL Table Group Member
  *
  * @param[out] acl_table_group_member_id The ACL table group member id
- * @param[in] attr_count number of attributes
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error

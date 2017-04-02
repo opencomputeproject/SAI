@@ -17,16 +17,16 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    saimetadatatypes.h
+ * @file    saimetadatalogger.h
  *
- * @brief   This module defines SAI Metadata Types
+ * @brief   This module defines SAI Metadata Logger
  */
 
 #ifndef __SAI_METADATA_LOGGER_H__
 #define __SAI_METADATA_LOGGER_H__
 
 /**
- * @defgroup SAIMETADATALOGGER SAI Metadata Types Definitions
+ * @defgroup SAIMETADATALOGGER SAI Metadata Logger Definitions
  *
  * @{
  */

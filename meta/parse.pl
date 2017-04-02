@@ -2569,6 +2569,45 @@ sub CheckApiDefines
     }
 }
 
+sub CheckDoxygenStyle
+{
+    my ($header, $line, $n) = @_;
+
+    return if (not $line =~ /\@(\w+)/);
+
+    my $mark = $1;
+
+    if ($mark eq "file" and not $line =~ /\@file\s+($header)/)
+    {
+        LogWarning "\@file should match format: sai\\w+.h: $header $n:$line";
+        return;
+    }
+
+    if ($mark eq "brief" and not $line =~ /\@brief\s+[A-Z]/)
+    {
+        LogWarning "\@brief should start with capital letter: $header $n:$line";
+        return;
+    }
+
+    if ($mark eq "return" and not $line =~ /\@return\s+#/)
+    {
+        LogWarning "\@return should start with #: $header $n:$line";
+        return;
+    }
+
+    if ($mark eq "return" and not $line =~ /\@return\s+#/)
+    {
+        LogWarning "\@return should start with #: $header $n:$line";
+        return;
+    }
+
+    if ($mark eq "param" and not $line =~ /\@param\[(in|out|inout)\]\s+([a-z]\w+)\s+([A-Z]\w+)/)
+    {
+        LogWarning "\@param should be in format \@param[in|out|inout] [A-Z]\\w+: $header $n:$line";
+        return;
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -2655,6 +2694,13 @@ sub CheckHeadersStyle
 
                 LogWarning "$1 should be equal to $2" if (($1 ne $2) and not($1 =~ /^bulk/))
             }
+
+            if ($line =~ /\\/ and not $line =~ /\\[0\[\]]/)
+            {
+                LogWarning "line contains \\ which should not be used in this way $header $n:$line";
+            }
+
+            CheckDoxygenStyle($header, $line, $n);
 
             next if $line =~ /^ \*/;                # doxygen comment
             next if $line =~ /^$/;                  # empty line

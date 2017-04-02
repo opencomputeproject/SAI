@@ -147,7 +147,7 @@ typedef sai_status_t (*sai_remove_samplepacket_fn)(
 /**
  * @brief Set samplepacket session attributes.
  *
- * @param[in] session_id samplepacket session id
+ * @param[in] session_id Samplepacket session id
  * @param[in] attr Value of attribute
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
@@ -173,7 +173,7 @@ typedef sai_status_t (*sai_get_samplepacket_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief samplepacket method table retrieved with sai_api_query()
+ * @brief Samplepacket method table retrieved with sai_api_query()
  */
 typedef struct _sai_samplepacket_api_t
 {
