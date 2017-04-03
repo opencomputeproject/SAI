@@ -1,6 +1,6 @@
 # SAI API
 The sai lib (C lib) uses P4 thrift to configure the soft switch as described below:
-![[sai_arch]](https://github.com/Mellanox/SAI-P4-BM/blob/master/p4-softswitch/docs/SAI_arch.PNG)  
+![[sai_arch]](../p4-softswitch/docs/SAI_arch.PNG)  
 
 ## Including the SAI lib
 The sai_api lib is currently under development.
@@ -45,9 +45,9 @@ If you decide to do so, run the sai p4 thrift server with:
 tests/sai_thrift_development_python_server/sai_rpc_server.sh
 
 ## Implementing new SAI functionaity:
-* in [sai_object_interface.h](inc/sai_object_interface.h) create C function decleration. 
-* in [sai_object_interface.cpp](src/sai_object_interface.cpp) create the function link, with the sai_object pointer.
-* in [sai_object.h](inc/sai_object.h) add a static decleration for the function.
+* in [sai_adapter_interface.h](inc/sai_adapter_interface.h) create C function decleration. 
+* in [sai_adapter_interface.cpp](src/sai_adapter_interface.cpp) create the function link, with the sai_object pointer.
+* in [sai_adapter.h](inc/sai_adapter.h) add a static decleration for the function.
 * for new/unimplemented api, also add the sai_api decleration, and link in the sai_api_query in the sai_object.h, and sai.c files.
 * Add the function implementation to a .cpp file in the [src/](src/) dir, under the sai_object namespace.
 ### Additional information
