@@ -113,32 +113,6 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
     return NULL;
 }
 
-bool sai_metadata_is_acl_field_or_action(
-        _In_ const sai_attr_metadata_t* metadata)
-{
-    if (metadata == NULL)
-    {
-        return false;
-    }
-
-    if (metadata->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
-    {
-        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
-                metadata->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
-        {
-            return true;
-        }
-
-        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
-                metadata->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 const char* sai_metadata_get_enum_value_name(
         _In_ const sai_enum_metadata_t* metadata,
         _In_ int value)

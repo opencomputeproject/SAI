@@ -306,6 +306,32 @@ void check_attr_value_type_range(
     META_ASSERT_NOT_NULL(sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_attr_value_type_t, md->attrvaluetype));
 }
 
+bool sai_metadata_is_acl_field_or_action(
+        _In_ const sai_attr_metadata_t* metadata)
+{
+    if (metadata == NULL)
+    {
+        return false;
+    }
+
+    if (metadata->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
+    {
+        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+                metadata->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+        {
+            return true;
+        }
+
+        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
+                metadata->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void check_attr_flags(
         _In_ const sai_attr_metadata_t* md)
 {

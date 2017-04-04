@@ -58,16 +58,6 @@ extern bool sai_metadata_is_allowed_enum_value(
         _In_ int value);
 
 /**
- * @brief Is attribute ACL field or action
- *
- * @param[in] metadata Attribute metadata
- *
- * @return True if is ACL field or action, false otherwise
- */
-extern bool sai_metadata_is_acl_field_or_action(
-        _In_ const sai_attr_metadata_t* metadata);
-
-/**
  * @brief Gets attribute metadata based on object type and attribute id
  *
  * @param[in] objecttype Object type
