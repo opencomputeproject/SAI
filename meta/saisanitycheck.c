@@ -1502,7 +1502,7 @@ void check_attr_key(
 
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
 
-                if (md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT)
+                if ((md->objecttype == SAI_OBJECT_TYPE_QUEUE || md->objecttype == SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP) && md->attrid == SAI_QUEUE_ATTR_PORT)
                 {
                     /*
                      * This is also special case, OBJECT_ID at should not be a
