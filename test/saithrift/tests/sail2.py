@@ -455,7 +455,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
             for vlan_member in vlan_member_list:
                 self.client.sai_thrift_remove_vlan_member(vlan_member)
 
-            self.client.sai_thrift_remove_vlan(vlan_id)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
 
             for port in sai_port_list:
                 sai_thrift_create_vlan_member(self.client, default_vlan, port, SAI_VLAN_TAGGING_MODE_UNTAGGED)
