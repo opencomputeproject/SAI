@@ -238,7 +238,7 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_TYPE,
 
     /**
-     * @brief buffer pool size in bytes
+     * @brief Buffer pool size in bytes
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -246,7 +246,7 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_SIZE,
 
     /**
-     * @brief shared threshold mode for the buffer
+     * @brief Shared threshold mode for the buffer
      *
      * @type sai_buffer_pool_threshold_mode_t
      * @flags CREATE_ONLY
@@ -255,7 +255,7 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE,
 
     /**
-     * @brief shared headroom pool size in bytes for lossless traffic
+     * @brief Shared headroom pool size in bytes for lossless traffic
      *
      * Only valid for the ingress buffer pool
      *
@@ -566,7 +566,7 @@ typedef sai_status_t(*sai_get_buffer_profile_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief buffer methods table retrieved with sai_api_query()
+ * @brief Buffer methods table retrieved with sai_api_query()
  */
 typedef struct _sai_buffer_api_t
 {

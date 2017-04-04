@@ -658,6 +658,11 @@ typedef struct _sai_attr_metadata_t
     bool                                allownullobjectid;
 
     /**
+     * @brief Determines whether object contais OIDs.
+     */
+    bool                                isoidattribute;
+
+    /**
      * @brief Specifies default value type.
      *
      * Default value can be a const assigned by switch
@@ -803,7 +808,7 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                isaclfield;
 
-    /*
+    /**
      * @brief Determines whether attribute is ACL action
      *
      * This will become handy for fast detrmination whether
@@ -1015,6 +1020,11 @@ typedef struct _sai_object_type_info_t
      * instead od actual object id
      */
     bool                                    isnonobjectid;
+
+    /**
+     * @brief Indicates if object is oid object id
+     */
+    bool                                    isobjectid;
 
     /**
      * @brief Defines all struct members

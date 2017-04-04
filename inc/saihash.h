@@ -121,7 +121,7 @@ typedef enum _sai_hash_attr_t
 } sai_hash_attr_t;
 
 /**
- *@brief Create hash
+ * @brief Create hash
  *
  * @param[out] hash_id Hash id
  * @param[in] switch_id Switch object id
@@ -173,7 +173,7 @@ typedef sai_status_t (*sai_get_hash_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief hash methods, retrieved via sai_api_query()
+ * @brief Hash methods, retrieved via sai_api_query()
  */
 typedef struct _sai_hash_api_t
 {

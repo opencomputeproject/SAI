@@ -420,7 +420,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_ATTR_START,
 
     /**
-     * @brief tunnel underlay interface
+     * @brief Tunnel underlay interface
      *
      * Underlay interface is router interface when conditions are met
      *
@@ -483,7 +483,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE,
 
     /**
-     * @brief tunnel DSCP value (6 bits)
+     * @brief Tunnel DSCP value (6 bits)
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -626,7 +626,7 @@ typedef sai_status_t (*sai_set_tunnel_attribute_fn)(
 /**
  * @brief Get tunnel attributes
  *
- * @param[in] tunnel _id Tunnel id
+ * @param[in] tunnel_id Tunnel id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Aarray of attributes
  *
@@ -830,7 +830,7 @@ typedef sai_status_t (*sai_get_tunnel_map_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief tunnel methods table retrieved with sai_api_query()
+ * @brief Tunnel methods table retrieved with sai_api_query()
  */
 typedef struct _sai_tunnel_api_t
 {

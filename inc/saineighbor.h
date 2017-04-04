@@ -104,7 +104,7 @@ typedef enum _sai_neighbor_entry_attr_t
 } sai_neighbor_entry_attr_t;
 
 /**
- * @brief neighbor entry
+ * @brief Neighbor entry
  */
 typedef struct _sai_neighbor_entry_t
 {
@@ -193,7 +193,7 @@ typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(
         _In_ sai_object_id_t switch_id);
 
 /**
- * @brief neighbor table methods, retrieved via sai_api_query()
+ * @brief Neighbor table methods, retrieved via sai_api_query()
  */
 typedef struct _sai_neighbor_api_t
 {
