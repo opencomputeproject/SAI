@@ -2325,7 +2325,7 @@ void check_non_object_id_object_types()
                         META_FAIL("fdb flush or hostif packet can't be used as object in nonobjectid struct");
                     }
 
-                    if (ot >= SAI_OBJECT_TYPE_NULL && ot <= SAI_OBJECT_TYPE_MAX)
+                    if (ot > SAI_OBJECT_TYPE_NULL && ot < SAI_OBJECT_TYPE_MAX)
                     {
                         if (ot == SAI_OBJECT_TYPE_SWITCH)
                         {
