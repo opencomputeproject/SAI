@@ -16,7 +16,7 @@ sai_adapter::sai_adapter()
   // logger
   logger_o = spdlog::get("logger");
   if (logger_o == 0) {
-    auto logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
+    logger_o = spdlog::basic_logger_mt("logger", "logs/log.txt");
     logger_o->flush_on(spdlog::level::info);   // make err
     spdlog::set_pattern("[thread %t] %l %v "); // add %T for time
   }
