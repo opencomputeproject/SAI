@@ -76,7 +76,13 @@ typedef enum _sai_ingress_priority_group_attr_t
     /**
      * @brief End of attributes
      */
-    SAI_INGRESS_PRIORITY_GROUP_ATTR_END
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_END,
+
+    /** Custom range base value */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_CUSTOM_RANGE_END
 
 } sai_ingress_priority_group_attr_t;
 
@@ -286,6 +292,12 @@ typedef enum _sai_buffer_pool_attr_t
      * @brief End of attributes
      */
     SAI_BUFFER_POOL_ATTR_END,
+
+    /** Custom range base value */
+    SAI_BUFFER_POOL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_BUFFER_POOL_ATTR_CUSTOM_RANGE_END
 
 } sai_buffer_pool_attr_t;
 
@@ -527,6 +539,12 @@ typedef enum _sai_buffer_profile_attr_t
      * @brief End of attributes
      */
     SAI_BUFFER_PROFILE_ATTR_END,
+
+    /** Custom range base value */
+    SAI_BUFFER_PROFILE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_BUFFER_PROFILE_ATTR_CUSTOM_RANGE_END
 
 } sai_buffer_profile_attr_t;
 

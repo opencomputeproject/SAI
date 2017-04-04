@@ -1778,6 +1778,12 @@ typedef enum _sai_acl_entry_attr_t
      */
     SAI_ACL_ENTRY_ATTR_END,
 
+    /** Custom range base value */
+    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_END
+
 } sai_acl_entry_attr_t;
 
 /**
@@ -1848,6 +1854,12 @@ typedef enum _sai_acl_counter_attr_t
      */
     SAI_ACL_COUNTER_ATTR_END,
 
+    /** Custom range base value */
+    SAI_ACL_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_ACL_COUNTER_ATTR_CUSTOM_RANGE_END
+
 } sai_acl_counter_attr_t;
 
 /**
@@ -1909,6 +1921,12 @@ typedef enum _sai_acl_range_attr_t
      * @brief End of attributes
      */
     SAI_ACL_RANGE_ATTR_END,
+
+    /** Custom range base value */
+    SAI_ACL_RANGE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_ACL_RANGE_ATTR_CUSTOM_RANGE_END
 
 } sai_acl_range_attr_t;
 

@@ -118,6 +118,12 @@ typedef enum _sai_hash_attr_t
      */
     SAI_HASH_ATTR_END,
 
+    /** Custom range base value */
+    SAI_HASH_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_HASH_ATTR_CUSTOM_RANGE_END
+
 } sai_hash_attr_t;
 
 /**
