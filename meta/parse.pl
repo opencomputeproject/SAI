@@ -1413,6 +1413,7 @@ sub ProcessSingleObjectType
         WriteSource "    .allowmixedobjecttypes         = $allowmixed,";
         WriteSource "    .allowemptylist                = $allowempty,";
         WriteSource "    .allownullobjectid             = $allownull,";
+        WriteSource "    .isoidattribute                = ($objectslen > 0),";
         WriteSource "    .defaultvaluetype              = $defvaltype,";
         WriteSource "    .defaultvalue                  = $defval,";
         WriteSource "    .defaultvalueobjecttype        = $defvalot,";
@@ -2302,6 +2303,26 @@ sub CreateCustomRangeTest
     WriteTest "}";
 }
 
+sub CreateEnumSizeCheckTest
+{
+    DefineTestName "enum_size_check_test";
+
+    WriteTest "{";
+
+    # purpose of this test is to check if all enums size is int32_t in this compiler
+    # since serialize/deserialize enums make assumption that enum base is int32_t
+
+    for my $key (sort keys %SAI_ENUMS)
+    {
+        next if not $key =~ /^(sai_\w+_t)$/;
+        next if $key =~ /^(sai_null_attr_t)$/;
+
+        WriteTest "    if (sizeof($1) != sizeof(int32_t)) exit(1);";
+    }
+
+    WriteTest "    if (sizeof(sai_status_t) != sizeof(int32_t)) exit(1);";
+}
+
 sub ExtractStructInfo
 {
     my $struct = shift;
@@ -3046,6 +3067,8 @@ CreateNonObjectIdTest();
 CreateCustomRangeTest();
 
 CreatePointersTest();
+
+CreateEnumSizeCheckTest();
 
 WriteTestMain();
 

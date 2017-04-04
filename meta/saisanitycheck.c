@@ -569,6 +569,15 @@ void check_attr_allowed_object_types(
         return;
     }
 
+    if (md->isoidattribute)
+    {
+        META_ASSERT_TRUE(md->allowedobjecttypeslength > 0, "object len should be at least 1");
+    }
+    else
+    {
+        META_ASSERT_TRUE(md->allowedobjecttypeslength == 0, "object len should be 0");
+    }
+
     switch (md->attrvaluetype)
     {
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:

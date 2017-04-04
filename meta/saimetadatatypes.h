@@ -658,6 +658,11 @@ typedef struct _sai_attr_metadata_t
     bool                                allownullobjectid;
 
     /**
+     * @brief Determines whether object contais OIDs.
+     */
+    bool                                isoidattribute;
+
+    /**
      * @brief Specifies default value type.
      *
      * Default value can be a const assigned by switch
