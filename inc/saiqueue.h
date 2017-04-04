@@ -286,8 +286,8 @@ typedef sai_status_t (*sai_remove_queue_fn)(
 /**
  * @brief Set attribute to Queue
  *
- * @param[in] queue_id queue id to set the attribute
- * @param[in] attr attribute to set
+ * @param[in] queue_id Queue ID to set the attribute
+ * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */

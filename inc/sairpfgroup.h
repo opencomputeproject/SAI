@@ -153,7 +153,7 @@ typedef sai_status_t (*sai_set_rpf_group_attribute_fn)(
  * @brief Get RPF interface Group attribute
  *
  * @param[in] sai_object_id_t RPF interface group id
- * @param[in] attr_count -Number of attributes
+ * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -166,9 +166,9 @@ typedef sai_status_t (*sai_get_rpf_group_attribute_fn)(
 /**
  * @brief Create RPF interface group member
  *
- * @param[out] rpf_group_member_id - RPF interface group member id
- * @param[in] attr_count - number of attributes
- * @param[in] attr_list - array of attributes
+ * @param[out] rpf_group_member_id RPF interface group member id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -181,9 +181,9 @@ typedef sai_status_t (*sai_create_rpf_group_member_fn)(
 /**
  * @brief Remove RPF interface group member
  *
- * @param[in] rpf_group_member_id - RPF interface group member id
+ * @param[in] rpf_group_member_id RPF interface group member id
  *
- * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_rpf_group_member_fn)(
         _In_ sai_object_id_t rpf_group_member_id);
@@ -191,8 +191,8 @@ typedef sai_status_t (*sai_remove_rpf_group_member_fn)(
 /**
  * @brief Set RPF interface Group attribute
  *
- * @param[in] sai_object_id_t - RPF interface group member id
- * @param[in] attr - attribute
+ * @param[in] sai_object_id_t RPF interface group member id
+ * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -203,11 +203,11 @@ typedef sai_status_t (*sai_set_rpf_group_member_attribute_fn)(
 /**
  * @brief Get RPF interface Group attribute
  *
- * @param[in] sai_object_id_t - rpf_group_member_id
- * @param[in] attr_count - number of attributes
- * @param[inout] attr_list - array of attributes
+ * @param[in] sai_object_id_t Rpf group member ID
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
- * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_rpf_group_member_attribute_fn)(
         _In_ sai_object_id_t rpf_group_member_id,

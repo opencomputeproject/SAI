@@ -220,7 +220,7 @@ sai_status_t sai_log_set(
  *
  * @param[in] sai_object_id Object id
  *
- * @return Return #SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
+ * @return #SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
  * Otherwise, return a valid sai object type SAI_OBJECT_TYPE_XXX
  */
 sai_object_type_t sai_object_type_query(
@@ -231,7 +231,7 @@ sai_object_type_t sai_object_type_query(
  *
  * @param[in] sai_object_id Object id
  *
- * @return Return #SAI_NULL_OBJECT_ID when sai_object_id is not valid.
+ * @return #SAI_NULL_OBJECT_ID when sai_object_id is not valid.
  * Otherwise, return a valid SAI_OBJECT_TYPE_SWITCH object on which
  * provided object id belongs. If valid switch id object is provided
  * as input parameter it should returin itself.

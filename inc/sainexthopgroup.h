@@ -181,8 +181,8 @@ typedef sai_status_t (*sai_set_next_hop_group_attribute_fn)(
 /**
  * @brief Get Next Hop Group attribute
  *
- * @param[in] sai_object_id_t Next_hop_group_id
- * @param[in] attr_count -Number of attributes
+ * @param[in] sai_object_id_t Next hop group ID
+ * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -195,9 +195,9 @@ typedef sai_status_t (*sai_get_next_hop_group_attribute_fn)(
 /**
  * @brief Create next hop group member
  *
- * @param[out] next_hop_group_member_id - next hop group member id
- * @param[in] attr_count - number of attributes
- * @param[in] attr_list - array of attributes
+ * @param[out] next_hop_group_member_id Next hop group member id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -210,9 +210,9 @@ typedef sai_status_t (*sai_create_next_hop_group_member_fn)(
 /**
  * @brief Remove next hop group member
  *
- * @param[in] next_hop_group_member_id - next hop group member id
+ * @param[in] next_hop_group_member_id Next hop group member ID
  *
- * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_next_hop_group_member_fn)(
         _In_ sai_object_id_t next_hop_group_member_id);
@@ -220,8 +220,8 @@ typedef sai_status_t (*sai_remove_next_hop_group_member_fn)(
 /**
  * @brief Set Next Hop Group attribute
  *
- * @param[in] sai_object_id_t - next_hop_group_member_id
- * @param[in] attr - attribute
+ * @param[in] sai_object_id_t Next hop group member ID
+ * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -232,11 +232,11 @@ typedef sai_status_t (*sai_set_next_hop_group_member_attribute_fn)(
 /**
  * @brief Get Next Hop Group attribute
  *
- * @param[in] sai_object_id_t - next_hop_group_member_id
- * @param[in] attr_count - number of attributes
- * @param[inout] attr_list - array of attributes
+ * @param[in] sai_object_id_t Next hop group member ID
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
- * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_next_hop_group_member_attribute_fn)(
         _In_ sai_object_id_t next_hop_group_member_id,

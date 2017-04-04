@@ -158,7 +158,7 @@ typedef sai_status_t (*sai_create_route_entry_fn)(
  *
  * Note: IP prefix/mask expected in Network Byte Order.
  *
- * @param[in] route_entry - route entry
+ * @param[in] route_entry Route entry
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */

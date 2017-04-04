@@ -191,7 +191,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TTL,
 
     /**
-     * @brief tunnel source IP
+     * @brief Tunnel source IP
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -291,7 +291,7 @@ typedef sai_status_t (*sai_set_mirror_session_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Value of attribute
  *
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.
  */
 typedef sai_status_t (*sai_get_mirror_session_attribute_fn)(

@@ -1407,7 +1407,7 @@ typedef void (*sai_switch_state_change_notification_fn)(
  * given for create/connect for each NPU.
  *
  * @param[out] switch_id The Switch Object ID
- * @param[in] attr_count number of attributes
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error

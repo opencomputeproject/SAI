@@ -381,7 +381,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_NUMBER_OF_INGRESS_PRIORITY_GROUPS,
 
     /**
-     * @brief list of ingress priority groups
+     * @brief List of ingress priority groups
      *
      * @type sai_object_list_t
      * @flags READ_ONLY

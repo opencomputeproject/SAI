@@ -143,7 +143,7 @@ typedef struct _sai_object_list_t {
 } sai_object_list_t;
 
 /**
- * @brief sai common api type
+ * @brief Sai common api type
  */
 typedef enum _sai_common_api_t {
     SAI_COMMON_API_CREATE = 0,
@@ -154,7 +154,7 @@ typedef enum _sai_common_api_t {
 } sai_common_api_t;
 
 /**
- * @brief sai object type
+ * @brief Sai object type
  */
 typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_NULL                     =  0, /**< invalid object type */
@@ -598,7 +598,7 @@ typedef enum _sai_bulk_op_type_t {
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to create.
  * @param[in] attrs List of attributes for every object.
- * @param[in] type bulk operation type.
+ * @param[in] type Bulk operation type.
  *
  * @param[out] object_id List of object ids returned
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
@@ -622,7 +622,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
  *
  * @param[in] object_count Number of objects to create
  * @param[in] object_id List of object ids
- * @param[in] type bulk operation type.
+ * @param[in] type Bulk operation type.
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
  *
  * @return #SAI_STATUS_SUCCESS on success when all objects are removed or #SAI_STATUS_FAILURE when
