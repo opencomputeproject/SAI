@@ -539,6 +539,7 @@ typedef enum _sai_port_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0x6A737D
+     * @validonly SAI_PORT_ATTR_SPEED == 25000Mbps, 50000Mbps
      */
     SAI_PORT_ATTR_ADVERTISED_OUI_CODE,
 
