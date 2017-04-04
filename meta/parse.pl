@@ -2321,6 +2321,8 @@ sub CreateEnumSizeCheckTest
     }
 
     WriteTest "    if (sizeof(sai_status_t) != sizeof(int32_t)) exit(1);";
+
+    WriteTest "}";
 }
 
 sub ExtractStructInfo
