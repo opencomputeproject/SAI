@@ -110,42 +110,43 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TC,
 
     /**
-     * @brief Valid for RSPAN and ERSPAN
-     *
-     * L2 header TPID if vlanId is not zero
+     * @brief L2 header TPID. Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint16_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags CREATE_AND_SET
      * @isvlan false
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * @default 0x8100
+     * @validonly SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_TPID,
 
     /**
-     * @brief Valid for RSPAN and ERSPAN L2 header VlanId
+     * @brief L2 header VlanId. Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @isvlan true
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_ID,
 
     /**
-     * @brief Valid for RSPAN and ERSPAN packet priority (3 bits)
+     * @brief L2 header packet priority (3 bits). Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint8_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
 
     /**
-     * @brief Valid for RSPAN and ERSPAN Vlan-CFI (1 bit)
+     * @brief L2 header Vlan-CFI (1 bit). Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint8_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_CFI,
 
@@ -153,6 +154,16 @@ typedef enum _sai_mirror_session_attr_t
      * All attributes below are Valid only for ERSPAN
      * SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
+
+    /**
+     * @brief Vlan header valid
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     * @validonly SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
+     */
+    SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID,
 
     /**
      * @brief Encapsulation type

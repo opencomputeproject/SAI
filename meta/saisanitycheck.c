@@ -1303,6 +1303,13 @@ void check_attr_validonly(
                  * assumption.
                  */
             }
+            else if (md->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION &&
+                (md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_TPID || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_ID ||
+                md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_CFI))
+            {
+                /* Vlan header attributes are depending on VLAN_HEADER_VALID which is 
+                 * also valid only for ERSPAN. */
+            }
             else
             {
                 META_ASSERT_FAIL(md, "validonly attibute is also validonly attribute, not allowed");
