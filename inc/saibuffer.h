@@ -57,7 +57,7 @@ typedef enum _sai_ingress_priority_group_attr_t
     SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
 
     /**
-     * @brief Pord id
+     * @brief Port id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
