@@ -1,1 +1,0 @@
-p4c-bmv2 --p4-v1.1 --json sai.json p4src/sai.p4
