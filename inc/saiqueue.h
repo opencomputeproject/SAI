@@ -73,7 +73,7 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_TYPE = SAI_QUEUE_ATTR_START,
 
     /**
-     * @brief Pord id
+     * @brief Port id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
