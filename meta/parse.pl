@@ -2763,7 +2763,7 @@ sub CheckHeadersStyle
                 {
                     next if $1 eq "SAI" or $2 eq ".h";
 
-                    LogWarning "$1 $header $n:$line";
+                    LogWarning "Sai word $1 should use capital letters $header $n:$line";
                 }
             }
 
