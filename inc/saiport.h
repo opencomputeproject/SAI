@@ -1519,31 +1519,31 @@ typedef sai_status_t (*sai_get_port_attribute_fn)(
  * @brief Get port statistics counters.
  *
  * @param[in] port_id Port id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_port_stats_fn)(
         _In_ sai_object_id_t port_id,
-        _In_ const sai_port_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
+        _In_ const sai_port_stat_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
  * @brief Clear port statistics counters.
  *
  * @param[in] port_id Port id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_clear_port_stats_fn)(
         _In_ sai_object_id_t port_id,
-        _In_ const sai_port_stat_t *counter_ids,
-        _In_ uint32_t number_of_counters);
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_port_stat_t *counter_ids);
 
 /**
  * @brief Clear port's all statistics counters.
