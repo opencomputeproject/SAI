@@ -2755,6 +2755,18 @@ sub CheckHeadersStyle
                 }
             }
 
+            if ($line =~ /\bsai\b/ )
+            {
+                # force sai word to be capital
+
+                while ($line =~ /\b(sai)\b(.h)/ig)
+                {
+                    next if $1 eq "SAI" or $2 eq ".h";
+
+                    LogWarning "$1 $header $n:$line";
+                }
+            }
+
             if ($line =~ /\\/ and not $line =~ /\\[0\[\]]/)
             {
                 LogWarning "line contains \\ which should not be used in this way $header $n:$line";

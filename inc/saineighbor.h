@@ -40,7 +40,7 @@
  */
 
 /**
- * @brief Attribute Id for sai neighbor object
+ * @brief Attribute Id for SAI neighbor object
  */
 typedef enum _sai_neighbor_entry_attr_t
 {

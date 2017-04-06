@@ -122,7 +122,7 @@ typedef void *sai_pointer_t;
 #define SAI_NULL_OBJECT_ID 0L
 
 /**
- * @brief Defines a list of sai object ids used as sai attribute value.
+ * @brief Defines a list of SAI object ids used as SAI attribute value.
  *
  * In set attribute function call, the count member defines the number of
  * objects.
