@@ -66,7 +66,7 @@ typedef enum _sai_hostif_trap_group_attr_t
     SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE = SAI_HOSTIF_TRAP_GROUP_ATTR_START,
 
     /**
-     * @brief Cpu egress queue
+     * @brief CPU egress queue
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -75,7 +75,7 @@ typedef enum _sai_hostif_trap_group_attr_t
     SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
 
     /**
-     * @brief Sai policer object id
+     * @brief SAI policer object id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -263,25 +263,25 @@ typedef enum _sai_hostif_trap_type_t
     SAI_HOSTIF_TRAP_TYPE_IP2ME = 0x00004000,
 
     /**
-     * @brief SSH traffic (tcp dst port == 22) to local router IP address
+     * @brief SSH traffic (TCP dst port == 22) to local router IP address
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_SSH = 0x00004001,
 
     /**
-     * @brief SNMP traffic (udp dst port == 161) to local router IP address
+     * @brief SNMP traffic (UDP dst port == 161) to local router IP address
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_SNMP = 0x00004002,
 
     /**
-     * @brief BGP traffic (tcp src port == 179 or tcp dst port == 179) to local
+     * @brief BGP traffic (TCP src port == 179 or TCP dst port == 179) to local
      * router IP address (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BGP = 0x00004003,
 
     /**
-     * @brief BGPv6 traffic (tcp src port == 179 or tcp dst port == 179) to
+     * @brief BGPv6 traffic (TCP src port == 179 or TCP dst port == 179) to
      * local router IP address (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x00004004,
@@ -456,7 +456,7 @@ typedef enum _sai_hostif_user_defined_trap_type_t
     /** ACL traps (default packet action is drop) */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ACL,
 
-    /** fdb traps (default packet action is drop) */
+    /** FDB traps (default packet action is drop) */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB,
 
     /** Custom range base */
@@ -785,7 +785,7 @@ typedef enum _sai_hostif_table_entry_attr_t
      * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT
      * || #SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG || #SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN
      * should be port object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT
-     * should be lag object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG
+     * should be LAG object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG
      * should be VLAN ID object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN
      *
      * @type sai_object_id_t

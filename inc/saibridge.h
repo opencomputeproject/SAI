@@ -70,10 +70,10 @@ typedef enum _sai_bridge_port_fdb_learning_mode_t
  */
 typedef enum _sai_bridge_port_type_t
 {
-    /** Port or Lag */
+    /** Port or LAG */
     SAI_BRIDGE_PORT_TYPE_PORT,
 
-    /** {Port or Lag.vlan} */
+    /** {Port or LAG.vlan} */
     SAI_BRIDGE_PORT_TYPE_SUB_PORT,
 
     /** bridge router port */
@@ -106,7 +106,7 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_TYPE = SAI_BRIDGE_PORT_ATTR_START,
 
     /**
-     * @brief Associated Port or Lag object id
+     * @brief Associated Port or LAG object id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -177,7 +177,7 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_MAX_LEARNED_ADDRESSES,
 
     /**
-     * @brief Action for packets with unknown source mac address
+     * @brief Action for packets with unknown source MAC address
      * when FDB learning limit is reached.
      *
      * @type sai_packet_action_t

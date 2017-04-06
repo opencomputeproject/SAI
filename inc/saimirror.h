@@ -38,13 +38,13 @@
  */
 typedef enum _sai_mirror_session_type_t
 {
-    /** Local span */
+    /** Local SPAN */
     SAI_MIRROR_SESSION_TYPE_LOCAL = 0,
 
-    /** Remote span */
+    /** Remote SPAN */
     SAI_MIRROR_SESSION_TYPE_REMOTE,
 
-    /** Enhanced Remote span */
+    /** Enhanced Remote SPAN */
     SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE,
 
 } sai_mirror_session_type_t;

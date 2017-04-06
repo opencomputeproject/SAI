@@ -34,7 +34,7 @@
  */
 
 /**
- * @brief Lag attribute: List of attributes for LAG object
+ * @brief LAG attribute: List of attributes for LAG object
  */
 typedef enum _sai_lag_attr_t
 {
@@ -57,7 +57,7 @@ typedef enum _sai_lag_attr_t
     /**
      * @brief LAG bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a LAG. Enable/Update
+     * Bind (or unbind) an ingress ACL table or ACL group on a LAG. Enable/Update
      * ingress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -73,7 +73,7 @@ typedef enum _sai_lag_attr_t
     /**
      * @brief LAG bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl tables or acl groups on a LAG. Enable/Update
+     * Bind (or unbind) an egress ACL tables or ACL groups on a LAG. Enable/Update
      * egress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.

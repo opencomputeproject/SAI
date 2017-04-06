@@ -115,9 +115,10 @@ typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
+
 /**
  * @def SAI_NULL_OBJECT_ID
- * Sai NULL object ID
+ * SAI NULL object ID
  */
 #define SAI_NULL_OBJECT_ID 0L
 
@@ -143,7 +144,7 @@ typedef struct _sai_object_list_t {
 } sai_object_list_t;
 
 /**
- * @brief Sai common api type
+ * @brief SAI common api type
  */
 typedef enum _sai_common_api_t {
     SAI_COMMON_API_CREATE = 0,
@@ -154,7 +155,7 @@ typedef enum _sai_common_api_t {
 } sai_common_api_t;
 
 /**
- * @brief Sai object type
+ * @brief SAI object type
  */
 typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_NULL                     =  0, /**< invalid object type */
@@ -407,16 +408,16 @@ typedef enum _sai_packet_color_t
 } sai_packet_color_t;
 
 /**
- * @brief Defines qos map types.
+ * @brief Defines QOS map types.
  *
  * @par Examples:
  *
- * dot1p/dscp --> TC
- * dot1p/dscp --> Color
- * dot1p/dscp --> TC + Color
- * Tc --> dot1p/Dscp.
- * Tc + color --> dot1p/Dscp.
- * Tc --> Egress Queue.
+ * dot1p/DSCP --> TC
+ * dot1p/DSCP --> Color
+ * dot1p/DSCP --> TC + Color
+ * TC --> dot1p/DSCP.
+ * TC + color --> dot1p/DSCP.
+ * TC --> Egress Queue.
  */
 typedef struct _sai_qos_map_params_t
 {
@@ -502,7 +503,7 @@ typedef struct _sai_tunnel_map_list_t
 } sai_tunnel_map_list_t;
 
 /**
- * @brief Structure for acl attributes supported at each stage.
+ * @brief Structure for ACL attributes supported at each stage.
  * action_list alone is added now. Qualifier list can also be added
  * when needed.
  */

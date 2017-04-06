@@ -2755,16 +2755,23 @@ sub CheckHeadersStyle
                 }
             }
 
-            if ($line =~ /\bsai\b/ )
+            my @magicWords = qw/SAI IP MAC L2 ACL L3 GRE ECMP EEE FDB FD FEC ICMP I2C HW IEEE IP2ME L2MC LAG
+            ARP ASIC BGP CAM CBS CB CIR CIDR CRC DLL CPU TTL TOS ECN DSCP TC MACST MTU NPU PFC PBS PCI PIR
+            QOS RFC RFP SDK RSPAN ERSPAN SPAN SNMP SSH STP TCAM TCP UDP TPID UDF UOID VNI VR VRRP WCMP/;
+
+            my $pattern = join"|",@magicWords;
+
+            while ($line =~ /\b($pattern)\b/ig)
             {
-                # force sai word to be capital
+                # force special word to be capital
 
-                while ($line =~ /\b(sai)\b(.h)/ig)
-                {
-                    next if $1 eq "SAI" or $2 eq ".h";
+                my $word = $1;
 
-                    LogWarning "Sai word $1 should use capital letters $header $n:$line";
-                }
+                next if $word =~ /^($pattern)$/;
+                next if $line =~ /$word.h/;
+                next if not $line =~ /\*/; # must contain star, so will be comment
+
+                LogWarning "Word $word should use capital letters $header $n:$line";
             }
 
             if ($line =~ /\\/ and not $line =~ /\\[0\[\]]/)

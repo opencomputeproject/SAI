@@ -28,44 +28,44 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIQOSMAPS SAI - Qos Maps specific API definitions.
+ * @defgroup SAIQOSMAPS SAI - QOS Maps specific API definitions.
  *
  * @{
  */
 
 /**
- * @brief Enum defining qos map types.
+ * @brief Enum defining QOS map types.
  */
 typedef enum _sai_qos_map_type_t
 {
-    /** Qos Map to set DOT1P to Traffic class */
+    /** QOS Map to set DOT1P to Traffic class */
     SAI_QOS_MAP_TYPE_DOT1P_TO_TC = 0x00000000,
 
-    /** Qos Map to set DOT1P to color */
+    /** QOS Map to set DOT1P to color */
     SAI_QOS_MAP_TYPE_DOT1P_TO_COLOR = 0x00000001,
 
-    /** Qos Map to set DSCP to Traffic class */
+    /** QOS Map to set DSCP to Traffic class */
     SAI_QOS_MAP_TYPE_DSCP_TO_TC = 0x00000002,
 
-    /** Qos Map to set DSCP to color */
+    /** QOS Map to set DSCP to color */
     SAI_QOS_MAP_TYPE_DSCP_TO_COLOR = 0x00000003,
 
-    /** Qos Map to set traffic class to queue */
+    /** QOS Map to set traffic class to queue */
     SAI_QOS_MAP_TYPE_TC_TO_QUEUE = 0x00000004,
 
-    /** Qos Map to set traffic class and color to DSCP */
+    /** QOS Map to set traffic class and color to DSCP */
     SAI_QOS_MAP_TYPE_TC_AND_COLOR_TO_DSCP = 0x00000005,
 
-    /** Qos Map to set traffic class and color to DSCP */
+    /** QOS Map to set traffic class and color to DSCP */
     SAI_QOS_MAP_TYPE_TC_AND_COLOR_TO_DOT1P = 0x00000006,
 
-    /** Qos Map to set traffic class to priority group */
+    /** QOS Map to set traffic class to priority group */
     SAI_QOS_MAP_TYPE_TC_TO_PRIORITY_GROUP = 0x00000007,
 
-    /** Qos Map to set PFC priority to priority group */
+    /** QOS Map to set PFC priority to priority group */
     SAI_QOS_MAP_TYPE_PFC_PRIORITY_TO_PRIORITY_GROUP = 0x00000008,
 
-    /** Qos Map to set PFC priority to queue */
+    /** QOS Map to set PFC priority to queue */
     SAI_QOS_MAP_TYPE_PFC_PRIORITY_TO_QUEUE = 0x00000009,
 
     /** Custom range base value */
@@ -74,7 +74,7 @@ typedef enum _sai_qos_map_type_t
 } sai_qos_map_type_t;
 
 /**
- * @brief Enum defining attributes for Qos Maps.
+ * @brief Enum defining attributes for QOS Maps.
  */
 typedef enum _sai_qos_map_attr_t
 {
@@ -84,7 +84,7 @@ typedef enum _sai_qos_map_attr_t
     SAI_QOS_MAP_ATTR_START,
 
     /**
-     * @brief Qos Map type
+     * @brief QOS Map type
      *
      * @type sai_qos_map_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -118,9 +118,9 @@ typedef enum _sai_qos_map_attr_t
 } sai_qos_map_attr_t ;
 
 /**
- * @brief Create Qos Map
+ * @brief Create QOS Map
  *
- * @param[out] qos_map_id Qos Map Id
+ * @param[out] qos_map_id QOS Map Id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -134,9 +134,9 @@ typedef sai_status_t (*sai_create_qos_map_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove Qos Map
+ * @brief Remove QOS Map
  *
- * @param[in] qos_map_id Qos Map id to be removed.
+ * @param[in] qos_map_id QOS Map id to be removed.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -144,9 +144,9 @@ typedef sai_status_t (*sai_remove_qos_map_fn) (
         _In_ sai_object_id_t qos_map_id);
 
 /**
- * @brief Set attributes for qos map
+ * @brief Set attributes for QOS map
  *
- * @param[in] qos_map_id Qos Map Id
+ * @param[in] qos_map_id QOS Map Id
  * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -156,7 +156,7 @@ typedef sai_status_t (*sai_set_qos_map_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attrbutes of qos map
+ * @brief Get attrbutes of QOS map
  *
  * @param[in] qos_map_id Map id
  * @param[in] attr_count Number of attributes
@@ -170,7 +170,7 @@ typedef sai_status_t (*sai_get_qos_map_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Qos Map methods table retrieved with sai_api_query()
+ * @brief QOS Map methods table retrieved with sai_api_query()
  */
 typedef struct _sai_qos_map_api_t
 {

@@ -50,7 +50,7 @@ typedef enum _sai_neighbor_entry_attr_t
     SAI_NEIGHBOR_ENTRY_ATTR_START,
 
     /**
-     * @brief Destination mac address for the neighbor
+     * @brief Destination MAC address for the neighbor
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET

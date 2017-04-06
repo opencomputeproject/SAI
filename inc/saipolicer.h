@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIPOLICER SAI - Qos Policer specific API definitions
+ * @defgroup SAIPOLICER SAI - QOS Policer specific API definitions
  *
  * @{
  */

@@ -109,7 +109,7 @@ typedef enum _sai_vlan_attr_t
     /**
      * @brief STP Instance that the VLAN is associated to
      *
-     * Ddefault to default stp instance id
+     * Ddefault to default STP instance id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -122,7 +122,7 @@ typedef enum _sai_vlan_attr_t
      * @brief To disable learning on a VLAN
      *
      * This should override port learn settings. If this is set to true on a
-     * vlan, then the source mac learning is disabled for this vlan on a member
+     * vlan, then the source MAC learning is disabled for this vlan on a member
      * port even if learn is enable on the port(based on port learn attribute)
      *
      * @type bool
@@ -150,11 +150,11 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_IPV6_MCAST_LOOKUP_KEY_TYPE,
 
     /**
-     * @brief L2MC Group ID that unknown non-ip MACST packets forwarded to
+     * @brief L2MC Group ID that unknown non-IP MACST packets forwarded to
      *
-     * Indicating the output ports/LAGs for unknown non-ip multicast packets.
+     * Indicating the output ports/LAGs for unknown non-IP multicast packets.
      * This attribute only takes effect when one of the following conditions is met:
-     * (1)non-ip multicast packet
+     * (1)non-IP multicast packet
      * (2)IPv4 multicast packet && not linklocal && IPv4 mcast snooping disabled for vlan
      * (3)IPv6 multicast packet && not linklocal && IPv6 mcast snooping disabled for vlan
      * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
@@ -169,7 +169,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_NON_IP_MCAST_OUTPUT_GROUP_ID,
 
     /**
-     * @brief L2MC Group ID that unknown ipv4 MACST packets forwarded to
+     * @brief L2MC Group ID that unknown IPv4 MACST packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown IPv4 multicast packets.
      * This attribute only takes effect when the following condition is met:
@@ -186,7 +186,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_IPV4_MCAST_OUTPUT_GROUP_ID,
 
     /**
-     * @brief L2MC Group ID that unknown ipv6 MACST packets forwarded to
+     * @brief L2MC Group ID that unknown IPv6 MACST packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown IPv6 multicast packets.
      * This attribute only takes effect when the following condition is met:
@@ -223,7 +223,7 @@ typedef enum _sai_vlan_attr_t
     /**
      * @brief VLAN bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a VLAN. Enable/Update
+     * Bind (or unbind) an ingress ACL table or ACL group on a VLAN. Enable/Update
      * ingress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -239,7 +239,7 @@ typedef enum _sai_vlan_attr_t
     /**
      * @brief VLAN bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl table or acl group on a VLAN. Enable/Update
+     * Bind (or unbind) an egress ACL table or ACL group on a VLAN. Enable/Update
      * egress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.

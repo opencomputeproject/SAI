@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIQUEUE SAI - Qos Queue specific API definitions.
+ * @defgroup SAIQUEUE SAI - QOS Queue specific API definitions.
  *
  * @{
  */
@@ -92,8 +92,8 @@ typedef enum _sai_queue_attr_t
     /**
      * @brief Parent scheduler node
      *
-     * In case of Hierarchical Qos not supported, the parent node is the port.
-     * Condition on whether Hierarchial Qos is supported or not, need to remove
+     * In case of Hierarchical QOS not supported, the parent node is the port.
+     * Condition on whether Hierarchial QOS is supported or not, need to remove
      * the MANDATORY_ON_CREATE FLAG when HQoS is introduced
      *
      * @type sai_object_id_t
@@ -340,7 +340,7 @@ typedef sai_status_t (*sai_clear_queue_stats_fn)(
         _In_ const sai_queue_stat_t *counter_ids);
 
 /**
- * @brief Qos methods table retrieved with sai_api_query()
+ * @brief QOS methods table retrieved with sai_api_query()
  */
 typedef struct _sai_queue_api_t
 {
