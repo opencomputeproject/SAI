@@ -19,7 +19,7 @@
  *
  * @file    saitam.h
  *
- * @brief   This module defines SAI Bridge
+ * @brief   This module defines SAI TAM (Telemetry And Monitoring) module
  */
 
 #if !defined (__SAITAM_H_)
