@@ -2090,6 +2090,18 @@ void check_attr_sai_pointer(
 
     if (md->objecttype == SAI_OBJECT_TYPE_SWITCH)
     {
+        if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
+        {
+            /*
+             * Make sure that all pointers are CREATE_AND_SET.
+             */
+
+            if (md->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
+            {
+                META_ASSERT_FAIL(md, "all pointers should be CREATE_AND_SET");
+            }
+        }
+
         return;
     }
 
@@ -3525,7 +3537,7 @@ void check_switch_create_only_objects()
     {
         const sai_attr_metadata_t *md = meta[index];
 
-        if (HAS_FLAG_CREATE_ONLY(md->flags) && md->allowedobjecttypeslength > 0)
+        if (HAS_FLAG_CREATE_ONLY(md->flags) && md->isoidattribute)
         {
             META_ASSERT_FAIL(md, "attribute is create_only and it's an object id, this is not allowed");
         }
