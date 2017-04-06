@@ -19,7 +19,7 @@
  *
  * @file    saitam.h
  *
- * @brief   This module defines SAI TAM (Telemetry And Monitoring) module
+ * @brief   This module defines SAI TAM (Telemetry And Monitoring) spec
  */
 
 #if !defined (__SAITAM_H_)
