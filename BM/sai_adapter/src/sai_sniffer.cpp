@@ -43,6 +43,7 @@ void sai_adapter::release_pcap_lock(){
 
 void sai_adapter::PacketSniffer() {
   const char *dev = "host_port";
+
   char errbuf[PCAP_ERRBUF_SIZE];
 
   (*logger)->info("pcap started on dev {}", dev);

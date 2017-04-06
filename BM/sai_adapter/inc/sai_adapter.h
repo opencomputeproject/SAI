@@ -6,6 +6,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+// TUN/TAP if
+#include "tun_if.h"
 #include <sai.h>
 #ifdef __cplusplus
 }
