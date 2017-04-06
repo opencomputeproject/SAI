@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAISCHEDULER SAI - Qos scheduler specific API definitions
+ * @defgroup SAISCHEDULER SAI - QOS scheduler specific API definitions
  *
  * @{
  */

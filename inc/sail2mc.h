@@ -82,7 +82,7 @@ typedef struct _sai_l2mc_entry_t
 } sai_l2mc_entry_t;
 
 /**
- * @brief Attribute Id for l2mc entry
+ * @brief Attribute Id for L2MC entry
  */
 typedef enum _sai_l2mc_entry_attr_t
 {
@@ -152,7 +152,7 @@ typedef sai_status_t (*sai_remove_l2mc_entry_fn)(
         _In_ const sai_l2mc_entry_t *l2mc_entry);
 
 /**
- * @brief Set l2mc entry attribute value
+ * @brief Set L2MC entry attribute value
  *
  * @param[in] l2mc_entry L2MC entry
  * @param[in] attr Attribute
@@ -164,7 +164,7 @@ typedef sai_status_t (*sai_set_l2mc_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get l2mc entry attribute value
+ * @brief Get L2MC entry attribute value
  *
  * @param[in] l2mc_entry L2MC entry
  * @param[in] attr_count Number of attributes

@@ -45,7 +45,7 @@ typedef struct _sai_mcast_fdb_entry_t
      */
     sai_object_id_t switch_id;
 
-    /** Mac address */
+    /** MAC address */
     sai_mac_t mac_address;
 
     /** Vlan ID */
@@ -54,7 +54,7 @@ typedef struct _sai_mcast_fdb_entry_t
 } sai_mcast_fdb_entry_t;
 
 /**
- * @brief Attribute Id for multicast fdb entry
+ * @brief Attribute Id for multicast FDB entry
  */
 typedef enum _sai_mcast_fdb_entry_attr_t
 {
@@ -132,7 +132,7 @@ typedef sai_status_t (*sai_remove_mcast_fdb_entry_fn)(
         _In_ const sai_mcast_fdb_entry_t *fdb_entry);
 
 /**
- * @brief Set multicast fdb entry attribute value
+ * @brief Set multicast FDB entry attribute value
  *
  * @param[in] fdb_entry FDB entry
  * @param[in] attr Attribute
@@ -144,7 +144,7 @@ typedef sai_status_t (*sai_set_mcast_fdb_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get fdb entry attribute value
+ * @brief Get FDB entry attribute value
  *
  * @param[in] fdb_entry FDB entry
  * @param[in] attr_count Number of attributes

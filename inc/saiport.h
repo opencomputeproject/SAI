@@ -124,7 +124,7 @@ typedef enum _sai_port_internal_loopback_mode_t
     /** port internal loopback at phy module */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_PHY,
 
-    /** port internal loopback at mac module */
+    /** port internal loopback at MAC module */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_MAC
 
 } sai_port_internal_loopback_mode_t;
@@ -639,7 +639,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a port. Enable/Update
+     * Bind (or unbind) an ingress ACL table or ACL group on a port. Enable/Update
      * ingress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -655,7 +655,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl tables or acl group on a port. Enable/Update
+     * Bind (or unbind) an egress ACL tables or ACL group on a port. Enable/Update
      * egress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -1172,7 +1172,7 @@ typedef enum _sai_port_stat_t
     /** SAI port stat ether stats collisions */
     SAI_PORT_STAT_ETHER_STATS_COLLISIONS,
 
-    /** SAI port stat ether stats crc align errors */
+    /** SAI port stat ether stats CRC align errors */
     SAI_PORT_STAT_ETHER_STATS_CRC_ALIGN_ERRORS,
 
     /** SAI port stat ether stats tx no errors */
@@ -1181,31 +1181,31 @@ typedef enum _sai_port_stat_t
     /** SAI port stat ether stats rx no errors */
     SAI_PORT_STAT_ETHER_STATS_RX_NO_ERRORS,
 
-    /** SAI port stat ip in receives */
+    /** SAI port stat IP in receives */
     SAI_PORT_STAT_IP_IN_RECEIVES,
 
-    /** SAI port stat ip in octets */
+    /** SAI port stat IP in octets */
     SAI_PORT_STAT_IP_IN_OCTETS,
 
-    /** SAI port stat ip in ucast pkts */
+    /** SAI port stat IP in ucast pkts */
     SAI_PORT_STAT_IP_IN_UCAST_PKTS,
 
-    /** SAI port stat ip in non ucast pkts */
+    /** SAI port stat IP in non ucast pkts */
     SAI_PORT_STAT_IP_IN_NON_UCAST_PKTS,
 
-    /** SAI port stat ip in discards */
+    /** SAI port stat IP in discards */
     SAI_PORT_STAT_IP_IN_DISCARDS,
 
-    /** SAI port stat ip out octets */
+    /** SAI port stat IP out octets */
     SAI_PORT_STAT_IP_OUT_OCTETS,
 
-    /** SAI port stat ip out ucast pkts */
+    /** SAI port stat IP out ucast pkts */
     SAI_PORT_STAT_IP_OUT_UCAST_PKTS,
 
-    /** SAI port stat ip out non ucast pkts */
+    /** SAI port stat IP out non ucast pkts */
     SAI_PORT_STAT_IP_OUT_NON_UCAST_PKTS,
 
-    /** SAI port stat ip out discards */
+    /** SAI port stat IP out discards */
     SAI_PORT_STAT_IP_OUT_DISCARDS,
 
     /** SAI port stat ipv6 in receives */
@@ -1367,73 +1367,73 @@ typedef enum _sai_port_stat_t
     /** PFC Packet Counters for RX and TX per PFC priority [uint64_t] */
     SAI_PORT_STAT_PFC_0_RX_PKTS,
 
-    /** SAI port stat pfc 0 tx pkts */
+    /** SAI port stat PFC 0 tx pkts */
     SAI_PORT_STAT_PFC_0_TX_PKTS,
 
-    /** SAI port stat pfc 1 rx pkts */
+    /** SAI port stat PFC 1 rx pkts */
     SAI_PORT_STAT_PFC_1_RX_PKTS,
 
-    /** SAI port stat pfc 1 tx pkts */
+    /** SAI port stat PFC 1 tx pkts */
     SAI_PORT_STAT_PFC_1_TX_PKTS,
 
-    /** SAI port stat pfc 2 rx pkts */
+    /** SAI port stat PFC 2 rx pkts */
     SAI_PORT_STAT_PFC_2_RX_PKTS,
 
-    /** SAI port stat pfc 2 tx pkts */
+    /** SAI port stat PFC 2 tx pkts */
     SAI_PORT_STAT_PFC_2_TX_PKTS,
 
-    /** SAI port stat pfc 3 rx pkts */
+    /** SAI port stat PFC 3 rx pkts */
     SAI_PORT_STAT_PFC_3_RX_PKTS,
 
-    /** SAI port stat pfc 3 tx pkts */
+    /** SAI port stat PFC 3 tx pkts */
     SAI_PORT_STAT_PFC_3_TX_PKTS,
 
-    /** SAI port stat pfc 4 rx pkts */
+    /** SAI port stat PFC 4 rx pkts */
     SAI_PORT_STAT_PFC_4_RX_PKTS,
 
-    /** SAI port stat pfc 4 tx pkts */
+    /** SAI port stat PFC 4 tx pkts */
     SAI_PORT_STAT_PFC_4_TX_PKTS,
 
-    /** SAI port stat pfc 5 rx pkts */
+    /** SAI port stat PFC 5 rx pkts */
     SAI_PORT_STAT_PFC_5_RX_PKTS,
 
-    /** SAI port stat pfc 5 tx pkts */
+    /** SAI port stat PFC 5 tx pkts */
     SAI_PORT_STAT_PFC_5_TX_PKTS,
 
-    /** SAI port stat pfc 6 rx pkts */
+    /** SAI port stat PFC 6 rx pkts */
     SAI_PORT_STAT_PFC_6_RX_PKTS,
 
-    /** SAI port stat pfc 6 tx pkts */
+    /** SAI port stat PFC 6 tx pkts */
     SAI_PORT_STAT_PFC_6_TX_PKTS,
 
-    /** SAI port stat pfc 7 rx pkts */
+    /** SAI port stat PFC 7 rx pkts */
     SAI_PORT_STAT_PFC_7_RX_PKTS,
 
-    /** SAI port stat pfc 7 tx pkts */
+    /** SAI port stat PFC 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
     /** PFC based ON to OFF pause transitions counter per PFC priority [uint64_t] */
     SAI_PORT_STAT_PFC_0_ON2OFF_RX_PKTS,
 
-    /** SAI port stat pfc 1 on to off rx pkts */
+    /** SAI port stat PFC 1 on to off rx pkts */
     SAI_PORT_STAT_PFC_1_ON2OFF_RX_PKTS,
 
-    /** SAI port stat pfc 2 on to off rx pkts */
+    /** SAI port stat PFC 2 on to off rx pkts */
     SAI_PORT_STAT_PFC_2_ON2OFF_RX_PKTS,
 
-    /** SAI port stat pfc 3 on to off rx pkts */
+    /** SAI port stat PFC 3 on to off rx pkts */
     SAI_PORT_STAT_PFC_3_ON2OFF_RX_PKTS,
 
-    /** SAI port stat pfc 4 on to off rx pkts */
+    /** SAI port stat PFC 4 on to off rx pkts */
     SAI_PORT_STAT_PFC_4_ON2OFF_RX_PKTS,
 
-    /** SAI port stat pfc 5 on to off rx pkts */
+    /** SAI port stat PFC 5 on to off rx pkts */
     SAI_PORT_STAT_PFC_5_ON2OFF_RX_PKTS,
 
-    /** SAI port stat pfc 6 on to off rx pkts */
+    /** SAI port stat PFC 6 on to off rx pkts */
     SAI_PORT_STAT_PFC_6_ON2OFF_RX_PKTS,
 
-    /** SAI port stat pfc 7 on to off rx pkts */
+    /** SAI port stat PFC 7 on to off rx pkts */
     SAI_PORT_STAT_PFC_7_ON2OFF_RX_PKTS,
 
     /**

@@ -302,7 +302,7 @@ typedef enum _sai_tunnel_type_t
 } sai_tunnel_type_t;
 
 /**
- * @brief Defines tunnel ttl mode
+ * @brief Defines tunnel TTL mode
  */
 typedef enum _sai_tunnel_ttl_mode_t
 {
@@ -330,7 +330,7 @@ typedef enum _sai_tunnel_ttl_mode_t
 } sai_tunnel_ttl_mode_t;
 
 /**
- * @brief Defines tunnel dscp mode
+ * @brief Defines tunnel DSCP mode
  */
 typedef enum _sai_tunnel_dscp_mode_t
 {
@@ -358,7 +358,7 @@ typedef enum _sai_tunnel_dscp_mode_t
 } sai_tunnel_dscp_mode_t;
 
 /**
- * @brief Defines tunnel encap ecn mode
+ * @brief Defines tunnel encap ECN mode
  */
 typedef enum _sai_tunnel_encap_ecn_mode_t
 {
@@ -378,7 +378,7 @@ typedef enum _sai_tunnel_encap_ecn_mode_t
 } sai_tunnel_encap_ecn_mode_t;
 
 /**
- * @brief Defines tunnel decap ecn mode
+ * @brief Defines tunnel decap ECN mode
  */
 typedef enum _sai_tunnel_decap_ecn_mode_t
 {
@@ -446,7 +446,7 @@ typedef enum _sai_tunnel_attr_t
     /* Tunnel encap attributes */
 
     /**
-     * @brief Tunnel src ip
+     * @brief Tunnel src IP
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -474,7 +474,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_TTL_VAL,
 
     /**
-     * @brief Tunnel dscp mode (pipe or uniform model)
+     * @brief Tunnel DSCP mode (pipe or uniform model)
      *
      * @type sai_tunnel_dscp_mode_t
      * @flags CREATE_ONLY
@@ -562,7 +562,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
     /**
-     * @brief Tunnel dscp mode (pipe or uniform model)
+     * @brief Tunnel DSCP mode (pipe or uniform model)
      *
      * Default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
      *
@@ -642,10 +642,10 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
  */
 typedef enum _sai_tunnel_term_table_entry_type_t
 {
-    /** tunnel termination table point to point entry match on dst & src ip & tunnel type */
+    /** tunnel termination table point to point entry match on dst & src IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
 
-    /** tunnel termination table point to multi point entry match on dst ip & tunnel type */
+    /** tunnel termination table point to multi point entry match on dst IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP,
 
 } sai_tunnel_term_table_entry_type_t;
@@ -678,7 +678,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE,
 
     /**
-     * @brief Tunnel termination ip address [
+     * @brief Tunnel termination IP address
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -686,7 +686,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP,
 
     /**
-     * @brief Tunnel source ip address
+     * @brief Tunnel source IP address
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY

@@ -28,7 +28,7 @@
 #include "saitypes.h"
 
 /**
- * @defgroup SAIWRED SAI - Qos Wred specific API definitions
+ * @defgroup SAIWRED SAI - QOS Wred specific API definitions
  *
  * @{
  */

@@ -58,7 +58,7 @@ typedef struct _sai_fdb_entry_t
      */
     sai_object_id_t switch_id;
 
-    /** Mac address */
+    /** MAC address */
     sai_mac_t mac_address;
 
     /** Bridge type */
@@ -96,7 +96,7 @@ typedef enum _sai_fdb_event_t
 } sai_fdb_event_t;
 
 /**
- * @brief Attribute Id for fdb entry
+ * @brief Attribute Id for FDB entry
  */
 typedef enum _sai_fdb_entry_attr_t
 {
@@ -192,7 +192,7 @@ typedef enum _sai_fdb_flush_entry_type_t
  * then there is no need to specify the #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE attribute.
  * The API uses AND operation when multiple attributes are specified. For
  * exmaple,
- * 1) Flush all entries in fdb table - Do not specify any attribute
+ * 1) Flush all entries in FDB table - Do not specify any attribute
  * 2) Flush all entries by bridge port - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
  * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_VLAN_ID
  * 4) Flush all entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
@@ -294,7 +294,7 @@ typedef sai_status_t (*sai_remove_fdb_entry_fn)(
         _In_ const sai_fdb_entry_t *fdb_entry);
 
 /**
- * @brief Set fdb entry attribute value
+ * @brief Set FDB entry attribute value
  *
  * @param[in] fdb_entry FDB entry
  * @param[in] attr Attribute
@@ -306,7 +306,7 @@ typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get fdb entry attribute value
+ * @brief Get FDB entry attribute value
  *
  * @param[in] fdb_entry FDB entry
  * @param[in] attr_count Number of attributes
@@ -337,7 +337,7 @@ typedef sai_status_t (*sai_flush_fdb_entries_fn)(
  * @brief FDB notifications
  *
  * @param[in] count Number of notifications
- * @param[in] data Pointer to fdb event notification data array
+ * @param[in] data Pointer to FDB event notification data array
  */
 typedef void (*sai_fdb_event_notification_fn)(
         _In_ uint32_t count,

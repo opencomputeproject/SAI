@@ -38,7 +38,7 @@
  */
 typedef enum _sai_router_interface_type_t
 {
-    /** Port or Lag Router Interface Type */
+    /** Port or LAG Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_PORT,
 
     /** VLAN Router Interface Type */
@@ -85,7 +85,7 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_TYPE,
 
     /**
-     * @brief Assosiated Port or Lag object id
+     * @brief Assosiated Port or LAG object id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -148,7 +148,7 @@ typedef enum _sai_router_interface_attr_t
     /**
      * @brief RIF bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a RIF. Enable/Update
+     * Bind (or unbind) an ingress ACL table or ACL group on a RIF. Enable/Update
      * ingress ACL table or ACL group filtering by assigning a valid object id.
      * Disable ingress filtering by assigning SAI_NULL_OBJECT_ID in the
      * attribute value.
@@ -164,7 +164,7 @@ typedef enum _sai_router_interface_attr_t
     /**
      * @brief RIF bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl table or acl group on a RIF. Enable/Update
+     * Bind (or unbind) an egress ACL table or ACL group on a RIF. Enable/Update
      * egress ACL table or ACL group filtering by assigning a valid object id.
      * Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.

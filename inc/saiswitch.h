@@ -546,7 +546,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Switch/Global bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group globally. Enable/Update
+     * Bind (or unbind) an ingress ACL table or ACL group globally. Enable/Update
      * ingress ACL table or ACL group filtering by assigning the list of valid
      * object id . Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -562,7 +562,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Switch/Global bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl tables or acl group globally. Enable/Update
+     * Bind (or unbind) an egress ACL tables or ACL group globally. Enable/Update
      * egress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -860,7 +860,7 @@ typedef enum _sai_switch_attr_t
      * @brief SAI ECMP default symmetric hash
      *
      * When set, the hash calculation will result in the same value as when the
-     * source and destination addresses (L2 src/dst mac,L3 src/dst ip,L4
+     * source and destination addresses (L2 src/dst MAC,L3 src/dst IP,L4
      * src/dst port) were swapped, ensuring the same conversation will result
      * in the same hash value.
      *
@@ -922,7 +922,7 @@ typedef enum _sai_switch_attr_t
      * @brief SAI LAG default symmetric hash
      *
      * When set, the hash calculation will result in the same value as when the source and
-     * destination addresses (L2 src/dst mac,L3 src/dst ip,L4 src/dst port) were swapped,
+     * destination addresses (L2 src/dst MAC,L3 src/dst IP,L4 src/dst port) were swapped,
      * ensuring the same conversation will result in the same hash value.
      *
      * @type bool
@@ -1241,7 +1241,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MIRROR_TC,
 
     /**
-     * @brief Ingress acl stage.
+     * @brief Ingress ACL stage.
      *
      * @type sai_acl_capability_t
      * @flags READ_ONLY
@@ -1249,7 +1249,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_STAGE_INGRESS,
 
     /**
-     * @brief Egress acl stage.
+     * @brief Egress ACL stage.
      *
      * @type sai_acl_capability_t
      * @flags READ_ONLY
