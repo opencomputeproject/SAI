@@ -456,31 +456,31 @@ typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
  * @brief Get vlan statistics counters.
  *
  * @param[in] vlan_id VLAN id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
         _In_ sai_object_id_t vlan_id,
-        _In_ const sai_vlan_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
+        _In_ const sai_vlan_stat_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
  * @brief Clear vlan statistics counters.
  *
  * @param[in] vlan_id Vlan id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_clear_vlan_stats_fn)(
         _In_ sai_object_id_t vlan_id,
-        _In_ const sai_vlan_stat_t *counter_ids,
-        _In_ uint32_t number_of_counters);
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_vlan_stat_t *counter_ids);
 
 /**
  * @brief VLAN methods table retrieved with sai_api_query()

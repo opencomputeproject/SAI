@@ -34,7 +34,7 @@
  */
 
 /**
- * @brief Attribute Id for sai route object
+ * @brief Attribute Id for SAI route object
  */
 typedef enum _sai_route_entry_attr_t
 {

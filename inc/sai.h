@@ -204,7 +204,7 @@ sai_status_t sai_api_query(
 sai_status_t sai_api_uninitialize(void);
 
 /**
- * @brief Set log level for sai api module. The default log level is #SAI_LOG_LEVEL_WARN
+ * @brief Set log level for SAI api module. The default log level is #SAI_LOG_LEVEL_WARN
  *
  * @param[in] sai_api_id SAI api ID
  * @param[in] log_level Log level
@@ -216,18 +216,18 @@ sai_status_t sai_log_set(
         _In_ sai_log_level_t log_level);
 
 /**
- * @brief Query sai object type.
+ * @brief Query SAI object type.
  *
  * @param[in] sai_object_id Object id
  *
  * @return #SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
- * Otherwise, return a valid sai object type SAI_OBJECT_TYPE_XXX
+ * Otherwise, return a valid SAI object type SAI_OBJECT_TYPE_XXX
  */
 sai_object_type_t sai_object_type_query(
         _In_ sai_object_id_t sai_object_id);
 
 /**
- * @brief Query sai switch id.
+ * @brief Query SAI switch id.
  *
  * @param[in] sai_object_id Object id
  *

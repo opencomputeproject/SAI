@@ -34,7 +34,7 @@
  */
 
 /**
- * @brief Attribute data for sai native hash fields
+ * @brief Attribute data for SAI native hash fields
  */
 typedef enum _sai_native_hash_field_t
 {

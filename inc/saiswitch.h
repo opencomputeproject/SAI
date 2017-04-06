@@ -104,16 +104,16 @@ typedef enum _sai_packet_action_t
 
     /** Combination of Packet Actions */
 
-    /** This is a combination of sai packet action COPY and DROP. */
+    /** This is a combination of SAI packet action COPY and DROP. */
     SAI_PACKET_ACTION_TRAP,
 
-    /** This is a combination of sai packet action COPY and FORWARD. */
+    /** This is a combination of SAI packet action COPY and FORWARD. */
     SAI_PACKET_ACTION_LOG,
 
-    /** This is a combination of sai packet action COPY_CANCEL and DROP */
+    /** This is a combination of SAI packet action COPY_CANCEL and DROP */
     SAI_PACKET_ACTION_DENY,
 
-    /** This is a combination of sai packet action COPY_CANCEL and FORWARD */
+    /** This is a combination of SAI packet action COPY_CANCEL and FORWARD */
     SAI_PACKET_ACTION_TRANSIT
 
 } sai_packet_action_t;

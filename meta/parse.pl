@@ -2743,6 +2743,30 @@ sub CheckHeadersStyle
                 LogWarning "$1 should be equal to $2" if (($1 ne $2) and not($1 =~ /^bulk/))
             }
 
+            if ($line =~ /_In\w+\s+(?:sai_)?uint32_t\s*\*?(\w+)/)
+            {
+                my $param = $1;
+
+                my $pattern = '^(attr_count|object_count|number_of_counters|count)$';
+
+                if (not $param =~ /$pattern/)
+                {
+                    LogWarning "param $1 should match $pattern $header:$n:$line";
+                }
+            }
+
+            if ($line =~ /\bsai\b/ )
+            {
+                # force sai word to be capital
+
+                while ($line =~ /\b(sai)\b(.h)/ig)
+                {
+                    next if $1 eq "SAI" or $2 eq ".h";
+
+                    LogWarning "Sai word $1 should use capital letters $header $n:$line";
+                }
+            }
+
             if ($line =~ /\\/ and not $line =~ /\\[0\[\]]/)
             {
                 LogWarning "line contains \\ which should not be used in this way $header $n:$line";

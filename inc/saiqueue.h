@@ -313,31 +313,31 @@ typedef sai_status_t (*sai_get_queue_attribute_fn)(
  * @brief Get queue statistics counters.
  *
  * @param[in] queue_id Queue id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,
-        _In_ const sai_queue_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
+        _In_ const sai_queue_stat_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
  * @brief Clear queue statistics counters.
  *
  * @param[in] queue_id Queue id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_clear_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,
-        _In_ const sai_queue_stat_t *counter_ids,
-        _In_ uint32_t number_of_counters);
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_queue_stat_t *counter_ids);
 
 /**
  * @brief Qos methods table retrieved with sai_api_query()
