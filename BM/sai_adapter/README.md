@@ -49,6 +49,9 @@ tests/sai_thrift_development_python_server/sai_rpc_server.sh
 * in [sai_adapter.h](inc/sai_adapter.h) add a static decleration for the function.
 * for new/unimplemented api, also add the sai_api decleration, and link in the sai_api_query in the sai_object.h, and sai.c files.
 * Add the function implementation to a .cpp file in the [src/](src/) dir, under the sai_object namespace.
+* For PTF testing:
+    * add thrift function implementation to the [sai_thrift_server](test/sai_thrift_server).
+    * add PTF test in [test/ptf_tests/](test/ptf_tests/).
 ### Additional information
 * the sai_object uses the [switch_meta_data.h](inc/switch_meta_data.h) to manage the runtime information regarding the sai_object_ids etc... 
 * to configure the BM tables, use the P4 thrift API is found (after p4-sofswitch compliation) in /SAI-P4-BM/p4-softswitch/thrift_src/gen-cpp/bm/Standard.h
