@@ -2849,7 +2849,7 @@ sub CheckHeadersStyle
             next if $line =~ /^ {8}bool booldata/;  # union bool
             next if $line =~ /^ {4}(true|false)/;   # bool definition
 
-            LogWarning "header don't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
+            LogWarning "Header doesn't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
         }
     }
 
@@ -2867,7 +2867,7 @@ sub CheckHeadersStyle
 
     my $all = "@keys";
 
-    LogInfo "words to check $count";
+    LogInfo "Words to check: $count";
 
     my @result = `echo "$all" | /usr/bin/aspell -l en -a`;
 
@@ -2899,7 +2899,7 @@ sub CheckHeadersStyle
             $where = $wordsToCheck{$word};
         }
 
-        LogWarning "word '$word' is misspeld $where";
+        LogWarning "Word '$word' is misspelled $where";
     }
 }
 
