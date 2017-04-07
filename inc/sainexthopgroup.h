@@ -41,9 +41,43 @@ typedef enum _sai_next_hop_group_type_t
     /** Next hop group is ECMP */
     SAI_NEXT_HOP_GROUP_TYPE_ECMP,
 
+    /** Next hop protection group.  Contains primary and backup next hops. */
+    SAI_NEXT_HOP_GROUP_TYPE_PROTECTION,
+
     /* Other types of next hop group to be defined in the future, e.g., WCMP */
 
 } sai_next_hop_group_type_t;
+
+/**
+ * @brief No switchover triggers supported
+ */
+#define SAI_NEXT_HOP_SWITCHOVER_TRIGGER_NULL                         0x00000000
+
+/**
+ * @brief Supported switchover triggered by BFD
+ */
+#define SAI_NEXT_HOP_SWITCHOVER_TRIGGER_BFD                          0x00000001
+
+/**
+ * @brief Supported switchover triggered by port goint down
+ */
+#define SAI_NEXT_HOP_SWITCHOVER_TRIGGER_PORT_DOWN                    0x00000002
+
+/**
+ * @brief Next hop group member protection role
+ */
+typedef enum _sai_next_hop_group_member_protection_role_t
+{
+    /** Next hop group member is forwarding */
+    SAI_NEXT_HOP_GROUP_MEMBER_FORWARDING,
+
+    /** Next hop group member is standby */
+    SAI_NEXT_HOP_GROUP_MEMBER_STANDBY,
+
+    /** Next hop group member has failed */
+    SAI_NEXT_HOP_GROUP_MEMBER_FAILED,
+
+} sai_next_hop_group_member_protection_role_t;
 
 /**
  * @brief Attribute id for next hop
@@ -79,6 +113,37 @@ typedef enum _sai_next_hop_group_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_NEXT_HOP_GROUP_ATTR_TYPE,
+
+    /**
+     * @brief Events that can initiate switchover from primary to backup next hop
+     *
+     * Can be a combination of the following:
+     * SAI_NEXT_HOP_SWITCHOVER_TRIGGER_NULL,
+     * SAI_NEXT_HOP_SWITCHOVER_TRIGGER_BFD,
+     * SAI_NEXT_HOP_SWITCHOVER_TRIGGER_PORT_DOWN
+     *
+     * @type sai_uint8_t
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_SWITCHOVER_TYPE,
+
+    /**
+     * @brief Trigger a switchover from primary to backup next hop
+     *
+     * @type bool
+     * @default false
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION and SAI_NEXT_HOP_GROUP_ATTR_CLEAR_SWITCHOVER == false
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER,
+
+    /**
+     * @brief Revert back to forwarding over primary next hop
+     *
+     * @type bool
+     * @default false
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION and SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER == false
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_CLEAR_SWITCHOVER,
 
     /**
      * @brief End of attributes
@@ -126,6 +191,27 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @default 1
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_WEIGHT,
+
+    /**
+     * @brief Preferred role in the protection group
+     *
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
+     *
+     * @type sai_next_hop_group_member_protection_role_t
+     * @flags CREATE_ONLY
+     * @default SAI_NEXT_HOP_GROUP_MEMBER_PRIMARY
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_ROLE,
+
+    /**
+     * @brief The actual role in protection group
+     *
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
+     *
+     * @type sai_next_hop_group_member_protection_role_t
+     * @flags READ_ONLY
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OBSERVED_ROLE,
 
     /**
      * @brief End of attributes
