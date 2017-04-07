@@ -230,7 +230,7 @@ void check_object_type()
 {
     META_LOG_ENTER();
 
-    META_ASSERT_TRUE(SAI_OBJECT_TYPE_NULL == 0, "sai object type null mustbe zero");
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_NULL == 0, "sai object type null must be zero");
 
     size_t i = 0;
 
@@ -701,7 +701,7 @@ void check_attr_default_required(
                     /*
                      * Const on list, this is exception for UDF object since
                      * it's default value is 2 bytes 0xFF,0xFF and it's special
-                     * calse.
+                     * case.
                      */
 
                     break;
@@ -908,7 +908,7 @@ void check_attr_default_value_type(
         case SAI_DEFAULT_VALUE_TYPE_NONE:
         case SAI_DEFAULT_VALUE_TYPE_CONST:
 
-            /* check conditions/cretion flags? */
+            /* check conditions/creation flags? */
             break;
 
         case SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE:
@@ -1073,7 +1073,7 @@ void check_attr_conditions(
             META_ASSERT_FAIL(md, "marked as conditional, but invalid creation flags: 0x%u", md->flags);
     }
 
-    /* condition must be the same object type as attribue we check */
+    /* condition must be the same object type as attribute we check */
 
     size_t index = 0;
 
@@ -1127,7 +1127,7 @@ void check_attr_conditions(
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
+            META_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
         }
 
         switch ((int)cmd->flags)
@@ -1196,12 +1196,12 @@ void check_attr_validonly(
         case SAI_ATTR_FLAGS_CREATE_ONLY:
 
             /*
-             * In generral valid only attribute should be used only on
+             * In general valid only attribute should be used only on
              * CREATE_AND_SET flags, since when attribute is CREATE_ONLY it has
-             * default value and it can't be changed anywa, and entire purpose
+             * default value and it can't be changed anyway, and entire purpose
              * of valid only attribute is to allow change during runtime.
              *
-             * Wthen attribute CREATE_ONLY is marked as valid only is more like
+             * When attribute CREATE_ONLY is marked as valid only is more like
              * indication that this value will be used in that specific case
              * but you won't be able to change it anyway.
              */
@@ -1233,10 +1233,10 @@ void check_attr_validonly(
          * provided for CONST only.
          */
 
-        META_ASSERT_FAIL(md, "expected default value on vlaid only attribute, but none provided");
+        META_ASSERT_FAIL(md, "expected default value on valid only attribute, but none provided");
     }
 
-    /* condition must be the same object type as attribue we check */
+    /* condition must be the same object type as attribute we check */
 
     size_t index = 0;
 
@@ -1312,13 +1312,13 @@ void check_attr_validonly(
             }
             else
             {
-                META_ASSERT_FAIL(md, "validonly attibute is also validonly attribute, not allowed");
+                META_ASSERT_FAIL(md, "validonly attribute is also validonly attribute, not allowed");
             }
         }
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
+            META_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
         }
 
         switch ((int)cmd->flags)
@@ -1683,7 +1683,7 @@ void check_attr_vlan(
                 md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT16 &&
                 md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16)
         {
-            META_ASSERT_FAIL(md, "marked as vlan, but fiels has wrong attr value type");
+            META_ASSERT_FAIL(md, "marked as vlan, but has wrong attr value type");
         }
     }
 }
@@ -1973,7 +1973,7 @@ void check_attr_existing_objects(
     META_LOG_ENTER();
 
     /*
-     * Purpose of this test it to find attributes on objects exisring already
+     * Purpose of this test it to find attributes on objects existing already
      * on the switch with attributes that are mandatory on create and create
      * and set.  Those attributes can be changed by user fro previous value,
      * and this causes problem for comparison logic to bring those objects to
@@ -1990,7 +1990,7 @@ void check_attr_existing_objects(
     {
         /*
          * Those objects are not existing on the switch by default user needs
-         * to crete them.
+         * to create them.
          */
 
         case SAI_OBJECT_TYPE_SAMPLEPACKET:
@@ -2027,7 +2027,7 @@ void check_attr_existing_objects(
     /*
      * If attribute is mandatory on create and create and set then there is no
      * default value on created object, and user can change it's value so in
-     * comparison logic we will need to mantain this state somewhere as
+     * comparison logic we will need to maintain this state somewhere as
      * default.
      */
 
@@ -2063,7 +2063,7 @@ void check_attr_existing_objects(
 
             /*
              * When type is object id we need to store it's previous value
-             * since we will not be albe to bring it to default.
+             * since we will not be able to bring it to default.
              */
 
             META_WARN_LOG("Default value needs to be stored %s", md->attridname);
@@ -2201,7 +2201,7 @@ void check_object_infos()
             const sai_attr_metadata_t* am = meta[index];
 
             META_ASSERT_TRUE((int)am->attrid >= 0, "attribute must be non negative");
-            META_ASSERT_TRUE(last < (int)am->attrid, "attributes are not incresing");
+            META_ASSERT_TRUE(last < (int)am->attrid, "attributes are not increasing");
 
             if (last + 1 != (int)am->attrid)
             {
@@ -2760,7 +2760,7 @@ void check_mixed_object_list_types()
 
     /*
      * Purpose of this check is to find out if any of object id lists supports
-     * multiple object types at the same time.  For now this abbility will not
+     * multiple object types at the same time.  For now this ability will not
      * be supported.
      */
 
@@ -2862,7 +2862,7 @@ void check_api_names()
      * Purpose of this check is to find out if all api names correspond to
      * actual object names and follow convention name and the same signature
      * except some special objects. Currently this test is performed here
-     * manually, but it could be coverted to automatic generated test using
+     * manually, but it could be converted to automatic generated test using
      * parse.pl script.
      *
      * NOTE: Currently all new objects needs to be added here manually.
@@ -2939,7 +2939,7 @@ void check_api_names()
 
     /*
      * hostif packet is special since its not a real object but represents
-     * attruibutes received from host interface.
+     * attributes received from host interface.
      */
 
     checked[(int)SAI_OBJECT_TYPE_HOSTIF_PACKET] = SAI_OBJECT_TYPE_HOSTIF_PACKET;
@@ -2950,7 +2950,7 @@ void check_api_names()
 
     /*
      * fdb flush is special since its not a real object but represents
-     * attruibutes that are passed when flushng fdb entries
+     * attributes that are passed when flushing fdb entries
      */
 
     checked[(int)SAI_OBJECT_TYPE_FDB_FLUSH] = SAI_OBJECT_TYPE_FDB_FLUSH;
@@ -3115,7 +3115,7 @@ void check_single_non_object_id_for_rev_graph(
             META_ASSERT_NOT_NULL(rm->structmember);
 
             /*
-             * This graph entry is struct memner, maybe this i the
+             * This graph entry is struct member, maybe this i the
              * one we are looking for, since graph can have multiple
              * entries for the same object.
              */
@@ -3578,7 +3578,7 @@ void check_object_id_non_object_id(
 
     /*
      * Purpose of this test is to check whether isobjectid and isnonobject id
-     * have oposite values.
+     * have opposite values.
      */
 
     META_ASSERT_TRUE(oi->isnonobjectid == !oi->isobjectid, "non object id object id not match");

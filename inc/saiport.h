@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -121,7 +121,7 @@ typedef enum _sai_port_internal_loopback_mode_t
     /** disable internal loopback */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_NONE,
 
-    /** port internal loopback at phy module */
+    /** port internal loopback at PHY module */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_PHY,
 
     /** port internal loopback at MAC module */
@@ -993,8 +993,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port EEE Configuration
      *
-     * Energy Efficient Ethernet(EEE) is an IEEE 802.3 az standard aiming to
-     * reduce power consumptions on Ethernet ports (native copper ports).
+     * Energy Efficient Ethernet(EEE) is an IEEE 802.3az standard aiming to
+     * reduce power consumption on Ethernet ports (native copper ports).
      * Enable the EEE on port level
      *
      * @type bool
@@ -1006,7 +1006,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port EEE IDLE time configuration
      *
-     * Time (in microsecs) to move to Low power state (No traffic), at the end of which MAC transitions to Low power state.
+     * Time (in microseconds) to move to Low power state (No traffic), at the
+     * end of which MAC transitions to Low power state.
      * MAX value set more benefit.
      *
      * @type sai_uint16_t
@@ -1019,7 +1020,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port EEE Wakeup time configuration
      *
-     * Time(in microsecs) to wait before transmitter is leaving Low Power Mode State. Min value set avoid latency.
+     * Time (in microseconds) to wait before transmitter is leaving Low Power
+     * Mode State. Min value set avoid latency.
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
@@ -1070,7 +1072,7 @@ typedef enum _sai_port_stat_t
     /** SAI port stat if in errors */
     SAI_PORT_STAT_IF_IN_ERRORS,
 
-    /** SAI port stat if in unknown protos */
+    /** SAI port stat if in unknown protocols */
     SAI_PORT_STAT_IF_IN_UNKNOWN_PROTOS,
 
     /** SAI port stat if in broadcast pkts */
@@ -1097,7 +1099,7 @@ typedef enum _sai_port_stat_t
     /** SAI port stat if out errors */
     SAI_PORT_STAT_IF_OUT_ERRORS,
 
-    /** SAI port stat if out qlen */
+    /** SAI port stat if out queue length */
     SAI_PORT_STAT_IF_OUT_QLEN,
 
     /** SAI port stat if out broadcast pkts */
@@ -1115,7 +1117,7 @@ typedef enum _sai_port_stat_t
     /** SAI port stat ether stats broadcast pkts */
     SAI_PORT_STAT_ETHER_STATS_BROADCAST_PKTS,
 
-    /** SAI port stat ether stats undersize pkts */
+    /** SAI port stat ether stats undersized pkts */
     SAI_PORT_STAT_ETHER_STATS_UNDERSIZE_PKTS,
 
     /** SAI port stat ether stats fragments */
@@ -1208,37 +1210,37 @@ typedef enum _sai_port_stat_t
     /** SAI port stat IP out discards */
     SAI_PORT_STAT_IP_OUT_DISCARDS,
 
-    /** SAI port stat ipv6 in receives */
+    /** SAI port stat IPv6 in receives */
     SAI_PORT_STAT_IPV6_IN_RECEIVES,
 
-    /** SAI port stat ipv6 in octets */
+    /** SAI port stat IPv6 in octets */
     SAI_PORT_STAT_IPV6_IN_OCTETS,
 
-    /** SAI port stat ipv6 in ucast pkts */
+    /** SAI port stat IPv6 in ucast pkts */
     SAI_PORT_STAT_IPV6_IN_UCAST_PKTS,
 
-    /** SAI port stat ipv6 in non ucast pkts */
+    /** SAI port stat IPv6 in non ucast pkts */
     SAI_PORT_STAT_IPV6_IN_NON_UCAST_PKTS,
 
-    /** SAI port stat ipv6 in mcast pkts */
+    /** SAI port stat IPv6 in mcast pkts */
     SAI_PORT_STAT_IPV6_IN_MCAST_PKTS,
 
-    /** SAI port stat ipv6 in discards */
+    /** SAI port stat IPv6 in discards */
     SAI_PORT_STAT_IPV6_IN_DISCARDS,
 
-    /** SAI port stat ipv6 out octets */
+    /** SAI port stat IPv6 out octets */
     SAI_PORT_STAT_IPV6_OUT_OCTETS,
 
-    /** SAI port stat ipv6 out ucast pkts */
+    /** SAI port stat IPv6 out ucast pkts */
     SAI_PORT_STAT_IPV6_OUT_UCAST_PKTS,
 
-    /** SAI port stat ipv6 out non ucast pkts */
+    /** SAI port stat IPv6 out non ucast pkts */
     SAI_PORT_STAT_IPV6_OUT_NON_UCAST_PKTS,
 
-    /** SAI port stat ipv6 out mcast pkts */
+    /** SAI port stat IPv6 out mcast pkts */
     SAI_PORT_STAT_IPV6_OUT_MCAST_PKTS,
 
-    /** SAI port stat ipv6 out discards */
+    /** SAI port stat IPv6 out discards */
     SAI_PORT_STAT_IPV6_OUT_DISCARDS,
 
     /** get/set WRED green packet count [uint64_t] */

@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -265,7 +265,7 @@ typedef enum _sai_udf_group_attr_t
  * @param[out] udf_id UDF id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
- * @param[in] attr_list Aarray of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -354,7 +354,7 @@ typedef sai_status_t (*sai_set_udf_match_attribute_fn)(
  *
  * @param[in] udf_match_id UDF match id
  * @param[in] attr_count Number of attributes
- * @param[inout] attrs Aarray of attributes
+ * @param[inout] attr_list List of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -406,7 +406,7 @@ typedef sai_status_t (*sai_set_udf_group_attribute_fn)(
  *
  * @param[in] udf_group_id UDF group id
  * @param[in] attr_count Number of attributes
- * @param[inout] attrs Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */

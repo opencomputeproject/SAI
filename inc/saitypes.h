@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -131,7 +131,7 @@ typedef void *sai_pointer_t;
  * In get attribute function call, the function call returns a list of objects
  * to the caller in the list member. The caller is responsible for allocating the
  * buffer for the list member and set the count member to the size of allocated object
- * list. If the size is large enough to accomodate the list of object id, the
+ * list. If the size is large enough to accommodate the list of object id, the
  * callee will then fill the list member and set the count member to the actual
  * number of objects. If the list size is not large enough, the callee will set the
  * count member to the actual number of object id and return
@@ -144,7 +144,7 @@ typedef struct _sai_object_list_t {
 } sai_object_list_t;
 
 /**
- * @brief SAI common api type
+ * @brief SAI common API type
  */
 typedef enum _sai_common_api_t {
     SAI_COMMON_API_CREATE = 0,
@@ -266,14 +266,14 @@ typedef struct _sai_s32_range_t {
 } sai_s32_range_t;
 
 /**
- * @brief Defines a vlan list datastructure
+ * @brief Defines a vlan list data structure
  */
 typedef struct _sai_vlan_list_t {
 
-    /** Number of Vlans */
+    /** Number of VLANs */
     uint32_t count;
 
-    /** List of Vlans */
+    /** List of VLANs */
     sai_vlan_id_t *list;
 
 } sai_vlan_list_t;
@@ -538,7 +538,9 @@ typedef enum _sai_fdb_entry_bridge_type_t
 } sai_fdb_entry_bridge_type_t;
 
 /**
- * @brief Data Type to use enum's as attribute value is sai_int32_t s32
+ * @brief Data Type
+ *
+ * To use enum values as attribute value is sai_int32_t s32
  */
 typedef union {
     bool booldata;
@@ -598,7 +600,7 @@ typedef enum _sai_bulk_op_type_t {
  * @param[in] object_count Number of objects to create
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to create.
- * @param[in] attrs List of attributes for every object.
+ * @param[in] attr_list List of attributes for every object.
  * @param[in] type Bulk operation type.
  *
  * @param[out] object_id List of object ids returned
@@ -613,7 +615,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t object_count,
         _In_ const uint32_t *attr_count,
-        _In_ const sai_attribute_t **attrs,
+        _In_ const sai_attribute_t **attr_list,
         _In_ sai_bulk_op_type_t type,
         _Out_ sai_object_id_t *object_id,
         _Out_ sai_status_t *object_statuses);

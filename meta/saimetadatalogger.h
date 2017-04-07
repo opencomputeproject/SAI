@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -34,7 +34,7 @@
 /**
  * @brief Log level function definition.
  *
- * User can sepcify his own function thah will be called when message log level
+ * User can specify his own function that will be called when message log level
  * will be greater or equal to #sai_metadata_log_level.
  */
 typedef void (*sai_metadata_log_fn)(
@@ -53,7 +53,7 @@ typedef void (*sai_metadata_log_fn)(
 extern volatile sai_metadata_log_fn sai_metadata_log;
 
 /**
- * @brief Log level for sai metadat macros.
+ * @brief Log level for sai metadata macros.
  *
  * Log level can be changed by user at any time.
  *

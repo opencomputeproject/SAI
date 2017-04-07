@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -23,8 +23,8 @@
  *
  * @par Abstract
  *
- *    This module defines SAI Host Interface which is responsbile for
- *    creating/deleting linux netdev corresponding to the host interface type.
+ *    This module defines SAI Host Interface which is responsible for
+ *    creating/deleting Linux netdev corresponding to the host interface type.
  *    All the management operations of the netdevs such as changing IP address
  *    are outside the scope of SAI.
  *
@@ -623,7 +623,7 @@ typedef enum _sai_hostif_attr_t
     /**
      * @brief Name [char[HOSTIF_NAME_SIZE]]
      *
-     * The maximum number of charactars for the name is HOSTIF_NAME_SIZE - 1 since
+     * The maximum number of characters for the name is HOSTIF_NAME_SIZE - 1 since
      * it needs the terminating null byte ('\0') at the end.
      *
      * Valid only when #SAI_HOSTIF_ATTR_TYPE == #SAI_HOSTIF_TYPE_NETDEV
@@ -653,7 +653,7 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_QUEUE,
 
     /**
-     * @brief Rnd of attributes
+     * @brief End of attributes
      */
     SAI_HOSTIF_ATTR_END,
 
@@ -671,7 +671,7 @@ typedef enum _sai_hostif_attr_t
  * @param[out] hif_id Host interface id
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
- * @param[in] attr_list Aarray of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -830,7 +830,7 @@ typedef enum _sai_hostif_table_entry_attr_t
     SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
 
     /**
-     * @brief Rnd of attributes
+     * @brief End of attributes
      */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_END,
 
@@ -848,7 +848,7 @@ typedef enum _sai_hostif_table_entry_attr_t
  * @param[out] hif_table_entry Host interface table entry
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
- * @param[in] attr_list Aarray of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -908,7 +908,7 @@ typedef enum _sai_hostif_tx_type_t
     /** tx packet goes to the switch ASIC processing pipeline to decide the output port */
     SAI_HOSTIF_TX_TYPE_PIPELINE_LOOKUP,
 
-    /** Custom range bae */
+    /** Custom range base */
     SAI_HOSTIF_TX_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hostif_tx_type_t;
@@ -963,7 +963,7 @@ typedef enum _sai_hostif_packet_attr_t
      *
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
-     * Applicable for use-case like SAMPLEPACKET traps
+     * Applicable for use-case like samplepacket traps
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY

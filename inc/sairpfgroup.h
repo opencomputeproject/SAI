@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -203,7 +203,7 @@ typedef sai_status_t (*sai_set_rpf_group_member_attribute_fn)(
 /**
  * @brief Get RPF interface Group attribute
  *
- * @param[in] sai_object_id_t Rpf group member ID
+ * @param[in] sai_object_id_t RPF group member ID
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *

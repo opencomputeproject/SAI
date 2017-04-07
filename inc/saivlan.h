@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -109,7 +109,7 @@ typedef enum _sai_vlan_attr_t
     /**
      * @brief STP Instance that the VLAN is associated to
      *
-     * Ddefault to default STP instance id
+     * Default to default STP instance id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -154,9 +154,9 @@ typedef enum _sai_vlan_attr_t
      *
      * Indicating the output ports/LAGs for unknown non-IP multicast packets.
      * This attribute only takes effect when one of the following conditions is met:
-     * (1)non-IP multicast packet
-     * (2)IPv4 multicast packet && not linklocal && IPv4 mcast snooping disabled for vlan
-     * (3)IPv6 multicast packet && not linklocal && IPv6 mcast snooping disabled for vlan
+     * (1) non-IP multicast packet
+     * (2) IPv4 multicast packet && not linklocal && IPv4 mcast snooping disabled for vlan
+     * (3) IPv6 multicast packet && not linklocal && IPv6 mcast snooping disabled for vlan
      * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
      * If the group has no member, unknown multicast packets will be discarded.
      *
@@ -173,7 +173,7 @@ typedef enum _sai_vlan_attr_t
      *
      * Indicating the output ports/LAGs for unknown IPv4 multicast packets.
      * This attribute only takes effect when the following condition is met:
-     * (1)IPv4 multicast packet && not linklocal && IPv4 mcast snooping enabled for vlan
+     * (1) IPv4 multicast packet && not linklocal && IPv4 mcast snooping enabled for vlan
      * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
      * If the group has no member, unknown multicast packets will be discarded.
      *
@@ -190,7 +190,7 @@ typedef enum _sai_vlan_attr_t
      *
      * Indicating the output ports/LAGs for unknown IPv6 multicast packets.
      * This attribute only takes effect when the following condition is met:
-     * (1)IPv6 multicast packet && not linklocal && IPv6 mcast snooping enabled for vlan
+     * (1) IPv6 multicast packet && not linklocal && IPv6 mcast snooping enabled for vlan
      * In case of SAI_NULL_OBJECT_ID, unknown multicast packets will be discarded.
      * If the group has no member, unknown multicast packets will be discarded.
      *
@@ -271,7 +271,7 @@ typedef enum _sai_vlan_attr_t
     /** Custom range base value */
     SAI_VLAN_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
-    /** End oo custom range base */
+    /** End of custom range base */
     SAI_VLAN_ATTR_CUSTOM_RANGE_END
 
 } sai_vlan_attr_t;
