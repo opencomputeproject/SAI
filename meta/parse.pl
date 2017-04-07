@@ -8,6 +8,7 @@ use XML::Simple qw(:strict);
 use Getopt::Std;
 use Data::Dumper;
 use Term::ANSIColor;
+#use Text::Aspell;
 
 my $errors = 0;
 my $warnings = 0;
@@ -2188,6 +2189,7 @@ sub ReadHeaderFile
 {
     my $filename = shift;
     local $/ = undef;
+
     open FILE, "$INCLUDEDIR/$filename" or die "Couldn't open file $INCLUDEDIR/$filename: $!";
     binmode FILE;
     my $string = <FILE>;
@@ -2643,12 +2645,6 @@ sub CheckDoxygenStyle
         return;
     }
 
-    if ($mark eq "return" and not $line =~ /\@return\s+#/)
-    {
-        LogWarning "\@return should start with #: $header $n:$line";
-        return;
-    }
-
     if ($mark eq "param" and not $line =~ /\@param\[(in|out|inout)\]\s+([a-z]\w+)\s+([A-Z]\w+)/)
     {
         LogWarning "\@param should be in format \@param[in|out|inout] [A-Z]\\w+: $header $n:$line";
@@ -2669,6 +2665,32 @@ sub CheckHeadersStyle
     #
 
     my @headers = GetHeaderFiles();
+
+    my @magicWords = qw/SAI IP MAC L2 ACL L3 GRE ECMP EEE FDB FD FEC ICMP I2C
+        HW IEEE IP2ME L2MC LAG ARP ASIC BGP CAM CBS CB CIR CIDR CRC DLL CPU TTL
+        TOS ECN DSCP TC MACST MTU NPU PFC PBS PCI PIR QOS RFC RFP SDK RSPAN
+        ERSPAN SPAN SNMP SSH STP TCAM TCP UDP TPID UDF UOID VNI VR VRRP WCMP
+        WWW API CCITT RARP CFI MPLS IPMC RPF WRED XON XOFF NHLFE SG/;
+
+    # we could put that to local dictionary file
+
+    my @spellExceptions = qw/ http www apache MERCHANTABILITY Mellanox defgroup
+        Enum param attr VLAN IPv4 IPv6 Vlan inout policer Src Dst Decrement
+        lookups optimizations lookup bool EtherType tx rx validonly enum sai
+        loopback Multicast isvlan 6th nexthop nexthopgroup encap decap src dst
+        wildcard Wilcard const APIs multi multicast LAGs Linux mcast HQoS
+        childs callee Callee boolean attrvalue unicast Unicast untagged
+        Untagged Policer objlist BGPv6 allownull 0xFF Hostif samplepacket
+        Samplepacket pkts Loopback linklocal lossless Mbps vlan ucast
+        ingressing MCAST netdev AUTONEG decapsulation egressing functionalities
+        rv subnet subnets Uninitialize versa VRFs Netdevice netdevs PGs CRC32
+        HQOS Wildcard VLANs VLAN2 SerDes FC Wakeup warmboot Inservice PVID PHY
+        /;
+
+    my %exceptions = map { $_ => $_ } @spellExceptions;
+
+    my %wordsToCheck = ();
+    my %wordsChecked = ();
 
     for my $header (@headers)
     {
@@ -2743,7 +2765,7 @@ sub CheckHeadersStyle
                 LogWarning "$1 should be equal to $2" if (($1 ne $2) and not($1 =~ /^bulk/))
             }
 
-            if ($line =~ /_In\w+\s+(?:sai_)?uint32_t\s*\*?(\w+)/)
+            if ($line =~ /_(?:In|Out)\w+\s+(?:sai_)?uint32_t\s*\*?(\w+)/)
             {
                 my $param = $1;
 
@@ -2755,14 +2777,13 @@ sub CheckHeadersStyle
                 }
             }
 
-            my @magicWords = qw/SAI IP MAC L2 ACL L3 GRE ECMP EEE FDB FD FEC ICMP I2C HW IEEE IP2ME L2MC LAG
-            ARP ASIC BGP CAM CBS CB CIR CIDR CRC DLL CPU TTL TOS ECN DSCP TC MACST MTU NPU PFC PBS PCI PIR
-            QOS RFC RFP SDK RSPAN ERSPAN SPAN SNMP SSH STP TCAM TCP UDP TPID UDF UOID VNI VR VRRP WCMP/;
-
             my $pattern = join"|",@magicWords;
 
-            while ($line =~ /\b($pattern)\b/ig)
+            while ($line =~ /\b($pattern)\b/igp)
             {
+                my $pre = $`;
+                my $post = $';
+
                 # force special word to be capital
 
                 my $word = $1;
@@ -2770,8 +2791,37 @@ sub CheckHeadersStyle
                 next if $word =~ /^($pattern)$/;
                 next if $line =~ /$word.h/;
                 next if not $line =~ /\*/; # must contain star, so will be comment
+                next if "$pre$word" =~ m!http://$word$!;
 
-                LogWarning "Word $word should use capital letters $header $n:$line";
+                LogWarning "Word '$word' should use capital letters $header $n:$line";
+            }
+
+            # perform aspell checking (move to separate method)
+
+            if ($line =~ m!^\s*(\*|/\*\*)!)
+            {
+                while ($line =~ /\b([a-z0-9']+)\b/ig)
+                {
+                    my $pre = $`;
+                    my $post = $';
+                    my $word = $1;
+
+                    next if $word =~ /^($pattern)$/; # capital words
+
+                    # look into good and bad words hash to speed things up
+
+                    next if defined $exceptions{$word};
+                    next if $word =~/^sai\w+/i;
+                    next if $word =~/0x\S+L/;
+                    next if $word =~/\S+L/;
+                    next if "$pre$word" =~/802.\d+\w+/;
+
+                    next if defined $wordsChecked{$word};
+
+                    $wordsChecked{$word} = 1;
+
+                    $wordsToCheck{$word} = "$header $n:$line";
+                }
             }
 
             if ($line =~ /\\/ and not $line =~ /\\[0\[\]]/)
@@ -2801,6 +2851,51 @@ sub CheckHeadersStyle
 
             LogWarning "header don't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
         }
+    }
+
+    return if not -e "/usr/bin/aspell";
+
+    LogInfo "Running Aspell";
+
+    my @keys = sort keys %wordsToCheck;
+
+    my $count = @keys;
+
+    my $all = "@keys";
+
+    LogInfo "words to check $count";
+
+    my @result = `echo "$all" | /usr/bin/aspell -l en -a`;
+
+    for my $res (@result)
+    {
+        next if not $res =~ /^\s*&\s*(\S+)/;
+
+        my $word = $1;
+
+        chomp $res;
+
+        my $where = "??";
+
+        if (not defined $wordsToCheck{$word})
+        {
+            for my $k (@keys)
+            {
+                if ($k =~/(^$word|$word$)/)
+                {
+                    $where = $wordsToCheck{$k};
+                    last;
+                }
+
+                $where = $wordsToCheck{$k} if ($k =~/$word/);
+            }
+        }
+        else
+        {
+            $where = $wordsToCheck{$word};
+        }
+
+        LogWarning "word '$word' is misspeld $where";
     }
 }
 

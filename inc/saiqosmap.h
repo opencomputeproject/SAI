@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -112,7 +112,7 @@ typedef enum _sai_qos_map_attr_t
     /** Custom range base value */
     SAI_QOS_MAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
-    /** Endo of custom range base */
+    /** End of custom range base */
     SAI_QOS_MAP_ATTR_CUSTOM_RANGE_END
 
 } sai_qos_map_attr_t ;
@@ -156,7 +156,7 @@ typedef sai_status_t (*sai_set_qos_map_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attrbutes of QOS map
+ * @brief Get attributes of QOS map
  *
  * @param[in] qos_map_id Map id
  * @param[in] attr_count Number of attributes

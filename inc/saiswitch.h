@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -37,7 +37,7 @@
  */
 
 /**
- * @brief Maximum Hardware ID Lenght
+ * @brief Maximum Hardware ID Length
  */
 #define SAI_MAX_HARDWARE_ID_LEN                 255
 
@@ -167,7 +167,7 @@ typedef enum _sai_switch_switching_mode_t
  */
 typedef enum _sai_hash_algorithm_t
 {
-    /** CRC-based hash algorithm */
+    /** CRC based hash algorithm */
     SAI_HASH_ALGORITHM_CRC = 0,
 
     /** XOR-based hash algorithm */
@@ -176,7 +176,7 @@ typedef enum _sai_hash_algorithm_t
     /** Random-based hash algorithm */
     SAI_HASH_ALGORITHM_RANDOM = 2,
 
-    /** Lower 16-bits of CRC32-based hash algorithm */
+    /** Lower 16-bits of CRC32 based hash algorithm */
     SAI_HASH_ALGORITHM_CRC_32LO = 3,
 
     /** Higher 16-bits of CRC32-based hash algorithm */
@@ -381,7 +381,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ON_LINK_ROUTE_SUPPORTED,
 
     /**
-     * @brief Oper state
+     * @brief Operational state
      *
      * @type sai_switch_oper_status_t
      * @flags READ_ONLY
@@ -602,7 +602,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUPS_PER_HIERARCHY_LEVEL,
 
     /**
-     * @brief HQOS - Maximum number of childs supported per scheudler group
+     * @brief HQOS - Maximum number of childs supported per scheduler group
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -720,7 +720,7 @@ typedef enum _sai_switch_attr_t
      *
      * Will be 0 for #SAI_SWITCH_RESTART_TYPE_NONE. The Host Adapter will have to
      * wait for this minimum interval of time before it decides to bring down
-     * SAI due to init failure.
+     * SAI due to initialize failure.
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -1114,7 +1114,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Handle for switch profile id.
      *
-     * Use this to retrive the Key-Vlaue pairs as part of switch
+     * Use this to retrieve the Key-Value pairs as part of switch
      * initialization.
      *
      * @type sai_uint32_t
@@ -1128,7 +1128,7 @@ typedef enum _sai_switch_attr_t
      *
      * Hardware information format is based on SAI implementations by vendors.
      * String is NULL terminated. Format is vendor specific.
-     * Example: Like PCI location, I2C adddress etc.
+     * Example: Like PCI location, I2C address etc.
      * In case of NULL, First NPU attached to CPU will be initialized.
      * Single NPU case this attribute is optional.
      *
@@ -1161,7 +1161,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_INIT_SWITCH,
 
     /**
-     * @brief Set Switch oper status change notification callback
+     * @brief Set Switch operational status change notification callback
      * function passed to the adapter.
      *
      * Use sai_switch_state_change_notification_fn as notification function.
@@ -1353,8 +1353,8 @@ typedef enum _sai_switch_attr_t
  *
  * 0: cold boot. Initialize NPU and external phys.
  * 1: warm boot. Do not re-initialize NPU or external phys, reconstruct SAI/SDK state from stored state.
- * 2: fast boot. Only initilize NPU. SAI/SDK state should not be persisted except for those related
- *    to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status.
+ * 2: fast boot. Only initialize NPU. SAI/SDK state should not be persisted except for those related
+ *    to physical port attributes such as SPEED, AUTONEG mode, admin state, operational status.
  */
 #define SAI_KEY_BOOT_TYPE                         "SAI_BOOT_TYPE"
 
@@ -1374,7 +1374,7 @@ typedef enum _sai_switch_attr_t
  * @def SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE
  * Vendor specific Configuration file for Hardware Port Profile ID parameters.
  * HW port profile ID can be used to set vendor specific port attributes based on
- * the tranceiver type plugged in to the port
+ * the transceiver type plugged in to the port
  */
 #define SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE    "SAI_HW_PORT_PROFILE_ID_CONFIG_FILE"
 
@@ -1390,10 +1390,10 @@ typedef void (*sai_switch_shutdown_request_notification_fn)(
         _In_ sai_object_id_t switch_id);
 
 /**
- * @brief Switch oper state change notification
+ * @brief Switch operational state change notification
  *
  * @param[in] switch_id Switch Id
- * @param[in] switch_oper_status New switch oper state
+ * @param[in] switch_oper_status New switch operational state
  */
 typedef void (*sai_switch_state_change_notification_fn)(
         _In_ sai_object_id_t switch_id,

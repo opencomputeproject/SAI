@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -93,7 +93,7 @@ typedef enum _sai_queue_attr_t
      * @brief Parent scheduler node
      *
      * In case of Hierarchical QOS not supported, the parent node is the port.
-     * Condition on whether Hierarchial QOS is supported or not, need to remove
+     * Condition on whether Hierarchical QOS is supported or not, need to remove
      * the MANDATORY_ON_CREATE FLAG when HQoS is introduced
      *
      * @type sai_object_id_t

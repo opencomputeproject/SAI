@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -28,13 +28,13 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAISTP SAI - STP specific public APIs and datastructures
+ * @defgroup SAISTP SAI - STP specific public APIs and data structures
  *
  * @{
  */
 
 /**
- * @brief Datastructure for STP port state
+ * @brief Data structure for STP port state
  */
 typedef enum _sai_stp_port_state_t
 {
@@ -60,7 +60,7 @@ typedef enum _sai_stp_attr_t
     SAI_STP_ATTR_START,
 
     /**
-     * @brief Vlans attached to STP instance
+     * @brief VLANs attached to STP instance
      *
      * @type sai_vlan_list_t
      * @flags READ_ONLY

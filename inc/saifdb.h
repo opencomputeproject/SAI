@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -90,7 +90,7 @@ typedef enum _sai_fdb_event_t
     /** FDB entry move */
     SAI_FDB_EVENT_MOVE,
 
-    /** FDB entry flushd */
+    /** FDB entry flushed */
     SAI_FDB_EVENT_FLUSHED,
 
 } sai_fdb_event_t;
@@ -191,7 +191,7 @@ typedef enum _sai_fdb_flush_entry_type_t
  * = #SAI_FDB_FLUSH_ENTRY_TYPE_STATIC. If you want to flush both static and dynamic entries,
  * then there is no need to specify the #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE attribute.
  * The API uses AND operation when multiple attributes are specified. For
- * exmaple,
+ * example,
  * 1) Flush all entries in FDB table - Do not specify any attribute
  * 2) Flush all entries by bridge port - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
  * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_VLAN_ID

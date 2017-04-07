@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIMIRROR SAI - Mirror specific public APIs and datastructures
+ * @defgroup SAIMIRROR SAI - Mirror specific public APIs and data structures
  *
  * @{
  */
@@ -80,7 +80,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
 
     /**
-     * @brief Destination/Analyser/Monitor Port
+     * @brief Destination/Analyzer/Monitor Port
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -121,7 +121,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_VLAN_TPID,
 
     /**
-     * @brief L2 header VlanId. Valid for RSPAN or ERSPAN with valid Vlan header
+     * @brief L2 header VLAN Id. Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -141,7 +141,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
 
     /**
-     * @brief L2 header Vlan-CFI (1 bit). Valid for RSPAN or ERSPAN with valid Vlan header
+     * @brief L2 header Vlan CFI (1 bit). Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
