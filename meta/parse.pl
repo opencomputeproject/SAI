@@ -2855,7 +2855,8 @@ sub CheckHeadersStyle
 
     if (not -e "/usr/bin/aspell")
     {
-        LogIndo "ASPELL IS NOT PRESENT, will skip checkking";
+        LogInfo "ASPELL IS NOT PRESENT, will skip check";
+        return;
     }
 
     LogInfo "Running Aspell";
