@@ -50,7 +50,7 @@ typedef enum _sai_tam_stat_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP, 
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP,
      *          SAI_OBJECT_TYPE_QUEUE
      */
     SAI_TAM_STAT_ATTR_PARENT_ID = SAI_TAM_STAT_ATTR_START,
