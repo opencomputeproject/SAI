@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -153,7 +153,7 @@ typedef sai_status_t (*sai_set_ipmc_group_attribute_fn)(
  * @brief Get IPMC Group attribute
  *
  * @param[in] sai_object_id_t IPMC group id
- * @param[in] attr_count -Number of attributes
+ * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -166,9 +166,9 @@ typedef sai_status_t (*sai_get_ipmc_group_attribute_fn)(
 /**
  * @brief Create IPMC group member
  *
- * @param[out] ipmc_group_member_id - IPMC group member id
- * @param[in] attr_count - number of attributes
- * @param[in] attr_list - array of attributes
+ * @param[out] ipmc_group_member_id IPMC group member id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -181,9 +181,9 @@ typedef sai_status_t (*sai_create_ipmc_group_member_fn)(
 /**
  * @brief Remove IPMC group member
  *
- * @param[in] ipmc_group_member_id - IPMC group member id
+ * @param[in] ipmc_group_member_id IPMC group member id
  *
- * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_ipmc_group_member_fn)(
         _In_ sai_object_id_t ipmc_group_member_id);
@@ -191,8 +191,8 @@ typedef sai_status_t (*sai_remove_ipmc_group_member_fn)(
 /**
  * @brief Set IPMC Group attribute
  *
- * @param[in] sai_object_id_t - IPMC group member id
- * @param[in] attr - attribute
+ * @param[in] sai_object_id_t IPMC group member id
+ * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -203,11 +203,11 @@ typedef sai_status_t (*sai_set_ipmc_group_member_attribute_fn)(
 /**
  * @brief Get IPMC Group attribute
  *
- * @param[in] sai_object_id_t - ipmc_group_member_id
- * @param[in] attr_count - number of attributes
- * @param[inout] attr_list - array of attributes
+ * @param[in] sai_object_id_t IPMC group member ID
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
- * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_ipmc_group_member_attribute_fn)(
         _In_ sai_object_id_t ipmc_group_member_id,

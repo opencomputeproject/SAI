@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIMIRROR SAI - Mirror specific public APIs and datastructures
+ * @defgroup SAIMIRROR SAI - Mirror specific public APIs and data structures
  *
  * @{
  */
@@ -38,13 +38,13 @@
  */
 typedef enum _sai_mirror_session_type_t
 {
-    /** Local span */
+    /** Local SPAN */
     SAI_MIRROR_SESSION_TYPE_LOCAL = 0,
 
-    /** Remote span */
+    /** Remote SPAN */
     SAI_MIRROR_SESSION_TYPE_REMOTE,
 
-    /** Enhanced Remote span */
+    /** Enhanced Remote SPAN */
     SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE,
 
 } sai_mirror_session_type_t;
@@ -80,7 +80,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
 
     /**
-     * @brief Destination/Analyser/Monitor Port
+     * @brief Destination/Analyzer/Monitor Port
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -95,6 +95,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      * @default 0
      */
     SAI_MIRROR_SESSION_ATTR_TRUNCATE_SIZE,
@@ -109,41 +110,43 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TC,
 
     /**
-     * @brief Valid for RSPAN and ERSPAN
-     *
-     * L2 header TPID if vlanId is not zero
+     * @brief L2 header TPID. Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint16_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0x8100
+     * @validonly SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_TPID,
 
     /**
-     * @brief Valid for RSPAN and ERSPAN L2 header VlanId
+     * @brief L2 header VLAN Id. Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @isvlan true
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * @condition SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_ID,
 
     /**
-     * @brief Valid for RSPAN and ERSPAN packet priority (3 bits)
+     * @brief L2 header packet priority (3 bits). Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint8_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
 
     /**
-     * @brief Valid for RSPAN and ERSPAN Vlan-CFI (1 bit)
+     * @brief L2 header Vlan CFI (1 bit). Valid for RSPAN or ERSPAN with valid Vlan header
      *
      * @type sai_uint8_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_CFI,
 
@@ -151,6 +154,16 @@ typedef enum _sai_mirror_session_attr_t
      * All attributes below are Valid only for ERSPAN
      * SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
+
+    /**
+     * @brief Vlan header valid
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     * @validonly SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
+     */
+    SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID,
 
     /**
      * @brief Encapsulation type
@@ -180,7 +193,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TOS,
 
     /**
-     * Tunnel header TTL
+     * @brief Tunnel header TTL
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -189,7 +202,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TTL,
 
     /**
-     * @brief tunnel source IP
+     * @brief Tunnel source IP
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -229,6 +242,7 @@ typedef enum _sai_mirror_session_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @isvlan false
      * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE,
@@ -237,6 +251,12 @@ typedef enum _sai_mirror_session_attr_t
      * @brief End of attributes
      */
     SAI_MIRROR_SESSION_ATTR_END,
+
+    /** Custom range base value */
+    SAI_MIRROR_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_MIRROR_SESSION_ATTR_CUSTOM_RANGE_END
 
 } sai_mirror_session_attr_t;
 
@@ -288,7 +308,7 @@ typedef sai_status_t (*sai_set_mirror_session_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Value of attribute
  *
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.
  */
 typedef sai_status_t (*sai_get_mirror_session_attribute_fn)(

@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -40,7 +40,7 @@
  */
 
 /**
- * @brief Attribute Id for sai neighbor object
+ * @brief Attribute Id for SAI neighbor object
  */
 typedef enum _sai_neighbor_entry_attr_t
 {
@@ -50,7 +50,7 @@ typedef enum _sai_neighbor_entry_attr_t
     SAI_NEIGHBOR_ENTRY_ATTR_START,
 
     /**
-     * @brief Destination mac address for the neighbor
+     * @brief Destination MAC address for the neighbor
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -104,7 +104,7 @@ typedef enum _sai_neighbor_entry_attr_t
 } sai_neighbor_entry_attr_t;
 
 /**
- * @brief neighbor entry
+ * @brief Neighbor entry
  */
 typedef struct _sai_neighbor_entry_t
 {
@@ -136,7 +136,7 @@ typedef struct _sai_neighbor_entry_t
  *
  * @param[in] neighbor_entry Neighbor entry
  * @param[in] attr_count Number of attributes
- * @param[in] attrs Array of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -174,7 +174,7 @@ typedef sai_status_t (*sai_set_neighbor_entry_attribute_fn)(
  *
  * @param[in] neighbor_entry Neighbor entry
  * @param[in] attr_count Number of attributes
- * @param[inout] attrs Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -193,7 +193,7 @@ typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(
         _In_ sai_object_id_t switch_id);
 
 /**
- * @brief neighbor table methods, retrieved via sai_api_query()
+ * @brief Neighbor table methods, retrieved via sai_api_query()
  */
 typedef struct _sai_neighbor_api_t
 {

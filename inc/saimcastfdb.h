@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -17,7 +17,7 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    saimcfdb.h
+ * @file    saimcastfdb.h
  *
  * @brief   This module defines SAI multicast FDB interface
  */
@@ -45,7 +45,7 @@ typedef struct _sai_mcast_fdb_entry_t
      */
     sai_object_id_t switch_id;
 
-    /** Mac address */
+    /** MAC address */
     sai_mac_t mac_address;
 
     /** Vlan ID */
@@ -54,7 +54,7 @@ typedef struct _sai_mcast_fdb_entry_t
 } sai_mcast_fdb_entry_t;
 
 /**
- * @brief Attribute Id for multicast fdb entry
+ * @brief Attribute Id for multicast FDB entry
  */
 typedef enum _sai_mcast_fdb_entry_attr_t
 {
@@ -132,7 +132,7 @@ typedef sai_status_t (*sai_remove_mcast_fdb_entry_fn)(
         _In_ const sai_mcast_fdb_entry_t *fdb_entry);
 
 /**
- * @brief Set multicast fdb entry attribute value
+ * @brief Set multicast FDB entry attribute value
  *
  * @param[in] fdb_entry FDB entry
  * @param[in] attr Attribute
@@ -144,7 +144,7 @@ typedef sai_status_t (*sai_set_mcast_fdb_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get fdb entry attribute value
+ * @brief Get FDB entry attribute value
  *
  * @param[in] fdb_entry FDB entry
  * @param[in] attr_count Number of attributes

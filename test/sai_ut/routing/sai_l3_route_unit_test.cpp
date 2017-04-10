@@ -929,8 +929,7 @@ TEST_F (saiL3RouteTest, route_next_hop_on_lag_id)
     sai_object_id_t       rif_id;
     sai_object_id_t       nh_id;
     sai_lag_api_t*        sai_lag_api_table;
-    sai_object_list_t     lag_port_list;
-    sai_attribute_t       attr;
+    sai_attribute_t       attr_list[2];
     const char           *ip_str = "21.1.1.1";
     const char           *prefix_str = "100.0.0.0";
     unsigned int          prefix_len = 8;
@@ -938,6 +937,9 @@ TEST_F (saiL3RouteTest, route_next_hop_on_lag_id)
     const unsigned int    member_count = 2;
     sai_object_id_t       port_arr[member_count];
     sai_vlan_port_t       vlan_port[member_count];
+    sai_object_id_t       member_arr[member_count];
+    unsigned int          index;
+    const unsigned int    attr_count = 2;
 
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_api_query
                (SAI_API_LAG, (static_cast<void**>
@@ -959,14 +961,20 @@ TEST_F (saiL3RouteTest, route_next_hop_on_lag_id)
                (const sai_vlan_port_t*)vlan_port));
 
     /* Create the LAG object with port members */
-    lag_port_list.count = member_count;
-    lag_port_list.list = port_arr;
-
-    attr.id = SAI_LAG_ATTR_PORT_LIST;
-    attr.value.objlist = lag_port_list;
-
-    sai_rc = sai_lag_api_table->create_lag (&lag_id, 1, &attr);
+    sai_rc = sai_lag_api_table->create_lag (&lag_id, 0, attr_list);
     ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    for (index = 0; index < member_count; index++) {
+        attr_list [0].id = SAI_LAG_MEMBER_ATTR_LAG_ID;
+        attr_list [0].value.oid = lag_id;
+
+        attr_list [1].id = SAI_LAG_MEMBER_ATTR_PORT_ID;
+        attr_list [1].value.oid = port_arr [index];
+
+        sai_rc = sai_lag_api_table->create_lag_member (&member_arr [index],
+                                                       attr_count, attr_list);
+        EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+    }
 
     /* Create RIF with LAG object id */
     sai_rc = sai_test_rif_create (&rif_id, default_rif_attr_count,
@@ -1026,6 +1034,14 @@ TEST_F (saiL3RouteTest, route_next_hop_on_lag_id)
     sai_rc = sai_test_rif_remove (rif_id);
 
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    /* Remove the LAG members */
+    for (index = 0; index < member_count; index++) {
+
+        sai_rc = sai_lag_api_table->remove_lag_member (member_arr [index]);
+
+        EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+    }
 
     /* Remove the LAG */
     sai_rc = sai_lag_api_table->remove_lag (lag_id);

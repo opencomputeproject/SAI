@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -19,7 +19,7 @@
  *
  * @file    sai.h
  *
- * @brief   This module defines an entry point into Switch Abstraction Interfrace (SAI)
+ * @brief   This module defines an entry point into Switch Abstraction Interface (SAI)
  */
 
 #if !defined (__SAI_H_)
@@ -31,7 +31,7 @@
 #include "saibuffer.h"
 #include "saifdb.h"
 #include "saihash.h"
-#include "saihostintf.h"
+#include "saihostif.h"
 #include "sailag.h"
 #include "saimirror.h"
 #include "saineighbor.h"
@@ -40,11 +40,11 @@
 #include "saiobject.h"
 #include "saipolicer.h"
 #include "saiport.h"
-#include "saiqosmaps.h"
+#include "saiqosmap.h"
 #include "saiqueue.h"
 #include "sairoute.h"
-#include "sairouter.h"
-#include "sairouterintf.h"
+#include "saivirtualrouter.h"
+#include "sairouterinterface.h"
 #include "saisamplepacket.h"
 #include "saischedulergroup.h"
 #include "saischeduler.h"
@@ -60,7 +60,7 @@
 #include "sairpfgroup.h"
 #include "sail2mcgroup.h"
 #include "saiipmcgroup.h"
-#include "saimcfdb.h"
+#include "saimcastfdb.h"
 #include "saitam.h"
 
 /**
@@ -72,13 +72,13 @@
 /**
  * @brief Defined API sets have assigned ID's.
  *
- * If specific api method table changes in any way (method signature, number of
+ * If specific API method table changes in any way (method signature, number of
  * methods), a new ID needs to be created (e.g. VLAN2) and old API still may
  * need to be supported for compatibility with older adapter hosts.
  */
 typedef enum _sai_api_t
 {
-    SAI_API_UNSPECIFIED      =  0, /**< unspecified api */
+    SAI_API_UNSPECIFIED      =  0, /**< unspecified API */
     SAI_API_SWITCH           =  1, /**< sai_switch_api_t */
     SAI_API_PORT             =  2, /**< sai_port_api_t */
     SAI_API_FDB              =  3, /**< sai_fdb_api_t */
@@ -113,6 +113,7 @@ typedef enum _sai_api_t
     SAI_API_MCAST_FDB        = 32, /**< sai_mcast_fdb_api_t */
     SAI_API_BRIDGE           = 33, /**< sai_bridge_api_t */
     SAI_API_TAM              = 34, /**< sai_tam_api_t */
+    SAI_API_MAX              = 35, /**< total number of apis */
 } sai_api_t;
 
 /**
@@ -129,7 +130,7 @@ typedef enum _sai_log_level_t
     /** Log Level Notice */
     SAI_LOG_LEVEL_NOTICE           = 2,
 
-    /** Log level Warnng */
+    /** Log level Warning */
     SAI_LOG_LEVEL_WARN             = 3,
 
     /** Log Level Error */
@@ -186,7 +187,7 @@ sai_status_t sai_api_initialize(
  * @brief Retrieve a pointer to the C-style method table for desired SAI
  * functionality as specified by the given sai_api_id.
  *
- * @param[in] sai_api_id SAI api ID
+ * @param[in] sai_api_id SAI API ID
  * @param[out] api_method_table Caller allocated method table The table must
  * remain valid until the sai_api_uninitialize() is called
  *
@@ -197,7 +198,7 @@ sai_status_t sai_api_query(
         _Out_ void** api_method_table);
 
 /**
- * @brief Uninitialization of the adapter module. SAI functionalities,
+ * @brief Uninitialize adapter module. SAI functionalities,
  * retrieved via sai_api_query() cannot be used after this call.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -205,9 +206,9 @@ sai_status_t sai_api_query(
 sai_status_t sai_api_uninitialize(void);
 
 /**
- * @brief Set log level for sai api module. The default log level is #SAI_LOG_LEVEL_WARN
+ * @brief Set log level for SAI API module. The default log level is #SAI_LOG_LEVEL_WARN
  *
- * @param[in] sai_api_id SAI api ID
+ * @param[in] sai_api_id SAI API ID
  * @param[in] log_level Log level
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -217,25 +218,25 @@ sai_status_t sai_log_set(
         _In_ sai_log_level_t log_level);
 
 /**
- * @brief Query sai object type.
+ * @brief Query SAI object type.
  *
  * @param[in] sai_object_id Object id
  *
- * @return Return #SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
- * Otherwise, return a valid sai object type SAI_OBJECT_TYPE_XXX
+ * @return #SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
+ * Otherwise, return a valid SAI object type SAI_OBJECT_TYPE_XXX
  */
 sai_object_type_t sai_object_type_query(
         _In_ sai_object_id_t sai_object_id);
 
 /**
- * @brief Query sai switch id.
+ * @brief Query SAI switch id.
  *
  * @param[in] sai_object_id Object id
  *
- * @return Return #SAI_NULL_OBJECT_ID when sai_object_id is not valid.
+ * @return #SAI_NULL_OBJECT_ID when sai_object_id is not valid.
  * Otherwise, return a valid SAI_OBJECT_TYPE_SWITCH object on which
  * provided object id belongs. If valid switch id object is provided
- * as input parameter it should returin itself.
+ * as input parameter it should return itself.
  */
 sai_object_id_t sai_switch_id_query(
         _In_ sai_object_id_t sai_object_id);

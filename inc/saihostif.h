@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -17,14 +17,14 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    saihostintf.h
+ * @file    saihostif.h
  *
  * @brief   This module defines SAI host interface
  *
  * @par Abstract
  *
- *    This module defines SAI Host Interface which is responsbile for
- *    creating/deleting linux netdev corresponding to the host interface type.
+ *    This module defines SAI Host Interface which is responsible for
+ *    creating/deleting Linux netdev corresponding to the host interface type.
  *    All the management operations of the netdevs such as changing IP address
  *    are outside the scope of SAI.
  *
@@ -66,7 +66,7 @@ typedef enum _sai_hostif_trap_group_attr_t
     SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE = SAI_HOSTIF_TRAP_GROUP_ATTR_START,
 
     /**
-     * @brief Cpu egress queue
+     * @brief CPU egress queue
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -75,7 +75,7 @@ typedef enum _sai_hostif_trap_group_attr_t
     SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
 
     /**
-     * @brief Sai policer object id
+     * @brief SAI policer object id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -137,7 +137,7 @@ typedef sai_status_t (*sai_set_hostif_trap_group_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief get host interface trap group attribute value.
+ * @brief Get host interface trap group attribute value.
  *
  * @param[in] hostif_trap_group_id Host interface trap group id
  * @param[in] attr_count Number of attributes
@@ -245,7 +245,7 @@ typedef enum _sai_hostif_trap_type_t
     SAI_HOSTIF_TRAP_TYPE_MLD_V2_REPORT = 0x0000200d,
 
     /**
-     * Unknown L3 multicast packets
+     * @brief Unknown L3 multicast packets
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_UNKNOWN_L3_MULTICAST = 0x0000200e,
@@ -263,25 +263,25 @@ typedef enum _sai_hostif_trap_type_t
     SAI_HOSTIF_TRAP_TYPE_IP2ME = 0x00004000,
 
     /**
-     * @brief SSH traffic (tcp dst port == 22) to local router IP address
+     * @brief SSH traffic (TCP dst port == 22) to local router IP address
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_SSH = 0x00004001,
 
     /**
-     * @brief SNMP traffic (udp dst port == 161) to local router IP address
+     * @brief SNMP traffic (UDP dst port == 161) to local router IP address
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_SNMP = 0x00004002,
 
     /**
-     * @brief BGP traffic (tcp src port == 179 or tcp dst port == 179) to local
+     * @brief BGP traffic (TCP src port == 179 or TCP dst port == 179) to local
      * router IP address (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BGP = 0x00004003,
 
     /**
-     * @brief BGPv6 traffic (tcp src port == 179 or tcp dst port == 179) to
+     * @brief BGPv6 traffic (TCP src port == 179 or TCP dst port == 179) to
      * local router IP address (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x00004004,
@@ -456,7 +456,7 @@ typedef enum _sai_hostif_user_defined_trap_type_t
     /** ACL traps (default packet action is drop) */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ACL,
 
-    /** fdb traps (default packet action is drop) */
+    /** FDB traps (default packet action is drop) */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB,
 
     /** Custom range base */
@@ -623,7 +623,7 @@ typedef enum _sai_hostif_attr_t
     /**
      * @brief Name [char[HOSTIF_NAME_SIZE]]
      *
-     * The maximum number of charactars for the name is HOSTIF_NAME_SIZE - 1 since
+     * The maximum number of characters for the name is HOSTIF_NAME_SIZE - 1 since
      * it needs the terminating null byte ('\0') at the end.
      *
      * Valid only when #SAI_HOSTIF_ATTR_TYPE == #SAI_HOSTIF_TYPE_NETDEV
@@ -653,7 +653,7 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_QUEUE,
 
     /**
-     * @brief Rnd of attributes
+     * @brief End of attributes
      */
     SAI_HOSTIF_ATTR_END,
 
@@ -671,7 +671,7 @@ typedef enum _sai_hostif_attr_t
  * @param[out] hif_id Host interface id
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
- * @param[in] attr_list Aarray of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -785,7 +785,7 @@ typedef enum _sai_hostif_table_entry_attr_t
      * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT
      * || #SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG || #SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN
      * should be port object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT
-     * should be lag object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG
+     * should be LAG object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG
      * should be VLAN ID object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN
      *
      * @type sai_object_id_t
@@ -830,7 +830,7 @@ typedef enum _sai_hostif_table_entry_attr_t
     SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
 
     /**
-     * @brief Rnd of attributes
+     * @brief End of attributes
      */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_END,
 
@@ -848,7 +848,7 @@ typedef enum _sai_hostif_table_entry_attr_t
  * @param[out] hif_table_entry Host interface table entry
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
- * @param[in] attr_list Aarray of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -861,7 +861,7 @@ typedef sai_status_t(*sai_create_hostif_table_entry_fn)(
 /**
  * @brief Remove host interface table entry
  *
- * @param[in] hif_table_entry - host interface table entry
+ * @param[in] hif_table_entry Host interface table entry
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -871,7 +871,7 @@ typedef sai_status_t(*sai_remove_hostif_table_entry_fn)(
 /**
  * @brief Set host interface table entry attribute
  *
- * @param[in] hif_table_entry - host interface table entry
+ * @param[in] hif_table_entry Host interface table entry
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -883,7 +883,7 @@ typedef sai_status_t(*sai_set_hostif_table_entry_attribute_fn)(
 /**
  * @brief Get host interface table entry attribute
  *
- * @param[in] hif_table_entry - host interface table entry
+ * @param[in] hif_table_entry Host interface table entry
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
@@ -908,7 +908,7 @@ typedef enum _sai_hostif_tx_type_t
     /** tx packet goes to the switch ASIC processing pipeline to decide the output port */
     SAI_HOSTIF_TX_TYPE_PIPELINE_LOOKUP,
 
-    /** Custom range bae */
+    /** Custom range base */
     SAI_HOSTIF_TX_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hostif_tx_type_t;
@@ -963,7 +963,7 @@ typedef enum _sai_hostif_packet_attr_t
      *
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
-     * Applicable for use-case like SAMPLEPACKET traps
+     * Applicable for use-case like samplepacket traps
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -977,6 +977,12 @@ typedef enum _sai_hostif_packet_attr_t
      */
     SAI_HOSTIF_PACKET_ATTR_END,
 
+    /** Custom range base value */
+    SAI_HOSTIF_PACKET_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_HOSTIF_PACKET_ATTR_CUSTOM_RANGE_END
+
 } sai_hostif_packet_attr_t;
 
 /**
@@ -984,8 +990,8 @@ typedef enum _sai_hostif_packet_attr_t
  *
  * @param[in] hif_id Host interface id
  * @param[out] buffer Packet buffer
- * @param[inout] buffer_size Allocated buffer size [in], actual packet size in bytes [out]
- * @param[inout] attr_count Allocated list size [in], number of attributes [out]
+ * @param[inout] buffer_size Allocated buffer size [in], Actual packet size in bytes [out]
+ * @param[inout] attr_count Allocated list size [in], Number of attributes [out]
  * @param[out] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success #SAI_STATUS_BUFFER_OVERFLOW if
@@ -1007,7 +1013,7 @@ typedef sai_status_t(*sai_recv_hostif_packet_fn)(
  * When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
  * When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
  * @param[in] buffer Packet buffer
- * @param[in] buffer size Packet size in bytes
+ * @param[in] buffer_size Packet size in bytes
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1026,7 +1032,7 @@ typedef sai_status_t(*sai_send_hostif_packet_fn)(
  * @param[in] switch_id Switch Object ID
  * @param[in] buffer Packet buffer
  * @param[in] buffer_size Actual packet size in bytes
- * @param[in] attr_count Nnumber of attributes
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  */
 typedef void(*sai_packet_event_notification_fn)(
@@ -1037,7 +1043,7 @@ typedef void(*sai_packet_event_notification_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief hostif methods table retrieved with sai_api_query()
+ * @brief Hostif methods table retrieved with sai_api_query()
  */
 typedef struct _sai_hostif_api_t
 {

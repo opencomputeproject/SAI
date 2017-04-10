@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -28,17 +28,17 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAISTP SAI - STP specific public APIs and datastructures
+ * @defgroup SAISTP SAI - STP specific public APIs and data structures
  *
  * @{
  */
 
 /**
- * @brief Datastructure for stp port state
+ * @brief Data structure for STP port state
  */
 typedef enum _sai_stp_port_state_t
 {
-    /** Port is in Learning mode*/
+    /** Port is in Learning mode */
     SAI_STP_PORT_STATE_LEARNING,
 
     /** Port is in Forwarding mode */
@@ -60,7 +60,7 @@ typedef enum _sai_stp_attr_t
     SAI_STP_ATTR_START,
 
     /**
-     * @brief Vlans attached to STP instance
+     * @brief VLANs attached to STP instance
      *
      * @type sai_vlan_list_t
      * @flags READ_ONLY
@@ -79,7 +79,7 @@ typedef enum _sai_stp_attr_t
     /**
      * @brief Port member list
      *
-     * When a stp is created, this list is empty, all ports state as blocking.
+     * When a STP is created, this list is empty, all ports state as blocking.
      *
      * @type sai_object_list_t
      * @flags READ_ONLY
@@ -91,6 +91,12 @@ typedef enum _sai_stp_attr_t
      * @brief End of attributes
      */
     SAI_STP_ATTR_END,
+
+    /** Custom range base value */
+    SAI_STP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_STP_ATTR_CUSTOM_RANGE_END
 
 } sai_stp_attr_t;
 
@@ -135,12 +141,18 @@ typedef enum _sai_stp_port_attr_t
      */
     SAI_STP_PORT_ATTR_END,
 
+    /** Custom range base value */
+    SAI_STP_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_STP_PORT_ATTR_CUSTOM_RANGE_END
+
 } sai_stp_port_attr_t;
 
 /**
- * @brief Create stp instance with default port state as blocking.
+ * @brief Create STP instance with default port state as blocking.
  *
- * @param[out] stp_id stp instance id
+ * @param[out] stp_id STP instance id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
@@ -155,9 +167,9 @@ typedef sai_status_t (*sai_create_stp_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove stp instance.
+ * @brief Remove STP instance.
  *
- * @param[in] stp_id Stp instance id
+ * @param[in] stp_id STP instance id
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.
@@ -168,9 +180,9 @@ typedef sai_status_t (*sai_remove_stp_fn)(
 /**
  * @brief Set the attribute of STP instance.
  *
- * @param[in] stp_id Stp instance id
- * @param[in] attr attribute value
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * @param[in] stp_id STP instance id
+ * @param[in] attr Attribute value
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_attribute_fn)(
@@ -180,10 +192,10 @@ typedef sai_status_t (*sai_set_stp_attribute_fn)(
 /**
  * @brief Get the attribute of STP instance.
  *
- * @param[in] stp_id stp instance id
- * @param[in] attr_count number of the attribute
- * @param[in] attr_list attribute value
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * @param[in] stp_id STP instance id
+ * @param[in] attr_count Number of the attribute
+ * @param[in] attr_list Attribute value
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_attribute_fn)(
@@ -192,12 +204,12 @@ typedef sai_status_t (*sai_get_stp_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Create stp port object
+ * @brief Create STP port object
  *
- * @param[out] stp_port_id stp port id
+ * @param[out] stp_port_id STP port id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
 typedef sai_status_t (*sai_create_stp_port_fn)(
@@ -207,10 +219,10 @@ typedef sai_status_t (*sai_create_stp_port_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove stp port object.
+ * @brief Remove STP port object.
  *
- * @param[in] stp_port_id stp object id
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * @param[in] stp_port_id STP object id
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
 typedef sai_status_t (*sai_remove_stp_port_fn)(
@@ -219,9 +231,9 @@ typedef sai_status_t (*sai_remove_stp_port_fn)(
 /**
  * @brief Set the attribute of STP port.
  *
- * @param[in] stp_port_id stp port id
- * @param[in] attr attribute value
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * @param[in] stp_port_id STP port id
+ * @param[in] attr Attribute value
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
 typedef sai_status_t (*sai_set_stp_port_attribute_fn)(
@@ -231,10 +243,10 @@ typedef sai_status_t (*sai_set_stp_port_attribute_fn)(
 /**
  * @brief Get the attribute of STP port.
  *
- * @param[in] stp_port_id stp port id
- * @param[in] attr_count number of the attribute
- * @param[in] attr_list attribute value
- * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
+ * @param[in] stp_port_id STP port id
+ * @param[in] attr_count Number of the attribute
+ * @param[in] attr_list Attribute value
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
 typedef sai_status_t (*sai_get_stp_port_attribute_fn)(

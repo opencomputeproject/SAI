@@ -74,11 +74,11 @@ void check_all_enums_name_pointers()
 
     size_t i = 0;
 
-    META_ASSERT_TRUE(metadata_all_enums_count > 100, "we need to have some enums");
+    META_ASSERT_TRUE(sai_metadata_all_enums_count > 100, "we need to have some enums");
 
-    for (; i < metadata_all_enums_count; ++i)
+    for (; i < sai_metadata_all_enums_count; ++i)
     {
-        const sai_enum_metadata_t* emd = metadata_all_enums[i];
+        const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
 
         META_ASSERT_NOT_NULL(emd);
 
@@ -136,9 +136,9 @@ void check_all_enums_values()
 
     size_t i = 0;
 
-    for (; i < metadata_all_enums_count; ++i)
+    for (; i < sai_metadata_all_enums_count; ++i)
     {
-        const sai_enum_metadata_t* emd = metadata_all_enums[i];
+        const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
 
         META_LOG_INFO("enum: %s", emd->name);
 
@@ -201,17 +201,17 @@ void check_sai_status()
     META_LOG_ENTER();
 
     META_ASSERT_TRUE(SAI_STATUS_SUCCESS == 0, "success must be zero");
-    META_ASSERT_TRUE(metadata_enum_sai_status_t.valuescount > 1, "there must be error codes");
+    META_ASSERT_TRUE(sai_metadata_enum_sai_status_t.valuescount > 1, "there must be error codes");
 
     size_t i = 0;
 
     int last = 1;
 
-    for (; i < metadata_enum_sai_status_t.valuescount; ++i)
+    for (; i < sai_metadata_enum_sai_status_t.valuescount; ++i)
     {
-        META_LOG_INFO("status: %s", metadata_enum_sai_status_t.valuesnames[i]);
+        META_LOG_INFO("status: %s", sai_metadata_enum_sai_status_t.valuesnames[i]);
 
-        int value = metadata_enum_sai_status_t.values[i];
+        int value = sai_metadata_enum_sai_status_t.values[i];
 
         if (i == 0)
         {
@@ -230,17 +230,17 @@ void check_object_type()
 {
     META_LOG_ENTER();
 
-    META_ASSERT_TRUE(SAI_OBJECT_TYPE_NULL == 0, "sai object type null mustbe zero");
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_NULL == 0, "sai object type null must be zero");
 
     size_t i = 0;
 
     int last = -1; /* will enforce NULL be first */
 
-    for (; i < metadata_enum_sai_object_type_t.valuescount; ++i)
+    for (; i < sai_metadata_enum_sai_object_type_t.valuescount; ++i)
     {
-        META_LOG_INFO("object_type: %s", metadata_enum_sai_object_type_t.valuesnames[i]);
+        META_LOG_INFO("object_type: %s", sai_metadata_enum_sai_object_type_t.valuesnames[i]);
 
-        int value = metadata_enum_sai_object_type_t.values[i];
+        int value = sai_metadata_enum_sai_object_type_t.values[i];
 
         META_ASSERT_TRUE(value == last + 1, "object type values must be consecutive numbers");
 
@@ -252,17 +252,17 @@ void check_attr_by_object_type()
 {
     META_LOG_ENTER();
 
-    META_ASSERT_TRUE(metadata_attr_by_object_type_count == SAI_OBJECT_TYPE_MAX, "invalid object type count in metadata");
+    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == SAI_OBJECT_TYPE_MAX, "invalid object type count in metadata");
 
     size_t i = 0;
 
-    for (; i < metadata_attr_by_object_type_count; ++i)
+    for (; i < sai_metadata_attr_by_object_type_count; ++i)
     {
         META_LOG_INFO("processing %zu, %s", i, sai_metadata_get_object_type_name((sai_object_type_t)i));
 
-        META_ASSERT_NOT_NULL(metadata_attr_by_object_type[i]);
+        META_ASSERT_NOT_NULL(sai_metadata_attr_by_object_type[i]);
 
-        const sai_attr_metadata_t ** ot = metadata_attr_by_object_type[i];
+        const sai_attr_metadata_t ** ot = sai_metadata_attr_by_object_type[i];
 
         size_t index = 0;
 
@@ -283,7 +283,7 @@ void check_attr_by_object_type()
         META_LOG_INFO("attr index %zu for %s", index, sai_metadata_get_object_type_name((sai_object_type_t)i));
     }
 
-    META_ASSERT_NULL(metadata_attr_by_object_type[i]);
+    META_ASSERT_NULL(sai_metadata_attr_by_object_type[i]);
 }
 
 void check_attr_object_type(
@@ -303,7 +303,33 @@ void check_attr_value_type_range(
 {
     META_LOG_ENTER();
 
-    META_ASSERT_NOT_NULL(sai_metadata_get_enum_value_name(&metadata_enum_sai_attr_value_type_t, md->attrvaluetype));
+    META_ASSERT_NOT_NULL(sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_attr_value_type_t, md->attrvaluetype));
+}
+
+bool sai_metadata_is_acl_field_or_action(
+        _In_ const sai_attr_metadata_t* metadata)
+{
+    if (metadata == NULL)
+    {
+        return false;
+    }
+
+    if (metadata->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
+    {
+        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+                metadata->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+        {
+            return true;
+        }
+
+        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
+                metadata->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void check_attr_flags(
@@ -569,6 +595,15 @@ void check_attr_allowed_object_types(
         return;
     }
 
+    if (md->isoidattribute)
+    {
+        META_ASSERT_TRUE(md->allowedobjecttypeslength > 0, "object len should be at least 1");
+    }
+    else
+    {
+        META_ASSERT_TRUE(md->allowedobjecttypeslength == 0, "object len should be 0");
+    }
+
     switch (md->attrvaluetype)
     {
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
@@ -601,7 +636,7 @@ void check_attr_allowed_object_types(
             META_ASSERT_FAIL(md, "invalid allowed object type: %d", ot);
         }
 
-        const sai_object_type_info_t* info = sai_all_object_type_infos[ot];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[ot];
 
         META_ASSERT_NOT_NULL(info);
 
@@ -610,7 +645,9 @@ void check_attr_allowed_object_types(
             META_ASSERT_FAIL(md, "non object id can't be used as object id: %d", ot);
         }
 
-        if (ot == SAI_OBJECT_TYPE_SWITCH)
+        if (ot == SAI_OBJECT_TYPE_SWITCH ||
+                ot == SAI_OBJECT_TYPE_FDB_FLUSH ||
+                ot == SAI_OBJECT_TYPE_HOSTIF_PACKET)
         {
             /* switch object type is ment to be used only in non object id struct types */
 
@@ -664,7 +701,7 @@ void check_attr_default_required(
                     /*
                      * Const on list, this is exception for UDF object since
                      * it's default value is 2 bytes 0xFF,0xFF and it's special
-                     * calse.
+                     * case.
                      */
 
                     break;
@@ -871,7 +908,7 @@ void check_attr_default_value_type(
         case SAI_DEFAULT_VALUE_TYPE_NONE:
         case SAI_DEFAULT_VALUE_TYPE_CONST:
 
-            /* check conditions/cretion flags? */
+            /* check conditions/creation flags? */
             break;
 
         case SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE:
@@ -1008,8 +1045,11 @@ void check_attr_conditions(
 
     if (!conditional)
     {
+        META_ASSERT_FALSE(md->isconditional, "marked conditional but is not");
         return;
     }
+
+    META_ASSERT_TRUE(md->isconditional, "marked not conditional but is");
 
     if (md->conditions == NULL)
     {
@@ -1033,7 +1073,7 @@ void check_attr_conditions(
             META_ASSERT_FAIL(md, "marked as conditional, but invalid creation flags: 0x%u", md->flags);
     }
 
-    /* condition must be the same object type as attribue we check */
+    /* condition must be the same object type as attribute we check */
 
     size_t index = 0;
 
@@ -1087,7 +1127,7 @@ void check_attr_conditions(
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
+            META_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
         }
 
         switch ((int)cmd->flags)
@@ -1156,12 +1196,12 @@ void check_attr_validonly(
         case SAI_ATTR_FLAGS_CREATE_ONLY:
 
             /*
-             * In generral valid only attribute should be used only on
+             * In general valid only attribute should be used only on
              * CREATE_AND_SET flags, since when attribute is CREATE_ONLY it has
-             * default value and it can't be changed anywa, and entire purpose
+             * default value and it can't be changed anyway, and entire purpose
              * of valid only attribute is to allow change during runtime.
              *
-             * Wthen attribute CREATE_ONLY is marked as valid only is more like
+             * When attribute CREATE_ONLY is marked as valid only is more like
              * indication that this value will be used in that specific case
              * but you won't be able to change it anyway.
              */
@@ -1193,10 +1233,10 @@ void check_attr_validonly(
          * provided for CONST only.
          */
 
-        META_ASSERT_FAIL(md, "expected default value on vlaid only attribute, but none provided");
+        META_ASSERT_FAIL(md, "expected default value on valid only attribute, but none provided");
     }
 
-    /* condition must be the same object type as attribue we check */
+    /* condition must be the same object type as attribute we check */
 
     size_t index = 0;
 
@@ -1263,15 +1303,22 @@ void check_attr_validonly(
                  * assumption.
                  */
             }
+            else if (md->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION &&
+                (md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_TPID || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_ID ||
+                md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_CFI))
+            {
+                /* Vlan header attributes are depending on VLAN_HEADER_VALID which is 
+                 * also valid only for ERSPAN. */
+            }
             else
             {
-                META_ASSERT_FAIL(md, "validonly attibute is also validonly attribute, not allowed");
+                META_ASSERT_FAIL(md, "validonly attribute is also validonly attribute, not allowed");
             }
         }
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_ASSERT_FAIL(md, "conditional attibute is also conditional, not allowed");
+            META_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
         }
 
         switch ((int)cmd->flags)
@@ -1462,7 +1509,8 @@ void check_attr_key(
 
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
 
-                if (md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT)
+                if ((md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT) ||
+                     (md->objecttype == SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP && md->attrid == SAI_INGRESS_PRIORITY_GROUP_ATTR_PORT))
                 {
                     /*
                      * This is also special case, OBJECT_ID at should not be a
@@ -1631,9 +1679,11 @@ void check_attr_vlan(
 
     if (md->isvlan)
     {
-        if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_UINT16)
+        if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_UINT16 &&
+                md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT16 &&
+                md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16)
         {
-            META_ASSERT_FAIL(md, "marked as vlan, but fiels has wrong attr value type");
+            META_ASSERT_FAIL(md, "marked as vlan, but has wrong attr value type");
         }
     }
 }
@@ -1747,7 +1797,7 @@ void check_attr_reverse_graph(
 
         sai_object_type_t depobjecttype = md->allowedobjecttypes[index];
 
-        const sai_object_type_info_t *oi = sai_all_object_type_infos[depobjecttype];
+        const sai_object_type_info_t *oi = sai_metadata_all_object_type_infos[depobjecttype];
 
         META_ASSERT_NOT_NULL(oi->revgraphmembers);
 
@@ -1808,8 +1858,8 @@ void check_attr_reverse_graph(
                             rm->attrmetadata->attrid == md->attrid)
                     {
                         META_LOG_INFO("dep %s ot %s attr %s\n",
-                                metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
-                                metadata_enum_sai_object_type_t.valuesnames[md->objecttype],
+                                sai_metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
+                                sai_metadata_enum_sai_object_type_t.valuesnames[md->objecttype],
                                 md->attridname);
 
                         defined = true;
@@ -1923,7 +1973,7 @@ void check_attr_existing_objects(
     META_LOG_ENTER();
 
     /*
-     * Purpose of this test it to find attributes on objects exisring already
+     * Purpose of this test it to find attributes on objects existing already
      * on the switch with attributes that are mandatory on create and create
      * and set.  Those attributes can be changed by user fro previous value,
      * and this causes problem for comparison logic to bring those objects to
@@ -1931,7 +1981,7 @@ void check_attr_existing_objects(
      * somewhere.
      */
 
-    if (sai_all_object_type_infos[md->objecttype]->isnonobjectid)
+    if (sai_metadata_all_object_type_infos[md->objecttype]->isnonobjectid)
     {
         return;
     }
@@ -1940,7 +1990,7 @@ void check_attr_existing_objects(
     {
         /*
          * Those objects are not existing on the switch by default user needs
-         * to crete them.
+         * to create them.
          */
 
         case SAI_OBJECT_TYPE_SAMPLEPACKET:
@@ -1977,7 +2027,7 @@ void check_attr_existing_objects(
     /*
      * If attribute is mandatory on create and create and set then there is no
      * default value on created object, and user can change it's value so in
-     * comparison logic we will need to mantain this state somewhere as
+     * comparison logic we will need to maintain this state somewhere as
      * default.
      */
 
@@ -2013,7 +2063,7 @@ void check_attr_existing_objects(
 
             /*
              * When type is object id we need to store it's previous value
-             * since we will not be albe to bring it to default.
+             * since we will not be able to bring it to default.
              */
 
             META_WARN_LOG("Default value needs to be stored %s", md->attridname);
@@ -2026,6 +2076,39 @@ void check_attr_existing_objects(
     }
 
     /* TODO there is default .1Q Bridge present */
+}
+
+void check_attr_sai_pointer(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this test is to check whether sai_pointer_t
+     * is only used on SAI_OBJECT_TYPE_SWITCH.
+     */
+
+    if (md->objecttype == SAI_OBJECT_TYPE_SWITCH)
+    {
+        if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
+        {
+            /*
+             * Make sure that all pointers are CREATE_AND_SET.
+             */
+
+            if (md->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
+            {
+                META_ASSERT_FAIL(md, "all pointers should be CREATE_AND_SET");
+            }
+        }
+
+        return;
+    }
+
+    if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
+    {
+        META_ASSERT_FAIL(md, "attribute value pointer is only allowed on SAI_OBJECT_TYPE_SWITCH");
+    }
 }
 
 void check_single_attribute(
@@ -2061,6 +2144,7 @@ void check_single_attribute(
     check_attr_acl_conditions(md);
     check_attr_acl_field_or_action(md);
     check_attr_existing_objects(md);
+    check_attr_sai_pointer(md);
 
     define_attr(md);
 }
@@ -2086,7 +2170,7 @@ void check_object_infos()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL)
         {
@@ -2094,6 +2178,8 @@ void check_object_infos()
         }
 
         META_ASSERT_TRUE(info->objecttype == i, "object type mismatch");
+
+        META_ASSERT_NOT_NULL(info->objecttypename);
 
         META_LOG_INFO("processing object type: %s", sai_metadata_get_object_type_name((sai_object_type_t)i));
 
@@ -2115,7 +2201,7 @@ void check_object_infos()
             const sai_attr_metadata_t* am = meta[index];
 
             META_ASSERT_TRUE((int)am->attrid >= 0, "attribute must be non negative");
-            META_ASSERT_TRUE(last < (int)am->attrid, "attributes are not incresing");
+            META_ASSERT_TRUE(last < (int)am->attrid, "attributes are not increasing");
 
             if (last + 1 != (int)am->attrid)
             {
@@ -2162,7 +2248,7 @@ void check_non_object_id_object_types()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL)
         {
@@ -2254,7 +2340,12 @@ void check_non_object_id_object_types()
                 {
                     sai_object_type_t ot = m->allowedobjecttypes[k];
 
-                    if (ot >= SAI_OBJECT_TYPE_NULL && ot <= SAI_OBJECT_TYPE_MAX)
+                    if (ot == SAI_OBJECT_TYPE_FDB_FLUSH || ot == SAI_OBJECT_TYPE_HOSTIF_PACKET)
+                    {
+                        META_FAIL("fdb flush or hostif packet can't be used as object in nonobjectid struct");
+                    }
+
+                    if (ot > SAI_OBJECT_TYPE_NULL && ot < SAI_OBJECT_TYPE_MAX)
                     {
                         if (ot == SAI_OBJECT_TYPE_SWITCH)
                         {
@@ -2264,11 +2355,18 @@ void check_non_object_id_object_types()
                              */
 
                             member_supports_switch_id++;
+
+                            if (strcmp("switch_id", m->membername) != 0)
+                            {
+                                META_FAIL("struct member %s supports object type SWITCH, should be named switch_id", m->membername);
+                            }
+
+                            META_ASSERT_TRUE(m->allowedobjecttypeslength == 1, "switch_id member should only support object type SWITCH");
                         }
 
                         /* non object id struct can't contain object id which is also non object id */
 
-                        const sai_object_type_info_t* sinfo = sai_all_object_type_infos[ot];
+                        const sai_object_type_info_t* sinfo = sai_metadata_all_object_type_infos[ot];
 
                         META_ASSERT_NOT_NULL(sinfo);
 
@@ -2308,7 +2406,7 @@ void check_non_object_id_object_attrs()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL || !info->isnonobjectid)
         {
@@ -2351,12 +2449,12 @@ void check_attr_sorted_by_id_name()
 
     const char *last = "AAA";
 
-    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500,
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 500,
             "there should be at least 500 attributes in total");
 
-    for (; i < metadata_attr_sorted_by_id_name_count; ++i)
+    for (; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
     {
-        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+        const sai_attr_metadata_t *am = sai_metadata_attr_sorted_by_id_name[i];
 
         META_ASSERT_NOT_NULL(am);
 
@@ -2372,13 +2470,13 @@ void check_attr_sorted_by_id_name()
         last = name;
     }
 
-    META_ASSERT_NULL(metadata_attr_sorted_by_id_name[i]);
+    META_ASSERT_NULL(sai_metadata_attr_sorted_by_id_name[i]);
 
     /* check search */
 
-    for (i = 0; i < metadata_attr_sorted_by_id_name_count; ++i)
+    for (i = 0; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
     {
-        const sai_attr_metadata_t *am = metadata_attr_sorted_by_id_name[i];
+        const sai_attr_metadata_t *am = sai_metadata_attr_sorted_by_id_name[i];
 
         META_LOG_INFO("search for %s", am->attridname);
 
@@ -2407,20 +2505,20 @@ void list_loop(
     META_LOG_ENTER();
 
     META_WARN_LOG("LOOP DETECTED on object type: %s",
-            metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
+            sai_metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
 
     for (; levelidx < level; ++levelidx)
     {
         sai_object_type_t ot = visited[levelidx];
 
-        const char* ot_name = metadata_enum_sai_object_type_t.valuesnames[ot];
+        const char* ot_name = sai_metadata_enum_sai_object_type_t.valuesnames[ot];
 
         const sai_attr_metadata_t* m = sai_metadata_get_attr_metadata(ot, attributes[levelidx]);
 
         META_WARN_LOG(" %s: %s", ot_name, m->attridname);
     }
 
-    META_WARN_LOG(" -> %s", metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
+    META_WARN_LOG(" -> %s", sai_metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
 
     if (level >= 0)
     {
@@ -2507,7 +2605,7 @@ void check_objects_for_loops_recursive(
 
                     for (; j < m->allowedobjecttypeslength; ++j)
                     {
-                        const sai_object_type_info_t* next = sai_all_object_type_infos[ m->allowedobjecttypes[j] ];
+                        const sai_object_type_info_t* next = sai_metadata_all_object_type_infos[ m->allowedobjecttypes[j] ];
 
                         check_objects_for_loops_recursive(next, visited, attributes, level + 1);
                     }
@@ -2539,7 +2637,7 @@ void check_objects_for_loops_recursive(
 
             for (; k < m->allowedobjecttypeslength; k++)
             {
-                const sai_object_type_info_t* next = sai_all_object_type_infos[ m->allowedobjecttypes[k] ];
+                const sai_object_type_info_t* next = sai_metadata_all_object_type_infos[ m->allowedobjecttypes[k] ];
 
                 check_objects_for_loops_recursive(next, visited, attributes, level + 1);
             }
@@ -2563,7 +2661,7 @@ void check_objects_for_loops()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL)
         {
@@ -2611,7 +2709,7 @@ void check_read_only_attributes()
 
     for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL)
         {
@@ -2651,7 +2749,7 @@ void check_read_only_attributes()
              */
 
             META_WARN_LOG("object %s has only READ_ONLY attributes",
-                    metadata_enum_sai_object_type_t.valuesnames[i]);
+                    sai_metadata_enum_sai_object_type_t.valuesnames[i]);
         }
     }
 }
@@ -2662,17 +2760,17 @@ void check_mixed_object_list_types()
 
     /*
      * Purpose of this check is to find out if any of object id lists supports
-     * multiple object types at the same time.  For now this abbility will not
+     * multiple object types at the same time.  For now this ability will not
      * be supported.
      */
 
-    META_ASSERT_TRUE(metadata_attr_sorted_by_id_name_count > 500, "there should be at least 500 attributes in total");
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 500, "there should be at least 500 attributes in total");
 
     size_t idx = 0;
 
-    for (; idx < metadata_attr_sorted_by_id_name_count; ++idx)
+    for (; idx < sai_metadata_attr_sorted_by_id_name_count; ++idx)
     {
-        const sai_attr_metadata_t* meta = metadata_attr_sorted_by_id_name[idx];
+        const sai_attr_metadata_t* meta = sai_metadata_attr_sorted_by_id_name[idx];
 
         switch (meta->attrvaluetype)
         {
@@ -2698,6 +2796,16 @@ void check_mixed_object_list_types()
                 }
                 else
                 {
+                    if (meta->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY &&
+                            meta->attrid == SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST)
+                    {
+                        /*
+                         * We make exception for this attribute.
+                         */
+
+                        break;
+                    }
+
                     /*
                      * For non read only attributes, there should be a good
                      * reason why object list should support mixed object
@@ -2754,7 +2862,7 @@ void check_api_names()
      * Purpose of this check is to find out if all api names correspond to
      * actual object names and follow convention name and the same signature
      * except some special objects. Currently this test is performed here
-     * manually, but it could be coverted to automatic generated test using
+     * manually, but it could be converted to automatic generated test using
      * parse.pl script.
      *
      * NOTE: Currently all new objects needs to be added here manually.
@@ -2831,7 +2939,7 @@ void check_api_names()
 
     /*
      * hostif packet is special since its not a real object but represents
-     * attruibutes received from host interface.
+     * attributes received from host interface.
      */
 
     checked[(int)SAI_OBJECT_TYPE_HOSTIF_PACKET] = SAI_OBJECT_TYPE_HOSTIF_PACKET;
@@ -2842,7 +2950,7 @@ void check_api_names()
 
     /*
      * fdb flush is special since its not a real object but represents
-     * attruibutes that are passed when flushng fdb entries
+     * attributes that are passed when flushing fdb entries
      */
 
     checked[(int)SAI_OBJECT_TYPE_FDB_FLUSH] = SAI_OBJECT_TYPE_FDB_FLUSH;
@@ -2962,7 +3070,7 @@ void check_api_names()
         if (checked[index] != (sai_object_type_t)index)
         {
             META_FAIL("object %s (%d) was not added to check",
-                    metadata_enum_sai_object_type_t.valuesnames[index], index);
+                    sai_metadata_enum_sai_object_type_t.valuesnames[index], index);
         }
     }
 }
@@ -2979,7 +3087,7 @@ void check_single_non_object_id_for_rev_graph(
      * member.
      */
 
-    const sai_object_type_info_t *oi = sai_all_object_type_infos[depobjecttype];
+    const sai_object_type_info_t *oi = sai_metadata_all_object_type_infos[depobjecttype];
 
     META_ASSERT_NOT_NULL(oi->revgraphmembers);
 
@@ -3012,7 +3120,7 @@ void check_single_non_object_id_for_rev_graph(
             META_ASSERT_NOT_NULL(rm->structmember);
 
             /*
-             * This graph entry is struct memner, maybe this i the
+             * This graph entry is struct member, maybe this i the
              * one we are looking for, since graph can have multiple
              * entries for the same object.
              */
@@ -3040,8 +3148,8 @@ void check_single_non_object_id_for_rev_graph(
                 if (rm->structmember->allowedobjecttypes[i] == depobjecttype)
                 {
                     META_LOG_INFO("dep %s ot %s attr %s\n",
-                            metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
-                            metadata_enum_sai_object_type_t.valuesnames[objecttype],
+                            sai_metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
+                            sai_metadata_enum_sai_object_type_t.valuesnames[objecttype],
                             sm->membername);
 
                     defined = true;
@@ -3092,7 +3200,7 @@ void check_reverse_graph_for_non_object_id()
     {
         sai_object_type_t objecttype = (sai_object_type_t)i;
 
-        const sai_object_type_info_t* info = sai_all_object_type_infos[i];
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL || !info->isnonobjectid)
         {
@@ -3150,7 +3258,7 @@ void check_vlan_attributes()
      * iterating each time.
      */
 
-    const sai_attr_metadata_t** const meta = sai_object_type_info_SAI_OBJECT_TYPE_VLAN.attrmetadata;
+    const sai_attr_metadata_t** const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_VLAN.attrmetadata;
 
     size_t index = 0;
 
@@ -3217,8 +3325,8 @@ void check_acl_table_fields_and_acl_entry_fields()
      * find both attribute fields start for entry and table
      */
 
-    const sai_attr_metadata_t **meta_acl_table = sai_object_type_info_SAI_OBJECT_TYPE_ACL_TABLE.attrmetadata;
-    const sai_attr_metadata_t **meta_acl_entry = sai_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+    const sai_attr_metadata_t **meta_acl_table = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_TABLE.attrmetadata;
+    const sai_attr_metadata_t **meta_acl_entry = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
 
     int acl_table_field_index = 0;
 
@@ -3344,7 +3452,7 @@ void check_acl_entry_actions()
      * find both attribute fields start for entry and table
      */
 
-    const sai_attr_metadata_t **meta_acl_entry = sai_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+    const sai_attr_metadata_t **meta_acl_entry = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
 
     size_t index = 0;
 
@@ -3383,7 +3491,7 @@ void check_acl_entry_actions()
             META_ASSERT_FAIL(meta, "acl entry action flags should be CREATE_AND_SET");
         }
 
-        const char* enum_name = metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
+        const char* enum_name = sai_metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
 
         META_ASSERT_NOT_NULL(enum_name);
 
@@ -3411,7 +3519,7 @@ void check_acl_entry_actions()
         enum_index++;
     }
 
-    META_ASSERT_TRUE(enum_index == metadata_enum_sai_acl_action_type_t.valuescount,
+    META_ASSERT_TRUE(enum_index == sai_metadata_enum_sai_acl_action_type_t.valuescount,
             "number of acl entry action mismatch vs number of enums in sai_acl_action_type_t");
 }
 
@@ -3426,7 +3534,7 @@ void check_switch_create_only_objects()
      * other object so setting that object on create will be impossible.
      */
 
-    const sai_attr_metadata_t** const meta = sai_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
+    const sai_attr_metadata_t** const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
 
     size_t index = 0;
 
@@ -3434,7 +3542,7 @@ void check_switch_create_only_objects()
     {
         const sai_attr_metadata_t *md = meta[index];
 
-        if (HAS_FLAG_CREATE_ONLY(md->flags) && md->allowedobjecttypeslength > 0)
+        if (HAS_FLAG_CREATE_ONLY(md->flags) && md->isoidattribute)
         {
             META_ASSERT_FAIL(md, "attribute is create_only and it's an object id, this is not allowed");
         }
@@ -3468,12 +3576,34 @@ void check_quad_api_pointers(
     }
 }
 
+void check_object_id_non_object_id(
+    _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this test is to check whether isobjectid and isnonobject id
+     * have opposite values.
+     */
+
+    META_ASSERT_TRUE(oi->isnonobjectid == !oi->isobjectid, "non object id object id not match");
+}
+
 void check_single_object_info(
     _In_ const sai_object_type_info_t *oi)
 {
     META_LOG_ENTER();
 
     check_quad_api_pointers(oi);
+    check_object_id_non_object_id(oi);
+}
+
+void check_api_max()
+{
+    META_LOG_ENTER();
+
+    META_ASSERT_TRUE(sai_metadata_enum_sai_api_t.valuescount == SAI_API_MAX,
+            "SAI_API_MAX should be equal to number of SAI_API*");
 }
 
 int main(int argc, char **argv)
@@ -3490,9 +3620,9 @@ int main(int argc, char **argv)
 
     size_t i = 0;
 
-    for (; i < metadata_attr_by_object_type_count; ++i)
+    for (; i < sai_metadata_attr_by_object_type_count; ++i)
     {
-        check_single_object_type_attributes(metadata_attr_by_object_type[i]);
+        check_single_object_type_attributes(sai_metadata_attr_by_object_type[i]);
     }
 
     check_object_infos();
@@ -3509,12 +3639,13 @@ int main(int argc, char **argv)
     check_reverse_graph_for_non_object_id();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
+    check_api_max();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 
     for (; i < SAI_OBJECT_TYPE_MAX; ++i)
     {
-        check_single_object_info(sai_all_object_type_infos[i]);
+        check_single_object_info(sai_metadata_all_object_type_infos[i]);
     }
 
     SAI_META_LOG_DEBUG("log test");

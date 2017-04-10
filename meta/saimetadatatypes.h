@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -135,7 +135,7 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_IP_ADDRESS,
 
     /**
-     * @brief Attribute value is ip prefix
+     * @brief Attribute value is IP prefix
      */
     SAI_ATTR_VALUE_TYPE_IP_PREFIX,
 
@@ -195,122 +195,122 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_VLAN_LIST,
 
     /**
-     * @brief Attribute value is acl field bool.
+     * @brief Attribute value is ACL field bool.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL,
 
     /**
-     * @brief Attribute value is acl field 8 bit unsigned integer.
+     * @brief Attribute value is ACL field 8 bit unsigned integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8,
 
     /**
-     * @brief Attribute value is acl field 8 bit signed integer.
+     * @brief Attribute value is ACL field 8 bit signed integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT8,
 
     /**
-     * @brief Attribute value is acl field 16 bit unsigned integer.
+     * @brief Attribute value is ACL field 16 bit unsigned integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT16,
 
     /**
-     * @brief Attribute value is acl field 16 bit signed integer.
+     * @brief Attribute value is ACL field 16 bit signed integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT16,
 
     /**
-     * @brief Attribute value is acl field 32 bit unsigned integer.
+     * @brief Attribute value is ACL field 32 bit unsigned integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT32,
 
     /**
-     * @brief Attribute value is acl field 32 bit signed integer.
+     * @brief Attribute value is ACL field 32 bit signed integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32,
 
     /**
-     * @brief Attribute value is acl field mac address.
+     * @brief Attribute value is ACL field mac address.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC,
 
     /**
-     * @brief Attribute value is acl field IPv4.
+     * @brief Attribute value is ACL field IPv4.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV4,
 
     /**
-     * @brief Attribute value is acl field IPv6.
+     * @brief Attribute value is ACL field IPv6.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6,
 
     /**
-     * @brief Attribute value is acl field object id.
+     * @brief Attribute value is ACL field object id.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID,
 
     /**
-     * @brief Attribute value is acl field object list.
+     * @brief Attribute value is ACL field object list.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST,
 
     /**
-     * @brief Attribute value is acl field list of 8 bit unsigned integers.
+     * @brief Attribute value is ACL field list of 8 bit unsigned integers.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST,
 
     /**
-     * @brief Attribute value is acl action 8 bit unsigned integer.
+     * @brief Attribute value is ACL action 8 bit unsigned integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8,
 
     /**
-     * @brief Attribute value is acl action 8 bit signed integer.
+     * @brief Attribute value is ACL action 8 bit signed integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8,
 
     /**
-     * @brief Attribute value is acl action 16 bit unsigned integer.
+     * @brief Attribute value is ACL action 16 bit unsigned integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16,
 
     /**
-     * @brief Attribute value is acl action 16 bit signed integer.
+     * @brief Attribute value is ACL action 16 bit signed integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT16,
 
     /**
-     * @brief Attribute value is acl action 32 bit unsigned integer.
+     * @brief Attribute value is ACL action 32 bit unsigned integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT32,
 
     /**
-     * @brief Attribute value is acl action 32 bit signed integer.
+     * @brief Attribute value is ACL action 32 bit signed integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT32,
 
     /**
-     * @brief Attribute value is acl action mac address.
+     * @brief Attribute value is ACL action mac address.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC,
 
     /**
-     * @brief Attribute value is acl action IPv4.
+     * @brief Attribute value is ACL action IPv4.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4,
 
     /**
-     * @brief Attribute value is acl action IPV6.
+     * @brief Attribute value is ACL action IPV6.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6,
 
     /**
-     * @brief Attribute value is acl action object id.
+     * @brief Attribute value is ACL action object id.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID,
 
     /**
-     * @brief Attribute value is acl action object list.
+     * @brief Attribute value is ACL action object list.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST,
 
@@ -325,7 +325,7 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST,
 
     /**
-     * @brief Attribute value is acl capability.
+     * @brief Attribute value is ACL capability.
      */
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
 
@@ -359,7 +359,7 @@ typedef enum _sai_attr_flags_t {
      * @brief Create and set flag.
      *
      * Attribute with this flag can be created and after creation value may be
-     * modified using SET api. Can be bombined with MANDATORY flag. If
+     * modified using SET api. Can be combined with MANDATORY flag. If
      * attribute is not combined with MANDATORY flag then DEFAULT value must be
      * provided for this attribute.
      */
@@ -413,37 +413,37 @@ typedef enum _sai_attr_flags_t {
 } sai_attr_flags_t;
 
 /**
- * @def Defines helper to chek if mandatory on create falg is set.
+ * @def Defines helper to check if mandatory on create flag is set.
  */
 #define HAS_FLAG_MANDATORY_ON_CREATE(x)   (((x) & SAI_ATTR_FLAGS_MANDATORY_ON_CREATE) == SAI_ATTR_FLAGS_MANDATORY_ON_CREATE)
 
 /**
- * @def Defines helper to chek if create only falg is set.
+ * @def Defines helper to check if create only flag is set.
  */
 #define HAS_FLAG_CREATE_ONLY(x)           (((x) & SAI_ATTR_FLAGS_CREATE_ONLY) == SAI_ATTR_FLAGS_CREATE_ONLY)
 
 /**
- * @def Defines helper to chek if create and set falg is set.
+ * @def Defines helper to check if create and set flag is set.
  */
 #define HAS_FLAG_CREATE_AND_SET(x)        (((x) & SAI_ATTR_FLAGS_CREATE_AND_SET) == SAI_ATTR_FLAGS_CREATE_AND_SET)
 
 /**
- * @def Defines helper to chek if read only falg is set.
+ * @def Defines helper to check if read only flag is set.
  */
 #define HAS_FLAG_READ_ONLY(x)             (((x) & SAI_ATTR_FLAGS_READ_ONLY) == SAI_ATTR_FLAGS_READ_ONLY)
 
 /**
- * @def Defines helper to chek if key falg is set.
+ * @def Defines helper to check if key flag is set.
  */
 #define HAS_FLAG_KEY(x)                   (((x) & SAI_ATTR_FLAGS_KEY) == SAI_ATTR_FLAGS_KEY)
 
 /**
- * @def Defines helper to chek if dynamic falg is set.
+ * @def Defines helper to check if dynamic flag is set.
  */
 #define HAS_FLAG_DYNAMIC(x)               (((x) & SAI_ATTR_FLAGS_DYNAMIC) == SAI_ATTR_FLAGS_DYNAMIC)
 
 /**
- * @def Defines helper to chek if special falg is set.
+ * @def Defines helper to check if special flag is set.
  */
 #define HAS_FLAG_SPECIAL(x)               (((x) & SAI_ATTR_FLAGS_SPECIAL) == SAI_ATTR_FLAGS_SPECIAL)
 
@@ -468,8 +468,8 @@ typedef enum _sai_default_value_type_t {
     /**
      * @brief Value must be in range provided by other attribute.
      *
-     * Usually value is provieded by switch object.
-     * Range can be obtined by GET api.
+     * Usually value is provided by switch object.
+     * Range can be obtained by GET api.
      * Usually default value is minimum of range.
      */
     SAI_DEFAULT_VALUE_TYPE_ATTR_RANGE,
@@ -518,7 +518,7 @@ typedef enum _sai_default_value_type_t {
 typedef enum _sai_attr_condition_type_t
 {
     /**
-     * @brief This attribute is not conditional atttribute
+     * @brief This attribute is not conditional attribute
      */
     SAI_ATTR_CONDITION_TYPE_NONE = 0,
 
@@ -529,7 +529,7 @@ typedef enum _sai_attr_condition_type_t
     SAI_ATTR_CONDITION_TYPE_OR,
 
     /**
-     * @brief All condictions must meet for this attribute
+     * @brief All conditions must meet for this attribute
      * to be mandatory on create.
      */
     SAI_ATTR_CONDITION_TYPE_AND,
@@ -658,6 +658,11 @@ typedef struct _sai_attr_metadata_t
     bool                                allownullobjectid;
 
     /**
+     * @brief Determines whether object contains OIDs.
+     */
+    bool                                isoidattribute;
+
+    /**
      * @brief Specifies default value type.
      *
      * Default value can be a const assigned by switch
@@ -675,8 +680,8 @@ typedef struct _sai_attr_metadata_t
      * If creation flag is CREATE_ONLY or CREATE_AND_SET
      * then default value must be provided for attribute.
      *
-     * @note Default value may not apply for acl field
-     * or acl entry, need special care.
+     * @note Default value may not apply for ACL field
+     * or ACL entry, need special care.
      */
     const sai_attribute_value_t* const  defaultvalue;
 
@@ -697,7 +702,7 @@ typedef struct _sai_attr_metadata_t
     sai_attr_id_t                       defaultvalueattrid;
 
     /**
-     * @brief Indicates wheter attribute is enum value.
+     * @brief Indicates whether attribute is enum value.
      *
      * Attribute type must be set as INT32.
      *
@@ -707,7 +712,7 @@ typedef struct _sai_attr_metadata_t
     bool                                isenum;
 
     /**
-     * @brief Indicates wheter attribute is enum list value.
+     * @brief Indicates whether attribute is enum list value.
      *
      * Attribute value must must be set INT32 LIST.
      *
@@ -743,6 +748,11 @@ typedef struct _sai_attr_metadata_t
     size_t                              conditionslength;
 
     /**
+     * @brief Indicates whether attribute is conditional.
+     */
+    bool                                isconditional;
+
+    /**
      * @brief Specifies valid only type of attribute.
      *
      * @note Currently all valid only are "OR" conditions
@@ -756,7 +766,7 @@ typedef struct _sai_attr_metadata_t
      *
      * If conditions are specified (OR condition assumed)
      * then this attribute is only valid when different
-     * atribute has condition value set. Valid only
+     * attribute has condition value set. Valid only
      * attribute (against we check) can be dynamic so
      * this attribute can't be marked as MANDATORY on
      * create since default value will be required.
@@ -773,13 +783,13 @@ typedef struct _sai_attr_metadata_t
     size_t                              validonlylength;
 
     /**
-     * @brief When calling GET api result will be put
+     * @brief When calling GET API result will be put
      * in local db for future use (extra logic).
      *
      * This flag must be taken with care, since when set
      * on dynamic attribute it may provide inconsistent data.
      *
-     * Value should be updated after successfull set or remove.
+     * Value should be updated after successful set or remove.
      */
     bool                                getsave;
 
@@ -793,15 +803,15 @@ typedef struct _sai_attr_metadata_t
     /**
      * @brief Determines whether attribute is ACL field
      *
-     * This will become handy for fast detrmination whether
+     * This will become handy for fast determination whether
      * default value is present.
      */
     bool                                isaclfield;
 
-    /*
+    /**
      * @brief Determines whether attribute is ACL action
      *
-     * This will become handy for fast detrmination whether
+     * This will become handy for fast determination whether
      * default value is present.
      */
     bool                                isaclaction;
@@ -809,7 +819,7 @@ typedef struct _sai_attr_metadata_t
 } sai_attr_metadata_t;
 
 /*
- * TODO since non object id members can have different type and can be localed
+ * TODO since non object id members can have different type and can be located
  * at different object_key union position, we need to find a way to extract
  * those for automatic serialize/deserialize for example extracting value as
  * sai_attribute_value_t and pointing to right serialize/deserialize functions.
@@ -818,14 +828,14 @@ typedef struct _sai_attr_metadata_t
  */
 
 /**
- * @brief Function definition for getting OID from non obeject
+ * @brief Function definition for getting OID from non object
  * id struct member.
  */
 typedef sai_object_id_t (*sai_meta_get_struct_member_oid_fn)(
         _In_ const sai_object_meta_key_t *object_meta_key);
 
 /**
- * @brief Function definition for setting OID from non obeject
+ * @brief Function definition for setting OID from non object
  * id struct member.
  */
 typedef void (*sai_meta_set_struct_member_oid_fn)(
@@ -839,7 +849,7 @@ typedef void (*sai_meta_set_struct_member_oid_fn)(
 typedef struct _sai_struct_member_info_t
 {
     /**
-     * @brief Member vlaue type
+     * @brief Member value type
      */
     sai_attr_value_type_t                               membervaluetype;
 
@@ -867,7 +877,7 @@ typedef struct _sai_struct_member_info_t
     size_t                                              allowedobjecttypeslength;
 
     /**
-     * @brief Indicates wheter member is enum value.
+     * @brief Indicates whether member is enum value.
      *
      * Type must be set as INT32.
      *
@@ -915,7 +925,7 @@ typedef struct _sai_rev_graph_member_t
     /**
      * @brief Defines attribute metadata for object type
      *
-     * This can be NULL if dependency objec type
+     * This can be NULL if dependency object type
      * is non object id type and dependency is on
      * defined struct.
      */
@@ -934,20 +944,20 @@ typedef struct _sai_rev_graph_member_t
 } sai_rev_graph_member_t;
 
 /*
- * Generic QUAD api definitions. All apis can be called using this quad genric
+ * Generic QUAD API definitions. All APIs can be called using this quad generic
  * functions.
  *
  * When creating switch object or non object id switch_id parameter is ignored,
  * and can be NULL. Currently objecttype inside sai_object_meta_key_t is
  * ignored and can be skipped.
  *
- * This generic quad api will help us later to call any api, without doind any
- * switch cases for calling differen signature functions including non object
+ * This generic quad API will help us later to call any api, without doing any
+ * switch cases for calling different signature functions including non object
  * id structs. Also later we will generate automatic serialize and deserialize
  * methods for non object id which will deserialize data to object union in
  * sai_object_meta_key_t to right place.
  *
- * TODO add medatada init function which will populate global api function
+ * TODO add metadata init function which will populate global API function
  * pointers which will be used when calling each api.
  */
 
@@ -980,6 +990,11 @@ typedef struct _sai_object_type_info_t
     sai_object_type_t                       objecttype;
 
     /**
+     * @brief Object Type name
+     */
+    const char*                             objecttypename;
+
+    /**
      * @brief Start of attributes *_START
      */
     sai_attr_id_t                           attridstart;
@@ -1002,9 +1017,14 @@ typedef struct _sai_object_type_info_t
 
     /**
      * @brief Indicates if object is using struct
-     * instead od actual object id
+     * instead of actual object id
      */
     bool                                    isnonobjectid;
+
+    /**
+     * @brief Indicates if object is oid object id
+     */
+    bool                                    isobjectid;
 
     /**
      * @brief Defines all struct members

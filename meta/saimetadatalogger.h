@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -17,16 +17,16 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    saimetadatatypes.h
+ * @file    saimetadatalogger.h
  *
- * @brief   This module defines SAI Metadata Types
+ * @brief   This module defines SAI Metadata Logger
  */
 
 #ifndef __SAI_METADATA_LOGGER_H__
 #define __SAI_METADATA_LOGGER_H__
 
 /**
- * @defgroup SAIMETADATALOGGER SAI Metadata Types Definitions
+ * @defgroup SAIMETADATALOGGER SAI Metadata Logger Definitions
  *
  * @{
  */
@@ -34,10 +34,10 @@
 /**
  * @brief Log level function definition.
  *
- * User can sepcify his own function thah will be called when message log level
- * will be greater or equal to #sai_meta_log_level.
+ * User can specify his own function that will be called when message log level
+ * will be greater or equal to #sai_metadata_log_level.
  */
-typedef void (*sai_meta_log_fn)(
+typedef void (*sai_metadata_log_fn)(
         _In_ sai_log_level_t log_level,
         _In_ const char *file,
         _In_ int line,
@@ -50,16 +50,16 @@ typedef void (*sai_meta_log_fn)(
  *
  * TODO: add a set function to update this?
  */
-extern volatile sai_meta_log_fn sai_meta_log;
+extern volatile sai_metadata_log_fn sai_metadata_log;
 
 /**
- * @brief Log level for sai metadat macros.
+ * @brief Log level for sai metadata macros.
  *
  * Log level can be changed by user at any time.
  *
  * TODO: add a set function to update this?
  */
-extern volatile sai_log_level_t sai_meta_log_level;
+extern volatile sai_log_level_t sai_metadata_log_level;
 
 /**
  * @brief Helper log macro definition
@@ -68,12 +68,12 @@ extern volatile sai_log_level_t sai_meta_log_level;
  * function will validate parameters at compilation time.
  */
 #define SAI_META_LOG(loglevel,format,...)\
-    if (loglevel >= sai_meta_log_level)\
+    if (loglevel >= sai_metadata_log_level)\
 {\
-    if (sai_meta_log == NULL) /* or syslog? */ \
+    if (sai_metadata_log == NULL) /* or syslog? */ \
         fprintf(stderr, "%s:%d %s: " format "\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__);\
     else\
-        sai_meta_log(loglevel, __FILE__, __LINE__, __func__, format, ##__VA_ARGS__);\
+        sai_metadata_log(loglevel, __FILE__, __LINE__, __func__, format, ##__VA_ARGS__);\
 }
 
 /*

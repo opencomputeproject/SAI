@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -19,7 +19,7 @@
  *
  * @file    saiwred.h
  *
- * @brief   This module defines SAI QOS Wred interface
+ * @brief   This module defines SAI QOS WRED interface
  */
 
 #if !defined (__SAIWRED_H_)
@@ -28,7 +28,7 @@
 #include "saitypes.h"
 
 /**
- * @defgroup SAIWRED SAI - Qos Wred specific API definitions
+ * @defgroup SAIWRED SAI - QOS WRED specific API definitions
  *
  * @{
  */
@@ -242,7 +242,7 @@ typedef enum _sai_wred_attr_t
 /**
  * @brief Create WRED Profile
  *
- * @param[out] wred_id Wred profile Id.
+ * @param[out] wred_id WRED profile Id.
  * @param[in] switch_id Switch Id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -258,7 +258,7 @@ typedef sai_status_t (*sai_create_wred_fn)(
 /**
  * @brief Remove WRED Profile
  *
- * @param[in] wred_id Wred profile Id.
+ * @param[in] wred_id WRED profile Id.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -266,9 +266,9 @@ typedef sai_status_t (*sai_remove_wred_fn)(
         _In_ sai_object_id_t wred_id);
 
 /**
- * @brief Set attributes to Wred profile.
+ * @brief Set attributes to WRED profile.
  *
- * @param[out] wred_id Wred profile Id.
+ * @param[out] wred_id WRED profile Id.
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -278,9 +278,9 @@ typedef sai_status_t (*sai_set_wred_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get Wred profile attribute
+ * @brief Get WRED profile attribute
  *
- * @param[in] wred_id Wred Profile Id
+ * @param[in] wred_id WRED Profile Id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
