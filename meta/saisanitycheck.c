@@ -2327,13 +2327,6 @@ void check_non_object_id_object_types()
                 META_ASSERT_NOT_NULL(m->allowedobjecttypes);
                 META_ASSERT_TRUE(m->allowedobjecttypeslength > 0, "struct member object id, should specify some object types");
 
-                /*
-                 * this check can be relaxed in the future, but currently
-                 * supporting only one object type in non object id make sense
-                 */
-
-                META_ASSERT_TRUE(m->allowedobjecttypeslength == 1, "currently struct member object id, should specify only one object type");
-
                 size_t k = 0;
 
                 for (; k < m->allowedobjecttypeslength; k++)
