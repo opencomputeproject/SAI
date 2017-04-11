@@ -57,7 +57,7 @@ typedef enum _sai_tam_stat_attr_t
     /**
      * @brief Counter
      *
-     * Eg.: SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES
+     * Example SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -82,10 +82,10 @@ typedef enum _sai_tam_stat_attr_t
  *
  * This creates a TAM stat id object.
  *
- * @param[out] tam_id TAM stat id object
+ * @param[out] stat_id TAM stat id object
  * @param[in] switch_id Switch object id
- * @param[in] attr_count number of attributes
- * @param[in] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -110,7 +110,7 @@ typedef sai_status_t(*sai_remove_tam_stat_fn)(
  * @brief Set TAM stat id object attribute value(s).
  *
  * @param[in] stat_id TAM stat id
- * @param[in] attr attribute to set
+ * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -121,9 +121,9 @@ typedef sai_status_t(*sai_set_tam_stat_attribute_fn)(
 /**
  * @brief Get values for specified TAM stat id attributes.
  *
- * @param[in] stat_id - tam stat id object id
- * @param[in] attr_count - number of attributes
- * @param[inout] attr_list - array of attributes
+ * @param[in] stat_id TAM stat id object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -320,8 +320,8 @@ typedef enum _sai_tam_attr_t
  *
  * @param[out] tam_id TAM object
  * @param[in] switch_id Switch object id
- * @param[in] attr_count number of attributes
- * @param[in] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -348,7 +348,7 @@ typedef sai_status_t(*sai_remove_tam_fn)(
  * @brief Set TAM attribute value(s).
  *
  * @param[in] tam_id TAM id
- * @param[in] attr attribute to set
+ * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -359,9 +359,9 @@ typedef sai_status_t(*sai_set_tam_attribute_fn)(
 /**
  * @brief Get values for specified TAM attributes.
  *
- * @param[in] tam_id - tam object id
- * @param[in] attr_count - number of attributes
- * @param[inout] attr_list - array of attributes
+ * @param[in] tam_id TAM object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -540,7 +540,7 @@ typedef enum _sai_tam_threshold_attr_t
  *
  * @param[out] threshold_id Threshold object
  * @param[in] switch_id Switch object id
- * @param[in] attr_count number of attributes
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Preferences for creating a threshold
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -564,8 +564,8 @@ typedef sai_status_t(*sai_remove_tam_threshold_fn)(
 /**
  * @brief Set threshold attribute value(s).
  *
- * @param[in] threshold_id - threshold object id
- * @param[in] attr attribute to set
+ * @param[in] threshold_id Threshold object id
+ * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -577,8 +577,8 @@ typedef sai_status_t(*sai_set_tam_threshold_attribute_fn)(
  * @brief Get values for specified threshold attributes.
  *
  * @param[in] threshold_id Threshold object id
- * @param[in] attr_count number of attributes
- * @param[inout] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -664,8 +664,8 @@ typedef enum _sai_tam_snapshot_attr_t
  *
  * @param[out] snapshot_id Snapshot object
  * @param[in] switch_id Switch object id
- * @param[in] attr_count number of attributes
- * @param[in] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -689,7 +689,7 @@ typedef sai_status_t(*sai_remove_tam_snapshot_fn)(
  * @brief Set Snapshot attribute value(s).
  *
  * @param[in] snapshot_id Snapshot object id
- * @param[in] attr attribute to set
+ * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -701,8 +701,8 @@ typedef sai_status_t(*sai_set_tam_snapshot_attribute_fn)(
  * @brief Get values for specified Snapshot attributes.
  *
  * @param[in] snapshot_id Snapshot object id
- * @param[in] attr_count number of attributes
- * @param[inout] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -719,14 +719,14 @@ typedef sai_status_t(*sai_get_tam_snapshot_attribute_fn)(
  * supported by the associated tam object.
  *
  * @param[in] snapshot_id Snapshot object id
- * @param[inout] stat_count Number of statistics (required/provided)
+ * @param[inout] number_of_counters Number of statistics (required/provided)
  * @param[inout] statistics Statistics (allocated/provided)
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_tam_snapshot_statistics_get_fn)(
+typedef sai_status_t(*sai_get_tam_snapshot_statistics_fn)(
         _In_ sai_object_id_t snapshot_id,
-        _Inout_ uint32_t *stat_count,
+        _Inout_ uint32_t *number_of_counters,
         _Inout_ sai_tam_statistic_t *statistics);
 
 /**
@@ -809,8 +809,8 @@ typedef enum _sai_tam_transporter_attr_t {
  *
  * @param[out] transporter_id Transporter object
  * @param[in] switch_id Switch object id
- * @param[in] attr_count number of attributes
- * @param[in] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -833,8 +833,8 @@ typedef sai_status_t(*sai_remove_tam_transporter_fn)(
 /**
  * @brief Set TAM Transporter attribute value(s).
  *
- * @param[in] transporter_id - transporter object id
- * @param[in] attr attribute to set
+ * @param[in] transporter_id Transporter object id
+ * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -845,9 +845,9 @@ typedef sai_status_t(*sai_set_tam_transporter_attribute_fn)(
 /**
  * @brief Get values for specified Transporter attributes.
  *
- * @param[in] transporter_id - Transporter object id
- * @param[in] attr_count number of attributes
- * @param[inout] attr_list array of attributes
+ * @param[in] transporter_id Transporter object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -874,7 +874,7 @@ typedef struct _sai_tam_api_t
     sai_remove_tam_snapshot_fn              remove_tam_snapshot;
     sai_set_tam_snapshot_attribute_fn       set_tam_snapshot_attribute;
     sai_get_tam_snapshot_attribute_fn       get_tam_snapshot_attribute;
-    sai_tam_snapshot_statistics_get_fn      get_tam_snapshot_statistics;
+    sai_get_tam_snapshot_statistics_fn      get_tam_snapshot_statistics;
     sai_create_tam_transporter_fn           create_tam_transporter;
     sai_remove_tam_transporter_fn           remove_tam_transporter;
     sai_set_tam_transporter_attribute_fn    set_tam_transporter_attribute;
