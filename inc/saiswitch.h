@@ -1184,7 +1184,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY,
 
     /**
-     * @brief Set Switch FDB Event notification callback function passed to the adapter.
+     * @brief Set Switch FDB event notification callback function passed to the adapter.
      *
      * Use sai_fdb_event_notification_fn as notification function.
      *
@@ -1215,6 +1215,17 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
+
+    /**
+     * @brief Set Switch TAM event notification callback function passed to the adapter.
+     *
+     * Use sai_tam_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
 
     /**
      * @brief Enable SAI function call fast mode, which executes calls very quickly
