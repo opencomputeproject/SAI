@@ -192,16 +192,18 @@ typedef sai_status_t (*sai_get_stp_attribute_fn)(
  * @brief Create stp port object
  *
  * @param[out] stp_port_id stp port id
+ * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
  * @return SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
 typedef sai_status_t (*sai_create_stp_port_fn)(
-        _Out_ sai_object_id_t *stp_port_id,
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
+    _Out_ sai_object_id_t *stp_port_id,
+    _In_ sai_object_id_t switch_id,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list);
+
 
 /**
  * @brief Remove stp port object.
