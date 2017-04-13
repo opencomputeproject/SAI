@@ -48,8 +48,12 @@ typedef struct _sai_mcast_fdb_entry_t
     /** MAC address */
     sai_mac_t mac_address;
 
-    /** Vlan ID */
-    sai_vlan_id_t vlan_id;
+    /**
+     * @brief Bridge ID. for .1D and Vlan ID for .1Q
+     *
+     * @objects SAI_OBJECT_TYPE_BRIDGE, SAI_OBJECT_TYPE_VLAN
+     */
+    sai_object_id_t bvid;
 
 } sai_mcast_fdb_entry_t;
 
