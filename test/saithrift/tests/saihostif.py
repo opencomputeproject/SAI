@@ -30,6 +30,7 @@ import time
 
 import pprint
 
+
 class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
     MAX_PORTS = 32
     POLICER_CIR = 10
@@ -38,6 +39,8 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
     my_ip = "10.0.0.1"
     peer_ip = "10.0.0.0"
     src_mac_uc = '00:55:55:55:55:00'
+
+    hif_trap_list = []
 
     trap_list = [
         SAI_HOSTIF_TRAP_TYPE_TTL_ERROR,
@@ -53,6 +56,7 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
     myip = ''
     peerip = ''
     hostif_id={}
+    traps=[]
     trap_groups=[]
     policers=[]
     routes=[]
@@ -60,12 +64,14 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
     rifs=[]
     v_routers=[]
     neighbors=[]
+
     test_port_ind = 1
+    hif_type = SAI_HOSTIF_TYPE_NETDEV
 
     def create_host_interfaces(self):
         for interface,front in interface_to_front_mapping.iteritems():
             port_id = port_list[int(interface)]
-            hif_id = sai_thrift_create_hostif(self.client, port_id, front)
+            hif_id = sai_thrift_create_hostif(self.client, self.hif_type, port_id, front)
             self.hostif_id[front]=hif_id
         return
 
@@ -77,11 +83,9 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
         return
 
     def __init__(self):
-
         BaseTest.__init__(self)
 
         self.test_params = testutils.test_params_get()
-
 
         self.myip = self.my_ip
         self.peerip = self.peer_ip
@@ -134,6 +138,7 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
 
         ThriftInterfaceDataPlane.setUp(self)
         self.policers=[]
+        self.traps=[]
         self.trap_groups=[]
         self.routes=[]
         self.next_hops=[]
@@ -153,11 +158,11 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
         if config["log_dir"] != None:
             self.dataplane.stop_pcap()
 
-        for trap_gr in self.trap_groups:
-            self.client.sai_thrift_remove_hostif_trap_group(trap_group_id=trap_gr)
+        for trap in self.traps:
+            sai_thrift_remove_hostif_trap(self.client, trap)
 
-        for trapid in self.trap_list:
-            sai_thrift_set_hostif_trap(self.client, trap_id=trapid, action=SAI_PACKET_ACTION_FORWARD)
+        for trap_group in self.trap_groups:
+            sai_thrift_remove_hostif_trap_group(self.client, trap_group)
 
         for policer in self.policers:
             self.client.sai_thrift_remove_policer(policer_id=policer)
@@ -181,7 +186,6 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
         return
 
     def copp_test(self, packet, count, send_intf, recv_intf):
-
         start_time=datetime.datetime.now()
         for i in xrange(count):
             testutils.send_packet(self, send_intf, packet)
@@ -204,10 +208,14 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
         raise NotImplemented
 
     def one_port_test(self, port_number, packet_count):
-
         packet = self.contruct_packet()
-        total_rcv_pkt_cnt, time_delta, time_delta_ms, tx_pps, rx_pps = self.copp_test(packet, packet_count, (0, port_number), (1, port_number))
-        self.printStats(packet_count, total_rcv_pkt_cnt, time_delta, tx_pps, rx_pps)
+        total_rcv_pkt_cnt, time_delta, time_delta_ms, tx_pps, rx_pps = self.copp_test(packet, packet_count, (1, port_number), (0, port_number))
+
+        self.printStats(packet_count,
+                        total_rcv_pkt_cnt,
+                        time_delta,
+                        tx_pps,
+                        rx_pps)
         self.check_constraints(total_rcv_pkt_cnt)
         return
 
@@ -258,26 +266,26 @@ class ARPTest(PolicyTest):
         self.setup_test_port_rif(self.test_port_ind)
 
         sai_policer_id = sai_thrift_create_policer(self.client,
-                            meter_type=SAI_POLICER_MODE_Sr_TCM,
-                            mode=SAI_METER_TYPE_PACKETS,
-                            cir=self.POLICER_CIR,
-                            red_action=SAI_PACKET_ACTION_DROP)
+                                                   meter_type=SAI_METER_TYPE_BYTES,
+                                                   mode=SAI_POLICER_MODE_SR_TCM,
+                                                   cir=self.POLICER_CIR,
+                                                   red_action=SAI_PACKET_ACTION_DROP)
         self.policers.append(sai_policer_id)
+        print sai_policer_id
 
         trap_group = sai_thrift_create_hostif_trap_group(self.client, queue_id=4, policer_id=sai_policer_id)
         self.trap_groups.append(trap_group)
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_ARP_REQUEST,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_ARP_RESPONSE,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
+
+        trap1 = sai_thrift_create_hostif_trap(client=self.client,
+                                              trap_type=SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST,
+                                              packet_action=SAI_PACKET_ACTION_TRAP,
+                                              trap_group=trap_group)
+        self.traps.append(trap1)
+        trap2 = sai_thrift_create_hostif_trap(client=self.client,
+                                              trap_type=SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE,
+                                              packet_action=SAI_PACKET_ACTION_TRAP,
+                                              trap_group=trap_group)
+        self.traps.append(trap2)
         return
 
     def contruct_packet(self):
@@ -285,14 +293,13 @@ class ARPTest(PolicyTest):
         src_ip = self.myip
         dst_ip = self.peerip
 
-        packet = simple_arp_packet(
-                       eth_dst='ff:ff:ff:ff:ff:ff',
-                       eth_src=src_mac,
-                       arp_op=1,
-                       ip_snd=src_ip,
-                       ip_tgt=dst_ip,
-                       hw_snd=src_mac,
-                       hw_tgt='ff:ff:ff:ff:ff:ff')
+        packet = simple_arp_packet(eth_dst='ff:ff:ff:ff:ff:ff',
+                                   eth_src=src_mac,
+                                   arp_op=1,
+                                   ip_snd=src_ip,
+                                   ip_tgt=dst_ip,
+                                   hw_snd=src_mac,
+                                   hw_tgt='ff:ff:ff:ff:ff:ff')
 
         return packet
 
@@ -306,12 +313,12 @@ class DHCPTest(NoPolicyTest):
 
         trap_group = sai_thrift_create_hostif_trap_group(self.client, queue_id=4)
         self.trap_groups.append(trap_group)
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_DHCP,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
+
+        trap = sai_thrift_create_hostif_trap(client=self.client,
+                                             trap_type=SAI_HOSTIF_TRAP_TYPE_DHCP,
+                                             packet_action=SAI_PACKET_ACTION_TRAP,
+                                             trap_group=trap_group)
+        self.traps.append(trap)
         return
 
     def runTest(self):
@@ -320,25 +327,23 @@ class DHCPTest(NoPolicyTest):
     def contruct_packet(self):
         src_mac = self.src_mac_uc
         packet = simple_udp_packet(pktlen=100,
-                          eth_dst='ff:ff:ff:ff:ff:ff',
-                          eth_src=src_mac,
-                          dl_vlan_enable=False,
-                          vlan_vid=0,
-                          vlan_pcp=0,
-                          dl_vlan_cfi=0,
-                          ip_src='0.0.0.0',
-                          ip_dst='255.255.255.255',
-                          ip_tos=0,
-                          ip_ttl=64,
-                          udp_sport=68,
-                          udp_dport=67,
-                          ip_ihl=None,
-                          ip_options=False,
-                          with_udp_chksum=True
-                          )
+                                   eth_dst='ff:ff:ff:ff:ff:ff',
+                                   eth_src=src_mac,
+                                   dl_vlan_enable=False,
+                                   vlan_vid=0,
+                                   vlan_pcp=0,
+                                   dl_vlan_cfi=0,
+                                   ip_src='0.0.0.0',
+                                   ip_dst='255.255.255.255',
+                                   ip_tos=0,
+                                   ip_ttl=64,
+                                   udp_sport=68,
+                                   udp_dport=67,
+                                   ip_ihl=None,
+                                   ip_options=False,
+                                   with_udp_chksum=True)
 
         return packet
-
 
 class LLDPTest(NoPolicyTest):
     def __init__(self):
@@ -349,13 +354,12 @@ class LLDPTest(NoPolicyTest):
         ControlPlaneBaseTest.setUp(self)
         trap_group = sai_thrift_create_hostif_trap_group(self.client, queue_id=4)
         self.trap_groups.append(trap_group)
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_LLDP,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
 
+        trap = sai_thrift_create_hostif_trap(client=self.client,
+                                             trap_type=SAI_HOSTIF_TRAP_TYPE_LLDP,
+                                             packet_action=SAI_PACKET_ACTION_TRAP,
+                                             trap_group=trap_group)
+        self.traps.append(trap)
         return
 
     def runTest(self):
@@ -365,13 +369,10 @@ class LLDPTest(NoPolicyTest):
     def contruct_packet(self):
 
         src_mac = self.src_mac_uc
-        packet = simple_eth_packet(
-                       eth_dst='01:80:c2:00:00:0e',
-                       eth_src=src_mac,
-                       eth_type=0x88cc
-                 )
+        packet = simple_eth_packet(eth_dst='01:80:c2:00:00:0e',
+                                   eth_src=src_mac,
+                                   eth_type=0x88cc)
         return packet
-
 
 class LACPTest(NoPolicyTest):
     def __init__(self):
@@ -381,23 +382,21 @@ class LACPTest(NoPolicyTest):
         ControlPlaneBaseTest.setUp(self)
         trap_group = sai_thrift_create_hostif_trap_group(self.client, queue_id=4)
         self.trap_groups.append(trap_group)
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_LACP,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
+
+        trap = sai_thrift_create_hostif_trap(client=self.client,
+                                             trap_type=SAI_HOSTIF_TRAP_TYPE_LACP,
+                                             packet_action=SAI_PACKET_ACTION_TRAP,
+                                             trap_group=trap_group)
+        self.traps.append(trap)
         return
 
     def runTest(self):
         self.run_suite()
 
     def contruct_packet(self):
-        packet = simple_eth_packet(
-               pktlen=14,
+        packet = simple_eth_packet(pktlen=14,
                eth_dst='01:80:c2:00:00:02',
-               eth_type=0x8809
-               ) / (chr(0x01)+(chr(0x01)))
+               eth_type=0x8809) / (chr(0x01)+(chr(0x01)))
 
         return packet
 
@@ -408,14 +407,15 @@ class SNMPTest(NoPolicyTest):
     def setUp(self):
         ControlPlaneBaseTest.setUp(self)
         self.setup_test_port_rif(self.test_port_ind)
+
         trap_group = sai_thrift_create_hostif_trap_group(self.client, queue_id=4)
         self.trap_groups.append(trap_group)
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_SNMP,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
+
+        trap = sai_thrift_create_hostif_trap(client=self.client,
+                                             trap_type=SAI_HOSTIF_TRAP_ID_SNMP,
+                                             packet_action=SAI_PACKET_ACTION_TRAP,
+                                             trap_group=trap_group)
+        self.traps.append(trap)
         return
 
     def runTest(self):
@@ -423,12 +423,10 @@ class SNMPTest(NoPolicyTest):
 
     def contruct_packet(self):
         src_mac = self.src_mac_uc
-        packet = simple_udp_packet(
-                          eth_dst=router_mac,
-                          ip_dst=self.peerip,
-                          eth_src=src_mac,
-                          udp_dport=161
-                          )
+        packet = simple_udp_packet(eth_dst=router_mac,
+                                   ip_dst=self.peerip,
+                                   eth_src=src_mac,
+                                   udp_dport=161)
         return packet
 
 class SSHTest(NoPolicyTest):
@@ -440,12 +438,12 @@ class SSHTest(NoPolicyTest):
 
         trap_group = sai_thrift_create_hostif_trap_group(self.client, queue_id=4)
         self.trap_groups.append(trap_group)
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_SSH,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
+
+        trap = sai_thrift_create_hostif_trap(client=self.client,
+                                             trap_type=SAI_HOSTIF_TRAP_ID_SSH,
+                                             packet_action=SAI_PACKET_ACTION_TRAP,
+                                             trap_group=trap_group)
+        self.traps.append(trap)
         return
 
     def runTest(self):
@@ -455,12 +453,11 @@ class SSHTest(NoPolicyTest):
         src_ip = self.myip
         dst_ip = self.peerip
 
-        packet = simple_tcp_packet(
-                eth_dst=router_mac,
-                ip_dst=dst_ip,
-                ip_src=src_ip,
-                tcp_sport=22,
-                tcp_dport=22)
+        packet = simple_tcp_packet(eth_dst=router_mac,
+                                   ip_dst=dst_ip,
+                                   ip_src=src_ip,
+                                   tcp_sport=22,
+                                   tcp_dport=22)
 
         return packet
 
@@ -471,24 +468,24 @@ class IP2METest(NoPolicyTest):
 
     def setUpIp2Me(self):
         self.create_routes()
-        trap_group = sai_thrift_create_hostif_trap_group(self.client, queue_id=4)
+
+        trap_group = sai_thrift_create_hostif_trap_group(self.client,
+                                                         queue_id=4)
         self.trap_groups.append(trap_group)
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_IP2ME,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
+        trap = sai_thrift_create_hostif_trap(self.client,
+                                             trap_type=SAI_HOSTIF_TRAP_TYPE_IP2ME,
+                                             packet_action=SAI_PACKET_ACTION_TRAP,
+                                             trap_group=trap_group)
+        self.traps.append(trap)
+
         return
 
     def setUp(self):
-
         ControlPlaneBaseTest.setUp(self)
         self.setUpIp2Me()
         return
 
     def tearDown(self):
-
         ControlPlaneBaseTest.tearDown(self)
         return
 
@@ -499,11 +496,9 @@ class IP2METest(NoPolicyTest):
         src_mac = self.src_mac_uc
         dst_ip = self.peerip
 
-        packet = simple_tcp_packet(
-                      eth_src=src_mac,
-                      eth_dst=router_mac,
-                      ip_dst=dst_ip
-                      )
+        packet = simple_tcp_packet(eth_src=src_mac,
+                                   eth_dst=router_mac,
+                                   ip_dst=dst_ip)
 
         return packet
 
@@ -526,12 +521,11 @@ class TTLErrorTest(NoPolicyTest):
         trap_group = sai_thrift_create_hostif_trap_group(self.client, queue_id=4)
         self.trap_groups.append(trap_group)
 
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_TTL_ERROR,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
+        trap = sai_thrift_create_hostif_trap(client=self.client,
+                                             trap_type=SAI_HOSTIF_TRAP_TYPE_TTL_ERROR,
+                                             packet_action=SAI_PACKET_ACTION_TRAP,
+                                             trap_group=trap_group)
+        self.traps.append(trap)
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
         self.v_routers.append(vr_id)
@@ -563,11 +557,11 @@ class TTLErrorTest(NoPolicyTest):
     def contruct_packet(self):
 
         packet = simple_tcp_packet(eth_dst=router_mac,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst=self.ip_addr1,
-                                ip_src=self.src_ip,
-                                ip_id=105,
-                                ip_ttl=1)
+                                   eth_src='00:22:22:22:22:22',
+                                   ip_dst=self.ip_addr1,
+                                   ip_src=self.src_ip,
+                                   ip_id=105,
+                                   ip_ttl=1)
         return packet
 
 class BGPTest(NoPolicyTest):
@@ -581,21 +575,19 @@ class BGPTest(NoPolicyTest):
 
         trap_group = sai_thrift_create_hostif_trap_group(self.client, queue_id=4)
         self.trap_groups.append(trap_group)
-        sai_thrift_set_hostif_trap(
-            client=self.client,
-            trap_id=SAI_HOSTIF_TRAP_ID_BGP,
-            action=SAI_PACKET_ACTION_TRAP,
-            channel=SAI_HOSTIF_TRAP_CHANNEL_NETDEV,
-            trap_group_id=trap_group)
+
+        trap = sai_thrift_create_hostif_trap(client=self.client,
+                                             trap_type=SAI_HOSTIF_TRAP_TYPE_BGP,
+                                             packet_action=SAI_PACKET_ACTION_TRAP,
+                                             trap_group=trap_group)
+        self.traps.append(trap)
 
     def runTest(self):
         self.run_suite()
 
     def contruct_packet(self):
         dst_ip = self.peerip
-        packet = simple_tcp_packet(
-                      eth_dst=router_mac,
-                      ip_dst=dst_ip,
-                      tcp_dport=179
-                      )
+        packet = simple_tcp_packet(eth_dst=router_mac,
+                                   ip_dst=dst_ip,
+                                   tcp_dport=179)
         return packet
