@@ -444,11 +444,109 @@ def sai_thrift_create_stp_entry(client, vlan_list):
     stp_id = client.sai_thrift_create_stp_entry(stp_attr_list)
     return stp_id
 
-def sai_thrift_set_hostif_trap_group(client, trap_group_id, policer_id):
-    policer_attr_value = sai_thrift_attribute_value_t(oid=policer_id)
-    policer_attr = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER, value=policer_attr_value)
-    status = client.sai_thrift_set_hostif_trap_group(trap_group_id, thrift_attr=policer_attr)
-    return status
+def sai_thrift_create_hostif(client,
+                             hif_type,
+                             hif_obj_id,
+                             hif_name):
+    attr_list=[]
+
+    atr_value=sai_thrift_attribute_value_t(s32=hif_type)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_TYPE,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(oid=hif_obj_id)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_OBJ_ID,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(chardata=hif_name)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_NAME,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    return client.sai_thrift_create_hostif(attr_list)
+
+def sai_thrift_create_hostif_trap(client,
+                                  trap_type,
+                                  packet_action,
+                                  trap_priority=None,
+                                  exclude_port_list=None,
+                                  trap_group=None):
+    attr_list=[]
+
+    atr_value=sai_thrift_attribute_value_t(s32=trap_type)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(s32=packet_action)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    if trap_priority != None:
+        atr_value=sai_thrift_attribute_value_t(u32=trap_priority)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if trap_priority != None:
+        atr_value=sai_thrift_attribute_value_t(objlist=exclude_port_list)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if trap_group != None:
+        atr_value=sai_thrift_attribute_value_t(oid=trap_group)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    trap_id = client.sai_thrift_create_hostif_trap(attr_list)
+    return trap_id
+
+def sai_thrift_remove_hostif_trap(client,
+                                  trap_id):
+    client.sai_thrift_remove_hostif_trap(trap_id)
+
+def sai_thrift_set_hostif_trap_attribute(client,
+                                         trap_type,
+                                         packet_action,
+                                         trap_priority=None,
+                                         exclude_port_list=None,
+                                         trap_group=None):
+    attr_list=[]
+
+    atr_value=sai_thrift_attribute_value_t(s32=trap_type)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(s32=packet_action)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    if trap_priority != None:
+        atr_value=sai_thrift_attribute_value_t(u32=trap_priority)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if exclude_port_list != None:
+        atr_value=sai_thrift_attribute_value_t(objlist=exclude_port_list)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if trap_group != None:
+        atr_value=sai_thrift_attribute_value_t(oid=trap_group)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    client.sai_thrift_set_hostif_trap_attribute(attr_list)
 
 def sai_thrift_create_hostif_trap_group(client, queue_id, policer_id=None):
     attr_list = []
@@ -461,10 +559,24 @@ def sai_thrift_create_hostif_trap_group(client, queue_id, policer_id=None):
         policer_attr = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER, value=policer_attr_value)
         attr_list.append(policer_attr)
 
-    trap_group_id = client.sai_thrift_create_hostif_trap_group(thrift_attr_list=attr_list)
-    return trap_group_id
+    trap_group = client.sai_thrift_create_hostif_trap_group(thrift_attr_list=attr_list)
+    return trap_group
 
-def sai_thrift_create_policer(client, meter_type, mode, cir, red_action):
+def sai_thrift_remove_hostif_trap_group(client,
+                                        trap_group):
+    client.sai_thrift_remove_hostif_trap_group(trap_group)
+
+def sai_thrift_set_hostif_trap_group(client, trap_group_id, policer_id):
+    policer_attr_value = sai_thrift_attribute_value_t(oid=policer_id)
+    policer_attr = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER, value=policer_attr_value)
+    status = client.sai_thrift_set_hostif_trap_group(trap_group_id, thrift_attr=policer_attr)
+    return status
+
+def sai_thrift_create_policer(client,
+                              meter_type,
+                              mode,
+                              cir,
+                              red_action):
     attr_list = []
 
     meter_attr_value = sai_thrift_attribute_value_t(s32=meter_type)
@@ -486,41 +598,6 @@ def sai_thrift_create_policer(client, meter_type, mode, cir, red_action):
     policer_id = client.sai_thrift_create_policer(attr_list)
 
     return policer_id
-
-def sai_thrift_set_hostif_trap(client, trap_id, action, priority=None, channel=None, trap_group_id=None):
-
-    if channel != None:
-        attribute3_value = sai_thrift_attribute_value_t(s32=channel)
-        attribute3 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL, value=attribute3_value)
-        client.sai_thrift_set_hostif_trap(trap_id, attribute3)
-
-    if trap_group_id != None:
-        attribute4_value = sai_thrift_attribute_value_t(oid=trap_group_id)
-        attribute4 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP, value=attribute4_value)
-        client.sai_thrift_set_hostif_trap(trap_id, attribute4)
-
-    attribute1_value = sai_thrift_attribute_value_t(s32=action)
-    attribute1 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION, value=attribute1_value)
-    client.sai_thrift_set_hostif_trap(trap_id, attribute1)
-
-    if priority != None:
-        attribute2_value = sai_thrift_attribute_value_t(u32=priority)
-        attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY, value=attribute2_value)
-        client.sai_thrift_set_hostif_trap(trap_id, attribute2)
-
-def sai_thrift_create_hostif(client, rif_or_port_id, intf_name):
-    attribute1_value = sai_thrift_attribute_value_t(s32=SAI_HOSTIF_TYPE_NETDEV)
-    attribute1 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_TYPE,
-                                        value=attribute1_value)
-    attribute2_value = sai_thrift_attribute_value_t(oid=rif_or_port_id)
-    attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_OBJ_ID,
-                                        value=attribute2_value)
-    attribute3_value = sai_thrift_attribute_value_t(chardata=intf_name)
-    attribute3 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_NAME,
-                                        value=attribute3_value)
-    attr_list = [attribute1, attribute2, attribute3]
-    hif_id = client.sai_thrift_create_hostif(attr_list)
-    return hif_id
 
 def sai_thrift_create_acl_table(client,
                                 table_stage,
