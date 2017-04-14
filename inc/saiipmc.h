@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -68,7 +68,7 @@ typedef struct _sai_ipmc_entry_t
     /** IPMC entry type */
     sai_ipmc_entry_type_t type;
 
-    /** IP dest address */
+    /** IP destination address */
     sai_ip_address_t destination;
 
     /** IP source address */
@@ -76,7 +76,7 @@ typedef struct _sai_ipmc_entry_t
 } sai_ipmc_entry_t;
 
 /**
- * @brief Attribute Id for ipmc entry
+ * @brief Attribute Id for IPMC entry
  */
 typedef enum _sai_ipmc_entry_attr_t
 {
@@ -125,7 +125,7 @@ typedef enum _sai_ipmc_entry_attr_t
     SAI_IPMC_ENTRY_ATTR_END,
 
     /* Custom range base value */
-    SAI_IPMC_ENTRY_ATTR_CUSTOM_RANGE_BASE  = 0x10000000,
+    SAI_IPMC_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /* -- */
     SAI_IPMC_ENTRY_ATTR_CUSTOM_RANGE_END
@@ -157,7 +157,7 @@ typedef sai_status_t (*sai_remove_ipmc_entry_fn)(
         _In_ const sai_ipmc_entry_t *ipmc_entry);
 
 /**
- * @brief Set ipmc entry attribute value
+ * @brief Set IPMC entry attribute value
  *
  * @param[in] ipmc_entry IPMC entry
  * @param[in] attr Attribute
@@ -169,7 +169,7 @@ typedef sai_status_t (*sai_set_ipmc_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get ipmc entry attribute value
+ * @brief Get IPMC entry attribute value
  *
  * @param[in] ipmc_entry IPMC entry
  * @param[in] attr_count Number of attributes

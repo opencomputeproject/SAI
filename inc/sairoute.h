@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -34,7 +34,7 @@
  */
 
 /**
- * @brief Attribute Id for sai route object
+ * @brief Attribute Id for SAI route object
  */
 typedef enum _sai_route_entry_attr_t
 {
@@ -158,7 +158,7 @@ typedef sai_status_t (*sai_create_route_entry_fn)(
  *
  * Note: IP prefix/mask expected in Network Byte Order.
  *
- * @param[in] route_entry - route entry
+ * @param[in] route_entry Route entry
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */

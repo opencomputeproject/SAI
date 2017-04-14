@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -273,7 +273,7 @@ typedef sai_status_t(*sai_set_tunnel_map_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attrbutes of tunnel map
+ * @brief Get attributes of tunnel map
  *
  * @param[in] tunnel_map_id Tunnel map id
  * @param[in] attr_count Number of attributes
@@ -302,7 +302,7 @@ typedef enum _sai_tunnel_type_t
 } sai_tunnel_type_t;
 
 /**
- * @brief Defines tunnel ttl mode
+ * @brief Defines tunnel TTL mode
  */
 typedef enum _sai_tunnel_ttl_mode_t
 {
@@ -330,7 +330,7 @@ typedef enum _sai_tunnel_ttl_mode_t
 } sai_tunnel_ttl_mode_t;
 
 /**
- * @brief Defines tunnel dscp mode
+ * @brief Defines tunnel DSCP mode
  */
 typedef enum _sai_tunnel_dscp_mode_t
 {
@@ -358,7 +358,7 @@ typedef enum _sai_tunnel_dscp_mode_t
 } sai_tunnel_dscp_mode_t;
 
 /**
- * @brief Defines tunnel encap ecn mode
+ * @brief Defines tunnel encap ECN mode
  */
 typedef enum _sai_tunnel_encap_ecn_mode_t
 {
@@ -378,7 +378,7 @@ typedef enum _sai_tunnel_encap_ecn_mode_t
 } sai_tunnel_encap_ecn_mode_t;
 
 /**
- * @brief Defines tunnel decap ecn mode
+ * @brief Defines tunnel decap ECN mode
  */
 typedef enum _sai_tunnel_decap_ecn_mode_t
 {
@@ -420,7 +420,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_ATTR_START,
 
     /**
-     * @brief tunnel underlay interface
+     * @brief Tunnel underlay interface
      *
      * Underlay interface is router interface when conditions are met
      *
@@ -432,7 +432,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
 
     /**
-     * @brief Tunnel overlay interafce
+     * @brief Tunnel overlay interface
      *
      * Overlay interface is router interface when conditions are met
      *
@@ -446,7 +446,7 @@ typedef enum _sai_tunnel_attr_t
     /* Tunnel encap attributes */
 
     /**
-     * @brief Tunnel src ip
+     * @brief Tunnel src IP
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -474,7 +474,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_TTL_VAL,
 
     /**
-     * @brief Tunnel dscp mode (pipe or uniform model)
+     * @brief Tunnel DSCP mode (pipe or uniform model)
      *
      * @type sai_tunnel_dscp_mode_t
      * @flags CREATE_ONLY
@@ -483,7 +483,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE,
 
     /**
-     * @brief tunnel DSCP value (6 bits)
+     * @brief Tunnel DSCP value (6 bits)
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -562,7 +562,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
     /**
-     * @brief Tunnel dscp mode (pipe or uniform model)
+     * @brief Tunnel DSCP mode (pipe or uniform model)
      *
      * Default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
      *
@@ -626,9 +626,9 @@ typedef sai_status_t (*sai_set_tunnel_attribute_fn)(
 /**
  * @brief Get tunnel attributes
  *
- * @param[in] tunnel _id Tunnel id
+ * @param[in] tunnel_id Tunnel id
  * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Aarray of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -642,10 +642,10 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
  */
 typedef enum _sai_tunnel_term_table_entry_type_t
 {
-    /** tunnel termination table point to point entry match on dst & src ip & tunnel type */
+    /** tunnel termination table point to point entry match on dst & src IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
 
-    /** tunnel termination table point to multi point entry match on dst ip & tunnel type */
+    /** tunnel termination table point to multi point entry match on dst IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP,
 
 } sai_tunnel_term_table_entry_type_t;
@@ -678,7 +678,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE,
 
     /**
-     * @brief Tunnel termination ip address [
+     * @brief Tunnel termination IP address
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -686,7 +686,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP,
 
     /**
-     * @brief Tunnel source ip address
+     * @brief Tunnel source IP address
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -720,7 +720,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     /** Custom range base value */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
-    /** Enc od custom range base */
+    /** Enc of custom range base */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_CUSTOM_RANGE_END
 
 } sai_tunnel_term_table_entry_attr_t;
@@ -830,7 +830,7 @@ typedef sai_status_t (*sai_get_tunnel_map_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief tunnel methods table retrieved with sai_api_query()
+ * @brief Tunnel methods table retrieved with sai_api_query()
  */
 typedef struct _sai_tunnel_api_t
 {

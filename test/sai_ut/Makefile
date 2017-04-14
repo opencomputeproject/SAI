@@ -26,6 +26,11 @@ nhg_SRCS = $(l3_util_SRCS) ./routing/sai_l3_nexthopgroup_unit_test.cpp
 nbr_SRCS = $(l3_util_SRCS) ./routing/sai_l3_neighbor_unit_test.cpp
 route_SRCS = $(l3_util_SRCS) ./routing/sai_l3_route_unit_test.cpp
 
+fdb_SRCS = ./switching/sai_fdb_unit_test.cpp
+vlan_SRCS = ./switching/sai_vlan_unit_test.cpp
+lag_SRCS = ./switching/sai_lag_unit_test.cpp
+stp_SRCS = ./switching/sai_stp_unit_test.cpp
+
 ### platform specific Linker/LD Flags
 # add pointers to SAI library
 # by adding -l<sai> and -L<location-to-libsai.so> directives
@@ -42,8 +47,12 @@ nh_EXEC    = sai_ut_nh
 nhg_EXEC   = sai_ut_nhg
 nbr_EXEC   = sai_ut_nbr
 route_EXEC = sai_ut_route
+fdb_EXEC   = sai_ut_fdb
+vlan_EXEC  = sai_ut_vlan
+lag_EXEC  = sai_ut_lag
+stp_EXEC   = sai_ut_stp
 
-EXEC_ALL = $(BDIR)/$(vr_EXEC) $(BDIR)/$(rif_EXEC) $(BDIR)/$(nh_EXEC) $(BDIR)/$(nhg_EXEC) $(BDIR)/$(nbr_EXEC) $(BDIR)/$(route_EXEC)
+EXEC_ALL = $(BDIR)/$(vr_EXEC) $(BDIR)/$(rif_EXEC) $(BDIR)/$(nh_EXEC) $(BDIR)/$(nhg_EXEC) $(BDIR)/$(nbr_EXEC) $(BDIR)/$(route_EXEC) $(BDIR)/$(fdb_EXEC) $(BDIR)/$(vlan_EXEC) $(BDIR)/$(lag_EXEC) $(BDIR)/$(stp_EXEC)
 
 # what to use for compiling
 CXX=g++
@@ -62,9 +71,12 @@ nh_OBJS = $(nh_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 nhg_OBJS = $(nhg_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 nbr_OBJS = $(nbr_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 route_OBJS = $(route_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+fdb_OBJS = $(fdb_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+vlan_OBJS = $(vlan_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+lag_OBJS = $(lag_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
+stp_OBJS = $(stp_SRCS:%.cpp=%.o) $(LDIR)/gtest_main.a
 
-all : $(vr_SRCS) $(rif_SRCS) $(nh_SRCS) $(nhg_SRCS) $(nbr_SRCS) $(route_SRCS) $(EXEC_ALL)
-
+all : $(vr_SRCS) $(rif_SRCS) $(nh_SRCS) $(nhg_SRCS) $(nbr_SRCS) $(route_SRCS) $(fdb_SRCS) $(vlan_SRCS) $(lag_SRCS) $(stp_SRCS) $(EXEC_ALL)
 # rule for execs
 $(BDIR)/$(vr_EXEC): $(vr_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(vr_OBJS) -o $@ $(LDFLAGS)
@@ -84,10 +96,22 @@ $(BDIR)/$(nbr_EXEC): $(nbr_OBJS)
 $(BDIR)/$(route_EXEC): $(route_OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(route_OBJS) -o $@ $(LDFLAGS)
 
+$(BDIR)/$(fdb_EXEC): $(fdb_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(fdb_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(vlan_EXEC): $(vlan_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(vlan_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(lag_EXEC): $(lag_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(lag_OBJS) -o $@ $(LDFLAGS)
+
+$(BDIR)/$(stp_EXEC): $(stp_OBJS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(stp_OBJS) -o $@ $(LDFLAGS)
+
 .cpp.o:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDEFLAGS) -o $@ -c $<
  
 clean :
-	rm -f $(EXEC_ALL) *.o routing/*.o
+	rm -f $(EXEC_ALL) *.o routing/*.o switching/*.o
 
 

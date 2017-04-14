@@ -31,7 +31,7 @@ WARNINGS = \
 	-Wredundant-decls \
 	-Wshadow \
 	-Wstack-protector \
-	-Wstrict-aliasing=2 \
+	-Wstrict-aliasing=3 \
 	-Wswitch \
 	-Wswitch-default \
 	-Wunreachable-code \

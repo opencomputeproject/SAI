@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -58,21 +58,15 @@ typedef struct _sai_fdb_entry_t
      */
     sai_object_id_t switch_id;
 
-    /** Mac address */
+    /** MAC address */
     sai_mac_t mac_address;
 
-    /** Bridge type */
-    sai_fdb_entry_bridge_type_t bridge_type;
-
-    /** Vlan ID. Valid for .1Q */
-    sai_vlan_id_t vlan_id;
-
     /**
-     * @brief Bridge ID. Valid for .1D
+     * @brief Bridge ID. for .1D and Vlan ID for .1Q
      *
-     * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @objects SAI_OBJECT_TYPE_BRIDGE, SAI_OBJECT_TYPE_VLAN
      */
-    sai_object_id_t bridge_id;
+    sai_object_id_t bvid;
 
 } sai_fdb_entry_t;
 
@@ -90,13 +84,13 @@ typedef enum _sai_fdb_event_t
     /** FDB entry move */
     SAI_FDB_EVENT_MOVE,
 
-    /** FDB entry flushd */
+    /** FDB entry flushed */
     SAI_FDB_EVENT_FLUSHED,
 
 } sai_fdb_event_t;
 
 /**
- * @brief Attribute Id for fdb entry
+ * @brief Attribute Id for FDB entry
  */
 typedef enum _sai_fdb_entry_attr_t
 {
@@ -191,8 +185,8 @@ typedef enum _sai_fdb_flush_entry_type_t
  * = #SAI_FDB_FLUSH_ENTRY_TYPE_STATIC. If you want to flush both static and dynamic entries,
  * then there is no need to specify the #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE attribute.
  * The API uses AND operation when multiple attributes are specified. For
- * exmaple,
- * 1) Flush all entries in fdb table - Do not specify any attribute
+ * example,
+ * 1) Flush all entries in FDB table - Do not specify any attribute
  * 2) Flush all entries by bridge port - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
  * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_VLAN_ID
  * 4) Flush all entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
@@ -242,6 +236,12 @@ typedef enum _sai_fdb_flush_attr_t
      */
     SAI_FDB_FLUSH_ATTR_END,
 
+    /** Custom range base value */
+    SAI_FDB_FLUSH_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_FDB_FLUSH_ATTR_CUSTOM_RANGE_END
+
 } sai_fdb_flush_attr_t;
 
 /**
@@ -288,7 +288,7 @@ typedef sai_status_t (*sai_remove_fdb_entry_fn)(
         _In_ const sai_fdb_entry_t *fdb_entry);
 
 /**
- * @brief Set fdb entry attribute value
+ * @brief Set FDB entry attribute value
  *
  * @param[in] fdb_entry FDB entry
  * @param[in] attr Attribute
@@ -300,7 +300,7 @@ typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get fdb entry attribute value
+ * @brief Get FDB entry attribute value
  *
  * @param[in] fdb_entry FDB entry
  * @param[in] attr_count Number of attributes
@@ -331,7 +331,7 @@ typedef sai_status_t (*sai_flush_fdb_entries_fn)(
  * @brief FDB notifications
  *
  * @param[in] count Number of notifications
- * @param[in] data Pointer to fdb event notification data array
+ * @param[in] data Pointer to FDB event notification data array
  */
 typedef void (*sai_fdb_event_notification_fn)(
         _In_ uint32_t count,

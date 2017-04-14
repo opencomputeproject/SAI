@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -91,6 +91,7 @@ typedef enum _sai_udf_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
      */
     SAI_UDF_ATTR_OFFSET,
 
@@ -114,6 +115,12 @@ typedef enum _sai_udf_attr_t
      */
     SAI_UDF_ATTR_END,
 
+    /** Custom range base value */
+    SAI_UDF_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_UDF_ATTR_CUSTOM_RANGE_END
+
 } sai_udf_attr_t;
 
 /**
@@ -133,6 +140,7 @@ typedef enum _sai_udf_match_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_UDF_MATCH_ATTR_L2_TYPE = SAI_UDF_MATCH_ATTR_START,
@@ -155,6 +163,7 @@ typedef enum _sai_udf_match_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_UDF_MATCH_ATTR_GRE_TYPE,
@@ -172,6 +181,12 @@ typedef enum _sai_udf_match_attr_t
      * @brief End of attributes
      */
     SAI_UDF_MATCH_ATTR_END,
+
+    /** Custom range base value */
+    SAI_UDF_MATCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_UDF_MATCH_ATTR_CUSTOM_RANGE_END
 
 } sai_udf_match_attr_t;
 
@@ -227,6 +242,7 @@ typedef enum _sai_udf_group_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
      */
     SAI_UDF_GROUP_ATTR_LENGTH,
 
@@ -234,6 +250,12 @@ typedef enum _sai_udf_group_attr_t
      * @brief End of attributes
      */
     SAI_UDF_GROUP_ATTR_END,
+
+    /** Custom range base value */
+    SAI_UDF_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_UDF_GROUP_ATTR_CUSTOM_RANGE_END
 
 } sai_udf_group_attr_t;
 
@@ -243,7 +265,7 @@ typedef enum _sai_udf_group_attr_t
  * @param[out] udf_id UDF id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
- * @param[in] attr_list Aarray of attributes
+ * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -279,8 +301,8 @@ typedef sai_status_t (*sai_set_udf_attribute_fn)(
  * @brief Get UDF attribute value
  *
  * @param[in] udf_id UDF id
- * @param[in] attr_count number of attributes
- * @param[inout] attrs -rray of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -332,7 +354,7 @@ typedef sai_status_t (*sai_set_udf_match_attribute_fn)(
  *
  * @param[in] udf_match_id UDF match id
  * @param[in] attr_count Number of attributes
- * @param[inout] attrs Aarray of attributes
+ * @param[inout] attr_list List of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -384,7 +406,7 @@ typedef sai_status_t (*sai_set_udf_group_attribute_fn)(
  *
  * @param[in] udf_group_id UDF group id
  * @param[in] attr_count Number of attributes
- * @param[inout] attrs Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */

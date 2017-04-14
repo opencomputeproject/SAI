@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIPOLICER SAI - Qos Policer specific API definitions
+ * @defgroup SAIPOLICER SAI - QOS Policer specific API definitions
  *
  * @{
  */
@@ -251,7 +251,7 @@ typedef enum _sai_policer_stat_t
  *
  * @param[out] policer_id The policer id
  * @param[in] switch_id Switch id
- * @param[in] attr_count Nnumber of attributes
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -302,27 +302,26 @@ typedef sai_status_t (*sai_get_policer_attribute_fn)(
  * @brief Get Policer Statistics
  *
  * @param[in] policer_id Policer id
- * @param[in] counter_ids Array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_policer_stats_fn)(
         _In_ sai_object_id_t policer_id,
-        _In_ const sai_policer_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
+        _In_ const sai_policer_stat_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
  * @brief Clear Policer statistics counters.
  *
  * @param[in] policer_id Policer id
- * @param[in] number_of_counters number of counters in the array
- * @param[in] counter_ids specifies the array of counter ids
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  *
- * @return SAI_STATUS_SUCCESS on success
- *    Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_clear_policer_stats_fn)(
         _In_ sai_object_id_t policer_id,
@@ -338,7 +337,7 @@ typedef struct _sai_policer_api_t
     sai_remove_policer_fn                 remove_policer;
     sai_set_policer_attribute_fn          set_policer_attribute;
     sai_get_policer_attribute_fn          get_policer_attribute;
-    sai_get_policer_stats_fn              get_policer_statistics;
+    sai_get_policer_stats_fn              get_policer_stats;
     sai_clear_policer_stats_fn            clear_policer_stats;
 
 } sai_policer_api_t;

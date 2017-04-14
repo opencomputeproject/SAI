@@ -151,7 +151,7 @@ void saiL3NextHopGroupTest::TearDownTestCase (void)
     EXPECT_EQ (SAI_STATUS_SUCCESS, status);
 
     /* Reset the Max ECMP Paths attribute to its old value */
-    attr.id        = SAI_SWITCH_ATTR_ECMP_MAX_PATHS;
+    attr.id        = SAI_SWITCH_ATTR_ECMP_MEMBERS;
     attr.value.u32 = prev_max_ecmp_paths_value;
 
     status  = saiL3Test::switch_api_tbl_get()->set_switch_attribute (
@@ -169,7 +169,7 @@ void saiL3NextHopGroupTest::sai_test_setup_max_ecmp_paths (void)
 
     memset (&attr, 0, sizeof (sai_attribute_t));
 
-    attr.id = SAI_SWITCH_ATTR_ECMP_MAX_PATHS;
+    attr.id = SAI_SWITCH_ATTR_ECMP_MEMBERS;
 
     /* Retrieve and store the current Max ECMP Paths value */
     status  = saiL3Test::switch_api_tbl_get()->get_switch_attribute (1, &attr);
@@ -179,7 +179,7 @@ void saiL3NextHopGroupTest::sai_test_setup_max_ecmp_paths (void)
     prev_max_ecmp_paths_value = attr.value.u32;
 
     /* Set the default Max ECMP Paths value */
-    attr.id        = SAI_SWITCH_ATTR_ECMP_MAX_PATHS;
+    attr.id        = SAI_SWITCH_ATTR_ECMP_MEMBERS;
     attr.value.u32 = max_ecmp_paths;
 
     status  = saiL3Test::switch_api_tbl_get()->set_switch_attribute (
@@ -189,7 +189,7 @@ void saiL3NextHopGroupTest::sai_test_setup_max_ecmp_paths (void)
     /* Verify the Max ECMP Paths attribute */
     memset (&attr, 0, sizeof (sai_attribute_t));
 
-    attr.id = SAI_SWITCH_ATTR_ECMP_MAX_PATHS;
+    attr.id = SAI_SWITCH_ATTR_ECMP_MEMBERS;
 
     status  = saiL3Test::switch_api_tbl_get()->get_switch_attribute (1, &attr);
 

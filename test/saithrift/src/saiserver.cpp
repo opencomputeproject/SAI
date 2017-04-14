@@ -360,6 +360,7 @@ main(int argc, char* argv[])
     start_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
 
     sai_log_set(SAI_API_SWITCH, SAI_LOG_LEVEL_NOTICE);
+    sai_log_set(SAI_API_BRIDGE, SAI_LOG_LEVEL_NOTICE);
     sai_log_set(SAI_API_FDB, SAI_LOG_LEVEL_NOTICE);
     sai_log_set(SAI_API_PORT, SAI_LOG_LEVEL_NOTICE);
     sai_log_set(SAI_API_VLAN, SAI_LOG_LEVEL_NOTICE);
@@ -372,10 +373,10 @@ main(int argc, char* argv[])
     sai_log_set(SAI_API_ACL, SAI_LOG_LEVEL_NOTICE);
     sai_log_set(SAI_API_MIRROR, SAI_LOG_LEVEL_NOTICE);
     sai_log_set(SAI_API_LAG, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_BUFFERS, SAI_LOG_LEVEL_NOTICE);
+    sai_log_set(SAI_API_BUFFER, SAI_LOG_LEVEL_NOTICE);
     sai_log_set(SAI_API_POLICER, SAI_LOG_LEVEL_NOTICE);
     sai_log_set(SAI_API_WRED, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_QOS_MAPS, SAI_LOG_LEVEL_NOTICE);
+    sai_log_set(SAI_API_QOS_MAP, SAI_LOG_LEVEL_NOTICE);
 
     while (1) pause();
 

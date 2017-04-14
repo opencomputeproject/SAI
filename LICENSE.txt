@@ -1,11 +1,15 @@
-© 2014 Microsoft Corporation, Dell Inc., Facebook, Inc, Broadcom Corporation, Intel Corporation, Mellanox
-Technologies Ltd.
+© 2014 Microsoft Corporation, Dell Inc., Facebook Inc., Broadcom Corporation,
+Intel Corporation, Mellanox Technologies Ltd.
 
-As of September 9, 2014, the following persons or entities have made this
+
+As of January 1, 2017, the following persons or entities have made this
 Specification available under the Open Web Foundation Final Specification
 Agreement (OWFa 1.0), which is available at
 http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0
-Microsoft Corporation, Dell Inc., Facebook, Inc, Intel Corporation, Mellanox Technologies Ltd.
+Microsoft Corporation, Dell Inc., Mellanox Technologies Ltd., Cavium,
+Centec Networks, Marvell Technology Group, Barefoot Networks, Facebook Inc.,
+Intel Corporation.
+
 
 You can review the signed copies of the Open Web Foundation Agreement Version
 1.0 for this Specification at http://opencompute.org/licensing/, which may also

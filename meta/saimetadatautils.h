@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -41,7 +41,7 @@
  *
  * @return True if object is allowed on on this attribute, false otherwise
  */
-extern bool sai_meta_is_allowed_object_type(
+extern bool sai_metadata_is_allowed_object_type(
         _In_ const sai_attr_metadata_t* metadata,
         _In_ sai_object_type_t object_type);
 
@@ -53,19 +53,9 @@ extern bool sai_meta_is_allowed_object_type(
  *
  * @return True if enum value is allowed on this attribute, false otherwise
  */
-extern bool sai_meta_is_allowed_enum_value(
+extern bool sai_metadata_is_allowed_enum_value(
         _In_ const sai_attr_metadata_t* metadata,
         _In_ int value);
-
-/**
- * @brief Is attribute ACL field or action
- *
- * @param[in] metadata Attribute metadata
- *
- * @return True if is ACL field or action, false otherwise
- */
-bool sai_metadata_is_acl_field_or_action(
-        _In_ const sai_attr_metadata_t* metadata);
 
 /**
  * @brief Gets attribute metadata based on object type and attribute id
@@ -73,7 +63,7 @@ bool sai_metadata_is_acl_field_or_action(
  * @param[in] objecttype Object type
  * @param[in] attrid Attribute Id
  *
- * @return Poionter to object metadata or NULL in case of failure
+ * @return Pointer to object metadata or NULL in case of failure
  */
 extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
         _In_ sai_object_type_t objecttype,
@@ -84,7 +74,7 @@ extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
  *
  * @param[in] attr_id_name Attribute id name
  *
- * @return Poionter to object metadata or NULL in case of failure
+ * @return Pointer to object metadata or NULL in case of failure
  */
 extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
         _In_ const char *attr_id_name);
@@ -93,7 +83,7 @@ extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name
  * @brief Gets string representation of enum value
  *
  * @param[in] metadata Enum metadata
- * @param[in] value Enum value to bo converted to string
+ * @param[in] value Enum value to be converted to string
  *
  * @return String representation of enum value or NULL if value was not found
  */
@@ -101,6 +91,39 @@ extern const char* sai_metadata_get_enum_value_name(
         _In_ const sai_enum_metadata_t* metadata,
         _In_ int value);
 
+/**
+ * @brief Gets attribute from attribute list by attribute id
+ *
+ * @param[in] id Attribute id to be found
+ * @param[in] attr_count Total number of attributes
+ * @param[in] attr_list List of attributes to search
+ *
+ * @return Attribute pointer with requested ID or NULL if not found
+ */
+extern const sai_attribute_t* sai_metadata_get_attr_by_id(
+        _In_ sai_attr_id_t id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Gets object type info
+ *
+ * @param[in] object_type Object type
+ *
+ * @return Object type info struct or NULL if not found
+ */
+extern const sai_object_type_info_t* sai_metadata_get_object_type_info(
+        _In_ sai_object_type_t object_type);
+
+/**
+ * @brief Checks if object type is valid
+ *
+ * @param[in] object_type Object type
+ *
+ * @return true if object type is valid, false otherwise
+ */
+extern bool sai_metadata_is_object_type_valid(
+        _In_ sai_object_type_t object_type);
 /**
  * @}
  */

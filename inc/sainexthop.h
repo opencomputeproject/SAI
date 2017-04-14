@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -68,7 +68,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_ATTR_START,
 
     /**
-     * @brief Next hop entry ipv4 address
+     * @brief Next hop entry IPv4 address
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY

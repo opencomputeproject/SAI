@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -115,14 +115,15 @@ typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
+
 /**
  * @def SAI_NULL_OBJECT_ID
- * Sai NULL object ID
+ * SAI NULL object ID
  */
 #define SAI_NULL_OBJECT_ID 0L
 
 /**
- * @brief Defines a list of sai object ids used as sai attribute value.
+ * @brief Defines a list of SAI object ids used as SAI attribute value.
  *
  * In set attribute function call, the count member defines the number of
  * objects.
@@ -130,7 +131,7 @@ typedef void *sai_pointer_t;
  * In get attribute function call, the function call returns a list of objects
  * to the caller in the list member. The caller is responsible for allocating the
  * buffer for the list member and set the count member to the size of allocated object
- * list. If the size is large enough to accomodate the list of object id, the
+ * list. If the size is large enough to accommodate the list of object id, the
  * callee will then fill the list member and set the count member to the actual
  * number of objects. If the list size is not large enough, the callee will set the
  * count member to the actual number of object id and return
@@ -143,7 +144,7 @@ typedef struct _sai_object_list_t {
 } sai_object_list_t;
 
 /**
- * @brief sai common api type
+ * @brief SAI common API type
  */
 typedef enum _sai_common_api_t {
     SAI_COMMON_API_CREATE = 0,
@@ -154,7 +155,7 @@ typedef enum _sai_common_api_t {
 } sai_common_api_t;
 
 /**
- * @brief sai object type
+ * @brief SAI object type
  */
 typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_NULL                     =  0, /**< invalid object type */
@@ -217,7 +218,12 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_BRIDGE                   = 57,
     SAI_OBJECT_TYPE_BRIDGE_PORT              = 58,
     SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY         = 59,
-    SAI_OBJECT_TYPE_MAX                      = 60,
+    SAI_OBJECT_TYPE_TAM                      = 60,
+    SAI_OBJECT_TYPE_TAM_STAT                 = 61,
+    SAI_OBJECT_TYPE_TAM_SNAPSHOT             = 62,
+    SAI_OBJECT_TYPE_TAM_TRANSPORTER          = 63,
+    SAI_OBJECT_TYPE_TAM_THRESHOLD            = 64,
+    SAI_OBJECT_TYPE_MAX                      = 65,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t {
@@ -265,14 +271,14 @@ typedef struct _sai_s32_range_t {
 } sai_s32_range_t;
 
 /**
- * @brief Defines a vlan list datastructure
+ * @brief Defines a vlan list data structure
  */
 typedef struct _sai_vlan_list_t {
 
-    /** Number of Vlans */
+    /** Number of VLANs */
     uint32_t count;
 
-    /** List of Vlans */
+    /** List of VLANs */
     sai_vlan_id_t *list;
 
 } sai_vlan_list_t;
@@ -407,16 +413,16 @@ typedef enum _sai_packet_color_t
 } sai_packet_color_t;
 
 /**
- * @brief Defines qos map types.
+ * @brief Defines QOS map types.
  *
  * @par Examples:
  *
- * dot1p/dscp --> TC
- * dot1p/dscp --> Color
- * dot1p/dscp --> TC + Color
- * Tc --> dot1p/Dscp.
- * Tc + color --> dot1p/Dscp.
- * Tc --> Egress Queue.
+ * dot1p/DSCP --> TC
+ * dot1p/DSCP --> Color
+ * dot1p/DSCP --> TC + Color
+ * TC --> dot1p/DSCP.
+ * TC + color --> dot1p/DSCP.
+ * TC --> Egress Queue.
  */
 typedef struct _sai_qos_map_params_t
 {
@@ -502,7 +508,7 @@ typedef struct _sai_tunnel_map_list_t
 } sai_tunnel_map_list_t;
 
 /**
- * @brief Structure for acl attributes supported at each stage.
+ * @brief Structure for ACL attributes supported at each stage.
  * action_list alone is added now. Qualifier list can also be added
  * when needed.
  */
@@ -524,20 +530,9 @@ typedef struct _sai_acl_capability_t
 }sai_acl_capability_t;
 
 /**
- * @brief FDB entry type.
- */
-typedef enum _sai_fdb_entry_bridge_type_t
-{
-    /** .1Q FDB Entry */
-    SAI_FDB_ENTRY_BRIDGE_TYPE_1Q,
-
-    /** .1D FDB Entry */
-    SAI_FDB_ENTRY_BRIDGE_TYPE_1D,
-
-} sai_fdb_entry_bridge_type_t;
-
-/**
- * @brief Data Type to use enum's as attribute value is sai_int32_t s32
+ * @brief Data Type
+ *
+ * To use enum values as attribute value is sai_int32_t s32
  */
 typedef union {
     bool booldata;
@@ -597,8 +592,8 @@ typedef enum _sai_bulk_op_type_t {
  * @param[in] object_count Number of objects to create
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to create.
- * @param[in] attrs List of attributes for every object.
- * @param[in] type bulk operation type.
+ * @param[in] attr_list List of attributes for every object.
+ * @param[in] type Bulk operation type.
  *
  * @param[out] object_id List of object ids returned
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
@@ -612,7 +607,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t object_count,
         _In_ const uint32_t *attr_count,
-        _In_ const sai_attribute_t **attrs,
+        _In_ const sai_attribute_t **attr_list,
         _In_ sai_bulk_op_type_t type,
         _Out_ sai_object_id_t *object_id,
         _Out_ sai_status_t *object_statuses);
@@ -622,7 +617,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
  *
  * @param[in] object_count Number of objects to create
  * @param[in] object_id List of object ids
- * @param[in] type bulk operation type.
+ * @param[in] type Bulk operation type.
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
  *
  * @return #SAI_STATUS_SUCCESS on success when all objects are removed or #SAI_STATUS_FAILURE when
