@@ -225,6 +225,9 @@ typedef enum _sai_acl_action_type_t
     /** Set Do Not Learn unknown source MAC */
     SAI_ACL_ACTION_TYPE_SET_DO_NOT_LEARN,
 
+    /** Set Segment Route Origination ID (segment_id) */
+    SAI_ACL_ACTION_TYPE_SET_SEGMENT_ID,
+
 } sai_acl_action_type_t;
 
 /**

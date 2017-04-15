@@ -28,19 +28,19 @@ In order to add IPv6 Segment Routing, it requires two mechanisms:
 1. Way to specify which flows will be marked for SR origination
 2. Way to add SR header (origination), remove SR header (termination), manipulate SR header to use next segment (transit) before normal IPv6 Route lookup or just do normal IPv6 Routing
 
-For the first mechanism, ingress ACL is used to match on specific native IPv6 flows to originate a SR header due to n-tuple match flexbility.  From ACL match, it would derive a segment_id to pass into the Segment Route Table.
+For the first mechanism, ingress ACL is used to match on specific native IPv6 flows to originate a SR header due to n-tuple match flexbility.  From ACL match, it would derive a segment_id to pass into the Segment Route Origination Table.
 
 For the second mechanism, the Segment Route Table would be used to manipulate the SR header information before IPv6 Route lookup.  This would require two mechanisms:
 1. Way to specific what segment and/or TLV information would be added in the origination case.  This will be programmed via SAI APIs into a match/action within the Segment Route Table.
-2. Way to identify if ingress packet has a SR header existing and SR DIP is my IP address for the transit and termination cases.  This is done via the segment_flag metadata, which will be set via a previous element such as the parser.
+2. Way to identify if ingress packet has a SR header existing and SR DIP is my IP address for the transit and termination cases.  This is done via the segment_exists metadata, which will be set via a previous element such as the parser.
 
-Within the Segment Route Table, if a match on the segment_id is found, the resulting action would add the programmed SR header to the packet so the subsequent route lookup will be on the SR header segment DIP instead of the native DIP.  If segment_flag is set, then the logic will replace the outer IP with the next segment information or decapsulate the SR header if it is the last segment.
+Within the Segment Route Origination Table, if a match on the segment_id is found, the resulting action would add the programmed SR header to the packet so the subsequent route lookup will be on the SR header segment DIP instead of the native DIP.  If segment_exists is set, then the logic will go to the Segment Route Transit/Termnation Table and match on whether the outer DIP matches the router IP.  If it does, the action will replace the outer IP with the next segment information or decapsulate the SR header if it is the last segment.
 
 With this model, only SR origination case requires user API interaction to configure.  Transit and Termination behavior, in current form, is implicit.
 
 Figure 1 shows the additional logic between the ACL and Router Table in the behavioral pipeline to support this.
 
-![SAI v6SR bm](figures/sai_v6SR_bm.png "Figure 1: Behavioral Model Addition. ")
+![SAI v6SR bm](figures/sai_v6SR_bm.pdf "Figure 1: Behavioral Model Addition. ")
 __Figure 1: Behavioral Model Addition.__
 
 ## API Modification
@@ -48,59 +48,41 @@ __Figure 1: Behavioral Model Addition.__
 ### ACL Table Modification
 Adding an additional ACL action / value of SAI_ACL_ACTION_TYPE_SET_SEGMENT_ID to define the segment_id for native packets to be matched upon for SR origination in the next Segment Route Table lookup
 
-### Segment Route Table APIs for Origination
+### Segment Route Origination Table APIs
 #### Vendor Support Advertisement
 
-Included is also a way for vendors to advertise devcie support include type of SR supported, the number of segments and TLV types that can be originated
+Included is also a way for vendors to advertise devcie support include the number of segments and TLV types that can be originated
 
-    SAI_SEGMENTROUTE_ENTRY_ATTR_HEADERTYPE_SUPPORTED
     SAI_SEGMENTROUTE_ENTRY_ATTR_NUM_SEGMENTS_SUPPORTED
     SAI_SEGMENTROUTE_ENTRY_ATTR_TLV_TYPE_SUPPORTED
 
+> Note: NSH Carrier and Padding TLVs were not included in this first draft
+
 #### Match Parameter
 
-The sole match parameter it the segment ID passed from the ACL lookup
-    SAI_SEGMENTROUTE_ENTRY_ATTR_SEGMENT_ID
+The sole match parameter is the segment_id passed from the ACL lookup
+   sai_segmentroute_entry_t
 
 #### Action Parameters
 
-Define what kind of segment route type to originate upon (IPv6 or MPLS):
-    SAI_SEGMENTROUTE_ENTRY_ATTR_HEADERTYPE
-        SAI_SEGMENTROUTE_FAMILY_IPV6,
-        SAI_SEGMENTROUTE_FAMILY_MPLS
+List of DIP segments to be added
 
-Number of segments to be add:
-    SAI_SEGMENTROUTE_ENTRY_ATTR_NUM_SEGMENTS
+    attribute enum: SAI_SEGMENTROUTE_ENTRY_ATTR_SEGMENT_LIST
+    list of segments: sai_sr_segment_list_t
+        
+List of TLVs to be added
 
-List of DIP/SIP pair to be added.  Elements in list must match number in SAI_SEGMENTROUTE_ENTRY_ATTR_NUM_SEGMENTS:
-    SAI_SEGMENTROUTE_ENTRY_ATTR_SEGMENT_LIST
-        typedef struct _sai_segmentroute_address_t {
-            sai_ip6_t ip6_dip;
-            sai_ip6_t ip6_sip;
-        } sai_segmentroute_address_t;
-
-Number of TLVs to be add:
-    SAI_SEGMENTROUTE_ENTRY_ATTR_NUM_TLVS
-
-List of TLVs to be added.  Elements in list must match number in SAI_SEGMENTROUTE_ENTRY_ATTR_NUM_TLVS:
-    SAI_SEGMENTROUTE_ENTRY_ATTR_TLV
-        tlv_family
-            SAI_SEGMENTROUTE_TLV_TYPE_INGRESS,
-            SAI_SEGMENTROUTE_TLV_TYPE_EGRESS,
-            SAI_SEGMENTROUTE_TLV_TYPE_OPAQUE,
-            SAI_SEGMENTROUTE_TLV_TYPE_PADDING,
-            SAI_SEGMENTROUTE_TLV_TYPE_HMAC,
-            SAI_SEGMENTROUTE_TLV_TYPE_NSH_CARRIER,
-        union
-????
+    attribute enum: SAI_SEGMENTROUTE_ENTRY_ATTR_TLV
+    list of TLVs: sai_sr_tlv_list_t
 
 #### APIs
 
-To start with, the basic create/remove entry and set/get attributes APIs are included: 
-    create_segmentroute;
-    remove_segmentroute;
-    set_segmentroute_attribute;
-    get_segmentroute_attribute;
+To start with, the basic create/remove entry and set/get attributes APIs are included
+ 
+    create_segmentroute
+    remove_segmentroute
+    set_segmentroute_attribute
+    get_segmentroute_attribute
 
 ## Examples ##
 ### Example 1 - SR Origination
@@ -111,7 +93,7 @@ The following example creates an ACL entry to specify a specific flow to bind to
     acl_entry_attrs[1].id = SAI_ACL_ENTRY_ATTR_PRIORITY;
     acl_entry_attrs[1].value.u32 = 1;
     acl_entry_attrs[2].id = SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6;
-    CONVERT_STR_TO_IP(acl_entry_attrs[2].value.aclfield.data.ip6, "2001:db8:85a3::8a2e:370:7334");
+    CONVERT_STR_TO_IPV6(acl_entry_attrs[2].value.aclfield.data.ip6, "2001:db8:85a3::8a2e:370:7334");
     acl_entry_attrs[3].id = SAI_ACL_ACTION_TYPE_SET_SEGMENTROUTE; 
     acl_entry_attrs[3].value.aclfield.data.u32 = 1;
     saistatus = sai_acl_api->create_acl_entry(&acl_entry, 4, acl_entry_attrs);
@@ -119,20 +101,19 @@ The following example creates an ACL entry to specify a specific flow to bind to
         return saistatus;
     }
 
-???????? For enums, what should I use??  For structs, what should I use??
-
-    v6SR_entry_attrs[0].id = SAI_SEGMENTROUTE_ENTRY_ATTR_HEADERTYPE
-    v6SR_entry_attrs[0].value.u32... = SAI_SEGMENTROUTE_FAMILY_IPV6
-    v6SR_entry_attrs[1].id = SAI_SEGMENTROUTE_ENTRY_ATTR_SEGMENT_ID
-    v6SR_entry_attrs[1].value.u32... = 1
-    v6SR_entry_attrs[2].id = SAI_SEGMENTROUTE_ENTRY_ATTR_NUM_SEGMENTS
-    v6SR_entry_attrs[2].value.u32 = 3
-    v6SR_entry_attrs[3].id = SAI_SEGMENTROUTE_ENTRY_ATTR_SEGMENT_LIST
-    v6SR_entry_attrs[3].value.u32... =  list ...
-    v6SR_entry_attrs[4].id = SAI_SEGMENTROUTE_ENTRY_ATTR_TLV
-    v6SR_entry_attrs[4].value.u32... = TO... list SAI_SEGMENTROUTE_TLV_TYPE_INGRESS
-
-    saistatus = sai_v6sr_api->create_segmentroute(&v6sr_entry, 5, v6SR_entry_attrs);
+    v6sr_entry.switch_id = 0;
+    v6sr_entry.segment_id = 1;
+    v6sr_entry_attrs[0].id = SAI_SEGMENTROUTE_ENTRY_ATTR_SEGMENT_LIST
+    v6sr_entry_attrs[0].value.objlist.count = 3;
+    CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[0], "2001:db8:85a3::8a2e:370:1234");
+    CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[1], "2001:db8:85a3::8a2e:370:2345");
+    CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[2], "2001:db8:85a3::8a2e:370:3456");
+    v6sr_entry_attrs[1].id = SAI_SEGMENTROUTE_ENTRY_ATTR_TLV
+    v6sr_entry_attrs[1].value.objlist.count = 1
+    v6sr_entry_attrs[1].value.objlist.list[0].tlv_type = SAI_TLV_TYPE_INGRESS;
+    CONVERT_STR_TO_IPV6(v6sr_entry_attrs[1].value.objlist.list[0].ingress_node, "2001:db8:85a3::8a2e:370:9876");
+    
+    saistatus = sai_v6sr_api->create_segmentroute(&v6sr_entry, 2, v6sr_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }

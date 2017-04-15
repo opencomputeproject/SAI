@@ -232,6 +232,8 @@ sai_acl_action_data_t   aclaction
 sai_qos_map_list_t      qosmap
 sai_tunnel_map_list_t   tunnelmap
 sai_acl_capability_t    aclcapability
+sai_tlv_list_t          tlvlist
+sai_segment_list_t      segmentlist
 /;
 
 my %VALUE_TYPES_TO_VT = qw/
@@ -263,6 +265,8 @@ sai_vlan_list_t         VLAN_LIST
 sai_qos_map_list_t      QOS_MAP_LIST
 sai_tunnel_map_list_t   TUNNEL_MAP_LIST
 sai_acl_capability_t    ACL_CAPABILITY
+sai_tlv_list_t          TLV_LIST
+sai_segment_list_t      SEGMENT_LIST
 /;
 
 sub ProcessTagType
