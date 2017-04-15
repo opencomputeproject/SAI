@@ -40,7 +40,7 @@ With this model, only SR origination case requires user API interaction to confi
 
 Figure 1 shows the additional logic between the ACL and Router Table in the behavioral pipeline to support this.
 
-![SAI v6SR bm](figures/sai_v6SR_bm.pdf "Figure 1: Behavioral Model Addition. ")
+![SAI v6SR bm](figures/sai_v6SR_bm.png "Figure 1: Behavioral Model Addition. ")
 __Figure 1: Behavioral Model Addition.__
 
 ## API Modification
