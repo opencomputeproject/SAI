@@ -1,4 +1,4 @@
-#SAI IPv6 Segment Routing Proposal for SAI 1.2.0
+SAI IPv6 Segment Routing Proposal for SAI 1.2.0
 -------------------------------------------------------------------------------
  Title       | SAI IPv6 Segment Routing
 -------------|-----------------------------------------------------------------
@@ -28,15 +28,15 @@ In order to add IPv6 Segment Routing, it requires two mechanisms:
 1. Way to specify which flows will be marked for SR origination
 2. Way to add SR header (origination), remove SR header (termination), manipulate SR header to use next segment (transit) before normal IPv6 Route lookup or just do normal IPv6 Routing
 
-For the first mechanism, ingress ACL is used to match on specific native IPv6 flows to originate a SR header due to n-tuple match flexbility.  From ACL match, it would derive a segment_id to pass into the Segment Route Origination Table.
+For the first mechanism, ingress ACL is used to match on specific native IPv6 flows to originate a SR header due to n-tuple match flexbility.  From ACL match, it would derive a segment_id to pass into the Segment Route Origination Table.  One can also use segment_id as a compression mechanism for multiple flows to take the same segment path.
 
-For the second mechanism, the Segment Route Table would be used to manipulate the SR header information before IPv6 Route lookup.  This would require two mechanisms:
+For the second mechanism, the Segment Route Tables would be used to manipulate the SR header information before IPv6 Route lookup.  This would require two mechanisms:
 1. Way to specific what segment and/or TLV information would be added in the origination case.  This will be programmed via SAI APIs into a match/action within the Segment Route Table.
-2. Way to identify if ingress packet has a SR header existing and SR DIP is my IP address for the transit and termination cases.  This is done via the segment_exists metadata, which will be set via a previous element such as the parser.
+2. Way to identify if ingress packet has a SR header existing and SR DIP is my IP address for the transit and termination cases. The segment_exists metadata is set if SR header exists on ingress pakcet via a previous element such as the parser.
 
-Within the Segment Route Origination Table, if a match on the segment_id is found, the resulting action would add the programmed SR header to the packet so the subsequent route lookup will be on the SR header segment DIP instead of the native DIP.  If segment_exists is set, then the logic will go to the Segment Route Transit/Termnation Table and match on whether the outer DIP matches the router IP.  If it does, the action will replace the outer IP with the next segment information or decapsulate the SR header if it is the last segment.
+Within the Segment Route Origination Table, if a match on the segment_id is found, the resulting action would add the programmed SR header to the packet so the subsequent route lookup will be on the SR header segment DIP instead of the native DIP.  If segment_exists is set, then the logic will go to the Segment Route Transit/Termnation Table and match on whether the outer DIP matches the router IP.  If it does, the action will replace the outer IP with the next segment information or decapsulate the SR header if it is the last segment.  Ideally, this would be a direct access table.
 
-With this model, only SR origination case requires user API interaction to configure.  Transit and Termination behavior, in current form, is implicit.
+With this model, only SR origination case requires user API interaction to configure.  Transit and Termination behavior, in current form, is implicit.  And only two new metadata values need to be added, segment_exists and segment_id.
 
 Figure 1 shows the additional logic between the ACL and Router Table in the behavioral pipeline to support this.
 
