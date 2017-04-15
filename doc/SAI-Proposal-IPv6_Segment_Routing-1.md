@@ -96,10 +96,11 @@ List of TLVs to be added.  Elements in list must match number in SAI_SEGMENTROUT
 
 #### APIs
 
-    sai_create_segmentroute_fn create_segmentroute;
-    sai_remove_segmentroute_fn remove_segmentroute;
-    sai_set_segmentroute_attribute_fn set_segmentroute_attribute;
-    sai_get_segmentroute_attribute_fn get_segmentroute_attribute;
+To start with, the basic create/remove entry and set/get attributes APIs are included: 
+    create_segmentroute;
+    remove_segmentroute;
+    set_segmentroute_attribute;
+    get_segmentroute_attribute;
 
 ## Examples ##
 ### Example 1 - SR Origination
