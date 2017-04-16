@@ -62,6 +62,7 @@
 #include "saiipmcgroup.h"
 #include "saimcastfdb.h"
 #include "saitam.h"
+#include "saisegmentroute.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -113,7 +114,8 @@ typedef enum _sai_api_t
     SAI_API_MCAST_FDB        = 32, /**< sai_mcast_fdb_api_t */
     SAI_API_BRIDGE           = 33, /**< sai_bridge_api_t */
     SAI_API_TAM              = 34, /**< sai_tam_api_t */
-    SAI_API_MAX              = 35, /**< total number of apis */
+    SAI_API_SEGMENTROUTE     = 35, /**< sai_segmentroute_api_t */
+    SAI_API_MAX              = 36, /**< total number of apis */
 } sai_api_t;
 
 /**

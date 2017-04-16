@@ -61,7 +61,8 @@ Included is also a way for vendors to advertise devcie support include the numbe
 #### Match Parameter
 
 The sole match parameter is the segment_id passed from the ACL lookup
-   sai_segmentroute_entry_t
+   
+    sai_segmentroute_entry_t
 
 #### Action Parameters
 
@@ -79,10 +80,10 @@ List of TLVs to be added
 
 To start with, the basic create/remove entry and set/get attributes APIs are included
  
-    create_segmentroute
-    remove_segmentroute
-    set_segmentroute_attribute
-    get_segmentroute_attribute
+    create_segmentroute_entry
+    remove_segmentroute_entry
+    set_segmentroute_entry_attribute
+    get_segmentroute_entry_attribute
 
 ## Examples ##
 ### Example 1 - SR Origination
@@ -113,7 +114,7 @@ The following example creates an ACL entry to specify a specific flow to bind to
     v6sr_entry_attrs[1].value.objlist.list[0].tlv_type = SAI_TLV_TYPE_INGRESS;
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[1].value.objlist.list[0].ingress_node, "2001:db8:85a3::8a2e:370:9876");
     
-    saistatus = sai_v6sr_api->create_segmentroute(&v6sr_entry, 2, v6sr_entry_attrs);
+    saistatus = sai_v6sr_api->create_segmentroute_entry(&v6sr_entry, 2, v6sr_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }

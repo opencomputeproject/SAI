@@ -110,7 +110,7 @@ typedef struct _sai_segmentroute_entry_t
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_create_segmentroute_fn)(
+typedef sai_status_t (*sai_create_segmentroute_entry_fn)(
         _In_ const sai_segmentroute_entry_t *segmentroute_entry,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -122,7 +122,7 @@ typedef sai_status_t (*sai_create_segmentroute_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_remove_segmentroute_fn)(
+typedef sai_status_t (*sai_remove_segmentroute_entry_fn)(
         _In_ const sai_segmentroute_entry_t *segmentroute_entry);
 
 /**
@@ -133,7 +133,7 @@ typedef sai_status_t (*sai_remove_segmentroute_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_set_segmentroute_attribute_fn)(
+typedef sai_status_t (*sai_set_segmentroute_entry_attribute_fn)(
         _In_ const sai_segmentroute_entry_t *segmentroute_entry,
         _In_ const sai_attribute_t *attr);
 
@@ -146,7 +146,7 @@ typedef sai_status_t (*sai_set_segmentroute_attribute_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_get_segmentroute_attribute_fn)(
+typedef sai_status_t (*sai_get_segmentroute_entry_attribute_fn)(
         _In_ const sai_segmentroute_entry_t *segmentroute_entry,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -156,10 +156,10 @@ typedef sai_status_t (*sai_get_segmentroute_attribute_fn)(
  */
 typedef struct _sai_segmentroute_api_t
 {
-    sai_create_segmentroute_fn create_segmentroute;
-    sai_remove_segmentroute_fn remove_segmentroute;
-    sai_set_segmentroute_attribute_fn set_segmentroute_attribute;
-    sai_get_segmentroute_attribute_fn get_segmentroute_attribute;
+    sai_create_segmentroute_entry_fn create_segmentroute_entry;
+    sai_remove_segmentroute_entry_fn remove_segmentroute_entry;
+    sai_set_segmentroute_entry_attribute_fn set_segmentroute_entry_attribute;
+    sai_get_segmentroute_entry_attribute_fn get_segmentroute_entry_attribute;
 } sai_segmentroute_api_t;
 
 /**
