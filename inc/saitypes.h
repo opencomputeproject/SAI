@@ -541,12 +541,12 @@ typedef enum _sai_tlv_type_t
     SAI_TLV_TYPE_EGRESS,
     /** Opaque TLV */
     SAI_TLV_TYPE_OPAQUE,
-    /** HMAC TLV */
-    SAI_TLV_TYPE_HMAC,
+    /** Hash-based Message Authentication Code TLV */
+    SAI_TLV_TYPE_HMAC
 } sai_tlv_type_t;
 
 /**
- * @brief Segment Routing HMAC TLV Format
+ * @brief Segment Routing Hash-based Message Authentication Code TLV Format
  */
 typedef struct _sai_hmac_t {
     sai_uint32_t key_id;
@@ -571,7 +571,7 @@ typedef struct _sai_tlv_t {
  */
 typedef struct _sai_tlv_list_t
 {
-    /** Number of tlv entries */
+    /** Number of TLV entries */
     uint32_t count;
     /** TLV list */
     sai_tlv_t *list;
