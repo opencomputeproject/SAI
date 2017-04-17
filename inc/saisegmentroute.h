@@ -64,6 +64,7 @@ typedef enum _sai_segmentroute_attr_t
      *
      * @type sai_tlv_list_t
      * @flags CREATE_AND_SET
+     * @default empty
      */
     SAI_SEGMENTROUTE_ATTR_TLV_LIST,
 
@@ -72,6 +73,7 @@ typedef enum _sai_segmentroute_attr_t
      *
      * @type sai_segment_list_t
      * @flags CREATE_AND_SET
+     * @default empty
      */
     SAI_SEGMENTROUTE_ATTR_SEGMENT_LIST,
 

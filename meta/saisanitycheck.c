@@ -332,26 +332,6 @@ bool sai_metadata_is_acl_field_or_action(
     return false;
 }
 
-bool sai_metadata_is_tlv_or_segment(
-        _In_ const sai_attr_metadata_t* metadata)
-{
-    if (metadata == NULL)
-    {
-        return false;
-    }
-
-    if (metadata->objecttype == SAI_OBJECT_TYPE_SEGMENTROUTE)
-    {
-        if (metadata->attrid >= SAI_SEGMENTROUTE_ATTR_TLV_LIST &&
-                metadata->attrid <= SAI_SEGMENTROUTE_ATTR_SEGMENT_LIST)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 void check_attr_flags(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -402,7 +382,7 @@ void check_attr_flags(
                  * Default value for pointer must be specified and must be NULL.
                  */
 
-                if (sai_metadata_is_acl_field_or_action(md) || sai_metadata_is_tlv_or_segment(md))
+                if (sai_metadata_is_acl_field_or_action(md))
                 {
                     /*
                      * Default value for acl field or action is not provided
@@ -699,7 +679,7 @@ void check_attr_default_required(
 
         META_ASSERT_NULL(md->defaultvalue);
 
-        if (sai_metadata_is_acl_field_or_action(md) || sai_metadata_is_tlv_or_segment(md))
+        if (sai_metadata_is_acl_field_or_action(md))
         {
             /*
              * By default we assume that default acl field or action is
@@ -801,6 +781,8 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
+        case SAI_ATTR_VALUE_TYPE_TLV_LIST:
+        case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
@@ -977,6 +959,9 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+                case SAI_ATTR_VALUE_TYPE_TLV_LIST:
+                case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
+
                     break;
 
                 default:
