@@ -53,37 +53,37 @@ Adding an additional ACL action / value of SAI_ACL_ACTION_TYPE_SET_SEGMENT_ID to
 
 Included is also a way for vendors to advertise devcie support include the number of segments and TLV types that can be originated
 
-    SAI_SEGMENTROUTE_ENTRY_ATTR_NUM_SEGMENTS_SUPPORTED
-    SAI_SEGMENTROUTE_ENTRY_ATTR_TLV_TYPE_SUPPORTED
+    SAI_SEGMENTROUTE_ATTR_NUM_SEGMENTS_SUPPORTED
+    SAI_SEGMENTROUTE_ATTR_TLV_TYPE_SUPPORTED
 
 > Note: NSH Carrier and Padding TLVs were not included in this first draft
 
 #### Match Parameter
 
 The sole match parameter is the segment_id passed from the ACL lookup
-   
-    sai_segmentroute_entry_t
 
+    SAI_ACL_ACTION_TYPE_SET_SEGMENT_ID
+   
 #### Action Parameters
 
 List of DIP segments to be added
 
-    attribute enum: SAI_SEGMENTROUTE_ENTRY_ATTR_SEGMENT_LIST
+    attribute enum: SAI_SEGMENTROUTE_ATTR_SEGMENT_LIST
     list of segments: sai_sr_segment_list_t
         
 List of TLVs to be added
 
-    attribute enum: SAI_SEGMENTROUTE_ENTRY_ATTR_TLV
+    attribute enum: SAI_SEGMENTROUTE_ATTR_TLV
     list of TLVs: sai_sr_tlv_list_t
 
 #### APIs
 
 To start with, the basic create/remove entry and set/get attributes APIs are included
  
-    create_segmentroute_entry
-    remove_segmentroute_entry
-    set_segmentroute_entry_attribute
-    get_segmentroute_entry_attribute
+    create_segmentroute
+    remove_segmentroute
+    set_segmentroute_attribute
+    get_segmentroute_attribute
 
 ## Examples ##
 ### Example 1 - SR Origination
@@ -104,17 +104,17 @@ The following example creates an ACL entry to specify a specific flow to bind to
 
     v6sr_entry.switch_id = 0;
     v6sr_entry.segment_id = 1;
-    v6sr_entry_attrs[0].id = SAI_SEGMENTROUTE_ENTRY_ATTR_SEGMENT_LIST
+    v6sr_entry_attrs[0].id = SAI_SEGMENTROUTE_ATTR_SEGMENT_LIST
     v6sr_entry_attrs[0].value.objlist.count = 3;
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[0], "2001:db8:85a3::8a2e:370:1234");
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[1], "2001:db8:85a3::8a2e:370:2345");
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[2], "2001:db8:85a3::8a2e:370:3456");
-    v6sr_entry_attrs[1].id = SAI_SEGMENTROUTE_ENTRY_ATTR_TLV
+    v6sr_entry_attrs[1].id = SAI_SEGMENTROUTE_ATTR_TLV
     v6sr_entry_attrs[1].value.objlist.count = 1
     v6sr_entry_attrs[1].value.objlist.list[0].tlv_type = SAI_TLV_TYPE_INGRESS;
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[1].value.objlist.list[0].ingress_node, "2001:db8:85a3::8a2e:370:9876");
     
-    saistatus = sai_v6sr_api->create_segmentroute_entry(&v6sr_entry, 2, v6sr_entry_attrs);
+    saistatus = sai_v6sr_api->create_segmentroute(&v6sr_entry, 2, v6sr_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }

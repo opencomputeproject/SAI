@@ -332,6 +332,26 @@ bool sai_metadata_is_acl_field_or_action(
     return false;
 }
 
+bool sai_metadata_is_tlv_or_segment(
+        _In_ const sai_attr_metadata_t* metadata)
+{
+    if (metadata == NULL)
+    {
+        return false;
+    }
+
+    if (metadata->objecttype == SAI_OBJECT_TYPE_SEGMENTROUTE)
+    {
+        if (metadata->attrid >= SAI_SEGMENTROUTE_ATTR_TLV_LIST &&
+                metadata->attrid <= SAI_SEGMENTROUTE_ATTR_SEGMENT_LIST)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void check_attr_flags(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -382,7 +402,7 @@ void check_attr_flags(
                  * Default value for pointer must be specified and must be NULL.
                  */
 
-                if (sai_metadata_is_acl_field_or_action(md))
+                if (sai_metadata_is_acl_field_or_action(md) || sai_metadata_is_tlv_or_segment(md))
                 {
                     /*
                      * Default value for acl field or action is not provided
@@ -540,6 +560,8 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
+        case SAI_ATTR_VALUE_TYPE_TLV_LIST:
+        case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
 
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
@@ -677,7 +699,7 @@ void check_attr_default_required(
 
         META_ASSERT_NULL(md->defaultvalue);
 
-        if (sai_metadata_is_acl_field_or_action(md))
+        if (sai_metadata_is_acl_field_or_action(md) || sai_metadata_is_tlv_or_segment(md))
         {
             /*
              * By default we assume that default acl field or action is
@@ -2915,6 +2937,7 @@ void check_api_names()
     CHECK_API(wred, wred, SAI_OBJECT_TYPE_WRED);
     CHECK_API(qos_map, qos_map, SAI_OBJECT_TYPE_QOS_MAP);
     CHECK_API(queue, queue, SAI_OBJECT_TYPE_QUEUE);
+    CHECK_API(segmentroute, segmentroute, SAI_OBJECT_TYPE_SEGMENTROUTE);
     CHECK_API(scheduler, scheduler, SAI_OBJECT_TYPE_SCHEDULER);
     CHECK_API(scheduler_group, scheduler_group, SAI_OBJECT_TYPE_SCHEDULER_GROUP);
     CHECK_API(buffer, buffer_pool, SAI_OBJECT_TYPE_BUFFER_POOL);

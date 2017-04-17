@@ -1752,13 +1752,20 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
      */
-
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
+
+    /**
+     * @brief Set segment_id for Segment Route Origination Table
+     *
+     * @type sai_acl_action_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_SEGMENT_ID,
 
     /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_SEGMENT_ID,
 
     /**
      * @brief End of ACL Entry attributes
