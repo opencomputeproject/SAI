@@ -225,8 +225,8 @@ typedef enum _sai_acl_action_type_t
     /** Set Do Not Learn unknown source MAC */
     SAI_ACL_ACTION_TYPE_SET_DO_NOT_LEARN,
 
-    /** Set Segment Route Origination ID (segment_id) */
-    SAI_ACL_ACTION_TYPE_SET_SEGMENT_ID,
+    /** Set Segment Route Policy ID (policy_id) */
+    SAI_ACL_ACTION_TYPE_SET_POLICY_ID,
 
 } sai_acl_action_type_t;
 
@@ -1755,17 +1755,17 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
 
     /**
-     * @brief Set segment_id for Segment Route Origination Table
+     * @brief Set policy_id for Segment Route Origination / Transit Table
      *
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_SEGMENT_ID,
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICY_ID,
 
     /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_SEGMENT_ID,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICY_ID,
 
     /**
      * @brief End of ACL Entry attributes
