@@ -39,7 +39,7 @@
 typedef enum _sai_segmentroute_endpoint_entry_action_type_t
 {
     /** Basic Endpoint */
-    SAI_SEGMENTROUTE_ENDPOINT_ENTRY_ACTION_TYPE_END,
+    SAI_SEGMENTROUTE_ENDPOINT_ENTRY_ACTION_TYPE_E,
 
     /** End.X Endpoint with Layer-3 Cross-connect */
     SAI_SEGMENTROUTE_ENDPOINT_ENTRY_ACTION_TYPE_X,
@@ -94,8 +94,8 @@ typedef enum _sai_segmentroute_endpoint_entry_attr_t
      * @brief SAI Segment Route Endpoint Action Type
      *
      * @type sai_segmentroute_endpoint_entry_action_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @default SAI_SEGMENTROUTE_ENDPOINT_ENTRY_ACTION_TYPE_END
+     * @flags CREATE_AND_SET
+     * @default SAI_SEGMENTROUTE_ENDPOINT_ENTRY_ACTION_TYPE_E
      */
     SAI_SEGMENTROUTE_ENDPOINT_ENTRY_ATTR_ACTION_TYPE = SAI_SEGMENTROUTE_ENDPOINT_ENTRY_ATTR_START,
 

@@ -15,12 +15,14 @@ SAI IPv6 Segment Routing Proposal for SAI 1.2.0
 
 Segment Routing (SR) allows a node to steer a packet through a controlled set of instructions, called segments, by prepending an SR header to the packet.  A segment can represent any instruction, topological or service-based.  SR allows to enforce a flow through any path (topological, or application/service based) while maintaining per-flow state only at the ingress node to the SR domain.
 
-This document covers IPv6-based Segment Routing as per IETF Draft: https://tools.ietf.org/html/draft-ietf-6man-segment-routing-header-06.  
+This document covers IPv6-based Segment Routing as per IETF Drafts:
+1. https://tools.ietf.org/html/draft-ietf-6man-segment-routing-header-06.  
+2. https://tools.ietf.org/html/draft-filsfils-spring-srv6-network-programming-00
 
 This specification proposes the following points:
 1. Introduce the concept of Segment Routing using IPv6.
-2. Introduce behavioral model modifications to support SR origination, transit, and termination.
-3. Introduce SAI APIs to define SR origination properties including segment and TLV definitions.
+2. Introduce behavioral model modifications to support SR origination, transit, and endpoint.
+3. Introduce SAI APIs to define SR origination / transit properties including segment and TLV definitions.
 
 ## Behavioral Model
 
@@ -159,7 +161,7 @@ The following example creates an local SID / Endpoint entry to match on incoming
     endpoint_entry.vr_id = 0;
     CONVERT_STR_TO_IPV6(endpoint_entry.segment_id, "2001:db8:85a3::8a2e:370:4567");
     v6sr_entry_attrs[0].id = SAI_SEGMENTROUTE_ENDPOINT_ENTRY_ATTR_ACTION;
-    v6sr_entry_attrs[0].value = SAI_SEGMENTROUTE_ENDPOINT_ACTION_TYPE_END;
+    v6sr_entry_attrs[0].value = SAI_SEGMENTROUTE_ENDPOINT_ACTION_TYPE_E;
     v6sr_entry_attrs[1].id = SAI_SEGMENTROUTE_ENDPOINT_ENTRY_ATTR_POP;
     v6sr_entry_attrs[1].value = SAI_SEGMENTROUTE_ENDPOINT_POP_TYPE_PSP;
 
@@ -169,5 +171,5 @@ The following example creates an local SID / Endpoint entry to match on incoming
     }
 
 ## References ##
-1. Most Recent IPv6 Segment Routing IETF Draft: https://tools.ietf.org/html/draft-ietf-6man-segment-routing-header-06
-
+1. https://tools.ietf.org/html/draft-ietf-6man-segment-routing-header-06
+2. https://tools.ietf.org/html/draft-filsfils-spring-srv6-network-programming-00
