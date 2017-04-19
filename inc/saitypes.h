@@ -224,7 +224,7 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_TAM_TRANSPORTER          = 63,
     SAI_OBJECT_TYPE_TAM_THRESHOLD            = 64,
     SAI_OBJECT_TYPE_SEGMENTROUTE_ENDPOINT_ENTRY = 65,
-    SAI_OBJECT_TYPE_SEGMENTROUTE_TRANSIT     = 66,
+    SAI_OBJECT_TYPE_SEGMENTROUTE_ST          = 66,
     SAI_OBJECT_TYPE_MAX                      = 67,
 } sai_object_type_t;
 

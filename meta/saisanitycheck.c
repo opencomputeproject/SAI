@@ -2922,7 +2922,7 @@ void check_api_names()
     CHECK_API(wred, wred, SAI_OBJECT_TYPE_WRED);
     CHECK_API(qos_map, qos_map, SAI_OBJECT_TYPE_QOS_MAP);
     CHECK_API(queue, queue, SAI_OBJECT_TYPE_QUEUE);
-    CHECK_API(segmentroute, segmentroute_transit, SAI_OBJECT_TYPE_SEGMENTROUTE_TRANSIT);
+    CHECK_API(segmentroute, segmentroute_st, SAI_OBJECT_TYPE_SEGMENTROUTE_ST);
     CHECK_API(scheduler, scheduler, SAI_OBJECT_TYPE_SCHEDULER);
     CHECK_API(scheduler_group, scheduler_group, SAI_OBJECT_TYPE_SCHEDULER_GROUP);
     CHECK_API(buffer, buffer_pool, SAI_OBJECT_TYPE_BUFFER_POOL);

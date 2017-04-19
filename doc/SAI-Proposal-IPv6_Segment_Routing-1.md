@@ -21,22 +21,22 @@ This document covers IPv6-based Segment Routing as per IETF Drafts:
 
 This specification proposes the following points:
 1. Introduce the concept of Segment Routing using IPv6.
-2. Introduce behavioral model modifications to support SR origination, transit, and endpoint.
-3. Introduce SAI APIs to define SR origination / transit properties including segment and TLV definitions.
+2. Introduce behavioral model modifications to support SR source, transit, and endpoint.
+3. Introduce SAI APIs to define SR source / transit properties including segment and TLV definitions.
 
 ## Behavioral Model
 
 In order to add IPv6 Segment Routing, it requires two mechanisms:
-1. Way to specify which flows will be marked for SR origination or transit
-2. Way to add SR header (origination / transit) or modify / remove SR header (endpoint) before normal processing
+1. Way to specify which flows will be marked for SR source or transit
+2. Way to add SR header (source / transit) or modify / remove SR header (endpoint) before normal processing
 
-For the first mechanism, ingress ACL is used to match on specific IPv6 flows to originate or transit a SR header due to n-tuple match flexbility.  From ACL match, it would derive a policy_id to pass into the Segment Route Origination / Transit Table.  One can also use policy_id as a compression mechanism for multiple flows to take the same segment path.
+For the first mechanism, ingress ACL is used to match on specific IPv6 flows to originate or transit a SR header due to n-tuple match flexbility.  From ACL match, it would derive a policy_id to pass into the Segment Route Source / Transit Table.  One can also use policy_id as a compression mechanism for multiple flows to take the same segment path.
 
 For the second mechanism, the Segment Route Tables would be used to manipulate the SR header information before normal lookup routine.  This would require two mechanisms:
-1. Way to specific what segment and/or TLV information would be added in the origination / transit case.  This will be programmed via SAI APIs into a match/action within the Origination / Transit Table.
+1. Way to specific what segment and/or TLV information would be added in the source / transit case.  This will be programmed via SAI APIs into a match/action within the Source / Transit Table.
 2. Way to identify if ingress packet has a SR header existing and SR DIP matches local Segment ID (SID) for the endpoint cases. The segment_exists metadata is set if SR header exists on ingress packet via a previous element such as the parser.
 
-Within the Segment Route Origination / Transit Table, if a match on the policy_id is found, the resulting action would add the programmed SR header to the packet so the subsequent route lookup will be on the SR header segment DIP instead of the native DIP.  In the Endpoint table, if a SID matches, the user can define various endpoint functionalities.
+Within the Segment Route Source / Transit Table, if a match on the policy_id is found, the resulting action would add the programmed SR header to the packet so the subsequent route lookup will be on the SR header segment DIP instead of the native DIP.  In the Endpoint table, if a SID matches, the user can define various endpoint functionalities.
 
 Only two new metadata values need to be added, segment_exists and policy_id.
 
@@ -48,9 +48,9 @@ __Figure 1: Behavioral Model Addition.__
 ## API Modification
 
 ### ACL Table Modification
-Adding an additional ACL action / value of SAI_ACL_ACTION_TYPE_SET_POLICY_ID to define the policy_id for native packets to be matched upon for SR origination or transit in the Segment Route Origination / Transit Table lookup
+Adding an additional ACL action / value of SAI_ACL_ACTION_TYPE_SET_POLICY_ID to define the policy_id for native packets to be matched upon for SR source or transit in the Segment Route Source / Transit Table lookup
 
-### Segment Route Origination / Transit Table APIs
+### Segment Route Source / Transit Table APIs
 #### Vendor Support Advertisement
 
 Included is also a way for vendors to advertise devcie support include the number of segments and TLV types that can be originated
@@ -68,9 +68,9 @@ The sole match parameter is the policy_id passed from the ACL lookup
    
 #### Action Parameters
 
-Transit or Origination Action to be taken with policy
+Transit or Source Action to be taken with policy
 
-    SAI_SEGMENTROUTE_ATTR_TRANSIT_TYPE
+    SAI_SEGMENTROUTE_ATTR_ST_TYPE
 
 List of DIP segments to be added
 
@@ -106,8 +106,8 @@ To start with, the basic create/remove entry and set/get attributes APIs are inc
  
     create_segmentroute_transit
     remove_segmentroute_transit
-    set_segmentroute_transit_attribute
-    get_segmentroute_transit_attribute
+    set_segmentroute_st_attribute
+    get_segmentroute_st_attribute
 
     create_segmentroute_endpoint_entry
     remove_segmentroute_endpoint_entry
@@ -120,8 +120,8 @@ To start with, the basic create/remove entry and set/get attributes APIs are inc
     get_segmentroute_counter_attribute
 
 ## Examples ##
-### Example 1 - SR Origination / Transit
-The following example creates an ACL entry to specify a specific flow to bind to policy_id = 1 as well as creating the corresponding entry in the Segment Routing Transit / Origination Table to add 3 Segments and an Ingress Node TLV
+### Example 1 - SR Source / Transit
+The following example creates an ACL entry to specify a specific flow to bind to policy_id = 1 as well as creating the corresponding entry in the Segment Routing Transit / Source Table to add 3 Segments and an Ingress Node TLV
 
     acl_entry_attrs[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
     acl_entry_attrs[0].value.oid = acl_table_id2;
@@ -146,8 +146,8 @@ The following example creates an ACL entry to specify a specific flow to bind to
     v6sr_entry_attrs[1].value.objlist.count = 1;
     v6sr_entry_attrs[1].value.objlist.list[0].tlv_type = SAI_TLV_TYPE_INGRESS;
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[1].value.objlist.list[0].ingress_node, "2001:db8:85a3::8a2e:370:9876");
-    v6sr_entry_attrs[2].id = SAI_SEGMENTROUTE_ATTR_TRANSIT_TYPE;
-    v6sr_entry_attrs[2].value = SAI_SEGMENTROUTE_TRANSIT_TYPE_ENCAPS_ORIGINATION; 
+    v6sr_entry_attrs[2].id = SAI_SEGMENTROUTE_ATTR_ST_TYPE;
+    v6sr_entry_attrs[2].value = SAI_SEGMENTROUTE_ST_TYPE_ENCAPS_ORIGINATION; 
 
     saistatus = sai_v6sr_api->create_segmentroute_transit(&policy_id, switch_id, 3, v6sr_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
