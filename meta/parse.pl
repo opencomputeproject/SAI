@@ -4,9 +4,8 @@ use strict;
 use warnings;
 use diagnostics;
 
-# use exact perl since on newer one it complains on
-# experimental::autoderef push pop
-use v5.18.2;
+# disable for experimental::autoderef push pop
+no warnings "experimental";
 
 use XML::Simple qw(:strict);
 use Getopt::Std;
