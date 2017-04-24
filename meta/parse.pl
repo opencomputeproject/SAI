@@ -4,11 +4,13 @@ use strict;
 use warnings;
 use diagnostics;
 
+# disable for experimental::autoderef push pop
+no warnings "experimental";
+
 use XML::Simple qw(:strict);
 use Getopt::Std;
 use Data::Dumper;
 use Term::ANSIColor;
-#use Text::Aspell;
 
 my $errors = 0;
 my $warnings = 0;
@@ -2855,7 +2857,7 @@ sub CheckHeadersStyle
 
     if (not -e "/usr/bin/aspell")
     {
-        LogInfo "ASPELL IS NOT PRESENT, will skip check";
+        LogError "ASPELL IS NOT PRESENT, please install aspell";
         return;
     }
 
