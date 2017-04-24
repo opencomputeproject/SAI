@@ -241,7 +241,7 @@ AC_CONFIG_FILES([Makefile
 		src/bm_apps/Makefile
 		src/bm_apps/examples/Makefile
     targets/Makefile
- 		../p4-sai/Makefile
+ 		targets/p4-sai/Makefile
 		tests/Makefile
 		tests/stress_tests/Makefile
                 tools/Makefile
