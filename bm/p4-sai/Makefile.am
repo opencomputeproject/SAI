@@ -1,4 +1,4 @@
-SUBDIRS = . tests
+SUBDIRS = .
 
 simple_switch_thrift_py_files = \
 gen-py/sswitch_runtime/constants.py \
