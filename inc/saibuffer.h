@@ -267,6 +267,10 @@ typedef enum _sai_buffer_pool_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_BUFFER_POOL_ATTR_SIZE,
+    
+    /** For the ingress buffer pool, we allocate a shared XOFF (GLOBAL HEADROOM) room for lossless traffic 
+     *  default to 0. */
+    SAI_BUFFER_POOL_ATTR_XOFF_SIZE,
 
     /**
      * @brief Shared threshold mode for the buffer
