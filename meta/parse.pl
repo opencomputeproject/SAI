@@ -1771,6 +1771,11 @@ sub ProcessStructMembers
         # TODO allow null
 
         WriteSource "};";
+
+        if ($objectlen > 0 and not $key =~ /_id$/)
+        {
+            LogWarning "struct member key '$key' should end at _id in sai_${rawname}_t";
+        }
     }
 
     WriteSource "const sai_struct_member_info_t* sai_metadata_struct_members_sai_${rawname}_t[] = {";
@@ -2815,7 +2820,6 @@ sub CheckHeadersStyle
                     next if defined $exceptions{$word};
                     next if $word =~/^sai\w+/i;
                     next if $word =~/0x\S+L/;
-                    #next if $word =~/\S+L/;
                     next if "$pre$word" =~/802.\d+\w+/;
 
                     next if defined $wordsChecked{$word};
