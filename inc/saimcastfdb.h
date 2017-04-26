@@ -53,7 +53,7 @@ typedef struct _sai_mcast_fdb_entry_t
      *
      * @objects SAI_OBJECT_TYPE_BRIDGE, SAI_OBJECT_TYPE_VLAN
      */
-    sai_object_id_t bvid;
+    sai_object_id_t bv_id;
 
 } sai_mcast_fdb_entry_t;
 
