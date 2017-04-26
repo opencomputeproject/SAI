@@ -1463,7 +1463,7 @@ typedef sai_status_t (*sai_set_switch_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_switch_attribute_fn)(
         _In_ sai_object_id_t switch_id,
-        _In_ sai_uint32_t attr_count,
+        _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
