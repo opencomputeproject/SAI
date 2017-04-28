@@ -3166,6 +3166,39 @@ sub WriteTestMain
     WriteTest "}";
 }
 
+sub CreateListCountTest
+{
+    #
+    # purpose of this test is to check if all list structs have count as first
+    # item so later on we can cast any structure to extract count
+    #
+
+    DefineTestName "list_count_test";
+
+    WriteTest "{";
+
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union");
+
+    WriteTest "    size_t size_ref = sizeof(sai_object_list_t);";
+
+    for my $key (keys %Union)
+    {
+        my $type = $Union{$key}->{type};
+
+        next if not $type =~ /^sai_(\w+_list)_t$/;
+
+        my $name = $1;
+
+        WriteTest "    $type $name;";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($type) == size_ref, \"type $type has different sizeof than sai_object_type_t\");";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($name.count) == sizeof(uint32_t), \"$type.count should be uint32_t\");";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($name.list) == sizeof(void*), \"$type.list should be pointer\");";
+        WriteTest "    TEST_ASSERT_TRUE(&$name == (void*)&$name.count, \"$type.count should be first member in $type\");";
+    }
+
+    WriteTest "}";
+}
+
 sub WriteLoggerVariables
 {
     #
@@ -3313,6 +3346,8 @@ CreateCustomRangeTest();
 CreatePointersTest();
 
 CreateEnumSizeCheckTest();
+
+CreateListCountTest();
 
 WriteTestMain();
 
