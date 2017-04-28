@@ -577,11 +577,16 @@ typedef struct _sai_attribute_t {
 
 typedef enum _sai_bulk_op_type_t {
 
-    /* bulk operation stops on the first failed creation. Rest of objects will use SAI_STATUS_NON_EXECUTED
-     * return status value. */
+    /*
+     * @brief Bulk operation stops on the first failed creation
+     *
+     * Rest of objects will use SAI_STATUS_NON_EXECUTED return status value.
+     */
     SAI_BULK_OP_TYPE_STOP_ON_ERROR,
 
-    /* bulk operation ignores the failures and continues to create other objects */
+    /*
+     * @brief Bulk operation ignores the failures and continues to create other objects
+     */
     SAI_BULK_OP_TYPE_INGORE_ERROR,
 } sai_bulk_op_type_t;
 
