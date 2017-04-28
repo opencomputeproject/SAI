@@ -2054,6 +2054,29 @@ sub CreateApisQuery
     WriteHeader "        _In_ sai_api_t sai_api_id,";
     WriteHeader "        _Out_ void** api_method_table);";
 
+    WriteSource "typedef sai_status_t(*sai_create_generic_fn)(";
+    WriteSource "        _Out_ sai_object_id_t* object_id,";
+    WriteSource "        _In_ sai_object_id_t switch_id,";
+    WriteSource "        _In_ uint32_t attr_count,";
+    WriteSource "        _In_ const sai_attribute_t *attr_list);";
+
+    WriteSource "typedef sai_status_t (*sai_remove_generic_fn)(";
+    WriteSource "        _In_ sai_object_id_t object_id);";
+
+    WriteSource "typedef sai_status_t (*sai_set_generic_attribute_fn)(";
+    WriteSource "        _In_ sai_object_id_t object_id,";
+    WriteSource "        _In_ const sai_attribute_t *attr);";
+
+    WriteSource "typedef sai_status_t (*sai_get_generic_attribute_fn)(";
+    WriteSource "        _In_ sai_object_id_t object_id,";
+    WriteSource "        _In_ uint32_t attr_count,";
+    WriteSource "        _Inout_ sai_attribute_t *attr_list);";
+
+
+    # for switch we need to generate wrapper, for others we can use pointers
+    # so we don't need to use meta key then
+
+
     WriteSource "int sai_metadata_apis_query(";
     WriteSource "    _In_ const sai_api_query_fn api_query)";
     WriteSource "{";
@@ -2287,6 +2310,23 @@ sub CreateNonObjectIdTest
     WriteTest "}";
 }
 
+sub CreateSwitchIdTest
+{
+    DefineTestName "switch_id_position_test";
+
+    WriteTest "{";
+
+    my @rawnames = GetNonObjectIdStructNames();
+
+    for my $rawname (@rawnames)
+    {
+        WriteTest "    sai_${rawname}_t $rawname = { 0 };";
+        WriteTest "    TEST_ASSERT_TRUE(&$rawname == (void*)&$rawname.switch_id, \"$rawname.switch_id is not at the struct beginning\");";
+    }
+
+    WriteTest "}";
+}
+
 sub CreateCustomRangeTest
 {
     DefineTestName "custom_range_test";
@@ -2326,10 +2366,10 @@ sub CreateEnumSizeCheckTest
         next if not $key =~ /^(sai_\w+_t)$/;
         next if $key =~ /^(sai_null_attr_t)$/;
 
-        WriteTest "    if (sizeof($1) != sizeof(int32_t)) exit(1);";
+        WriteTest "    TEST_ASSERT_TRUE((sizeof($1) == sizeof(int32_t)), \"invalid enum $1 size\");";
     }
 
-    WriteTest "    if (sizeof(sai_status_t) != sizeof(int32_t)) exit(1);";
+    WriteTest "    TEST_ASSERT_TRUE((sizeof(sai_status_t) == sizeof(int32_t)), \"invalid sai_status_t size\");";
 
     WriteTest "}";
 }
@@ -2659,6 +2699,24 @@ sub CheckDoxygenStyle
     }
 }
 
+sub ExtractComments
+{
+    my $input = shift;
+
+    my $comments = "";
+
+    # good enough comments extractor C/C++ source
+
+    while ($input =~ m!(".*?")|//.*?[\r\n]|/\*.*?\*/!s)
+    {
+        $input = $';
+
+        $comments .= $& if not $1;
+    }
+
+    return $comments;
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -2685,7 +2743,7 @@ sub CheckHeadersStyle
         Enum param attr VLAN IPv4 IPv6 Vlan inout policer Src Dst Decrement
         lookups optimizations lookup bool EtherType tx rx validonly enum sai
         loopback Multicast isvlan 6th nexthop nexthopgroup encap decap src dst
-        wildcard Wilcard const APIs multi multicast LAGs Linux mcast HQoS
+        wildcard const APIs multi multicast LAGs Linux mcast HQoS
         childs callee Callee boolean attrvalue unicast Unicast untagged
         Untagged Policer objlist BGPv6 allownull 0xFF Hostif samplepacket
         Samplepacket pkts Loopback linklocal lossless Mbps vlan ucast
@@ -3247,6 +3305,8 @@ WriteHeader "#endif /* __SAI_METADATA_H__ */";
 WriteTestHeader();
 
 CreateNonObjectIdTest();
+
+CreateSwitchIdTest();
 
 CreateCustomRangeTest();
 
