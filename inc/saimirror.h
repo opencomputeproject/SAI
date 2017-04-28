@@ -263,7 +263,7 @@ typedef enum _sai_mirror_session_attr_t
 /**
  * @brief Create mirror session.
  *
- * @param[out] session_id Port mirror session id
+ * @param[out] mirror_session_id Port mirror session id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
@@ -272,7 +272,7 @@ typedef enum _sai_mirror_session_attr_t
  * error code is returned.
  */
 typedef sai_status_t (*sai_create_mirror_session_fn)(
-        _Out_ sai_object_id_t *session_id,
+        _Out_ sai_object_id_t *mirror_session_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -280,31 +280,31 @@ typedef sai_status_t (*sai_create_mirror_session_fn)(
 /**
  * @brief Remove mirror session.
  *
- * @param[in] session_id Port mirror session id
+ * @param[in] mirror_session_id Port mirror session id
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.
  */
 typedef sai_status_t (*sai_remove_mirror_session_fn)(
-        _In_ sai_object_id_t session_id);
+        _In_ sai_object_id_t mirror_session_id);
 
 /**
  * @brief Set mirror session attributes.
  *
- * @param[in] session_id Port mirror session id
+ * @param[in] mirror_session_id Port mirror session id
  * @param[in] attr Value of attribute
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.
  */
 typedef sai_status_t (*sai_set_mirror_session_attribute_fn)(
-        _In_ sai_object_id_t session_id,
+        _In_ sai_object_id_t mirror_session_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get mirror session attributes.
  *
- * @param[in] session_id Port mirror session id
+ * @param[in] mirror_session_id Port mirror session id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Value of attribute
  *
@@ -312,7 +312,7 @@ typedef sai_status_t (*sai_set_mirror_session_attribute_fn)(
  * error code is returned.
  */
 typedef sai_status_t (*sai_get_mirror_session_attribute_fn)(
-        _In_ sai_object_id_t session_id,
+        _In_ sai_object_id_t mirror_session_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 

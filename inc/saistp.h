@@ -207,6 +207,7 @@ typedef sai_status_t (*sai_get_stp_attribute_fn)(
  * @brief Create STP port object
  *
  * @param[out] stp_port_id STP port id
+ * @param[in] switch_id Switch ID
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different

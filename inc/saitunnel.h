@@ -244,7 +244,7 @@ typedef enum _sai_tunnel_map_attr_t
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_create_tunnel_map_fn)(
+typedef sai_status_t (*sai_create_tunnel_map_fn)(
         _Out_ sai_object_id_t *tunnel_map_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -257,7 +257,7 @@ typedef sai_status_t(*sai_create_tunnel_map_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_remove_tunnel_map_fn) (
+typedef sai_status_t (*sai_remove_tunnel_map_fn)(
         _In_ sai_object_id_t tunnel_map_id);
 
 /**
@@ -268,7 +268,7 @@ typedef sai_status_t(*sai_remove_tunnel_map_fn) (
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_set_tunnel_map_attribute_fn)(
+typedef sai_status_t (*sai_set_tunnel_map_attribute_fn)(
         _In_ sai_object_id_t tunnel_map_id,
         _In_ const sai_attribute_t *attr);
 

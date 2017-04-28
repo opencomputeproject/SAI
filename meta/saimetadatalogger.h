@@ -22,11 +22,11 @@
  * @brief   This module defines SAI Metadata Logger
  */
 
-#ifndef __SAI_METADATA_LOGGER_H__
-#define __SAI_METADATA_LOGGER_H__
+#ifndef __SAIMETADATALOGGER_H_
+#define __SAIMETADATALOGGER_H_
 
 /**
- * @defgroup SAIMETADATALOGGER SAI Metadata Logger Definitions
+ * @defgroup SAIMETADATALOGGER SAI - Metadata Logger Definitions
  *
  * @{
  */
@@ -53,7 +53,7 @@ typedef void (*sai_metadata_log_fn)(
 extern volatile sai_metadata_log_fn sai_metadata_log;
 
 /**
- * @brief Log level for sai metadata macros.
+ * @brief Log level for SAI metadata macros.
  *
  * Log level can be changed by user at any time.
  *
@@ -92,4 +92,4 @@ extern volatile sai_log_level_t sai_metadata_log_level;
 /**
  * @}
  */
-#endif /** __SAI_METADATA_LOGGER_H__ */
+#endif /** __SAIMETADATALOGGER_H_ */

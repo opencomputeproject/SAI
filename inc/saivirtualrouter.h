@@ -28,8 +28,8 @@
  *    considered.
  */
 
-#if !defined (__SAIROUTER_H_)
-#define __SAIROUTER_H_
+#if !defined (__SAIVIRTUALROUTER_H_)
+#define __SAIVIRTUALROUTER_H_
 
 #include <saitypes.h>
 
@@ -124,7 +124,7 @@ typedef enum _sai_virtual_router_attr_t
 /**
  * @brief Create virtual router
  *
- * @param[out] vr_id Virtual router id
+ * @param[out] virtual_router_id Virtual router id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -134,7 +134,7 @@ typedef enum _sai_virtual_router_attr_t
  *    #SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS is set.
  */
 typedef sai_status_t (*sai_create_virtual_router_fn)(
-        _Out_ sai_object_id_t *vr_id,
+        _Out_ sai_object_id_t *virtual_router_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -142,36 +142,36 @@ typedef sai_status_t (*sai_create_virtual_router_fn)(
 /**
  * @brief Remove virtual router
  *
- * @param[in] vr_id Virtual router id
+ * @param[in] virtual_router_id Virtual router id
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_remove_virtual_router_fn)(
-        _In_ sai_object_id_t vr_id);
+        _In_ sai_object_id_t virtual_router_id);
 
 /**
  * @brief Set virtual router attribute Value
  *
- * @param[in] vr_id Virtual router id
+ * @param[in] virtual_router_id Virtual router id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_set_virtual_router_attribute_fn)(
-        _In_ sai_object_id_t vr_id,
+        _In_ sai_object_id_t virtual_router_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get virtual router attribute Value
  *
- * @param[in] vr_id Virtual router id
+ * @param[in] virtual_router_id Virtual router id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_virtual_router_attribute_fn)(
-        _In_ sai_object_id_t vr_id,
+        _In_ sai_object_id_t virtual_router_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -190,4 +190,4 @@ typedef struct _sai_virtual_router_api_t
 /**
  * @}
  */
-#endif /** __SAIROUTER_H_ */
+#endif /** __SAIVIRTUALROUTER_H_ */
