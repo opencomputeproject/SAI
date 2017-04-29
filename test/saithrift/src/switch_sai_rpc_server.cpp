@@ -97,6 +97,14 @@ public:
         std::printf("%02d:%02d:%02d ", tm->tm_hour, tm->tm_min, tm->tm_sec);
     }
 
+    template<typename T>
+    inline void sai_thrift_alloc_array(T* &arr, const std::size_t &size) const noexcept
+    { arr = new (std::nothrow) T[size]; }
+
+    template<typename T>
+    inline void sai_thrift_free_array(T* &arr) const noexcept
+    { delete[] arr; arr = nullptr; }
+
   unsigned int sai_thrift_string_to_mac(const std::string s, unsigned char *m) {
       unsigned int i, j=0;
       memset(m, 0, 6);
@@ -474,60 +482,95 @@ public:
       }
   }
 
-  void sai_thrift_parse_hostif_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
-      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
-      sai_thrift_attribute_t attribute;
-      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
-          attribute = (sai_thrift_attribute_t)*it1;
+  void sai_thrift_parse_hostif_attributes(sai_attribute_t *attr_list, const std::vector<sai_thrift_attribute_t> &thrift_attr_list) const noexcept
+  {
+      if (attr_list == nullptr || thrift_attr_list.empty())
+      { SAI_THRIFT_LOG_ERR("Invalid input arguments."); return; }
+
+      std::vector<sai_thrift_attribute_t>::const_iterator cit = thrift_attr_list.begin();
+      for (sai_size_t i = 0; i < thrift_attr_list.size(); i++, cit++)
+      {
+          sai_thrift_attribute_t attribute = *cit;
           attr_list[i].id = attribute.id;
-          switch (attribute.id) {
+
+          switch (attribute.id)
+          {
               case SAI_HOSTIF_ATTR_TYPE:
                   attr_list[i].value.s32 = attribute.value.s32;
                   break;
+
               case SAI_HOSTIF_ATTR_OBJ_ID:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
+
               case SAI_HOSTIF_ATTR_NAME:
-                  memcpy(attr_list[i].value.chardata, attribute.value.chardata.c_str(), HOSTIF_NAME_SIZE);
+                  std::memcpy(attr_list[i].value.chardata, attribute.value.chardata.c_str(), HOSTIF_NAME_SIZE);
+                  break;
+
+              default:
+                  SAI_THRIFT_LOG_ERR("Failed to parse attribute.");
                   break;
           }
       }
   }
 
-  void sai_thrift_parse_hostif_trap_group_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
-      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
-      sai_thrift_attribute_t attribute;
-      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
-          attribute = (sai_thrift_attribute_t)*it1;
+  void sai_thrift_parse_hostif_trap_group_attributes(sai_attribute_t *attr_list, const std::vector<sai_thrift_attribute_t> &thrift_attr_list) const noexcept
+  {
+      if (attr_list == nullptr || thrift_attr_list.empty())
+      { SAI_THRIFT_LOG_ERR("Invalid input arguments."); return; }
+
+      std::vector<sai_thrift_attribute_t>::const_iterator cit = thrift_attr_list.begin();
+
+      for (sai_size_t i = 0; i < thrift_attr_list.size(); i++, cit++)
+      {
+          sai_thrift_attribute_t attribute = *cit;
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
+              case SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
               case SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE:
                   attr_list[i].value.u32 = attribute.value.u32;
                   break;
               case SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
+              default:
+                  SAI_THRIFT_LOG_ERR("Failed to parse attribute.");
+                  break;
           }
       }
   }
 
-  void sai_thrift_parse_hostif_trap_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
-      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
-      sai_thrift_attribute_t attribute;
-      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
-          attribute = (sai_thrift_attribute_t)*it1;
+  void sai_thrift_parse_hostif_trap_attributes(sai_attribute_t *attr_list, const std::vector<sai_thrift_attribute_t> &thrift_attr_list) const noexcept
+  {
+      if (attr_list == nullptr || thrift_attr_list.empty())
+      { SAI_THRIFT_LOG_ERR("Invalid input arguments."); return; }
+
+      std::vector<sai_thrift_attribute_t>::const_iterator cit = thrift_attr_list.begin();
+
+      for (sai_size_t i = 0; i < thrift_attr_list.size(); i++, cit++)
+      {
+          sai_thrift_attribute_t attribute = *cit;
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
+              case SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
               case SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION:
                   attr_list[i].value.s32 = attribute.value.s32;
                   break;
               case SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY:
                   attr_list[i].value.u32 = attribute.value.u32;
                   break;
+              case SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
               case SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
               default:
+                  SAI_THRIFT_LOG_ERR("Failed to parse attribute.");
                   break;
           }
       }
@@ -1648,110 +1691,227 @@ public:
   }
 
 
-  sai_thrift_object_id_t sai_thrift_create_hostif(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-      printf("sai_thrift_create_hostif\n");
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      sai_hostif_api_t *hostif_api;
-      sai_object_id_t hif_id;
-      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
-      if (status != SAI_STATUS_SUCCESS) {
-          return status;
-      }
-      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
-      sai_thrift_parse_hostif_attributes(thrift_attr_list, attr_list);
-      uint32_t attr_count = thrift_attr_list.size();
-      status = hostif_api->create_hostif(&hif_id, gSwitchId, attr_count, attr_list);
-      free(attr_list);
-      return hif_id;
+  sai_thrift_object_id_t sai_thrift_create_hostif(const std::vector<sai_thrift_attribute_t> &thrift_attr_list) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return SAI_NULL_OBJECT_ID; }
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_hostif_attributes(attr_list, thrift_attr_list);
+
+      sai_object_id_t hif_oid = 0;
+      status = hostif_api->create_hostif(&hif_oid, gSwitchId, attr_size, attr_list);
+      sai_thrift_free_attr(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return hif_oid; }
+
+      SAI_THRIFT_LOG_ERR("Failed to create OID.");
+
+      return SAI_NULL_OBJECT_ID;
   }
 
-  sai_thrift_status_t sai_thrift_remove_hostif(const sai_thrift_object_id_t hif_id) {
-       printf("sai_thrift_remove_hostif\n");
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      sai_hostif_api_t *hostif_api;
-      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
-      if (status != SAI_STATUS_SUCCESS) {
-          return status;
-      }
-      status = hostif_api->remove_hostif((sai_object_id_t) hif_id);
+  sai_thrift_status_t sai_thrift_remove_hostif(const sai_thrift_object_id_t thrift_hif_id) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      status = hostif_api->remove_hostif(thrift_hif_id);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to remove OID.");
+  }
+
+  sai_thrift_status_t sai_thrift_set_hostif_attribute(const sai_thrift_object_id_t thrift_hif_id, const sai_thrift_attribute_t &thrift_attr) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      const std::vector<sai_thrift_attribute_t> thrift_attr_list = { thrift_attr };
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_hostif_trap_group_attributes(attr_list, thrift_attr_list);
+
+      status = hostif_api->set_hostif_attribute(thrift_hif_id, attr_list);
+      sai_thrift_free_attr(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to set attribute.");
+
       return status;
   }
 
-  sai_thrift_object_id_t sai_thrift_create_hostif_trap_group(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-      printf("sai_thrift_create_hostif_trap_group\n");
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      sai_hostif_api_t *hostif_api;
-      sai_object_id_t hif_trap_group_id;
-      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
-      if (status != SAI_STATUS_SUCCESS) {
-          return status;
-      }
-      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
-      sai_thrift_parse_hostif_trap_group_attributes(thrift_attr_list, attr_list);
-      uint32_t attr_count = thrift_attr_list.size();
-      status = hostif_api->create_hostif_trap_group(&hif_trap_group_id, gSwitchId, attr_count, attr_list);
-      free(attr_list);
-      return hif_trap_group_id;
+  sai_thrift_object_id_t sai_thrift_create_hostif_trap_group(const std::vector<sai_thrift_attribute_t> &thrift_attr_list) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return SAI_NULL_OBJECT_ID; }
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_hostif_trap_group_attributes(attr_list, thrift_attr_list);
+
+      sai_object_id_t hostif_trap_group_oid = 0;
+      status = hostif_api->create_hostif_trap_group(&hostif_trap_group_oid, gSwitchId, attr_size, attr_list);
+      sai_thrift_free_attr(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return hostif_trap_group_oid; }
+
+      SAI_THRIFT_LOG_ERR("Failed to create OID.");
+
+      return SAI_NULL_OBJECT_ID;
   }
 
-  sai_thrift_status_t sai_thrift_remove_hostif_trap_group(const sai_thrift_object_id_t hif_trap_group_id) {
-      printf("sai_thrift_remove_hostif_trap_group\n");
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      sai_hostif_api_t *hostif_api;
-      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
-      if (status != SAI_STATUS_SUCCESS) {
-          return status;
-      }
-      status = hostif_api->remove_hostif_trap_group((sai_object_id_t) hif_trap_group_id);
+  sai_thrift_status_t sai_thrift_remove_hostif_trap_group(const sai_thrift_object_id_t thrift_hostif_trap_group_id) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      status = hostif_api->remove_hostif_trap_group(thrift_hostif_trap_group_id);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to remove OID.");
+
       return status;
   }
 
-  sai_thrift_status_t sai_thrift_create_hostif_trap(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-    printf("sai_thrift_create_hostif_trap\n");
-    return 0;
-  }
+  sai_thrift_status_t sai_thrift_set_hostif_trap_group_attribute(const sai_thrift_object_id_t thrift_hostif_trap_group_id,
+                                                                 const sai_thrift_attribute_t &thrift_attr) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
 
-  sai_thrift_status_t sai_thrift_remove_hostif_trap(const sai_thrift_hostif_trap_id_t trap_id) {
-    printf("sai_thrift_remove_hostif_trap\n");
-    return 0;
-  }
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
 
-  sai_thrift_status_t sai_thrift_set_hostif_trap(const sai_thrift_object_id_t trap_id, const sai_thrift_attribute_t& thrift_attr) {
-      printf("sai_thrift_set_hostif_trap\n");
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      sai_hostif_api_t *hostif_api;
-      sai_attribute_t attr;
-      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
-      if (status != SAI_STATUS_SUCCESS) {
-          return status;
-      }
-      sai_thrift_parse_hostif_trap_attribute(thrift_attr, &attr);
-      status = hostif_api->set_hostif_trap_attribute((sai_object_id_t) trap_id, &attr);
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      const std::vector<sai_thrift_attribute_t> thrift_attr_list = { thrift_attr };
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_hostif_trap_group_attributes(attr_list, thrift_attr_list);
+
+      status = hostif_api->set_trap_group_attribute(thrift_hostif_trap_group_id, attr_list);
+      sai_thrift_free_attr(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to set attribute.");
+
       return status;
   }
 
-  void sai_thrift_parse_hostif_trap_group_attribute(const sai_thrift_attribute_t &thrift_attr, sai_attribute_t *attr) {
-      attr->id = thrift_attr.id;
-      switch (thrift_attr.id) {
-          case SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER:
-              attr->value.oid = thrift_attr.value.oid;
-              break;
-          default:
-              break;
-      }
+  sai_thrift_object_id_t sai_thrift_create_hostif_trap(const std::vector<sai_thrift_attribute_t> &thrift_attr_list) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return SAI_NULL_OBJECT_ID; }
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_hostif_trap_attributes(attr_list, thrift_attr_list);
+
+      sai_object_id_t hostif_trap_oid = 0;
+      status = hostif_api->create_trap(&hostif_trap_oid, gSwitchId, attr_size, attr_list);
+      sai_thrift_free_attr(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return hostif_trap_oid; }
+
+      SAI_THRIFT_LOG_ERR("Failed to create OID.");
+
+      return SAI_NULL_OBJECT_ID;
   }
 
-  sai_thrift_status_t sai_thrift_set_hostif_trap_group(const sai_thrift_object_id_t trap_group_id, const sai_thrift_attribute_t& thrift_attr) {
-      printf("%s\n", __FUNCTION__);
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      sai_hostif_api_t *hostif_api;
-      sai_attribute_t attr;
-      status = sai_api_query(SAI_API_HOSTIF, (void **) &hostif_api);
-      if (status != SAI_STATUS_SUCCESS) {
-          return status;
-      }
-      sai_thrift_parse_hostif_trap_group_attribute(thrift_attr, &attr);
-      status = hostif_api->set_hostif_trap_group_attribute((sai_object_id_t) trap_group_id, &attr);
+  sai_thrift_status_t sai_thrift_remove_hostif_trap(const sai_thrift_object_id_t thrift_hostif_trap_id) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      status = hostif_api->remove_trap(thrift_hostif_trap_id);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to remove OID.");
+
+      return status;
+  }
+
+  sai_thrift_status_t sai_thrift_set_hostif_trap_attribute(const sai_thrift_object_id_t thrift_hostif_trap_id, const sai_thrift_attribute_t &thrift_attr)
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      const std::vector<sai_thrift_attribute_t> thrift_attr_list = { thrift_attr };
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_hostif_trap_attributes(attr_list, thrift_attr_list);
+
+      status = hostif_api->set_trap_attribute(thrift_hostif_trap_id, attr_list);
+      sai_thrift_free_attr(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to set attribute.");
+
       return status;
   }
 
@@ -2282,11 +2442,17 @@ public:
       return status;
   }
 
-  void sai_thrift_parse_policer_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
-      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
-      sai_thrift_attribute_t attribute;
-      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
-          attribute = (sai_thrift_attribute_t)*it;
+  void sai_thrift_parse_policer_attributes(sai_attribute_t *attr_list,
+                                           const std::vector<sai_thrift_attribute_t> &thrift_attr_list) const noexcept
+  {
+      if (attr_list == nullptr || thrift_attr_list.empty())
+      { SAI_THRIFT_LOG_ERR("Invalid input arguments."); return; }
+
+      std::vector<sai_thrift_attribute_t>::const_iterator cit = thrift_attr_list.begin();
+
+      for (sai_size_t i = 0; i < thrift_attr_list.size(); i++, cit++)
+      {
+          sai_thrift_attribute_t attribute = *cit;
           attr_list[i].id = attribute.id;
           switch (attribute.id) {
               case SAI_POLICER_ATTR_METER_TYPE:
@@ -2319,68 +2485,151 @@ public:
               case SAI_POLICER_ATTR_RED_PACKET_ACTION:
                   attr_list[i].value.s32 = attribute.value.s32;
                   break;
+              case SAI_POLICER_ATTR_ENABLE_COUNTER_PACKET_ACTION_LIST:
+                  for (sai_size_t j = 0; j < attribute.value.s32list.s32list.size(); j++)
+                  { attr_list[i].value.s32list.list[j] = attribute.value.s32list.s32list[j]; }
+                  attr_list[i].value.s32list.count = attribute.value.s32list.s32list.size();
+                  break;
+              default:
+                  SAI_THRIFT_LOG_ERR("Failed to parse attribute.");
+                  break;
           }
       }
   }
 
-  sai_thrift_object_id_t sai_thrift_create_policer(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
-      printf("sai_thrift_create_policer\n");
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      sai_policer_api_t *policer_api;
-      sai_object_id_t policer_id = 0;
-      status = sai_api_query(SAI_API_POLICER, (void **) &policer_api);
-      if (status != SAI_STATUS_SUCCESS) {
-          return status;
-      }
-      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
-      sai_thrift_parse_policer_attributes(thrift_attr_list, attr_list);
-      uint32_t attr_count = thrift_attr_list.size();
-      policer_api->create_policer(&policer_id, gSwitchId, attr_count, attr_list);
-      return policer_id;
+  sai_thrift_object_id_t sai_thrift_create_policer(const std::vector<sai_thrift_attribute_t> &thrift_attr_list) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_policer_api_t *policer_api = nullptr;
+      auto status = sai_api_query(SAI_API_POLICER, reinterpret_cast<void**>(&policer_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return SAI_NULL_OBJECT_ID; }
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+
+      sai_thrift_alloc_array(attr_list, attr_size);
+      sai_thrift_parse_policer_attributes(attr_list, thrift_attr_list);
+
+      sai_object_id_t policer_oid = 0;
+      status = policer_api->create_policer(&policer_oid, gSwitchId, attr_size, attr_list);
+      sai_thrift_free_array(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return policer_oid; }
+
+      SAI_THRIFT_LOG_ERR("Failed to create OID.");
+
+      return SAI_NULL_OBJECT_ID;
   }
 
-  sai_thrift_status_t sai_thrift_remove_policer(const sai_thrift_object_id_t policer_id) {
-      printf("sai_thrift_remove_policer\n");
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      sai_policer_api_t *policer_api;
-      status = sai_api_query(SAI_API_POLICER, (void **) &policer_api);
-      if (status != SAI_STATUS_SUCCESS) {
-          return status;
-      }
-      status = policer_api->remove_policer((sai_object_id_t) policer_id);
+  sai_thrift_status_t sai_thrift_remove_policer(const sai_thrift_object_id_t thrift_policer_id) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_policer_api_t *policer_api = nullptr;
+      auto status = sai_api_query(SAI_API_POLICER, reinterpret_cast<void**>(&policer_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      status = policer_api->remove_policer(thrift_policer_id);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to remove OID.");
+
       return status;
   }
 
-  void sai_thrift_get_policer_stats(std::vector<int64_t> & thrift_counters,
-                                    const sai_thrift_object_id_t policer_id,
-                                    const std::vector<sai_thrift_policer_stat_counter_t> & thrift_counter_ids) {
-      printf("sai_thrift_get_policer_stats\n");
-      sai_status_t status = SAI_STATUS_SUCCESS;
-      sai_policer_api_t *policer_api;
-      status = sai_api_query(SAI_API_POLICER, (void **) &policer_api);
-      if (status != SAI_STATUS_SUCCESS) {
+  sai_thrift_status_t sai_thrift_set_policer_attribute(const sai_thrift_object_id_t thrift_policer_id, const sai_thrift_attribute_t &thrift_attr) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_policer_api_t *policer_api = nullptr;
+      auto status = sai_api_query(SAI_API_POLICER, reinterpret_cast<void**>(&policer_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      const std::vector<sai_thrift_attribute_t> thrift_attr_list = { thrift_attr };
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+
+      sai_thrift_alloc_array(attr_list, attr_size);
+      sai_thrift_parse_policer_attributes(attr_list, thrift_attr_list);
+
+      status = policer_api->set_policer_attribute(thrift_policer_id, attr_list);
+      sai_thrift_free_array(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to set attribute.");
+
+      return status;
+  }
+
+  void sai_thrift_get_policer_stats(std::vector<sai_thrift_uint64_t> &_return, const sai_thrift_object_id_t thrift_policer_id,
+                                    const std::vector<sai_thrift_policer_stat_t> &thrift_counter_ids) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_policer_api_t *policer_api = nullptr;
+      auto status = sai_api_query(SAI_API_POLICER, reinterpret_cast<void**>(&policer_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      {
+          SAI_THRIFT_LOG_ERR("Failed to get API.");
           return;
       }
-      _sai_policer_stat_t *counter_ids = (_sai_policer_stat_t *) malloc(sizeof(_sai_policer_stat_t) * thrift_counter_ids.size());
-      std::vector<int32_t>::const_iterator it = thrift_counter_ids.begin();
-      uint64_t *counters = (uint64_t *) malloc(sizeof(uint64_t) * thrift_counter_ids.size());
-      for(uint32_t i = 0; i < thrift_counter_ids.size(); i++, it++) {
-          counter_ids[i] = (_sai_policer_stat_t) *it;
+
+      auto counter_ids = reinterpret_cast<const sai_policer_stat_t*>(thrift_counter_ids.data());
+      sai_size_t number_of_counters = thrift_counter_ids.size();
+      sai_uint64_t *counters = nullptr;
+
+      sai_thrift_alloc_array(counters, number_of_counters);
+
+      status = policer_api->get_policer_statistics(thrift_policer_id, counter_ids, number_of_counters, counters);
+
+      if (status == SAI_STATUS_SUCCESS)
+      {
+          SAI_THRIFT_LOG_DBG("Exited.");
+          _return.assign(counters, counters + number_of_counters);
+          sai_thrift_free_array(counters);
+          return;
       }
 
-      int32_t number_of_counters = thrift_counter_ids.size();
-      status = policer_api->get_policer_stats(
-                             (sai_object_id_t) policer_id,
-                             counter_ids,
-                             number_of_counters,
-                             counters);
+      SAI_THRIFT_LOG_ERR("Failed to get statistics.");
+      sai_thrift_free_array(counters);
+  }
 
-      for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
-          thrift_counters.push_back(counters[i]);
-      }
-      free(counter_ids);
-      free(counters);
-      return;
+  sai_thrift_status_t sai_thrift_clear_policer_stats(const sai_thrift_object_id_t thrift_policer_id,
+                                                     const std::vector<sai_thrift_policer_stat_t> &thrift_counter_ids) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_policer_api_t *policer_api = nullptr;
+      auto status = sai_api_query(SAI_API_POLICER, reinterpret_cast<void**>(&policer_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      auto counter_ids = reinterpret_cast<const sai_policer_stat_t*>(thrift_counter_ids.data());
+      sai_size_t number_of_counters = thrift_counter_ids.size();
+
+      status = policer_api->clear_policer_stats(thrift_policer_id, number_of_counters, counter_ids);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to clear statistics.");
+
+      return status;
   }
 
   sai_thrift_object_id_t sai_thrift_create_scheduler_profile(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
