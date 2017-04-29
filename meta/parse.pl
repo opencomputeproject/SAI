@@ -2742,7 +2742,7 @@ sub CheckHeaderHeader
 
     my $header = <<_END_
 /**
- * Copyright (c) 2014 Microsoft Open Technologies, Inc.
+ * Copyright (c) 20XX Microsoft Open Technologies, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may
  *    not use this file except in compliance with the License. You may obtain
@@ -2763,7 +2763,9 @@ sub CheckHeaderHeader
 _END_
 ;
 
-    my $is = substr($data, 0 , length($header));
+    my $is = substr($data, 0, length($header));
+
+    $is =~ s/ 20\d\d / 20XX /;
 
     return if $is eq $header;
 
