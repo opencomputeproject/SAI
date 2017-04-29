@@ -2980,6 +2980,11 @@ sub CheckHeadersStyle
                 LogWarning "wrong style typedef function definition $header:$n:$line";
             }
 
+            if ($line =~ / ,/)
+            {
+                LogWarning "space before comma: $header:$n:$line";
+            }
+
             my $pattern = join"|",@magicWords;
 
             while ($line =~ /\b($pattern)\b/igp)
