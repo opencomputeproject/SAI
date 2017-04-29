@@ -796,6 +796,34 @@ public:
       }
   }
 
+  void sai_thrift_get_vlan_member_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t vlan_member_id) {
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_vlan_api_t *vlan_api;
+      sai_attribute_t attr[3];
+
+      SAI_THRIFT_FUNC_LOG();
+
+      thrift_attr_list.attr_count = 0;
+
+      status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("failed to obtain vlan_api, status:%d", status);
+          return;
+      }
+
+      attr[0].id = SAI_VLAN_MEMBER_ATTR_VLAN_ID;
+      attr[1].id = SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID;
+      attr[2].id = SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE;
+
+      status = vlan_api->get_vlan_member_attribute(vlan_member_id, 3, attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("failed to obtain vlan member attributes, status:%d", status);
+          return;
+      }
+
+      sai_attributes_to_sai_thrift_list(attr, 3, thrift_attr_list.attr_list);
+  }
+
   sai_thrift_status_t sai_thrift_remove_vlan_member(const sai_thrift_object_id_t vlan_member_id) {
       printf("sai_thrift_remove_vlan_member\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
@@ -1543,6 +1571,27 @@ public:
           port_list.push_back((sai_thrift_object_id_t) attr.value.objlist.list[index]);
       }
       free(attr.value.objlist.list);
+  }
+
+  sai_thrift_status_t sai_thrift_set_bridge_port_attribute(const sai_thrift_object_id_t bridge_port_id,
+                                                           const sai_thrift_attribute_t& thrift_attr)
+  {
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_bridge_api_t *bridge_api;
+      sai_attribute_t attr;
+
+      SAI_THRIFT_FUNC_LOG();
+
+      status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("failed to obtain bridge_api, status:%d", status);
+          return status;
+      }
+
+      attr.id = thrift_attr.id;
+      attr.value.oid = thrift_attr.value.oid;
+
+      return bridge_api->set_bridge_port_attribute(bridge_port_id, &attr);
   }
 
   void sai_thrift_get_bridge_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t bridge_port_id) {
