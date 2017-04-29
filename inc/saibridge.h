@@ -211,7 +211,7 @@ typedef enum _sai_bridge_port_attr_t
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_create_bridge_port_fn)(
+typedef sai_status_t (*sai_create_bridge_port_fn)(
         _Out_ sai_object_id_t* bridge_port_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -224,7 +224,7 @@ typedef sai_status_t(*sai_create_bridge_port_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_remove_bridge_port_fn) (
+typedef sai_status_t (*sai_remove_bridge_port_fn)(
         _In_ sai_object_id_t bridge_port_id);
 
 /**
@@ -349,7 +349,7 @@ typedef sai_status_t(*sai_create_bridge_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t(*sai_remove_bridge_fn) (
+typedef sai_status_t (*sai_remove_bridge_fn)(
         _In_ sai_object_id_t bridge_id);
 
 /**

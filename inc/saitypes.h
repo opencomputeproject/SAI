@@ -232,8 +232,9 @@ typedef struct _sai_u8_list_t {
 } sai_u8_list_t;
 
 /**
- * @brief Defines a s8 list or string.
- * string should be null terminated and count should include '\0'
+ * @brief Defines a s8 list or string
+ *
+ * String should be null terminated and count should include '\0'.
  */
 typedef struct _sai_s8_list_t {
     uint32_t count;
