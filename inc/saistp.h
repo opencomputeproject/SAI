@@ -194,7 +194,7 @@ typedef sai_status_t (*sai_set_stp_attribute_fn)(
  *
  * @param[in] stp_id STP instance id
  * @param[in] attr_count Number of the attribute
- * @param[in] attr_list Attribute value
+ * @param[inout] attr_list Attribute value
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
@@ -246,7 +246,7 @@ typedef sai_status_t (*sai_set_stp_port_attribute_fn)(
  *
  * @param[in] stp_port_id STP port id
  * @param[in] attr_count Number of the attribute
- * @param[in] attr_list Attribute value
+ * @param[inout] attr_list Attribute value
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */

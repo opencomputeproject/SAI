@@ -1442,17 +1442,17 @@ sub ProcessSingleObjectType
 
         if ($isenum eq "true" or $isenumlist eq "true")
         {
-            my $en = uc($1) if $meta{type} =~/.*sai_(\S+)_t/;
+            my $en = uc($1) if $meta{type} =~/.*sai_(\w+)_t/;
 
             next if $attr =~ /_${en}_LIST$/;
             next if $attr =~ /_$en$/;
 
-            $attr =~/SAI_(\S+?)_ATTR_(\S+)/;
+            $attr =~/SAI_(\w+?)_ATTR_(\w+)/;
 
             my $aot = $1;
             my $aend = $1;
 
-            if ($en =~/^${aot}_(\S+)$/)
+            if ($en =~/^${aot}_(\w+)$/)
             {
                 my $ending = $1;
 
@@ -1483,8 +1483,37 @@ sub CreateMetadata
     }
 }
 
+sub SanityCheckContent
+{
+    # since we generate so much metadata now
+    # lets put some primitive sanity check
+    # if everything we generated is fine
+
+    my $testCount = @TESTNAMES;
+
+    if ($testCount < 5)
+    {
+        LogError "there should be at least 5 test defined, got $testCount";
+    }
+
+    my $metaHeaderSize = 29337 * 0.9;
+    my $metaSourceSize = 1738348 * 0.9;
+
+    if (length($HEADER_CONTENT) < $metaHeaderSize)
+    {
+        LogError "generated saimetadata.h size is too small";
+    }
+
+    if (length($SOURCE_CONTENT) < $metaSourceSize)
+    {
+        LogError "generated saimetadata.c size is too small";
+    }
+}
+
 sub WriteMetaDataFiles
 {
+    SanityCheckContent();
+
     exit 1 if ($warnings > 0 || $errors > 0);
 
     WriteFile("saimetadata.h", $HEADER_CONTENT);
@@ -2209,7 +2238,7 @@ sub CreateObjectInfo
 sub GetHeaderFiles
 {
     opendir(my $dh, $INCLUDEDIR) || die "Can't opendir $INCLUDEDIR: $!";
-    my @headers = grep { /^sai\S*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
+    my @headers = grep { /^sai\w*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
     closedir $dh;
 
     return @headers;
@@ -2218,7 +2247,7 @@ sub GetHeaderFiles
 sub GetMetaHeaderFiles
 {
     opendir(my $dh, ".") || die "Can't opendir . $!";
-    my @headers = grep { /^sai\S*\.h$/ and -f "./$_" } readdir($dh);
+    my @headers = grep { /^sai\w*\.h$/ and -f "./$_" } readdir($dh);
     closedir $dh;
 
     return @headers;
@@ -2253,7 +2282,7 @@ sub GetNonObjectIdStructNames
 
         # TODO there should be better way to extract those
 
-        while ($data =~ /sai_(?:create|set)_\S+.+?\n.+const\s+(sai_(\w+)_t)/gim)
+        while ($data =~ /sai_(?:create|set)_\w+.+?\n.+const\s+(sai_(\w+)_t)/gim)
         {
             my $name = $1;
             my $rawname = $2;
@@ -2429,7 +2458,7 @@ sub ExtractStructInfo
     for my $member (@members)
     {
         my $name = $member->{name}[0];
-        my $type = $1 if $member->{definition}[0] =~ /^(\S+)/;
+        my $type = $1 if $member->{definition}[0] =~ /^(\w+)/;
 
         my $desc = ExtractDescription($struct, $struct, $member->{detaileddescription}[0]);
 
@@ -2478,6 +2507,9 @@ sub ProcessSingleNonObjectId
         LogError "struct $structname does not correspont to known object type";
         return undef;
     }
+
+    # NOTE: since this is a HASH then order of the members is not preserved as
+    # they appear in struct definition
 
     my %struct = ExtractStructInfo($structname, "struct_");
 
@@ -2630,7 +2662,7 @@ sub CheckApiStructNames
     {
         next if $value eq "SAI_API_UNSPECIFIED";
 
-        if (not $value =~ /^SAI_API_(\S+)$/)
+        if (not $value =~ /^SAI_API_(\w+)$/)
         {
             LogError "invalie api name $value";
             next;
@@ -2705,9 +2737,9 @@ sub CheckDoxygenStyle
         return;
     }
 
-    if ($mark eq "param" and not $line =~ /\@param\[(in|out|inout)\]\s+([a-z]\w+)\s+([A-Z]\w+)/)
+    if ($mark eq "param" and not $line =~ /\@param\[(in|out|inout)\] ([a-z]\w+)\s+([A-Z]\w+)/)
     {
-        LogWarning "\@param should be in format \@param[in|out|inout] [A-Z]\\w+: $header $n:$line";
+        LogWarning "\@param should be in format \@param[in|out|inout] [a-z]\\w+ [A-Z]\\w+: $header $n:$line";
         return;
     }
 
@@ -2807,6 +2839,14 @@ sub CheckFunctionsParams
         {
             LogWarning "wrong param names: $fnparams: $fname";
             LogWarning " expected: $params[0](| attr| attr_count attr_list| switch_id attr_count attr_list)";
+        }
+
+        my @paramsFlags = lc($comment) =~ /\@param\[(\w+)]/gis;
+        my @fnparamsFlags = lc($fn) =~ /_(\w+)_.+?\w+\s*[,\)]/gis;
+
+        if (not "@paramsFlags" eq "@fnparamsFlags")
+        {
+            LogWarning "params flags not match ('@paramsFlags' vs '@fnparamsFlags') in $fname: $file";
         }
 
         if ($fname =~ /^sai_(get|set|create|remove)_(\w+?)(_attribute)?(_stats)?_fn/)

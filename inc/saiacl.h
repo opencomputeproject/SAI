@@ -2022,7 +2022,7 @@ typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
  * @brief Create an ACL counter
  *
  * @param[out] acl_counter_id The ACL counter id
- * @param[out] switch_id The switch Object id
+ * @param[in] switch_id The switch Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *

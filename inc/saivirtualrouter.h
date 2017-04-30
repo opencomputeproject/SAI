@@ -166,7 +166,7 @@ typedef sai_status_t (*sai_set_virtual_router_attribute_fn)(
  *
  * @param[in] virtual_router_id Virtual router id
  * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
