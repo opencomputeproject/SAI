@@ -3072,6 +3072,11 @@ sub CheckHeadersStyle
                 LogWarning "star should be next to param name $header:$n:$line";
             }
 
+            if ($line =~ /[^ ]\s*_(In|Out|Inout)_/ and not $line =~ /^#define/)
+            {
+                LogWarning "each param should be in separate line $header:$n:$line";
+            }
+
             my $pattern = join"|",@magicWords;
 
             while ($line =~ /\b($pattern)\b/igp)
