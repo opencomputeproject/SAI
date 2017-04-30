@@ -174,7 +174,7 @@ typedef sai_status_t (*sai_get_l2mc_group_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_create_l2mc_group_member_fn)(
-        _Out_ sai_object_id_t* l2mc_group_member_id,
+        _Out_ sai_object_id_t *l2mc_group_member_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);

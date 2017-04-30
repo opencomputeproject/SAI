@@ -42,7 +42,7 @@
  * @return True if object is allowed on on this attribute, false otherwise
  */
 extern bool sai_metadata_is_allowed_object_type(
-        _In_ const sai_attr_metadata_t* metadata,
+        _In_ const sai_attr_metadata_t *metadata,
         _In_ sai_object_type_t object_type);
 
 /**
@@ -54,7 +54,7 @@ extern bool sai_metadata_is_allowed_object_type(
  * @return True if enum value is allowed on this attribute, false otherwise
  */
 extern bool sai_metadata_is_allowed_enum_value(
-        _In_ const sai_attr_metadata_t* metadata,
+        _In_ const sai_attr_metadata_t *metadata,
         _In_ int value);
 
 /**
@@ -88,7 +88,7 @@ extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name
  * @return String representation of enum value or NULL if value was not found
  */
 extern const char* sai_metadata_get_enum_value_name(
-        _In_ const sai_enum_metadata_t* metadata,
+        _In_ const sai_enum_metadata_t *metadata,
         _In_ int value);
 
 /**

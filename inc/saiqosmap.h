@@ -115,7 +115,7 @@ typedef enum _sai_qos_map_attr_t
     /** End of custom range base */
     SAI_QOS_MAP_ATTR_CUSTOM_RANGE_END
 
-} sai_qos_map_attr_t ;
+} sai_qos_map_attr_t;
 
 /**
  * @brief Create QOS Map
