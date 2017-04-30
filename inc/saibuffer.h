@@ -134,7 +134,7 @@ typedef enum _sai_ingress_priority_group_stat_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_ingress_priority_group_fn)(
-        _Out_ sai_object_id_t* ingress_priority_group_id,
+        _Out_ sai_object_id_t *ingress_priority_group_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -189,7 +189,7 @@ typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
         _In_ sai_object_id_t ingress_priority_group_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_ingress_priority_group_stat_t *counter_ids,
-        _Out_ uint64_t* counters);
+        _Out_ uint64_t *counters);
 
 /**
  * @brief Clear ingress priority group statistics counters.
@@ -331,7 +331,7 @@ typedef enum _sai_buffer_pool_stat_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_buffer_pool_fn)(
-        _Out_ sai_object_id_t* buffer_pool_id,
+        _Out_ sai_object_id_t *buffer_pool_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -386,7 +386,7 @@ typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
         _In_ sai_object_id_t buffer_pool_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_buffer_pool_stat_t *counter_ids,
-        _Out_ uint64_t* counters);
+        _Out_ uint64_t *counters);
 
 /**
  * @brief Clear buffer pool statistics counters.

@@ -528,7 +528,7 @@ typedef struct _sai_acl_capability_t
      * Max action list can be obtained using the #SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT
      */
     sai_s32_list_t action_list;
-}sai_acl_capability_t;
+} sai_acl_capability_t;
 
 /**
  * @brief Data Type

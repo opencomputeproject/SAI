@@ -277,7 +277,7 @@ typedef enum _sai_acl_table_group_attr_t
      * @brief ACL table group type
      *
      * ACL table group type represents the way various ACL tables within this
-     * ACL table group perform their lookups. There are two optional values :
+     * ACL table group perform their lookups. There are two optional values:
      * Sequential - All the ACL tables are looked up in a sequential order,
      * which is based on the ACL table priorities and only one ACL entry is matched
      * with its corresponding ACL entry action applied. In case two ACL tables

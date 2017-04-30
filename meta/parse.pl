@@ -2871,6 +2871,29 @@ sub CheckFunctionsParams
     }
 }
 
+sub CheckFunctionNaming
+{
+    my ($header, $n, $line) = @_;
+
+    return if not $line =~ /^\s*sai_(\w+)_fn\s+(\w+)\s*;/;
+
+    my $typename = $1;
+    my $name = $2;
+
+    if ($typename ne $name and not $typename =~ /^bulk_/)
+    {
+        LogWarning "function not matching $typename vs $name in $header:$n:$line";
+    }
+
+    if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?|clear_\w+_stats$/)
+    {
+        # exceptions
+        return if $name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value)$/;
+
+        LogWarning "function not follow convention in $header:$n:$line";
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -2941,6 +2964,8 @@ sub CheckHeadersStyle
         for my $line (@lines)
         {
             $n++;
+
+            CheckFunctionNaming($header, $n, $line);
 
             $oncedefCount++ if $line =~/\b$oncedef\b/;
 
@@ -3022,9 +3047,24 @@ sub CheckHeadersStyle
                 LogWarning "wrong style typedef function definition $header:$n:$line";
             }
 
-            if ($line =~ / ,/)
+            if ($line =~ / ([.,:;)])/ and not $line =~ /\.(1D|1Q|\.\.)/)
             {
-                LogWarning "space before comma: $header:$n:$line";
+                LogWarning "space before '$1' : $header:$n:$line";
+            }
+
+            if ($line =~ / \* / and not $line =~ /^\s*\* /)
+            {
+                LogWarning "floating start: $header:$n:$line";
+            }
+
+            if ($line =~ /}[^ ]/)
+            {
+                LogWarning "no space after '}' $header:$n:$line";
+            }
+
+            if ($line =~ /_[IO].+\w+\* /)
+            {
+                LogWarning "star should be next to param name $header:$n:$line";
             }
 
             my $pattern = join"|",@magicWords;
