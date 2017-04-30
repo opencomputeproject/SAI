@@ -2832,6 +2832,11 @@ sub CheckFunctionsParams
             LogWarning " doxygen '$params' vs code '$fnparams'";
         }
 
+        if ("@params" =~ /[A-Z]/)
+        {
+            LogWarning "params should use small letters only '@params' in $fname: $file";
+        }
+
         next if $fname eq "sai_remove_all_neighbor_entries_fn"; # exception
 
         if (not $fnparams =~ /^(\w+)(| attr| attr_count attr_list| switch_id attr_count attr_list)$/ and
