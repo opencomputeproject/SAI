@@ -2737,7 +2737,7 @@ sub CheckDoxygenStyle
         return;
     }
 
-    if ($mark eq "param" and not $line =~ /\@param\[(in|out|inout)\] ([a-z]\w+)\s+([A-Z]\w+)/)
+    if ($mark eq "param" and not $line =~ /\@param\[(in|out|inout)\] (\.\.\.|[a-z]\w+)\s+([A-Z]\w+)/)
     {
         LogWarning "\@param should be in format \@param[in|out|inout] [a-z]\\w+ [A-Z]\\w+: $header $n:$line";
         return;
@@ -2812,16 +2812,21 @@ sub CheckFunctionsParams
 
     my ($data, $file) = @_;
 
-    while ($data =~ m#/\*((?:(?!\*/).)*?)\*/\s*typedef\s*\w+[^;]+?(\w+_fn)([^;]+?);#gis)
+    my $doxygenCommentPattern = '/\*\*((?:(?!\*/).)*?)\*/';
+    my $fnTypeDefinition = 'typedef\s*\w+[^;]+?(\w+_fn)\s*\)([^;]+?);';
+    my $globalFunction = 'sai_\w+\s*(sai_\w+)[^;]*?\(([^;]+?);';
+
+    while ($data =~ m/$doxygenCommentPattern\s*(?:$fnTypeDefinition|$globalFunction)/gis)
     {
         my $comment = $1;
         my $fname = $2;
         my $fn = $3;
 
-        next if not $comment =~ /\@param/;
+        $fname = $4 if defined $4;
+        $fn = $5 if defined $5;
 
-        my @params = $comment =~ /\@param\[\w+]\s+(\w+)/gis;
-        my @fnparams = $fn =~ /_\w+_.+?(\w+)\s*[,\)]/gis;
+        my @params = $comment =~ /\@param\[\w+]\s+(\.\.\.|\w+)/gis;
+        my @fnparams = $fn =~ /_(?:In|Out|Inout)_.+?(\.\.\.|\w+)\s*[,\)]/gis;
 
         my $params = "@params";
         my $fnparams = "@fnparams";
@@ -2839,19 +2844,21 @@ sub CheckFunctionsParams
 
         next if $fname eq "sai_remove_all_neighbor_entries_fn"; # exception
 
-        if (not $fnparams =~ /^(\w+)(| attr| attr_count attr_list| switch_id attr_count attr_list)$/ and
-            not $fname =~ /_stats_fn$|^sai_bulk_|_notification_fn$|^sai_send_|^sai_recv/)
-        {
-            LogWarning "wrong param names: $fnparams: $fname";
-            LogWarning " expected: $params[0](| attr| attr_count attr_list| switch_id attr_count attr_list)";
-        }
-
         my @paramsFlags = lc($comment) =~ /\@param\[(\w+)]/gis;
-        my @fnparamsFlags = lc($fn) =~ /_(\w+)_.+?\w+\s*[,\)]/gis;
+        my @fnparamsFlags = lc($fn) =~ /_(\w+)_.+?(?:\.\.\.|\w+)\s*[,\)]/gis;
 
         if (not "@paramsFlags" eq "@fnparamsFlags")
         {
             LogWarning "params flags not match ('@paramsFlags' vs '@fnparamsFlags') in $fname: $file";
+        }
+
+        next if not $fname =~ /_fn$/; # below don't apply for global functions
+
+        if (not $fnparams =~ /^(\w+)(| attr| attr_count attr_list| switch_id attr_count attr_list)$/ and
+            not $fname =~ /_(stats|notification)_fn$|^sai_(send|recv|bulk)_|^sai_meta/)
+        {
+            LogWarning "wrong param names: $fnparams: $fname";
+            LogWarning " expected: $params[0](| attr| attr_count attr_list| switch_id attr_count attr_list)";
         }
 
         if ($fname =~ /^sai_(get|set|create|remove)_(\w+?)(_attribute)?(_stats)?_fn/)
@@ -3091,6 +3098,11 @@ sub CheckHeadersStyle
             if ($line =~ m!/\*\*\s+[a-z]!)
             {
                 #LogWarning "doxygen comment should start with capital letter: $header:$n:$line";
+            }
+
+            if ($line =~ /sai_\w+_statistics_fn/)
+            {
+                LogWarning "statistics should use 'stats' to follow convention $header:$n:$line";
             }
 
             my $pattern = join"|",@magicWords;

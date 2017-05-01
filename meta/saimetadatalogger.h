@@ -36,14 +36,21 @@
  *
  * User can specify his own function that will be called when message log level
  * will be greater or equal to #sai_metadata_log_level.
+ *
+ * @param[in] log_level Log level
+ * @param[in] file Source file
+ * @param[in] line Line number in file
+ * @param[in] function Function name
+ * @param[in] format Format of logging
+ * @param[in] ... Variable parameters
  */
 typedef void (*sai_metadata_log_fn)(
         _In_ sai_log_level_t log_level,
         _In_ const char *file,
         _In_ int line,
-        _In_ const char *func,
+        _In_ const char *function,
         _In_ const char *format,
-        ...);
+        _In_ ...);
 
 /**
  * @brief User specified log function.

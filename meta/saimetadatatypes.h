@@ -830,6 +830,10 @@ typedef struct _sai_attr_metadata_t
 /**
  * @brief Function definition for getting object id from non object
  * id structure member.
+ *
+ * @param[in] object_meta_key Object meta key
+ *
+ * @return Object id from struct member
  */
 typedef sai_object_id_t (*sai_meta_get_struct_member_oid_fn)(
         _In_ const sai_object_meta_key_t *object_meta_key);
@@ -837,10 +841,13 @@ typedef sai_object_id_t (*sai_meta_get_struct_member_oid_fn)(
 /**
  * @brief Function definition for setting object id from non object
  * id structure member.
+ *
+ * @param[inout] object_meta_key Object meta key
+ * @param[in] object_id Object id to be set
  */
 typedef void (*sai_meta_set_struct_member_oid_fn)(
         _Inout_ sai_object_meta_key_t *object_meta_key,
-        _In_ sai_object_id_t oid);
+        _In_ sai_object_id_t object_id);
 
 /**
  * @brief Defines struct member info for
