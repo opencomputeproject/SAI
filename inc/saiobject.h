@@ -93,7 +93,7 @@ sai_status_t sai_get_object_count(
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
  * @param[in] object_count Number of objects in SAI
- * @param[in] object_list List of SAI objects or keys
+ * @param[inout] object_list List of SAI objects or keys
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
