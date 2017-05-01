@@ -1442,17 +1442,17 @@ sub ProcessSingleObjectType
 
         if ($isenum eq "true" or $isenumlist eq "true")
         {
-            my $en = uc($1) if $meta{type} =~/.*sai_(\S+)_t/;
+            my $en = uc($1) if $meta{type} =~/.*sai_(\w+)_t/;
 
             next if $attr =~ /_${en}_LIST$/;
             next if $attr =~ /_$en$/;
 
-            $attr =~/SAI_(\S+?)_ATTR_(\S+)/;
+            $attr =~/SAI_(\w+?)_ATTR_(\w+)/;
 
             my $aot = $1;
             my $aend = $1;
 
-            if ($en =~/^${aot}_(\S+)$/)
+            if ($en =~/^${aot}_(\w+)$/)
             {
                 my $ending = $1;
 
@@ -1483,8 +1483,37 @@ sub CreateMetadata
     }
 }
 
+sub SanityCheckContent
+{
+    # since we generate so much metadata now
+    # lets put some primitive sanity check
+    # if everything we generated is fine
+
+    my $testCount = @TESTNAMES;
+
+    if ($testCount < 5)
+    {
+        LogError "there should be at least 5 test defined, got $testCount";
+    }
+
+    my $metaHeaderSize = 29337 * 0.9;
+    my $metaSourceSize = 1738348 * 0.9;
+
+    if (length($HEADER_CONTENT) < $metaHeaderSize)
+    {
+        LogError "generated saimetadata.h size is too small";
+    }
+
+    if (length($SOURCE_CONTENT) < $metaSourceSize)
+    {
+        LogError "generated saimetadata.c size is too small";
+    }
+}
+
 sub WriteMetaDataFiles
 {
+    SanityCheckContent();
+
     exit 1 if ($warnings > 0 || $errors > 0);
 
     WriteFile("saimetadata.h", $HEADER_CONTENT);
@@ -2209,7 +2238,16 @@ sub CreateObjectInfo
 sub GetHeaderFiles
 {
     opendir(my $dh, $INCLUDEDIR) || die "Can't opendir $INCLUDEDIR: $!";
-    my @headers = grep { /^sai\S*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
+    my @headers = grep { /^sai\w*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
+    closedir $dh;
+
+    return @headers;
+}
+
+sub GetMetaHeaderFiles
+{
+    opendir(my $dh, ".") || die "Can't opendir . $!";
+    my @headers = grep { /^sai\w*\.h$/ and -f "./$_" } readdir($dh);
     closedir $dh;
 
     return @headers;
@@ -2220,7 +2258,11 @@ sub ReadHeaderFile
     my $filename = shift;
     local $/ = undef;
 
-    open FILE, "$INCLUDEDIR/$filename" or die "Couldn't open file $INCLUDEDIR/$filename: $!";
+    # first search file in meta directory
+
+    $filename = "$INCLUDEDIR/$filename" if not -e $filename;
+
+    open FILE, $filename or die "Couldn't open file $filename: $!";
     binmode FILE;
     my $string = <FILE>;
     close FILE;
@@ -2240,7 +2282,7 @@ sub GetNonObjectIdStructNames
 
         # TODO there should be better way to extract those
 
-        while ($data =~ /sai_(?:create|set)_\S+.+?\n.+const\s+(sai_(\w+)_t)/gim)
+        while ($data =~ /sai_(?:create|set)_\w+.+?\n.+const\s+(sai_(\w+)_t)/gim)
         {
             my $name = $1;
             my $rawname = $2;
@@ -2416,7 +2458,7 @@ sub ExtractStructInfo
     for my $member (@members)
     {
         my $name = $member->{name}[0];
-        my $type = $1 if $member->{definition}[0] =~ /^(\S+)/;
+        my $type = $1 if $member->{definition}[0] =~ /^(\w+)/;
 
         my $desc = ExtractDescription($struct, $struct, $member->{detaileddescription}[0]);
 
@@ -2465,6 +2507,9 @@ sub ProcessSingleNonObjectId
         LogError "struct $structname does not correspont to known object type";
         return undef;
     }
+
+    # NOTE: since this is a HASH then order of the members is not preserved as
+    # they appear in struct definition
 
     my %struct = ExtractStructInfo($structname, "struct_");
 
@@ -2617,7 +2662,7 @@ sub CheckApiStructNames
     {
         next if $value eq "SAI_API_UNSPECIFIED";
 
-        if (not $value =~ /^SAI_API_(\S+)$/)
+        if (not $value =~ /^SAI_API_(\w+)$/)
         {
             LogError "invalie api name $value";
             next;
@@ -2686,15 +2731,21 @@ sub CheckDoxygenStyle
         return;
     }
 
-    if ($mark eq "return" and not $line =~ /\@return\s+#/)
+    if ($mark eq "return" and not $line =~ /\@return\s+(#SAI_|[A-Z][a-z])/)
     {
         LogWarning "\@return should start with #: $header $n:$line";
         return;
     }
 
-    if ($mark eq "param" and not $line =~ /\@param\[(in|out|inout)\]\s+([a-z]\w+)\s+([A-Z]\w+)/)
+    if ($mark eq "param" and not $line =~ /\@param\[(in|out|inout)\] (\.\.\.|[a-z]\w+)\s+([A-Z]\w+)/)
     {
-        LogWarning "\@param should be in format \@param[in|out|inout] [A-Z]\\w+: $header $n:$line";
+        LogWarning "\@param should be in format \@param[in|out|inout] [a-z]\\w+ [A-Z]\\w+: $header $n:$line";
+        return;
+    }
+
+    if ($mark eq "defgroup" and not $line =~ /\@defgroup SAI\w* SAI - \w+/)
+    {
+        LogWarning "\@defgroup should be in format \@defgroup SAI\\w* SAI - \\w+: $header $n:$line";
         return;
     }
 }
@@ -2717,6 +2768,154 @@ sub ExtractComments
     return $comments;
 }
 
+sub CheckHeaderHeader
+{
+    my ($data, $file) = @_;
+
+    my $header = <<_END_
+/**
+ * Copyright (c) 20XX Microsoft Open Technologies, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *    not use this file except in compliance with the License. You may obtain
+ *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+ *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+ *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+ *
+ *    See the Apache Version 2.0 License for specific language governing
+ *    permissions and limitations under the License.
+ *
+ *    Microsoft would like to thank the following companies for their review and
+ *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+ *    Dell Products, L.P., Facebook, Inc
+ *
+_END_
+;
+
+    my $is = substr($data, 0, length($header));
+
+    $is =~ s/ 20\d\d / 20XX /;
+
+    return if $is eq $header;
+
+    LogWarning "Wrong header in $file, is:\n$is\n should be:\n\n$header";
+}
+
+sub CheckFunctionsParams
+{
+    #
+    # make sure that doxygen params match function params names
+    #
+
+    my ($data, $file) = @_;
+
+    my $doxygenCommentPattern = '/\*\*((?:(?!\*/).)*?)\*/';
+    my $fnTypeDefinition = 'typedef\s*\w+[^;]+?(\w+_fn)\s*\)([^;]+?);';
+    my $globalFunction = 'sai_\w+\s*(sai_\w+)[^;]*?\(([^;]+?);';
+
+    while ($data =~ m/$doxygenCommentPattern\s*(?:$fnTypeDefinition|$globalFunction)/gis)
+    {
+        my $comment = $1;
+        my $fname = $2;
+        my $fn = $3;
+
+        $fname = $4 if defined $4;
+        $fn = $5 if defined $5;
+
+        my @params = $comment =~ /\@param\[\w+]\s+(\.\.\.|\w+)/gis;
+        my @fnparams = $fn =~ /_(?:In|Out|Inout)_.+?(\.\.\.|\w+)\s*[,\)]/gis;
+
+        my $params = "@params";
+        my $fnparams = "@fnparams";
+
+        if ($params ne $fnparams)
+        {
+            LogWarning "not matching params in function $fname: $file";
+            LogWarning " doxygen '$params' vs code '$fnparams'";
+        }
+
+        if ("@params" =~ /[A-Z]/)
+        {
+            LogWarning "params should use small letters only '@params' in $fname: $file";
+        }
+
+        next if $fname eq "sai_remove_all_neighbor_entries_fn"; # exception
+
+        my @paramsFlags = lc($comment) =~ /\@param\[(\w+)]/gis;
+        my @fnparamsFlags = lc($fn) =~ /_(\w+)_.+?(?:\.\.\.|\w+)\s*[,\)]/gis;
+
+        if (not "@paramsFlags" eq "@fnparamsFlags")
+        {
+            LogWarning "params flags not match ('@paramsFlags' vs '@fnparamsFlags') in $fname: $file";
+        }
+
+        next if not $fname =~ /_fn$/; # below don't apply for global functions
+
+        if (not $fnparams =~ /^(\w+)(| attr| attr_count attr_list| switch_id attr_count attr_list)$/ and
+            not $fname =~ /_(stats|notification)_fn$|^sai_(send|recv|bulk)_|^sai_meta/)
+        {
+            LogWarning "wrong param names: $fnparams: $fname";
+            LogWarning " expected: $params[0](| attr| attr_count attr_list| switch_id attr_count attr_list)";
+        }
+
+        if ($fname =~ /^sai_(get|set|create|remove)_(\w+?)(_attribute)?(_stats)?_fn/)
+        {
+            my $pattern = $2;
+            my $first = $params[0];
+
+            if ($pattern =~ /_entry$/)
+            {
+                $pattern = "${pattern}_id|${pattern}";
+            }
+            else
+            {
+                $pattern = "${pattern}_id";
+            }
+
+            if (not $first =~ /^$pattern$/)
+            {
+                LogWarning "first param should be called ${pattern} but is $first in $fname: $file";
+            }
+        }
+    }
+}
+
+sub CheckDoxygenCommentFormating
+{
+    my ($data, $file) = @_;
+
+    while ($data =~ m%/\*\*(?:(?!\*/).)*?(\*/\n[\n]+(\s*[a-z][^\n]*))%gis)
+    {
+        LogWarning "empty line between doxygen comment and definition: $file: $2";
+    }
+}
+
+sub CheckFunctionNaming
+{
+    my ($header, $n, $line) = @_;
+
+    return if not $line =~ /^\s*sai_(\w+)_fn\s+(\w+)\s*;/;
+
+    my $typename = $1;
+    my $name = $2;
+
+    if ($typename ne $name and not $typename =~ /^bulk_/)
+    {
+        LogWarning "function not matching $typename vs $name in $header:$n:$line";
+    }
+
+    if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?|clear_\w+_stats$/)
+    {
+        # exceptions
+        return if $name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value)$/;
+
+        LogWarning "function not follow convention in $header:$n:$line";
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -2728,8 +2927,6 @@ sub CheckHeadersStyle
     # - double spaces
     # - wrong spacing idient
     #
-
-    my @headers = GetHeaderFiles();
 
     my @magicWords = qw/SAI IP MAC L2 ACL L3 GRE ECMP EEE FDB FD FEC ICMP I2C
         HW IEEE IP2ME L2MC LAG ARP ASIC BGP CAM CBS CB CIR CIDR CRC DLL CPU TTL
@@ -2750,6 +2947,8 @@ sub CheckHeadersStyle
         ingressing MCAST netdev AUTONEG decapsulation egressing functionalities
         rv subnet subnets Uninitialize versa VRFs Netdevice netdevs PGs CRC32
         HQOS Wildcard VLANs VLAN2 SerDes FC Wakeup warmboot Inservice PVID PHY
+        metadata Metadata TODO Facebook OID OIDs deserialize
+        fprintf struct stderr
         /;
 
     my %exceptions = map { $_ => $_ } @spellExceptions;
@@ -2757,9 +2956,26 @@ sub CheckHeadersStyle
     my %wordsToCheck = ();
     my %wordsChecked = ();
 
+    my @headers = GetHeaderFiles();
+    my @metaheaders = GetMetaHeaderFiles();
+
+    @headers = (@headers, @metaheaders);
+
     for my $header (@headers)
     {
+        next if $header eq "saimetadata.h"; # skip auto generated header
+
         my $data = ReadHeaderFile($header);
+
+        my $oncedef = uc ("__${header}_");
+
+        $oncedef =~ s/\./_/g;
+
+        my $oncedefCount = 0;
+
+        CheckHeaderHeader($data, $header);
+        CheckFunctionsParams($data, $header);
+        CheckDoxygenCommentFormating($data, $header);
 
         my @lines = split/\n/,$data;
 
@@ -2771,6 +2987,10 @@ sub CheckHeadersStyle
         for my $line (@lines)
         {
             $n++;
+
+            CheckFunctionNaming($header, $n, $line);
+
+            $oncedefCount++ if $line =~/\b$oncedef\b/;
 
             # detect multiple empty lines
 
@@ -2805,7 +3025,10 @@ sub CheckHeadersStyle
 
             if ($line =~ /\*\s+[^ ].*  / and not $line =~ /\* \@(brief|file)/)
             {
-                LogWarning "too many spaces after *\\s+ $header $n:$line";
+                if (not $line =~ /const.+const\s+\w+;/)
+                {
+                    LogWarning "too many spaces after *\\s+ $header $n:$line";
+                }
             }
 
             if ($line =~ /(typedef|{|}|_In\w+|_Out\w+)( [^ ].*  |  )/ and not $line =~ /typedef\s+u?int/i)
@@ -2827,7 +3050,7 @@ sub CheckHeadersStyle
             {
                 # make struct function members to follow convention
 
-                LogWarning "$1 should be equal to $2" if (($1 ne $2) and not($1 =~ /^bulk/))
+                LogWarning "$2 should be equal to $1" if (($1 ne $2) and not($1 =~ /^bulk/))
             }
 
             if ($line =~ /_(?:In|Out)\w+\s+(?:sai_)?uint32_t\s*\*?(\w+)/)
@@ -2838,8 +3061,48 @@ sub CheckHeadersStyle
 
                 if (not $param =~ /$pattern/)
                 {
-                    LogWarning "param $1 should match $pattern $header:$n:$line";
+                    LogWarning "param $param should match $pattern $header:$n:$line";
                 }
+            }
+
+            if ($line =~ /typedef.+_fn\s*\)/ and not $line =~ /typedef( \S+)+ ?\(\*\w+_fn\)\(/)
+            {
+                LogWarning "wrong style typedef function definition $header:$n:$line";
+            }
+
+            if ($line =~ / ([.,:;)])/ and not $line =~ /\.(1D|1Q|\.\.)/)
+            {
+                LogWarning "space before '$1' : $header:$n:$line";
+            }
+
+            if ($line =~ / \* / and not $line =~ /^\s*\* /)
+            {
+                LogWarning "floating start: $header:$n:$line";
+            }
+
+            if ($line =~ /}[^ ]/)
+            {
+                LogWarning "no space after '}' $header:$n:$line";
+            }
+
+            if ($line =~ /_[IO].+\w+\* /)
+            {
+                LogWarning "star should be next to param name $header:$n:$line";
+            }
+
+            if ($line =~ /[^ ]\s*_(In|Out|Inout)_/ and not $line =~ /^#define/)
+            {
+                LogWarning "each param should be in separate line $header:$n:$line";
+            }
+
+            if ($line =~ m!/\*\*\s+[a-z]!)
+            {
+                #LogWarning "doxygen comment should start with capital letter: $header:$n:$line";
+            }
+
+            if ($line =~ /sai_\w+_statistics_fn/)
+            {
+                LogWarning "statistics should use 'stats' to follow convention $header:$n:$line";
             }
 
             my $pattern = join"|",@magicWords;
@@ -2888,20 +3151,26 @@ sub CheckHeadersStyle
                 }
             }
 
-            if ($line =~ /\\/ and not $line =~ /\\[0\[\]]/)
+            if ($line =~ /\\/ and not $line =~ /\\[0\[\]]/ and not $line =~ /\\$/)
             {
                 LogWarning "line contains \\ which should not be used in this way $header $n:$line";
             }
 
+            if ($line =~ /typedef\s*(enum|struct|union).*{/)
+            {
+                LogWarning "move '{' to new line in typedef $header $n:$line";
+            }
+
             CheckDoxygenStyle($header, $line, $n);
 
-            next if $line =~ /^ \*/;                # doxygen comment
+            next if $line =~ /^ \*($|[ \/])/;       # doxygen comment
             next if $line =~ /^$/;                  # empty line
             next if $line =~ /^typedef /;           # type definition
             next if $line =~ /^sai_status/;         # return codes
             next if $line =~ /^sai_object/;         # return codes
+            next if $line =~ /^extern /;            # extern in metadata
             next if $line =~ /^[{}#\/]/;            # start end of struct, define, start of comment
-            next if $line =~ /^ {8}(_In|_Out)/;     # function arguments
+            next if $line =~ /^ {8}(_In|_Out|\.\.\.)/;     # function arguments
             next if $line =~ /^ {4}(sai_)/i;        # sai struct entry or SAI enum
             next if $line =~ /^ {4}\/\*/;           # doxygen start
             next if $line =~ /^ {5}\*/;             # doxygen comment continue
@@ -2912,8 +3181,16 @@ sub CheckHeadersStyle
             next if $line =~ /^ {4}(char|bool)/;    # union entries
             next if $line =~ /^ {8}bool booldata/;  # union bool
             next if $line =~ /^ {4}(true|false)/;   # bool definition
+            next if $line =~ /^ {4}(const|size_t|else)/; # const in meta headers
+
+            next if $line =~ m![^\\]\\$!; # macro multiline
 
             LogWarning "Header doesn't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
+        }
+
+        if ($oncedefCount != 3)
+        {
+            LogWarning "$oncedef should be used 3 times in header, but used $oncedefCount";
         }
     }
 
@@ -2983,8 +3260,6 @@ sub ExtractApiToObjectMap
 
         my @lines = split/\n/,$data;
 
-        my $n = 0;
-
         my $empty = 0;
         my $emptydoxy = 0;
 
@@ -2993,8 +3268,6 @@ sub ExtractApiToObjectMap
 
         for my $line (@lines)
         {
-            $n++;
-
             if ($line =~ /typedef\s+enum\s+_sai_(\w+)_attr_t/)
             {
                 push@objects,uc("SAI_OBJECT_TYPE_$1");
@@ -3166,6 +3439,39 @@ sub WriteTestMain
     WriteTest "}";
 }
 
+sub CreateListCountTest
+{
+    #
+    # purpose of this test is to check if all list structs have count as first
+    # item so later on we can cast any structure to extract count
+    #
+
+    DefineTestName "list_count_test";
+
+    WriteTest "{";
+
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union");
+
+    WriteTest "    size_t size_ref = sizeof(sai_object_list_t);";
+
+    for my $key (keys %Union)
+    {
+        my $type = $Union{$key}->{type};
+
+        next if not $type =~ /^sai_(\w+_list)_t$/;
+
+        my $name = $1;
+
+        WriteTest "    $type $name;";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($type) == size_ref, \"type $type has different sizeof than sai_object_type_t\");";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($name.count) == sizeof(uint32_t), \"$type.count should be uint32_t\");";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($name.list) == sizeof(void*), \"$type.list should be pointer\");";
+        WriteTest "    TEST_ASSERT_TRUE(&$name == (void*)&$name.count, \"$type.count should be first member in $type\");";
+    }
+
+    WriteTest "}";
+}
+
 sub WriteLoggerVariables
 {
     #
@@ -3313,6 +3619,8 @@ CreateCustomRangeTest();
 CreatePointersTest();
 
 CreateEnumSizeCheckTest();
+
+CreateListCountTest();
 
 WriteTestMain();
 

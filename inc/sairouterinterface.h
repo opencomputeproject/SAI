@@ -22,8 +22,8 @@
  * @brief   This module defines SAI Router interface
  */
 
-#if !defined (__SAIROUTERINTF_H_)
-#define __SAIROUTERINTF_H_
+#if !defined (__SAIROUTERINTERFACE_H_)
+#define __SAIROUTERINTERFACE_H_
 
 #include <saitypes.h>
 
@@ -220,7 +220,7 @@ typedef enum _sai_router_interface_attr_t
 /**
  * @brief Create router interface.
  *
- * @param[out] rif_id Router interface id
+ * @param[out] router_interface_id Router interface id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -228,7 +228,7 @@ typedef enum _sai_router_interface_attr_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_router_interface_fn)(
-        _Out_ sai_object_id_t *rif_id,
+        _Out_ sai_object_id_t *router_interface_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -236,36 +236,36 @@ typedef sai_status_t(*sai_create_router_interface_fn)(
 /**
  * @brief Remove router interface
  *
- * @param[in] rif_id Router interface id
+ * @param[in] router_interface_id Router interface id
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_router_interface_fn)(
-        _In_ sai_object_id_t rif_id);
+        _In_ sai_object_id_t router_interface_id);
 
 /**
  * @brief Set router interface attribute
  *
- * @param[in] rif_id Router interface id
+ * @param[in] router_interface_id Router interface id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
-        _In_ sai_object_id_t rif_id,
+        _In_ sai_object_id_t router_interface_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get router interface attribute
  *
- * @param[in] rif_id Router interface id
+ * @param[in] router_interface_id Router interface id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_router_interface_attribute_fn)(
-        _In_ sai_object_id_t rif_id,
+        _In_ sai_object_id_t router_interface_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -284,4 +284,4 @@ typedef struct _sai_router_interface_api_t
 /**
  * @}
  */
-#endif /** __SAIROUTERINTF_H_ */
+#endif /** __SAIROUTERINTERFACE_H_ */

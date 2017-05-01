@@ -22,8 +22,8 @@
  * @brief   This module defines SAI QOS Maps interface
  */
 
-#if !defined (__SAIQOSMAPS_H_)
-#define __SAIQOSMAPS_H_
+#if !defined (__SAIQOSMAP_H_)
+#define __SAIQOSMAP_H_
 
 #include <saitypes.h>
 
@@ -115,7 +115,7 @@ typedef enum _sai_qos_map_attr_t
     /** End of custom range base */
     SAI_QOS_MAP_ATTR_CUSTOM_RANGE_END
 
-} sai_qos_map_attr_t ;
+} sai_qos_map_attr_t;
 
 /**
  * @brief Create QOS Map
@@ -140,7 +140,7 @@ typedef sai_status_t (*sai_create_qos_map_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_remove_qos_map_fn) (
+typedef sai_status_t (*sai_remove_qos_map_fn)(
         _In_ sai_object_id_t qos_map_id);
 
 /**
@@ -165,7 +165,7 @@ typedef sai_status_t (*sai_set_qos_map_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_qos_map_attribute_fn)(
-        _In_ sai_object_id_t qos_map_id ,
+        _In_ sai_object_id_t qos_map_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -184,4 +184,4 @@ typedef struct _sai_qos_map_api_t
 /**
  * @}
  */
-#endif /** __SAIQOSMAPS_H_ */
+#endif /** __SAIQOSMAP_H_ */

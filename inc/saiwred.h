@@ -268,7 +268,7 @@ typedef sai_status_t (*sai_remove_wred_fn)(
 /**
  * @brief Set attributes to WRED profile.
  *
- * @param[out] wred_id WRED profile Id.
+ * @param[in] wred_id WRED profile Id.
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error

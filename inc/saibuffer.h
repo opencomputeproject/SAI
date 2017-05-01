@@ -126,7 +126,7 @@ typedef enum _sai_ingress_priority_group_stat_t
 /**
  * @brief Create ingress priority group
  *
- * @param[out] ingress_pg_id Ingress priority group
+ * @param[out] ingress_priority_group_id Ingress priority group
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -134,7 +134,7 @@ typedef enum _sai_ingress_priority_group_stat_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_ingress_priority_group_fn)(
-        _Out_ sai_object_id_t* ingress_pg_id,
+        _Out_ sai_object_id_t *ingress_priority_group_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -142,43 +142,43 @@ typedef sai_status_t(*sai_create_ingress_priority_group_fn)(
 /**
  * @brief Remove ingress priority group
  *
- * @param[in] ingress_pg_id Ingress priority group
+ * @param[in] ingress_priority_group_id Ingress priority group
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_ingress_priority_group_fn)(
-        _In_ sai_object_id_t ingress_pg_id);
+        _In_ sai_object_id_t ingress_priority_group_id);
 
 /**
  * @brief Set ingress priority group attribute
  *
- * @param[in] ingress_pg_id Ingress priority group id
+ * @param[in] ingress_priority_group_id Ingress priority group id
  * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_ingress_priority_group_attribute_fn)(
-        _In_ sai_object_id_t ingress_pg_id,
+        _In_ sai_object_id_t ingress_priority_group_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get ingress priority group attributes
  *
- * @param[in] ingress_pg_id Ingress priority group id
+ * @param[in] ingress_priority_group_id Ingress priority group id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_ingress_priority_group_attribute_fn)(
-        _In_ sai_object_id_t ingress_pg_id,
+        _In_ sai_object_id_t ingress_priority_group_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Get ingress priority group statistics counters.
  *
- * @param[in] ingress_pg_id Ingress priority group id
+ * @param[in] ingress_priority_group_id Ingress priority group id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
@@ -186,22 +186,22 @@ typedef sai_status_t(*sai_get_ingress_priority_group_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
-        _In_ sai_object_id_t ingress_pg_id,
+        _In_ sai_object_id_t ingress_priority_group_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_ingress_priority_group_stat_t *counter_ids,
-        _Out_ uint64_t* counters);
+        _Out_ uint64_t *counters);
 
 /**
  * @brief Clear ingress priority group statistics counters.
  *
- * @param[in] ingress_pg_id Ingress priority group id
+ * @param[in] ingress_priority_group_id Ingress priority group id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_clear_ingress_priority_group_stats_fn)(
-        _In_ sai_object_id_t ingress_pg_id,
+        _In_ sai_object_id_t ingress_priority_group_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_ingress_priority_group_stat_t *counter_ids);
 
@@ -323,7 +323,7 @@ typedef enum _sai_buffer_pool_stat_t
 /**
  * @brief Create buffer pool
  *
- * @param[out] pool_id Buffer pool id
+ * @param[out] buffer_pool_id Buffer pool id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -331,7 +331,7 @@ typedef enum _sai_buffer_pool_stat_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_buffer_pool_fn)(
-        _Out_ sai_object_id_t* pool_id,
+        _Out_ sai_object_id_t *buffer_pool_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -339,43 +339,43 @@ typedef sai_status_t(*sai_create_buffer_pool_fn)(
 /**
  * @brief Remove buffer pool
  *
- * @param[in] pool_id Buffer pool id
+ * @param[in] buffer_pool_id Buffer pool id
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_buffer_pool_fn)(
-        _In_ sai_object_id_t pool_id);
+        _In_ sai_object_id_t buffer_pool_id);
 
 /**
  * @brief Set buffer pool attribute
  *
- * @param[in] pool_id Buffer pool id
+ * @param[in] buffer_pool_id Buffer pool id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_buffer_pool_attribute_fn)(
-        _In_ sai_object_id_t pool_id,
+        _In_ sai_object_id_t buffer_pool_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get buffer pool attributes
  *
- * @param[in] pool_id Buffer pool id
+ * @param[in] buffer_pool_id Buffer pool id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_buffer_pool_attribute_fn)(
-        _In_ sai_object_id_t pool_id,
+        _In_ sai_object_id_t buffer_pool_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Get buffer pool statistics counters.
  *
- * @param[in] pool_id Buffer pool id
+ * @param[in] buffer_pool_id Buffer pool id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
@@ -383,22 +383,22 @@ typedef sai_status_t(*sai_get_buffer_pool_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
-        _In_ sai_object_id_t pool_id,
+        _In_ sai_object_id_t buffer_pool_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_buffer_pool_stat_t *counter_ids,
-        _Out_ uint64_t* counters);
+        _Out_ uint64_t *counters);
 
 /**
  * @brief Clear buffer pool statistics counters.
  *
- * @param[in] pool_id Buffer pool id
+ * @param[in] buffer_pool_id Buffer pool id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_clear_buffer_pool_stats_fn)(
-        _In_ sai_object_id_t pool_id,
+        _In_ sai_object_id_t buffer_pool_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_buffer_pool_stat_t *counter_ids);
 

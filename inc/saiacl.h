@@ -277,8 +277,8 @@ typedef enum _sai_acl_table_group_attr_t
      * @brief ACL table group type
      *
      * ACL table group type represents the way various ACL tables within this
-     * ACL table group perform their lookups. There are two optional values :
-     * Sequential - All the ACL tables are looked up in a sequential order ,
+     * ACL table group perform their lookups. There are two optional values:
+     * Sequential - All the ACL tables are looked up in a sequential order,
      * which is based on the ACL table priorities and only one ACL entry is matched
      * with its corresponding ACL entry action applied. In case two ACL tables
      * have the same priority they are looked up on a first come basis.
@@ -419,7 +419,7 @@ typedef enum _sai_acl_table_attr_t
      * supports Dynamic adjustment of Table size post Table creation
      *
      * The table size refers to the number of ACL entries. The number
-     * of entries that get's allocated when we create a table with a
+     * of entries that gets allocated when we create a table with a
      * specific size would depend on the ACL CAM Arch of the NPU. Some
      * NPU supports different blocks, each may have same or different
      * size and what gets allocated can depend on the block size or other
@@ -1749,7 +1749,6 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
      */
-
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
 
     /**
@@ -1918,8 +1917,8 @@ typedef enum _sai_acl_range_attr_t
  * @brief Create an ACL table
  *
  * @param[out] acl_table_id The the ACL table id
- * @param[in] attr_count Number of attributes
  * @param[in] switch_id Switch Object id
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
@@ -2022,7 +2021,7 @@ typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
  * @brief Create an ACL counter
  *
  * @param[out] acl_counter_id The ACL counter id
- * @param[out] switch_id The switch Object id
+ * @param[in] switch_id The switch Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -2125,6 +2124,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  * @brief Create an ACL Table Group
  *
  * @param[out] acl_table_group_id The ACL group id
+ * @param[in] switch_id Switch ID
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -2176,6 +2176,7 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  * @brief Create an ACL Table Group Member
  *
  * @param[out] acl_table_group_member_id The ACL table group member id
+ * @param[in] switch_id Switch ID
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -2212,7 +2213,7 @@ typedef sai_status_t (*sai_set_acl_table_group_member_attribute_fn)(
 /**
  * @brief Get ACL table group member attribute
  *
- * @param[in] acl_table_group_id ACL table group member id
+ * @param[in] acl_table_group_member_id ACL table group member id
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *

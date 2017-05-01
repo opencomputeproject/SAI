@@ -22,8 +22,8 @@
  * @brief   This module defines SAI QOS Scheduler Group interface
  */
 
-#if !defined (__SAISCHEDULER_GROUP_H_)
-#define __SAISCHEDULER_GROUP_H_
+#if !defined (__SAISCHEDULERGROUP_H_)
+#define __SAISCHEDULERGROUP_H_
 
 #include <saitypes.h>
 
@@ -185,4 +185,4 @@ typedef struct _sai_scheduler_group_api_t
 /**
  * @}
  */
-#endif /** __SAISCHEDULER_GROUP_H_ */
+#endif /** __SAISCHEDULERGROUP_H_ */

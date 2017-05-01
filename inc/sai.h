@@ -70,7 +70,7 @@
  */
 
 /**
- * @brief Defined API sets have assigned ID's.
+ * @brief Defined API sets have assigned IDs.
  *
  * If specific API method table changes in any way (method signature, number of
  * methods), a new ID needs to be created (e.g. VLAN2) and old API still may
@@ -172,7 +172,9 @@ typedef struct _service_method_table_t
 } service_method_table_t;
 
 /**
- * @brief Adapter module initialization call. This is NOT for SDK initialization.
+ * @brief Adapter module initialization call
+ *
+ * This is NOT for SDK initialization.
  *
  * @param[in] flags Reserved for future use, must be zero
  * @param[in] services Methods table with services provided by adapter host
@@ -181,7 +183,7 @@ typedef struct _service_method_table_t
  */
 sai_status_t sai_api_initialize(
         _In_ uint64_t flags,
-        _In_ const service_method_table_t* services);
+        _In_ const service_method_table_t *services);
 
 /**
  * @brief Retrieve a pointer to the C-style method table for desired SAI
@@ -206,7 +208,9 @@ sai_status_t sai_api_query(
 sai_status_t sai_api_uninitialize(void);
 
 /**
- * @brief Set log level for SAI API module. The default log level is #SAI_LOG_LEVEL_WARN
+ * @brief Set log level for SAI API module
+ *
+ * The default log level is #SAI_LOG_LEVEL_WARN.
  *
  * @param[in] sai_api_id SAI API ID
  * @param[in] log_level Log level

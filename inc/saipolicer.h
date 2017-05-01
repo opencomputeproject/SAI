@@ -57,7 +57,7 @@ typedef enum _sai_policer_mode_t
     /** RFC 2697, Single Rate Three color marker, CIR, CBS and PBS, G, Y and R */
     SAI_POLICER_MODE_SR_TCM = 0x00000000,
 
-    /** RFC 2698, Two Rate Three color marker, CIR, CBS , PIR and PBS, G, Y and R */
+    /** RFC 2698, Two Rate Three color marker, CIR, CBS, PIR and PBS, G, Y and R */
     SAI_POLICER_MODE_TR_TCM = 0x00000001,
 
     /** Storm control mode. Single Rate Two color CIR, CBS, G and R */

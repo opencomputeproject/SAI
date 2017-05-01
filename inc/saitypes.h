@@ -60,7 +60,8 @@ typedef UINT32  sai_switch_hash_seed_t;
 
 #if !defined(__BOOL_DEFINED)
 
-typedef enum {
+typedef enum
+{
     false,
     true
 } _bool;
@@ -138,7 +139,8 @@ typedef void *sai_pointer_t;
  * #SAI_STATUS_BUFFER_OVERFLOW. Once the caller gets such return code, it should
  * use the returned count member to re-allocate list and retry.
  */
-typedef struct _sai_object_list_t {
+typedef struct _sai_object_list_t
+{
     uint32_t count;
     sai_object_id_t *list;
 } sai_object_list_t;
@@ -146,7 +148,8 @@ typedef struct _sai_object_list_t {
 /**
  * @brief SAI common API type
  */
-typedef enum _sai_common_api_t {
+typedef enum _sai_common_api_t
+{
     SAI_COMMON_API_CREATE = 0,
     SAI_COMMON_API_REMOVE = 1,
     SAI_COMMON_API_SET    = 2,
@@ -157,7 +160,8 @@ typedef enum _sai_common_api_t {
 /**
  * @brief SAI object type
  */
-typedef enum _sai_object_type_t {
+typedef enum _sai_object_type_t
+{
     SAI_OBJECT_TYPE_NULL                     =  0, /**< invalid object type */
     SAI_OBJECT_TYPE_PORT                     =  1,
     SAI_OBJECT_TYPE_LAG                      =  2,
@@ -226,46 +230,55 @@ typedef enum _sai_object_type_t {
     SAI_OBJECT_TYPE_MAX                      = 65,
 } sai_object_type_t;
 
-typedef struct _sai_u8_list_t {
+typedef struct _sai_u8_list_t
+{
     uint32_t count;
     uint8_t *list;
 } sai_u8_list_t;
 
 /**
- * @brief Defines a s8 list or string.
- * string should be null terminated and count should include '\0'
+ * @brief Defines a s8 list or string
+ *
+ * String should be null terminated and count should include '\0'.
  */
-typedef struct _sai_s8_list_t {
+typedef struct _sai_s8_list_t
+{
     uint32_t count;
     int8_t *list;
 } sai_s8_list_t;
 
-typedef struct _sai_u16_list_t {
+typedef struct _sai_u16_list_t
+{
     uint32_t count;
     uint16_t *list;
 } sai_u16_list_t;
 
-typedef struct _sai_s16_list_t {
+typedef struct _sai_s16_list_t
+{
     uint32_t count;
     int16_t *list;
 } sai_s16_list_t;
 
-typedef struct _sai_u32_list_t {
+typedef struct _sai_u32_list_t
+{
     uint32_t count;
     uint32_t *list;
 } sai_u32_list_t;
 
-typedef struct _sai_s32_list_t {
+typedef struct _sai_s32_list_t
+{
     uint32_t count;
     int32_t *list;
 } sai_s32_list_t;
 
-typedef struct _sai_u32_range_t {
+typedef struct _sai_u32_range_t
+{
     uint32_t min;
     uint32_t max;
 } sai_u32_range_t;
 
-typedef struct _sai_s32_range_t {
+typedef struct _sai_s32_range_t
+{
     int32_t min;
     int32_t max;
 } sai_s32_range_t;
@@ -273,8 +286,8 @@ typedef struct _sai_s32_range_t {
 /**
  * @brief Defines a vlan list data structure
  */
-typedef struct _sai_vlan_list_t {
-
+typedef struct _sai_vlan_list_t
+{
     /** Number of VLANs */
     uint32_t count;
 
@@ -291,7 +304,8 @@ typedef enum _sai_ip_addr_family_t
 
 } sai_ip_addr_family_t;
 
-typedef struct _sai_ip_address_t {
+typedef struct _sai_ip_address_t
+{
     sai_ip_addr_family_t addr_family;
     union {
         sai_ip4_t ip4;
@@ -299,7 +313,8 @@ typedef struct _sai_ip_address_t {
     } addr;
 } sai_ip_address_t;
 
-typedef struct _sai_ip_prefix_t {
+typedef struct _sai_ip_prefix_t
+{
     sai_ip_addr_family_t addr_family;
     union {
         sai_ip4_t ip4;
@@ -527,14 +542,15 @@ typedef struct _sai_acl_capability_t
      * Max action list can be obtained using the #SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT
      */
     sai_s32_list_t action_list;
-}sai_acl_capability_t;
+} sai_acl_capability_t;
 
 /**
  * @brief Data Type
  *
  * To use enum values as attribute value is sai_int32_t s32
  */
-typedef union {
+typedef union
+{
     bool booldata;
     char chardata[32];
     sai_uint8_t u8;
@@ -570,13 +586,14 @@ typedef union {
 
 } sai_attribute_value_t;
 
-typedef struct _sai_attribute_t {
+typedef struct _sai_attribute_t
+{
     sai_attr_id_t id;
     sai_attribute_value_t value;
 } sai_attribute_t;
 
-typedef enum _sai_bulk_op_type_t {
-
+typedef enum _sai_bulk_op_type_t
+{
     /*
      * @brief Bulk operation stops on the first failed creation
      *
@@ -607,7 +624,6 @@ typedef enum _sai_bulk_op_type_t {
  * any of the objects fails to create. When there is failure, Caller is expected to go through the
  * list of returned statuses to find out which fails and which succeeds.
  */
-
 typedef sai_status_t (*sai_bulk_object_create_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t object_count,
@@ -629,7 +645,6 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
  * any of the objects fails to remove. When there is failure, Caller is expected to go through the
  * list of returned statuses to find out which fails and which succeeds.
  */
-
 typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ uint32_t object_count,
         _In_ const sai_object_id_t *object_id,
