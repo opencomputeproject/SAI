@@ -39,8 +39,8 @@
 /**
  * @brief Defines object metadata key.
  */
-typedef struct _sai_object_meta_key_t {
-
+typedef struct _sai_object_meta_key_t
+{
     /**
      * @brief Object type.
      */
@@ -57,8 +57,8 @@ typedef struct _sai_object_meta_key_t {
  * @brief Defines attribute value type.
  * Can be used when serializing attributes.
  */
-typedef enum _sai_attr_value_type_t {
-
+typedef enum _sai_attr_value_type_t
+{
     /**
      * @brief Attribute value is bool.
      */
@@ -334,8 +334,8 @@ typedef enum _sai_attr_value_type_t {
 /**
  * @brief Attribute flags.
  */
-typedef enum _sai_attr_flags_t {
-
+typedef enum _sai_attr_flags_t
+{
     /**
      * @brief Mandatory on create flag.
      *
@@ -450,8 +450,8 @@ typedef enum _sai_attr_flags_t {
 /**
  * @brief Defines default value type.
  */
-typedef enum _sai_default_value_type_t {
-
+typedef enum _sai_default_value_type_t
+{
     /**
      * @brief There is no default value.
      *
@@ -558,8 +558,8 @@ typedef struct _sai_attr_condition_t
 /**
  * @brief Defines enum metadata information.
  */
-typedef struct _sai_enum_metadata_t {
-
+typedef struct _sai_enum_metadata_t
+{
     /**
      * @brief String representation of enum type definition.
      */

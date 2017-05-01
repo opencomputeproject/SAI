@@ -73,7 +73,7 @@ typedef enum _sai_bridge_port_type_t
     /** Port or LAG */
     SAI_BRIDGE_PORT_TYPE_PORT,
 
-    /** {Port or LAG.vlan} */
+    /** Port or LAG.vlan */
     SAI_BRIDGE_PORT_TYPE_SUB_PORT,
 
     /** bridge router port */
