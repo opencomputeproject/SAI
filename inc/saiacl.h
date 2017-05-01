@@ -1749,7 +1749,6 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
      */
-
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
 
     /**

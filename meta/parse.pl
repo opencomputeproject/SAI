@@ -2876,6 +2876,16 @@ sub CheckFunctionsParams
     }
 }
 
+sub CheckDoxygenCommentFormating
+{
+    my ($data, $file) = @_;
+
+    while ($data =~ m%/\*\*(?:(?!\*/).)*?(\*/\n[\n]+(\s*[a-z][^\n]*))%gis)
+    {
+        LogWarning "empty line between doxygen comment and definition: $file: $2";
+    }
+}
+
 sub CheckFunctionNaming
 {
     my ($header, $n, $line) = @_;
@@ -2958,6 +2968,7 @@ sub CheckHeadersStyle
 
         CheckHeaderHeader($data, $header);
         CheckFunctionsParams($data, $header);
+        CheckDoxygenCommentFormating($data, $header);
 
         my @lines = split/\n/,$data;
 
@@ -3043,7 +3054,7 @@ sub CheckHeadersStyle
 
                 if (not $param =~ /$pattern/)
                 {
-                    LogWarning "param $1 should match $pattern $header:$n:$line";
+                    LogWarning "param $param should match $pattern $header:$n:$line";
                 }
             }
 
@@ -3075,6 +3086,11 @@ sub CheckHeadersStyle
             if ($line =~ /[^ ]\s*_(In|Out|Inout)_/ and not $line =~ /^#define/)
             {
                 LogWarning "each param should be in separate line $header:$n:$line";
+            }
+
+            if ($line =~ m!/\*\*\s+[a-z]!)
+            {
+                #LogWarning "doxygen comment should start with capital letter: $header:$n:$line";
             }
 
             my $pattern = join"|",@magicWords;
@@ -3128,9 +3144,14 @@ sub CheckHeadersStyle
                 LogWarning "line contains \\ which should not be used in this way $header $n:$line";
             }
 
+            if ($line =~ /typedef\s*(enum|struct|union).*{/)
+            {
+                LogWarning "move '{' to new line in typedef $header $n:$line";
+            }
+
             CheckDoxygenStyle($header, $line, $n);
 
-            next if $line =~ /^ \*/;                # doxygen comment
+            next if $line =~ /^ \*($|[ \/])/;       # doxygen comment
             next if $line =~ /^$/;                  # empty line
             next if $line =~ /^typedef /;           # type definition
             next if $line =~ /^sai_status/;         # return codes

@@ -734,7 +734,6 @@ typedef sai_status_t(*sai_get_tam_snapshot_stats_fn)(
  */
 typedef enum _sai_tam_transporter_type_t
 {
-
     /** Transport local, to the CPU */
     SAI_TAM_TRANSPORTER_TYPE_LOCAL,
 
@@ -746,7 +745,8 @@ typedef enum _sai_tam_transporter_type_t
 /**
  * @brief TAM Snapshot Transporter Attributes
  */
-typedef enum _sai_tam_transporter_attr_t {
+typedef enum _sai_tam_transporter_attr_t
+{
     /**
      * @brief Start of Attributes
      */

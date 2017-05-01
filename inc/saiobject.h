@@ -46,8 +46,7 @@
  */
 typedef struct _sai_object_key_t
 {
-    union
-    {
+    union {
         sai_object_id_t           object_id;
         sai_fdb_entry_t           fdb_entry;
         sai_neighbor_entry_t      neighbor_entry;

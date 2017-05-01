@@ -258,7 +258,8 @@ typedef sai_status_t (*sai_get_stp_port_attribute_fn)(
 /**
  * @brief STP method table retrieved with sai_api_query()
  */
-typedef struct _sai_stp_api_t {
+typedef struct _sai_stp_api_t
+{
     sai_create_stp_fn               create_stp;
     sai_remove_stp_fn               remove_stp;
     sai_set_stp_attribute_fn        set_stp_attribute;
