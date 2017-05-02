@@ -194,7 +194,7 @@ typedef sai_status_t (*sai_set_stp_attribute_fn)(
  *
  * @param[in] stp_id STP instance id
  * @param[in] attr_count Number of the attribute
- * @param[in] attr_list Attribute value
+ * @param[inout] attr_list Attribute value
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
@@ -207,6 +207,7 @@ typedef sai_status_t (*sai_get_stp_attribute_fn)(
  * @brief Create STP port object
  *
  * @param[out] stp_port_id STP port id
+ * @param[in] switch_id Switch ID
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
@@ -245,7 +246,7 @@ typedef sai_status_t (*sai_set_stp_port_attribute_fn)(
  *
  * @param[in] stp_port_id STP port id
  * @param[in] attr_count Number of the attribute
- * @param[in] attr_list Attribute value
+ * @param[inout] attr_list Attribute value
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
@@ -257,7 +258,8 @@ typedef sai_status_t (*sai_get_stp_port_attribute_fn)(
 /**
  * @brief STP method table retrieved with sai_api_query()
  */
-typedef struct _sai_stp_api_t {
+typedef struct _sai_stp_api_t
+{
     sai_create_stp_fn               create_stp;
     sai_remove_stp_fn               remove_stp;
     sai_set_stp_attribute_fn        set_stp_attribute;

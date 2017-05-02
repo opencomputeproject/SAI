@@ -19,16 +19,16 @@
  *
  * @file    saimetadatautils.h
  *
- * @brief   This module defines SAI Metadata Utils
+ * @brief   This module defines SAI Metadata Utilities
  */
 
-#ifndef __SAI_METADATA_UTILS_H__
-#define __SAI_METADATA_UTILS_H__
+#ifndef __SAIMETADATAUTILS_H_
+#define __SAIMETADATAUTILS_H_
 
 #include "saimetadatatypes.h"
 
 /**
- * @defgroup SAIMETADATAUTILS SAI Metadata Utils Definitions
+ * @defgroup SAIMETADATAUTILS SAI - Metadata Utilities Definitions
  *
  * @{
  */
@@ -42,7 +42,7 @@
  * @return True if object is allowed on on this attribute, false otherwise
  */
 extern bool sai_metadata_is_allowed_object_type(
-        _In_ const sai_attr_metadata_t* metadata,
+        _In_ const sai_attr_metadata_t *metadata,
         _In_ sai_object_type_t object_type);
 
 /**
@@ -54,20 +54,20 @@ extern bool sai_metadata_is_allowed_object_type(
  * @return True if enum value is allowed on this attribute, false otherwise
  */
 extern bool sai_metadata_is_allowed_enum_value(
-        _In_ const sai_attr_metadata_t* metadata,
+        _In_ const sai_attr_metadata_t *metadata,
         _In_ int value);
 
 /**
  * @brief Gets attribute metadata based on object type and attribute id
  *
- * @param[in] objecttype Object type
- * @param[in] attrid Attribute Id
+ * @param[in] object_type Object type
+ * @param[in] attr_id Attribute Id
  *
  * @return Pointer to object metadata or NULL in case of failure
  */
 extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
-        _In_ sai_object_type_t objecttype,
-        _In_ sai_attr_id_t attrid);
+        _In_ sai_object_type_t object_type,
+        _In_ sai_attr_id_t attr_id);
 
 /**
  * @brief Gets attribute metadata based on attribute id name
@@ -88,7 +88,7 @@ extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name
  * @return String representation of enum value or NULL if value was not found
  */
 extern const char* sai_metadata_get_enum_value_name(
-        _In_ const sai_enum_metadata_t* metadata,
+        _In_ const sai_enum_metadata_t *metadata,
         _In_ int value);
 
 /**
@@ -110,7 +110,7 @@ extern const sai_attribute_t* sai_metadata_get_attr_by_id(
  *
  * @param[in] object_type Object type
  *
- * @return Object type info struct or NULL if not found
+ * @return Object type info structure or NULL if not found
  */
 extern const sai_object_type_info_t* sai_metadata_get_object_type_info(
         _In_ sai_object_type_t object_type);
@@ -120,11 +120,11 @@ extern const sai_object_type_info_t* sai_metadata_get_object_type_info(
  *
  * @param[in] object_type Object type
  *
- * @return true if object type is valid, false otherwise
+ * @return True if object type is valid, false otherwise
  */
 extern bool sai_metadata_is_object_type_valid(
         _In_ sai_object_type_t object_type);
 /**
  * @}
  */
-#endif /** __SAI_METADATA_UTILS_H_ */
+#endif /** __SAIMETADATAUTILS_H_ */

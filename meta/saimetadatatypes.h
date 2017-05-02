@@ -22,11 +22,11 @@
  * @brief   This module defines SAI Metadata Types
  */
 
-#ifndef __SAI_METADATA_TYPES_H__
-#define __SAI_METADATA_TYPES_H__
+#ifndef __SAIMETADATATYPES_H_
+#define __SAIMETADATATYPES_H_
 
 /**
- * @defgroup SAIMETADATATYPES SAI Metadata Types Definitions
+ * @defgroup SAIMETADATATYPES SAI - Metadata Types Definitions
  *
  * @{
  */
@@ -39,8 +39,8 @@
 /**
  * @brief Defines object metadata key.
  */
-typedef struct _sai_object_meta_key_t {
-
+typedef struct _sai_object_meta_key_t
+{
     /**
      * @brief Object type.
      */
@@ -57,8 +57,8 @@ typedef struct _sai_object_meta_key_t {
  * @brief Defines attribute value type.
  * Can be used when serializing attributes.
  */
-typedef enum _sai_attr_value_type_t {
-
+typedef enum _sai_attr_value_type_t
+{
     /**
      * @brief Attribute value is bool.
      */
@@ -115,7 +115,7 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_POINTER,
 
     /**
-     * @brief Attribute value is mac address.
+     * @brief Attribute value is MAC address.
      */
     SAI_ATTR_VALUE_TYPE_MAC,
 
@@ -230,7 +230,7 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32,
 
     /**
-     * @brief Attribute value is ACL field mac address.
+     * @brief Attribute value is ACL field MAC address.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC,
 
@@ -290,7 +290,7 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT32,
 
     /**
-     * @brief Attribute value is ACL action mac address.
+     * @brief Attribute value is ACL action MAC address.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC,
 
@@ -300,7 +300,7 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4,
 
     /**
-     * @brief Attribute value is ACL action IPV6.
+     * @brief Attribute value is ACL action IPv6.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6,
 
@@ -315,7 +315,7 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST,
 
     /**
-     * @brief Attribute value is qos map list.
+     * @brief Attribute value is QOS map list.
      */
     SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST,
 
@@ -344,12 +344,12 @@ typedef enum _sai_attr_value_type_t {
 /**
  * @brief Attribute flags.
  */
-typedef enum _sai_attr_flags_t {
-
+typedef enum _sai_attr_flags_t
+{
     /**
      * @brief Mandatory on create flag.
      *
-     * Attribute with this flags is mandatory when calling CREATE api, unless
+     * Attribute with this flags is mandatory when calling CREATE API, unless
      * this attribute is marked as conditional. Must be combined with
      * CREATE_ONLY or CREATE_AND_SET flag.
      */
@@ -359,7 +359,7 @@ typedef enum _sai_attr_flags_t {
      * @brief Create only flag.
      *
      * Attribute with this flag can only be created and it's value cannot be
-     * changed by SET api. Can be combined with with MANDATORY flag. If
+     * changed by SET API. Can be combined with with MANDATORY flag. If
      * attribute is not combined with MANDATORY flag then DEFAULT value must be
      * provided for this attribute.
      */
@@ -369,7 +369,7 @@ typedef enum _sai_attr_flags_t {
      * @brief Create and set flag.
      *
      * Attribute with this flag can be created and after creation value may be
-     * modified using SET api. Can be combined with MANDATORY flag. If
+     * modified using SET API. Can be combined with MANDATORY flag. If
      * attribute is not combined with MANDATORY flag then DEFAULT value must be
      * provided for this attribute.
      */
@@ -378,7 +378,7 @@ typedef enum _sai_attr_flags_t {
     /**
      * @brief Read only flag.
      *
-     * Attribute with this flag can only be read using GET api. Creation and
+     * Attribute with this flag can only be read using GET API. Creation and
      * modification is not possible. Can be combined with DYNAMIC flag for
      * example counter attribute.
      */
@@ -460,8 +460,8 @@ typedef enum _sai_attr_flags_t {
 /**
  * @brief Defines default value type.
  */
-typedef enum _sai_default_value_type_t {
-
+typedef enum _sai_default_value_type_t
+{
     /**
      * @brief There is no default value.
      *
@@ -479,7 +479,7 @@ typedef enum _sai_default_value_type_t {
      * @brief Value must be in range provided by other attribute.
      *
      * Usually value is provided by switch object.
-     * Range can be obtained by GET api.
+     * Range can be obtained by GET API.
      * Usually default value is minimum of range.
      */
     SAI_DEFAULT_VALUE_TYPE_ATTR_RANGE,
@@ -488,7 +488,7 @@ typedef enum _sai_default_value_type_t {
      * @brief Default value is equal to other attribute value.
      *
      * Usually value is provided by switch object.
-     * Can be obtained using GET api.
+     * Can be obtained using GET API.
      */
     SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE,
 
@@ -568,10 +568,10 @@ typedef struct _sai_attr_condition_t
 /**
  * @brief Defines enum metadata information.
  */
-typedef struct _sai_enum_metadata_t {
-
+typedef struct _sai_enum_metadata_t
+{
     /**
-     * @brief String representation of enum typedef.
+     * @brief String representation of enum type definition.
      */
     const char*     name;
 
@@ -649,7 +649,7 @@ typedef struct _sai_attr_metadata_t
 
     /**
      * @brief Allows mixed object id types on list
-     * like port and lag.
+     * like port and LAG.
      */
     bool                                allowmixedobjecttypes;
 
@@ -668,7 +668,7 @@ typedef struct _sai_attr_metadata_t
     bool                                allownullobjectid;
 
     /**
-     * @brief Determines whether object contains OIDs.
+     * @brief Determines whether attribute contains OIDs
      */
     bool                                isoidattribute;
 
@@ -677,8 +677,8 @@ typedef struct _sai_attr_metadata_t
      *
      * Default value can be a const assigned by switch
      * (which is not know at compile), can be obtained
-     * by GET api, or a min/max value in specific
-     * range also assigned by switch at runtime.
+     * by GET API, or a min/max value in specific
+     * range also assigned by switch at run time.
      *
      * Default value can be also an object id.
      */
@@ -806,7 +806,7 @@ typedef struct _sai_attr_metadata_t
     /**
      * @brief Determines whether value is vlan.
      *
-     * Can only be set on UINT16 value type.
+     * Can only be set on sai_uint16_t value type.
      */
     bool                                isvlan;
 
@@ -834,23 +834,30 @@ typedef struct _sai_attr_metadata_t
  * those for automatic serialize/deserialize for example extracting value as
  * sai_attribute_value_t and pointing to right serialize/deserialize functions.
  * Also a automatic generated functions for serialize/deserialize for those non
- * object id structs must be generated, we don't want to update them manually.
+ * object id structures must be generated, we don't want to update them manually.
  */
 
 /**
- * @brief Function definition for getting OID from non object
- * id struct member.
+ * @brief Function definition for getting object id from non object
+ * id structure member.
+ *
+ * @param[in] object_meta_key Object meta key
+ *
+ * @return Object id from struct member
  */
 typedef sai_object_id_t (*sai_meta_get_struct_member_oid_fn)(
         _In_ const sai_object_meta_key_t *object_meta_key);
 
 /**
- * @brief Function definition for setting OID from non object
- * id struct member.
+ * @brief Function definition for setting object id from non object
+ * id structure member.
+ *
+ * @param[inout] object_meta_key Object meta key
+ * @param[in] object_id Object id to be set
  */
 typedef void (*sai_meta_set_struct_member_oid_fn)(
         _Inout_ sai_object_meta_key_t *object_meta_key,
-        _In_ sai_object_id_t oid);
+        _In_ sai_object_id_t object_id);
 
 /**
  * @brief Defines struct member info for
@@ -958,17 +965,14 @@ typedef struct _sai_rev_graph_member_t
  * functions.
  *
  * When creating switch object or non object id switch_id parameter is ignored,
- * and can be NULL. Currently objecttype inside sai_object_meta_key_t is
+ * and can be NULL. Currently object type inside sai_object_meta_key_t is
  * ignored and can be skipped.
  *
- * This generic quad API will help us later to call any api, without doing any
+ * This generic quad API will help us later to call any API, without doing any
  * switch cases for calling different signature functions including non object
- * id structs. Also later we will generate automatic serialize and deserialize
- * methods for non object id which will deserialize data to object union in
- * sai_object_meta_key_t to right place.
- *
- * TODO add metadata init function which will populate global API function
- * pointers which will be used when calling each api.
+ * id structures. Also later we will generate automatic serialize and
+ * deserialize methods for non object id which will deserialize data to object
+ * union in sai_object_meta_key_t to right place.
  */
 
 typedef sai_status_t (*sai_meta_generic_create_fn)(
@@ -1032,7 +1036,7 @@ typedef struct _sai_object_type_info_t
     bool                                    isnonobjectid;
 
     /**
-     * @brief Indicates if object is oid object id
+     * @brief Indicates if object is OID object
      */
     bool                                    isobjectid;
 
@@ -1076,4 +1080,4 @@ typedef struct _sai_object_type_info_t
 /**
  * @}
  */
-#endif /** __SAI_METADATA_TYPES_H__ */
+#endif /** __SAIMETADATATYPES_H_ */

@@ -214,9 +214,6 @@ class L3IPv6PrefixTest(sai_base_test.ThriftInterfaceDataPlane):
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
 
-        #Create default route
-        sai_thrift_create_route(self.client, vr_id, addr_family, '::', '::', rif_id2, SAI_PACKET_ACTION_DROP)
-
         #Create neighbor and neighbor subnet
         ip_addr1 = '2000:aaaa::1'
         dmac1 = '00:11:22:33:44:55'
@@ -257,7 +254,6 @@ class L3IPv6PrefixTest(sai_base_test.ThriftInterfaceDataPlane):
             if mask!="":
                 sai_thrift_remove_route(self.client, vr_id, addr_family, net, mask, None)
             sai_thrift_remove_route(self.client, vr_id, addr_family, '2000:aaaa::', 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:fff0', None)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, '::', '::', None)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
 
@@ -828,6 +824,9 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
         lag_id1 = self.client.sai_thrift_create_lag([])
+
+        sai_thrift_vlan_remove_ports(self.client, switch.default_vlan.oid, [port1, port2])
+
         lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
         lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
 
@@ -864,8 +863,8 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
 
-            self.client.sai_thrift_remove_lag_member(lag_member_id1)
-            self.client.sai_thrift_remove_lag_member(lag_member_id2)
+            sai_thrift_remove_lag_member(self.client, lag_member_id1)
+            sai_thrift_remove_lag_member(self.client, lag_member_id2)
             self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
@@ -884,6 +883,7 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
         lag_id1 = self.client.sai_thrift_create_lag([])
+        sai_thrift_vlan_remove_ports(self.client, switch.default_vlan.oid, [port1, port2])
         lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
         lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
 
@@ -923,8 +923,8 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
 
-            self.client.sai_thrift_remove_lag_member(lag_member_id1)
-            self.client.sai_thrift_remove_lag_member(lag_member_id2)
+            sai_thrift_remove_lag_member(self.client, lag_member_id1)
+            sai_thrift_remove_lag_member(self.client, lag_member_id2)
             self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
@@ -934,6 +934,9 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
 class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         switch_init(self.client)
+        if len(port_list) < 7: 
+            assert False, "skip this test as it requires 7 ports"
+
         port1 = port_list[0]
         port2 = port_list[1]
         port3 = port_list[2]
@@ -1230,7 +1233,7 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_id, v4_enabled, v6_enabled, mac1)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_oid, v4_enabled, v6_enabled, mac1)
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac2)
 
         sai_thrift_create_fdb(self.client, vlan_id, dmac1, port1, mac_action)
@@ -1407,10 +1410,10 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
         rif_vlan_id = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan1, v4_enabled, v6_enabled, mac1)
         rif_port_id = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac2)
 
-        attr_value2 = sai_thrift_attribute_value_t(s32=SAI_PORT_FDB_LEARNING_MODE_HW)
-        attr2 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_FDB_LEARNING_MODE, value=attr_value2)
-        self.client.sai_thrift_set_port_attribute(port1, attr2)
-        self.client.sai_thrift_set_port_attribute(port2, attr2)
+        attr_value2 = sai_thrift_attribute_value_t(s32=SAI_BRIDGE_PORT_FDB_LEARNING_MODE_HW)
+        attr2 = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE, value=attr_value2)
+        self.client.sai_thrift_set_port_attribute(sai_thrift_get_bridge_port_by_port(self.client, port1), attr2)
+        self.client.sai_thrift_set_port_attribute(sai_thrift_get_bridge_port_by_port(self.client, port2), attr2)
 
         sai_thrift_create_neighbor(self.client, addr_family, rif_vlan_id, ip_port1, mac_port1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_vlan_id)
@@ -1574,7 +1577,6 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
                     "Not all paths are equally balanced, %s" % pkt_counter[stat_port])
 
     def runTest(self):
-        return
         """
         For sai server, testing different lags with router
         ---- Test for 17 ports minimun ----
@@ -1594,11 +1596,10 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
         #general configuration 
         random.seed(1)
         switch_init(self.client)
-        self.src_port = port_list[self.total_lag_port]
         if (len(port_list) < (self.total_lag_port + 1) ) : 
-            print "skip this test as it requires 17 ports"
-            return
+            assert False, "skip this test as it requires 17 ports"
 
+        self.src_port = port_list[self.total_lag_port]
         self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
         rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
         num_of_lags = self.total_lag_port
@@ -1777,6 +1778,9 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         #general configuration 
         random.seed(1)
         switch_init(self.client)
+        if (len(port_list) < (self.total_dst_port + 1) ) :
+            assert False, "skip this test as it requires 17 ports"
+
         self.src_port = port_list[0]
         for i in range (self.total_dst_port+1):
             self.mac_pool.append('00:11:22:33:44:'+str(50+i))

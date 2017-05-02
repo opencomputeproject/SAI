@@ -68,7 +68,7 @@ saisanitycheck: saisanitycheck.c $(HEADERS)
 	gcc -o $@ saisanitycheck.c $(COMMONSRC) $(CFLAGS) $(WARNINGS)
 
 saimetadatatest: saimetadatatest.c $(COMMONSRC) $(HEADERS)
-	gcc -o $@ saimetadatatest.c $(COMMONSRC) $(CFLAGS) $(WARNINGS)
+	gcc -o $@ saimetadatatest.c $(COMMONSRC) $(CFLAGS) $(WARNINGS) -Wno-suggest-attribute=noreturn
 
 saidepgraphgen: saidepgraphgen.cpp $(HEADERS)
 	g++ -o $@ saidepgraphgen.cpp $(COMMONSRC) $(CFLAGS) $(WARNINGS)
