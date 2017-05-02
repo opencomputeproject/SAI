@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -57,9 +57,32 @@ typedef enum _sai_ingress_priority_group_attr_t
     SAI_INGRESS_PRIORITY_GROUP_ATTR_BUFFER_PROFILE = SAI_INGRESS_PRIORITY_GROUP_ATTR_START,
 
     /**
+     * @brief Port id
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
+     * @objects SAI_OBJECT_TYPE_PORT
+     */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_PORT,
+
+    /**
+     * @brief PG index
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
+     */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_INDEX,
+
+    /**
      * @brief End of attributes
      */
-    SAI_INGRESS_PRIORITY_GROUP_ATTR_END
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_END,
+
+    /** Custom range base value */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_CUSTOM_RANGE_END
 
 } sai_ingress_priority_group_attr_t;
 
@@ -86,10 +109,10 @@ typedef enum _sai_ingress_priority_group_stat_t
     /** get watermark pg shared occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_WATERMARK_BYTES = 0x00000005,
 
-    /** get current pg xoff room occupancy in bytes [uint64_t] */
+    /** get current pg XOFF room occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_CURR_OCCUPANCY_BYTES = 0x00000006,
 
-    /** get watermark pg xoff room occupancy in bytes [uint64_t] */
+    /** get watermark pg XOFF room occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
 
     /** get dropped packets count [uint64_t] */
@@ -156,16 +179,16 @@ typedef sai_status_t(*sai_get_ingress_priority_group_attribute_fn)(
  * @brief Get ingress priority group statistics counters.
  *
  * @param[in] ingress_pg_id Ingress priority group id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_ingress_priority_group_stats_fn)(
         _In_ sai_object_id_t ingress_pg_id,
-        _In_ const sai_ingress_priority_group_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
+        _In_ const sai_ingress_priority_group_stat_t *counter_ids,
         _Out_ uint64_t* counters);
 
 /**
@@ -221,7 +244,7 @@ typedef enum _sai_buffer_pool_attr_t
     /**
      * @brief Shared buffer size in bytes
      *
-     * This is derived from substracting all reversed buffers of queue/port
+     * This is derived from subtracting all reversed buffers of queue/port
      * from the total pool size.
      *
      * @type sai_uint32_t
@@ -238,7 +261,7 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_TYPE,
 
     /**
-     * @brief buffer pool size in bytes
+     * @brief Buffer pool size in bytes
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -246,7 +269,7 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_SIZE,
 
     /**
-     * @brief shared threshold mode for the buffer
+     * @brief Shared threshold mode for the buffer
      *
      * @type sai_buffer_pool_threshold_mode_t
      * @flags CREATE_ONLY
@@ -255,7 +278,7 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE,
 
     /**
-     * @brief shared headroom pool size in bytes for lossless traffic
+     * @brief Shared headroom pool size in bytes for lossless traffic
      *
      * Only valid for the ingress buffer pool
      *
@@ -270,6 +293,12 @@ typedef enum _sai_buffer_pool_attr_t
      */
     SAI_BUFFER_POOL_ATTR_END,
 
+    /** Custom range base value */
+    SAI_BUFFER_POOL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_BUFFER_POOL_ATTR_CUSTOM_RANGE_END
+
 } sai_buffer_pool_attr_t;
 
 /**
@@ -283,7 +312,7 @@ typedef enum _sai_buffer_pool_stat_t
     /** get watermark pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
 
-    /** get count of packest dropped in this pool [uint64_t] */
+    /** get count of packets dropped in this pool [uint64_t] */
     SAI_BUFFER_POOL_STAT_DROPPED_PACKETS = 0x00000002,
 
     /** Custom range base value */
@@ -347,16 +376,16 @@ typedef sai_status_t(*sai_get_buffer_pool_attribute_fn)(
  * @brief Get buffer pool statistics counters.
  *
  * @param[in] pool_id Buffer pool id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_buffer_pool_stats_fn)(
         _In_ sai_object_id_t pool_id,
-        _In_ const sai_buffer_pool_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
+        _In_ const sai_buffer_pool_stat_t *counter_ids,
         _Out_ uint64_t* counters);
 
 /**
@@ -511,6 +540,12 @@ typedef enum _sai_buffer_profile_attr_t
      */
     SAI_BUFFER_PROFILE_ATTR_END,
 
+    /** Custom range base value */
+    SAI_BUFFER_PROFILE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_BUFFER_PROFILE_ATTR_CUSTOM_RANGE_END
+
 } sai_buffer_profile_attr_t;
 
 /**
@@ -566,7 +601,7 @@ typedef sai_status_t(*sai_get_buffer_profile_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief buffer methods table retrieved with sai_api_query()
+ * @brief Buffer methods table retrieved with sai_api_query()
  */
 typedef struct _sai_buffer_api_t
 {

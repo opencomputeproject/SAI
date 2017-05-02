@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAISAMPLEPACKET SAI - samplepacket specific public APIs and datastructures
+ * @defgroup SAISAMPLEPACKET SAI - samplepacket specific public APIs and data structures
  *
  * @{
  */
@@ -114,6 +114,12 @@ typedef enum _sai_samplepacket_attr_t
      */
     SAI_SAMPLEPACKET_ATTR_END,
 
+    /** Custom range base value */
+    SAI_SAMPLEPACKET_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_SAMPLEPACKET_ATTR_CUSTOM_RANGE_END
+
 } sai_samplepacket_attr_t;
 
 /**
@@ -147,7 +153,7 @@ typedef sai_status_t (*sai_remove_samplepacket_fn)(
 /**
  * @brief Set samplepacket session attributes.
  *
- * @param[in] session_id samplepacket session id
+ * @param[in] session_id Samplepacket session id
  * @param[in] attr Value of attribute
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
@@ -173,7 +179,7 @@ typedef sai_status_t (*sai_get_samplepacket_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief samplepacket method table retrieved with sai_api_query()
+ * @brief Samplepacket method table retrieved with sai_api_query()
  */
 typedef struct _sai_samplepacket_api_t
 {

@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -34,7 +34,7 @@
  */
 
 /**
- * @brief Attribute data for sai native hash fields
+ * @brief Attribute data for SAI native hash fields
  */
 typedef enum _sai_native_hash_field_t
 {
@@ -64,7 +64,7 @@ typedef enum _sai_native_hash_field_t
     /** Native hash field IP protocol */
     SAI_NATIVE_HASH_FIELD_IP_PROTOCOL = 5,
 
-    /** Native hash field ethernet type */
+    /** Native hash field Ethernet type */
     SAI_NATIVE_HASH_FIELD_ETHERTYPE = 6,
 
     /** Native hash field L4 source port */
@@ -118,10 +118,16 @@ typedef enum _sai_hash_attr_t
      */
     SAI_HASH_ATTR_END,
 
+    /** Custom range base value */
+    SAI_HASH_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_HASH_ATTR_CUSTOM_RANGE_END
+
 } sai_hash_attr_t;
 
 /**
- *@brief Create hash
+ * @brief Create hash
  *
  * @param[out] hash_id Hash id
  * @param[in] switch_id Switch object id
@@ -163,7 +169,7 @@ typedef sai_status_t (*sai_set_hash_attribute_fn)(
  *
  * @param[in] hash_id Hash id
  * @param[in] attr_count Number of attributes
- * @param[inout] attrs Aarray of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -173,7 +179,7 @@ typedef sai_status_t (*sai_get_hash_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief hash methods, retrieved via sai_api_query()
+ * @brief Hash methods, retrieved via sai_api_query()
  */
 typedef struct _sai_hash_api_t
 {

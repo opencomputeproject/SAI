@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIQUEUE SAI - Qos Queue specific API definitions.
+ * @defgroup SAIQUEUE SAI - QOS Queue specific API definitions.
  *
  * @{
  */
@@ -73,7 +73,7 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_TYPE = SAI_QUEUE_ATTR_START,
 
     /**
-     * @brief Pord id
+     * @brief Port id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
@@ -92,8 +92,8 @@ typedef enum _sai_queue_attr_t
     /**
      * @brief Parent scheduler node
      *
-     * In case of Hierarchical Qos not supported, the parent node is the port.
-     * Condition on whether Hierarchial Qos is supported or not, need to remove
+     * In case of Hierarchical QOS not supported, the parent node is the port.
+     * Condition on whether Hierarchical QOS is supported or not, need to remove
      * the MANDATORY_ON_CREATE FLAG when HQoS is introduced
      *
      * @type sai_object_id_t
@@ -286,8 +286,8 @@ typedef sai_status_t (*sai_remove_queue_fn)(
 /**
  * @brief Set attribute to Queue
  *
- * @param[in] queue_id queue id to set the attribute
- * @param[in] attr attribute to set
+ * @param[in] queue_id Queue ID to set the attribute
+ * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
@@ -313,34 +313,34 @@ typedef sai_status_t (*sai_get_queue_attribute_fn)(
  * @brief Get queue statistics counters.
  *
  * @param[in] queue_id Queue id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_get_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,
-        _In_ const sai_queue_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
+        _In_ const sai_queue_stat_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
  * @brief Clear queue statistics counters.
  *
  * @param[in] queue_id Queue id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t (*sai_clear_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,
-        _In_ const sai_queue_stat_t *counter_ids,
-        _In_ uint32_t number_of_counters);
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_queue_stat_t *counter_ids);
 
 /**
- * @brief Qos methods table retrieved with sai_api_query()
+ * @brief QOS methods table retrieved with sai_api_query()
  */
 typedef struct _sai_queue_api_t
 {

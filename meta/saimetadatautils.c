@@ -57,7 +57,7 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
     if ((objecttype > SAI_OBJECT_TYPE_NULL) &&
             (objecttype < SAI_OBJECT_TYPE_MAX))
     {
-        const sai_attr_metadata_t** md = metadata_attr_by_object_type[objecttype];
+        const sai_attr_metadata_t** md = sai_metadata_attr_by_object_type[objecttype];
 
         size_t index = 0;
 
@@ -84,13 +84,13 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
     /* use binary search */
 
     ssize_t first = 0;
-    ssize_t last = (ssize_t)(metadata_attr_sorted_by_id_name_count - 1);
+    ssize_t last = (ssize_t)(sai_metadata_attr_sorted_by_id_name_count - 1);
 
     while (first <= last)
     {
         ssize_t middle = (first + last) / 2;
 
-        int res = strcmp(attr_id_name, metadata_attr_sorted_by_id_name[middle]->attridname);
+        int res = strcmp(attr_id_name, sai_metadata_attr_sorted_by_id_name[middle]->attridname);
 
         if (res > 0)
         {
@@ -104,39 +104,13 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
         {
             /* found */
 
-            return metadata_attr_sorted_by_id_name[middle];
+            return sai_metadata_attr_sorted_by_id_name[middle];
         }
     }
 
     /* not found */
 
     return NULL;
-}
-
-bool sai_metadata_is_acl_field_or_action(
-        _In_ const sai_attr_metadata_t* metadata)
-{
-    if (metadata == NULL)
-    {
-        return false;
-    }
-
-    if (metadata->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
-    {
-        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
-                metadata->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
-        {
-            return true;
-        }
-
-        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
-                metadata->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
-        {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 const char* sai_metadata_get_enum_value_name(
@@ -182,4 +156,21 @@ const sai_attribute_t* sai_metadata_get_attr_by_id(
     }
 
     return NULL;
+}
+
+const sai_object_type_info_t* sai_metadata_get_object_type_info(
+        _In_ sai_object_type_t object_type)
+{
+    if (sai_metadata_is_object_type_valid(object_type))
+    {
+        return sai_metadata_all_object_type_infos[object_type];
+    }
+
+    return NULL;
+}
+
+bool sai_metadata_is_object_type_valid(
+        _In_ sai_object_type_t object_type)
+{
+    return object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_MAX;
 }
