@@ -1841,7 +1841,7 @@ sub ProcessStructMembersCount
 
     return "0" if not defined $struct;
 
-    my @keys = keys $struct;
+    my @keys = keys %$struct;
     my $count = @keys;
 
     return $count;
@@ -3475,7 +3475,8 @@ sub GetReverseDependencyGraph
                     $REVGRAPH{$usedot} = \@arr;
                 }
 
-                push$REVGRAPH{$usedot},"$ot,$attrid";
+                my $ref = $REVGRAPH{$usedot};
+                push@$ref,"$ot,$attrid";
             }
         }
 
@@ -3499,9 +3500,9 @@ sub GetReverseDependencyGraph
                     $REVGRAPH{$usedot} = \@arr;
                 }
 
-                push$REVGRAPH{$usedot},"$ot,$key";
+                my $ref = $REVGRAPH{$usedot};
+                push@$ref,"$ot,$key";
             }
-
         }
     }
 
