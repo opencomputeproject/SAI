@@ -4,9 +4,6 @@ use strict;
 use warnings;
 use diagnostics;
 
-# disable for experimental::autoderef push pop
-no warnings "experimental";
-
 use XML::Simple qw(:strict);
 use Getopt::Std;
 use Data::Dumper;
@@ -518,9 +515,15 @@ sub ProcessEnumSection
 
         $enumtypename =~ s/^_//;
 
+        if (defined $SAI_ENUMS{$enumtypename})
+        {
+            LogError "duplicated enum $enumtypename";
+            next;
+        }
+
         my @arr = ();
 
-        $SAI_ENUMS{$enumtypename}{values} = \@arr if not defined $SAI_ENUMS{$enumtypename};
+        $SAI_ENUMS{$enumtypename}{values} = \@arr;
 
         for my $ev (@{ $memberdef->{enumvalue} })
         {
@@ -528,7 +531,7 @@ sub ProcessEnumSection
 
             LogDebug "$id $enumtypename $enumvaluename";
 
-            push$SAI_ENUMS{$enumtypename}{values},$enumvaluename;
+            push@arr,$enumvaluename;
 
             if (not $enumvaluename =~/^[A-Z0-9_]+$/)
             {
@@ -1784,7 +1787,7 @@ sub ProcessStructMembers
 
     return "NULL" if not defined $struct;
 
-    my @keys = keys $struct;
+    my @keys = keys %$struct; # since struct here is reference
 
     for my $key (@keys)
     {
