@@ -26,8 +26,7 @@ parser, ... It is produced by the [p4c-bm](https://github.com/p4lang/p4c-bm)
 tool. Please take a look at the
 [README](https://github.com/p4lang/p4c-bm/blob/master/README.rst) for this repo
 to find out how to install it. Once this is done, 
-use the ```compile_json.sh``` script that is found inside the P4-SAI target directory.
-or manualy, as follows:
+use the script that is found inside the P4-SAI target directory as follows:
 
-    p4c-bmv2 --p4-v1.1 --json <path to JSON file> <path to P4 file>
+    ./compile_json.sh
     
