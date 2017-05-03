@@ -11,10 +11,11 @@ For list of dependencies and build instructions:
   
 ### Compiling P4 target
 Due to current behavioral-model implemntation, targets can only be complied in the bm/behavioral-model/targets/ dir.
-  First time/every target (cpp) change, use: [build_p4_target.sh](../build_p4_target.sh)
-  
+  First time/every target (cpp) change, use:  
+    `bm/build_target.sh`
+      
 ### Create virtual interfaces
-Use the ```veth_setup.sh``` script to create the virtual interfaces and hosts.
+To create the virtual interfaces and hosts. ```veth_setup.sh``` and remove them by ```veth_teardown.sh```
   
 ### Compiling P4 code
 If any editing to the P4 program was made, before running it you first need to transform the P4 code into a json representation which can be consumed by the software switch. This
