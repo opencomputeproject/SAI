@@ -160,10 +160,13 @@ typedef enum _sai_tam_tracking_mode_t
 {
     /** Peak value tracking mode */
     SAI_TAM_TRACKING_MODE_PEAK,
+
     /** Current value tracking mode */
     SAI_TAM_TRACKING_MODE_CURRENT,
+
     /** Average value tracking mode */
     SAI_TAM_TRACKING_MODE_AVERAGE,
+
     /** Minimum value tracking mode */
     SAI_TAM_TRACKING_MODE_MINIMUM
 } sai_tam_tracking_mode_t;
@@ -175,6 +178,7 @@ typedef enum _sai_tam_reporting_mode_t
 {
     /** Report tracking data in terms of bytes */
     SAI_TAM_REPORTING_MODE_BYTES,
+
     /** Report tracking data in percentages */
     SAI_TAM_REPORTING_MODE_PERCENTAGE,
 } sai_tam_reporting_mode_t;
