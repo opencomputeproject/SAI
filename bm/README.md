@@ -7,7 +7,7 @@ The model enables for both users and vendors to experiance the SAI switch model 
 ## Repository Structure
 The repository consist of:
 
-### [P4 soft-switch](p4-softswitch/)
+### [P4 soft-switch](p4-sai/)
 P4_14 source files to be complied by the p4c complier 
 Can be independently configured via the CLI interface.
 ### [SAI adapter](sai_adapter/)
