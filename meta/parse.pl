@@ -2979,17 +2979,21 @@ sub CheckStructAlignment
         my $struct = $1;
         my $inner = $2;
 
-        $inner =~ m/^(\s*)(\w.+\s+)(\w+)\s*;$/im;
+        # we use space in regex since \s will capture \n
+
+        $inner =~ m/^( *)(\w.+\s+)(\w+)\s*;$/im;
 
         my $spaces = $1;
         my $inside = $2;
         my $name = $3;
 
-        while ($inner =~ m/^(\s*)(\w.+\s+)(\w+)\s*;$/gim)
+        while ($inner =~ m/^( *)(\w.+\s+)(\w+)\s*;$/gim)
         {
+            my $itemname = $2;
+
             if ($1 ne $spaces or (length($2) != length($inside) and $struct =~ /_api_t/))
             {
-                LogWarning "$struct items has invalid column ident: $file: $inner";
+                LogWarning "$struct items has invalid column ident: $file: $itemname";
             }
         }
     }
