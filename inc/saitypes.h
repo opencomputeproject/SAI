@@ -481,6 +481,7 @@ typedef struct _sai_qos_map_list_t
 {
     /** Number of entries in the map */
     uint32_t count;
+
     /** Map list */
     sai_qos_map_t *list;
 

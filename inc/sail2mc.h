@@ -113,7 +113,7 @@ typedef enum _sai_l2mc_entry_attr_t
      */
     SAI_L2MC_ENTRY_ATTR_END,
 
-    /* Custom range base value */
+    /** Custom range base value */
     SAI_L2MC_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */

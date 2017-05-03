@@ -2899,6 +2899,13 @@ sub CheckDoxygenCommentFormating
             }
         }
     }
+
+    while($data =~ m!(([^\n ])+\n */\*\*.{1,30}.+?\n)!isg)
+    {
+        next if $2 eq "{";
+
+        LogWarning "doxygen comment can't be upper sticked: $file:\n$1";
+    }
 }
 
 sub CheckFunctionNaming

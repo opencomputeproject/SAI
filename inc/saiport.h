@@ -1481,6 +1481,7 @@ typedef sai_status_t (*sai_create_port_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
+
 /**
  * @brief Remove port
  *
