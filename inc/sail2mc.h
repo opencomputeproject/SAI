@@ -63,7 +63,7 @@ typedef struct _sai_l2mc_entry_t
      *
      * @objects SAI_OBJECT_TYPE_BRIDGE, SAI_OBJECT_TYPE_VLAN
      */
-    sai_object_id_t bvid;
+    sai_object_id_t bv_id;
 
     /** L2MC entry type */
     sai_l2mc_entry_type_t type;
@@ -113,7 +113,7 @@ typedef enum _sai_l2mc_entry_attr_t
      */
     SAI_L2MC_ENTRY_ATTR_END,
 
-    /* Custom range base value */
+    /** Custom range base value */
     SAI_L2MC_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */

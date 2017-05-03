@@ -26,9 +26,6 @@
 #define __SAISWITCH_H_
 
 #include <saitypes.h>
-#include <saiport.h>
-#include <saifdb.h>
-#include <saihostif.h>
 
 /**
  * @defgroup SAISWITCH SAI - Switch specific API definitions
@@ -548,7 +545,7 @@ typedef enum _sai_switch_attr_t
      *
      * Bind (or unbind) an ingress ACL table or ACL group globally. Enable/Update
      * ingress ACL table or ACL group filtering by assigning the list of valid
-     * object id . Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
+     * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
      * @type sai_object_id_t
@@ -1424,7 +1421,7 @@ typedef void (*sai_switch_state_change_notification_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_switch_fn)(
-        _Out_ sai_object_id_t* switch_id,
+        _Out_ sai_object_id_t *switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1463,7 +1460,7 @@ typedef sai_status_t (*sai_set_switch_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_switch_attribute_fn)(
         _In_ sai_object_id_t switch_id,
-        _In_ sai_uint32_t attr_count,
+        _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**

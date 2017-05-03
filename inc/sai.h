@@ -25,14 +25,18 @@
 #if !defined (__SAI_H_)
 #define __SAI_H_
 
-#include "saitypes.h"
-#include "saistatus.h"
 #include "saiacl.h"
+#include "saibridge.h"
 #include "saibuffer.h"
 #include "saifdb.h"
 #include "saihash.h"
 #include "saihostif.h"
+#include "saiipmcgroup.h"
+#include "saiipmc.h"
+#include "sail2mcgroup.h"
+#include "sail2mc.h"
 #include "sailag.h"
+#include "saimcastfdb.h"
 #include "saimirror.h"
 #include "saineighbor.h"
 #include "sainexthopgroup.h"
@@ -43,26 +47,22 @@
 #include "saiqosmap.h"
 #include "saiqueue.h"
 #include "sairoute.h"
-#include "saivirtualrouter.h"
 #include "sairouterinterface.h"
+#include "sairpfgroup.h"
 #include "saisamplepacket.h"
 #include "saischedulergroup.h"
 #include "saischeduler.h"
+#include "saisr.h"
+#include "saistatus.h"
 #include "saistp.h"
 #include "saiswitch.h"
+#include "saitam.h"
 #include "saitunnel.h"
+#include "saitypes.h"
 #include "saiudf.h"
+#include "saivirtualrouter.h"
 #include "saivlan.h"
 #include "saiwred.h"
-#include "saibridge.h"
-#include "sail2mc.h"
-#include "saiipmc.h"
-#include "sairpfgroup.h"
-#include "sail2mcgroup.h"
-#include "saiipmcgroup.h"
-#include "saimcastfdb.h"
-#include "saitam.h"
-#include "saisr.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -71,7 +71,7 @@
  */
 
 /**
- * @brief Defined API sets have assigned ID's.
+ * @brief Defined API sets have assigned IDs.
  *
  * If specific API method table changes in any way (method signature, number of
  * methods), a new ID needs to be created (e.g. VLAN2) and old API still may
@@ -174,7 +174,9 @@ typedef struct _service_method_table_t
 } service_method_table_t;
 
 /**
- * @brief Adapter module initialization call. This is NOT for SDK initialization.
+ * @brief Adapter module initialization call
+ *
+ * This is NOT for SDK initialization.
  *
  * @param[in] flags Reserved for future use, must be zero
  * @param[in] services Methods table with services provided by adapter host
@@ -183,7 +185,7 @@ typedef struct _service_method_table_t
  */
 sai_status_t sai_api_initialize(
         _In_ uint64_t flags,
-        _In_ const service_method_table_t* services);
+        _In_ const service_method_table_t *services);
 
 /**
  * @brief Retrieve a pointer to the C-style method table for desired SAI
@@ -208,7 +210,9 @@ sai_status_t sai_api_query(
 sai_status_t sai_api_uninitialize(void);
 
 /**
- * @brief Set log level for SAI API module. The default log level is #SAI_LOG_LEVEL_WARN
+ * @brief Set log level for SAI API module
+ *
+ * The default log level is #SAI_LOG_LEVEL_WARN.
  *
  * @param[in] sai_api_id SAI API ID
  * @param[in] log_level Log level

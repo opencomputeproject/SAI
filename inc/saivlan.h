@@ -397,7 +397,7 @@ typedef sai_status_t (*sai_set_vlan_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_vlan_attribute_fn)(
         _In_ sai_object_id_t vlan_id,
-        _In_ const uint32_t attr_count,
+        _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
@@ -449,7 +449,7 @@ typedef sai_status_t (*sai_set_vlan_member_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
         _In_ sai_object_id_t vlan_member_id,
-        _In_ const uint32_t attr_count,
+        _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**

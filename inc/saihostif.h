@@ -27,11 +27,10 @@
  *    creating/deleting Linux netdev corresponding to the host interface type.
  *    All the management operations of the netdevs such as changing IP address
  *    are outside the scope of SAI.
- *
  */
 
-#if !defined (__SAIHOSTINTF_H_)
-#define __SAIHOSTINTF_H_
+#if !defined (__SAIHOSTIF_H_)
+#define __SAIHOSTIF_H_
 
 #include <saitypes.h>
 
@@ -668,7 +667,7 @@ typedef enum _sai_hostif_attr_t
 /**
  * @brief Create host interface
  *
- * @param[out] hif_id Host interface id
+ * @param[out] hostif_id Host interface id
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -676,7 +675,7 @@ typedef enum _sai_hostif_attr_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_hostif_fn)(
-        _Out_ sai_object_id_t *hif_id,
+        _Out_ sai_object_id_t *hostif_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -684,36 +683,36 @@ typedef sai_status_t(*sai_create_hostif_fn)(
 /**
  * @brief Remove host interface
  *
- * @param[in] hif_id Host interface id
+ * @param[in] hostif_id Host interface id
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_hostif_fn)(
-        _In_ sai_object_id_t hif_id);
+        _In_ sai_object_id_t hostif_id);
 
 /**
  * @brief Set host interface attribute
  *
- * @param[in] hif_id Host interface id
+ * @param[in] hostif_id Host interface id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_hostif_attribute_fn)(
-        _In_ sai_object_id_t hif_id,
+        _In_ sai_object_id_t hostif_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get host interface attribute
  *
- * @param[in] hif_id Host interface id
+ * @param[in] hostif_id Host interface id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_hostif_attribute_fn)(
-        _In_ sai_object_id_t hif_id,
+        _In_ sai_object_id_t hostif_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -845,7 +844,7 @@ typedef enum _sai_hostif_table_entry_attr_t
 /**
  * @brief Create host interface table entry
  *
- * @param[out] hif_table_entry Host interface table entry
+ * @param[out] hostif_table_entry_id Host interface table entry
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -853,7 +852,7 @@ typedef enum _sai_hostif_table_entry_attr_t
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_create_hostif_table_entry_fn)(
-        _Out_ sai_object_id_t *hif_table_entry,
+        _Out_ sai_object_id_t *hostif_table_entry_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -861,36 +860,36 @@ typedef sai_status_t(*sai_create_hostif_table_entry_fn)(
 /**
  * @brief Remove host interface table entry
  *
- * @param[in] hif_table_entry Host interface table entry
+ * @param[in] hostif_table_entry_id Host interface table entry
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_remove_hostif_table_entry_fn)(
-        _In_ sai_object_id_t hif_table_entry);
+        _In_ sai_object_id_t hostif_table_entry_id);
 
 /**
  * @brief Set host interface table entry attribute
  *
- * @param[in] hif_table_entry Host interface table entry
+ * @param[in] hostif_table_entry_id Host interface table entry
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_set_hostif_table_entry_attribute_fn)(
-        _In_ sai_object_id_t hif_table_entry,
+        _In_ sai_object_id_t hostif_table_entry_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get host interface table entry attribute
  *
- * @param[in] hif_table_entry Host interface table entry
+ * @param[in] hostif_table_entry_id Host interface table entry
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_get_hostif_table_entry_attribute_fn)(
-        _In_ sai_object_id_t hif_table_entry,
+        _In_ sai_object_id_t hostif_table_entry_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -988,7 +987,7 @@ typedef enum _sai_hostif_packet_attr_t
 /**
  * @brief Hostif receive function
  *
- * @param[in] hif_id Host interface id
+ * @param[in] hostif_id Host interface id
  * @param[out] buffer Packet buffer
  * @param[inout] buffer_size Allocated buffer size [in], Actual packet size in bytes [out]
  * @param[inout] attr_count Allocated list size [in], Number of attributes [out]
@@ -1000,7 +999,7 @@ typedef enum _sai_hostif_packet_attr_t
  * required count. Failure status code on error
  */
 typedef sai_status_t(*sai_recv_hostif_packet_fn)(
-        _In_ sai_object_id_t hif_id,
+        _In_ sai_object_id_t hostif_id,
         _Out_ void *buffer,
         _Inout_ sai_size_t *buffer_size,
         _Inout_ uint32_t *attr_count,
@@ -1009,7 +1008,7 @@ typedef sai_status_t(*sai_recv_hostif_packet_fn)(
 /**
  * @brief Hostif send function
  *
- * @param[in] hif_id Host interface id.
+ * @param[in] hostif_id Host interface id.
  * When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
  * When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
  * @param[in] buffer Packet buffer
@@ -1020,7 +1019,7 @@ typedef sai_status_t(*sai_recv_hostif_packet_fn)(
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
 typedef sai_status_t(*sai_send_hostif_packet_fn)(
-        _In_ sai_object_id_t hif_id,
+        _In_ sai_object_id_t hostif_id,
         _In_ void *buffer,
         _In_ sai_size_t buffer_size,
         _In_ uint32_t attr_count,
@@ -1074,4 +1073,4 @@ typedef struct _sai_hostif_api_t
 /**
  * @}
  */
-#endif /** __SAIHOSTINTF_H_ */
+#endif /** __SAIHOSTIF_H_ */

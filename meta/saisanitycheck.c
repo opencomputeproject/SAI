@@ -1215,8 +1215,9 @@ void check_attr_validonly(
 
             META_WARN(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
 
-        case SAI_ATTR_FLAGS_CREATE_AND_SET:
+            /* intentional fall through */
 
+        case SAI_ATTR_FLAGS_CREATE_AND_SET:
 
             /* ok */
 
@@ -2003,6 +2004,11 @@ void check_attr_existing_objects(
         case SAI_OBJECT_TYPE_SAMPLEPACKET:
         case SAI_OBJECT_TYPE_HOSTIF_TRAP:
         case SAI_OBJECT_TYPE_MIRROR_SESSION:
+
+        case SAI_OBJECT_TYPE_TAM_STAT:
+        case SAI_OBJECT_TYPE_TAM_SNAPSHOT:
+        case SAI_OBJECT_TYPE_TAM_THRESHOLD:
+
             return;
 
             /*

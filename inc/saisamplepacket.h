@@ -125,7 +125,7 @@ typedef enum _sai_samplepacket_attr_t
 /**
  * @brief Create samplepacket session.
  *
- * @param[out] session_id Samplepacket session id
+ * @param[out] samplepacket_id Samplepacket session id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
@@ -142,7 +142,7 @@ typedef sai_status_t (*sai_create_samplepacket_fn)(
 /**
  * @brief Remove samplepacket session.
  *
- * @param[in] session_id Samplepacket session id
+ * @param[in] samplepacket_id Samplepacket session id
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.
@@ -153,7 +153,7 @@ typedef sai_status_t (*sai_remove_samplepacket_fn)(
 /**
  * @brief Set samplepacket session attributes.
  *
- * @param[in] session_id Samplepacket session id
+ * @param[in] samplepacket_id Samplepacket session id
  * @param[in] attr Value of attribute
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
@@ -166,7 +166,7 @@ typedef sai_status_t (*sai_set_samplepacket_attribute_fn)(
 /**
  * @brief Get samplepacket session attributes.
  *
- * @param[in] session_id Samplepacket session id
+ * @param[in] samplepacket_id Samplepacket session id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Value of attribute
  *
@@ -174,7 +174,7 @@ typedef sai_status_t (*sai_set_samplepacket_attribute_fn)(
  * error code is returned.
  */
 typedef sai_status_t (*sai_get_samplepacket_attribute_fn)(
-        _In_ sai_object_id_t sample_packet_id,
+        _In_ sai_object_id_t samplepacket_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
