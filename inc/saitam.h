@@ -96,7 +96,6 @@ typedef sai_status_t(*sai_create_tam_stat_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- *
  * @brief Deletes a specified tam stat id object.
  *
  * @param[in] tam_stat_id TAM object to be removed.
@@ -332,7 +331,6 @@ typedef sai_status_t(*sai_create_tam_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- *
  * @brief Deletes a specified tam object.
  *
  * Deleting a TAM object also deletes all associated snapshot and threshold objects.
