@@ -8,17 +8,14 @@ It implements SAI 1.0 on top of soft switch coded via P4.
 ## Compiling P4 Behavioural model 
 For list of dependencies and build instructions:
 [p4lang/behavioural_model](https://github.com/p4lang/behavioral-model/).
-
+  
 ### Compiling P4 target
 Due to current behavioral-model implemntation, targets can only be complied in the bm/behavioral-model/targets/ dir.
   First time/every target (cpp) change, use: [build_p4_target.sh](../build_p4_target.sh)
-
+  
 ### Create virtual interfaces
 Use the ```veth_setup.sh``` script to create the virtual interfaces and hosts.
-### Running P4 program
-running the switch can be done with the following command: ```run_server.sh``` found in P4-SAI target directory.
-This script also implements some default configurations found in: p4src/DefaultConfig.txt
-
+  
 ### Compiling P4 code
 If any editing to the P4 program was made, before running it you first need to transform the P4 code into a json representation which can be consumed by the software switch. This
 representation will tell bmv2 which tables to initialize, how to configure the
@@ -29,4 +26,7 @@ to find out how to install it. Once this is done,
 use the script that is found inside the P4-SAI target directory as follows:
 
     ./compile_json.sh
-    
+      
+### Running P4 program
+running the switch can be done with the following command: ```run_server.sh``` found in P4-SAI target directory.
+This script also implements some default configurations found in: p4src/DefaultConfig.txt
