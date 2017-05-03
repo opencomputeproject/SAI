@@ -193,6 +193,7 @@
  * @brief Invalid attribute value (range from 0x00020000L to 0x0002FFFFL)
  */
 #define SAI_STATUS_INVALID_ATTR_VALUE_0             SAI_STATUS_CODE(0x00020000L)
+
 /**
  * @brief End of invalid attribute value range
  */

@@ -96,7 +96,6 @@ typedef sai_status_t(*sai_create_tam_stat_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- *
  * @brief Deletes a specified tam stat id object.
  *
  * @param[in] tam_stat_id TAM object to be removed.
@@ -161,10 +160,13 @@ typedef enum _sai_tam_tracking_mode_t
 {
     /** Peak value tracking mode */
     SAI_TAM_TRACKING_MODE_PEAK,
+
     /** Current value tracking mode */
     SAI_TAM_TRACKING_MODE_CURRENT,
+
     /** Average value tracking mode */
     SAI_TAM_TRACKING_MODE_AVERAGE,
+
     /** Minimum value tracking mode */
     SAI_TAM_TRACKING_MODE_MINIMUM
 } sai_tam_tracking_mode_t;
@@ -176,6 +178,7 @@ typedef enum _sai_tam_reporting_mode_t
 {
     /** Report tracking data in terms of bytes */
     SAI_TAM_REPORTING_MODE_BYTES,
+
     /** Report tracking data in percentages */
     SAI_TAM_REPORTING_MODE_PERCENTAGE,
 } sai_tam_reporting_mode_t;
@@ -332,7 +335,6 @@ typedef sai_status_t(*sai_create_tam_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- *
  * @brief Deletes a specified tam object.
  *
  * Deleting a TAM object also deletes all associated snapshot and threshold objects.

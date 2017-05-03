@@ -25,7 +25,6 @@
  *
  *    This module defines SAI neighbor table API
  *    The table contains both IPv4 and IPv6 neighbors
- *
  */
 
 #if !defined (__SAINEIGHBOR_H_)

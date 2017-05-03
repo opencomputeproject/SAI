@@ -27,7 +27,6 @@
  *    creating/deleting Linux netdev corresponding to the host interface type.
  *    All the management operations of the netdevs such as changing IP address
  *    are outside the scope of SAI.
- *
  */
 
 #if !defined (__SAIHOSTIF_H_)

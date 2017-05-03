@@ -376,6 +376,12 @@ sub ProcessTagValidOnly
 
     my @conditions = split/\s+or\s+/,$val;
 
+    if ($val =~ /and/)
+    {
+        LogError "and condition is not supported yet on $value";
+        return undef;
+    }
+
     for my $cond (@conditions)
     {
         if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
@@ -393,6 +399,12 @@ sub ProcessTagCondition
     my ($type, $value, $val) = @_;
 
     my @conditions = split/\s+or\s+/,$val;
+
+    if ($val =~ /and/)
+    {
+        LogError "and condition is not supported yet on $value";
+        return undef;
+    }
 
     for my $cond (@conditions)
     {
@@ -2613,46 +2625,6 @@ sub CreateListOfAllAttributes
     WriteHeader "extern const size_t sai_metadata_attr_sorted_by_id_name_count;";
 }
 
-sub CheckWhiteSpaceInHeaders
-{
-    my @headers = GetHeaderFiles();
-
-    for my $header (@headers)
-    {
-        my $data = ReadHeaderFile($header);
-
-        my @lines = split/\n/,$data;
-
-        my $n = 0;
-
-        for my $line (@lines)
-        {
-            $n++;
-            chomp $line;
-
-            if ($line =~/\s+$/)
-            {
-                LogError "line ends in whitespace $header $n: $line";
-            }
-
-            if ($line =~ /[^\x20-\x7e]/)
-            {
-                LogError "line contains non ascii characters $header $n: $line";
-            }
-
-            if ($line =~ /typedef .+?\(\s*\*\s*(\w+)\s*\)/)
-            {
-                my $fname = $1;
-
-                if (not $fname =~ /^sai_\w+_fn$/)
-                {
-                    LogError "all function declarations should be in format sai_\\w+_fn $header $n: $line";
-                }
-            }
-        }
-    }
-}
-
 sub CheckApiStructNames
 {
     #
@@ -2896,6 +2868,61 @@ sub CheckDoxygenCommentFormating
     {
         LogWarning "empty line between doxygen comment and definition: $file: $2";
     }
+
+    while ($data =~ m%( *)(/\*\*(?:(?!\*/).)*?\*/)%gis)
+    {
+        my $spaces = $1 . " ";
+        my $comment = $2;
+
+        next if $comment =~ m!^/\*\*.*\*/$!; # single line comment
+
+        my @lines = split/\n/,$comment;
+
+        my $first = shift @lines;
+        my $last = pop @lines;
+
+        if (not $first =~ m!^\s*/..$!)
+        {
+            LogWarning "first line doxygen comment should be with '/**': $file: $first";
+            next;
+        }
+
+        if (not $last =~ m!^\s*\*/$!)
+        {
+            LogWarning "last line doxygen comment should be '*/': $file: $last";
+            next;
+        }
+
+        if (not $lines[0] =~ m!\* (\@|Copyright )!)
+        {
+            LogWarning "first doxygen line should contain \@ tag $file: $lines[0]";
+        }
+
+        if ($lines[$#lines] =~ m!^\s*\*\s*$!)
+        {
+            LogWarning "last doxygen line should not be empty $file: $lines[$#lines]";
+        }
+
+        for my $line (@lines)
+        {
+            if (not $line =~ m!^\s*\*( |$)!)
+            {
+                LogWarning "multiline doxygen comments should start with '* ': $file: $line";
+            }
+
+            if (not $line =~ /^$spaces\*/)
+            {
+                LogWarning "doxygen comment has invalid ident: $file: $line";
+            }
+        }
+    }
+
+    while($data =~ m!(([^\n ])+\n */\*\*.{1,30}.+?\n)!isg)
+    {
+        next if $2 eq "{";
+
+        LogWarning "doxygen comment can't be upper sticked: $file:\n$1";
+    }
 }
 
 sub CheckFunctionNaming
@@ -2918,6 +2945,62 @@ sub CheckFunctionNaming
         return if $name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value)$/;
 
         LogWarning "function not follow convention in $header:$n:$line";
+    }
+}
+
+sub CheckQuadApi
+{
+    my ($data, $file) = @_;
+
+    return if not $data =~ m!(sai_\w+_api_t)(.+?)\1;!igs;
+
+    my $apis = $2;
+
+    my @fns = $apis =~ /sai_(\w+)_fn/g;
+
+    my $fn = join" ",@fns;
+
+    my @quad = split/\bcreate_/,$fn;
+
+    for my $q (@quad)
+    {
+        next if $q eq "";
+
+        if (not $q =~ /(\w+) remove_\1 set_\1_attribute get_\1_attribute( |$)/)
+        {
+            LogWarning "quad api must be in order: create remove set get: $file: $q";
+        }
+    }
+}
+
+sub CheckStructAlignment
+{
+    my ($data, $file) = @_;
+
+    return if $file eq "saitypes.h";
+
+    while ($data =~ m!typedef\s+struct\s+_(sai_\w+_t)(.+?)\1;!igs)
+    {
+        my $struct = $1;
+        my $inner = $2;
+
+        # we use space in regex since \s will capture \n
+
+        $inner =~ m/^( *)(\w.+\s+)(\w+)\s*;$/im;
+
+        my $spaces = $1;
+        my $inside = $2;
+        my $name = $3;
+
+        while ($inner =~ m/^( *)(\w.+\s+)(\w+)\s*;$/gim)
+        {
+            my $itemname = $2;
+
+            if ($1 ne $spaces or (length($2) != length($inside) and $struct =~ /_api_t/))
+            {
+                LogWarning "$struct items has invalid column ident: $file: $itemname";
+            }
+        }
     }
 }
 
@@ -2981,6 +3064,8 @@ sub CheckHeadersStyle
         CheckHeaderHeader($data, $header);
         CheckFunctionsParams($data, $header);
         CheckDoxygenCommentFormating($data, $header);
+        CheckQuadApi($data, $header);
+        CheckStructAlignment($data, $header);
 
         my @lines = split/\n/,$data;
 
@@ -3108,6 +3193,26 @@ sub CheckHeadersStyle
             if ($line =~ /sai_\w+_statistics_fn/)
             {
                 LogWarning "statistics should use 'stats' to follow convention $header:$n:$line";
+            }
+
+            if ($line =~/\s+$/)
+            {
+                LogWarning "line ends in whitespace $header $n: $line";
+            }
+
+            if ($line =~ /[^\x20-\x7e]/)
+            {
+                LogWarning "line contains non ascii characters $header $n: $line";
+            }
+
+            if ($line =~ /typedef .+?\(\s*\*\s*(\w+)\s*\)/)
+            {
+                my $fname = $1;
+
+                if (not $fname =~ /^sai_\w+_fn$/)
+                {
+                    LogWarning "all function declarations should be in format sai_\\w+_fn $header $n: $line";
+                }
             }
 
             my $pattern = join"|",@magicWords;
@@ -3600,8 +3705,6 @@ CreateApisQuery();
 CreateObjectInfo();
 
 CreateListOfAllAttributes();
-
-CheckWhiteSpaceInHeaders();
 
 CheckApiStructNames();
 
