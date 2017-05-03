@@ -372,6 +372,12 @@ sub ProcessTagValidOnly
 
     my @conditions = split/\s+or\s+/,$val;
 
+    if ($val =~ /and/)
+    {
+        LogError "and condition is not supported yet on $value";
+        return undef;
+    }
+
     for my $cond (@conditions)
     {
         if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
@@ -389,6 +395,12 @@ sub ProcessTagCondition
     my ($type, $value, $val) = @_;
 
     my @conditions = split/\s+or\s+/,$val;
+
+    if ($val =~ /and/)
+    {
+        LogError "and condition is not supported yet on $value";
+        return undef;
+    }
 
     for my $cond (@conditions)
     {
