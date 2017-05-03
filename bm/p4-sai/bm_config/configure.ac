@@ -240,7 +240,7 @@ AC_CONFIG_FILES([Makefile
 		src/BMI/Makefile
 		src/bm_apps/Makefile
 		src/bm_apps/examples/Makefile
-    targets/Makefile
+    		targets/Makefile
  		targets/p4-sai/Makefile
 		tests/Makefile
 		tests/stress_tests/Makefile

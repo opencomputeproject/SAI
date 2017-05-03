@@ -1,3 +1,0 @@
-table_add table_l2_trap action_set_trap_id 00:00:00:00:01:00 => 5
-table_add table_trap_id action_copy_to_cpu 5 => 
-table_add table_fdb action_set_egress_br_port 00:00:00:00:01:00 1 => 3
