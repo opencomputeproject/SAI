@@ -43,7 +43,7 @@
 /**
  * @brief Defines maximum host interface name
  */
-#define HOSTIF_NAME_SIZE 16
+#define SAI_HOSTIF_NAME_SIZE 16
 
 /**
  * @brief Host interface trap group attributes
@@ -620,9 +620,9 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_OBJ_ID,
 
     /**
-     * @brief Name [char[HOSTIF_NAME_SIZE]]
+     * @brief Name [char[SAI_HOSTIF_NAME_SIZE]]
      *
-     * The maximum number of characters for the name is HOSTIF_NAME_SIZE - 1 since
+     * The maximum number of characters for the name is SAI_HOSTIF_NAME_SIZE - 1 since
      * it needs the terminating null byte ('\0') at the end.
      *
      * Valid only when #SAI_HOSTIF_ATTR_TYPE == #SAI_HOSTIF_TYPE_NETDEV

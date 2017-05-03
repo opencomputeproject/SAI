@@ -37,7 +37,7 @@ void process_object_type_attributes(
             continue;
         }
 
-        bool ro = HAS_FLAG_READ_ONLY(meta->flags);
+        bool ro = SAI_HAS_FLAG_READ_ONLY(meta->flags);
 
         if (ro && !show_read_only_links)
         {

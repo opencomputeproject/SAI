@@ -3190,6 +3190,16 @@ sub CheckHeadersStyle
                 LogWarning "statistics should use 'stats' to follow convention $header:$n:$line";
             }
 
+            if ($line =~ /#define\s*(\w+)/ and $header ne "saitypes.h")
+            {
+                my $defname = $1;
+
+                if (not $defname =~ /^(SAI_|__SAI)/)
+                {
+                    LogWarning "define should start with SAI_ or __SAI: $header:$n:$line";
+                }
+            }
+
             if ($line =~/\s+$/)
             {
                 LogWarning "line ends in whitespace $header $n: $line";
