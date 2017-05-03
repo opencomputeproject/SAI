@@ -374,7 +374,7 @@ sub ProcessTagValidOnly
 
     if ($val =~ /and/)
     {
-        LogError "and condition is not supported yet";
+        LogError "and condition is not supported yet on $value";
         return undef;
     }
 
@@ -398,7 +398,7 @@ sub ProcessTagCondition
 
     if ($val =~ /and/)
     {
-        LogError "and condition is not supported yet";
+        LogError "and condition is not supported yet on $value";
         return undef;
     }
 
