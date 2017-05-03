@@ -39,13 +39,11 @@ WARNINGS = \
 	-Wvariadic-macros \
 	-Wwrite-strings
 
-CFLAGS += -I../inc
+CFLAGS += -I../inc $(WARNINGS)
 
 DEPS = $(wildcard ../inc/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
 
-%.o: %.c $(DEPS)
-	gcc -c -o $@ $< $(CFLAGS) $(WARNINGS)
 
 all: saisanitycheck saimetadatatest saidepgraph.svg
 	./saimetadatatest > /dev/null
@@ -54,24 +52,30 @@ all: saisanitycheck saimetadatatest saidepgraph.svg
 CONSTHEADERS = saimetadatatypes.h saimetadatalogger.h saimetadatautils.h
 
 xml: $(DEPS) Doxyfile $(CONSTHEADERS)
-	doxygen Doxyfile 2>&1 | perl -npe '$$e=1 if /warning/i; END{exit $$e}';
+	doxygen Doxyfile 2>&1 | perl -npe '$$e=1 if /warning/i; END{exit $$e}'
 	touch xml
 
-saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl saimetadatatypes.h
+saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS)
 	perl parse.pl
 
 HEADERS = saimetadata.h $(CONSTHEADERS)
 
-COMMONSRC = saimetadata.c saimetadatautils.c
+%.o: %.c $(HEADERS)
+	gcc -c -o $@ $< $(CFLAGS)
 
-saisanitycheck: saisanitycheck.c $(HEADERS)
-	gcc -o $@ saisanitycheck.c $(COMMONSRC) $(CFLAGS) $(WARNINGS)
+%.o: %.cpp $(HEADERS)
+	gcc -c -o $@ $< $(CFLAGS)
 
-saimetadatatest: saimetadatatest.c $(COMMONSRC) $(HEADERS)
-	gcc -o $@ saimetadatatest.c $(COMMONSRC) $(CFLAGS) $(WARNINGS) -Wno-suggest-attribute=noreturn
+OBJ = saimetadata.o saimetadatautils.o
 
-saidepgraphgen: saidepgraphgen.cpp $(HEADERS)
-	g++ -o $@ saidepgraphgen.cpp $(COMMONSRC) $(CFLAGS) $(WARNINGS)
+saisanitycheck: saisanitycheck.o $(OBJ)
+	gcc -o $@ $^
+
+saimetadatatest: saimetadatatest.o $(OBJ)
+	gcc -o $@ $^
+
+saidepgraphgen: saidepgraphgen.o $(OBJ)
+	g++ -o $@ $^
 
 saidepgraph.gv: saidepgraphgen
 	./saidepgraphgen > $@
