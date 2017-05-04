@@ -661,8 +661,8 @@ void check_attr_default_required(
 {
     META_LOG_ENTER();
 
-    bool requiredefault = (!HAS_FLAG_MANDATORY_ON_CREATE(md->flags)) &&
-        (HAS_FLAG_CREATE_ONLY(md->flags) || HAS_FLAG_CREATE_AND_SET(md->flags));
+    bool requiredefault = (!SAI_HAS_FLAG_MANDATORY_ON_CREATE(md->flags)) &&
+        (SAI_HAS_FLAG_CREATE_ONLY(md->flags) || SAI_HAS_FLAG_CREATE_AND_SET(md->flags));
 
     if (requiredefault == false)
     {
@@ -861,8 +861,8 @@ void check_attr_enums(
         META_ASSERT_FAIL(md, "is marked enum but missing enum allowed values");
     }
 
-    bool requiredefault = (!HAS_FLAG_MANDATORY_ON_CREATE(md->flags)) &&
-        (HAS_FLAG_CREATE_ONLY(md->flags) || HAS_FLAG_CREATE_AND_SET(md->flags));
+    bool requiredefault = (!SAI_HAS_FLAG_MANDATORY_ON_CREATE(md->flags)) &&
+        (SAI_HAS_FLAG_CREATE_ONLY(md->flags) || SAI_HAS_FLAG_CREATE_AND_SET(md->flags));
 
     if (requiredefault && md->isenum)
     {
@@ -1488,7 +1488,7 @@ void check_attr_key(
 {
     META_LOG_ENTER();
 
-    if (HAS_FLAG_KEY(md->flags))
+    if (SAI_HAS_FLAG_KEY(md->flags))
     {
         switch (md->attrvaluetype)
         {
@@ -2025,7 +2025,7 @@ void check_attr_existing_objects(
             break;
     }
 
-    if (!HAS_FLAG_MANDATORY_ON_CREATE(md->flags) || !HAS_FLAG_CREATE_AND_SET(md->flags))
+    if (!SAI_HAS_FLAG_MANDATORY_ON_CREATE(md->flags) || !SAI_HAS_FLAG_CREATE_AND_SET(md->flags))
     {
         return;
     }
@@ -2563,7 +2563,7 @@ void check_objects_for_loops_recursive(
 
         META_ASSERT_NOT_NULL(m);
 
-        if (HAS_FLAG_READ_ONLY(m->flags))
+        if (SAI_HAS_FLAG_READ_ONLY(m->flags))
         {
             /* skip read only attributes since with those we will have loops for sure */
 
@@ -2727,7 +2727,7 @@ void check_read_only_attributes()
         {
             const sai_attr_metadata_t* m = meta[index];
 
-            if (!HAS_FLAG_READ_ONLY(m->flags))
+            if (!SAI_HAS_FLAG_READ_ONLY(m->flags))
             {
                 non_read_only_count++;
             }
@@ -3267,7 +3267,7 @@ void check_vlan_attributes()
     {
         const sai_attr_metadata_t *md = meta[index];
 
-        if (HAS_FLAG_KEY(md->flags))
+        if (SAI_HAS_FLAG_KEY(md->flags))
         {
             keys++;
         }
@@ -3541,7 +3541,7 @@ void check_switch_create_only_objects()
     {
         const sai_attr_metadata_t *md = meta[index];
 
-        if (HAS_FLAG_CREATE_ONLY(md->flags) && md->isoidattribute)
+        if (SAI_HAS_FLAG_CREATE_ONLY(md->flags) && md->isoidattribute)
         {
             META_ASSERT_FAIL(md, "attribute is create_only and it's an object id, this is not allowed");
         }

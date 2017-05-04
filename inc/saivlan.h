@@ -34,9 +34,9 @@
  */
 
 /**
- * @def VLAN_COUNTER_SET_DEFAULT
+ * @def SAI_VLAN_COUNTER_SET_DEFAULT
  */
-#define VLAN_COUNTER_SET_DEFAULT 0
+#define SAI_VLAN_COUNTER_SET_DEFAULT 0
 
 /**
  * @brief Attribute data for tagging_mode parameter
