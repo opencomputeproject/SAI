@@ -2968,6 +2968,30 @@ sub CheckQuadApi
     }
 }
 
+sub CheckSwitchKeys
+{
+    my ($data, $file) = @_;
+
+    my $keycount = $1 if $data =~ /#define\s+SAI_SWITCH_ATTR_MAX_KEY_COUNT\s+(\d+)/s;
+
+    my $count = 0;
+
+    while ($data =~ m!#define\s+SAI_KEY_(\w+)\s+"SAI_(\w+)"!gs)
+    {
+        if ($1 ne $2)
+        {
+            LogWarning "SAI_(KEY_)$1 should match SAI_$2";
+        }
+
+        $count++;
+    }
+
+    if ($count != $keycount)
+    {
+        LogWarning "SAI_SWITCH_ATTR_MAX_KEY_COUNT is $keycount, but found only $count keys";
+    }
+}
+
 sub CheckStructAlignment
 {
     my ($data, $file) = @_;
@@ -3061,6 +3085,7 @@ sub CheckHeadersStyle
         CheckDoxygenCommentFormating($data, $header);
         CheckQuadApi($data, $header);
         CheckStructAlignment($data, $header);
+        CheckSwitchKeys($data, $header) if $header eq "saiswitch.h";
 
         my @lines = split/\n/,$data;
 
