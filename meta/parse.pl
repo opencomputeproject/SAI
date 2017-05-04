@@ -358,9 +358,9 @@ sub ProcessTagValidOnly
 
     for my $cond (@conditions)
     {
-        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+|25000|50000)$/)
         {
-            LogError "invalid validonly tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM";
+            LogError "invalid validonly tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM|25000|50000";
             return undef;
         }
     }
@@ -1142,7 +1142,7 @@ sub ProcessValidOnly
 
     for my $cond (@conditions)
     {
-        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+|25000|50000)$/)
         {
             LogError "invalid condition '$cond' on $attr";
             return "";
