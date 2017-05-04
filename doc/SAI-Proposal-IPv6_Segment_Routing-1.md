@@ -53,19 +53,14 @@ __Figure 1: Endpoint Behavior.__
 ## API Modification
 
 ### Next-Hop Table Modifications
-#### Match Parameter
-
-Match on VRF, IPv6 DIP, and color from ACL lookup
-    sai_sr_pe_entry_t
-
 #### Action Parameters
 
 Set SID List Object ID for transit / source behavior to be taken:
-    SAI_NEXT_HOP_ATTR_SR_SIDLIST_ID
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID
 
 Endpoint Actions to be taken:
-    SAI_NEXT_HOP_ATTR_SR_ENDPOINT_TYPE
-    SAI_NEXT_HOP_ATTR_SR_ENDPOINT_POP_TYPE
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_TYPE
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE
 
 > Note: Not all endpoint actions included
 
@@ -74,8 +69,8 @@ Endpoint Actions to be taken:
 
 Included is also a way for vendors to advertise devcie support include the number of segments and TLV types that can be originated
 
-    SAI_SR_SIDLIST_ATTR_NUM_SEGMENTS_SUPPORTED
-    SAI_SR_SIDLIST_ATTR_TLV_TYPE_SUPPORTED
+    SAI_SEGMENTROUTE_SIDLIST_ATTR_NUM_SEGMENTS_SUPPORTED
+    SAI_SEGMENTROUTE_SIDLIST_ATTR_TLV_TYPE_SUPPORTED
 
 > Note: NSH Carrier and Padding TLVs were not included in this first draft
 
@@ -83,17 +78,17 @@ Included is also a way for vendors to advertise devcie support include the numbe
 
 Transit or Source Action to be taken with policy
 
-    SAI_SR_SIDLIST_ATTR_TYPE
+    SAI_SEGMENTROUTE_SIDLIST_ATTR_TYPE
 
 SID List Action to be taken:
 
-    SAI_SR_SIDLIST_TYPE_INSERT
-    SAI_SR_SIDLIST_TYPE_ENCAPS
+    SAI_SEGMENTROUTE_SIDLIST_TYPE_INSERT
+    SAI_SEGMENTROUTE_SIDLIST_TYPE_ENCAPS
 
 List of DIP segments or TLVs to be added
 
-    SAI_SR_SIDLIST_ATTR_SEGMENT_LIST
-    SAI_SR_SIDLIST_ATTR_TLV
+    SAI_SEGMENTROUTE_SIDLIST_ATTR_SEGMENT_LIST
+    SAI_SEGMENTROUTE_SIDLIST_ATTR_TLV
 
 ### Segment Route Counter Support
 
@@ -103,12 +98,12 @@ List of DIP segments or TLVs to be added
 
 To start with, the basic create/remove entry and set/get attributes APIs are included
 
-    create_sr_sidlist;
-    remove_sr_sidlist;
-    set_sr_sidlist_attribute;
-    get_sr_sidlist_attribute;
-    create_sr_sidlists;
-    remove_sr_sidlists;
+    create_segmentroute_sidlist;
+    remove_segmentroute_sidlist;
+    set_segmentroute_sidlist_attribute;
+    get_segmentroute_sidlist_attribute;
+    create_segmentroute_sidlists;
+    remove_segmentroute_sidlists;
 
 ## Examples ##
 ### Example 1 - SR Source / Transit
@@ -139,27 +134,27 @@ The following example
         return saistatus;
     }
 
-    v6sr_entry_attrs[0].id = SAI_SR_SIDLIST_ATTR_SEGMENT_LIST
+    v6sr_entry_attrs[0].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_SEGMENT_LIST
     v6sr_entry_attrs[0].value.objlist.count = 3;
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[0], "2001:db8:85a3::8a2e:370:1234");
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[1], "2001:db8:85a3::8a2e:370:2345");
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[2], "2001:db8:85a3::8a2e:370:3456");
-    v6sr_entry_attrs[1].id = SAI_SR_SIDLIST_ATTR_TLV;
+    v6sr_entry_attrs[1].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_TLV;
     v6sr_entry_attrs[1].value.objlist.count = 1;
     v6sr_entry_attrs[1].value.objlist.list[0].tlv_type = SAI_TLV_TYPE_INGRESS;
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[1].value.objlist.list[0].ingress_node, "2001:db8:85a3::8a2e:370:9876");
-    v6sr_entry_attrs[2].id = SAI_SR_SIDLIST_ATTR_TYPE;
-    v6sr_entry_attrs[2].value = SAI_SR_SIDLIST_TYPE_ENCAPS_ORIGINATION; 
-    v6sr_entry_attrs[3].id = SAI_SR_SIDLIST_ATTR_SR_BSID;
+    v6sr_entry_attrs[2].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_TYPE;
+    v6sr_entry_attrs[2].value = SAI_SEGMENTROUTE_SIDLIST_TYPE_ENCAPS_ORIGINATION; 
+    v6sr_entry_attrs[3].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_SEGMENTROUTE_BSID;
     v6sr_entry_attrs[3].value = bsid_id;
-    saistatus = sai_v6sr_api->create_sr_sidlist(&sidlist_id, switch_id, 4, v6sr_entry_attrs);
+    saistatus = sai_v6sr_api->create_segmentroute_sidlist(&sidlist_id, switch_id, 4, v6sr_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }
 
     nh_entry_attrs[0].id = SAI_NEXT_HOP_ATTR_TYPE;
-    nh_entry_attrs[0].value.u32 = SAI_NEXT_HOP_TYPE_SR_SIDLIST; 
-    nh_entry_attrs[1].id = SAI_NEXT_HOP_ATTR_SR_SIDLIST_ID;
+    nh_entry_attrs[0].value.u32 = SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST; 
+    nh_entry_attrs[1].id = SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID;
     nh_entry_attrs[1].value.oid = sidlist_id; 
     saistatus = sai_v6sr_api->create_next_hop(&nh_id, switch_id, 2, nh_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
@@ -180,10 +175,10 @@ The following example
 The following example creates an Endpoint entry to match on incoming DIP and do a basic endpoint behavior with PSP
 
     nh_entry_attrs[0].id = SAI_NEXT_HOP_ATTR_TYPE;
-    nh_entry_attrs[0].value.u32 = SAI_NEXT_HOP_TYPE_SR_ENDPOINT; 
-    nh_entry_attrs[1].id = SAI_NEXT_HOP_ATTR_SR_ENDPOINT_POP_TYPE;
+    nh_entry_attrs[0].value.u32 = SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT; 
+    nh_entry_attrs[1].id = SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE;
     nh_entry_attrs[1].value.u32 = SAI_NEXT_HOP_ENDPOINT_POP_TYPE_PSP;
-    nh_entry_attrs[2].id = SAI_NEXT_HOP_ATTR_SR_ENDPOINT_TYPE;
+    nh_entry_attrs[2].id = SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_TYPE;
     nh_entry_attrs[2].value.u32 = SAI_NEXT_HOP_ENDPOINT_TYPE_E;
 
     saistatus = sai_v6sr_api->create_next_hop(&nh_id, switch_id, 3, nh_entry_attrs);

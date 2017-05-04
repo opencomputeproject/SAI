@@ -48,10 +48,10 @@ typedef enum _sai_next_hop_type_t
     SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
 
     /** IPv6 Segment Route SID List */
-    SAI_NEXT_HOP_TYPE_SR_SIDLIST,
+    SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST,
 
     /** IPv6 Segment Route Endpoint Function */
-    SAI_NEXT_HOP_TYPE_SR_ENDPOINT
+    SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
 
 } sai_next_hop_type_t;
 
@@ -153,28 +153,28 @@ typedef enum _sai_next_hop_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_SR_SIDLIST
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SR_SIDLIST
+     * @objects SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST
      */
-    SAI_NEXT_HOP_ATTR_SR_SIDLIST_ID,
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID,
 
     /**
      * @brief Next hop entry Segment Route Endpoint Function
      *
      * @type sai_next_hop_endpoint_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SR_ENDPOINT
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
      */
-    SAI_NEXT_HOP_ATTR_SR_ENDPOINT_TYPE,
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_TYPE,
 
     /**
      * @brief Next hop entry Segment Route Endpoint Pop Option
      *
      * @type sai_next_hop_endpoint_pop_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SR_ENDPOINT
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
      */
-    SAI_NEXT_HOP_ATTR_SR_ENDPOINT_POP_TYPE,
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE,
 
     /**
      * @brief End of attributes

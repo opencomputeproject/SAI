@@ -52,7 +52,7 @@
 #include "saisamplepacket.h"
 #include "saischedulergroup.h"
 #include "saischeduler.h"
-#include "saisr.h"
+#include "saisegmentroute.h"
 #include "saistatus.h"
 #include "saistp.h"
 #include "saiswitch.h"
@@ -114,7 +114,7 @@ typedef enum _sai_api_t
     SAI_API_MCAST_FDB        = 32, /**< sai_mcast_fdb_api_t */
     SAI_API_BRIDGE           = 33, /**< sai_bridge_api_t */
     SAI_API_TAM              = 34, /**< sai_tam_api_t */
-    SAI_API_SR               = 35, /**< sai_sr_api_t */
+    SAI_API_SEGMENTROUTE     = 35, /**< sai_segmentroute_api_t */
     SAI_API_MAX              = 36, /**< total number of apis */
 } sai_api_t;
 
