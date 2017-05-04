@@ -225,9 +225,6 @@ typedef enum _sai_acl_action_type_t
     /** Set Do Not Learn unknown source MAC */
     SAI_ACL_ACTION_TYPE_SET_DO_NOT_LEARN,
 
-    /** Set Segment Route Policy color (policy_color) */
-    SAI_ACL_ACTION_TYPE_SET_POLICY_COLOR,
-
 } sai_acl_action_type_t;
 
 /**
@@ -1755,17 +1752,9 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
 
     /**
-     * @brief Set policy_color for Segment Route Policy / Endpoint Table
-     *
-     * @type sai_acl_action_data_t sai_uint32_t
-     * @flags CREATE_AND_SET
-     */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICY_COLOR,
-
-    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICY_COLOR,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
 
     /**
      * @brief End of ACL Entry attributes

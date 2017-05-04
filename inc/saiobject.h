@@ -32,7 +32,6 @@
 #include <saiipmc.h>
 #include <saineighbor.h>
 #include <sairoute.h>
-#include <saisr.h>
 
 /**
  * @defgroup SAIOBJECT SAI - Object API definitions.
@@ -55,7 +54,6 @@ typedef struct _sai_object_key_t
         sai_mcast_fdb_entry_t     mcast_fdb_entry;
         sai_l2mc_entry_t          l2mc_entry;
         sai_ipmc_entry_t          ipmc_entry;
-        sai_sr_pe_entry_t         sr_pe_entry;
 
     } key;
 

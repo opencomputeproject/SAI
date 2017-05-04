@@ -2300,7 +2300,6 @@ void check_non_object_id_object_types()
             {
                 case SAI_ATTR_VALUE_TYPE_MAC:
                 case SAI_ATTR_VALUE_TYPE_INT32:
-                case SAI_ATTR_VALUE_TYPE_UINT32:
                 case SAI_ATTR_VALUE_TYPE_UINT16:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
@@ -2930,7 +2929,6 @@ void check_api_names()
     CHECK_API(qos_map, qos_map, SAI_OBJECT_TYPE_QOS_MAP);
     CHECK_API(queue, queue, SAI_OBJECT_TYPE_QUEUE);
     CHECK_API(sr, sr_sidlist, SAI_OBJECT_TYPE_SR_SIDLIST);
-    CHECK_API(sr, sr_bsid, SAI_OBJECT_TYPE_SR_BSID);
     CHECK_API(scheduler, scheduler, SAI_OBJECT_TYPE_SCHEDULER);
     CHECK_API(scheduler_group, scheduler_group, SAI_OBJECT_TYPE_SCHEDULER_GROUP);
     CHECK_API(buffer, buffer_pool, SAI_OBJECT_TYPE_BUFFER_POOL);
@@ -3028,7 +3026,6 @@ void check_api_names()
     CHECK_ENTRY_API(fdb, fdb_entry, SAI_OBJECT_TYPE_FDB_ENTRY);
     CHECK_ENTRY_API(neighbor, neighbor_entry, SAI_OBJECT_TYPE_NEIGHBOR_ENTRY);
     CHECK_ENTRY_API(route, route_entry, SAI_OBJECT_TYPE_ROUTE_ENTRY);
-    CHECK_ENTRY_API(sr, sr_pe_entry, SAI_OBJECT_TYPE_SR_PE_ENTRY);
     CHECK_ENTRY_API(l2mc, l2mc_entry, SAI_OBJECT_TYPE_L2MC_ENTRY);
     CHECK_ENTRY_API(ipmc, ipmc_entry, SAI_OBJECT_TYPE_IPMC_ENTRY);
     CHECK_ENTRY_API(mcast_fdb, mcast_fdb_entry, SAI_OBJECT_TYPE_MCAST_FDB_ENTRY);

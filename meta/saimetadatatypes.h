@@ -330,7 +330,7 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
 
     /**
-     * @brief Attribute value is Segment Route TLV list.
+     * @brief Attribute value is Segment Route Type Length Value list.
      */
     SAI_ATTR_VALUE_TYPE_TLV_LIST,
 
