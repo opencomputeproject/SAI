@@ -600,10 +600,12 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
             count = [0, 0, 0]
             dst_ip = int(socket.inet_aton('10.10.10.1').encode('hex'),16)
             max_itrs = 200
+            src_mac_start = '00:22:22:22:22:'
             for i in range(0, max_itrs):
                 dst_ip_addr = socket.inet_ntoa(hex(dst_ip)[2:].zfill(8).decode('hex'))
+                src_mac = src_mac_start + str(i%99).zfill(2)
                 pkt = simple_tcp_packet(eth_dst=router_mac,
-                                        eth_src='00:22:22:22:22:22',
+                                        eth_src=src_mac,
                                         ip_dst=dst_ip_addr,
                                         ip_src='192.168.8.1',
                                         ip_id=106,
@@ -717,16 +719,18 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
             count = [0, 0, 0]
             dst_ip = socket.inet_pton(socket.AF_INET6, '6000:1:1:0:0:0:0:1')
             dst_ip_arr = list(dst_ip)
+            src_mac_start = '00:22:22:22:22:'
             max_itrs = 200
             sport = 0x1234
             dport = 0x50
             for i in range(0, max_itrs):
                 dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
+                src_mac = src_mac_start + str(i%99).zfill(2)
                 #HACK: sport is a hack for hashing since the ecmp hash does not
                 #include ipv6 sa and da.
                 pkt = simple_tcpv6_packet(
                         eth_dst=router_mac,
-                        eth_src='00:22:22:22:22:22',
+                        eth_src=src_mac,
                         ipv6_dst=dst_ip_addr,
                         ipv6_src='1001:1:1:0:0:0:0:2',
                         tcp_sport=sport,
@@ -993,11 +997,11 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         try:
             count = [0, 0, 0, 0, 0, 0]
             dst_ip = int(socket.inet_aton('10.10.10.1').encode('hex'), 16)
-            src_mac_start = '00:22:22:22:23:'
+            src_mac_start = '00:22:22:22:{0}:{1}'
             max_itrs = 500
             for i in range(0, max_itrs):
                 dst_ip_addr = socket.inet_ntoa(hex(dst_ip)[2:].zfill(8).decode('hex'))
-                src_mac = src_mac_start + str(i%99).zfill(2)
+                src_mac = src_mac_start.format(str(i).zfill(4)[:2], str(i).zfill(4)[2:])
                 pkt = simple_tcp_packet(eth_dst=router_mac,
                         eth_src=src_mac,
                         ip_dst=dst_ip_addr,
@@ -1537,12 +1541,13 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
         destanation_ports = range(self.total_lag_port)
         sport = 0x1234
         dport = 0x50
-        src_mac = self.dataplane.get_mac(0, self.total_lag_port)
+        src_mac_start = '00:22:22:22:{0}:{1}'
         NUM_OF_PKT_TO_EACH_PORT = 254
         NUM_OF_PKTS_TO_SEND = NUM_OF_PKT_TO_EACH_PORT * self.total_lag_port
         for i in xrange(NUM_OF_PKTS_TO_SEND):
                 ip_src = '10.0.' + str(i % 255) + '.' + str(i % 255)
                 ip_dst = '10.10.' + str((i % num_of_lags) + 1) + '.1'
+                src_mac = src_mac_start.format(str(i).zfill(4)[:2], str(i).zfill(4)[2:])
                 pkt = simple_tcp_packet(eth_dst=router_mac,
                                         eth_src=src_mac,
                                         ip_src=ip_src,
@@ -1637,6 +1642,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     port_rifs = []
     neighbors = []
     nhops = []
+    nhop_gmembers = []
     routes = []
     vr_id = 0
     mac_action = SAI_PACKET_ACTION_FORWARD
@@ -1646,12 +1652,12 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
     def setup_ecmp_lag_group(self, first_rif_port):
         self.lag = self.client.sai_thrift_create_lag([])
         #adding lag members
-        sai_thrift_create_lag_member(self.client, self.lag, port_list[1])
+        self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[1]))
         for i in range(self.first_changing_port,first_rif_port):
             self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[i]))
         self.lag_rif = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lag, 0, self.v4_enabled, self.v6_enabled, '')
-        sai_thrift_create_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.0.1", self.mac_pool[15])
-        sai_thrift_create_route(self.client, self.vr_id,self.addr_family, "10.10.0.1", '255.255.255.0', self.lag_rif)        
+        sai_thrift_create_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.0.1", self.mac_pool[self.total_changing_ports])
+        sai_thrift_create_route(self.client, self.vr_id,self.addr_family, "10.10.0.1", '255.255.255.0', self.lag_rif)
         self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.0.1" , self.lag_rif))
         for i in range(first_rif_port,self.total_changing_ports):
             self.port_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, port_list[i], 0, self.v4_enabled, self.v6_enabled, ''))
@@ -1659,18 +1665,18 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_create_neighbor(self.client, self.addr_family, self.port_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
             self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.%s.1" % str(i+1), self.port_rifs[i]))
             sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.1" % str(i+1), '255.255.255.0', self.port_rifs[i])
+        self.nhop_group = sai_thrift_create_next_hop_group(self.client)
         for nhop in self.nhops:
             self.nhop_gmembers.append(sai_thrift_create_next_hop_group_member(self.client, self.nhop_group, nhop))
         sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.20.0.0", self.ip_mask, self.nhop_group)
 
     def teardown_ecmp_lag_group(self, first_rif_port):
         sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.20.0.0", self.ip_mask, self.nhop_group)
-        sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.0.1", '255.255.255.0', self.lag_rif)        
+        sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.0.1", '255.255.255.0', self.lag_rif)
         for i in range(self.total_changing_ports - first_rif_port):
             sai_thrift_remove_route(self.client, self.vr_id, self.addr_family, "10.10.%s.1" % str(i+1), '255.255.255.0', self.port_rifs[i])
         for nhop_gmember in self.nhop_gmembers:
             self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember)
-        sai_thrift_remove_next_hop_from_group(self.client, self.nhops)
         self.client.sai_thrift_remove_next_hop_group(self.nhop_group)
         for nhop in self.nhops:
             self.client.sai_thrift_remove_next_hop(nhop)
@@ -1684,7 +1690,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         for lag_member in self.lag_members:
             self.client.sai_thrift_remove_lag_member(lag_member)
         del self.lag_members[:]
-        sai_thrift_remove_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.0.1", self.mac_pool[15])
+        sai_thrift_remove_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.0.1", self.mac_pool[self.total_changing_ports])
         self.client.sai_thrift_remove_router_interface(self.lag_rif)
         self.client.sai_thrift_remove_lag(self.lag)
 
@@ -1700,16 +1706,16 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         exp_pkts = [0]*self.total_dst_port
         pkt_counter = [0] * self.total_dst_port
         destanation_ports = range(self.total_dst_port + 1)
-        router_mac = '00:02:03:04:05:00'
         sport = 0x1234
         dport = 0x50
-        src_mac = self.dataplane.get_mac(0, 0)
+        src_mac_start = '00:22:22:22:{0}:{1}'
         IP_LAST_WORD_RANGE = 254
         IP_2ND_LAST_WORD_RANGE = 16
         for i in xrange(IP_LAST_WORD_RANGE):
                 for j in xrange(IP_2ND_LAST_WORD_RANGE):
                     ip_src = '10.0.' + str(j) + '.' + str(i+1)
                     ip_dst = '10.20.' + str(j+1) + '.1'
+                    src_mac = src_mac_start.format(str(i).zfill(4)[:2], str(i).zfill(4)[2:])
                     pkt = simple_tcp_packet(
                                             eth_dst=router_mac,
                                             eth_src=src_mac,
@@ -1733,7 +1739,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
 
                     send_packet(self, 0, str(pkt))
                     (match_index,rcv_pkt) = verify_packet_any_port(self,masked_exp_pkt,destanation_ports)
-                    logging.debug("found expected packet from port %d" % destanation_ports[match_index])
+                    logging.debug("Found expected packet from port %d" % destanation_ports[match_index])
                     pkt_counter[match_index] += 1
                     sport = random.randint(0,0xffff)
                     dport = random.randint(0,0xffff)
@@ -1775,7 +1781,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         print
         print "L3MultipleEcmpLagTest"
-        #general configuration 
+        #general configuration
         random.seed(1)
         switch_init(self.client)
         if (len(port_list) < (self.total_dst_port + 1) ) :
@@ -1787,13 +1793,13 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
         rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
-        
+
         try:
-            # the first iteration will configure port #1 as a lag with only one member
-            #and will configure port #2 to port #15 as rifs, 
-            #the rif will advance until all of the ports will be in lag and only one if port 
+            # The first iteration will configure port #1 as a lag with only one member
+            # and will configure port #2 to port #15 as rifs,
+            # the rif will advance until all of the ports will be in lag and only one if port
             for first_rif_port in range(self.first_changing_port,self.total_changing_ports):
-                print "testing with " +str(first_rif_port - 1) + " lag members"
+                print "Testing with " + str(first_rif_port - 1) + " lag members."
                 self.setup_ecmp_lag_group(first_rif_port)
                 self.send_and_verify_packets(first_rif_port)
                 self.teardown_ecmp_lag_group(first_rif_port)
