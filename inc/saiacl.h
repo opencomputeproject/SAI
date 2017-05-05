@@ -923,7 +923,8 @@ typedef enum _sai_acl_table_attr_t
      * @brief Range type defined
      *
      * @type sai_s32_list_t sai_acl_range_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
+     * @default empty
      */
     SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE,
 
