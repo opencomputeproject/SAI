@@ -34,6 +34,19 @@
  */
 
 /**
+ * @brief Attribute data for #SAI_LAG_ATTR_BIND_MODE
+ */
+typedef enum _sai_lag_bind_mode_t
+{
+    /** Port */
+    SAI_LAG_BIND_MODE_PORT,
+
+    /** Sub port */
+    SAI_LAG_BIND_MODE_SUB_PORT,
+
+} sai_lag_bind_mode_t;
+
+/**
  * @brief LAG attribute: List of attributes for LAG object
  */
 typedef enum _sai_lag_attr_t
@@ -85,6 +98,63 @@ typedef enum _sai_lag_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_LAG_ATTR_EGRESS_ACL,
+
+    /**
+     * @brief LAG bind mode
+     *
+     * @type sai_lag_bind_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_LAG_BIND_MODE_PORT
+     */
+    SAI_LAG_ATTR_BIND_MODE,
+
+    /**
+     * @brief Port VLAN ID
+     *
+     * Untagged ingress frames are tagged with Port VLAN ID (PVID)
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan true
+     * @default 1
+     */
+    SAI_LAG_ATTR_PORT_VLAN_ID,
+
+    /**
+     * @brief Default VLAN Priority
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_LAG_ATTR_DEFAULT_VLAN_PRIORITY,
+
+    /**
+     * @brief Ingress Filtering (Drop Frames with Unknown VLANs)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_LAG_ATTR_INGRESS_FILTERING,
+
+    /**
+     * @brief Dropping of untagged frames on ingress
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_LAG_ATTR_DROP_UNTAGGED,
+
+    /**
+     * @brief Dropping of tagged frames on ingress
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_LAG_ATTR_DROP_TAGGED,
 
     /**
      * @brief End of attributes
