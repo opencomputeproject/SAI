@@ -2875,6 +2875,23 @@ sub CheckFunctionsParams
     }
 }
 
+sub CheckNonDoxygenComments
+{
+    my ($data, $file) = @_;
+
+    while ($data =~ m%( */\*[^\*](?:(?!\*/).)*?\*/)(\n *(\w+))?%gis)
+    {
+        my $comment = $1;
+        my $stick = $3;
+
+        if (($comment =~/\W\@\w+/is) or defined $stick)
+        {
+            LogWarning "candidate for doxygen comment in $file:\n$comment";
+            LogWarning "comment sticked to $stick" if defined $stick;
+        }
+    }
+}
+
 sub CheckDoxygenCommentFormating
 {
     my ($data, $file) = @_;
@@ -3105,6 +3122,7 @@ sub CheckHeadersStyle
         CheckDoxygenCommentFormating($data, $header);
         CheckQuadApi($data, $header);
         CheckStructAlignment($data, $header);
+        CheckNonDoxygenComments($data, $header);
         CheckSwitchKeys($data, $header) if $header eq "saiswitch.h";
 
         my @lines = split/\n/,$data;
