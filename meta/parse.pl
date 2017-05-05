@@ -726,6 +726,9 @@ sub CreateMetadataHeaderAndSource
     WriteHeader "#include \"saimetadatautils.h\"";
     WriteHeader "#include \"saimetadatalogger.h\"";
 
+    # since sai_status is not enum and it will declare extra statuses
+    ProcessSaiStatus();
+
     WriteSource $HEAD;
     WriteSource "#include <stdio.h>";
     WriteSource "#include \"saimetadata.h\"";
@@ -1566,9 +1569,23 @@ sub ProcessSaiStatus
 
     while (my $line = <$fh>)
     {
-        next if not $line =~ /define\s+(SAI_STATUS_\w+).+0x00/;
+        next if not $line =~ /define\s+(SAI_STATUS_\w+).+(0x00\w+)/;
 
-        push@values,$1;
+        my $status = $1;
+        my $base = $2;
+
+        push@values,$status;
+
+        next if not ($status =~ /(SAI_\w+)_0$/);
+
+        for my $idx (1..10)
+        {
+            $status = "$1_$idx";
+
+            WriteHeader "#define $status  SAI_STATUS_CODE(($base + ${idx}))";
+
+            push@values,$status;
+        }
     }
 
     close $fh;
@@ -3713,9 +3730,6 @@ for my $file (GetXmlFiles($XMLDIR))
 
     ProcessXmlFile("$XMLDIR/$file");
 }
-
-# since sai_status is not enum
-ProcessSaiStatus();
 
 WriteHeader "#ifndef __SAI_METADATA_H__";
 WriteHeader "#define __SAI_METADATA_H__";
