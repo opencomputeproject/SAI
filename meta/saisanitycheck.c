@@ -1104,19 +1104,31 @@ void check_attr_conditions(
 
             case SAI_ATTR_VALUE_TYPE_INT32:
 
-                if (!cmd->isenum)
+                if (cmd->isenum)
                 {
-                    META_ASSERT_FAIL(md, "conditional attribute %d is not enum type", cmd->attrid);
+                    /* condition value can be a number or enum */
+
+                    META_LOG_INFO("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
+
+                    /* check if condition enum is in condition attribute range */
+
+                    if (sai_metadata_get_enum_value_name(cmd->enummetadata, c->condition.s32) == NULL)
+                    {
+                        META_ASSERT_FAIL(md, "condition enum %d not found on condition attribute enum range", c->condition.s32);
+                    }
                 }
 
-                META_LOG_INFO("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
+                break;
 
-                /* check if condition enum is in condition attribute range */
+            case SAI_ATTR_VALUE_TYPE_INT8:
+            case SAI_ATTR_VALUE_TYPE_INT16:
+            case SAI_ATTR_VALUE_TYPE_INT64:
+            case SAI_ATTR_VALUE_TYPE_UINT8:
+            case SAI_ATTR_VALUE_TYPE_UINT16:
+            case SAI_ATTR_VALUE_TYPE_UINT32:
+            case SAI_ATTR_VALUE_TYPE_UINT64:
 
-                if (sai_metadata_get_enum_value_name(cmd->enummetadata, c->condition.s32) == NULL)
-                {
-                    META_ASSERT_FAIL(md, "condition enum %d not found on condition attribute enum range", c->condition.s32);
-                }
+                /* number conditions */
 
                 break;
 
@@ -1269,20 +1281,29 @@ void check_attr_validonly(
 
             case SAI_ATTR_VALUE_TYPE_INT32:
 
-                if (!cmd->isenum)
+                if (cmd->isenum)
                 {
-                    META_ASSERT_FAIL(md, "validonly attribute %d is not enum type", cmd->attrid);
+                    /* condition value can be a number or enum */
+
+                    META_LOG_INFO("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
+
+                    /* check if condition enum is in condition attribute range */
+
+                    if (sai_metadata_get_enum_value_name(cmd->enummetadata, c->condition.s32) == NULL)
+                    {
+                        META_ASSERT_FAIL(md, "validonly enum %d not found on validonly attribute enum range", c->condition.s32);
+                    }
                 }
 
-                META_LOG_INFO("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
+                break;
 
-                /* check if condition enum is in condition attribute range */
-
-                if (sai_metadata_get_enum_value_name(cmd->enummetadata, c->condition.s32) == NULL)
-                {
-                    META_ASSERT_FAIL(md, "validonly enum %d not found on validonly attribute enum range", c->condition.s32);
-                }
-
+            case SAI_ATTR_VALUE_TYPE_INT8:
+            case SAI_ATTR_VALUE_TYPE_INT16:
+            case SAI_ATTR_VALUE_TYPE_INT64:
+            case SAI_ATTR_VALUE_TYPE_UINT8:
+            case SAI_ATTR_VALUE_TYPE_UINT16:
+            case SAI_ATTR_VALUE_TYPE_UINT32:
+            case SAI_ATTR_VALUE_TYPE_UINT64:
                 break;
 
             default:
