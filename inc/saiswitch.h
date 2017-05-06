@@ -150,10 +150,10 @@ typedef enum _sai_packet_vlan_t
  */
 typedef enum _sai_switch_switching_mode_t
 {
-    /** cut-through switching mode */
+    /** Cut-through switching mode */
     SAI_SWITCH_SWITCHING_MODE_CUT_THROUGH,
 
-    /** store-and-forward switching mode */
+    /** Store-and-forward switching mode */
     SAI_SWITCH_SWITCHING_MODE_STORE_AND_FORWARD
 
 } sai_switch_switching_mode_t;
@@ -217,7 +217,7 @@ typedef enum _sai_switch_mcast_snooping_capability_t
     /** SG lookup only */
     SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_SG = 2,
 
-    /** both *G/SG lookup supported */
+    /** Both *G/SG lookup supported */
     SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_XG_AND_SG = 3,
 
 } sai_switch_mcast_snooping_capability_t;

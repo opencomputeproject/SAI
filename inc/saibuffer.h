@@ -91,31 +91,31 @@ typedef enum _sai_ingress_priority_group_attr_t
  */
 typedef enum _sai_ingress_priority_group_stat_t
 {
-    /** get rx packets count [uint64_t] */
+    /** Get rx packets count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS = 0x00000000,
 
-    /** get rx bytes count [uint64_t] */
+    /** Get rx bytes count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_BYTES = 0x00000001,
 
-    /** get current pg occupancy in bytes [uint64_t] */
+    /** Get current pg occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES = 0x00000002,
 
-    /** get watermark pg occupancy in bytes [uint64_t] */
+    /** Get watermark pg occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES = 0x00000003,
 
-    /** get current pg shared occupancy in bytes [uint64_t] */
+    /** Get current pg shared occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES = 0x00000004,
 
-    /** get watermark pg shared occupancy in bytes [uint64_t] */
+    /** Get watermark pg shared occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_WATERMARK_BYTES = 0x00000005,
 
-    /** get current pg XOFF room occupancy in bytes [uint64_t] */
+    /** Get current pg XOFF room occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_CURR_OCCUPANCY_BYTES = 0x00000006,
 
-    /** get watermark pg XOFF room occupancy in bytes [uint64_t] */
+    /** Get watermark pg XOFF room occupancy in bytes [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000007,
 
-    /** get dropped packets count [uint64_t] */
+    /** Get dropped packets count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS = 0x00000008,
 
     /** Custom range base value */
@@ -223,10 +223,10 @@ typedef enum _sai_buffer_pool_type_t
  */
 typedef enum _sai_buffer_pool_threshold_mode_t
 {
-    /** static maximum */
+    /** Static maximum */
     SAI_BUFFER_POOL_THRESHOLD_MODE_STATIC,
 
-    /** dynamic maximum (relative) */
+    /** Dynamic maximum (relative) */
     SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC,
 
 } sai_buffer_pool_threshold_mode_t;
@@ -306,13 +306,13 @@ typedef enum _sai_buffer_pool_attr_t
  */
 typedef enum _sai_buffer_pool_stat_t
 {
-    /** get current pool occupancy in bytes [uint64_t] */
+    /** Get current pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_BYTES = 0x00000000,
 
-    /** get watermark pool occupancy in bytes [uint64_t] */
+    /** Get watermark pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_WATERMARK_BYTES = 0x00000001,
 
-    /** get count of packets dropped in this pool [uint64_t] */
+    /** Get count of packets dropped in this pool [uint64_t] */
     SAI_BUFFER_POOL_STAT_DROPPED_PACKETS = 0x00000002,
 
     /** Custom range base value */
@@ -407,13 +407,13 @@ typedef sai_status_t(*sai_clear_buffer_pool_stats_fn)(
  */
 typedef enum _sai_buffer_profile_threshold_mode_t
 {
-    /** static maximum */
+    /** Static maximum */
     SAI_BUFFER_PROFILE_THRESHOLD_MODE_STATIC,
 
-    /** dynamic maximum (relative) */
+    /** Dynamic maximum (relative) */
     SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC,
 
-    /** inherit from buffer pool threshold mode */
+    /** Inherit from buffer pool threshold mode */
     SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE,
 
 } sai_buffer_profile_threshold_mode_t;

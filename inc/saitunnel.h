@@ -642,10 +642,10 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
  */
 typedef enum _sai_tunnel_term_table_entry_type_t
 {
-    /** tunnel termination table point to point entry match on dst & src IP & tunnel type */
+    /** Tunnel termination table point to point entry match on dst & src IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
 
-    /** tunnel termination table point to multi point entry match on dst IP & tunnel type */
+    /** Tunnel termination table point to multi point entry match on dst IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP,
 
 } sai_tunnel_term_table_entry_type_t;

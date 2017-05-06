@@ -76,13 +76,13 @@ typedef enum _sai_bridge_port_type_t
     /** Port or LAG.vlan */
     SAI_BRIDGE_PORT_TYPE_SUB_PORT,
 
-    /** bridge router port */
+    /** Bridge router port */
     SAI_BRIDGE_PORT_TYPE_1Q_ROUTER,
 
-    /** bridge router port */
+    /** Bridge router port */
     SAI_BRIDGE_PORT_TYPE_1D_ROUTER,
 
-    /** bridge tunnel port */
+    /** Bridge tunnel port */
     SAI_BRIDGE_PORT_TYPE_TUNNEL,
 
 } sai_bridge_port_type_t;
@@ -269,10 +269,10 @@ typedef sai_status_t(*sai_get_bridge_port_attribute_fn)(
  */
 typedef enum _sai_bridge_type_t
 {
-    /** vlan aware bridge */
+    /** Vlan aware bridge */
     SAI_BRIDGE_TYPE_1Q,
 
-    /** non vlan aware bridge */
+    /** Non vlan aware bridge */
     SAI_BRIDGE_TYPE_1D,
 
 } sai_bridge_type_t;

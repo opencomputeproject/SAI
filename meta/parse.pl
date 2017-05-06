@@ -3261,7 +3261,7 @@ sub CheckHeadersStyle
 
             if ($line =~ m!/\*\*\s+[a-z]!)
             {
-                #LogWarning "doxygen comment should start with capital letter: $header:$n:$line";
+                LogWarning "doxygen comment should start with capital letter: $header:$n:$line";
             }
 
             if ($line =~ /sai_\w+_statistics_fn/)
