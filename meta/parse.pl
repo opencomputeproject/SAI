@@ -1365,6 +1365,12 @@ sub ProcessSingleObjectType
         my $isaclfield      = ProcessIsAclField($attr);
         my $isaclaction     = ProcessIsAclAction($attr);
 
+        my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
+        my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
+        my $iscreateandset      = ($flags =~ /CREATE_AND_SET/)  ? "true" : "false";
+        my $isreadonly          = ($flags =~ /READ_ONLY/)       ? "true" : "false";
+        my $iskey               = ($flags =~ /KEY/)             ? "true" : "false";
+
         WriteSource "const sai_attr_metadata_t sai_metadata_attr_$attr = {";
 
         WriteSource "    .objecttype                    = $objecttype,";
@@ -1397,6 +1403,11 @@ sub ProcessSingleObjectType
         WriteSource "    .isvlan                        = $isvlan,";
         WriteSource "    .isaclfield                    = $isaclfield,";
         WriteSource "    .isaclaction                   = $isaclaction,";
+        WriteSource "    .ismandatoryoncreate           = $ismandatoryoncreate,";
+        WriteSource "    .iscreateonly                  = $iscreateonly,";
+        WriteSource "    .iscreateandset                = $iscreateandset,";
+        WriteSource "    .isreadonly                    = $isreadonly,";
+        WriteSource "    .iskey                         = $iskey,";
 
         WriteSource "};";
 

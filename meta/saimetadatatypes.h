@@ -816,6 +816,31 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                isaclaction;
 
+    /**
+     * @brief Determines whether attribute is mandatory on create
+     */
+    bool                                ismandatoryoncreate;
+
+    /**
+     * @brief Determines whether attribute is create only
+     */
+    bool                                iscreateonly;
+
+    /**
+     * @brief Determines whether attribute is create and set
+     */
+    bool                                iscreateandset;
+
+    /**
+     * @brief Determines whether attribute is read only
+     */
+    bool                                isreadonly;
+
+    /**
+     * @brief Determines whether attribute is key
+     */
+    bool                                iskey;
+
 } sai_attr_metadata_t;
 
 /*
