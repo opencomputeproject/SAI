@@ -1029,6 +1029,7 @@ void check_attr_conditions(
     {
         case SAI_ATTR_CONDITION_TYPE_NONE:
         case SAI_ATTR_CONDITION_TYPE_OR:
+        case SAI_ATTR_CONDITION_TYPE_AND:
             break;
 
         default:
@@ -1160,6 +1161,7 @@ void check_attr_validonly(
     {
         case SAI_ATTR_CONDITION_TYPE_NONE:
         case SAI_ATTR_CONDITION_TYPE_OR:
+        case SAI_ATTR_CONDITION_TYPE_AND:
             break;
 
         default:
@@ -1994,14 +1996,32 @@ void check_attr_existing_objects(
          * to create them.
          */
 
-        case SAI_OBJECT_TYPE_SAMPLEPACKET:
+        case SAI_OBJECT_TYPE_ACL_COUNTER:
+        case SAI_OBJECT_TYPE_ACL_ENTRY:
+        case SAI_OBJECT_TYPE_ACL_TABLE:
+        case SAI_OBJECT_TYPE_ACL_TABLE_GROUP_MEMBER:
+        case SAI_OBJECT_TYPE_HOSTIF:
+        case SAI_OBJECT_TYPE_HOSTIF_PACKET:
+        case SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY:
         case SAI_OBJECT_TYPE_HOSTIF_TRAP:
+        case SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP:
+        case SAI_OBJECT_TYPE_IPMC_GROUP_MEMBER:
+        case SAI_OBJECT_TYPE_L2MC_GROUP_MEMBER:
+        case SAI_OBJECT_TYPE_LAG:
+        case SAI_OBJECT_TYPE_LAG_MEMBER:
         case SAI_OBJECT_TYPE_MIRROR_SESSION:
-
-        case SAI_OBJECT_TYPE_TAM_STAT:
+        case SAI_OBJECT_TYPE_NEXT_HOP:
+        case SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER:
+        case SAI_OBJECT_TYPE_ROUTER_INTERFACE:
+        case SAI_OBJECT_TYPE_RPF_GROUP_MEMBER:
+        case SAI_OBJECT_TYPE_SAMPLEPACKET:
         case SAI_OBJECT_TYPE_TAM_SNAPSHOT:
+        case SAI_OBJECT_TYPE_TAM_STAT:
         case SAI_OBJECT_TYPE_TAM_THRESHOLD:
-
+        case SAI_OBJECT_TYPE_TUNNEL:
+        case SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY:
+        case SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY:
+        case SAI_OBJECT_TYPE_UDF:
             return;
 
             /*
@@ -2010,17 +2030,26 @@ void check_attr_existing_objects(
              * MANDATORY_ON_CREATE attributes on them.
              */
 
-        case SAI_OBJECT_TYPE_VLAN_MEMBER:
-        case SAI_OBJECT_TYPE_VLAN:
+        case SAI_OBJECT_TYPE_BRIDGE:
+        case SAI_OBJECT_TYPE_BRIDGE_PORT:
+        case SAI_OBJECT_TYPE_BUFFER_POOL:
+        case SAI_OBJECT_TYPE_BUFFER_PROFILE:
         case SAI_OBJECT_TYPE_HASH:
-        case SAI_OBJECT_TYPE_STP:
-        case SAI_OBJECT_TYPE_VIRTUAL_ROUTER:
         case SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP:
-        case SAI_OBJECT_TYPE_SWITCH:
-        case SAI_OBJECT_TYPE_PORT:
-        case SAI_OBJECT_TYPE_QUEUE:
         case SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP:
+        case SAI_OBJECT_TYPE_POLICER:
+        case SAI_OBJECT_TYPE_PORT:
+        case SAI_OBJECT_TYPE_QOS_MAP:
+        case SAI_OBJECT_TYPE_QUEUE:
+        case SAI_OBJECT_TYPE_SCHEDULER:
         case SAI_OBJECT_TYPE_SCHEDULER_GROUP:
+        case SAI_OBJECT_TYPE_STP:
+        case SAI_OBJECT_TYPE_STP_PORT:
+        case SAI_OBJECT_TYPE_SWITCH:
+        case SAI_OBJECT_TYPE_VIRTUAL_ROUTER:
+        case SAI_OBJECT_TYPE_VLAN:
+        case SAI_OBJECT_TYPE_VLAN_MEMBER:
+        case SAI_OBJECT_TYPE_WRED:
         default:
             break;
     }
@@ -2035,6 +2064,9 @@ void check_attr_existing_objects(
      * default value on created object, and user can change it's value so in
      * comparison logic we will need to maintain this state somewhere as
      * default.
+     *
+     * Actually even if object is create only and is created on the switch we
+     * need to keep it's value for future reference count in metadata db.
      */
 
     /*
