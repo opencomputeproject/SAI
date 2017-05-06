@@ -163,37 +163,37 @@ typedef enum _sai_hostif_trap_type_t
 
     /* Switch trap */
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_STP = SAI_HOSTIF_TRAP_TYPE_START,
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_LACP = 0x00000001,
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_EAPOL = 0x00000002,
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_LLDP = 0x00000003,
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_PVRST = 0x00000004,
 
-    /** default action is forward */
+    /** Default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_QUERY = 0x00000005,
 
-    /** default action is forward */
+    /** Default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_LEAVE = 0x00000006,
 
-    /** default action is forward */
+    /** Default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V1_REPORT = 0x00000007,
 
-    /** default action is forward */
+    /** Default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V2_REPORT = 0x00000008,
 
-    /** default action is forward */
+    /** Default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V3_REPORT = 0x000000009,
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_SAMPLEPACKET = 0x00000000a,
 
     /** Switch traps custom range start */
@@ -201,46 +201,46 @@ typedef enum _sai_hostif_trap_type_t
 
     /* Router traps */
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST = 0x00002000,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE = 0x00002001,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_DHCP = 0x00002002,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_OSPF = 0x00002003,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_PIM = 0x00002004,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_VRRP = 0x00002005,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_DHCPV6 = 0x00002006,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_OSPFV6 = 0x00002007,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_VRRPV6 = 0x00002008,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_DISCOVERY = 0x00002009,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_MLD_V1_V2 = 0x0000200a,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_MLD_V1_REPORT = 0x0000200b,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_MLD_V1_DONE = 0x0000200c,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_MLD_V2_REPORT = 0x0000200d,
 
     /**
@@ -446,10 +446,10 @@ typedef enum _sai_hostif_user_defined_trap_type_t
      */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START = 0x0000000,
 
-    /** router traps (default packet action is drop) */
+    /** Router traps (default packet action is drop) */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ROUTER = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START,
 
-    /** neighbor table traps (default packet action is drop) */
+    /** Neighbor table traps (default packet action is drop) */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH,
 
     /** ACL traps (default packet action is drop) */
@@ -743,19 +743,19 @@ typedef enum _sai_hostif_table_entry_type_t
  */
 typedef enum _sai_hostif_table_entry_channel_type_t
 {
-    /** receive packets via callback */
+    /** Receive packets via callback */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_CB,
 
-    /** receive packets via file descriptor */
+    /** Receive packets via file descriptor */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD,
 
-    /** receive packets via Linux netdev type port */
+    /** Receive packets via Linux netdev type port */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT,
 
-    /** receive packets via Linux netdev logical port (LAG or port) */
+    /** Receive packets via Linux netdev logical port (LAG or port) */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_LOGICAL_PORT,
 
-    /** receive packets via Linux netdev L3 interface */
+    /** Receive packets via Linux netdev L3 interface */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3
 
 } sai_hostif_table_entry_channel_type_t;
@@ -904,7 +904,7 @@ typedef enum _sai_hostif_tx_type_t
      */
     SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS,
 
-    /** tx packet goes to the switch ASIC processing pipeline to decide the output port */
+    /** TX packet goes to the switch ASIC processing pipeline to decide the output port */
     SAI_HOSTIF_TX_TYPE_PIPELINE_LOOKUP,
 
     /** Custom range base */

@@ -38,28 +38,28 @@
  */
 typedef enum _sai_ecn_mark_mode_t
 {
-    /** disable ECN marking for all colors */
+    /** Disable ECN marking for all colors */
     SAI_ECN_MARK_MODE_NONE,
 
-    /** enable ECN marking for green color. Yellow and red are disabled */
+    /** Enable ECN marking for green color. Yellow and red are disabled */
     SAI_ECN_MARK_MODE_GREEN,
 
-    /** enable ECN marking for yellow color. Green and red are disabled */
+    /** Enable ECN marking for yellow color. Green and red are disabled */
     SAI_ECN_MARK_MODE_YELLOW,
 
-    /** enable ECN marking for red color. Green and yellow are disabled */
+    /** Enable ECN marking for red color. Green and yellow are disabled */
     SAI_ECN_MARK_MODE_RED,
 
-    /** enable ECN marking for green and yellow colors. Red is disabled */
+    /** Enable ECN marking for green and yellow colors. Red is disabled */
     SAI_ECN_MARK_MODE_GREEN_YELLOW,
 
-    /** enable ECN marking for green and red colors. Yellow is disabled */
+    /** Enable ECN marking for green and red colors. Yellow is disabled */
     SAI_ECN_MARK_MODE_GREEN_RED,
 
-    /** enable ECN marking for yellow and red colors. Green is disabled */
+    /** Enable ECN marking for yellow and red colors. Green is disabled */
     SAI_ECN_MARK_MODE_YELLOW_RED,
 
-    /** enable ECN marking for all colors */
+    /** Enable ECN marking for all colors */
     SAI_ECN_MARK_MODE_ALL,
 
 } sai_ecn_mark_mode_t;

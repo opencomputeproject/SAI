@@ -99,16 +99,16 @@ typedef struct _sai_port_oper_status_notification_t
  */
 typedef enum _sai_port_flow_control_mode_t
 {
-    /** disable flow control for both tx and rx */
+    /** Disable flow control for both tx and rx */
     SAI_PORT_FLOW_CONTROL_MODE_DISABLE,
 
-    /** enable flow control for tx only */
+    /** Enable flow control for tx only */
     SAI_PORT_FLOW_CONTROL_MODE_TX_ONLY,
 
-    /** enable flow control for rx only */
+    /** Enable flow control for rx only */
     SAI_PORT_FLOW_CONTROL_MODE_RX_ONLY,
 
-    /** enable flow control for both tx and rx */
+    /** Enable flow control for both tx and rx */
     SAI_PORT_FLOW_CONTROL_MODE_BOTH_ENABLE,
 
 } sai_port_flow_control_mode_t;
@@ -118,13 +118,13 @@ typedef enum _sai_port_flow_control_mode_t
  */
 typedef enum _sai_port_internal_loopback_mode_t
 {
-    /** disable internal loopback */
+    /** Disable internal loopback */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_NONE,
 
-    /** port internal loopback at PHY module */
+    /** Port internal loopback at PHY module */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_PHY,
 
-    /** port internal loopback at MAC module */
+    /** Port internal loopback at MAC module */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_MAC
 
 } sai_port_internal_loopback_mode_t;
@@ -1243,34 +1243,34 @@ typedef enum _sai_port_stat_t
     /** SAI port stat IPv6 out discards */
     SAI_PORT_STAT_IPV6_OUT_DISCARDS,
 
-    /** get/set WRED green packet count [uint64_t] */
+    /** Get/set WRED green packet count [uint64_t] */
     SAI_PORT_STAT_GREEN_DISCARD_DROPPED_PACKETS,
 
-    /** get/set WRED green byte count [uint64_t] */
+    /** Get/set WRED green byte count [uint64_t] */
     SAI_PORT_STAT_GREEN_DISCARD_DROPPED_BYTES,
 
-    /** get/set WRED yellow packet count [uint64_t] */
+    /** Get/set WRED yellow packet count [uint64_t] */
     SAI_PORT_STAT_YELLOW_DISCARD_DROPPED_PACKETS,
 
-    /** get/set WRED yellow byte count [uint64_t] */
+    /** Get/set WRED yellow byte count [uint64_t] */
     SAI_PORT_STAT_YELLOW_DISCARD_DROPPED_BYTES,
 
-    /** get/set WRED red packet count [uint64_t] */
+    /** Get/set WRED red packet count [uint64_t] */
     SAI_PORT_STAT_RED_DISCARD_DROPPED_PACKETS,
 
-    /** get/set WRED red byte count [uint64_t] */
+    /** Get/set WRED red byte count [uint64_t] */
     SAI_PORT_STAT_RED_DISCARD_DROPPED_BYTES,
 
-    /** get/set WRED dropped packets count [uint64_t] */
+    /** Get/set WRED dropped packets count [uint64_t] */
     SAI_PORT_STAT_DISCARD_DROPPED_PACKETS,
 
-    /** get/set WRED dropped bytes count [uint64_t] */
+    /** Get/set WRED dropped bytes count [uint64_t] */
     SAI_PORT_STAT_DISCARD_DROPPED_BYTES,
 
-    /** get/set packets marked by ECN count [uint64_t] */
+    /** Get/set packets marked by ECN count [uint64_t] */
     SAI_PORT_STAT_ECN_MARKED_PACKETS,
 
-    /** packet size based packets count rt stat ether in pkts 64 octets */
+    /** Packet size based packets count rt stat ether in pkts 64 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_64_OCTETS,
 
     /** SAI port stat ether in pkts 65 to 127 octets */
@@ -1330,40 +1330,40 @@ typedef enum _sai_port_stat_t
     /** SAI port stat ether out pkts 9217 to 16383 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_9217_TO_16383_OCTETS,
 
-    /** get in port current occupancy in bytes [uint64_t] */
+    /** Get in port current occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_IN_CURR_OCCUPANCY_BYTES,
 
-    /** get in port watermark occupancy in bytes [uint64_t] */
+    /** Get in port watermark occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_IN_WATERMARK_BYTES,
 
-    /** get in port current shared occupancy in bytes [uint64_t] */
+    /** Get in port current shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_IN_SHARED_CURR_OCCUPANCY_BYTES,
 
-    /** get in port watermark shared occupancy in bytes [uint64_t] */
+    /** Get in port watermark shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_IN_SHARED_WATERMARK_BYTES,
 
-    /** get out port current occupancy in bytes [uint64_t] */
+    /** Get out port current occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_OUT_CURR_OCCUPANCY_BYTES,
 
-    /** get out port watermark occupancy in bytes [uint64_t] */
+    /** Get out port watermark occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_OUT_WATERMARK_BYTES,
 
-    /** get out port current shared occupancy in bytes [uint64_t] */
+    /** Get out port current shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_OUT_SHARED_CURR_OCCUPANCY_BYTES,
 
-    /** get out port watermark shared occupancy in bytes [uint64_t] */
+    /** Get out port watermark shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_OUT_SHARED_WATERMARK_BYTES,
 
-    /** get in port packet drops due to buffers [uint64_t] */
+    /** Get in port packet drops due to buffers [uint64_t] */
     SAI_PORT_STAT_IN_DROPPED_PKTS,
 
-    /** get out port packet drops due to buffers [uint64_t] */
+    /** Get out port packet drops due to buffers [uint64_t] */
     SAI_PORT_STAT_OUT_DROPPED_PKTS,
 
-    /** get the number of pause frames received on the port [uint64_t] */
+    /** Get the number of pause frames received on the port [uint64_t] */
     SAI_PORT_STAT_PAUSE_RX_PKTS,
 
-    /** get the number of pause frames transmitted on the port [uint64_t] */
+    /** Get the number of pause frames transmitted on the port [uint64_t] */
     SAI_PORT_STAT_PAUSE_TX_PKTS,
 
     /** PFC Packet Counters for RX and TX per PFC priority [uint64_t] */
