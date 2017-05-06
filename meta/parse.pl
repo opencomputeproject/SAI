@@ -18,6 +18,8 @@ my %METADATA = ();
 my %STRUCTS = ();
 my %options = ();
 
+my $NUMBER_REGEX = '(?:-?\d+|0x[A-F0-9]+)';
+
 # pointers used in switch object for notifications
 my @pointers = ();
 
@@ -40,12 +42,11 @@ my %TAGS = (
         "objects"   , \&ProcessTagObjects,
         "allownull" , \&ProcessTagAllowNull,
         "condition" , \&ProcessTagCondition,
-        "validonly" , \&ProcessTagValidOnly,
+        "validonly" , \&ProcessTagCondition, # since validonly uses same format as condition
         "default"   , \&ProcessTagDefault,
         "ignore"    , \&ProcessTagIgnore,
         "isvlan"    , \&ProcessTagIsVlan,
         "getsave"   , \&ProcessTagGetSave,
-
         );
 
 getopts("d",\%options);
@@ -363,36 +364,6 @@ sub ProcessTagAllowNull
     return $val;
 }
 
-sub ProcessTagValidOnly
-{
-    my ($type, $value, $val) = @_;
-
-    my @conditions = split/\s+(?:or|and)\s+/,$val;
-
-    if ($val =~/or.+and|and.+or/)
-    {
-        LogError "mixed conditions and/or is not supported: $val";
-        return undef;
-    }
-
-    for my $cond (@conditions)
-    {
-        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
-        {
-            LogError "invalid validonly tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM";
-            return undef;
-        }
-    }
-
-    # if there is only one condition, then type does not matter
-
-    $type = "SAI_ATTR_CONDITION_TYPE_" . (($val =~ /and/) ? "AND" : "OR");
-
-    unshift @conditions, $type;
-
-    return \@conditions;
-}
-
 sub ProcessTagCondition
 {
     my ($type, $value, $val) = @_;
@@ -407,9 +378,9 @@ sub ProcessTagCondition
 
     for my $cond (@conditions)
     {
-        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
-            LogError "invalid condition tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM";
+            LogError "invalid condition tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM|number";
             return undef;
         }
     }
@@ -437,7 +408,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    if ($val =~/^(true|false|NULL|SAI_\w+|-?\d+|0x[0-9A-F]+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
+    if ($val =~/^(true|false|NULL|SAI_\w+|$NUMBER_REGEX)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
     {
         return $val;
     }
@@ -448,7 +419,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    LogError "invalid default tag value '$val', on $type $value";
+    LogError "invalid default tag value '$val' on $type $value";
     return undef;
 }
 
@@ -998,7 +969,7 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL" if $default =~ /^internal$/;
 
-    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|-?\d+|0x[0-9A-F]+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|$NUMBER_REGEX|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST" if $default =~ /^empty$/;
 
@@ -1037,13 +1008,13 @@ sub ProcessDefaultValue
     }
     elsif ($default =~ /^0$/ and $type =~ /sai_acl_field_data_t (sai_u?int\d+_t)/)
     {
-        WriteSource "$val = { };";
+        WriteSource "$val = { 0 };";
     }
     elsif ($default =~ /^0$/ and $type =~ /sai_acl_action_data_t (sai_u?int\d+_t)/)
     {
-        WriteSource "$val = { };";
+        WriteSource "$val = { 0 };";
     }
-    elsif ($default =~ /^(-?\d+|0x[0-9A-F]+)$/ and $type =~ /sai_u?int\d+_t/)
+    elsif ($default =~ /^$NUMBER_REGEX$/ and $type =~ /sai_u?int\d+_t/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
@@ -1167,9 +1138,9 @@ sub ProcessConditionType
     return @{$value}[0];
 }
 
-sub ProcessConditions
+sub ProcessConditionsGeneric
 {
-    my ($attr, $conditions, $enumtype) = @_;
+    my ($attr, $conditions, $enumtype, $name) = @_;
 
     return "NULL" if not defined $conditions;
 
@@ -1183,7 +1154,7 @@ sub ProcessConditions
 
     for my $cond (@conditions)
     {
-        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
             LogError "invalid condition '$cond' on $attr";
             return "";
@@ -1197,21 +1168,34 @@ sub ProcessConditions
 
         if ($main_attr ne $cond_attr)
         {
-            LogError "conditional attribute $attr has condition from different object $attrid";
+            LogError "$name attribute $attr has condition from different object $attrid";
             return "";
         }
 
-        WriteSource "const sai_attr_condition_t sai_metadata_condition_${attr}_$count = {";
+        WriteSource "const sai_attr_condition_t sai_metadata_${name}_${attr}_$count = {";
 
         if ($val eq "true" or $val eq "false")
         {
             WriteSource "    .attrid = $attrid,";
             WriteSource "    .condition = { .booldata = $val }";
         }
-        else
+        elsif ($val =~ /^SAI_/)
         {
             WriteSource "    .attrid = $attrid,";
             WriteSource "    .condition = { .s32 = $val }";
+        }
+        elsif ($val =~ /^$NUMBER_REGEX$/ and $enumtype =~ /^sai_u?int(\d+)_t$/)
+        {
+            my $n = $1;
+            my $item = ($enumtype =~ /uint/) ? "u$n" : "s$n";
+
+            WriteSource "    .attrid = $attrid,";
+            WriteSource "    .condition = { .$item = $val }";
+        }
+        else
+        {
+            LogError "unknown $name value: $val on $attr $enumtype";
+            return "";
         }
 
         WriteSource "};";
@@ -1219,13 +1203,13 @@ sub ProcessConditions
         $count++;
     }
 
-    WriteSource "const sai_attr_condition_t* sai_metadata_conditions_${attr}\[\] = {";
+    WriteSource "const sai_attr_condition_t* sai_metadata_${name}s_${attr}\[\] = {";
 
     $count = 0;
 
     for my $cond (@conditions)
     {
-        WriteSource "    &sai_metadata_condition_${attr}_$count,";
+        WriteSource "    &sai_metadata_${name}_${attr}_$count,";
 
         $count++;
     }
@@ -1234,7 +1218,12 @@ sub ProcessConditions
 
     WriteSource "};";
 
-    return "sai_metadata_conditions_${attr}";
+    return "sai_metadata_${name}s_${attr}";
+}
+
+sub ProcessConditions
+{
+    ProcessConditionsGeneric(@_, "condition");
 }
 
 sub ProcessConditionsLen
@@ -1244,6 +1233,8 @@ sub ProcessConditionsLen
     return "0" if not defined $value;
 
     my @conditions = @{ $value };
+
+    # NOTE: number returned is -1 since first item is condition type
 
     return $#conditions;
 }
@@ -1259,72 +1250,7 @@ sub ProcessValidOnlyType
 
 sub ProcessValidOnly
 {
-    my ($attr, $conditions, $enumtype) = @_;
-
-    return "NULL" if not defined $conditions;
-
-    my @conditions = @{ $conditions };
-
-    shift @conditions;
-
-    my $count = 0;
-
-    my @values = ();
-
-    for my $cond (@conditions)
-    {
-        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+)$/)
-        {
-            LogError "invalid condition '$cond' on $attr";
-            return "";
-        }
-
-        my $attrid = $1;
-        my $val = $2;
-
-        my $main_attr = $1 if $attr =~ /^SAI_(\w+?)_ATTR_/;
-        my $cond_attr = $1 if $attrid =~ /^SAI_(\w+?)_ATTR_/;
-
-        if ($main_attr ne $cond_attr)
-        {
-            LogError "validonly attribute $attr has condition from different object $attrid";
-            return "";
-        }
-
-        WriteSource "const sai_attr_condition_t sai_metadata_validonly_${attr}_$count = {";
-
-        if ($val eq "true" or $val eq "false")
-        {
-            WriteSource "    .attrid = $attrid,";
-            WriteSource "    .condition = { .booldata = $val }";
-        }
-        else
-        {
-            WriteSource "    .attrid = $attrid,";
-            WriteSource "    .condition = { .s32 = $val }";
-        }
-
-        WriteSource "};";
-
-        $count++;
-    }
-
-    WriteSource "const sai_attr_condition_t* sai_metadata_validonly_${attr}\[\] = {";
-
-    $count = 0;
-
-    for my $cond (@conditions)
-    {
-        WriteSource "    &sai_metadata_validonly_${attr}_$count,";
-
-        $count++;
-    }
-
-    WriteSource "    NULL";
-
-    WriteSource "};";
-
-    return "sai_metadata_validonly_${attr}";
+    ProcessConditionsGeneric(@_, "validonly");
 }
 
 sub ProcessValidOnlyLen
@@ -1334,6 +1260,8 @@ sub ProcessValidOnlyLen
     return "0" if not defined $value;
 
     my @conditions = @{ $value };
+
+    # NOTE: number returned is -1 since first item is condition type
 
     return $#conditions;
 }
@@ -1505,10 +1433,7 @@ sub CreateMetadata
 {
     for my $key (sort keys %SAI_ENUMS)
     {
-        if (not $key =~ /^(sai_(\w+)_attr_t)$/)
-        {
-            next;
-        }
+        next if not $key =~ /^(sai_(\w+)_attr_t)$/;
 
         my $typedef = $1;
         my $objtype = "SAI_OBJECT_TYPE_" . uc($2);
@@ -2149,13 +2074,11 @@ sub CreateApisQuery
     WriteSource "        _In_ uint32_t attr_count,";
     WriteSource "        _Inout_ sai_attribute_t *attr_list);";
 
-
     # for switch we need to generate wrapper, for others we can use pointers
     # so we don't need to use meta key then
 
-
     WriteSource "int sai_metadata_apis_query(";
-    WriteSource "    _In_ const sai_api_query_fn api_query)";
+    WriteSource "        _In_ const sai_api_query_fn api_query)";
     WriteSource "{";
     WriteSource "    sai_status_t status = SAI_STATUS_SUCCESS;";
     WriteSource "    int count = 0;";
@@ -3092,7 +3015,7 @@ sub CheckHeadersStyle
         HW IEEE IP2ME L2MC LAG ARP ASIC BGP CAM CBS CB CIR CIDR CRC DLL CPU TTL
         TOS ECN DSCP TC MACST MTU NPU PFC PBS PCI PIR QOS RFC RFP SDK RSPAN
         ERSPAN SPAN SNMP SSH STP TCAM TCP UDP TPID UDF UOID VNI VR VRRP WCMP
-        WWW API CCITT RARP CFI MPLS IPMC RPF WRED XON XOFF NHLFE SG/;
+        WWW API CCITT RARP CFI MPLS IPMC RPF WRED XON XOFF NHLFE SG OUI/;
 
     # we could put that to local dictionary file
 
