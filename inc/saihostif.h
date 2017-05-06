@@ -904,7 +904,7 @@ typedef enum _sai_hostif_tx_type_t
      */
     SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS,
 
-    /** Tx packet goes to the switch ASIC processing pipeline to decide the output port */
+    /** TX packet goes to the switch ASIC processing pipeline to decide the output port */
     SAI_HOSTIF_TX_TYPE_PIPELINE_LOOKUP,
 
     /** Custom range base */
