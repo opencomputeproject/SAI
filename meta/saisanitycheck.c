@@ -439,6 +439,12 @@ void check_attr_flags(
 
             META_ASSERT_FAIL(md, "invalid creation flags: 0x%u", md->flags);
     }
+
+    META_ASSERT_TRUE(SAI_HAS_FLAG_MANDATORY_ON_CREATE(md->flags) == md->ismandatoryoncreate, "wrong ismandatoryoncreate");
+    META_ASSERT_TRUE(SAI_HAS_FLAG_CREATE_ONLY(md->flags) == md->iscreateonly, "wrong iscreateonly");
+    META_ASSERT_TRUE(SAI_HAS_FLAG_CREATE_AND_SET(md->flags) == md->iscreateandset, "wrong iscreateandset");
+    META_ASSERT_TRUE(SAI_HAS_FLAG_READ_ONLY(md->flags) == md->isreadonly, "wrong isreadonly");
+    META_ASSERT_TRUE(SAI_HAS_FLAG_KEY(md->flags) == md->iskey, "wrong iskey");
 }
 
 void check_attr_object_id_allownull(
