@@ -367,11 +367,11 @@ sub ProcessTagValidOnly
 {
     my ($type, $value, $val) = @_;
 
-    my @conditions = split/\s+or\s+/,$val;
+    my @conditions = split/\s+(?:or|and)\s+/,$val;
 
-    if ($val =~ /and/)
+    if ($val =~/or.+and|and.+or/)
     {
-        LogError "and condition is not supported yet on $value";
+        LogError "mixed conditions and/or is not supported: $val";
         return undef;
     }
 
@@ -384,6 +384,12 @@ sub ProcessTagValidOnly
         }
     }
 
+    # if there is only one condition, then type does not matter
+
+    $type = "SAI_ATTR_CONDITION_TYPE_" . (($val =~ /and/) ? "AND" : "OR");
+
+    unshift @conditions, $type;
+
     return \@conditions;
 }
 
@@ -391,11 +397,11 @@ sub ProcessTagCondition
 {
     my ($type, $value, $val) = @_;
 
-    my @conditions = split/\s+or\s+/,$val;
+    my @conditions = split/\s+(?:or|and)\s+/,$val;
 
-    if ($val =~ /and/)
+    if ($val =~/or.+and|and.+or/)
     {
-        LogError "and condition is not supported yet on $value";
+        LogError "mixed conditions and/or is not supported: $val";
         return undef;
     }
 
@@ -407,6 +413,12 @@ sub ProcessTagCondition
             return undef;
         }
     }
+
+    # if there is only one condition, then type does not matter
+
+    $type = "SAI_ATTR_CONDITION_TYPE_" . (($val =~ /and/) ? "AND" : "OR");
+
+    unshift @conditions, $type;
 
     return \@conditions;
 }
@@ -1152,7 +1164,7 @@ sub ProcessConditionType
 
     return "SAI_ATTR_CONDITION_TYPE_NONE" if not defined $value;
 
-    return "SAI_ATTR_CONDITION_TYPE_OR";
+    return @{$value}[0];
 }
 
 sub ProcessConditions
@@ -1162,6 +1174,8 @@ sub ProcessConditions
     return "NULL" if not defined $conditions;
 
     my @conditions = @{ $conditions };
+
+    shift @conditions;
 
     my $count = 0;
 
@@ -1231,7 +1245,7 @@ sub ProcessConditionsLen
 
     my @conditions = @{ $value };
 
-    return $#conditions + 1;
+    return $#conditions;
 }
 
 sub ProcessValidOnlyType
@@ -1240,7 +1254,7 @@ sub ProcessValidOnlyType
 
     return "SAI_ATTR_CONDITION_TYPE_NONE" if not defined $value;
 
-    return "SAI_ATTR_CONDITION_TYPE_OR";
+    return @{$value}[0];
 }
 
 sub ProcessValidOnly
@@ -1250,6 +1264,8 @@ sub ProcessValidOnly
     return "NULL" if not defined $conditions;
 
     my @conditions = @{ $conditions };
+
+    shift @conditions;
 
     my $count = 0;
 
@@ -1319,7 +1335,7 @@ sub ProcessValidOnlyLen
 
     my @conditions = @{ $value };
 
-    return $#conditions + 1;
+    return $#conditions;
 }
 
 sub ProcessAllowRepeat
