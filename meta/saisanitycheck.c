@@ -3647,6 +3647,35 @@ void check_object_id_non_object_id(
     META_ASSERT_TRUE(oi->isnonobjectid == !oi->isobjectid, "non object id object id not match");
 }
 
+void check_enum_to_attr_map(
+    _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Check whether attribute enum declared has equal number of items as the
+     * number of declared attributes. Item siwth @ignore flag shluld be
+     * removed from enum and attribute should not be created.
+     */
+
+    META_LOG_INFO("checking %s", oi->objecttypename);
+
+    uint32_t i = 0;
+
+    for (; i < oi->enummetadata->valuescount ;i++)
+    {
+        META_LOG_INFO("checking enum %s", oi->enummetadata->valuesnames[i]);
+
+        const sai_attr_metadata_t *m = oi->attrmetadata[i];
+
+        META_ASSERT_NOT_NULL(m);
+
+        META_ASSERT_TRUE(m->attrid == (uint32_t)oi->enummetadata->values[i], "attrid must be equal to enum");
+    }
+
+    META_ASSERT_NULL(oi->attrmetadata[i]);
+}
+
 void check_single_object_info(
     _In_ const sai_object_type_info_t *oi)
 {
@@ -3654,6 +3683,7 @@ void check_single_object_info(
 
     check_quad_api_pointers(oi);
     check_object_id_non_object_id(oi);
+    check_enum_to_attr_map(oi);
 }
 
 void check_api_max()

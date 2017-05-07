@@ -558,6 +558,14 @@ sub ProcessEnumSection
             my $desc = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
 
             ProcessDescription($enumtypename, $enumvaluename, $desc);
+
+            # remove ignored attributes from enums from list
+            # since enum must match attribute list size
+
+            next if not defined $METADATA{$enumtypename}{$enumvaluename}{ignore};
+
+            @values = grep(!/^$enumvaluename$/, @values);
+            $SAI_ENUMS{$enumtypename}{values} = \@values;
         }
     }
 }
@@ -2897,6 +2905,22 @@ sub CheckDoxygenCommentFormating
                 LogWarning "doxygen comment has invalid ident: $file: $line";
             }
         }
+
+        next; # disabled for now since it generates too much changes
+
+        $comment =~ s!^ *(/\*\*|\*/|\* *)!!gm;
+
+        if ($comment =~ m!\@brief\s+(.+?)\n\n!s)
+        {
+            my $brief = $1;
+
+            if (not $brief =~ /\.$/)
+            {
+                LogWarning "brief should end with dot $file: $brief";
+            }
+        }
+
+        my @n = split/^\@\S+ /m,$comment;
     }
 
     while($data =~ m!(([^\n ])+\n */\*\*.{1,30}.+?\n)!isg)
