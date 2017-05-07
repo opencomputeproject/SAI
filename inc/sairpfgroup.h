@@ -19,7 +19,7 @@
  *
  * @file    sairpfgroup.h
  *
- * @brief   This module defines SAI RFP Group interface
+ * @brief   This module defines SAI RPF Group interface
  */
 
 #if !defined (__SAIRPFGROUP_H_)
