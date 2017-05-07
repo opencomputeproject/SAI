@@ -3060,20 +3060,7 @@ sub CheckHeadersStyle
 
     my @acronyms = GetAcronyms();
 
-    my @spellExceptions = qw/ http www apache MERCHANTABILITY Mellanox defgroup
-        Enum param attr VLAN IPv4 IPv6 Vlan inout policer Src Dst Decrement
-        lookups optimizations lookup bool EtherType tx rx validonly enum sai
-        loopback Multicast isvlan 6th nexthop nexthopgroup encap decap src dst
-        wildcard const APIs multi multicast LAGs Linux mcast HQoS
-        childs callee Callee boolean attrvalue unicast Unicast untagged
-        Untagged Policer objlist BGPv6 allownull 0xFF Hostif samplepacket
-        Samplepacket pkts Loopback linklocal lossless Mbps vlan ucast
-        ingressing MCAST netdev AUTONEG decapsulation egressing functionalities
-        rv subnet subnets Uninitialize versa VRFs Netdevice netdevs PGs CRC32
-        HQOS Wildcard VLANs VLAN2 SerDes FC Wakeup warmboot Inservice PVID PHY
-        metadata Metadata TODO Facebook OID OIDs deserialize
-        fprintf struct stderr
-        /;
+    my @spellExceptions = qw/ CRC32 IPv4 IPv6 BGPv6 6th 0xFF /;
 
     my %exceptions = map { $_ => $_ } @spellExceptions;
 
@@ -3368,10 +3355,16 @@ sub CheckHeadersStyle
 
     LogInfo "Words to check: $count";
 
-    my @result = `echo "$all" | /usr/bin/aspell -l en -a`;
+    my @result = `echo "$all" | /usr/bin/aspell -l en -a -p ./aspell.en.pws 2>&1`;
 
     for my $res (@result)
     {
+        if ($res =~/error/i)
+        {
+            LogError "aspell error: $res";
+            last;
+        }
+
         next if not $res =~ /^\s*&\s*(\S+)/;
 
         my $word = $1;
