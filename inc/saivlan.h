@@ -150,7 +150,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_IPV6_MCAST_LOOKUP_KEY_TYPE,
 
     /**
-     * @brief L2MC Group ID that unknown non-IP MACST packets forwarded to
+     * @brief L2MC Group ID that unknown non-IP mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown non-IP multicast packets.
      * This attribute only takes effect when one of the following conditions is met:
@@ -169,7 +169,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_NON_IP_MCAST_OUTPUT_GROUP_ID,
 
     /**
-     * @brief L2MC Group ID that unknown IPv4 MACST packets forwarded to
+     * @brief L2MC Group ID that unknown IPv4 mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown IPv4 multicast packets.
      * This attribute only takes effect when the following condition is met:
@@ -186,7 +186,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_IPV4_MCAST_OUTPUT_GROUP_ID,
 
     /**
-     * @brief L2MC Group ID that unknown IPv6 MACST packets forwarded to
+     * @brief L2MC Group ID that unknown IPv6 mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown IPv6 multicast packets.
      * This attribute only takes effect when the following condition is met:
@@ -203,7 +203,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_IPV6_MCAST_OUTPUT_GROUP_ID,
 
     /**
-     * @brief L2MC Group ID that unknown linklocal MACST packets forwarded to
+     * @brief L2MC Group ID that unknown linklocal mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown linklocal multicast packets.
      * This attribute only takes effect when the following condition is met:

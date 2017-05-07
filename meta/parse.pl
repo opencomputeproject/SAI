@@ -3010,6 +3010,40 @@ sub CheckStructAlignment
     }
 }
 
+sub GetAcronyms
+{
+    # load acronyms list from file
+
+    my $filename = "acronyms.txt";
+
+    open FILE, $filename or die "Couldn't open file $filename: $!";
+
+    my @acronyms;
+
+    while (<FILE>)
+    {
+        chomp;
+        my $line = $_;
+
+        next if $line =~ /(^#|^$)/;
+
+        if (not $line =~ /^([A-Z0-9]{2,})(\s+-\s+(.+))?$/)
+        {
+            LogWarning "invalid line in $filename: $line";
+            next;
+        }
+
+        my $acronym = $1;
+        my $definition = $3;
+
+        push @acronyms,$acronym;
+    }
+
+    close FILE;
+
+    return @acronyms;
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -3022,13 +3056,9 @@ sub CheckHeadersStyle
     # - wrong spacing idient
     #
 
-    my @magicWords = qw/SAI IP MAC L2 ACL L3 GRE ECMP EEE FDB FD FEC ICMP I2C
-        HW IEEE IP2ME L2MC LAG ARP ASIC BGP CAM CBS CB CIR CIDR CRC DLL CPU TTL
-        TOS ECN DSCP TC MACST MTU NPU PFC PBS PCI PIR QOS RFC RFP SDK RSPAN
-        ERSPAN SPAN SNMP SSH STP TCAM TCP UDP TPID UDF UOID VNI VR VRRP WCMP
-        WWW API CCITT RARP CFI MPLS IPMC RPF WRED XON XOFF NHLFE SG OUI/;
-
     # we could put that to local dictionary file
+
+    my @acronyms = GetAcronyms();
 
     my @spellExceptions = qw/ http www apache MERCHANTABILITY Mellanox defgroup
         Enum param attr VLAN IPv4 IPv6 Vlan inout policer Src Dst Decrement
@@ -3233,7 +3263,7 @@ sub CheckHeadersStyle
                 }
             }
 
-            my $pattern = join"|",@magicWords;
+            my $pattern = join"|", @acronyms;
 
             while ($line =~ /\b($pattern)\b/igp)
             {
@@ -3368,7 +3398,14 @@ sub CheckHeadersStyle
             $where = $wordsToCheck{$word};
         }
 
-        LogWarning "Word '$word' is misspelled $where";
+        if ($word =~ /^[A-Z0-9]{2,}$/)
+        {
+            LogWarning "Word '$word' is misspelled or is acronym, add to acronyms.txt? $where";
+        }
+        else
+        {
+            LogWarning "Word '$word' is misspelled $where";
+        }
     }
 }
 

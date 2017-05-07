@@ -457,7 +457,7 @@ typedef struct _sai_qos_map_params_t
     sai_uint8_t pg;
 
     /**
-     * @brief Egress port queue UOID is not known at the time of map creation.
+     * @brief Egress port queue OID is not known at the time of map creation.
      * Using queue index for maps.
      */
     sai_queue_index_t queue_index;
