@@ -180,7 +180,7 @@ typedef enum _sai_policer_attr_t
     /**
      * @brief Action to take for RED color packets
      *
-     * For storm control action should be used as red packet action
+     * For storm control action should be used as red packet action.
      *
      * @type sai_packet_action_t
      * @flags CREATE_ONLY
@@ -191,7 +191,7 @@ typedef enum _sai_policer_attr_t
     /**
      * @brief Enable/disable counter
      *
-     * Default disabled. Modify List Needs full new set
+     * Default disabled. Modify list needs full new set.
      *
      * @type sai_s32_list_t sai_packet_action_t
      * @flags CREATE_AND_SET
@@ -254,7 +254,7 @@ typedef enum _sai_policer_stat_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_policer_fn)(
         _Out_ sai_object_id_t *policer_id,
@@ -267,7 +267,7 @@ typedef sai_status_t (*sai_create_policer_fn)(
  *
  * @param[in] policer_id Policer id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_policer_fn)(
         _In_ sai_object_id_t policer_id);
@@ -278,7 +278,7 @@ typedef sai_status_t (*sai_remove_policer_fn)(
  * @param[in] policer_id Policer id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_policer_attribute_fn)(
         _In_ sai_object_id_t policer_id,
@@ -291,7 +291,7 @@ typedef sai_status_t (*sai_set_policer_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_policer_attribute_fn)(
         _In_ sai_object_id_t policer_id,
@@ -306,7 +306,7 @@ typedef sai_status_t (*sai_get_policer_attribute_fn)(
  * @param[in] counter_ids Array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_policer_stats_fn)(
         _In_ sai_object_id_t policer_id,

@@ -267,7 +267,7 @@ typedef enum _sai_udf_group_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_udf_fn)(
         _Out_ sai_object_id_t *udf_id,
@@ -280,7 +280,7 @@ typedef sai_status_t (*sai_create_udf_fn)(
  *
  * @param[in] udf_id UDF id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_udf_fn)(
         _In_ sai_object_id_t udf_id);
@@ -291,7 +291,7 @@ typedef sai_status_t (*sai_remove_udf_fn)(
  * @param[in] udf_id UDF id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_udf_attribute_fn)(
         _In_ sai_object_id_t udf_id,
@@ -304,7 +304,7 @@ typedef sai_status_t (*sai_set_udf_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_udf_attribute_fn)(
         _In_ sai_object_id_t udf_id,
@@ -319,7 +319,7 @@ typedef sai_status_t (*sai_get_udf_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_udf_match_fn)(
         _Out_ sai_object_id_t *udf_match_id,
@@ -332,7 +332,7 @@ typedef sai_status_t (*sai_create_udf_match_fn)(
  *
  * @param[in] udf_match_id UDF match id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_udf_match_fn)(
         _In_ sai_object_id_t udf_match_id);
@@ -343,7 +343,7 @@ typedef sai_status_t (*sai_remove_udf_match_fn)(
  * @param[in] udf_match_id UDF match id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_udf_match_attribute_fn)(
         _In_ sai_object_id_t udf_match_id,
@@ -356,7 +356,7 @@ typedef sai_status_t (*sai_set_udf_match_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list List of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_udf_match_attribute_fn)(
         _In_ sai_object_id_t udf_match_id,
@@ -371,7 +371,7 @@ typedef sai_status_t (*sai_get_udf_match_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_udf_group_fn)(
         _Out_ sai_object_id_t *udf_group_id,
@@ -384,7 +384,7 @@ typedef sai_status_t (*sai_create_udf_group_fn)(
  *
  * @param[in] udf_group_id UDF group id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_udf_group_fn)(
         _In_ sai_object_id_t udf_group_id);
@@ -395,7 +395,7 @@ typedef sai_status_t (*sai_remove_udf_group_fn)(
  * @param[in] udf_group_id UDF group id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_udf_group_attribute_fn)(
         _In_ sai_object_id_t udf_group_id,
@@ -408,7 +408,7 @@ typedef sai_status_t (*sai_set_udf_group_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_udf_group_attribute_fn)(
         _In_ sai_object_id_t udf_group_id,

@@ -125,7 +125,7 @@ typedef enum _sai_qos_map_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_qos_map_fn)(
         _Out_ sai_object_id_t *qos_map_id,
@@ -138,7 +138,7 @@ typedef sai_status_t (*sai_create_qos_map_fn)(
  *
  * @param[in] qos_map_id QOS Map id to be removed.
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_qos_map_fn)(
         _In_ sai_object_id_t qos_map_id);
@@ -149,7 +149,7 @@ typedef sai_status_t (*sai_remove_qos_map_fn)(
  * @param[in] qos_map_id QOS Map Id
  * @param[in] attr Attribute to set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_qos_map_attribute_fn)(
         _In_ sai_object_id_t qos_map_id,
@@ -162,7 +162,7 @@ typedef sai_status_t (*sai_set_qos_map_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_qos_map_attribute_fn)(
         _In_ sai_object_id_t qos_map_id,

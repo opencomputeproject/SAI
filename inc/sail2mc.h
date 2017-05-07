@@ -96,8 +96,8 @@ typedef enum _sai_l2mc_entry_attr_t
     /**
      * @brief L2MC entry output group id
      *
-     * This attribute only takes effect when ATTR_PACKET_ACTION is set to FORWARD.
-     * If the group has no member, packets will be discarded.
+     * This attribute only takes effect when ATTR_PACKET_ACTION is set to
+     * FORWARD. If the group has no member, packets will be discarded.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -128,7 +128,7 @@ typedef enum _sai_l2mc_entry_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_l2mc_entry_fn)(
         _In_ const sai_l2mc_entry_t *l2mc_entry,
@@ -140,7 +140,7 @@ typedef sai_status_t (*sai_create_l2mc_entry_fn)(
  *
  * @param[in] l2mc_entry L2MC entry
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_l2mc_entry_fn)(
         _In_ const sai_l2mc_entry_t *l2mc_entry);
@@ -151,7 +151,7 @@ typedef sai_status_t (*sai_remove_l2mc_entry_fn)(
  * @param[in] l2mc_entry L2MC entry
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_l2mc_entry_attribute_fn)(
         _In_ const sai_l2mc_entry_t *l2mc_entry,
@@ -164,7 +164,7 @@ typedef sai_status_t (*sai_set_l2mc_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_l2mc_entry_attribute_fn)(
         _In_ const sai_l2mc_entry_t *l2mc_entry,

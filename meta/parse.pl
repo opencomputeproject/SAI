@@ -3180,7 +3180,7 @@ sub CheckHeadersStyle
                 }
             }
 
-            if ($line =~ /typedef.+_fn\s*\)/ and not $line =~ /typedef( \S+)+ ?\(\*\w+_fn\)\(/)
+            if ($line =~ /typedef.+_fn\s*\)/ and not $line =~ /typedef( \S+)+ \(\*\w+_fn\)\(/)
             {
                 LogWarning "wrong style typedef function definition $header:$n:$line";
             }
@@ -3218,6 +3218,16 @@ sub CheckHeadersStyle
             if ($line =~ /sai_\w+_statistics_fn/)
             {
                 LogWarning "statistics should use 'stats' to follow convention $header:$n:$line";
+            }
+
+            if ($line =~ /^\s*SAI_\w+\s*=\s*+0x(\w+)(,|$)/ and length($1) != 8)
+            {
+                LogWarning "enum number '0x$1' should have 8 digits $header:$n:$line";
+            }
+
+            if ($line =~ /^\s*SAI_\w+(\s*)=(\s*)/ and ($1 eq "" or $2 eq ""))
+            {
+                LogWarning "space is required before and after '=' $header:$n:$line";
             }
 
             if ($line =~ /#define\s*(\w+)/ and $header ne "saitypes.h")

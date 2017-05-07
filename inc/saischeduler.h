@@ -71,12 +71,12 @@ typedef enum _sai_scheduler_attr_t
     /**
      * @brief Scheduling algorithm weight
      *
-     * Range [1 - 100]
-     * Valid when #SAI_SCHEDULER_ATTR_SCHEDULING_TYPE = #SAI_SCHEDULING_TYPE_DWRR
+     * Range [1 - 100].
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 1
+     * @validonly SAI_SCHEDULER_ATTR_SCHEDULING_TYPE == SAI_SCHEDULING_TYPE_DWRR
      */
     SAI_SCHEDULER_ATTR_SCHEDULING_WEIGHT = 0x00000001,
 
@@ -92,7 +92,7 @@ typedef enum _sai_scheduler_attr_t
     /**
      * @brief Guaranteed Bandwidth shape rate [bytes/sec or PPS]
      *
-     * Value 0 to No Limit
+     * Value 0 to no limit.
      *
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
@@ -112,7 +112,7 @@ typedef enum _sai_scheduler_attr_t
     /**
      * @brief Maximum Bandwidth shape rate [bytes/sec or PPS]
      *
-     * Value 0 to No limit
+     * Value 0 to no limit.
      *
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
@@ -150,7 +150,7 @@ typedef enum _sai_scheduler_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_scheduler_fn)(
         _Out_ sai_object_id_t *scheduler_id,
@@ -163,7 +163,7 @@ typedef sai_status_t (*sai_create_scheduler_fn)(
  *
  * @param[in] scheduler_id Scheduler id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_scheduler_fn)(
         _In_ sai_object_id_t scheduler_id);
@@ -174,7 +174,7 @@ typedef sai_status_t (*sai_remove_scheduler_fn)(
  * @param[in] scheduler_id Scheduler id
  * @param[in] attr Attribute to set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_scheduler_attribute_fn)(
         _In_ sai_object_id_t scheduler_id,
@@ -187,7 +187,7 @@ typedef sai_status_t (*sai_set_scheduler_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_scheduler_attribute_fn)(
         _In_ sai_object_id_t scheduler_id,
