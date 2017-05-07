@@ -189,9 +189,10 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION_PACKET_ACTION,
 
     /**
-     * @brief Admin Mode. Before removing a bridge port, need to
-     * disable it by setting admin mode to false, then flush the FDB entries, and
-     * then remove it.
+     * @brief Admin Mode.
+     *
+     * Before removing a bridge port, need to disable it by setting admin mode
+     * to false, then flush the FDB entries, and then remove it.
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -220,7 +221,7 @@ typedef enum _sai_bridge_port_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_bridge_port_fn)(
         _Out_ sai_object_id_t *bridge_port_id,
@@ -233,7 +234,7 @@ typedef sai_status_t (*sai_create_bridge_port_fn)(
  *
  * @param[in] bridge_port_id Bridge port ID
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_bridge_port_fn)(
         _In_ sai_object_id_t bridge_port_id);
@@ -244,9 +245,9 @@ typedef sai_status_t (*sai_remove_bridge_port_fn)(
  * @param[in] bridge_port_id Bridge port ID
  * @param[in] attr Attribute to set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_set_bridge_port_attribute_fn)(
+typedef sai_status_t (*sai_set_bridge_port_attribute_fn)(
         _In_ sai_object_id_t bridge_port_id,
         _In_ const sai_attribute_t *attr);
 
@@ -257,9 +258,9 @@ typedef sai_status_t(*sai_set_bridge_port_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_bridge_port_attribute_fn)(
+typedef sai_status_t (*sai_get_bridge_port_attribute_fn)(
         _In_ sai_object_id_t bridge_port_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -307,7 +308,7 @@ typedef enum _sai_bridge_attr_t
     /**
      * @brief Maximum number of learned MAC addresses
      *
-     * Zero means learning limit disable
+     * Zero means learning limit is disabled.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -345,9 +346,9 @@ typedef enum _sai_bridge_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_bridge_fn)(
+typedef sai_status_t (*sai_create_bridge_fn)(
         _Out_ sai_object_id_t *bridge_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -358,7 +359,7 @@ typedef sai_status_t(*sai_create_bridge_fn)(
  *
  * @param[in] bridge_id Bridge ID
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_bridge_fn)(
         _In_ sai_object_id_t bridge_id);
@@ -369,9 +370,9 @@ typedef sai_status_t (*sai_remove_bridge_fn)(
  * @param[in] bridge_id Bridge ID
  * @param[in] attr Attribute to set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_set_bridge_attribute_fn)(
+typedef sai_status_t (*sai_set_bridge_attribute_fn)(
         _In_ sai_object_id_t bridge_id,
         _In_ const sai_attribute_t *attr);
 
@@ -382,9 +383,9 @@ typedef sai_status_t(*sai_set_bridge_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_bridge_attribute_fn)(
+typedef sai_status_t (*sai_get_bridge_attribute_fn)(
         _In_ sai_object_id_t bridge_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);

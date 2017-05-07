@@ -71,7 +71,7 @@ extern volatile sai_log_level_t sai_metadata_log_level;
 /**
  * @brief Helper log macro definition
  *
- * If logger function is NULL, stderr is used to print messages. Also fprintf
+ * If logger function is NULL, stderr is used to print messages. Also, fprintf
  * function will validate parameters at compilation time.
  */
 #define SAI_META_LOG(loglevel,format,...)\

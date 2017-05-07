@@ -87,7 +87,8 @@ typedef enum _sai_wred_attr_t
      * @brief Green minimum threshold bytes
      *
      * Range 1 - Max Buffer size.
-     * default to 0 i.e Maximum buffer size
+     *
+     * Default to 0 i.e. maximum buffer size.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -100,7 +101,7 @@ typedef enum _sai_wred_attr_t
      * @brief Green maximum threshold
      *
      * Range 1 - Max Buffer size.
-     * default to 0 i.e Maximum buffer size
+     * Default to 0 i.e. maximum buffer size.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -247,7 +248,7 @@ typedef enum _sai_wred_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_wred_fn)(
         _Out_ sai_object_id_t *wred_id,
@@ -260,7 +261,7 @@ typedef sai_status_t (*sai_create_wred_fn)(
  *
  * @param[in] wred_id WRED profile Id.
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_wred_fn)(
         _In_ sai_object_id_t wred_id);
@@ -271,7 +272,7 @@ typedef sai_status_t (*sai_remove_wred_fn)(
  * @param[in] wred_id WRED profile Id.
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_wred_attribute_fn)(
         _In_ sai_object_id_t wred_id,
@@ -284,7 +285,7 @@ typedef sai_status_t (*sai_set_wred_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_wred_attribute_fn)(
         _In_ sai_object_id_t wred_id,

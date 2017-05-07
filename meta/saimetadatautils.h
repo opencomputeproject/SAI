@@ -39,7 +39,7 @@
  * @param[in] metadata Attribute metadata
  * @param[in] object_type Object type to be checked
  *
- * @return True if object is allowed on on this attribute, false otherwise
+ * @return True if object is allowed on this attribute, false otherwise
  */
 extern bool sai_metadata_is_allowed_object_type(
         _In_ const sai_attr_metadata_t *metadata,

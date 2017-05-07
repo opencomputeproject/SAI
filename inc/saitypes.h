@@ -355,7 +355,8 @@ typedef struct _sai_acl_field_data_t
     } mask;
 
     /**
-     * @brief Expected AND result using match mask above with packet field value where applicable.
+     * @brief Expected AND result using match mask above with packet field
+     * value where applicable.
      */
     union {
         bool booldata;
@@ -532,7 +533,8 @@ typedef struct _sai_acl_capability_t
 {
     /**
      * @brief Output from get function.
-     * boolean indicating whether action list is mandatory for table creation
+     *
+     * Flag indicating whether action list is mandatory for table creation.
      */
     bool is_action_list_mandatory;
 
@@ -540,7 +542,7 @@ typedef struct _sai_acl_capability_t
      * @brief Output from get function.
      *
      * List of actions supported per stage from the sai_acl_table_action_list_t.
-     * Max action list can be obtained using the #SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT
+     * Max action list can be obtained using the #SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT.
      */
     sai_s32_list_t action_list;
 } sai_acl_capability_t;

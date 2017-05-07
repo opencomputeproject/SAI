@@ -44,7 +44,7 @@ typedef enum _sai_scheduler_group_attr_t
     SAI_SCHEDULER_GROUP_ATTR_START = 0x00000000,
 
     /**
-     * @brief Number of queues/groups childs added to
+     * @brief Number of queues/groups childs added to scheduler
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -126,7 +126,7 @@ typedef enum _sai_scheduler_group_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_scheduler_group_fn)(
         _Out_ sai_object_id_t *scheduler_group_id,
@@ -139,7 +139,7 @@ typedef sai_status_t (*sai_create_scheduler_group_fn)(
  *
  * @param[in] scheduler_group_id Scheduler group id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_scheduler_group_fn)(
         _In_ sai_object_id_t scheduler_group_id);
@@ -150,7 +150,7 @@ typedef sai_status_t (*sai_remove_scheduler_group_fn)(
  * @param[in] scheduler_group_id Scheduler group id
  * @param[in] attr Attribute to set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_scheduler_group_attribute_fn)(
         _In_ sai_object_id_t scheduler_group_id,
@@ -163,7 +163,7 @@ typedef sai_status_t (*sai_set_scheduler_group_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_scheduler_group_attribute_fn)(
         _In_ sai_object_id_t scheduler_group_id,

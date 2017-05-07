@@ -94,7 +94,7 @@ typedef enum _sai_queue_attr_t
      *
      * In case of Hierarchical QOS not supported, the parent node is the port.
      * Condition on whether Hierarchical QOS is supported or not, need to remove
-     * the MANDATORY_ON_CREATE FLAG when HQoS is introduced
+     * the MANDATORY_ON_CREATE FLAG when HQoS is introduced.
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -265,7 +265,7 @@ typedef enum _sai_queue_stat_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_queue_fn)(
         _Out_ sai_object_id_t *queue_id,
@@ -278,7 +278,7 @@ typedef sai_status_t (*sai_create_queue_fn)(
  *
  * @param[in] queue_id Queue id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_queue_fn)(
         _In_ sai_object_id_t queue_id);
@@ -289,7 +289,7 @@ typedef sai_status_t (*sai_remove_queue_fn)(
  * @param[in] queue_id Queue ID to set the attribute
  * @param[in] attr Attribute to set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_queue_attribute_fn)(
         _In_ sai_object_id_t queue_id,
@@ -302,7 +302,7 @@ typedef sai_status_t (*sai_set_queue_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_queue_attribute_fn)(
         _In_ sai_object_id_t queue_id,
@@ -317,7 +317,7 @@ typedef sai_status_t (*sai_get_queue_attribute_fn)(
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,
@@ -332,7 +332,7 @@ typedef sai_status_t (*sai_get_queue_stats_fn)(
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_clear_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,

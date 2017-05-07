@@ -151,8 +151,8 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_VLAN_CFI,
 
     /*
-     * All attributes below are Valid only for ERSPAN
-     * SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
+     * All attributes below are valid only for ERSPAN
+     * SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE.
      */
 
     /**
