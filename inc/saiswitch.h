@@ -1162,7 +1162,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_INIT_SWITCH,
 
     /**
-     * @brief Set Switch operational status change notification callback
+     * @brief Operational status change notification callback
      * function passed to the adapter.
      *
      * Use sai_switch_state_change_notification_fn as notification function.
@@ -1174,7 +1174,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY,
 
     /**
-     * @brief Set Switch shutdown notification callback function passed to the adapter.
+     * @brief Shutdown notification callback function passed to the adapter.
      *
      * Use sai_switch_shutdown_request_notification_fn as notification function.
      *
@@ -1185,7 +1185,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY,
 
     /**
-     * @brief Set Switch FDB event notification callback function passed to the adapter.
+     * @brief FDB event notification callback function passed to the adapter.
      *
      * Use sai_fdb_event_notification_fn as notification function.
      *
@@ -1196,7 +1196,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY,
 
     /**
-     * @brief Set Switch Port state change notification callback function passed to the adapter.
+     * @brief Port state change notification callback function passed to the adapter.
      *
      * Use sai_port_state_change_notification_fn as notification function.
      *
@@ -1207,7 +1207,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
 
     /**
-     * @brief Set Switch Received packet event notification callback function passed to the adapter.
+     * @brief Received packet event notification callback function passed to the adapter.
      *
      * Use sai_packet_event_notification_fn as notification function.
      *
@@ -1218,7 +1218,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
 
     /**
-     * @brief Set Switch TAM event notification callback function passed to the adapter.
+     * @brief TAM event notification callback function passed to the adapter.
      *
      * Use sai_tam_event_notification_fn as notification function.
      *
