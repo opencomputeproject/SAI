@@ -333,6 +333,8 @@ typedef enum _sai_attr_value_type_t
 
 /**
  * @brief Attribute flags.
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_attr_flags_t
 {
@@ -584,6 +586,13 @@ typedef struct _sai_enum_metadata_t
      * @brief Array of enum values string short names.
      */
     const char**    valuesshortnames;
+
+    /**
+     * @brief Indicates whether enumeration contains flags.
+     *
+     * When set to true numbers of enumeration are not continuous.
+     */
+    bool            containsflags;
 
 } sai_enum_metadata_t;
 

@@ -151,6 +151,8 @@ typedef sai_status_t (*sai_get_hostif_trap_group_attribute_fn)(
 
 /**
  * @brief Host interface trap type
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_hostif_trap_type_t
 {
