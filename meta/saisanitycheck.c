@@ -1109,6 +1109,16 @@ void check_attr_conditions(
 
             case SAI_ATTR_VALUE_TYPE_INT32:
 
+                /*
+                 * Currently force conditional int32 attributes to be enum.
+                 * This can be relaxed later when needed.
+                 */
+
+                if (!cmd->isenum)
+                {
+                    META_ASSERT_FAIL(md, "conditional attribute %s is not enum type", cmd->attridname);
+                }
+
                 if (cmd->isenum)
                 {
                     /* condition value can be a number or enum */
@@ -1285,6 +1295,16 @@ void check_attr_validonly(
                 break;
 
             case SAI_ATTR_VALUE_TYPE_INT32:
+
+                /*
+                 * Currently force conditional int32 attributes to be enum.
+                 * This can be relaxed later when needed.
+                 */
+
+                if (!cmd->isenum)
+                {
+                    META_ASSERT_FAIL(md, "validonly attribute %s is not enum type", cmd->attridname);
+                }
 
                 if (cmd->isenum)
                 {
