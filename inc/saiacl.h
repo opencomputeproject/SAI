@@ -385,6 +385,8 @@ typedef enum _sai_acl_table_group_member_attr_t
 
 /**
  * @brief Attribute Id for sai_acl_table
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_acl_table_attr_t
 {
@@ -958,6 +960,8 @@ typedef enum _sai_acl_table_attr_t
 
 /**
  * @brief Attribute Id for sai_acl_entry
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_acl_entry_attr_t
 {

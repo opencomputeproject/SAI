@@ -30,6 +30,9 @@ defined_attr_t* defined_attributes = NULL;
 #define META_WARN_LOG(format, ...)\
     fprintf(stderr, "WARN: " format "\n", ##__VA_ARGS__);
 
+#define META_NOTE_LOG(format, ...)\
+    fprintf(stderr, "NOTE: " format "\n", ##__VA_ARGS__);
+
 #define META_ASSERT_FAIL(md, format, ...)\
 {\
     fprintf(stderr, \
@@ -110,24 +113,7 @@ bool is_flag_enum(const sai_enum_metadata_t* emd)
 {
     META_LOG_ENTER();
 
-    const char* flagenums[] = {
-        "sai_acl_entry_attr_t",
-        "sai_acl_table_attr_t",
-        "sai_attr_flags_t",
-        "sai_hostif_trap_type_t",
-    };
-
-    size_t i = 0;
-
-    for (; i < sizeof(flagenums)/sizeof(const char*); ++i)
-    {
-        if (strcmp(emd->name, flagenums[i]) == 0)
-        {
-            return true;
-        }
-    }
-
-    return false;
+    return emd->containsflags;
 }
 
 void check_all_enums_values()
@@ -141,6 +127,8 @@ void check_all_enums_values()
         const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
 
         META_LOG_INFO("enum: %s", emd->name);
+
+        bool flags = false;
 
         size_t j = 0;
 
@@ -166,6 +154,8 @@ void check_all_enums_values()
             {
                 if (value != 0)
                 {
+                    flags = true;
+
                     if (is_flag_enum(emd))
                     {
                         /* ok, flags not need zero enum */
@@ -179,6 +169,8 @@ void check_all_enums_values()
 
             if (value != last + 1)
             {
+                flags = true;
+
                 if (is_flag_enum(emd))
                 {
                     /* flags, ok */
@@ -192,6 +184,13 @@ void check_all_enums_values()
             last = emd->values[j];
 
             META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
+        }
+
+        META_ASSERT_TRUE(emd->values[j] == -1, "missing guard at the end of enum");
+
+        if (flags != emd->containsflags)
+        {
+            META_ENUM_ASSERT_FAIL(emd, "enum flags: %d but declared as %d", flags, emd->containsflags);
         }
     }
 }
@@ -2131,7 +2130,7 @@ void check_attr_existing_objects(
              * since we will not be able to bring it to default.
              */
 
-            META_WARN_LOG("Default value needs to be stored %s", md->attridname);
+            META_NOTE_LOG("Default value needs to be stored %s", md->attridname);
 
             break;
 

@@ -504,6 +504,10 @@ sub ProcessEnumSection
             next;
         }
 
+        my $ed = ExtractDescription($enumtypename, $enumtypename, $memberdef->{detaileddescription}[0]);
+
+        $SAI_ENUMS{$enumtypename}{flagsenum} = ($ed =~ /\@\@flags/s) ? "true" : "false";
+
         my @arr = ();
 
         $SAI_ENUMS{$enumtypename}{values} = \@arr;
@@ -655,7 +659,8 @@ sub ProcessSingleEnum
 
     my @values = @{$enum->{values}};
 
-    WriteSource "const char sai_metadata_${typedef}_enum_name[] = \"$typedef\";";
+    my $flags = (defined $enum->{flagsenum}) ? $enum->{flagsenum} : "false";
+
     WriteSource "const $typedef sai_metadata_${typedef}_enum_values[] = {";
 
     for my $value (@values)
@@ -664,6 +669,8 @@ sub ProcessSingleEnum
 
         WriteSource "    $value,";
     }
+
+    WriteSource "    -1"; # guard
 
     WriteSource "};";
 
@@ -689,9 +696,18 @@ sub ProcessSingleEnum
     WriteSource "    NULL";
     WriteSource "};";
 
-    my $count = $#values + 1;
+    my $count = @values;
 
-    WriteSource "const size_t sai_metadata_${typedef}_enum_values_count = $count;";
+    WriteHeader "extern const sai_enum_metadata_t sai_metadata_enum_$typedef;";
+
+    WriteSource "const sai_enum_metadata_t sai_metadata_enum_$typedef = {";
+    WriteSource "    .name              = \"${typedef}\",";
+    WriteSource "    .valuescount       = $count,";
+    WriteSource "    .values            = (const int*)sai_metadata_${typedef}_enum_values,";
+    WriteSource "    .valuesnames       = sai_metadata_${typedef}_enum_values_names,";
+    WriteSource "    .valuesshortnames  = sai_metadata_${typedef}_enum_values_short_names,";
+    WriteSource "    .containsflags     = $flags,";
+    WriteSource "};";
 
     return $count;
 }
@@ -724,15 +740,6 @@ sub CreateMetadataHeaderAndSource
     WriteSource "#include <stdio.h>";
     WriteSource "#include \"saimetadata.h\"";
 
-    WriteSource "#define DEFINE_ENUM_METADATA(x,count)\\";
-    WriteSource "const sai_enum_metadata_t sai_metadata_enum_ ## x = {\\";
-    WriteSource "    .name              = sai_metadata_ ## x ## _enum_name,\\";
-    WriteSource "    .valuescount       = count,\\";
-    WriteSource "    .values            = (const int*)sai_metadata_ ## x ## _enum_values,\\";
-    WriteSource "    .valuesnames       = sai_metadata_ ## x ## _enum_values_names,\\";
-    WriteSource "    .valuesshortnames  = sai_metadata_ ## x ## _enum_values_short_names,\\";
-    WriteSource "};";
-
     for my $key (sort keys %SAI_ENUMS)
     {
         if (not $key =~ /^((sai_\w+_)t)$/)
@@ -741,10 +748,7 @@ sub CreateMetadataHeaderAndSource
             next;
         }
 
-        my $count = ProcessSingleEnum($key, $1, uc $2);
-
-        WriteHeader "extern const sai_enum_metadata_t sai_metadata_enum_$1;";
-        WriteSource "DEFINE_ENUM_METADATA($1, $count);";
+        ProcessSingleEnum($key, $1, uc $2);
     }
 
     # all enums
@@ -962,9 +966,9 @@ sub ProcessObjectsLen
 
     return "0" if not defined $objects;
 
-    my @objs =@{ $objects };
+    my $count = @{ $objects };
 
-    return $#objs + 1;
+    return $count;
 }
 
 sub ProcessDefaultValueType
@@ -1609,7 +1613,7 @@ sub CreateMetadataForAttributes
     WriteSource "    NULL";
     WriteSource "};";
 
-    my $count = $#objects + 1;
+    my $count = @objects;
 
     WriteHeader "extern const size_t sai_metadata_attr_by_object_type_count;";
     WriteSource "const size_t sai_metadata_attr_by_object_type_count = $count;";
