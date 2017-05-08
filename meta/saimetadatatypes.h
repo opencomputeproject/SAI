@@ -617,6 +617,11 @@ typedef struct _sai_attr_metadata_t
     const char* const                   attridname;
 
     /**
+     * @brief Extracted brief description from Doxygen comment.
+     */
+    const char* const                   brief;
+
+    /**
      * @brief Specifies attribute value type for this attribute.
      */
     sai_attr_value_type_t               attrvaluetype;

@@ -142,6 +142,28 @@ sub ExtractDescription
         return $content;
     }
 
+    if (defined $item->{content} and defined $item->{ref})
+    {
+        my $n = 0;
+
+        if (ref ($item->{content}) eq "")
+        {
+            # content is just string
+
+            return $item->{content} . $item->{ref}[0]->{content};
+        }
+
+        for my $c ( @{ $item->{content} })
+        {
+            my $ref = $item->{ref}[$n++]->{content};
+
+            # ref array can be 1 item shorter than content
+
+            $content .= $c;
+            $content .= $ref if defined $ref;
+        }
+    }
+
     return $content;
 }
 
@@ -442,7 +464,7 @@ sub ProcessTagIsVlan
 
 sub ProcessDescription
 {
-    my ($type, $value, $desc) = @_;
+    my ($type, $value, $desc, $brief) = @_;
 
     my @order = ();
 
@@ -471,6 +493,11 @@ sub ProcessDescription
         $METADATA{$type}{$value}{objecttype}    = $type;
         $METADATA{$type}{$value}{attrid}        = $value;
     }
+
+    $brief =~ s/^\s*//;
+    $brief =~ s/\s*$//;
+
+    $METADATA{$type}{$value}{brief} = $brief if $brief ne "";
 
     my $count = @order;
 
@@ -560,8 +587,9 @@ sub ProcessEnumSection
             my $enumvaluename = $ev->{name}[0];
 
             my $desc = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
+            my $brief = ExtractDescription($enumtypename, $enumvaluename, $ev->{briefdescription}[0]);
 
-            ProcessDescription($enumtypename, $enumvaluename, $desc);
+            ProcessDescription($enumtypename, $enumvaluename, $desc, $brief);
 
             # remove ignored attributes from enums from list
             # since enum must match attribute list size
@@ -1312,7 +1340,7 @@ sub ProcessAttrName
     return "\"$attr\"";
 }
 
-sub  ProcessIsAclField
+sub ProcessIsAclField
 {
     my $attr = shift;
 
@@ -1321,13 +1349,36 @@ sub  ProcessIsAclField
     return "false";
 }
 
-sub  ProcessIsAclAction
+sub ProcessIsAclAction
 {
     my $attr = shift;
 
     return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_ACTION_\w+$/;
 
     return "false";
+}
+
+sub ProcessBrief
+{
+    my ($attr, $brief) = @_;
+
+    if (not defined $brief or $brief eq "")
+    {
+        LogWarning "missing brief description for $attr";
+        return "";
+    }
+
+    if ($brief =~ m!([^\x20-\x7e]|\\|")!is)
+    {
+        LogWarning "Not allowed char '$1' in brief description on $attr: $brief";
+    }
+
+    if (length $brief > 200)
+    {
+        LogWarning "Long brief > 200 on $attr:\n - $brief";
+    }
+
+    return "\"$brief\"";
 }
 
 sub ProcessSingleObjectType
@@ -1376,6 +1427,7 @@ sub ProcessSingleObjectType
         my $getsave         = ProcessGetSave($attr, $meta{getsave});
         my $isaclfield      = ProcessIsAclField($attr);
         my $isaclaction     = ProcessIsAclAction($attr);
+        my $brief           = ProcessBrief($attr, $meta{brief});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -1388,6 +1440,7 @@ sub ProcessSingleObjectType
         WriteSource "    .objecttype                    = $objecttype,";
         WriteSource "    .attrid                        = $attr,";
         WriteSource "    .attridname                    = $attrname,";
+        WriteSource "    .brief                         = $brief,";
         WriteSource "    .attrvaluetype                 = $type,";
         WriteSource "    .flags                         = $flags,";
         WriteSource "    .allowedobjecttypes            = $objects,";

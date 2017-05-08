@@ -878,7 +878,8 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP,
 
     /**
-     * @brief Enable PFC Priority -> Queue MAP
+     * @brief Enable PFC Priority -> Queue MAP.
+     *
      * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
      * Default no map
      *
