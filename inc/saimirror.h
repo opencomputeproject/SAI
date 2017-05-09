@@ -110,7 +110,9 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TC,
 
     /**
-     * @brief L2 header TPID. Valid for RSPAN or ERSPAN with valid Vlan header
+     * @brief L2 header TPID.
+     *
+     * Valid for RSPAN or ERSPAN with valid Vlan header.
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
@@ -121,7 +123,9 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_VLAN_TPID,
 
     /**
-     * @brief L2 header VLAN Id. Valid for RSPAN or ERSPAN with valid Vlan header
+     * @brief L2 header VLAN Id.
+     *
+     * Valid for RSPAN or ERSPAN with valid Vlan header.
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -131,7 +135,9 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_VLAN_ID,
 
     /**
-     * @brief L2 header packet priority (3 bits). Valid for RSPAN or ERSPAN with valid Vlan header
+     * @brief L2 header packet priority (3 bits).
+     *
+     * Valid for RSPAN or ERSPAN with valid Vlan header.
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -141,7 +147,9 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_VLAN_PRI,
 
     /**
-     * @brief L2 header Vlan CFI (1 bit). Valid for RSPAN or ERSPAN with valid Vlan header
+     * @brief L2 header Vlan CFI (1 bit).
+     *
+     * Valid for RSPAN or ERSPAN with valid Vlan header.
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -151,8 +159,8 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_VLAN_CFI,
 
     /*
-     * All attributes below are Valid only for ERSPAN
-     * SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
+     * All attributes below are valid only for ERSPAN
+     * SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE.
      */
 
     /**

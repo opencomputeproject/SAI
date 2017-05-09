@@ -67,8 +67,8 @@ typedef enum _sai_route_entry_attr_t
      * @brief Next hop or next hop group id for the packet, or a router interface
      * in case of directly reachable route, or the CPU port in case of IP2ME route
      *
-     * The next hop id is only effective when the packet action is one of the following:
-     * FORWARD, COPY, LOG, TRANSIT
+     * The next hop id is only effective when the packet action is one of the
+     * following: FORWARD, COPY, LOG, TRANSIT.
      *
      * The next hop id can be a generic next hop object, such as next hop, next
      * hop group. Directly reachable routes are the IP subnets that are
@@ -146,7 +146,7 @@ typedef struct _sai_route_entry_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_route_entry_fn)(
         _In_ const sai_route_entry_t *route_entry,
@@ -160,7 +160,7 @@ typedef sai_status_t (*sai_create_route_entry_fn)(
  *
  * @param[in] route_entry Route entry
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_route_entry_fn)(
         _In_ const sai_route_entry_t *route_entry);
@@ -171,7 +171,7 @@ typedef sai_status_t (*sai_remove_route_entry_fn)(
  * @param[in] route_entry Route entry
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_route_entry_attribute_fn)(
         _In_ const sai_route_entry_t *route_entry,
@@ -184,7 +184,7 @@ typedef sai_status_t (*sai_set_route_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_route_entry_attribute_fn)(
         _In_ const sai_route_entry_t *route_entry,

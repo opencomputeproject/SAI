@@ -4,9 +4,6 @@ use strict;
 use warnings;
 use diagnostics;
 
-# disable for experimental::autoderef push pop
-no warnings "experimental";
-
 use XML::Simple qw(:strict);
 use Getopt::Std;
 use Data::Dumper;
@@ -20,6 +17,8 @@ my %SAI_ENUMS = ();
 my %METADATA = ();
 my %STRUCTS = ();
 my %options = ();
+
+my $NUMBER_REGEX = '(?:-?\d+|0x[A-F0-9]+)';
 
 # pointers used in switch object for notifications
 my @pointers = ();
@@ -43,12 +42,11 @@ my %TAGS = (
         "objects"   , \&ProcessTagObjects,
         "allownull" , \&ProcessTagAllowNull,
         "condition" , \&ProcessTagCondition,
-        "validonly" , \&ProcessTagValidOnly,
+        "validonly" , \&ProcessTagCondition, # since validonly uses same format as condition
         "default"   , \&ProcessTagDefault,
         "ignore"    , \&ProcessTagIgnore,
         "isvlan"    , \&ProcessTagIsVlan,
         "getsave"   , \&ProcessTagGetSave,
-
         );
 
 getopts("d",\%options);
@@ -142,6 +140,28 @@ sub ExtractDescription
         }
 
         return $content;
+    }
+
+    if (defined $item->{content} and defined $item->{ref})
+    {
+        my $n = 0;
+
+        if (ref ($item->{content}) eq "")
+        {
+            # content is just string
+
+            return $item->{content} . $item->{ref}[0]->{content};
+        }
+
+        for my $c ( @{ $item->{content} })
+        {
+            my $ref = $item->{ref}[$n++]->{content};
+
+            # ref array can be 1 item shorter than content
+
+            $content .= $c;
+            $content .= $ref if defined $ref;
+        }
     }
 
     return $content;
@@ -370,50 +390,32 @@ sub ProcessTagAllowNull
     return $val;
 }
 
-sub ProcessTagValidOnly
-{
-    my ($type, $value, $val) = @_;
-
-    my @conditions = split/\s+or\s+/,$val;
-
-    if ($val =~ /and/)
-    {
-        LogError "and condition is not supported yet on $value";
-        return undef;
-    }
-
-    for my $cond (@conditions)
-    {
-        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
-        {
-            LogError "invalid validonly tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM";
-            return undef;
-        }
-    }
-
-    return \@conditions;
-}
-
 sub ProcessTagCondition
 {
     my ($type, $value, $val) = @_;
 
-    my @conditions = split/\s+or\s+/,$val;
+    my @conditions = split/\s+(?:or|and)\s+/,$val;
 
-    if ($val =~ /and/)
+    if ($val =~/or.+and|and.+or/)
     {
-        LogError "and condition is not supported yet on $value";
+        LogError "mixed conditions and/or is not supported: $val";
         return undef;
     }
 
     for my $cond (@conditions)
     {
-        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
-            LogError "invalid condition tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM";
+            LogError "invalid condition tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM|number";
             return undef;
         }
     }
+
+    # if there is only one condition, then type does not matter
+
+    $type = "SAI_ATTR_CONDITION_TYPE_" . (($val =~ /and/) ? "AND" : "OR");
+
+    unshift @conditions, $type;
 
     return \@conditions;
 }
@@ -432,7 +434,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    if ($val =~/^(true|false|NULL|SAI_\w+|-?\d+|0x[0-9A-F]+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
+    if ($val =~/^(true|false|NULL|SAI_\w+|$NUMBER_REGEX)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
     {
         return $val;
     }
@@ -443,7 +445,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    LogError "invalid default tag value '$val', on $type $value";
+    LogError "invalid default tag value '$val' on $type $value";
     return undef;
 }
 
@@ -466,7 +468,7 @@ sub ProcessTagIsVlan
 
 sub ProcessDescription
 {
-    my ($type, $value, $desc) = @_;
+    my ($type, $value, $desc, $brief) = @_;
 
     my @order = ();
 
@@ -496,6 +498,11 @@ sub ProcessDescription
         $METADATA{$type}{$value}{attrid}        = $value;
     }
 
+    $brief =~ s/^\s*//;
+    $brief =~ s/\s*$//;
+
+    $METADATA{$type}{$value}{brief} = $brief if $brief ne "";
+
     my $count = @order;
 
     return if $count == 0;
@@ -522,9 +529,19 @@ sub ProcessEnumSection
 
         $enumtypename =~ s/^_//;
 
+        if (defined $SAI_ENUMS{$enumtypename})
+        {
+            LogError "duplicated enum $enumtypename";
+            next;
+        }
+
+        my $ed = ExtractDescription($enumtypename, $enumtypename, $memberdef->{detaileddescription}[0]);
+
+        $SAI_ENUMS{$enumtypename}{flagsenum} = ($ed =~ /\@\@flags/s) ? "true" : "false";
+
         my @arr = ();
 
-        $SAI_ENUMS{$enumtypename}{values} = \@arr if not defined $SAI_ENUMS{$enumtypename};
+        $SAI_ENUMS{$enumtypename}{values} = \@arr;
 
         for my $ev (@{ $memberdef->{enumvalue} })
         {
@@ -532,7 +549,7 @@ sub ProcessEnumSection
 
             LogDebug "$id $enumtypename $enumvaluename";
 
-            push$SAI_ENUMS{$enumtypename}{values},$enumvaluename;
+            push@arr,$enumvaluename;
 
             if (not $enumvaluename =~/^[A-Z0-9_]+$/)
             {
@@ -574,8 +591,17 @@ sub ProcessEnumSection
             my $enumvaluename = $ev->{name}[0];
 
             my $desc = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
+            my $brief = ExtractDescription($enumtypename, $enumvaluename, $ev->{briefdescription}[0]);
 
-            ProcessDescription($enumtypename, $enumvaluename, $desc);
+            ProcessDescription($enumtypename, $enumvaluename, $desc, $brief);
+
+            # remove ignored attributes from enums from list
+            # since enum must match attribute list size
+
+            next if not defined $METADATA{$enumtypename}{$enumvaluename}{ignore};
+
+            @values = grep(!/^$enumvaluename$/, @values);
+            $SAI_ENUMS{$enumtypename}{values} = \@values;
         }
     }
 }
@@ -665,7 +691,8 @@ sub ProcessSingleEnum
 
     my @values = @{$enum->{values}};
 
-    WriteSource "const char sai_metadata_${typedef}_enum_name[] = \"$typedef\";";
+    my $flags = (defined $enum->{flagsenum}) ? $enum->{flagsenum} : "false";
+
     WriteSource "const $typedef sai_metadata_${typedef}_enum_values[] = {";
 
     for my $value (@values)
@@ -674,6 +701,8 @@ sub ProcessSingleEnum
 
         WriteSource "    $value,";
     }
+
+    WriteSource "    -1"; # guard
 
     WriteSource "};";
 
@@ -699,9 +728,18 @@ sub ProcessSingleEnum
     WriteSource "    NULL";
     WriteSource "};";
 
-    my $count = $#values + 1;
+    my $count = @values;
 
-    WriteSource "const size_t sai_metadata_${typedef}_enum_values_count = $count;";
+    WriteHeader "extern const sai_enum_metadata_t sai_metadata_enum_$typedef;";
+
+    WriteSource "const sai_enum_metadata_t sai_metadata_enum_$typedef = {";
+    WriteSource "    .name              = \"${typedef}\",";
+    WriteSource "    .valuescount       = $count,";
+    WriteSource "    .values            = (const int*)sai_metadata_${typedef}_enum_values,";
+    WriteSource "    .valuesnames       = sai_metadata_${typedef}_enum_values_names,";
+    WriteSource "    .valuesshortnames  = sai_metadata_${typedef}_enum_values_short_names,";
+    WriteSource "    .containsflags     = $flags,";
+    WriteSource "};";
 
     return $count;
 }
@@ -727,18 +765,12 @@ sub CreateMetadataHeaderAndSource
     WriteHeader "#include \"saimetadatautils.h\"";
     WriteHeader "#include \"saimetadatalogger.h\"";
 
+    # since sai_status is not enum and it will declare extra statuses
+    ProcessSaiStatus();
+
     WriteSource $HEAD;
     WriteSource "#include <stdio.h>";
     WriteSource "#include \"saimetadata.h\"";
-
-    WriteSource "#define DEFINE_ENUM_METADATA(x,count)\\";
-    WriteSource "const sai_enum_metadata_t sai_metadata_enum_ ## x = {\\";
-    WriteSource "    .name              = sai_metadata_ ## x ## _enum_name,\\";
-    WriteSource "    .valuescount       = count,\\";
-    WriteSource "    .values            = (const int*)sai_metadata_ ## x ## _enum_values,\\";
-    WriteSource "    .valuesnames       = sai_metadata_ ## x ## _enum_values_names,\\";
-    WriteSource "    .valuesshortnames  = sai_metadata_ ## x ## _enum_values_short_names,\\";
-    WriteSource "};";
 
     for my $key (sort keys %SAI_ENUMS)
     {
@@ -748,10 +780,7 @@ sub CreateMetadataHeaderAndSource
             next;
         }
 
-        my $count = ProcessSingleEnum($key, $1, uc $2);
-
-        WriteHeader "extern const sai_enum_metadata_t sai_metadata_enum_$1;";
-        WriteSource "DEFINE_ENUM_METADATA($1, $count);";
+        ProcessSingleEnum($key, $1, uc $2);
     }
 
     # all enums
@@ -969,9 +998,9 @@ sub ProcessObjectsLen
 
     return "0" if not defined $objects;
 
-    my @objs =@{ $objects };
+    my $count = @{ $objects };
 
-    return $#objs + 1;
+    return $count;
 }
 
 sub ProcessDefaultValueType
@@ -984,7 +1013,7 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL" if $default =~ /^internal$/;
 
-    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|-?\d+|0x[0-9A-F]+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|$NUMBER_REGEX|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST" if $default =~ /^empty$/;
 
@@ -1023,13 +1052,13 @@ sub ProcessDefaultValue
     }
     elsif ($default =~ /^0$/ and $type =~ /sai_acl_field_data_t (sai_u?int\d+_t)/)
     {
-        WriteSource "$val = { };";
+        WriteSource "$val = { 0 };";
     }
     elsif ($default =~ /^0$/ and $type =~ /sai_acl_action_data_t (sai_u?int\d+_t)/)
     {
-        WriteSource "$val = { };";
+        WriteSource "$val = { 0 };";
     }
-    elsif ($default =~ /^(-?\d+|0x[0-9A-F]+)$/ and $type =~ /sai_u?int\d+_t/)
+    elsif ($default =~ /^$NUMBER_REGEX$/ and $type =~ /sai_u?int\d+_t/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
@@ -1150,16 +1179,18 @@ sub ProcessConditionType
 
     return "SAI_ATTR_CONDITION_TYPE_NONE" if not defined $value;
 
-    return "SAI_ATTR_CONDITION_TYPE_OR";
+    return @{$value}[0];
 }
 
-sub ProcessConditions
+sub ProcessConditionsGeneric
 {
-    my ($attr, $conditions, $enumtype) = @_;
+    my ($attr, $conditions, $enumtype, $name) = @_;
 
     return "NULL" if not defined $conditions;
 
     my @conditions = @{ $conditions };
+
+    shift @conditions;
 
     my $count = 0;
 
@@ -1167,7 +1198,7 @@ sub ProcessConditions
 
     for my $cond (@conditions)
     {
-        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
             LogError "invalid condition '$cond' on $attr";
             return "";
@@ -1181,21 +1212,34 @@ sub ProcessConditions
 
         if ($main_attr ne $cond_attr)
         {
-            LogError "conditional attribute $attr has condition from different object $attrid";
+            LogError "$name attribute $attr has condition from different object $attrid";
             return "";
         }
 
-        WriteSource "const sai_attr_condition_t sai_metadata_condition_${attr}_$count = {";
+        WriteSource "const sai_attr_condition_t sai_metadata_${name}_${attr}_$count = {";
 
         if ($val eq "true" or $val eq "false")
         {
             WriteSource "    .attrid = $attrid,";
             WriteSource "    .condition = { .booldata = $val }";
         }
-        else
+        elsif ($val =~ /^SAI_/)
         {
             WriteSource "    .attrid = $attrid,";
             WriteSource "    .condition = { .s32 = $val }";
+        }
+        elsif ($val =~ /^$NUMBER_REGEX$/ and $enumtype =~ /^sai_u?int(\d+)_t$/)
+        {
+            my $n = $1;
+            my $item = ($enumtype =~ /uint/) ? "u$n" : "s$n";
+
+            WriteSource "    .attrid = $attrid,";
+            WriteSource "    .condition = { .$item = $val }";
+        }
+        else
+        {
+            LogError "unknown $name value: $val on $attr $enumtype";
+            return "";
         }
 
         WriteSource "};";
@@ -1203,13 +1247,13 @@ sub ProcessConditions
         $count++;
     }
 
-    WriteSource "const sai_attr_condition_t* sai_metadata_conditions_${attr}\[\] = {";
+    WriteSource "const sai_attr_condition_t* sai_metadata_${name}s_${attr}\[\] = {";
 
     $count = 0;
 
     for my $cond (@conditions)
     {
-        WriteSource "    &sai_metadata_condition_${attr}_$count,";
+        WriteSource "    &sai_metadata_${name}_${attr}_$count,";
 
         $count++;
     }
@@ -1218,7 +1262,12 @@ sub ProcessConditions
 
     WriteSource "};";
 
-    return "sai_metadata_conditions_${attr}";
+    return "sai_metadata_${name}s_${attr}";
+}
+
+sub ProcessConditions
+{
+    ProcessConditionsGeneric(@_, "condition");
 }
 
 sub ProcessConditionsLen
@@ -1229,7 +1278,9 @@ sub ProcessConditionsLen
 
     my @conditions = @{ $value };
 
-    return $#conditions + 1;
+    # NOTE: number returned is -1 since first item is condition type
+
+    return $#conditions;
 }
 
 sub ProcessValidOnlyType
@@ -1238,75 +1289,12 @@ sub ProcessValidOnlyType
 
     return "SAI_ATTR_CONDITION_TYPE_NONE" if not defined $value;
 
-    return "SAI_ATTR_CONDITION_TYPE_OR";
+    return @{$value}[0];
 }
 
 sub ProcessValidOnly
 {
-    my ($attr, $conditions, $enumtype) = @_;
-
-    return "NULL" if not defined $conditions;
-
-    my @conditions = @{ $conditions };
-
-    my $count = 0;
-
-    my @values = ();
-
-    for my $cond (@conditions)
-    {
-        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+)$/)
-        {
-            LogError "invalid condition '$cond' on $attr";
-            return "";
-        }
-
-        my $attrid = $1;
-        my $val = $2;
-
-        my $main_attr = $1 if $attr =~ /^SAI_(\w+?)_ATTR_/;
-        my $cond_attr = $1 if $attrid =~ /^SAI_(\w+?)_ATTR_/;
-
-        if ($main_attr ne $cond_attr)
-        {
-            LogError "validonly attribute $attr has condition from different object $attrid";
-            return "";
-        }
-
-        WriteSource "const sai_attr_condition_t sai_metadata_validonly_${attr}_$count = {";
-
-        if ($val eq "true" or $val eq "false")
-        {
-            WriteSource "    .attrid = $attrid,";
-            WriteSource "    .condition = { .booldata = $val }";
-        }
-        else
-        {
-            WriteSource "    .attrid = $attrid,";
-            WriteSource "    .condition = { .s32 = $val }";
-        }
-
-        WriteSource "};";
-
-        $count++;
-    }
-
-    WriteSource "const sai_attr_condition_t* sai_metadata_validonly_${attr}\[\] = {";
-
-    $count = 0;
-
-    for my $cond (@conditions)
-    {
-        WriteSource "    &sai_metadata_validonly_${attr}_$count,";
-
-        $count++;
-    }
-
-    WriteSource "    NULL";
-
-    WriteSource "};";
-
-    return "sai_metadata_validonly_${attr}";
+    ProcessConditionsGeneric(@_, "validonly");
 }
 
 sub ProcessValidOnlyLen
@@ -1317,7 +1305,9 @@ sub ProcessValidOnlyLen
 
     my @conditions = @{ $value };
 
-    return $#conditions + 1;
+    # NOTE: number returned is -1 since first item is condition type
+
+    return $#conditions;
 }
 
 sub ProcessAllowRepeat
@@ -1354,7 +1344,7 @@ sub ProcessAttrName
     return "\"$attr\"";
 }
 
-sub  ProcessIsAclField
+sub ProcessIsAclField
 {
     my $attr = shift;
 
@@ -1363,13 +1353,36 @@ sub  ProcessIsAclField
     return "false";
 }
 
-sub  ProcessIsAclAction
+sub ProcessIsAclAction
 {
     my $attr = shift;
 
     return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_ACTION_\w+$/;
 
     return "false";
+}
+
+sub ProcessBrief
+{
+    my ($attr, $brief) = @_;
+
+    if (not defined $brief or $brief eq "")
+    {
+        LogWarning "missing brief description for $attr";
+        return "";
+    }
+
+    if ($brief =~ m!([^\x20-\x7e]|\\|")!is)
+    {
+        LogWarning "Not allowed char '$1' in brief description on $attr: $brief";
+    }
+
+    if (length $brief > 200)
+    {
+        LogWarning "Long brief > 200 on $attr:\n - $brief";
+    }
+
+    return "\"$brief\"";
 }
 
 sub ProcessSingleObjectType
@@ -1418,12 +1431,20 @@ sub ProcessSingleObjectType
         my $getsave         = ProcessGetSave($attr, $meta{getsave});
         my $isaclfield      = ProcessIsAclField($attr);
         my $isaclaction     = ProcessIsAclAction($attr);
+        my $brief           = ProcessBrief($attr, $meta{brief});
+
+        my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
+        my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
+        my $iscreateandset      = ($flags =~ /CREATE_AND_SET/)  ? "true" : "false";
+        my $isreadonly          = ($flags =~ /READ_ONLY/)       ? "true" : "false";
+        my $iskey               = ($flags =~ /KEY/)             ? "true" : "false";
 
         WriteSource "const sai_attr_metadata_t sai_metadata_attr_$attr = {";
 
         WriteSource "    .objecttype                    = $objecttype,";
         WriteSource "    .attrid                        = $attr,";
         WriteSource "    .attridname                    = $attrname,";
+        WriteSource "    .brief                         = $brief,";
         WriteSource "    .attrvaluetype                 = $type,";
         WriteSource "    .flags                         = $flags,";
         WriteSource "    .allowedobjecttypes            = $objects,";
@@ -1451,6 +1472,11 @@ sub ProcessSingleObjectType
         WriteSource "    .isvlan                        = $isvlan,";
         WriteSource "    .isaclfield                    = $isaclfield,";
         WriteSource "    .isaclaction                   = $isaclaction,";
+        WriteSource "    .ismandatoryoncreate           = $ismandatoryoncreate,";
+        WriteSource "    .iscreateonly                  = $iscreateonly,";
+        WriteSource "    .iscreateandset                = $iscreateandset,";
+        WriteSource "    .isreadonly                    = $isreadonly,";
+        WriteSource "    .iskey                         = $iskey,";
 
         WriteSource "};";
 
@@ -1487,10 +1513,7 @@ sub CreateMetadata
 {
     for my $key (sort keys %SAI_ENUMS)
     {
-        if (not $key =~ /^(sai_(\w+)_attr_t)$/)
-        {
-            next;
-        }
+        next if not $key =~ /^(sai_(\w+)_attr_t)$/;
 
         my $typedef = $1;
         my $objtype = "SAI_OBJECT_TYPE_" . uc($2);
@@ -1567,9 +1590,23 @@ sub ProcessSaiStatus
 
     while (my $line = <$fh>)
     {
-        next if not $line =~ /define\s+(SAI_STATUS_\w+).+0x00/;
+        next if not $line =~ /define\s+(SAI_STATUS_\w+).+(0x00\w+)/;
 
-        push@values,$1;
+        my $status = $1;
+        my $base = $2;
+
+        push@values,$status;
+
+        next if not ($status =~ /(SAI_\w+)_0$/);
+
+        for my $idx (1..10)
+        {
+            $status = "$1_$idx";
+
+            WriteHeader "#define $status  SAI_STATUS_CODE(($base + ${idx}))";
+
+            push@values,$status;
+        }
     }
 
     close $fh;
@@ -1633,7 +1670,7 @@ sub CreateMetadataForAttributes
     WriteSource "    NULL";
     WriteSource "};";
 
-    my $count = $#objects + 1;
+    my $count = @objects;
 
     WriteHeader "extern const size_t sai_metadata_attr_by_object_type_count;";
     WriteSource "const size_t sai_metadata_attr_by_object_type_count = $count;";
@@ -1788,7 +1825,7 @@ sub ProcessStructMembers
 
     return "NULL" if not defined $struct;
 
-    my @keys = keys $struct;
+    my @keys = keys %$struct; # since struct here is reference
 
     for my $key (@keys)
     {
@@ -1842,7 +1879,7 @@ sub ProcessStructMembersCount
 
     return "0" if not defined $struct;
 
-    my @keys = keys $struct;
+    my @keys = keys %$struct;
     my $count = @keys;
 
     return $count;
@@ -2117,13 +2154,11 @@ sub CreateApisQuery
     WriteSource "        _In_ uint32_t attr_count,";
     WriteSource "        _Inout_ sai_attribute_t *attr_list);";
 
-
     # for switch we need to generate wrapper, for others we can use pointers
     # so we don't need to use meta key then
 
-
     WriteSource "int sai_metadata_apis_query(";
-    WriteSource "    _In_ const sai_api_query_fn api_query)";
+    WriteSource "        _In_ const sai_api_query_fn api_query)";
     WriteSource "{";
     WriteSource "    sai_status_t status = SAI_STATUS_SUCCESS;";
     WriteSource "    int count = 0;";
@@ -2859,6 +2894,23 @@ sub CheckFunctionsParams
     }
 }
 
+sub CheckNonDoxygenComments
+{
+    my ($data, $file) = @_;
+
+    while ($data =~ m%( */\*[^\*](?:(?!\*/).)*?\*/)(\n *(\w+))?%gis)
+    {
+        my $comment = $1;
+        my $stick = $3;
+
+        if (($comment =~/\W\@\w+/is) or defined $stick)
+        {
+            LogWarning "candidate for doxygen comment in $file:\n$comment";
+            LogWarning "comment sticked to $stick" if defined $stick;
+        }
+    }
+}
+
 sub CheckDoxygenCommentFormating
 {
     my ($data, $file) = @_;
@@ -2914,6 +2966,22 @@ sub CheckDoxygenCommentFormating
                 LogWarning "doxygen comment has invalid ident: $file: $line";
             }
         }
+
+        next; # disabled for now since it generates too much changes
+
+        $comment =~ s!^ *(/\*\*|\*/|\* *)!!gm;
+
+        if ($comment =~ m!\@brief\s+(.+?)\n\n!s)
+        {
+            my $brief = $1;
+
+            if (not $brief =~ /\.$/)
+            {
+                LogWarning "brief should end with dot $file: $brief";
+            }
+        }
+
+        my @n = split/^\@\S+ /m,$comment;
     }
 
     while($data =~ m!(([^\n ])+\n */\*\*.{1,30}.+?\n)!isg)
@@ -2972,6 +3040,30 @@ sub CheckQuadApi
     }
 }
 
+sub CheckSwitchKeys
+{
+    my ($data, $file) = @_;
+
+    my $keycount = $1 if $data =~ /#define\s+SAI_SWITCH_ATTR_MAX_KEY_COUNT\s+(\d+)/s;
+
+    my $count = 0;
+
+    while ($data =~ m!#define\s+SAI_KEY_(\w+)\s+"SAI_(\w+)"!gs)
+    {
+        if ($1 ne $2)
+        {
+            LogWarning "SAI_(KEY_)$1 should match SAI_$2";
+        }
+
+        $count++;
+    }
+
+    if ($count != $keycount)
+    {
+        LogWarning "SAI_SWITCH_ATTR_MAX_KEY_COUNT is $keycount, but found only $count keys";
+    }
+}
+
 sub CheckStructAlignment
 {
     my ($data, $file) = @_;
@@ -3003,6 +3095,40 @@ sub CheckStructAlignment
     }
 }
 
+sub GetAcronyms
+{
+    # load acronyms list from file
+
+    my $filename = "acronyms.txt";
+
+    open FILE, $filename or die "Couldn't open file $filename: $!";
+
+    my @acronyms;
+
+    while (<FILE>)
+    {
+        chomp;
+        my $line = $_;
+
+        next if $line =~ /(^#|^$)/;
+
+        if (not $line =~ /^([A-Z0-9]{2,})(\s+-\s+(.+))?$/)
+        {
+            LogWarning "invalid line in $filename: $line";
+            next;
+        }
+
+        my $acronym = $1;
+        my $definition = $3;
+
+        push @acronyms,$acronym;
+    }
+
+    close FILE;
+
+    return @acronyms;
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -3015,28 +3141,11 @@ sub CheckHeadersStyle
     # - wrong spacing idient
     #
 
-    my @magicWords = qw/SAI IP MAC L2 ACL L3 GRE ECMP EEE FDB FD FEC ICMP I2C
-        HW IEEE IP2ME L2MC LAG ARP ASIC BGP CAM CBS CB CIR CIDR CRC DLL CPU TTL
-        TOS ECN DSCP TC MACST MTU NPU PFC PBS PCI PIR QOS RFC RFP SDK RSPAN
-        ERSPAN SPAN SNMP SSH STP TCAM TCP UDP TPID UDF UOID VNI VR VRRP WCMP
-        WWW API CCITT RARP CFI MPLS IPMC RPF WRED XON XOFF NHLFE SG/;
-
     # we could put that to local dictionary file
 
-    my @spellExceptions = qw/ http www apache MERCHANTABILITY Mellanox defgroup
-        Enum param attr VLAN IPv4 IPv6 Vlan inout policer Src Dst Decrement
-        lookups optimizations lookup bool EtherType tx rx validonly enum sai
-        loopback Multicast isvlan 6th nexthop nexthopgroup encap decap src dst
-        wildcard const APIs multi multicast LAGs Linux mcast HQoS
-        childs callee Callee boolean attrvalue unicast Unicast untagged
-        Untagged Policer objlist BGPv6 allownull 0xFF Hostif samplepacket
-        Samplepacket pkts Loopback linklocal lossless Mbps vlan ucast
-        ingressing MCAST netdev AUTONEG decapsulation egressing functionalities
-        rv subnet subnets Uninitialize versa VRFs Netdevice netdevs PGs CRC32
-        HQOS Wildcard VLANs VLAN2 SerDes FC Wakeup warmboot Inservice PVID PHY
-        metadata Metadata TODO Facebook OID OIDs deserialize
-        fprintf struct stderr
-        /;
+    my @acronyms = GetAcronyms();
+
+    my @spellExceptions = qw/ CRC32 IPv4 IPv6 BGPv6 6th 0xFF /;
 
     my %exceptions = map { $_ => $_ } @spellExceptions;
 
@@ -3065,6 +3174,8 @@ sub CheckHeadersStyle
         CheckDoxygenCommentFormating($data, $header);
         CheckQuadApi($data, $header);
         CheckStructAlignment($data, $header);
+        CheckNonDoxygenComments($data, $header);
+        CheckSwitchKeys($data, $header) if $header eq "saiswitch.h";
 
         my @lines = split/\n/,$data;
 
@@ -3154,7 +3265,7 @@ sub CheckHeadersStyle
                 }
             }
 
-            if ($line =~ /typedef.+_fn\s*\)/ and not $line =~ /typedef( \S+)+ ?\(\*\w+_fn\)\(/)
+            if ($line =~ /typedef.+_fn\s*\)/ and not $line =~ /typedef( \S+)+ \(\*\w+_fn\)\(/)
             {
                 LogWarning "wrong style typedef function definition $header:$n:$line";
             }
@@ -3186,12 +3297,32 @@ sub CheckHeadersStyle
 
             if ($line =~ m!/\*\*\s+[a-z]!)
             {
-                #LogWarning "doxygen comment should start with capital letter: $header:$n:$line";
+                LogWarning "doxygen comment should start with capital letter: $header:$n:$line";
             }
 
             if ($line =~ /sai_\w+_statistics_fn/)
             {
                 LogWarning "statistics should use 'stats' to follow convention $header:$n:$line";
+            }
+
+            if ($line =~ /^\s*SAI_\w+\s*=\s*+0x(\w+)(,|$)/ and length($1) != 8)
+            {
+                LogWarning "enum number '0x$1' should have 8 digits $header:$n:$line";
+            }
+
+            if ($line =~ /^\s*SAI_\w+(\s*)=(\s*)/ and ($1 eq "" or $2 eq ""))
+            {
+                LogWarning "space is required before and after '=' $header:$n:$line";
+            }
+
+            if ($line =~ /#define\s*(\w+)/ and $header ne "saitypes.h")
+            {
+                my $defname = $1;
+
+                if (not $defname =~ /^(SAI_|__SAI)/)
+                {
+                    LogWarning "define should start with SAI_ or __SAI: $header:$n:$line";
+                }
             }
 
             if ($line =~/\s+$/)
@@ -3214,7 +3345,7 @@ sub CheckHeadersStyle
                 }
             }
 
-            my $pattern = join"|",@magicWords;
+            my $pattern = join"|", @acronyms;
 
             while ($line =~ /\b($pattern)\b/igp)
             {
@@ -3319,10 +3450,16 @@ sub CheckHeadersStyle
 
     LogInfo "Words to check: $count";
 
-    my @result = `echo "$all" | /usr/bin/aspell -l en -a`;
+    my @result = `echo "$all" | /usr/bin/aspell -l en -a -p ./aspell.en.pws 2>&1`;
 
     for my $res (@result)
     {
+        if ($res =~/error/i)
+        {
+            LogError "aspell error: $res";
+            last;
+        }
+
         next if not $res =~ /^\s*&\s*(\S+)/;
 
         my $word = $1;
@@ -3349,7 +3486,14 @@ sub CheckHeadersStyle
             $where = $wordsToCheck{$word};
         }
 
-        LogWarning "Word '$word' is misspelled $where";
+        if ($word =~ /^[A-Z0-9]{2,}$/)
+        {
+            LogWarning "Word '$word' is misspelled or is acronym, add to acronyms.txt? $where";
+        }
+        else
+        {
+            LogWarning "Word '$word' is misspelled $where";
+        }
     }
 }
 
@@ -3476,7 +3620,8 @@ sub GetReverseDependencyGraph
                     $REVGRAPH{$usedot} = \@arr;
                 }
 
-                push$REVGRAPH{$usedot},"$ot,$attrid";
+                my $ref = $REVGRAPH{$usedot};
+                push@$ref,"$ot,$attrid";
             }
         }
 
@@ -3500,9 +3645,9 @@ sub GetReverseDependencyGraph
                     $REVGRAPH{$usedot} = \@arr;
                 }
 
-                push$REVGRAPH{$usedot},"$ot,$key";
+                my $ref = $REVGRAPH{$usedot};
+                push@$ref,"$ot,$key";
             }
-
         }
     }
 
@@ -3678,9 +3823,6 @@ for my $file (GetXmlFiles($XMLDIR))
 
     ProcessXmlFile("$XMLDIR/$file");
 }
-
-# since sai_status is not enum
-ProcessSaiStatus();
 
 WriteHeader "#ifndef __SAI_METADATA_H__";
 WriteHeader "#define __SAI_METADATA_H__";

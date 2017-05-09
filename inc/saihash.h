@@ -40,14 +40,16 @@ typedef enum _sai_native_hash_field_t
 {
     /**
      * @brief Native hash field source IP.
-     * also refers to the outer source IP
+     *
+     * Also, refers to the outer source IP
      * in case for encapsulated packets
      */
     SAI_NATIVE_HASH_FIELD_SRC_IP = 0,
 
     /**
      * @brief Native hash field destination IP
-     * also refers to the outer source IP
+     *
+     * Also, refers to the outer source IP
      * in case for encapsulated packets
      */
     SAI_NATIVE_HASH_FIELD_DST_IP = 1,
@@ -134,9 +136,9 @@ typedef enum _sai_hash_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_hash_fn)(
+typedef sai_status_t (*sai_create_hash_fn)(
         _Out_ sai_object_id_t *hash_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -147,9 +149,9 @@ typedef sai_status_t(*sai_create_hash_fn)(
  *
  * @param[in] hash_id Hash id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_remove_hash_fn)(
+typedef sai_status_t (*sai_remove_hash_fn)(
         _In_ sai_object_id_t hash_id);
 
 /**
@@ -158,7 +160,7 @@ typedef sai_status_t(*sai_remove_hash_fn)(
  * @param[in] hash_id Hash id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_hash_attribute_fn)(
         _In_ sai_object_id_t hash_id,
@@ -171,7 +173,7 @@ typedef sai_status_t (*sai_set_hash_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_hash_attribute_fn)(
         _In_ sai_object_id_t hash_id,

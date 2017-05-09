@@ -242,7 +242,7 @@ typedef enum _sai_tunnel_map_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_tunnel_map_fn)(
         _Out_ sai_object_id_t *tunnel_map_id,
@@ -255,7 +255,7 @@ typedef sai_status_t (*sai_create_tunnel_map_fn)(
  *
  * @param[in] tunnel_map_id Tunnel Map id to be removed
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_tunnel_map_fn)(
         _In_ sai_object_id_t tunnel_map_id);
@@ -266,7 +266,7 @@ typedef sai_status_t (*sai_remove_tunnel_map_fn)(
  * @param[in] tunnel_map_id Tunnel Map Id
  * @param[in] attr Attribute to set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_tunnel_map_attribute_fn)(
         _In_ sai_object_id_t tunnel_map_id,
@@ -279,9 +279,9 @@ typedef sai_status_t (*sai_set_tunnel_map_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_tunnel_map_attribute_fn)(
+typedef sai_status_t (*sai_get_tunnel_map_attribute_fn)(
         _In_ sai_object_id_t tunnel_map_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -371,7 +371,7 @@ typedef enum _sai_tunnel_encap_ecn_mode_t
     /**
      * @brief User defined behavior.
      *
-     * Need to provide #SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN in #SAI_TUNNEL_ATTR_ENCAP_MAPPERS
+     * Need to provide #SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN in #SAI_TUNNEL_ATTR_ENCAP_MAPPERS.
      */
     SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
 
@@ -422,7 +422,7 @@ typedef enum _sai_tunnel_attr_t
     /**
      * @brief Tunnel underlay interface
      *
-     * Underlay interface is router interface when conditions are met
+     * Underlay interface is router interface when conditions are met.
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -434,7 +434,7 @@ typedef enum _sai_tunnel_attr_t
     /**
      * @brief Tunnel overlay interface
      *
-     * Overlay interface is router interface when conditions are met
+     * Overlay interface is router interface when conditions are met.
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -593,7 +593,7 @@ typedef enum _sai_tunnel_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_tunnel_fn)(
         _Out_ sai_object_id_t *tunnel_id,
@@ -606,7 +606,7 @@ typedef sai_status_t (*sai_create_tunnel_fn)(
  *
  * @param[in] tunnel_id Tunnel id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_tunnel_fn)(
         _In_ sai_object_id_t tunnel_id);
@@ -617,7 +617,7 @@ typedef sai_status_t (*sai_remove_tunnel_fn)(
  * @param[in] tunnel_id Tunnel id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_tunnel_attribute_fn)(
         _In_ sai_object_id_t tunnel_id,
@@ -630,7 +630,7 @@ typedef sai_status_t (*sai_set_tunnel_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
         _In_ sai_object_id_t tunnel_id,
@@ -642,10 +642,10 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
  */
 typedef enum _sai_tunnel_term_table_entry_type_t
 {
-    /** tunnel termination table point to point entry match on dst & src IP & tunnel type */
+    /** Tunnel termination table point to point entry match on dst & src IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
 
-    /** tunnel termination table point to multi point entry match on dst IP & tunnel type */
+    /** Tunnel termination table point to multi point entry match on dst IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP,
 
 } sai_tunnel_term_table_entry_type_t;
@@ -733,7 +733,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_tunnel_term_table_entry_fn)(
         _Out_ sai_object_id_t *tunnel_term_table_entry_id,
@@ -746,7 +746,7 @@ typedef sai_status_t (*sai_create_tunnel_term_table_entry_fn)(
  *
  * @param[in] tunnel_term_table_entry_id Tunnel termination table entry id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_tunnel_term_table_entry_fn)(
         _In_ sai_object_id_t tunnel_term_table_entry_id);
@@ -757,7 +757,7 @@ typedef sai_status_t (*sai_remove_tunnel_term_table_entry_fn)(
  * @param[in] tunnel_term_table_entry_id Tunnel termination table entry id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_tunnel_term_table_entry_attribute_fn)(
         _In_ sai_object_id_t tunnel_term_table_entry_id,
@@ -770,7 +770,7 @@ typedef sai_status_t (*sai_set_tunnel_term_table_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_tunnel_term_table_entry_attribute_fn)(
         _In_ sai_object_id_t tunnel_term_table_entry_id,
@@ -785,7 +785,7 @@ typedef sai_status_t (*sai_get_tunnel_term_table_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_tunnel_map_entry_fn)(
         _Out_ sai_object_id_t *tunnel_map_entry_id,
@@ -798,7 +798,7 @@ typedef sai_status_t (*sai_create_tunnel_map_entry_fn)(
  *
  * @param[in] tunnel_map_entry_id Tunnel map item id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_tunnel_map_entry_fn)(
         _In_ sai_object_id_t tunnel_map_entry_id);
@@ -809,7 +809,7 @@ typedef sai_status_t (*sai_remove_tunnel_map_entry_fn)(
  * @param[in] tunnel_map_entry_id Tunnel map item id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_tunnel_map_entry_attribute_fn)(
         _In_ sai_object_id_t tunnel_map_entry_id,
@@ -822,7 +822,7 @@ typedef sai_status_t (*sai_set_tunnel_map_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_tunnel_map_entry_attribute_fn)(
         _In_ sai_object_id_t tunnel_map_entry_id,

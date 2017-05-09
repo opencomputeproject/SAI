@@ -34,9 +34,9 @@
  */
 
 /**
- * @def VLAN_COUNTER_SET_DEFAULT
+ * @def SAI_VLAN_COUNTER_SET_DEFAULT
  */
-#define VLAN_COUNTER_SET_DEFAULT 0
+#define SAI_VLAN_COUNTER_SET_DEFAULT 0
 
 /**
  * @brief Attribute data for tagging_mode parameter
@@ -98,7 +98,7 @@ typedef enum _sai_vlan_attr_t
     /**
      * @brief Maximum number of learned MAC addresses
      *
-     * Zero means learning limit disable
+     * Zero means learning limit is disabled.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -123,7 +123,7 @@ typedef enum _sai_vlan_attr_t
      *
      * This should override port learn settings. If this is set to true on a
      * vlan, then the source MAC learning is disabled for this vlan on a member
-     * port even if learn is enable on the port(based on port learn attribute)
+     * port even if learn is enable on the port (based on port learn attribute).
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -150,7 +150,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_IPV6_MCAST_LOOKUP_KEY_TYPE,
 
     /**
-     * @brief L2MC Group ID that unknown non-IP MACST packets forwarded to
+     * @brief L2MC Group ID that unknown non-IP mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown non-IP multicast packets.
      * This attribute only takes effect when one of the following conditions is met:
@@ -169,7 +169,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_NON_IP_MCAST_OUTPUT_GROUP_ID,
 
     /**
-     * @brief L2MC Group ID that unknown IPv4 MACST packets forwarded to
+     * @brief L2MC Group ID that unknown IPv4 mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown IPv4 multicast packets.
      * This attribute only takes effect when the following condition is met:
@@ -186,7 +186,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_IPV4_MCAST_OUTPUT_GROUP_ID,
 
     /**
-     * @brief L2MC Group ID that unknown IPv6 MACST packets forwarded to
+     * @brief L2MC Group ID that unknown IPv6 mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown IPv6 multicast packets.
      * This attribute only takes effect when the following condition is met:
@@ -203,7 +203,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_IPV6_MCAST_OUTPUT_GROUP_ID,
 
     /**
-     * @brief L2MC Group ID that unknown linklocal MACST packets forwarded to
+     * @brief L2MC Group ID that unknown linklocal mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown linklocal multicast packets.
      * This attribute only takes effect when the following condition is met:
@@ -296,7 +296,9 @@ typedef enum _sai_vlan_member_attr_t
     SAI_VLAN_MEMBER_ATTR_VLAN_ID = SAI_VLAN_MEMBER_ATTR_START,
 
     /**
-     * @brief Bridge port ID. Valid only for .1Q Bridge ports
+     * @brief Bridge port ID.
+     *
+     * Valid only for .1Q bridge ports.
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -356,7 +358,7 @@ typedef enum _sai_vlan_stat_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_vlan_fn)(
         _Out_ sai_object_id_t *vlan_id,
@@ -369,7 +371,7 @@ typedef sai_status_t (*sai_create_vlan_fn)(
  *
  * @param[in] vlan_id VLAN member ID
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_vlan_fn)(
         _In_ sai_object_id_t vlan_id);
@@ -380,7 +382,7 @@ typedef sai_status_t (*sai_remove_vlan_fn)(
  * @param[in] vlan_id VLAN ID
  * @param[in] attr Attribute structure containing ID and value
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_vlan_attribute_fn)(
         _In_ sai_object_id_t vlan_id,
@@ -393,7 +395,7 @@ typedef sai_status_t (*sai_set_vlan_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list List of attribute structures containing ID and value
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_vlan_attribute_fn)(
         _In_ sai_object_id_t vlan_id,
@@ -408,7 +410,7 @@ typedef sai_status_t (*sai_get_vlan_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_vlan_member_fn)(
         _Out_ sai_object_id_t *vlan_member_id,
@@ -421,7 +423,7 @@ typedef sai_status_t (*sai_create_vlan_member_fn)(
  *
  * @param[in] vlan_member_id VLAN member ID
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_vlan_member_fn)(
         _In_ sai_object_id_t vlan_member_id);
@@ -432,7 +434,7 @@ typedef sai_status_t (*sai_remove_vlan_member_fn)(
  * @param[in] vlan_member_id VLAN member ID
  * @param[in] attr Attribute structure containing ID and value
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_vlan_member_attribute_fn)(
         _In_ sai_object_id_t vlan_member_id,
@@ -445,7 +447,7 @@ typedef sai_status_t (*sai_set_vlan_member_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list List of attribute structures containing ID and value
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
         _In_ sai_object_id_t vlan_member_id,
@@ -460,7 +462,7 @@ typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
         _In_ sai_object_id_t vlan_id,
@@ -475,7 +477,7 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_clear_vlan_stats_fn)(
         _In_ sai_object_id_t vlan_id,

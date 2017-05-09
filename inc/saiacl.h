@@ -153,7 +153,7 @@ typedef enum _sai_acl_action_type_t
     /** Egress Mirror */
     SAI_ACL_ACTION_TYPE_MIRROR_EGRESS,
 
-    /** Associate with policer (policer id) */
+    /** Associate with policer */
     SAI_ACL_ACTION_TYPE_SET_POLICER,
 
     /** Decrement TTL */
@@ -213,7 +213,7 @@ typedef enum _sai_acl_action_type_t
     /** Set egress packet sampling */
     SAI_ACL_ACTION_TYPE_EGRESS_SAMPLEPACKET_ENABLE,
 
-    /** Set Meta Data to carry forward to next ACL Stage */
+    /** Set metadata to carry forward to next ACL stage */
     SAI_ACL_ACTION_TYPE_SET_ACL_META_DATA,
 
     /** Egress block port list */
@@ -261,7 +261,7 @@ typedef enum _sai_acl_table_group_attr_t
     /**
      * @brief List of ACL bind points where this group will be applied.
      *
-     * ACL group bind point list - is a create only attribute required for ACL
+     * ACL group bind point list - create only attribute required for ACL
      * groups to let the user specify his intention to allow further error
      * checks and optimizations based on a specific ASIC SAI implementation.
      * ACL members being added to this group SHOULD be a subset of the bind
@@ -323,7 +323,7 @@ typedef enum _sai_acl_table_group_member_attr_t
      * @brief ACL table group id
      *
      * This attribute is required to associate or attach a member object (acl_table_id)
-     * to a ACL table group id allocated by the create ACL group API.
+     * to a ACL table group id allocated during create ACL group API.
      *
      * User should always use the group id returned by SAI create_acl_group API,
      * to group the tables else Invalid attribute value error code will be returned.
@@ -385,6 +385,8 @@ typedef enum _sai_acl_table_group_member_attr_t
 
 /**
  * @brief Attribute Id for sai_acl_table
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_acl_table_attr_t
 {
@@ -413,8 +415,8 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief Table size
      *
-     * (default = 0) - Grow dynamically till MAX ACL TCAM Size
-     * By default table can grow up to maximum ACL TCAM space.
+     * (Default = 0) - Grow dynamically till MAX ACL TCAM Size
+     * By default, table can grow up to maximum ACL TCAM space.
      * Supported only during Table Create for now until NPU
      * supports Dynamic adjustment of Table size post Table creation
      *
@@ -427,7 +429,7 @@ typedef enum _sai_acl_table_attr_t
      * create would be based on the NPU CAM Arch and size may be more
      * than what is requested. As an example the NPU may support blocks of
      * 128 entries. When a user creates a table of size 100, the actual
-     * size that gets allocated is 128. Hence its recommended that the user
+     * size that gets allocated is 128. Hence, it's recommended that the user
      * does a get_attribute(#SAI_ACL_TABLE_ATTR_SIZE) to query the actual
      * table size on table create so the user knows the ACL CAM space
      * allocated and able to do ACL CAM Carving accurately.
@@ -444,7 +446,7 @@ typedef enum _sai_acl_table_attr_t
      * Based on the ACL capability per stage obtained from the switch
      * attributes #SAI_SWITCH_ATTR_ACL_STAGE_INGRESS and #SAI_SWITCH_ATTR_ACL_STAGE_EGRESS
      * application should pass the action list if its mandatory per stage.
-     * pass the action list if its mandatory per stage.
+     * Pass the action list if its mandatory per stage.
      * If its not mandatory application can either pass the action list
      * or ignore it.
      *
@@ -816,7 +818,7 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_FIELD_PACKET_VLAN,
 
-    /* User Based Meta Data [bool] */
+    /* User Based metadata [bool] */
 
     /**
      * @brief FDB DST user meta data
@@ -837,7 +839,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_DST_USER_META,
 
     /**
-     * @brief Neighbor DST User Meta Data
+     * @brief Neighbor DST User metadata
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -846,7 +848,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_USER_META,
 
     /**
-     * @brief Port User Meta Data
+     * @brief Port User metadata
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -855,7 +857,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_PORT_USER_META,
 
     /**
-     * @brief Vlan User Meta Data
+     * @brief Vlan User metadata
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -864,7 +866,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_VLAN_USER_META,
 
     /**
-     * @brief Meta Data carried from previous ACL Stage
+     * @brief Metadata carried from previous ACL Stage
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -872,7 +874,7 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_FIELD_ACL_USER_META,
 
-    /* NPU Based Meta Data [bool] */
+    /* NPU Based metadata [bool] */
 
     /**
      * @brief DST MAC address match in FDB
@@ -920,7 +922,8 @@ typedef enum _sai_acl_table_attr_t
      * @brief Range type defined
      *
      * @type sai_s32_list_t sai_acl_range_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
+     * @default empty
      */
     SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE,
 
@@ -957,6 +960,8 @@ typedef enum _sai_acl_table_attr_t
 
 /**
  * @brief Attribute Id for sai_acl_entry
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_acl_entry_attr_t
 {
@@ -1334,7 +1339,7 @@ typedef enum _sai_acl_entry_attr_t
      */
     SAI_ACL_ENTRY_ATTR_FIELD_PACKET_VLAN,
 
-    /* User Based Meta Data */
+    /* User Based metadata */
 
     /**
      * @brief DST MAC address match user meta data in FDB
@@ -1370,7 +1375,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_DST_USER_META,
 
     /**
-     * @brief Port User Meta Data
+     * @brief Port User metadata
      *
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE
@@ -1381,7 +1386,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_PORT_USER_META,
 
     /**
-     * @brief Vlan User Meta Data
+     * @brief Vlan User metadata
      *
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE
@@ -1392,9 +1397,9 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_VLAN_USER_META,
 
     /**
-     * @brief Meta Data carried from previous ACL Stage.
+     * @brief Metadata carried from previous ACL stage.
      *
-     * When an ACL entry set the meta data, the ACL meta data
+     * When an ACL entry set the meta data, the ACL metadata
      * form previous stages are overridden.
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE
@@ -1404,7 +1409,7 @@ typedef enum _sai_acl_entry_attr_t
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_USER_META,
 
-    /* NPU Based Meta Data [bool] */
+    /* NPU Based metadata [bool] */
 
     /**
      * @brief DST MAC address match in FDB
@@ -1457,6 +1462,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief IPv6 Next Header (8 bits)
+     *
      * This is to qualify 6th Byte value in IPv6 header.
      *
      * @type sai_acl_field_data_t sai_uint8_t
@@ -1471,6 +1477,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /*
      * Actions [sai_acl_action_data_t]
+     *
      * - To enable an action, parameter is needed unless noted specifically.
      * - To disable an action, parameter is not needed.
      */
@@ -1544,7 +1551,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS,
 
     /**
-     * @brief Associate with policer (policer id)
+     * @brief Associate with policer
      *
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
@@ -1710,7 +1717,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
 
     /**
-     * @brief Set Meta Data to carry forward to next ACL Stage
+     * @brief Set metadata to carry forward to next ACL Stage
      *
      * Value Range #SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE
      *
@@ -1789,7 +1796,7 @@ typedef enum _sai_acl_counter_attr_t
     SAI_ACL_COUNTER_ATTR_TABLE_ID = SAI_ACL_COUNTER_ATTR_START,
 
     /*
-     * By default Byte Counter would be created and following
+     * By default, Byte Counter would be created and following
      * use of the below attributes would result in an error.
      *
      * - Both packet count and byte count set to disable
@@ -1878,7 +1885,7 @@ typedef enum _sai_acl_range_attr_t
     SAI_ACL_RANGE_ATTR_START,
 
     /**
-     * @brief Range Type
+     * @brief Range type
      *
      * Mandatory to pass only one of the range types
      * defined in sai_acl_range_type_t enum during ACL Range Creation.
@@ -1916,12 +1923,12 @@ typedef enum _sai_acl_range_attr_t
 /**
  * @brief Create an ACL table
  *
- * @param[out] acl_table_id The the ACL table id
+ * @param[out] acl_table_id The ACL table id
  * @param[in] switch_id Switch Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_table_fn)(
         _Out_ sai_object_id_t *acl_table_id,
@@ -1934,7 +1941,7 @@ typedef sai_status_t (*sai_create_acl_table_fn)(
  *
  * @param[in] acl_table_id The ACL table id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_table_fn)(
         _In_ sai_object_id_t acl_table_id);
@@ -1945,7 +1952,7 @@ typedef sai_status_t (*sai_remove_acl_table_fn)(
  * @param[in] acl_table_id The ACL table id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
         _In_ sai_object_id_t acl_table_id,
@@ -1958,7 +1965,7 @@ typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
         _In_ sai_object_id_t acl_table_id,
@@ -1973,7 +1980,7 @@ typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_entry_fn)(
         _Out_ sai_object_id_t *acl_entry_id,
@@ -1986,7 +1993,7 @@ typedef sai_status_t (*sai_create_acl_entry_fn)(
  *
  * @param[in] acl_entry_id The ACL entry id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_entry_fn)(
         _In_ sai_object_id_t acl_entry_id);
@@ -1997,7 +2004,7 @@ typedef sai_status_t (*sai_remove_acl_entry_fn)(
  * @param[in] acl_entry_id The ACL entry id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
         _In_ sai_object_id_t acl_entry_id,
@@ -2010,7 +2017,7 @@ typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
         _In_ sai_object_id_t acl_entry_id,
@@ -2025,7 +2032,7 @@ typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_counter_fn)(
         _Out_ sai_object_id_t *acl_counter_id,
@@ -2038,7 +2045,7 @@ typedef sai_status_t (*sai_create_acl_counter_fn)(
  *
  * @param[in] acl_counter_id The ACL counter id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_counter_fn)(
         _In_ sai_object_id_t acl_counter_id);
@@ -2049,7 +2056,7 @@ typedef sai_status_t (*sai_remove_acl_counter_fn)(
  * @param[in] acl_counter_id The ACL counter id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
         _In_ sai_object_id_t acl_counter_id,
@@ -2062,7 +2069,7 @@ typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
         _In_ sai_object_id_t acl_counter_id,
@@ -2077,7 +2084,7 @@ typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_range_fn)(
         _Out_ sai_object_id_t *acl_range_id,
@@ -2090,7 +2097,7 @@ typedef sai_status_t (*sai_create_acl_range_fn)(
  *
  * @param[in] acl_range_id The ACL range id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_range_fn)(
         _In_ sai_object_id_t acl_range_id);
@@ -2100,7 +2107,7 @@ typedef sai_status_t (*sai_remove_acl_range_fn)(
  *
  * @param[in] acl_range_id The ACL range id
  * @param[in] attr Attribute
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_range_attribute_fn)(
         _In_ sai_object_id_t acl_range_id,
@@ -2113,7 +2120,7 @@ typedef sai_status_t (*sai_set_acl_range_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
         _In_ sai_object_id_t acl_range_id,
@@ -2128,7 +2135,7 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_table_group_fn)(
         _Out_ sai_object_id_t *acl_table_group_id,
@@ -2141,7 +2148,7 @@ typedef sai_status_t (*sai_create_acl_table_group_fn)(
  *
  * @param[in] acl_table_group_id The ACL group id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_table_group_fn)(
         _In_ sai_object_id_t acl_table_group_id);
@@ -2152,7 +2159,7 @@ typedef sai_status_t (*sai_remove_acl_table_group_fn)(
  * @param[in] acl_table_group_id The ACL table group id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_table_group_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_id,
@@ -2165,7 +2172,7 @@ typedef sai_status_t (*sai_set_acl_table_group_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_id,
@@ -2180,7 +2187,7 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
         _Out_ sai_object_id_t *acl_table_group_member_id,
@@ -2193,7 +2200,7 @@ typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
  *
  * @param[in] acl_table_group_member_id The ACL table group member id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_table_group_member_fn)(
         _In_ sai_object_id_t acl_table_group_member_id);
@@ -2204,7 +2211,7 @@ typedef sai_status_t (*sai_remove_acl_table_group_member_fn)(
  * @param[in] acl_table_group_member_id The ACL table group member id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_table_group_member_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_member_id,
@@ -2217,7 +2224,7 @@ typedef sai_status_t (*sai_set_acl_table_group_member_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_member_id,

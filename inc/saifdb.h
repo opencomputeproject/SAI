@@ -119,8 +119,8 @@ typedef enum _sai_fdb_entry_attr_t
     /**
      * @brief FDB entry bridge port id
      *
-     * The port id is only effective when the packet action is one of the following:
-     * FORWARD, COPY, LOG, TRANSIT
+     * The port id is only effective when the packet action is one of the
+     * following: FORWARD, COPY, LOG, TRANSIT
      *
      * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
      *
@@ -184,8 +184,10 @@ typedef enum _sai_fdb_flush_entry_type_t
  * For example, if you want to flush all static entries, set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE
  * = #SAI_FDB_FLUSH_ENTRY_TYPE_STATIC. If you want to flush both static and dynamic entries,
  * then there is no need to specify the #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE attribute.
- * The API uses AND operation when multiple attributes are specified. For
- * example,
+ * The API uses AND operation when multiple attributes are specified.
+ *
+ * For example:
+ *
  * 1) Flush all entries in FDB table - Do not specify any attribute
  * 2) Flush all entries by bridge port - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
  * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_VLAN_ID
@@ -270,7 +272,7 @@ typedef struct _sai_fdb_event_notification_data_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_fdb_entry_fn)(
         _In_ const sai_fdb_entry_t *fdb_entry,
@@ -282,7 +284,7 @@ typedef sai_status_t (*sai_create_fdb_entry_fn)(
  *
  * @param[in] fdb_entry FDB entry
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_fdb_entry_fn)(
         _In_ const sai_fdb_entry_t *fdb_entry);
@@ -293,7 +295,7 @@ typedef sai_status_t (*sai_remove_fdb_entry_fn)(
  * @param[in] fdb_entry FDB entry
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
         _In_ const sai_fdb_entry_t *fdb_entry,
@@ -306,7 +308,7 @@ typedef sai_status_t (*sai_set_fdb_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
         _In_ const sai_fdb_entry_t *fdb_entry,
@@ -320,7 +322,7 @@ typedef sai_status_t (*sai_get_fdb_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_flush_fdb_entries_fn)(
         _In_ sai_object_id_t switch_id,

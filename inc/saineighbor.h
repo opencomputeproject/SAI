@@ -137,7 +137,7 @@ typedef struct _sai_neighbor_entry_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_neighbor_entry_fn)(
         _In_ const sai_neighbor_entry_t *neighbor_entry,
@@ -151,7 +151,7 @@ typedef sai_status_t (*sai_create_neighbor_entry_fn)(
  *
  * @param[in] neighbor_entry Neighbor entry
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
         _In_ const sai_neighbor_entry_t *neighbor_entry);
@@ -162,7 +162,7 @@ typedef sai_status_t (*sai_remove_neighbor_entry_fn)(
  * @param[in] neighbor_entry Neighbor entry
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_neighbor_entry_attribute_fn)(
         _In_ const sai_neighbor_entry_t *neighbor_entry,
@@ -175,7 +175,7 @@ typedef sai_status_t (*sai_set_neighbor_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_neighbor_entry_attribute_fn)(
         _In_ const sai_neighbor_entry_t *neighbor_entry,
@@ -186,7 +186,7 @@ typedef sai_status_t (*sai_get_neighbor_entry_attribute_fn)(
  * @brief Remove all neighbor entries
  *
  * @param[in] switch_id Switch id
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(
         _In_ sai_object_id_t switch_id);
