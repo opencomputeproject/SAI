@@ -1064,6 +1064,11 @@ typedef struct _sai_object_type_info_t
     const sai_attr_metadata_t** const       attrmetadata;
 
     /**
+     * @brief Attributes metadata length
+     */
+    size_t                                  attrmetadatalength;
+
+    /**
      * @brief Indicates if object is using struct
      * instead of actual object id
      */

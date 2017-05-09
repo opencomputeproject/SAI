@@ -3736,6 +3736,8 @@ void check_enum_to_attr_map(
 
     uint32_t i = 0;
 
+    META_ASSERT_TRUE(oi->enummetadata->valuescount == oi->attrmetadatalength, "attr length must be equal to enum length");
+
     for (; i < oi->enummetadata->valuescount ;i++)
     {
         META_LOG_INFO("checking enum %s", oi->enummetadata->valuesnames[i]);

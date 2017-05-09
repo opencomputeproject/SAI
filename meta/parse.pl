@@ -2216,10 +2216,12 @@ sub CreateObjectInfo
         # so struct members must be generated previously
         #
 
-        my $isnonobjectid = ProcessIsNonObjectId($struct, $ot);
-        my $structmembers = ProcessStructMembersName($struct, $ot ,lc($1));
-        my $structmemberscount = ProcessStructMembersCount($struct, $ot);
-        my $revgraph = ProcessRevGraph($ot);
+        my $isnonobjectid       = ProcessIsNonObjectId($struct, $ot);
+        my $structmembers       = ProcessStructMembersName($struct, $ot ,lc($1));
+        my $structmemberscount  = ProcessStructMembersCount($struct, $ot);
+        my $revgraph            = ProcessRevGraph($ot);
+        my $attrmetalength      = @{ $SAI_ENUMS{$type}{values} };
+
         my $create = "NULL";
         my $remove = "NULL";
         my $set = "NULL";
@@ -2246,6 +2248,7 @@ sub CreateObjectInfo
         WriteSource "    .attridend          = $end,";
         WriteSource "    .enummetadata       = $enum,";
         WriteSource "    .attrmetadata       = sai_metadata_object_type_$type,";
+        WriteSource "    .attrmetadatalength = $attrmetalength,";
         WriteSource "    .isnonobjectid      = $isnonobjectid,";
         WriteSource "    .isobjectid         = !$isnonobjectid,";
         WriteSource "    .structmembers      = $structmembers,";
