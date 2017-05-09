@@ -1201,6 +1201,7 @@ void check_attr_validonly(
     if (!conditional && md->validonly != NULL)
     {
         META_ASSERT_FAIL(md, "not validonly but validonly specified");
+        META_ASSERT_FALSE(md->isvalidonly, "marked validonly but is not");
     }
 
     if (!conditional)
@@ -1211,6 +1212,13 @@ void check_attr_validonly(
     if (md->validonly == NULL)
     {
         META_ASSERT_FAIL(md, "marked as validonly but no validonly specified");
+    }
+
+    META_ASSERT_TRUE(md->isvalidonly, "marked not validonly but is");
+
+    if (!conditional)
+    {
+        return;
     }
 
     switch ((int)md->flags)
@@ -1356,8 +1364,10 @@ void check_attr_validonly(
                 (md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_TPID || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_ID ||
                 md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_CFI))
             {
-                /* Vlan header attributes are depending on VLAN_HEADER_VALID which is 
-                 * also valid only for ERSPAN. */
+                /*
+                 * Vlan header attributes are depending on VLAN_HEADER_VALID which is
+                 * also valid only for ERSPAN.
+                 */
             }
             else
             {

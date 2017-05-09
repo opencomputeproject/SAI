@@ -1464,6 +1464,7 @@ sub ProcessSingleObjectType
         WriteSource "    .validonlytype                 = $validonlytype,";
         WriteSource "    .validonly                     = $validonly,";
         WriteSource "    .validonlylength               = $validonlylen,";
+        WriteSource "    .isvalidonly                   = ($validonlylen != 0),";
         WriteSource "    .getsave                       = $getsave,";
         WriteSource "    .isvlan                        = $isvlan,";
         WriteSource "    .isaclfield                    = $isaclfield,";

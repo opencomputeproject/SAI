@@ -797,6 +797,11 @@ typedef struct _sai_attr_metadata_t
     size_t                              validonlylength;
 
     /**
+     * @brief Indicates whether attribute is valid only.
+     */
+    bool                                isvalidonly;
+
+    /**
      * @brief When calling GET API result will be put
      * in local db for future use (extra logic).
      *
