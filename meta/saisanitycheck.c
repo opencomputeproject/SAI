@@ -1216,11 +1216,6 @@ void check_attr_validonly(
 
     META_ASSERT_TRUE(md->isvalidonly, "marked not validonly but is");
 
-    if (!conditional)
-    {
-        return;
-    }
-
     switch ((int)md->flags)
     {
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY:
