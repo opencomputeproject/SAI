@@ -2195,6 +2195,24 @@ void check_attr_sai_pointer(
     }
 }
 
+void check_attr_brief_description(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of of this check is to see if brief description extracte from
+     * header is present and not too long.
+     */
+
+    META_ASSERT_NOT_NULL(md->brief);
+
+    if (strlen(md->brief) > 200)
+    {
+        META_ASSERT_FAIL(md, "brief description is too long > 200");
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2229,6 +2247,7 @@ void check_single_attribute(
     check_attr_acl_field_or_action(md);
     check_attr_existing_objects(md);
     check_attr_sai_pointer(md);
+    check_attr_brief_description(md);
 
     define_attr(md);
 }
