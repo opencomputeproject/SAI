@@ -3629,6 +3629,32 @@ void check_acl_entry_actions()
             "number of acl entry action mismatch vs number of enums in sai_acl_action_type_t");
 }
 
+void check_switch_attributes()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out whether switch object has some
+     * conditional or validonly attributes. Currently we are making assumptions
+     * that there are no such objects, so we are adding check for that, but if
+     * there will be need for such in the future, this check can be removed.
+     */
+
+    const sai_attr_metadata_t** const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
+
+    size_t index = 0;
+
+    for (; meta[index] != NULL; index++)
+    {
+        const sai_attr_metadata_t *md = meta[index];
+
+        if (md->isconditional || md->isvalidonly)
+        {
+            META_ASSERT_FAIL(md, "attribute can't be conditional/validonly (this check can be relaxed)");
+        }
+    }
+}
+
 void check_switch_create_only_objects()
 {
     META_LOG_ENTER();
@@ -3772,6 +3798,7 @@ int main(int argc, char **argv)
     check_vlan_attributes();
     check_api_names();
     check_switch_create_only_objects();
+    check_switch_attributes();
     check_reverse_graph_for_non_object_id();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
