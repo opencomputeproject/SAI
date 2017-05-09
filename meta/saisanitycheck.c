@@ -1201,6 +1201,7 @@ void check_attr_validonly(
     if (!conditional && md->validonly != NULL)
     {
         META_ASSERT_FAIL(md, "not validonly but validonly specified");
+        META_ASSERT_FALSE(md->isvalidonly, "marked validonly but is not");
     }
 
     if (!conditional)
@@ -1212,6 +1213,8 @@ void check_attr_validonly(
     {
         META_ASSERT_FAIL(md, "marked as validonly but no validonly specified");
     }
+
+    META_ASSERT_TRUE(md->isvalidonly, "marked not validonly but is");
 
     switch ((int)md->flags)
     {
@@ -1356,8 +1359,10 @@ void check_attr_validonly(
                 (md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_TPID || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_ID ||
                 md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_CFI))
             {
-                /* Vlan header attributes are depending on VLAN_HEADER_VALID which is 
-                 * also valid only for ERSPAN. */
+                /*
+                 * Vlan header attributes are depending on VLAN_HEADER_VALID which is
+                 * also valid only for ERSPAN.
+                 */
             }
             else
             {
@@ -1988,7 +1993,7 @@ void check_attr_acl_field_or_action(
      * acl field or action.
      */
 
-    if ((md->isaclfield | md->isaclaction) != sai_metadata_is_acl_field_or_action(md))
+    if ((md->isaclfield || md->isaclaction) != sai_metadata_is_acl_field_or_action(md))
     {
         META_ASSERT_FAIL(md, "isaclfield or isaclaction don't match utils method");
     }
@@ -2195,6 +2200,24 @@ void check_attr_sai_pointer(
     }
 }
 
+void check_attr_brief_description(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of of this check is to see if brief description extracte from
+     * header is present and not too long.
+     */
+
+    META_ASSERT_NOT_NULL(md->brief);
+
+    if (strlen(md->brief) > 200)
+    {
+        META_ASSERT_FAIL(md, "brief description is too long > 200");
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2229,6 +2252,7 @@ void check_single_attribute(
     check_attr_acl_field_or_action(md);
     check_attr_existing_objects(md);
     check_attr_sai_pointer(md);
+    check_attr_brief_description(md);
 
     define_attr(md);
 }
@@ -2931,227 +2955,6 @@ typedef sai_status_t(*switch_create_fn)(
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
-void check_api_names()
-{
-    META_LOG_ENTER();
-
-    /*
-     * Purpose of this check is to find out if all api names correspond to
-     * actual object names and follow convention name and the same signature
-     * except some special objects. Currently this test is performed here
-     * manually, but it could be converted to automatic generated test using
-     * parse.pl script.
-     *
-     * NOTE: Currently all new objects needs to be added here manually.
-     */
-
-    sai_object_type_t checked[SAI_OBJECT_TYPE_MAX];
-
-    memset(checked, 0, SAI_OBJECT_TYPE_MAX * sizeof(sai_object_type_t));
-
-    void *dummy = NULL;
-
-#define CHECK_API(apiname, short_object_type, object_type)\
-    {\
-        sai_ ## apiname ## _api_t apiname ## _api;\
-        checked[(int)object_type] = object_type;\
-        \
-        generic_create_fn create = apiname ## _api.create_ ## short_object_type;\
-        generic_remove_fn remove = apiname ## _api.remove_ ## short_object_type;\
-        generic_set_fn set = apiname ## _api.set_ ## short_object_type ## _attribute;\
-        generic_get_fn get =  apiname ## _api.get_ ## short_object_type ## _attribute;\
-        sai_create_ ## short_object_type ## _fn cr = NULL;\
-        sai_remove_ ## short_object_type ## _fn re = NULL;\
-        sai_set_ ## short_object_type ## _attribute_fn se = NULL;\
-        sai_get_ ## short_object_type ## _attribute_fn ge = NULL;\
-        dummy = &create;\
-        dummy = &remove;\
-        dummy = &set;\
-        dummy = &get;\
-        dummy = &cr;\
-        dummy = &re;\
-        dummy = &se;\
-        dummy = &ge;\
-    }
-
-    /*
-     * Rule here is that SECOND parameter should be exact match for object name
-     * but lower case, for example: CHECK_API(foo, xyz, SAI_OBJECT_TYPE_XYZ);
-     */
-
-    CHECK_API(port, port, SAI_OBJECT_TYPE_PORT);
-    CHECK_API(lag, lag, SAI_OBJECT_TYPE_LAG);
-    CHECK_API(virtual_router, virtual_router, SAI_OBJECT_TYPE_VIRTUAL_ROUTER);
-    CHECK_API(next_hop, next_hop, SAI_OBJECT_TYPE_NEXT_HOP);
-    CHECK_API(router_interface, router_interface, SAI_OBJECT_TYPE_ROUTER_INTERFACE);
-    CHECK_API(acl, acl_table, SAI_OBJECT_TYPE_ACL_TABLE);
-    CHECK_API(acl, acl_entry, SAI_OBJECT_TYPE_ACL_ENTRY);
-    CHECK_API(acl, acl_counter, SAI_OBJECT_TYPE_ACL_COUNTER);
-    CHECK_API(acl, acl_range, SAI_OBJECT_TYPE_ACL_RANGE);
-    CHECK_API(acl, acl_table_group, SAI_OBJECT_TYPE_ACL_TABLE_GROUP);
-    CHECK_API(acl, acl_table_group_member, SAI_OBJECT_TYPE_ACL_TABLE_GROUP_MEMBER);
-    CHECK_API(hostif, hostif, SAI_OBJECT_TYPE_HOSTIF);
-    CHECK_API(mirror, mirror_session, SAI_OBJECT_TYPE_MIRROR_SESSION);
-    CHECK_API(samplepacket, samplepacket, SAI_OBJECT_TYPE_SAMPLEPACKET);
-    CHECK_API(stp, stp, SAI_OBJECT_TYPE_STP);
-    CHECK_API(hostif, hostif_trap_group, SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP);
-    CHECK_API(policer, policer, SAI_OBJECT_TYPE_POLICER);
-    CHECK_API(wred, wred, SAI_OBJECT_TYPE_WRED);
-    CHECK_API(qos_map, qos_map, SAI_OBJECT_TYPE_QOS_MAP);
-    CHECK_API(queue, queue, SAI_OBJECT_TYPE_QUEUE);
-    CHECK_API(scheduler, scheduler, SAI_OBJECT_TYPE_SCHEDULER);
-    CHECK_API(scheduler_group, scheduler_group, SAI_OBJECT_TYPE_SCHEDULER_GROUP);
-    CHECK_API(buffer, buffer_pool, SAI_OBJECT_TYPE_BUFFER_POOL);
-    CHECK_API(buffer, buffer_profile, SAI_OBJECT_TYPE_BUFFER_PROFILE);
-    CHECK_API(buffer, ingress_priority_group, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP);
-    CHECK_API(lag, lag_member, SAI_OBJECT_TYPE_LAG_MEMBER);
-    CHECK_API(hash, hash, SAI_OBJECT_TYPE_HASH);
-    CHECK_API(udf, udf, SAI_OBJECT_TYPE_UDF);
-    CHECK_API(udf, udf_match, SAI_OBJECT_TYPE_UDF_MATCH);
-    CHECK_API(udf, udf_group, SAI_OBJECT_TYPE_UDF_GROUP);
-    CHECK_API(hostif, hostif_trap, SAI_OBJECT_TYPE_HOSTIF_TRAP);
-    CHECK_API(hostif, hostif_table_entry, SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY);
-    CHECK_API(vlan, vlan, SAI_OBJECT_TYPE_VLAN);
-    CHECK_API(vlan, vlan_member, SAI_OBJECT_TYPE_VLAN_MEMBER);
-
-    /*
-     * hostif packet is special since its not a real object but represents
-     * attributes received from host interface.
-     */
-
-    checked[(int)SAI_OBJECT_TYPE_HOSTIF_PACKET] = SAI_OBJECT_TYPE_HOSTIF_PACKET;
-
-    CHECK_API(tunnel, tunnel_map, SAI_OBJECT_TYPE_TUNNEL_MAP);
-    CHECK_API(tunnel, tunnel, SAI_OBJECT_TYPE_TUNNEL);
-    CHECK_API(tunnel, tunnel_term_table_entry, SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY);
-
-    /*
-     * fdb flush is special since its not a real object but represents
-     * attributes that are passed when flushing fdb entries
-     */
-
-    checked[(int)SAI_OBJECT_TYPE_FDB_FLUSH] = SAI_OBJECT_TYPE_FDB_FLUSH;
-
-    CHECK_API(next_hop_group, next_hop_group, SAI_OBJECT_TYPE_NEXT_HOP_GROUP);
-    CHECK_API(next_hop_group, next_hop_group_member, SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER);
-    CHECK_API(stp, stp_port, SAI_OBJECT_TYPE_STP_PORT);
-    CHECK_API(rpf_group, rpf_group, SAI_OBJECT_TYPE_RPF_GROUP);
-    CHECK_API(rpf_group, rpf_group_member, SAI_OBJECT_TYPE_RPF_GROUP_MEMBER);
-    CHECK_API(l2mc_group, l2mc_group, SAI_OBJECT_TYPE_L2MC_GROUP);
-    CHECK_API(l2mc_group, l2mc_group_member, SAI_OBJECT_TYPE_L2MC_GROUP_MEMBER);
-    CHECK_API(ipmc_group, ipmc_group, SAI_OBJECT_TYPE_IPMC_GROUP);
-    CHECK_API(ipmc_group, ipmc_group_member, SAI_OBJECT_TYPE_IPMC_GROUP_MEMBER);
-    CHECK_API(hostif, hostif_user_defined_trap, SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP);
-    CHECK_API(bridge, bridge, SAI_OBJECT_TYPE_BRIDGE);
-    CHECK_API(bridge, bridge_port, SAI_OBJECT_TYPE_BRIDGE_PORT);
-    CHECK_API(tunnel, tunnel_map_entry, SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY);
-    CHECK_API(tam, tam, SAI_OBJECT_TYPE_TAM);
-    CHECK_API(tam, tam_stat, SAI_OBJECT_TYPE_TAM_STAT);
-    CHECK_API(tam, tam_snapshot, SAI_OBJECT_TYPE_TAM_SNAPSHOT);
-    CHECK_API(tam, tam_transporter, SAI_OBJECT_TYPE_TAM_TRANSPORTER);
-    CHECK_API(tam, tam_threshold, SAI_OBJECT_TYPE_TAM_THRESHOLD);
-
-#define CHECK_ENTRY_API(apiname, entry_name, object_type)\
-    {\
-        typedef sai_status_t (*entry_name ## _create_fn)(\
-                _In_ const sai_ ## entry_name ## _t *entry_name,\
-                _In_ uint32_t attr_count,\
-                _In_ const sai_attribute_t *attr_list);\
-        typedef sai_status_t (*entry_name ## _remove_fn)(\
-                _In_ const sai_ ## entry_name ## _t *entry_name);\
-        typedef sai_status_t (*entry_name ## _set_fn)(\
-                _In_ const sai_ ## entry_name ## _t *entry_name,\
-                _In_ const sai_attribute_t *attr);\
-        typedef sai_status_t (*entry_name ## _get_fn)(\
-                _In_ const sai_ ## entry_name ## _t *entry_name,\
-                _In_ uint32_t attr_count,\
-                _Inout_ sai_attribute_t *attr_list);\
-        \
-        sai_ ## apiname ## _api_t apiname ## _api;\
-        checked[(int)object_type] = object_type;\
-        \
-        entry_name ## _create_fn create = apiname ## _api.create_ ## entry_name;\
-        entry_name ## _remove_fn remove = apiname ## _api.remove_ ## entry_name;\
-        entry_name ## _set_fn set = apiname ## _api.set_ ## entry_name ## _attribute;\
-        entry_name ## _get_fn get =  apiname ## _api.get_ ## entry_name ## _attribute;\
-        sai_create_ ## entry_name ## _fn cr = NULL;\
-        sai_remove_ ## entry_name ## _fn re = NULL;\
-        sai_set_ ## entry_name ## _attribute_fn se = NULL;\
-        sai_get_ ## entry_name ## _attribute_fn ge = NULL;\
-        dummy = &create;\
-        dummy = &remove;\
-        dummy = &set;\
-        dummy = &get;\
-        dummy = &cr;\
-        dummy = &re;\
-        dummy = &se;\
-        dummy = &ge;\
-    }
-
-    /*
-     * Those are objects with non object id, so we need to generate api
-     * definitions on the fly.
-     */
-
-    CHECK_ENTRY_API(fdb, fdb_entry, SAI_OBJECT_TYPE_FDB_ENTRY);
-    CHECK_ENTRY_API(neighbor, neighbor_entry, SAI_OBJECT_TYPE_NEIGHBOR_ENTRY);
-    CHECK_ENTRY_API(route, route_entry, SAI_OBJECT_TYPE_ROUTE_ENTRY);
-    CHECK_ENTRY_API(l2mc, l2mc_entry, SAI_OBJECT_TYPE_L2MC_ENTRY);
-    CHECK_ENTRY_API(ipmc, ipmc_entry, SAI_OBJECT_TYPE_IPMC_ENTRY);
-    CHECK_ENTRY_API(mcast_fdb, mcast_fdb_entry, SAI_OBJECT_TYPE_MCAST_FDB_ENTRY);
-
-    {
-        /*
-         * Switch object is special since it create function
-         * don't have switch_id as input parameter
-         */
-
-        checked[(int)SAI_OBJECT_TYPE_SWITCH] = SAI_OBJECT_TYPE_SWITCH;
-
-        sai_switch_api_t switch_api;
-
-        switch_create_fn create = switch_api.create_switch;
-        generic_remove_fn remove = switch_api.remove_switch;
-        generic_set_fn set = switch_api.set_switch_attribute;
-        generic_get_fn get = switch_api.get_switch_attribute;
-        sai_create_switch_fn cr = NULL;
-        sai_remove_switch_fn re = NULL;
-        sai_set_switch_attribute_fn se = NULL;
-        sai_get_switch_attribute_fn ge = NULL;
-        dummy = &create;
-        dummy = &remove;
-        dummy = &set;
-        dummy = &get;
-        dummy = &cr;
-        dummy = &re;
-        dummy = &se;
-        dummy = &ge;
-    }
-
-    if (debug)
-    {
-        /*
-         * to prevent warnings on not used variable
-         */
-        printf("dummy pointer: %p", dummy);
-    }
-
-    int index = SAI_OBJECT_TYPE_NULL;
-
-    /*
-     * check if all objects were processed
-     */
-
-    for (; index < SAI_OBJECT_TYPE_MAX; ++index)
-    {
-        if (checked[index] != (sai_object_type_t)index)
-        {
-            META_FAIL("object %s (%d) was not added to check",
-                    sai_metadata_enum_sai_object_type_t.valuesnames[index], index);
-        }
-    }
-}
-
 void check_single_non_object_id_for_rev_graph(
         _In_ const sai_struct_member_info_t *sm,
         _In_ sai_object_type_t objecttype,
@@ -3352,7 +3155,7 @@ void check_vlan_attributes()
 
         if (md->attrid == SAI_VLAN_ATTR_VLAN_ID)
         {
-            int expected_flags = (SAI_ATTR_FLAGS_MANDATORY_ON_CREATE|SAI_ATTR_FLAGS_CREATE_ONLY|SAI_ATTR_FLAGS_KEY);
+            int expected_flags = (SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY);
 
             if ((int)md->flags != expected_flags)
             {
@@ -3600,6 +3403,32 @@ void check_acl_entry_actions()
             "number of acl entry action mismatch vs number of enums in sai_acl_action_type_t");
 }
 
+void check_switch_attributes()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out whether switch object has some
+     * conditional or validonly attributes. Currently we are making assumptions
+     * that there are no such objects, so we are adding check for that, but if
+     * there will be need for such in the future, this check can be removed.
+     */
+
+    const sai_attr_metadata_t** const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
+
+    size_t index = 0;
+
+    for (; meta[index] != NULL; index++)
+    {
+        const sai_attr_metadata_t *md = meta[index];
+
+        if (md->isconditional || md->isvalidonly)
+        {
+            META_ASSERT_FAIL(md, "attribute can't be conditional/validonly (this check can be relaxed)");
+        }
+    }
+}
+
 void check_switch_create_only_objects()
 {
     META_LOG_ENTER();
@@ -3681,6 +3510,8 @@ void check_enum_to_attr_map(
 
     uint32_t i = 0;
 
+    META_ASSERT_TRUE(oi->enummetadata->valuescount == oi->attrmetadatalength, "attr length must be equal to enum length");
+
     for (; i < oi->enummetadata->valuescount ;i++)
     {
         META_LOG_INFO("checking enum %s", oi->enummetadata->valuesnames[i]);
@@ -3741,8 +3572,8 @@ int main(int argc, char **argv)
     check_read_only_attributes();
     check_mixed_object_list_types();
     check_vlan_attributes();
-    check_api_names();
     check_switch_create_only_objects();
+    check_switch_attributes();
     check_reverse_graph_for_non_object_id();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
