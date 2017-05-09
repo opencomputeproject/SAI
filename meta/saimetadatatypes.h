@@ -1027,6 +1027,24 @@ typedef sai_status_t (*sai_meta_generic_get_fn)(
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
+typedef sai_status_t (*sai_generic_create_fn)(
+        _Out_ sai_object_id_t *object_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_generic_remove_fn)(
+        _In_ sai_object_id_t object_id);
+
+typedef sai_status_t (*sai_generic_set_fn)(
+        _In_ sai_object_id_t object_id,
+        _In_ const sai_attribute_t *attr);
+
+typedef sai_status_t (*sai_generic_get_fn)(
+        _In_ sai_object_id_t object_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
 /**
  * @brief SAI object type information
  */

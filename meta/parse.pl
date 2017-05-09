@@ -3667,6 +3667,7 @@ sub WriteTestHeader
 
     WriteTest "#include <stdio.h>";
     WriteTest "#include <stdlib.h>";
+    WriteTest "#include <string.h>";
     WriteTest "#include \"saimetadata.h\"";
     WriteTest "#define PP(x) printf(\"%p\\n\", (x));";
     WriteTest "#define TEST_ASSERT_TRUE(x,msg) if (!(x)){ fprintf(stderr, \"ASSERT TRUE FAILED(%d): %s: %s\\n\", __LINE__, #x, msg); exit(1);}";
@@ -3727,6 +3728,139 @@ sub CreateListCountTest
         WriteTest "    TEST_ASSERT_TRUE(sizeof($name.list) == sizeof(void*), \"$type.list should be pointer\");";
         WriteTest "    TEST_ASSERT_TRUE(&$name == (void*)&$name.count, \"$type.count should be first member in $type\");";
     }
+
+    WriteTest "}";
+}
+
+sub CreateApiNameTest
+{
+    #
+    # Purpose of this check is to find out if all api names correspond to
+    # actual object names and follow convention name and the same signature except
+    # some special objects.
+    #
+
+    DefineTestName "api_name_test";
+
+    WriteTest "{";
+
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    WriteTest "    sai_object_type_t checked[SAI_OBJECT_TYPE_MAX];";
+    WriteTest "    memset(checked, 0, SAI_OBJECT_TYPE_MAX * sizeof(sai_object_type_t));";
+
+    WriteTest "    void *dummy = NULL;";
+
+    for my $ot (@objects)
+    {
+        next if $ot =~ /^SAI_OBJECT_TYPE_(MAX|NULL)$/;
+
+        $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/;
+
+        if ($ot eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $ot eq "SAI_OBJECT_TYPE_HOSTIF_PACKET")
+        {
+            # those obejcts are special, just attributes, no APIs
+            WriteTest "    checked[(int)$ot] = $ot;";
+            next;
+        }
+
+        my $short = lc($1);
+
+        my $api = $OBJTOAPIMAP{$ot};
+
+        WriteTest "    {";
+        WriteTest "        sai_${api}_api_t ${api}_api;";
+
+        if (defined $STRUCTS{$ot})
+        {
+            # object type is non object id, we must generate stuff on the fly
+
+            WriteTest "        typedef sai_status_t (*${short}_create_fn)(\\";
+            WriteTest "                _In_ const sai_${short}_t *$short,\\";
+            WriteTest "                _In_ uint32_t attr_count,\\";
+            WriteTest "                _In_ const sai_attribute_t *attr_list);";
+
+            WriteTest "        typedef sai_status_t (*${short}_remove_fn)(\\";
+            WriteTest "                _In_ const sai_${short}_t *$short);";
+
+            WriteTest "        typedef sai_status_t (*${short}_set_fn)(\\";
+            WriteTest "                _In_ const sai_${short}_t *$short,\\";
+            WriteTest "                _In_ const sai_attribute_t *attr);";
+
+            WriteTest "        typedef sai_status_t (*${short}_get_fn)(\\";
+            WriteTest "                _In_ const sai_${short}_t *$short,\\";
+            WriteTest "                _In_ uint32_t attr_count,\\";
+            WriteTest "                _Inout_ sai_attribute_t *attr_list);";
+
+            WriteTest "        ${short}_create_fn create = ${api}_api.create_$short;";
+            WriteTest "        ${short}_remove_fn remove = ${api}_api.remove_$short;";
+            WriteTest "        ${short}_set_fn set = ${api}_api.set_${short}_attribute;";
+            WriteTest "        ${short}_get_fn get = ${api}_api.get_${short}_attribute;";
+
+            # just to check if function is declared
+
+            WriteTest "        sai_create_${short}_fn cr = NULL;";
+            WriteTest "        sai_remove_${short}_fn re = NULL;";
+            WriteTest "        sai_set_${short}_attribute_fn se = NULL;";
+            WriteTest "        sai_get_${short}_attribute_fn ge = NULL;";
+
+            WriteTest "        dummy = &create;";
+            WriteTest "        dummy = &remove;";
+            WriteTest "        dummy = &set;";
+            WriteTest "        dummy = &get;";
+            WriteTest "        dummy = &cr;";
+            WriteTest "        dummy = &re;";
+            WriteTest "        dummy = &se;";
+            WriteTest "        dummy = &ge;";
+            WriteTest "        checked[(int)$ot] = $ot;";
+        }
+        else
+        {
+            if ($ot eq "SAI_OBJECT_TYPE_SWITCH")
+            {
+                WriteTest "        sai_create_switch_fn create = ${api}_api.create_$short;";
+            }
+            else
+            {
+                WriteTest "        sai_generic_create_fn create = ${api}_api.create_$short;";
+            }
+
+            WriteTest "        sai_generic_remove_fn remove = ${api}_api.remove_$short;";
+            WriteTest "        sai_generic_set_fn set = ${api}_api.set_${short}_attribute;";
+            WriteTest "        sai_generic_get_fn get = ${api}_api.get_${short}_attribute;";
+
+            # just to check if function is declared
+
+            WriteTest "        sai_create_${short}_fn cr = NULL;";
+            WriteTest "        sai_remove_${short}_fn re = NULL;";
+            WriteTest "        sai_set_${short}_attribute_fn se = NULL;";
+            WriteTest "        sai_get_${short}_attribute_fn ge = NULL;";
+
+            WriteTest "        dummy = &create;";
+            WriteTest "        dummy = &remove;";
+            WriteTest "        dummy = &set;";
+            WriteTest "        dummy = &get;";
+            WriteTest "        dummy = &cr;";
+            WriteTest "        dummy = &re;";
+            WriteTest "        dummy = &se;";
+            WriteTest "        dummy = &ge;";
+            WriteTest "        checked[(int)$ot] = $ot;";
+        }
+
+        WriteTest "    }";
+    }
+
+    WriteTest "    int index = SAI_OBJECT_TYPE_NULL;";
+
+    WriteTest "    for (; index < SAI_OBJECT_TYPE_MAX; ++index)";
+    WriteTest "    {";
+    WriteTest "        printf(\"checking: %s checked (%d) == index (%d)\\n\",";
+    WriteTest "             sai_metadata_enum_sai_object_type_t.valuesnames[index],";
+    WriteTest "             checked[index],(sai_object_type_t)index);";
+    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all obejcts were processed\");";
+    WriteTest "    }";
+
+    WriteTest "    PP(dummy);";
 
     WriteTest "}";
 }
@@ -3875,6 +4009,8 @@ CreatePointersTest();
 CreateEnumSizeCheckTest();
 
 CreateListCountTest();
+
+CreateApiNameTest();
 
 WriteTestMain();
 
