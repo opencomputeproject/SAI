@@ -2176,7 +2176,12 @@ sub CreateApisQuery
         my $api = uc("SAI_API_${key}");
 
         WriteSource "    status = api_query($api, (void**)&sai_metadata_sai_${key}_api);";
-        WriteSource "    if (status != SAI_STATUS_SUCCESS) { count++; SAI_META_LOG_ERROR(\"failed to query api $api\"); }";
+        WriteSource "    if (status != SAI_STATUS_SUCCESS)";
+        WriteSource "    {";
+        WriteSource "        count++;";
+        WriteSource "        const char *name = sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_status_t, status);";
+        WriteSource "        SAI_META_LOG_ERROR(\"failed to query api $api: %s (%d)\", name, status);";
+        WriteSource "    }";
     }
 
     WriteSource "    return count; /* number of unsuccesfull apis */";
@@ -2184,7 +2189,7 @@ sub CreateApisQuery
     WriteSource "}";
 
     WriteHeader "extern int sai_metadata_apis_query(";
-    WriteHeader "    _In_ const sai_api_query_fn api_query);";
+    WriteHeader "       _In_ const sai_api_query_fn api_query);";
 }
 
 sub CreateObjectInfo

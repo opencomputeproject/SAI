@@ -1998,7 +1998,7 @@ void check_attr_acl_field_or_action(
      * acl field or action.
      */
 
-    if ((md->isaclfield | md->isaclaction) != sai_metadata_is_acl_field_or_action(md))
+    if ((md->isaclfield || md->isaclaction) != sai_metadata_is_acl_field_or_action(md))
     {
         META_ASSERT_FAIL(md, "isaclfield or isaclaction don't match utils method");
     }
@@ -3381,7 +3381,7 @@ void check_vlan_attributes()
 
         if (md->attrid == SAI_VLAN_ATTR_VLAN_ID)
         {
-            int expected_flags = (SAI_ATTR_FLAGS_MANDATORY_ON_CREATE|SAI_ATTR_FLAGS_CREATE_ONLY|SAI_ATTR_FLAGS_KEY);
+            int expected_flags = (SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY | SAI_ATTR_FLAGS_KEY);
 
             if ((int)md->flags != expected_flags)
             {
