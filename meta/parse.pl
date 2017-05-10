@@ -1822,7 +1822,7 @@ sub ProcessStructMembers
 
     return "NULL" if not defined $struct;
 
-    my @keys = keys %$struct; # since struct here is reference
+    my @keys = GetStructKeysInOrder($struct);
 
     for my $key (@keys)
     {
@@ -1876,8 +1876,7 @@ sub ProcessStructMembersCount
 
     return "0" if not defined $struct;
 
-    my @keys = keys %$struct;
-    my $count = @keys;
+    my $count = keys %$struct;
 
     return $count;
 }
@@ -2120,7 +2119,7 @@ sub ProcessGet
 
 sub CreateApis
 {
-    for my $key(sort keys %APITOOBJMAP)
+    for my $key (sort keys %APITOOBJMAP)
     {
         WriteSource "sai_${key}_api_t *sai_metadata_sai_${key}_api = NULL;";
         WriteHeader "extern sai_${key}_api_t *sai_metadata_sai_${key}_api;";
@@ -2163,7 +2162,7 @@ sub CreateApisQuery
     WriteSource "    if (api_query == NULL)";
     WriteSource "    {";
 
-    for my $key(sort keys %APITOOBJMAP)
+    for my $key (sort keys %APITOOBJMAP)
     {
         WriteSource "        sai_metadata_sai_${key}_api = NULL;";
     }
@@ -2171,7 +2170,7 @@ sub CreateApisQuery
     WriteSource "        return count;";
     WriteSource "    }";
 
-    for my $key(sort keys %APITOOBJMAP)
+    for my $key (sort keys %APITOOBJMAP)
     {
         my $api = uc("SAI_API_${key}");
 
@@ -2297,7 +2296,7 @@ sub GetHeaderFiles
     my @headers = grep { /^sai\w*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
     closedir $dh;
 
-    return @headers;
+    return sort @headers;
 }
 
 sub GetMetaHeaderFiles
@@ -2306,7 +2305,7 @@ sub GetMetaHeaderFiles
     my @headers = grep { /^sai\w*\.h$/ and -f "./$_" } readdir($dh);
     closedir $dh;
 
-    return @headers;
+    return sort @headers;
 }
 
 sub ReadHeaderFile
@@ -2511,6 +2510,8 @@ sub ExtractStructInfo
         return %S;
     }
 
+    my $idx = 0;
+
     for my $member (@members)
     {
         my $name = $member->{name}[0];
@@ -2520,6 +2521,7 @@ sub ExtractStructInfo
 
         $S{$name}{type} = $type;
         $S{$name}{desc} = $desc;
+        $S{$name}{idx}  = $idx++;
     }
 
     return %S;
@@ -2548,6 +2550,25 @@ sub ExtractObjectsFromDesc
     return undef;
 }
 
+sub GetStructKeysInOrder
+{
+    my $structRef = shift;
+
+    my @values = ();
+
+    for my $key (keys %$structRef)
+    {
+        $values[$structRef->{$key}->{idx}] = $key;
+    }
+
+    if ($values[0] ne "switch_id")
+    {
+        LogError "GetStructKeysInOrder failed, switch_id is not first item";
+    }
+
+    return @values;
+}
+
 sub ProcessSingleNonObjectId
 {
     my $rawname = shift;
@@ -2569,7 +2590,7 @@ sub ProcessSingleNonObjectId
 
     my %struct = ExtractStructInfo($structname, "struct_");
 
-    for my $member (keys %struct)
+    for my $member (GetStructKeysInOrder(\%struct))
     {
         my $type = $struct{$member}{type};
         my $desc = $struct{$member}{desc};
@@ -3636,7 +3657,7 @@ sub GetReverseDependencyGraph
 
         my %struct = %{ $STRUCTS{$ot} };
 
-        for my $key(keys %struct)
+        for my $key (sort keys %struct)
         {
             next if not defined $struct{$key}{objects};
 
@@ -3714,7 +3735,7 @@ sub CreateListCountTest
 
     WriteTest "    size_t size_ref = sizeof(sai_object_list_t);";
 
-    for my $key (keys %Union)
+    for my $key (sort keys %Union)
     {
         my $type = $Union{$key}->{type};
 
@@ -3910,7 +3931,7 @@ sub ProcessStructItem
 
     my %S = ExtractStructInfo($type, "struct_");
 
-    for my $key (keys %S)
+    for my $key (sort keys %S)
     {
         my $item = $S{$key}{type};
 
@@ -3935,7 +3956,7 @@ sub CheckAttributeValueUnion
 
     my @primitives = qw/sai_acl_action_data_t sai_acl_field_data_t sai_pointer_t sai_object_id_t sai_object_list_t char/;
 
-    for my $key (keys %Union)
+    for my $key (sort keys %Union)
     {
         my $type = $Union{$key}{type};
 
