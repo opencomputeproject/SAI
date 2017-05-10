@@ -1,4 +1,4 @@
-SAI access control lists (ACL) enhancements for SAI 1.0.0
+SAI Fast Reroute enhancement for SAI 1.2.0
 -------------------------------------------------------------------------------
  Title       | Fast Reroute
 -------------|-----------------------------------------------------------------
@@ -116,6 +116,10 @@ switchover times can be achieved if the switching entity can trigger
 them directly. This has been confirmed by feedback we received from
 hardware vendors after we presented the first draft of this proposal
 
+Furthermore, to simplify the operation of the switching entity, it is desired
+that the control plane provides the identifiers of the BFD session of port
+that is associated with given next hop group.
+
 # Proposal
 ## Current SAI object model
 
@@ -147,22 +151,18 @@ program more than two next hops within a single Protection Next Hop
 Group. It is outside the scope of this proposal to specify how the
 Adapter or Adapter Host should enforce this condition.
 
-Furthermore, a new attribute is added to the Next Hop Group to indicate
-what kind of events can cause the Switching Entity to initiate a
-switchover. The attribute is
-SAI\_NEXT\_HOP\_GROUP\_ATTR\_SWITCHOVER\_TYPE and can be any combination
-of the following bit flags:
+Furthermore, two new attributes are added to the Next Hop Group to identify
+what kind of events can cause the Switching Entity to initiate a switchover.
+The attributes are:
+-  SAI\_NEXT\_HOP\_GROUP\_ATTR\_BFD\_SESSION\_ID
+-  SAI\_NEXT\_HOP\_GROUP\_ATTR\_PORT\_ID
 
--   SAI\_NEXT\_HOP\_SWITCHOVER\_TRIGGER\_NULL
+These attributes allow the switching entity to monitor a specified object
+(BFD session or port) and in case of its failure, trigger a switchover.
 
--   SAI\_NEXT\_HOP\_SWITCHOVER\_TRIGGER\_BFD
-
--   SAI\_NEXT\_HOP\_SWITCHOVER\_TRIGGER\_PORT\_DOWN
-
-Finally, two attributes are added to allow the Control Plane stack to
-initiate and revert the failover. These are
-SAI\_NEXT\_HOP\_GROUP\_ATTR\_SET\_SWITCHOVER and
-SAI\_NEXT\_HOP\_GROUP\_ATTR\_CLEAR\_SWITCHOVER. This is required for
+Finally, new attribute is added to allow the Control Plane stack to
+initiate and revert the failover. The new attribute is
+SAI\_NEXT\_HOP\_GROUP\_ATTR\_SET\_SWITCHOVER. This is required for
 example in the scenario when the BFD process runs in the Control Plane
 process rather than in the Switching Entity and the Control Plane stack
 has to trigger a switchover “manually”.
@@ -248,35 +248,39 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_TYPE,
 
 +     /**
-+      * @brief Events that can initiate switchover from primary to backup next hop
-+      *
-+      * Can be a combination of the following:
-+      * SAI_NEXT_HOP_SWITCHOVER_TRIGGER_NULL,
-+      * SAI_NEXT_HOP_SWITCHOVER_TRIGGER_BFD,
-+      * SAI_NEXT_HOP_SWITCHOVER_TRIGGER_PORT_DOWN
-+      *
-+      * @type sai_uint8_t
-+      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
-+      */
-+     SAI_NEXT_HOP_GROUP_ATTR_SWITCHOVER_TYPE,
-+
-+     /**
 +      * @brief Trigger a switchover from primary to backup next hop
 +      *
 +      * @type bool
 +      * @default false
-+      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION and SAI_NEXT_HOP_GROUP_ATTR_CLEAR_SWITCHOVER == false
++      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
 +      */
 +     SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER,
 +
 +     /**
-+      * @brief Revert back to forwarding over primary next hop
++      * @brief Identifier of the BFD session associated with the primary next hop
 +      *
-+      * @type bool
-+      * @default false
-+      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION and SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER == false
++      * The BFD session is used to detect failure of the primary next hop.
++      * If the specified BFD session detects failure, the switching entity
++      * triggers a switchover to backup next hop.
++      *
++      * @type TODO (Waiting for the BFD proposal to specify the format)
++      * @default 0
++      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
 +      */
-+     SAI_NEXT_HOP_GROUP_ATTR_CLEAR_SWITCHOVER,
++     SAI_NEXT_HOP_GROUP_ATTR_BFD_SESSION_ID,
++
++     /**
++      * @brief Identifier of the port associated with the primary next hop
++      *
++      * If the specified port fails, the switching entity triggers a switchover
++      * from the primary next hop to backup.
++      *
++      * @type sai_object_id_t
++      * @default 0
++      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
++      */
++     SAI_NEXT_HOP_GROUP_ATTR_PORT_ID,
+
 
     /**
      * @brief End of attributes
@@ -403,5 +407,155 @@ There are no changes to be made to the API.
 
 # Examples
 
-# Pipeline
+The examples illustrate the following scenario:
+- Create a protection Next Hop Group with primary and backup next hops.
+- Trigger a switchover.
+- Read the status of the Next Hop Group Members.
+- Revert the switchover.
+- Read the status again.
 
+## Create a protection Next Hop Group
+```
+nh_1_interface_id = 1
+nh_2_interface_id = 2
+switch_id = 0;
+
+nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_TYPE;
+nhg_entry_attrs[0].value.u32 = SAI_NEXT_HOP_GROUP_TYPE_PROTECTION;
+nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER;
+nhg_entry_attrs[1].value.u32 = false;
+nhg_entry_attrs[2].id = SAI_NEXT_HOP_GROUP_ATTR_BFD_SESSION_ID;
+nhg_entry_attrs[2].value.u32 = 1;
+saistatus = sai_frr_api->create_next_hop_group(&nhg_id, switch_id, 1, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+nh_entry_attrs[0].id = SAI_NEXT_HOP_ATTR_TYPE;
+nh_entry_attrs[0].value.u32 = SAI_NEXT_HOP_TYPE_IP;
+nh_entry_attrs[1].id = SAI_NEXT_HOP_ATTR_IP;
+CONVERT_STRING_TO_SAI_IPV4(nh_entry_attrs[1].value, "10.1.1.1");
+nh_entry_attrs[2].id = SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID;
+nh_entry_attrs[2].value.u64 = nh_1_interface_id;
+saistatus = sai_frr_api->create_next_hop(&nh_1_id, switch_id, 2, nh_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+nh_entry_attrs[0].id = SAI_NEXT_HOP_ATTR_TYPE;
+nh_entry_attrs[0].value.u32 = SAI_NEXT_HOP_TYPE_IP;
+nh_entry_attrs[1].id = SAI_NEXT_HOP_ATTR_IP;
+CONVERT_STRING_TO_SAI_IPV4(nh_entry_attrs[1].value, "10.1.2.1");
+nh_entry_attrs[2].id = SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID;
+nh_entry_attrs[2].value.u64 = nh_2_interface_id;
+saistatus = sai_frr_api->create_next_hop(&nh_2_id, switch_id, 2, nh_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+nhgm_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID;
+nhgm_entry_attrs[0].value.oid = nhg_id;
+nhgm_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID;
+nhgm_entry_attrs[1].value.oid = nh_1_id;
+nhgm_entry_attrs[2].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_PROTECTION_ROLE;
+nhgm_entry_attrs[2].value.u32 = SAI_NEXT_HOP_GROUP_MEMBER_PRIMARY;
+saistatus = sai_frr_api->create_next_hop_group_member(&nhgm_1_id, switch_id, 2, nhgm_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+nhgm_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID;
+nhgm_entry_attrs[0].value.oid = nhg_id;
+nhgm_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID;
+nhgm_entry_attrs[1].value.oid = nh_2_id;
+nhgm_entry_attrs[2].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_PROTECTION_ROLE;
+nhgm_entry_attrs[2].value.u32 = SAI_NEXT_HOP_GROUP_MEMBER_BACKUP;
+saistatus = sai_frr_api->create_next_hop_group_member(&nhgm_2_id, switch_id, 2, nhgm_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+```
+
+## Trigger a switchover
+```
+nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER;
+nhg_entry_attrs[0].value.u32 = true;
+saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+```
+
+## Query the status of next hop group members.
+```
+
+attr_count = 5;
+
+// Get the attributes of the first next hop.
+saistatus = sai_frr_api->sai_get_next_hop_group_member_attribute_fn(nhgm_1_id, attr_count, nhgm_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+// Find the value of observed protection role.  In the previous step we triggered
+// a switchover so the observed role must be "FAILED".
+for (attr_id = 0; attr_id < attr_count; attr_id++) {
+    if (nhgm_entry_attrs[attr_id].id == SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_OBSERVED_ROLE) {
+        assert(nhgm_entry_attrs[attr_id].value.u32 == SAI_NEXT_HOP_GROUP_MEMBER_FAILED);
+    }
+}
+
+// Now check the other backup next hop.
+saistatus = sai_frr_api->sai_get_next_hop_group_member_attribute_fn(nhgm_2_id, attr_count, nhgm_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+// This time the observed role will be "FORWARDING".
+for (attr_id = 0; attr_id < attr_count; attr_id++) {
+    if (nhgm_entry_attrs[attr_id].id == SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_OBSERVED_ROLE) {
+        assert(nhgm_entry_attrs[attr_id].value.u32 == SAI_NEXT_HOP_GROUP_MEMBER_FORWARDING);
+    }
+}
+
+```
+
+## Clear the switchover
+```
+nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER;
+nhg_entry_attrs[0].value.u32 = false;
+saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+```
+## Query the status of next hop group members again.
+```
+// The switchover has been cleared so the primary next hop is forwarding again.
+saistatus = sai_frr_api->sai_get_next_hop_group_member_attribute_fn(nhgm_1_id, attr_count, nhgm_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+for (attr_id = 0; attr_id < attr_count; attr_id++) {
+    if (nhgm_entry_attrs[attr_id].id == SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_OBSERVED_ROLE) {
+        assert(nhgm_entry_attrs[attr_id].value.u32 == SAI_NEXT_HOP_GROUP_MEMBER_FORWARDING);
+    }
+}
+
+// And backup is not forwarding anymore.
+saistatus = sai_frr_api->sai_get_next_hop_group_member_attribute_fn(nhgm_2_id, attr_count, nhgm_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+for (attr_id = 0; attr_id < attr_count; attr_id++) {
+    if (nhgm_entry_attrs[attr_id].id == SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_OBSERVED_ROLE) {
+        assert(nhgm_entry_attrs[attr_id].value.u32 == SAI_NEXT_HOP_GROUP_MEMBER_BACKUP);
+    }
+}
+
+```
+
+# Pipeline
