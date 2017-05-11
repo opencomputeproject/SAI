@@ -172,6 +172,9 @@ typedef enum _sai_hostif_trap_id_t
     /** default action is trap */
     SAI_HOSTIF_TRAP_ID_SAMPLEPACKET = 0x00000000b,
 
+    /** default action is drop */
+    SAI_HOSTIF_TRAP_ID_UDLD = 0x00000000c,
+
     SAI_HOSTIF_TRAP_ID_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
 
     /**
