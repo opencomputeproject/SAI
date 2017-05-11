@@ -68,22 +68,6 @@ typedef enum _sai_segmentroute_sidlist_attr_t
     SAI_SEGMENTROUTE_SIDLIST_ATTR_TYPE = SAI_SEGMENTROUTE_SIDLIST_ATTR_START,
 
     /**
-     * @brief Number of Segments supported on device for source
-     *
-     * @type sai_uint8_t
-     * @flags READ_ONLY
-     */
-    SAI_SEGMENTROUTE_SIDLIST_ATTR_SUPPORTED_NUM_SEGMENTS,
-
-    /**
-     * @brief List of Type Length Value types supported for source
-     *
-     * @type sai_s32_list_t sai_tlv_type_t
-     * @flags READ_ONLY
-     */
-    SAI_SEGMENTROUTE_SIDLIST_ATTR_SUPPORTED_TLV_TYPE,
-
-    /**
      * @brief List of Type Length Values for Source
      *
      * @type sai_tlv_list_t

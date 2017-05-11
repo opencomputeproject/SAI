@@ -6,7 +6,7 @@ SAI IPv6 Segment Routing Proposal for SAI 1.2.0
  Status      | In review
  Type        | Standards track
  Created     | 04/14/2017
- Updated     | 05/03/2017
+ Updated     | 05/11/2017
  SAI-Version | 1.2.0
 
 -------------------------------------------------------------------------------
@@ -41,13 +41,13 @@ The below figures shows the additional logic in the Ingress ACL and Route lookup
 __Figure 1: Behavioral Model Addition.__
 
 ![SAI v6SR bm1](figures/sai_v6SR_bm1.png "Figure 2: Source Behavior ")
-__Figure 1: Source Behavior.__
+__Figure 2: Source Behavior.__
 
 ![SAI v6SR bm2](figures/sai_v6SR_bm2.png "Figure 3: Transit Behavior ")
-__Figure 1: Transit Behavior.__
+__Figure 3: Transit Behavior.__
 
 ![SAI v6SR bm3](figures/sai_v6SR_bm3.png "Figure 4: Endpoint Behavior ")
-__Figure 1: Endpoint Behavior.__
+__Figure 4: Endpoint Behavior.__
 
 
 ## API Modification
@@ -67,10 +67,11 @@ Endpoint Actions to be taken:
 ### SID List Object APIs
 #### Vendor Support Advertisement
 
-Included is also a way for vendors to advertise devcie support include the number of segments and TLV types that can be originated
+Included is also a way for vendors to advertise device support include the number of segments and TLV types that can be originated
 
-    SAI_SEGMENTROUTE_SIDLIST_ATTR_NUM_SEGMENTS_SUPPORTED
-    SAI_SEGMENTROUTE_SIDLIST_ATTR_TLV_TYPE_SUPPORTED
+    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SEGMENTS
+    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SIDLISTS
+    SAI_SWITCH_ATTR_SEGMENTROUTE_TLV_TYPE
 
 > Note: NSH Carrier and Padding TLVs were not included in this first draft
 
@@ -112,6 +113,7 @@ The following example
 2. Creates an ACL entry to specify a specific flow to bind to a Next-Hop Group (BSID)
 3. Writes SID List Object to add 3 Segments and an Ingress Node TLV  
 4. Create Next-Hop Group Member / Next-Hop Object bound to a SID List Object 
+
 
     switch_id = 0;
     nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_TYPE;
@@ -182,6 +184,19 @@ The following example creates an Endpoint entry to match on incoming DIP and do 
     nh_entry_attrs[2].value.u32 = SAI_NEXT_HOP_ENDPOINT_TYPE_E;
 
     saistatus = sai_v6sr_api->create_next_hop(&nh_id, switch_id, 3, nh_entry_attrs);
+    if (saistatus != SAI_STATUS_SUCCESS) {
+        return saistatus;
+    }
+
+    route_entry.switch_id = switch_id_1;
+    route_entry.vr_id = vr_id_1;
+    route_entry.destination.addr_family = SAI_IP_ADDR_FAMILY_IPV6;
+    CONVERT_STR_TO_IPV6(route_entry.destination.addr.ip6, "2001:db8:85a3::8a2e:370:0001");
+    CONVERT_STR_TO_IPV6(route_entry.destination.mask.ip6, "FFFF::FFFF");
+    route_entry_attrs[0].id = SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID;
+    route_entry_attrs[0].value.u32 = nh_id; 
+
+    saistatus = sai_v6sr_api->create_route_entry(route_entry, 1, route_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }
