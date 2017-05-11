@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -68,7 +68,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_ATTR_START,
 
     /**
-     * @brief Next hop entry ipv4 address
+     * @brief Next hop entry IPv4 address
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -80,8 +80,8 @@ typedef enum _sai_next_hop_attr_t
      * @brief Next hop entry router interface id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      */
     SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 
@@ -89,8 +89,8 @@ typedef enum _sai_next_hop_attr_t
      * @brief Next hop entry tunnel-id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
      */
     SAI_NEXT_HOP_ATTR_TUNNEL_ID,
@@ -118,7 +118,7 @@ typedef enum _sai_next_hop_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_next_hop_fn)(
         _Out_ sai_object_id_t *next_hop_id,
@@ -131,7 +131,7 @@ typedef sai_status_t (*sai_create_next_hop_fn)(
  *
  * @param[in] next_hop_id Next hop id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_next_hop_fn)(
         _In_ sai_object_id_t next_hop_id);
@@ -142,7 +142,7 @@ typedef sai_status_t (*sai_remove_next_hop_fn)(
  * @param[in] next_hop_id Next hop id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
         _In_ sai_object_id_t next_hop_id,
@@ -155,7 +155,7 @@ typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_next_hop_attribute_fn)(
         _In_ sai_object_id_t next_hop_id,

@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -17,13 +17,13 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    saimcfdb.h
+ * @file    saimcastfdb.h
  *
  * @brief   This module defines SAI multicast FDB interface
  */
 
-#if !defined (__SAIMCFDB_H_)
-#define __SAIMCFDB_H_
+#if !defined (__SAIMCASTFDB_H_)
+#define __SAIMCASTFDB_H_
 
 #include <saitypes.h>
 
@@ -45,16 +45,20 @@ typedef struct _sai_mcast_fdb_entry_t
      */
     sai_object_id_t switch_id;
 
-    /** Mac address */
+    /** MAC address */
     sai_mac_t mac_address;
 
-    /** Vlan ID */
-    sai_vlan_id_t vlan_id;
+    /**
+     * @brief Bridge ID. for .1D and Vlan ID for .1Q
+     *
+     * @objects SAI_OBJECT_TYPE_BRIDGE, SAI_OBJECT_TYPE_VLAN
+     */
+    sai_object_id_t bv_id;
 
 } sai_mcast_fdb_entry_t;
 
 /**
- * @brief Attribute Id for multicast fdb entry
+ * @brief Attribute Id for multicast FDB entry
  */
 typedef enum _sai_mcast_fdb_entry_attr_t
 {
@@ -70,8 +74,8 @@ typedef enum _sai_mcast_fdb_entry_attr_t
      * packets will be discarded.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      */
     SAI_MCAST_FDB_ENTRY_ATTR_GROUP_ID = SAI_MCAST_FDB_ENTRY_ATTR_START,
 
@@ -110,50 +114,50 @@ typedef enum _sai_mcast_fdb_entry_attr_t
 /**
  * @brief Create Multicast FDB entry
  *
- * @param[in] fdb_entry FDB entry
+ * @param[in] mcast_fdb_entry FDB entry
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_mcast_fdb_entry_fn)(
-        _In_ const sai_mcast_fdb_entry_t *fdb_entry,
+        _In_ const sai_mcast_fdb_entry_t *mcast_fdb_entry,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove Multicast FDB entry
  *
- * @param[in] fdb_entry FDB entry
+ * @param[in] mcast_fdb_entry FDB entry
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_mcast_fdb_entry_fn)(
-        _In_ const sai_mcast_fdb_entry_t *fdb_entry);
+        _In_ const sai_mcast_fdb_entry_t *mcast_fdb_entry);
 
 /**
- * @brief Set multicast fdb entry attribute value
+ * @brief Set multicast FDB entry attribute value
  *
- * @param[in] fdb_entry FDB entry
+ * @param[in] mcast_fdb_entry FDB entry
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_mcast_fdb_entry_attribute_fn)(
-        _In_ const sai_mcast_fdb_entry_t *fdb_entry,
+        _In_ const sai_mcast_fdb_entry_t *mcast_fdb_entry,
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get fdb entry attribute value
+ * @brief Get FDB entry attribute value
  *
- * @param[in] fdb_entry FDB entry
+ * @param[in] mcast_fdb_entry FDB entry
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_mcast_fdb_entry_attribute_fn)(
-        _In_ const sai_mcast_fdb_entry_t *fdb_entry,
+        _In_ const sai_mcast_fdb_entry_t *mcast_fdb_entry,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -172,4 +176,4 @@ typedef struct _sai_mcast_fdb_api_t
 /**
  * @}
  */
-#endif /** __SAIMCFDB_H_ */
+#endif /** __SAIMCASTFDB_H_ */

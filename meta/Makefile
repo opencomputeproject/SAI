@@ -31,7 +31,7 @@ WARNINGS = \
 	-Wredundant-decls \
 	-Wshadow \
 	-Wstack-protector \
-	-Wstrict-aliasing=2 \
+	-Wstrict-aliasing=3 \
 	-Wswitch \
 	-Wswitch-default \
 	-Wunreachable-code \
@@ -39,36 +39,45 @@ WARNINGS = \
 	-Wvariadic-macros \
 	-Wwrite-strings
 
-CFLAGS += -I../inc
+CFLAGS += -I../inc $(WARNINGS)
 
 DEPS = $(wildcard ../inc/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
 
-%.o: %.c $(DEPS)
-	gcc -c -o $@ $< $(CFLAGS) $(WARNINGS)
 
 all: saisanitycheck saimetadatatest saidepgraph.svg
 	./saimetadatatest > /dev/null
 	./saisanitycheck
 
-xml: $(DEPS) Doxyfile saimetadatatypes.h
-	doxygen Doxyfile 2>&1 | perl -npe '$$e=1 if /warning/i; END{exit $$e}';
+CONSTHEADERS = saimetadatatypes.h saimetadatalogger.h saimetadatautils.h
+
+xml: $(DEPS) Doxyfile $(CONSTHEADERS)
+	doxygen Doxyfile 2>&1 | perl -npe '$$e=1 if /warning/i; END{exit $$e}'
 	touch xml
 
-saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl saimetadatatypes.h
+EXTRA = acronyms.txt aspell.en.pws
+
+saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl parse.pl
 
-saisanitycheck: saisanitycheck.c saimetadata.c saimetadata.h saimetadatatypes.h saimetadatautils.c saimetadatautils.h
-	g++ -c saimetadatautils.c -o /dev/null $(CFLAGS) $(WARNINGS)
-	g++ -c saisanitycheck.c -o /dev/null $(CFLAGS) $(WARNINGS)
-	g++ -c saimetadata.c -o /dev/null $(CFLAGS) $(WARNINGS)
-	gcc -o $@ saisanitycheck.c saimetadata.c saimetadatautils.c $(CFLAGS) $(WARNINGS)
+HEADERS = saimetadata.h $(CONSTHEADERS)
 
-saimetadatatest: saimetadatatest.c saimetadata.c saimetadata.h saimetadatatypes.h saimetadatautils.c saimetadatautils.h
-	gcc -o $@ saimetadatatest.c saimetadata.c saimetadatautils.c $(CFLAGS) $(WARNINGS)
+%.o: %.c $(HEADERS)
+	gcc -c -o $@ $< $(CFLAGS)
 
-saidepgraphgen: saidepgraphgen.cpp
-	g++ -o $@ saidepgraphgen.cpp saimetadata.c saimetadatautils.c $(CFLAGS) $(WARNINGS)
+%.o: %.cpp $(HEADERS)
+	gcc -c -o $@ $< $(CFLAGS)
+
+OBJ = saimetadata.o saimetadatautils.o
+
+saisanitycheck: saisanitycheck.o $(OBJ)
+	gcc -o $@ $^
+
+saimetadatatest: saimetadatatest.o $(OBJ)
+	gcc -o $@ $^
+
+saidepgraphgen: saidepgraphgen.o $(OBJ)
+	g++ -o $@ $^
 
 saidepgraph.gv: saidepgraphgen
 	./saidepgraphgen > $@

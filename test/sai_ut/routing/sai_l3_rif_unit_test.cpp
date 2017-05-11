@@ -55,6 +55,8 @@ class saiL3RifTest : public saiL3Test {
                     bool v4_admin_state, bool v6_admin_state);
         static void sai_test_rif_mtu_attr_verify (sai_object_id_t rif,
                                                   uint32_t mtu);
+        static sai_object_id_t sai_test_rif_add_lag_member (
+                    sai_object_id_t lag_id, sai_object_id_t port_id);
 
         static const unsigned int test_port = 0;
         static const unsigned int test_vlan_id = 1000;
@@ -292,6 +294,33 @@ void saiL3RifTest ::sai_test_rif_mtu_attr_verify (sai_object_id_t rif_id,
 
     ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
     EXPECT_EQ (mtu, mtu_attr.value.u32);
+}
+
+/*
+ * Helper function to add LAG member ports.
+ */
+sai_object_id_t saiL3RifTest ::sai_test_rif_add_lag_member (
+                    sai_object_id_t lag_id, sai_object_id_t port_id)
+{
+    unsigned int count = 0;
+    sai_object_id_t member_id;
+    sai_attribute_t attr_list [2];
+    sai_status_t    sai_rc = SAI_STATUS_SUCCESS;
+
+    attr_list [count].id = SAI_LAG_MEMBER_ATTR_LAG_ID;
+    attr_list [count].value.oid = lag_id;
+    count++;
+
+    attr_list [count].id = SAI_LAG_MEMBER_ATTR_PORT_ID;
+    attr_list [count].value.oid = port_id;
+    count++;
+
+    sai_rc = sai_lag_api_table->create_lag_member (&member_id, count, 
+                                                   attr_list);
+
+    EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    return member_id;
 }
 
 /*
@@ -1184,9 +1213,11 @@ TEST_F (saiL3RifTest, create_rif_on_active_lag)
     const unsigned int member_count = 2;
     sai_object_id_t lag_id;
     sai_object_id_t port_arr[member_count];
-    sai_object_list_t lag_port_list;
     sai_attribute_t attr;
     sai_vlan_port_t  vlan_port[member_count];
+    unsigned int     port_id_index = 2;
+    unsigned int     index;
+    sai_object_id_t  member_arr[member_count];
 
     ASSERT_TRUE(sai_lag_api_table != NULL);
     ASSERT_TRUE(sai_vlan_api_table != NULL);
@@ -1204,14 +1235,18 @@ TEST_F (saiL3RifTest, create_rif_on_active_lag)
                (const sai_vlan_port_t*)vlan_port));
 
     /* Create the LAG object with port members */
-    lag_port_list.count = member_count;
-    lag_port_list.list = port_arr;
-
-    attr.id = SAI_LAG_ATTR_PORT_LIST;
-    attr.value.objlist = lag_port_list;
-
-    sai_rc = sai_lag_api_table->create_lag (&lag_id, 1, &attr);
+    sai_rc = sai_lag_api_table->create_lag (&lag_id, 0, &attr);
     ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    for (index = 0; index < member_count; index++) {
+
+        member_arr [index] = sai_test_rif_add_lag_member (lag_id, 
+                             sai_l3_port_id_get (port_id_index));
+
+        EXPECT_NE (member_arr [index], SAI_NULL_OBJECT_ID);
+
+        port_id_index++;
+    }
 
     /* Create RIF with LAG object id */
     sai_rc = sai_test_rif_create (&rif_id, 3,
@@ -1239,6 +1274,14 @@ TEST_F (saiL3RifTest, create_rif_on_active_lag)
     sai_rc = sai_test_rif_remove (rif_id);
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
+    /* Remove the LAG members */
+    for (index = 0; index < member_count; index++) {
+
+        sai_rc = sai_lag_api_table->remove_lag_member (member_arr [index]);
+
+        EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+    }
+
     /* Remove the LAG */
     sai_rc = sai_lag_api_table->remove_lag (lag_id);
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
@@ -1258,11 +1301,12 @@ TEST_F (saiL3RifTest, rif_lag_member_update)
     sai_status_t    sai_rc = SAI_STATUS_SUCCESS;
     sai_object_id_t rif_id;
     sai_object_id_t lag_id;
-    sai_object_id_t port_arr[2];
-    sai_object_list_t lag_port_list;
     sai_attribute_t attr;
     const unsigned int member_count = 4;
     sai_vlan_port_t  vlan_port[member_count];
+    sai_object_id_t  member_arr[member_count];
+    unsigned int     port_id_index = 2;
+    unsigned int     index;
 
     vlan_port[0].port_id = sai_l3_port_id_get (2);
     vlan_port[1].port_id = sai_l3_port_id_get (3);
@@ -1281,16 +1325,18 @@ TEST_F (saiL3RifTest, rif_lag_member_update)
                (const sai_vlan_port_t*)vlan_port));
 
     /* Create the LAG object with first two port members */
-    port_arr[0] = sai_l3_port_id_get (2);
-    port_arr[1] = sai_l3_port_id_get (3);
-    lag_port_list.count = 2;
-    lag_port_list.list = port_arr;
-
-    attr.id = SAI_LAG_ATTR_PORT_LIST;
-    attr.value.objlist = lag_port_list;
-
-    sai_rc = sai_lag_api_table->create_lag (&lag_id, 1, &attr);
+    sai_rc = sai_lag_api_table->create_lag (&lag_id, 0, &attr);
     ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    for (index = 0; index < 2; index++) {
+
+        member_arr [index] = sai_test_rif_add_lag_member (lag_id, 
+                             sai_l3_port_id_get (port_id_index));
+
+        EXPECT_NE (member_arr [index], SAI_NULL_OBJECT_ID);
+
+        port_id_index++;
+    }
 
     /* Create RIF with LAG object id */
     sai_rc = sai_test_rif_create (&rif_id, 3,
@@ -1304,25 +1350,32 @@ TEST_F (saiL3RifTest, rif_lag_member_update)
     ASSERT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
     /* Add two new members to the LAG */
-    lag_port_list.count = 2;
-    port_arr[0] = sai_l3_port_id_get (4);
-    port_arr[1] = sai_l3_port_id_get (5);
+    for (; index < 4; index++) {
 
-    lag_port_list.list = port_arr;
-    sai_rc = sai_lag_api_table->add_ports_to_lag (lag_id, &lag_port_list);
-    EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+        member_arr [index] = sai_test_rif_add_lag_member (lag_id, 
+                             sai_l3_port_id_get (port_id_index));
+
+        EXPECT_NE (member_arr [index], SAI_NULL_OBJECT_ID);
+
+        port_id_index++;
+    }
 
     /* Remove two members from the LAG */
-    lag_port_list.count = 2;
-    port_arr[0] = sai_l3_port_id_get (3);
-    port_arr[1] = sai_l3_port_id_get (5);
+    sai_rc = sai_lag_api_table->remove_lag_member (member_arr [1]);
+    EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
-    lag_port_list.list = port_arr;
-    sai_rc = sai_lag_api_table->remove_ports_from_lag (lag_id, &lag_port_list);
+    sai_rc = sai_lag_api_table->remove_lag_member (member_arr [3]);
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
     /* Remove the port RIF. */
     sai_rc = sai_test_rif_remove (rif_id);
+    EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    /* Remove the LAG members */
+    sai_rc = sai_lag_api_table->remove_lag_member (member_arr [0]);
+    EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
+
+    sai_rc = sai_lag_api_table->remove_lag_member (member_arr [2]);
     EXPECT_EQ (SAI_STATUS_SUCCESS, sai_rc);
 
     /* Remove the LAG */

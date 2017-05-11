@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -19,7 +19,7 @@
  *
  * @file    sairpfgroup.h
  *
- * @brief   This module defines SAI RFP Group interface
+ * @brief   This module defines SAI RPF Group interface
  */
 
 #if !defined (__SAIRPFGROUP_H_)
@@ -53,9 +53,10 @@ typedef enum _sai_rpf_group_attr_t
 
     /**
      * @brief RPF member list
+     *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_RPF_GROUP_MEMBER
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_RPF_GROUP_MEMBER
      */
     SAI_RPF_GROUP_ATTR_RPF_MEMBER_LIST,
 
@@ -81,17 +82,19 @@ typedef enum _sai_rpf_group_member_attr_t
 
     /**
      * @brief RPF interface group id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_RPF_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_RPF_GROUP
      */
     SAI_RPF_GROUP_MEMBER_ATTR_RPF_GROUP_ID = SAI_RPF_GROUP_MEMBER_ATTR_START,
 
     /**
      * @brief RPF interface id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      */
     SAI_RPF_GROUP_MEMBER_ATTR_RPF_INTERFACE_ID,
 
@@ -116,7 +119,7 @@ typedef enum _sai_rpf_group_member_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_rpf_group_fn)(
         _Out_ sai_object_id_t *rpf_group_id,
@@ -129,7 +132,7 @@ typedef sai_status_t (*sai_create_rpf_group_fn)(
  *
  * @param[in] rpf_group_id RPF interface group id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_rpf_group_fn)(
         _In_ sai_object_id_t rpf_group_id);
@@ -137,10 +140,10 @@ typedef sai_status_t (*sai_remove_rpf_group_fn)(
 /**
  * @brief Set RPF interface Group attribute
  *
- * @param[in] sai_object_id_t RPF interface group id
+ * @param[in] rpf_group_id RPF interface group id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_rpf_group_attribute_fn)(
         _In_ sai_object_id_t rpf_group_id,
@@ -149,11 +152,11 @@ typedef sai_status_t (*sai_set_rpf_group_attribute_fn)(
 /**
  * @brief Get RPF interface Group attribute
  *
- * @param[in] sai_object_id_t RPF interface group id
- * @param[in] attr_count -Number of attributes
+ * @param[in] rpf_group_id RPF interface group id
+ * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_rpf_group_attribute_fn)(
         _In_ sai_object_id_t rpf_group_id,
@@ -163,14 +166,15 @@ typedef sai_status_t (*sai_get_rpf_group_attribute_fn)(
 /**
  * @brief Create RPF interface group member
  *
- * @param[out] rpf_group_member_id - RPF interface group member id
- * @param[in] attr_count - number of attributes
- * @param[in] attr_list - array of attributes
+ * @param[out] rpf_group_member_id RPF interface group member id
+ * @param[in] switch_id Switch ID
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_rpf_group_member_fn)(
-        _Out_ sai_object_id_t* rpf_group_member_id,
+        _Out_ sai_object_id_t *rpf_group_member_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -178,9 +182,9 @@ typedef sai_status_t (*sai_create_rpf_group_member_fn)(
 /**
  * @brief Remove RPF interface group member
  *
- * @param[in] rpf_group_member_id - RPF interface group member id
+ * @param[in] rpf_group_member_id RPF interface group member id
  *
- * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_rpf_group_member_fn)(
         _In_ sai_object_id_t rpf_group_member_id);
@@ -188,10 +192,10 @@ typedef sai_status_t (*sai_remove_rpf_group_member_fn)(
 /**
  * @brief Set RPF interface Group attribute
  *
- * @param[in] sai_object_id_t - RPF interface group member id
- * @param[in] attr - attribute
+ * @param[in] rpf_group_member_id RPF interface group member id
+ * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_rpf_group_member_attribute_fn)(
         _In_ sai_object_id_t rpf_group_member_id,
@@ -200,11 +204,11 @@ typedef sai_status_t (*sai_set_rpf_group_member_attribute_fn)(
 /**
  * @brief Get RPF interface Group attribute
  *
- * @param[in] sai_object_id_t - rpf_group_member_id
- * @param[in] attr_count - number of attributes
- * @param[inout] attr_list - array of attributes
+ * @param[in] rpf_group_member_id RPF group member ID
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
- * @return SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_rpf_group_member_attribute_fn)(
         _In_ sai_object_id_t rpf_group_member_id,

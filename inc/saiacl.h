@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -79,20 +79,20 @@ typedef enum _sai_acl_ip_type_t
     /** IPv4 and IPv6 packets */
     SAI_ACL_IP_TYPE_IP,
 
-    /** Non-Ip packet */
+    /** Non-IP packet */
     SAI_ACL_IP_TYPE_NON_IP,
 
     /** Any IPv4 packet */
-    SAI_ACL_IP_TYPE_IPv4ANY,
+    SAI_ACL_IP_TYPE_IPV4ANY,
 
     /** Anything but IPv4 packets */
-    SAI_ACL_IP_TYPE_NON_IPv4,
+    SAI_ACL_IP_TYPE_NON_IPV4,
 
     /** IPv6 packet */
-    SAI_ACL_IP_TYPE_IPv6ANY,
+    SAI_ACL_IP_TYPE_IPV6ANY,
 
     /** Anything but IPv6 packets */
-    SAI_ACL_IP_TYPE_NON_IPv6,
+    SAI_ACL_IP_TYPE_NON_IPV6,
 
     /** ARP/RARP */
     SAI_ACL_IP_TYPE_ARP,
@@ -153,7 +153,7 @@ typedef enum _sai_acl_action_type_t
     /** Egress Mirror */
     SAI_ACL_ACTION_TYPE_MIRROR_EGRESS,
 
-    /** Assosiate with policer (policer id) */
+    /** Associate with policer */
     SAI_ACL_ACTION_TYPE_SET_POLICER,
 
     /** Decrement TTL */
@@ -165,16 +165,16 @@ typedef enum _sai_acl_action_type_t
     /** Set Packet Color */
     SAI_ACL_ACTION_TYPE_SET_PACKET_COLOR,
 
-    /** Set Packet Inner Vlan-Id */
+    /** Set Packet Inner Vlan Id */
     SAI_ACL_ACTION_TYPE_SET_INNER_VLAN_ID,
 
-    /** Set Packet Inner Vlan-Priority */
+    /** Set Packet Inner Vlan Priority */
     SAI_ACL_ACTION_TYPE_SET_INNER_VLAN_PRI,
 
-    /** Set Packet Outer Vlan-Id */
+    /** Set Packet Outer Vlan Id */
     SAI_ACL_ACTION_TYPE_SET_OUTER_VLAN_ID,
 
-    /** Set Packet Outer Vlan-Priority */
+    /** Set Packet Outer Vlan Priority */
     SAI_ACL_ACTION_TYPE_SET_OUTER_VLAN_PRI,
 
     /** Set Packet Src MAC Address */
@@ -190,10 +190,10 @@ typedef enum _sai_acl_action_type_t
     SAI_ACL_ACTION_TYPE_SET_DST_IP,
 
     /** Set Packet Src IPv6 Address */
-    SAI_ACL_ACTION_TYPE_SET_SRC_IPv6,
+    SAI_ACL_ACTION_TYPE_SET_SRC_IPV6,
 
     /** Set Packet Src IPv6 Address */
-    SAI_ACL_ACTION_TYPE_SET_DST_IPv6,
+    SAI_ACL_ACTION_TYPE_SET_DST_IPV6,
 
     /** Set Packet DSCP */
     SAI_ACL_ACTION_TYPE_SET_DSCP,
@@ -213,10 +213,7 @@ typedef enum _sai_acl_action_type_t
     /** Set egress packet sampling */
     SAI_ACL_ACTION_TYPE_EGRESS_SAMPLEPACKET_ENABLE,
 
-    /** Set CPU Queue for CPU bound traffic */
-    SAI_ACL_ACTION_TYPE_SET_CPU_QUEUE,
-
-    /** Set Meta Data to carry forward to next ACL Stage */
+    /** Set metadata to carry forward to next ACL stage */
     SAI_ACL_ACTION_TYPE_SET_ACL_META_DATA,
 
     /** Egress block port list */
@@ -225,7 +222,7 @@ typedef enum _sai_acl_action_type_t
     /** Set user defined trap id */
     SAI_ACL_ACTION_TYPE_SET_USER_TRAP_ID,
 
-    /** Set Do Not Learn unknow source MAC*/
+    /** Set Do Not Learn unknown source MAC */
     SAI_ACL_ACTION_TYPE_SET_DO_NOT_LEARN,
 
 } sai_acl_action_type_t;
@@ -264,11 +261,11 @@ typedef enum _sai_acl_table_group_attr_t
     /**
      * @brief List of ACL bind points where this group will be applied.
      *
-     * ACL group bind point list - is a create only attribute required for ACL
-     * groups to let the user specific his intention to allow further error
-     * checks and optimizations based on a specific ASIC's SAI implementation.
+     * ACL group bind point list - create only attribute required for ACL
+     * groups to let the user specify his intention to allow further error
+     * checks and optimizations based on a specific ASIC SAI implementation.
      * ACL members being added to this group SHOULD be a subset of the bind
-     * point list that acl group was created with.
+     * point list that ACL group was created with.
      *
      * @type sai_s32_list_t sai_acl_bind_point_type_t
      * @flags CREATE_ONLY
@@ -280,10 +277,10 @@ typedef enum _sai_acl_table_group_attr_t
      * @brief ACL table group type
      *
      * ACL table group type represents the way various ACL tables within this
-     * ACL table group perform their lookups. There are two optional values :
-     * Sequential - All the ACL tables are looked up in a sequential order ,
-     * which is based on the ACL table priorities and only one acl entry is matched
-     * with its corresponding acl entry action applied. In case two ACL tables
+     * ACL table group perform their lookups. There are two optional values:
+     * Sequential - All the ACL tables are looked up in a sequential order,
+     * which is based on the ACL table priorities and only one ACL entry is matched
+     * with its corresponding ACL entry action applied. In case two ACL tables
      * have the same priority they are looked up on a first come basis.
      * Parallel - All the ACL tables within the ACL table groups are looked up
      * in parallel and non-conflicting actions are resolved and applied from
@@ -325,10 +322,10 @@ typedef enum _sai_acl_table_group_member_attr_t
     /**
      * @brief ACL table group id
      *
-     * This attribute is required to bind a member object (acl_table_id) to a
-     * acl table group id allocated by the create acl group api.
+     * This attribute is required to associate or attach a member object (acl_table_id)
+     * to a ACL table group id allocated during create ACL group API.
      *
-     * User should always use the group id returned by SAI create_acl_group api,
+     * User should always use the group id returned by SAI create_acl_group API,
      * to group the tables else Invalid attribute value error code will be returned.
      *
      * The ACL Table lookup could be done serially or in parallel. In both the
@@ -337,16 +334,17 @@ typedef enum _sai_acl_table_group_member_attr_t
      * actions are resolved in case of parallel.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_GROUP_ID = SAI_ACL_TABLE_GROUP_MEMBER_ATTR_START,
 
     /**
      * @brief ACL table id
+     *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_ID,
 
@@ -387,6 +385,8 @@ typedef enum _sai_acl_table_group_member_attr_t
 
 /**
  * @brief Attribute Id for sai_acl_table
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_acl_table_attr_t
 {
@@ -415,13 +415,13 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief Table size
      *
-     * (default = 0) - Grow dynamically till MAX ACL TCAM Size
-     * By default table can grow upto maximum ACL TCAM space.
+     * (Default = 0) - Grow dynamically till MAX ACL TCAM Size
+     * By default, table can grow up to maximum ACL TCAM space.
      * Supported only during Table Create for now until NPU
      * supports Dynamic adjustment of Table size post Table creation
      *
      * The table size refers to the number of ACL entries. The number
-     * of entries that get's allocated when we create a table with a
+     * of entries that gets allocated when we create a table with a
      * specific size would depend on the ACL CAM Arch of the NPU. Some
      * NPU supports different blocks, each may have same or different
      * size and what gets allocated can depend on the block size or other
@@ -429,7 +429,7 @@ typedef enum _sai_acl_table_attr_t
      * create would be based on the NPU CAM Arch and size may be more
      * than what is requested. As an example the NPU may support blocks of
      * 128 entries. When a user creates a table of size 100, the actual
-     * size that gets allocated is 128. Hence its recommended that the user
+     * size that gets allocated is 128. Hence, it's recommended that the user
      * does a get_attribute(#SAI_ACL_TABLE_ATTR_SIZE) to query the actual
      * table size on table create so the user knows the ACL CAM space
      * allocated and able to do ACL CAM Carving accurately.
@@ -446,7 +446,7 @@ typedef enum _sai_acl_table_attr_t
      * Based on the ACL capability per stage obtained from the switch
      * attributes #SAI_SWITCH_ATTR_ACL_STAGE_INGRESS and #SAI_SWITCH_ATTR_ACL_STAGE_EGRESS
      * application should pass the action list if its mandatory per stage.
-     * pass the action list if its mandatory per stage.
+     * Pass the action list if its mandatory per stage.
      * If its not mandatory application can either pass the action list
      * or ignore it.
      *
@@ -474,7 +474,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPv6 = SAI_ACL_TABLE_ATTR_FIELD_START,
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6 = SAI_ACL_TABLE_ATTR_FIELD_START,
 
     /**
      * @brief Dst IPv6 Address
@@ -483,7 +483,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_DST_IPv6,
+    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6,
 
     /**
      * @brief Inner Src IPv6 Address
@@ -492,7 +492,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IPv6,
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IPV6,
 
     /**
      * @brief Inner Dst IPv6 Address
@@ -501,7 +501,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IPv6,
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IPV6,
 
     /**
      * @brief Src MAC Address
@@ -603,7 +603,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_SRC_PORT,
 
     /**
-     * @brief Outer Vlan-Id
+     * @brief Outer Vlan Id
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -612,7 +612,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_OUTER_VLAN_ID,
 
     /**
-     * @brief Outer Vlan-Priority
+     * @brief Outer Vlan Priority
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -621,7 +621,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_OUTER_VLAN_PRI,
 
     /**
-     * @brief Outer Vlan-CFI
+     * @brief Outer Vlan CFI
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -630,7 +630,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_OUTER_VLAN_CFI,
 
     /**
-     * @brief Inner Vlan-Id
+     * @brief Inner Vlan Id
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -639,7 +639,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_INNER_VLAN_ID,
 
     /**
-     * @brief Inner Vlan-Priority
+     * @brief Inner Vlan Priority
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -648,7 +648,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_INNER_VLAN_PRI,
 
     /**
-     * @brief Inner Vlan-CFI
+     * @brief Inner Vlan CFI
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -702,7 +702,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_IP_IDENTIFICATION,
 
     /**
-     * @brief Ip Dscp
+     * @brief IP DSCP
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -711,7 +711,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_DSCP,
 
     /**
-     * @brief Ip Ecn
+     * @brief IP ECN
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -720,7 +720,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ECN,
 
     /**
-     * @brief Ip Ttl
+     * @brief IP TTL
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -729,7 +729,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_TTL,
 
     /**
-     * @brief Ip Tos
+     * @brief IP TOS
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -738,7 +738,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_TOS,
 
     /**
-     * @brief Ip Flags
+     * @brief IP Flags
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -747,7 +747,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_IP_FLAGS,
 
     /**
-     * @brief Tcp Flags
+     * @brief TCP Flags
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -756,7 +756,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_TCP_FLAGS,
 
     /**
-     * @brief Ip Type
+     * @brief IP Type
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -765,7 +765,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ACL_IP_TYPE,
 
     /**
-     * @brief Ip Frag
+     * @brief IP Frag
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -780,7 +780,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_IPv6_FLOW_LABEL,
+    SAI_ACL_TABLE_ATTR_FIELD_IPV6_FLOW_LABEL,
 
     /**
      * @brief Class-of-Service (Traffic Class)
@@ -818,7 +818,7 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_FIELD_PACKET_VLAN,
 
-    /* User Based Meta Data [bool] */
+    /* User Based metadata [bool] */
 
     /**
      * @brief FDB DST user meta data
@@ -839,7 +839,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_DST_USER_META,
 
     /**
-     * @brief Neighbor DST User Meta Data
+     * @brief Neighbor DST User metadata
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -848,7 +848,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_NEIGHBOR_DST_USER_META,
 
     /**
-     * @brief Port User Meta Data
+     * @brief Port User metadata
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -857,7 +857,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_PORT_USER_META,
 
     /**
-     * @brief Vlan User Meta Data
+     * @brief Vlan User metadata
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -866,7 +866,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_VLAN_USER_META,
 
     /**
-     * @brief Meta Data carried from previous ACL Stage
+     * @brief Metadata carried from previous ACL Stage
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -874,7 +874,7 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_FIELD_ACL_USER_META,
 
-    /* NPU Based Meta Data [bool] */
+    /* NPU Based metadata [bool] */
 
     /**
      * @brief DST MAC address match in FDB
@@ -922,14 +922,24 @@ typedef enum _sai_acl_table_attr_t
      * @brief Range type defined
      *
      * @type sai_s32_list_t sai_acl_range_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
+     * @default empty
      */
     SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE,
 
     /**
+     * @brief IPv6 Next Header
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
      * @brief End of ACL Table attributes
@@ -950,6 +960,8 @@ typedef enum _sai_acl_table_attr_t
 
 /**
  * @brief Attribute Id for sai_acl_entry
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_acl_entry_attr_t
 {
@@ -962,8 +974,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief SAI ACL table object id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      */
     SAI_ACL_ENTRY_ATTR_TABLE_ID = SAI_ACL_ENTRY_ATTR_START,
 
@@ -993,8 +1005,8 @@ typedef enum _sai_acl_entry_attr_t
     /*
      * Match fields [sai_acl_field_data_t]
      * - Mandatory to pass at least one field during ACL Rule creation.
-     * - Unless noted specificially, both data and mask are required.
-     * - When bit field is used, only those least significent bits are valid for
+     * - Unless noted specifically, both data and mask are required.
+     * - When bit field is used, only those least significant bits are valid for
      * matching.
      */
 
@@ -1009,7 +1021,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPv6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
 
     /**
      * @brief Dst IPv6 Address
@@ -1017,7 +1029,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPv6,
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6,
 
     /**
      * @brief Inner Src IPv6 Address
@@ -1025,7 +1037,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IPv6,
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IPV6,
 
     /**
      * @brief Inner Dst IPv6 Address
@@ -1033,7 +1045,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IPv6,
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IPV6,
 
     /**
      * @brief Src MAC Address
@@ -1087,8 +1099,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief In-Ports (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS,
 
@@ -1096,8 +1108,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Out-Ports (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS,
 
@@ -1105,8 +1117,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief In-Port (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
 
@@ -1114,31 +1126,32 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Out-Port (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
     /**
-     * @brief Source port which could be a physical or lag port
+     * @brief Source port which could be a physical or LAG port
      * (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_PORT,
 
     /**
-     * @brief Outer Vlan-Id (12 bits)
+     * @brief Outer Vlan Id (12 bits)
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan true
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID,
 
     /**
-     * @brief Outer Vlan-Priority (3 bits)
+     * @brief Outer Vlan Priority (3 bits)
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1146,7 +1159,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_PRI,
 
     /**
-     * @brief Outer Vlan-CFI (1 bit)
+     * @brief Outer Vlan CFI (1 bit)
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1154,15 +1167,16 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_CFI,
 
     /**
-     * @brief Inner Vlan-Id (12 bits)
+     * @brief Inner Vlan Id (12 bits)
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan true
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_ID,
 
     /**
-     * @brief Inner Vlan-Priority (3 bits)
+     * @brief Inner Vlan Priority (3 bits)
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1170,7 +1184,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_PRI,
 
     /**
-     * @brief Inner Vlan-CFI (1 bit)
+     * @brief Inner Vlan CFI (1 bit)
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1182,6 +1196,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT,
 
@@ -1190,6 +1205,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
 
@@ -1198,6 +1214,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ETHER_TYPE,
 
@@ -1214,11 +1231,12 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_IDENTIFICATION,
 
     /**
-     * @brief Ip Dscp (6 bits)
+     * @brief IP DSCP (6 bits)
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1226,7 +1244,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_DSCP,
 
     /**
-     * @brief Ip Ecn (2 bits)
+     * @brief IP ECN (2 bits)
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1234,7 +1252,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ECN,
 
     /**
-     * @brief Ip Ttl
+     * @brief IP TTL
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1242,7 +1260,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_TTL,
 
     /**
-     * @brief Ip Tos
+     * @brief IP TOS
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1250,7 +1268,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_TOS,
 
     /**
-     * @brief Ip Flags (3 bits)
+     * @brief IP Flags (3 bits)
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1258,7 +1276,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_IP_FLAGS,
 
     /**
-     * @brief Tcp Flags (6 bits)
+     * @brief TCP Flags (6 bits)
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1266,7 +1284,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_TCP_FLAGS,
 
     /**
-     * @brief Ip Type (field mask is not needed)
+     * @brief IP Type (field mask is not needed)
      *
      * @type sai_acl_field_data_t sai_acl_ip_type_t
      * @flags CREATE_AND_SET
@@ -1274,7 +1292,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_IP_TYPE,
 
     /**
-     * @brief Ip Frag (field mask is not needed)
+     * @brief IP Frag (field mask is not needed)
      *
      * @type sai_acl_field_data_t sai_acl_ip_frag_t
      * @flags CREATE_AND_SET
@@ -1287,7 +1305,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_IPv6_FLOW_LABEL,
+    SAI_ACL_ENTRY_ATTR_FIELD_IPV6_FLOW_LABEL,
 
     /**
      * @brief Class-of-Service (Traffic Class)
@@ -1321,10 +1339,11 @@ typedef enum _sai_acl_entry_attr_t
      */
     SAI_ACL_ENTRY_ATTR_FIELD_PACKET_VLAN,
 
-    /* User Based Meta Data */
+    /* User Based metadata */
 
     /**
      * @brief DST MAC address match user meta data in FDB
+     *
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE
      *
@@ -1335,6 +1354,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief DST IP address match user meta data in Route Table
+     *
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_ROUTE_DST_USER_META_DATA_RANGE
      *
@@ -1345,6 +1365,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief DST IP address match user meta data in Neighbor Table
+     *
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_NEIGHBOR_DST_USER_META_DATA_RANGE
      *
@@ -1354,7 +1375,8 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_DST_USER_META,
 
     /**
-     * @brief Port User Meta Data
+     * @brief Port User metadata
+     *
      * Value must be in the range defined in
      * SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE
      *
@@ -1364,7 +1386,8 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_PORT_USER_META,
 
     /**
-     * @brief Vlan User Meta Data
+     * @brief Vlan User metadata
+     *
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_VLAN_USER_META_DATA_RANGE
      *
@@ -1374,9 +1397,10 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_VLAN_USER_META,
 
     /**
-     * @brief Meta Data carried from previous ACL Stage.
-     * When an ACL entry set the meta data, the ACL meta data
-     * form previous stages are overriden.
+     * @brief Metadata carried from previous ACL stage.
+     *
+     * When an ACL entry set the meta data, the ACL metadata
+     * form previous stages are overridden.
      * Value must be in the range defined in
      * #SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE
      *
@@ -1385,7 +1409,7 @@ typedef enum _sai_acl_entry_attr_t
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_USER_META,
 
-    /* NPU Based Meta Data [bool] */
+    /* NPU Based metadata [bool] */
 
     /**
      * @brief DST MAC address match in FDB
@@ -1427,21 +1451,33 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Range Type defined in sai_acl_range_type_t
+     *
      * List of SAI ACL Range Object Id
      *
      * @type sai_acl_field_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_ACL_RANGE
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_RANGE
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_RANGE_TYPE,
 
     /**
+     * @brief IPv6 Next Header (8 bits)
+     *
+     * This is to qualify 6th Byte value in IPv6 header.
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_ACL_RANGE_TYPE,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /*
      * Actions [sai_acl_action_data_t]
+     *
      * - To enable an action, parameter is needed unless noted specifically.
      * - To disable an action, parameter is not needed.
      */
@@ -1453,11 +1489,11 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Redirect Packet to a destination which can be a port,
-     * lag, nexthop, nexthopgroup
+     * LAG, nexthop, nexthopgroup
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
 
@@ -1465,9 +1501,9 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Redirect Packet to a list of destination which can be
      * a port list.
      *
-     * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
 
@@ -1491,8 +1527,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Attach/detach counter id to the entry
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_COUNTER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_COUNTER
      */
     SAI_ACL_ENTRY_ATTR_ACTION_COUNTER,
 
@@ -1500,8 +1536,8 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Ingress Mirror (mirror session id list)
      *
      * @type sai_acl_action_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS,
 
@@ -1509,17 +1545,17 @@ typedef enum _sai_acl_entry_attr_t
      * @brief Egress Mirror (mirror session id list)
      *
      * @type sai_acl_action_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
      */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS,
 
     /**
-     * @brief Assosiate with policer (policer id)
+     * @brief Associate with policer
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_POLICER
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER,
 
@@ -1548,7 +1584,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_COLOR,
 
     /**
-     * @brief Set Packet Inner Vlan-Id (12 bits)
+     * @brief Set Packet Inner Vlan Id (12 bits)
      *
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1556,7 +1592,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_VLAN_ID,
 
     /**
-     * @brief Set Packet Inner Vlan-Priority (3 bits)
+     * @brief Set Packet Inner Vlan Priority (3 bits)
      *
      * @type sai_acl_action_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1564,15 +1600,16 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_VLAN_PRI,
 
     /**
-     * @brief Set Packet Outer Vlan-Id (12 bits)
+     * @brief Set Packet Outer Vlan Id (12 bits)
      *
      * @type sai_acl_action_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan true
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_ID,
 
     /**
-     * @brief Set Packet Outer Vlan-Priority (3 bits)
+     * @brief Set Packet Outer Vlan Priority (3 bits)
      *
      * @type sai_acl_action_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1617,7 +1654,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IPv6,
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IPV6,
 
     /**
      * @brief Set Packet Src IPv6 Address
@@ -1625,7 +1662,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IPv6,
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IPV6,
 
     /**
      * @brief Set Packet DSCP (6 bits)
@@ -1648,6 +1685,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_SRC_PORT,
 
@@ -1656,42 +1694,31 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT,
 
     /**
-     * @brief Set ingress packet sampling (samplepacket session id)
+     * @brief Set ingress packet sampling (sample packet session id)
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
 
     /**
-     * @brief Set egress packet sampling (samplepacket session id)
+     * @brief Set egress packet sampling (sample packet session id)
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
      */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
 
     /**
-     * @brief Set CPU Queue for CPU bound traffic
+     * @brief Set metadata to carry forward to next ACL Stage
      *
-     * Action can be used whenever packet is destined to CPU such as
-     * when packet action specifies the packet needs to be punted
-     * to CPU (Trap/Log) or the destination port points to CPU.
-     *
-     * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_QUEUE
-     * @flags CREATE_AND_SET
-     */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
-
-    /**
-     * @brief Set Meta Data to carry forward to next ACL Stage
      * Value Range #SAI_SWITCH_ATTR_ACL_USER_META_DATA_RANGE
      *
      * @type sai_acl_action_data_t sai_uint32_t
@@ -1701,12 +1728,13 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Egress block port list
+     *
      * Packets matching the ACL entry and egressing out of the ports in the
      * given port list will be dropped.
      *
      * @type sai_acl_action_data_t sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_PORT
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
 
@@ -1717,18 +1745,17 @@ typedef enum _sai_acl_entry_attr_t
      * Value Range #SAI_SWITCH_ATTR_ACL_USER_TRAP_ID_RANGE
      *
      * @type sai_acl_action_data_t sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID,
 
     /**
-     * @brief Do Not Learn unknown source MAC on match(enable/disbale) (parameter is not needed)
+     * @brief Do Not Learn unknown source MAC on match(enable/disable) (parameter is not needed)
      *
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
      */
-
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
 
     /**
@@ -1740,6 +1767,12 @@ typedef enum _sai_acl_entry_attr_t
      * @brief End of ACL Entry attributes
      */
     SAI_ACL_ENTRY_ATTR_END,
+
+    /** Custom range base value */
+    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_END
 
 } sai_acl_entry_attr_t;
 
@@ -1757,13 +1790,13 @@ typedef enum _sai_acl_counter_attr_t
      * @brief SAI ACL table object id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
      */
     SAI_ACL_COUNTER_ATTR_TABLE_ID = SAI_ACL_COUNTER_ATTR_START,
 
     /*
-     * By default Byte Counter would be created and following
+     * By default, Byte Counter would be created and following
      * use of the below attributes would result in an error.
      *
      * - Both packet count and byte count set to disable
@@ -1811,6 +1844,12 @@ typedef enum _sai_acl_counter_attr_t
      */
     SAI_ACL_COUNTER_ATTR_END,
 
+    /** Custom range base value */
+    SAI_ACL_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_ACL_COUNTER_ATTR_CUSTOM_RANGE_END
+
 } sai_acl_counter_attr_t;
 
 /**
@@ -1846,7 +1885,7 @@ typedef enum _sai_acl_range_attr_t
     SAI_ACL_RANGE_ATTR_START,
 
     /**
-     * @brief Range Type
+     * @brief Range type
      *
      * Mandatory to pass only one of the range types
      * defined in sai_acl_range_type_t enum during ACL Range Creation.
@@ -1873,17 +1912,23 @@ typedef enum _sai_acl_range_attr_t
      */
     SAI_ACL_RANGE_ATTR_END,
 
+    /** Custom range base value */
+    SAI_ACL_RANGE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_ACL_RANGE_ATTR_CUSTOM_RANGE_END
+
 } sai_acl_range_attr_t;
 
 /**
  * @brief Create an ACL table
  *
- * @param[out] acl_table_id The the ACL table id
- * @param[in] attr_count number of attributes
+ * @param[out] acl_table_id The ACL table id
  * @param[in] switch_id Switch Object id
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_table_fn)(
         _Out_ sai_object_id_t *acl_table_id,
@@ -1896,7 +1941,7 @@ typedef sai_status_t (*sai_create_acl_table_fn)(
  *
  * @param[in] acl_table_id The ACL table id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_table_fn)(
         _In_ sai_object_id_t acl_table_id);
@@ -1907,7 +1952,7 @@ typedef sai_status_t (*sai_remove_acl_table_fn)(
  * @param[in] acl_table_id The ACL table id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
         _In_ sai_object_id_t acl_table_id,
@@ -1920,7 +1965,7 @@ typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
         _In_ sai_object_id_t acl_table_id,
@@ -1935,7 +1980,7 @@ typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_entry_fn)(
         _Out_ sai_object_id_t *acl_entry_id,
@@ -1948,7 +1993,7 @@ typedef sai_status_t (*sai_create_acl_entry_fn)(
  *
  * @param[in] acl_entry_id The ACL entry id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_entry_fn)(
         _In_ sai_object_id_t acl_entry_id);
@@ -1959,7 +2004,7 @@ typedef sai_status_t (*sai_remove_acl_entry_fn)(
  * @param[in] acl_entry_id The ACL entry id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
         _In_ sai_object_id_t acl_entry_id,
@@ -1972,7 +2017,7 @@ typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
         _In_ sai_object_id_t acl_entry_id,
@@ -1983,11 +2028,11 @@ typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
  * @brief Create an ACL counter
  *
  * @param[out] acl_counter_id The ACL counter id
- * @param[out] switch_id The switch Object id
+ * @param[in] switch_id The switch Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_counter_fn)(
         _Out_ sai_object_id_t *acl_counter_id,
@@ -2000,7 +2045,7 @@ typedef sai_status_t (*sai_create_acl_counter_fn)(
  *
  * @param[in] acl_counter_id The ACL counter id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_counter_fn)(
         _In_ sai_object_id_t acl_counter_id);
@@ -2011,7 +2056,7 @@ typedef sai_status_t (*sai_remove_acl_counter_fn)(
  * @param[in] acl_counter_id The ACL counter id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
         _In_ sai_object_id_t acl_counter_id,
@@ -2024,7 +2069,7 @@ typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
         _In_ sai_object_id_t acl_counter_id,
@@ -2039,7 +2084,7 @@ typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_range_fn)(
         _Out_ sai_object_id_t *acl_range_id,
@@ -2052,7 +2097,7 @@ typedef sai_status_t (*sai_create_acl_range_fn)(
  *
  * @param[in] acl_range_id The ACL range id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_range_fn)(
         _In_ sai_object_id_t acl_range_id);
@@ -2062,7 +2107,7 @@ typedef sai_status_t (*sai_remove_acl_range_fn)(
  *
  * @param[in] acl_range_id The ACL range id
  * @param[in] attr Attribute
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_range_attribute_fn)(
         _In_ sai_object_id_t acl_range_id,
@@ -2075,7 +2120,7 @@ typedef sai_status_t (*sai_set_acl_range_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
         _In_ sai_object_id_t acl_range_id,
@@ -2086,10 +2131,11 @@ typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
  * @brief Create an ACL Table Group
  *
  * @param[out] acl_table_group_id The ACL group id
- * @param[in] attr_count number of attributes
+ * @param[in] switch_id Switch ID
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_table_group_fn)(
         _Out_ sai_object_id_t *acl_table_group_id,
@@ -2102,7 +2148,7 @@ typedef sai_status_t (*sai_create_acl_table_group_fn)(
  *
  * @param[in] acl_table_group_id The ACL group id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_table_group_fn)(
         _In_ sai_object_id_t acl_table_group_id);
@@ -2113,7 +2159,7 @@ typedef sai_status_t (*sai_remove_acl_table_group_fn)(
  * @param[in] acl_table_group_id The ACL table group id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_table_group_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_id,
@@ -2126,7 +2172,7 @@ typedef sai_status_t (*sai_set_acl_table_group_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_id,
@@ -2137,10 +2183,11 @@ typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
  * @brief Create an ACL Table Group Member
  *
  * @param[out] acl_table_group_member_id The ACL table group member id
- * @param[in] attr_count number of attributes
+ * @param[in] switch_id Switch ID
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
         _Out_ sai_object_id_t *acl_table_group_member_id,
@@ -2153,7 +2200,7 @@ typedef sai_status_t (*sai_create_acl_table_group_member_fn)(
  *
  * @param[in] acl_table_group_member_id The ACL table group member id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_acl_table_group_member_fn)(
         _In_ sai_object_id_t acl_table_group_member_id);
@@ -2164,7 +2211,7 @@ typedef sai_status_t (*sai_remove_acl_table_group_member_fn)(
  * @param[in] acl_table_group_member_id The ACL table group member id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_table_group_member_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_member_id,
@@ -2173,11 +2220,11 @@ typedef sai_status_t (*sai_set_acl_table_group_member_attribute_fn)(
 /**
  * @brief Get ACL table group member attribute
  *
- * @param[in] acl_table_group_id ACL table group member id
+ * @param[in] acl_table_group_member_id ACL table group member id
  * @param[in] attr_count Number of attributes
  * @param[out] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_member_id,
