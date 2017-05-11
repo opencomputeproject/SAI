@@ -192,14 +192,111 @@ typedef sai_status_t (*sai_get_route_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Bulk create route entry
+ *
+ * @param[in] object_count Number of objects to create
+ * @param[in] route_entry List of object to create
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to create.
+ * @param[in] attr_list List of attributes for every object.
+ * @param[in] type Bulk operation type.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are created or
+ * #SAI_STATUS_FAILURE when any of the objects fails to create. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_create_route_entry_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_route_entry_t *route_entry,
+        _In_ const uint32_t *attr_count,
+        _In_ const sai_attribute_t **attr_list,
+        _In_ sai_bulk_op_type_t type,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk remove route entry
+ *
+ * @param[in] object_count Number of objects to remove
+ * @param[in] route_entry List of objects to remove
+ * @param[in] type Bulk operation type.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_remove_route_entry_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_route_entry_t *route_entry,
+        _In_ sai_bulk_op_type_t type,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk set attribute on route entry
+ *
+ * @param[in] object_count Number of objects to set attribute
+ * @param[in] route_entry List of objects to set attribute
+ * @param[in] attr_list List of attributes to set on objects, one attribute per object
+ * @param[in] type Bulk operation type.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_set_route_entry_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_route_entry_t *route_entry,
+        _In_ const sai_attribute_t *attr_list,
+        _In_ sai_bulk_op_type_t type,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk get attribute on route entry
+ *
+ * @param[in] object_count Number of objects to set attribute
+ * @param[in] route_entry List of objects to set attribute
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to get
+ * @param[inout] attr_list List of attributes to set on objects, one attribute per object
+ * @param[in] type Bulk operation type
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_get_route_entry_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_route_entry_t *route_entry,
+        _In_ const uint32_t *attr_count,
+        _Inout_ sai_attribute_t **attr_list,
+        _In_ sai_bulk_op_type_t type,
+        _Out_ sai_status_t *object_statuses);
+
+/**
  * @brief Router entry methods table retrieved with sai_api_query()
  */
 typedef struct _sai_route_api_t
 {
-    sai_create_route_entry_fn         create_route_entry;
-    sai_remove_route_entry_fn         remove_route_entry;
-    sai_set_route_entry_attribute_fn  set_route_entry_attribute;
-    sai_get_route_entry_attribute_fn  get_route_entry_attribute;
+    sai_create_route_entry_fn                   create_route_entry;
+    sai_remove_route_entry_fn                   remove_route_entry;
+    sai_set_route_entry_attribute_fn            set_route_entry_attribute;
+    sai_get_route_entry_attribute_fn            get_route_entry_attribute;
+
+    sai_bulk_create_route_entry_fn              create_route_entries;
+    sai_bulk_remove_route_entry_fn              remove_route_entries;
+    sai_bulk_set_route_entry_attribute_fn       set_route_entries_attribute;
+    sai_bulk_get_route_entry_attribute_fn       get_route_entries_attribute;
 
 } sai_route_api_t;
 

@@ -150,11 +150,15 @@ typedef struct _sai_object_list_t
  */
 typedef enum _sai_common_api_t
 {
-    SAI_COMMON_API_CREATE = 0,
-    SAI_COMMON_API_REMOVE = 1,
-    SAI_COMMON_API_SET    = 2,
-    SAI_COMMON_API_GET    = 3,
-    SAI_COMMON_API_MAX    = 4,
+    SAI_COMMON_API_CREATE      = 0,
+    SAI_COMMON_API_REMOVE      = 1,
+    SAI_COMMON_API_SET         = 2,
+    SAI_COMMON_API_GET         = 3,
+    SAI_COMMON_API_BULK_CREATE = 4,
+    SAI_COMMON_API_BULK_REMOVE = 5,
+    SAI_COMMON_API_BULK_SET    = 6,
+    SAI_COMMON_API_BULK_GET    = 7,
+    SAI_COMMON_API_MAX         = 8,
 } sai_common_api_t;
 
 /**
