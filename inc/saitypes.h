@@ -602,13 +602,13 @@ typedef enum _sai_bulk_op_error_mode_t
      *
      * Rest of objects will use SAI_STATUS_NON_EXECUTED return status value.
      */
-    SAI_BULK_OP_TYPE_STOP_ON_ERROR,
+    SAI_BULK_OP_ERROR_MODE_STOP_ON_ERROR,
 
     /**
      * @brief Bulk operation error handling mode where operation ignores the failures and continues to create other objects
      */
-    SAI_BULK_OP_TYPE_INGORE_ERROR,
-} sai_bulk_op_type_t;
+    SAI_BULK_OP_ERROR_MODE_INGORE_ERROR,
+} sai_bulk_op_error_mode_t;
 
 /**
  * @brief Bulk objects creation.
