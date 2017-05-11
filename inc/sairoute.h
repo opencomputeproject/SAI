@@ -199,7 +199,7 @@ typedef sai_status_t (*sai_get_route_entry_attribute_fn)(
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to create.
  * @param[in] attr_list List of attributes for every object.
- * @param[in] mode Bulk operation error mode.
+ * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
@@ -221,7 +221,7 @@ typedef sai_status_t (*sai_bulk_create_route_entry_fn)(
  *
  * @param[in] object_count Number of objects to remove
  * @param[in] route_entry List of objects to remove
- * @param[in] mode Bulk operation error mode.
+ * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
@@ -242,7 +242,7 @@ typedef sai_status_t (*sai_bulk_remove_route_entry_fn)(
  * @param[in] object_count Number of objects to set attribute
  * @param[in] route_entry List of objects to set attribute
  * @param[in] attr_list List of attributes to set on objects, one attribute per object
- * @param[in] mode Bulk operation error mode.
+ * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
@@ -266,7 +266,7 @@ typedef sai_status_t (*sai_bulk_set_route_entry_attribute_fn)(
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to get
  * @param[inout] attr_list List of attributes to set on objects, one attribute per object
- * @param[in] mode Bulk operation error mode
+ * @param[in] mode Bulk operation error handling mode
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
