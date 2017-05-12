@@ -21,7 +21,7 @@ bool show_switch_links = false;
 bool show_read_only_links = false;
 
 void process_object_type_attributes(
-        _In_ const sai_attr_metadata_t** meta_attr_list,
+        _In_ const sai_attr_metadata_t* const* const meta_attr_list,
         _In_ sai_object_type_t current_object_type)
 {
     std::set<sai_object_type_t> otset;
@@ -111,7 +111,7 @@ void process_object_types()
 {
     for (int i = 0; sai_metadata_attr_by_object_type[i] != NULL; ++i)
     {
-        const sai_attr_metadata_t** meta = sai_metadata_attr_by_object_type[i];
+        const sai_attr_metadata_t* const* const meta = sai_metadata_attr_by_object_type[i];
 
         process_object_type_attributes(meta, (sai_object_type_t)i);
     }

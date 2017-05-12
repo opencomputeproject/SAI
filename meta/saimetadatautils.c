@@ -54,10 +54,9 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
         _In_ sai_object_type_t objecttype,
         _In_ sai_attr_id_t attrid)
 {
-    if ((objecttype > SAI_OBJECT_TYPE_NULL) &&
-            (objecttype < SAI_OBJECT_TYPE_MAX))
+    if (sai_metadata_is_object_type_valid(objecttype))
     {
-        const sai_attr_metadata_t** md = sai_metadata_attr_by_object_type[objecttype];
+        const sai_attr_metadata_t* const* const md = sai_metadata_attr_by_object_type[objecttype];
 
         size_t index = 0;
 
