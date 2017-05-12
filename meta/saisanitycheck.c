@@ -261,7 +261,7 @@ void check_attr_by_object_type()
 
         META_ASSERT_NOT_NULL(sai_metadata_attr_by_object_type[i]);
 
-        const sai_attr_metadata_t ** ot = sai_metadata_attr_by_object_type[i];
+        const sai_attr_metadata_t * const* const ot = sai_metadata_attr_by_object_type[i];
 
         size_t index = 0;
 
@@ -1745,7 +1745,7 @@ void check_attr_vlan(
 void check_condition_in_range(
         _In_ const sai_attr_metadata_t* md,
         _In_ size_t length,
-        _In_ const sai_attr_condition_t **conditions,
+        _In_ const sai_attr_condition_t * const* const conditions,
         _In_ sai_attr_id_t start,
         _In_ sai_attr_id_t end)
 {
@@ -2258,7 +2258,7 @@ void check_single_attribute(
 }
 
 void check_single_object_type_attributes(
-        _In_ const sai_attr_metadata_t** attributes)
+        _In_ const sai_attr_metadata_t* const* const attributes)
 {
     META_LOG_ENTER();
 
@@ -2294,7 +2294,7 @@ void check_object_infos()
         META_ASSERT_TRUE(info->attridstart == 0, "attribute enum start should be zero");
         META_ASSERT_TRUE(info->attridend > 0, "attribute enum end must be > 0");
 
-        const sai_attr_metadata_t** const meta = info->attrmetadata;
+        const sai_attr_metadata_t* const* const meta = info->attrmetadata;
 
         META_ASSERT_NOT_NULL(meta);
 
@@ -2514,7 +2514,7 @@ void check_non_object_id_object_attrs()
             continue;
         }
 
-        const sai_attr_metadata_t** meta = info->attrmetadata;
+        const sai_attr_metadata_t* const* meta = info->attrmetadata;
 
         META_ASSERT_NOT_NULL(meta);
 
@@ -2651,7 +2651,7 @@ void check_objects_for_loops_recursive(
         }
     }
 
-    const sai_attr_metadata_t** meta = info->attrmetadata;
+    const sai_attr_metadata_t* const* meta = info->attrmetadata;
 
     META_ASSERT_NOT_NULL(meta);
 
@@ -2823,7 +2823,7 @@ void check_read_only_attributes()
 
         int non_read_only_count = 0;
 
-        const sai_attr_metadata_t** const meta = info->attrmetadata;
+        const sai_attr_metadata_t* const* const meta = info->attrmetadata;
 
         for (; meta[index] != NULL; ++index)
         {
@@ -3138,7 +3138,7 @@ void check_vlan_attributes()
      * iterating each time.
      */
 
-    const sai_attr_metadata_t** const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_VLAN.attrmetadata;
+    const sai_attr_metadata_t* const* const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_VLAN.attrmetadata;
 
     size_t index = 0;
 
@@ -3205,8 +3205,8 @@ void check_acl_table_fields_and_acl_entry_fields()
      * find both attribute fields start for entry and table
      */
 
-    const sai_attr_metadata_t **meta_acl_table = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_TABLE.attrmetadata;
-    const sai_attr_metadata_t **meta_acl_entry = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+    const sai_attr_metadata_t* const* meta_acl_table = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_TABLE.attrmetadata;
+    const sai_attr_metadata_t* const* meta_acl_entry = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
 
     int acl_table_field_index = 0;
 
@@ -3332,7 +3332,7 @@ void check_acl_entry_actions()
      * find both attribute fields start for entry and table
      */
 
-    const sai_attr_metadata_t **meta_acl_entry = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
+    const sai_attr_metadata_t *const * meta_acl_entry = sai_metadata_object_type_info_SAI_OBJECT_TYPE_ACL_ENTRY.attrmetadata;
 
     size_t index = 0;
 
@@ -3414,7 +3414,7 @@ void check_switch_attributes()
      * there will be need for such in the future, this check can be removed.
      */
 
-    const sai_attr_metadata_t** const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
+    const sai_attr_metadata_t* const* const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
 
     size_t index = 0;
 
@@ -3440,7 +3440,7 @@ void check_switch_create_only_objects()
      * other object so setting that object on create will be impossible.
      */
 
-    const sai_attr_metadata_t** const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
+    const sai_attr_metadata_t* const* const meta = sai_metadata_object_type_info_SAI_OBJECT_TYPE_SWITCH.attrmetadata;
 
     size_t index = 0;
 
