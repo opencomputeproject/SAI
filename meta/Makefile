@@ -44,8 +44,11 @@ CFLAGS += -I../inc $(WARNINGS)
 DEPS = $(wildcard ../inc/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
 
+OBJ = saimetadata.o saimetadatautils.o
 
-all: saisanitycheck saimetadatatest saidepgraph.svg
+SYMBOLS = $(OBJ:=.symbols)
+
+all: saisanitycheck saimetadatatest saidepgraph.svg $(SYMBOLS)
 	./saimetadatatest > /dev/null
 	./saisanitycheck
 
@@ -68,8 +71,6 @@ HEADERS = saimetadata.h $(CONSTHEADERS)
 %.o: %.cpp $(HEADERS)
 	gcc -c -o $@ $< $(CFLAGS)
 
-OBJ = saimetadata.o saimetadatautils.o
-
 saisanitycheck: saisanitycheck.o $(OBJ)
 	gcc -o $@ $^
 
@@ -78,6 +79,9 @@ saimetadatatest: saimetadatatest.o $(OBJ)
 
 saidepgraphgen: saidepgraphgen.o $(OBJ)
 	g++ -o $@ $^
+
+%.o.symbols: %.o
+	nm $^ | ./checksymbols.pl
 
 saidepgraph.gv: saidepgraphgen
 	./saidepgraphgen > $@
@@ -88,7 +92,7 @@ saidepgraph.svg: saidepgraph.gv
 .PHONY: clean
 
 clean:
-	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg
+	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols
 	rm -f saimetadata.h saimetadata.c saimetadatatest.c
 	rm -f saisanitycheck saimetadatatest saidepgraphgen
 	rm -rf xml html dist
