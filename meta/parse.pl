@@ -1108,6 +1108,30 @@ sub ProcessDefaultValueAttrId
     return "SAI_INVALID_ATTRIBUTE_ID";
 }
 
+sub ProcessStoreDefaultValue
+{
+    my ($attr, $value, $flags) = @_;
+
+    # at this point we can't determine whether object is non object id
+
+    if (defined $value and $value =~/vendor|attrvalue/)
+    {
+        return "true";
+    }
+
+    my @flags = @{ $flags };
+
+    $flags = "@flags";
+
+    if ($flags =~/MANDATORY/ and $flags =~ /CREATE_AND_SET/)
+    {
+        return "true";
+    }
+
+    return "false";
+}
+
+
 sub ProcessIsEnum
 {
     my ($value, $type) = @_;
@@ -1414,6 +1438,7 @@ sub ProcessSingleObjectType
         my $defval          = ProcessDefaultValue($attr, $meta{default}, $meta{type});
         my $defvalot        = ProcessDefaultValueObjectType($attr, $meta{default}, $meta{type});
         my $defvalattrid    = ProcessDefaultValueAttrId($attr, $meta{default}, $meta{type});
+        my $storedefaultval = ProcessStoreDefaultValue($attr, $meta{default}, $meta{flags});
         my $isenum          = ProcessIsEnum($attr, $meta{type});
         my $isenumlist      = ProcessIsEnumList($attr, $meta{type});
         my $enummetadata    = ProcessEnumMetadata($attr, $meta{type});
@@ -1454,6 +1479,7 @@ sub ProcessSingleObjectType
         WriteSource "    .defaultvalue                  = $defval,";
         WriteSource "    .defaultvalueobjecttype        = $defvalot,";
         WriteSource "    .defaultvalueattrid            = $defvalattrid,";
+        WriteSource "    .storedefaultvalue             = $storedefaultval,";
         WriteSource "    .isenum                        = $isenum,";
         WriteSource "    .isenumlist                    = $isenumlist,";
         WriteSource "    .enummetadata                  = $enummetadata,";
