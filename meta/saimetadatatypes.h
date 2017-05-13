@@ -716,6 +716,22 @@ typedef struct _sai_attr_metadata_t
     sai_attr_id_t                               defaultvalueattrid;
 
     /**
+     * @brief Indicates whether default value needs to be saved.
+     *
+     * When switch is created some objects are created internally like vlan 1,
+     * vlan members, bridge port, virtual router etc. Some of those objects
+     * has attributes assigned by vendor like switch MAC address. When user
+     * changes that value then there is no way to go back and set it's previous
+     * value if user didn't query it first. This member will indicate whether
+     * user needs to query it first (and store) before change, if he wants to
+     * bring original attribute value later.
+     *
+     * Some of those attributes can be OID attributes with flags
+     * MANDATORY_ON_CREATE and CREATE_AND_SET.
+     */
+    bool                                        storedefaultvalue;
+
+    /**
      * @brief Indicates whether attribute is enum value.
      *
      * Attribute type must be set as INT32.
