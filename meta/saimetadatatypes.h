@@ -563,7 +563,7 @@ typedef struct _sai_attr_condition_t
      * @brief Condition value that attribute will be mandatory
      * then default value must be provided for attribute.
      */
-    sai_attribute_value_t               condition;
+    const sai_attribute_value_t         condition;
 
 } sai_attr_condition_t;
 
@@ -575,34 +575,34 @@ typedef struct _sai_enum_metadata_t
     /**
      * @brief String representation of enum type definition.
      */
-    const char*     name;
+    const char* const               name;
 
     /**
      * @brief Values count in enum.
      */
-    const size_t    valuescount;
+    const size_t                    valuescount;
 
     /**
      * @brief Array of enum values.
      */
-    const int*      values;
+    const int* const                values;
 
     /**
      * @brief Array of enum values string names.
      */
-    const char**    valuesnames;
+    const char* const* const        valuesnames;
 
     /**
      * @brief Array of enum values string short names.
      */
-    const char**    valuesshortnames;
+    const char* const* const        valuesshortnames;
 
     /**
      * @brief Indicates whether enumeration contains flags.
      *
      * When set to true numbers of enumeration are not continuous.
      */
-    bool            containsflags;
+    bool                            containsflags;
 
 } sai_enum_metadata_t;
 
@@ -614,32 +614,32 @@ typedef struct _sai_attr_metadata_t
     /**
      * @brief Specifies valid SAI object type.
      */
-    sai_object_type_t                   objecttype;
+    sai_object_type_t                           objecttype;
 
     /**
      * @brief Specifies valid attribute id for this object type.
      */
-    sai_attr_id_t                       attrid;
+    sai_attr_id_t                               attrid;
 
     /**
      * @brief Specifies valid attribute id name for this object type.
      */
-    const char* const                   attridname;
+    const char* const                           attridname;
 
     /**
      * @brief Extracted brief description from Doxygen comment.
      */
-    const char* const                   brief;
+    const char* const                           brief;
 
     /**
      * @brief Specifies attribute value type for this attribute.
      */
-    sai_attr_value_type_t               attrvaluetype;
+    sai_attr_value_type_t                       attrvaluetype;
 
     /**
      * @brief Specifies flags for this attribute.
      */
-    sai_attr_flags_t                    flags;
+    sai_attr_flags_t                            flags;
 
     /**
      * @brief Specified allowed object types.
@@ -647,30 +647,30 @@ typedef struct _sai_attr_metadata_t
      * If object attr value type is OBJECT_ID
      * this list specifies what object type can be used.
      */
-    const sai_object_type_t* const      allowedobjecttypes;
+    const sai_object_type_t* const              allowedobjecttypes;
 
     /**
      * @brief Length of allowed object types.
      */
-    size_t                              allowedobjecttypeslength;
+    size_t                                      allowedobjecttypeslength;
 
     /**
      * @brief Allows repetitions on object list.
      *
      * Can be useful when using object id list.
      */
-    bool                                allowrepetitiononlist;
+    bool                                        allowrepetitiononlist;
 
     /**
      * @brief Allows mixed object id types on list
      * like port and LAG.
      */
-    bool                                allowmixedobjecttypes;
+    bool                                        allowmixedobjecttypes;
 
     /**
      * @brief Allows empty list to be set on list value type.
      */
-    bool                                allowemptylist;
+    bool                                        allowemptylist;
 
     /**
      * @brief Allows null object id to be passed.
@@ -679,12 +679,12 @@ typedef struct _sai_attr_metadata_t
      * it tells whether SAI_NULL_OBJECT_ID can be used
      * as actual id.
      */
-    bool                                allownullobjectid;
+    bool                                        allownullobjectid;
 
     /**
      * @brief Determines whether attribute contains OIDs
      */
-    bool                                isoidattribute;
+    bool                                        isoidattribute;
 
     /**
      * @brief Specifies default value type.
@@ -696,7 +696,7 @@ typedef struct _sai_attr_metadata_t
      *
      * Default value can be also an object id.
      */
-    const sai_default_value_type_t      defaultvaluetype;
+    const sai_default_value_type_t              defaultvaluetype;
 
     /**
      * @brief Provides default value.
@@ -707,7 +707,7 @@ typedef struct _sai_attr_metadata_t
      * @note Default value may not apply for ACL field
      * or ACL entry, need special care.
      */
-    const sai_attribute_value_t* const  defaultvalue;
+    const sai_attribute_value_t* const          defaultvalue;
 
     /**
      * @brief Default value object type.
@@ -715,7 +715,7 @@ typedef struct _sai_attr_metadata_t
      * Required when default value type is pointing to
      * different object type.
      */
-    sai_object_type_t                   defaultvalueobjecttype;
+    sai_object_type_t                           defaultvalueobjecttype;
 
     /**
      * @brief Default value object id.
@@ -723,7 +723,23 @@ typedef struct _sai_attr_metadata_t
      * Required when default value type is pointing to
      * different object attribute.
      */
-    sai_attr_id_t                       defaultvalueattrid;
+    sai_attr_id_t                               defaultvalueattrid;
+
+    /**
+     * @brief Indicates whether default value needs to be saved.
+     *
+     * When switch is created some objects are created internally like vlan 1,
+     * vlan members, bridge port, virtual router etc. Some of those objects
+     * has attributes assigned by vendor like switch MAC address. When user
+     * changes that value then there is no way to go back and set it's previous
+     * value if user didn't query it first. This member will indicate whether
+     * user needs to query it first (and store) before change, if he wants to
+     * bring original attribute value later.
+     *
+     * Some of those attributes can be OID attributes with flags
+     * MANDATORY_ON_CREATE and CREATE_AND_SET.
+     */
+    bool                                        storedefaultvalue;
 
     /**
      * @brief Indicates whether attribute is enum value.
@@ -733,7 +749,7 @@ typedef struct _sai_attr_metadata_t
      * @note Could be deduced from enum type string or
      * enum vector values and attr value type.
      */
-    bool                                isenum;
+    bool                                        isenum;
 
     /**
      * @brief Indicates whether attribute is enum list value.
@@ -743,13 +759,13 @@ typedef struct _sai_attr_metadata_t
      * @note Could be deduced from enum type string or
      * enum vector values and attr value type.
      */
-    bool                                isenumlist;
+    bool                                        isenumlist;
 
     /**
      * @brief Provides enum metadata if attribute
      * is enum or enum list.
      */
-    const sai_enum_metadata_t* const    enummetadata;
+    const sai_enum_metadata_t* const            enummetadata;
 
     /**
      * @brief Specifies condition type of attribute.
@@ -758,23 +774,23 @@ typedef struct _sai_attr_metadata_t
      * so we can deduce if this is conditional type
      * if any conditions are defined.
      */
-    sai_attr_condition_type_t           conditiontype;
+    sai_attr_condition_type_t                   conditiontype;
 
     /**
      * @brief Provide conditions for attribute under
      * which this attribute will be mandatory on create.
      */
-    const sai_attr_condition_t** const  conditions;
+    const sai_attr_condition_t* const* const    conditions;
 
     /**
      * @brief Length of the conditions.
      */
-    size_t                              conditionslength;
+    size_t                                      conditionslength;
 
     /**
      * @brief Indicates whether attribute is conditional.
      */
-    bool                                isconditional;
+    bool                                        isconditional;
 
     /**
      * @brief Specifies valid only type of attribute.
@@ -783,7 +799,7 @@ typedef struct _sai_attr_metadata_t
      * so we can deduce if this is conditional type
      * if any conditions are defined.
      */
-    sai_attr_condition_type_t           validonlytype;
+    sai_attr_condition_type_t                   validonlytype;
 
     /**
      * @brief Provides conditions when this attribute is valid.
@@ -799,17 +815,17 @@ typedef struct _sai_attr_metadata_t
      * valid only mark. For now we will check that in
      * specific attribute logic.
      */
-    const sai_attr_condition_t** const  validonly;
+    const sai_attr_condition_t* const* const    validonly;
 
     /**
      * @brief Length of the valid only when conditions.
      */
-    size_t                              validonlylength;
+    size_t                                      validonlylength;
 
     /**
      * @brief Indicates whether attribute is valid only.
      */
-    bool                                isvalidonly;
+    bool                                        isvalidonly;
 
     /**
      * @brief When calling GET API result will be put
@@ -820,14 +836,14 @@ typedef struct _sai_attr_metadata_t
      *
      * Value should be updated after successful set or remove.
      */
-    bool                                getsave;
+    bool                                        getsave;
 
     /**
      * @brief Determines whether value is vlan.
      *
      * Can only be set on sai_uint16_t value type.
      */
-    bool                                isvlan;
+    bool                                        isvlan;
 
     /**
      * @brief Determines whether attribute is ACL field
@@ -835,7 +851,7 @@ typedef struct _sai_attr_metadata_t
      * This will become handy for fast determination whether
      * default value is present.
      */
-    bool                                isaclfield;
+    bool                                        isaclfield;
 
     /**
      * @brief Determines whether attribute is ACL action
@@ -843,32 +859,32 @@ typedef struct _sai_attr_metadata_t
      * This will become handy for fast determination whether
      * default value is present.
      */
-    bool                                isaclaction;
+    bool                                        isaclaction;
 
     /**
      * @brief Determines whether attribute is mandatory on create
      */
-    bool                                ismandatoryoncreate;
+    bool                                        ismandatoryoncreate;
 
     /**
      * @brief Determines whether attribute is create only
      */
-    bool                                iscreateonly;
+    bool                                        iscreateonly;
 
     /**
      * @brief Determines whether attribute is create and set
      */
-    bool                                iscreateandset;
+    bool                                        iscreateandset;
 
     /**
      * @brief Determines whether attribute is read only
      */
-    bool                                isreadonly;
+    bool                                        isreadonly;
 
     /**
      * @brief Determines whether attribute is key
      */
-    bool                                iskey;
+    bool                                        iskey;
 
 } sai_attr_metadata_t;
 
@@ -1063,84 +1079,84 @@ typedef struct _sai_object_type_info_t
     /**
      * @brief Object Type
      */
-    sai_object_type_t                       objecttype;
+    sai_object_type_t                               objecttype;
 
     /**
      * @brief Object Type name
      */
-    const char*                             objecttypename;
+    const char* const                               objecttypename;
 
     /**
      * @brief Start of attributes *_START
      */
-    sai_attr_id_t                           attridstart;
+    sai_attr_id_t                                   attridstart;
 
     /**
      * @brief End of attributes *_END
      */
-    sai_attr_id_t                           attridend;
+    sai_attr_id_t                                   attridend;
 
     /**
      * @brief Provides enum metadata if attribute
      * is enum or enum list.
      */
-    const sai_enum_metadata_t* const        enummetadata;
+    const sai_enum_metadata_t* const                enummetadata;
 
     /**
      * @brief Attributes metadata
      */
-    const sai_attr_metadata_t** const       attrmetadata;
+    const sai_attr_metadata_t* const* const         attrmetadata;
 
     /**
      * @brief Attributes metadata length.
      */
-    size_t                                  attrmetadatalength;
+    size_t                                          attrmetadatalength;
 
     /**
      * @brief Indicates if object is using struct
      * instead of actual object id
      */
-    bool                                    isnonobjectid;
+    bool                                            isnonobjectid;
 
     /**
      * @brief Indicates if object is OID object
      */
-    bool                                    isobjectid;
+    bool                                            isobjectid;
 
     /**
      * @brief Defines all struct members
      */
-    const sai_struct_member_info_t** const  structmembers;
+    const sai_struct_member_info_t* const* const    structmembers;
 
     /**
      * @brief Defines count of struct members
      */
-    size_t                                  structmemberscount;
+    size_t                                          structmemberscount;
 
     /**
      * @brief Defines reverse dependency graph members
      */
-    const sai_rev_graph_member_t** const    revgraphmembers;
+    const sai_rev_graph_member_t* const* const      revgraphmembers;
 
     /**
      * @brief Create function pointer.
      */
-    const sai_meta_generic_create_fn        create;
+    const sai_meta_generic_create_fn                create;
 
     /**
      * @brief Remove function pointer.
      */
-    const sai_meta_generic_remove_fn        remove;
+    const sai_meta_generic_remove_fn                remove;
 
     /**
      * @brief Set function pointer.
      */
-    const sai_meta_generic_set_fn           set;
+    const sai_meta_generic_set_fn                   set;
 
     /**
      * @brief Get function pointer
      */
-    const sai_meta_generic_get_fn           get;
+    const sai_meta_generic_get_fn                   get;
 
 } sai_object_type_info_t;
 

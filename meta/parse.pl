@@ -706,7 +706,7 @@ sub ProcessSingleEnum
 
     WriteSource "};";
 
-    WriteSource "const char* sai_metadata_${typedef}_enum_values_names[] = {";
+    WriteSource "const char* const sai_metadata_${typedef}_enum_values_names[] = {";
 
     for my $value (@values)
     {
@@ -716,7 +716,7 @@ sub ProcessSingleEnum
     WriteSource "    NULL";
     WriteSource "};";
 
-    WriteSource "const char* sai_metadata_${typedef}_enum_values_short_names[] = {";
+    WriteSource "const char* const sai_metadata_${typedef}_enum_values_short_names[] = {";
 
     for my $value (@values)
     {
@@ -785,8 +785,8 @@ sub CreateMetadataHeaderAndSource
 
     # all enums
 
-    WriteHeader "extern const sai_enum_metadata_t* sai_metadata_all_enums[];";
-    WriteSource "const sai_enum_metadata_t* sai_metadata_all_enums[] = {";
+    WriteHeader "extern const sai_enum_metadata_t* const sai_metadata_all_enums[];";
+    WriteSource "const sai_enum_metadata_t* const sai_metadata_all_enums[] = {";
 
     for my $key (sort keys %SAI_ENUMS)
     {
@@ -809,8 +809,8 @@ sub CreateMetadataHeaderAndSource
     WriteHeader "extern const size_t sai_metadata_all_enums_count;";
     WriteSource "const size_t sai_metadata_all_enums_count = $count;";
 
-    WriteHeader "extern const sai_enum_metadata_t* sai_metadata_attr_enums[];";
-    WriteSource "const sai_enum_metadata_t* sai_metadata_attr_enums[] = {";
+    WriteHeader "extern const sai_enum_metadata_t* const sai_metadata_attr_enums[];";
+    WriteSource "const sai_enum_metadata_t* const sai_metadata_attr_enums[] = {";
 
     $count = 0;
 
@@ -1112,6 +1112,30 @@ sub ProcessDefaultValueAttrId
     return "SAI_INVALID_ATTRIBUTE_ID";
 }
 
+sub ProcessStoreDefaultValue
+{
+    my ($attr, $value, $flags) = @_;
+
+    # at this point we can't determine whether object is non object id
+
+    if (defined $value and $value =~/vendor|attrvalue/)
+    {
+        return "true";
+    }
+
+    my @flags = @{ $flags };
+
+    $flags = "@flags";
+
+    if ($flags =~/MANDATORY/ and $flags =~ /CREATE_AND_SET/)
+    {
+        return "true";
+    }
+
+    return "false";
+}
+
+
 sub ProcessIsEnum
 {
     my ($value, $type) = @_;
@@ -1247,7 +1271,7 @@ sub ProcessConditionsGeneric
         $count++;
     }
 
-    WriteSource "const sai_attr_condition_t* sai_metadata_${name}s_${attr}\[\] = {";
+    WriteSource "const sai_attr_condition_t* const sai_metadata_${name}s_${attr}\[\] = {";
 
     $count = 0;
 
@@ -1418,6 +1442,7 @@ sub ProcessSingleObjectType
         my $defval          = ProcessDefaultValue($attr, $meta{default}, $meta{type});
         my $defvalot        = ProcessDefaultValueObjectType($attr, $meta{default}, $meta{type});
         my $defvalattrid    = ProcessDefaultValueAttrId($attr, $meta{default}, $meta{type});
+        my $storedefaultval = ProcessStoreDefaultValue($attr, $meta{default}, $meta{flags});
         my $isenum          = ProcessIsEnum($attr, $meta{type});
         my $isenumlist      = ProcessIsEnumList($attr, $meta{type});
         my $enummetadata    = ProcessEnumMetadata($attr, $meta{type});
@@ -1458,6 +1483,7 @@ sub ProcessSingleObjectType
         WriteSource "    .defaultvalue                  = $defval,";
         WriteSource "    .defaultvalueobjecttype        = $defvalot,";
         WriteSource "    .defaultvalueattrid            = $defvalattrid,";
+        WriteSource "    .storedefaultvalue             = $storedefaultval,";
         WriteSource "    .isenum                        = $isenum,";
         WriteSource "    .isenumlist                    = $isenumlist,";
         WriteSource "    .enummetadata                  = $enummetadata,";
@@ -1637,7 +1663,7 @@ sub CreateMetadataForAttributes
             $SAI_ENUMS{$type}{values} = \@empty;
         }
 
-        WriteSource "const sai_attr_metadata_t* sai_metadata_object_type_$type\[\] = {";
+        WriteSource "const sai_attr_metadata_t* const sai_metadata_object_type_$type\[\] = {";
 
         my @values = @{ $SAI_ENUMS{$type}{values} };
 
@@ -1652,8 +1678,8 @@ sub CreateMetadataForAttributes
         WriteSource "};";
     }
 
-    WriteHeader "extern const sai_attr_metadata_t** sai_metadata_attr_by_object_type[];";
-    WriteSource "const sai_attr_metadata_t** sai_metadata_attr_by_object_type[] = {";
+    WriteHeader "extern const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[];";
+    WriteSource "const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[] = {";
 
     for my $ot (@objects)
     {
@@ -1861,7 +1887,7 @@ sub ProcessStructMembers
         }
     }
 
-    WriteSource "const sai_struct_member_info_t* sai_metadata_struct_members_sai_${rawname}_t[] = {";
+    WriteSource "const sai_struct_member_info_t* const sai_metadata_struct_members_sai_${rawname}_t[] = {";
 
     for my $key (@keys)
     {
@@ -1953,7 +1979,7 @@ sub ProcessRevGraph
         $index++;
     }
 
-    WriteSource "const sai_rev_graph_member_t* sai_metadata_${objectType}_rev_graph_members[] = {";
+    WriteSource "const sai_rev_graph_member_t* const sai_metadata_${objectType}_rev_graph_members[] = {";
 
     for my $mn (@membernames)
     {
@@ -2269,9 +2295,9 @@ sub CreateObjectInfo
         WriteSource "};";
     }
 
-    WriteHeader "extern const sai_object_type_info_t* sai_metadata_all_object_type_infos[];";
+    WriteHeader "extern const sai_object_type_info_t* const sai_metadata_all_object_type_infos[];";
 
-    WriteSource "const sai_object_type_info_t* sai_metadata_all_object_type_infos[] = {";
+    WriteSource "const sai_object_type_info_t* const sai_metadata_all_object_type_infos[] = {";
 
     for my $ot (@objects)
     {
@@ -2670,8 +2696,8 @@ sub CreateListOfAllAttributes
         }
     }
 
-    WriteSource "const sai_attr_metadata_t* sai_metadata_attr_sorted_by_id_name[] = {";
-    WriteHeader "extern const sai_attr_metadata_t* sai_metadata_attr_sorted_by_id_name[];";
+    WriteSource "const sai_attr_metadata_t* const sai_metadata_attr_sorted_by_id_name[] = {";
+    WriteHeader "extern const sai_attr_metadata_t* const sai_metadata_attr_sorted_by_id_name[];";
 
     my @keys = sort keys %ATTRIBUTES;
 
