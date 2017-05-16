@@ -468,7 +468,7 @@ class L2FdbAgingTest(sai_base_test.ThriftInterfaceDataPlane):
         port3 = port_list[2]
         mac1 = '00:11:11:11:11:11'
         mac2 = '00:22:22:22:22:22'
-        fdb_aging_time = 30
+        fdb_aging_time = 10
 
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
         vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
@@ -507,14 +507,14 @@ class L2FdbAgingTest(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 1, str(pkt1))
             verify_packets(self, pkt1, [0])
             print "Wait when the aging time for FDB entries in the FDB table expires, and the entries are removed ..."
-            time.sleep(fdb_aging_time + 5)
+            time.sleep(fdb_aging_time + 2)
             print "Send packet from port2 to port1 and verify on each of ports"
             print '#### Sending 00:22:22:22:22:22| 00:11:11:11:11:11 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 2 ####'
             send_packet(self, 1, str(pkt1))
             verify_each_packet_on_each_port(self, [pkt1, pkt1], [0, 2])
-            print "Wait when the aging time for FDB entries in the FDB table expires, and the entries are removed ..."
-            time.sleep(fdb_aging_time + 5)
         finally:
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan_id)
+
             attr_value = sai_thrift_attribute_value_t(u32=0)
             attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
             self.client.sai_thrift_set_switch_attribute(attr)
