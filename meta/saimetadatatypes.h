@@ -876,6 +876,14 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        iskey;
 
+    /**
+     * @brief Determines whether attribute value is primitive.
+     *
+     * Primitive values will not contain any pointers so value can be
+     * transferred by regular assignment operator.
+     */
+    bool                                        isprimitive;
+
 } sai_attr_metadata_t;
 
 /*
