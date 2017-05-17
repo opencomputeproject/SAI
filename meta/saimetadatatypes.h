@@ -1137,6 +1137,11 @@ typedef struct _sai_object_type_info_t
     const sai_rev_graph_member_t* const* const      revgraphmembers;
 
     /**
+     * @brief Defines reverse dependency graph members count.
+     */
+    size_t                                          revgraphmemberscount;
+
+    /**
      * @brief Create function pointer.
      */
     const sai_meta_generic_create_fn                create;

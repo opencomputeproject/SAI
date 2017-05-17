@@ -3584,6 +3584,30 @@ void check_enum_to_attr_map(
     META_ASSERT_NULL(oi->attrmetadata[i]);
 }
 
+void check_reverse_graph_count(
+    _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    size_t i = 0;
+
+    if (oi->revgraphmemberscount == 0)
+    {
+        META_ASSERT_NULL(oi->revgraphmembers);
+
+        return;
+    }
+
+    META_ASSERT_NOT_NULL(oi->revgraphmembers);
+
+    for (; i < oi->revgraphmemberscount; ++i)
+    {
+        META_ASSERT_NOT_NULL(oi->revgraphmembers[i]);
+    }
+
+    META_ASSERT_NULL(oi->revgraphmembers[i]);
+}
+
 void check_single_object_info(
     _In_ const sai_object_type_info_t *oi)
 {
@@ -3592,6 +3616,7 @@ void check_single_object_info(
     check_quad_api_pointers(oi);
     check_object_id_non_object_id(oi);
     check_enum_to_attr_map(oi);
+    check_reverse_graph_count(oi);
 }
 
 void check_api_max()
