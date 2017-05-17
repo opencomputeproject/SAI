@@ -555,6 +555,10 @@ typedef struct _sai_attr_condition_t
      */
     const sai_attribute_value_t         condition;
 
+    /*
+     * In future we can add condition operator like equal, not equal, etc.
+     */
+
 } sai_attr_condition_t;
 
 /**
