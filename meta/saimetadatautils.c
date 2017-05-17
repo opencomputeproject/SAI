@@ -208,8 +208,8 @@ bool sai_metadata_is_condition_in_force(
         if (cattr == NULL)
         {
             /*
-             * User didn't passed conditional attribute, attrubte, so check if
-             * there is default value.
+             * User didn't passed conditional attribute, so check if there is
+             * default value.
              */
 
             cvalue = cmd->defaultvalue;
