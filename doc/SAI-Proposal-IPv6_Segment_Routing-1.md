@@ -6,7 +6,7 @@ SAI IPv6 Segment Routing Proposal for SAI 1.2.0
  Status      | In review
  Type        | Standards track
  Created     | 04/14/2017
- Updated     | 05/11/2017
+ Updated     | 05/17/2017
  SAI-Version | 1.2.0
 
 -------------------------------------------------------------------------------
@@ -27,15 +27,20 @@ This specification proposes the following points:
 
 ## Behavioral Model
 
-In order to add IPv6 Segment Routing, it requires three mechanisms:
-1. Way to specify which flows will be marked for SR source or transit
+To clarify the behaviors of different nodes:
+1. Source Node.  This node first encapsulates the SR header on a native IPv6 packet and routes on the outer-most address in SR list.
+2. Transit Node.  Typically is unaware of SR header and only does native routing.  But there is an option to append the packet with another SR header to create a stack of SR headers via mechanism similar to Source Node.
+3. Endpoint Node.  Last node of the SR header stack.  User can choose an endpoint function to process the packet further such as removing the SR header and natively route.
+
+In order to add IPv6 Segment Routing support, it requires two mechanisms:
+1. Way to specify which flows will be marked for SR processing at either source, transit, or endpoint nodes
 2. Way to add SR header (source / transit) or modify / remove SR header (endpoint) before normal L2/L3 processing
 
-For the first mechanism, ACL is used to match on any flow characteristics to determine the policy "color".  The color and packet DIP is used in the ACL match lookup to determine the Policy's Binding Segment ID (BSID) which is enabled in the next-hop group table. Alternatively, one can use the route table to just use DIP alone to determine the BSID.  The BSID is used in the next-hop group table to group Segment ID Lists (SID Lists) and ECMP hash between the possible paths
+For the first mechanism, ACL is used to match on any flow characteristics to determine the policy "color" for source node processing.  The color and packet DIP is used in the ACL match lookup to determine the Policy's Binding Segment ID (BSID) which is enabled in the next-hop group table. Alternatively, one can use the LPM route table lookup to just use DIP alone to determine the BSID.  In the transit or endpoint nodes, LPM lookup would be the main mechanism.  The BSID is used in the next-hop group table to group Segment ID Lists (SID Lists).  Weighted or unweighted ECMP hash is configurable to select the possible paths. 
 
-For the second mechanism, the route / next-hop group / next-hop tables are used to identify the SR DIP and manipulate via endpoint function or source/transit SID lists as objects in the next-hop table.  Afterwards the flow will head to the egress pipeline for futher lookup on the modified packet.  Thus, the only structural changes needed is in the next-hop table to handle the transit, source, and endpoint actions.
+For the second mechanism, the next-hop table is used to manipulate the header.  For endpoint nodes, an entry specifying the endpoint function and parameters is used.  For source or transit nodes that add SR headers, SID lists are represented as objects in the next-hop table.  Afterwards the flow will head to the egress pipeline for futher lookup on the modified packet.  For transit nodes that would do normal L3 processing, the existing pipeline where next-hop is derived will be unchanged.  Thus, the only structural changes needed is in the next-hop table to handle the transit, source, and endpoint actions.
 
-The below figures shows the additional logic in the Ingress ACL and Route lookup in the behavioral pipeline to support this.
+The below figures shows the logic flow for each scenario in the behavioral pipeline to support this.
 
 ![SAI v6SR bm](figures/sai_v6SR_bm.png "Figure 1: Behavioral Model Addition. ")
 __Figure 1: Behavioral Model Addition.__
@@ -67,10 +72,9 @@ Endpoint Actions to be taken:
 ### SID List Object APIs
 #### Vendor Support Advertisement
 
-Included is also a way for vendors to advertise device support include the number of segments and TLV types that can be originated
+The switch attribute is a way for vendors to advertise device support include the number of segments and TLV types supported
 
-    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SEGMENTS
-    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SIDLISTS
+    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SID_DEPTH
     SAI_SWITCH_ATTR_SEGMENTROUTE_TLV_TYPE
 
 > Note: NSH Carrier and Padding TLVs were not included in this first draft
@@ -114,6 +118,7 @@ The following example
 3. Writes SID List Object to add 3 Segments and an Ingress Node TLV  
 4. Create Next-Hop Group Member / Next-Hop Object bound to a SID List Object 
 
+<b></b>
 
     switch_id = 0;
     nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_TYPE;
@@ -138,18 +143,16 @@ The following example
 
     v6sr_entry_attrs[0].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_SEGMENT_LIST
     v6sr_entry_attrs[0].value.objlist.count = 3;
-    CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[0], "2001:db8:85a3::8a2e:370:1234");
+    CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[0], "2001:db8:85a3::8a2e:370:7334");
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[1], "2001:db8:85a3::8a2e:370:2345");
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[0].value.objlist.list[2], "2001:db8:85a3::8a2e:370:3456");
-    v6sr_entry_attrs[1].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_TLV;
+    v6sr_entry_attrs[1].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_TLV_LIST;
     v6sr_entry_attrs[1].value.objlist.count = 1;
     v6sr_entry_attrs[1].value.objlist.list[0].tlv_type = SAI_TLV_TYPE_INGRESS;
     CONVERT_STR_TO_IPV6(v6sr_entry_attrs[1].value.objlist.list[0].ingress_node, "2001:db8:85a3::8a2e:370:9876");
     v6sr_entry_attrs[2].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_TYPE;
-    v6sr_entry_attrs[2].value = SAI_SEGMENTROUTE_SIDLIST_TYPE_ENCAPS_ORIGINATION; 
-    v6sr_entry_attrs[3].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_SEGMENTROUTE_BSID;
-    v6sr_entry_attrs[3].value = bsid_id;
-    saistatus = sai_v6sr_api->create_segmentroute_sidlist(&sidlist_id, switch_id, 4, v6sr_entry_attrs);
+    v6sr_entry_attrs[2].value = SAI_SEGMENTROUTE_SIDLIST_TYPE_ENCAPS; 
+    saistatus = sai_v6sr_api->create_segmentroute_sidlist(&sidlist_id, switch_id, 3, v6sr_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }

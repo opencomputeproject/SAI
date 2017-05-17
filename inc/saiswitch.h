@@ -1269,20 +1269,12 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
 
     /**
-     * @brief Max number of Segments in SID List supported
+     * @brief Max number of Segments in a single SID List supported
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SEGMENTS,
-
-    /**
-     * @brief Max number of SID Lists supported
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SIDLISTS,
+    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SID_DEPTH,
 
     /**
      * @brief List of Type Length Value types supported for source
