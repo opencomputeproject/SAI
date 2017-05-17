@@ -1409,6 +1409,15 @@ sub ProcessBrief
     return "\"$brief\"";
 }
 
+sub ProcessIsPrimitive
+{
+    my ($attr, $type) = @_;
+
+    return "false" if $type =~ /(_list_t|acl_capability_t)/;
+
+    return "true";
+}
+
 sub ProcessSingleObjectType
 {
     my ($typedef, $objecttype) = @_;
@@ -1457,6 +1466,7 @@ sub ProcessSingleObjectType
         my $isaclfield      = ProcessIsAclField($attr);
         my $isaclaction     = ProcessIsAclAction($attr);
         my $brief           = ProcessBrief($attr, $meta{brief});
+        my $isprimitive     = ProcessIsPrimitive($attr, $meta{type});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -1504,6 +1514,7 @@ sub ProcessSingleObjectType
         WriteSource "    .iscreateandset                = $iscreateandset,";
         WriteSource "    .isreadonly                    = $isreadonly,";
         WriteSource "    .iskey                         = $iskey,";
+        WriteSource "    .isprimitive                   = $isprimitive,";
 
         WriteSource "};";
 

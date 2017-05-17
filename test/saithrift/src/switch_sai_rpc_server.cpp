@@ -291,7 +291,9 @@ public:
               case SAI_PORT_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
-
+              case SAI_PORT_ATTR_FDB_LEARNING_MODE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
               default:
                   break;
           }
@@ -2070,6 +2072,7 @@ public:
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION:
+                attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
                 attr_list[i].value.aclaction.parameter.u32 = attribute.value.aclaction.parameter.u32;
                 break;
               default:

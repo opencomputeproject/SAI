@@ -2190,7 +2190,7 @@ void check_attr_brief_description(
     META_LOG_ENTER();
 
     /*
-     * Purpose of of this check is to see if brief description extracte from
+     * Purpose of this check is to see if brief description extracte from
      * header is present and not too long.
      */
 
@@ -2199,6 +2199,86 @@ void check_attr_brief_description(
     if (strlen(md->brief) > 200)
     {
         META_ASSERT_FAIL(md, "brief description is too long > 200");
+    }
+}
+
+void check_attr_is_primitive(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to see if isprimitive flag is correct.
+     */
+
+    switch (md->attrvaluetype)
+    {
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
+        case SAI_ATTR_VALUE_TYPE_INT32_LIST:
+        case SAI_ATTR_VALUE_TYPE_INT8_LIST:
+        case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+        case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
+        case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
+        case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+        case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
+        case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
+
+            if (md->isprimitive)
+            {
+                META_ASSERT_FAIL(md, "marked as primitive on list")
+            }
+
+            break;
+
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT16:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT32:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT32:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT16:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT8:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV4:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT16:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT32:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
+        case SAI_ATTR_VALUE_TYPE_BOOL:
+        case SAI_ATTR_VALUE_TYPE_CHARDATA:
+        case SAI_ATTR_VALUE_TYPE_INT32:
+        case SAI_ATTR_VALUE_TYPE_INT8:
+        case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
+        case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
+        case SAI_ATTR_VALUE_TYPE_MAC:
+        case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+        case SAI_ATTR_VALUE_TYPE_POINTER:
+        case SAI_ATTR_VALUE_TYPE_UINT16:
+        case SAI_ATTR_VALUE_TYPE_UINT32:
+        case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
+        case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_UINT8:
+
+            if (!md->isprimitive)
+            {
+                META_ASSERT_FAIL(md, "not marked as primitive on primitive")
+            }
+
+            break;
+
+        default:
+
+            META_ASSERT_FAIL(md, "attr value type not handled, FIXME");
     }
 }
 
@@ -2237,6 +2317,7 @@ void check_single_attribute(
     check_attr_existing_objects(md);
     check_attr_sai_pointer(md);
     check_attr_brief_description(md);
+    check_attr_is_primitive(md);
 
     define_attr(md);
 }
