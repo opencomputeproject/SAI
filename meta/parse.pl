@@ -693,6 +693,8 @@ sub ProcessSingleEnum
 
     for my $value (@values)
     {
+        LogWarning "Value $value of $typedef must use only capital letters" if $value =~ /[a-z]/;
+
         LogWarning "Value $value of $typedef is not prefixed as $prefix" if not $value =~ /^$prefix/;
 
         WriteSource "    $value,";
@@ -2421,15 +2423,34 @@ sub DefineTestName
 
 sub CreatePointersTest
 {
-    # we don't declare actual test, just global values
+    DefineTestName "check_pointer_names_test";
 
-    for my $pointer (@pointers)
+    WriteTest "{";
+
+    for my $pointer (sort @pointers)
     {
+        if (not $pointer =~ /^sai_(\w+)_notification_fn/)
+        {
+            LogWarning "notification function $pointer is not ending on _notification_fn";
+            next;
+        }
+
+        my $name = $1;
+
         # make sure taht declared pointer is correct
         # by testing if it will compile in test
 
-        WriteTest "$pointer var_$pointer = NULL;";
+        WriteTest "    $pointer var_$pointer = NULL;";
+        WriteTest "    PP(var_$pointer);";
+
+        # make sure that switch attribute exists corresponding to pointer name
+
+        my $swattrname = uc "SAI_SWITCH_ATTR_${name}_NOTIFY";
+
+        WriteTest "    printf(\"%d\\n\", $swattrname);";
     }
+
+    WriteTest "}";
 }
 
 sub CreateNonObjectIdTest
@@ -4029,6 +4050,50 @@ sub CheckAttributeValueUnion
     }
 }
 
+sub CreateNotificationStruct
+{
+    #
+    # create notification struct for easier notification
+    # manipulation in code
+    #
+
+    WriteHeader "typedef struct _sai_switch_notifications_t {";
+
+    for my $pointer (sort @pointers)
+    {
+        if (not $pointer =~ /^sai_(\w+)_notification_fn/)
+        {
+            LogWarning "notification function $pointer is not ending on _notification_fn";
+            next;
+        }
+
+        WriteHeader "    $pointer on_$1;";
+    }
+
+    WriteHeader "} sai_switch_notifications_t;";
+}
+
+sub WriteHeaderHeader
+{
+    WriteHeader "#ifndef __SAI_METADATA_H__";
+    WriteHeader "#define __SAI_METADATA_H__";
+}
+
+sub WriteHeaderFotter
+{
+    WriteHeader "#endif /* __SAI_METADATA_H__ */";
+}
+
+sub ProcessXmlFiles
+{
+    for my $file (GetXmlFiles($XMLDIR))
+    {
+        LogInfo "Processing $file";
+
+        ProcessXmlFile("$XMLDIR/$file");
+    }
+}
+
 #
 # MAIN
 #
@@ -4037,15 +4102,9 @@ CheckHeadersStyle();
 
 ExtractApiToObjectMap();
 
-for my $file (GetXmlFiles($XMLDIR))
-{
-    LogInfo "Processing $file";
+ProcessXmlFiles();
 
-    ProcessXmlFile("$XMLDIR/$file");
-}
-
-WriteHeader "#ifndef __SAI_METADATA_H__";
-WriteHeader "#define __SAI_METADATA_H__";
+WriteHeaderHeader();
 
 CreateMetadataHeaderAndSource();
 
@@ -4073,7 +4132,9 @@ CheckApiDefines();
 
 CheckAttributeValueUnion();
 
-WriteHeader "#endif /* __SAI_METADATA_H__ */";
+CreateNotificationStruct();
+
+WriteHeaderFotter();
 
 # Test Section
 
