@@ -2241,7 +2241,7 @@ sub CreateApisQuery
     WriteSource "}";
 
     WriteHeader "extern int sai_metadata_apis_query(";
-    WriteHeader "       _In_ const sai_api_query_fn api_query);";
+    WriteHeader "        _In_ const sai_api_query_fn api_query);";
 }
 
 sub CreateObjectInfo
@@ -3482,6 +3482,11 @@ sub CheckHeadersStyle
                 LogWarning "move '{' to new line in typedef $header $n:$line";
             }
 
+            if ($line =~ /^[^*]*union/ and not $line =~ /union _\w+/)
+            {
+                LogError "all unions must be named $header $n:$line";
+            }
+
             CheckDoxygenStyle($header, $line, $n);
 
             next if $line =~ /^ \*($|[ \/])/;       # doxygen comment
@@ -3786,7 +3791,7 @@ sub CreateListCountTest
 
     WriteTest "{";
 
-    my %Union = ExtractStructInfo("sai_attribute_value_t", "union");
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union_");
 
     WriteTest "    size_t size_ref = sizeof(sai_object_list_t);";
 
@@ -4007,7 +4012,7 @@ sub CheckAttributeValueUnion
     # object dependencies via metadata and comparison logic
     #
 
-    my %Union = ExtractStructInfo("sai_attribute_value_t", "union");
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union_");
 
     my @primitives = qw/sai_acl_action_data_t sai_acl_field_data_t sai_pointer_t sai_object_id_t sai_object_list_t char/;
 
