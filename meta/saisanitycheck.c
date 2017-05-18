@@ -3710,6 +3710,21 @@ void check_api_max()
             "SAI_API_MAX should be equal to number of SAI_API*");
 }
 
+void check_backward_comparibility_defines()
+{
+    META_LOG_ENTER();
+
+    /* check assignments if type matches */
+
+    sai_switch_attr_t sw = SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY;
+    sai_hostif_user_defined_trap_type_t trap = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH;
+    sai_acl_bind_point_type_t bind = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF;
+
+    META_ASSERT_TRUE(sw == SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY, "not equal");
+    META_ASSERT_TRUE(trap == SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGHBOR, "not equal");
+    META_ASSERT_TRUE(bind == SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE, "not equal");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -3744,6 +3759,7 @@ int main(int argc, char **argv)
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
     check_api_max();
+    check_backward_comparibility_defines();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 

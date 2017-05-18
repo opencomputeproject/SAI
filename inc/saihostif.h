@@ -456,7 +456,7 @@ typedef enum _sai_hostif_user_defined_trap_type_t
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ROUTER = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START,
 
     /** Neighbor table traps (default packet action is drop) */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH,
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGHBOR,
 
     /** ACL traps (default packet action is drop) */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ACL,
@@ -473,6 +473,13 @@ typedef enum _sai_hostif_user_defined_trap_type_t
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_END,
 
 } sai_hostif_user_defined_trap_type_t;
+
+/**
+ * @def SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH
+ *
+ * For backward compatibility.
+ */
+#define SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGHBOR
 
 /**
  * @brief Host interface user defined trap attributes
