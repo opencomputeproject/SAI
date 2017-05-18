@@ -1416,7 +1416,14 @@ typedef enum _sai_port_stat_t
     /** SAI port stat PFC 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
-    /** PFC pause duration for RX and TX per PFC priority [uint64_t] */
+    /**
+     * @brief PFC pause duration for RX and TX per PFC priority [uint64_t]
+     *
+     * RX pause duration for certain priority is a the duration quanta in ingress pause
+     * frame for that priority (a pause frame received by the switch).
+     * While TX pause duration for certain priority is the duration quanta in egress pause
+     * frame for that priority (a pause frame sent by the switch).
+     */
     SAI_PORT_STAT_PFC_0_RX_PAUSE_DURATION,
 
     /** SAI port stat PFC 0 tx duration */
