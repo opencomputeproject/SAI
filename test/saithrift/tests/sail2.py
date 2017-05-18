@@ -456,3 +456,76 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
             for port in sai_port_list:
                 sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port, SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
+@group('l2')
+class L2FdbAgingTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        print
+        print "PTF L2 FDB aging test ..."
+        switch_init(self.client)
+        vlan_id = 10
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        mac1 = '00:11:11:11:11:11'
+        mac2 = '00:22:22:22:22:22'
+        fdb_aging_time = 10
+
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_oid, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+        self.client.sai_thrift_set_port_attribute(port3, attr)
+
+        attr_value = sai_thrift_attribute_value_t(u32=fdb_aging_time)
+        attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
+        self.client.sai_thrift_set_switch_attribute(attr)
+
+        pkt = simple_tcp_packet(eth_dst=mac2,
+                                eth_src=mac1,
+                                ip_dst='10.0.0.1',
+                                ip_id=101,
+                                ip_ttl=64)
+
+        pkt1 = simple_tcp_packet(eth_dst=mac1,
+                                 eth_src=mac2,
+                                 ip_dst='10.0.0.1',
+                                 ip_id=101,
+                                 ip_ttl=64)
+
+        try:
+            print "Send packet from port1 to port2 and verify on each of ports"
+            print '#### Sending 00:11:11:11:11:11| 00:22:22:22:22:22 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 1 ####'
+            send_packet(self, 0, str(pkt))
+            verify_each_packet_on_each_port(self, [pkt, pkt], [1, 2])
+            print "Send packet from port2 to port1 and verify only on port1"
+            print '#### Sending 00:22:22:22:22:22| 00:11:11:11:11:11 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 2 ####'
+            send_packet(self, 1, str(pkt1))
+            verify_packets(self, pkt1, [0])
+            print "Wait when the aging time for FDB entries in the FDB table expires, and the entries are removed ..."
+            time.sleep(fdb_aging_time + 2)
+            print "Send packet from port2 to port1 and verify on each of ports"
+            print '#### Sending 00:22:22:22:22:22| 00:11:11:11:11:11 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 2 ####'
+            send_packet(self, 1, str(pkt1))
+            verify_each_packet_on_each_port(self, [pkt1, pkt1], [0, 2])
+        finally:
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan_id)
+
+            attr_value = sai_thrift_attribute_value_t(u32=0)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+            self.client.sai_thrift_set_port_attribute(port3, attr)
+
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_remove_vlan_member(vlan_member3)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
