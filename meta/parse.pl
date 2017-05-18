@@ -2000,6 +2000,22 @@ sub ProcessRevGraph
     return "sai_metadata_${objectType}_rev_graph_members";
 }
 
+sub ProcessRevGraphCount
+{
+    my %REVGRAPH = GetReverseDependencyGraph();
+
+    my $objectType = shift;
+
+    if (not defined $REVGRAPH{$objectType})
+    {
+        return 0;
+    }
+
+    my $count = @{ $REVGRAPH{$objectType} };
+
+    return $count;
+}
+
 sub CreateStructNonObjectId
 {
     my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
@@ -2261,6 +2277,7 @@ sub CreateObjectInfo
         my $structmembers       = ProcessStructMembersName($struct, $ot ,lc($1));
         my $structmemberscount  = ProcessStructMembersCount($struct, $ot);
         my $revgraph            = ProcessRevGraph($ot);
+        my $revgraphcount       = ProcessRevGraphCount($ot);
         my $attrmetalength      = @{ $SAI_ENUMS{$type}{values} };
 
         my $create = "NULL";
@@ -2283,22 +2300,23 @@ sub CreateObjectInfo
         WriteHeader "extern const sai_object_type_info_t sai_metadata_object_type_info_$ot;";
 
         WriteSource "const sai_object_type_info_t sai_metadata_object_type_info_$ot = {";
-        WriteSource "    .objecttype         = $ot,";
-        WriteSource "    .objecttypename     = \"$ot\",";
-        WriteSource "    .attridstart        = $start,";
-        WriteSource "    .attridend          = $end,";
-        WriteSource "    .enummetadata       = $enum,";
-        WriteSource "    .attrmetadata       = sai_metadata_object_type_$type,";
-        WriteSource "    .attrmetadatalength = $attrmetalength,";
-        WriteSource "    .isnonobjectid      = $isnonobjectid,";
-        WriteSource "    .isobjectid         = !$isnonobjectid,";
-        WriteSource "    .structmembers      = $structmembers,";
-        WriteSource "    .structmemberscount = $structmemberscount,";
-        WriteSource "    .revgraphmembers    = $revgraph,";
-        WriteSource "    .create             = $create,";
-        WriteSource "    .remove             = $remove,";
-        WriteSource "    .set                = $set,";
-        WriteSource "    .get                = $get,";
+        WriteSource "    .objecttype           = $ot,";
+        WriteSource "    .objecttypename       = \"$ot\",";
+        WriteSource "    .attridstart          = $start,";
+        WriteSource "    .attridend            = $end,";
+        WriteSource "    .enummetadata         = $enum,";
+        WriteSource "    .attrmetadata         = sai_metadata_object_type_$type,";
+        WriteSource "    .attrmetadatalength   = $attrmetalength,";
+        WriteSource "    .isnonobjectid        = $isnonobjectid,";
+        WriteSource "    .isobjectid           = !$isnonobjectid,";
+        WriteSource "    .structmembers        = $structmembers,";
+        WriteSource "    .structmemberscount   = $structmemberscount,";
+        WriteSource "    .revgraphmembers      = $revgraph,";
+        WriteSource "    .revgraphmemberscount = $revgraphcount,";
+        WriteSource "    .create               = $create,";
+        WriteSource "    .remove               = $remove,";
+        WriteSource "    .set                  = $set,";
+        WriteSource "    .get                  = $get,";
         WriteSource "};";
     }
 
