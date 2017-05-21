@@ -935,7 +935,7 @@ typedef struct _sai_struct_member_info_t
     /**
      * @brief Member name
      */
-    const char*                                         membername;
+    const char* const                                   membername;
 
     /**
      * @brief Indicates whether field is vlan
