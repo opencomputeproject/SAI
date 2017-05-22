@@ -559,3 +559,5 @@ for (attr_id = 0; attr_id < attr_count; attr_id++) {
 ```
 
 # Pipeline
+
+![](figures/sai_frr_pipeline.png)
