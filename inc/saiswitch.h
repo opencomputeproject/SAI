@@ -1292,7 +1292,7 @@ typedef enum _sai_switch_attr_t
      *
      * This control applies to all packets on all applicable port/queues. If application wants finer packet
      * action control on per port per queue level then it is expected to set this control to packet forward
-     * and install appropriate ACLs and enable/disable them in the DLD/DLR event callback
+     * and install one or more ACL and enable/disable them in the DLD/DLR event callback
      * (SAI_SWITCH_ATTR_PFC_DEADLOCK_EVENT_NOTIFY) respectively.
      *
      * @type sai_packet_action_t
