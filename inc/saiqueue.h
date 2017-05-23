@@ -162,7 +162,7 @@ typedef enum _sai_queue_attr_t
      * @default false
      */
     SAI_QUEUE_ATTR_ENABLE_PFC_DLDR = 0x00000008,
-    
+
     /**
      * @brief End of attributes
      */
@@ -279,7 +279,7 @@ typedef enum _sai_queue_pfc_deadlock_event_type_t
     SAI_QUEUE_PFC_DL_START = 0x00000001,
 
     /** PFC deadlock recovery ended */
-   SAI_QUEUE_PFC_DL_END
+    SAI_QUEUE_PFC_DL_END
 
 } sai_queue_pfc_deadlock_event_type_t;
 
