@@ -560,6 +560,16 @@ sub ProcessEnumSection
 
         if ($enumtypename =~ /^(sai_\w+)_t$/)
         {
+            my $valuescount = @values;
+
+            if ($valuescount == 0)
+            {
+                LogError "enum $enumtypename is empty, after removing suffixed entries _START/_END/_CUSTOM_RANGE_BASE";
+                LogError "  those suffixes are reserved for range markers and are removed by metadata parser, don't use them";
+                LogError "  as actual part of valid enum name, take a look at sai_udf_group_type_t for valid usage";
+                next;
+            }
+
             my $last = $values[$#values];
 
             if ($last eq uc("$1_MAX"))
