@@ -1291,7 +1291,7 @@ typedef enum _sai_switch_attr_t
      * @brief Control for buffered and incoming packets on queue undergoing PFC Deadlock Recovery.
      *
      * This control applies to all packets on all applicable port/queues. If application wants finer packet
-     * action control on per port per queue level then it is expected to set this control to packet forward 
+     * action control on per port per queue level then it is expected to set this control to packet forward
      * and install appropriate ACLs and enable/disable them in the DLD/DLR event callback
      * (SAI_SWITCH_ATTR_PFC_DEADLOCK_EVENT_NOTIFY) respectively.
      *
