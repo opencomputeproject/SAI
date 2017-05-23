@@ -3090,7 +3090,7 @@ sub CheckDoxygenCommentFormating
     {
         next if $2 eq "{";
 
-        LogWarning "doxygen comment can't be upper sticked: $file:\n$1";
+        LogWarning "doxygen comment must be preceded with blank line: $file:\n$1";
     }
 }
 
