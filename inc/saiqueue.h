@@ -151,6 +151,19 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_PAUSE_STATUS = 0x00000007,
 
     /**
+     * @brief Enable PFC Deadlock Detection and Recovery (DLDR) on a lossless queue.
+     *
+     * A deadlock is assumed to have occurred when a queue is in a XOFF
+     * state for more than a configurable (SAI_SWITCH_ATTR_PFC_COS_DLD_INTERVAL)
+     * amount of time.
+     * 
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_QUEUE_ATTR_ENABLE_PFC_DLDR = 0x00000008,
+    
+    /**
      * @brief End of attributes
      */
     SAI_QUEUE_ATTR_END,
@@ -258,6 +271,32 @@ typedef enum _sai_queue_stat_t
 } sai_queue_stat_t;
 
 /**
+ * @brief Enum defining Queue deadlock event state.
+ */
+typedef enum _sai_queue_pfc_deadlock_event_type_t
+{
+    /** PFC deadlock detected */
+    SAI_QUEUE_PFC_DL_START = 0x00000001,
+
+    /** PFC deadlock recovery ended */
+   SAI_QUEUE_PFC_DL_END
+
+} sai_queue_pfc_deadlock_event_type_t;
+
+/**
+ * @brief Notification data format received from SAI queue deadlock event callback
+ */
+typedef struct _sai_queue_deadlock_notification_t
+{
+    /** Queue id */
+    sai_object_id_t queue_id;
+
+    /** Deadlock event */
+    sai_queue_pfc_deadlock_event_type_t event;
+
+} sai_queue_deadlock_notification_t;
+
+/**
  * @brief Create queue
  *
  * @param[out] queue_id Queue id
@@ -338,6 +377,18 @@ typedef sai_status_t (*sai_clear_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_queue_stat_t *counter_ids);
+
+/**
+ * @brief Queue PFC deadlock event notification
+ *
+ * Passed as a parameter into sai_initialize_switch()
+ *
+ * @param[in] count Number of notifications
+ * @param[in] data Array of queue event types
+ */
+typedef void (*sai_queue_pfc_deadlock_notification_fn)(
+        _In_ uint32_t count,
+        _In_ sai_queue_deadlock_notification_t *data);
 
 /**
  * @brief QOS methods table retrieved with sai_api_query()
