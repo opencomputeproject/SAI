@@ -525,6 +525,12 @@ sub ProcessEnumSection
 
         $enumtypename =~ s/^_//;
 
+        if (not $enumtypename =~ /^sai_/)
+        {
+            LogWarning "enum $enumtypename is not prefixed sai_";
+            next;
+        }
+
         if (defined $SAI_ENUMS{$enumtypename})
         {
             LogError "duplicated enum $enumtypename";
@@ -539,6 +545,8 @@ sub ProcessEnumSection
 
         $SAI_ENUMS{$enumtypename}{values} = \@arr;
 
+        my $enumprefix = uc($1) if $enumtypename =~ /^(sai_\w+)t$/;
+
         for my $ev (@{ $memberdef->{enumvalue} })
         {
             my $enumvaluename = $ev->{name}[0];
@@ -546,6 +554,8 @@ sub ProcessEnumSection
             LogDebug "$id $enumtypename $enumvaluename";
 
             push@arr,$enumvaluename;
+
+            LogWarning "Value $enumvaluename of $enumtypename is not prefixed as $enumprefix" if not $enumvaluename =~ /^$enumprefix/;
 
             if (not $enumvaluename =~/^[A-Z0-9_]+$/)
             {
