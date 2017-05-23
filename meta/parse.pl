@@ -1863,6 +1863,11 @@ sub ProcessStructMembers
 
     my @keys = GetStructKeysInOrder($struct);
 
+    if ($keys[0] ne "switch_id")
+    {
+        LogError "switch_id is not first item in $rawname";
+    }
+
     for my $key (@keys)
     {
         my $valuetype   = ProcessStructValueType($struct->{$key}{type});
@@ -2591,7 +2596,9 @@ sub ExtractStructInfo
     for my $member (@members)
     {
         my $name = $member->{name}[0];
-        my $type = $1 if $member->{definition}[0] =~ /^(\w+)/;
+        my $type = $member->{definition}[0];
+
+        $type = $1 if $type =~ /^(.+) _sai_\w+_t::\w+/;
 
         my $desc = ExtractDescription($struct, $struct, $member->{detaileddescription}[0]);
 
@@ -2635,11 +2642,6 @@ sub GetStructKeysInOrder
     for my $key (keys %$structRef)
     {
         $values[$structRef->{$key}->{idx}] = $key;
-    }
-
-    if ($values[0] ne "switch_id")
-    {
-        LogError "GetStructKeysInOrder failed, switch_id is not first item";
     }
 
     return @values;
@@ -3513,8 +3515,9 @@ sub CheckHeadersStyle
             next if $line =~ /^ \*($|[ \/])/;       # doxygen comment
             next if $line =~ /^$/;                  # empty line
             next if $line =~ /^typedef /;           # type definition
-            next if $line =~ /^sai_status/;         # return codes
-            next if $line =~ /^sai_object/;         # return codes
+            next if $line =~ /^sai_status_t sai_\w+\(/;     # return codes
+            next if $line =~ /^sai_object\w+_t sai_\w+\(/;  # return codes
+            next if $line =~ /^int sai_\w+\($/;             # methods returning int
             next if $line =~ /^extern /;            # extern in metadata
             next if $line =~ /^[{}#\/]/;            # start end of struct, define, start of comment
             next if $line =~ /^ {8}(_In|_Out|\.\.\.)/;     # function arguments
@@ -3995,7 +3998,7 @@ sub ProcessStructItem
 
     return if defined $SAI_ENUMS{$type}; # struct entry is enum
 
-    return if $type eq "union"; # union is special, but all union members are flattened anyway
+    return if $type =~ /^union /; # union is special, but all union members are flattened anyway
     return if $type eq "bool";
 
     return if $type =~/^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
