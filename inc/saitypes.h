@@ -531,7 +531,7 @@ typedef struct _sai_tunnel_map_list_t
 typedef struct _sai_map_t
 {
     /** Input key value */
-    sai_uint32_t key; 
+    sai_uint32_t key;
 
     /** Input data value for the key */
     sai_int32_t value;
