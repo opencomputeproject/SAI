@@ -1472,20 +1472,6 @@ typedef void (*sai_switch_state_change_notification_fn)(
         _In_ sai_switch_oper_status_t switch_oper_status);
 
 /**
- * @brief Queue PFC deadlock event notification
- *
- * Passed as a parameter into sai_initialize_switch()
- *
- * @param[in] switch_id Switch Id
- * @param[in] count Number of notifications
- * @param[in] data Array of queue event types
- */
-typedef void (*sai_queue_pfc_deadlock_notification_fn)(
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t count,
-        _In_ sai_queue_deadlock_notification_t *data);
-
-/**
  * @brief Create switch
  *
  * SDK initialization/connect to SDK. After the call the capability attributes should be
