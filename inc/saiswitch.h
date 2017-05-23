@@ -1238,7 +1238,7 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_PFC_DEADLOCK_EVENT_NOTIFY,
-    
+
     /**
      * @brief Enable SAI function call fast mode, which executes calls very quickly
      *
@@ -1305,7 +1305,7 @@ typedef enum _sai_switch_attr_t
      * @brief PFC Deadlock Detection timer interval in milliseconds.
      *
      * If the monitored queue is in XOFF state for more than this duration then
-.    * its considered to be in a PFC deadlock state and recovery process is kicked off.
+     * its considered to be in a PFC deadlock state and recovery process is kicked off.
      * Note: Use COS value as key and timer interval as value.
      *
      * @type sai_map_list_t
