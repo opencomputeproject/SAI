@@ -156,7 +156,7 @@ typedef enum _sai_queue_attr_t
      * A deadlock is assumed to have occurred when a queue is in a XOFF
      * state for more than a configurable (SAI_SWITCH_ATTR_PFC_COS_DLD_INTERVAL)
      * amount of time.
-     * 
+     *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
