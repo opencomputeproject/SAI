@@ -1310,7 +1310,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_map_list_t
      * @flags CREATE_AND_SET
-     * @default 100
+     * @default empty
      */
     SAI_SWITCH_ATTR_PFC_COS_DLD_INTERVAL,
 
@@ -1324,7 +1324,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_map_list_t
      * @flags CREATE_AND_SET
-     * @default 100
+     * @default empty
      */
     SAI_SWITCH_ATTR_PFC_COS_DLR_INTERVAL,
 
