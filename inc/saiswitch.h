@@ -1229,6 +1229,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
 
     /**
+     * @brief Set Switch PFC deadlock event notification callback function passed to the adapter.
+     *
+     * Use sai_queue_pfc_deadlock_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_queue_pfc_deadlock_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_PFC_DEADLOCK_EVENT_NOTIFY,
+    
+    /**
      * @brief Enable SAI function call fast mode, which executes calls very quickly
      *
      * @type bool
@@ -1267,6 +1278,55 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
+
+    /**
+     * @brief The number of lossless queues per port supported by the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_QOS_NUM_LOSSLESS_QUEUES,
+
+    /**
+     * @brief Control for buffered and incoming packets on queue undergoing PFC Deadlock Recovery.
+     *
+     * This control applies to all packets on all applicable port/queues. If application wants finer packet
+     * action control on per port per queue level then it is expected to set this control to packet forward 
+     * and install appropriate ACLs and enable/disable them in the DLD/DLR event callback
+     * (SAI_SWITCH_ATTR_PFC_DEADLOCK_EVENT_NOTIFY) respectively.
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_DROP
+     */
+    SAI_SWITCH_ATTR_PFC_DLR_PACKET_ACTION,
+
+    /**
+     * @brief PFC Deadlock Detection timer interval in milliseconds.
+     *
+     * If the monitored queue is in XOFF state for more than this duration then
+.    * its considered to be in a PFC deadlock state and recovery process is kicked off.
+     * Note: Use COS value as key and timer interval as value.
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     */
+    SAI_SWITCH_ATTR_PFC_COS_DLD_INTERVAL,
+
+    /**
+     * @brief PFC Deadlock Recovery timer interval in milliseconds.
+     *
+     * The PFC deadlock recovery process will run for this amount of time and then normal
+     * state will resume. If the system remains in a deadlock state then the detection and
+     * recovery will resume again after the configured detection timer interval.
+     * Note: Use COS value as key and timer interval as value.
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     */
+    SAI_SWITCH_ATTR_PFC_COS_DLR_INTERVAL,
 
     /**
      * @brief End of attributes
@@ -1410,6 +1470,20 @@ typedef void (*sai_switch_shutdown_request_notification_fn)(
 typedef void (*sai_switch_state_change_notification_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ sai_switch_oper_status_t switch_oper_status);
+
+/**
+ * @brief Queue PFC deadlock event notification
+ *
+ * Passed as a parameter into sai_initialize_switch()
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] count Number of notifications
+ * @param[in] data Array of queue event types
+ */
+typedef void (*sai_queue_pfc_deadlock_notification_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t count,
+        _In_ sai_queue_deadlock_notification_t *data);
 
 /**
  * @brief Create switch
