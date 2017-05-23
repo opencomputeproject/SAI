@@ -285,6 +285,7 @@ sai_s32_range_t         INT32_RANGE
 sai_vlan_list_t         VLAN_LIST
 sai_qos_map_list_t      QOS_MAP_LIST
 sai_tunnel_map_list_t   TUNNEL_MAP_LIST
+sai_map_list_t          MAP_LIST
 sai_acl_capability_t    ACL_CAPABILITY
 /;
 
