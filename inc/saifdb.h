@@ -117,6 +117,19 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_PACKET_ACTION,
 
     /**
+     * @brief Generate User Defined Trap ID for trap/log actions
+     *
+     * When it is SAI_NULL_OBJECT_ID, then packet will not be trapped.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_FDB_ENTRY_ATTR_USER_TRAP_ID,
+
+    /**
      * @brief FDB entry bridge port id
      *
      * The port id is only effective when the packet action is one of the

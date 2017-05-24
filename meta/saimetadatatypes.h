@@ -555,6 +555,10 @@ typedef struct _sai_attr_condition_t
      */
     const sai_attribute_value_t         condition;
 
+    /*
+     * In future we can add condition operator like equal, not equal, etc.
+     */
+
 } sai_attr_condition_t;
 
 /**
@@ -716,6 +720,22 @@ typedef struct _sai_attr_metadata_t
     sai_attr_id_t                               defaultvalueattrid;
 
     /**
+     * @brief Indicates whether default value needs to be saved.
+     *
+     * When switch is created some objects are created internally like vlan 1,
+     * vlan members, bridge port, virtual router etc. Some of those objects
+     * has attributes assigned by vendor like switch MAC address. When user
+     * changes that value then there is no way to go back and set it's previous
+     * value if user didn't query it first. This member will indicate whether
+     * user needs to query it first (and store) before change, if he wants to
+     * bring original attribute value later.
+     *
+     * Some of those attributes can be OID attributes with flags
+     * MANDATORY_ON_CREATE and CREATE_AND_SET.
+     */
+    bool                                        storedefaultvalue;
+
+    /**
      * @brief Indicates whether attribute is enum value.
      *
      * Attribute type must be set as INT32.
@@ -860,6 +880,14 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        iskey;
 
+    /**
+     * @brief Determines whether attribute value is primitive.
+     *
+     * Primitive values will not contain any pointers so value can be
+     * transferred by regular assignment operator.
+     */
+    bool                                        isprimitive;
+
 } sai_attr_metadata_t;
 
 /*
@@ -907,7 +935,7 @@ typedef struct _sai_struct_member_info_t
     /**
      * @brief Member name
      */
-    const char*                                         membername;
+    const char* const                                   membername;
 
     /**
      * @brief Indicates whether field is vlan
@@ -1111,6 +1139,11 @@ typedef struct _sai_object_type_info_t
      * @brief Defines reverse dependency graph members
      */
     const sai_rev_graph_member_t* const* const      revgraphmembers;
+
+    /**
+     * @brief Defines reverse dependency graph members count.
+     */
+    size_t                                          revgraphmemberscount;
 
     /**
      * @brief Create function pointer.

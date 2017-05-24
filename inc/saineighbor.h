@@ -66,6 +66,19 @@ typedef enum _sai_neighbor_entry_attr_t
     SAI_NEIGHBOR_ENTRY_ATTR_PACKET_ACTION,
 
     /**
+     * @brief Generate User Defined Trap ID for trap/log actions
+     *
+     * When it is SAI_NULL_OBJECT_ID, then packet will not be trapped.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_NEIGHBOR_ENTRY_ATTR_USER_TRAP_ID,
+
+    /**
      * @brief Neighbor not to be programmed as a host route entry in ASIC and
      * to be only used to setup next-hop purpose.
      *

@@ -218,7 +218,7 @@ void process_nonobjectid_connections()
         }
     }
 
-    PRINT_NN(PORT, SWITCH, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
+    PRINT_NN(SWITCH, PORT, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
 }
 
 int main(int argc, char** argv)

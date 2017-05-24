@@ -311,7 +311,7 @@ typedef enum _sai_ip_addr_family_t
 typedef struct _sai_ip_address_t
 {
     sai_ip_addr_family_t addr_family;
-    union {
+    union _ip_addr {
         sai_ip4_t ip4;
         sai_ip6_t ip6;
     } addr;
@@ -320,11 +320,11 @@ typedef struct _sai_ip_address_t
 typedef struct _sai_ip_prefix_t
 {
     sai_ip_addr_family_t addr_family;
-    union {
+    union _ip_prefix_addr {
         sai_ip4_t ip4;
         sai_ip6_t ip6;
     } addr;
-    union {
+    union _ip_prefix_mask {
         sai_ip4_t ip4;
         sai_ip6_t ip6;
     } mask;
@@ -345,7 +345,7 @@ typedef struct _sai_acl_field_data_t
     /**
      * @brief Field match mask
      */
-    union {
+    union _mask {
         sai_uint8_t u8;
         sai_int8_t s8;
         sai_uint16_t u16;
@@ -362,7 +362,7 @@ typedef struct _sai_acl_field_data_t
      * @brief Expected AND result using match mask above with packet field
      * value where applicable.
      */
-    union {
+    union _data {
         bool booldata;
         sai_uint8_t u8;
         sai_int8_t s8;
@@ -394,7 +394,7 @@ typedef struct _sai_acl_action_data_t
     /**
      * @brief Action parameter
      */
-    union {
+    union _parameter {
         sai_uint8_t u8;
         sai_int8_t s8;
         sai_uint16_t u16;
@@ -556,7 +556,7 @@ typedef struct _sai_acl_capability_t
  *
  * To use enum values as attribute value is sai_int32_t s32
  */
-typedef union
+typedef union _sai_attribute_value_t
 {
     bool booldata;
     char chardata[32];

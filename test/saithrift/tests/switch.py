@@ -50,6 +50,13 @@ class SwitchObj:
         self.default_1q_bridge = SAI_NULL_OBJECT_ID
         self.default_vlan = VlanObj()
 
+"""
+0xFFFF cannot pass the validation,
+the reason is that sai u16 is mapped to thrift i16 which is checked to be in [-32768, 32767] range
+but "-1" is serialized to 0xFFFF.
+"""
+U16MASKFULL = -1
+
 switch_inited=0
 port_list = {}
 sai_port_list = []
@@ -729,7 +736,7 @@ def sai_thrift_create_acl_entry(client,
 
     #Priority
     if entry_priority != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u32=entry_priority)))
+        attribute_value = sai_thrift_attribute_value_t(u32=entry_priority)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PRIORITY,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -787,22 +794,23 @@ def sai_thrift_create_acl_entry(client,
 
     #L4 Source port
     if src_l4_port != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=src_l4_port), 
-                                                                                            mask = sai_thrift_acl_mask_t(u16=0)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=src_l4_port),
+                                                                                            mask = sai_thrift_acl_mask_t(u16=U16MASKFULL)))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
     #L4 Destination port
     if dst_l4_port != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=dst_l4_port), 
-                                                                                            mask = sai_thrift_acl_mask_t(u16=0)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=dst_l4_port),
+                                                                                            mask = sai_thrift_acl_mask_t(u16=U16MASKFULL)))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
     if action != None:
-        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(u32=action)))
+        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(u32=action),
+                                                                                              enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -836,7 +844,8 @@ def sai_thrift_create_acl_table_group(client,
 
     if group_bind_point_list != None:
         acl_group_bind_point_list = sai_thrift_s32_list_t(count=len(group_bind_point_list), s32list=group_bind_point_list)
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(bind_point_list=acl_group_bind_point_list)))
+        attribute_value = sai_thrift_attribute_value_t(s32list=acl_group_bind_point_list)
+
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
