@@ -1229,17 +1229,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
 
     /**
-     * @brief Set Switch PFC deadlock event notification callback function passed to the adapter.
-     *
-     * Use sai_queue_pfc_deadlock_notification_fn as notification function.
-     *
-     * @type sai_pointer_t sai_queue_pfc_deadlock_notification_fn
-     * @flags CREATE_AND_SET
-     * @default NULL
-     */
-    SAI_SWITCH_ATTR_QUEUE_PFC_DEADLOCK_NOTIFY,
-
-    /**
      * @brief Enable SAI function call fast mode, which executes calls very quickly
      *
      * @type bool
@@ -1286,6 +1275,17 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_QOS_NUM_LOSSLESS_QUEUES,
+
+    /**
+     * @brief Set Switch PFC deadlock event notification callback function passed to the adapter.
+     *
+     * Use sai_queue_pfc_deadlock_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_queue_pfc_deadlock_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_QUEUE_PFC_DEADLOCK_NOTIFY,
 
     /**
      * @brief Control for buffered and incoming packets on queue undergoing PFC Deadlock Recovery.
