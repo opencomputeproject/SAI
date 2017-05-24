@@ -528,15 +528,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_DEFAULT_VLAN_PRIORITY,
 
     /**
-     * @brief Ingress Filtering (Drop Frames with Unknown VLANs)
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_PORT_ATTR_INGRESS_FILTERING,
-
-    /**
      * @brief Dropping of untagged frames on ingress
      *
      * @type bool
