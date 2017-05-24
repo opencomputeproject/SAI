@@ -1237,7 +1237,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default NULL
      */
-    SAI_SWITCH_ATTR_PFC_DEADLOCK_EVENT_NOTIFY,
+    SAI_SWITCH_ATTR_QUEUE_PFC_DEADLOCK_EVENT_NOTIFY,
 
     /**
      * @brief Enable SAI function call fast mode, which executes calls very quickly
