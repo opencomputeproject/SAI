@@ -55,13 +55,17 @@ typedef enum _sai_route_entry_attr_t
     SAI_ROUTE_ENTRY_ATTR_PACKET_ACTION = SAI_ROUTE_ENTRY_ATTR_START,
 
     /**
-     * @brief Packet priority for trap/log actions
+     * @brief Generate User Defined Trap ID for trap/log actions
      *
-     * @type sai_uint8_t
+     * When it is SAI_NULL_OBJECT_ID, then packet will not be trapped.
+     *
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_ROUTE_ENTRY_ATTR_TRAP_PRIORITY,
+    SAI_ROUTE_ENTRY_ATTR_USER_TRAP_ID,
 
     /**
      * @brief Next hop or next hop group id for the packet, or a router interface

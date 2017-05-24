@@ -1416,6 +1416,61 @@ typedef enum _sai_port_stat_t
     /** SAI port stat PFC 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
 
+    /**
+     * @brief PFC pause duration for RX and TX per PFC priority [uint64_t]
+     *
+     * RX pause duration for certain priority is a the duration quanta in ingress pause
+     * frame for that priority (a pause frame received by the switch).
+     * While TX pause duration for certain priority is the duration quanta in egress pause
+     * frame for that priority (a pause frame sent by the switch).
+     */
+    SAI_PORT_STAT_PFC_0_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 0 tx duration */
+    SAI_PORT_STAT_PFC_0_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 1 rx duration */
+    SAI_PORT_STAT_PFC_1_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 1 tx duration */
+    SAI_PORT_STAT_PFC_1_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 2 rx duration */
+    SAI_PORT_STAT_PFC_2_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 2 tx duration */
+    SAI_PORT_STAT_PFC_2_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 3 rx duration */
+    SAI_PORT_STAT_PFC_3_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 3 tx duration */
+    SAI_PORT_STAT_PFC_3_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 4 rx duration */
+    SAI_PORT_STAT_PFC_4_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 4 tx duration */
+    SAI_PORT_STAT_PFC_4_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 5 rx duration */
+    SAI_PORT_STAT_PFC_5_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 5 tx duration */
+    SAI_PORT_STAT_PFC_5_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 6 rx duration */
+    SAI_PORT_STAT_PFC_6_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 6 tx duration */
+    SAI_PORT_STAT_PFC_6_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 7 rx duration */
+    SAI_PORT_STAT_PFC_7_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 7 tx duration */
+    SAI_PORT_STAT_PFC_7_TX_PAUSE_DURATION,
+
     /** PFC based ON to OFF pause transitions counter per PFC priority [uint64_t] */
     SAI_PORT_STAT_PFC_0_ON2OFF_RX_PKTS,
 

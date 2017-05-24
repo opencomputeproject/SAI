@@ -1182,7 +1182,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default NULL
      */
-    SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY,
+    SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
 
     /**
      * @brief FDB event notification callback function passed to the adapter.

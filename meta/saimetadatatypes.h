@@ -565,6 +565,10 @@ typedef struct _sai_attr_condition_t
      */
     const sai_attribute_value_t         condition;
 
+    /*
+     * In future we can add condition operator like equal, not equal, etc.
+     */
+
 } sai_attr_condition_t;
 
 /**
@@ -941,7 +945,7 @@ typedef struct _sai_struct_member_info_t
     /**
      * @brief Member name
      */
-    const char*                                         membername;
+    const char* const                                   membername;
 
     /**
      * @brief Indicates whether field is vlan
@@ -1145,6 +1149,11 @@ typedef struct _sai_object_type_info_t
      * @brief Defines reverse dependency graph members
      */
     const sai_rev_graph_member_t* const* const      revgraphmembers;
+
+    /**
+     * @brief Defines reverse dependency graph members count.
+     */
+    size_t                                          revgraphmemberscount;
 
     /**
      * @brief Create function pointer.

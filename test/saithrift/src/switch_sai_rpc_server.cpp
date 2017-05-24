@@ -1383,6 +1383,9 @@ public:
           case SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_PACKET_ACTION:
               attr->value.s32 = thrift_attr.value.s32;
               break;
+          case SAI_SWITCH_ATTR_FDB_AGING_TIME:
+              attr->value.u32 = thrift_attr.value.u32;
+              break;
       }
   }
 
