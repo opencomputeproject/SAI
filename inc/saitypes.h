@@ -585,7 +585,7 @@ typedef struct _sai_hmac_t
 typedef struct _sai_tlv_t
 {
     sai_tlv_type_t tlv_type;
-    union {
+    union _entry {
         sai_ip6_t ingress_node;
         sai_ip6_t egress_node;
         sai_uint32_t opaque_container[4];
