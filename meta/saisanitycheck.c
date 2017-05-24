@@ -821,6 +821,7 @@ void check_attr_default_required(
             break;
 
         case SAI_ATTR_VALUE_TYPE_POINTER:
+        case SAI_ATTR_VALUE_TYPE_MAP_LIST:
             break;
 
         default:
