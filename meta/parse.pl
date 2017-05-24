@@ -167,125 +167,13 @@ sub ExtractDescription
     return $content;
 }
 
-my %ACL_FIELD_TYPES = qw/
-bool                booldata
-sai_uint8_t         u8
-sai_int8_t          s8
-sai_uint16_t        u16
-sai_int16_t         s16
-sai_uint32_t        u32
-sai_int32_t         s32
-sai_mac_t           mac
-sai_ip4_t           ip4
-sai_ip6_t           ip6
-sai_object_id_t     oid
-sai_object_list_t   objlist
-sai_uint8_list_t    u8list/;
+my %ACL_FIELD_TYPES = ();
+my %ACL_FIELD_TYPES_TO_VT = ();
+my %ACL_ACTION_TYPES = ();
+my %ACL_ACTION_TYPES_TO_VT = ();
 
-my %ACL_FIELD_TYPES_TO_VT = qw/
-bool                BOOL
-sai_uint8_t         UINT8
-sai_int8_t          INT8
-sai_uint16_t        UINT16
-sai_int16_t         INT16
-sai_uint32_t        UINT32
-sai_int32_t         INT32
-sai_mac_t           MAC
-sai_ip4_t           IPV4
-sai_ip6_t           IPV6
-sai_object_id_t     OBJECT_ID
-sai_object_list_t   OBJECT_LIST
-sai_uint8_list_t    UINT8_LIST/;
-
-my %ACL_ACTION_TYPES = qw/
-sai_uint8_t           u8
-sai_int8_t            s8
-sai_uint16_t          u16
-sai_int16_t           s16
-sai_uint32_t          u32
-sai_int32_t           s32
-sai_mac_t             mac
-sai_ip4_t             ip4
-sai_ip6_t             ip6
-sai_object_id_t       oid
-sai_object_list_t     objectlist/;
-
-my %ACL_ACTION_TYPES_TO_VT = qw/
-sai_uint8_t           UINT8
-sai_int8_t            INT8
-sai_uint16_t          UINT16
-sai_int16_t           INT16
-sai_uint32_t          UINT32
-sai_int32_t           INT32
-sai_mac_t             MAC
-sai_ip4_t             IPV4
-sai_ip6_t             IPV6
-sai_object_id_t       OBJECT_ID
-sai_object_list_t     OBJECT_LIST/;
-
-my %VALUE_TYPES = qw/
-sai_uint8_t             u8
-sai_int8_t              s8
-sai_uint16_t            u16
-sai_int16_t             s16
-sai_uint32_t            u32
-sai_int32_t             s32
-sai_uint64_t            u64
-sai_int64_t             s64
-sai_pointer_t           ptr
-sai_mac_t               mac
-sai_ip4_t               ip4
-sai_ip6_t               ip6
-sai_ip_address_t        ipaddr
-sai_ip_prefix_t         ipprefix
-sai_object_id_t         oid
-sai_object_list_t       objlist
-sai_u8_list_t           u8list
-sai_s8_list_t           s8list
-sai_u16_list_t          u16list
-sai_s16_list_t          s16list
-sai_u32_list_t          u32list
-sai_s32_list_t          s32list
-sai_u32_range_t         u32range
-sai_s32_range_t         s32range
-sai_vlan_list_t         vlanlist
-sai_acl_field_data_t    aclfield
-sai_acl_action_data_t   aclaction
-sai_qos_map_list_t      qosmap
-sai_tunnel_map_list_t   tunnelmap
-sai_acl_capability_t    aclcapability
-/;
-
-my %VALUE_TYPES_TO_VT = qw/
-sai_uint8_t             UINT8
-sai_int8_t              INT8
-sai_uint16_t            UINT16
-sai_int16_t             INT16
-sai_uint32_t            UINT32
-sai_int32_t             INT32
-sai_uint64_t            UINT64
-sai_int64_t             INT64
-sai_pointer_t           POINTER
-sai_mac_t               MAC
-sai_ip4_t               IPV4
-sai_ip6_t               IPV6
-sai_ip_address_t        IP_ADDRESS
-sai_ip_prefix_t         IP_PREFIX
-sai_object_id_t         OBJECT_ID
-sai_object_list_t       OBJECT_LIST
-sai_u8_list_t           UINT8_LIST
-sai_s8_list_t           INT8_LIST
-sai_u16_list_t          UINT16_LIST
-sai_s16_list_t          INT16_LIST
-sai_u32_list_t          UINT32_LIST
-sai_s32_list_t          INT32_LIST
-sai_u32_range_t         UINT32_RANGE
-sai_s32_range_t         INT32_RANGE
-sai_vlan_list_t         VLAN_LIST
-sai_qos_map_list_t      QOS_MAP_LIST
-sai_tunnel_map_list_t   TUNNEL_MAP_LIST
-sai_acl_capability_t    ACL_CAPABILITY
-/;
+my %VALUE_TYPES = ();
+my %VALUE_TYPES_TO_VT = ();
 
 sub ProcessTagType
 {
@@ -2583,6 +2471,8 @@ sub ExtractStructInfo
 
     $filename =~ s/_/__/g;
 
+    $filename = $prefix if -e "$XMLDIR/$prefix" and $prefix =~ /\.xml$/;
+
     my $file = "$XMLDIR/$filename"; # example: xml/struct__sai__fdb__entry__t.xml
 
     # read xml, we need to get each struct field and it's type and description
@@ -2617,6 +2507,13 @@ sub ExtractStructInfo
     {
         my $name = $member->{name}[0];
         my $type = $member->{definition}[0];
+        my $args = $member->{argsstring}[0];
+
+        # if argstring is empty in xml, then it returns empty hash, skip this
+        # args contain extra arguments like [32] for "char foo[32]" or
+        # function parameters
+
+        $args = "" if ref $args eq "HASH";
 
         $type = $1 if $type =~ /^(.+) _sai_\w+_t::\w+/;
 
@@ -4117,6 +4014,48 @@ sub ProcessXmlFiles
     }
 }
 
+sub ProcessValues
+{
+    my ($refUnion, $refValueTypes, $refValueTypesToVt) = @_;
+
+    for my $key (keys %$refUnion)
+    {
+        my $type = $refUnion->{$key}->{type};
+
+        if (not $type =~ /^sai_(\w+)_t$/)
+        {
+            next if $type eq "char" or $type eq "bool";
+
+            LogWarning "skipping type $type, FIXME";
+            next;
+        }
+
+        my $innername = $1;
+
+        $innername =~ s/^s(\d+)/INT$1/;
+        $innername =~ s/^u(\d+)/UINT$1/;
+        $innername =~ s/^ip(\d+)/IPV$1/;
+
+        $refValueTypes->{$type} = $key;
+        $refValueTypesToVt->{$type} = uc($innername);
+    }
+}
+
+sub PopulateValueTypes
+{
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union_");
+
+    ProcessValues(\%Union, \%VALUE_TYPES, \%VALUE_TYPES_TO_VT);
+
+    %Union = ExtractStructInfo("sai_acl_action_data_t", "union__sai__acl__action__data__t_1_1__parameter.xml");
+
+    ProcessValues(\%Union, \%ACL_ACTION_TYPES, \%ACL_ACTION_TYPES_TO_VT);
+
+    %Union = ExtractStructInfo("sai_acl_field_data_t", "union__sai__acl__field__data__t_1_1__data.xml");
+
+    ProcessValues(\%Union, \%ACL_FIELD_TYPES, \%ACL_FIELD_TYPES_TO_VT);
+}
+
 #
 # MAIN
 #
@@ -4124,6 +4063,8 @@ sub ProcessXmlFiles
 CheckHeadersStyle();
 
 ExtractApiToObjectMap();
+
+PopulateValueTypes();
 
 ProcessXmlFiles();
 
