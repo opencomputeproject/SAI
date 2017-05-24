@@ -276,17 +276,17 @@ typedef enum _sai_queue_stat_t
 typedef enum _sai_queue_pfc_deadlock_event_type_t
 {
     /** PFC deadlock detected */
-    SAI_QUEUE_PFC_DL_START = 0x00000001,
+    SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_DETECTED,
 
     /** PFC deadlock recovery ended */
-    SAI_QUEUE_PFC_DL_END
+    SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_RECOVERED
 
 } sai_queue_pfc_deadlock_event_type_t;
 
 /**
  * @brief Notification data format received from SAI queue deadlock event callback
  */
-typedef struct _sai_queue_deadlock_notification_t
+typedef struct _sai_queue_deadlock_notification_data_t
 {
     /** Queue id */
     sai_object_id_t queue_id;
@@ -294,7 +294,7 @@ typedef struct _sai_queue_deadlock_notification_t
     /** Deadlock event */
     sai_queue_pfc_deadlock_event_type_t event;
 
-} sai_queue_deadlock_notification_t;
+} sai_queue_deadlock_notification_data_t;
 
 /**
  * @brief Create queue
