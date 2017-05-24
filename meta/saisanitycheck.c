@@ -963,6 +963,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+                case SAI_ATTR_VALUE_TYPE_MAP_LIST:
                     break;
 
                 default:
