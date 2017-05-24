@@ -786,6 +786,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
+        case SAI_ATTR_VALUE_TYPE_MAP_LIST:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
@@ -821,7 +822,6 @@ void check_attr_default_required(
             break;
 
         case SAI_ATTR_VALUE_TYPE_POINTER:
-        case SAI_ATTR_VALUE_TYPE_MAP_LIST:
             break;
 
         default:
