@@ -1312,7 +1312,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default empty
      */
-    SAI_SWITCH_ATTR_PFC_COS_DLD_INTERVAL_MAP_LIST,
+    SAI_SWITCH_ATTR_PFC_COS_DLD_INTERVAL,
 
     /**
      * @brief PFC Deadlock Recovery timer interval in milliseconds.
@@ -1326,7 +1326,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default empty
      */
-    SAI_SWITCH_ATTR_PFC_COS_DLR_INTERVAL_MAP_LIST,
+    SAI_SWITCH_ATTR_PFC_COS_DLR_INTERVAL,
 
     /**
      * @brief End of attributes
