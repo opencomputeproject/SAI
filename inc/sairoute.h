@@ -80,7 +80,7 @@ typedef enum _sai_route_entry_attr_t
      * interface id to which the subnet is attached. IP2ME route adds a local
      * router IP address. For such routes, fill the CPU port
      * (#SAI_SWITCH_ATTR_CPU_PORT).
-     * When pointing to a next hop group which is empty, the effective routing 
+     * When pointing to a next hop group which is empty, the effective routing
      * action will be DROP.
      *
      * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
