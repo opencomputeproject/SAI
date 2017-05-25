@@ -1302,6 +1302,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PFC_DLR_PACKET_ACTION,
 
     /**
+     * @brief  PFC Deadlock Detection timer interval range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLD_INTERVAL_RANGE,
+
+    /**
      * @brief PFC Deadlock Detection timer interval in milliseconds.
      *
      * If the monitored queue is in XOFF state for more than this duration then
@@ -1313,6 +1321,14 @@ typedef enum _sai_switch_attr_t
      * @default empty
      */
     SAI_SWITCH_ATTR_PFC_TC_DLD_INTERVAL,
+
+    /**
+     * @brief  PFC Deadlock Recovery timer interval range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLR_INTERVAL_RANGE,
 
     /**
      * @brief PFC Deadlock Recovery timer interval in milliseconds.
