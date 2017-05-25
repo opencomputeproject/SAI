@@ -2094,35 +2094,38 @@ sub CreateApis
     }
 }
 
+sub CreateApisStruct
+{
+    my @apis = @{ $SAI_ENUMS{sai_api_t}{values} };
+
+    WriteHeader "typedef struct _sai_apis_t {";
+
+    for my $api (@apis)
+    {
+        $api =~ /^SAI_API_(\w+)/;
+
+        $api = lc($1);
+
+        next if $api =~/unspecified/;
+
+        WriteHeader "    sai_${api}_api_t* ${api}_api;";
+    }
+
+    WriteHeader "} sai_apis_t;";
+}
+
 sub CreateApisQuery
 {
     WriteHeader "typedef sai_status_t (*sai_api_query_fn)(";
     WriteHeader "        _In_ sai_api_t sai_api_id,";
     WriteHeader "        _Out_ void** api_method_table);";
 
-    WriteSource "typedef sai_status_t(*sai_create_generic_fn)(";
-    WriteSource "        _Out_ sai_object_id_t* object_id,";
-    WriteSource "        _In_ sai_object_id_t switch_id,";
-    WriteSource "        _In_ uint32_t attr_count,";
-    WriteSource "        _In_ const sai_attribute_t *attr_list);";
-
-    WriteSource "typedef sai_status_t (*sai_remove_generic_fn)(";
-    WriteSource "        _In_ sai_object_id_t object_id);";
-
-    WriteSource "typedef sai_status_t (*sai_set_generic_attribute_fn)(";
-    WriteSource "        _In_ sai_object_id_t object_id,";
-    WriteSource "        _In_ const sai_attribute_t *attr);";
-
-    WriteSource "typedef sai_status_t (*sai_get_generic_attribute_fn)(";
-    WriteSource "        _In_ sai_object_id_t object_id,";
-    WriteSource "        _In_ uint32_t attr_count,";
-    WriteSource "        _Inout_ sai_attribute_t *attr_list);";
-
     # for switch we need to generate wrapper, for others we can use pointers
     # so we don't need to use meta key then
 
     WriteSource "int sai_metadata_apis_query(";
-    WriteSource "        _In_ const sai_api_query_fn api_query)";
+    WriteSource "        _In_ const sai_api_query_fn api_query,";
+    WriteSource "        _Inout_ sai_apis_t *apis)";
     WriteSource "{";
     WriteSource "    sai_status_t status = SAI_STATUS_SUCCESS;";
     WriteSource "    int count = 0;";
@@ -2133,6 +2136,7 @@ sub CreateApisQuery
     for my $key (sort keys %APITOOBJMAP)
     {
         WriteSource "        sai_metadata_sai_${key}_api = NULL;";
+        WriteSource "        apis->${key}_api = NULL;";
     }
 
     WriteSource "        return count;";
@@ -2143,6 +2147,7 @@ sub CreateApisQuery
         my $api = uc("SAI_API_${key}");
 
         WriteSource "    status = api_query($api, (void**)&sai_metadata_sai_${key}_api);";
+        WriteSource "    apis->${key}_api = sai_metadata_sai_${key}_api;";
         WriteSource "    if (status != SAI_STATUS_SUCCESS)";
         WriteSource "    {";
         WriteSource "        count++;";
@@ -2156,7 +2161,8 @@ sub CreateApisQuery
     WriteSource "}";
 
     WriteHeader "extern int sai_metadata_apis_query(";
-    WriteHeader "        _In_ const sai_api_query_fn api_query);";
+    WriteHeader "        _In_ const sai_api_query_fn api_query,";
+    WriteHeader "        _Inout_ sai_apis_t *apis);";
 }
 
 sub CreateObjectInfo
@@ -4083,6 +4089,8 @@ ProcessNonObjectIdObjects();
 CreateStructNonObjectId();
 
 CreateApis();
+
+CreateApisStruct();
 
 CreateApisQuery();
 
