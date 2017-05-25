@@ -138,7 +138,7 @@ typedef enum _sai_port_media_type_t
     SAI_PORT_MEDIA_TYPE_NOT_PRESENT,
 
     /** Media type not known */
-    SAI_PORT_MEDIA_TYPE_UNKNONWN,
+    SAI_PORT_MEDIA_TYPE_UNKNOWN,
 
     /** Media type fiber. Remote advertise medium information as fiber */
     SAI_PORT_MEDIA_TYPE_FIBER,
@@ -502,7 +502,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_media_type_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_MEDIA_TYPE_UNKNONWN
+     * @default SAI_PORT_MEDIA_TYPE_UNKNOWN
      */
     SAI_PORT_ATTR_ADVERTISED_MEDIA_TYPE,
 
