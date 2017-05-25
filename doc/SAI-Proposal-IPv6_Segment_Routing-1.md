@@ -28,9 +28,9 @@ This specification proposes the following points:
 ## Behavioral Model
 
 To clarify the behaviors of different nodes:
-1. Source Node.  This node first encapsulates the SR header on a native IPv6 packet and routes on the outer-most address in SR list.
-2. Transit Node.  Typically is unaware of SR header and only does native routing.  But there is an option to append the packet with another SR header to create a stack of SR headers via mechanism similar to Source Node.
-3. Endpoint Node.  Last node of the SR header stack.  User can choose an endpoint function to process the packet further such as removing the SR header and natively route.
+1. Source Node.  An SR domain ingress router encapsulating a received IPv6 packet into an outer IPv6 header followed by an SRH.
+2. Transit Node.  Transit node MUST NOT inspect the underneath routing header and MUST forward the packet towards the DA and according to the IPv6 routing table.  But there is an option to append the packet with another SR header to create a stack of SR headers via mechanism similar to Source Node.
+3. Endpoint Node.  Endpoint node is the node whose MyLocalSID table contains an entry for the DA of the packet.  User can choose an endpoint function to process the packet further such as removing the SR header and natively route.
 
 In order to add IPv6 Segment Routing support, it requires two mechanisms:
 1. Way to specify which flows will be marked for SR processing at either source, transit, or endpoint nodes
