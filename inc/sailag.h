@@ -130,15 +130,6 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_DEFAULT_VLAN_PRIORITY,
 
     /**
-     * @brief Ingress Filtering (Drop Frames with Unknown VLANs)
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_LAG_ATTR_INGRESS_FILTERING,
-
-    /**
      * @brief Dropping of untagged frames on ingress
      *
      * @type bool
