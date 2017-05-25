@@ -1306,13 +1306,13 @@ typedef enum _sai_switch_attr_t
      *
      * If the monitored queue is in XOFF state for more than this duration then
      * its considered to be in a PFC deadlock state and recovery process is kicked off.
-     * Note: Use COS value as key and timer interval as value.
+     * Note: Use TC (Traffic Class) value as key and timer interval as value.
      *
      * @type sai_map_list_t
      * @flags CREATE_AND_SET
      * @default empty
      */
-    SAI_SWITCH_ATTR_PFC_COS_DLD_INTERVAL,
+    SAI_SWITCH_ATTR_PFC_TC_DLD_INTERVAL,
 
     /**
      * @brief PFC Deadlock Recovery timer interval in milliseconds.
@@ -1320,13 +1320,13 @@ typedef enum _sai_switch_attr_t
      * The PFC deadlock recovery process will run for this amount of time and then normal
      * state will resume. If the system remains in a deadlock state then the detection and
      * recovery will resume again after the configured detection timer interval.
-     * Note: Use COS value as key and timer interval as value.
+     * Note: Use TC (Traffic Class) value as key and timer interval as value.
      *
      * @type sai_map_list_t
      * @flags CREATE_AND_SET
      * @default empty
      */
-    SAI_SWITCH_ATTR_PFC_COS_DLR_INTERVAL,
+    SAI_SWITCH_ATTR_PFC_TC_DLR_INTERVAL,
 
     /**
      * @brief End of attributes
