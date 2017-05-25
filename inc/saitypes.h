@@ -611,7 +611,7 @@ typedef enum _sai_bulk_op_error_mode_t
     /**
      * @brief Bulk operation error handling mode where operation ignores the failures and continues to create other objects
      */
-    SAI_BULK_OP_ERROR_MODE_INGORE_ERROR,
+    SAI_BULK_OP_ERROR_MODE_IGNORE_ERROR,
 } sai_bulk_op_error_mode_t;
 
 /**
