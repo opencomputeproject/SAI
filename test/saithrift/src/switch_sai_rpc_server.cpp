@@ -218,6 +218,7 @@ public:
 
   void sai_thrift_parse_fdb_entry(const sai_thrift_fdb_entry_t &thrift_fdb_entry, sai_fdb_entry_t *fdb_entry) {
       fdb_entry->vlan_id = (sai_vlan_id_t) thrift_fdb_entry.vlan_id;
+      fdb_entry->bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
       sai_thrift_string_to_mac(thrift_fdb_entry.mac_address, fdb_entry->mac_address);
   }
 
