@@ -13,7 +13,10 @@ CIDR - Classless Inter Domain Routing
 CIR - Committed Information Rate
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
+DLD - Dead Lock Detection
+DLDR - Dead Lock Detection and Recovery
 DLL - Dynamic Link Library
+DLR - Dead Lock Recovery
 DSCP - Differentiated Services Code Point
 ECMP - Equal Cost Multi-Path
 ECN - Explicit Congestion Notification
@@ -23,7 +26,7 @@ FD - File Descriptor
 FDB - Forwarding Data Base
 FEC - Forward Error Correction
 GRE - Generic Routing Encapsulation
-HW - Hawdware
+HW - Hardware
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
 IEEE - Institute of Electrical and Electronics Engineers
