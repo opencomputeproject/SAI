@@ -1635,7 +1635,16 @@ public:
       }
 
       attr.id = thrift_attr.id;
-      attr.value.oid = thrift_attr.value.oid;
+
+      switch (attr.id) {
+          case SAI_BRIDGE_PORT_ATTR_ADMIN_STATE:
+              attr.value.booldata = thrift_attr.value.booldata;
+              break;
+
+          default:
+              attr.value.oid = thrift_attr.value.oid;
+              break;
+      }
 
       return bridge_api->set_bridge_port_attribute(bridge_port_id, &attr);
   }
