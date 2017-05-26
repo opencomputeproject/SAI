@@ -23,7 +23,7 @@ my $NUMBER_REGEX = '(?:-?\d+|0x[A-F0-9]+)';
 # pointers used in switch object for notifications
 my @pointers = ();
 
-my @TESTNAMES= ();
+my @TESTNAMES = ();
 
 my %OBJTOAPIMAP = ();
 my %APITOOBJMAP = ();
@@ -4062,6 +4062,52 @@ sub PopulateValueTypes
     ProcessValues(\%Union, \%ACL_FIELD_TYPES, \%ACL_FIELD_TYPES_TO_VT);
 }
 
+sub GetStructLists
+{
+    my $data = ReadHeaderFile("$INCLUDEDIR/saitypes.h");
+
+    my %StructLists = ();
+
+    my @lines = split/\n/,$data;
+
+    for my $line (@lines)
+    {
+        next if not $line =~ /typedef\s+struct\s+_(sai_\w+_list_t)/;
+
+        $StructLists{$1} = $1;
+    }
+
+    return %StructLists;
+}
+
+sub CreateStructListTest
+{
+    #
+    # make sure that all structs _list_t contains 2 items
+    # and purpose is to be list, so .count and .list
+    #
+
+    my %StructLists = GetStructLists();
+
+    DefineTestName "struct_list_test";
+
+    WriteTest "{";
+
+    WriteTest "    uint32_t count;";
+    WriteTest "    void *ptr;";
+
+    for my $struct (sort keys %StructLists)
+    {
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($struct) == sizeof(sai_object_list_t), \"struct $struct sizeof is differenat than sai_object_list_t\");";
+        WriteTest "    $struct s_$struct;";
+        WriteTest "    count = s_$struct.count;";
+        WriteTest "    ptr   = s_$struct.list;";
+        WriteTest "    printf(\"$struct %p %u\\n\", ptr, count);";
+    }
+
+    WriteTest "}";
+}
+
 #
 # MAIN
 #
@@ -4069,6 +4115,8 @@ sub PopulateValueTypes
 CheckHeadersStyle();
 
 ExtractApiToObjectMap();
+
+GetStructLists();
 
 PopulateValueTypes();
 
@@ -4125,6 +4173,8 @@ CreateEnumSizeCheckTest();
 CreateListCountTest();
 
 CreateApiNameTest();
+
+CreateStructListTest();
 
 WriteTestMain();
 
