@@ -174,6 +174,11 @@ def sai_thrift_create_bridge_port(client, port_id):
     ret = client.sai_thrift_create_bridge_port(bport_attr_list)
     assert (ret.status == SAI_STATUS_SUCCESS)
     assert (ret.data.oid != SAI_NULL_OBJECT_ID)
+
+    attr_value = sai_thrift_attribute_value_t(booldata=1)
+    attr = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE, value=attr_value)
+    client.sai_thrift_set_bridge_port_attribute(ret.data.oid, attr)
+
     return ret.data.oid
 
 def sai_thrift_get_cpu_port_id(client):
