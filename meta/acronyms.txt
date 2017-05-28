@@ -55,7 +55,7 @@ RSPAN - Remote Span
 SAI - Switch Abstraction Interface
 SDK - Software Development Kit
 SG
-SNMP - Services and Protocols for Advanced Networks
+SNMP - Simple Network Management Protocol
 SPAN - Switched Port Analyzer
 SSH - Secure Shell
 STP - Spanning Tree Protocol
