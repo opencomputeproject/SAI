@@ -269,7 +269,7 @@ typedef enum _sai_buffer_pool_attr_t
      * @brief Attach WRED ID to pool
      *
      * WRED Drop/ECN marking based on pool thresholds will happen only
-     * when atleast one of queue refering to this buffer pool configured
+     * when one of queue referring to this buffer pool configured
      * with non default value for SAI_QUEUE_ATTR_WRED_PROFILE_ID.
      * ID = #SAI_NULL_OBJECT_ID to disable WRED
      *
