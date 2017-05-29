@@ -373,6 +373,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_REMOTE_ADVERTISED_MEDIA_TYPE,
 
     /**
+     * @brief Query Remote port Advertised OUI Code
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_OUI_CODE,
+
+    /**
      * @brief Number of ingress priority groups
      *
      * @type sai_uint32_t
@@ -505,6 +513,19 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_MEDIA_TYPE_UNKNONWN
      */
     SAI_PORT_ATTR_ADVERTISED_MEDIA_TYPE,
+
+    /**
+     * @brief Query/Configure Port's Advertised OUI code
+     *
+     * Organizationally Unique Identifier for 25G/50G auto negotiation.
+     * Default is 0x6A737D for Ethernet Consortium
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0x6A737D
+     * @validonly SAI_PORT_ATTR_SPEED == 25000 or SAI_PORT_ATTR_SPEED == 50000
+     */
+    SAI_PORT_ATTR_ADVERTISED_OUI_CODE,
 
     /**
      * @brief Port VLAN ID
