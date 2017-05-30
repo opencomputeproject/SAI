@@ -84,7 +84,7 @@ install-lib: $(ODIR)/librpcserver.a
 	$(INSTALL) -D $(SRC)/switch_sai_rpc_server.h $(DESTDIR)/usr/include/switch_sai_rpc_server.h
 
 install-pylib: $(PY_SOURCES) $(SAI_PY_HEADERS)
-	python setup.py install --prefix $(DESTDIR)/usr/local$(prefix)
+	python setup.py install --prefix $(DESTDIR)/usr$(prefix)
 
 install: install-lib install-pylib
 
