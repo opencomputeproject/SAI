@@ -154,7 +154,7 @@ typedef int (*sai_profile_get_next_value_fn)(
  * @brief Method table that contains function pointers for services exposed by
  * adapter host for adapter.
  */
-typedef struct _service_method_table_t
+typedef struct _sai_service_method_table_t
 {
     /**
      * @brief Get variable value given its name
@@ -169,7 +169,7 @@ typedef struct _service_method_table_t
      */
     sai_profile_get_next_value_fn   profile_get_next_value;
 
-} service_method_table_t;
+} sai_service_method_table_t;
 
 /**
  * @brief Adapter module initialization call
@@ -183,7 +183,7 @@ typedef struct _service_method_table_t
  */
 sai_status_t sai_api_initialize(
         _In_ uint64_t flags,
-        _In_ const service_method_table_t *services);
+        _In_ const sai_service_method_table_t *services);
 
 /**
  * @brief Retrieve a pointer to the C-style method table for desired SAI
