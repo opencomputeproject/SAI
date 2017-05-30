@@ -320,11 +320,6 @@ typedef enum _sai_attr_value_type_t {
     SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST,
 
     /**
-     * @brief Attribute value is tunnel map list.
-     */
-    SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST,
-
-    /**
      * @brief Attribute value is acl capability.
      */
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,

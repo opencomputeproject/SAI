@@ -211,17 +211,6 @@ typedef enum _sai_tunnel_map_attr_t
     SAI_TUNNEL_MAP_ATTR_TYPE = SAI_TUNNEL_MAP_ATTR_START,
 
     /**
-     * @brief Tunnel mapper
-     *
-     * If list is empty, TUNNEL_MAP can be used to assign
-     * TUNNEL_MAP_ENTRY objects.
-     *
-     * @type sai_tunnel_map_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_TUNNEL_MAP_ATTR_MAP_TO_VALUE_LIST = 0x00000001,
-
-    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_MAP_ATTR_END,
