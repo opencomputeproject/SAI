@@ -264,6 +264,16 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_META_DATA,
 
     /**
+     * @brief To disable flooding traffic (Broadcast, unknown unicast,
+     * unknown multicast) on a VLAN
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_VLAN_ATTR_FLOOD_DISABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_VLAN_ATTR_END,
