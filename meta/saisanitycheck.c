@@ -2369,7 +2369,8 @@ void check_attr_default_attrvalue(
     /*
      * When default value type is attrvalue, check if this attribute value is
      * switch, or if there is attribute on current object, with object
-     * represented by attrvalue.
+     * represented by default attrvalue. There can be only 1 attribute with
+     * this object type, since when more, then we couldn't decide which one.
      */
 
     if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE)
@@ -2388,7 +2389,9 @@ void check_attr_default_attrvalue(
 
     /* search for attribute */
 
-    size_t i;
+    size_t i = 0;
+
+    int count = 0;
 
     for (; i < info->attrmetadatalength; ++i)
     {
@@ -2409,11 +2412,25 @@ void check_attr_default_attrvalue(
         if (sai_metadata_is_allowed_object_type(cmd, md->defaultvalueobjecttype))
         {
             /* object type of default value is present on current object */
-            return;
+            count++;
         }
     }
 
-    META_ASSERT_FAIL(md, "default attrvalue object type is not present in current object");
+    if (count == 1)
+    {
+        /* only 1 attribute with this object type is present */
+        return;
+    }
+
+    if (count == 0)
+    {
+        META_ASSERT_FAIL(md, "oid attribute with %s is not present in %s",
+                sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename,
+                sai_metadata_all_object_type_infos[md->objecttype]->objecttypename);
+    }
+
+    META_ASSERT_FAIL(md, "too many attributes with %s for default value attrvalue",
+            sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename);
 }
 
 void check_single_attribute(
