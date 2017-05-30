@@ -238,7 +238,7 @@ typedef enum _sai_wred_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_WRED_ATTR_POOL_ID = 0x0000000d,
+    SAI_WRED_ATTR_POOL_ID = 0x0000000e,
 
     /**
      * @brief End of attributes
