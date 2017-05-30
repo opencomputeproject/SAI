@@ -897,7 +897,6 @@ typedef enum _sai_port_attr_t
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_WRED
-     * @allownull true
      * @default empty
      */
     SAI_PORT_ATTR_QOS_WRED_PROFILE_ID_LIST,
