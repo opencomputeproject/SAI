@@ -2361,6 +2361,61 @@ void check_attr_condition_in_force(
     }
 }
 
+void check_attr_default_attrvalue(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * When default value type is attrvalue, check if this attribute value is
+     * switch, or if there is attribute on current object, with object
+     * represented by attrvalue.
+     */
+
+    if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE)
+    {
+        return;
+    }
+
+    if (md->defaultvalueobjecttype == SAI_OBJECT_TYPE_SWITCH)
+    {
+        /* switch is ok */
+        return;
+    }
+
+    const sai_object_type_info_t* info =
+        sai_metadata_all_object_type_infos[md->objecttype];
+
+    /* search for attribute */
+
+    size_t i;
+
+    for (; i < info->attrmetadatalength; ++i)
+    {
+        const sai_attr_metadata_t *cmd = info->attrmetadata[i];
+
+        if (cmd->isreadonly)
+        {
+            /* skip read only attributes since we don't set them */
+            continue;
+        }
+
+        if (cmd->attrvaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+        {
+            /* skip object lists */
+            continue;
+        }
+
+        if (sai_metadata_is_allowed_object_type(cmd, md->defaultvalueobjecttype))
+        {
+            /* object type of default value is present on current object */
+            return;
+        }
+    }
+
+    META_ASSERT_FAIL(md, "default attrvalue object type is not present in current object");
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2398,6 +2453,7 @@ void check_single_attribute(
     check_attr_brief_description(md);
     check_attr_is_primitive(md);
     check_attr_condition_in_force(md);
+    check_attr_default_attrvalue(md);
 
     define_attr(md);
 }
