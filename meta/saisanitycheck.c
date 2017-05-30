@@ -2361,6 +2361,78 @@ void check_attr_condition_in_force(
     }
 }
 
+void check_attr_default_attrvalue(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * When default value type is attrvalue, check if this attribute value is
+     * switch, or if there is attribute on current object, with object
+     * represented by default attrvalue. There can be only 1 attribute with
+     * this object type, since when more, then we couldn't decide which one.
+     */
+
+    if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE)
+    {
+        return;
+    }
+
+    if (md->defaultvalueobjecttype == SAI_OBJECT_TYPE_SWITCH)
+    {
+        /* switch is ok */
+        return;
+    }
+
+    const sai_object_type_info_t* info =
+        sai_metadata_all_object_type_infos[md->objecttype];
+
+    /* search for attribute */
+
+    size_t i = 0;
+
+    int count = 0;
+
+    for (; i < info->attrmetadatalength; ++i)
+    {
+        const sai_attr_metadata_t *cmd = info->attrmetadata[i];
+
+        if (cmd->isreadonly)
+        {
+            /* skip read only attributes since we don't set them */
+            continue;
+        }
+
+        if (cmd->attrvaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+        {
+            /* skip object lists */
+            continue;
+        }
+
+        if (sai_metadata_is_allowed_object_type(cmd, md->defaultvalueobjecttype))
+        {
+            /* object type of default value is present on current object */
+            count++;
+        }
+    }
+
+    if (count == 1)
+    {
+        /* only 1 attribute with this object type is present */
+        return;
+    }
+
+    if (count == 0)
+    {
+        META_ASSERT_FAIL(md, "oid attribute with %s is not present in %s",
+                sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename,
+                sai_metadata_all_object_type_infos[md->objecttype]->objecttypename);
+    }
+
+    META_ASSERT_FAIL(md, "too many attributes with %s for default value attrvalue",
+            sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename);
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2398,6 +2470,7 @@ void check_single_attribute(
     check_attr_brief_description(md);
     check_attr_is_primitive(md);
     check_attr_condition_in_force(md);
+    check_attr_default_attrvalue(md);
 
     define_attr(md);
 }
