@@ -528,6 +528,26 @@ typedef struct _sai_tunnel_map_list_t
 
 } sai_tunnel_map_list_t;
 
+typedef struct _sai_map_t
+{
+    /** Input key value */
+    sai_uint32_t key;
+
+    /** Input data value for the key */
+    sai_int32_t value;
+
+} sai_map_t;
+
+typedef struct _sai_map_list_t
+{
+    /** Number of entries in the map */
+    uint32_t count;
+
+    /** Map list */
+    sai_map_t *list;
+
+} sai_map_list_t;
+
 /**
  * @brief Structure for ACL attributes supported at each stage.
  * action_list alone is added now. Qualifier list can also be added
@@ -584,11 +604,12 @@ typedef union _sai_attribute_value_t
     sai_s32_list_t s32list;
     sai_u32_range_t u32range;
     sai_s32_range_t s32range;
+    sai_map_list_t maplist;
     sai_vlan_list_t vlanlist;
-    sai_acl_field_data_t aclfield;
-    sai_acl_action_data_t aclaction;
     sai_qos_map_list_t qosmap;
     sai_tunnel_map_list_t tunnelmap;
+    sai_acl_field_data_t aclfield;
+    sai_acl_action_data_t aclaction;
     sai_acl_capability_t aclcapability;
 
 } sai_attribute_value_t;

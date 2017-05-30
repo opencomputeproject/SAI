@@ -1106,6 +1106,8 @@ class L3EcmpLagTestMini(sai_base_test.ThriftInterfaceDataPlane):
 
         lag_id1 = self.client.sai_thrift_create_lag([])
 
+        sai_thrift_vlan_remove_ports(self.client, switch.default_vlan.oid, [port1, port2])
+
         lag_member11 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
         lag_member12 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
 
@@ -1196,8 +1198,8 @@ class L3EcmpLagTestMini(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_id2)
             self.client.sai_thrift_remove_router_interface(rif_id3)
 
-            self.client.sai_thrift_remove_lag_member(lag_member11)
-            self.client.sai_thrift_remove_lag_member(lag_member12)
+            sai_thrift_remove_lag_member(self.client, lag_member11)
+            sai_thrift_remove_lag_member(self.client, lag_member12)
 
             self.client.sai_thrift_remove_lag(lag_id1)
 
