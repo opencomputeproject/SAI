@@ -3921,7 +3921,6 @@ sub ProcessStructItem
 
     return if defined $SAI_ENUMS{$type}; # struct entry is enum
 
-    return if $type =~ /^union /; # union is special, but all union members are flattened anyway
     return if $type eq "bool";
 
     return if $type =~/^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
@@ -3936,7 +3935,29 @@ sub ProcessStructItem
         return;
     }
 
-    my %S = ExtractStructInfo($type, "struct_");
+    my %S = ();
+
+    if ($type =~ /^union (\w+)::(\w+)/)
+    {
+        # union is special, but now since all unions are named
+        # then members are not flattened anyway, and we need to examine
+        # entries from union xml
+        # XXX may require revisit if union names will be complicated
+
+        my $unionStructName = $1;
+        my $unionName = $2;
+
+        $unionStructName =~ s/_/__/g;
+        $unionName =~ s/_/__/g;
+
+        my $filename = "union${unionStructName}_1_1$unionName.xml";
+
+        %S = ExtractStructInfo($unionStructName, $filename);
+    }
+    else
+    {
+        %S = ExtractStructInfo($type, "struct_");
+    }
 
     for my $key (sort keys %S)
     {
