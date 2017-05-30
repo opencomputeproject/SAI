@@ -61,12 +61,19 @@ typedef enum _sai_acl_bind_point_type_t
     SAI_ACL_BIND_POINT_TYPE_VLAN,
 
     /** Bind Point Type RIF */
-    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF,
+    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE,
 
     /** Bind Point Type Switch */
     SAI_ACL_BIND_POINT_TYPE_SWITCH
 
 } sai_acl_bind_point_type_t;
+
+/**
+ * @def SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF
+ *
+ * For backward compatibility.
+ */
+#define SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF     SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE
 
 /**
  * @brief ACL IP Type
@@ -354,6 +361,7 @@ typedef enum _sai_acl_table_group_member_attr_t
      * Value must be in the range defined in
      * [SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
      * SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY]
+     *
      * This priority attribute is only valid for SEQUENTIAL type of ACL groups
      *
      * @type sai_uint32_t

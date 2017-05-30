@@ -1358,6 +1358,13 @@ typedef enum _sai_switch_attr_t
 } sai_switch_attr_t;
 
 /**
+ * @def SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY
+ *
+ * For backward compatibility.
+ */
+#define SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY
+
+/**
  * @def SAI_SWITCH_ATTR_MAX_KEY_STRING_LEN
  * Maximum length of switch attribute key string that can be set using key=value
  */
