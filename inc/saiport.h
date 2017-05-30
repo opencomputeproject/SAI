@@ -47,19 +47,6 @@ typedef enum _sai_port_type_t
 } sai_port_type_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_BIND_MODE
- */
-typedef enum _sai_port_bind_mode_t
-{
-    /** Port */
-    SAI_PORT_BIND_MODE_PORT,
-
-    /** Sub port */
-    SAI_PORT_BIND_MODE_SUB_PORT,
-
-} sai_port_bind_mode_t;
-
-/**
  * @brief Attribute data for #SAI_PORT_ATTR_OPER_STATUS
  */
 typedef enum _sai_port_oper_status_t
@@ -1027,15 +1014,6 @@ typedef enum _sai_port_attr_t
      * @default 5
      */
     SAI_PORT_ATTR_EEE_WAKE_TIME,
-
-    /**
-     * @brief Port bind mode
-     *
-     * @type sai_port_bind_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_BIND_MODE_PORT
-     */
-    SAI_PORT_ATTR_BIND_MODE,
 
     /**
      * @brief End of attributes
