@@ -544,6 +544,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
+        case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
@@ -789,6 +790,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
+        case SAI_ATTR_VALUE_TYPE_MAP_LIST:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
@@ -967,7 +969,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_TLV_LIST:
                 case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
-
+                case SAI_ATTR_VALUE_TYPE_MAP_LIST:
                     break;
 
                 default:
@@ -2221,6 +2223,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
+        case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
@@ -3719,6 +3722,95 @@ void check_api_max()
             "SAI_API_MAX should be equal to number of SAI_API*");
 }
 
+void helper_check_graph_connected(
+        _In_ sai_object_type_t ot,
+        _Inout_ sai_object_type_t *visited)
+{
+    META_LOG_ENTER();
+
+    if (visited[ot] == ot)
+    {
+        return;
+    }
+
+    visited[ot] = ot;
+
+    const sai_object_type_info_t *oi = sai_metadata_all_object_type_infos[ot];
+
+    size_t i = 0;
+
+    /* check all attributes */
+
+    for (; i < oi->attrmetadatalength; ++i)
+    {
+        const sai_attr_metadata_t *md = oi->attrmetadata[i];
+
+        if (!md->isoidattribute)
+        {
+            continue;
+        }
+
+        if (!(md->iscreateonly || md->iscreateandset))
+        {
+            continue;
+        }
+
+        size_t j = 0;
+
+        for (;j < md->allowedobjecttypeslength; ++j)
+        {
+            helper_check_graph_connected(md->allowedobjecttypes[j], visited);
+        }
+    }
+
+    for (i = 0; i < oi->structmemberscount; ++i)
+    {
+        const sai_struct_member_info_t *sm = oi->structmembers[i];
+
+        size_t j = 0;
+
+        for (;j < sm->allowedobjecttypeslength; ++j)
+        {
+            helper_check_graph_connected(sm->allowedobjecttypes[j], visited);
+        }
+    }
+
+    for (i = 0; i < oi->revgraphmemberscount; ++i)
+    {
+        const sai_rev_graph_member_t *rgm = oi->revgraphmembers[i];
+
+        helper_check_graph_connected(rgm->depobjecttype, visited);
+    }
+}
+
+void check_graph_connected()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Check if all objects are used and are not "disconnected" from the graph.
+     */
+
+    sai_object_type_t visited[SAI_OBJECT_TYPE_MAX];
+
+    memset(visited, 0, SAI_OBJECT_TYPE_MAX * sizeof(sai_object_type_t));
+
+    helper_check_graph_connected(SAI_OBJECT_TYPE_PORT, visited);
+
+    int i = 0;
+
+    for (; i < SAI_OBJECT_TYPE_MAX; ++i)
+    {
+        if (visited[i] == (sai_object_type_t)i)
+        {
+            continue;
+        }
+
+        META_WARN_LOG("object %s is disconnected from graph",
+                 sai_metadata_all_object_type_infos[i]->objecttypename);
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -3753,6 +3845,7 @@ int main(int argc, char **argv)
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
     check_api_max();
+    check_graph_connected();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 
