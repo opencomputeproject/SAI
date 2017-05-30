@@ -1,0 +1,27 @@
+README for running unit-tests for SAI
+
+## Dependency  ##
+
+We rely on google-test infrastructure to run these unit-tests. Download 
+google-test from this location
+https://code.google.com/p/googletest/downloads/list
+update the pointer to gtest in the Makefile
+
+We also rely on SAI library which are _your_ implementation of the SAI API
+Update the pointer to SAI library and other Linking flags in Makefile
+Update the pointer to the SAI API Include directory, if necessary. 
+
+## Building unit-tests ##
+
+Add your unit-test sources to SRCS in the Makefile. A sample unit-test file
+already exists, which tests some of the PORT Object/Attributes of SAI
+
+## Running unit-tests ##
+After building, a single binary/executable "test_sai" (EXEC variable in Makefile)
+is generated. Place this binary/executable on the switch, along with the 
+SAI binary, and run the executable. It outputs a PASS/FAIL per testcase, which
+can be used to validate the test run
+
+## Alternative environments for running the unit-test ##
+P4 test framework and soft switch - TBD
+
