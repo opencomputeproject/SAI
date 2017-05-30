@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -26,9 +26,6 @@
 #define __SAISWITCH_H_
 
 #include <saitypes.h>
-#include <saiport.h>
-#include <saifdb.h>
-#include <saihostif.h>
 
 /**
  * @defgroup SAISWITCH SAI - Switch specific API definitions
@@ -37,7 +34,7 @@
  */
 
 /**
- * @brief Maximum Hardware ID Lenght
+ * @brief Maximum Hardware ID Length
  */
 #define SAI_MAX_HARDWARE_ID_LEN                 255
 
@@ -79,7 +76,8 @@ typedef enum _sai_packet_action_t
      */
 
     /*
-     * Data Plane Packet Actions
+     * Data Plane Packet Actions.
+     *
      * Following two packet actions only affect the packet action on the data plane.
      * Packet action on the CPU path remains unchanged.
      */
@@ -91,7 +89,8 @@ typedef enum _sai_packet_action_t
     SAI_PACKET_ACTION_FORWARD,
 
     /*
-     * CPU Path Packet Actions
+     * CPU Path Packet Actions.
+     *
      * Following two packet actions only affect the packet action on the CPU path.
      * Packet action on the data plane remains unchanged.
      */
@@ -104,16 +103,16 @@ typedef enum _sai_packet_action_t
 
     /** Combination of Packet Actions */
 
-    /** This is a combination of sai packet action COPY and DROP. */
+    /** This is a combination of SAI packet action COPY and DROP. */
     SAI_PACKET_ACTION_TRAP,
 
-    /** This is a combination of sai packet action COPY and FORWARD. */
+    /** This is a combination of SAI packet action COPY and FORWARD. */
     SAI_PACKET_ACTION_LOG,
 
-    /** This is a combination of sai packet action COPY_CANCEL and DROP */
+    /** This is a combination of SAI packet action COPY_CANCEL and DROP */
     SAI_PACKET_ACTION_DENY,
 
-    /** This is a combination of sai packet action COPY_CANCEL and FORWARD */
+    /** This is a combination of SAI packet action COPY_CANCEL and FORWARD */
     SAI_PACKET_ACTION_TRANSIT
 
 } sai_packet_action_t;
@@ -126,7 +125,7 @@ typedef enum _sai_packet_vlan_t
     /**
      * @brief Untagged
      *
-     * Packet without vlan tags
+     * Packet without vlan tags.
      */
     SAI_PACKET_VLAN_UNTAG,
 
@@ -134,7 +133,7 @@ typedef enum _sai_packet_vlan_t
      * @brief Single Outer Tag
      *
      * Packet outer TPID matches to the ingress port outer TPID and
-     * Packet inner TPID if present, does not matches the configured inner TPID
+     * packet inner TPID if present, does not match the configured inner TPID.
      */
     SAI_PACKET_VLAN_SINGLE_OUTER_TAG,
 
@@ -142,7 +141,7 @@ typedef enum _sai_packet_vlan_t
      * @brief Double Tag
      *
      * Packet outer TPID matches to the ingress port outer TPID and
-     * Packet inner TPID matches to the configured inner TPID
+     * packet inner TPID matches to the configured inner TPID.
      */
     SAI_PACKET_VLAN_DOUBLE_TAG
 
@@ -153,10 +152,10 @@ typedef enum _sai_packet_vlan_t
  */
 typedef enum _sai_switch_switching_mode_t
 {
-    /** cut-through switching mode */
+    /** Cut-through switching mode */
     SAI_SWITCH_SWITCHING_MODE_CUT_THROUGH,
 
-    /** store-and-forward switching mode */
+    /** Store-and-forward switching mode */
     SAI_SWITCH_SWITCHING_MODE_STORE_AND_FORWARD
 
 } sai_switch_switching_mode_t;
@@ -167,7 +166,7 @@ typedef enum _sai_switch_switching_mode_t
  */
 typedef enum _sai_hash_algorithm_t
 {
-    /** CRC-based hash algorithm */
+    /** CRC based hash algorithm */
     SAI_HASH_ALGORITHM_CRC = 0,
 
     /** XOR-based hash algorithm */
@@ -176,7 +175,7 @@ typedef enum _sai_hash_algorithm_t
     /** Random-based hash algorithm */
     SAI_HASH_ALGORITHM_RANDOM = 2,
 
-    /** Lower 16-bits of CRC32-based hash algorithm */
+    /** Lower 16-bits of CRC32 based hash algorithm */
     SAI_HASH_ALGORITHM_CRC_32LO = 3,
 
     /** Higher 16-bits of CRC32-based hash algorithm */
@@ -220,7 +219,7 @@ typedef enum _sai_switch_mcast_snooping_capability_t
     /** SG lookup only */
     SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_SG = 2,
 
-    /** both *G/SG lookup supported */
+    /** Both *G/SG lookup supported */
     SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_XG_AND_SG = 3,
 
 } sai_switch_mcast_snooping_capability_t;
@@ -339,7 +338,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NUMBER_OF_ECMP_GROUPS,
 
     /**
-     * @brief The number of Unicast Queues per port
+     * @brief The number of Unicast queues per port
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -347,7 +346,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NUMBER_OF_UNICAST_QUEUES,
 
     /**
-     * @brief The number of Multicast Queues per port
+     * @brief The number of Multicast queues per port
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -355,7 +354,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NUMBER_OF_MULTICAST_QUEUES,
 
     /**
-     * @brief The total number of Queues per port
+     * @brief The total number of queues per port
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -363,7 +362,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NUMBER_OF_QUEUES,
 
     /**
-     * @brief The number of CPU Queues
+     * @brief The number of CPU queues
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -381,7 +380,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ON_LINK_ROUTE_SUPPORTED,
 
     /**
-     * @brief Oper state
+     * @brief Operational state
      *
      * @type sai_switch_oper_status_t
      * @flags READ_ONLY
@@ -390,7 +389,9 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief The current value of the maximum temperature
-     * retrieved from the switch sensors, in Celsius
+     * retrieved from the switch sensors
+     *
+     * Value in Celsius.
      *
      * @type sai_int32_t
      * @flags READ_ONLY
@@ -546,9 +547,9 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Switch/Global bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group globally. Enable/Update
+     * Bind (or unbind) an ingress ACL table or ACL group globally. Enable/Update
      * ingress ACL table or ACL group filtering by assigning the list of valid
-     * object id . Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
+     * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
      * @type sai_object_id_t
@@ -562,7 +563,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Switch/Global bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl tables or acl group globally. Enable/Update
+     * Bind (or unbind) an egress ACL tables or ACL group globally. Enable/Update
      * egress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -602,7 +603,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUPS_PER_HIERARCHY_LEVEL,
 
     /**
-     * @brief HQOS - Maximum number of childs supported per scheudler group
+     * @brief HQOS - Maximum number of childs supported per scheduler group
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -636,15 +637,15 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Default trap group
      *
-     * Default value after switch initialization
+     * Default value after switch initialization:
      *
      * #SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE = true
      * SAI_HOSTIF_TRAP_GROUP_ATTR_PRIO = #SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY
      * #SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE = 0
      * #SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER = #SAI_NULL_OBJECT_ID
      *
-     * The group handle is read only, while the group attributes, such as queue and policer,
-     * may be modified
+     * The group handle is read only, while the group attributes, such as queue
+     * and policer, may be modified.
      *
      * @type sai_object_id_t
      * @flags READ_ONLY
@@ -656,14 +657,14 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief The hash object for packets going through ECMP
      *
-     * Default value after switch initialization
+     * Default value after switch initialization:
      *
      * #SAI_HASH_ATTR_NATIVE_HASH_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
      * #SAI_NATIVE_HASH_FIELD_DST_MAC, #SAI_NATIVE_HASH_FIELD_IN_PORT,
      * #SAI_NATIVE_HASH_FIELD_ETHERTYPE\]
      * #SAI_HASH_ATTR_UDF_GROUP_LIST empty list
      *
-     * The object id is read only, while the object attributes can be modified
+     * The object id is read only, while the object attributes can be modified.
      *
      * @type sai_object_id_t
      * @flags READ_ONLY
@@ -675,14 +676,14 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief The hash object for packets going through LAG
      *
-     * Default value after switch initialization
+     * Default value after switch initialization:
      *
      * #SAI_HASH_ATTR_NATIVE_HASH_FIELD_LIST = \[#SAI_NATIVE_HASH_FIELD_SRC_MAC,
      * #SAI_NATIVE_HASH_FIELD_DST_MAC, #SAI_NATIVE_HASH_FIELD_IN_PORT,
      * #SAI_NATIVE_HASH_FIELD_ETHERTYPE\]
      * #SAI_HASH_ATTR_UDF_GROUP_LIST empty list)
      *
-     * The object id is read only, while the object attributes can be modified
+     * The object id is read only, while the object attributes can be modified.
      *
      * @type sai_object_id_t
      * @flags READ_ONLY
@@ -720,7 +721,7 @@ typedef enum _sai_switch_attr_t
      *
      * Will be 0 for #SAI_SWITCH_RESTART_TYPE_NONE. The Host Adapter will have to
      * wait for this minimum interval of time before it decides to bring down
-     * SAI due to init failure.
+     * SAI due to initialize failure.
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -730,7 +731,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Nonvolatile storage required by both SAI and NPU in KB
      *
-     * Will be 0 for #SAI_SWITCH_RESTART_TYPE_NONE
+     * Will be 0 for #SAI_SWITCH_RESTART_TYPE_NONE.
      *
      * @type sai_uint64_t
      * @flags READ_ONLY
@@ -792,7 +793,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Maximum number of learned MAC addresses
      *
-     * Zero means learning limit disable.
+     * Zero means learning limit is disabled.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -860,7 +861,7 @@ typedef enum _sai_switch_attr_t
      * @brief SAI ECMP default symmetric hash
      *
      * When set, the hash calculation will result in the same value as when the
-     * source and destination addresses (L2 src/dst mac,L3 src/dst ip,L4
+     * source and destination addresses (L2 src/dst MAC,L3 src/dst IP,L4
      * src/dst port) were swapped, ensuring the same conversation will result
      * in the same hash value.
      *
@@ -922,7 +923,7 @@ typedef enum _sai_switch_attr_t
      * @brief SAI LAG default symmetric hash
      *
      * When set, the hash calculation will result in the same value as when the source and
-     * destination addresses (L2 src/dst mac,L3 src/dst ip,L4 src/dst port) were swapped,
+     * destination addresses (L2 src/dst MAC,L3 src/dst IP,L4 src/dst port) were swapped,
      * ensuring the same conversation will result in the same hash value.
      *
      * @type bool
@@ -1004,8 +1005,8 @@ typedef enum _sai_switch_attr_t
      * @brief Enable DOT1P -> TC MAP on switch.
      *
      * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disable trust Dot1p, Map ID should be add/remove on switch.
-     * Default disabled
+     * To enable/disable trust Dot1p, Map ID should be added/removed on switch.
+     * Default disabled.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -1019,8 +1020,8 @@ typedef enum _sai_switch_attr_t
      * @brief Enable DOT1P -> COLOR MAP on switch.
      *
      * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disable trust Dot1p, Map ID should be add/remove on switch.
-     * Default disabled
+     * To enable/disable trust Dot1p, Map ID should be added/removed on switch.
+     * Default disabled.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -1034,8 +1035,8 @@ typedef enum _sai_switch_attr_t
      * @brief Enable DSCP -> TC MAP on switch.
      *
      * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disable trust DSCP, Map ID should be add/remove on port.
-     * Default no map
+     * To enable/disable trust DSCP, Map ID should be added/removed on port.
+     * Default no map.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -1049,8 +1050,8 @@ typedef enum _sai_switch_attr_t
      * @brief Enable DSCP -> COLOR MAP on switch
      *
      * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disable trust DSCP, Map ID should be add/remove on switch.
-     * Default no map
+     * To enable/disable trust DSCP, Map ID should be added/removed on switch.
+     * Default no map.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -1092,7 +1093,7 @@ typedef enum _sai_switch_attr_t
      * @brief Enable TC + COLOR -> DSCP MAP
      *
      * Map id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * Default no map
+     * Default no map.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -1114,7 +1115,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Handle for switch profile id.
      *
-     * Use this to retrive the Key-Vlaue pairs as part of switch
+     * Use this to retrieve the Key-Value pairs as part of switch
      * initialization.
      *
      * @type sai_uint32_t
@@ -1128,7 +1129,7 @@ typedef enum _sai_switch_attr_t
      *
      * Hardware information format is based on SAI implementations by vendors.
      * String is NULL terminated. Format is vendor specific.
-     * Example: Like PCI location, I2C adddress etc.
+     * Example: Like PCI location, I2C address etc.
      * In case of NULL, First NPU attached to CPU will be initialized.
      * Single NPU case this attribute is optional.
      *
@@ -1151,7 +1152,7 @@ typedef enum _sai_switch_attr_t
      * @brief Set to switch initialization or connect to NPU/SDK.
      *
      * TRUE - Initialize switch/SDK.
-     * FALSE - Connect to SDK. This will connects library to the initialized SDK.
+     * FALSE - Connect to SDK. This will connect library to the initialized SDK.
      * After this call the capability attributes should be ready for retrieval
      * via sai_get_switch_attribute()
      *
@@ -1161,7 +1162,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_INIT_SWITCH,
 
     /**
-     * @brief Set Switch oper status change notification callback
+     * @brief Operational status change notification callback
      * function passed to the adapter.
      *
      * Use sai_switch_state_change_notification_fn as notification function.
@@ -1173,7 +1174,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY,
 
     /**
-     * @brief Set Switch shutdown notification callback function passed to the adapter.
+     * @brief Shutdown notification callback function passed to the adapter.
      *
      * Use sai_switch_shutdown_request_notification_fn as notification function.
      *
@@ -1181,10 +1182,10 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default NULL
      */
-    SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY,
+    SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
 
     /**
-     * @brief Set Switch FDB Event notification callback function passed to the adapter.
+     * @brief FDB event notification callback function passed to the adapter.
      *
      * Use sai_fdb_event_notification_fn as notification function.
      *
@@ -1195,7 +1196,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY,
 
     /**
-     * @brief Set Switch Port state change notification callback function passed to the adapter.
+     * @brief Port state change notification callback function passed to the adapter.
      *
      * Use sai_port_state_change_notification_fn as notification function.
      *
@@ -1206,7 +1207,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
 
     /**
-     * @brief Set Switch Received packet event notification callback function passed to the adapter.
+     * @brief Received packet event notification callback function passed to the adapter.
      *
      * Use sai_packet_event_notification_fn as notification function.
      *
@@ -1215,6 +1216,17 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
+
+    /**
+     * @brief TAM event notification callback function passed to the adapter.
+     *
+     * Use sai_tam_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
 
     /**
      * @brief Enable SAI function call fast mode, which executes calls very quickly
@@ -1241,7 +1253,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MIRROR_TC,
 
     /**
-     * @brief Ingress acl stage.
+     * @brief Ingress ACL stage.
      *
      * @type sai_acl_capability_t
      * @flags READ_ONLY
@@ -1249,12 +1261,88 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_STAGE_INGRESS,
 
     /**
-     * @brief Egress acl stage.
+     * @brief Egress ACL stage.
      *
      * @type sai_acl_capability_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
+
+    /**
+     * @brief The number of lossless queues per port supported by the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_QOS_NUM_LOSSLESS_QUEUES,
+
+    /**
+     * @brief Set Switch PFC deadlock event notification callback function passed to the adapter.
+     *
+     * Use sai_queue_pfc_deadlock_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_queue_pfc_deadlock_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_QUEUE_PFC_DEADLOCK_NOTIFY,
+
+    /**
+     * @brief Control for buffered and incoming packets on queue undergoing PFC Deadlock Recovery.
+     *
+     * This control applies to all packets on all applicable port/queues. If application wants finer packet
+     * action control on per port per queue level then it is expected to set this control to packet forward
+     * and install one or more ACL and enable/disable them in the DLD/DLR event callback
+     * (SAI_SWITCH_ATTR_PFC_DEADLOCK_EVENT_NOTIFY) respectively.
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_DROP
+     */
+    SAI_SWITCH_ATTR_PFC_DLR_PACKET_ACTION,
+
+    /**
+     * @brief  PFC Deadlock Detection timer interval range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLD_INTERVAL_RANGE,
+
+    /**
+     * @brief PFC Deadlock Detection timer interval in milliseconds.
+     *
+     * If the monitored queue is in XOFF state for more than this duration then
+     * its considered to be in a PFC deadlock state and recovery process is kicked off.
+     * Note: Use TC (Traffic Class) value as key and timer interval as value.
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLD_INTERVAL,
+
+    /**
+     * @brief  PFC Deadlock Recovery timer interval range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLR_INTERVAL_RANGE,
+
+    /**
+     * @brief PFC Deadlock Recovery timer interval in milliseconds.
+     *
+     * The PFC deadlock recovery process will run for this amount of time and then normal
+     * state will resume. If the system remains in a deadlock state then the detection and
+     * recovery will resume again after the configured detection timer interval.
+     * Note: Use TC (Traffic Class) value as key and timer interval as value.
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLR_INTERVAL,
 
     /**
      * @brief End of attributes
@@ -1353,8 +1441,8 @@ typedef enum _sai_switch_attr_t
  *
  * 0: cold boot. Initialize NPU and external phys.
  * 1: warm boot. Do not re-initialize NPU or external phys, reconstruct SAI/SDK state from stored state.
- * 2: fast boot. Only initilize NPU. SAI/SDK state should not be persisted except for those related
- *    to physical port attributes such as SPEED, AUTONEG mode, admin state, oper status.
+ * 2: fast boot. Only initialize NPU. SAI/SDK state should not be persisted except for those related
+ *    to physical port attributes such as SPEED, AUTONEG mode, admin state, operational status.
  */
 #define SAI_KEY_BOOT_TYPE                         "SAI_BOOT_TYPE"
 
@@ -1374,7 +1462,7 @@ typedef enum _sai_switch_attr_t
  * @def SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE
  * Vendor specific Configuration file for Hardware Port Profile ID parameters.
  * HW port profile ID can be used to set vendor specific port attributes based on
- * the tranceiver type plugged in to the port
+ * the transceiver type plugged in to the port
  */
 #define SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE    "SAI_HW_PORT_PROFILE_ID_CONFIG_FILE"
 
@@ -1390,10 +1478,10 @@ typedef void (*sai_switch_shutdown_request_notification_fn)(
         _In_ sai_object_id_t switch_id);
 
 /**
- * @brief Switch oper state change notification
+ * @brief Switch operational state change notification
  *
  * @param[in] switch_id Switch Id
- * @param[in] switch_oper_status New switch oper state
+ * @param[in] switch_oper_status New switch operational state
  */
 typedef void (*sai_switch_state_change_notification_fn)(
         _In_ sai_object_id_t switch_id,
@@ -1407,13 +1495,13 @@ typedef void (*sai_switch_state_change_notification_fn)(
  * given for create/connect for each NPU.
  *
  * @param[out] switch_id The Switch Object ID
- * @param[in] attr_count number of attributes
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_switch_fn)(
-        _Out_ sai_object_id_t* switch_id,
+typedef sai_status_t (*sai_create_switch_fn)(
+        _Out_ sai_object_id_t *switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1424,7 +1512,7 @@ typedef sai_status_t(*sai_create_switch_fn)(
  *
  * @param[in] switch_id The Switch id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_switch_fn)(
         _In_ sai_object_id_t switch_id);
@@ -1435,7 +1523,7 @@ typedef sai_status_t (*sai_remove_switch_fn)(
  * @param[in] switch_id Switch id
  * @param[in] attr Switch attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_switch_attribute_fn)(
         _In_ sai_object_id_t switch_id,
@@ -1448,11 +1536,11 @@ typedef sai_status_t (*sai_set_switch_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of switch attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_switch_attribute_fn)(
         _In_ sai_object_id_t switch_id,
-        _In_ sai_uint32_t attr_count,
+        _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**

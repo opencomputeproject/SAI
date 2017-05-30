@@ -45,6 +45,18 @@ class VlanObj:
         self.oid = 0
         self.vid = 0
 
+class SwitchObj:
+    def __init__(self):
+        self.default_1q_bridge = SAI_NULL_OBJECT_ID
+        self.default_vlan = VlanObj()
+
+"""
+0xFFFF cannot pass the validation,
+the reason is that sai u16 is mapped to thrift i16 which is checked to be in [-32768, 32767] range
+but "-1" is serialized to 0xFFFF.
+"""
+U16MASKFULL = -1
+
 switch_inited=0
 port_list = {}
 sai_port_list = []
@@ -52,7 +64,7 @@ table_attr_list = []
 router_mac='00:77:66:55:44:00'
 rewrite_mac1='00:77:66:55:44:01'
 rewrite_mac2='00:77:66:55:44:02'
-default_vlan = VlanObj()
+switch = SwitchObj()
 
 is_bmv2 = ('BMV2_TEST' in os.environ) and (int(os.environ['BMV2_TEST']) == 1)
 
@@ -62,14 +74,17 @@ def switch_init(client):
     if switch_inited:
         return
 
+    switch.default_1q_bridge = client.sai_thrift_get_default_1q_bridge_id()
+    assert (switch.default_1q_bridge != SAI_NULL_OBJECT_ID)
+
     ret = client.sai_thrift_get_default_vlan_id()
     assert (ret.status == SAI_STATUS_SUCCESS), "Failed to get default vlan"
-    default_vlan.oid = ret.data.oid
+    switch.default_vlan.oid = ret.data.oid
 
-    ret = client.sai_thrift_get_vlan_id(default_vlan.oid)
+    ret = client.sai_thrift_get_vlan_id(switch.default_vlan.oid)
     assert (ret.status == SAI_STATUS_SUCCESS), "Failed obtain default vlan id"
-    default_vlan.vid = ret.data.u16
-    
+    switch.default_vlan.vid = ret.data.u16
+
     for interface,front in interface_to_front_mapping.iteritems():
     	sai_port_id = client.sai_thrift_get_port_id_by_front_port(front);
     	port_list[int(interface)]=sai_port_id
@@ -112,6 +127,60 @@ def switch_init(client):
 
     switch_inited = 1
 
+def sai_thrift_get_bridge_port_by_port(client, port_id):
+    ret = client.sai_thrift_get_bridge_port_list(switch.default_1q_bridge)
+    assert (ret.status == SAI_STATUS_SUCCESS)
+
+    for bp in ret.data.objlist.object_id_list:
+        attrs = client.sai_thrift_get_bridge_port_attribute(bp)
+        bport = SAI_NULL_OBJECT_ID
+        is_port = False
+        for a in attrs.attr_list:
+            if a.id == SAI_BRIDGE_PORT_ATTR_PORT_ID:
+                bport = a.value.oid
+            if a.id == SAI_BRIDGE_PORT_ATTR_TYPE:
+                is_port = a.value.s32 == SAI_BRIDGE_PORT_TYPE_PORT
+
+        if is_port and bport == port_id:
+            return bp
+
+    return SAI_NULL_OBJECT_ID
+
+def sai_thrift_get_port_by_bridge_port(client, bp):
+    attrs = client.sai_thrift_get_bridge_port_attribute(bp)
+    port = SAI_NULL_OBJECT_ID
+
+    for a in attrs.attr_list:
+        if a.id == SAI_BRIDGE_PORT_ATTR_PORT_ID:
+            return a.value.oid
+
+    return SAI_NULL_OBJECT_ID
+
+def sai_thrift_create_bridge_port(client, port_id):
+    bport_attr1_value = sai_thrift_attribute_value_t(s32=SAI_BRIDGE_PORT_TYPE_PORT)
+    bport_attr1 = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_TYPE,
+                                              value=bport_attr1_value)
+
+    bport_attr2_value = sai_thrift_attribute_value_t(oid=port_id)
+    bport_attr2 = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_PORT_ID,
+                                              value=bport_attr2_value)
+
+    bport_attr3_value = sai_thrift_attribute_value_t(oid=switch.default_1q_bridge)
+    bport_attr3 = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
+                                              value=bport_attr3_value)
+
+    bport_attr_list = [bport_attr1, bport_attr2, bport_attr3]
+
+    ret = client.sai_thrift_create_bridge_port(bport_attr_list)
+    assert (ret.status == SAI_STATUS_SUCCESS)
+    assert (ret.data.oid != SAI_NULL_OBJECT_ID)
+
+    attr_value = sai_thrift_attribute_value_t(booldata=1)
+    attr = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE, value=attr_value)
+    client.sai_thrift_set_bridge_port_attribute(ret.data.oid, attr)
+
+    return ret.data.oid
+
 def sai_thrift_get_cpu_port_id(client):
     cpu_port = client.sai_thrift_get_cpu_port_id()
     return cpu_port
@@ -125,14 +194,17 @@ def sai_thrift_get_default_router_id(client):
     return default_router_id
 
 def sai_thrift_create_fdb(client, vlan_id, mac, port, mac_action):
+    bport_oid = sai_thrift_get_bridge_port_by_port(client, port)
+    assert (bport_oid != SAI_NULL_OBJECT_ID)
+
     fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, vlan_id=vlan_id)
     #value 0 represents static entry, id=0, represents entry type
     fdb_attribute1_value = sai_thrift_attribute_value_t(s32=SAI_FDB_ENTRY_TYPE_STATIC)
     fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_ENTRY_ATTR_TYPE,
                                             value=fdb_attribute1_value)
     #value oid represents object id, id=1 represents port id
-    fdb_attribute2_value = sai_thrift_attribute_value_t(oid=port)
-    fdb_attribute2 = sai_thrift_attribute_t(id=SAI_FDB_ENTRY_ATTR_PORT_ID,
+    fdb_attribute2_value = sai_thrift_attribute_value_t(oid=bport_oid)
+    fdb_attribute2 = sai_thrift_attribute_t(id=SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
                                             value=fdb_attribute2_value)
     #value oid represents object id, id=1 represents port id
     fdb_attribute3_value = sai_thrift_attribute_value_t(s32=mac_action)
@@ -336,16 +408,31 @@ def sai_thrift_remove_next_hop_from_group(client, nhop_list):
     for hnop in nhop_list:
         client.sai_thrift_remove_next_hop_from_group(hnop)
 
-def sai_thrift_create_lag(client, port_list):
-    lag_port_list = sai_thrift_object_list_t(count=len(port_list), object_id_list=port_list)
-    lag1_attr_value = sai_thrift_attribute_value_t(objlist=lag_port_list)
-    lag1_attr = sai_thrift_attribute_t(id=SAI_LAG_ATTR_PORT_LIST,
-                                       value=lag1_attr_value)
-    lag_attr_list = [lag1_attr]
-    lag = client.sai_thrift_create_lag(lag_attr_list)
+def sai_thrift_create_lag(client, port_list, is_bridged=True):
+    lag = client.sai_thrift_create_lag([])
+
+    if is_bridged:
+        sai_thrift_create_bridge_port(client, lag)
+
     return lag
 
+def sai_thrift_remove_lag(client, lag_oid):
+    bport_oid = sai_thrift_get_bridge_port_by_port(client, lag_oid)
+
+    if bport_oid != SAI_NULL_OBJECT_ID:
+        status = client.sai_thrift_remove_bridge_port(bport_oid)
+        assert (status == SAI_STATUS_SUCCESS)
+
+    status = client.sai_thrift_remove_lag(lag_oid)
+    assert (status == SAI_STATUS_SUCCESS)
+
 def sai_thrift_create_lag_member(client, lag_id, port_id):
+    bport_oid = sai_thrift_get_bridge_port_by_port(client, port_id)
+    assert (bport_oid != SAI_NULL_OBJECT_ID)
+
+    status = client.sai_thrift_remove_bridge_port(bport_oid)
+    assert (status == SAI_STATUS_SUCCESS)
+
     lag_member_attr1_value = sai_thrift_attribute_value_t(oid=lag_id)
     lag_member_attr1 = sai_thrift_attribute_t(id=SAI_LAG_MEMBER_ATTR_LAG_ID,
                                               value=lag_member_attr1_value)
@@ -356,6 +443,22 @@ def sai_thrift_create_lag_member(client, lag_id, port_id):
     lag_member_id = client.sai_thrift_create_lag_member(lag_member_attr_list)
     return lag_member_id
 
+def sai_thrift_remove_lag_member(client, lag_member_oid):
+    attrs = client.sai_thrift_get_lag_member_attribute(lag_member_oid)
+    port_id = SAI_NULL_OBJECT_ID
+
+    for a in attrs.attr_list:
+        if a.id == SAI_LAG_MEMBER_ATTR_PORT_ID:
+	   port_id = a.value.oid
+           break
+
+    assert (port_id != SAI_NULL_OBJECT_ID)
+
+    status = client.sai_thrift_remove_lag_member(lag_member_oid)
+    assert (status == SAI_STATUS_SUCCESS)
+
+    sai_thrift_create_bridge_port(client, port_id)
+
 def sai_thrift_create_stp_entry(client, vlan_list):
     vlanlist=sai_thrift_vlan_list_t(vlan_count=len(vlan_list), vlan_list=vlan_list)
     stp_attribute1_value = sai_thrift_attribute_value_t(vlanlist=vlanlist)
@@ -365,11 +468,109 @@ def sai_thrift_create_stp_entry(client, vlan_list):
     stp_id = client.sai_thrift_create_stp_entry(stp_attr_list)
     return stp_id
 
-def sai_thrift_set_hostif_trap_group(client, trap_group_id, policer_id):
-    policer_attr_value = sai_thrift_attribute_value_t(oid=policer_id)
-    policer_attr = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER, value=policer_attr_value)
-    status = client.sai_thrift_set_hostif_trap_group(trap_group_id, thrift_attr=policer_attr)
-    return status
+def sai_thrift_create_hostif(client,
+                             hif_type,
+                             hif_obj_id,
+                             hif_name):
+    attr_list=[]
+
+    atr_value=sai_thrift_attribute_value_t(s32=hif_type)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_TYPE,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(oid=hif_obj_id)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_OBJ_ID,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(chardata=hif_name)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_NAME,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    return client.sai_thrift_create_hostif(attr_list)
+
+def sai_thrift_create_hostif_trap(client,
+                                  trap_type,
+                                  packet_action,
+                                  trap_priority=None,
+                                  exclude_port_list=None,
+                                  trap_group=None):
+    attr_list=[]
+
+    atr_value=sai_thrift_attribute_value_t(s32=trap_type)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(s32=packet_action)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    if trap_priority != None:
+        atr_value=sai_thrift_attribute_value_t(u32=trap_priority)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if trap_priority != None:
+        atr_value=sai_thrift_attribute_value_t(objlist=exclude_port_list)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if trap_group != None:
+        atr_value=sai_thrift_attribute_value_t(oid=trap_group)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    trap_id = client.sai_thrift_create_hostif_trap(attr_list)
+    return trap_id
+
+def sai_thrift_remove_hostif_trap(client,
+                                  trap_id):
+    client.sai_thrift_remove_hostif_trap(trap_id)
+
+def sai_thrift_set_hostif_trap_attribute(client,
+                                         trap_type,
+                                         packet_action,
+                                         trap_priority=None,
+                                         exclude_port_list=None,
+                                         trap_group=None):
+    attr_list=[]
+
+    atr_value=sai_thrift_attribute_value_t(s32=trap_type)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(s32=packet_action)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    if trap_priority != None:
+        atr_value=sai_thrift_attribute_value_t(u32=trap_priority)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if exclude_port_list != None:
+        atr_value=sai_thrift_attribute_value_t(objlist=exclude_port_list)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if trap_group != None:
+        atr_value=sai_thrift_attribute_value_t(oid=trap_group)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    client.sai_thrift_set_hostif_trap_attribute(attr_list)
 
 def sai_thrift_create_hostif_trap_group(client, queue_id, policer_id=None):
     attr_list = []
@@ -382,10 +583,24 @@ def sai_thrift_create_hostif_trap_group(client, queue_id, policer_id=None):
         policer_attr = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER, value=policer_attr_value)
         attr_list.append(policer_attr)
 
-    trap_group_id = client.sai_thrift_create_hostif_trap_group(thrift_attr_list=attr_list)
-    return trap_group_id
+    trap_group = client.sai_thrift_create_hostif_trap_group(thrift_attr_list=attr_list)
+    return trap_group
 
-def sai_thrift_create_policer(client, meter_type, mode, cir, red_action):
+def sai_thrift_remove_hostif_trap_group(client,
+                                        trap_group):
+    client.sai_thrift_remove_hostif_trap_group(trap_group)
+
+def sai_thrift_set_hostif_trap_group(client, trap_group_id, policer_id):
+    policer_attr_value = sai_thrift_attribute_value_t(oid=policer_id)
+    policer_attr = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER, value=policer_attr_value)
+    status = client.sai_thrift_set_hostif_trap_group(trap_group_id, thrift_attr=policer_attr)
+    return status
+
+def sai_thrift_create_policer(client,
+                              meter_type,
+                              mode,
+                              cir,
+                              red_action):
     attr_list = []
 
     meter_attr_value = sai_thrift_attribute_value_t(s32=meter_type)
@@ -407,41 +622,6 @@ def sai_thrift_create_policer(client, meter_type, mode, cir, red_action):
     policer_id = client.sai_thrift_create_policer(attr_list)
 
     return policer_id
-
-def sai_thrift_set_hostif_trap(client, trap_id, action, priority=None, channel=None, trap_group_id=None):
-
-    if channel != None:
-        attribute3_value = sai_thrift_attribute_value_t(s32=channel)
-        attribute3 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_CHANNEL, value=attribute3_value)
-        client.sai_thrift_set_hostif_trap(trap_id, attribute3)
-
-    if trap_group_id != None:
-        attribute4_value = sai_thrift_attribute_value_t(oid=trap_group_id)
-        attribute4 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP, value=attribute4_value)
-        client.sai_thrift_set_hostif_trap(trap_id, attribute4)
-
-    attribute1_value = sai_thrift_attribute_value_t(s32=action)
-    attribute1 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION, value=attribute1_value)
-    client.sai_thrift_set_hostif_trap(trap_id, attribute1)
-
-    if priority != None:
-        attribute2_value = sai_thrift_attribute_value_t(u32=priority)
-        attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY, value=attribute2_value)
-        client.sai_thrift_set_hostif_trap(trap_id, attribute2)
-
-def sai_thrift_create_hostif(client, rif_or_port_id, intf_name):
-    attribute1_value = sai_thrift_attribute_value_t(s32=SAI_HOSTIF_TYPE_NETDEV)
-    attribute1 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_TYPE,
-                                        value=attribute1_value)
-    attribute2_value = sai_thrift_attribute_value_t(oid=rif_or_port_id)
-    attribute2 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_OBJ_ID,
-                                        value=attribute2_value)
-    attribute3_value = sai_thrift_attribute_value_t(chardata=intf_name)
-    attribute3 = sai_thrift_attribute_t(id=SAI_HOSTIF_ATTR_NAME,
-                                        value=attribute3_value)
-    attr_list = [attribute1, attribute2, attribute3]
-    hif_id = client.sai_thrift_create_hostif(attr_list)
-    return hif_id
 
 def sai_thrift_create_acl_table(client,
                                 table_stage,
@@ -561,7 +741,7 @@ def sai_thrift_create_acl_entry(client,
 
     #Priority
     if entry_priority != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u32=entry_priority)))
+        attribute_value = sai_thrift_attribute_value_t(u32=entry_priority)
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_PRIORITY,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -619,22 +799,23 @@ def sai_thrift_create_acl_entry(client,
 
     #L4 Source port
     if src_l4_port != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=src_l4_port), 
-                                                                                            mask = sai_thrift_acl_mask_t(u16=0)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=src_l4_port),
+                                                                                            mask = sai_thrift_acl_mask_t(u16=U16MASKFULL)))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
     #L4 Destination port
     if dst_l4_port != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=dst_l4_port), 
-                                                                                            mask = sai_thrift_acl_mask_t(u16=0)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=dst_l4_port),
+                                                                                            mask = sai_thrift_acl_mask_t(u16=U16MASKFULL)))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
     if action != None:
-        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(u32=action)))
+        attribute_value = sai_thrift_attribute_value_t(aclaction=sai_thrift_acl_action_data_t(parameter = sai_thrift_acl_data_t(u32=action),
+                                                                                              enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -668,7 +849,8 @@ def sai_thrift_create_acl_table_group(client,
 
     if group_bind_point_list != None:
         acl_group_bind_point_list = sai_thrift_s32_list_t(count=len(group_bind_point_list), s32list=group_bind_point_list)
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(bind_point_list=acl_group_bind_point_list)))
+        attribute_value = sai_thrift_attribute_value_t(s32list=acl_group_bind_point_list)
+
         attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_GROUP_ATTR_ACL_BIND_POINT_TYPE_LIST,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -941,14 +1123,17 @@ def sai_thrift_create_vlan(client, vlan_id):
     return vlan_oid
 
 def sai_thrift_create_vlan_member(client, vlan_oid, port_oid, tagging_mode):
+    bport_oid = sai_thrift_get_bridge_port_by_port(client, port_oid)
+    assert (bport_oid != SAI_NULL_OBJECT_ID)
+
     vlan_member_attr_list = []
     attribute_value = sai_thrift_attribute_value_t(oid=vlan_oid)
     attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_VLAN_ID,
                                            value=attribute_value)
     vlan_member_attr_list.append(attribute)
 
-    attribute_value = sai_thrift_attribute_value_t(oid=port_oid)
-    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_PORT_ID,
+    attribute_value = sai_thrift_attribute_value_t(oid=bport_oid)
+    attribute = sai_thrift_attribute_t(id=SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID,
                                            value=attribute_value)
     vlan_member_attr_list.append(attribute)
 
@@ -971,6 +1156,24 @@ def sai_thrift_vlan_remove_all_ports(client, vlan_oid):
 
         for vlan_member in vlan_members_list:
             client.sai_thrift_remove_vlan_member(vlan_member)
+
+def sai_thrift_vlan_remove_ports(client, vlan_oid, ports):
+    vlan_members_list = []
+
+    vlan_attr_list = client.sai_thrift_get_vlan_attribute(vlan_oid)
+    attr_list = vlan_attr_list.attr_list
+    for attribute in attr_list:
+        if attribute.id == SAI_VLAN_ATTR_MEMBER_LIST:
+            for vlan_member in attribute.value.objlist.object_id_list:
+                attrs = client.sai_thrift_get_vlan_member_attribute(vlan_member)
+                for a in attrs.attr_list:
+                    if a.id == SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID:
+                        port = sai_thrift_get_port_by_bridge_port(client, a.value.oid)
+                        if port in ports:
+                            vlan_members_list.append(vlan_member)
+
+    for vlan_member in vlan_members_list:
+        client.sai_thrift_remove_vlan_member(vlan_member)
 
 def sai_thrift_set_port_shaper(client, port_id, max_rate):
     sched_prof_id=sai_thrift_create_scheduler_profile(client, max_rate)

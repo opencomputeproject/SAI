@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -17,16 +17,16 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc
  *
- * @file    saimetadatatypes.h
+ * @file    saimetadatalogger.h
  *
- * @brief   This module defines SAI Metadata Types
+ * @brief   This module defines SAI Metadata Logger
  */
 
-#ifndef __SAI_METADATA_LOGGER_H__
-#define __SAI_METADATA_LOGGER_H__
+#ifndef __SAIMETADATALOGGER_H_
+#define __SAIMETADATALOGGER_H_
 
 /**
- * @defgroup SAIMETADATALOGGER SAI Metadata Types Definitions
+ * @defgroup SAIMETADATALOGGER SAI - Metadata Logger Definitions
  *
  * @{
  */
@@ -34,16 +34,23 @@
 /**
  * @brief Log level function definition.
  *
- * User can sepcify his own function thah will be called when message log level
+ * User can specify his own function that will be called when message log level
  * will be greater or equal to #sai_metadata_log_level.
+ *
+ * @param[in] log_level Log level
+ * @param[in] file Source file
+ * @param[in] line Line number in file
+ * @param[in] function Function name
+ * @param[in] format Format of logging
+ * @param[in] ... Variable parameters
  */
 typedef void (*sai_metadata_log_fn)(
         _In_ sai_log_level_t log_level,
         _In_ const char *file,
         _In_ int line,
-        _In_ const char *func,
+        _In_ const char *function,
         _In_ const char *format,
-        ...);
+        _In_ ...);
 
 /**
  * @brief User specified log function.
@@ -53,7 +60,7 @@ typedef void (*sai_metadata_log_fn)(
 extern volatile sai_metadata_log_fn sai_metadata_log;
 
 /**
- * @brief Log level for sai metadat macros.
+ * @brief Log level for SAI metadata macros.
  *
  * Log level can be changed by user at any time.
  *
@@ -64,7 +71,7 @@ extern volatile sai_log_level_t sai_metadata_log_level;
 /**
  * @brief Helper log macro definition
  *
- * If logger function is NULL, stderr is used to print messages. Also fprintf
+ * If logger function is NULL, stderr is used to print messages. Also, fprintf
  * function will validate parameters at compilation time.
  */
 #define SAI_META_LOG(loglevel,format,...)\
@@ -92,4 +99,4 @@ extern volatile sai_log_level_t sai_metadata_log_level;
 /**
  * @}
  */
-#endif /** __SAI_METADATA_LOGGER_H__ */
+#endif /** __SAIMETADATALOGGER_H_ */
