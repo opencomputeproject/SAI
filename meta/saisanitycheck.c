@@ -2361,6 +2361,78 @@ void check_attr_condition_in_force(
     }
 }
 
+void check_attr_default_attrvalue(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * When default value type is attrvalue, check if this attribute value is
+     * switch, or if there is attribute on current object, with object
+     * represented by default attrvalue. There can be only 1 attribute with
+     * this object type, since when more, then we couldn't decide which one.
+     */
+
+    if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE)
+    {
+        return;
+    }
+
+    if (md->defaultvalueobjecttype == SAI_OBJECT_TYPE_SWITCH)
+    {
+        /* switch is ok */
+        return;
+    }
+
+    const sai_object_type_info_t* info =
+        sai_metadata_all_object_type_infos[md->objecttype];
+
+    /* search for attribute */
+
+    size_t i = 0;
+
+    int count = 0;
+
+    for (; i < info->attrmetadatalength; ++i)
+    {
+        const sai_attr_metadata_t *cmd = info->attrmetadata[i];
+
+        if (cmd->isreadonly)
+        {
+            /* skip read only attributes since we don't set them */
+            continue;
+        }
+
+        if (cmd->attrvaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+        {
+            /* skip object lists */
+            continue;
+        }
+
+        if (sai_metadata_is_allowed_object_type(cmd, md->defaultvalueobjecttype))
+        {
+            /* object type of default value is present on current object */
+            count++;
+        }
+    }
+
+    if (count == 1)
+    {
+        /* only 1 attribute with this object type is present */
+        return;
+    }
+
+    if (count == 0)
+    {
+        META_ASSERT_FAIL(md, "oid attribute with %s is not present in %s",
+                sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename,
+                sai_metadata_all_object_type_infos[md->objecttype]->objecttypename);
+    }
+
+    META_ASSERT_FAIL(md, "too many attributes with %s for default value attrvalue",
+            sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename);
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2398,6 +2470,7 @@ void check_single_attribute(
     check_attr_brief_description(md);
     check_attr_is_primitive(md);
     check_attr_condition_in_force(md);
+    check_attr_default_attrvalue(md);
 
     define_attr(md);
 }
@@ -3714,6 +3787,22 @@ void check_api_max()
             "SAI_API_MAX should be equal to number of SAI_API*");
 }
 
+
+void check_backward_comparibility_defines()
+{
+    META_LOG_ENTER();
+
+    /* check assignments if type matches */
+
+    sai_switch_attr_t sw = SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY;
+    sai_hostif_user_defined_trap_type_t trap = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH;
+    sai_acl_bind_point_type_t bind = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF;
+
+    META_ASSERT_TRUE(sw == SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY, "not equal");
+    META_ASSERT_TRUE(trap == SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGHBOR, "not equal");
+    META_ASSERT_TRUE(bind == SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE, "not equal");
+}
+
 void helper_check_graph_connected(
         _In_ sai_object_type_t ot,
         _Inout_ sai_object_type_t *visited)
@@ -3837,6 +3926,7 @@ int main(int argc, char **argv)
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
     check_api_max();
+    check_backward_comparibility_defines();
     check_graph_connected();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
