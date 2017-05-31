@@ -892,19 +892,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP,
 
     /**
-     * @brief Attach WRED to port
-     *
-     * ID = #SAI_NULL_OBJECT_ID to disable WRED.
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_WRED
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
-
-    /**
      * @brief Scheduler for port, Default no limits.
      *
      * #SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE & #SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE
@@ -1628,17 +1615,250 @@ typedef void (*sai_port_state_change_notification_fn)(
         _In_ sai_port_oper_status_notification_t *data);
 
 /**
+ * @brief Attribute data for #SAI_PORT_MEMBER_ATTR_TYPE
+ */
+typedef enum _sai_port_member_type_t
+{
+    /** Port member of type buffer pool. */
+    SAI_PORT_MEMBER_TYPE_BUFFER_POOL,
+
+} sai_port_member_type_t;
+
+/**
+ * @brief List of Port member attributes
+ */
+typedef enum _sai_port_member_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_PORT_MEMBER_ATTR_START,
+
+    /**
+     * @brief Port member object type
+     *
+     * @type sai_port_member_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_PORT_MEMBER_ATTR_TYPE = SAI_PORT_MEMBER_ATTR_START,
+
+    /**
+     * @brief Port ID
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
+     */
+    SAI_PORT_MEMBER_ATTR_PORT_ID,
+
+    /**
+     * @brief Buffer pool id
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
+     * @condition SAI_PORT_MEMBER_ATTR_TYPE == SAI_PORT_MEMBER_TYPE_BUFFER_POOL
+     */
+    SAI_PORT_MEMBER_ATTR_BUFFER_POOL_ID,
+
+    /**
+     * @brief Attach WRED to port member
+     *
+     * ID = #SAI_NULL_OBJECT_ID to disable WRED.
+     *
+     * WRED Drop/ECN marking based on port thresholds will happen only
+     * when one of queue referring to this port configured
+     * with non default value for SAI_QUEUE_ATTR_WRED_PROFILE_ID.
+     * ID = #SAI_NULL_OBJECT_ID to disable WRED
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_WRED
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_MEMBER_ATTR_QOS_WRED_PROFILE_ID,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_PORT_MEMBER_ATTR_END,
+
+    /** Custom range base value */
+    SAI_PORT_MEMBER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_PORT_MEMBER_ATTR_CUSTOM_RANGE_END
+
+} sai_port_member_attr_t;
+
+/**
+ * @brief Port member counter IDs in sai_get_port_member_stats() call
+ */
+typedef enum _sai_port_member_stat_t
+{
+    /** SAI port stat if in octets */
+    SAI_PORT_MEMBER_STAT_IF_IN_OCTETS,
+
+    /** Get/set WRED green packet count [uint64_t] */
+    SAI_PORT_MEMBER_STAT_GREEN_DISCARD_DROPPED_PACKETS,
+
+    /** Get/set WRED green byte count [uint64_t] */
+    SAI_PORT_MEMBER_STAT_GREEN_DISCARD_DROPPED_BYTES,
+
+    /** Get/set WRED yellow packet count [uint64_t] */
+    SAI_PORT_MEMBER_STAT_YELLOW_DISCARD_DROPPED_PACKETS,
+
+    /** Get/set WRED yellow byte count [uint64_t] */
+    SAI_PORT_MEMBER_STAT_YELLOW_DISCARD_DROPPED_BYTES,
+
+    /** Get/set WRED red packet count [uint64_t] */
+    SAI_PORT_MEMBER_STAT_RED_DISCARD_DROPPED_PACKETS,
+
+    /** Get/set WRED red byte count [uint64_t] */
+    SAI_PORT_MEMBER_STAT_RED_DISCARD_DROPPED_BYTES,
+
+    /** Get/set WRED dropped packets count [uint64_t] */
+    SAI_PORT_MEMBER_STAT_DISCARD_DROPPED_PACKETS,
+
+    /** Get/set WRED dropped bytes count [uint64_t] */
+    SAI_PORT_MEMBER_STAT_DISCARD_DROPPED_BYTES,
+
+    /** Get/set packets marked by ECN count [uint64_t] */
+    SAI_PORT_MEMBER_STAT_ECN_MARKED_PACKETS,
+
+    /** Get in port current occupancy in bytes [uint64_t] */
+    SAI_PORT_MEMBER_STAT_IN_CURR_OCCUPANCY_BYTES,
+
+    /** Get in port watermark occupancy in bytes [uint64_t] */
+    SAI_PORT_MEMBER_STAT_IN_WATERMARK_BYTES,
+
+    /** Get in port current shared occupancy in bytes [uint64_t] */
+    SAI_PORT_MEMBER_STAT_IN_SHARED_CURR_OCCUPANCY_BYTES,
+
+    /** Get in port watermark shared occupancy in bytes [uint64_t] */
+    SAI_PORT_MEMBER_STAT_IN_SHARED_WATERMARK_BYTES,
+
+    /** Get out port current occupancy in bytes [uint64_t] */
+    SAI_PORT_MEMBER_STAT_OUT_CURR_OCCUPANCY_BYTES,
+
+    /** Get out port watermark occupancy in bytes [uint64_t] */
+    SAI_PORT_MEMBER_STAT_OUT_WATERMARK_BYTES,
+
+    /** Get out port current shared occupancy in bytes [uint64_t] */
+    SAI_PORT_MEMBER_STAT_OUT_SHARED_CURR_OCCUPANCY_BYTES,
+
+    /** Get out port watermark shared occupancy in bytes [uint64_t] */
+    SAI_PORT_MEMBER_STAT_OUT_SHARED_WATERMARK_BYTES,
+
+    /** Get in port packet drops due to buffers [uint64_t] */
+    SAI_PORT_MEMBER_STAT_IN_DROPPED_PKTS,
+
+    /** Get out port packet drops due to buffers [uint64_t] */
+    SAI_PORT_MEMBER_STAT_OUT_DROPPED_PKTS,
+
+} sai_port_member_stat_t;
+
+/**
+ * @brief Create port member
+ *
+ * @param[out] port_member_id Port member id
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_port_member_fn)(
+        _Out_ sai_object_id_t *port_member_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove port member
+ *
+ * @param[in] port_member_id Port member id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_port_member_fn)(
+        _In_ sai_object_id_t port_member_id);
+
+/**
+ * @brief Set port member attribute value.
+ *
+ * @param[in] port_member_id Port member id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_port_member_attribute_fn)(
+        _In_ sai_object_id_t port_member_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get port member attribute value.
+ *
+ * @param[in] port_member_id Port member id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_port_member_attribute_fn)(
+        _In_ sai_object_id_t port_member_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Get port member statistics counters.
+ *
+ * @param[in] port_member_id Port member id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_port_member_stats_fn)(
+        _In_ sai_object_id_t port_member_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_port_member_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear port member statistics counters.
+ *
+ * @param[in] port_member_id Port member id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_port_member_stats_fn)(
+        _In_ sai_object_id_t port_member_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_port_member_stat_t *counter_ids);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_port_api_t
 {
-    sai_create_port_fn              create_port;
-    sai_remove_port_fn              remove_port;
-    sai_set_port_attribute_fn       set_port_attribute;
-    sai_get_port_attribute_fn       get_port_attribute;
-    sai_get_port_stats_fn           get_port_stats;
-    sai_clear_port_stats_fn         clear_port_stats;
-    sai_clear_port_all_stats_fn     clear_port_all_stats;
+    sai_create_port_fn                create_port;
+    sai_remove_port_fn                remove_port;
+    sai_set_port_attribute_fn         set_port_attribute;
+    sai_get_port_attribute_fn         get_port_attribute;
+    sai_get_port_stats_fn             get_port_stats;
+    sai_clear_port_stats_fn           clear_port_stats;
+    sai_clear_port_all_stats_fn       clear_port_all_stats;
+    sai_create_port_member_fn         create_port_member;
+    sai_remove_port_member_fn         remove_port_member;
+    sai_set_port_member_attribute_fn  set_port_member_attribute;
+    sai_get_port_member_attribute_fn  get_port_member_attribute;
+    sai_get_port_member_stats_fn      get_port_member_stats;
+    sai_clear_port_member_stats_fn    clear_port_member_stats;
 
 } sai_port_api_t;
 
