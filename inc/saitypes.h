@@ -493,6 +493,26 @@ typedef struct _sai_qos_map_list_t
 
 } sai_qos_map_list_t;
 
+typedef struct _sai_map_t
+{
+    /** Input key value */
+    sai_uint32_t key;
+
+    /** Input data value for the key */
+    sai_int32_t value;
+
+} sai_map_t;
+
+typedef struct _sai_map_list_t
+{
+    /** Number of entries in the map */
+    uint32_t count;
+
+    /** Map list */
+    sai_map_t *list;
+
+} sai_map_list_t;
+
 /**
  * @brief Structure for ACL attributes supported at each stage.
  * action_list alone is added now. Qualifier list can also be added
