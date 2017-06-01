@@ -300,6 +300,15 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_TYPE,
 
     /**
+     * @brief ACL table group members associated with this group.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP_MEMBER
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_MEMBER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_ACL_TABLE_GROUP_ATTR_END,
@@ -948,6 +957,15 @@ typedef enum _sai_acl_table_attr_t
      * @brief End of ACL Table Match Field
      */
     SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
+
+    /**
+     * @brief ACL table entries associated with this table.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_ENTRY
+     */
+    SAI_ACL_TABLE_ATTR_ENTRY_LIST,
 
     /**
      * @brief End of ACL Table attributes
