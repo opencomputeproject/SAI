@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -23,15 +23,14 @@
  *
  * @par Abstract
  *
- *    This module defines SAI Host Interface which is responsbile for
- *    creating/deleting linux netdev corresponding to the host interface type.
+ *    This module defines SAI Host Interface which is responsible for
+ *    creating/deleting Linux netdev corresponding to the host interface type.
  *    All the management operations of the netdevs such as changing IP address
  *    are outside the scope of SAI.
- *
  */
 
-#if !defined (__SAIHOSTINTF_H_)
-#define __SAIHOSTINTF_H_
+#if !defined (__SAIHOSTIF_H_)
+#define __SAIHOSTIF_H_
 
 #include <saitypes.h>
 
@@ -44,7 +43,7 @@
 /**
  * @brief Defines maximum host interface name
  */
-#define HOSTIF_NAME_SIZE 16
+#define SAI_HOSTIF_NAME_SIZE 16
 
 /**
  * @brief Host interface trap group attributes
@@ -66,7 +65,7 @@ typedef enum _sai_hostif_trap_group_attr_t
     SAI_HOSTIF_TRAP_GROUP_ATTR_ADMIN_STATE = SAI_HOSTIF_TRAP_GROUP_ATTR_START,
 
     /**
-     * @brief Cpu egress queue
+     * @brief CPU egress queue
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -75,7 +74,7 @@ typedef enum _sai_hostif_trap_group_attr_t
     SAI_HOSTIF_TRAP_GROUP_ATTR_QUEUE,
 
     /**
-     * @brief Sai policer object id
+     * @brief SAI policer object id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -106,7 +105,7 @@ typedef enum _sai_hostif_trap_group_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_hostif_trap_group_fn)(
         _Out_ sai_object_id_t *hostif_trap_group_id,
@@ -119,7 +118,7 @@ typedef sai_status_t (*sai_create_hostif_trap_group_fn)(
  *
  * @param[in] hostif_trap_group_id Host interface trap group id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_hostif_trap_group_fn)(
         _In_ sai_object_id_t hostif_trap_group_id);
@@ -130,118 +129,123 @@ typedef sai_status_t (*sai_remove_hostif_trap_group_fn)(
  * @param[in] hostif_trap_group_id Host interface trap group id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_hostif_trap_group_attribute_fn)(
         _In_ sai_object_id_t hostif_trap_group_id,
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief get host interface trap group attribute value.
+ * @brief Get host interface trap group attribute value.
  *
  * @param[in] hostif_trap_group_id Host interface trap group id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_hostif_trap_group_attribute_fn)(
+typedef sai_status_t (*sai_get_hostif_trap_group_attribute_fn)(
         _In_ sai_object_id_t hostif_trap_group_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Host interface trap type
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_hostif_trap_type_t
 {
     /**
      * @brief Start of trap types
      */
-    SAI_HOSTIF_TRAP_TYPE_START = 0x0000000,
+    SAI_HOSTIF_TRAP_TYPE_START = 0x00000000,
 
     /* Control plane protocol */
 
     /* Switch trap */
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_STP = SAI_HOSTIF_TRAP_TYPE_START,
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_LACP = 0x00000001,
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_EAPOL = 0x00000002,
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_LLDP = 0x00000003,
 
-    /** default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_PVRST = 0x00000004,
 
-    /** default action is forward */
+    /** Default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_QUERY = 0x00000005,
 
-    /** default action is forward */
+    /** Default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_LEAVE = 0x00000006,
 
-    /** default action is forward */
+    /** Default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V1_REPORT = 0x00000007,
 
-    /** default action is forward */
+    /** Default action is forward */
     SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V2_REPORT = 0x00000008,
 
-    /** default action is forward */
-    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V3_REPORT = 0x000000009,
+    /** Default action is forward */
+    SAI_HOSTIF_TRAP_TYPE_IGMP_TYPE_V3_REPORT = 0x00000009,
 
-    /** default action is drop */
-    SAI_HOSTIF_TRAP_TYPE_SAMPLEPACKET = 0x00000000a,
+    /** Default action is drop */
+    SAI_HOSTIF_TRAP_TYPE_SAMPLEPACKET = 0x0000000a,
+
+    /** Default action is drop */
+    SAI_HOSTIF_TRAP_TYPE_UDLD = 0x0000000b,
 
     /** Switch traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
 
     /* Router traps */
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST = 0x00002000,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE = 0x00002001,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_DHCP = 0x00002002,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_OSPF = 0x00002003,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_PIM = 0x00002004,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_VRRP = 0x00002005,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_DHCPV6 = 0x00002006,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_OSPFV6 = 0x00002007,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_VRRPV6 = 0x00002008,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_DISCOVERY = 0x00002009,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_MLD_V1_V2 = 0x0000200a,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_MLD_V1_REPORT = 0x0000200b,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_MLD_V1_DONE = 0x0000200c,
 
-    /** default packet action is forward */
+    /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_MLD_V2_REPORT = 0x0000200d,
 
     /**
@@ -251,9 +255,9 @@ typedef enum _sai_hostif_trap_type_t
     SAI_HOSTIF_TRAP_TYPE_UNKNOWN_L3_MULTICAST = 0x0000200e,
 
     /** Router traps custom range start */
-    SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x0003000,
+    SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
 
-    /* local IP traps */
+    /* Local IP traps */
 
     /**
      * @brief IP packets to local router IP address (routes with
@@ -263,31 +267,31 @@ typedef enum _sai_hostif_trap_type_t
     SAI_HOSTIF_TRAP_TYPE_IP2ME = 0x00004000,
 
     /**
-     * @brief SSH traffic (tcp dst port == 22) to local router IP address
+     * @brief SSH traffic (TCP dst port == 22) to local router IP address
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_SSH = 0x00004001,
 
     /**
-     * @brief SNMP traffic (udp dst port == 161) to local router IP address
+     * @brief SNMP traffic (UDP dst port == 161) to local router IP address
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_SNMP = 0x00004002,
 
     /**
-     * @brief BGP traffic (tcp src port == 179 or tcp dst port == 179) to local
+     * @brief BGP traffic (TCP src port == 179 or TCP dst port == 179) to local
      * router IP address (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BGP = 0x00004003,
 
     /**
-     * @brief BGPv6 traffic (tcp src port == 179 or tcp dst port == 179) to
+     * @brief BGPv6 traffic (TCP src port == 179 or TCP dst port == 179) to
      * local router IP address (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x00004004,
 
     /** Local IP traps custom range start */
-    SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x0005000,
+    SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
 
     /* Pipeline exceptions */
 
@@ -340,8 +344,9 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION,
 
     /**
-     * @brief Trap priority. This is equivalent to ACL entry priority
-     * #SAI_ACL_ENTRY_ATTR_PRIORITY
+     * @brief Trap priority.
+     *
+     * This is equivalent to ACL entry priority #SAI_ACL_ENTRY_ATTR_PRIORITY.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -362,7 +367,7 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
 
     /**
-     * @brief Trap-group ID for the trap
+     * @brief Trap group ID for the trap
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -393,7 +398,7 @@ typedef enum _sai_hostif_trap_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_hostif_trap_fn)(
         _Out_ sai_object_id_t *hostif_trap_id,
@@ -406,7 +411,7 @@ typedef sai_status_t (*sai_create_hostif_trap_fn)(
  *
  * @param[in] hostif_trap_id Host interface trap id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_hostif_trap_fn)(
         _In_ sai_object_id_t hostif_trap_id);
@@ -417,9 +422,9 @@ typedef sai_status_t (*sai_remove_hostif_trap_fn)(
  * @param[in] hostif_trap_id Host interface trap id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_set_hostif_trap_attribute_fn)(
+typedef sai_status_t (*sai_set_hostif_trap_attribute_fn)(
         _In_ sai_object_id_t hostif_trap_id,
         _In_ const sai_attribute_t *attr);
 
@@ -430,33 +435,40 @@ typedef sai_status_t(*sai_set_hostif_trap_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_hostif_trap_attribute_fn)(
+typedef sai_status_t (*sai_get_hostif_trap_attribute_fn)(
         _In_ sai_object_id_t hostif_trap_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Host interface user defined trap type
+ *
+ * User defined traps action is controlled by the referencing object.
+ * For example, ACL entry with packet action trap and user trap object ID
  */
 typedef enum _sai_hostif_user_defined_trap_type_t
 {
     /**
      * @brief Start of user defined trap types
      */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START = 0x0000000,
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START = 0x00000000,
 
-    /** router traps (default packet action is drop) */
+    /** Router traps */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ROUTER = SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_START,
 
-    /** neighbor table traps (default packet action is drop) */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH,
+    /**
+     * @brief Neighbor table traps
+     *
+     * Generated by neighbor table entry hit with action trap/log, or by neighbor table miss
+     */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGHBOR,
 
-    /** ACL traps (default packet action is drop) */
+    /** ACL traps */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_ACL,
 
-    /** fdb traps (default packet action is drop) */
+    /** FDB traps */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB,
 
     /** Custom range base */
@@ -468,6 +480,13 @@ typedef enum _sai_hostif_user_defined_trap_type_t
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_END,
 
 } sai_hostif_user_defined_trap_type_t;
+
+/**
+ * @def SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH
+ *
+ * For backward compatibility.
+ */
+#define SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGH SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGHBOR
 
 /**
  * @brief Host interface user defined trap attributes
@@ -500,7 +519,7 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_TRAP_PRIORITY,
 
     /**
-     * @brief Trap-group ID for the trap
+     * @brief Trap group ID for the trap
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -530,7 +549,7 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_hostif_user_defined_trap_fn)(
         _Out_ sai_object_id_t *hostif_user_defined_trap_id,
@@ -543,7 +562,7 @@ typedef sai_status_t (*sai_create_hostif_user_defined_trap_fn)(
  *
  * @param[in] hostif_user_defined_trap_id Host interface user defined trap id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_hostif_user_defined_trap_fn)(
         _In_ sai_object_id_t hostif_user_defined_trap_id);
@@ -554,9 +573,9 @@ typedef sai_status_t (*sai_remove_hostif_user_defined_trap_fn)(
  * @param[in] hostif_user_defined_trap_id Host interface user defined trap id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_set_hostif_user_defined_trap_attribute_fn)(
+typedef sai_status_t (*sai_set_hostif_user_defined_trap_attribute_fn)(
         _In_ sai_object_id_t hostif_user_defined_trap_id,
         _In_ const sai_attribute_t *attr);
 
@@ -567,9 +586,9 @@ typedef sai_status_t(*sai_set_hostif_user_defined_trap_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_hostif_user_defined_trap_attribute_fn)(
+typedef sai_status_t (*sai_get_hostif_user_defined_trap_attribute_fn)(
         _In_ sai_object_id_t hostif_user_defined_trap_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
@@ -608,7 +627,6 @@ typedef enum _sai_hostif_attr_t
     /**
      * @brief Host interface object ID
      *
-     * Valid only when #SAI_HOSTIF_ATTR_TYPE == #SAI_HOSTIF_TYPE_NETDEV
      * Port netdev will be created when object type is SAI_OBJECT_TYPE_PORT
      * LAG netdev will be created when object type is SAI_OBJECT_TYPE_LAG
      * VLAN netdev will be created when object type is SAI_OBJECT_TYPE_VLAN
@@ -621,12 +639,10 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_OBJ_ID,
 
     /**
-     * @brief Name [char[HOSTIF_NAME_SIZE]]
+     * @brief Name [char[SAI_HOSTIF_NAME_SIZE]]
      *
-     * The maximum number of charactars for the name is HOSTIF_NAME_SIZE - 1 since
+     * The maximum number of characters for the name is SAI_HOSTIF_NAME_SIZE - 1 since
      * it needs the terminating null byte ('\0') at the end.
-     *
-     * Valid only when #SAI_HOSTIF_ATTR_TYPE == #SAI_HOSTIF_TYPE_NETDEV
      *
      * @type char
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -653,7 +669,7 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_QUEUE,
 
     /**
-     * @brief Rnd of attributes
+     * @brief End of attributes
      */
     SAI_HOSTIF_ATTR_END,
 
@@ -668,15 +684,15 @@ typedef enum _sai_hostif_attr_t
 /**
  * @brief Create host interface
  *
- * @param[out] hif_id Host interface id
+ * @param[out] hostif_id Host interface id
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
- * @param[in] attr_list Aarray of attributes
+ * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_hostif_fn)(
-        _Out_ sai_object_id_t *hif_id,
+typedef sai_status_t (*sai_create_hostif_fn)(
+        _Out_ sai_object_id_t *hostif_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -684,36 +700,36 @@ typedef sai_status_t(*sai_create_hostif_fn)(
 /**
  * @brief Remove host interface
  *
- * @param[in] hif_id Host interface id
+ * @param[in] hostif_id Host interface id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_remove_hostif_fn)(
-        _In_ sai_object_id_t hif_id);
+typedef sai_status_t (*sai_remove_hostif_fn)(
+        _In_ sai_object_id_t hostif_id);
 
 /**
  * @brief Set host interface attribute
  *
- * @param[in] hif_id Host interface id
+ * @param[in] hostif_id Host interface id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_set_hostif_attribute_fn)(
-        _In_ sai_object_id_t hif_id,
+typedef sai_status_t (*sai_set_hostif_attribute_fn)(
+        _In_ sai_object_id_t hostif_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get host interface attribute
  *
- * @param[in] hif_id Host interface id
+ * @param[in] hostif_id Host interface id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_hostif_attribute_fn)(
-        _In_ sai_object_id_t hif_id,
+typedef sai_status_t (*sai_get_hostif_attribute_fn)(
+        _In_ sai_object_id_t hostif_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -744,19 +760,19 @@ typedef enum _sai_hostif_table_entry_type_t
  */
 typedef enum _sai_hostif_table_entry_channel_type_t
 {
-    /** receive packets via callback */
+    /** Receive packets via callback */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_CB,
 
-    /** receive packets via file descriptor */
+    /** Receive packets via file descriptor */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD,
 
-    /** receive packets via Linux netdev type port */
+    /** Receive packets via Linux netdev type port */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_PHYSICAL_PORT,
 
-    /** receive packets via Linux netdev logical port (LAG or port) */
+    /** Receive packets via Linux netdev logical port (LAG or port) */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_LOGICAL_PORT,
 
-    /** receive packets via Linux netdev L3 interface */
+    /** Receive packets via Linux netdev L3 interface */
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3
 
 } sai_hostif_table_entry_channel_type_t;
@@ -782,11 +798,9 @@ typedef enum _sai_hostif_table_entry_attr_t
     /**
      * @brief Host interface table entry match field object-id
      *
-     * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT
-     * || #SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG || #SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN
-     * should be port object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT
-     * should be lag object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG
-     * should be VLAN ID object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN
+     * Should be port object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT.
+     * Should be LAG object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG.
+     * Should be VLAN ID object when type is SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN.
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -797,10 +811,6 @@ typedef enum _sai_hostif_table_entry_attr_t
 
     /**
      * @brief Host interface table entry match field trap-id
-     *
-     * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE == #SAI_HOSTIF_TABLE_ENTRY_TYPE_PORT ||
-     * #SAI_HOSTIF_TABLE_ENTRY_TYPE_LAG || #SAI_HOSTIF_TABLE_ENTRY_TYPE_VLAN ||
-     * #SAI_HOSTIF_TABLE_ENTRY_TYPE_TRAP_ID
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -830,7 +840,7 @@ typedef enum _sai_hostif_table_entry_attr_t
     SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
 
     /**
-     * @brief Rnd of attributes
+     * @brief End of attributes
      */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_END,
 
@@ -845,15 +855,15 @@ typedef enum _sai_hostif_table_entry_attr_t
 /**
  * @brief Create host interface table entry
  *
- * @param[out] hif_table_entry Host interface table entry
+ * @param[out] hostif_table_entry_id Host interface table entry
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
- * @param[in] attr_list Aarray of attributes
+ * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_hostif_table_entry_fn)(
-        _Out_ sai_object_id_t *hif_table_entry,
+typedef sai_status_t (*sai_create_hostif_table_entry_fn)(
+        _Out_ sai_object_id_t *hostif_table_entry_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -861,36 +871,36 @@ typedef sai_status_t(*sai_create_hostif_table_entry_fn)(
 /**
  * @brief Remove host interface table entry
  *
- * @param[in] hif_table_entry - host interface table entry
+ * @param[in] hostif_table_entry_id Host interface table entry
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_remove_hostif_table_entry_fn)(
-        _In_ sai_object_id_t hif_table_entry);
+typedef sai_status_t (*sai_remove_hostif_table_entry_fn)(
+        _In_ sai_object_id_t hostif_table_entry_id);
 
 /**
  * @brief Set host interface table entry attribute
  *
- * @param[in] hif_table_entry - host interface table entry
+ * @param[in] hostif_table_entry_id Host interface table entry
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_set_hostif_table_entry_attribute_fn)(
-        _In_ sai_object_id_t hif_table_entry,
+typedef sai_status_t (*sai_set_hostif_table_entry_attribute_fn)(
+        _In_ sai_object_id_t hostif_table_entry_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get host interface table entry attribute
  *
- * @param[in] hif_table_entry - host interface table entry
+ * @param[in] hostif_table_entry_id Host interface table entry
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_hostif_table_entry_attribute_fn)(
-        _In_ sai_object_id_t hif_table_entry,
+typedef sai_status_t (*sai_get_hostif_table_entry_attribute_fn)(
+        _In_ sai_object_id_t hostif_table_entry_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -905,10 +915,10 @@ typedef enum _sai_hostif_tx_type_t
      */
     SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS,
 
-    /** tx packet goes to the switch ASIC processing pipeline to decide the output port */
+    /** TX packet goes to the switch ASIC processing pipeline to decide the output port */
     SAI_HOSTIF_TX_TYPE_PIPELINE_LOOKUP,
 
-    /** Custom range bae */
+    /** Custom range base */
     SAI_HOSTIF_TX_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hostif_tx_type_t;
@@ -963,7 +973,7 @@ typedef enum _sai_hostif_packet_attr_t
      *
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
-     * Applicable for use-case like SAMPLEPACKET traps
+     * Applicable for use-case like samplepacket traps.
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -977,15 +987,21 @@ typedef enum _sai_hostif_packet_attr_t
      */
     SAI_HOSTIF_PACKET_ATTR_END,
 
+    /** Custom range base value */
+    SAI_HOSTIF_PACKET_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_HOSTIF_PACKET_ATTR_CUSTOM_RANGE_END
+
 } sai_hostif_packet_attr_t;
 
 /**
  * @brief Hostif receive function
  *
- * @param[in] hif_id Host interface id
+ * @param[in] hostif_id Host interface id
  * @param[out] buffer Packet buffer
- * @param[inout] buffer_size Allocated buffer size [in], actual packet size in bytes [out]
- * @param[inout] attr_count Allocated list size [in], number of attributes [out]
+ * @param[inout] buffer_size Allocated buffer size [in], Actual packet size in bytes [out]
+ * @param[inout] attr_count Allocated list size [in], Number of attributes [out]
  * @param[out] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success #SAI_STATUS_BUFFER_OVERFLOW if
@@ -993,8 +1009,8 @@ typedef enum _sai_hostif_packet_attr_t
  * size. Or if attr_count is insufficient, and attr_count will be filled with
  * required count. Failure status code on error
  */
-typedef sai_status_t(*sai_recv_hostif_packet_fn)(
-        _In_ sai_object_id_t hif_id,
+typedef sai_status_t (*sai_recv_hostif_packet_fn)(
+        _In_ sai_object_id_t hostif_id,
         _Out_ void *buffer,
         _Inout_ sai_size_t *buffer_size,
         _Inout_ uint32_t *attr_count,
@@ -1003,18 +1019,18 @@ typedef sai_status_t(*sai_recv_hostif_packet_fn)(
 /**
  * @brief Hostif send function
  *
- * @param[in] hif_id Host interface id.
- * When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
- * When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
+ * @param[in] hostif_id Host interface id.
+ *    When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
+ *    When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
  * @param[in] buffer Packet buffer
- * @param[in] buffer size Packet size in bytes
+ * @param[in] buffer_size Packet size in bytes
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_send_hostif_packet_fn)(
-        _In_ sai_object_id_t hif_id,
+typedef sai_status_t (*sai_send_hostif_packet_fn)(
+        _In_ sai_object_id_t hostif_id,
         _In_ void *buffer,
         _In_ sai_size_t buffer_size,
         _In_ uint32_t attr_count,
@@ -1026,10 +1042,10 @@ typedef sai_status_t(*sai_send_hostif_packet_fn)(
  * @param[in] switch_id Switch Object ID
  * @param[in] buffer Packet buffer
  * @param[in] buffer_size Actual packet size in bytes
- * @param[in] attr_count Nnumber of attributes
+ * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  */
-typedef void(*sai_packet_event_notification_fn)(
+typedef void (*sai_packet_event_notification_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ const void *buffer,
         _In_ sai_size_t buffer_size,
@@ -1037,7 +1053,7 @@ typedef void(*sai_packet_event_notification_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief hostif methods table retrieved with sai_api_query()
+ * @brief Hostif methods table retrieved with sai_api_query()
  */
 typedef struct _sai_hostif_api_t
 {
@@ -1068,4 +1084,4 @@ typedef struct _sai_hostif_api_t
 /**
  * @}
  */
-#endif /** __SAIHOSTINTF_H_ */
+#endif /** __SAIHOSTIF_H_ */

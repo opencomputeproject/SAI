@@ -18,10 +18,12 @@ my %METADATA = ();
 my %STRUCTS = ();
 my %options = ();
 
+my $NUMBER_REGEX = '(?:-?\d+|0x[A-F0-9]+)';
+
 # pointers used in switch object for notifications
 my @pointers = ();
 
-my @TESTNAMES= ();
+my @TESTNAMES = ();
 
 my %OBJTOAPIMAP = ();
 my %APITOOBJMAP = ();
@@ -40,12 +42,11 @@ my %TAGS = (
         "objects"   , \&ProcessTagObjects,
         "allownull" , \&ProcessTagAllowNull,
         "condition" , \&ProcessTagCondition,
-        "validonly" , \&ProcessTagValidOnly,
+        "validonly" , \&ProcessTagCondition, # since validonly uses same format as condition
         "default"   , \&ProcessTagDefault,
         "ignore"    , \&ProcessTagIgnore,
         "isvlan"    , \&ProcessTagIsVlan,
         "getsave"   , \&ProcessTagGetSave,
-
         );
 
 getopts("d",\%options);
@@ -141,126 +142,39 @@ sub ExtractDescription
         return $content;
     }
 
+    if (defined $item->{content} and defined $item->{ref})
+    {
+        my $n = 0;
+
+        if (ref ($item->{content}) eq "")
+        {
+            # content is just string
+
+            return $item->{content} . $item->{ref}[0]->{content};
+        }
+
+        for my $c ( @{ $item->{content} })
+        {
+            my $ref = $item->{ref}[$n++]->{content};
+
+            # ref array can be 1 item shorter than content
+
+            $content .= $c;
+            $content .= $ref if defined $ref;
+        }
+    }
+
     return $content;
 }
 
-my %ACL_FIELD_TYPES = qw/
-bool                booldata
-sai_uint8_t         u8
-sai_int8_t          s8
-sai_uint16_t        u16
-sai_int16_t         s16
-sai_uint32_t        u32
-sai_int32_t         s32
-sai_mac_t           mac
-sai_ip4_t           ip4
-sai_ip6_t           ip6
-sai_object_id_t     oid
-sai_object_list_t   objlist
-sai_uint8_list_t    u8list/;
+my %ACL_FIELD_TYPES = ();
+my %ACL_FIELD_TYPES_TO_VT = ();
+my %ACL_ACTION_TYPES = ();
+my %ACL_ACTION_TYPES_TO_VT = ();
 
-my %ACL_FIELD_TYPES_TO_VT = qw/
-bool                BOOL
-sai_uint8_t         UINT8
-sai_int8_t          INT8
-sai_uint16_t        UINT16
-sai_int16_t         INT16
-sai_uint32_t        UINT32
-sai_int32_t         INT32
-sai_mac_t           MAC
-sai_ip4_t           IPV4
-sai_ip6_t           IPV6
-sai_object_id_t     OBJECT_ID
-sai_object_list_t   OBJECT_LIST
-sai_uint8_list_t    UINT8_LIST/;
+my %VALUE_TYPES = ();
+my %VALUE_TYPES_TO_VT = ();
 
-my %ACL_ACTION_TYPES = qw/
-sai_uint8_t           u8
-sai_int8_t            s8
-sai_uint16_t          u16
-sai_int16_t           s16
-sai_uint32_t          u32
-sai_int32_t           s32
-sai_mac_t             mac
-sai_ip4_t             ip4
-sai_ip6_t             ip6
-sai_object_id_t       oid
-sai_object_list_t     objectlist/;
-
-my %ACL_ACTION_TYPES_TO_VT = qw/
-sai_uint8_t           UINT8
-sai_int8_t            INT8
-sai_uint16_t          UINT16
-sai_int16_t           INT16
-sai_uint32_t          UINT32
-sai_int32_t           INT32
-sai_mac_t             MAC
-sai_ip4_t             IPV4
-sai_ip6_t             IPV6
-sai_object_id_t       OBJECT_ID
-sai_object_list_t     OBJECT_LIST/;
-
-my %VALUE_TYPES = qw/
-sai_uint8_t             u8
-sai_int8_t              s8
-sai_uint16_t            u16
-sai_int16_t             s16
-sai_uint32_t            u32
-sai_int32_t             s32
-sai_uint64_t            u64
-sai_int64_t             s64
-sai_pointer_t           ptr
-sai_mac_t               mac
-sai_ip4_t               ip4
-sai_ip6_t               ip6
-sai_ip_address_t        ipaddr
-sai_ip_prefix_t         ipprefix
-sai_object_id_t         oid
-sai_object_list_t       objlist
-sai_u8_list_t           u8list
-sai_s8_list_t           s8list
-sai_u16_list_t          u16list
-sai_s16_list_t          s16list
-sai_u32_list_t          u32list
-sai_s32_list_t          s32list
-sai_u32_range_t         u32range
-sai_s32_range_t         s32range
-sai_vlan_list_t         vlanlist
-sai_acl_field_data_t    aclfield
-sai_acl_action_data_t   aclaction
-sai_qos_map_list_t      qosmap
-sai_acl_capability_t    aclcapability
-/;
-
-my %VALUE_TYPES_TO_VT = qw/
-sai_uint8_t             UINT8
-sai_int8_t              INT8
-sai_uint16_t            UINT16
-sai_int16_t             INT16
-sai_uint32_t            UINT32
-sai_int32_t             INT32
-sai_uint64_t            UINT64
-sai_int64_t             INT64
-sai_pointer_t           POINTER
-sai_mac_t               MAC
-sai_ip4_t               IPV4
-sai_ip6_t               IPV6
-sai_ip_address_t        IP_ADDRESS
-sai_ip_prefix_t         IP_PREFIX
-sai_object_id_t         OBJECT_ID
-sai_object_list_t       OBJECT_LIST
-sai_u8_list_t           UINT8_LIST
-sai_s8_list_t           INT8_LIST
-sai_u16_list_t          UINT16_LIST
-sai_s16_list_t          INT16_LIST
-sai_u32_list_t          UINT32_LIST
-sai_s32_list_t          INT32_LIST
-sai_u32_range_t         UINT32_RANGE
-sai_s32_range_t         INT32_RANGE
-sai_vlan_list_t         VLAN_LIST
-sai_qos_map_list_t      QOS_MAP_LIST
-sai_acl_capability_t    ACL_CAPABILITY
-/;
 
 sub ProcessTagType
 {
@@ -361,38 +275,32 @@ sub ProcessTagAllowNull
     return $val;
 }
 
-sub ProcessTagValidOnly
-{
-    my ($type, $value, $val) = @_;
-
-    my @conditions = split/\s+or\s+/,$val;
-
-    for my $cond (@conditions)
-    {
-        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
-        {
-            LogError "invalid validonly tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM";
-            return undef;
-        }
-    }
-
-    return \@conditions;
-}
-
 sub ProcessTagCondition
 {
     my ($type, $value, $val) = @_;
 
-    my @conditions = split/\s+or\s+/,$val;
+    my @conditions = split/\s+(?:or|and)\s+/,$val;
+
+    if ($val =~/or.+and|and.+or/)
+    {
+        LogError "mixed conditions and/or is not supported: $val";
+        return undef;
+    }
 
     for my $cond (@conditions)
     {
-        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
-            LogError "invalid condition tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM";
+            LogError "invalid condition tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM|number";
             return undef;
         }
     }
+
+    # if there is only one condition, then type does not matter
+
+    $type = "SAI_ATTR_CONDITION_TYPE_" . (($val =~ /and/) ? "AND" : "OR");
+
+    unshift @conditions, $type;
 
     return \@conditions;
 }
@@ -411,7 +319,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    if ($val =~/^(true|false|NULL|SAI_\w+|-?\d+|0x[0-9A-F]+)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
+    if ($val =~/^(true|false|NULL|SAI_\w+|$NUMBER_REGEX)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
     {
         return $val;
     }
@@ -422,7 +330,7 @@ sub ProcessTagDefault
         return $val;
     }
 
-    LogError "invalid default tag value '$val', on $type $value";
+    LogError "invalid default tag value '$val' on $type $value";
     return undef;
 }
 
@@ -445,7 +353,7 @@ sub ProcessTagIsVlan
 
 sub ProcessDescription
 {
-    my ($type, $value, $desc) = @_;
+    my ($type, $value, $desc, $brief) = @_;
 
     my @order = ();
 
@@ -475,6 +383,11 @@ sub ProcessDescription
         $METADATA{$type}{$value}{attrid}        = $value;
     }
 
+    $brief =~ s/^\s*//;
+    $brief =~ s/\s*$//;
+
+    $METADATA{$type}{$value}{brief} = $brief if $brief ne "";
+
     my $count = @order;
 
     return if $count == 0;
@@ -501,9 +414,27 @@ sub ProcessEnumSection
 
         $enumtypename =~ s/^_//;
 
+        if (not $enumtypename =~ /^sai_/)
+        {
+            LogWarning "enum $enumtypename is not prefixed sai_";
+            next;
+        }
+
+        if (defined $SAI_ENUMS{$enumtypename})
+        {
+            LogError "duplicated enum $enumtypename";
+            next;
+        }
+
+        my $ed = ExtractDescription($enumtypename, $enumtypename, $memberdef->{detaileddescription}[0]);
+
+        $SAI_ENUMS{$enumtypename}{flagsenum} = ($ed =~ /\@\@flags/s) ? "true" : "false";
+
         my @arr = ();
 
-        $SAI_ENUMS{$enumtypename}{values} = \@arr if not defined $SAI_ENUMS{$enumtypename};
+        $SAI_ENUMS{$enumtypename}{values} = \@arr;
+
+        my $enumprefix = uc($1) if $enumtypename =~ /^(sai_\w+)t$/;
 
         for my $ev (@{ $memberdef->{enumvalue} })
         {
@@ -511,7 +442,9 @@ sub ProcessEnumSection
 
             LogDebug "$id $enumtypename $enumvaluename";
 
-            push$SAI_ENUMS{$enumtypename}{values},$enumvaluename;
+            push@arr,$enumvaluename;
+
+            LogWarning "Value $enumvaluename of $enumtypename is not prefixed as $enumprefix" if not $enumvaluename =~ /^$enumprefix/;
 
             if (not $enumvaluename =~/^[A-Z0-9_]+$/)
             {
@@ -526,6 +459,16 @@ sub ProcessEnumSection
 
         if ($enumtypename =~ /^(sai_\w+)_t$/)
         {
+            my $valuescount = @values;
+
+            if ($valuescount == 0)
+            {
+                LogError "enum $enumtypename is empty, after removing suffixed entries _START/_END/_CUSTOM_RANGE_BASE";
+                LogError "  those suffixes are reserved for range markers and are removed by metadata parser, don't use them";
+                LogError "  as actual part of valid enum name, take a look at sai_udf_group_type_t for valid usage";
+                next;
+            }
+
             my $last = $values[$#values];
 
             if ($last eq uc("$1_MAX"))
@@ -553,8 +496,17 @@ sub ProcessEnumSection
             my $enumvaluename = $ev->{name}[0];
 
             my $desc = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
+            my $brief = ExtractDescription($enumtypename, $enumvaluename, $ev->{briefdescription}[0]);
 
-            ProcessDescription($enumtypename, $enumvaluename, $desc);
+            ProcessDescription($enumtypename, $enumvaluename, $desc, $brief);
+
+            # remove ignored attributes from enums from list
+            # since enum must match attribute list size
+
+            next if not defined $METADATA{$enumtypename}{$enumvaluename}{ignore};
+
+            @values = grep(!/^$enumvaluename$/, @values);
+            $SAI_ENUMS{$enumtypename}{values} = \@values;
         }
     }
 }
@@ -644,19 +596,24 @@ sub ProcessSingleEnum
 
     my @values = @{$enum->{values}};
 
-    WriteSource "const char sai_metadata_${typedef}_enum_name[] = \"$typedef\";";
+    my $flags = (defined $enum->{flagsenum}) ? $enum->{flagsenum} : "false";
+
     WriteSource "const $typedef sai_metadata_${typedef}_enum_values[] = {";
 
     for my $value (@values)
     {
+        LogWarning "Value $value of $typedef must use only capital letters" if $value =~ /[a-z]/;
+
         LogWarning "Value $value of $typedef is not prefixed as $prefix" if not $value =~ /^$prefix/;
 
         WriteSource "    $value,";
     }
 
+    WriteSource "    -1"; # guard
+
     WriteSource "};";
 
-    WriteSource "const char* sai_metadata_${typedef}_enum_values_names[] = {";
+    WriteSource "const char* const sai_metadata_${typedef}_enum_values_names[] = {";
 
     for my $value (@values)
     {
@@ -666,7 +623,7 @@ sub ProcessSingleEnum
     WriteSource "    NULL";
     WriteSource "};";
 
-    WriteSource "const char* sai_metadata_${typedef}_enum_values_short_names[] = {";
+    WriteSource "const char* const sai_metadata_${typedef}_enum_values_short_names[] = {";
 
     for my $value (@values)
     {
@@ -678,9 +635,18 @@ sub ProcessSingleEnum
     WriteSource "    NULL";
     WriteSource "};";
 
-    my $count = $#values + 1;
+    my $count = @values;
 
-    WriteSource "const size_t sai_metadata_${typedef}_enum_values_count = $count;";
+    WriteHeader "extern const sai_enum_metadata_t sai_metadata_enum_$typedef;";
+
+    WriteSource "const sai_enum_metadata_t sai_metadata_enum_$typedef = {";
+    WriteSource "    .name              = \"${typedef}\",";
+    WriteSource "    .valuescount       = $count,";
+    WriteSource "    .values            = (const int*)sai_metadata_${typedef}_enum_values,";
+    WriteSource "    .valuesnames       = sai_metadata_${typedef}_enum_values_names,";
+    WriteSource "    .valuesshortnames  = sai_metadata_${typedef}_enum_values_short_names,";
+    WriteSource "    .containsflags     = $flags,";
+    WriteSource "};";
 
     return $count;
 }
@@ -706,18 +672,12 @@ sub CreateMetadataHeaderAndSource
     WriteHeader "#include \"saimetadatautils.h\"";
     WriteHeader "#include \"saimetadatalogger.h\"";
 
+    # since sai_status is not enum and it will declare extra statuses
+    ProcessSaiStatus();
+
     WriteSource $HEAD;
     WriteSource "#include <stdio.h>";
     WriteSource "#include \"saimetadata.h\"";
-
-    WriteSource "#define DEFINE_ENUM_METADATA(x,count)\\";
-    WriteSource "const sai_enum_metadata_t sai_metadata_enum_ ## x = {\\";
-    WriteSource "    .name              = sai_metadata_ ## x ## _enum_name,\\";
-    WriteSource "    .valuescount       = count,\\";
-    WriteSource "    .values            = (const int*)sai_metadata_ ## x ## _enum_values,\\";
-    WriteSource "    .valuesnames       = sai_metadata_ ## x ## _enum_values_names,\\";
-    WriteSource "    .valuesshortnames  = sai_metadata_ ## x ## _enum_values_short_names,\\";
-    WriteSource "};";
 
     for my $key (sort keys %SAI_ENUMS)
     {
@@ -727,16 +687,13 @@ sub CreateMetadataHeaderAndSource
             next;
         }
 
-        my $count = ProcessSingleEnum($key, $1, uc $2);
-
-        WriteHeader "extern const sai_enum_metadata_t sai_metadata_enum_$1;";
-        WriteSource "DEFINE_ENUM_METADATA($1, $count);";
+        ProcessSingleEnum($key, $1, uc $2);
     }
 
     # all enums
 
-    WriteHeader "extern const sai_enum_metadata_t* sai_metadata_all_enums[];";
-    WriteSource "const sai_enum_metadata_t* sai_metadata_all_enums[] = {";
+    WriteHeader "extern const sai_enum_metadata_t* const sai_metadata_all_enums[];";
+    WriteSource "const sai_enum_metadata_t* const sai_metadata_all_enums[] = {";
 
     for my $key (sort keys %SAI_ENUMS)
     {
@@ -759,8 +716,8 @@ sub CreateMetadataHeaderAndSource
     WriteHeader "extern const size_t sai_metadata_all_enums_count;";
     WriteSource "const size_t sai_metadata_all_enums_count = $count;";
 
-    WriteHeader "extern const sai_enum_metadata_t* sai_metadata_attr_enums[];";
-    WriteSource "const sai_enum_metadata_t* sai_metadata_attr_enums[] = {";
+    WriteHeader "extern const sai_enum_metadata_t* const sai_metadata_attr_enums[];";
+    WriteSource "const sai_enum_metadata_t* const sai_metadata_attr_enums[] = {";
 
     $count = 0;
 
@@ -948,9 +905,9 @@ sub ProcessObjectsLen
 
     return "0" if not defined $objects;
 
-    my @objs =@{ $objects };
+    my $count = @{ $objects };
 
-    return $#objs + 1;
+    return $count;
 }
 
 sub ProcessDefaultValueType
@@ -963,7 +920,7 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL" if $default =~ /^internal$/;
 
-    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|-?\d+|0x[0-9A-F]+|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^(true|false|const|NULL|$NUMBER_REGEX|SAI_\w+)$/ and not $default =~ /_ATTR_|SAI_OBJECT_TYPE_/;
 
     return "SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST" if $default =~ /^empty$/;
 
@@ -1002,13 +959,13 @@ sub ProcessDefaultValue
     }
     elsif ($default =~ /^0$/ and $type =~ /sai_acl_field_data_t (sai_u?int\d+_t)/)
     {
-        WriteSource "$val = { };";
+        WriteSource "$val = { 0 };";
     }
     elsif ($default =~ /^0$/ and $type =~ /sai_acl_action_data_t (sai_u?int\d+_t)/)
     {
-        WriteSource "$val = { };";
+        WriteSource "$val = { 0 };";
     }
-    elsif ($default =~ /^(-?\d+|0x[0-9A-F]+)$/ and $type =~ /sai_u?int\d+_t/)
+    elsif ($default =~ /^$NUMBER_REGEX$/ and $type =~ /sai_u?int\d+_t/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
@@ -1061,6 +1018,30 @@ sub ProcessDefaultValueAttrId
 
     return "SAI_INVALID_ATTRIBUTE_ID";
 }
+
+sub ProcessStoreDefaultValue
+{
+    my ($attr, $value, $flags) = @_;
+
+    # at this point we can't determine whether object is non object id
+
+    if (defined $value and $value =~/vendor|attrvalue/)
+    {
+        return "true";
+    }
+
+    my @flags = @{ $flags };
+
+    $flags = "@flags";
+
+    if ($flags =~/MANDATORY/ and $flags =~ /CREATE_AND_SET/)
+    {
+        return "true";
+    }
+
+    return "false";
+}
+
 
 sub ProcessIsEnum
 {
@@ -1129,16 +1110,18 @@ sub ProcessConditionType
 
     return "SAI_ATTR_CONDITION_TYPE_NONE" if not defined $value;
 
-    return "SAI_ATTR_CONDITION_TYPE_OR";
+    return @{$value}[0];
 }
 
-sub ProcessConditions
+sub ProcessConditionsGeneric
 {
-    my ($attr, $conditions, $enumtype) = @_;
+    my ($attr, $conditions, $enumtype, $name) = @_;
 
     return "NULL" if not defined $conditions;
 
     my @conditions = @{ $conditions };
+
+    shift @conditions;
 
     my $count = 0;
 
@@ -1146,7 +1129,7 @@ sub ProcessConditions
 
     for my $cond (@conditions)
     {
-        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+)$/)
+        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
             LogError "invalid condition '$cond' on $attr";
             return "";
@@ -1160,21 +1143,34 @@ sub ProcessConditions
 
         if ($main_attr ne $cond_attr)
         {
-            LogError "conditional attribute $attr has condition from different object $attrid";
+            LogError "$name attribute $attr has condition from different object $attrid";
             return "";
         }
 
-        WriteSource "const sai_attr_condition_t sai_metadata_condition_${attr}_$count = {";
+        WriteSource "const sai_attr_condition_t sai_metadata_${name}_${attr}_$count = {";
 
         if ($val eq "true" or $val eq "false")
         {
             WriteSource "    .attrid = $attrid,";
             WriteSource "    .condition = { .booldata = $val }";
         }
-        else
+        elsif ($val =~ /^SAI_/)
         {
             WriteSource "    .attrid = $attrid,";
             WriteSource "    .condition = { .s32 = $val }";
+        }
+        elsif ($val =~ /^$NUMBER_REGEX$/ and $enumtype =~ /^sai_u?int(\d+)_t$/)
+        {
+            my $n = $1;
+            my $item = ($enumtype =~ /uint/) ? "u$n" : "s$n";
+
+            WriteSource "    .attrid = $attrid,";
+            WriteSource "    .condition = { .$item = $val }";
+        }
+        else
+        {
+            LogError "unknown $name value: $val on $attr $enumtype";
+            return "";
         }
 
         WriteSource "};";
@@ -1182,13 +1178,13 @@ sub ProcessConditions
         $count++;
     }
 
-    WriteSource "const sai_attr_condition_t* sai_metadata_conditions_${attr}\[\] = {";
+    WriteSource "const sai_attr_condition_t* const sai_metadata_${name}s_${attr}\[\] = {";
 
     $count = 0;
 
     for my $cond (@conditions)
     {
-        WriteSource "    &sai_metadata_condition_${attr}_$count,";
+        WriteSource "    &sai_metadata_${name}_${attr}_$count,";
 
         $count++;
     }
@@ -1197,7 +1193,12 @@ sub ProcessConditions
 
     WriteSource "};";
 
-    return "sai_metadata_conditions_${attr}";
+    return "sai_metadata_${name}s_${attr}";
+}
+
+sub ProcessConditions
+{
+    ProcessConditionsGeneric(@_, "condition");
 }
 
 sub ProcessConditionsLen
@@ -1208,7 +1209,9 @@ sub ProcessConditionsLen
 
     my @conditions = @{ $value };
 
-    return $#conditions + 1;
+    # NOTE: number returned is -1 since first item is condition type
+
+    return $#conditions;
 }
 
 sub ProcessValidOnlyType
@@ -1217,75 +1220,12 @@ sub ProcessValidOnlyType
 
     return "SAI_ATTR_CONDITION_TYPE_NONE" if not defined $value;
 
-    return "SAI_ATTR_CONDITION_TYPE_OR";
+    return @{$value}[0];
 }
 
 sub ProcessValidOnly
 {
-    my ($attr, $conditions, $enumtype) = @_;
-
-    return "NULL" if not defined $conditions;
-
-    my @conditions = @{ $conditions };
-
-    my $count = 0;
-
-    my @values = ();
-
-    for my $cond (@conditions)
-    {
-        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+)$/)
-        {
-            LogError "invalid condition '$cond' on $attr";
-            return "";
-        }
-
-        my $attrid = $1;
-        my $val = $2;
-
-        my $main_attr = $1 if $attr =~ /^SAI_(\w+?)_ATTR_/;
-        my $cond_attr = $1 if $attrid =~ /^SAI_(\w+?)_ATTR_/;
-
-        if ($main_attr ne $cond_attr)
-        {
-            LogError "validonly attribute $attr has condition from different object $attrid";
-            return "";
-        }
-
-        WriteSource "const sai_attr_condition_t sai_metadata_validonly_${attr}_$count = {";
-
-        if ($val eq "true" or $val eq "false")
-        {
-            WriteSource "    .attrid = $attrid,";
-            WriteSource "    .condition = { .booldata = $val }";
-        }
-        else
-        {
-            WriteSource "    .attrid = $attrid,";
-            WriteSource "    .condition = { .s32 = $val }";
-        }
-
-        WriteSource "};";
-
-        $count++;
-    }
-
-    WriteSource "const sai_attr_condition_t* sai_metadata_validonly_${attr}\[\] = {";
-
-    $count = 0;
-
-    for my $cond (@conditions)
-    {
-        WriteSource "    &sai_metadata_validonly_${attr}_$count,";
-
-        $count++;
-    }
-
-    WriteSource "    NULL";
-
-    WriteSource "};";
-
-    return "sai_metadata_validonly_${attr}";
+    ProcessConditionsGeneric(@_, "validonly");
 }
 
 sub ProcessValidOnlyLen
@@ -1296,7 +1236,9 @@ sub ProcessValidOnlyLen
 
     my @conditions = @{ $value };
 
-    return $#conditions + 1;
+    # NOTE: number returned is -1 since first item is condition type
+
+    return $#conditions;
 }
 
 sub ProcessAllowRepeat
@@ -1333,7 +1275,7 @@ sub ProcessAttrName
     return "\"$attr\"";
 }
 
-sub  ProcessIsAclField
+sub ProcessIsAclField
 {
     my $attr = shift;
 
@@ -1342,13 +1284,45 @@ sub  ProcessIsAclField
     return "false";
 }
 
-sub  ProcessIsAclAction
+sub ProcessIsAclAction
 {
     my $attr = shift;
 
     return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_ACTION_\w+$/;
 
     return "false";
+}
+
+sub ProcessBrief
+{
+    my ($attr, $brief) = @_;
+
+    if (not defined $brief or $brief eq "")
+    {
+        LogWarning "missing brief description for $attr";
+        return "";
+    }
+
+    if ($brief =~ m!([^\x20-\x7e]|\\|")!is)
+    {
+        LogWarning "Not allowed char '$1' in brief description on $attr: $brief";
+    }
+
+    if (length $brief > 200)
+    {
+        LogWarning "Long brief > 200 on $attr:\n - $brief";
+    }
+
+    return "\"$brief\"";
+}
+
+sub ProcessIsPrimitive
+{
+    my ($attr, $type) = @_;
+
+    return "false" if $type =~ /(_list_t|acl_capability_t)/;
+
+    return "true";
 }
 
 sub ProcessSingleObjectType
@@ -1384,6 +1358,7 @@ sub ProcessSingleObjectType
         my $defval          = ProcessDefaultValue($attr, $meta{default}, $meta{type});
         my $defvalot        = ProcessDefaultValueObjectType($attr, $meta{default}, $meta{type});
         my $defvalattrid    = ProcessDefaultValueAttrId($attr, $meta{default}, $meta{type});
+        my $storedefaultval = ProcessStoreDefaultValue($attr, $meta{default}, $meta{flags});
         my $isenum          = ProcessIsEnum($attr, $meta{type});
         my $isenumlist      = ProcessIsEnumList($attr, $meta{type});
         my $enummetadata    = ProcessEnumMetadata($attr, $meta{type});
@@ -1397,12 +1372,21 @@ sub ProcessSingleObjectType
         my $getsave         = ProcessGetSave($attr, $meta{getsave});
         my $isaclfield      = ProcessIsAclField($attr);
         my $isaclaction     = ProcessIsAclAction($attr);
+        my $brief           = ProcessBrief($attr, $meta{brief});
+        my $isprimitive     = ProcessIsPrimitive($attr, $meta{type});
+
+        my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
+        my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
+        my $iscreateandset      = ($flags =~ /CREATE_AND_SET/)  ? "true" : "false";
+        my $isreadonly          = ($flags =~ /READ_ONLY/)       ? "true" : "false";
+        my $iskey               = ($flags =~ /KEY/)             ? "true" : "false";
 
         WriteSource "const sai_attr_metadata_t sai_metadata_attr_$attr = {";
 
         WriteSource "    .objecttype                    = $objecttype,";
         WriteSource "    .attrid                        = $attr,";
         WriteSource "    .attridname                    = $attrname,";
+        WriteSource "    .brief                         = $brief,";
         WriteSource "    .attrvaluetype                 = $type,";
         WriteSource "    .flags                         = $flags,";
         WriteSource "    .allowedobjecttypes            = $objects,";
@@ -1411,10 +1395,12 @@ sub ProcessSingleObjectType
         WriteSource "    .allowmixedobjecttypes         = $allowmixed,";
         WriteSource "    .allowemptylist                = $allowempty,";
         WriteSource "    .allownullobjectid             = $allownull,";
+        WriteSource "    .isoidattribute                = ($objectslen > 0),";
         WriteSource "    .defaultvaluetype              = $defvaltype,";
         WriteSource "    .defaultvalue                  = $defval,";
         WriteSource "    .defaultvalueobjecttype        = $defvalot,";
         WriteSource "    .defaultvalueattrid            = $defvalattrid,";
+        WriteSource "    .storedefaultvalue             = $storedefaultval,";
         WriteSource "    .isenum                        = $isenum,";
         WriteSource "    .isenumlist                    = $isenumlist,";
         WriteSource "    .enummetadata                  = $enummetadata,";
@@ -1425,10 +1411,17 @@ sub ProcessSingleObjectType
         WriteSource "    .validonlytype                 = $validonlytype,";
         WriteSource "    .validonly                     = $validonly,";
         WriteSource "    .validonlylength               = $validonlylen,";
+        WriteSource "    .isvalidonly                   = ($validonlylen != 0),";
         WriteSource "    .getsave                       = $getsave,";
         WriteSource "    .isvlan                        = $isvlan,";
         WriteSource "    .isaclfield                    = $isaclfield,";
         WriteSource "    .isaclaction                   = $isaclaction,";
+        WriteSource "    .ismandatoryoncreate           = $ismandatoryoncreate,";
+        WriteSource "    .iscreateonly                  = $iscreateonly,";
+        WriteSource "    .iscreateandset                = $iscreateandset,";
+        WriteSource "    .isreadonly                    = $isreadonly,";
+        WriteSource "    .iskey                         = $iskey,";
+        WriteSource "    .isprimitive                   = $isprimitive,";
 
         WriteSource "};";
 
@@ -1436,17 +1429,17 @@ sub ProcessSingleObjectType
 
         if ($isenum eq "true" or $isenumlist eq "true")
         {
-            my $en = uc($1) if $meta{type} =~/.*sai_(\S+)_t/;
+            my $en = uc($1) if $meta{type} =~/.*sai_(\w+)_t/;
 
             next if $attr =~ /_${en}_LIST$/;
             next if $attr =~ /_$en$/;
 
-            $attr =~/SAI_(\S+?)_ATTR_(\S+)/;
+            $attr =~/SAI_(\w+?)_ATTR_(\w+)/;
 
             my $aot = $1;
             my $aend = $1;
 
-            if ($en =~/^${aot}_(\S+)$/)
+            if ($en =~/^${aot}_(\w+)$/)
             {
                 my $ending = $1;
 
@@ -1465,10 +1458,7 @@ sub CreateMetadata
 {
     for my $key (sort keys %SAI_ENUMS)
     {
-        if (not $key =~ /^(sai_(\w+)_attr_t)$/)
-        {
-            next;
-        }
+        next if not $key =~ /^(sai_(\w+)_attr_t)$/;
 
         my $typedef = $1;
         my $objtype = "SAI_OBJECT_TYPE_" . uc($2);
@@ -1477,8 +1467,37 @@ sub CreateMetadata
     }
 }
 
+sub SanityCheckContent
+{
+    # since we generate so much metadata now
+    # lets put some primitive sanity check
+    # if everything we generated is fine
+
+    my $testCount = @TESTNAMES;
+
+    if ($testCount < 5)
+    {
+        LogError "there should be at least 5 test defined, got $testCount";
+    }
+
+    my $metaHeaderSize = 29337 * 0.9;
+    my $metaSourceSize = 1738348 * 0.9;
+
+    if (length($HEADER_CONTENT) < $metaHeaderSize)
+    {
+        LogError "generated saimetadata.h size is too small";
+    }
+
+    if (length($SOURCE_CONTENT) < $metaSourceSize)
+    {
+        LogError "generated saimetadata.c size is too small";
+    }
+}
+
 sub WriteMetaDataFiles
 {
+    SanityCheckContent();
+
     exit 1 if ($warnings > 0 || $errors > 0);
 
     WriteFile("saimetadata.h", $HEADER_CONTENT);
@@ -1516,9 +1535,23 @@ sub ProcessSaiStatus
 
     while (my $line = <$fh>)
     {
-        next if not $line =~ /define\s+(SAI_STATUS_\w+).+0x00/;
+        next if not $line =~ /define\s+(SAI_STATUS_\w+).+(0x00\w+)/;
 
-        push@values,$1;
+        my $status = $1;
+        my $base = $2;
+
+        push@values,$status;
+
+        next if not ($status =~ /(SAI_\w+)_0$/);
+
+        for my $idx (1..10)
+        {
+            $status = "$1_$idx";
+
+            WriteHeader "#define $status  SAI_STATUS_CODE(($base + ${idx}))";
+
+            push@values,$status;
+        }
     }
 
     close $fh;
@@ -1548,7 +1581,7 @@ sub CreateMetadataForAttributes
             $SAI_ENUMS{$type}{values} = \@empty;
         }
 
-        WriteSource "const sai_attr_metadata_t* sai_metadata_object_type_$type\[\] = {";
+        WriteSource "const sai_attr_metadata_t* const sai_metadata_object_type_$type\[\] = {";
 
         my @values = @{ $SAI_ENUMS{$type}{values} };
 
@@ -1563,8 +1596,8 @@ sub CreateMetadataForAttributes
         WriteSource "};";
     }
 
-    WriteHeader "extern const sai_attr_metadata_t** sai_metadata_attr_by_object_type[];";
-    WriteSource "const sai_attr_metadata_t** sai_metadata_attr_by_object_type[] = {";
+    WriteHeader "extern const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[];";
+    WriteSource "const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[] = {";
 
     for my $ot (@objects)
     {
@@ -1582,7 +1615,7 @@ sub CreateMetadataForAttributes
     WriteSource "    NULL";
     WriteSource "};";
 
-    my $count = $#objects + 1;
+    my $count = @objects;
 
     WriteHeader "extern const size_t sai_metadata_attr_by_object_type_count;";
     WriteSource "const size_t sai_metadata_attr_by_object_type_count = $count;";
@@ -1737,7 +1770,12 @@ sub ProcessStructMembers
 
     return "NULL" if not defined $struct;
 
-    my @keys = keys $struct;
+    my @keys = GetStructKeysInOrder($struct);
+
+    if ($keys[0] ne "switch_id")
+    {
+        LogError "switch_id is not first item in $rawname";
+    }
 
     for my $key (@keys)
     {
@@ -1765,9 +1803,14 @@ sub ProcessStructMembers
         # TODO allow null
 
         WriteSource "};";
+
+        if ($objectlen > 0 and not $key =~ /_id$/)
+        {
+            LogWarning "struct member key '$key' should end at _id in sai_${rawname}_t";
+        }
     }
 
-    WriteSource "const sai_struct_member_info_t* sai_metadata_struct_members_sai_${rawname}_t[] = {";
+    WriteSource "const sai_struct_member_info_t* const sai_metadata_struct_members_sai_${rawname}_t[] = {";
 
     for my $key (@keys)
     {
@@ -1786,8 +1829,7 @@ sub ProcessStructMembersCount
 
     return "0" if not defined $struct;
 
-    my @keys = keys $struct;
-    my $count = @keys;
+    my $count = keys %$struct;
 
     return $count;
 }
@@ -1860,7 +1902,7 @@ sub ProcessRevGraph
         $index++;
     }
 
-    WriteSource "const sai_rev_graph_member_t* sai_metadata_${objectType}_rev_graph_members[] = {";
+    WriteSource "const sai_rev_graph_member_t* const sai_metadata_${objectType}_rev_graph_members[] = {";
 
     for my $mn (@membernames)
     {
@@ -1872,6 +1914,22 @@ sub ProcessRevGraph
     WriteSource "};";
 
     return "sai_metadata_${objectType}_rev_graph_members";
+}
+
+sub ProcessRevGraphCount
+{
+    my %REVGRAPH = GetReverseDependencyGraph();
+
+    my $objectType = shift;
+
+    if (not defined $REVGRAPH{$objectType})
+    {
+        return 0;
+    }
+
+    my $count = @{ $REVGRAPH{$objectType} };
+
+    return $count;
 }
 
 sub CreateStructNonObjectId
@@ -2030,11 +2088,31 @@ sub ProcessGet
 
 sub CreateApis
 {
-    for my $key(sort keys %APITOOBJMAP)
+    for my $key (sort keys %APITOOBJMAP)
     {
         WriteSource "sai_${key}_api_t *sai_metadata_sai_${key}_api = NULL;";
         WriteHeader "extern sai_${key}_api_t *sai_metadata_sai_${key}_api;";
     }
+}
+
+sub CreateApisStruct
+{
+    my @apis = @{ $SAI_ENUMS{sai_api_t}{values} };
+
+    WriteHeader "typedef struct _sai_apis_t {";
+
+    for my $api (@apis)
+    {
+        $api =~ /^SAI_API_(\w+)/;
+
+        $api = lc($1);
+
+        next if $api =~/unspecified/;
+
+        WriteHeader "    sai_${api}_api_t* ${api}_api;";
+    }
+
+    WriteHeader "} sai_apis_t;";
 }
 
 sub CreateApisQuery
@@ -2043,8 +2121,12 @@ sub CreateApisQuery
     WriteHeader "        _In_ sai_api_t sai_api_id,";
     WriteHeader "        _Out_ void** api_method_table);";
 
+    # for switch we need to generate wrapper, for others we can use pointers
+    # so we don't need to use meta key then
+
     WriteSource "int sai_metadata_apis_query(";
-    WriteSource "    _In_ const sai_api_query_fn api_query)";
+    WriteSource "        _In_ const sai_api_query_fn api_query,";
+    WriteSource "        _Inout_ sai_apis_t *apis)";
     WriteSource "{";
     WriteSource "    sai_status_t status = SAI_STATUS_SUCCESS;";
     WriteSource "    int count = 0;";
@@ -2052,20 +2134,27 @@ sub CreateApisQuery
     WriteSource "    if (api_query == NULL)";
     WriteSource "    {";
 
-    for my $key(sort keys %APITOOBJMAP)
+    for my $key (sort keys %APITOOBJMAP)
     {
         WriteSource "        sai_metadata_sai_${key}_api = NULL;";
+        WriteSource "        apis->${key}_api = NULL;";
     }
 
     WriteSource "        return count;";
     WriteSource "    }";
 
-    for my $key(sort keys %APITOOBJMAP)
+    for my $key (sort keys %APITOOBJMAP)
     {
         my $api = uc("SAI_API_${key}");
 
         WriteSource "    status = api_query($api, (void**)&sai_metadata_sai_${key}_api);";
-        WriteSource "    if (status != SAI_STATUS_SUCCESS) { count++; SAI_META_LOG_ERROR(\"failed to query api $api\"); }";
+        WriteSource "    apis->${key}_api = sai_metadata_sai_${key}_api;";
+        WriteSource "    if (status != SAI_STATUS_SUCCESS)";
+        WriteSource "    {";
+        WriteSource "        count++;";
+        WriteSource "        const char *name = sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_status_t, status);";
+        WriteSource "        SAI_META_LOG_ERROR(\"failed to query api $api: %s (%d)\", name, status);";
+        WriteSource "    }";
     }
 
     WriteSource "    return count; /* number of unsuccesfull apis */";
@@ -2073,7 +2162,8 @@ sub CreateApisQuery
     WriteSource "}";
 
     WriteHeader "extern int sai_metadata_apis_query(";
-    WriteHeader "    _In_ const sai_api_query_fn api_query);";
+    WriteHeader "        _In_ const sai_api_query_fn api_query,";
+    WriteHeader "        _Inout_ sai_apis_t *apis);";
 }
 
 sub CreateObjectInfo
@@ -2105,10 +2195,13 @@ sub CreateObjectInfo
         # so struct members must be generated previously
         #
 
-        my $isnonobjectid = ProcessIsNonObjectId($struct, $ot);
-        my $structmembers = ProcessStructMembersName($struct, $ot ,lc($1));
-        my $structmemberscount = ProcessStructMembersCount($struct, $ot);
-        my $revgraph = ProcessRevGraph($ot);
+        my $isnonobjectid       = ProcessIsNonObjectId($struct, $ot);
+        my $structmembers       = ProcessStructMembersName($struct, $ot ,lc($1));
+        my $structmemberscount  = ProcessStructMembersCount($struct, $ot);
+        my $revgraph            = ProcessRevGraph($ot);
+        my $revgraphcount       = ProcessRevGraphCount($ot);
+        my $attrmetalength      = @{ $SAI_ENUMS{$type}{values} };
+
         my $create = "NULL";
         my $remove = "NULL";
         my $set = "NULL";
@@ -2129,27 +2222,29 @@ sub CreateObjectInfo
         WriteHeader "extern const sai_object_type_info_t sai_metadata_object_type_info_$ot;";
 
         WriteSource "const sai_object_type_info_t sai_metadata_object_type_info_$ot = {";
-        WriteSource "    .objecttype         = $ot,";
-        WriteSource "    .objecttypename     = \"$ot\",";
-        WriteSource "    .attridstart        = $start,";
-        WriteSource "    .attridend          = $end,";
-        WriteSource "    .enummetadata       = $enum,";
-        WriteSource "    .attrmetadata       = sai_metadata_object_type_$type,";
-        WriteSource "    .isnonobjectid      = $isnonobjectid,";
-        WriteSource "    .isobjectid         = !$isnonobjectid,";
-        WriteSource "    .structmembers      = $structmembers,";
-        WriteSource "    .structmemberscount = $structmemberscount,";
-        WriteSource "    .revgraphmembers    = $revgraph,";
-        WriteSource "    .create             = $create,";
-        WriteSource "    .remove             = $remove,";
-        WriteSource "    .set                = $set,";
-        WriteSource "    .get                = $get,";
+        WriteSource "    .objecttype           = $ot,";
+        WriteSource "    .objecttypename       = \"$ot\",";
+        WriteSource "    .attridstart          = $start,";
+        WriteSource "    .attridend            = $end,";
+        WriteSource "    .enummetadata         = $enum,";
+        WriteSource "    .attrmetadata         = sai_metadata_object_type_$type,";
+        WriteSource "    .attrmetadatalength   = $attrmetalength,";
+        WriteSource "    .isnonobjectid        = $isnonobjectid,";
+        WriteSource "    .isobjectid           = !$isnonobjectid,";
+        WriteSource "    .structmembers        = $structmembers,";
+        WriteSource "    .structmemberscount   = $structmemberscount,";
+        WriteSource "    .revgraphmembers      = $revgraph,";
+        WriteSource "    .revgraphmemberscount = $revgraphcount,";
+        WriteSource "    .create               = $create,";
+        WriteSource "    .remove               = $remove,";
+        WriteSource "    .set                  = $set,";
+        WriteSource "    .get                  = $get,";
         WriteSource "};";
     }
 
-    WriteHeader "extern const sai_object_type_info_t* sai_metadata_all_object_type_infos[];";
+    WriteHeader "extern const sai_object_type_info_t* const sai_metadata_all_object_type_infos[];";
 
-    WriteSource "const sai_object_type_info_t* sai_metadata_all_object_type_infos[] = {";
+    WriteSource "const sai_object_type_info_t* const sai_metadata_all_object_type_infos[] = {";
 
     for my $ot (@objects)
     {
@@ -2175,17 +2270,31 @@ sub CreateObjectInfo
 sub GetHeaderFiles
 {
     opendir(my $dh, $INCLUDEDIR) || die "Can't opendir $INCLUDEDIR: $!";
-    my @headers = grep { /^sai\S*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
+    my @headers = grep { /^sai\w*\.h$/ and -f "$INCLUDEDIR/$_" } readdir($dh);
     closedir $dh;
 
-    return @headers;
+    return sort @headers;
+}
+
+sub GetMetaHeaderFiles
+{
+    opendir(my $dh, ".") || die "Can't opendir . $!";
+    my @headers = grep { /^sai\w*\.h$/ and -f "./$_" } readdir($dh);
+    closedir $dh;
+
+    return sort @headers;
 }
 
 sub ReadHeaderFile
 {
     my $filename = shift;
     local $/ = undef;
-    open FILE, "$INCLUDEDIR/$filename" or die "Couldn't open file $INCLUDEDIR/$filename: $!";
+
+    # first search file in meta directory
+
+    $filename = "$INCLUDEDIR/$filename" if not -e $filename;
+
+    open FILE, $filename or die "Couldn't open file $filename: $!";
     binmode FILE;
     my $string = <FILE>;
     close FILE;
@@ -2205,7 +2314,7 @@ sub GetNonObjectIdStructNames
 
         # TODO there should be better way to extract those
 
-        while ($data =~ /sai_(?:create|set)_\S+.+?\n.+const\s+(sai_(\w+)_t)/gim)
+        while ($data =~ /sai_(?:create|set)_\w+.+?\n.+const\s+(sai_(\w+)_t)/gim)
         {
             my $name = $1;
             my $rawname = $2;
@@ -2234,15 +2343,34 @@ sub DefineTestName
 
 sub CreatePointersTest
 {
-    # we don't declare actual test, just global values
+    DefineTestName "check_pointer_names_test";
 
-    for my $pointer (@pointers)
+    WriteTest "{";
+
+    for my $pointer (sort @pointers)
     {
+        if (not $pointer =~ /^sai_(\w+)_notification_fn/)
+        {
+            LogWarning "notification function $pointer is not ending on _notification_fn";
+            next;
+        }
+
+        my $name = $1;
+
         # make sure taht declared pointer is correct
         # by testing if it will compile in test
 
-        WriteTest "$pointer var_$pointer = NULL;";
+        WriteTest "    $pointer var_$pointer = NULL;";
+        WriteTest "    PP(var_$pointer);";
+
+        # make sure that switch attribute exists corresponding to pointer name
+
+        my $swattrname = uc "SAI_SWITCH_ATTR_${name}_NOTIFY";
+
+        WriteTest "    printf(\"%d\\n\", $swattrname);";
     }
+
+    WriteTest "}";
 }
 
 sub CreateNonObjectIdTest
@@ -2275,6 +2403,70 @@ sub CreateNonObjectIdTest
     WriteTest "}";
 }
 
+sub CreateSwitchIdTest
+{
+    DefineTestName "switch_id_position_test";
+
+    WriteTest "{";
+
+    my @rawnames = GetNonObjectIdStructNames();
+
+    for my $rawname (@rawnames)
+    {
+        WriteTest "    sai_${rawname}_t $rawname = { 0 };";
+        WriteTest "    TEST_ASSERT_TRUE(&$rawname == (void*)&$rawname.switch_id, \"$rawname.switch_id is not at the struct beginning\");";
+    }
+
+    WriteTest "}";
+}
+
+sub CreateCustomRangeTest
+{
+    DefineTestName "custom_range_test";
+
+    # purpose of this test is to make sure
+    # all objects define custom range start and end markers
+
+    WriteTest "{";
+
+    my @all = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $obj (@all)
+    {
+        next if $obj eq "SAI_OBJECT_TYPE_NULL";
+        next if $obj eq "SAI_OBJECT_TYPE_MAX";
+
+        next if not $obj =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+        WriteTest "    TEST_ASSERT_TRUE(SAI_$1_ATTR_CUSTOM_RANGE_START == 0x10000000, \"invalid custom range start for $1\");";
+        WriteTest "    TEST_ASSERT_TRUE(SAI_$1_ATTR_CUSTOM_RANGE_END > 0x10000000, \"invalid custom range end for $1\");";
+    }
+
+    WriteTest "}";
+}
+
+sub CreateEnumSizeCheckTest
+{
+    DefineTestName "enum_size_check_test";
+
+    WriteTest "{";
+
+    # purpose of this test is to check if all enums size is int32_t in this compiler
+    # since serialize/deserialize enums make assumption that enum base is int32_t
+
+    for my $key (sort keys %SAI_ENUMS)
+    {
+        next if not $key =~ /^(sai_\w+_t)$/;
+        next if $key =~ /^(sai_null_attr_t)$/;
+
+        WriteTest "    TEST_ASSERT_TRUE((sizeof($1) == sizeof(int32_t)), \"invalid enum $1 size\");";
+    }
+
+    WriteTest "    TEST_ASSERT_TRUE((sizeof(sai_status_t) == sizeof(int32_t)), \"invalid sai_status_t size\");";
+
+    WriteTest "}";
+}
+
 sub ExtractStructInfo
 {
     my $struct = shift;
@@ -2285,6 +2477,8 @@ sub ExtractStructInfo
     my $filename = "${prefix}${struct}.xml";
 
     $filename =~ s/_/__/g;
+
+    $filename = $prefix if -e "$XMLDIR/$prefix" and $prefix =~ /\.xml$/;
 
     my $file = "$XMLDIR/$filename"; # example: xml/struct__sai__fdb__entry__t.xml
 
@@ -2314,15 +2508,27 @@ sub ExtractStructInfo
         return %S;
     }
 
+    my $idx = 0;
+
     for my $member (@members)
     {
         my $name = $member->{name}[0];
-        my $type = $1 if $member->{definition}[0] =~ /^(\S+)/;
+        my $type = $member->{definition}[0];
+        my $args = $member->{argsstring}[0];
+
+        # if argstring is empty in xml, then it returns empty hash, skip this
+        # args contain extra arguments like [32] for "char foo[32]" or
+        # function parameters
+
+        $args = "" if ref $args eq "HASH";
+
+        $type = $1 if $type =~ /^(.+) _sai_\w+_t::\w+/;
 
         my $desc = ExtractDescription($struct, $struct, $member->{detaileddescription}[0]);
 
         $S{$name}{type} = $type;
         $S{$name}{desc} = $desc;
+        $S{$name}{idx}  = $idx++;
     }
 
     return %S;
@@ -2351,6 +2557,20 @@ sub ExtractObjectsFromDesc
     return undef;
 }
 
+sub GetStructKeysInOrder
+{
+    my $structRef = shift;
+
+    my @values = ();
+
+    for my $key (keys %$structRef)
+    {
+        $values[$structRef->{$key}->{idx}] = $key;
+    }
+
+    return @values;
+}
+
 sub ProcessSingleNonObjectId
 {
     my $rawname = shift;
@@ -2367,9 +2587,12 @@ sub ProcessSingleNonObjectId
         return undef;
     }
 
+    # NOTE: since this is a HASH then order of the members is not preserved as
+    # they appear in struct definition
+
     my %struct = ExtractStructInfo($structname, "struct_");
 
-    for my $member (keys %struct)
+    for my $member (GetStructKeysInOrder(\%struct))
     {
         my $type = $struct{$member}{type};
         my $desc = $struct{$member}{desc};
@@ -2445,8 +2668,8 @@ sub CreateListOfAllAttributes
         }
     }
 
-    WriteSource "const sai_attr_metadata_t* sai_metadata_attr_sorted_by_id_name[] = {";
-    WriteHeader "extern const sai_attr_metadata_t* sai_metadata_attr_sorted_by_id_name[];";
+    WriteSource "const sai_attr_metadata_t* const sai_metadata_attr_sorted_by_id_name[] = {";
+    WriteHeader "extern const sai_attr_metadata_t* const sai_metadata_attr_sorted_by_id_name[];";
 
     my @keys = sort keys %ATTRIBUTES;
 
@@ -2464,46 +2687,6 @@ sub CreateListOfAllAttributes
     WriteHeader "extern const size_t sai_metadata_attr_sorted_by_id_name_count;";
 }
 
-sub CheckWhiteSpaceInHeaders
-{
-    my @headers = GetHeaderFiles();
-
-    for my $header (@headers)
-    {
-        my $data = ReadHeaderFile($header);
-
-        my @lines = split/\n/,$data;
-
-        my $n = 0;
-
-        for my $line (@lines)
-        {
-            $n++;
-            chomp $line;
-
-            if ($line =~/\s+$/)
-            {
-                LogError "line ends in whitespace $header $n: $line";
-            }
-
-            if ($line =~ /[^\x20-\x7e]/)
-            {
-                LogError "line contains non ascii characters $header $n: $line";
-            }
-
-            if ($line =~ /typedef .+?\(\s*\*\s*(\w+)\s*\)/)
-            {
-                my $fname = $1;
-
-                if (not $fname =~ /^sai_\w+_fn$/)
-                {
-                    LogError "all function declarations should be in format sai_\\w+_fn $header $n: $line";
-                }
-            }
-        }
-    }
-}
-
 sub CheckApiStructNames
 {
     #
@@ -2518,7 +2701,7 @@ sub CheckApiStructNames
     {
         next if $value eq "SAI_API_UNSPECIFIED";
 
-        if (not $value =~ /^SAI_API_(\S+)$/)
+        if (not $value =~ /^SAI_API_(\w+)$/)
         {
             LogError "invalie api name $value";
             next;
@@ -2567,6 +2750,413 @@ sub CheckApiDefines
     }
 }
 
+sub CheckDoxygenStyle
+{
+    my ($header, $line, $n) = @_;
+
+    return if (not $line =~ /\@(\w+)/);
+
+    my $mark = $1;
+
+    if ($mark eq "file" and not $line =~ /\@file\s+($header)/)
+    {
+        LogWarning "\@file should match format: sai\\w+.h: $header $n:$line";
+        return;
+    }
+
+    if ($mark eq "brief" and not $line =~ /\@brief\s+[A-Z]/)
+    {
+        LogWarning "\@brief should start with capital letter: $header $n:$line";
+        return;
+    }
+
+    if ($mark eq "return" and not $line =~ /\@return\s+(#SAI_|[A-Z][a-z])/)
+    {
+        LogWarning "\@return should start with #: $header $n:$line";
+        return;
+    }
+
+    if ($mark eq "param" and not $line =~ /\@param\[(in|out|inout)\] (\.\.\.|[a-z]\w+)\s+([A-Z]\w+)/)
+    {
+        LogWarning "\@param should be in format \@param[in|out|inout] [a-z]\\w+ [A-Z]\\w+: $header $n:$line";
+        return;
+    }
+
+    if ($mark eq "defgroup" and not $line =~ /\@defgroup SAI\w* SAI - \w+/)
+    {
+        LogWarning "\@defgroup should be in format \@defgroup SAI\\w* SAI - \\w+: $header $n:$line";
+        return;
+    }
+}
+
+sub ExtractComments
+{
+    my $input = shift;
+
+    my $comments = "";
+
+    # good enough comments extractor C/C++ source
+
+    while ($input =~ m!(".*?")|//.*?[\r\n]|/\*.*?\*/!s)
+    {
+        $input = $';
+
+        $comments .= $& if not $1;
+    }
+
+    return $comments;
+}
+
+sub CheckHeaderHeader
+{
+    my ($data, $file) = @_;
+
+    my $header = <<_END_
+/**
+ * Copyright (c) 20XX Microsoft Open Technologies, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *    not use this file except in compliance with the License. You may obtain
+ *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+ *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+ *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+ *
+ *    See the Apache Version 2.0 License for specific language governing
+ *    permissions and limitations under the License.
+ *
+ *    Microsoft would like to thank the following companies for their review and
+ *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+ *    Dell Products, L.P., Facebook, Inc
+ *
+_END_
+;
+
+    my $is = substr($data, 0, length($header));
+
+    $is =~ s/ 20\d\d / 20XX /;
+
+    return if $is eq $header;
+
+    LogWarning "Wrong header in $file, is:\n$is\n should be:\n\n$header";
+}
+
+sub CheckFunctionsParams
+{
+    #
+    # make sure that doxygen params match function params names
+    #
+
+    my ($data, $file) = @_;
+
+    my $doxygenCommentPattern = '/\*\*((?:(?!\*/).)*?)\*/';
+    my $fnTypeDefinition = 'typedef\s*\w+[^;]+?(\w+_fn)\s*\)([^;]+?);';
+    my $globalFunction = 'sai_\w+\s*(sai_\w+)[^;]*?\(([^;]+?);';
+
+    while ($data =~ m/$doxygenCommentPattern\s*(?:$fnTypeDefinition|$globalFunction)/gis)
+    {
+        my $comment = $1;
+        my $fname = $2;
+        my $fn = $3;
+
+        $fname = $4 if defined $4;
+        $fn = $5 if defined $5;
+
+        my @params = $comment =~ /\@param\[\w+]\s+(\.\.\.|\w+)/gis;
+        my @fnparams = $fn =~ /_(?:In|Out|Inout)_.+?(\.\.\.|\w+)\s*[,\)]/gis;
+
+        my $params = "@params";
+        my $fnparams = "@fnparams";
+
+        if ($params ne $fnparams)
+        {
+            LogWarning "not matching params in function $fname: $file";
+            LogWarning " doxygen '$params' vs code '$fnparams'";
+        }
+
+        if ("@params" =~ /[A-Z]/)
+        {
+            LogWarning "params should use small letters only '@params' in $fname: $file";
+        }
+
+        next if $fname eq "sai_remove_all_neighbor_entries_fn"; # exception
+
+        my @paramsFlags = lc($comment) =~ /\@param\[(\w+)]/gis;
+        my @fnparamsFlags = lc($fn) =~ /_(\w+)_.+?(?:\.\.\.|\w+)\s*[,\)]/gis;
+
+        if (not "@paramsFlags" eq "@fnparamsFlags")
+        {
+            LogWarning "params flags not match ('@paramsFlags' vs '@fnparamsFlags') in $fname: $file";
+        }
+
+        next if not $fname =~ /_fn$/; # below don't apply for global functions
+
+        if (not $fnparams =~ /^(\w+)(| attr| attr_count attr_list| switch_id attr_count attr_list)$/ and
+            not $fname =~ /_(stats|notification)_fn$|^sai_(send|recv|bulk)_|^sai_meta/)
+        {
+            LogWarning "wrong param names: $fnparams: $fname";
+            LogWarning " expected: $params[0](| attr| attr_count attr_list| switch_id attr_count attr_list)";
+        }
+
+        if ($fname =~ /^sai_(get|set|create|remove)_(\w+?)(_attribute)?(_stats)?_fn/)
+        {
+            my $pattern = $2;
+            my $first = $params[0];
+
+            if ($pattern =~ /_entry$/)
+            {
+                $pattern = "${pattern}_id|${pattern}";
+            }
+            else
+            {
+                $pattern = "${pattern}_id";
+            }
+
+            if (not $first =~ /^$pattern$/)
+            {
+                LogWarning "first param should be called ${pattern} but is $first in $fname: $file";
+            }
+        }
+    }
+}
+
+sub CheckNonDoxygenComments
+{
+    my ($data, $file) = @_;
+
+    while ($data =~ m%( */\*[^\*](?:(?!\*/).)*?\*/)(\n *(\w+))?%gis)
+    {
+        my $comment = $1;
+        my $stick = $3;
+
+        if (($comment =~/\W\@\w+/is) or defined $stick)
+        {
+            LogWarning "candidate for doxygen comment in $file:\n$comment";
+            LogWarning "comment sticked to $stick" if defined $stick;
+        }
+    }
+}
+
+sub CheckDoxygenCommentFormating
+{
+    my ($data, $file) = @_;
+
+    while ($data =~ m%/\*\*(?:(?!\*/).)*?(\*/\n[\n]+(\s*[a-z][^\n]*))%gis)
+    {
+        LogWarning "empty line between doxygen comment and definition: $file: $2";
+    }
+
+    while ($data =~ m%( *)(/\*\*(?:(?!\*/).)*?\*/)%gis)
+    {
+        my $spaces = $1 . " ";
+        my $comment = $2;
+
+        next if $comment =~ m!^/\*\*.*\*/$!; # single line comment
+
+        my @lines = split/\n/,$comment;
+
+        my $first = shift @lines;
+        my $last = pop @lines;
+
+        if (not $first =~ m!^\s*/..$!)
+        {
+            LogWarning "first line doxygen comment should be with '/**': $file: $first";
+            next;
+        }
+
+        if (not $last =~ m!^\s*\*/$!)
+        {
+            LogWarning "last line doxygen comment should be '*/': $file: $last";
+            next;
+        }
+
+        if (not $lines[0] =~ m!\* (\@|Copyright )!)
+        {
+            LogWarning "first doxygen line should contain \@ tag $file: $lines[0]";
+        }
+
+        if ($lines[$#lines] =~ m!^\s*\*\s*$!)
+        {
+            LogWarning "last doxygen line should not be empty $file: $lines[$#lines]";
+        }
+
+        for my $line (@lines)
+        {
+            if (not $line =~ m!^\s*\*( |$)!)
+            {
+                LogWarning "multiline doxygen comments should start with '* ': $file: $line";
+            }
+
+            if (not $line =~ /^$spaces\*/)
+            {
+                LogWarning "doxygen comment has invalid ident: $file: $line";
+            }
+        }
+
+        next; # disabled for now since it generates too much changes
+
+        $comment =~ s!^ *(/\*\*|\*/|\* *)!!gm;
+
+        if ($comment =~ m!\@brief\s+(.+?)\n\n!s)
+        {
+            my $brief = $1;
+
+            if (not $brief =~ /\.$/)
+            {
+                LogWarning "brief should end with dot $file: $brief";
+            }
+        }
+
+        my @n = split/^\@\S+ /m,$comment;
+    }
+
+    while($data =~ m!(([^\n ])+\n */\*\*.{1,30}.+?\n)!isg)
+    {
+        next if $2 eq "{";
+
+        LogWarning "doxygen comment must be preceded with blank line: $file:\n$1";
+    }
+}
+
+sub CheckFunctionNaming
+{
+    my ($header, $n, $line) = @_;
+
+    return if not $line =~ /^\s*sai_(\w+)_fn\s+(\w+)\s*;/;
+
+    my $typename = $1;
+    my $name = $2;
+
+    if ($typename ne $name and not $typename =~ /^bulk_/)
+    {
+        LogWarning "function not matching $typename vs $name in $header:$n:$line";
+    }
+
+    if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?|clear_\w+_stats$/)
+    {
+        # exceptions
+        return if $name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value)$/;
+
+        LogWarning "function not follow convention in $header:$n:$line";
+    }
+}
+
+sub CheckQuadApi
+{
+    my ($data, $file) = @_;
+
+    return if not $data =~ m!(sai_\w+_api_t)(.+?)\1;!igs;
+
+    my $apis = $2;
+
+    my @fns = $apis =~ /sai_(\w+)_fn/g;
+
+    my $fn = join" ",@fns;
+
+    my @quad = split/\bcreate_/,$fn;
+
+    for my $q (@quad)
+    {
+        next if $q eq "";
+
+        if (not $q =~ /(\w+) remove_\1 set_\1_attribute get_\1_attribute( |$)/)
+        {
+            LogWarning "quad api must be in order: create remove set get: $file: $q";
+        }
+    }
+}
+
+sub CheckSwitchKeys
+{
+    my ($data, $file) = @_;
+
+    my $keycount = $1 if $data =~ /#define\s+SAI_SWITCH_ATTR_MAX_KEY_COUNT\s+(\d+)/s;
+
+    my $count = 0;
+
+    while ($data =~ m!#define\s+SAI_KEY_(\w+)\s+"SAI_(\w+)"!gs)
+    {
+        if ($1 ne $2)
+        {
+            LogWarning "SAI_(KEY_)$1 should match SAI_$2";
+        }
+
+        $count++;
+    }
+
+    if ($count != $keycount)
+    {
+        LogWarning "SAI_SWITCH_ATTR_MAX_KEY_COUNT is $keycount, but found only $count keys";
+    }
+}
+
+sub CheckStructAlignment
+{
+    my ($data, $file) = @_;
+
+    return if $file eq "saitypes.h";
+
+    while ($data =~ m!typedef\s+struct\s+_(sai_\w+_t)(.+?)\1;!igs)
+    {
+        my $struct = $1;
+        my $inner = $2;
+
+        # we use space in regex since \s will capture \n
+
+        $inner =~ m/^( *)(\w.+\s+)(\w+)\s*;$/im;
+
+        my $spaces = $1;
+        my $inside = $2;
+        my $name = $3;
+
+        while ($inner =~ m/^( *)(\w.+\s+)(\w+)\s*;$/gim)
+        {
+            my $itemname = $2;
+
+            if ($1 ne $spaces or (length($2) != length($inside) and $struct =~ /_api_t/))
+            {
+                LogWarning "$struct items has invalid column ident: $file: $itemname";
+            }
+        }
+    }
+}
+
+sub GetAcronyms
+{
+    # load acronyms list from file
+
+    my $filename = "acronyms.txt";
+
+    open FILE, $filename or die "Couldn't open file $filename: $!";
+
+    my @acronyms;
+
+    while (<FILE>)
+    {
+        chomp;
+        my $line = $_;
+
+        next if $line =~ /(^#|^$)/;
+
+        if (not $line =~ /^([A-Z0-9]{2,})(\s+-\s+(.+))?$/)
+        {
+            LogWarning "invalid line in $filename: $line";
+            next;
+        }
+
+        my $acronym = $1;
+        my $definition = $3;
+
+        push @acronyms,$acronym;
+    }
+
+    close FILE;
+
+    return @acronyms;
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -2579,11 +3169,41 @@ sub CheckHeadersStyle
     # - wrong spacing idient
     #
 
+    # we could put that to local dictionary file
+
+    my @acronyms = GetAcronyms();
+
+    my @spellExceptions = qw/ CRC32 IPv4 IPv6 BGPv6 6th 0xFF /;
+
+    my %exceptions = map { $_ => $_ } @spellExceptions;
+
+    my %wordsToCheck = ();
+    my %wordsChecked = ();
+
     my @headers = GetHeaderFiles();
+    my @metaheaders = GetMetaHeaderFiles();
+
+    @headers = (@headers, @metaheaders);
 
     for my $header (@headers)
     {
+        next if $header eq "saimetadata.h"; # skip auto generated header
+
         my $data = ReadHeaderFile($header);
+
+        my $oncedef = uc ("__${header}_");
+
+        $oncedef =~ s/\./_/g;
+
+        my $oncedefCount = 0;
+
+        CheckHeaderHeader($data, $header);
+        CheckFunctionsParams($data, $header);
+        CheckDoxygenCommentFormating($data, $header);
+        CheckQuadApi($data, $header);
+        CheckStructAlignment($data, $header);
+        CheckNonDoxygenComments($data, $header);
+        CheckSwitchKeys($data, $header) if $header eq "saiswitch.h";
 
         my @lines = split/\n/,$data;
 
@@ -2595,6 +3215,10 @@ sub CheckHeadersStyle
         for my $line (@lines)
         {
             $n++;
+
+            CheckFunctionNaming($header, $n, $line);
+
+            $oncedefCount++ if $line =~/\b$oncedef\b/;
 
             # detect multiple empty lines
 
@@ -2629,7 +3253,10 @@ sub CheckHeadersStyle
 
             if ($line =~ /\*\s+[^ ].*  / and not $line =~ /\* \@(brief|file)/)
             {
-                LogWarning "too many spaces after *\\s+ $header $n:$line";
+                if (not $line =~ /const.+const\s+\w+;/)
+                {
+                    LogWarning "too many spaces after *\\s+ $header $n:$line";
+                }
             }
 
             if ($line =~ /(typedef|{|}|_In\w+|_Out\w+)( [^ ].*  |  )/ and not $line =~ /typedef\s+u?int/i)
@@ -2651,16 +3278,173 @@ sub CheckHeadersStyle
             {
                 # make struct function members to follow convention
 
-                LogWarning "$1 should be equal to $2" if (($1 ne $2) and not($1 =~ /^bulk/))
+                LogWarning "$2 should be equal to $1" if (($1 ne $2) and not($1 =~ /^bulk/))
             }
 
-            next if $line =~ /^ \*/;                # doxygen comment
+            if ($line =~ /_(?:In|Out)\w+\s+(?:sai_)?uint32_t\s*\*?(\w+)/)
+            {
+                my $param = $1;
+
+                my $pattern = '^(attr_count|object_count|number_of_counters|count)$';
+
+                if (not $param =~ /$pattern/)
+                {
+                    LogWarning "param $param should match $pattern $header:$n:$line";
+                }
+            }
+
+            if ($line =~ /typedef.+_fn\s*\)/ and not $line =~ /typedef( \S+)+ \(\*\w+_fn\)\(/)
+            {
+                LogWarning "wrong style typedef function definition $header:$n:$line";
+            }
+
+            if ($line =~ / ([.,:;)])/ and not $line =~ /\.(1D|1Q|\.\.)/)
+            {
+                LogWarning "space before '$1' : $header:$n:$line";
+            }
+
+            if ($line =~ / \* / and not $line =~ /^\s*\* /)
+            {
+                LogWarning "floating start: $header:$n:$line";
+            }
+
+            if ($line =~ /}[^ ]/)
+            {
+                LogWarning "no space after '}' $header:$n:$line";
+            }
+
+            if ($line =~ /_[IO].+\w+\* /)
+            {
+                LogWarning "star should be next to param name $header:$n:$line";
+            }
+
+            if ($line =~ /[^ ]\s*_(In|Out|Inout)_/ and not $line =~ /^#define/)
+            {
+                LogWarning "each param should be in separate line $header:$n:$line";
+            }
+
+            if ($line =~ m!/\*\*\s+[a-z]!)
+            {
+                LogWarning "doxygen comment should start with capital letter: $header:$n:$line";
+            }
+
+            if ($line =~ /sai_\w+_statistics_fn/)
+            {
+                LogWarning "statistics should use 'stats' to follow convention $header:$n:$line";
+            }
+
+            if ($line =~ /^\s*SAI_\w+\s*=\s*+0x(\w+)(,|$)/ and length($1) != 8)
+            {
+                LogWarning "enum number '0x$1' should have 8 digits $header:$n:$line";
+            }
+
+            if ($line =~ /^\s*SAI_\w+(\s*)=(\s*)/ and ($1 eq "" or $2 eq ""))
+            {
+                LogWarning "space is required before and after '=' $header:$n:$line";
+            }
+
+            if ($line =~ /#define\s*(\w+)/ and $header ne "saitypes.h")
+            {
+                my $defname = $1;
+
+                if (not $defname =~ /^(SAI_|__SAI)/)
+                {
+                    LogWarning "define should start with SAI_ or __SAI: $header:$n:$line";
+                }
+            }
+
+            if ($line =~/\s+$/)
+            {
+                LogWarning "line ends in whitespace $header $n: $line";
+            }
+
+            if ($line =~ /[^\x20-\x7e]/)
+            {
+                LogWarning "line contains non ascii characters $header $n: $line";
+            }
+
+            if ($line =~ /typedef .+?\(\s*\*\s*(\w+)\s*\)/)
+            {
+                my $fname = $1;
+
+                if (not $fname =~ /^sai_\w+_fn$/)
+                {
+                    LogWarning "all function declarations should be in format sai_\\w+_fn $header $n: $line";
+                }
+            }
+
+            my $pattern = join"|", @acronyms;
+
+            while ($line =~ /\b($pattern)\b/igp)
+            {
+                my $pre = $`;
+                my $post = $';
+
+                # force special word to be capital
+
+                my $word = $1;
+
+                next if $word =~ /^($pattern)$/;
+                next if $line =~ /$word.h/;
+                next if not $line =~ /\*/; # must contain star, so will be comment
+                next if "$pre$word" =~ m!http://$word$!;
+
+                LogWarning "Word '$word' should use capital letters $header $n:$line";
+            }
+
+            # perform aspell checking (move to separate method)
+
+            if ($line =~ m!^\s*(\*|/\*\*)!)
+            {
+                while ($line =~ /\b([a-z0-9']+)\b/ig)
+                {
+                    my $pre = $`;
+                    my $post = $';
+                    my $word = $1;
+
+                    next if $word =~ /^($pattern)$/; # capital words
+
+                    # look into good and bad words hash to speed things up
+
+                    next if defined $exceptions{$word};
+                    next if $word =~/^sai\w+/i;
+                    next if $word =~/0x\S+L/;
+                    next if "$pre$word" =~/802.\d+\w+/;
+
+                    next if defined $wordsChecked{$word};
+
+                    $wordsChecked{$word} = 1;
+
+                    $wordsToCheck{$word} = "$header $n:$line";
+                }
+            }
+
+            if ($line =~ /\\/ and not $line =~ /\\[0\[\]]/ and not $line =~ /\\$/)
+            {
+                LogWarning "line contains \\ which should not be used in this way $header $n:$line";
+            }
+
+            if ($line =~ /typedef\s*(enum|struct|union).*{/)
+            {
+                LogWarning "move '{' to new line in typedef $header $n:$line";
+            }
+
+            if ($line =~ /^[^*]*union/ and not $line =~ /union _\w+/)
+            {
+                LogError "all unions must be named $header $n:$line";
+            }
+
+            CheckDoxygenStyle($header, $line, $n);
+
+            next if $line =~ /^ \*($|[ \/])/;       # doxygen comment
             next if $line =~ /^$/;                  # empty line
             next if $line =~ /^typedef /;           # type definition
-            next if $line =~ /^sai_status/;         # return codes
-            next if $line =~ /^sai_object/;         # return codes
+            next if $line =~ /^sai_status_t sai_\w+\(/;     # return codes
+            next if $line =~ /^sai_object\w+_t sai_\w+\(/;  # return codes
+            next if $line =~ /^int sai_\w+\($/;             # methods returning int
+            next if $line =~ /^extern /;            # extern in metadata
             next if $line =~ /^[{}#\/]/;            # start end of struct, define, start of comment
-            next if $line =~ /^ {8}(_In|_Out)/;     # function arguments
+            next if $line =~ /^ {8}(_In|_Out|\.\.\.)/;     # function arguments
             next if $line =~ /^ {4}(sai_)/i;        # sai struct entry or SAI enum
             next if $line =~ /^ {4}\/\*/;           # doxygen start
             next if $line =~ /^ {5}\*/;             # doxygen comment continue
@@ -2671,8 +3455,78 @@ sub CheckHeadersStyle
             next if $line =~ /^ {4}(char|bool)/;    # union entries
             next if $line =~ /^ {8}bool booldata/;  # union bool
             next if $line =~ /^ {4}(true|false)/;   # bool definition
+            next if $line =~ /^ {4}(const|size_t|else)/; # const in meta headers
 
-            LogWarning "header don't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
+            next if $line =~ m![^\\]\\$!; # macro multiline
+
+            LogWarning "Header doesn't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
+        }
+
+        if ($oncedefCount != 3)
+        {
+            LogWarning "$oncedef should be used 3 times in header, but used $oncedefCount";
+        }
+    }
+
+    if (not -e "/usr/bin/aspell")
+    {
+        LogError "ASPELL IS NOT PRESENT, please install aspell";
+        return;
+    }
+
+    LogInfo "Running Aspell";
+
+    my @keys = sort keys %wordsToCheck;
+
+    my $count = @keys;
+
+    my $all = "@keys";
+
+    LogInfo "Words to check: $count";
+
+    my @result = `echo "$all" | /usr/bin/aspell -l en -a -p ./aspell.en.pws 2>&1`;
+
+    for my $res (@result)
+    {
+        if ($res =~/error/i)
+        {
+            LogError "aspell error: $res";
+            last;
+        }
+
+        next if not $res =~ /^\s*&\s*(\S+)/;
+
+        my $word = $1;
+
+        chomp $res;
+
+        my $where = "??";
+
+        if (not defined $wordsToCheck{$word})
+        {
+            for my $k (@keys)
+            {
+                if ($k =~/(^$word|$word$)/)
+                {
+                    $where = $wordsToCheck{$k};
+                    last;
+                }
+
+                $where = $wordsToCheck{$k} if ($k =~/$word/);
+            }
+        }
+        else
+        {
+            $where = $wordsToCheck{$word};
+        }
+
+        if ($word =~ /^[A-Z0-9]{2,}$/)
+        {
+            LogWarning "Word '$word' is misspelled or is acronym, add to acronyms.txt? $where";
+        }
+        else
+        {
+            LogWarning "Word '$word' is misspelled $where";
         }
     }
 }
@@ -2693,8 +3547,6 @@ sub ExtractApiToObjectMap
 
         my @lines = split/\n/,$data;
 
-        my $n = 0;
-
         my $empty = 0;
         my $emptydoxy = 0;
 
@@ -2703,8 +3555,6 @@ sub ExtractApiToObjectMap
 
         for my $line (@lines)
         {
-            $n++;
-
             if ($line =~ /typedef\s+enum\s+_sai_(\w+)_attr_t/)
             {
                 push@objects,uc("SAI_OBJECT_TYPE_$1");
@@ -2804,7 +3654,8 @@ sub GetReverseDependencyGraph
                     $REVGRAPH{$usedot} = \@arr;
                 }
 
-                push$REVGRAPH{$usedot},"$ot,$attrid";
+                my $ref = $REVGRAPH{$usedot};
+                push@$ref,"$ot,$attrid";
             }
         }
 
@@ -2814,7 +3665,7 @@ sub GetReverseDependencyGraph
 
         my %struct = %{ $STRUCTS{$ot} };
 
-        for my $key(keys %struct)
+        for my $key (sort keys %struct)
         {
             next if not defined $struct{$key}{objects};
 
@@ -2828,9 +3679,9 @@ sub GetReverseDependencyGraph
                     $REVGRAPH{$usedot} = \@arr;
                 }
 
-                push$REVGRAPH{$usedot},"$ot,$key";
+                my $ref = $REVGRAPH{$usedot};
+                push@$ref,"$ot,$key";
             }
-
         }
     }
 
@@ -2845,6 +3696,7 @@ sub WriteTestHeader
 
     WriteTest "#include <stdio.h>";
     WriteTest "#include <stdlib.h>";
+    WriteTest "#include <string.h>";
     WriteTest "#include \"saimetadata.h\"";
     WriteTest "#define PP(x) printf(\"%p\\n\", (x));";
     WriteTest "#define TEST_ASSERT_TRUE(x,msg) if (!(x)){ fprintf(stderr, \"ASSERT TRUE FAILED(%d): %s: %s\\n\", __LINE__, #x, msg); exit(1);}";
@@ -2876,6 +3728,172 @@ sub WriteTestMain
     WriteTest "}";
 }
 
+sub CreateListCountTest
+{
+    #
+    # purpose of this test is to check if all list structs have count as first
+    # item so later on we can cast any structure to extract count
+    #
+
+    DefineTestName "list_count_test";
+
+    WriteTest "{";
+
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union_");
+
+    WriteTest "    size_t size_ref = sizeof(sai_object_list_t);";
+
+    for my $key (sort keys %Union)
+    {
+        my $type = $Union{$key}->{type};
+
+        next if not $type =~ /^sai_(\w+_list)_t$/;
+
+        my $name = $1;
+
+        WriteTest "    $type $name;";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($type) == size_ref, \"type $type has different sizeof than sai_object_type_t\");";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($name.count) == sizeof(uint32_t), \"$type.count should be uint32_t\");";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($name.list) == sizeof(void*), \"$type.list should be pointer\");";
+        WriteTest "    TEST_ASSERT_TRUE(&$name == (void*)&$name.count, \"$type.count should be first member in $type\");";
+    }
+
+    WriteTest "}";
+}
+
+sub CreateApiNameTest
+{
+    #
+    # Purpose of this check is to find out if all api names correspond to
+    # actual object names and follow convention name and the same signature except
+    # some special objects.
+    #
+
+    DefineTestName "api_name_test";
+
+    WriteTest "{";
+
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    WriteTest "    sai_object_type_t checked[SAI_OBJECT_TYPE_MAX];";
+    WriteTest "    memset(checked, 0, SAI_OBJECT_TYPE_MAX * sizeof(sai_object_type_t));";
+
+    WriteTest "    void *dummy = NULL;";
+
+    for my $ot (@objects)
+    {
+        next if $ot =~ /^SAI_OBJECT_TYPE_(MAX|NULL)$/;
+
+        $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/;
+
+        if ($ot eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $ot eq "SAI_OBJECT_TYPE_HOSTIF_PACKET")
+        {
+            # those obejcts are special, just attributes, no APIs
+            WriteTest "    checked[(int)$ot] = $ot;";
+            next;
+        }
+
+        my $short = lc($1);
+
+        my $api = $OBJTOAPIMAP{$ot};
+
+        WriteTest "    {";
+        WriteTest "        sai_${api}_api_t ${api}_api;";
+
+        if (defined $STRUCTS{$ot})
+        {
+            # object type is non object id, we must generate stuff on the fly
+
+            WriteTest "        typedef sai_status_t (*${short}_create_fn)(\\";
+            WriteTest "                _In_ const sai_${short}_t *$short,\\";
+            WriteTest "                _In_ uint32_t attr_count,\\";
+            WriteTest "                _In_ const sai_attribute_t *attr_list);";
+
+            WriteTest "        typedef sai_status_t (*${short}_remove_fn)(\\";
+            WriteTest "                _In_ const sai_${short}_t *$short);";
+
+            WriteTest "        typedef sai_status_t (*${short}_set_fn)(\\";
+            WriteTest "                _In_ const sai_${short}_t *$short,\\";
+            WriteTest "                _In_ const sai_attribute_t *attr);";
+
+            WriteTest "        typedef sai_status_t (*${short}_get_fn)(\\";
+            WriteTest "                _In_ const sai_${short}_t *$short,\\";
+            WriteTest "                _In_ uint32_t attr_count,\\";
+            WriteTest "                _Inout_ sai_attribute_t *attr_list);";
+
+            WriteTest "        ${short}_create_fn create = ${api}_api.create_$short;";
+            WriteTest "        ${short}_remove_fn remove = ${api}_api.remove_$short;";
+            WriteTest "        ${short}_set_fn set = ${api}_api.set_${short}_attribute;";
+            WriteTest "        ${short}_get_fn get = ${api}_api.get_${short}_attribute;";
+
+            # just to check if function is declared
+
+            WriteTest "        sai_create_${short}_fn cr = NULL;";
+            WriteTest "        sai_remove_${short}_fn re = NULL;";
+            WriteTest "        sai_set_${short}_attribute_fn se = NULL;";
+            WriteTest "        sai_get_${short}_attribute_fn ge = NULL;";
+
+            WriteTest "        dummy = &create;";
+            WriteTest "        dummy = &remove;";
+            WriteTest "        dummy = &set;";
+            WriteTest "        dummy = &get;";
+            WriteTest "        dummy = &cr;";
+            WriteTest "        dummy = &re;";
+            WriteTest "        dummy = &se;";
+            WriteTest "        dummy = &ge;";
+            WriteTest "        checked[(int)$ot] = $ot;";
+        }
+        else
+        {
+            if ($ot eq "SAI_OBJECT_TYPE_SWITCH")
+            {
+                WriteTest "        sai_create_switch_fn create = ${api}_api.create_$short;";
+            }
+            else
+            {
+                WriteTest "        sai_generic_create_fn create = ${api}_api.create_$short;";
+            }
+
+            WriteTest "        sai_generic_remove_fn remove = ${api}_api.remove_$short;";
+            WriteTest "        sai_generic_set_fn set = ${api}_api.set_${short}_attribute;";
+            WriteTest "        sai_generic_get_fn get = ${api}_api.get_${short}_attribute;";
+
+            # just to check if function is declared
+
+            WriteTest "        sai_create_${short}_fn cr = NULL;";
+            WriteTest "        sai_remove_${short}_fn re = NULL;";
+            WriteTest "        sai_set_${short}_attribute_fn se = NULL;";
+            WriteTest "        sai_get_${short}_attribute_fn ge = NULL;";
+
+            WriteTest "        dummy = &create;";
+            WriteTest "        dummy = &remove;";
+            WriteTest "        dummy = &set;";
+            WriteTest "        dummy = &get;";
+            WriteTest "        dummy = &cr;";
+            WriteTest "        dummy = &re;";
+            WriteTest "        dummy = &se;";
+            WriteTest "        dummy = &ge;";
+            WriteTest "        checked[(int)$ot] = $ot;";
+        }
+
+        WriteTest "    }";
+    }
+
+    WriteTest "    int index = SAI_OBJECT_TYPE_NULL;";
+
+    WriteTest "    for (; index < SAI_OBJECT_TYPE_MAX; ++index)";
+    WriteTest "    {";
+    WriteTest "        printf(\"checking: %s checked (%d) == index (%d)\\n\",";
+    WriteTest "             sai_metadata_enum_sai_object_type_t.valuesnames[index],";
+    WriteTest "             checked[index],(sai_object_type_t)index);";
+    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all obejcts were processed\");";
+    WriteTest "    }";
+
+    WriteTest "    PP(dummy);";
+
+    WriteTest "}";
+}
+
 sub WriteLoggerVariables
 {
     #
@@ -2904,7 +3922,6 @@ sub ProcessStructItem
 
     return if defined $SAI_ENUMS{$type}; # struct entry is enum
 
-    return if $type eq "union"; # union is special, but all union members are flattened anyway
     return if $type eq "bool";
 
     return if $type =~/^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
@@ -2919,9 +3936,31 @@ sub ProcessStructItem
         return;
     }
 
-    my %S = ExtractStructInfo($type, "struct_");
+    my %S = ();
 
-    for my $key (keys %S)
+    if ($type =~ /^union (\w+)::(\w+)/)
+    {
+        # union is special, but now since all unions are named
+        # then members are not flattened anyway, and we need to examine
+        # entries from union xml
+        # XXX may require revisit if union names will be complicated
+
+        my $unionStructName = $1;
+        my $unionName = $2;
+
+        $unionStructName =~ s/_/__/g;
+        $unionName =~ s/_/__/g;
+
+        my $filename = "union${unionStructName}_1_1$unionName.xml";
+
+        %S = ExtractStructInfo($unionStructName, $filename);
+    }
+    else
+    {
+        %S = ExtractStructInfo($type, "struct_");
+    }
+
+    for my $key (sort keys %S)
     {
         my $item = $S{$key}{type};
 
@@ -2942,11 +3981,11 @@ sub CheckAttributeValueUnion
     # object dependencies via metadata and comparison logic
     #
 
-    my %Union = ExtractStructInfo("sai_attribute_value_t", "union");
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union_");
 
     my @primitives = qw/sai_acl_action_data_t sai_acl_field_data_t sai_pointer_t sai_object_id_t sai_object_list_t char/;
 
-    for my $key (keys %Union)
+    for my $key (sort keys %Union)
     {
         my $type = $Union{$key}{type};
 
@@ -2959,6 +3998,138 @@ sub CheckAttributeValueUnion
     }
 }
 
+sub CreateNotificationStruct
+{
+    #
+    # create notification struct for easier notification
+    # manipulation in code
+    #
+
+    WriteHeader "typedef struct _sai_switch_notifications_t {";
+
+    for my $pointer (sort @pointers)
+    {
+        if (not $pointer =~ /^sai_(\w+)_notification_fn/)
+        {
+            LogWarning "notification function $pointer is not ending on _notification_fn";
+            next;
+        }
+
+        WriteHeader "    $pointer on_$1;";
+    }
+
+    WriteHeader "} sai_switch_notifications_t;";
+}
+
+sub WriteHeaderHeader
+{
+    WriteHeader "#ifndef __SAI_METADATA_H__";
+    WriteHeader "#define __SAI_METADATA_H__";
+}
+
+sub WriteHeaderFotter
+{
+    WriteHeader "#endif /* __SAI_METADATA_H__ */";
+}
+
+sub ProcessXmlFiles
+{
+    for my $file (GetXmlFiles($XMLDIR))
+    {
+        LogInfo "Processing $file";
+
+        ProcessXmlFile("$XMLDIR/$file");
+    }
+}
+
+sub ProcessValues
+{
+    my ($refUnion, $refValueTypes, $refValueTypesToVt) = @_;
+
+    for my $key (keys %$refUnion)
+    {
+        my $type = $refUnion->{$key}->{type};
+
+        if (not $type =~ /^sai_(\w+)_t$/)
+        {
+            next if $type eq "char" or $type eq "bool";
+
+            LogWarning "skipping type $type, FIXME";
+            next;
+        }
+
+        my $innername = $1;
+
+        $innername =~ s/^s(\d+)/INT$1/;
+        $innername =~ s/^u(\d+)/UINT$1/;
+        $innername =~ s/^ip(\d+)/IPV$1/;
+
+        $refValueTypes->{$type} = $key;
+        $refValueTypesToVt->{$type} = uc($innername);
+    }
+}
+
+sub PopulateValueTypes
+{
+    my %Union = ExtractStructInfo("sai_attribute_value_t", "union_");
+
+    ProcessValues(\%Union, \%VALUE_TYPES, \%VALUE_TYPES_TO_VT);
+
+    %Union = ExtractStructInfo("sai_acl_action_data_t", "union__sai__acl__action__data__t_1_1__parameter.xml");
+
+    ProcessValues(\%Union, \%ACL_ACTION_TYPES, \%ACL_ACTION_TYPES_TO_VT);
+
+    %Union = ExtractStructInfo("sai_acl_field_data_t", "union__sai__acl__field__data__t_1_1__data.xml");
+
+    ProcessValues(\%Union, \%ACL_FIELD_TYPES, \%ACL_FIELD_TYPES_TO_VT);
+}
+
+sub GetStructLists
+{
+    my $data = ReadHeaderFile("$INCLUDEDIR/saitypes.h");
+
+    my %StructLists = ();
+
+    my @lines = split/\n/,$data;
+
+    for my $line (@lines)
+    {
+        next if not $line =~ /typedef\s+struct\s+_(sai_\w+_list_t)/;
+
+        $StructLists{$1} = $1;
+    }
+
+    return %StructLists;
+}
+
+sub CreateStructListTest
+{
+    #
+    # make sure that all structs _list_t contains 2 items
+    # and purpose is to be list, so .count and .list
+    #
+
+    my %StructLists = GetStructLists();
+
+    DefineTestName "struct_list_test";
+
+    WriteTest "{";
+
+    WriteTest "    uint32_t count;";
+    WriteTest "    void *ptr;";
+
+    for my $struct (sort keys %StructLists)
+    {
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($struct) == sizeof(sai_object_list_t), \"struct $struct sizeof is differenat than sai_object_list_t\");";
+        WriteTest "    $struct s_$struct;";
+        WriteTest "    count = s_$struct.count;";
+        WriteTest "    ptr   = s_$struct.list;";
+        WriteTest "    printf(\"$struct %p %u\\n\", ptr, count);";
+    }
+
+    WriteTest "}";
+}
+
 #
 # MAIN
 #
@@ -2967,18 +4138,13 @@ CheckHeadersStyle();
 
 ExtractApiToObjectMap();
 
-for my $file (GetXmlFiles($XMLDIR))
-{
-    LogInfo "Processing $file";
+GetStructLists();
 
-    ProcessXmlFile("$XMLDIR/$file");
-}
+PopulateValueTypes();
 
-# since sai_status is not enum
-ProcessSaiStatus();
+ProcessXmlFiles();
 
-WriteHeader "#ifndef __SAI_METADATA_H__";
-WriteHeader "#define __SAI_METADATA_H__";
+WriteHeaderHeader();
 
 CreateMetadataHeaderAndSource();
 
@@ -2994,13 +4160,13 @@ CreateStructNonObjectId();
 
 CreateApis();
 
+CreateApisStruct();
+
 CreateApisQuery();
 
 CreateObjectInfo();
 
 CreateListOfAllAttributes();
-
-CheckWhiteSpaceInHeaders();
 
 CheckApiStructNames();
 
@@ -3008,7 +4174,9 @@ CheckApiDefines();
 
 CheckAttributeValueUnion();
 
-WriteHeader "#endif /* __SAI_METADATA_H__ */";
+CreateNotificationStruct();
+
+WriteHeaderFotter();
 
 # Test Section
 
@@ -3016,7 +4184,19 @@ WriteTestHeader();
 
 CreateNonObjectIdTest();
 
+CreateSwitchIdTest();
+
+CreateCustomRangeTest();
+
 CreatePointersTest();
+
+CreateEnumSizeCheckTest();
+
+CreateListCountTest();
+
+CreateApiNameTest();
+
+CreateStructListTest();
 
 WriteTestMain();
 
