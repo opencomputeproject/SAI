@@ -379,6 +379,20 @@ typedef enum _sai_acl_table_group_member_attr_t
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_PRIORITY,
 
     /**
+     * @brief Available ACL entries for this table
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_AVAILABLE_ACL_ENTRY,
+
+    /**
+     * @brief Available ACL counters for this table
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_AVAILABLE_ACL_COUNTER,
+
+    /**
      * @brief End of attributes
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_END,
