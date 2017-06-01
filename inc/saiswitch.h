@@ -691,6 +691,30 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY,
 
     /**
+     * @brief Available FDB entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY,
+
+    /**
+     * @brief Available L2MC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_L2MC_ENTRY,
+
+    /**
+     * @brief Available IPMC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPMC_ENTRY,
+
+    /**
      * @brief Default trap group
      *
      * Default value after switch initialization:
