@@ -175,7 +175,6 @@ my %ACL_ACTION_TYPES_TO_VT = ();
 my %VALUE_TYPES = ();
 my %VALUE_TYPES_TO_VT = ();
 
-
 sub ProcessTagType
 {
     my ($type, $value, $val) = @_;
