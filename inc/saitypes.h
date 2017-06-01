@@ -636,6 +636,7 @@ typedef union _sai_attribute_value_t
     sai_s32_range_t s32range;
     sai_vlan_list_t vlanlist;
     sai_qos_map_list_t qosmap;
+    sai_map_list_t maplist;
     sai_acl_field_data_t aclfield;
     sai_acl_action_data_t aclaction;
     sai_acl_capability_t aclcapability;
