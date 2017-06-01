@@ -231,7 +231,8 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_TAM_SNAPSHOT             = 62,
     SAI_OBJECT_TYPE_TAM_TRANSPORTER          = 63,
     SAI_OBJECT_TYPE_TAM_THRESHOLD            = 64,
-    SAI_OBJECT_TYPE_MAX                      = 65,
+    SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST     = 65,
+    SAI_OBJECT_TYPE_MAX                      = 66,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -572,6 +573,71 @@ typedef struct _sai_acl_capability_t
 } sai_acl_capability_t;
 
 /**
+ * @brief Segment Routing Tag Length Value Types
+ */
+typedef enum _sai_tlv_type_t
+{
+    /** Ingress Tag Length Value */
+    SAI_TLV_TYPE_INGRESS,
+
+    /** Egress Tag Length Value */
+    SAI_TLV_TYPE_EGRESS,
+
+    /** Opaque Tag Length Value */
+    SAI_TLV_TYPE_OPAQUE,
+
+    /** Hash-based Message Authentication Code Tag Length Value */
+    SAI_TLV_TYPE_HMAC
+} sai_tlv_type_t;
+
+/**
+ * @brief Segment Routing Hash-based Message Authentication Code Tag Length Value Format
+ */
+typedef struct _sai_hmac_t
+{
+    sai_uint32_t key_id;
+    sai_uint32_t hmac[8];
+} sai_hmac_t;
+
+/**
+ * @brief Segment Routing Tag Length Value entry
+ */
+typedef struct _sai_tlv_t
+{
+    sai_tlv_type_t tlv_type;
+    union _entry {
+        sai_ip6_t ingress_node;
+        sai_ip6_t egress_node;
+        sai_uint32_t opaque_container[4];
+        sai_hmac_t hmac;
+    } entry;
+} sai_tlv_t;
+
+/**
+ * @brief List of Segment Routing Tag Length Value entries
+ */
+typedef struct _sai_tlv_list_t
+{
+    /** Number of Tag Length Value entries */
+    uint32_t count;
+
+    /** Tag Length Value list */
+    sai_tlv_t *list;
+} sai_tlv_list_t;
+
+/**
+ * @brief List of Segment Routing segment entries
+ */
+typedef struct _sai_segment_list_t
+{
+    /** Number of IPv6 Segment Route entries */
+    uint32_t count;
+
+    /** Segment list */
+    sai_ip6_t *list;
+} sai_segment_list_t;
+
+/**
  * @brief Data Type
  *
  * To use enum values as attribute value is sai_int32_t s32
@@ -611,6 +677,8 @@ typedef union _sai_attribute_value_t
     sai_acl_field_data_t aclfield;
     sai_acl_action_data_t aclaction;
     sai_acl_capability_t aclcapability;
+    sai_tlv_list_t tlvlist;
+    sai_segment_list_t segmentlist;
 
 } sai_attribute_value_t;
 

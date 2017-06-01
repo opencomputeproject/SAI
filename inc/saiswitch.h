@@ -1269,6 +1269,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
 
     /**
+     * @brief Max number of Segments in a single SID List supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SID_DEPTH,
+
+    /**
+     * @brief List of Type Length Value types supported for source
+     *
+     * @type sai_s32_list_t sai_tlv_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SEGMENTROUTE_TLV_TYPE,
+
+    /**
      * @brief The number of lossless queues per port supported by the switch
      *
      * @type sai_uint32_t
