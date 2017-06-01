@@ -315,6 +315,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
 
     /**
+     * @brief Attribute value is generic map list.
+     */
+    SAI_ATTR_VALUE_TYPE_MAP_LIST,
+ 
+    /**
      * @brief Attribute value is vlan list.
      */
     SAI_ATTR_VALUE_TYPE_VLAN_LIST,
