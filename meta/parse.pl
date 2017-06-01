@@ -439,6 +439,14 @@ sub ProcessEnumSection
         {
             my $enumvaluename = $ev->{name}[0];
 
+            my $eitemd = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
+
+            if ($eitemd =~/\@ignore/)
+            {
+                LogInfo "Ignoring $enumvaluename";
+                next;
+            }
+
             LogDebug "$id $enumtypename $enumvaluename";
 
             push@arr,$enumvaluename;
@@ -2152,7 +2160,7 @@ sub CreateApisQuery
         WriteSource "    {";
         WriteSource "        count++;";
         WriteSource "        const char *name = sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_status_t, status);";
-        WriteSource "        SAI_META_LOG_ERROR(\"failed to query api $api: %s (%d)\", name, status);";
+        WriteSource "        SAI_META_LOG_WARN(\"failed to query api $api: %s (%d)\", name, status);";
         WriteSource "    }";
     }
 
