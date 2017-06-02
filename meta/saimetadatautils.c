@@ -58,6 +58,20 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
     {
         const sai_attr_metadata_t* const* const md = sai_metadata_attr_by_object_type[objecttype];
 
+        /*
+         * Most obejct attributes are not flags, so we can use direct index to
+         * find attribute metadata, this should speed up search.
+         */
+
+        const sai_object_type_info_t* oi = sai_metadata_all_object_type_infos[objecttype];
+
+        if (!oi->enummetadata->containsflags && attrid < oi->enummetadata->valuescount)
+        {
+            return md[attrid];
+        }
+
+        /* otherwise search one by one */
+
         size_t index = 0;
 
         for (; md[index] != NULL; index++)
