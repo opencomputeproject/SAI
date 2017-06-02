@@ -3829,7 +3829,7 @@ void check_reverse_graph_count(
     if (oi->revgraphmemberscount == 0)
     {
         META_ASSERT_NULL(oi->revgraphmembers);
-      
+
         return;
     }
 
@@ -3968,6 +3968,36 @@ void check_graph_connected()
     }
 }
 
+void check_get_attr_metadata()
+{
+    META_LOG_ENTER();
+
+    int count = 0;
+
+    int ot = 0;
+
+    for (; ot < SAI_OBJECT_TYPE_MAX; ++ot)
+    {
+        const sai_attr_metadata_t* const* mda = sai_metadata_attr_by_object_type[ot];
+
+        int idx = 0;
+
+        while (mda[idx])
+        {
+            const sai_attr_metadata_t* m = mda[idx++];
+
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+
+            META_ASSERT_NOT_NULL(md);
+            META_ASSERT_TRUE(m == md, "different attribute found, fatal");
+
+            count++;
+        }
+    }
+
+    META_ASSERT_TRUE(count > 600, "expected at least 600 attributes");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4004,6 +4034,7 @@ int main(int argc, char **argv)
     check_api_max();
     check_backward_comparibility_defines();
     check_graph_connected();
+    check_get_attr_metadata();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 
