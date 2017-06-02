@@ -1972,6 +1972,13 @@ sub ProcessStructMembersName
     return "sai_metadata_struct_members_sai_${rawname}_t";
 }
 
+sub IsSpecialObject
+{
+    my $ot = shift;
+
+    return ($ot eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $ot eq "SAI_OBJECT_TYPE_HOSTIF_PACKET");
+}
+
 sub ProcessCreate
 {
     my $struct = shift;
@@ -1988,7 +1995,11 @@ sub ProcessCreate
     WriteSource "        _In_ const sai_attribute_t *attr_list)";
     WriteSource "{";
 
-    if (not defined $struct)
+    if (IsSpecialObject($ot))
+    {
+        WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+    }
+    elsif (not defined $struct)
     {
         if ($small eq "switch")
         {
@@ -2022,7 +2033,11 @@ sub ProcessRemove
     WriteSource "        _In_ const sai_object_meta_key_t *meta_key)";
     WriteSource "{";
 
-    if (not defined $struct)
+    if (IsSpecialObject($ot))
+    {
+        WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+    }
+    elsif (not defined $struct)
     {
         WriteSource "    return sai_metadata_sai_${api}_api->remove_$small(meta_key->objectkey.key.object_id);";
     }
@@ -2050,7 +2065,11 @@ sub ProcessSet
     WriteSource "        _In_ const sai_attribute_t *attr)";
     WriteSource "{";
 
-    if (not defined $struct)
+    if (IsSpecialObject($ot))
+    {
+        WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+    }
+    elsif (not defined $struct)
     {
         WriteSource "    return sai_metadata_sai_${api}_api->set_${small}_attribute(meta_key->objectkey.key.object_id, attr);";
     }
@@ -2079,7 +2098,11 @@ sub ProcessGet
     WriteSource "        _Inout_ sai_attribute_t *attr_list)";
     WriteSource "{";
 
-    if (not defined $struct)
+    if (IsSpecialObject($ot))
+    {
+        WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+    }
+    elsif (not defined $struct)
     {
         WriteSource "    return sai_metadata_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
     }
@@ -2209,22 +2232,10 @@ sub CreateObjectInfo
         my $revgraphcount       = ProcessRevGraphCount($ot);
         my $attrmetalength      = @{ $SAI_ENUMS{$type}{values} };
 
-        my $create = "NULL";
-        my $remove = "NULL";
-        my $set = "NULL";
-        my $get = "NULL";
-
-        if ($ot eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $ot eq "SAI_OBJECT_TYPE_HOSTIF_PACKET")
-        {
-            # ok
-        }
-        else
-        {
-            $create = ProcessCreate($struct, $ot);
-            $remove = ProcessRemove($struct, $ot);
-            $set = ProcessSet($struct, $ot);
-            $get = ProcessGet($struct, $ot);
-        }
+        my $create = ProcessCreate($struct, $ot);
+        my $remove = ProcessRemove($struct, $ot);
+        my $set = ProcessSet($struct, $ot);
+        my $get = ProcessGet($struct, $ot);
 
         WriteHeader "extern const sai_object_type_info_t sai_metadata_object_type_info_$ot;";
 
@@ -3793,7 +3804,7 @@ sub CreateApiNameTest
 
         $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/;
 
-        if ($ot eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $ot eq "SAI_OBJECT_TYPE_HOSTIF_PACKET")
+        if (IsSpecialObject($ot))
         {
             # those obejcts are special, just attributes, no APIs
             WriteTest "    checked[(int)$ot] = $ot;";
