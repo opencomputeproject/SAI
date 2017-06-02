@@ -3687,25 +3687,14 @@ void check_quad_api_pointers(
     META_LOG_ENTER();
 
     /*
-     * Check if quad api pointers are not NULL except hostif packet and fdb
-     * flush which are special.
+     * Check if quad api pointers are not NULL, hostif packet and fdb flush are
+     * special, dummy functions are generated.
      */
 
-    if (oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
-        oi->objecttype == SAI_OBJECT_TYPE_FDB_FLUSH)
-    {
-        META_ASSERT_NULL(oi->create);
-        META_ASSERT_NULL(oi->remove);
-        META_ASSERT_NULL(oi->set);
-        META_ASSERT_NULL(oi->get);
-    }
-    else
-    {
-        META_ASSERT_NOT_NULL(oi->create);
-        META_ASSERT_NOT_NULL(oi->remove);
-        META_ASSERT_NOT_NULL(oi->set);
-        META_ASSERT_NOT_NULL(oi->get);
-    }
+    META_ASSERT_NOT_NULL(oi->create);
+    META_ASSERT_NOT_NULL(oi->remove);
+    META_ASSERT_NOT_NULL(oi->set);
+    META_ASSERT_NOT_NULL(oi->get);
 }
 
 void check_object_id_non_object_id(
