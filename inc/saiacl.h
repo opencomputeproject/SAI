@@ -63,17 +63,13 @@ typedef enum _sai_acl_bind_point_type_t
     /** Bind Point Type RIF */
     SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE,
 
+    /** @ignore - for backward compatibility */
+    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE,
+
     /** Bind Point Type Switch */
     SAI_ACL_BIND_POINT_TYPE_SWITCH
 
 } sai_acl_bind_point_type_t;
-
-/**
- * @def SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF
- *
- * For backward compatibility.
- */
-#define SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF     SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE
 
 /**
  * @brief ACL IP Type
@@ -300,6 +296,15 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_TYPE,
 
     /**
+     * @brief ACL table group members associated with this group.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP_MEMBER
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_MEMBER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_ACL_TABLE_GROUP_ATTR_END,
@@ -368,6 +373,20 @@ typedef enum _sai_acl_table_group_member_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_PRIORITY,
+
+    /**
+     * @brief Available ACL entries for this table
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_AVAILABLE_ACL_ENTRY,
+
+    /**
+     * @brief Available ACL counters for this table
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_AVAILABLE_ACL_COUNTER,
 
     /**
      * @brief End of attributes
@@ -948,6 +967,15 @@ typedef enum _sai_acl_table_attr_t
      * @brief End of ACL Table Match Field
      */
     SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
+
+    /**
+     * @brief ACL table entries associated with this table.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_ENTRY
+     */
+    SAI_ACL_TABLE_ATTR_ENTRY_LIST,
 
     /**
      * @brief End of ACL Table attributes

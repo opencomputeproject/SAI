@@ -211,6 +211,15 @@ typedef enum _sai_tunnel_map_attr_t
     SAI_TUNNEL_MAP_ATTR_TYPE = SAI_TUNNEL_MAP_ATTR_START,
 
     /**
+     * @brief Tunnel map entries associated with this map.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY
+     */
+    SAI_TUNNEL_MAP_ATTR_ENTRY_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_MAP_ATTR_END,
@@ -560,6 +569,15 @@ typedef enum _sai_tunnel_attr_t
      * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
+
+    /**
+     * @brief Tunnel term table entries associated with this tunnel.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY
+     */
+    SAI_TUNNEL_ATTR_TERM_TABLE_ENTRY_LIST,
 
     /**
      * @brief End of attributes

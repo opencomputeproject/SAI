@@ -300,6 +300,15 @@ typedef enum _sai_tam_attr_t
     SAI_TAM_ATTR_MAX_NUM_SNAPSHOTS,
 
     /**
+     * @brief Tam thresholds associated with this tam.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM_THRESHOLD
+     */
+    SAI_TAM_ATTR_THRESHOLD_LIST,
+
+    /**
      * @brief End of Attributes
      */
     SAI_TAM_ATTR_END,

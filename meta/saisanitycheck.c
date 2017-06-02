@@ -2367,6 +2367,78 @@ void check_attr_condition_in_force(
     }
 }
 
+void check_attr_default_attrvalue(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * When default value type is attrvalue, check if this attribute value is
+     * switch, or if there is attribute on current object, with object
+     * represented by default attrvalue. There can be only 1 attribute with
+     * this object type, since when more, then we couldn't decide which one.
+     */
+
+    if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE)
+    {
+        return;
+    }
+
+    if (md->defaultvalueobjecttype == SAI_OBJECT_TYPE_SWITCH)
+    {
+        /* switch is ok */
+        return;
+    }
+
+    const sai_object_type_info_t* info =
+        sai_metadata_all_object_type_infos[md->objecttype];
+
+    /* search for attribute */
+
+    size_t i = 0;
+
+    int count = 0;
+
+    for (; i < info->attrmetadatalength; ++i)
+    {
+        const sai_attr_metadata_t *cmd = info->attrmetadata[i];
+
+        if (cmd->isreadonly)
+        {
+            /* skip read only attributes since we don't set them */
+            continue;
+        }
+
+        if (cmd->attrvaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_ID)
+        {
+            /* skip object lists */
+            continue;
+        }
+
+        if (sai_metadata_is_allowed_object_type(cmd, md->defaultvalueobjecttype))
+        {
+            /* object type of default value is present on current object */
+            count++;
+        }
+    }
+
+    if (count == 1)
+    {
+        /* only 1 attribute with this object type is present */
+        return;
+    }
+
+    if (count == 0)
+    {
+        META_ASSERT_FAIL(md, "oid attribute with %s is not present in %s",
+                sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename,
+                sai_metadata_all_object_type_infos[md->objecttype]->objecttypename);
+    }
+
+    META_ASSERT_FAIL(md, "too many attributes with %s for default value attrvalue",
+            sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename);
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2404,6 +2476,7 @@ void check_single_attribute(
     check_attr_brief_description(md);
     check_attr_is_primitive(md);
     check_attr_condition_in_force(md);
+    check_attr_default_attrvalue(md);
 
     define_attr(md);
 }
@@ -3677,6 +3750,73 @@ void check_enum_to_attr_map(
     META_ASSERT_NULL(oi->attrmetadata[i]);
 }
 
+void check_object_ro_list(
+    _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose is to check if object is referenced in any other object as read
+     * only attribute to know that we can get all objects of this type.
+     * Example: VLAN and VLAN_MEMBER. All vlan members are listed on attribute:
+     * SAI_VLAN_ATTR_MEMBER_LIST.
+     *
+     * Should we only check that for leaf objects?
+     */
+
+    if (oi->isnonobjectid)
+    {
+        return;
+    }
+
+    if (oi->objecttype == SAI_OBJECT_TYPE_FDB_FLUSH ||
+            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
+            oi->objecttype == SAI_OBJECT_TYPE_SWITCH ||
+            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY)
+    {
+        /*
+         * We skip hostif table entry since there is no 1 object which can
+         * identify all table entries. We would need to add one attribute for
+         * each used obect type port, lag, vlan etc.
+         */
+
+        return;
+    }
+
+    size_t idx = 0;
+
+    for (; idx < sai_metadata_attr_sorted_by_id_name_count; ++idx)
+    {
+        const sai_attr_metadata_t *meta = sai_metadata_attr_sorted_by_id_name[idx];
+
+        if (sai_metadata_is_allowed_object_type(meta, oi->objecttype))
+        {
+            if (oi->revgraphmembers != 0)
+            {
+                /* this object is not leaf, so it must be used as attribute */
+                return;
+            }
+        }
+
+        if (meta->attrvaluetype != SAI_ATTR_VALUE_TYPE_OBJECT_LIST)
+        {
+            continue;
+        }
+
+        if (!meta->isreadonly)
+        {
+            continue;
+        }
+
+        if (sai_metadata_is_allowed_object_type(meta, oi->objecttype))
+        {
+            return;
+        }
+    }
+
+    META_FAIL("%s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+}
+
 void check_reverse_graph_count(
     _In_ const sai_object_type_info_t *oi)
 {
@@ -3687,7 +3827,7 @@ void check_reverse_graph_count(
     if (oi->revgraphmemberscount == 0)
     {
         META_ASSERT_NULL(oi->revgraphmembers);
-
+      
         return;
     }
 
@@ -3709,6 +3849,7 @@ void check_single_object_info(
     check_quad_api_pointers(oi);
     check_object_id_non_object_id(oi);
     check_enum_to_attr_map(oi);
+    check_object_ro_list(oi);
     check_reverse_graph_count(oi);
 }
 

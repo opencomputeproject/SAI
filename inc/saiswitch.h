@@ -635,6 +635,86 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM,
 
     /**
+     * @brief Available IPv4 routes
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV4_ROUTE_ENTRY,
+
+    /**
+     * @brief Available IPv6 routes
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV6_ROUTE_ENTRY,
+
+    /**
+     * @brief Available IPv4 Nexthop entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEXTHOP_ENTRY,
+
+    /**
+     * @brief Available IPv6 Nexthop entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEXTHOP_ENTRY,
+
+    /**
+     * @brief Available IPv4 Neighbor entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEIGHBOR_ENTRY,
+
+    /**
+     * @brief Available IPv6 Neighbor entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEIGHBOR_ENTRY,
+
+    /**
+     * @brief Available Next hop group member entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY,
+
+    /**
+     * @brief Available FDB entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY,
+
+    /**
+     * @brief Available L2MC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_L2MC_ENTRY,
+
+    /**
+     * @brief Available IPMC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPMC_ENTRY,
+
+    /**
      * @brief Default trap group
      *
      * Default value after switch initialization:
@@ -1184,6 +1264,9 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
 
+    /** @ignore - for backward compatibility */
+    SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY = SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
+
     /**
      * @brief FDB event notification callback function passed to the adapter.
      *
@@ -1372,13 +1455,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END
 
 } sai_switch_attr_t;
-
-/**
- * @def SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY
- *
- * For backward compatibility.
- */
-#define SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY
 
 /**
  * @def SAI_SWITCH_ATTR_MAX_KEY_STRING_LEN
