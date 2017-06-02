@@ -1264,6 +1264,9 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
 
+    /** @ignore - for backward compatibility */
+    SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY = SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
+
     /**
      * @brief FDB event notification callback function passed to the adapter.
      *
@@ -1452,13 +1455,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END
 
 } sai_switch_attr_t;
-
-/**
- * @def SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY
- *
- * For backward compatibility.
- */
-#define SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY
 
 /**
  * @def SAI_SWITCH_ATTR_MAX_KEY_STRING_LEN
