@@ -990,6 +990,58 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST,
 
     /**
+     * @brief Egress broadcast flood traffic block port list
+     *
+     * Broadcast flood Traffic ingressing on this port and egressing out of
+     * the ports in the given port list will be dropped.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @default empty
+     */
+    SAI_PORT_ATTR_EGRESS_FLOOD_BLOCK_BCAST_PORT_LIST,
+
+    /**
+     * @brief Egress Unknown unicast flood traffic block port list
+     *
+     * Unknown unicast Traffic ingressing on this port and egressing out of
+     * the ports in the given port list will be dropped.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @default empty
+     */
+    SAI_PORT_ATTR_EGRESS_FLOOD_BLOCK_UNKNOWN_UCAST_PORT_LIST,
+
+    /**
+     * @brief Egress Unknown multicast flood traffic block port list
+     *
+     * Unknown multicast Traffic ingressing on this port and egressing out of
+     * the ports in the given port list will be dropped.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @default empty
+     */
+    SAI_PORT_ATTR_EGRESS_FLOOD_BLOCK_UNKNOWN_MCAST_PORT_LIST,
+
+    /**
+     * @brief Egress (broadcast, Unknown multicast/unicast) flood traffic block port list
+     *
+     * Flood Traffic ingressing on this port and egressing out of
+     * the ports in the given port list will be dropped.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @default empty
+     */
+    SAI_PORT_ATTR_EGRESS_FLOOD_BLOCK_ALL_PORT_LIST,
+
+    /**
      * @brief Port Hardware Configuration Profile ID
      *
      * Port can require different hardware configuration based on the attached
