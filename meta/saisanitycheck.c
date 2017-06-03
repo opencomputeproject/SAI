@@ -375,18 +375,10 @@ void check_attr_flags(
                  * Default value for pointer must be specified and must be NULL.
                  */
 
-                if (sai_metadata_is_acl_field_or_action(md))
-                {
-                    /*
-                     * Default value for acl field or action is not provided
-                     * since by default they are disabled, but as TODO we can
-                     * add this support and provide default value inside
-                     * metadata with disabled parameter and remove this check
-                     * here.
-                     */
-
-                    break;
-                }
+                /*
+                 * Default value for acl field or action is not provided and is
+                 * disabled by default.
+                 */
 
                 META_MD_ASSERT_FAIL(md, "expected default value, but none provided");
             }
@@ -679,15 +671,10 @@ void check_attr_default_required(
 
         META_ASSERT_NULL(md->defaultvalue);
 
-        if (sai_metadata_is_acl_field_or_action(md))
-        {
-            /*
-             * By default we assume that default acl field or action is
-             * disabled and default value is not provided.
-             */
-
-            return;
-        }
+        /*
+         * By default we assume that default acl field or action is
+         * disabled and default value is not provided.
+         */
 
         META_MD_ASSERT_FAIL(md, "expected default value, but none provided");
     }
@@ -762,6 +749,13 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
 
+            if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_CONST)
+            {
+                break;
+            }
+
+            META_MD_ASSERT_FAIL(md, "default value on acl field/action must be const/disabled");
+
         case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_BOOL:
         case SAI_ATTR_VALUE_TYPE_INT32:
@@ -774,13 +768,23 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
             break;
 
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
+
+            /* even if this is list, on acl field/action we require disabled */
+
+            if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_CONST)
+            {
+                break;
+            }
+
+            META_MD_ASSERT_FAIL(md, "default value on acl field/action must be const/disabled");
+
         case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
-        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
-        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
-        case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
@@ -791,8 +795,6 @@ void check_attr_default_required(
             }
 
             META_MD_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
-
-            break;
 
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
 
@@ -815,8 +817,6 @@ void check_attr_default_required(
             }
 
             META_MD_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
-
-            break;
 
         case SAI_ATTR_VALUE_TYPE_POINTER:
             break;
@@ -873,16 +873,6 @@ void check_attr_enums(
     {
         if (md->defaultvalue == NULL)
         {
-            if (sai_metadata_is_acl_field_or_action(md))
-            {
-                /*
-                 * Default value on acl field or action is by default disabled
-                 * so we just skip it here.
-                 */
-
-                return;
-            }
-
             META_MD_ASSERT_FAIL(md, "marked as enum, and require default, but not provided");
         }
 
