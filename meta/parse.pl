@@ -1556,6 +1556,7 @@ sub ProcessSaiStatus
     close $fh;
 
     $SAI_ENUMS{"sai_status_t"}{values} = \@values;
+    $SAI_ENUMS{"sai_status_t"}{flagsenum} = "true";
 }
 
 sub CreateMetadataForAttributes
@@ -3965,7 +3966,7 @@ sub ProcessStructItem
 
     my %S = ();
 
-    if ($type =~ /^union (\w+)::(\w+)/)
+    if ($type =~ /^union (\w+)::(\w+)\s*$/)
     {
         # union is special, but now since all unions are named
         # then members are not flattened anyway, and we need to examine

@@ -224,6 +224,8 @@ void check_sai_status()
 
         last = value;
     }
+
+    META_ASSERT_TRUE(sai_metadata_enum_sai_status_t.containsflags, "sai_status_t must be marked as containsflags");
 }
 
 void check_object_type()
