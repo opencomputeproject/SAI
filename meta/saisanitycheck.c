@@ -430,7 +430,7 @@ void check_attr_flags(
 
         default:
 
-            META_MD_ASSERT_FAIL(md, "invalid creation flags: 0x%u", md->flags);
+            META_MD_ASSERT_FAIL(md, "invalid creation flags: 0x%x", md->flags);
     }
 
     META_ASSERT_TRUE(SAI_HAS_FLAG_MANDATORY_ON_CREATE(md->flags) == md->ismandatoryoncreate, "wrong ismandatoryoncreate");
@@ -1079,7 +1079,7 @@ void check_attr_conditions(
 
         default:
 
-            META_MD_ASSERT_FAIL(md, "marked as conditional, but invalid creation flags: 0x%u", md->flags);
+            META_MD_ASSERT_FAIL(md, "marked as conditional, but invalid creation flags: 0x%x", md->flags);
     }
 
     /* condition must be the same object type as attribute we check */
@@ -1258,7 +1258,7 @@ void check_attr_validonly(
 
         default:
 
-            META_MD_ASSERT_FAIL(md, "marked as validonly, but invalid creation flags: 0x%u", md->flags);
+            META_MD_ASSERT_FAIL(md, "marked as validonly, but invalid creation flags: 0x%x", md->flags);
     }
 
     if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
