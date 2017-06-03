@@ -19,58 +19,49 @@ bool debug = false;
 
 defined_attr_t* defined_attributes = NULL;
 
-#define META_LOG_INFO(format, ...)\
-    if (debug) { printf(format "\n", ##__VA_ARGS__); }
+#define META_LOG_DEBUG(format, ...)\
+    if (debug) { printf("DEBUG: " format "\n", ##__VA_ARGS__); }
 
-#define META_LOG_WARN(emd, format, ...)\
-    fprintf(stderr, "WARN: %s: " format "\n",emd->name, ##__VA_ARGS__);
-
-#define META_WARN(md, format, ...)\
-    fprintf(stderr, "WARN: %s: " format "\n",md->attridname, ##__VA_ARGS__);
-
-#define META_WARN_LOG(format, ...)\
+#define META_LOG_WARN(format, ...)\
     fprintf(stderr, "WARN: " format "\n", ##__VA_ARGS__);
 
-#define META_NOTE_LOG(format, ...)\
-    fprintf(stderr, "NOTE: " format "\n", ##__VA_ARGS__);
-
-#define META_ASSERT_FAIL(md, format, ...)\
-{\
-    fprintf(stderr, \
-            " ASSERT FAIL(on line %d) %s: " format "\n", \
-            __LINE__, \
-            md->attridname, \
-##__VA_ARGS__); \
-    exit(1);\
-}
-
-#define META_ENUM_ASSERT_FAIL(md, format, ...)\
-{\
-    fprintf(stderr, \
-            " ASSERT FAIL(on line %d) %s: " format "\n", \
-            __LINE__, \
-            md->name, \
-##__VA_ARGS__); \
-    exit(1);\
-}
-
-#define META_ASSERT_NOT_NULL(x)\
-    if ((x) == NULL) { fprintf(stderr, "assert null failed: '%s' on line %d\n", #x, __LINE__); exit(1); }
-
-#define META_ASSERT_NULL(x)\
-    if ((x) != NULL) { fprintf(stderr, "assert not null failed: '%s' on line %d\n", #x, __LINE__); exit(1); }
-
-#define META_ASSERT_TRUE(x, msg)\
-    if ((x) == false) { fprintf(stderr, "assert true failed: '%s' on line %d: %s\n", #x, __LINE__, msg); exit(1); }
-
-#define META_ASSERT_FALSE(x, msg)\
-    if ((x) == true) { fprintf(stderr, "assert false failed: '%s' on line %d: %s\n", #x, __LINE__, msg); exit(1); }
-
-#define META_FAIL(format, ...)\
-    { fprintf(stderr, "assert failed on line %d: " format "\n", __LINE__, ##__VA_ARGS__); exit(1);}
+#define META_LOG_INFO(format, ...)\
+    fprintf(stderr, "INFO: " format "\n", ##__VA_ARGS__);
 
 #define META_LOG_ENTER() \
-    if (debug) { printf(":> %s\n", __FUNCTION__); }
+    META_LOG_DEBUG(":> %s", __FUNCTION__);
+
+#define META_ENUM_LOG_WARN(emd, format, ...)\
+    META_LOG_WARN("%s: " format, emd->name, ##__VA_ARGS__);
+
+#define META_MD_LOG_WARN(md, format, ...)\
+    META_LOG_WARN("%s: " format, md->attridname, ##__VA_ARGS__);
+
+#define META_ASSERT_FAIL(format, ...)                       \
+{                                                           \
+    fprintf(stderr,                                         \
+            " ASSERT FAILED (on line %d): " format "\n",    \
+            __LINE__, ##__VA_ARGS__);                       \
+    exit(1);                                                \
+}
+
+#define META_MD_ASSERT_FAIL(md, format, ...)\
+    META_ASSERT_FAIL("%s: " format, md->attridname, ##__VA_ARGS__);
+
+#define META_ENUM_ASSERT_FAIL(emd, format, ...)\
+    META_ASSERT_FAIL("%s: " format, emd->name, ##__VA_ARGS__);
+
+#define META_ASSERT_NOT_NULL(x)\
+    if ((x) == NULL) { META_ASSERT_FAIL("not expected NULL: " #x); }
+
+#define META_ASSERT_NULL(x)\
+    if ((x) != NULL) { META_ASSERT_FAIL("expected NULL: " #x); }
+
+#define META_ASSERT_TRUE(x, format, ...)\
+    if ((x) == false) { META_ASSERT_FAIL("expected true '" #x "': " format, ##__VA_ARGS__); }
+
+#define META_ASSERT_FALSE(x, format, ...)\
+    if ((x) == true) { META_ASSERT_FAIL("expected false '" #x "': " format, ##__VA_ARGS__); }
 
 void check_all_enums_name_pointers()
 {
@@ -86,7 +77,7 @@ void check_all_enums_name_pointers()
 
         META_ASSERT_NOT_NULL(emd);
 
-        META_LOG_INFO("enum: %s", emd->name);
+        META_LOG_DEBUG("enum: %s", emd->name);
 
         META_ASSERT_NOT_NULL(emd->name);
         META_ASSERT_NOT_NULL(emd->values);
@@ -99,7 +90,7 @@ void check_all_enums_name_pointers()
 
         for (; j < emd->valuescount; ++j)
         {
-            META_LOG_INFO(" value: %s", emd->valuesnames[j]);
+            META_LOG_DEBUG(" value: %s", emd->valuesnames[j]);
 
             META_ASSERT_NOT_NULL(emd->valuesnames[j]);
             META_ASSERT_NOT_NULL(emd->valuesshortnames[j]);
@@ -127,7 +118,7 @@ void check_all_enums_values()
     {
         const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
 
-        META_LOG_INFO("enum: %s", emd->name);
+        META_LOG_DEBUG("enum: %s", emd->name);
 
         bool flags = false;
 
@@ -143,7 +134,7 @@ void check_all_enums_values()
 
         for (; j < emd->valuescount; ++j)
         {
-            META_LOG_INFO(" value: %s", emd->valuesnames[j]);
+            META_LOG_DEBUG(" value: %s", emd->valuesnames[j]);
 
             int value = emd->values[j];
 
@@ -209,7 +200,7 @@ void check_sai_status()
 
     for (; i < sai_metadata_enum_sai_status_t.valuescount; ++i)
     {
-        META_LOG_INFO("status: %s", sai_metadata_enum_sai_status_t.valuesnames[i]);
+        META_LOG_DEBUG("status: %s", sai_metadata_enum_sai_status_t.valuesnames[i]);
 
         int value = sai_metadata_enum_sai_status_t.values[i];
 
@@ -240,7 +231,7 @@ void check_object_type()
 
     for (; i < sai_metadata_enum_sai_object_type_t.valuescount; ++i)
     {
-        META_LOG_INFO("object_type: %s", sai_metadata_enum_sai_object_type_t.valuesnames[i]);
+        META_LOG_DEBUG("object_type: %s", sai_metadata_enum_sai_object_type_t.valuesnames[i]);
 
         int value = sai_metadata_enum_sai_object_type_t.values[i];
 
@@ -260,7 +251,7 @@ void check_attr_by_object_type()
 
     for (; i < sai_metadata_attr_by_object_type_count; ++i)
     {
-        META_LOG_INFO("processing %zu, %s", i, sai_metadata_get_object_type_name((sai_object_type_t)i));
+        META_LOG_DEBUG("processing %zu, %s", i, sai_metadata_get_object_type_name((sai_object_type_t)i));
 
         META_ASSERT_NOT_NULL(sai_metadata_attr_by_object_type[i]);
 
@@ -277,12 +268,12 @@ void check_attr_by_object_type()
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
             META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_MAX, "object type must be < MAX");
 
-            /* META_LOG_INFO("processing indexer %lu", index); */
+            /* META_LOG_DEBUG("processing indexer %lu", index); */
 
             index++;
         }
 
-        META_LOG_INFO("attr index %zu for %s", index, sai_metadata_get_object_type_name((sai_object_type_t)i));
+        META_LOG_DEBUG("attr index %zu for %s", index, sai_metadata_get_object_type_name((sai_object_type_t)i));
     }
 
     META_ASSERT_NULL(sai_metadata_attr_by_object_type[i]);
@@ -296,7 +287,7 @@ void check_attr_object_type(
     if ((md->objecttype <= SAI_OBJECT_TYPE_NULL) ||
             (md->objecttype >= SAI_OBJECT_TYPE_MAX))
     {
-        META_ASSERT_FAIL(md, "invalid object type value %d", md->objecttype);
+        META_MD_ASSERT_FAIL(md, "invalid object type value %d", md->objecttype);
     }
 }
 
@@ -347,7 +338,7 @@ void check_attr_flags(
 
             if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
             {
-                META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
+                META_MD_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
             }
 
             /*
@@ -364,7 +355,7 @@ void check_attr_flags(
 
             if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_NONE)
             {
-                META_ASSERT_FAIL(md, "no default value expected, but type provided: %s",
+                META_MD_ASSERT_FAIL(md, "no default value expected, but type provided: %s",
                         sai_metadata_get_default_value_type_name(md->defaultvaluetype));
             }
 
@@ -397,7 +388,7 @@ void check_attr_flags(
                     break;
                 }
 
-                META_ASSERT_FAIL(md, "expected default value, but none provided");
+                META_MD_ASSERT_FAIL(md, "expected default value, but none provided");
             }
 
             break;
@@ -406,18 +397,18 @@ void check_attr_flags(
 
             if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
             {
-                META_ASSERT_FAIL(md, "read only attribute can't be conditional");
+                META_MD_ASSERT_FAIL(md, "read only attribute can't be conditional");
             }
 
             if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
             {
-                META_ASSERT_FAIL(md, "read only attribute can't be valid only");
+                META_MD_ASSERT_FAIL(md, "read only attribute can't be valid only");
             }
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
             {
                 if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID ||
-                    md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_LIST)
+                        md->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_LIST)
                 {
                     /*
                      * Read only object id/list can be marked as internal like
@@ -431,7 +422,7 @@ void check_attr_flags(
 
             if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_NONE)
             {
-                META_ASSERT_FAIL(md, "no default value expected, but type provided: %s",
+                META_MD_ASSERT_FAIL(md, "no default value expected, but type provided: %s",
                         sai_metadata_get_default_value_type_name(md->defaultvaluetype));
             }
 
@@ -439,7 +430,7 @@ void check_attr_flags(
 
         default:
 
-            META_ASSERT_FAIL(md, "invalid creation flags: 0x%u", md->flags);
+            META_MD_ASSERT_FAIL(md, "invalid creation flags: 0x%x", md->flags);
     }
 
     META_ASSERT_TRUE(SAI_HAS_FLAG_MANDATORY_ON_CREATE(md->flags) == md->ismandatoryoncreate, "wrong ismandatoryoncreate");
@@ -485,7 +476,7 @@ void check_attr_object_id_allownull(
                          * set to SAI_NULL_OBJECT_ID then allownull should be true
                          */
 
-                        META_ASSERT_FAIL(md, "allow null object id should be set to true since default value is required");
+                        META_MD_ASSERT_FAIL(md, "allow null object id should be set to true since default value is required");
                     }
 
                     break;
@@ -495,7 +486,7 @@ void check_attr_object_id_allownull(
                     break;
 
                 default:
-                    META_ASSERT_FAIL(md, "invalid default value type on object id when default is required");
+                    META_MD_ASSERT_FAIL(md, "invalid default value type on object id when default is required");
                     break;
             }
 
@@ -522,7 +513,7 @@ void check_attr_object_type_provided(
 
             if (md->allowedobjecttypes == NULL)
             {
-                META_ASSERT_FAIL(md, "object types list is required but it's empty");
+                META_MD_ASSERT_FAIL(md, "object types list is required but it's empty");
             }
 
             break;
@@ -576,13 +567,13 @@ void check_attr_object_type_provided(
 
             if (md->allowedobjecttypes != NULL)
             {
-                META_ASSERT_FAIL(md, "allowed object types defined for non object type");
+                META_MD_ASSERT_FAIL(md, "allowed object types defined for non object type");
             }
 
             break;
 
         default:
-            META_ASSERT_FAIL(md, "attr value type is not supported, FIXME");
+            META_MD_ASSERT_FAIL(md, "attr value type is not supported, FIXME");
     }
 }
 
@@ -593,12 +584,12 @@ void check_attr_allowed_object_types(
 
     if (md->allowedobjecttypeslength != 0 && md->allowedobjecttypes == NULL)
     {
-        META_ASSERT_FAIL(md, "allowed object type len is specified but pointer is NULL");
+        META_MD_ASSERT_FAIL(md, "allowed object type len is specified but pointer is NULL");
     }
 
     if (md->allowedobjecttypeslength == 0 && md->allowedobjecttypes != NULL)
     {
-        META_ASSERT_FAIL(md, "allowed object type len zero, but but pointer to objects is specified");
+        META_MD_ASSERT_FAIL(md, "allowed object type len zero, but but pointer to objects is specified");
     }
 
     if (md->allowedobjecttypes == NULL)
@@ -627,7 +618,7 @@ void check_attr_allowed_object_types(
 
         default:
 
-            META_ASSERT_FAIL(md, "allowed object types should be empty on this attr value type");
+            META_MD_ASSERT_FAIL(md, "allowed object types should be empty on this attr value type");
     }
 
     /*
@@ -644,7 +635,7 @@ void check_attr_allowed_object_types(
         if ((ot <= SAI_OBJECT_TYPE_NULL) ||
                 (ot >= SAI_OBJECT_TYPE_MAX))
         {
-            META_ASSERT_FAIL(md, "invalid allowed object type: %d", ot);
+            META_MD_ASSERT_FAIL(md, "invalid allowed object type: %d", ot);
         }
 
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[ot];
@@ -653,7 +644,7 @@ void check_attr_allowed_object_types(
 
         if (info->isnonobjectid)
         {
-            META_ASSERT_FAIL(md, "non object id can't be used as object id: %d", ot);
+            META_MD_ASSERT_FAIL(md, "non object id can't be used as object id: %d", ot);
         }
 
         if (ot == SAI_OBJECT_TYPE_SWITCH ||
@@ -662,7 +653,7 @@ void check_attr_allowed_object_types(
         {
             /* switch object type is ment to be used only in non object id struct types */
 
-            META_ASSERT_FAIL(md, "switch object type can't be used as object type in any attribute");
+            META_MD_ASSERT_FAIL(md, "switch object type can't be used as object type in any attribute");
         }
     }
 }
@@ -698,7 +689,7 @@ void check_attr_default_required(
             return;
         }
 
-        META_ASSERT_FAIL(md, "expected default value, but none provided");
+        META_MD_ASSERT_FAIL(md, "expected default value, but none provided");
     }
 
     switch (md->defaultvaluetype)
@@ -721,7 +712,7 @@ void check_attr_default_required(
 
             if (md->defaultvalue == NULL)
             {
-                META_ASSERT_FAIL(md, "default value type is provided, but default value pointer is NULL");
+                META_MD_ASSERT_FAIL(md, "default value type is provided, but default value pointer is NULL");
             }
 
             break;
@@ -734,14 +725,14 @@ void check_attr_default_required(
 
             if (md->defaultvalue != NULL)
             {
-                META_ASSERT_FAIL(md, "default value type is provided, but default value pointer is not NULL");
+                META_MD_ASSERT_FAIL(md, "default value type is provided, but default value pointer is not NULL");
             }
 
             break;
 
         default:
 
-            META_ASSERT_FAIL(md, "unknown default value type %d", md->defaultvaluetype);
+            META_MD_ASSERT_FAIL(md, "unknown default value type %d", md->defaultvaluetype);
     }
 
     /* default value is required */
@@ -799,7 +790,7 @@ void check_attr_default_required(
                 break;
             }
 
-            META_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
+            META_MD_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
 
             break;
 
@@ -823,7 +814,7 @@ void check_attr_default_required(
                 }
             }
 
-            META_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
+            META_MD_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
 
             break;
 
@@ -832,7 +823,7 @@ void check_attr_default_required(
 
         default:
 
-            META_ASSERT_FAIL(md, "default value is required but this attr value type is not supported yet");
+            META_MD_ASSERT_FAIL(md, "default value is required but this attr value type is not supported yet");
     }
 }
 
@@ -851,28 +842,28 @@ void check_attr_enums(
                 break;
 
             default:
-                META_ASSERT_FAIL(md, "attribute is marked as enum, but attr value type is not enum compatible");
+                META_MD_ASSERT_FAIL(md, "attribute is marked as enum, but attr value type is not enum compatible");
         }
     }
 
     if (md->isenum && md->isenumlist)
     {
-        META_ASSERT_FAIL(md, "attribute can't be marked as enum and enum list");
+        META_MD_ASSERT_FAIL(md, "attribute can't be marked as enum and enum list");
     }
 
     if ((md->isenum || md->isenumlist) && md->enummetadata == NULL)
     {
-        META_ASSERT_FAIL(md, "is marked enum but missing enum metadata");
+        META_MD_ASSERT_FAIL(md, "is marked enum but missing enum metadata");
     }
 
     if (!(md->isenum || md->isenumlist) && md->enummetadata != NULL)
     {
-        META_ASSERT_FAIL(md, "is not marked enum but has defined enum type string");
+        META_MD_ASSERT_FAIL(md, "is not marked enum but has defined enum type string");
     }
 
     if ((md->isenum || md->isenumlist) && md->enummetadata->valuescount == 0)
     {
-        META_ASSERT_FAIL(md, "is marked enum but missing enum allowed values");
+        META_MD_ASSERT_FAIL(md, "is marked enum but missing enum allowed values");
     }
 
     bool requiredefault = (!SAI_HAS_FLAG_MANDATORY_ON_CREATE(md->flags)) &&
@@ -892,14 +883,14 @@ void check_attr_enums(
                 return;
             }
 
-            META_ASSERT_FAIL(md, "marked as enum, and require default, but not provided");
+            META_MD_ASSERT_FAIL(md, "marked as enum, and require default, but not provided");
         }
 
         int32_t enumdefault = md->defaultvalue->s32;
 
         if (sai_metadata_get_enum_value_name(md->enummetadata, enumdefault) == NULL)
         {
-            META_ASSERT_FAIL(md, "default enum value %d is not present on enum allowed values (%s)", enumdefault, md->enummetadata->name);
+            META_MD_ASSERT_FAIL(md, "default enum value %d is not present on enum allowed values (%s)", enumdefault, md->enummetadata->name);
         }
     }
 
@@ -907,7 +898,7 @@ void check_attr_enums(
     {
         if (md->defaultvalue != NULL)
         {
-            META_ASSERT_FAIL(md, "default values on enum list are not supported yet");
+            META_MD_ASSERT_FAIL(md, "default values on enum list are not supported yet");
         }
     }
 }
@@ -932,12 +923,12 @@ void check_attr_default_value_type(
 
                 if (def == NULL)
                 {
-                    META_ASSERT_FAIL(md, "attr value can't be found");
+                    META_MD_ASSERT_FAIL(md, "attr value can't be found");
                 }
 
                 if (md->attrvaluetype != def->attrvaluetype)
                 {
-                    META_ASSERT_FAIL(md, "default attr value type is different");
+                    META_MD_ASSERT_FAIL(md, "default attr value type is different");
                 }
 
                 break;
@@ -950,10 +941,10 @@ void check_attr_default_value_type(
 
                 if (def == NULL)
                 {
-                    META_ASSERT_FAIL(md, "attr range can't be found");
+                    META_MD_ASSERT_FAIL(md, "attr range can't be found");
                 }
 
-                META_ASSERT_FAIL(md, "attr value attribute value range not supported yet");
+                META_MD_ASSERT_FAIL(md, "attr value attribute value range not supported yet");
 
                 break;
             }
@@ -976,7 +967,7 @@ void check_attr_default_value_type(
 
                 default:
 
-                    META_ASSERT_FAIL(md, "default empty list specified, but attribute is not list");
+                    META_MD_ASSERT_FAIL(md, "default empty list specified, but attribute is not list");
             }
 
             break;
@@ -996,7 +987,7 @@ void check_attr_default_value_type(
                      * primitive types and not on object id types (OIDs).
                      */
 
-                    META_ASSERT_FAIL(md, "vendor specific not allowed on this type");
+                    META_MD_ASSERT_FAIL(md, "vendor specific not allowed on this type");
             }
 
             break;
@@ -1005,7 +996,7 @@ void check_attr_default_value_type(
 
             if (md->flags != SAI_ATTR_FLAGS_READ_ONLY)
             {
-                META_ASSERT_FAIL(md, "default internal currently can be set only on read only objects");
+                META_MD_ASSERT_FAIL(md, "default internal currently can be set only on read only objects");
             }
 
             if (md->objecttype != SAI_OBJECT_TYPE_SWITCH)
@@ -1015,7 +1006,7 @@ void check_attr_default_value_type(
                  * by default queues created.
                  */
 
-                META_ASSERT_FAIL(md, "default internal can be only set on switch object type");
+                META_MD_ASSERT_FAIL(md, "default internal can be only set on switch object type");
             }
 
             switch (md->attrvaluetype)
@@ -1026,14 +1017,14 @@ void check_attr_default_value_type(
 
                 default:
 
-                    META_ASSERT_FAIL(md, "invalid attribute value type specified: %d", md->attrvaluetype);
+                    META_MD_ASSERT_FAIL(md, "invalid attribute value type specified: %d", md->attrvaluetype);
             }
 
             break;
 
         default:
 
-            META_ASSERT_FAIL(md, "invalid default value type specified: %d", md->defaultvaluetype);
+            META_MD_ASSERT_FAIL(md, "invalid default value type specified: %d", md->defaultvaluetype);
     }
 }
 
@@ -1051,14 +1042,14 @@ void check_attr_conditions(
 
         default:
 
-            META_ASSERT_FAIL(md, "invalid condition type specified: %d", md->conditiontype);
+            META_MD_ASSERT_FAIL(md, "invalid condition type specified: %d", md->conditiontype);
     }
 
     bool conditional = md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE;
 
     if (!conditional && md->conditions != NULL)
     {
-        META_ASSERT_FAIL(md, "not conditional but conditions specified");
+        META_MD_ASSERT_FAIL(md, "not conditional but conditions specified");
     }
 
     if (!conditional)
@@ -1071,7 +1062,7 @@ void check_attr_conditions(
 
     if (md->conditions == NULL)
     {
-        META_ASSERT_FAIL(md, "marked as conditional but no conditions specified");
+        META_MD_ASSERT_FAIL(md, "marked as conditional but no conditions specified");
     }
 
     switch ((int)md->flags)
@@ -1088,7 +1079,7 @@ void check_attr_conditions(
 
         default:
 
-            META_ASSERT_FAIL(md, "marked as conditional, but invalid creation flags: 0x%u", md->flags);
+            META_MD_ASSERT_FAIL(md, "marked as conditional, but invalid creation flags: 0x%x", md->flags);
     }
 
     /* condition must be the same object type as attribute we check */
@@ -1101,21 +1092,21 @@ void check_attr_conditions(
 
         if (c->attrid == md->attrid)
         {
-            META_ASSERT_FAIL(md, "conditional attr id %d is the same as condition attribute", c->attrid);
+            META_MD_ASSERT_FAIL(md, "conditional attr id %d is the same as condition attribute", c->attrid);
         }
 
         const sai_attr_metadata_t* cmd = sai_metadata_get_attr_metadata(md->objecttype, c->attrid);
 
         if (cmd == NULL)
         {
-            META_ASSERT_FAIL(md, "conditional attribute id %d was not defined yet in metadata", c->attrid);
+            META_MD_ASSERT_FAIL(md, "conditional attribute id %d was not defined yet in metadata", c->attrid);
         }
 
         switch (cmd->attrvaluetype)
         {
             case SAI_ATTR_VALUE_TYPE_BOOL:
 
-                META_LOG_INFO("attr id: %d cond.bool: %d", c->attrid, c->condition.booldata);
+                META_LOG_DEBUG("attr id: %d cond.bool: %d", c->attrid, c->condition.booldata);
 
                 break;
 
@@ -1128,20 +1119,20 @@ void check_attr_conditions(
 
                 if (!cmd->isenum)
                 {
-                    META_ASSERT_FAIL(md, "conditional attribute %s is not enum type", cmd->attridname);
+                    META_MD_ASSERT_FAIL(md, "conditional attribute %s is not enum type", cmd->attridname);
                 }
 
                 if (cmd->isenum)
                 {
                     /* condition value can be a number or enum */
 
-                    META_LOG_INFO("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
+                    META_LOG_DEBUG("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
 
                     /* check if condition enum is in condition attribute range */
 
                     if (sai_metadata_get_enum_value_name(cmd->enummetadata, c->condition.s32) == NULL)
                     {
-                        META_ASSERT_FAIL(md, "condition enum %d not found on condition attribute enum range", c->condition.s32);
+                        META_MD_ASSERT_FAIL(md, "condition enum %d not found on condition attribute enum range", c->condition.s32);
                     }
                 }
 
@@ -1161,13 +1152,13 @@ void check_attr_conditions(
 
             default:
 
-                META_ASSERT_FAIL(md, "attr value type %d of conditional attribute is not supported yet", cmd->attrvaluetype);
+                META_MD_ASSERT_FAIL(md, "attr value type %d of conditional attribute is not supported yet", cmd->attrvaluetype);
 
         }
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
+            META_MD_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
         }
 
         switch ((int)cmd->flags)
@@ -1186,7 +1177,7 @@ void check_attr_conditions(
 
             default:
 
-                META_ASSERT_FAIL(md, "conditional attribute must be create only");
+                META_MD_ASSERT_FAIL(md, "conditional attribute must be create only");
         }
     }
 }
@@ -1205,14 +1196,14 @@ void check_attr_validonly(
 
         default:
 
-            META_ASSERT_FAIL(md, "invalid validonly type specified: %d", md->validonlytype);
+            META_MD_ASSERT_FAIL(md, "invalid validonly type specified: %d", md->validonlytype);
     }
 
     bool conditional = md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE;
 
     if (!conditional && md->validonly != NULL)
     {
-        META_ASSERT_FAIL(md, "not validonly but validonly specified");
+        META_MD_ASSERT_FAIL(md, "not validonly but validonly specified");
         META_ASSERT_FALSE(md->isvalidonly, "marked validonly but is not");
     }
 
@@ -1223,7 +1214,7 @@ void check_attr_validonly(
 
     if (md->validonly == NULL)
     {
-        META_ASSERT_FAIL(md, "marked as validonly but no validonly specified");
+        META_MD_ASSERT_FAIL(md, "marked as validonly but no validonly specified");
     }
 
     META_ASSERT_TRUE(md->isvalidonly, "marked not validonly but is");
@@ -1234,7 +1225,7 @@ void check_attr_validonly(
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_ONLY:
         case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
 
-            META_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
+            META_MD_ASSERT_FAIL(md, "valid only attribute can't be mandatory on create, use condition");
             break;
 
         case SAI_ATTR_FLAGS_CREATE_ONLY:
@@ -1250,7 +1241,7 @@ void check_attr_validonly(
              * but you won't be able to change it anyway.
              */
 
-            META_WARN(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
+            META_MD_LOG_WARN(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
 
             /* intentional fall through */
 
@@ -1262,12 +1253,12 @@ void check_attr_validonly(
 
         case SAI_ATTR_FLAGS_READ_ONLY:
 
-            META_ASSERT_FAIL(md, "read only attribute can't be valid only");
+            META_MD_ASSERT_FAIL(md, "read only attribute can't be valid only");
             break;
 
         default:
 
-            META_ASSERT_FAIL(md, "marked as validonly, but invalid creation flags: 0x%u", md->flags);
+            META_MD_ASSERT_FAIL(md, "marked as validonly, but invalid creation flags: 0x%x", md->flags);
     }
 
     if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_NONE)
@@ -1278,7 +1269,7 @@ void check_attr_validonly(
          * provided for CONST only.
          */
 
-        META_ASSERT_FAIL(md, "expected default value on valid only attribute, but none provided");
+        META_MD_ASSERT_FAIL(md, "expected default value on valid only attribute, but none provided");
     }
 
     /* condition must be the same object type as attribute we check */
@@ -1291,21 +1282,21 @@ void check_attr_validonly(
 
         if (c->attrid == md->attrid)
         {
-            META_ASSERT_FAIL(md, "validonly attr id %d is the same as validonly attribute", c->attrid);
+            META_MD_ASSERT_FAIL(md, "validonly attr id %d is the same as validonly attribute", c->attrid);
         }
 
         const sai_attr_metadata_t* cmd = sai_metadata_get_attr_metadata(md->objecttype, c->attrid);
 
         if (cmd == NULL)
         {
-            META_ASSERT_FAIL(md, "validonly attribute id %d was not defined yet in metadata", c->attrid);
+            META_MD_ASSERT_FAIL(md, "validonly attribute id %d was not defined yet in metadata", c->attrid);
         }
 
         switch (cmd->attrvaluetype)
         {
             case SAI_ATTR_VALUE_TYPE_BOOL:
 
-                META_LOG_INFO("attr id: %d cond.bool: %d", c->attrid, c->condition.booldata);
+                META_LOG_DEBUG("attr id: %d cond.bool: %d", c->attrid, c->condition.booldata);
 
                 break;
 
@@ -1318,20 +1309,20 @@ void check_attr_validonly(
 
                 if (!cmd->isenum)
                 {
-                    META_ASSERT_FAIL(md, "validonly attribute %s is not enum type", cmd->attridname);
+                    META_MD_ASSERT_FAIL(md, "validonly attribute %s is not enum type", cmd->attridname);
                 }
 
                 if (cmd->isenum)
                 {
                     /* condition value can be a number or enum */
 
-                    META_LOG_INFO("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
+                    META_LOG_DEBUG("attr id: %d cond.s32: %d ", c->attrid, c->condition.s32);
 
                     /* check if condition enum is in condition attribute range */
 
                     if (sai_metadata_get_enum_value_name(cmd->enummetadata, c->condition.s32) == NULL)
                     {
-                        META_ASSERT_FAIL(md, "validonly enum %d not found on validonly attribute enum range", c->condition.s32);
+                        META_MD_ASSERT_FAIL(md, "validonly enum %d not found on validonly attribute enum range", c->condition.s32);
                     }
                 }
 
@@ -1348,7 +1339,7 @@ void check_attr_validonly(
 
             default:
 
-                META_ASSERT_FAIL(md, "attr value type %d of validonly attribute is not supported yet", cmd->attrvaluetype);
+                META_MD_ASSERT_FAIL(md, "attr value type %d of validonly attribute is not supported yet", cmd->attrvaluetype);
         }
 
         /*
@@ -1368,8 +1359,8 @@ void check_attr_validonly(
                  */
             }
             else if (md->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION &&
-                (md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_TPID || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_ID ||
-                md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_CFI))
+                    (md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_TPID || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_ID ||
+                     md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_CFI))
             {
                 /*
                  * Vlan header attributes are depending on VLAN_HEADER_VALID which is
@@ -1378,13 +1369,13 @@ void check_attr_validonly(
             }
             else
             {
-                META_ASSERT_FAIL(md, "validonly attribute is also validonly attribute, not allowed");
+                META_MD_ASSERT_FAIL(md, "validonly attribute is also validonly attribute, not allowed");
             }
         }
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
+            META_MD_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
         }
 
         switch ((int)cmd->flags)
@@ -1406,14 +1397,14 @@ void check_attr_validonly(
 
             default:
 
-                META_ASSERT_FAIL(cmd, "valid only condition attribute has invalid flags");
+                META_MD_ASSERT_FAIL(cmd, "valid only condition attribute has invalid flags");
         }
     }
 
     if ((md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE ) &&
             (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE ))
     {
-        META_ASSERT_FAIL(md, "attribute is conditional and valid only, not supported");
+        META_MD_ASSERT_FAIL(md, "attribute is conditional and valid only, not supported");
     }
 }
 
@@ -1426,12 +1417,12 @@ void check_attr_enum_list_condition(
     {
         if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_INT32_LIST)
         {
-            META_ASSERT_FAIL(md, "marked as enum list but wrong attr value type");
+            META_MD_ASSERT_FAIL(md, "marked as enum list but wrong attr value type");
         }
 
         if (md->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_ASSERT_FAIL(md, "conditional enum list not supported yet");
+            META_MD_ASSERT_FAIL(md, "conditional enum list not supported yet");
         }
     }
 }
@@ -1445,7 +1436,7 @@ void check_attr_enum_list_validonly(
     {
         if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_INT32_LIST)
         {
-            META_ASSERT_FAIL(md, "marked as enum list but wrong attr value type");
+            META_MD_ASSERT_FAIL(md, "marked as enum list but wrong attr value type");
         }
 
         if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
@@ -1455,7 +1446,7 @@ void check_attr_enum_list_validonly(
              * any enum list that are marked as valid only.
              */
 
-            META_ASSERT_FAIL(md, "validonly enum list not supported yet");
+            META_MD_ASSERT_FAIL(md, "validonly enum list not supported yet");
         }
     }
 }
@@ -1479,7 +1470,7 @@ void check_attr_allow_flags(
 
             default:
 
-                META_ASSERT_FAIL(md, "allow null object is set but attr value type is wrong");
+                META_MD_ASSERT_FAIL(md, "allow null object is set but attr value type is wrong");
         }
 
         /*
@@ -1489,7 +1480,7 @@ void check_attr_allow_flags(
 
         if (md->allowedobjecttypeslength == 0)
         {
-            META_ASSERT_FAIL(md, "allow null object is set but allowed object types is empty");
+            META_MD_ASSERT_FAIL(md, "allow null object is set but allowed object types is empty");
         }
     }
 
@@ -1510,7 +1501,7 @@ void check_attr_allow_flags(
             continue;
         }
 
-        META_ASSERT_FAIL(md, "not allowed object type %d on list", ot);
+        META_MD_ASSERT_FAIL(md, "not allowed object type %d on list", ot);
     }
 
     if (md->allowrepetitiononlist || md->allowmixedobjecttypes || md->allowemptylist)
@@ -1524,7 +1515,7 @@ void check_attr_allow_flags(
 
             default:
 
-                META_ASSERT_FAIL(md, "allow null object is set but attr value type is wrong");
+                META_MD_ASSERT_FAIL(md, "allow null object is set but attr value type is wrong");
         }
     }
 }
@@ -1543,7 +1534,7 @@ void check_attr_get_save(
 
             default:
 
-                META_ASSERT_FAIL(md, "get save not supported on %s", md->attridname);
+                META_MD_ASSERT_FAIL(md, "get save not supported on %s", md->attridname);
         }
     }
 }
@@ -1571,12 +1562,12 @@ void check_attr_key(
                     break;
                 }
 
-                META_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (list)");
+                META_MD_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (list)");
 
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
 
                 if ((md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT) ||
-                     (md->objecttype == SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP && md->attrid == SAI_INGRESS_PRIORITY_GROUP_ATTR_PORT))
+                        (md->objecttype == SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP && md->attrid == SAI_INGRESS_PRIORITY_GROUP_ATTR_PORT))
                 {
                     /*
                      * This is also special case, OBJECT_ID at should not be a
@@ -1587,7 +1578,7 @@ void check_attr_key(
                     break;
                 }
 
-                META_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (object id)");
+                META_MD_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (object id)");
 
             case SAI_ATTR_VALUE_TYPE_INT32:
             case SAI_ATTR_VALUE_TYPE_UINT32:
@@ -1597,7 +1588,7 @@ void check_attr_key(
 
             default:
 
-                META_ASSERT_FAIL(md, "marked as key, but have invalid attr value type");
+                META_MD_ASSERT_FAIL(md, "marked as key, but have invalid attr value type");
         }
     }
 }
@@ -1651,13 +1642,13 @@ void check_attr_acl_fields(
 
                     default:
 
-                        META_ASSERT_FAIL(md, "acl field data used on udf match can be only primitive type");
+                        META_MD_ASSERT_FAIL(md, "acl field data used on udf match can be only primitive type");
                 }
 
                 break;
             }
 
-            META_ASSERT_FAIL(md, "acl field may only be set on acl field and udf match");
+            META_MD_ASSERT_FAIL(md, "acl field may only be set on acl field and udf match");
 
             break;
 
@@ -1677,7 +1668,7 @@ void check_attr_acl_fields(
                     md->attrid < SAI_ACL_ENTRY_ATTR_ACTION_START ||
                     md->attrid > SAI_ACL_ENTRY_ATTR_ACTION_END)
             {
-                META_ASSERT_FAIL(md, "acl action may only be set on acl action");
+                META_MD_ASSERT_FAIL(md, "acl action may only be set on acl action");
             }
 
             break;
@@ -1709,7 +1700,7 @@ void check_attr_acl_fields(
                     break;
 
                 default:
-                    META_ASSERT_FAIL(md, "invalid attr value type for acl field");
+                    META_MD_ASSERT_FAIL(md, "invalid attr value type for acl field");
             }
         }
 
@@ -1732,7 +1723,7 @@ void check_attr_acl_fields(
                     break;
 
                 default:
-                    META_ASSERT_FAIL(md, "invalid attr value type for acl action");
+                    META_MD_ASSERT_FAIL(md, "invalid attr value type for acl action");
             }
         }
     }
@@ -1749,7 +1740,7 @@ void check_attr_vlan(
                 md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT16 &&
                 md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16)
         {
-            META_ASSERT_FAIL(md, "marked as vlan, but has wrong attr value type");
+            META_MD_ASSERT_FAIL(md, "marked as vlan, but has wrong attr value type");
         }
     }
 }
@@ -1774,7 +1765,7 @@ void check_condition_in_range(
             continue;
         }
 
-        META_ASSERT_FAIL(md, "has condition depending on acl field / action, not allowed");
+        META_MD_ASSERT_FAIL(md, "has condition depending on acl field / action, not allowed");
     }
 }
 
@@ -1798,11 +1789,11 @@ void check_attr_acl_conditions(
                 SAI_ACL_TABLE_ATTR_FIELD_START, SAI_ACL_TABLE_ATTR_FIELD_END);
 
         if (md->attrid >= SAI_ACL_TABLE_ATTR_FIELD_START &&
-            md->attrid >= SAI_ACL_TABLE_ATTR_FIELD_END)
+                md->attrid >= SAI_ACL_TABLE_ATTR_FIELD_END)
         {
             if (md->conditionslength != 0 || md->validonlylength != 0)
             {
-                META_ASSERT_FAIL(md, "acl table field has conditions, not allowed");
+                META_MD_ASSERT_FAIL(md, "acl table field has conditions, not allowed");
             }
         }
     }
@@ -1822,20 +1813,20 @@ void check_attr_acl_conditions(
                 SAI_ACL_ENTRY_ATTR_ACTION_START, SAI_ACL_ENTRY_ATTR_ACTION_END);
 
         if (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
-            md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_END)
+                md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_END)
         {
             if (md->conditionslength != 0 || md->validonlylength != 0)
             {
-                META_ASSERT_FAIL(md, "acl entry field has conditions, not allowed");
+                META_MD_ASSERT_FAIL(md, "acl entry field has conditions, not allowed");
             }
         }
 
         if (md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
-            md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_END)
+                md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_END)
         {
             if (md->conditionslength != 0 || md->validonlylength != 0)
             {
-                META_ASSERT_FAIL(md, "acl entry action has conditions, not allowed");
+                META_MD_ASSERT_FAIL(md, "acl entry action has conditions, not allowed");
             }
         }
     }
@@ -1900,7 +1891,7 @@ void check_attr_reverse_graph(
                  * this will require different method to check
                  */
 
-                META_ASSERT_FAIL(md, "This is attribute, it can't be defined in struct member");
+                META_MD_ASSERT_FAIL(md, "This is attribute, it can't be defined in struct member");
             }
             else
             {
@@ -1923,7 +1914,7 @@ void check_attr_reverse_graph(
                     if (rm->attrmetadata->allowedobjecttypes[i] == depobjecttype &&
                             rm->attrmetadata->attrid == md->attrid)
                     {
-                        META_LOG_INFO("dep %s ot %s attr %s\n",
+                        META_LOG_DEBUG("dep %s ot %s attr %s\n",
                                 sai_metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
                                 sai_metadata_enum_sai_object_type_t.valuesnames[md->objecttype],
                                 md->attridname);
@@ -1958,7 +1949,7 @@ void check_if_attr_was_already_defined(
             if (p->metadata->objecttype == md->objecttype &&
                     p->metadata->attrid == md->attrid)
             {
-                META_ASSERT_FAIL(md, "attribute was already declared");
+                META_MD_ASSERT_FAIL(md, "attribute was already declared");
             }
         }
 
@@ -1978,7 +1969,7 @@ void check_attr_acl_capability(
 
     if (md->flags != SAI_ATTR_FLAGS_READ_ONLY)
     {
-        META_ASSERT_FAIL(md, "attribute marked as acl capability should be READ_ONLY");
+        META_MD_ASSERT_FAIL(md, "attribute marked as acl capability should be READ_ONLY");
     }
 }
 
@@ -2007,7 +1998,7 @@ void check_attr_acl_field_or_action(
 
     if ((md->isaclfield || md->isaclaction) != sai_metadata_is_acl_field_or_action(md))
     {
-        META_ASSERT_FAIL(md, "isaclfield or isaclaction don't match utils method");
+        META_MD_ASSERT_FAIL(md, "isaclfield or isaclaction don't match utils method");
     }
 
     if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY)
@@ -2056,20 +2047,20 @@ void check_attr_existing_objects(
     {
         if (md->storedefaultvalue)
         {
-           /*
-            * Currently disabled since we need more complicated logic in parser
-            * and we assume non object id's are not created at the switch by
-            * internal components.
-            *
-            * META_ASSERT_FAIL(md, "store default val should be not present on non object id");
-            */
+            /*
+             * Currently disabled since we need more complicated logic in parser
+             * and we assume non object id's are not created at the switch by
+             * internal components.
+             *
+             * META_MD_ASSERT_FAIL(md, "store default val should be not present on non object id");
+             */
         }
 
         return;
     }
 
     if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_VENDOR_SPECIFIC ||
-        md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE)
+            md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_ATTR_VALUE)
     {
         /*
          * For attr value we can make restriction that value also needs to be
@@ -2078,10 +2069,10 @@ void check_attr_existing_objects(
 
         if (!md->storedefaultvalue)
         {
-           META_ASSERT_FAIL(md, "vendor/attrvalue specific values needs to be stored");
+            META_MD_ASSERT_FAIL(md, "vendor/attrvalue specific values needs to be stored");
         }
 
-        META_LOG_INFO("vendor/attrvalue specific values needs to be stored %s", md->attridname);
+        META_LOG_DEBUG("vendor/attrvalue specific values needs to be stored %s", md->attridname);
 
         return;
     }
@@ -2093,10 +2084,10 @@ void check_attr_existing_objects(
 
     if (!md->storedefaultvalue)
     {
-       META_ASSERT_FAIL(md, "default value needs to be stored");
+        META_MD_ASSERT_FAIL(md, "default value needs to be stored");
     }
 
-    META_LOG_INFO("MANDATORY_ON_CREATE|CREATE_AND_SET values needs to be stored %s", md->attridname);
+    META_LOG_DEBUG("MANDATORY_ON_CREATE|CREATE_AND_SET values needs to be stored %s", md->attridname);
 
     /*
      * If attribute is mandatory on create and create and set then there is no
@@ -2147,12 +2138,12 @@ void check_attr_existing_objects(
              * since we will not be able to bring it to default.
              */
 
-            META_LOG_INFO("Default value (oid) needs to be stored %s", md->attridname);
+            META_LOG_DEBUG("Default value (oid) needs to be stored %s", md->attridname);
             break;
 
         default:
 
-            META_ASSERT_FAIL(md, "not supported attr value type on existing object");
+            META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
     }
 }
 
@@ -2176,7 +2167,7 @@ void check_attr_sai_pointer(
 
             if (md->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
             {
-                META_ASSERT_FAIL(md, "all pointers should be CREATE_AND_SET");
+                META_MD_ASSERT_FAIL(md, "all pointers should be CREATE_AND_SET");
             }
         }
 
@@ -2185,7 +2176,7 @@ void check_attr_sai_pointer(
 
     if (md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER)
     {
-        META_ASSERT_FAIL(md, "attribute value pointer is only allowed on SAI_OBJECT_TYPE_SWITCH");
+        META_MD_ASSERT_FAIL(md, "attribute value pointer is only allowed on SAI_OBJECT_TYPE_SWITCH");
     }
 }
 
@@ -2203,7 +2194,7 @@ void check_attr_brief_description(
 
     if (strlen(md->brief) > 200)
     {
-        META_ASSERT_FAIL(md, "brief description is too long > 200");
+        META_MD_ASSERT_FAIL(md, "brief description is too long > 200");
     }
 }
 
@@ -2236,7 +2227,7 @@ void check_attr_is_primitive(
 
             if (md->isprimitive)
             {
-                META_ASSERT_FAIL(md, "marked as primitive on list")
+                META_MD_ASSERT_FAIL(md, "marked as primitive on list")
             }
 
             break;
@@ -2279,14 +2270,14 @@ void check_attr_is_primitive(
 
             if (!md->isprimitive)
             {
-                META_ASSERT_FAIL(md, "not marked as primitive on primitive")
+                META_MD_ASSERT_FAIL(md, "not marked as primitive on primitive")
             }
 
             break;
 
         default:
 
-            META_ASSERT_FAIL(md, "attr value type not handled, FIXME");
+            META_MD_ASSERT_FAIL(md, "attr value type not handled, FIXME");
     }
 }
 
@@ -2335,7 +2326,7 @@ void check_attr_condition_in_force(
             attrs[idx].id ^= (uint32_t)(-1);
         }
 
-         META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
+        META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
 
         /* when condition is "or" then any of attribute should match */
 
@@ -2356,7 +2347,7 @@ void check_attr_condition_in_force(
     }
     else /* AND */
     {
-         META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
+        META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
 
         /* when condition is "and" then any of wrong attribute should fail condition */
 
@@ -2434,12 +2425,12 @@ void check_attr_default_attrvalue(
 
     if (count == 0)
     {
-        META_ASSERT_FAIL(md, "oid attribute with %s is not present in %s",
+        META_MD_ASSERT_FAIL(md, "oid attribute with %s is not present in %s",
                 sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename,
                 sai_metadata_all_object_type_infos[md->objecttype]->objecttypename);
     }
 
-    META_ASSERT_FAIL(md, "too many attributes with %s for default value attrvalue",
+    META_MD_ASSERT_FAIL(md, "too many attributes with %s for default value attrvalue",
             sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename);
 }
 
@@ -2448,7 +2439,7 @@ void check_single_attribute(
 {
     META_LOG_ENTER();
 
-    META_LOG_INFO("performing metadata sanity check: object type %d, attr id: %d", md->objecttype, md->attrid);
+    META_LOG_DEBUG("performing metadata sanity check: object type %d, attr id: %d", md->objecttype, md->attrid);
 
     META_ASSERT_NOT_NULL(md->attridname);
 
@@ -2517,7 +2508,7 @@ void check_object_infos()
 
         META_ASSERT_NOT_NULL(info->objecttypename);
 
-        META_LOG_INFO("processing object type: %s", sai_metadata_get_object_type_name((sai_object_type_t)i));
+        META_LOG_DEBUG("processing object type: %s", sai_metadata_get_object_type_name((sai_object_type_t)i));
 
         META_ASSERT_TRUE(info->attridstart == 0, "attribute enum start should be zero");
         META_ASSERT_TRUE(info->attridend > 0, "attribute enum end must be > 0");
@@ -2544,7 +2535,7 @@ void check_object_infos()
                 if (info->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY &&
                         info->objecttype != SAI_OBJECT_TYPE_ACL_TABLE)
                 {
-                    META_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
+                    META_MD_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
                 }
             }
 
@@ -2556,7 +2547,7 @@ void check_object_infos()
                 continue;
             }
 
-            META_ASSERT_FAIL(am, "attr is is not in start .. end range");
+            META_MD_ASSERT_FAIL(am, "attr is is not in start .. end range");
         }
 
         META_ASSERT_NOT_NULL(info->enummetadata);
@@ -2596,7 +2587,7 @@ void check_non_object_id_object_types()
             if (info->structmemberscount != 0 ||
                     info->structmembers != NULL)
             {
-                META_FAIL("object type %zu is non object id but struct members defined", i);
+                META_ASSERT_FAIL("object type %zu is non object id but struct members defined", i);
             }
 
             continue;
@@ -2636,7 +2627,7 @@ void check_non_object_id_object_types()
                      * supported so no other structs or lists.
                      */
 
-                    META_FAIL("struct member %s have invalid value type %d", m->membername, m->membervaluetype);
+                    META_ASSERT_FAIL("struct member %s have invalid value type %d", m->membername, m->membervaluetype);
             }
 
             if (m->isenum)
@@ -2671,7 +2662,7 @@ void check_non_object_id_object_types()
 
                     if (ot == SAI_OBJECT_TYPE_FDB_FLUSH || ot == SAI_OBJECT_TYPE_HOSTIF_PACKET)
                     {
-                        META_FAIL("fdb flush or hostif packet can't be used as object in nonobjectid struct");
+                        META_ASSERT_FAIL("fdb flush or hostif packet can't be used as object in nonobjectid struct");
                     }
 
                     if (ot > SAI_OBJECT_TYPE_NULL && ot < SAI_OBJECT_TYPE_MAX)
@@ -2687,7 +2678,7 @@ void check_non_object_id_object_types()
 
                             if (strcmp("switch_id", m->membername) != 0)
                             {
-                                META_FAIL("struct member %s supports object type SWITCH, should be named switch_id", m->membername);
+                                META_ASSERT_FAIL("struct member %s supports object type SWITCH, should be named switch_id", m->membername);
                             }
 
                             META_ASSERT_TRUE(m->allowedobjecttypeslength == 1, "switch_id member should only support object type SWITCH");
@@ -2701,7 +2692,7 @@ void check_non_object_id_object_types()
 
                         if (sinfo->isnonobjectid)
                         {
-                            META_FAIL("struct member %s of non object id type can't be used as object id in non object id struct: %s",
+                            META_ASSERT_FAIL("struct member %s of non object id type can't be used as object id in non object id struct: %s",
                                     m->membername,
                                     sai_metadata_get_object_type_name(ot));
                         }
@@ -2709,7 +2700,7 @@ void check_non_object_id_object_types()
                         continue;
                     }
 
-                    META_FAIL("invalid object type specified on file %s: %d", m->membername, ot);
+                    META_ASSERT_FAIL("invalid object type specified on file %s: %d", m->membername, ot);
                 }
             }
             else
@@ -2764,7 +2755,7 @@ void check_non_object_id_object_attrs()
 
                 default:
 
-                    META_ASSERT_FAIL(m, "non object id attribute has invalid flags: 0x%x (should be CREATE_AND_SET)", m->flags);
+                    META_MD_ASSERT_FAIL(m, "non object id attribute has invalid flags: 0x%x (should be CREATE_AND_SET)", m->flags);
             }
         }
     }
@@ -2791,7 +2782,7 @@ void check_attr_sorted_by_id_name()
 
         if (strcmp(last, name) >= 0)
         {
-            META_ASSERT_FAIL(am, "attribute id name in not sorted alphabetical");
+            META_MD_ASSERT_FAIL(am, "attribute id name in not sorted alphabetical");
         }
 
         META_ASSERT_TRUE(strncmp(name, "SAI_", 4) == 0, "all attributes should start with SAI_");
@@ -2807,7 +2798,7 @@ void check_attr_sorted_by_id_name()
     {
         const sai_attr_metadata_t *am = sai_metadata_attr_sorted_by_id_name[i];
 
-        META_LOG_INFO("search for %s", am->attridname);
+        META_LOG_DEBUG("search for %s", am->attridname);
 
         const sai_attr_metadata_t *found = sai_metadata_get_attr_metadata_by_attr_id_name(am->attridname);
 
@@ -2833,7 +2824,7 @@ void list_loop(
 {
     META_LOG_ENTER();
 
-    META_WARN_LOG("LOOP DETECTED on object type: %s",
+    META_LOG_WARN("LOOP DETECTED on object type: %s",
             sai_metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
 
     for (; levelidx < level; ++levelidx)
@@ -2844,14 +2835,14 @@ void list_loop(
 
         const sai_attr_metadata_t* m = sai_metadata_get_attr_metadata(ot, attributes[levelidx]);
 
-        META_WARN_LOG(" %s: %s", ot_name, m->attridname);
+        META_LOG_WARN(" %s: %s", ot_name, m->attridname);
     }
 
-    META_WARN_LOG(" -> %s", sai_metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
+    META_LOG_WARN(" -> %s", sai_metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
 
     if (level >= 0)
     {
-        META_FAIL("LOOP is detected, we can't have loops in graph, please fix attributes");
+        META_ASSERT_FAIL("LOOP is detected, we can't have loops in graph, please fix attributes");
     }
 }
 
@@ -2905,15 +2896,15 @@ void check_objects_for_loops_recursive(
         if (m->objecttype == SAI_OBJECT_TYPE_PORT)
         {
             if (m->attrid == SAI_PORT_ATTR_EGRESS_MIRROR_SESSION ||
-                m->attrid == SAI_PORT_ATTR_INGRESS_MIRROR_SESSION ||
-                m->attrid == SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST)
+                    m->attrid == SAI_PORT_ATTR_INGRESS_MIRROR_SESSION ||
+                    m->attrid == SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST)
             {
                 continue;
             }
         }
 
         if (m->objecttype == SAI_OBJECT_TYPE_SCHEDULER_GROUP &&
-            m->attrid == SAI_SCHEDULER_GROUP_ATTR_PARENT_NODE)
+                m->attrid == SAI_SCHEDULER_GROUP_ATTR_PARENT_NODE)
         {
             continue;
         }
@@ -3065,7 +3056,7 @@ void check_read_only_attributes()
 
         if (index < 1)
         {
-            META_FAIL("object %s must define at least 1 attribute",
+            META_ASSERT_FAIL("object %s must define at least 1 attribute",
                     sai_metadata_get_object_type_name((sai_object_type_t)i));
         }
 
@@ -3077,7 +3068,7 @@ void check_read_only_attributes()
              * issue will be resolved.
              */
 
-            META_WARN_LOG("object %s has only READ_ONLY attributes",
+            META_LOG_WARN("object %s has only READ_ONLY attributes",
                     sai_metadata_enum_sai_object_type_t.valuesnames[i]);
         }
     }
@@ -3143,7 +3134,7 @@ void check_mixed_object_list_types()
                      * object types should be possible.
                      */
 
-                    META_ASSERT_FAIL(meta, "allowed object types on object id list is more then 1, not supported yet");
+                    META_MD_ASSERT_FAIL(meta, "allowed object types on object id list is more then 1, not supported yet");
                 }
 
                 break;
@@ -3255,7 +3246,7 @@ void check_single_non_object_id_for_rev_graph(
 
                 if (rm->structmember->allowedobjecttypes[i] == depobjecttype)
                 {
-                    META_LOG_INFO("dep %s ot %s attr %s\n",
+                    META_LOG_DEBUG("dep %s ot %s attr %s\n",
                             sai_metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
                             sai_metadata_enum_sai_object_type_t.valuesnames[objecttype],
                             sm->membername);
@@ -3346,9 +3337,9 @@ void check_reverse_graph_for_non_object_id()
                  * For each object type check it's location in graph
                  */
 
-                 sai_object_type_t depobjecttype = m->allowedobjecttypes[k];
+                sai_object_type_t depobjecttype = m->allowedobjecttypes[k];
 
-                 check_single_non_object_id_for_rev_graph(m, objecttype, depobjecttype);
+                check_single_non_object_id_for_rev_graph(m, objecttype, depobjecttype);
             }
         }
     }
@@ -3387,7 +3378,7 @@ void check_vlan_attributes()
 
             if ((int)md->flags != expected_flags)
             {
-                META_ASSERT_FAIL(md, "vlan id should have flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY, but has: %d", md->flags);
+                META_MD_ASSERT_FAIL(md, "vlan id should have flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY, but has: %d", md->flags);
             }
 
             META_ASSERT_TRUE(md->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT16, "VLAN_ID should be UINT16");
@@ -3425,7 +3416,7 @@ void check_acl_table_fields_and_acl_entry_fields()
 
     if (table_end != entry_end)
     {
-        META_FAIL("SAI_ACL_TABLE_ATTR_FIELD_END 0x%x is not equal to SAI_ACL_ENTRY_ATTR_FIELD_END 0x%x",
+        META_ASSERT_FAIL("SAI_ACL_TABLE_ATTR_FIELD_END 0x%x is not equal to SAI_ACL_ENTRY_ATTR_FIELD_END 0x%x",
                 SAI_ACL_TABLE_ATTR_FIELD_END, SAI_ACL_ENTRY_ATTR_FIELD_END);
     }
 
@@ -3475,12 +3466,12 @@ void check_acl_table_fields_and_acl_entry_fields()
         }
 
         if (mtable->attrid > SAI_ACL_TABLE_ATTR_FIELD_END ||
-            mentry->attrid > SAI_ACL_ENTRY_ATTR_FIELD_END)
+                mentry->attrid > SAI_ACL_ENTRY_ATTR_FIELD_END)
         {
             break;
         }
 
-        META_LOG_INFO("processing acl fields: %s %s", mtable->attridname, mentry->attridname);
+        META_LOG_DEBUG("processing acl fields: %s %s", mtable->attridname, mentry->attridname);
 
         /*
          * check acl table flags and attr value type
@@ -3498,12 +3489,12 @@ void check_acl_table_fields_and_acl_entry_fields()
         {
             if (mtable->flags != SAI_ATTR_FLAGS_CREATE_ONLY)
             {
-                META_ASSERT_FAIL(mtable, "acl table field flags should be CREATE_ONLY");
+                META_MD_ASSERT_FAIL(mtable, "acl table field flags should be CREATE_ONLY");
             }
 
             if (mtable->attrvaluetype != SAI_ATTR_VALUE_TYPE_BOOL)
             {
-                META_ASSERT_FAIL(mtable, "acl table attr value type should be bool");
+                META_MD_ASSERT_FAIL(mtable, "acl table attr value type should be bool");
             }
         }
 
@@ -3513,12 +3504,12 @@ void check_acl_table_fields_and_acl_entry_fields()
 
         if (mentry->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
         {
-            META_ASSERT_FAIL(mentry, "acl entry field flags should be CREATE_AND_SET");
+            META_MD_ASSERT_FAIL(mentry, "acl entry field flags should be CREATE_AND_SET");
         }
 
         if (mentry->attrid != mtable->attrid)
         {
-            META_ASSERT_FAIL(mentry, "acl entry attr id %d is different than acl table field %d", mentry->attrid, mtable->attrid);
+            META_MD_ASSERT_FAIL(mentry, "acl entry attr id %d is different than acl table field %d", mentry->attrid, mtable->attrid);
         }
 
         /*
@@ -3535,7 +3526,7 @@ void check_acl_table_fields_and_acl_entry_fields()
 
         if (strcmp(attr_table_pos, attr_entry_pos) != 0)
         {
-            META_FAIL("attr entry field name %s is not ending at the same name as acl table field %s",
+            META_ASSERT_FAIL("attr entry field name %s is not ending at the same name as acl table field %s",
                     mentry->attridname, mtable->attridname);
         }
 
@@ -3596,14 +3587,14 @@ void check_acl_entry_actions()
 
         if (meta->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
         {
-            META_ASSERT_FAIL(meta, "acl entry action flags should be CREATE_AND_SET");
+            META_MD_ASSERT_FAIL(meta, "acl entry action flags should be CREATE_AND_SET");
         }
 
         const char* enum_name = sai_metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
 
         META_ASSERT_NOT_NULL(enum_name);
 
-        META_LOG_INFO("processing acl action: %s %s", meta->attridname, enum_name);
+        META_LOG_DEBUG("processing acl action: %s %s", meta->attridname, enum_name);
 
         /*
          * check acl fields attribute if endings are the same
@@ -3619,7 +3610,7 @@ void check_acl_entry_actions()
 
         if (strcmp(enum_name_pos + strlen("_ACTION_TYPE_"), attr_entry_pos + strlen("_ATTR_ACTION_")) != 0)
         {
-            META_FAIL("attr entry action name %s is not ending at the same enum name %s",
+            META_ASSERT_FAIL("attr entry action name %s is not ending at the same enum name %s",
                     meta->attridname, enum_name);
         }
 
@@ -3652,7 +3643,7 @@ void check_switch_attributes()
 
         if (md->isconditional || md->isvalidonly)
         {
-            META_ASSERT_FAIL(md, "attribute can't be conditional/validonly (this check can be relaxed)");
+            META_MD_ASSERT_FAIL(md, "attribute can't be conditional/validonly (this check can be relaxed)");
         }
     }
 }
@@ -3678,13 +3669,13 @@ void check_switch_create_only_objects()
 
         if (SAI_HAS_FLAG_CREATE_ONLY(md->flags) && md->isoidattribute)
         {
-            META_ASSERT_FAIL(md, "attribute is create_only and it's an object id, this is not allowed");
+            META_MD_ASSERT_FAIL(md, "attribute is create_only and it's an object id, this is not allowed");
         }
     }
 }
 
 void check_quad_api_pointers(
-    _In_ const sai_object_type_info_t *oi)
+        _In_ const sai_object_type_info_t *oi)
 {
     META_LOG_ENTER();
 
@@ -3700,7 +3691,7 @@ void check_quad_api_pointers(
 }
 
 void check_object_id_non_object_id(
-    _In_ const sai_object_type_info_t *oi)
+        _In_ const sai_object_type_info_t *oi)
 {
     META_LOG_ENTER();
 
@@ -3713,7 +3704,7 @@ void check_object_id_non_object_id(
 }
 
 void check_enum_to_attr_map(
-    _In_ const sai_object_type_info_t *oi)
+        _In_ const sai_object_type_info_t *oi)
 {
     META_LOG_ENTER();
 
@@ -3723,7 +3714,7 @@ void check_enum_to_attr_map(
      * removed from enum and attribute should not be created.
      */
 
-    META_LOG_INFO("checking %s", oi->objecttypename);
+    META_LOG_DEBUG("checking %s", oi->objecttypename);
 
     uint32_t i = 0;
 
@@ -3731,7 +3722,7 @@ void check_enum_to_attr_map(
 
     for (; i < oi->enummetadata->valuescount ;i++)
     {
-        META_LOG_INFO("checking enum %s", oi->enummetadata->valuesnames[i]);
+        META_LOG_DEBUG("checking enum %s", oi->enummetadata->valuesnames[i]);
 
         const sai_attr_metadata_t *m = oi->attrmetadata[i];
 
@@ -3744,7 +3735,7 @@ void check_enum_to_attr_map(
 }
 
 void check_object_ro_list(
-    _In_ const sai_object_type_info_t *oi)
+        _In_ const sai_object_type_info_t *oi)
 {
     META_LOG_ENTER();
 
@@ -3807,11 +3798,11 @@ void check_object_ro_list(
         }
     }
 
-    META_FAIL("%s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+    META_ASSERT_FAIL("%s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
 }
 
 void check_reverse_graph_count(
-    _In_ const sai_object_type_info_t *oi)
+        _In_ const sai_object_type_info_t *oi)
 {
     META_LOG_ENTER();
 
@@ -3835,7 +3826,7 @@ void check_reverse_graph_count(
 }
 
 void check_single_object_info(
-    _In_ const sai_object_type_info_t *oi)
+        _In_ const sai_object_type_info_t *oi)
 {
     META_LOG_ENTER();
 
@@ -3954,8 +3945,8 @@ void check_graph_connected()
             continue;
         }
 
-        META_WARN_LOG("object %s is disconnected from graph",
-                 sai_metadata_all_object_type_infos[i]->objecttypename);
+        META_LOG_WARN("object %s is disconnected from graph",
+                sai_metadata_all_object_type_infos[i]->objecttypename);
     }
 }
 
