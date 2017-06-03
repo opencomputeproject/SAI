@@ -376,7 +376,7 @@ void check_attr_flags(
                  */
 
                 /*
-                 * Default value for acl field or action is not provided and is
+                 * Default value for acl field or action is provided and is
                  * disabled by default.
                  */
 
@@ -874,6 +874,16 @@ void check_attr_enums(
         if (md->defaultvalue == NULL)
         {
             META_MD_ASSERT_FAIL(md, "marked as enum, and require default, but not provided");
+        }
+
+        if (sai_metadata_is_acl_field_or_action(md))
+        {
+            /*
+             * Default value for acl action is disabled, so enum value can't be
+             * compared since it's not there.
+             */
+
+            return;
         }
 
         int32_t enumdefault = md->defaultvalue->s32;
