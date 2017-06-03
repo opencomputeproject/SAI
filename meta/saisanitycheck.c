@@ -2001,6 +2001,16 @@ void check_attr_acl_field_or_action(
         META_MD_ASSERT_FAIL(md, "isaclfield or isaclaction don't match utils method");
     }
 
+    if (md->isaclfield)
+    {
+        META_ASSERT_FALSE(md->defaultvalue->aclfield.enable, "enable should be false");
+    }
+
+    if (md->isaclaction)
+    {
+        META_ASSERT_FALSE(md->defaultvalue->aclaction.enable, "enable should be false");
+    }
+
     if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY)
     {
         META_ASSERT_FALSE(md->isaclfield, "field should be not marked as acl field");

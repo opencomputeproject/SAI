@@ -964,15 +964,15 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .s32 = $default };";
     }
-    elsif ($default =~ /^0$/ and $type =~ /sai_acl_field_data_t (sai_u?int\d+_t)/)
+    elsif ($default =~ /^0$/ and $type =~ /^sai_acl_field_data_t (sai_u?int\d+_t)/)
     {
         WriteSource "$val = { 0 };";
     }
-    elsif ($default =~ /^0$/ and $type =~ /sai_acl_action_data_t (sai_u?int\d+_t)/)
+    elsif ($default =~ /^0$/ and $type =~ /^sai_acl_action_data_t (sai_u?int\d+_t)/)
     {
         WriteSource "$val = { 0 };";
     }
-    elsif ($default =~ /^$NUMBER_REGEX$/ and $type =~ /sai_u?int\d+_t/)
+    elsif ($default =~ /^$NUMBER_REGEX$/ and $type =~ /^sai_u?int\d+_t/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
