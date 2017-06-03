@@ -1056,6 +1056,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
 
@@ -1064,6 +1065,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6,
 
@@ -1072,6 +1074,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IPV6,
 
@@ -1080,6 +1083,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IPV6,
 
@@ -1088,6 +1092,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_mac_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC,
 
@@ -1096,6 +1101,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_mac_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_MAC,
 
@@ -1104,6 +1110,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_ip4_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_IP,
 
@@ -1112,6 +1119,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_ip4_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IP,
 
@@ -1120,6 +1128,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_ip4_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_IP,
 
@@ -1128,6 +1137,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_ip4_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IP,
 
@@ -1137,6 +1147,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS,
 
@@ -1146,6 +1157,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS,
 
@@ -1155,6 +1167,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
 
@@ -1164,6 +1177,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
@@ -1174,6 +1188,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_PORT,
 
@@ -1183,6 +1198,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan true
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID,
 
@@ -1191,6 +1207,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_PRI,
 
@@ -1199,6 +1216,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_CFI,
 
@@ -1208,6 +1226,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan true
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_ID,
 
@@ -1216,6 +1235,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_PRI,
 
@@ -1224,6 +1244,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_CFI,
 
@@ -1233,6 +1254,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT,
 
@@ -1242,6 +1264,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
 
@@ -1251,6 +1274,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ETHER_TYPE,
 
@@ -1259,6 +1283,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL,
 
@@ -1268,6 +1293,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_IDENTIFICATION,
 
@@ -1276,6 +1302,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_DSCP,
 
@@ -1284,6 +1311,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ECN,
 
@@ -1292,6 +1320,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_TTL,
 
@@ -1300,6 +1329,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_TOS,
 
@@ -1308,6 +1338,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_FLAGS,
 
@@ -1316,6 +1347,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_TCP_FLAGS,
 
@@ -1324,6 +1356,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_acl_ip_type_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_IP_TYPE,
 
@@ -1332,6 +1365,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_acl_ip_frag_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_IP_FRAG,
 
@@ -1340,6 +1374,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IPV6_FLOW_LABEL,
 
@@ -1348,6 +1383,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_TC,
 
@@ -1356,6 +1392,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ICMP_TYPE,
 
@@ -1364,6 +1401,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ICMP_CODE,
 
@@ -1372,6 +1410,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_packet_vlan_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_PACKET_VLAN,
 
@@ -1385,6 +1424,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_FDB_DST_USER_META,
 
@@ -1396,6 +1436,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_DST_USER_META,
 
@@ -1407,6 +1448,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_DST_USER_META,
 
@@ -1418,6 +1460,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_PORT_USER_META,
 
@@ -1429,6 +1472,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_VLAN_USER_META,
 
@@ -1442,6 +1486,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_USER_META,
 
@@ -1452,6 +1497,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t bool
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_FDB_NPU_META_DST_HIT,
 
@@ -1460,6 +1506,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t bool
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_NEIGHBOR_NPU_META_DST_HIT,
 
@@ -1468,6 +1515,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t bool
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
@@ -1493,6 +1541,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_field_data_t sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_ACL_RANGE
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ACL_RANGE_TYPE,
 
@@ -1503,6 +1552,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
 
@@ -1530,6 +1580,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
 
@@ -1540,6 +1591,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
 
@@ -1548,6 +1600,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_packet_action_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION,
 
@@ -1556,6 +1609,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_int32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_FLOOD,
 
@@ -1565,6 +1619,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_ACL_COUNTER
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_COUNTER,
 
@@ -1574,6 +1629,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS,
 
@@ -1583,6 +1639,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS,
 
@@ -1592,6 +1649,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_POLICER
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER,
 
@@ -1600,6 +1658,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_int32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DECREMENT_TTL,
 
@@ -1608,6 +1667,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_TC,
 
@@ -1616,6 +1676,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_packet_color_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_COLOR,
 
@@ -1624,6 +1685,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_VLAN_ID,
 
@@ -1632,6 +1694,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_VLAN_PRI,
 
@@ -1641,6 +1704,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan true
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_ID,
 
@@ -1649,6 +1713,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_PRI,
 
@@ -1657,6 +1722,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_mac_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_MAC,
 
@@ -1665,6 +1731,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_mac_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_MAC,
 
@@ -1673,6 +1740,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_ip4_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IP,
 
@@ -1681,6 +1749,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_ip4_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IP,
 
@@ -1689,6 +1758,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_ip6_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_SRC_IPV6,
 
@@ -1697,6 +1767,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_ip6_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DST_IPV6,
 
@@ -1705,6 +1776,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DSCP,
 
@@ -1713,6 +1785,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ECN,
 
@@ -1722,6 +1795,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_SRC_PORT,
 
@@ -1731,6 +1805,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_L4_DST_PORT,
 
@@ -1740,6 +1815,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_INGRESS_SAMPLEPACKET_ENABLE,
 
@@ -1749,6 +1825,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_SAMPLEPACKET_ENABLE,
 
@@ -1759,6 +1836,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ACL_META_DATA,
 
@@ -1771,6 +1849,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
 
@@ -1783,6 +1862,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_USER_TRAP_ID,
 
@@ -1791,6 +1871,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
 

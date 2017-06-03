@@ -329,6 +329,12 @@ sub ProcessTagDefault
         return $val;
     }
 
+    if ($val eq "disabled")
+    {
+        # for aclfield and aclaction
+        return $val;
+    }
+
     LogError "invalid default tag value '$val' on $type $value";
     return undef;
 }
@@ -931,6 +937,8 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^0\.0\.0\.0$/;
 
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default eq "disabled";
+
     LogError "invalid default value type '$default' on $attr";
 
     return "";
@@ -956,15 +964,15 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .s32 = $default };";
     }
-    elsif ($default =~ /^0$/ and $type =~ /sai_acl_field_data_t (sai_u?int\d+_t)/)
+    elsif ($default =~ /^0$/ and $type =~ /^sai_acl_field_data_t (sai_u?int\d+_t)/)
     {
         WriteSource "$val = { 0 };";
     }
-    elsif ($default =~ /^0$/ and $type =~ /sai_acl_action_data_t (sai_u?int\d+_t)/)
+    elsif ($default =~ /^0$/ and $type =~ /^sai_acl_action_data_t (sai_u?int\d+_t)/)
     {
         WriteSource "$val = { 0 };";
     }
-    elsif ($default =~ /^$NUMBER_REGEX$/ and $type =~ /sai_u?int\d+_t/)
+    elsif ($default =~ /^$NUMBER_REGEX$/ and $type =~ /^sai_u?int\d+_t/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
@@ -987,6 +995,10 @@ sub ProcessDefaultValue
         # ipv4 address needs to be converted to uint32 number so we support now only 0.0.0.0
 
         WriteSource "$val = { .$VALUE_TYPES{$1} = { .addr_family = SAI_IP_ADDR_FAMILY_IPV4, .addr = { .ip4 = 0 } } };";
+    }
+    elsif ($default =~ /^disabled$/ and $type =~ /^(sai_acl_action_data_t|sai_acl_field_data_t) /)
+    {
+        WriteSource "$val = { .$VALUE_TYPES{$1} = { .enable = false } };";
     }
     else
     {
