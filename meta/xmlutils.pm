@@ -77,7 +77,7 @@ sub ProcessTag
 
     while (1)
     {
-        my $line = shift $Lines;
+        my $line = shift @{$Lines};
 
         last if not defined $line;
         chomp $line;
@@ -92,8 +92,8 @@ sub ProcessTag
             # cleanup node
             if (scalar(keys%current) == 1)
             {
-                pop$tagarr;
-                push$tagarr, $current{content};
+                pop@{$tagarr};
+                push@{$tagarr}, $current{content};
             }
 
             $ident--;
