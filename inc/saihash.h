@@ -82,6 +82,9 @@ typedef enum _sai_native_hash_field_t
     /** Native hash field source port */
     SAI_NATIVE_HASH_FIELD_IN_PORT = 11,
 
+    /** Native hash field max count */
+    SAI_NATIVE_HASH_FIELD_MAX
+
 } sai_native_hash_field_t;
 
 /**
