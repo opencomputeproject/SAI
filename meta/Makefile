@@ -59,7 +59,7 @@ xml: $(DEPS) Doxyfile $(CONSTHEADERS)
 	doxygen Doxyfile 2>&1 | perl -npe '$$e=1 if /warning/i; END{exit $$e}'
 	touch xml
 
-EXTRA = acronyms.txt aspell.en.pws
+EXTRA = acronyms.txt aspell.en.pws *.pm
 
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl parse.pl
