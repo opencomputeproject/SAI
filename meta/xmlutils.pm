@@ -7,6 +7,7 @@ use warnings;
 use diagnostics;
 use Getopt::Std;
 use Data::Dumper;
+use utils;
 
 require Exporter;
 
@@ -122,6 +123,13 @@ sub ReadXml
 {
     my $filename = shift;
 
+    if (defined $main::optionUseXmlSimple)
+    {
+        my $xs = XML::Simple->new();
+
+        return $xs->XMLin($filename, KeyAttr => { }, ForceArray => 1);
+    }
+
     open(FH, '<', $filename) or die "Could not open file '$filename' $!";
 
     my @values = ();
@@ -160,10 +168,176 @@ sub ReadXml
     return $ROOT{$doxygenTag}[0];
 }
 
+sub GetXmlFiles
+{
+    my $dir = shift;
+
+    opendir(my $dh, $dir) or die "Can't open $dir $!";
+
+    my @files = ();
+
+    while (readdir $dh)
+    {
+        next if not /^sai\w*_8h\.xml$/i;
+
+        push @files,$_;
+    }
+
+    closedir $dh;
+
+    return sort @files;
+}
+
+sub ExtractStructInfo
+{
+    my $struct = shift;
+    my $prefix = shift;
+
+    my %S = ();
+
+    my $filename = "${prefix}${struct}.xml";
+
+    $filename =~ s/_/__/g;
+
+    $filename = $prefix if -e "$main::XMLDIR/$prefix" and $prefix =~ /\.xml$/;
+
+    my $file = "$main::XMLDIR/$filename"; # example: xml/struct__sai__fdb__entry__t.xml
+
+    # read xml, we need to get each struct field and it's type and description
+
+    my $ref = ReadXml $file;
+
+    my @sections = @{ $ref->{compounddef}[0]->{sectiondef} };
+
+    my $count = @sections;
+
+    if ($count != 1)
+    {
+        LogError "expected only 1 section in $file for $struct";
+        return %S;
+    }
+
+    my @members = @{ $sections[0]->{memberdef} };
+
+    $count = @members;
+
+    if ($count < 2)
+    {
+        LogError "there must be at least 2 members in struct $struct";
+        return %S;
+    }
+
+    my $idx = 0;
+
+    for my $member (@members)
+    {
+        my $name = $member->{name}[0];
+        my $type = $member->{definition}[0];
+        my $args = $member->{argsstring}[0];
+
+        # if argstring is empty in xml, then it returns empty hash, skip this
+        # args contain extra arguments like [32] for "char foo[32]" or
+        # function parameters
+
+        $args = "" if ref $args eq "HASH";
+
+        $type = $1 if $type =~ /^(.+) _sai_\w+_t::(?:\w+|::)+(.*)$/;
+
+        if (defined $2 and $2 ne "")
+        {
+            my $suffix= $2;
+
+            if ($suffix =~/^\[\d+\]$/)
+            {
+                $type .= $suffix;
+            }
+            else
+            {
+                LogError "not supported type '$member->{definition}[0]' == $2\n";
+            }
+        }
+
+        my $desc = ExtractDescription($struct, $struct, $member->{detaileddescription}[0]);
+
+        $S{$name}{type} = $type;
+        $S{$name}{desc} = $desc;
+        $S{$name}{args} = $args;
+        $S{$name}{idx}  = $idx++;
+    }
+
+    return %S;
+}
+
+sub ExtractDescription
+{
+    my ($type, $value, $item) = @_;
+
+    return $item if ref $item eq "";
+
+    if (not ref $item eq "HASH")
+    {
+        LogError "invalid description provided in $type $value";
+        return undef;
+    }
+
+    my $content = "";
+
+    if (defined $item->{simplesect})
+    {
+        my @sim = @{ $item->{simplesect} };
+
+        for my $s (@sim)
+        {
+            $content .= ExtractDescription($type, $value, $s);
+        }
+
+        return $content;
+    }
+
+    if (defined $item->{para})
+    {
+        my @para = @{ $item->{para} };
+
+        for my $p (@para)
+        {
+            $content .= " " . ExtractDescription($type, $value, $p);
+        }
+
+        return $content;
+    }
+
+    if (defined $item->{content} and defined $item->{ref})
+    {
+        my $n = 0;
+
+        if (ref ($item->{content}) eq "")
+        {
+            # content is just string
+
+            return $item->{content} . $item->{ref}[0]->{content};
+        }
+
+        for my $c ( @{ $item->{content} })
+        {
+            my $ref = $item->{ref}[$n++]->{content};
+
+            # ref array can be 1 item shorter than content
+
+            $content .= $c;
+            $content .= $ref if defined $ref;
+        }
+    }
+
+    return $content;
+}
+
 BEGIN
 {
     our @ISA    = qw(Exporter);
-    our @EXPORT = qw/ReadXml UnescapeXml/;
+    our @EXPORT = qw/
+    ReadXml UnescapeXml GetXmlFiles
+    ExtractDescription ExtractStructInfo
+    /;
 }
 
 1;
