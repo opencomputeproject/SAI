@@ -3530,7 +3530,14 @@ sub CheckHeadersStyle
         }
     }
 
-    return if defined $optionDisableAspell;
+    RunAspell(\%wordsToCheck) if not defined $optionDisableAspell;
+}
+
+sub RunAspell
+{
+    my $hash = shift;
+
+    my %wordsToCheck = %{ $hash };
 
     if (not -e "/usr/bin/aspell")
     {
