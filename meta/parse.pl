@@ -8,6 +8,7 @@ use XML::Simple qw(:strict);
 use Getopt::Std;
 use Data::Dumper;
 use Term::ANSIColor;
+use xmlutils;
 
 my $errors = 0;
 my $warnings = 0;
@@ -49,9 +50,11 @@ my %TAGS = (
         "getsave"   , \&ProcessTagGetSave,
         );
 
-getopts("d",\%options);
+getopts("dsA", \%options);
 
-my $optionPrintDebug = 1 if defined $options{d};
+our $optionPrintDebug        = 1 + $options{d} if defined $options{d};
+our $optionDisableAspell     = 1 if defined $options{A};
+our $optionUseXmlSimple      = 1 if defined $options{s};
 
 # LOGGING FUNCTIONS HELPERS
 
@@ -102,6 +105,28 @@ sub GetXmlFiles
     @files = sort @files;
 
     return @files;
+}
+
+sub GetXml
+{
+    my $file = shift;
+
+    LogDebug "Reading $file";
+
+    my $ref;
+
+    if (defined $optionUseXmlSimple)
+    {
+        my $xs = XML::Simple->new();
+
+        $ref = $xs->XMLin($file, KeyAttr => { }, ForceArray => 1);
+    }
+    else
+    {
+        $ref = ReadXml $file;
+    }
+
+    return $ref;
 }
 
 sub ExtractDescription
@@ -364,7 +389,7 @@ sub ProcessDescription
 
     $desc =~ s/@@/\n@@/g;
 
-    while ($desc =~ /@@(\w+)(.+)/g)
+    while ($desc =~ /@@(\w+)(.*)/g)
     {
         my $tag = $1;
         my $val = $2;
@@ -377,7 +402,7 @@ sub ProcessDescription
 
         if (not defined $TAGS{$tag})
         {
-            LogError "unrecognized tag $tag on $type $value";
+            LogError "unrecognized tag '$tag' on $type $value";
             next;
         }
 
@@ -566,9 +591,7 @@ sub ProcessXmlFile
 {
     my $file = shift;
 
-    my $xs = XML::Simple->new();
-
-    my $ref = $xs->XMLin($file, KeyAttr => { }, ForceArray => 1);
+    my $ref = GetXml $file;
 
     my @sections = @{ $ref->{compounddef}[0]->{sectiondef} };
 
@@ -2352,7 +2375,7 @@ sub GetNonObjectIdStructNames
         }
     }
 
-    return values %structs;
+    return sort values %structs;
 }
 
 sub DefineTestName
@@ -2507,9 +2530,7 @@ sub ExtractStructInfo
 
     # read xml, we need to get each struct field and it's type and description
 
-    my $xs = XML::Simple->new();
-
-    my $ref = $xs->XMLin($file, KeyAttr => { }, ForceArray => 1);
+    my $ref = GetXml $file;
 
     my @sections = @{ $ref->{compounddef}[0]->{sectiondef} };
 
@@ -3507,6 +3528,8 @@ sub CheckHeadersStyle
             LogWarning "$oncedef should be used 3 times in header, but used $oncedefCount";
         }
     }
+
+    return if defined $optionDisableAspell;
 
     if (not -e "/usr/bin/aspell")
     {
