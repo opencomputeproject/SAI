@@ -29,7 +29,7 @@ sub CreatePointersTest
 
     WriteTest "{";
 
-    for my $pointer (sort @main::NOTIFICATION_NAMES)
+    for my $pointer (sort keys %main::NOTIFICATION_NAMES)
     {
         if (not $pointer =~ /^sai_(\w+)_notification_fn/)
         {

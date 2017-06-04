@@ -183,6 +183,7 @@ sub SanityCheckContent
 
     my $metaHeaderSize = 48832 * 0.99;
     my $metaSourceSize = 2216983 * 0.99;
+    my $metaTestSize   = 104995 * 0.99;
 
     if (length($HEADER_CONTENT) < $metaHeaderSize)
     {
@@ -192,6 +193,11 @@ sub SanityCheckContent
     if (length($SOURCE_CONTENT) < $metaSourceSize)
     {
         LogError "generated saimetadata.c size is too small";
+    }
+
+    if (length($TEST_CONTENT) < $metaTestSize)
+    {
+        LogError "generated saimetadatatest.c size is too small";
     }
 }
 
@@ -206,13 +212,27 @@ sub WriteMetaDataFiles
     WriteFile("saimetadatatest.c", $TEST_CONTENT);
 }
 
+sub GetStructKeysInOrder
+{
+    my $structRef = shift;
+
+    my @values = ();
+
+    for my $key (keys %$structRef)
+    {
+        $values[$structRef->{$key}->{idx}] = $key;
+    }
+
+    return @values;
+}
+
 BEGIN
 {
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
     LogDebug LogInfo LogWarning LogError
     WriteFile GetHeaderFiles GetMetaHeaderFiles ReadHeaderFile
-    GetNonObjectIdStructNames IsSpecialObject GetStructLists
+    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
     WriteHeader WriteSource WriteTest WriteMetaDataFiles
     $errors $warnings $NUMBER_REGEX
     $HEADER_CONTENT $SOURCE_CONTENT $TEST_CONTENT
