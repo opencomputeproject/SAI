@@ -50,11 +50,12 @@ my %TAGS = (
         "getsave"   , \&ProcessTagGetSave,
         );
 
-getopts("dsA", \%options);
+getopts("dsAS", \%options);
 
 our $optionPrintDebug        = 1 + $options{d} if defined $options{d};
 our $optionDisableAspell     = 1 if defined $options{A};
 our $optionUseXmlSimple      = 1 if defined $options{s};
+our $optionDisableStyleCheck = 1 if defined $options{S};
 
 # LOGGING FUNCTIONS HELPERS
 
@@ -4368,7 +4369,7 @@ sub CreateSerializeMetaKey
 # MAIN
 #
 
-CheckHeadersStyle();
+CheckHeadersStyle() if not defined $optionDisableStyleCheck;
 
 ExtractApiToObjectMap();
 
