@@ -76,6 +76,13 @@ int sai_serialize_s64(
     return sprintf(buffer, "%ld", s64);
 }
 
+int sai_serialize_size(
+        _Out_ char *buffer,
+        _In_ sai_size_t size)
+{
+    return sprintf(buffer, "%zu", size);
+}
+
 int sai_serialize_object_id(
         _Out_ char *buffer,
         _In_ sai_object_id_t oid)

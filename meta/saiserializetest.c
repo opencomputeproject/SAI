@@ -13,11 +13,17 @@
                 __func__, __LINE__, #x, ##__VA_ARGS__);     \
         exit(1);}
 
-#define ASSERT_STR_EQ(a,b)                                                  \
+#define ASSERT_STR_EQ(a,b,r)                                                \
     if (strcmp(a,b) != 0){                                                  \
         fprintf(stderr,                                                     \
                 "ASSERT STR_EQ FAILED(%s:%d): is:\n%s\nexpected:\n%s\n",    \
                 __func__, __LINE__, a, b);                                  \
+        exit(1);}                                                           \
+    if ((int)strlen(a) != r){                                               \
+        fprintf(stderr,                                                     \
+                "ASSERT STR_EQ FAILED(%s:%d): returned length is wrong"     \
+                " res (%d) != strlen (%zu)\n",                              \
+                __func__, __LINE__, r, strlen(a));                          \
         exit(1);}
 
 #define PRIMITIVE_BUFFER_SIZE 128
@@ -30,8 +36,7 @@ void subtest_serialize_object_id(
 
     int res = sai_serialize_object_id(buf, id);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, exp);
+    ASSERT_STR_EQ(buf, exp, res);
 }
 
 void test_serialize_object_id()
@@ -55,8 +60,7 @@ void subtest_serialize_ip_addres_v4(
 
     int res = sai_serialize_ip_address(buf, &ipaddr);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, exp);
+    ASSERT_STR_EQ(buf, exp, res);
 }
 
 void test_serialize_ip_address()
@@ -95,8 +99,7 @@ void test_serialize_ip_address()
 
     res = sai_serialize_ip_address(buf, &ipaddr);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "1111:2222:3333:4444:5555:6666:aaaa:bbbb");
+    ASSERT_STR_EQ(buf, "1111:2222:3333:4444:5555:6666:aaaa:bbbb", res);
 
     uint16_t ip6a[] = { 0x0100, 0, 0, 0, 0, 0, 0, 0xff00 };
 
@@ -104,8 +107,7 @@ void test_serialize_ip_address()
 
     res = sai_serialize_ip_address(buf, &ipaddr);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "1::ff");
+    ASSERT_STR_EQ(buf, "1::ff", res);
 
     uint16_t ip6b[] = { 0, 0, 0, 0, 0, 0, 0, 0x100 };
 
@@ -113,8 +115,7 @@ void test_serialize_ip_address()
 
     res = sai_serialize_ip_address(buf, &ipaddr);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "::1");
+    ASSERT_STR_EQ(buf, "::1", res);
 }
 
 void test_serialize_mac()
@@ -128,8 +129,7 @@ void test_serialize_mac()
 
     res = sai_serialize_mac(buf, mac);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "01:23:45:67:89:AB");
+    ASSERT_STR_EQ(buf, "01:23:45:67:89:AB", res);
 }
 
 void test_serialize_enum()
@@ -141,18 +141,15 @@ void test_serialize_enum()
 
     res = sai_serialize_enum(buf, &sai_metadata_enum_sai_object_type_t, ot);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "SAI_OBJECT_TYPE_PORT");
+    ASSERT_STR_EQ(buf, "SAI_OBJECT_TYPE_PORT", res);
 
     res = sai_serialize_enum(buf, &sai_metadata_enum_sai_object_type_t, -1);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "-1");
+    ASSERT_STR_EQ(buf, "-1", res);
 
     res = sai_serialize_enum(buf, &sai_metadata_enum_sai_object_type_t, 100);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "100");
+    ASSERT_STR_EQ(buf, "100", res);
 
     /* test all enums */
 
@@ -170,8 +167,7 @@ void test_serialize_enum()
 
             res = sai_serialize_enum(buf, emd, value);
 
-            ASSERT_TRUE(res > 0, "expected positive number");
-            ASSERT_STR_EQ(buf, emd->valuesnames[j]);
+            ASSERT_STR_EQ(buf, emd->valuesnames[j], res);
         }
     }
 }
@@ -185,15 +181,13 @@ void test_serialize_ipv4_mask()
 
     res = sai_serialize_ipv4_mask(buf, mask);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "0");
+    ASSERT_STR_EQ(buf, "0", res);
 
     mask = 0xffffffff;
 
     res = sai_serialize_ipv4_mask(buf, mask);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "32");
+    ASSERT_STR_EQ(buf, "32", res);
 
     mask = 0xffffffff;
 
@@ -206,8 +200,7 @@ void test_serialize_ipv4_mask()
 
         sprintf(exp, "%d", i);
 
-        ASSERT_TRUE(res > 0, "expected positive number");
-        ASSERT_STR_EQ(buf, exp);
+        ASSERT_STR_EQ(buf, exp, res);
 
         mask = mask << 1;
     }
@@ -253,8 +246,7 @@ void test_serialize_ipv6_mask()
         sai_serialize_ipv6(ipv6, mask);
         res = sai_serialize_ipv6_mask(buf, mask);
 
-        ASSERT_TRUE(res > 0, "expected positive number");
-        ASSERT_STR_EQ(buf, bufn);
+        ASSERT_STR_EQ(buf, bufn, res);
     }
 }
 
@@ -275,8 +267,7 @@ void test_serialize_route_entry()
 
     res = sai_serialize_route_entry(buf, &re);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"destination\":\"1.2.3.4/32\"}");
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"destination\":\"1.2.3.4/32\"}", res);
 
     re.destination.addr_family = SAI_IP_ADDR_FAMILY_IPV6;
 
@@ -287,8 +278,7 @@ void test_serialize_route_entry()
 
     res = sai_serialize_route_entry(buf, &re);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"destination\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb/128\"}");
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"destination\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb/128\"}", res);
 
     re.destination.addr_family = 2;
 
@@ -312,8 +302,7 @@ void test_serialize_neighbor_entry()
 
     res = sai_serialize_neighbor_entry(buf, &ne);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1.2.3.4\"}");
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1.2.3.4\"}", res);
 
     uint16_t ip6[] = { 0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0xaaaa, 0xbbbb };
 
@@ -323,8 +312,7 @@ void test_serialize_neighbor_entry()
 
     res = sai_serialize_neighbor_entry(buf, &ne);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb\"}");
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb\"}", res);
 
     ne.ip_address.addr_family = 2;
 
@@ -347,8 +335,7 @@ void test_serialize_fdb_entry()
 
     res = sai_serialize_fdb_entry(buf, &fe);
 
-    ASSERT_TRUE(res > 0, "expected positive number");
-    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}");
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}", res);
 }
 
 int main()
