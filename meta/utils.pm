@@ -39,6 +39,14 @@ sub WriteTest
     $TEST_CONTENT .= $content . "\n";
 }
 
+sub WriteSectionComment
+{
+    my $content = shift;
+
+    WriteHeader "\n/* $content */\n";
+    WriteSource "\n/* $content */\n";
+}
+
 sub LogDebug
 {
     print color('bright_blue') . "@_" . color('reset') . "\n" if $main::optionPrintDebug;
@@ -233,7 +241,7 @@ BEGIN
     LogDebug LogInfo LogWarning LogError
     WriteFile GetHeaderFiles GetMetaHeaderFiles ReadHeaderFile
     GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
-    WriteHeader WriteSource WriteTest WriteMetaDataFiles
+    WriteHeader WriteSource WriteTest WriteMetaDataFiles WriteSectionComment
     $errors $warnings $NUMBER_REGEX
     $HEADER_CONTENT $SOURCE_CONTENT $TEST_CONTENT
     /;

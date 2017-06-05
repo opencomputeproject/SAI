@@ -194,6 +194,70 @@ sub GetXmlFiles
     return sort @files;
 }
 
+# TODO we need similar processing like tag processing on attr
+
+sub ExtractCountFromDesc
+{
+    my ($type, $desc) = @_;
+
+    my %Count = ();
+
+    if (not defined $desc)
+    {
+        LogWarning "desc is not defined in '$type'";
+
+        return %Count;
+    }
+
+    while ($desc =~ /\@\@count\s+(\w+)\[(\w+|\d+)\]/g)
+    {
+        $Count{$1} = $2;
+
+        if ($1 eq $2)
+        {
+            LogError "count '$1' can't point to itself in \@count on $type";
+            return;
+        }
+    }
+
+    return %Count;
+}
+
+sub ExtractObjectsFromDesc
+{
+    my ($type, $member, $desc) = @_;
+
+    my @objectTypes = ();
+
+    if (not defined $desc)
+    {
+        LogWarning "desc is not defined in '${type}::$member'";
+
+        return \@objectTypes;
+    }
+
+    if (not $desc =~ /\@\@objects\s+(\w+(,\s*\w+)*)/g)
+    {
+        return \@objectTypes;
+    }
+
+    $desc = $1;
+    $desc =~ s/\s*//g;
+
+    @objectTypes = split/[,]/,$desc;
+
+    for my $ot (@objectTypes)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_\w+$/)
+        {
+            LogError "invalid objecttype '$ot' on ${type}::$member";
+            return undef;
+        }
+    }
+
+    return \@objectTypes;
+}
+
 sub ExtractStructInfo
 {
     my $struct = shift;
@@ -215,9 +279,7 @@ sub ExtractStructInfo
 
     my @sections = @{ $ref->{compounddef}[0]->{sectiondef} };
 
-    my $count = @sections;
-
-    if ($count != 1)
+    if (scalar @sections != 1)
     {
         LogError "expected only 1 section in $file for $struct";
         return %S;
@@ -225,13 +287,15 @@ sub ExtractStructInfo
 
     my @members = @{ $sections[0]->{memberdef} };
 
-    $count = @members;
-
-    if ($count < 2)
+    if (scalar@members < 2)
     {
         LogError "there must be at least 2 members in struct $struct";
         return %S;
     }
+
+    my $desc = ExtractDescription($struct, $struct, $ref->{compounddef}[0]->{detaileddescription}[0]);
+
+    my %Count = ExtractCountFromDesc($struct, $desc);
 
     my $idx = 0;
 
@@ -240,6 +304,7 @@ sub ExtractStructInfo
         my $name = $member->{name}[0];
         my $type = $member->{definition}[0];
         my $args = $member->{argsstring}[0];
+        my $file = $member->{location}[0]->{file};
 
         # if argstring is empty in xml, then it returns empty hash, skip this
         # args contain extra arguments like [32] for "char foo[32]" or
@@ -265,9 +330,13 @@ sub ExtractStructInfo
 
         my $desc = ExtractDescription($struct, $struct, $member->{detaileddescription}[0]);
 
+        $S{$name}{count} = $Count{$name} if defined $Count{$name};
         $S{$name}{type} = $type;
         $S{$name}{desc} = $desc;
         $S{$name}{args} = $args;
+        $S{$name}{file} = $file;
+        $S{$name}{name} = $name;
+        $S{$name}{objecttype} = ExtractObjectsFromDesc($struct, $name, $desc);
         $S{$name}{idx}  = $idx++;
     }
 

@@ -49,7 +49,7 @@ OBJ = saimetadata.o saimetadatautils.o saiserialize.o
 SYMBOLS = $(OBJ:=.symbols)
 
 all: saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
-	./saimetadatatest > /dev/null
+	./saimetadatatest >/dev/null
 	./saiserializetest >/dev/null 2>/dev/null
 	./saisanitycheck
 

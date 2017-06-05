@@ -298,6 +298,47 @@ int sai_serialize_ipv6_mask(
         _In_ const sai_ip6_t ip6_mask);
 
 /**
+ * @brief Serialize HMAC.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] hmac HMAC to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_hmac(
+        _Out_ char *buffer,
+        _In_ const sai_hmac_t *hmac);
+
+/**
+ * @brief Serialize TLV.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] tlv TLV to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_tlv(
+        _Out_ char *buffer,
+        _In_ const sai_tlv_t *tlv);
+
+/**
+ * @brief Serialize SAI attribute.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] meta Attribute metadata.
+ * @param[in] attr Attribute to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_attribute(
+        _Out_ char *buffer,
+        _In_ const sai_attr_metadata_t *meta,
+        _In_ const sai_attribute_t *attr);
+
+/**
  * @}
  */
 #endif /** __SAISERIALIZE_H_ */
