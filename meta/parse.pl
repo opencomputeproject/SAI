@@ -23,6 +23,8 @@ our %NOTIFICATION_NAMES = ();
 our %OBJTOAPIMAP = ();
 our %APITOOBJMAP = ();
 
+our %OBJECT_TYPE_MAP = ();
+
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY|DYNAMIC|SPECIAL";
 
 # TAGS HANDLERS
@@ -746,11 +748,12 @@ sub ProcessObjects
 
     for my $obj (@{ $objects })
     {
-        if (not grep(/^\Q$obj\E$/,@all))
+        if (not defined $OBJECT_TYPE_MAP{$obj})
         {
             LogError "unknown object type '$obj' on $attr";
             return "";
         }
+
         WriteSource "    $obj,";
     }
 
@@ -1292,32 +1295,37 @@ sub ProcessSingleObjectType
 
         # check enum attributes if their names are ending on enum name
 
-        if ($isenum eq "true" or $isenumlist eq "true")
-        {
-            my $en = uc($1) if $meta{type} =~/.*sai_(\w+)_t/;
-
-            next if $attr =~ /_${en}_LIST$/;
-            next if $attr =~ /_$en$/;
-
-            $attr =~/SAI_(\w+?)_ATTR_(\w+)/;
-
-            my $aot = $1;
-            my $aend = $1;
-
-            if ($en =~/^${aot}_(\w+)$/)
-            {
-                my $ending = $1;
-
-                next if $attr =~/_$ending$/;
-
-                LogError "enum starts by object type $aot but not ending on $ending in $en";
-
-            }
-
-            LogError "$meta{type} == $attr not ending on enum name $en";
-        }
+        CheckEnumNaming($attr, $meta{type}) if $isenum eq "true" or $isenumlist eq "true";
     }
-};
+}
+
+sub CheckEnumNaming
+{
+    my ($attr, $type) = @_;
+
+    LogError "can't match sai type on '$type'" if not $type =~/.*sai_(\w+)_t/;
+
+    my $enumTypeName = uc($1);
+
+    return if $attr =~ /_${enumTypeName}_LIST$/;
+    return if $attr =~ /_$enumTypeName$/;
+
+    $attr =~/SAI_(\w+?)_ATTR(_\w+)/;
+
+    my $attrObjectType = $1;
+    my $attrSuffix = $2;
+
+    if ($enumTypeName =~/^${attrObjectType}_(\w+)$/)
+    {
+        my $enumTypeNameSuffix = $1;
+
+        return if $attrSuffix =~/_$enumTypeNameSuffix$/;
+
+        LogError "enum starts by object type $attrObjectType but not ending on $enumTypeNameSuffix in $enumTypeName";
+    }
+
+    LogError "$type == $attr not ending on enum name $enumTypeName";
+}
 
 sub CreateMetadata
 {
@@ -2191,11 +2199,9 @@ sub CreateListOfAllAttributes
                 next;
             }
 
-            my %meta = %{ $METADATA{$typedef}{$attr} };
+            next if defined $METADATA{$typedef}{$attr}{ignore};
 
-            next if defined $meta{ignore};
-
-            $ATTRIBUTES{$attr} = 1; #"const sai_attr_metadata_t  = {";
+            $ATTRIBUTES{$attr} = 1;
         }
     }
 
@@ -2386,15 +2392,15 @@ sub GetReverseDependencyGraph
         {
             # metadata of single attribute of this object type
 
-            my %meta = %{ $METADATA{$typedef}{$attr} };
+            my $meta = $METADATA{$typedef}{$attr};
 
-            next if not defined $meta{objects};
+            next if not defined $meta->{objects};
 
             # we will also include RO attributes
 
-            my @objects = @{ $meta{objects} };
+            my @objects = @{ $meta->{objects} };
 
-            my $attrid = $meta{attrid};
+            my $attrid = $meta->{attrid};
 
             for my $usedot (@objects)
             {
@@ -2636,6 +2642,11 @@ sub PopulateValueTypes
     ProcessValues(\%Union, \%ACL_FIELD_TYPES, \%ACL_FIELD_TYPES_TO_VT);
 }
 
+sub CreateObjectTypeMap
+{
+    map { $OBJECT_TYPE_MAP{$_} = $_ } @{ $SAI_ENUMS{sai_object_type_t}{values} };
+}
+
 #
 # MAIN
 #
@@ -2649,6 +2660,8 @@ GetStructLists();
 PopulateValueTypes();
 
 ProcessXmlFiles();
+
+CreateObjectTypeMap();
 
 WriteHeaderHeader();
 

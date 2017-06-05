@@ -12,20 +12,21 @@ use utils;
 require Exporter;
 
 my $ident = 0;
+my $debug = 0;
 
 sub PrintDebug
 {
     my $line = shift;
     my $spaces = "  " x $ident;
 
-    print "$spaces$line\n" if defined $main::optionPrintDebug and $main::optionPrintDebug > 1;
+    print "$spaces$line\n" if $debug == 1;
 }
 
 sub PrintError
 {
     my $line = shift;
 
-    print "ERROR: $line\n";
+    print STDERR "ERROR: $line\n";
     exit 1;
 }
 
@@ -48,11 +49,11 @@ sub ProcessTag
 
     my ($Lines, $node, $tag, $tagparams) = @_;
 
-    PrintDebug "> entering $tag";
+    #PrintDebug "> entering $tag";
 
     if (not defined $node->{$tag})
     {
-        PrintDebug ": adding key '$tag' to node";
+        #PrintDebug ": adding key '$tag' to node";
 
         my @arr = ();
 
@@ -80,11 +81,12 @@ sub ProcessTag
         my $line = shift @{$Lines};
 
         last if not defined $line;
+
         chomp $line;
 
-        if ($line =~ m!^</$tag>$!)
+        if ($line eq "</$tag>")
         {
-            PrintDebug "< exiting $tag";
+            #PrintDebug "< exiting $tag";
 
             $current{content} =~ s/\s*$//;
             $current{content} =~ s/^\s*//;
@@ -100,6 +102,8 @@ sub ProcessTag
             return;
         }
 
+        next if $line eq "";
+
         if ($line =~ m!^<(\w+)(\s+[^<>]+[^/])?>$!)
         {
             ProcessTag($Lines, \%current, $1, $2);
@@ -109,7 +113,7 @@ sub ProcessTag
         if ($line =~ m!^[^<>]+$!)
         {
             $current{content} .= UnescapeXml "$line ";
-            PrintDebug ": content: $line";
+            #PrintDebug ": content: $line";
             next;
         }
 
@@ -155,13 +159,15 @@ sub ReadXml
         # split single tags to 2 to easier parsing
         $line =~ s!<(\w+)(\s+[^<>]+)/>!<$1$2></$1>!g;
 
-        # split each line by any xml tag and remove white space lines
-        push @lines, grep { not $_ =~ /^\s*$/ } split/\s*(<[^>]+>)\s*/,$line;
+        # split each line by any xml tag
+        push @lines, split/\s*(<[^>]+>)\s*/,$line;
     }
 
     close FH;
 
     $ident = 0;
+    $debug = 1 if defined $main::optionPrintDebug and $main::optionPrintDebug > 1;
+
     ProcessTag(\@lines, \%ROOT, $doxygenTag);
 
     # print Dumper (%ROOT);
