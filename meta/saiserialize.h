@@ -157,6 +157,19 @@ int sai_serialize_s64(
         _In_ int64_t s64);
 
 /**
+ * @brief Serialize sai_size_t
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] size Size to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_size(
+        _Out_ char *buffer,
+        _In_ sai_size_t size);
+
+/**
  * @brief Serialize object ID.
  *
  * @param[out] buffer Output buffer for serialized value.
