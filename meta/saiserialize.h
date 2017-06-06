@@ -40,7 +40,29 @@
 #define SAI_SERIALIZE_ERROR (-1)
 
 /**
+ * @def SAI_CHARDATA_LENGTH
+ *
+ * Defines size of char data inside sai_attribute_value_t union.
+ */
+#define SAI_CHARDATA_LENGTH 32
+
+/**
+ * @brief Serialize char data value.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] data Data to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_chardata(
+        _Out_ char *buffer,
+        _In_ const char data[SAI_CHARDATA_LENGTH]);
+
+/**
  * @brief Serialize bool value.
+ *
+ * All printable characters (isprint) are allowed except '\' and '"'.
  *
  * @param[out] buffer Output buffer for serialized value.
  * @param[in] flag Bool flag to be serialized.
