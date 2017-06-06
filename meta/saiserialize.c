@@ -275,3 +275,28 @@ int sai_serialize_ipv6_mask(
     SAI_META_LOG_WARN("ipv6 mask %s has holes", buf);
     return SAI_SERIALIZE_ERROR;
 }
+
+int sai_serialize_hmac(
+        _Out_ char *buffer,
+        _In_ const sai_hmac_t *hmac)
+{
+    SAI_META_LOG_WARN("not implemented");
+    return SAI_SERIALIZE_ERROR;
+}
+
+int sai_serialize_tlv(
+        _Out_ char *buffer,
+        _In_ const sai_tlv_t *tlv)
+{
+    SAI_META_LOG_WARN("not implemented");
+    return SAI_SERIALIZE_ERROR;
+}
+
+int sai_serialize_attribute(
+        _Out_ char *buffer,
+        _In_ const sai_attr_metadata_t *meta,
+        _In_ const sai_attribute_t *attr)
+{
+    SAI_META_LOG_WARN("not implemented");
+    return SAI_SERIALIZE_ERROR;
+}

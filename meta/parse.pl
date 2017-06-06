@@ -19,10 +19,10 @@ our $INCLUDE_DIR = "../inc/";
 our %SAI_ENUMS = ();
 our %METADATA = ();
 our %NON_OBJECT_ID_STRUCTS = ();
-our %NOTIFICATION_NAMES = ();
+our %NOTIFICATIONS = ();
 our %OBJTOAPIMAP = ();
 our %APITOOBJMAP = ();
-
+our %ALL_STRUCTS = ();
 our %OBJECT_TYPE_MAP = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY|DYNAMIC|SPECIAL";
@@ -43,9 +43,9 @@ my %TAGS = (
         );
 
 my %options = ();
-getopts("d:sAS", \%options);
+getopts("dsAS", \%options);
 
-our $optionPrintDebug        = 1 + $options{d} if defined $options{d};
+our $optionPrintDebug        = 1 if defined $options{d};
 our $optionDisableAspell     = 1 if defined $options{A};
 our $optionUseXmlSimple      = 1 if defined $options{s};
 our $optionDisableStyleCheck = 1 if defined $options{S};
@@ -433,7 +433,27 @@ sub ProcessTypedefSection
 
         $typedeftype = $memberdef->{type}[0]->{content} if ref $memberdef->{type}[0] eq "HASH";
 
-        next if not $typedeftype =~ /^enum /;
+        if ($typedeftype =~ /^struct/)
+        {
+            # record structs for later serialization
+            # this will also include structs from metadata
+            $ALL_STRUCTS{$typedefname} = 1;
+            next;
+        }
+
+        if ($typedefname =~ /^sai_\w+_notification_fn$/)
+        {
+            if (not $typedeftype =~ /void\(\*/)
+            {
+                LogWarning "notification $typedefname should return void, but got '$typedeftype'";
+                next;
+            }
+
+            ProcessNotifications($memberdef, $typedefname);
+            next;
+        }
+
+        next if not $typedeftype =~ /^enum/;
 
         if (not defined $SAI_ENUMS{$typedefname})
         {
@@ -445,11 +465,132 @@ sub ProcessTypedefSection
 
         # this enum is attribute definition for object
 
-        my $objecttype = "SAI_OBJECT_TYPE_" . uc $1;
+        $SAI_ENUMS{$typedefname}{objecttype} = "SAI_OBJECT_TYPE_" . uc($1);
+    }
+}
 
-        my %ENUM = %{ $SAI_ENUMS{$typedefname} };
+# remove ?
+sub ProcessTypedefStructsSection
+{
+    my $section = shift;
 
-        $ENUM{"objecttype"} = $objecttype;
+    for my $memberdef (@{ $section->{memberdef} })
+    {
+        next if not $memberdef->{kind} eq "typedef";
+
+        my $id = $memberdef->{id};
+
+        my $typedefname = $memberdef->{name}[0];
+
+        my $typedeftype;
+
+        $typedeftype = $memberdef->{type}[0] if ref $memberdef->{type}[0] eq "";
+
+        $typedeftype = $memberdef->{type}[0]->{content} if ref $memberdef->{type}[0] eq "HASH";
+    }
+}
+
+sub ProcessNotifications
+{
+    my ($member, $typedefname) = @_;
+
+    my $args = $member->{argsstring}[0];
+
+    $args =~ s/[()]//g;
+
+    my @params = split/,/,$args;
+
+    my $idx = 0;
+
+    my $desc = ExtractDescription($typedefname, $typedefname, $member->{detaileddescription}[0]);
+
+    $desc =~ s/@@/\n@@/g; # @count data[count] | attr_list[attr_count] | foo[1]
+
+    my %Count = ();
+
+    # $typedefname = $1 if $typedefname =~ /^sai_(\w+)_fn$/;
+
+    while ($desc =~ /\@\@count\s+(\w+)\[(\w+|\d+)\]/g)
+    {
+        $Count{$1} = $2;
+
+        if ($1 eq $2)
+        {
+            LogError "notification count '$1' can't point to itself in \@count";
+            return;
+        }
+    }
+
+    my %Objects = ();
+
+    while ($desc =~ /\@\@(?:objects|type)\s+(\w+)\s+(SAI_OBJECT_TYPE_\w+)\s*$/g)
+    {
+        $Objects{$1} = $2;
+    }
+
+    # NOTE: if there are only 2 elements, one is uint32_t and second is pointer
+
+    for my $param (@params)
+    {
+        # NOTE multple pointers or consts are not supported
+        if (not $param =~ /_In_ ((const )?\w+\s*?\*?)\s*(\w+)$/)
+        {
+            LogWarning "can't match param '$param' on $typedefname";
+            next;
+        }
+
+        my $type = $1;
+        my $name = $3;
+
+        $NOTIFICATIONS{$typedefname}{$idx}{type} = $type;
+        $NOTIFICATIONS{$typedefname}{$idx}{name} = $name;
+        $NOTIFICATIONS{$typedefname}{$idx}{ot} = $Objects{$name};
+        $NOTIFICATIONS{$typedefname}{$name} = $idx;
+
+        $idx++;
+    }
+
+    $idx = 0;
+
+    # second pass is needed if count is defined after data pointer
+    for my $param (@params)
+    {
+        next if (not $param =~ /_In_ ((const )?\w+\s*?\*?)\s*(\w+)$/);
+
+        my $type = $1;
+        my $name = $3;
+
+        if (not $type =~ /\*/)
+        {
+            $idx++;
+            next;
+        }
+
+        if (not defined $Count{$name})
+        {
+            LogWarning "type '$type' is pointer, \@count is required, but missing on $typedefname";
+            next;
+        }
+
+        $NOTIFICATIONS{$typedefname}{$idx}{count} = $Count{$name};
+
+        if ($Count{$name} =~ /^(\d+)$/)
+        {
+            # count is given explicit
+            next;
+        }
+
+        my $countidx = $NOTIFICATIONS{$typedefname}{ $Count{$name} };
+
+        my $counttype = $NOTIFICATIONS{$typedefname}{$countidx}{type};
+
+        if (not $counttype =~ /^(uint32_t|sai_size_t)$/)
+        {
+            LogWarning "param '$Count{$name}' used as count for param '$name' ($typedefname)";
+            LogWarning " is wrong type '$counttype' allowed: uint32_t|sai_size_t";
+        }
+
+        $idx++;
     }
 }
 
@@ -537,9 +678,10 @@ sub CreateMetadataHeaderAndSource
     # since sai_status is not enum and it will declare extra statuses
     ProcessSaiStatus();
 
-    WriteSource "/* AUTOGENERATED FILE! DO NOT EDIT! */";
     WriteSource "#include <stdio.h>";
     WriteSource "#include \"saimetadata.h\"";
+
+    WriteSectionComment "Enums metadata";
 
     for my $key (sort keys %SAI_ENUMS)
     {
@@ -837,8 +979,6 @@ sub ProcessDefaultValue
     elsif ($default =~ /^NULL$/ and $type =~ /^(sai_pointer_t) (sai_\w+_fn)$/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$1} = $default };";
-
-        $NOTIFICATION_NAMES{$2} = $2;
     }
     elsif ($default =~ /^(attrvalue|attrrange|vendor|empty|const|internal)/)
     {
@@ -1348,6 +1488,8 @@ sub ProcessSaiStatus
 
     my @values = ();
 
+    WriteSectionComment "Extra SAI statuses";
+
     while (my $line = <$fh>)
     {
         next if not $line =~ /define\s+(SAI_STATUS_\w+).+(0x00\w+)/;
@@ -1437,22 +1579,31 @@ sub CreateMetadataForAttributes
     WriteSource "const size_t sai_metadata_attr_by_object_type_count = $count;";
 }
 
+sub CreateEnumHelperMethod
+{
+    my $key = shift;
+
+    return if not $key =~ /^sai_(\w+)_t/;
+
+    WriteSource "const char* sai_metadata_get_$1_name(";
+    WriteSource "        _In_ $key value)";
+    WriteSource "{";
+    WriteSource "    return sai_metadata_get_enum_value_name(&sai_metadata_enum_$key, value);";
+    WriteSource "}";
+
+    WriteHeader "extern const char* sai_metadata_get_$1_name(";
+    WriteHeader "        _In_ $key value);";
+}
+
 sub CreateEnumHelperMethods
 {
+    WriteSectionComment "Get enum name helper methods";
+
     for my $key (sort keys %SAI_ENUMS)
     {
-        next if not $key =~ /^sai_(\w+)_t/;
-
         next if $key =~/_attr_t$/;
 
-        WriteSource "const char* sai_metadata_get_$1_name(";
-        WriteSource "        _In_ $key value)";
-        WriteSource "{";
-        WriteSource "    return sai_metadata_get_enum_value_name(&sai_metadata_enum_$key, value);";
-        WriteSource "}";
-
-        WriteHeader "extern const char* sai_metadata_get_$1_name(";
-        WriteHeader "        _In_ $key value);";
+        CreateEnumHelperMethod($key);
     }
 }
 
@@ -1920,6 +2071,8 @@ sub ProcessGet
 
 sub CreateApis
 {
+    WriteSectionComment "Global SAI API declarations";
+
     for my $key (sort keys %APITOOBJMAP)
     {
         WriteSource "sai_${key}_api_t *sai_metadata_sai_${key}_api = NULL;";
@@ -1930,6 +2083,8 @@ sub CreateApis
 sub CreateApisStruct
 {
     my @apis = @{ $SAI_ENUMS{sai_api_t}{values} };
+
+    WriteSectionComment "All APIs struct";
 
     WriteHeader "typedef struct _sai_apis_t {";
 
@@ -1949,6 +2104,8 @@ sub CreateApisStruct
 
 sub CreateApisQuery
 {
+    WriteSectionComment "SAI API query";
+
     WriteHeader "typedef sai_status_t (*sai_api_query_fn)(";
     WriteHeader "        _In_ sai_api_t sai_api_id,";
     WriteHeader "        _Out_ void** api_method_table);";
@@ -2000,6 +2157,8 @@ sub CreateApisQuery
 
 sub CreateObjectInfo
 {
+    WriteSectionComment "Object info metadata";
+
     my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
 
     for my $ot (@objects)
@@ -2061,6 +2220,8 @@ sub CreateObjectInfo
         WriteSource "    .get                  = $get,";
         WriteSource "};";
     }
+
+    WriteSectionComment "Object infos table";
 
     WriteHeader "extern const sai_object_type_info_t* const sai_metadata_all_object_type_infos[];";
 
@@ -2178,6 +2339,8 @@ sub CreateListOfAllAttributes
 {
     # list will be used to find attribute metadata
     # based on attribute string name
+
+    WriteSectionComment "List of all attributes";
 
     my %ATTRIBUTES = ();
 
@@ -2463,10 +2626,9 @@ my %ProcessedItems = ();
 
 sub ProcessStructItem
 {
-    my $type = shift;
-    my $struct = shift;
+    my ($type, $struct, $allowPointers) = @_;
 
-    $type = $1 if $type =~/^(\w+)\*$/; # handle pointers
+    $type = $1 if $struct =~ /^sai_(\w+)_list_t$/ and $type =~/^(\w+)\*$/;
 
     return if defined $ProcessedItems{$type};
 
@@ -2545,7 +2707,7 @@ sub CheckAttributeValueUnion
 
         next if grep(/^$type$/, @primitives);
 
-        ProcessStructItem($type, "sai_attribute_value_t");
+        ProcessStructItem($type, "sai_attribute_value_t", 1);
     }
 }
 
@@ -2556,25 +2718,75 @@ sub CreateNotificationStruct
     # manipulation in code
     #
 
+    WriteSectionComment "SAI notifications struct";
+
     WriteHeader "typedef struct _sai_switch_notifications_t {";
 
-    for my $pointer (sort keys %NOTIFICATION_NAMES)
+    for my $name (sort keys %NOTIFICATIONS)
     {
-        if (not $pointer =~ /^sai_(\w+)_notification_fn/)
+        if (not $name =~ /^sai_(\w+)_notification_fn/)
         {
-            LogWarning "notification function $pointer is not ending on _notification_fn";
+            LogWarning "notification function $name is not ending on _notification_fn";
             next;
         }
 
-        WriteHeader "    $pointer on_$1;";
+        WriteHeader "    $name on_$1;";
     }
 
     WriteHeader "} sai_switch_notifications_t;";
 }
 
+sub CreateNotificationEnum
+{
+    #
+    # create notification enum for easier notification
+    # manipulation in code
+    #
+
+    WriteSectionComment "SAI notifications enum";
+
+    my $typename = "sai_switch_notification_type_t";
+
+    WriteHeader "typedef enum _$typename {";
+
+    my $prefix = uc $typename;
+
+    chop $prefix;
+
+    my @values = ();
+
+    for my $name (sort keys %NOTIFICATIONS)
+    {
+        if (not $name =~ /^sai_(\w+)_notification_fn/)
+        {
+            LogWarning "notification function '$name' is not ending on _notification_fn";
+            next;
+        }
+
+        $name = uc $1;
+
+        WriteHeader "    ${prefix}$name,";
+
+        push @values, "${prefix}$name";
+    }
+
+    WriteHeader "} $typename;";
+
+    $SAI_ENUMS{$typename}{values} = \@values;
+
+    WriteSectionComment "sai_switch_notification_type_t metadata";
+
+    ProcessSingleEnum($typename, $typename, $prefix);
+
+    WriteSectionComment "Get sai_switch_notification_type_t helper method";
+
+    CreateEnumHelperMethod("sai_switch_notification_type_t");
+}
+
 sub WriteHeaderHeader
 {
-    WriteHeader "/* AUTOGENERATED FILE! DO NOT EDIT! */";
+    WriteSectionComment "AUTOGENERATED FILE! DO NOT EDIT";
+
     WriteHeader "#ifndef __SAI_METADATA_H__";
     WriteHeader "#define __SAI_METADATA_H__";
 
@@ -2598,6 +2810,8 @@ sub ProcessXmlFiles
 
         ProcessXmlFile("$XMLDIR/$file");
     }
+
+    #print Dumper %SAI_ENUMS;
 }
 
 sub ProcessValues
@@ -2694,6 +2908,8 @@ CheckApiDefines();
 CheckAttributeValueUnion();
 
 CreateNotificationStruct();
+
+CreateNotificationEnum();
 
 CreateSerializeMethods();
 

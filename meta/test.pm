@@ -29,7 +29,7 @@ sub CreatePointersTest
 
     WriteTest "{";
 
-    for my $pointer (sort keys %main::NOTIFICATION_NAMES)
+    for my $pointer (sort keys %main::NOTIFICATIONS)
     {
         if (not $pointer =~ /^sai_(\w+)_notification_fn/)
         {
@@ -343,6 +343,45 @@ sub CreateStructListTest
     WriteTest "}";
 }
 
+sub CreateSerializeStructsTest
+{
+    #
+    # make sure that all structs can be serialized fine
+
+    my %StructLists = GetStructLists();
+
+    DefineTestName "serialize_structs";
+
+    WriteTest "{";
+
+    WriteTest "    char buf[0x4000];";
+    WriteTest "    int ret;";
+
+    for my $structname (sort keys %main::ALL_STRUCTS)
+    {
+        next if $structname  =~ /_api_t$/;
+
+        my $struct = $1 if $structname =~ /^sai_(\w+)_t$/;
+
+        next if $struct =~ /^acl_action_data$/;
+        next if $struct =~ /^acl_field_data$/;
+        next if $struct =~ /^attribute$/;
+        next if $struct =~ /^(attr_condition|attr_metadata|enum_metadata|object_key|object_type_info)$/;
+        next if $struct =~ /^(object_key|rev_graph_member|service_method_table|struct_member_info|object_meta_key)$/;
+
+        # not implemented yet
+        next if $struct =~ /^(hmac|tlv)$/;
+
+        WriteTest "    $structname $struct;";
+        WriteTest "    memset(&$struct, 0, sizeof($structname));";
+        WriteTest "    ret = sai_serialize_$struct(buf, &$struct);";
+        WriteTest "    TEST_ASSERT_TRUE(ret > 0, \"failed to serialize $structname\");";
+        WriteTest "    printf(\"serialized $structname: %s\\n\", buf);";
+    }
+
+    WriteTest "}";
+}
+
 sub WriteTestHeader
 {
     #
@@ -402,6 +441,8 @@ sub CreateTests
     CreateApiNameTest();
 
     CreateStructListTest();
+
+    CreateSerializeStructsTest();
 
     WriteTestMain();
 }
