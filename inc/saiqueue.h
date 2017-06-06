@@ -383,6 +383,8 @@ typedef sai_status_t (*sai_clear_queue_stats_fn)(
  *
  * Passed as a parameter into sai_initialize_switch()
  *
+ * @count data[count]
+ *
  * @param[in] count Number of notifications
  * @param[in] data Array of queue event types
  */
