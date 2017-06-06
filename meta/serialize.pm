@@ -362,7 +362,6 @@ sub CreateSerializeSingleStruct
 
         if ($type eq "bool")
         {
-            $needQuote = 1;
         }
         elsif ($type =~ /^sai_ip6_t$/)
         {

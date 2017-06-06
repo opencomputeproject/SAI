@@ -67,6 +67,7 @@ hmac
 http
 ingressing
 inout
+isprint
 isvlan
 linklocal
 lookup

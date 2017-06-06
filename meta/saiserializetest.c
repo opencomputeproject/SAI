@@ -39,6 +39,35 @@ void subtest_serialize_object_id(
     ASSERT_STR_EQ(buf, exp, res);
 }
 
+void test_serialize_chardata()
+{
+    sai_attribute_value_t val;
+
+    memset(&val, 0, sizeof(val));
+
+    char buf[PRIMITIVE_BUFFER_SIZE];
+
+    int res;
+
+    res = sai_serialize_chardata(buf, val.chardata);
+    ASSERT_STR_EQ(buf, "", res);
+
+    strcpy(val.chardata, "foo bar 123");
+
+    res = sai_serialize_chardata(buf, val.chardata);
+    ASSERT_STR_EQ(buf, "foo bar 123", res);
+
+    strcpy(val.chardata, "foo \\ bar 123");
+
+    res = sai_serialize_chardata(buf, val.chardata);
+    ASSERT_TRUE(res < 0, "expected negative number");
+
+    strcpy(val.chardata, "foo \" bar 123");
+
+    res = sai_serialize_chardata(buf, val.chardata);
+    ASSERT_TRUE(res < 0, "expected negative number");
+}
+
 void test_serialize_object_id()
 {
     subtest_serialize_object_id(0, "oid:0x0");
@@ -340,6 +369,7 @@ void test_serialize_fdb_entry()
 
 int main()
 {
+    test_serialize_chardata();
     test_serialize_object_id();
     test_serialize_ip_address();
     test_serialize_mac();

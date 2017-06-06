@@ -324,7 +324,7 @@ sub ExtractStructInfo
             }
             else
             {
-                LogError "not supported type '$member->{definition}[0]' == $2\n";
+                LogError "not supported type '$member->{definition}[0]'\n";
             }
         }
 

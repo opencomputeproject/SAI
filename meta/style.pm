@@ -751,11 +751,6 @@ sub CheckHeadersStyle
                 }
             }
 
-            if ($line =~ /\\/ and not $line =~ /\\[0\[\]]/ and not $line =~ /\\$/)
-            {
-                LogWarning "line contains \\ which should not be used in this way $header $n:$line";
-            }
-
             if ($line =~ /typedef\s*(enum|struct|union).*{/)
             {
                 LogWarning "move '{' to new line in typedef $header $n:$line";

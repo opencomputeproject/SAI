@@ -20,6 +20,37 @@ int sai_serialize_bool(
     return sprintf(buffer, "%s", flag ? "true" : "false");
 }
 
+int sai_serialize_chardata(
+        _Out_ char *buffer,
+        _In_ const char data[SAI_CHARDATA_LENGTH])
+{
+    int idx;
+
+    for (idx = 0; idx < SAI_CHARDATA_LENGTH; ++idx)
+    {
+        char c = data[idx];
+
+        if (c == 0)
+        {
+            break;
+        }
+
+        if (isprint(c) && c != '\\' && c != '"')
+        {
+            buffer[idx] = c;
+            continue;
+        }
+
+        SAI_META_LOG_WARN("invalid character 0x%x", c);
+        return SAI_SERIALIZE_ERROR;
+    }
+
+    buffer[idx] = 0;
+
+    return idx;
+}
+
+
 int sai_serialize_u8(
         _Out_ char *buffer,
         _In_ uint8_t u8)
