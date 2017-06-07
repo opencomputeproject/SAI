@@ -228,7 +228,7 @@ typedef enum _sai_next_hop_group_member_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_next_hop_group_fn)(
         _Out_ sai_object_id_t *next_hop_group_id,
@@ -241,7 +241,7 @@ typedef sai_status_t (*sai_create_next_hop_group_fn)(
  *
  * @param[in] next_hop_group_id Next hop group id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_next_hop_group_fn)(
         _In_ sai_object_id_t next_hop_group_id);
@@ -252,7 +252,7 @@ typedef sai_status_t (*sai_remove_next_hop_group_fn)(
  * @param[in] next_hop_group_id Next hop group id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_next_hop_group_attribute_fn)(
         _In_ sai_object_id_t next_hop_group_id,
@@ -265,7 +265,7 @@ typedef sai_status_t (*sai_set_next_hop_group_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_next_hop_group_attribute_fn)(
         _In_ sai_object_id_t next_hop_group_id,
@@ -280,7 +280,7 @@ typedef sai_status_t (*sai_get_next_hop_group_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_next_hop_group_member_fn)(
         _Out_ sai_object_id_t *next_hop_group_member_id,
@@ -293,7 +293,7 @@ typedef sai_status_t (*sai_create_next_hop_group_member_fn)(
  *
  * @param[in] next_hop_group_member_id Next hop group member ID
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_next_hop_group_member_fn)(
         _In_ sai_object_id_t next_hop_group_member_id);
@@ -304,7 +304,7 @@ typedef sai_status_t (*sai_remove_next_hop_group_member_fn)(
  * @param[in] next_hop_group_member_id Next hop group member ID
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_next_hop_group_member_attribute_fn)(
         _In_ sai_object_id_t next_hop_group_member_id,
@@ -317,7 +317,7 @@ typedef sai_status_t (*sai_set_next_hop_group_member_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_next_hop_group_member_attribute_fn)(
         _In_ sai_object_id_t next_hop_group_member_id,

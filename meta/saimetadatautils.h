@@ -39,7 +39,7 @@
  * @param[in] metadata Attribute metadata
  * @param[in] object_type Object type to be checked
  *
- * @return True if object is allowed on on this attribute, false otherwise
+ * @return True if object is allowed on this attribute, false otherwise
  */
 extern bool sai_metadata_is_allowed_object_type(
         _In_ const sai_attr_metadata_t *metadata,
@@ -92,13 +92,15 @@ extern const char* sai_metadata_get_enum_value_name(
         _In_ int value);
 
 /**
- * @brief Gets attribute from attribute list by attribute id
+ * @brief Gets attribute from attribute list by attribute id.
  *
- * @param[in] id Attribute id to be found
- * @param[in] attr_count Total number of attributes
- * @param[in] attr_list List of attributes to search
+ * @param[in] id Attribute id to be found.
+ * @param[in] attr_count Total number of attributes.
+ * @param[in] attr_list List of attributes to search.
  *
- * @return Attribute pointer with requested ID or NULL if not found
+ * @return Attribute pointer with requested ID or NULL if not found.
+ * When multiple attributes with the same id are passed, only first
+ * attribute is returned.
  */
 extern const sai_attribute_t* sai_metadata_get_attr_by_id(
         _In_ sai_attr_id_t id,
@@ -124,6 +126,31 @@ extern const sai_object_type_info_t* sai_metadata_get_object_type_info(
  */
 extern bool sai_metadata_is_object_type_valid(
         _In_ sai_object_type_t object_type);
+
+/**
+ * @brief Check if condition is in force.
+ *
+ * List of attributes will be examined in terms of conditions. This is
+ * convenient since user can pass list when calling create API. If
+ * condition attribute is not on the list, then default value will be
+ * examined.
+ *
+ * NOTE: When multiple attributes with the same ID are passed,
+ * sai_metadata_get_attr_by_id will select only first one.
+ * Function will not be able to handle multiple attributes
+ *
+ * @param[in] metadata Metadata of attribute that we need to check.
+ * @param[in] attr_count Number of attributes.
+ * @param[in] attr_list Attribute list to check. All attributes must
+ * belong to the same object type as metadata parameter.
+ *
+ * @return True if condition is in force, false otherwise. False will be also
+ * returned if any of input pointers is NULL or attribute is not conditional.
+ */
+extern bool sai_metadata_is_condition_in_force(
+        _In_ const sai_attr_metadata_t *metadata,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @}

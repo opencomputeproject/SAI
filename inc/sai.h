@@ -113,7 +113,7 @@ typedef enum _sai_api_t
     SAI_API_MCAST_FDB        = 32, /**< sai_mcast_fdb_api_t */
     SAI_API_BRIDGE           = 33, /**< sai_bridge_api_t */
     SAI_API_TAM              = 34, /**< sai_tam_api_t */
-    SAI_API_MAX              = 35, /**< total number of apis */
+    SAI_API_MAX              = 35, /**< total number of APIs */
 } sai_api_t;
 
 /**
@@ -179,7 +179,7 @@ typedef struct _service_method_table_t
  * @param[in] flags Reserved for future use, must be zero
  * @param[in] services Methods table with services provided by adapter host
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_api_initialize(
         _In_ uint64_t flags,
@@ -190,10 +190,10 @@ sai_status_t sai_api_initialize(
  * functionality as specified by the given sai_api_id.
  *
  * @param[in] sai_api_id SAI API ID
- * @param[out] api_method_table Caller allocated method table The table must
- * remain valid until the sai_api_uninitialize() is called
+ * @param[out] api_method_table Caller allocated method table. The table must
+ * remain valid until the sai_api_uninitialize() is called.
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_api_query(
         _In_ sai_api_t sai_api_id,
@@ -203,7 +203,7 @@ sai_status_t sai_api_query(
  * @brief Uninitialize adapter module. SAI functionalities,
  * retrieved via sai_api_query() cannot be used after this call.
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_api_uninitialize(void);
 
@@ -215,7 +215,7 @@ sai_status_t sai_api_uninitialize(void);
  * @param[in] sai_api_id SAI API ID
  * @param[in] log_level Log level
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_log_set(
         _In_ sai_api_t sai_api_id,
@@ -227,7 +227,7 @@ sai_status_t sai_log_set(
  * @param[in] sai_object_id Object id
  *
  * @return #SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
- * Otherwise, return a valid SAI object type SAI_OBJECT_TYPE_XXX
+ * Otherwise, return a valid SAI object type SAI_OBJECT_TYPE_XXX.
  */
 sai_object_type_t sai_object_type_query(
         _In_ sai_object_id_t sai_object_id);
@@ -250,7 +250,7 @@ sai_object_id_t sai_switch_id_query(
  *
  * @param[in] dump_file_name Full path for dump file
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_dbg_generate_dump(
         _In_ const char *dump_file_name);

@@ -50,6 +50,7 @@ typedef enum _sai_samplepacket_mode_t
 {
     /**
      * @brief A profile defining sample packet attributes.
+     *
      * The profile can be configured on a port or as ACL entry action,
      * in which case, an actual session is instantiated which is private
      * for that port or ACL.
@@ -60,6 +61,7 @@ typedef enum _sai_samplepacket_mode_t
 
     /**
      * @brief An instance of sample packet session.
+     *
      * This session can be attached to multiple ports and ACL entries.
      * Traffic going through these ports or matching these ACL entries
      * is merged from a sampling point of view.

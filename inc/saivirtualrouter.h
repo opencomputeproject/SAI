@@ -73,8 +73,6 @@ typedef enum _sai_virtual_router_attr_t
     /**
      * @brief MAC Address
      *
-     * Equal to the #SAI_SWITCH_ATTR_SRC_MAC_ADDRESS by default
-     *
      * @type sai_mac_t
      * @flags CREATE_AND_SET
      * @default attrvalue SAI_SWITCH_ATTR_SRC_MAC_ADDRESS
@@ -144,7 +142,7 @@ typedef sai_status_t (*sai_create_virtual_router_fn)(
  *
  * @param[in] virtual_router_id Virtual router id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_virtual_router_fn)(
         _In_ sai_object_id_t virtual_router_id);
@@ -155,7 +153,7 @@ typedef sai_status_t (*sai_remove_virtual_router_fn)(
  * @param[in] virtual_router_id Virtual router id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_virtual_router_attribute_fn)(
         _In_ sai_object_id_t virtual_router_id,
@@ -168,7 +166,7 @@ typedef sai_status_t (*sai_set_virtual_router_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_virtual_router_attribute_fn)(
         _In_ sai_object_id_t virtual_router_id,

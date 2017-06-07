@@ -46,7 +46,7 @@
  */
 typedef struct _sai_object_key_t
 {
-    union {
+    union _object_key {
         sai_object_id_t           object_id;
         sai_fdb_entry_t           fdb_entry;
         sai_neighbor_entry_t      neighbor_entry;
@@ -66,7 +66,7 @@ typedef struct _sai_object_key_t
  * @param[in] object_type SAI object type
  * @param[inout] count Maximum number of attribute for an object type
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_get_maximum_attribute_count(
         _In_ sai_object_id_t switch_id,
@@ -80,7 +80,7 @@ sai_status_t sai_get_maximum_attribute_count(
  * @param[in] object_type SAI object type
  * @param[inout] count Number of objects in SAI
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_get_object_count(
         _In_ sai_object_id_t switch_id,
@@ -95,7 +95,7 @@ sai_status_t sai_get_object_count(
  * @param[in] object_count Number of objects in SAI
  * @param[inout] object_list List of SAI objects or keys
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_get_object_key(
         _In_ sai_object_id_t switch_id,
@@ -105,7 +105,9 @@ sai_status_t sai_get_object_key(
 
 /**
  * @brief Get the bulk list of valid attributes for a given list of
- * object keys.Only valid attributes for an objects are returned.
+ * object keys.
+ *
+ * Only valid attributes for an object are returned.
  *
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
@@ -121,7 +123,7 @@ sai_status_t sai_get_object_key(
  * @param[inout] attr_list List of attributes for every object. Caller is
  *    responsible for allocating and freeing buffer for the attributes.
  *    For list based attribute, e.g., s32list, objlist, callee should
- *    assume the caller has not allocate the memory for the list and
+ *    assume the caller has not allocated the memory for the list and
  *    should only to fill the count but not list. Then, caller
  *    can use corresponding get_attribute to get the list.
  *
@@ -130,7 +132,7 @@ sai_status_t sai_get_object_key(
  *    If the allocated attribute count is not large enough,
  *    set the status to #SAI_STATUS_BUFFER_OVERFLOW.
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_bulk_get_attribute(
         _In_ sai_object_id_t switch_id,
