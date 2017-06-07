@@ -103,7 +103,7 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_TYPE,
 
     /**
-     * @brief Trigger a switchover from primary to backup next hop
+     * @brief Trigger a switch-over from primary to backup next hop
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -117,7 +117,7 @@ typedef enum _sai_next_hop_group_attr_t
      *
      * The BFD session is used to detect failure of the primary next hop.
      * If the specified BFD session detects failure, the switching entity
-     * triggers a switchover to backup next hop.
+     * triggers a switch-over to backup next hop.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -129,7 +129,7 @@ typedef enum _sai_next_hop_group_attr_t
     /**
      * @brief Identifier of the port associated with the primary next hop
      *
-     * If the specified port fails, the switching entity triggers a switchover
+     * If the specified port fails, the switching entity triggers a switch-over
      * from the primary next hop to backup.
      *
      * @type sai_uint32_t
