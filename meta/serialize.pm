@@ -399,13 +399,13 @@ sub CreateSerializeSingleStruct
             $amp = "&";
             $isattribute = 1;
 
-            if (not defined $struct{$name}{objecttype})
+            if (not defined $struct{$name}{objects})
             {
                 LogError "param '$name' is '$type' on '$structName' and requires object type specified in \@objects";
                 next;
             }
 
-            my @ot = @{ $struct{$name}{objecttype} };
+            my @ot = @{ $struct{$name}{objects} };
 
             if (scalar@ot != 1)
             {

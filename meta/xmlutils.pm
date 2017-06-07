@@ -194,63 +194,47 @@ sub GetXmlFiles
     return sort @files;
 }
 
-# TODO we need similar processing like tag processing on attr
-
-sub ExtractCountFromDesc
+sub ProcessStructCount
 {
-    my ($type, $desc) = @_;
+    my ($structName, $tagValue, $previousTagValue) = @_;
 
-    my %Count = ();
+    my %count = ();
 
-    if (not defined $desc)
+    %count = %{ $previousTagValue } if defined $previousTagValue;
+
+    if (not $tagValue =~ /^(\w+)\[(\w+|\d+)\]$/g)
     {
-        LogWarning "desc is not defined in '$type'";
-
-        return %Count;
+        LogError "unable to pars count '$tagValue' on $structName";
+        return undef;
     }
 
-    while ($desc =~ /\@\@count\s+(\w+)\[(\w+|\d+)\]/g)
-    {
-        $Count{$1} = $2;
+    my $pointerParam = $1;
+    my $countParam = $2;
 
-        if ($1 eq $2)
-        {
-            LogError "count '$1' can't point to itself in \@count on $type";
-            return;
-        }
+    $count{$pointerParam} = $countParam;
+
+    if ($pointerParam eq $countParam)
+    {
+        LogError "count '$pointerParam' can't point to itself in \@count on $structName";
+        undef;
     }
 
-    return %Count;
+    return \%count;
 }
 
-sub ExtractObjectsFromDesc
+sub ProcessStructObjects
 {
-    my ($type, $member, $desc) = @_;
+    my ($structName, $tagValue) = @_;
 
-    my @objectTypes = ();
+    $tagValue =~ s/\s*//g;
 
-    if (not defined $desc)
-    {
-        LogWarning "desc is not defined in '${type}::$member'";
-
-        return \@objectTypes;
-    }
-
-    if (not $desc =~ /\@\@objects\s+(\w+(,\s*\w+)*)/g)
-    {
-        return \@objectTypes;
-    }
-
-    $desc = $1;
-    $desc =~ s/\s*//g;
-
-    @objectTypes = split/[,]/,$desc;
+    my @objectTypes = split/[,]/,$tagValue;
 
     for my $ot (@objectTypes)
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_\w+$/)
         {
-            LogError "invalid objecttype '$ot' on ${type}::$member";
+            LogError "invalid object type tag value ($ot) in $structName $tagValue";
             return undef;
         }
     }
@@ -258,14 +242,65 @@ sub ExtractObjectsFromDesc
     return \@objectTypes;
 }
 
+my %STRUCT_TAGS = (
+        "count"       , \&ProcessStructCount,
+        "objects"     , \&ProcessStructObjects,
+        );
+
+sub ProcessStructDescription
+{
+    my ($struct, $desc) = @_;
+
+    $struct->{desc} = $desc;
+
+    my $structName = $struct->{name};
+
+    $desc =~ s/@@/\n@@/g;
+
+    while ($desc =~ /@@(\w+)(.*)/g)
+    {
+        my $tag = $1;
+        my $value = $2;
+
+        $value =~ s/\s+/ /g;
+        $value =~ s/^\s*//;
+        $value =~ s/\s*$//;
+
+        if (not defined $STRUCT_TAGS{$tag})
+        {
+            LogError "unrecognized tag '$tag' on $structName: $value";
+            next;
+        }
+
+        $struct->{$tag} = $STRUCT_TAGS{$tag}->($structName, $value, $struct->{$tag});
+    }
+}
+
 sub ExtractStructInfo
 {
-    my $struct = shift;
-    my $prefix = shift;
+    my ($structName, $prefix) = @_;
+
+    my %struct = ExtractStructInfoEx($structName, $prefix);
 
     my %S = ();
 
-    my $filename = "${prefix}${struct}.xml";
+    my @StructMembers = @{ $struct{members} };
+
+    for my $m (@StructMembers)
+    {
+        $S{$m->{name}} = $m;
+    }
+
+    return %S;
+}
+
+sub ExtractStructInfoEx
+{
+    my ($structName, $prefix) = @_;
+
+    my %Struct = (name => $structName);
+
+    my $filename = "${prefix}${structName}.xml";
 
     $filename =~ s/_/__/g;
 
@@ -281,23 +316,27 @@ sub ExtractStructInfo
 
     if (scalar @sections != 1)
     {
-        LogError "expected only 1 section in $file for $struct";
-        return %S;
+        LogError "expected only 1 section in $file for $structName";
+        return %Struct;
     }
 
     my @members = @{ $sections[0]->{memberdef} };
 
     if (scalar@members < 2)
     {
-        LogError "there must be at least 2 members in struct $struct";
-        return %S;
+        LogError "there must be at least 2 members in struct $structName";
+        return %Struct;
     }
 
-    my $desc = ExtractDescription($struct, $struct, $ref->{compounddef}[0]->{detaileddescription}[0]);
+    my $desc = ExtractDescription($structName, $structName, $ref->{compounddef}[0]->{detaileddescription}[0]);
 
-    my %Count = ExtractCountFromDesc($struct, $desc);
+    ProcessStructDescription(\%Struct, $desc);
 
     my $idx = 0;
+
+    # we must chage this method to return hash with members $st
+
+    my @StructMembers;
 
     for my $member (@members)
     {
@@ -328,19 +367,26 @@ sub ExtractStructInfo
             }
         }
 
-        my $desc = ExtractDescription($struct, $struct, $member->{detaileddescription}[0]);
+        my $desc = ExtractDescription($structName, $name, $member->{detaileddescription}[0]);
 
-        $S{$name}{count} = $Count{$name} if defined $Count{$name};
-        $S{$name}{type} = $type;
-        $S{$name}{desc} = $desc;
-        $S{$name}{args} = $args;
-        $S{$name}{file} = $file;
-        $S{$name}{name} = $name;
-        $S{$name}{objecttype} = ExtractObjectsFromDesc($struct, $name, $desc);
-        $S{$name}{idx}  = $idx++;
+        my %M = ();
+
+        ProcessStructDescription(\%M, $desc);
+
+        $M{count} = $Struct{count}->{$name} if defined $Struct{count}->{$name};
+        $M{type} = $type;
+        $M{desc} = $desc;
+        $M{args} = $args;
+        $M{file} = $file;
+        $M{name} = $name;
+        $M{idx}  = $idx++;
+
+        push @StructMembers,\%M;
     }
 
-    return %S;
+    $Struct{members} = \@StructMembers;
+
+    return %Struct;
 }
 
 sub ExtractDescription
