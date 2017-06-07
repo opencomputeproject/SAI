@@ -103,6 +103,7 @@ typedef enum _sai_next_hop_group_attr_t
      * @brief Trigger a switchover from primary to backup next hop
      *
      * @type bool
+     * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      */
@@ -115,8 +116,9 @@ typedef enum _sai_next_hop_group_attr_t
      * If the specified BFD session detects failure, the switching entity
      * triggers a switchover to backup next hop.
      *
-     * @type TODO (Waiting for the BFD proposal to specify the format)
-     * @default 0
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      */
     SAI_NEXT_HOP_GROUP_ATTR_BFD_SESSION_ID,
@@ -128,7 +130,8 @@ typedef enum _sai_next_hop_group_attr_t
      * from the primary next hop to backup.
      *
      * @type sai_object_id_t
-     * @default 0
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      */
     SAI_NEXT_HOP_GROUP_ATTR_PORT_ID,
