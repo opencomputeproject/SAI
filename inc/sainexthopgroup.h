@@ -53,11 +53,14 @@ typedef enum _sai_next_hop_group_type_t
  */
 typedef enum _sai_next_hop_group_member_protection_role_t
 {
-    /** Next hop group member is forwarding */
-    SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING,
+    /** Next hop group member is primary */
+    SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_PRIMARY,
 
     /** Next hop group member is standby */
     SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_STANDBY,
+
+    /** Next hop group member is forwarding */
+    SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING,
 
     /** Next hop group member has failed */
     SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED,
@@ -116,9 +119,9 @@ typedef enum _sai_next_hop_group_attr_t
      * If the specified BFD session detects failure, the switching entity
      * triggers a switchover to backup next hop.
      *
-     * @type sai_object_id_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default SAI_NULL_OBJECT_ID
+     * @default 0
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      */
     SAI_NEXT_HOP_GROUP_ATTR_BFD_SESSION_ID,
@@ -129,9 +132,9 @@ typedef enum _sai_next_hop_group_attr_t
      * If the specified port fails, the switching entity triggers a switchover
      * from the primary next hop to backup.
      *
-     * @type sai_object_id_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default SAI_NULL_OBJECT_ID
+     * @default 0
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      */
     SAI_NEXT_HOP_GROUP_ATTR_PORT_ID,
@@ -190,7 +193,7 @@ typedef enum _sai_next_hop_group_member_attr_t
      *
      * @type sai_next_hop_group_member_protection_role_t
      * @flags CREATE_ONLY
-     * @default SAI_NEXT_HOP_GROUP_MEMBER_PRIMARY
+     * @default SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_PRIMARY
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_PROTECTION_ROLE,
 
