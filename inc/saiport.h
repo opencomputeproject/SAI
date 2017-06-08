@@ -904,17 +904,16 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP,
 
     /**
-     * @brief Attach WRED to port
+     * @brief WRED profiles for port
      *
-     * ID = #SAI_NULL_OBJECT_ID to disable WRED.
+     * There can be up to #SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM profiles
      *
-     * @type sai_object_id_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_WRED
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
-    SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
+    SAI_PORT_ATTR_QOS_WRED_PROFILE_ID_LIST,
 
     /**
      * @brief Scheduler for port, Default no limits.

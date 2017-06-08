@@ -228,6 +228,20 @@ typedef enum _sai_wred_attr_t
     SAI_WRED_ATTR_ECN_MARK_MODE = 0x0000000d,
 
     /**
+     * @brief Pointer to buffer pool object id
+     *
+     * Pool id != #SAI_NULL_OBJECT_ID when profile is associated with port.
+     * with specific pool.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_WRED_ATTR_POOL_ID = 0x0000000e,
+
+    /**
      * @brief End of attributes
      */
     SAI_WRED_ATTR_END,
