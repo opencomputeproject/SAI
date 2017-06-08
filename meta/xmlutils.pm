@@ -204,7 +204,7 @@ sub ProcessStructCount
 
     if (not $tagValue =~ /^(\w+)\[(\w+|\d+)\]$/g)
     {
-        LogError "unable to pars count '$tagValue' on $structName";
+        LogError "unable to parse count '$tagValue' on $structName";
         return undef;
     }
 
@@ -212,6 +212,8 @@ sub ProcessStructCount
     my $countParam = $2;
 
     $count{$pointerParam} = $countParam;
+
+    LogDebug "adding count $pointerParam\[$countParam\] on $structName";
 
     if ($pointerParam eq $countParam)
     {
@@ -239,6 +241,8 @@ sub ProcessStructObjects
         }
     }
 
+    LogDebug "adding objects @objectTypes on $structName";
+
     return \@objectTypes;
 }
 
@@ -260,11 +264,7 @@ sub ProcessStructDescription
     while ($desc =~ /@@(\w+)(.*)/g)
     {
         my $tag = $1;
-        my $value = $2;
-
-        $value =~ s/\s+/ /g;
-        $value =~ s/^\s*//;
-        $value =~ s/\s*$//;
+        my $value = Trim($2);
 
         if (not defined $STRUCT_TAGS{$tag})
         {
@@ -272,26 +272,19 @@ sub ProcessStructDescription
             next;
         }
 
+        LogDebug "processing tag '$tag' on $structName";
+
         $struct->{$tag} = $STRUCT_TAGS{$tag}->($structName, $value, $struct->{$tag});
     }
 }
 
 sub ExtractStructInfo
 {
-    my ($structName, $prefix) = @_;
+    my ($structName, $filePrefix) = @_;
 
-    my %struct = ExtractStructInfoEx($structName, $prefix);
+    my %struct = ExtractStructInfoEx($structName, $filePrefix);
 
-    my %S = ();
-
-    my @StructMembers = @{ $struct{members} };
-
-    for my $m (@StructMembers)
-    {
-        $S{$m->{name}} = $m;
-    }
-
-    return %S;
+    return %{ $struct{membersHash} };
 }
 
 sub ExtractStructInfoEx
@@ -322,7 +315,7 @@ sub ExtractStructInfoEx
 
     my @members = @{ $sections[0]->{memberdef} };
 
-    if (scalar@members < 2)
+    if (scalar @members < 2)
     {
         LogError "there must be at least 2 members in struct $structName";
         return %Struct;
@@ -332,11 +325,14 @@ sub ExtractStructInfoEx
 
     ProcessStructDescription(\%Struct, $desc);
 
+    $Struct{$desc} = $desc;
+
     my $idx = 0;
 
     # we must chage this method to return hash with members $st
 
-    my @StructMembers;
+    my @StructMembers = ();
+    my @keys = ();
 
     for my $member (@members)
     {
@@ -344,6 +340,8 @@ sub ExtractStructInfoEx
         my $type = $member->{definition}[0];
         my $args = $member->{argsstring}[0];
         my $file = $member->{location}[0]->{file};
+
+        LogDebug "processing member '$name' on $structName";
 
         # if argstring is empty in xml, then it returns empty hash, skip this
         # args contain extra arguments like [32] for "char foo[32]" or
@@ -353,13 +351,13 @@ sub ExtractStructInfoEx
 
         $type = $1 if $type =~ /^(.+) _sai_\w+_t::(?:\w+|::)+(.*)$/;
 
-        if (defined $2 and $2 ne "")
-        {
-            my $suffix= $2;
+        my $typeSuffix= $2;
 
-            if ($suffix =~/^\[\d+\]$/)
+        if ($typeSuffix ne "")
+        {
+            if ($typeSuffix =~/^\[\d+\]$/)
             {
-                $type .= $suffix;
+                $type .= $typeSuffix;
             }
             else
             {
@@ -371,8 +369,6 @@ sub ExtractStructInfoEx
 
         my %M = ();
 
-        ProcessStructDescription(\%M, $desc);
-
         $M{count} = $Struct{count}->{$name} if defined $Struct{count}->{$name};
         $M{type} = $type;
         $M{desc} = $desc;
@@ -381,10 +377,17 @@ sub ExtractStructInfoEx
         $M{name} = $name;
         $M{idx}  = $idx++;
 
-        push @StructMembers,\%M;
+        ProcessStructDescription(\%M, $desc);
+
+        $Struct{membersHash}{$name} = \%M;
+
+        push @StructMembers, \%M;
+        push @keys, $name;
     }
 
     $Struct{members} = \@StructMembers;
+    $Struct{keys} = \@keys;
+    $Struct{baseName} = $1 if $structName =~/^sai_(\w+)_t$/;
 
     return %Struct;
 }
@@ -457,7 +460,7 @@ BEGIN
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
     ReadXml UnescapeXml GetXmlFiles
-    ExtractDescription ExtractStructInfo
+    ExtractDescription ExtractStructInfo ExtractStructInfoEx
     /;
 }
 

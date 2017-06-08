@@ -469,24 +469,92 @@ sub ProcessTypedefSection
     }
 }
 
-# remove ?
-sub ProcessTypedefStructsSection
+sub ProcessNotificationCount
 {
-    my $section = shift;
+    my ($ntfName, $tagValue, $previousTagValue) = @_;
 
-    for my $memberdef (@{ $section->{memberdef} })
+    my %count = ();
+
+    %count = %{ $previousTagValue } if defined $previousTagValue;
+
+    if (not $tagValue =~ /^(\w+)\[(\w+|\d+)\]$/g)
     {
-        next if not $memberdef->{kind} eq "typedef";
+        LogError "unable to parse count '$tagValue' on $ntfName";
+        return undef;
+    }
 
-        my $id = $memberdef->{id};
+    my $pointerParam = $1;
+    my $countParam = $2;
 
-        my $typedefname = $memberdef->{name}[0];
+    $count{$pointerParam} = $countParam;
 
-        my $typedeftype;
+    LogDebug "adding count $pointerParam\[$countParam\] on $ntfName";
 
-        $typedeftype = $memberdef->{type}[0] if ref $memberdef->{type}[0] eq "";
+    if ($pointerParam eq $countParam)
+    {
+        LogError "count '$pointerParam' can't point to itself in \@count on $ntfName";
+        undef;
+    }
 
-        $typedeftype = $memberdef->{type}[0]->{content} if ref $memberdef->{type}[0] eq "HASH";
+    return \%count;
+}
+
+sub ProcessNotificationObjects
+{
+    #
+    # object type for attribute params are described in
+    # notification descripnon, it would be easier
+    # if they would be described on params itself
+    #
+
+    my ($ntfName, $tagValue, $previousTagValue) = @_;
+
+    my %objectTypes = ();
+
+    %objectTypes = %{ $previousTagValue } if defined $previousTagValue;
+
+    if (not $tagValue =~ /^(\w+)\s+(SAI_OBJECT_TYPE_\w+)$/g)
+    {
+        LogError "invalid object type tag value '$tagValue' in $ntfName";
+        return undef;
+    }
+
+    $objectTypes{$1} = $2;
+
+    LogDebug "adding object type $2 on param $1 in $ntfName";
+
+    return \%objectTypes;
+}
+
+my %NOTIFICATION_TAGS = (
+        "count"       , \&ProcessNotificationCount,
+        "objects"     , \&ProcessNotificationObjects,
+        );
+
+sub ProcessNotificationDescription
+{
+    my ($refNtf, $desc) = @_;
+
+    $refNtf->{desc} = $desc;
+
+    my $ntfName = $refNtf->{name};
+
+    $desc =~ s/@@/\n@@/g;
+
+    while ($desc =~ /@@(\w+)(.*)/g)
+    {
+        my $tag = $1;
+        my $value = Trim($2);
+
+        if (not defined $NOTIFICATION_TAGS{$tag})
+        {
+            LogError "unrecognized tag '$tag' on $ntfName: $value";
+            next;
+        }
+
+        LogDebug "processing tag '$tag' on $ntfName";
+
+        $refNtf->{$tag} = $NOTIFICATION_TAGS{$tag}->($ntfName, $value, $refNtf->{$tag});
     }
 }
 
@@ -500,98 +568,100 @@ sub ProcessNotifications
 
     my @params = split/,/,$args;
 
-    my $idx = 0;
+    my %N = (name => $typedefname);
 
     my $desc = ExtractDescription($typedefname, $typedefname, $member->{detaileddescription}[0]);
 
-    $desc =~ s/@@/\n@@/g; # @count data[count] | attr_list[attr_count] | foo[1]
+    ProcessNotificationDescription(\%N, $desc);
 
-    my %Count = ();
+    my @Members = ();
 
-    # $typedefname = $1 if $typedefname =~ /^sai_(\w+)_fn$/;
+    my $idx = 0;
 
-    while ($desc =~ /\@\@count\s+(\w+)\[(\w+|\d+)\]/g)
-    {
-        $Count{$1} = $2;
+    my $ParamRegex = '^\s*_In_ ((const )?\w+\s*?\*?)\s*(\w+)$';
 
-        if ($1 eq $2)
-        {
-            LogError "notification count '$1' can't point to itself in \@count";
-            return;
-        }
-    }
-
-    my %Objects = ();
-
-    while ($desc =~ /\@\@(?:objects|type)\s+(\w+)\s+(SAI_OBJECT_TYPE_\w+)\s*$/g)
-    {
-        $Objects{$1} = $2;
-    }
-
-    # NOTE: if there are only 2 elements, one is uint32_t and second is pointer
+    my @keys = ();
 
     for my $param (@params)
     {
         # NOTE multple pointers or consts are not supported
-        if (not $param =~ /_In_ ((const )?\w+\s*?\*?)\s*(\w+)$/)
+
+        if (not $param =~ /$ParamRegex/)
         {
             LogWarning "can't match param '$param' on $typedefname";
-            next;
+            return
         }
+
+        my %M = ();
 
         my $type = $1;
         my $name = $3;
 
-        $NOTIFICATIONS{$typedefname}{$idx}{type} = $type;
-        $NOTIFICATIONS{$typedefname}{$idx}{name} = $name;
-        $NOTIFICATIONS{$typedefname}{$idx}{ot} = $Objects{$name};
-        $NOTIFICATIONS{$typedefname}{$name} = $idx;
+        push @keys, $name;
+
+        $M{param}       = $param;
+        $M{type}        = $type;
+        $M{name}        = $name;
+        $M{objecttype}  = $N{objects}{$name} if defined $N{objects} and defined $N{objects}{$name};
+        $M{idx}         = $idx;
+
+        push @Members, \%M;
+
+        $N{membersHash}{ $name } = \%M;
 
         $idx++;
     }
 
-    $idx = 0;
+    # second pass is needed if count param is defined after data pointer
 
-    # second pass is needed if count is defined after data pointer
     for my $param (@params)
     {
-        next if (not $param =~ /_In_ ((const )?\w+\s*?\*?)\s*(\w+)$/);
+        next if (not $param =~ /$ParamRegex/);
 
         my $type = $1;
         my $name = $3;
 
-        if (not $type =~ /\*/)
-        {
-            $idx++;
-            next;
-        }
+        next if not $type =~ /\*/;
 
-        if (not defined $Count{$name})
+        if (not defined $N{count} and not defined $N{count}->{$name})
         {
             LogWarning "type '$type' is pointer, \@count is required, but missing on $typedefname";
             next;
         }
 
-        $NOTIFICATIONS{$typedefname}{$idx}{count} = $Count{$name};
+        my $countParamName = $N{count}->{$name};
 
-        if ($Count{$name} =~ /^(\d+)$/)
+        $N{membersHash}->{$name}{count} = $countParamName;
+
+        if ($countParamName =~ /^(\d+)$/)
         {
             # count is given explicit
             next;
         }
 
-        my $countidx = $NOTIFICATIONS{$typedefname}{ $Count{$name} };
-
-        my $counttype = $NOTIFICATIONS{$typedefname}{$countidx}{type};
-
-        if (not $counttype =~ /^(uint32_t|sai_size_t)$/)
+        if (not defined $N{membersHash}->{$countParamName})
         {
-            LogWarning "param '$Count{$name}' used as count for param '$name' ($typedefname)";
-            LogWarning " is wrong type '$counttype' allowed: uint32_t|sai_size_t";
+            LogWarning "count param name '$countParamName' on $typedefname is not defined";
+            next;
         }
 
-        $idx++;
+        my $countType = $N{membersHash}->{$countParamName}{type};
+
+        if (not $countType =~ /^(uint32_t|sai_size_t)$/)
+        {
+            LogWarning "param '$countParamName' used as count for param '$name' ($typedefname)";
+            LogWarning " is wrong type '$countType' allowed: (uint32_t|sai_size_t)";
+        }
     }
+
+    $N{params} = \@params;
+    $N{keys} = \@keys;
+    $N{members} = \@Members;
+    $N{ismethod} = 1;
+
+    $N{baseName} = $1 if $typedefname =~ /^sai_(\w+_notification)_fn$/;
+
+    $NOTIFICATIONS{$typedefname} = \%N;
 }
 
 sub ProcessXmlFile
