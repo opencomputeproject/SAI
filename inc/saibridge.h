@@ -187,6 +187,18 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION_PACKET_ACTION,
 
     /**
+     * @brief Admin Mode.
+     *
+     * Before removing a bridge port, need to disable it by setting admin mode
+     * to false, then flush the FDB entries, and then remove it.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_BRIDGE_PORT_ATTR_END,
