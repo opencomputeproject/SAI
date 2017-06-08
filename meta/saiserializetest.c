@@ -201,20 +201,20 @@ void test_serialize_enum()
     }
 }
 
-void test_serialize_ipv4_mask()
+void test_serialize_ip4_mask()
 {
     int res;
     char buf[PRIMITIVE_BUFFER_SIZE];
 
     sai_ip4_t mask = 0;
 
-    res = sai_serialize_ipv4_mask(buf, mask);
+    res = sai_serialize_ip4_mask(buf, mask);
 
     ASSERT_STR_EQ(buf, "0", res);
 
     mask = 0xffffffff;
 
-    res = sai_serialize_ipv4_mask(buf, mask);
+    res = sai_serialize_ip4_mask(buf, mask);
 
     ASSERT_STR_EQ(buf, "32", res);
 
@@ -225,7 +225,7 @@ void test_serialize_ipv4_mask()
 
     for (i = 32; i >= 0; i--)
     {
-        res = sai_serialize_ipv4_mask(buf, htonl(mask));
+        res = sai_serialize_ip4_mask(buf, htonl(mask));
 
         sprintf(exp, "%d", i);
 
@@ -236,12 +236,12 @@ void test_serialize_ipv4_mask()
 
     mask = htonl(0xff001); /* holes */
 
-    res = sai_serialize_ipv4_mask(buf, mask);
+    res = sai_serialize_ip4_mask(buf, mask);
 
     ASSERT_TRUE(res < 0, "expected negative number");
 }
 
-void test_serialize_ipv6_mask()
+void test_serialize_ip6_mask()
 {
     int res;
     char buf[PRIMITIVE_BUFFER_SIZE];
@@ -250,7 +250,7 @@ void test_serialize_ipv6_mask()
 
     mask[1] = 0xff; /* mask with holes */
 
-    res = sai_serialize_ipv6_mask(buf, mask);
+    res = sai_serialize_ip6_mask(buf, mask);
 
     ASSERT_TRUE(res < 0, "expected negative number");
 
@@ -272,8 +272,8 @@ void test_serialize_ipv6_mask()
 
         sprintf(bufn, "%d", n);
 
-        sai_serialize_ipv6(ipv6, mask);
-        res = sai_serialize_ipv6_mask(buf, mask);
+        sai_serialize_ip6(ipv6, mask);
+        res = sai_serialize_ip6_mask(buf, mask);
 
         ASSERT_STR_EQ(buf, bufn, res);
     }
@@ -433,8 +433,8 @@ int main()
     test_serialize_ip_address();
     test_serialize_mac();
     test_serialize_enum();
-    test_serialize_ipv4_mask();
-    test_serialize_ipv6_mask();
+    test_serialize_ip4_mask();
+    test_serialize_ip6_mask();
 
     test_serialize_route_entry();
     test_serialize_neighbor_entry();
