@@ -113,33 +113,6 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER,
 
     /**
-     * @brief Identifier of the BFD session associated with the primary next hop
-     *
-     * The BFD session is used to detect failure of the primary next hop.
-     * If the specified BFD session detects failure, the switching entity
-     * triggers a switch-over to backup next hop.
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
-     */
-    SAI_NEXT_HOP_GROUP_ATTR_BFD_SESSION_ID,
-
-    /**
-     * @brief Identifier of the port associated with the primary next hop
-     *
-     * If the specified port fails, the switching entity triggers a switch-over
-     * from the primary next hop to backup.
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
-     */
-    SAI_NEXT_HOP_GROUP_ATTR_PORT_ID,
-
-    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
@@ -206,6 +179,39 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @flags READ_ONLY
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OBSERVED_PROTECTION_ROLE,
+
+    /**
+     * @brief Identifier of the BFD session associated with the next hop
+     *
+     * The BFD session is used to detect failure of the next hop.
+     * If the specified BFD session fails, the switching entity marks this next
+     * hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does not use
+     * it to forward traffic. If there is a backup next hop available in this
+     * group then the backup's observed role is set to
+     * SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING and it is used to
+     * forward traffic.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_BFD_SESSION_ID,
+
+    /**
+     * @brief Identifier of the port associated with the next hop
+     *
+     * If the specified port fails, the switching entity marks this next
+     * hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does not use
+     * it to forward traffic. If there is a backup next hop available in this
+     * group then the backup's observed role is set to
+     * SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING and it is used to
+     * forward traffic.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PORT_ID,
 
     /**
      * @brief End of attributes

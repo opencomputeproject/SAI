@@ -6,7 +6,7 @@ SAI Fast Reroute enhancement for SAI 1.2.0
  Status      | In review
  Type        | Standards track
  Created     | 13/04/2017
- Updated     | 11/05/2017
+ Updated     | 08/06/2017
  SAI-Version | 1.2.0
 
 -------------------------------------------------------------------------------
@@ -151,16 +151,7 @@ program more than two next hops within a single Protection Next Hop
 Group. It is outside the scope of this proposal to specify how the
 Adapter or Adapter Host should enforce this condition.
 
-Furthermore, two new attributes are added to the Next Hop Group to identify
-what kind of events can cause the Switching Entity to initiate a switchover.
-The attributes are:
--  SAI\_NEXT\_HOP\_GROUP\_ATTR\_BFD\_SESSION\_ID
--  SAI\_NEXT\_HOP\_GROUP\_ATTR\_PORT\_ID
-
-These attributes allow the switching entity to monitor a specified object
-(BFD session or port) and in case of its failure, trigger a switchover.
-
-Finally, new attribute is added to allow the Control Plane stack to
+Additionally, new attribute is added to allow the Control Plane stack to
 initiate and revert the failover. The new attribute is
 SAI\_NEXT\_HOP\_GROUP\_ATTR\_SET\_SWITCHOVER. This is required for
 example in the scenario when the BFD process runs in the Control Plane
@@ -169,7 +160,7 @@ has to trigger a switchover “manually”.
 
 ### Next Hop Group Member
 
-Two attributes are added to the Next Hop Group Member object. These
+Two attributes are added to the Next Hop Group Member object to
 indicate what is the configured and actual role of the referred next hop
 in a protection group. The attributes are:
 
@@ -187,10 +178,26 @@ in a protection group. The attributes are:
         - SAI\_NEXT\_HOP\_GROUP\_MEMBER\_STANDBY - This next hop is backup and is currently not forwarding any traffic.
         - SAI\_NEXT\_HOP\_GROUP\_MEMBER\_FAILED - This next hop is primary but is currently in failed state and is not forwarding any traffic.
 
-Furthermore, the relationship between next hops and their roles within a
+The relationship between next hops and their roles within a
 protection group can be in one of two states:
 
 ![](figures/sai_frr_fsm.png)
+
+Furthermore, two new attributes are added to the Next Hop Group to identify
+what kind of events can cause the Switching Entity to initiate a switchover.
+The attributes are:
+-  SAI\_NEXT\_HOP\_GROUP\_ATTR\_BFD\_SESSION\_ID
+-  SAI\_NEXT\_HOP\_GROUP\_ATTR\_PORT\_ID
+
+These attributes allow the switching entity to monitor a specified object
+(BFD session or port) and in case of its failure, trigger a switchover.
+
+If the referred object fails, then the switch marks the next hop as FAILED and
+does not use it for forwarding.
+If the next hop group is a Protection type and there is a backup next hop available in the group, then it is no longer STANDBY, but FORWARDING and is used to forward traffic.
+
+Note that this feature can be used in non FRR cases.  For example, specifying
+a BFD session or port number will accelerate removing failed next hops from an ECMP group.
 
 # Specification
 
@@ -255,32 +262,6 @@ typedef enum _sai_next_hop_group_attr_t
 +      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
 +      */
 +     SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER,
-+
-+     /**
-+      * @brief Identifier of the BFD session associated with the primary next hop
-+      *
-+      * The BFD session is used to detect failure of the primary next hop.
-+      * If the specified BFD session detects failure, the switching entity
-+      * triggers a switchover to backup next hop.
-+      *
-+      * @type TODO (Waiting for the BFD proposal to specify the format)
-+      * @default 0
-+      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
-+      */
-+     SAI_NEXT_HOP_GROUP_ATTR_BFD_SESSION_ID,
-+
-+     /**
-+      * @brief Identifier of the port associated with the primary next hop
-+      *
-+      * If the specified port fails, the switching entity triggers a switchover
-+      * from the primary next hop to backup.
-+      *
-+      * @type sai_object_id_t
-+      * @default 0
-+      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
-+      */
-+     SAI_NEXT_HOP_GROUP_ATTR_PORT_ID,
-
 
     /**
      * @brief End of attributes
@@ -384,6 +365,39 @@ typedef enum _sai_next_hop_group_member_attr_t
 +      * @flags READ_ONLY
 +      */
 +     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OBSERVED_ROLE,
++
++    /**
++     * @brief Identifier of the BFD session associated with the next hop
++     *
++     * The BFD session is used to detect failure of the next hop.
++     * If the specified BFD session fails, the switching entity marks this next
++     * hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does not use
++     * it to forward traffic. If there is a backup next hop available in this
++     * group then the backup's observed role is set to
++     * SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING and it is used to
++     * forward traffic.
++     *
++     * @type sai_uint32_t
++     * @flags CREATE_AND_SET
++     * @default 0
++     */
++    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_BFD_SESSION_ID,
++
++    /**
++     * @brief Identifier of the port associated with the next hop
++     *
++     * If the specified port fails, the switching entity marks this next
++     * hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does not use
++     * it to forward traffic. If there is a backup next hop available in this
++     * group then the backup's observed role is set to
++     * SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING and it is used to
++     * forward traffic.
++     *
++     * @type sai_uint32_t
++     * @flags CREATE_AND_SET
++     * @default 0
++     */
++    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PORT_ID,
 
     /**
      * @brief End of attributes
@@ -422,10 +436,6 @@ switch_id = 0;
 
 nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_TYPE;
 nhg_entry_attrs[0].value.u32 = SAI_NEXT_HOP_GROUP_TYPE_PROTECTION;
-nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER;
-nhg_entry_attrs[1].value.u32 = false;
-nhg_entry_attrs[2].id = SAI_NEXT_HOP_GROUP_ATTR_BFD_SESSION_ID;
-nhg_entry_attrs[2].value.u32 = 1;
 saistatus = sai_frr_api->create_next_hop_group(&nhg_id, switch_id, 1, nhg_entry_attrs);
 if (saistatus != SAI_STATUS_SUCCESS) {
     return saistatus;
@@ -453,12 +463,17 @@ if (saistatus != SAI_STATUS_SUCCESS) {
     return saistatus;
 }
 
+// Program the primary NH Group member.
+// We wat it to be monitored using BFD so BFD session id
+// is specified.
 nhgm_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID;
 nhgm_entry_attrs[0].value.oid = nhg_id;
 nhgm_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID;
 nhgm_entry_attrs[1].value.oid = nh_1_id;
 nhgm_entry_attrs[2].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_PROTECTION_ROLE;
 nhgm_entry_attrs[2].value.u32 = SAI_NEXT_HOP_GROUP_MEMBER_PRIMARY;
+nhg_entry_attrs[3].id = SAI_NEXT_HOP_GROUP_ATTR_BFD_SESSION_ID;
+nhg_entry_attrs[3].value.u32 = 1;
 saistatus = sai_frr_api->create_next_hop_group_member(&nhgm_1_id, switch_id, 2, nhgm_entry_attrs);
 if (saistatus != SAI_STATUS_SUCCESS) {
     return saistatus;
@@ -479,8 +494,8 @@ if (saistatus != SAI_STATUS_SUCCESS) {
 
 ## Trigger a switchover
 ```
-nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER;
-nhg_entry_attrs[0].value.u32 = true;
+nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER;
+nhg_entry_attrs[1].value.u32 = true;
 saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
 if (saistatus != SAI_STATUS_SUCCESS) {
     return saistatus;
@@ -524,8 +539,8 @@ for (attr_id = 0; attr_id < attr_count; attr_id++) {
 
 ## Clear the switchover
 ```
-nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER;
-nhg_entry_attrs[0].value.u32 = false;
+nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER;
+nhg_entry_attrs[1].value.u32 = false;
 saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
 if (saistatus != SAI_STATUS_SUCCESS) {
     return saistatus;
