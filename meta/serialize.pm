@@ -315,7 +315,7 @@ sub CreateSerializeSingleNotification
             }
         }
 
-        WriteSource "    if ($name == NULL)";
+        WriteSource "    if ($name == NULL || $countName == 0)";
         WriteSource "    {";
         WriteSource "        $buf += sprintf($buf, \"null\");";
         WriteSource "    }";
@@ -598,7 +598,7 @@ sub ProcessMembersForSerialize
             }
         }
 
-        WriteSource "    if ($structBase->$name == NULL)";
+        WriteSource "    if ($structBase->$name == NULL || $structBase->$name == 0)";
         WriteSource "    {";
         WriteSource "        $buf += sprintf($buf, \"null\");";
         WriteSource "    }";
