@@ -160,8 +160,6 @@ sub CreateSerializeSingleNotification
 
         WriteSource "    $buf += sprintf($buf, \"$comma\\\"$name\\\":\");";
 
-        my $suffix = $type;
-
         my $needQuote = 0;
         my $ispointer = 0;
         my $isattribute = 0;
@@ -177,6 +175,8 @@ sub CreateSerializeSingleNotification
 
         $type = $1 if $type =~ /^const\s+(.+)$/;
 
+        my $suffix = ($type =~ /sai_(\w+)_t/ ) ? $1 : $type;
+
         # TODO all this quote/amp, suffix could be defined on respected members
         # as metadata and we could automatically get that, and keep track in
         # deserialize and free methods by free instead of listing all of them here
@@ -186,50 +186,43 @@ sub CreateSerializeSingleNotification
         }
         elsif ($type eq "sai_size_t")
         {
-            $suffix = "size";
         }
         elsif ($type eq "void")
         {
             # treat void* as uint8_t*
 
-            $suffix = "u8";
+            $suffix = "uint8";
             $castName = "((const uint8_t*)$name)";
         }
-        elsif ($type =~ /^sai_ip6_t$/)
+        elsif ($type =~ /^sai_(ip[46])_t$/)
         {
             $needQuote = 1;
-            $suffix = "ipv6";
         }
         elsif ($type =~ /^sai_(vlan_id)_t$/)
         {
-            $suffix = "u16";
+            $suffix = "uint16";
         }
         elsif ($type =~ /^sai_(cos|queue_index)_t$/)
         {
-            $suffix = "u8";
+            $suffix = "uint8";
         }
         elsif ($type =~ /^(?:sai_)?(u?int\d+)_t$/)
         {
             $suffix = $1;
-            $suffix =~ s/uint/u/;
-            $suffix =~ s/int/s/;
 
             # enums!
         }
         elsif ($type =~ m/^sai_(ip_address|ip_prefix)_t$/)
         {
-            $suffix = $1;
             $needQuote = 1;
             $amp = "&";
         }
         elsif ($type =~ m/^sai_(object_id|mac)_t$/)
         {
-            $suffix = $1;
             $needQuote = 1;
         }
         elsif ($type =~ /^sai_(attribute)_t$/)
         {
-            $suffix = $1;
             $amp = "&";
             $isattribute = 1;
 
@@ -249,14 +242,12 @@ sub CreateSerializeSingleNotification
         }
         elsif (defined $main::ALL_STRUCTS{$type} and $type =~ /^sai_(\w+)_t$/)
         {
-            $suffix = $1;
             $amp = "&";
 
             # sai_s32_list_t enum !
         }
         elsif (defined $main::SAI_ENUMS{$type} and $type =~ /^sai_(\w+)_t$/)
         {
-            $suffix = $1;
             $needQuote = 1;
         }
         else
@@ -449,8 +440,6 @@ sub ProcessMembersForSerialize
 
         WriteSource "    $buf += sprintf($buf, \"$comma\\\"$name\\\":\");";
 
-        my $suffix = $type;
-
         my $needQuote = 0;
         my $ispointer = 0;
         my $isattribute = 0;
@@ -463,6 +452,8 @@ sub ProcessMembersForSerialize
             $ispointer = 1;
         }
 
+        my $suffix = ($type =~ /sai_(\w+)_t/ ) ? $1 : $type;
+
         # TODO all this quote/amp, suffix could be defined on respected members
         # as metadata and we could automatically get that, and keep track in
         # deserialize and free methods by free instead of listing all of them here
@@ -470,41 +461,34 @@ sub ProcessMembersForSerialize
         if ($type eq "bool")
         {
         }
-        elsif ($type =~ /^sai_ip6_t$/)
+        elsif ($type =~ /^sai_(ip6)_t$/)
         {
             $needQuote = 1;
-            $suffix = "ipv6";
         }
         elsif ($type =~ /^sai_(vlan_id)_t$/)
         {
-            $suffix = "u16";
+            $suffix = "uint16";
         }
         elsif ($type =~ /^sai_(cos|queue_index)_t$/)
         {
-            $suffix = "u8";
+            $suffix = "uint8";
         }
         elsif ($type =~ /^(?:sai_)?(u?int\d+)_t$/)
         {
-            $suffix = $1;
-            $suffix =~ s/uint/u/;
-            $suffix =~ s/int/s/;
-
             # enums!
+            $suffix = $1;
         }
         elsif ($type =~ m/^sai_(ip_address|ip_prefix)_t$/)
         {
-            $suffix = $1;
             $needQuote = 1;
             $amp = "&";
         }
         elsif ($type =~ m/^sai_(object_id|mac)_t$/)
         {
-            $suffix = $1;
             $needQuote = 1;
         }
         elsif ($type =~ /^sai_(attribute)_t$/)
         {
-            $suffix = $1;
             $amp = "&";
             $isattribute = 1;
 
@@ -532,14 +516,12 @@ sub ProcessMembersForSerialize
         }
         elsif (defined $main::ALL_STRUCTS{$type} and $type =~ /^sai_(\w+)_t$/)
         {
-            $suffix = $1;
             $amp = "&";
 
             # sai_s32_list_t enum !
         }
         elsif (defined $main::SAI_ENUMS{$type} and $type =~ /^sai_(\w+)_t$/)
         {
-            $suffix = $1;
             $needQuote = 1;
         }
         else

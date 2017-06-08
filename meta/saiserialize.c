@@ -51,56 +51,56 @@ int sai_serialize_chardata(
 }
 
 
-int sai_serialize_u8(
+int sai_serialize_uint8(
         _Out_ char *buffer,
         _In_ uint8_t u8)
 {
     return sprintf(buffer, "%u", u8);
 }
 
-int sai_serialize_s8(
+int sai_serialize_int8(
         _Out_ char *buffer,
         _In_ int8_t u8)
 {
     return sprintf(buffer, "%d", u8);
 }
 
-int sai_serialize_u16(
+int sai_serialize_uint16(
         _Out_ char *buffer,
         _In_ uint16_t u16)
 {
     return sprintf(buffer, "%u", u16);
 }
 
-int sai_serialize_s16(
+int sai_serialize_int16(
         _Out_ char *buffer,
         _In_ int16_t s16)
 {
     return sprintf(buffer, "%d", s16);
 }
 
-int sai_serialize_u32(
+int sai_serialize_uint32(
         _Out_ char *buffer,
         _In_ uint32_t u32)
 {
     return sprintf(buffer, "%u", u32);
 }
 
-int sai_serialize_s32(
+int sai_serialize_int32(
         _Out_ char *buffer,
         _In_ int32_t s32)
 {
     return sprintf(buffer, "%d", s32);
 }
 
-int sai_serialize_u64(
+int sai_serialize_uint64(
         _Out_ char *buffer,
         _In_ uint64_t u64)
 {
     return sprintf(buffer, "%lu", u64);
 }
 
-int sai_serialize_s64(
+int sai_serialize_int64(
         _Out_ char *buffer,
         _In_ int64_t s64)
 {
@@ -136,7 +136,7 @@ int sai_serialize_enum(
 {
     if (meta == NULL)
     {
-        return sai_serialize_s32(buffer, value);
+        return sai_serialize_int32(buffer, value);
     }
 
     size_t i = 0;
@@ -151,10 +151,10 @@ int sai_serialize_enum(
 
     SAI_META_LOG_WARN("enum value %d not found in enum %s", value, meta->name);
 
-    return sai_serialize_s32(buffer, value);
+    return sai_serialize_int32(buffer, value);
 }
 
-int sai_serialize_ipv4(
+int sai_serialize_ip4(
         _Out_ char *buffer,
         _In_ sai_ip4_t ip)
 {
@@ -167,7 +167,7 @@ int sai_serialize_ipv4(
     return (int)strlen(buffer);
 }
 
-int sai_serialize_ipv6(
+int sai_serialize_ip6(
         _Out_ char *buffer,
         _In_ const sai_ip6_t ip)
 {
@@ -188,11 +188,11 @@ int sai_serialize_ip_address(
     {
         case SAI_IP_ADDR_FAMILY_IPV4:
 
-            return sai_serialize_ipv4(buffer, ip_address->addr.ip4);
+            return sai_serialize_ip4(buffer, ip_address->addr.ip4);
 
         case SAI_IP_ADDR_FAMILY_IPV6:
 
-            return sai_serialize_ipv6(buffer, ip_address->addr.ip6);
+            return sai_serialize_ip6(buffer, ip_address->addr.ip6);
 
         default:
 
@@ -214,8 +214,8 @@ int sai_serialize_ip_prefix(
     {
         case SAI_IP_ADDR_FAMILY_IPV4:
 
-            ret |= sai_serialize_ipv4(addr, ip_prefix->addr.ip4);
-            ret |= sai_serialize_ipv4_mask(mask, ip_prefix->mask.ip4);
+            ret |= sai_serialize_ip4(addr, ip_prefix->addr.ip4);
+            ret |= sai_serialize_ip4_mask(mask, ip_prefix->mask.ip4);
 
             if (ret < 0)
             {
@@ -227,8 +227,8 @@ int sai_serialize_ip_prefix(
 
         case SAI_IP_ADDR_FAMILY_IPV6:
 
-            ret |= sai_serialize_ipv6(addr, ip_prefix->addr.ip6);
-            ret |= sai_serialize_ipv6_mask(mask, ip_prefix->mask.ip6);
+            ret |= sai_serialize_ip6(addr, ip_prefix->addr.ip6);
+            ret |= sai_serialize_ip6_mask(mask, ip_prefix->mask.ip6);
 
             if (ret < 0)
             {
@@ -247,7 +247,7 @@ int sai_serialize_ip_prefix(
     return sprintf(buffer, "%s/%s", addr, mask);
 }
 
-int sai_serialize_ipv4_mask(
+int sai_serialize_ip4_mask(
         _Out_ char *buffer,
         _In_ sai_ip4_t mask)
 {
@@ -260,14 +260,14 @@ int sai_serialize_ipv4_mask(
 
     if (tmp == mask)
     {
-        return sai_serialize_u32(buffer, n);
+        return sai_serialize_uint32(buffer, n);
     }
 
     SAI_META_LOG_WARN("ipv4 mask 0x%X has holes", htonl(mask));
     return SAI_SERIALIZE_ERROR;
 }
 
-int sai_serialize_ipv6_mask(
+int sai_serialize_ip6_mask(
         _Out_ char *buffer,
         _In_ const sai_ip6_t mask)
 {
@@ -286,7 +286,7 @@ int sai_serialize_ipv6_mask(
 
         if (tmp == low)
         {
-            return sai_serialize_u32(buffer, 64 + n);
+            return sai_serialize_uint32(buffer, 64 + n);
         }
     }
     else if (low == 0)
@@ -295,13 +295,13 @@ int sai_serialize_ipv6_mask(
 
         if (tmp == high)
         {
-            return sai_serialize_u32(buffer, n);
+            return sai_serialize_uint32(buffer, n);
         }
     }
 
     char buf[PRIMITIVE_BUFFER_SIZE];
 
-    sai_serialize_ipv6(buf, mask);
+    sai_serialize_ip6(buf, mask);
 
     SAI_META_LOG_WARN("ipv6 mask %s has holes", buf);
     return SAI_SERIALIZE_ERROR;

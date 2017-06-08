@@ -83,7 +83,7 @@ int sai_serialize_bool(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_u8(
+int sai_serialize_uint8(
         _Out_ char *buffer,
         _In_ uint8_t u8);
 
@@ -96,7 +96,7 @@ int sai_serialize_u8(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_s8(
+int sai_serialize_int8(
         _Out_ char *buffer,
         _In_ int8_t u8);
 
@@ -109,7 +109,7 @@ int sai_serialize_s8(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_u16(
+int sai_serialize_uint16(
         _Out_ char *buffer,
         _In_ uint16_t u16);
 
@@ -122,7 +122,7 @@ int sai_serialize_u16(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_s16(
+int sai_serialize_int16(
         _Out_ char *buffer,
         _In_ int16_t s16);
 
@@ -135,7 +135,7 @@ int sai_serialize_s16(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_u32(
+int sai_serialize_uint32(
         _Out_ char *buffer,
         _In_ uint32_t u32);
 
@@ -148,7 +148,7 @@ int sai_serialize_u32(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_s32(
+int sai_serialize_int32(
         _Out_ char *buffer,
         _In_ int32_t s32);
 
@@ -161,7 +161,7 @@ int sai_serialize_s32(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_u64(
+int sai_serialize_uint64(
         _Out_ char *buffer,
         _In_ uint64_t u64);
 
@@ -174,7 +174,7 @@ int sai_serialize_u64(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_s64(
+int sai_serialize_int64(
         _Out_ char *buffer,
         _In_ int64_t s64);
 
@@ -244,7 +244,7 @@ int sai_serialize_enum(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_ipv4(
+int sai_serialize_ip4(
         _Out_ char *buffer,
         _In_ const sai_ip4_t ip4);
 
@@ -257,7 +257,7 @@ int sai_serialize_ipv4(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_ipv6(
+int sai_serialize_ip6(
         _Out_ char *buffer,
         _In_ const sai_ip6_t ip6);
 
@@ -299,7 +299,7 @@ int sai_serialize_ip_prefix(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_ipv4_mask(
+int sai_serialize_ip4_mask(
         _Out_ char *buffer,
         _In_ sai_ip4_t ip4_mask);
 
@@ -315,7 +315,7 @@ int sai_serialize_ipv4_mask(
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_ipv6_mask(
+int sai_serialize_ip6_mask(
         _Out_ char *buffer,
         _In_ const sai_ip6_t ip6_mask);
 
