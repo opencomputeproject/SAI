@@ -367,6 +367,65 @@ void test_serialize_fdb_entry()
     ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}", res);
 }
 
+void test_serialize_notifications()
+{
+    char buf[0x100 * PRIMITIVE_BUFFER_SIZE];
+    int res;
+    const char* ret;
+
+    sai_object_id_t switch_id = 0x123abc;
+
+    sai_fdb_event_notification_data_t data;
+    memset(&data, 0, sizeof(data));
+
+    res = sai_serialize_fdb_event_notification(buf, 1, &data);
+    ret = "{\"count\":1,\"data\":[{\"event_type\":\"SAI_FDB_EVENT_LEARNED\",\"fdb_entry\":{\"switch_id\":\"oid:0x0\",\"mac_address\":\"00:00:00:00:00:00\",\"bv_id\":\"oid:0x0\"},\"attr_count\":0,\"attr\":null}]}";
+
+    ASSERT_STR_EQ(buf, ret, res);
+
+    char buffer[7] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };
+
+    sai_attribute_t attrs[1];
+
+    /*
+     * TODO we set to zero, since attr serialize is not supported yet, after
+     * support we need to fix this.
+     */
+
+    res = sai_serialize_packet_event_notification(buf, switch_id, buffer, 7, 0, attrs);
+    ret = "{\"switch_id\":\"oid:0x123abc\",\"buffer\":[17,34,51,68,85,102,119],\"buffer_size\":7,\"attr_count\":0,\"attr_list\":null}";
+    ASSERT_STR_EQ(buf, ret, res);
+
+    sai_port_oper_status_notification_t data1;
+    memset(&data1, 0, sizeof(data1));
+
+    res = sai_serialize_port_state_change_notification(buf, 1, &data1);
+    ret = "{\"count\":1,\"data\":[{\"port_id\":\"oid:0x0\",\"port_state\":\"SAI_PORT_OPER_STATUS_UNKNOWN\"}]}";
+    ASSERT_STR_EQ(buf, ret , res);
+
+    sai_queue_deadlock_notification_data_t data2;
+    memset(&data2, 0, sizeof(data2));
+
+    res = sai_serialize_queue_pfc_deadlock_notification(buf, 1, &data2);
+    ret = "{\"count\":1,\"data\":[{\"queue_id\":\"oid:0x0\",\"event\":\"SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_DETECTED\"}]}";
+    ASSERT_STR_EQ(buf, ret, res);
+
+    res = sai_serialize_switch_shutdown_request_notification(buf, switch_id);
+    ret = "{\"switch_id\":\"oid:0x123abc\"}";
+    ASSERT_STR_EQ(buf, ret, res);
+
+    res = sai_serialize_switch_state_change_notification(buf, switch_id, SAI_SWITCH_OPER_STATUS_UP);
+    ret = "{\"switch_id\":\"oid:0x123abc\",\"switch_oper_status\":\"SAI_SWITCH_OPER_STATUS_UP\"}";
+    ASSERT_STR_EQ(buf, ret, res);
+
+    sai_tam_threshold_breach_event_t data3;
+    memset(&data3, 0, sizeof(data3));
+
+    res = sai_serialize_tam_event_notification(buf, 1, &data3);
+    ret = "{\"count\":1,\"data\":[{\"threshold_id\":\"oid:0x0\",\"is_snapshot_valid\":false,\"tam_snapshot_id\":\"oid:0x0\",\"value\":0}]}";
+    ASSERT_STR_EQ(buf, ret, res);
+}
+
 int main()
 {
     test_serialize_chardata();
@@ -380,6 +439,8 @@ int main()
     test_serialize_route_entry();
     test_serialize_neighbor_entry();
     test_serialize_fdb_entry();
+
+    test_serialize_notifications();
 
     return 0;
 }

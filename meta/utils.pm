@@ -234,13 +234,24 @@ sub GetStructKeysInOrder
     return @values;
 }
 
+sub Trim
+{
+    my $value = shift;
+
+    $value =~ s/\s+/ /g;
+    $value =~ s/^\s*//;
+    $value =~ s/\s*$//;
+
+    return $value;
+}
+
 BEGIN
 {
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
     LogDebug LogInfo LogWarning LogError
     WriteFile GetHeaderFiles GetMetaHeaderFiles ReadHeaderFile
-    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
+    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder Trim
     WriteHeader WriteSource WriteTest WriteMetaDataFiles WriteSectionComment
     $errors $warnings $NUMBER_REGEX
     $HEADER_CONTENT $SOURCE_CONTENT $TEST_CONTENT
