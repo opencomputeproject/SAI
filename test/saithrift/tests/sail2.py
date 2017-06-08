@@ -529,3 +529,84 @@ class L2FdbAgingTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan_member(vlan_member3)
             self.client.sai_thrift_remove_vlan(vlan_oid)
+
+@group('l2')
+class L2ARPRequestReplyFDBLearningTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        print
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        v4_enabled = 1
+        v6_enabled = 1
+        vlan_id = 10
+
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_oid, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+        self.client.sai_thrift_set_port_attribute(port3, attr)
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_oid, v4_enabled, v6_enabled, router_mac)
+
+        try:
+            # send the test packet(s)
+            print "Send ARP request packet from port1 ..."
+            arp_req_pkt = simple_arp_packet(eth_dst='ff:ff:ff:ff:ff:ff',
+                                            eth_src='00:11:11:11:11:11',
+                                            vlan_vid=10,
+                                            arp_op=1, #ARP request
+                                            ip_snd='10.10.10.1',
+                                            ip_tgt='10.10.10.2',
+                                            hw_snd='00:11:11:11:11:11')
+
+            send_packet(self, 0, str(arp_req_pkt))
+
+            time.sleep(1)
+            print "Send ARP reply packet from port2 ..."
+            arp_rpl_pkt = simple_arp_packet(eth_dst=router_mac,
+                                            eth_src='00:11:22:33:44:55',
+                                            vlan_vid=10,
+                                            arp_op=2, #ARP reply
+                                            ip_snd='10.10.10.2',
+                                            ip_tgt='10.10.10.1',
+                                            hw_snd=router_mac,
+                                            hw_tgt='00:11:22:33:44:55')
+
+            send_packet(self, 1, str(arp_rpl_pkt))
+
+            pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                    eth_src='00:11:22:33:44:55',
+                                    ip_dst='10.10.10.1',
+                                    ip_id=101,
+                                    ip_ttl=64)
+
+            time.sleep(1)
+            print "Send packet from port2 to port1 and verify only on port1 (src_mac and dst_mac addresses are learned)"
+            print '#### Sending 00:11:11:11:11:11 | 00:11:22:33:44:55 | 10.10.10.1 | 10.10.10.2 | @ ptf_intf 2 ####'
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, pkt, [0])
+
+        finally:
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan_id)
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+            self.client.sai_thrift_set_port_attribute(port3, attr)
+
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_remove_vlan_member(vlan_member3)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
