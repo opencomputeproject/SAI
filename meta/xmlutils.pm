@@ -329,8 +329,6 @@ sub ExtractStructInfoEx
 
     my $idx = 0;
 
-    # we must chage this method to return hash with members $st
-
     my @StructMembers = ();
     my @keys = ();
 

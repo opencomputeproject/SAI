@@ -599,11 +599,20 @@ sub ProcessNotifications
 
         push @keys, $name;
 
+        if (defined $N{objects} and defined $N{objects}{$name})
+        {
+            my @objects = ();
+
+            push @objects, $N{objects}{$name};
+
+            $M{objects} = \@objects;
+        }
+
         $M{param}       = $param;
         $M{type}        = $type;
         $M{name}        = $name;
-        $M{objecttype}  = $N{objects}{$name} if defined $N{objects} and defined $N{objects}{$name};
         $M{idx}         = $idx;
+        $M{file}        = $member->{location}[0]->{file};
 
         push @Members, \%M;
 
