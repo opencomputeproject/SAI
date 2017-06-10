@@ -640,7 +640,7 @@ sub CheckHeadersStyle
 
             if ($line =~ /}[^ ]/)
             {
-                LogWarning "no space after '}' $header:$n:$line";
+                LogWarning "no space after '}' $header:$n:$line" if (not $line =~ /^\s*\* /);
             }
 
             if ($line =~ /_[IO].+\w+\* /)
@@ -718,6 +718,7 @@ sub CheckHeadersStyle
                 next if $line =~ /$word.h/;
                 next if not $line =~ /\*/; # must contain star, so will be comment
                 next if "$pre$word" =~ m!http://$word$!;
+                next if ($line =~/\@param\[\w+\]\s+$word /); # skip word if word is param name
 
                 LogWarning "Word '$word' should use capital letters $header $n:$line";
             }
@@ -734,7 +735,7 @@ sub CheckHeadersStyle
 
                     next if $word =~ /^($pattern)$/; # capital words
 
-                    next if ($line =~/\@param\[\w+\]\s+$word/); # skip word if word is param name
+                    next if ($line =~/\@param\[\w+\]\s+$word /); # skip word if word is param name
 
                     # look into good and bad words hash to speed things up
 
@@ -783,6 +784,7 @@ sub CheckHeadersStyle
             next if $line =~ /^ {8}bool booldata/;  # union bool
             next if $line =~ /^ {4}(true|false)/;   # bool definition
             next if $line =~ /^ {4}(const|size_t|else)/; # const in meta headers
+            next if $line =~ /^(void|bool) /;       # function return
 
             next if $line =~ m![^\\]\\$!; # macro multiline
 

@@ -69,6 +69,7 @@ ingressing
 inout
 isprint
 isvlan
+json
 linklocal
 lookup
 lookups
