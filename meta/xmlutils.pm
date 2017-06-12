@@ -332,6 +332,8 @@ sub ExtractStructInfoEx
     my @StructMembers = ();
     my @keys = ();
 
+    $Struct{count}->{list} = "count" if $structName =~ /^sai_(\w+)_list_t$/;
+
     for my $member (@members)
     {
         my $name = $member->{name}[0];

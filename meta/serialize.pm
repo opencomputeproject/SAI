@@ -146,6 +146,177 @@ sub IsMetadataStruct
 
 # TODO on s32/s32_list in struct we could declare enum type
 
+sub ProcessFunctionHeaderForSerialize
+{
+    my ($refHashStructInfoEx, $buf) = @_;
+
+    my %structInfoEx = %{ $refHashStructInfoEx };
+
+    my $structName = $structInfoEx{name};
+    my $structBase = $structInfoEx{baseName};
+    my $membersHash = $structInfoEx{membersHash};
+
+    my @keys = @{ $structInfoEx{keys} };
+
+    WriteHeader "extern int sai_serialize_${structBase}(";
+    WriteHeader "        _Out_ char *$buf,";
+
+    WriteSource "int sai_serialize_${structBase}(";
+    WriteSource "        _Out_ char *$buf,";
+
+    if (defined $structInfoEx{ismethod})
+    {
+        #
+        # we create serialize method as this funcion was method instead of
+        # struct, this will be used to create serialize for notifications
+        #
+
+        for my $name (@keys)
+        {
+            my $type = $membersHash->{$name}{type};
+
+            LogDebug "$structName $structBase $name $type";
+
+            my $last = 1 if $keys[-1] eq $name;
+
+            my $end = (defined $last) ? ")" : ",";
+            my $endheader = (defined $last) ? ");" : ",";
+
+            WriteSource "        _In_ $type $name$end";
+            WriteHeader "        _In_ $type $name$endheader";
+        }
+    }
+    else
+    {
+        WriteHeader "        _In_ const $structName *$structBase);";
+        WriteSource "        _In_ const $structName *$structBase)";
+    }
+}
+
+sub GetTypeInfoForSerialize
+{
+    my ($refHashStructInfoEx, $name) = @_;
+
+    my %structInfoEx = %{ $refHashStructInfoEx };
+
+    my $structName = $structInfoEx{name};
+    my $structBase = $structInfoEx{baseName};
+
+    my $type = $structInfoEx{membersHash}->{$name}{type};
+
+    my %TypeInfo = (
+            needQuote => 0,
+            ispointer => 0,
+            isattribute => 0,
+            amp => "",
+            objectType =>"UNKNOWN_OBJ_TYPE",
+            castName => "");
+
+    $type = $1 if $type =~ /^const\s+(.+)$/;
+
+    if ($type =~ /\s*\*$/)
+    {
+        $type =~ s!\s*\*$!!;
+        $TypeInfo{ispointer} = 1;
+    }
+
+    $TypeInfo{suffix} = ($type =~ /sai_(\w+)_t/) ? $1 : $type;
+
+    # TODO all this quote/amp, suffix could be defined on respected members
+    # as metadata and we could automatically get that, and keep track in
+    # deserialize and free methods by free instead of listing all of them here
+
+    if ($type eq "bool")
+    {
+    }
+    elsif ($type eq "sai_size_t")
+    {
+    }
+    elsif ($type eq "void")
+    {
+        # treat void* as uint8_t*
+
+        $TypeInfo{suffix}   = "uint8";
+        $TypeInfo{castName} = "(const uint8_t*)";
+    }
+    elsif ($type =~ /^sai_(ip[46])_t$/)
+    {
+        $TypeInfo{needQuote} = 1;
+    }
+    elsif ($type =~ /^sai_(vlan_id)_t$/)
+    {
+        $TypeInfo{suffix} = "uint16";
+    }
+    elsif ($type =~ /^sai_(cos|queue_index)_t$/)
+    {
+        $TypeInfo{suffix} = "uint8";
+    }
+    elsif ($type =~ /^(?:sai_)?(u?int\d+)_t$/)
+    {
+        # enums!
+        $TypeInfo{suffix} = $1;
+    }
+    elsif ($type =~ m/^sai_(ip_address|ip_prefix)_t$/)
+    {
+        $TypeInfo{needQuote} = 1;
+        $TypeInfo{amp} = "&";
+    }
+    elsif ($type =~ m/^sai_(object_id|mac)_t$/)
+    {
+        $TypeInfo{needQuote} = 1;
+    }
+    elsif ($type =~ /^sai_(attribute)_t$/)
+    {
+        $TypeInfo{amp} = "&";
+        $TypeInfo{isattribute} = 1;
+
+        if (not defined $structInfoEx{membersHash}->{$name}{objects})
+        {
+            LogError "param '$name' is '$type' on '$structName' and requires object type specified in \@objects";
+            return undef;
+        }
+
+        my @ot = @{ $structInfoEx{membersHash}->{$name}{objects} };
+
+        if (scalar@ot != 1)
+        {
+            LogWarning "expected only 1 obejct type, but given '@ot'";
+            return undef;
+        }
+
+        $TypeInfo{objectType} = $ot[0];
+
+        if (not defined $main::OBJECT_TYPE_MAP{$TypeInfo{objectType}})
+        {
+            LogError "unknown object type '$TypeInfo{objectType}' on $structName :: $name";
+            return undef;
+        }
+    }
+    elsif (defined $main::ALL_STRUCTS{$type} and $type =~ /^sai_(\w+)_t$/)
+    {
+        $TypeInfo{amp} = "&";
+
+        # sai_s32_list_t enum !
+    }
+    elsif (defined $main::SAI_ENUMS{$type} and $type =~ /^sai_(\w+)_t$/)
+    {
+        $TypeInfo{needQuote} = 1;
+    }
+    else
+    {
+        LogError "not handled $type $name in $structName, FIXME";
+        return undef;
+    }
+
+    my $memberName = (defined $structInfoEx{ismethod}) ? $name : "$structBase\->$name";
+
+    $memberName = "($TypeInfo{castName}$memberName)" if $TypeInfo{castName} ne "";
+
+    $TypeInfo{memberName} = $memberName;
+
+    return %TypeInfo;
+}
+
 sub ProcessMembersForSerialize
 {
     my $refHashStructInfoEx = shift;
@@ -168,33 +339,7 @@ sub ProcessMembersForSerialize
 
     my @keys = @{ $structInfoEx{keys} };
 
-    WriteHeader "extern int sai_serialize_${structBase}(";
-    WriteHeader "        _Out_ char *$buf,";
-
-    WriteSource "int sai_serialize_${structBase}(";
-    WriteSource "        _Out_ char *$buf,";
-
-    if (defined $structInfoEx{ismethod})
-    {
-        for my $name (@keys)
-        {
-            my $type = $membersHash{$name}{type};
-
-            LogDebug "$structName $structBase $name $type";
-            my $last = 1 if $keys[-1] eq $name;
-
-            my $end = (defined $last) ? ")" : ",";
-            my $endheader = (defined $last) ? ");" : ",";
-
-            WriteSource "        _In_ $type $name$end";
-            WriteHeader "        _In_ $type $name$endheader";
-        }
-    }
-    else
-    {
-        WriteHeader "        _In_ const $structName *$structBase);";
-        WriteSource "        _In_ const $structName *$structBase)";
-    }
+    ProcessFunctionHeaderForSerialize($refHashStructInfoEx, $buf);
 
     WriteSource "{";
     WriteSource "    char *start_$buf = $buf;";
@@ -211,164 +356,53 @@ sub ProcessMembersForSerialize
 
         WriteSource "    $buf += sprintf($buf, \"$comma\\\"$name\\\":\");";
 
-        my $needQuote = 0;
-        my $ispointer = 0;
-        my $isattribute = 0;
-        my $amp = "";
-        my $objectType = "UNKNOWN_OBJ_TYPE";
-        my $castName = "";
+        my %TypeInfo = GetTypeInfoForSerialize($refHashStructInfoEx, $name);
 
-        $type = $1 if $type =~ /^const\s+(.+)$/;
-
-        if ($type =~ /\s*\*$/)
-        {
-            $type =~ s!\s*\*$!!;
-            $ispointer = 1;
-        }
-
-        my $suffix = ($type =~ /sai_(\w+)_t/) ? $1 : $type;
-
-        # TODO all this quote/amp, suffix could be defined on respected members
-        # as metadata and we could automatically get that, and keep track in
-        # deserialize and free methods by free instead of listing all of them here
-
-        if ($type eq "bool")
-        {
-        }
-        elsif ($type eq "sai_size_t")
-        {
-        }
-        elsif ($type eq "void")
-        {
-            # treat void* as uint8_t*
-
-            $suffix = "uint8";
-            $castName = "(const uint8_t*)";
-        }
-        elsif ($type =~ /^sai_(ip[46])_t$/)
-        {
-            $needQuote = 1;
-        }
-        elsif ($type =~ /^sai_(vlan_id)_t$/)
-        {
-            $suffix = "uint16";
-        }
-        elsif ($type =~ /^sai_(cos|queue_index)_t$/)
-        {
-            $suffix = "uint8";
-        }
-        elsif ($type =~ /^(?:sai_)?(u?int\d+)_t$/)
-        {
-            # enums!
-            $suffix = $1;
-        }
-        elsif ($type =~ m/^sai_(ip_address|ip_prefix)_t$/)
-        {
-            $needQuote = 1;
-            $amp = "&";
-        }
-        elsif ($type =~ m/^sai_(object_id|mac)_t$/)
-        {
-            $needQuote = 1;
-        }
-        elsif ($type =~ /^sai_(attribute)_t$/)
-        {
-            $amp = "&";
-            $isattribute = 1;
-
-            if (not defined $membersHash{$name}{objects})
-            {
-                LogError "param '$name' is '$type' on '$structName' and requires object type specified in \@objects";
-                next;
-            }
-
-            my @ot = @{ $membersHash{$name}{objects} };
-
-            if (scalar@ot != 1)
-            {
-                LogWarning "expected only 1 obejct type, but given '@ot'";
-                next;
-            }
-
-            $objectType = $ot[0];
-
-            if (not defined $main::OBJECT_TYPE_MAP{$objectType})
-            {
-                LogError "unknown object type '$objectType' on $structName :: $name";
-                next;
-            }
-        }
-        elsif (defined $main::ALL_STRUCTS{$type} and $type =~ /^sai_(\w+)_t$/)
-        {
-            $amp = "&";
-
-            # sai_s32_list_t enum !
-        }
-        elsif (defined $main::SAI_ENUMS{$type} and $type =~ /^sai_(\w+)_t$/)
-        {
-            $needQuote = 1;
-        }
-        else
-        {
-            LogError "not handled $type $name in $structName, FIXME";
-            next;
-        }
-
-        my $memberName = (defined $structInfoEx{ismethod}) ? $name : "$structBase\->$name";
-
-        $memberName = "($castName$memberName)" if $castName ne "";
-
-        if (not $ispointer)
+        if (not $TypeInfo{ispointer})
         {
             # XXX we don't need to check for many types which won't fail like int/uint, object id, enums
 
-            WriteSource "    $quot;" if $needQuote;
-            WriteSource "    ret = sai_serialize_$suffix($buf, $amp$memberName);";
+            WriteSource "    $quot;" if $TypeInfo{needQuote};
+            WriteSource "    ret = sai_serialize_$TypeInfo{suffix}($buf, $TypeInfo{amp}$TypeInfo{memberName});";
             WriteSource "    if (ret < 0)";
             WriteSource "    {";
             WriteSource "        SAI_META_LOG_WARN(\"failed to serialize '$name'\");";
             WriteSource "        return SAI_SERIALIZE_ERROR;";
             WriteSource "    }";
             WriteSource "    $buf += ret;";
-            WriteSource "    $quot;" if $needQuote;
+            WriteSource "    $quot;" if $TypeInfo{needQuote};
             next;
         }
 
-        my $countMemberName = (defined $structInfoEx{ismethod}) ? $name : "$structBase\->count";
-        my $countType = "uint32_t";
+        my $countMemberName;
+        my $countType;
 
-        # for _list_t we can deduce type, since we force lists to have only 2 elements
-        if (not $structName =~ /^sai_(\w+)_list_t$/)
+        my $count = $membersHash{$name}{count};
+
+        if (not defined $count)
         {
-            my $count = $membersHash{$name}{count};
-
-            if (not defined $count)
-            {
-                LogError "count must be defined for pointer '$name' in $structName";
-                next;
-            }
-
-            if (not defined $membersHash{$count})
-            {
-                LogWarning "count '$count' not found in '$structName'";
-                next;
-            }
-
-            # this is pointer
-
-            $countMemberName = $membersHash{$count}{name};
-            $countType = $membersHash{$count}{type};
-
-            $countMemberName = (defined $structInfoEx{ismethod}) ? $countMemberName: "$structBase\->$countMemberName";
-
-            if (not $countType =~ /^(uint32_t|sai_size_t)$/)
-            {
-                LogWarning "count '$count' on '$structName' has invalid type '$countType', expected uint32_t";
-                next;
-            }
+            LogError "count must be defined for pointer '$name' in $structName";
+            next;
         }
 
-        WriteSource "    if ($memberName == NULL || $countMemberName == 0)";
+        if (not defined $membersHash{$count})
+        {
+            LogWarning "count '$count' not found in '$structName'";
+            next;
+        }
+
+        $countMemberName = $membersHash{$count}{name};
+        $countType = $membersHash{$count}{type};
+
+        $countMemberName = (defined $structInfoEx{ismethod}) ? $countMemberName: "$structBase\->$countMemberName";
+
+        if (not $countType =~ /^(uint32_t|sai_size_t)$/)
+        {
+            LogWarning "count '$count' on '$structName' has invalid type '$countType', expected uint32_t";
+            next;
+        }
+
+        WriteSource "    if ($TypeInfo{memberName} == NULL || $countMemberName == 0)";
         WriteSource "    {";
         WriteSource "        $buf += sprintf($buf, \"null\");";
         WriteSource "    }";
@@ -378,17 +412,17 @@ sub ProcessMembersForSerialize
         WriteSource "        $countType idx;";
         WriteSource "        for (idx = 0; idx < $countMemberName; idx++)";
         WriteSource "        {";
-        WriteSource "            $quot;" if $needQuote;
+        WriteSource "            $quot;" if $TypeInfo{needQuote};
 
-        if ($isattribute)
+        if ($TypeInfo{isattribute})
         {
             WriteSource "            const sai_attr_metadata_t *meta =";
-            WriteSource "                       sai_metadata_get_attr_metadata($objectType, $memberName\[idx\].id);";
-            WriteSource "            ret = sai_serialize_$suffix($buf, meta, $amp$memberName\[idx\]);";
+            WriteSource "                       sai_metadata_get_attr_metadata($TypeInfo{objectType}, $TypeInfo{memberName}\[idx\].id);";
+            WriteSource "            ret = sai_serialize_$TypeInfo{suffix}($buf, meta, $TypeInfo{amp}$TypeInfo{memberName}\[idx\]);";
         }
         else
         {
-            WriteSource "            ret = sai_serialize_$suffix($buf, $amp$memberName\[idx\]);";
+            WriteSource "            ret = sai_serialize_$TypeInfo{suffix}($buf, $TypeInfo{amp}$TypeInfo{memberName}\[idx\]);";
         }
 
         WriteSource "            if (ret < 0)";
@@ -397,7 +431,7 @@ sub ProcessMembersForSerialize
         WriteSource "                return SAI_SERIALIZE_ERROR;";
         WriteSource "            }";
         WriteSource "            $buf += ret;";
-        WriteSource "            $quot;" if $needQuote;
+        WriteSource "            $quot;" if $TypeInfo{needQuote};
         WriteSource "            if (idx != $countMemberName - 1)";
         WriteSource "               $buf += sprintf($buf, \",\");";
         WriteSource "        }";
