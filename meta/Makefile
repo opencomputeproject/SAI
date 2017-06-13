@@ -50,7 +50,7 @@ SYMBOLS = $(OBJ:=.symbols)
 
 all: saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
 	./saimetadatatest >/dev/null
-	./saiserializetest >/dev/null 2>/dev/null
+	./saiserializetest >/dev/null
 	./saisanitycheck
 
 CONSTHEADERS = saimetadatatypes.h saimetadatalogger.h saimetadatautils.h saiserialize.h
