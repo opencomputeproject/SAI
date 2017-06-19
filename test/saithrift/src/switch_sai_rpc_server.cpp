@@ -2394,6 +2394,9 @@ public:
               case SAI_MIRROR_SESSION_ATTR_VLAN_PRI:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
+              case SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
               case SAI_MIRROR_SESSION_ATTR_ERSPAN_ENCAPSULATION_TYPE:
                   attr_list[i].value.s32 = attribute.value.s32;
                   break;
