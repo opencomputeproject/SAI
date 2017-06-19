@@ -2386,7 +2386,7 @@ public:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_VLAN_TPID:
-                  attr_list[i].value.u16 = attribute.value.u16;
+                  attr_list[i].value.u16 = attribute.value.u32;
                   break;
               case SAI_MIRROR_SESSION_ATTR_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
@@ -2401,10 +2401,10 @@ public:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_TOS:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.u8 = attribute.value.u16;
                   break;
               case SAI_MIRROR_SESSION_ATTR_TTL:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.u8 = attribute.value.u16;
                   break;
               case SAI_MIRROR_SESSION_ATTR_SRC_IP_ADDRESS:
                   sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
@@ -2419,7 +2419,7 @@ public:
                   sai_thrift_string_to_mac(attribute.value.mac, attr_list[i].value.mac);
                   break;
               case SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE:
-                  attr_list[i].value.u16 = attribute.value.u16;
+                  attr_list[i].value.u16 = attribute.value.u32;
                   break;
               default:
                   break;
