@@ -50,6 +50,7 @@ attrvalue
 bool
 boolean
 callee
+checksum
 childs
 const
 decap
