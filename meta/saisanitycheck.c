@@ -264,7 +264,15 @@ void check_attr_by_object_type()
             sai_object_type_t current = ot[index]->objecttype;
 
             META_ASSERT_TRUE(current == i, "object type must be equal on object type list");
-            META_ASSERT_TRUE(index < 200, "object defines > 200 attributes, metadata bug?");
+
+            /* we are generating acl user field group attributes and there are a lot of them */
+
+            if (current != SAI_OBJECT_TYPE_ACL_TABLE &&
+                    current != SAI_OBJECT_TYPE_ACL_ENTRY)
+            {
+                META_ASSERT_TRUE(index < 200, "object defines > 200 attributes, metadata bug?");
+            }
+
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
             META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_MAX, "object type must be < MAX");
 
@@ -3990,6 +3998,19 @@ void check_get_attr_metadata()
     META_ASSERT_TRUE(count > 600, "expected at least 600 attributes");
 }
 
+void check_acl_user_defined_field()
+{
+    SAI_META_LOG_ENTER();
+
+    META_ASSERT_TRUE(SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE > 0, "should be positive");
+
+    META_ASSERT_TRUE(SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE  ==
+            SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX, "expected true");
+
+    META_ASSERT_TRUE(SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE  ==
+            SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX, "expected true");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4027,6 +4048,7 @@ int main(int argc, char **argv)
     check_backward_comparibility_defines();
     check_graph_connected();
     check_get_attr_metadata();
+    check_acl_user_defined_field();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 
