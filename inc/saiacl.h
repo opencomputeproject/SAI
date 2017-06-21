@@ -931,17 +931,21 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /**
-     * @brief User Defined Field Groups [sai_object_id_t]
-     * (CREATE_ONLY, default to #SAI_NULL_OBJECT_ID)
+     * @brief User Defined Field Groups
      *
-     * @ignore
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     * @range SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
      */
     SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN,
 
     /**
      * @brief User Defined Field Groups end
      *
-     * @ignore
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
      */
     SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
@@ -1522,16 +1526,23 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief User Defined Field data for the UDF Groups in ACL Table
      *
-     * @ignore
+     * @type sai_acl_field_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_UDF_GROUP
+     * @default disabled
+     * @range SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
      */
-    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN,
+    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN,
 
     /**
      * @brief User Defined Field data max
      *
-     * @ignore
+     * @type sai_acl_field_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_UDF_GROUP
+     * @default disabled
      */
-    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
+    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
     /**
      * @brief Range Type defined in sai_acl_range_type_t

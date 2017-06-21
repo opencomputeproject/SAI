@@ -3990,6 +3990,19 @@ void check_get_attr_metadata()
     META_ASSERT_TRUE(count > 600, "expected at least 600 attributes");
 }
 
+void check_acl_user_defined_field()
+{
+    SAI_META_LOG_ENTER();
+
+    META_ASSERT_TRUE(SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE > 0, "should be positive");
+
+    META_ASSERT_TRUE(SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE  ==
+            SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX, "expected true");
+
+    META_ASSERT_TRUE(SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE  ==
+            SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX, "expected true");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4027,6 +4040,7 @@ int main(int argc, char **argv)
     check_backward_comparibility_defines();
     check_graph_connected();
     check_get_attr_metadata();
+    check_acl_user_defined_field();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 
