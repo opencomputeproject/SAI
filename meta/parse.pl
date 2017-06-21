@@ -274,9 +274,9 @@ sub ProcessTagRange
 
     $range = hex $range;
 
-    if ($range < 0 or $range > 0x1000)
+    if ($range < 0 or $range > 0x100)
     {
-        LogWarning "range $value $range is negative or > 0x1000";
+        LogWarning "range $value $range is negative or > 0x100";
         next;
     }
 
@@ -365,17 +365,17 @@ sub ProcessEnumSection
     {
         next if not $memberdef->{kind} eq "enum";
 
-        my $id = $memberdef->{id};
-
         my $enumtypename = $memberdef->{name}[0];
 
         $enumtypename =~ s/^_//;
 
-        if (not $enumtypename =~ /^sai_/)
+        if (not $enumtypename =~ /^(sai_\w+_)t$/)
         {
             LogWarning "enum $enumtypename is not prefixed sai_";
             next;
         }
+
+        my $enumprefix = uc $1;
 
         if (defined $SAI_ENUMS{$enumtypename})
         {
@@ -391,8 +391,6 @@ sub ProcessEnumSection
 
         $SAI_ENUMS{$enumtypename}{values} = \@arr;
 
-        my $enumprefix = uc($1) if $enumtypename =~ /^(sai_\w+)t$/;
-
         for my $ev (@{ $memberdef->{enumvalue} })
         {
             my $enumvaluename = $ev->{name}[0];
@@ -405,7 +403,7 @@ sub ProcessEnumSection
                 next;
             }
 
-            LogDebug "$id $enumtypename $enumvaluename";
+            LogDebug "$enumtypename $enumvaluename";
 
             push@arr,$enumvaluename;
 
@@ -436,7 +434,7 @@ sub ProcessEnumSection
 
             my $last = $values[$#values];
 
-            if ($last eq uc("$1_MAX"))
+            if ($last eq "${enumprefix}MAX")
             {
                 $last =  pop @values;
                 LogInfo "Removing last element $last";
@@ -486,6 +484,17 @@ sub ProcessEnumSection
                     # XXX we can relax this and generate range only if range tag is defined
                     LogWarning "attribute $enumvaluename must have \@range tag";
                     next;
+                }
+
+                my $rangeLimit = 10;
+
+                if ($range > $rangeLimit)
+                {
+                    # let's not generate too many attributes that will not be used
+
+                    LogInfo "Limiting range from $range to $rangeLimit";
+
+                    $range = $rangeLimit;
                 }
 
                 # we assume zero is reserved for *_MIN and last value for *_MAX

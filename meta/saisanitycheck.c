@@ -264,15 +264,7 @@ void check_attr_by_object_type()
             sai_object_type_t current = ot[index]->objecttype;
 
             META_ASSERT_TRUE(current == i, "object type must be equal on object type list");
-
-            /* we are generating acl user field group attributes and there are a lot of them */
-
-            if (current != SAI_OBJECT_TYPE_ACL_TABLE &&
-                    current != SAI_OBJECT_TYPE_ACL_ENTRY)
-            {
-                META_ASSERT_TRUE(index < 200, "object defines > 200 attributes, metadata bug?");
-            }
-
+            META_ASSERT_TRUE(index < 200, "object defines > 200 attributes, metadata bug?");
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
             META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_MAX, "object type must be < MAX");
 
