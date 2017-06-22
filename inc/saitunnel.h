@@ -246,7 +246,7 @@ typedef enum _sai_tunnel_map_attr_t
 /**
  * @brief Create tunnel Map
  *
- * @param[out] tunnel_map_id Runnel Map Id
+ * @param[out] tunnel_map_id Tunnel Map Id
  * @param[in] switch_id Switch Id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
