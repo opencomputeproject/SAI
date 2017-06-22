@@ -349,6 +349,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_REMOTE_ADVERTISED_FEC_MODE,
 
     /**
+     * @brief Advertised remote port FEC AN request bit
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_FEC_MODE_REQUEST,
+
+    /**
      * @brief Query list of Remote Port's Advertised HALF-Duplex speed in Mbps
      *
      * @type sai_u32_list_t
@@ -469,13 +477,22 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ADVERTISED_SPEED,
 
     /**
-     * @brief Query/Configure list of Advertised port FEC Mode
+     * @brief Query/Configure list of Advertised port FEC Mode. AN ability bit implicitly set to true.
      *
      * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags CREATE_AND_SET
      * @default empty
      */
     SAI_PORT_ATTR_ADVERTISED_FEC_MODE,
+
+    /**
+     * @brief Advertised port FEC AN request bit.  True means FEC is requested for 10/40/100G
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_ADVERTISED_FEC_MODE_REQUEST,
 
     /**
      * @brief Query/Configure list of Advertised HALF-Duplex speed in Mbps
