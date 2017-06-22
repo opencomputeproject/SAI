@@ -12,7 +12,7 @@ SAI Advanced Network Telemetry API Proposal
 
 # Overview #
 
-This document describes the API proposal to enable advanced telemetry capabilities in a network device. 
+This draft describes the API proposal to enable advanced telemetry capabilities in a network device. The main goal of this advanced telemetry proposal is to achieve per-packet network visibility with low overhead. The network device should be able to inspect and take actions on each individual data packet.
 
 ## Telemetry data plane workflow ##
 
@@ -20,7 +20,7 @@ This document describes the API proposal to enable advanced telemetry capabiliti
 
 __Figure 1: Telemetry data plane workflow__
 
-Figure 1 describes the data plane telemetry functionality. It operates on header fields of every data packet and does not interfere with normal data forwarding pipeline. A Telemetry Watchlist table specifies the flows to monitor. It matches on each data packet, and provides telemetry action parameters. Packets belonging to the specified flow spaces will be processed by the the event detection logic. If a triggering event is detected, the switch will generate a report message to the monitor.
+Figure 1 describes the telemetry data plane functionality. The telemetry module inspects every data packet without interfering with normal data forwarding pipeline. A telemetry watchlist table specifies the flows to monitor. It performs ternary match on the packet headers, and provides telemetry action parameters. Packets belonging to the specified flow spaces will be processed by the the event detection logic. If a triggering event is detected, the switch will generate a report message to the monitor. The report message includes packet header and switch metadata associated with the packet (e.g., timestamp, ingress/egress ports, queue latency).
 
 ## In-band Network Telemetry ##
 
@@ -28,20 +28,32 @@ Figure 1 describes the data plane telemetry functionality. It operates on header
 
 __Figure 2: In-band Network Telemetry__
 
+Figure 2 shows an example workflow of In-band Network Telemety (INT). Switches along the route path add switch metadata into the packet header, based on the “telemetry instructions” carried in the INT header.
 
-## Postcard ##
+Each switch may play the role of __endpoint__ or __transit__ for INT packets. INT endpoint acts both as __INT source__ and __INT sink__. As INT source it initiates INT operation by inserting INT header into a packet and thereby instructing other network devices along the routing path to add desired telemetry information into the packet. As INT sink device it extracts the INT information from the packet and exports it using a mirror session to the monitor.
+
+An INT transit device is a device along the path of a packet from source to sink. INT transit device adds its own INT information to the packet as requested by an INT source.
+
+
+## Packet Postcards ##
 
 ![Postcard](figures/postcard.png "Figure 3: Postcard")
 
 __Figure 3: Postcard Telemetry__
 
+Figure 3 shows an example workflow of Packet Postcards, an alternative telemetry approach. Each switch makes its own decision and reports packets info (aka “postcards”) to the monitor. Unlike INT, a Postcard switch never modifies the original data packets. 
+
 ## Mirror on Drop ##
 
-![MoD](figures/mod.png "Figure 3: Mirror on Drop")
+![MoD](figures/mod.png "Figure 4: Mirror on Drop")
 
 __Figure 4: Mirror on Drop__
 
+Figure 4 depicts the mirror on drop capability. Switches mirror packets dropped by the ingress pipe, egress pipe or queueing buffer to the monitor for network diagnosis. The report messages include packet header, switch metadata, and drop reason.
+
 # Specification #
+
+This section describes the advanced telemetry API proposal. (Changes to saitypes.h are not included yet)
 
 ## New Header saitelemetry.h ##
 
@@ -51,6 +63,8 @@ __Figure 4: Mirror on Drop__
 ~~~cpp
 /**
  * @brief Telemetry feature types
+ * INT_EP, INT_TRANSIT, POSTCARD are mutually exclusive
+ * MOD can coexit with any one of the three above
  */
 typedef enum _sai_telemetry_type_t {
     /** INT source and sink */
@@ -129,7 +143,7 @@ typedef enum _sai_telemetry_watchlist_entry_attr_t {
 #### Telemetry report triggering event detection ####
 ~~~cpp
 /** Queue alert thresholds */
-typedef stuct _sai_telemetry_queue_alert_t {
+typedef struct _sai_telemetry_queue_alert_t {
     /** egress port */
     uint16_t port;
     /** queue id */
@@ -285,10 +299,11 @@ typedef struct _sai_telemetry_api_t {
 ~~~
 
 ## Example ##
-Example of configuring a switch with INT Endpoint and Mirror on Drop
+Example of configuring __INT Endpoint__ and __Mirror on Drop__ on a switch
+
 ### Enable Telemetry Functionality
 ~~~cpp
-ai_telemetry_query(SAI_API_TELEMETRY, &sai_telemetry_api);
+sai_telemetry_query(SAI_API_TELEMETRY, &sai_telemetry_api);
 sai_attribute_t telemetry_attr[5];
 sai_object_id_t telemetry_obj;
 sai_telemetry_type_t telemetry_type_list[2];
