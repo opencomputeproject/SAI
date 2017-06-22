@@ -28,7 +28,7 @@ Figure 1 describes the telemetry data plane functionality. The telemetry module 
 
 __Figure 2: In-band Network Telemetry__
 
-Figure 2 shows an example workflow of In-band Network Telemety (INT). Switches along the route path add switch metadata into the packet header, based on the “telemetry instructions” carried in the INT header.
+Figure 2 shows an example workflow of In-band Network Telemetry (INT). Switches along the route path add switch metadata into the packet header, based on the “telemetry instructions” carried in the INT header.
 
 Each switch may play the role of __endpoint__ or __transit__ for INT packets. INT endpoint acts both as __INT source__ and __INT sink__. As INT source it initiates INT operation by inserting INT header into a packet and thereby instructing other network devices along the routing path to add desired telemetry information into the packet. As INT sink device it extracts the INT information from the packet and exports it using a mirror session to the monitor.
 
@@ -64,7 +64,7 @@ This section describes the advanced telemetry API proposal. (Changes to saitypes
 /**
  * @brief Telemetry feature types
  * INT_EP, INT_TRANSIT, POSTCARD are mutually exclusive
- * MOD can coexit with any one of the three above
+ * MOD can coexist with any one of the three above
  */
 typedef enum _sai_telemetry_type_t {
     /** INT source and sink */
@@ -133,7 +133,7 @@ typedef enum _sai_telemetry_watchlist_entry_attr_t {
 
     /** Watch or not */
     SAI_TWL_ENTRY_ATTR_ACTION_WATCH,
-    /** Report every mached packet (no triggering event detection) */
+    /** Report every matched packet (no triggering event detection) */
     SAI_TWL_ENTRY_ATTR_ACTION_REPORT_ALL,
     /** INT config session ID */
     SAI_TWL_ENTRY_ATTR_ACTION_INT_CONFIG_SESSION_ID,
@@ -163,7 +163,7 @@ typedef enum _sai_telemetry_report_trigger_attr_t {
 } sai_telemetry_report_trigger_attr_t;
 ~~~
 
-#### INT-specific attributues ####
+#### INT-specific attributes ####
 ~~~cpp
 /** INT instructions */
 typedef enum _sai_telemetry_int_instruction_t {
@@ -371,7 +371,7 @@ sai_telemetry_api->telemetry_report_trigger_create(&telemetry_queue_trigger_id, 
 
 ### Create INT Session ###
 ~~~cpp
-/** Create INT confg session */
+/** Create INT config session */
 sai_attribute_t int_session_attr[3];
 sai_object_id_t int_session_id;
 sai_telemetry_int_instruction_t instructions[5];
