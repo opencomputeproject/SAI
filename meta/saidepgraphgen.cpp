@@ -12,7 +12,7 @@ extern "C" {
 }
 
 // node name
-#define NN(x) (metadata_enum_sai_object_type_t.valuesshortnames[(x)])
+#define NN(x) (sai_metadata_enum_sai_object_type_t.valuesshortnames[(x)])
 
 std::set<sai_object_type_t> source;
 std::set<sai_object_type_t> target;
@@ -21,7 +21,7 @@ bool show_switch_links = false;
 bool show_read_only_links = false;
 
 void process_object_type_attributes(
-        _In_ const sai_attr_metadata_t** meta_attr_list,
+        _In_ const sai_attr_metadata_t* const* const meta_attr_list,
         _In_ sai_object_type_t current_object_type)
 {
     std::set<sai_object_type_t> otset;
@@ -37,7 +37,7 @@ void process_object_type_attributes(
             continue;
         }
 
-        bool ro = HAS_FLAG_READ_ONLY(meta->flags);
+        bool ro = SAI_HAS_FLAG_READ_ONLY(meta->flags);
 
         if (ro && !show_read_only_links)
         {
@@ -109,9 +109,9 @@ void process_object_type_attributes(
 
 void process_object_types()
 {
-    for (int i = 0; metadata_attr_by_object_type[i] != NULL; ++i)
+    for (int i = 0; sai_metadata_attr_by_object_type[i] != NULL; ++i)
     {
-        const sai_attr_metadata_t** meta = metadata_attr_by_object_type[i];
+        const sai_attr_metadata_t* const* const meta = sai_metadata_attr_by_object_type[i];
 
         process_object_type_attributes(meta, (sai_object_type_t)i);
     }
@@ -119,7 +119,7 @@ void process_object_types()
 
 void process_colors()
 {
-    for (int i = 0; metadata_attr_by_object_type[i] != NULL; ++i)
+    for (int i = 0; sai_metadata_attr_by_object_type[i] != NULL; ++i)
     {
         sai_object_type_t ot = (sai_object_type_t)i;
 
@@ -154,7 +154,7 @@ void process_colors()
 
     for (size_t i = SAI_OBJECT_TYPE_NULL; i < SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* oi =  sai_all_object_type_infos[i];
+        const sai_object_type_info_t* oi =  sai_metadata_all_object_type_infos[i];
 
         if (oi == NULL)
         {
@@ -179,7 +179,7 @@ void process_nonobjectid_connections()
 
     for (size_t i = SAI_OBJECT_TYPE_NULL; i < SAI_OBJECT_TYPE_MAX; ++i)
     {
-        const sai_object_type_info_t* oi =  sai_all_object_type_infos[i];
+        const sai_object_type_info_t* oi =  sai_metadata_all_object_type_infos[i];
 
         if (oi == NULL)
         {
@@ -218,7 +218,7 @@ void process_nonobjectid_connections()
         }
     }
 
-    PRINT_NN(PORT, SWITCH, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
+    PRINT_NN(SWITCH, PORT, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
 }
 
 int main(int argc, char** argv)

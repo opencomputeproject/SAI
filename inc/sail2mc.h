@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -58,23 +58,17 @@ typedef struct _sai_l2mc_entry_t
      */
     sai_object_id_t switch_id;
 
-    /** Bridge type */
-    sai_fdb_entry_bridge_type_t bridge_type;
-
-    /** Vlan ID. Valid for .1Q */
-    sai_vlan_id_t vlan_id;
-
     /**
-     * Bridge ID. Valid for .1D
+     * @brief Bridge ID. for .1D and Vlan ID for .1Q
      *
-     * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @objects SAI_OBJECT_TYPE_BRIDGE, SAI_OBJECT_TYPE_VLAN
      */
-    sai_object_id_t bridge_id;
+    sai_object_id_t bv_id;
 
     /** L2MC entry type */
     sai_l2mc_entry_type_t type;
 
-    /** IP dest address */
+    /** IP destination address */
     sai_ip_address_t destination;
 
     /** IP source address */
@@ -82,7 +76,7 @@ typedef struct _sai_l2mc_entry_t
 } sai_l2mc_entry_t;
 
 /**
- * @brief Attribute Id for l2mc entry
+ * @brief Attribute Id for L2MC entry
  */
 typedef enum _sai_l2mc_entry_attr_t
 {
@@ -102,12 +96,12 @@ typedef enum _sai_l2mc_entry_attr_t
     /**
      * @brief L2MC entry output group id
      *
-     * This attribute only takes effect when ATTR_PACKET_ACTION is set to FORWARD.
-     * If the group has no member, packets will be discarded.
+     * This attribute only takes effect when ATTR_PACKET_ACTION is set to
+     * FORWARD. If the group has no member, packets will be discarded.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_L2MC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD
@@ -119,10 +113,10 @@ typedef enum _sai_l2mc_entry_attr_t
      */
     SAI_L2MC_ENTRY_ATTR_END,
 
-    /* Custom range base value */
-    SAI_L2MC_ENTRY_ATTR_CUSTOM_RANGE_BASE  = 0x10000000,
+    /** Custom range base value */
+    SAI_L2MC_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
-    /* --*/
+    /** End of custom range base */
     SAI_L2MC_ENTRY_ATTR_CUSTOM_RANGE_END
 
 } sai_l2mc_entry_attr_t;
@@ -134,7 +128,7 @@ typedef enum _sai_l2mc_entry_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_l2mc_entry_fn)(
         _In_ const sai_l2mc_entry_t *l2mc_entry,
@@ -146,31 +140,31 @@ typedef sai_status_t (*sai_create_l2mc_entry_fn)(
  *
  * @param[in] l2mc_entry L2MC entry
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_l2mc_entry_fn)(
         _In_ const sai_l2mc_entry_t *l2mc_entry);
 
 /**
- * @brief Set l2mc entry attribute value
+ * @brief Set L2MC entry attribute value
  *
  * @param[in] l2mc_entry L2MC entry
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_l2mc_entry_attribute_fn)(
         _In_ const sai_l2mc_entry_t *l2mc_entry,
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get l2mc entry attribute value
+ * @brief Get L2MC entry attribute value
  *
  * @param[in] l2mc_entry L2MC entry
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_l2mc_entry_attribute_fn)(
         _In_ const sai_l2mc_entry_t *l2mc_entry,

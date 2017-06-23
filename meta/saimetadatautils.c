@@ -54,10 +54,23 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
         _In_ sai_object_type_t objecttype,
         _In_ sai_attr_id_t attrid)
 {
-    if ((objecttype > SAI_OBJECT_TYPE_NULL) &&
-            (objecttype < SAI_OBJECT_TYPE_MAX))
+    if (sai_metadata_is_object_type_valid(objecttype))
     {
-        const sai_attr_metadata_t** md = metadata_attr_by_object_type[objecttype];
+        const sai_attr_metadata_t* const* const md = sai_metadata_attr_by_object_type[objecttype];
+
+        /*
+         * Most obejct attributes are not flags, so we can use direct index to
+         * find attribute metadata, this should speed up search.
+         */
+
+        const sai_object_type_info_t* oi = sai_metadata_all_object_type_infos[objecttype];
+
+        if (!oi->enummetadata->containsflags && attrid < oi->enummetadata->valuescount)
+        {
+            return md[attrid];
+        }
+
+        /* otherwise search one by one */
 
         size_t index = 0;
 
@@ -84,13 +97,13 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
     /* use binary search */
 
     ssize_t first = 0;
-    ssize_t last = (ssize_t)(metadata_attr_sorted_by_id_name_count - 1);
+    ssize_t last = (ssize_t)(sai_metadata_attr_sorted_by_id_name_count - 1);
 
     while (first <= last)
     {
         ssize_t middle = (first + last) / 2;
 
-        int res = strcmp(attr_id_name, metadata_attr_sorted_by_id_name[middle]->attridname);
+        int res = strcmp(attr_id_name, sai_metadata_attr_sorted_by_id_name[middle]->attridname);
 
         if (res > 0)
         {
@@ -104,39 +117,13 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
         {
             /* found */
 
-            return metadata_attr_sorted_by_id_name[middle];
+            return sai_metadata_attr_sorted_by_id_name[middle];
         }
     }
 
     /* not found */
 
     return NULL;
-}
-
-bool sai_metadata_is_acl_field_or_action(
-        _In_ const sai_attr_metadata_t* metadata)
-{
-    if (metadata == NULL)
-    {
-        return false;
-    }
-
-    if (metadata->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
-    {
-        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
-                metadata->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
-        {
-            return true;
-        }
-
-        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
-                metadata->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
-        {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 const char* sai_metadata_get_enum_value_name(
@@ -159,4 +146,160 @@ const char* sai_metadata_get_enum_value_name(
     }
 
     return NULL;
+}
+
+const sai_attribute_t* sai_metadata_get_attr_by_id(
+        _In_ sai_attr_id_t id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    if (attr_list == NULL)
+    {
+        return NULL;
+    }
+
+    uint32_t i = 0;
+
+    for (; i < attr_count; ++i)
+    {
+        if (attr_list[i].id == id)
+        {
+            return &attr_list[i];
+        }
+    }
+
+    return NULL;
+}
+
+const sai_object_type_info_t* sai_metadata_get_object_type_info(
+        _In_ sai_object_type_t object_type)
+{
+    if (sai_metadata_is_object_type_valid(object_type))
+    {
+        return sai_metadata_all_object_type_infos[object_type];
+    }
+
+    return NULL;
+}
+
+bool sai_metadata_is_object_type_valid(
+        _In_ sai_object_type_t object_type)
+{
+    return object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_MAX;
+}
+
+bool sai_metadata_is_condition_in_force(
+        _In_ const sai_attr_metadata_t *metadata,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    if (metadata == NULL || !metadata->isconditional || attr_list == NULL)
+    {
+        return false;
+    }
+
+    size_t idx = 0;
+
+    bool met = (metadata->conditiontype == SAI_ATTR_CONDITION_TYPE_AND);
+
+    for (; idx < metadata->conditionslength; ++idx)
+    {
+        const sai_attr_condition_t *condition = metadata->conditions[idx];
+
+        /*
+         * Conditons may only be on the same object type.
+         *
+         * Default value may not exists if conditional object is marked as
+         * MANDATORY_ON_CREATE.
+         */
+
+        const sai_attr_metadata_t *cmd = sai_metadata_get_attr_metadata(metadata->objecttype, condition->attrid);
+
+        const sai_attribute_t *cattr = sai_metadata_get_attr_by_id(condition->attrid, attr_count, attr_list);
+
+        const sai_attribute_value_t* cvalue = NULL;
+
+        if (cattr == NULL)
+        {
+            /*
+             * User didn't passed conditional attribute, so check if there is
+             * default value.
+             */
+
+            cvalue = cmd->defaultvalue;
+        }
+        else
+        {
+            cvalue = &cattr->value;
+        }
+
+        if (cvalue == NULL)
+        {
+            /*
+             * There is no default value and user didn't passed attribute.
+             */
+
+            if (metadata->conditiontype == SAI_ATTR_CONDITION_TYPE_AND)
+            {
+                return false;
+            }
+
+            continue;
+        }
+
+        bool current = false;
+
+        switch (cmd->attrvaluetype)
+        {
+            case SAI_ATTR_VALUE_TYPE_BOOL:
+                current = (condition->condition.booldata == cvalue->booldata);
+                break;
+            case SAI_ATTR_VALUE_TYPE_INT8:
+                current = (condition->condition.s8 == cvalue->s8);
+                break;
+            case SAI_ATTR_VALUE_TYPE_INT16:
+                current = (condition->condition.s16 == cvalue->s16);
+                break;
+            case SAI_ATTR_VALUE_TYPE_INT32:
+                current = (condition->condition.s32 == cvalue->s32);
+                break;
+            case SAI_ATTR_VALUE_TYPE_INT64:
+                current = (condition->condition.s64 == cvalue->s64);
+                break;
+            case SAI_ATTR_VALUE_TYPE_UINT8:
+                current = (condition->condition.u8 == cvalue->u8);
+                break;
+            case SAI_ATTR_VALUE_TYPE_UINT16:
+                current = (condition->condition.u16 == cvalue->u16);
+                break;
+            case SAI_ATTR_VALUE_TYPE_UINT32:
+                current = (condition->condition.u32 == cvalue->u32);
+                break;
+            case SAI_ATTR_VALUE_TYPE_UINT64:
+                current = (condition->condition.u64 == cvalue->u64);
+                break;
+
+            default:
+
+                /*
+                 * We should never get here since sanity check tests all
+                 * attributes and all conditions.
+                 */
+
+                SAI_META_LOG_ERROR("condition value type %d is not supported, FIXME", cmd->attrvaluetype);
+
+                return false;
+        }
+
+        if (metadata->conditiontype == SAI_ATTR_CONDITION_TYPE_AND)
+        {
+            met &= current;
+        }
+        else /* OR */
+        {
+            met |= current;
+        }
+    }
+
+    return met;
 }

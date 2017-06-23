@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -53,11 +53,14 @@ typedef enum _sai_bridge_port_fdb_learning_mode_t
     /** Trap packets with unknown source MAC to CPU. Do not learn. Forward based on destination MAC */
     SAI_BRIDGE_PORT_FDB_LEARNING_MODE_CPU_LOG,
 
-    /** Notify unknown source MAC using FDB callback. Do not learn in hardware. Do not forward.
-    * When a packet from unknown source MAC comes this mode will trigger a new learn notification
-    * via FDB callback for the MAC address. This mode will generate only one notification
-    * per unknown source MAC to FDB callback.
-    */
+    /**
+     * @brief Notify unknown source MAC using FDB callback.
+     *
+     * Do not learn in hardware. Do not forward. When a packet from unknown
+     * source MAC comes this mode will trigger a new learn notification via FDB
+     * callback for the MAC address. This mode will generate only one
+     * notification per unknown source MAC to FDB callback.
+     */
     SAI_BRIDGE_PORT_FDB_LEARNING_MODE_FDB_NOTIFICATION,
 
 } sai_bridge_port_fdb_learning_mode_t;
@@ -67,26 +70,26 @@ typedef enum _sai_bridge_port_fdb_learning_mode_t
  */
 typedef enum _sai_bridge_port_type_t
 {
-    /** Port or Lag   */
+    /** Port or LAG */
     SAI_BRIDGE_PORT_TYPE_PORT,
 
-    /** {Port or Lag.vlan}   */
+    /** Port or LAG.vlan */
     SAI_BRIDGE_PORT_TYPE_SUB_PORT,
 
-    /**  bridge router port  */
+    /** Bridge router port */
     SAI_BRIDGE_PORT_TYPE_1Q_ROUTER,
 
-    /**  bridge router port  */
+    /** Bridge router port */
     SAI_BRIDGE_PORT_TYPE_1D_ROUTER,
 
-    /**  bridge tunnel  port  */
+    /** Bridge tunnel port */
     SAI_BRIDGE_PORT_TYPE_TUNNEL,
 
 } sai_bridge_port_type_t;
 
 /**
-* @brief SAI attributes for Bridge Port
-*/
+ * @brief SAI attributes for Bridge Port
+ */
 typedef enum _sai_bridge_port_attr_t
 {
     /**
@@ -103,11 +106,13 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_TYPE = SAI_BRIDGE_PORT_ATTR_START,
 
     /**
-     * @brief Associated Port or Lag object id
+     * @brief Associated Port or LAG object id
+     *
+     * The CPU port is not a member of any bridge.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      */
     SAI_BRIDGE_PORT_ATTR_PORT_ID,
@@ -117,19 +122,20 @@ typedef enum _sai_bridge_port_attr_t
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      * @isvlan true
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      */
     SAI_BRIDGE_PORT_ATTR_VLAN_ID,
 
     /**
-     * @brief Associated router inerface object id
+     * @brief Associated router interface object id
+     *
      * Please note that for SAI_BRIDGE_PORT_TYPE_1Q_ROUTER,
      * all vlan interfaces are auto bounded for the bridge port.
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER
      */
     SAI_BRIDGE_PORT_ATTR_RIF_ID,
@@ -138,8 +144,8 @@ typedef enum _sai_bridge_port_attr_t
      * @brief Associated tunnel id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
      */
     SAI_BRIDGE_PORT_ATTR_TUNNEL_ID,
@@ -148,8 +154,8 @@ typedef enum _sai_bridge_port_attr_t
      * @brief Associated bridge id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER
      */
     SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
@@ -173,7 +179,7 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_MAX_LEARNED_ADDRESSES,
 
     /**
-     * @brief Action for packets with unknown source mac address
+     * @brief Action for packets with unknown source MAC address
      * when FDB learning limit is reached.
      *
      * @type sai_packet_action_t
@@ -181,6 +187,27 @@ typedef enum _sai_bridge_port_attr_t
      * @default SAI_PACKET_ACTION_DROP
      */
     SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_LIMIT_VIOLATION_PACKET_ACTION,
+
+    /**
+     * @brief Admin Mode.
+     *
+     * Before removing a bridge port, need to disable it by setting admin mode
+     * to false, then flush the FDB entries, and then remove it.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+
+    /**
+     * @brief Ingress filtering (drop frames with unknown VLANs)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_BRIDGE_PORT_ATTR_INGRESS_FILTERING,
 
     /**
      * @brief End of attributes
@@ -195,68 +222,67 @@ typedef enum _sai_bridge_port_attr_t
 
 } sai_bridge_port_attr_t;
 
-
 /**
  * @brief Create bridge port
  *
  * @param[out] bridge_port_id Bridge port ID
  * @param[in] switch_id Switch object id
- * @param[in] attr_count number of attributes
- * @param[in] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_bridge_port_fn)(
-    _Out_ sai_object_id_t* bridge_port_id,
-    _In_ sai_object_id_t switch_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list);
+typedef sai_status_t (*sai_create_bridge_port_fn)(
+        _Out_ sai_object_id_t *bridge_port_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove bridge port
  *
  * @param[in] bridge_port_id Bridge port ID
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_remove_bridge_port_fn) (
-    _In_  sai_object_id_t bridge_port_id);
+typedef sai_status_t (*sai_remove_bridge_port_fn)(
+        _In_ sai_object_id_t bridge_port_id);
 
 /**
  * @brief Set attribute for bridge port
  *
  * @param[in] bridge_port_id Bridge port ID
- * @param[in] attr attribute to set
+ * @param[in] attr Attribute to set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_set_bridge_port_attribute_fn)(
-    _In_ sai_object_id_t bridge_port_id,
-    _In_ const sai_attribute_t *attr);
+typedef sai_status_t (*sai_set_bridge_port_attribute_fn)(
+        _In_ sai_object_id_t bridge_port_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get attributes of bridge port
  *
  * @param[in] bridge_port_id Bridge port ID
- * @param[in] attr_count number of attributes
- * @param[inout] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_bridge_port_attribute_fn)(
-    _In_ sai_object_id_t bridge_port_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list);
+typedef sai_status_t (*sai_get_bridge_port_attribute_fn)(
+        _In_ sai_object_id_t bridge_port_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Attribute data for #SAI_BRIDGE_ATTR_TYPE
  */
 typedef enum _sai_bridge_type_t
 {
-    /** vlan aware bridge */
+    /** Vlan aware bridge */
     SAI_BRIDGE_TYPE_1Q,
 
-    /** non vlan aware bridge */
+    /** Non vlan aware bridge */
     SAI_BRIDGE_TYPE_1D,
 
 } sai_bridge_type_t;
@@ -283,15 +309,15 @@ typedef enum _sai_bridge_attr_t
      * @brief List of bridge ports associated to this bridge
      *
      * @type sai_object_list_t
-     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      */
     SAI_BRIDGE_ATTR_PORT_LIST,
 
     /**
      * @brief Maximum number of learned MAC addresses
      *
-     * Zero means learning limit disable
+     * Zero means learning limit is disabled.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -326,58 +352,56 @@ typedef enum _sai_bridge_attr_t
  *
  * @param[out] bridge_id Bridge ID
  * @param[in] switch_id Switch object id
- * @param[in] attr_count number of attributes
- * @param[in] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_bridge_fn)(
-    _Out_ sai_object_id_t* bridge_id,
-    _In_ sai_object_id_t switch_id,
-    _In_ uint32_t attr_count,
-    _In_ const sai_attribute_t *attr_list
-    );
+typedef sai_status_t (*sai_create_bridge_fn)(
+        _Out_ sai_object_id_t *bridge_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Remove bridge
  *
  * @param[in] bridge_id Bridge ID
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_remove_bridge_fn) (
-    _In_  sai_object_id_t bridge_id
-    );
+typedef sai_status_t (*sai_remove_bridge_fn)(
+        _In_ sai_object_id_t bridge_id);
 
 /**
  * @brief Set attribute for bridge
  *
  * @param[in] bridge_id Bridge ID
- * @param[in] attr attribute to set
+ * @param[in] attr Attribute to set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_set_bridge_attribute_fn)(
-    _In_ sai_object_id_t  bridge_id,
-    _In_ const sai_attribute_t *attr);
+typedef sai_status_t (*sai_set_bridge_attribute_fn)(
+        _In_ sai_object_id_t bridge_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get attributes of bridge
  *
  * @param[in] bridge_id Bridge ID
- * @param[in] attr_count number of attributes
- * @param[inout] attr_list array of attributes
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_bridge_attribute_fn)(
-    _In_ sai_object_id_t   bridge_id,
-    _In_ uint32_t attr_count,
-    _Inout_ sai_attribute_t *attr_list);
+typedef sai_status_t (*sai_get_bridge_attribute_fn)(
+        _In_ sai_object_id_t bridge_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
-* @brief bridge methods table retrieved with sai_api_query()
-*/
+ * @brief Bridge methods table retrieved with sai_api_query()
+ */
 typedef struct _sai_bridge_api_t
 {
     sai_create_bridge_fn                create_bridge;
