@@ -991,10 +991,12 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
             mirror_attr_list.append(attribute11)
 
         #vlan
-        attribute12_value = sai_thrift_attribute_value_t(u16=vlan)
-        attribute12 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_ID,
-                                            value=attribute12_value)
-        mirror_attr_list.append(attribute12)
+        if vlan is not None:
+            attribute12_value = sai_thrift_attribute_value_t(u16=vlan)
+            attribute12 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_ID,
+                                                value=attribute12_value)
+            mirror_attr_list.append(attribute12)
+
         #tos
         attribute13_value = sai_thrift_attribute_value_t(u16=tos)
         attribute13 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_TOS,
