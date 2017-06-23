@@ -688,20 +688,20 @@ typedef struct _sai_attribute_t
     sai_attribute_value_t value;
 } sai_attribute_t;
 
-typedef enum _sai_bulk_op_type_t
+typedef enum _sai_bulk_op_error_mode_t
 {
     /**
-     * @brief Bulk operation stops on the first failed creation
+     * @brief Bulk operation error handling mode where operation stops on the first failed creation
      *
      * Rest of objects will use SAI_STATUS_NON_EXECUTED return status value.
      */
-    SAI_BULK_OP_TYPE_STOP_ON_ERROR,
+    SAI_BULK_OP_ERROR_MODE_STOP_ON_ERROR,
 
     /**
-     * @brief Bulk operation ignores the failures and continues to create other objects
+     * @brief Bulk operation error handling mode where operation ignores the failures and continues to create other objects
      */
-    SAI_BULK_OP_TYPE_INGORE_ERROR,
-} sai_bulk_op_type_t;
+    SAI_BULK_OP_ERROR_MODE_IGNORE_ERROR,
+} sai_bulk_op_error_mode_t;
 
 /**
  * @brief Bulk objects creation.
@@ -711,7 +711,7 @@ typedef enum _sai_bulk_op_type_t
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to create.
  * @param[in] attr_list List of attributes for every object.
- * @param[in] type Bulk operation type.
+ * @param[in] mode Bulk operation error handling mode.
  *
  * @param[out] object_id List of object ids returned
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
@@ -725,7 +725,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
         _In_ uint32_t object_count,
         _In_ const uint32_t *attr_count,
         _In_ const sai_attribute_t **attr_list,
-        _In_ sai_bulk_op_type_t type,
+        _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_object_id_t *object_id,
         _Out_ sai_status_t *object_statuses);
 
@@ -734,7 +734,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
  *
  * @param[in] object_count Number of objects to create
  * @param[in] object_id List of object ids
- * @param[in] type Bulk operation type.
+ * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
  *
  * @return #SAI_STATUS_SUCCESS on success when all objects are removed or #SAI_STATUS_FAILURE when
@@ -744,7 +744,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
 typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ uint32_t object_count,
         _In_ const sai_object_id_t *object_id,
-        _In_ sai_bulk_op_type_t type,
+        _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
 /**
