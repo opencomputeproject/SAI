@@ -38,34 +38,35 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
         port3 = port_list[2]
         monitor_port=port1
         source_port=port2
+        vlan_id = 2
         mac3='00:00:00:00:00:33'
         mac2='00:00:00:00:00:22'
-        mirror_type=SAI_MIRROR_TYPE_LOCAL
-        sai_thrift_create_fdb(self.client, 2, mac3, port3, 1)
-        sai_thrift_create_fdb(self.client, 2, mac2, port2, 1)
+        mac_action = SAI_PACKET_ACTION_FORWARD
+        mirror_type=SAI_MIRROR_SESSION_TYPE_LOCAL
 
         # Put ports under test in VLAN 2
-        self.client.sai_thrift_create_vlan(2)
-        vlan_member1 = sai_thrift_create_vlan_member(self.client, 2, port1, SAI_VLAN_PORT_TAGGED)
-        vlan_member1a = sai_thrift_create_vlan_member(self.client, 1, port1, SAI_VLAN_PORT_TAGGED)
-        vlan_member2 = sai_thrift_create_vlan_member(self.client, 2, port2, SAI_VLAN_PORT_TAGGED)
-        vlan_member2a = sai_thrift_create_vlan_member(self.client, 1, port2, SAI_VLAN_PORT_TAGGED)
-        vlan_member3 = sai_thrift_create_vlan_member(self.client, 2, port3, SAI_VLAN_PORT_TAGGED)
-        vlan_member3a = sai_thrift_create_vlan_member(self.client, 1, port3, SAI_VLAN_PORT_TAGGED)
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
 
-        # Remove ports from default VLAN
-        self.client.sai_thrift_remove_vlan_member(vlan_member1a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member2a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member3a)
+        sai_thrift_create_fdb(self.client, vlan_id, mac3, port3, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
 
         # Set PVID
-        attr_value = sai_thrift_attribute_value_t(u16=2)
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
         self.client.sai_thrift_set_port_attribute(port2, attr)
         self.client.sai_thrift_set_port_attribute(port3, attr)
 
-        spanid=sai_thrift_create_mirror_session(self.client,mirror_type=mirror_type,port=monitor_port,vlan=1,vlan_priority=0,vlan_tpid=0,src_mac=None,dst_mac=None,addr_family=0,src_ip=None,dst_ip=None,encap_type=0,protocol=0,ttl=0,tos=0,gre_type=0)
+        spanid=sai_thrift_create_mirror_session(self.client,
+                                                mirror_type=mirror_type, port=monitor_port,
+                                                vlan=None, vlan_priority=None, vlan_tpid=None,
+                                                src_mac=None, dst_mac=None, addr_family=None,
+                                                src_ip=None, dst_ip=None, encap_type=None,
+                                                protocol=None, ttl=None, tos=None, gre_type=None)
+
         attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=1,object_id_list=[spanid]))
 
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attrb_value)
@@ -73,11 +74,12 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
 
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attrb_value)
         self.client.sai_thrift_set_port_attribute(port2, attr)
+
         pkt = simple_tcp_packet(eth_dst='00:00:00:00:00:33',
                                 eth_src='00:22:22:22:22:22',
                                 ip_dst='10.0.0.1',
                                 dl_vlan_enable=True,
-                                vlan_vid=2,
+                                vlan_vid=vlan_id,
                                 ip_id=101,
                                 ip_ttl=64)
 
@@ -85,7 +87,7 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
                                 eth_src='00:22:22:22:22:22',
                                 ip_dst='10.0.0.1',
                                 dl_vlan_enable=True,
-                                vlan_vid=2,
+                                vlan_vid=vlan_id,
                                 ip_id=101,
                                 ip_ttl=64)
 
@@ -93,7 +95,7 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
                                 eth_src='00:33:33:33:33:33',
                                 ip_dst='10.0.0.1',
                                 dl_vlan_enable=True,
-                                vlan_vid=2,
+                                vlan_vid=vlan_id,
                                 ip_id=101,
                                 ip_ttl=64,
                                 pktlen=104)
@@ -102,7 +104,7 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
                                 eth_src='00:33:33:33:33:33',
                                 ip_dst='10.0.0.1',
                                 dl_vlan_enable=True,
-                                vlan_vid=2,#use vlan_vid field if packets are expected to be monitored on client side otherwise not needed 
+                                vlan_vid=vlan_id,#use vlan_vid field if packets are expected to be monitored on client side otherwise not needed
                                 ip_id=101,
                                 ip_ttl=64,
                                 pktlen=104)
@@ -124,37 +126,33 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 2, pkt2)
             verify_each_packet_on_each_port(self, [m,pkt2], ports=[0,1])
         finally:
-            sai_thrift_delete_fdb(self.client, 2, mac3, port3)
-            sai_thrift_delete_fdb(self.client, 2, mac2, port2)
-
             # Remove ports from mirror destination
             attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[spanid]))
+
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attrb_value)
             self.client.sai_thrift_set_port_attribute(port2, attr)
+
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attrb_value)
             self.client.sai_thrift_set_port_attribute(port2, attr)
 
             # Now you can remove destination
             self.client.sai_thrift_remove_mirror_session(spanid)
 
+            # Remove FDB entries
+            sai_thrift_delete_fdb(self.client, vlan_id, mac3, port3)
+            sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)
+
             # Remove ports from VLAN 2
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan_member(vlan_member3)
-            self.client.sai_thrift_delete_vlan(2)
-
-            # Add ports back to default VLAN
-            vlan_member1a = sai_thrift_create_vlan_member(self.client, 1, port1, SAI_VLAN_PORT_UNTAGGED)
-            vlan_member2a = sai_thrift_create_vlan_member(self.client, 1, port2, SAI_VLAN_PORT_UNTAGGED)
-            vlan_member3a = sai_thrift_create_vlan_member(self.client, 1, port3, SAI_VLAN_PORT_UNTAGGED)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
             self.client.sai_thrift_set_port_attribute(port3, attr)
-
-
 
 @group('mirror')
 class erspanmonitor(sai_base_test.ThriftInterfaceDataPlane):
@@ -171,15 +169,17 @@ class erspanmonitor(sai_base_test.ThriftInterfaceDataPlane):
         port3 = port_list[2]
         mac3='00:00:00:00:00:33'
         mac2='00:00:00:00:00:22'
+        mac_action = SAI_PACKET_ACTION_FORWARD
         monitor_port=port1
         source_port=port2
-        mirror_type=SAI_MIRROR_TYPE_ENHANCED_REMOTE
+        vlan_id = 3
+        mirror_type=SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
         vlan=0x2
         vlan_tpid=0x8100
         vlan_pri=0x6
         src_mac='00:00:00:00:11:22'
         dst_mac='00:00:00:00:11:33'
-        encap_type=SAI_MIRROR_L3_GRE_TUNNEL
+        encap_type=SAI_ERSPAN_ENCAPSULATION_TYPE_MIRROR_L3_GRE_TUNNEL
         ip_version=0x4
         tos=0x3c
         ttl=0xf0
@@ -188,38 +188,34 @@ class erspanmonitor(sai_base_test.ThriftInterfaceDataPlane):
         dst_ip='33.19.20.0'
         addr_family=0
 
-        sai_thrift_create_fdb(self.client, 3, mac3, port3, 1)
-        sai_thrift_create_fdb(self.client, 3, mac2, port2, 1)
 
         # Put ports under test in VLAN 3
-        self.client.sai_thrift_create_vlan(3)
-        vlan_member1 = sai_thrift_create_vlan_member(self.client, 3, port1, SAI_VLAN_PORT_TAGGED)
-        vlan_member1a = sai_thrift_create_vlan_member(self.client, 1, port1, SAI_VLAN_PORT_TAGGED)
-        vlan_member2 = sai_thrift_create_vlan_member(self.client, 3, port2, SAI_VLAN_PORT_TAGGED)
-        vlan_member2a = sai_thrift_create_vlan_member(self.client, 1, port2, SAI_VLAN_PORT_TAGGED)
-        vlan_member3 = sai_thrift_create_vlan_member(self.client, 3, port3, SAI_VLAN_PORT_TAGGED)
-        vlan_member3a = sai_thrift_create_vlan_member(self.client, 1, port3, SAI_VLAN_PORT_TAGGED)
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
 
-        # Remove ports from default VLAN
-        self.client.sai_thrift_remove_vlan_member(vlan_member1a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member2a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member3a)
+        sai_thrift_create_fdb(self.client, vlan_id, mac3, port3, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
 
         # Set PVID
-        attr_value = sai_thrift_attribute_value_t(u16=3)
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
         self.client.sai_thrift_set_port_attribute(port2, attr)
         self.client.sai_thrift_set_port_attribute(port3, attr)
 
-        erspanid=sai_thrift_create_mirror_session(self.client,mirror_type=mirror_type,port=monitor_port,vlan=vlan,vlan_priority=vlan_pri,vlan_tpid=vlan_tpid,src_mac=src_mac,dst_mac=dst_mac,addr_family=addr_family,src_ip=src_ip,dst_ip=dst_ip,encap_type=encap_type,protocol=ip_version,ttl=ttl,tos=tos,gre_type=gre_type)
+        erspanid=sai_thrift_create_mirror_session(self.client,
+                                                  mirror_type=mirror_type, port=monitor_port,
+                                                  vlan=vlan, vlan_priority=vlan_pri, vlan_tpid=vlan_tpid,
+                                                  src_mac=src_mac, dst_mac=dst_mac, addr_family=addr_family,
+                                                  src_ip=src_ip, dst_ip=dst_ip, encap_type=encap_type,
+                                                  protocol=ip_version, ttl=ttl, tos=tos, gre_type=gre_type)
 
-        #attrb_value = sai_thrift_attribute_value_t(oid=erspanid)
         attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=1,object_id_list=[erspanid]))
 
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attrb_value)
         self.client.sai_thrift_set_port_attribute(port2, attr)
-
 
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attrb_value)
         self.client.sai_thrift_set_port_attribute(port2, attr)
@@ -259,8 +255,7 @@ class erspanmonitor(sai_base_test.ThriftInterfaceDataPlane):
                                     ip_ihl=5,
                                     ip_src='17.18.19.0',
                                     ip_dst='33.19.20.0',
-                                    inner_frame=pkt
-                                    )
+                                    inner_frame=pkt)
 
         exp_pkt2= simple_gre_packet(pktlen=142,
                                     eth_dst='00:00:00:00:11:33',
@@ -273,8 +268,7 @@ class erspanmonitor(sai_base_test.ThriftInterfaceDataPlane):
                                     ip_ihl=5,
                                     ip_src='17.18.19.0',
                                     ip_dst='33.19.20.0',
-                                    inner_frame=pkt3
-                                    )
+                                    inner_frame=pkt3)
         m1=Mask(exp_pkt1)
         m2=Mask(exp_pkt2)
         m1.set_do_not_care_scapy(ptf.packet.IP,'tos')
@@ -305,29 +299,27 @@ class erspanmonitor(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 2, pkt2)
             verify_each_packet_on_each_port(self, [pkt2,m2], ports=[1,0])#FIXME need to properly implement
         finally:
-            sai_thrift_delete_fdb(self.client, 3, mac2, port2)
-            sai_thrift_delete_fdb(self.client, 3, mac3, port3)
-
             # Remove ports from mirror destination
             attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[erspanid]))
+
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attrb_value)
             self.client.sai_thrift_set_port_attribute(port2, attr)
+
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attrb_value)
             self.client.sai_thrift_set_port_attribute(port2, attr)
 
             # Now you can remove destination
             self.client.sai_thrift_remove_mirror_session(erspanid)
 
+            # Remove FDB entries
+            sai_thrift_delete_fdb(self.client, vlan_id, mac3, port3)
+            sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)
+
             # Remove ports from VLAN 3
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan_member(vlan_member3)
-            self.client.sai_thrift_delete_vlan(3)
-
-            # Add ports back to default VLAN
-            vlan_member1a = sai_thrift_create_vlan_member(self.client, 1, port1, SAI_VLAN_PORT_UNTAGGED)
-            vlan_member2a = sai_thrift_create_vlan_member(self.client, 1, port2, SAI_VLAN_PORT_UNTAGGED)
-            vlan_member3a = sai_thrift_create_vlan_member(self.client, 1, port3, SAI_VLAN_PORT_UNTAGGED)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -373,10 +365,10 @@ class IngressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             None, None, None,
             None, None, None,
             None, None, None,
-            None, None, None)
-        print "ingress_mirror_id = %d" %ingress_mirror_id
+            None, None, None, None)
+        print "ingress_mirror_id = %x" %ingress_mirror_id
 
-        attr_value = sai_thrift_attribute_value_t(oid=ingress_mirror_id)
+        attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=1,object_id_list=[ingress_mirror_id]))
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
         self.client.sai_thrift_set_port_attribute(port2, attr)
@@ -428,7 +420,7 @@ class IngressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_each_packet_on_each_port(self, [exp_pkt, pkt], [1, 3])
 
         finally:
-            attr_value = sai_thrift_attribute_value_t(oid=SAI_NULL_OBJECT_ID)
+            attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[ingress_mirror_id]))
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
@@ -465,8 +457,9 @@ class IngressRSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
         vlan_remote_oid = sai_thrift_create_vlan(self.client, vlan_remote_id)
-        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
-        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid,        port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid,        port2, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
 
         attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -486,10 +479,10 @@ class IngressRSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             vlan, None, None,
             None, None, None,
             None, None, None,
-            None, None, None)
+            None, None, None, None)
         print "ingress_mirror_id = %x" %ingress_mirror_id
 
-        attr_value = sai_thrift_attribute_value_t(oid=ingress_mirror_id)
+        attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=1,object_id_list=[ingress_mirror_id]))
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
 
@@ -525,7 +518,7 @@ class IngressRSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_each_packet_on_each_port(self, [exp_pkt, exp_mirrored_pkt], [2, 3])
 
         finally:
-            attr_value = sai_thrift_attribute_value_t(oid=SAI_NULL_OBJECT_ID)
+            attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[ingress_mirror_id]))
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
 
@@ -537,9 +530,11 @@ class IngressRSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port2, attr)
+            self.client.sai_thrift_set_port_attribute(port3, attr)
 
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_remove_vlan_member(vlan_member3)
             self.client.sai_thrift_remove_vlan(vlan_oid)
             self.client.sai_thrift_remove_vlan(vlan_remote_oid)
 
@@ -588,10 +583,10 @@ class IngressERSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             vlan, None, None,
             tunnel_src_mac, tunnel_dst_mac,
             addr_family, tunnel_src_ip, tunnel_dst_ip,
-            None, protocol, None, None)
-        print "ingress_mirror_id = %d" %ingress_mirror_id
+            None, protocol, None, None, None)
+        print "ingress_mirror_id = %x" %ingress_mirror_id
 
-        attr_value = sai_thrift_attribute_value_t(oid=ingress_mirror_id)
+        attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=1,object_id_list=[ingress_mirror_id]))
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
 
@@ -628,7 +623,7 @@ class IngressERSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_packet(self, exp_mirrored_pkt, 3)
 
         finally:
-            attr_value = sai_thrift_attribute_value_t(oid=SAI_NULL_OBJECT_ID)
+            attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[ingress_mirror_id]))
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
 
@@ -682,10 +677,10 @@ class EgressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             None, None, None,
             None, None, None,
             None, None, None,
-            None, None, None)
-        print "egress_mirror_id = %d" %egress_mirror_id
+            None, None, None, None)
+        print "egress_mirror_id = %x" %egress_mirror_id
 
-        attr_value = sai_thrift_attribute_value_t(oid=egress_mirror_id)
+        attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=1,object_id_list=[egress_mirror_id]))
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port2, attr)
 
@@ -713,7 +708,7 @@ class EgressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_each_packet_on_each_port(self, [exp_pkt, exp_pkt], [2, 3])
 
         finally:
-            attr_value = sai_thrift_attribute_value_t(oid=SAI_NULL_OBJECT_ID)
+            attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[egress_mirror_id]))
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port2, attr)
 
@@ -776,10 +771,10 @@ class EgressERSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             vlan, None, None,
             tunnel_src_mac, tunnel_dst_mac,
             addr_family, tunnel_src_ip, tunnel_dst_ip,
-            None, protocol, None, None)
-        print "egress_mirror_id = %d" %egress_mirror_id
+            None, protocol, None, None, None)
+        print "egress_mirror_id = %x" %egress_mirror_id
 
-        attr_value = sai_thrift_attribute_value_t(oid=egress_mirror_id)
+        attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=1,object_id_list=[egress_mirror_id]))
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port2, attr)
 
@@ -816,7 +811,7 @@ class EgressERSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_packet(self, exp_mirrored_pkt, 3)
 
         finally:
-            attr_value = sai_thrift_attribute_value_t(oid=SAI_NULL_OBJECT_ID)
+            attr_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[egress_mirror_id]))
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port2, attr)
 
