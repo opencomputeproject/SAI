@@ -2291,20 +2291,20 @@ void check_attr_is_primitive(
     }
 }
 
-void check_attr_condition_in_force(
+void check_attr_condition_met(
         _In_ const sai_attr_metadata_t* md)
 {
     META_LOG_ENTER();
 
     sai_attribute_t attr = { 0 };
 
-    META_ASSERT_FALSE(sai_metadata_is_condition_in_force(NULL, 1, NULL), "condition check failed");
-    META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, 1, NULL), "condition check failed");
-    META_ASSERT_FALSE(sai_metadata_is_condition_in_force(NULL, 1, &attr), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, NULL), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(md, 1, NULL), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, &attr), "condition check failed");
 
     if (!md->isconditional)
     {
-        META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, 1, &attr), "condition check failed");
+        META_ASSERT_FALSE(sai_metadata_is_condition_met(md, 1, &attr), "condition check failed");
         return;
     }
 
@@ -2327,7 +2327,7 @@ void check_attr_condition_in_force(
         attrs[idx].value = md->conditions[idx]->condition; /* copy */
     }
 
-    META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should be met");
+    META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
     if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_OR)
     {
@@ -2336,7 +2336,7 @@ void check_attr_condition_in_force(
             attrs[idx].id ^= (uint32_t)(-1);
         }
 
-        META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
+        META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
 
         /* when condition is "or" then any of attribute should match */
 
@@ -2344,20 +2344,20 @@ void check_attr_condition_in_force(
         {
             /*
              * Since multiple attributes with the same ID are passed,
-             * sai_metadata_is_condition_in_force is using sai_metadata_get_attr_by_id
+             * sai_metadata_is_condition_met is using sai_metadata_get_attr_by_id
              * and only first attribute will be selected.
              */
 
             attrs[idx].id ^= (uint32_t)(-1);
 
-            META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should be met");
+            META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
     else /* AND */
     {
-        META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
+        META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
 
         /* when condition is "and" then any of wrong attribute should fail condition */
 
@@ -2365,7 +2365,7 @@ void check_attr_condition_in_force(
         {
             attrs[idx].id ^= (uint32_t)(-1);
 
-            META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should be met");
+            META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
             attrs[idx].id ^= (uint32_t)(-1);
         }
@@ -2480,7 +2480,7 @@ void check_single_attribute(
     check_attr_sai_pointer(md);
     check_attr_brief_description(md);
     check_attr_is_primitive(md);
-    check_attr_condition_in_force(md);
+    check_attr_condition_met(md);
     check_attr_default_attrvalue(md);
 
     define_attr(md);
