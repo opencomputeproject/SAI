@@ -914,7 +914,7 @@ TEST_F(saiL3VrfTest, max_ecmp_paths_switch_attr_set)
     memset (&attr, 0, sizeof (sai_attribute_t));
 
     /* Set the Max ECMP Paths value */
-    attr.id        = SAI_SWITCH_ATTR_ECMP_MAX_PATHS;
+    attr.id        = SAI_SWITCH_ATTR_ECMP_MEMBERS;
     attr.value.u32 = max_paths;
 
     status  = saiL3Test::switch_api_tbl_get()->set_switch_attribute (

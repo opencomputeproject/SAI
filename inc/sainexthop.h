@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -45,9 +45,62 @@ typedef enum _sai_next_hop_type_t
     SAI_NEXT_HOP_TYPE_MPLS,
 
     /** Tunnel next hop */
-    SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
+    SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
+
+    /** IPv6 Segment Route SID List */
+    SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST,
+
+    /** IPv6 Segment Route Endpoint Function */
+    SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
 
 } sai_next_hop_type_t;
+
+/**
+ * @brief Enum defining Endpoint Action types
+ */
+typedef enum _sai_next_hop_endpoint_type_t
+{
+    /** Basic Endpoint */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_E,
+
+    /** End.X Endpoint with Layer-3 Cross-connect */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_X,
+
+    /** End.T Endpoint with specific IPv6 Table */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_T,
+
+    /** Endpoint with decapsulation and Layer 2 Cross-connect */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DX2,
+
+    /** Endpoint with decapsulation and IPv6 Cross-connect */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DX6,
+
+    /** Endpoint with decapsulation and IPv4 Cross-connect */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DX4,
+
+    /** Endpoint with decapsulation and specific IPv6 */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DT6,
+
+    /** Endpoint with decapsulation and specific IPv6 */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DT4,
+
+    /** Custom range base value */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_CUSTOM_RANGE_BASE = 0x10000000
+
+} sai_next_hop_endpoint_type_t;
+
+/**
+ * @brief Enum defining Endpoint Segment Pop types for End, End.X and End.T
+ */
+typedef enum _sai_next_hop_endpoint_pop_type_t
+{
+    /** Penultimate segment pop */
+    SAI_NEXT_HOP_ENDPOINT_POP_TYPE_PSP,
+
+    /** Ultimate Segment pop */
+    SAI_NEXT_HOP_ENDPOINT_POP_TYPE_USP,
+
+} sai_next_hop_endpoint_pop_type_t;
 
 /**
  * @brief Attribute id for next hop
@@ -68,7 +121,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_ATTR_START,
 
     /**
-     * @brief Next hop entry ipv4 address
+     * @brief Next hop entry IPv4 address
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -80,8 +133,8 @@ typedef enum _sai_next_hop_attr_t
      * @brief Next hop entry router interface id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
      */
     SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 
@@ -89,11 +142,39 @@ typedef enum _sai_next_hop_attr_t
      * @brief Next hop entry tunnel-id
      *
      * @type sai_object_id_t
-     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL
      * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
      */
     SAI_NEXT_HOP_ATTR_TUNNEL_ID,
+
+    /**
+     * @brief Next hop entry Segment Route SID List
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST
+     */
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID,
+
+    /**
+     * @brief Next hop entry Segment Route Endpoint Function
+     *
+     * @type sai_next_hop_endpoint_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
+     */
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_TYPE,
+
+    /**
+     * @brief Next hop entry Segment Route Endpoint Pop Option
+     *
+     * @type sai_next_hop_endpoint_pop_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
+     */
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE,
 
     /**
      * @brief End of attributes
@@ -118,7 +199,7 @@ typedef enum _sai_next_hop_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_next_hop_fn)(
         _Out_ sai_object_id_t *next_hop_id,
@@ -131,7 +212,7 @@ typedef sai_status_t (*sai_create_next_hop_fn)(
  *
  * @param[in] next_hop_id Next hop id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_next_hop_fn)(
         _In_ sai_object_id_t next_hop_id);
@@ -142,7 +223,7 @@ typedef sai_status_t (*sai_remove_next_hop_fn)(
  * @param[in] next_hop_id Next hop id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
         _In_ sai_object_id_t next_hop_id,
@@ -155,7 +236,7 @@ typedef sai_status_t (*sai_set_next_hop_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_next_hop_attribute_fn)(
         _In_ sai_object_id_t next_hop_id,

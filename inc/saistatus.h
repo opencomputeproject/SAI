@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -137,17 +137,19 @@
 #define SAI_STATUS_OBJECT_IN_USE                    SAI_STATUS_CODE(0x00000011L)
 
 /**
- * @brief Invalid SAI Object type passed to a function. If the object id is
- * passed as an attribute value in list, then #SAI_STATUS_INVALID_ATTR_VALUE_0
- * status code should be used
+ * @brief Invalid SAI Object type passed to a function.
+ *
+ * If the object id is passed as an attribute value in list, then
+ * #SAI_STATUS_INVALID_ATTR_VALUE_0 status code should be used.
  */
 #define SAI_STATUS_INVALID_OBJECT_TYPE              SAI_STATUS_CODE(0x00000012L)
 
 /**
- * @brief Invalid SAI Object ID passed to a function. Return
- * #SAI_STATUS_INVALID_OBJECT_TYPE when the object type is invalid, otherwise
- * return this #SAI_STATUS_INVALID_OBJECT_ID. This can happen if the object id
- * is already deleted.
+ * @brief Invalid SAI Object ID passed to a function.
+ *
+ * Return #SAI_STATUS_INVALID_OBJECT_TYPE when the object type is invalid,
+ * otherwise return this #SAI_STATUS_INVALID_OBJECT_ID. This can happen if the
+ * object id is already deleted.
  */
 #define SAI_STATUS_INVALID_OBJECT_ID                SAI_STATUS_CODE(0x00000013L)
 
@@ -172,10 +174,14 @@
 #define SAI_STATUS_NOT_EXECUTED                     SAI_STATUS_CODE(0x00000017L)
 
 /**
- * @brief Attribute is invalid (range from 0x00010000L to 0x0001FFFFL).
+ * @brief Attribute is invalid
+ *
+ * Range from 0x00010000L to 0x0001FFFFL.
  *
  * Return this when the property attached to the attribute does not match
- * the API call. For example:
+ * the API call.
+ *
+ * For example:
  * - When a READ_ONLY attribute is passed set_attribute or create call
  * - When a CREATE_ONLY attribute is passed to set_attribute call
  *
@@ -190,16 +196,21 @@
 #define SAI_STATUS_INVALID_ATTRIBUTE_MAX            SAI_STATUS_CODE(0x0001FFFFL)
 
 /**
- * @brief Invalid attribute value (range from 0x00020000L to 0x0002FFFFL)
+ * @brief Invalid attribute value
+ *
+ * Range from 0x00020000L to 0x0002FFFFL.
  */
 #define SAI_STATUS_INVALID_ATTR_VALUE_0             SAI_STATUS_CODE(0x00020000L)
+
 /**
  * @brief End of invalid attribute value range
  */
 #define SAI_STATUS_INVALID_ATTR_VALUE_MAX           SAI_STATUS_CODE(0x0002FFFFL)
 
 /**
- * @brief Attribute is not implmented (range from 0x00030000L to 0x003FFFFL)
+ * @brief Attribute is not implemented
+ *
+ * Range from 0x00030000L to 0x003FFFFL.
  *
  * Return this when the attribute is supported but not implemented on
  * the platform.
@@ -212,7 +223,9 @@
 #define SAI_STATUS_ATTR_NOT_IMPLEMENTED_MAX         SAI_STATUS_CODE(0x0003FFFFL)
 
 /**
- * @brief Attribute is unknown (range from 0x00040000L to 0x004FFFFL)
+ * @brief Attribute is unknown
+ *
+ * Range from 0x00040000L to 0x004FFFFL.
  *
  * Return this when the attribute is undefined, e.g., the attribute id
  * is out of range.
@@ -225,9 +238,11 @@
 #define SAI_STATUS_UNKNOWN_ATTRIBUTE_MAX            SAI_STATUS_CODE(0x0004FFFFL)
 
 /**
- * @brief Attribute is not supported (range from 0x00050000L to 0x005FFFFL)
+ * @brief Attribute is not supported
  *
- * Return this when the platform does not has the capability to support
+ * Range from 0x00050000L to 0x005FFFFL.
+ *
+ * Return this when the platform does not have the capability to support
  * this attribute.
  */
 #define SAI_STATUS_ATTR_NOT_SUPPORTED_0             SAI_STATUS_CODE(0x00050000L)
