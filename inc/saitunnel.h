@@ -699,7 +699,6 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      *
      * @type sai_tunnel_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TUNNEL_TYPE,
 
