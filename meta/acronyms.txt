@@ -54,7 +54,7 @@ RPF - Reverse Path Forwarding
 RSPAN - Remote Span
 SAI - Switch Abstraction Interface
 SDK - Software Development Kit
-SG
+SG - (S,G) Source-specific multicast
 SNMP - Simple Network Management Protocol
 SPAN - Switched Port Analyzer
 SSH - Secure Shell
@@ -73,5 +73,6 @@ VRRP - Virtual Router Redundancy Protocol
 WCMP - Weighted Cost Multipath
 WRED - Weighted Random Early Detection
 WWW - World Wide Web
+XG - (*,G) Any-source Multicast
 XOFF - Transmitter Off
 XON - Transmitter On

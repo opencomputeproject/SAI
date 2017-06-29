@@ -227,6 +227,8 @@ ALIASES                += "validonly    =@par Valid only when:\n        @xmlonly
 ALIASES                += "default      =@par Default value:\n          @xmlonly @@default       @endxmlonly"
 ALIASES                += "ignore       =@par Ignored:\n                @xmlonly @@ignore        @endxmlonly"
 ALIASES                += "isvlan       =@par IsVlan:\n                 @xmlonly @@isvlan        @endxmlonly"
+ALIASES                += "count        =@par Count:\n                  @xmlonly @@count         @endxmlonly"
+ALIASES                += "range        =@par Range:\n                  @xmlonly @@range         @endxmlonly"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
@@ -746,6 +748,7 @@ INPUT                  = ../inc/
 INPUT                  += saimetadatatypes.h
 INPUT                  += saimetadatautils.h
 INPUT                  += saimetadatalogger.h
+INPUT                  += saiserialize.h
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

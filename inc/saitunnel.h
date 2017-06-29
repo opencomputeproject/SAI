@@ -211,15 +211,13 @@ typedef enum _sai_tunnel_map_attr_t
     SAI_TUNNEL_MAP_ATTR_TYPE = SAI_TUNNEL_MAP_ATTR_START,
 
     /**
-     * @brief Tunnel mapper
+     * @brief Tunnel map entries associated with this map.
      *
-     * If list is empty, TUNNEL_MAP can be used to assign
-     * TUNNEL_MAP_ENTRY objects.
-     *
-     * @type sai_tunnel_map_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY
      */
-    SAI_TUNNEL_MAP_ATTR_MAP_TO_VALUE_LIST = 0x00000001,
+    SAI_TUNNEL_MAP_ATTR_ENTRY_LIST,
 
     /**
      * @brief End of attributes
@@ -237,7 +235,7 @@ typedef enum _sai_tunnel_map_attr_t
 /**
  * @brief Create tunnel Map
  *
- * @param[out] tunnel_map_id Runnel Map Id
+ * @param[out] tunnel_map_id Tunnel Map Id
  * @param[in] switch_id Switch Id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
@@ -573,6 +571,15 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
 
     /**
+     * @brief Tunnel term table entries associated with this tunnel.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY
+     */
+    SAI_TUNNEL_ATTR_TERM_TABLE_ENTRY_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_ATTR_END,
@@ -699,7 +706,6 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      *
      * @type sai_tunnel_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TUNNEL_TYPE,
 

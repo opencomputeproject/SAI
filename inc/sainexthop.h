@@ -45,9 +45,62 @@ typedef enum _sai_next_hop_type_t
     SAI_NEXT_HOP_TYPE_MPLS,
 
     /** Tunnel next hop */
-    SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
+    SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
+
+    /** IPv6 Segment Route SID List */
+    SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST,
+
+    /** IPv6 Segment Route Endpoint Function */
+    SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
 
 } sai_next_hop_type_t;
+
+/**
+ * @brief Enum defining Endpoint Action types
+ */
+typedef enum _sai_next_hop_endpoint_type_t
+{
+    /** Basic Endpoint */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_E,
+
+    /** End.X Endpoint with Layer-3 Cross-connect */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_X,
+
+    /** End.T Endpoint with specific IPv6 Table */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_T,
+
+    /** Endpoint with decapsulation and Layer 2 Cross-connect */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DX2,
+
+    /** Endpoint with decapsulation and IPv6 Cross-connect */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DX6,
+
+    /** Endpoint with decapsulation and IPv4 Cross-connect */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DX4,
+
+    /** Endpoint with decapsulation and specific IPv6 */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DT6,
+
+    /** Endpoint with decapsulation and specific IPv6 */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DT4,
+
+    /** Custom range base value */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_CUSTOM_RANGE_BASE = 0x10000000
+
+} sai_next_hop_endpoint_type_t;
+
+/**
+ * @brief Enum defining Endpoint Segment Pop types for End, End.X and End.T
+ */
+typedef enum _sai_next_hop_endpoint_pop_type_t
+{
+    /** Penultimate segment pop */
+    SAI_NEXT_HOP_ENDPOINT_POP_TYPE_PSP,
+
+    /** Ultimate Segment pop */
+    SAI_NEXT_HOP_ENDPOINT_POP_TYPE_USP,
+
+} sai_next_hop_endpoint_pop_type_t;
 
 /**
  * @brief Attribute id for next hop
@@ -94,6 +147,34 @@ typedef enum _sai_next_hop_attr_t
      * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
      */
     SAI_NEXT_HOP_ATTR_TUNNEL_ID,
+
+    /**
+     * @brief Next hop entry Segment Route SID List
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST
+     */
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID,
+
+    /**
+     * @brief Next hop entry Segment Route Endpoint Function
+     *
+     * @type sai_next_hop_endpoint_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
+     */
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_TYPE,
+
+    /**
+     * @brief Next hop entry Segment Route Endpoint Pop Option
+     *
+     * @type sai_next_hop_endpoint_pop_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
+     */
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE,
 
     /**
      * @brief End of attributes
