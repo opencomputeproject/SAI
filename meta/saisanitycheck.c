@@ -530,7 +530,6 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
-        case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
@@ -2227,7 +2226,6 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
-        case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
