@@ -49,23 +49,30 @@ typedef enum _sai_next_hop_group_type_t
 } sai_next_hop_group_type_t;
 
 /**
- * @brief Next hop group member protection role
+ * @brief Next hop group member configured protection role
  */
-typedef enum _sai_next_hop_group_member_protection_role_t
+typedef enum _sai_next_hop_group_member_configured_role_t
 {
     /** Next hop group member is primary */
-    SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_PRIMARY,
+    SAI_NEXT_HOP_GROUP_MEMBER_CONFIGURED_ROLE_PRIMARY,
 
     /** Next hop group member is standby */
-    SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_STANDBY,
+    SAI_NEXT_HOP_GROUP_MEMBER_CONFIGURED_ROLE_STANDBY,
 
-    /** Next hop group member is forwarding */
-    SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING,
+} sai_next_hop_group_member_configured_role_t;
 
-    /** Next hop group member has failed */
-    SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED,
+/**
+ * @brief Next hop group member observed role
+ */
+typedef enum _sai_next_hop_group_member_observed_role_t
+{
+    /** Next hop group member is active */
+    SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_ACTIVE,
 
-} sai_next_hop_group_member_protection_role_t;
+    /** Next hop group member is inactive */
+    SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_INACTIVE,
+
+} sai_next_hop_group_member_observed_role_t;
 
 /**
  * @brief Attribute id for next hop
@@ -160,58 +167,43 @@ typedef enum _sai_next_hop_group_member_attr_t
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_WEIGHT,
 
     /**
-     * @brief Preferred role in the protection group
+     * @brief Configured role in the protection group
      *
      * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      *
-     * @type sai_next_hop_group_member_protection_role_t
+     * @type sai_next_hop_group_member_configured_role_t
      * @flags CREATE_ONLY
-     * @default SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_PRIMARY
+     * @default SAI_NEXT_HOP_GROUP_MEMBER_CONFIGURED_ROLE_PRIMARY
      */
-    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PREFERRED_PROTECTION_ROLE,
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_CONFIGURED_ROLE,
 
     /**
      * @brief The actual role in protection group
      *
      * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      *
-     * @type sai_next_hop_group_member_protection_role_t
+     * @type sai_next_hop_group_member_observed_role_t
      * @flags READ_ONLY
      */
-    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OBSERVED_PROTECTION_ROLE,
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OBSERVED_ROLE,
 
     /**
-     * @brief Identifier of the BFD session associated with the next hop
+     * @brief The object to be monitored for this next hop.
      *
-     * The BFD session is used to detect failure of the next hop.
-     * If the specified BFD session fails, the switching entity marks this next
-     * hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does not use
-     * it to forward traffic. If there is a backup next hop available in this
-     * group then the backup's observed role is set to
+     * If the specified objects fails, the switching entity marks this
+     * next hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does
+     * not use it to forward traffic. If there is a backup next hop available
+     * in this group then the backup's observed role is set to
      * SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING and it is used to
      * forward traffic.
      *
-     * @type sai_uint32_t
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_VLAN_MEMBER, SAI_OBJECT_TYPE_TUNNEL
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_BFD_SESSION_ID,
-
-    /**
-     * @brief Identifier of the port associated with the next hop
-     *
-     * If the specified port fails, the switching entity marks this next
-     * hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does not use
-     * it to forward traffic. If there is a backup next hop available in this
-     * group then the backup's observed role is set to
-     * SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING and it is used to
-     * forward traffic.
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PORT_ID,
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT,
 
     /**
      * @brief End of attributes
