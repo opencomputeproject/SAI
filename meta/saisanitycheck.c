@@ -530,7 +530,6 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
-        case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
@@ -2227,7 +2226,6 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
-        case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
@@ -2291,20 +2289,20 @@ void check_attr_is_primitive(
     }
 }
 
-void check_attr_condition_in_force(
+void check_attr_condition_met(
         _In_ const sai_attr_metadata_t* md)
 {
     META_LOG_ENTER();
 
     sai_attribute_t attr = { 0 };
 
-    META_ASSERT_FALSE(sai_metadata_is_condition_in_force(NULL, 1, NULL), "condition check failed");
-    META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, 1, NULL), "condition check failed");
-    META_ASSERT_FALSE(sai_metadata_is_condition_in_force(NULL, 1, &attr), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, NULL), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(md, 1, NULL), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, &attr), "condition check failed");
 
     if (!md->isconditional)
     {
-        META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, 1, &attr), "condition check failed");
+        META_ASSERT_FALSE(sai_metadata_is_condition_met(md, 1, &attr), "condition check failed");
         return;
     }
 
@@ -2327,7 +2325,7 @@ void check_attr_condition_in_force(
         attrs[idx].value = md->conditions[idx]->condition; /* copy */
     }
 
-    META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should be met");
+    META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
     if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_OR)
     {
@@ -2336,7 +2334,7 @@ void check_attr_condition_in_force(
             attrs[idx].id ^= (uint32_t)(-1);
         }
 
-        META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
+        META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
 
         /* when condition is "or" then any of attribute should match */
 
@@ -2344,20 +2342,20 @@ void check_attr_condition_in_force(
         {
             /*
              * Since multiple attributes with the same ID are passed,
-             * sai_metadata_is_condition_in_force is using sai_metadata_get_attr_by_id
+             * sai_metadata_is_condition_met is using sai_metadata_get_attr_by_id
              * and only first attribute will be selected.
              */
 
             attrs[idx].id ^= (uint32_t)(-1);
 
-            META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should be met");
+            META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
     else /* AND */
     {
-        META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
+        META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
 
         /* when condition is "and" then any of wrong attribute should fail condition */
 
@@ -2365,7 +2363,7 @@ void check_attr_condition_in_force(
         {
             attrs[idx].id ^= (uint32_t)(-1);
 
-            META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should be met");
+            META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
             attrs[idx].id ^= (uint32_t)(-1);
         }
@@ -2480,7 +2478,7 @@ void check_single_attribute(
     check_attr_sai_pointer(md);
     check_attr_brief_description(md);
     check_attr_is_primitive(md);
-    check_attr_condition_in_force(md);
+    check_attr_condition_met(md);
     check_attr_default_attrvalue(md);
 
     define_attr(md);
@@ -3990,6 +3988,19 @@ void check_get_attr_metadata()
     META_ASSERT_TRUE(count > 600, "expected at least 600 attributes");
 }
 
+void check_acl_user_defined_field()
+{
+    SAI_META_LOG_ENTER();
+
+    META_ASSERT_TRUE(SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE > 0, "should be positive");
+
+    META_ASSERT_TRUE(SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE  ==
+            SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX, "expected true");
+
+    META_ASSERT_TRUE(SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE  ==
+            SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX, "expected true");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4027,6 +4038,7 @@ int main(int argc, char **argv)
     check_backward_comparibility_defines();
     check_graph_connected();
     check_get_attr_metadata();
+    check_acl_user_defined_field();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 

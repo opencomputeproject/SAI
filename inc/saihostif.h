@@ -307,13 +307,35 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_TTL_ERROR = 0x00006001,
 
+    /* Pipeline discards. For the following traps, packet action is either drop or trap */
+
+    /**
+     * @brief Packets discarded due to egress buffer full
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PIPELINE_DISCARD_EGRESS_BUFFER = 0x00007000,
+
+    /**
+     * @brief Packets discarded by WRED
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PIPELINE_DISCARD_WRED = 0x00007001,
+
+    /**
+     * @brief Packets discarded due to router causes, such as
+     * header checksum, router interface is down,
+     * matching a route with drop action (black holes), etc.
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PIPELINE_DISCARD_ROUTER = 0x00007002,
+
     /** Exception traps custom range start */
-    SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00007000,
+    SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00008000,
 
     /**
      * @brief End of trap types
      */
-    SAI_HOSTIF_TRAP_TYPE_END = 0x00008000
+    SAI_HOSTIF_TRAP_TYPE_END = 0x00009000
 
 } sai_hostif_trap_type_t;
 
@@ -376,6 +398,16 @@ typedef enum _sai_hostif_trap_attr_t
      * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
+
+    /**
+     * @brief Mirror session for the trap
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
+     * @default empty
+     */
+    SAI_HOSTIF_TRAP_ATTR_MIRROR_SESSION,
 
     /**
      * @brief End of attributes

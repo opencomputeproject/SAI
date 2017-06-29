@@ -24,12 +24,14 @@ our %OBJTOAPIMAP = ();
 our %APITOOBJMAP = ();
 our %ALL_STRUCTS = ();
 our %OBJECT_TYPE_MAP = ();
+our %SAI_DEFINES = ();
+our %EXTRA_RANGE_DEFINES = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY|DYNAMIC|SPECIAL";
 
 # TAGS HANDLERS
 
-my %TAGS = (
+my %ATTR_TAGS = (
         "type"      , \&ProcessTagType,
         "flags"     , \&ProcessTagFlags,
         "objects"   , \&ProcessTagObjects,
@@ -40,6 +42,7 @@ my %TAGS = (
         "ignore"    , \&ProcessTagIgnore,
         "isvlan"    , \&ProcessTagIsVlan,
         "getsave"   , \&ProcessTagGetSave,
+        "range"     , \&ProcessTagRange,
         );
 
 my %options = ();
@@ -247,6 +250,39 @@ sub ProcessTagIsVlan
     return undef;
 }
 
+sub ProcessTagRange
+{
+    my ($type, $attrName, $value) = @_;
+
+    $value = Trim $value;
+
+    if (not $value =~ /^SAI_\w+$/)
+    {
+        LogWarning "invalid range value: '$value', expected 'SAI_\\w+'";
+        return "-1"
+    }
+
+    LogInfo "Creating range attrs $attrName .. MAX";
+
+    my $range = $SAI_DEFINES{$value};
+
+    if (not defined $range or not $range =~ /^$NUMBER_REGEX$/)
+    {
+        LogWarning "range '$value' is not defined or not numer";
+        return "-1";
+    }
+
+    $range = hex $range;
+
+    if ($range < 0 or $range > 0x100)
+    {
+        LogWarning "range $value $range is negative or > 0x100";
+        next;
+    }
+
+    return $range;
+}
+
 sub ProcessDescription
 {
     my ($type, $value, $desc, $brief) = @_;
@@ -266,13 +302,13 @@ sub ProcessDescription
         $val =~ s/^\s*//;
         $val =~ s/\s*$//;
 
-        if (not defined $TAGS{$tag})
+        if (not defined $ATTR_TAGS{$tag})
         {
             LogError "unrecognized tag '$tag' on $type $value";
             next;
         }
 
-        $val = $TAGS{$tag}->($type, $value, $val);
+        $val = $ATTR_TAGS{$tag}->($type, $value, $val);
 
         $METADATA{$type}{$value}{$tag}          = $val;
         $METADATA{$type}{$value}{objecttype}    = $type;
@@ -288,12 +324,37 @@ sub ProcessDescription
 
     return if $count == 0;
 
+    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?';
+
     my $order = join(":",@order);
 
-    return if $order =~/^type:flags(:objects)?(:allownull)?(:isvlan)?(:default)?(:condition|:validonly)?$/;
+    return if $order =~/^$rightOrder$/;
     return if $order =~/^ignore$/;
 
     LogWarning "metadata tags are not in right order: $order on $value";
+    LogWarning "   correct order: $rightOrder or ignore";
+}
+
+sub ProcessDefineSection
+{
+    my $section = shift;
+
+    for my $memberdef (@{ $section->{memberdef} })
+    {
+        next if not $memberdef->{kind} eq "define";
+
+        my $name = $memberdef->{name}[0];
+
+        next if (not $name =~ /^SAI_\w+$/);
+
+        my $initializer = $memberdef->{initializer}[0];
+
+        next if (not $initializer =~ /^(\(?".*"|$NUMBER_REGEX\)?)$/);
+
+        $SAI_DEFINES{$name} = $1;
+
+        LogDebug "adding define $name = $initializer";
+    }
 }
 
 sub ProcessEnumSection
@@ -304,17 +365,17 @@ sub ProcessEnumSection
     {
         next if not $memberdef->{kind} eq "enum";
 
-        my $id = $memberdef->{id};
-
         my $enumtypename = $memberdef->{name}[0];
 
         $enumtypename =~ s/^_//;
 
-        if (not $enumtypename =~ /^sai_/)
+        if (not $enumtypename =~ /^(sai_\w+_)t$/)
         {
             LogWarning "enum $enumtypename is not prefixed sai_";
             next;
         }
+
+        my $enumprefix = uc $1;
 
         if (defined $SAI_ENUMS{$enumtypename})
         {
@@ -330,8 +391,6 @@ sub ProcessEnumSection
 
         $SAI_ENUMS{$enumtypename}{values} = \@arr;
 
-        my $enumprefix = uc($1) if $enumtypename =~ /^(sai_\w+)t$/;
-
         for my $ev (@{ $memberdef->{enumvalue} })
         {
             my $enumvaluename = $ev->{name}[0];
@@ -344,7 +403,7 @@ sub ProcessEnumSection
                 next;
             }
 
-            LogDebug "$id $enumtypename $enumvaluename";
+            LogDebug "$enumtypename $enumvaluename";
 
             push@arr,$enumvaluename;
 
@@ -375,7 +434,7 @@ sub ProcessEnumSection
 
             my $last = $values[$#values];
 
-            if ($last eq uc("$1_MAX"))
+            if ($last eq "${enumprefix}MAX")
             {
                 $last =  pop @values;
                 LogInfo "Removing last element $last";
@@ -407,12 +466,79 @@ sub ProcessEnumSection
             # remove ignored attributes from enums from list
             # since enum must match attribute list size
 
-            next if not defined $METADATA{$enumtypename}{$enumvaluename}{ignore};
+            if (defined $METADATA{$enumtypename}{$enumvaluename}{ignore})
+            {
+                @values = grep(!/^$enumvaluename$/, @values);
+                $SAI_ENUMS{$enumtypename}{values} = \@values;
+                next;
+            }
 
-            @values = grep(!/^$enumvaluename$/, @values);
-            $SAI_ENUMS{$enumtypename}{values} = \@values;
+            if ($enumvaluename =~ /^(SAI_\w+_)MIN$/)
+            {
+                my $prefix = $1;
+
+                my $range = $METADATA{$enumtypename}{$enumvaluename}{range};
+
+                if (not defined $range)
+                {
+                    # XXX we can relax this and generate range only if range tag is defined
+                    LogWarning "attribute $enumvaluename must have \@range tag";
+                    next;
+                }
+
+                my $rangeLimit = 10;
+
+                if ($range > $rangeLimit)
+                {
+                    # let's not generate too many attributes that will not be used
+
+                    LogInfo "Limiting range from $range to $rangeLimit";
+
+                    $range = $rangeLimit;
+                }
+
+                # we assume zero is reserved for *_MIN and last value for *_MAX
+
+                my @rangeElements = ();
+
+                for (my $idx = 1; $idx < $range; ++$idx)
+                {
+                    my $attrid = "${prefix}$idx";
+
+                    push@rangeElements, $attrid;
+
+                    my $attr = ShallowCopyAttrEnum($METADATA{$enumtypename}{$enumvaluename});
+
+                    $attr->{attrid} = $attrid;
+
+                    $METADATA{$enumtypename}{$attrid} = $attr;
+
+                    $EXTRA_RANGE_DEFINES{$attrid} = "($enumvaluename + $idx)";
+                }
+
+                # update enum values (this could be done in previous step
+
+                my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
+
+                my ($index) = grep { $values[$_] =~ /^$enumvaluename$/ } 0..$#values;
+
+                splice @values, $index+1,0, @rangeElements;
+
+                $SAI_ENUMS{$enumtypename}{values} = \@values;
+            }
         }
     }
+}
+
+sub ShallowCopyAttrEnum
+{
+    my $refHash = shift;
+
+    my %hash = %{ $refHash };
+
+    my %attr = map { $_, $hash{$_} } keys %hash;
+
+    return \%attr;
 }
 
 sub ProcessTypedefSection
@@ -683,6 +809,8 @@ sub ProcessXmlFile
 
     for my $section (@sections)
     {
+        ProcessDefineSection($section) if ($section->{kind} eq "define");
+
         ProcessEnumSection($section) if ($section->{kind} eq "enum");
 
         ProcessTypedefSection($section) if ($section->{kind} eq "typedef");
@@ -752,11 +880,18 @@ sub ProcessSingleEnum
     return $count;
 }
 
+sub ProcessExtraRangeDefines
+{
+    WriteSectionComment "Enums metadata";
+
+    for my $key (sort keys %EXTRA_RANGE_DEFINES)
+    {
+        WriteHeader "#define $key $EXTRA_RANGE_DEFINES{$key}";
+    }
+}
+
 sub CreateMetadataHeaderAndSource
 {
-    # since sai_status is not enum and it will declare extra statuses
-    ProcessSaiStatus();
-
     WriteSource "#include <stdio.h>";
     WriteSource "#include \"saimetadata.h\"";
 
@@ -1366,7 +1501,7 @@ sub ProcessIsAclField
 {
     my $attr = shift;
 
-    return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_FIELD_\w+$/;
+    return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_(USER_DEFINED_)?FIELD_\w+$/;
 
     return "false";
 }
@@ -1431,6 +1566,8 @@ sub ProcessSingleObjectType
         my %meta = %{ $METADATA{$typedef}{$attr} };
 
         next if defined $meta{ignore};
+
+        $meta{type} = "" if not defined $meta{type};
 
         my $type            = ProcessType($attr, $meta{type});
         my $attrname        = ProcessAttrName($attr, $meta{type});
@@ -2957,6 +3094,10 @@ ProcessXmlFiles();
 CreateObjectTypeMap();
 
 WriteHeaderHeader();
+
+ProcessSaiStatus();
+
+ProcessExtraRangeDefines();
 
 CreateMetadataHeaderAndSource();
 

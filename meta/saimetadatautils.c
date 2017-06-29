@@ -188,7 +188,7 @@ bool sai_metadata_is_object_type_valid(
     return object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_MAX;
 }
 
-bool sai_metadata_is_condition_in_force(
+bool sai_metadata_is_condition_met(
         _In_ const sai_attr_metadata_t *metadata,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list)
