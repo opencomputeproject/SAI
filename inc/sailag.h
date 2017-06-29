@@ -34,19 +34,6 @@
  */
 
 /**
- * @brief Attribute data for #SAI_LAG_ATTR_BIND_MODE
- */
-typedef enum _sai_lag_bind_mode_t
-{
-    /** Port */
-    SAI_LAG_BIND_MODE_PORT,
-
-    /** Sub port */
-    SAI_LAG_BIND_MODE_SUB_PORT,
-
-} sai_lag_bind_mode_t;
-
-/**
  * @brief LAG attribute: List of attributes for LAG object
  */
 typedef enum _sai_lag_attr_t
@@ -98,15 +85,6 @@ typedef enum _sai_lag_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_LAG_ATTR_EGRESS_ACL,
-
-    /**
-     * @brief LAG bind mode
-     *
-     * @type sai_lag_bind_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_LAG_BIND_MODE_PORT
-     */
-    SAI_LAG_ATTR_BIND_MODE,
 
     /**
      * @brief Port VLAN ID
