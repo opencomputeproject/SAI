@@ -264,6 +264,18 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_META_DATA,
 
     /**
+     * @brief IGMP Snooping enable or disable control for VLAN
+     *
+     * IGMP Snooping enable control for VLAN. Default is
+     * disabled
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_VLAN_ATTR_CUSTOM_IGMP_SNOOPING_EN,
+
+    /**
      * @brief End of attributes
      */
     SAI_VLAN_ATTR_END,
