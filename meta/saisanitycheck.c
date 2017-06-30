@@ -3953,7 +3953,7 @@ void check_graph_connected()
             continue;
         }
 
-        META_LOG_WARN("object %s is disconnected from graph",
+        META_ASSERT_FAIL("object %s is disconnected from graph",
                 sai_metadata_all_object_type_infos[i]->objecttypename);
     }
 }
