@@ -283,7 +283,7 @@ typedef enum _sai_vlan_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_VLAN_ATTR_CUSTOM_IGMP_SNOOPING_EN,
+    SAI_VLAN_ATTR_CUSTOM_IGMP_SNOOPING_ENABLE,
 
     /**
      * @brief End of attributes
