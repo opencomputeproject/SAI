@@ -266,7 +266,10 @@ typedef enum _sai_buffer_pool_attr_t
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
-    SAI_BUFFER_POOL_ATTR_SIZE,
+    SAI_BUFFER_POOL_ATTR_RESERVED_SIZE,
+
+    /** @ignore - for backward compatibility */
+    SAI_BUFFER_POOL_ATTR_SIZE = SAI_BUFFER_POOL_ATTR_RESERVED_SIZE,
 
     /**
      * @brief Shared threshold mode for the buffer
