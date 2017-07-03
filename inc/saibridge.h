@@ -201,6 +201,15 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
 
     /**
+     * @brief Ingress filtering (drop frames with unknown VLANs)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_BRIDGE_PORT_ATTR_INGRESS_FILTERING,
+
+    /**
      * @brief End of attributes
      */
     SAI_BRIDGE_PORT_ATTR_END,
@@ -324,6 +333,16 @@ typedef enum _sai_bridge_attr_t
      * @default false
      */
     SAI_BRIDGE_ATTR_LEARN_DISABLE,
+
+    /**
+     * @brief To disable flooding traffic (Broadcast, unknown unicast,
+     * unknown multicast) on a bridge
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_BRIDGE_ATTR_FLOOD_DISABLE,
 
     /**
      * @brief End of attributes

@@ -635,6 +635,86 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM,
 
     /**
+     * @brief Available IPv4 routes
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV4_ROUTE_ENTRY,
+
+    /**
+     * @brief Available IPv6 routes
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV6_ROUTE_ENTRY,
+
+    /**
+     * @brief Available IPv4 Nexthop entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEXTHOP_ENTRY,
+
+    /**
+     * @brief Available IPv6 Nexthop entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEXTHOP_ENTRY,
+
+    /**
+     * @brief Available IPv4 Neighbor entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEIGHBOR_ENTRY,
+
+    /**
+     * @brief Available IPv6 Neighbor entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEIGHBOR_ENTRY,
+
+    /**
+     * @brief Available Next hop group member entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY,
+
+    /**
+     * @brief Available FDB entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY,
+
+    /**
+     * @brief Available L2MC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_L2MC_ENTRY,
+
+    /**
+     * @brief Available IPMC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPMC_ENTRY,
+
+    /**
      * @brief Default trap group
      *
      * Default value after switch initialization:
@@ -745,6 +825,22 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
+
+    /**
+     * @brief Count of the total number of ranges supported by NPU
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_ACL_RANGE_COUNT,
+
+    /**
+     * @brief ACL capabilities supported by the NPU
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_CAPABILITY,
 
     /**
      * @brief Multicast snooping capability supported by the NPU
@@ -1184,6 +1280,9 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
 
+    /** @ignore - for backward compatibility */
+    SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY = SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
+
     /**
      * @brief FDB event notification callback function passed to the adapter.
      *
@@ -1267,6 +1366,22 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
+
+    /**
+     * @brief Max number of Segments in a single SID List supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SID_DEPTH,
+
+    /**
+     * @brief List of Type Length Value types supported for source
+     *
+     * @type sai_s32_list_t sai_tlv_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SEGMENTROUTE_TLV_TYPE,
 
     /**
      * @brief The number of lossless queues per port supported by the switch

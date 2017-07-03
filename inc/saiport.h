@@ -47,19 +47,6 @@ typedef enum _sai_port_type_t
 } sai_port_type_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_BIND_MODE
- */
-typedef enum _sai_port_bind_mode_t
-{
-    /** Port */
-    SAI_PORT_BIND_MODE_PORT,
-
-    /** Sub port */
-    SAI_PORT_BIND_MODE_SUB_PORT,
-
-} sai_port_bind_mode_t;
-
-/**
  * @brief Attribute data for #SAI_PORT_ATTR_OPER_STATUS
  */
 typedef enum _sai_port_oper_status_t
@@ -373,6 +360,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_REMOTE_ADVERTISED_MEDIA_TYPE,
 
     /**
+     * @brief Query Remote port Advertised OUI Code
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_OUI_CODE,
+
+    /**
      * @brief Number of ingress priority groups
      *
      * @type sai_uint32_t
@@ -507,6 +502,19 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ADVERTISED_MEDIA_TYPE,
 
     /**
+     * @brief Query/Configure Port's Advertised OUI code
+     *
+     * Organizationally Unique Identifier for 25G/50G auto negotiation.
+     * Default is 0x6A737D for Ethernet Consortium
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0x6A737D
+     * @validonly SAI_PORT_ATTR_SPEED == 25000 or SAI_PORT_ATTR_SPEED == 50000
+     */
+    SAI_PORT_ATTR_ADVERTISED_OUI_CODE,
+
+    /**
      * @brief Port VLAN ID
      *
      * Untagged ingress frames are tagged with Port VLAN ID (PVID).
@@ -526,15 +534,6 @@ typedef enum _sai_port_attr_t
      * @default 0
      */
     SAI_PORT_ATTR_DEFAULT_VLAN_PRIORITY,
-
-    /**
-     * @brief Ingress Filtering (Drop Frames with Unknown VLANs)
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_PORT_ATTR_INGRESS_FILTERING,
 
     /**
      * @brief Dropping of untagged frames on ingress
@@ -1031,15 +1030,6 @@ typedef enum _sai_port_attr_t
      * @default 5
      */
     SAI_PORT_ATTR_EEE_WAKE_TIME,
-
-    /**
-     * @brief Port bind mode
-     *
-     * @type sai_port_bind_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_BIND_MODE_PORT
-     */
-    SAI_PORT_ATTR_BIND_MODE,
 
     /**
      * @brief End of attributes
@@ -1619,6 +1609,8 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
  * @brief Port state change notification
  *
  * Passed as a parameter into sai_initialize_switch()
+ *
+ * @count data[count]
  *
  * @param[in] count Number of notifications
  * @param[in] data Array of port operational status

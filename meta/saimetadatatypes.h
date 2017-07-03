@@ -330,9 +330,14 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST,
 
     /**
-     * @brief Attribute value is tunnel map list.
+     * @brief Attribute value is Segment Route Type Length Value list.
      */
-    SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST,
+    SAI_ATTR_VALUE_TYPE_TLV_LIST,
+
+    /**
+     * @brief Attribute value is Segment Route Segment list.
+     */
+    SAI_ATTR_VALUE_TYPE_SEGMENT_LIST,
 
 } sai_attr_value_type_t;
 
