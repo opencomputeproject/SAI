@@ -335,10 +335,10 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_LEARN_DISABLE,
 
     /**
-     * @brief Unknown unicast flood group. 
+     * @brief Unknown unicast flood group.
      *
-     * Provides control on the set of bridge ports on which unknown 
-     * unicast packets need to be flooded.If null object id is passed, 
+     * Provides control on the set of bridge ports on which unknown
+     * unicast packets need to be flooded.If null object id is passed,
      * then flooding will be disabled. Default is to disable flooding.
      *
      * @type sai_object_id_t
@@ -353,7 +353,7 @@ typedef enum _sai_bridge_attr_t
     /**
      * @brief Unknown multicast flood group.
      *
-     * Provides control on the set of bridge ports on which unknown 
+     * Provides control on the set of bridge ports on which unknown
      * multicast packets need to be flooded.If null object id is passed,
      * then flooding will be disabled. Default is to disable flooding.
      *
@@ -367,10 +367,10 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
 
     /**
-     * @brief Broadcast flood group. 
+     * @brief Broadcast flood group.
      *
      * Provides control on the set of bridge ports on which broadcast
-     * packets need to be flooded.If null object id is passed, 
+     * packets need to be flooded.If null object id is passed,
      * then flooding will be disabled. Default is to disable flooding.
      *
      * @type sai_object_id_t
