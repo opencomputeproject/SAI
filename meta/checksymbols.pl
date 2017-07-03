@@ -15,7 +15,7 @@ for my $line (<STDIN>)
     my $type = $1;
     my $name = $2;
 
-    next if $name =~ /^(sai_metadata_\w+|__func__)/ and $type =~ /[rRBT]/;
+    next if $name =~ /^(sai_(metadata|(de)?serialize)_\w+|__func__)/ and $type =~ /[rRBTt]/;
 
     # metadata log level is exception since it can be changed
 

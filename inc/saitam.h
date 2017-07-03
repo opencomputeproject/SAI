@@ -300,6 +300,15 @@ typedef enum _sai_tam_attr_t
     SAI_TAM_ATTR_MAX_NUM_SNAPSHOTS,
 
     /**
+     * @brief Tam thresholds associated with this tam.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM_THRESHOLD
+     */
+    SAI_TAM_ATTR_THRESHOLD_LIST,
+
+    /**
      * @brief End of Attributes
      */
     SAI_TAM_ATTR_END,
@@ -415,6 +424,8 @@ typedef struct _sai_tam_threshold_breach_event_t
  * If callback is required but SAI_TAM_THRESHOLD_ATTR_SNAPSHOT_ON_BREACH is
  * set to false, then the event data passed to the callback function will
  * have the field is_snapshot_valid set to false.
+ *
+ * @count data[count]
  *
  * @param[in] count Number of events
  * @param[in] data Pointer to TAM events data array

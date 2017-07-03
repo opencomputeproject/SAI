@@ -44,21 +44,22 @@ CFLAGS += -I../inc $(WARNINGS)
 DEPS = $(wildcard ../inc/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
 
-OBJ = saimetadata.o saimetadatautils.o
+OBJ = saimetadata.o saimetadatautils.o saiserialize.o
 
 SYMBOLS = $(OBJ:=.symbols)
 
-all: saisanitycheck saimetadatatest saidepgraph.svg $(SYMBOLS)
-	./saimetadatatest > /dev/null
+all: saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
+	./saimetadatatest >/dev/null
+	./saiserializetest >/dev/null
 	./saisanitycheck
 
-CONSTHEADERS = saimetadatatypes.h saimetadatalogger.h saimetadatautils.h
+CONSTHEADERS = saimetadatatypes.h saimetadatalogger.h saimetadatautils.h saiserialize.h
 
 xml: $(DEPS) Doxyfile $(CONSTHEADERS)
 	doxygen Doxyfile 2>&1 | perl -npe '$$e=1 if /warning/i; END{exit $$e}'
 	touch xml
 
-EXTRA = acronyms.txt aspell.en.pws
+EXTRA = acronyms.txt aspell.en.pws *.pm
 
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl parse.pl
@@ -75,6 +76,9 @@ saisanitycheck: saisanitycheck.o $(OBJ)
 	gcc -o $@ $^
 
 saimetadatatest: saimetadatatest.o $(OBJ)
+	gcc -o $@ $^
+
+saiserializetest: saiserializetest.o $(OBJ)
 	gcc -o $@ $^
 
 saidepgraphgen: saidepgraphgen.o $(OBJ)
@@ -94,5 +98,5 @@ saidepgraph.svg: saidepgraph.gv
 clean:
 	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols
 	rm -f saimetadata.h saimetadata.c saimetadatatest.c
-	rm -f saisanitycheck saimetadatatest saidepgraphgen
+	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen
 	rm -rf xml html dist
