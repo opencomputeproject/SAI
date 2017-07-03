@@ -335,14 +335,49 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_LEARN_DISABLE,
 
     /**
-     * @brief To disable flooding traffic (Broadcast, unknown unicast,
-     * unknown multicast) on a bridge
+     * @brief Unknown unicast flood group. Provides control on the
+     * set of bridge ports on which unknown unicast packets need to 
+     * be flooded.If null object id is passed, then flooding will be 
+     * disabled. Default is to disable flooding.
      *
-     * @type bool
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @condition SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_BRIDGE_ATTR_FLOOD_DISABLE,
+    SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Unknown multicast flood group. Provides control on the
+     * set of bridge ports on which unknown multicast packets need to
+     * be flooded.If null object id is passed, then flooding will be
+     * disabled. Default is to disable flooding.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @condition SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Broadcast flood group. Provides control on the
+     * set of bridge ports on which broadcast packets need to
+     * be flooded.If null object id is passed, then flooding will be
+     * disabled. Default is to disable flooding.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @condition SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
     /**
      * @brief End of attributes
