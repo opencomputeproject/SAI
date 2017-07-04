@@ -1019,6 +1019,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_EEE_WAKE_TIME,
 
     /**
+     * @brief List of port pools for the port
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT_POOL
+     */
+    SAI_PORT_ATTR_PORT_POOL_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
