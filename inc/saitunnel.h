@@ -447,7 +447,8 @@ typedef enum _sai_tunnel_attr_t
      * @brief Tunnel src IP
      *
      * @type sai_ip_address_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
+     * @default 0.0.0.0
      */
     SAI_TUNNEL_ATTR_ENCAP_SRC_IP,
 
