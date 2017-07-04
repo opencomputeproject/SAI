@@ -448,7 +448,10 @@ typedef enum _sai_buffer_profile_attr_t
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
-    SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,
+    SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE,
+
+    /** @ignore - for backward compatibility */
+    SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE = SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE,
 
     /**
      * @brief Shared threshold mode for the buffer profile
