@@ -6,7 +6,7 @@ SAI Fast Reroute enhancement for SAI 1.2.0
  Status      | In review
  Type        | Standards track
  Created     | 13/04/2017
- Updated     | 29/06/2017
+ Updated     | 04/07/2017
  SAI-Version | 1.2.0
 
 -------------------------------------------------------------------------------
@@ -178,9 +178,6 @@ trigger a switchover.
 
 If the referred object fails, then the switch marks the next hop as FAILED and does not use it for forwarding.
 If the next hop group is a Protection type and there is a backup next hop available in the group, then it is no longer STANDBY, but FORWARDING and is used to forward traffic.
-
-Note that this feature can be used in non FRR cases.  For example, specifying
-a port number will accelerate removing failed next hops from an ECMP group.
 
 ### SAI SWITCH
 
