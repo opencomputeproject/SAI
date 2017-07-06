@@ -218,6 +218,7 @@ public:
 
   void sai_thrift_parse_fdb_entry(const sai_thrift_fdb_entry_t &thrift_fdb_entry, sai_fdb_entry_t *fdb_entry) {
       fdb_entry->vlan_id = (sai_vlan_id_t) thrift_fdb_entry.vlan_id;
+      fdb_entry->bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
       sai_thrift_string_to_mac(thrift_fdb_entry.mac_address, fdb_entry->mac_address);
   }
 
@@ -290,9 +291,6 @@ public:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP:
               case SAI_PORT_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
-                  break;
-              case SAI_PORT_ATTR_FDB_LEARNING_MODE:
-                  attr_list[i].value.s32 = attribute.value.s32;
                   break;
               default:
                   break;
@@ -763,8 +761,8 @@ public:
         { counter_ids[i] = (sai_vlan_stat_t) *it; }
 
         status = vlan_api->get_vlan_stats((sai_vlan_id_t) vlan_id,
-                                          counter_ids,
                                           number_of_counters,
+                                          counter_ids,
                                           counters);
 
         for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) { thrift_counters.push_back(counters[i]); }
@@ -1637,7 +1635,16 @@ public:
       }
 
       attr.id = thrift_attr.id;
-      attr.value.oid = thrift_attr.value.oid;
+
+      switch (attr.id) {
+          case SAI_BRIDGE_PORT_ATTR_ADMIN_STATE:
+              attr.value.booldata = thrift_attr.value.booldata;
+              break;
+
+          default:
+              attr.value.oid = thrift_attr.value.oid;
+              break;
+      }
 
       return bridge_api->set_bridge_port_attribute(bridge_port_id, &attr);
   }
@@ -1701,7 +1708,7 @@ public:
       SAI_THRIFT_LOG_DBG("Called.");
 
       sai_hostif_api_t *hostif_api = nullptr;
-      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
 
       if (status != SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_ERR("Failed to get API."); return SAI_NULL_OBJECT_ID; }
@@ -1728,7 +1735,7 @@ public:
       SAI_THRIFT_LOG_DBG("Called.");
 
       sai_hostif_api_t *hostif_api = nullptr;
-      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
 
       if (status != SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
@@ -1746,7 +1753,7 @@ public:
       SAI_THRIFT_LOG_DBG("Called.");
 
       sai_hostif_api_t *hostif_api = nullptr;
-      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
 
       if (status != SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
@@ -1774,7 +1781,7 @@ public:
       SAI_THRIFT_LOG_DBG("Called.");
 
       sai_hostif_api_t *hostif_api = nullptr;
-      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
 
       if (status != SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_ERR("Failed to get API."); return SAI_NULL_OBJECT_ID; }
@@ -1801,7 +1808,7 @@ public:
       SAI_THRIFT_LOG_DBG("Called.");
 
       sai_hostif_api_t *hostif_api = nullptr;
-      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
 
       if (status != SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
@@ -1822,7 +1829,7 @@ public:
       SAI_THRIFT_LOG_DBG("Called.");
 
       sai_hostif_api_t *hostif_api = nullptr;
-      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
 
       if (status != SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
@@ -1834,7 +1841,7 @@ public:
       sai_thrift_alloc_attr(attr_list, attr_size);
       sai_thrift_parse_hostif_trap_group_attributes(attr_list, thrift_attr_list);
 
-      status = hostif_api->set_trap_group_attribute(thrift_hostif_trap_group_id, attr_list);
+      status = hostif_api->set_hostif_trap_group_attribute(thrift_hostif_trap_group_id, attr_list);
       sai_thrift_free_attr(attr_list);
 
       if (status == SAI_STATUS_SUCCESS)
@@ -1850,7 +1857,7 @@ public:
       SAI_THRIFT_LOG_DBG("Called.");
 
       sai_hostif_api_t *hostif_api = nullptr;
-      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
 
       if (status != SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_ERR("Failed to get API."); return SAI_NULL_OBJECT_ID; }
@@ -1861,7 +1868,7 @@ public:
       sai_thrift_parse_hostif_trap_attributes(attr_list, thrift_attr_list);
 
       sai_object_id_t hostif_trap_oid = 0;
-      status = hostif_api->create_trap(&hostif_trap_oid, gSwitchId, attr_size, attr_list);
+      status = hostif_api->create_hostif_trap(&hostif_trap_oid, gSwitchId, attr_size, attr_list);
       sai_thrift_free_attr(attr_list);
 
       if (status == SAI_STATUS_SUCCESS)
@@ -1877,12 +1884,12 @@ public:
       SAI_THRIFT_LOG_DBG("Called.");
 
       sai_hostif_api_t *hostif_api = nullptr;
-      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
 
       if (status != SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
 
-      status = hostif_api->remove_trap(thrift_hostif_trap_id);
+      status = hostif_api->remove_hostif_trap(thrift_hostif_trap_id);
 
       if (status == SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_DBG("Exited."); return status; }
@@ -1897,7 +1904,7 @@ public:
       SAI_THRIFT_LOG_DBG("Called.");
 
       sai_hostif_api_t *hostif_api = nullptr;
-      auto status = sai_api_query(SAI_API_HOST_INTERFACE, reinterpret_cast<void**>(&hostif_api));
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
 
       if (status != SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
@@ -1909,7 +1916,7 @@ public:
       sai_thrift_alloc_attr(attr_list, attr_size);
       sai_thrift_parse_hostif_trap_attributes(attr_list, thrift_attr_list);
 
-      status = hostif_api->set_trap_attribute(thrift_hostif_trap_id, attr_list);
+      status = hostif_api->set_hostif_trap_attribute(thrift_hostif_trap_id, attr_list);
       sai_thrift_free_attr(attr_list);
 
       if (status == SAI_STATUS_SUCCESS)
@@ -2379,13 +2386,16 @@ public:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_VLAN_TPID:
-                  attr_list[i].value.u16 = attribute.value.u16;
+                  attr_list[i].value.u16 = attribute.value.u32;
                   break;
               case SAI_MIRROR_SESSION_ATTR_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
                   break;
               case SAI_MIRROR_SESSION_ATTR_VLAN_PRI:
                   attr_list[i].value.u8 = attribute.value.u8;
+                  break;
+              case SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID:
+                  attr_list[i].value.booldata = attribute.value.booldata;
                   break;
               case SAI_MIRROR_SESSION_ATTR_ERSPAN_ENCAPSULATION_TYPE:
                   attr_list[i].value.s32 = attribute.value.s32;
@@ -2394,10 +2404,10 @@ public:
                   attr_list[i].value.u8 = attribute.value.u8;
                   break;
               case SAI_MIRROR_SESSION_ATTR_TOS:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.u8 = attribute.value.u16;
                   break;
               case SAI_MIRROR_SESSION_ATTR_TTL:
-                  attr_list[i].value.u8 = attribute.value.u8;
+                  attr_list[i].value.u8 = attribute.value.u16;
                   break;
               case SAI_MIRROR_SESSION_ATTR_SRC_IP_ADDRESS:
                   sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
@@ -2412,7 +2422,7 @@ public:
                   sai_thrift_string_to_mac(attribute.value.mac, attr_list[i].value.mac);
                   break;
               case SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE:
-                  attr_list[i].value.u16 = attribute.value.u16;
+                  attr_list[i].value.u16 = attribute.value.u32;
                   break;
               default:
                   break;
@@ -2600,7 +2610,7 @@ public:
 
       sai_thrift_alloc_array(counters, number_of_counters);
 
-      status = policer_api->get_policer_statistics(thrift_policer_id, counter_ids, number_of_counters, counters);
+      status = policer_api->get_policer_stats(thrift_policer_id, number_of_counters, counter_ids, counters);
 
       if (status == SAI_STATUS_SUCCESS)
       {
@@ -2712,8 +2722,8 @@ public:
       }
 
       status = port_api->get_port_stats((sai_object_id_t) port_id,
-                                        counter_ids,
                                         number_of_counters,
+                                        counter_ids,
                                         counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -2846,8 +2856,8 @@ public:
 
       status = queue_api->get_queue_stats(
                              (sai_object_id_t) queue_id,
-                             counter_ids,
                              number_of_counters,
+                             counter_ids,
                              counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -2892,8 +2902,8 @@ public:
 
       status = queue_api->clear_queue_stats(
                              (sai_object_id_t) queue_id,
-                             counter_ids,
-                             number_of_counters);
+                             number_of_counters,
+                             counter_ids);
 
       free(counter_ids);
       return status;
@@ -3018,8 +3028,8 @@ public:
       }
 
       status = buffer_api->get_ingress_priority_group_stats((sai_object_id_t) pg_id,
-                                                            counter_ids,
                                                             number_of_counters,
+                                                            counter_ids,
                                                             counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {

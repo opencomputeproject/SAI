@@ -635,6 +635,86 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM,
 
     /**
+     * @brief Available IPv4 routes
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV4_ROUTE_ENTRY,
+
+    /**
+     * @brief Available IPv6 routes
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV6_ROUTE_ENTRY,
+
+    /**
+     * @brief Available IPv4 Nexthop entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEXTHOP_ENTRY,
+
+    /**
+     * @brief Available IPv6 Nexthop entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEXTHOP_ENTRY,
+
+    /**
+     * @brief Available IPv4 Neighbor entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEIGHBOR_ENTRY,
+
+    /**
+     * @brief Available IPv6 Neighbor entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEIGHBOR_ENTRY,
+
+    /**
+     * @brief Available Next hop group member entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY,
+
+    /**
+     * @brief Available FDB entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY,
+
+    /**
+     * @brief Available L2MC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_L2MC_ENTRY,
+
+    /**
+     * @brief Available IPMC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IPMC_ENTRY,
+
+    /**
      * @brief Default trap group
      *
      * Default value after switch initialization:
@@ -745,6 +825,22 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
+
+    /**
+     * @brief Count of the total number of ranges supported by NPU
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_ACL_RANGE_COUNT,
+
+    /**
+     * @brief ACL capabilities supported by the NPU
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_CAPABILITY,
 
     /**
      * @brief Multicast snooping capability supported by the NPU
@@ -1184,6 +1280,9 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
 
+    /** @ignore - for backward compatibility */
+    SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY = SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY,
+
     /**
      * @brief FDB event notification callback function passed to the adapter.
      *
@@ -1267,6 +1366,98 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
+
+    /**
+     * @brief Max number of Segments in a single SID List supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SID_DEPTH,
+
+    /**
+     * @brief List of Type Length Value types supported for source
+     *
+     * @type sai_s32_list_t sai_tlv_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SEGMENTROUTE_TLV_TYPE,
+
+    /**
+     * @brief The number of lossless queues per port supported by the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_QOS_NUM_LOSSLESS_QUEUES,
+
+    /**
+     * @brief Set Switch PFC deadlock event notification callback function passed to the adapter.
+     *
+     * Use sai_queue_pfc_deadlock_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_queue_pfc_deadlock_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_QUEUE_PFC_DEADLOCK_NOTIFY,
+
+    /**
+     * @brief Control for buffered and incoming packets on queue undergoing PFC Deadlock Recovery.
+     *
+     * This control applies to all packets on all applicable port/queues. If application wants finer packet
+     * action control on per port per queue level then it is expected to set this control to packet forward
+     * and install one or more ACL and enable/disable them in the DLD/DLR event callback
+     * (SAI_SWITCH_ATTR_PFC_DEADLOCK_EVENT_NOTIFY) respectively.
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_DROP
+     */
+    SAI_SWITCH_ATTR_PFC_DLR_PACKET_ACTION,
+
+    /**
+     * @brief  PFC Deadlock Detection timer interval range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLD_INTERVAL_RANGE,
+
+    /**
+     * @brief PFC Deadlock Detection timer interval in milliseconds.
+     *
+     * If the monitored queue is in XOFF state for more than this duration then
+     * its considered to be in a PFC deadlock state and recovery process is kicked off.
+     * Note: Use TC (Traffic Class) value as key and timer interval as value.
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLD_INTERVAL,
+
+    /**
+     * @brief  PFC Deadlock Recovery timer interval range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLR_INTERVAL_RANGE,
+
+    /**
+     * @brief PFC Deadlock Recovery timer interval in milliseconds.
+     *
+     * The PFC deadlock recovery process will run for this amount of time and then normal
+     * state will resume. If the system remains in a deadlock state then the detection and
+     * recovery will resume again after the configured detection timer interval.
+     * Note: Use TC (Traffic Class) value as key and timer interval as value.
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLR_INTERVAL,
 
     /**
      * @brief Get the list of supported protected object types.

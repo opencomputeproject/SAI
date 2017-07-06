@@ -55,13 +55,17 @@ typedef enum _sai_route_entry_attr_t
     SAI_ROUTE_ENTRY_ATTR_PACKET_ACTION = SAI_ROUTE_ENTRY_ATTR_START,
 
     /**
-     * @brief Packet priority for trap/log actions
+     * @brief Generate User Defined Trap ID for trap/log actions
      *
-     * @type sai_uint8_t
+     * When it is SAI_NULL_OBJECT_ID, then packet will not be trapped.
+     *
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_ROUTE_ENTRY_ATTR_TRAP_PRIORITY,
+    SAI_ROUTE_ENTRY_ATTR_USER_TRAP_ID,
 
     /**
      * @brief Next hop or next hop group id for the packet, or a router interface
@@ -76,6 +80,8 @@ typedef enum _sai_route_entry_attr_t
      * interface id to which the subnet is attached. IP2ME route adds a local
      * router IP address. For such routes, fill the CPU port
      * (#SAI_SWITCH_ATTR_CPU_PORT).
+     * When pointing to a next hop group which is empty, the effective routing
+     * action will be DROP.
      *
      * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
      *
@@ -199,7 +205,7 @@ typedef sai_status_t (*sai_get_route_entry_attribute_fn)(
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to create.
  * @param[in] attr_list List of attributes for every object.
- * @param[in] type Bulk operation type.
+ * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
@@ -213,7 +219,7 @@ typedef sai_status_t (*sai_bulk_create_route_entry_fn)(
         _In_ const sai_route_entry_t *route_entry,
         _In_ const uint32_t *attr_count,
         _In_ const sai_attribute_t **attr_list,
-        _In_ sai_bulk_op_type_t type,
+        _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
 /**
@@ -221,7 +227,7 @@ typedef sai_status_t (*sai_bulk_create_route_entry_fn)(
  *
  * @param[in] object_count Number of objects to remove
  * @param[in] route_entry List of objects to remove
- * @param[in] type Bulk operation type.
+ * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
@@ -233,7 +239,7 @@ typedef sai_status_t (*sai_bulk_create_route_entry_fn)(
 typedef sai_status_t (*sai_bulk_remove_route_entry_fn)(
         _In_ uint32_t object_count,
         _In_ const sai_route_entry_t *route_entry,
-        _In_ sai_bulk_op_type_t type,
+        _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
 /**
@@ -242,7 +248,7 @@ typedef sai_status_t (*sai_bulk_remove_route_entry_fn)(
  * @param[in] object_count Number of objects to set attribute
  * @param[in] route_entry List of objects to set attribute
  * @param[in] attr_list List of attributes to set on objects, one attribute per object
- * @param[in] type Bulk operation type.
+ * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
@@ -255,7 +261,7 @@ typedef sai_status_t (*sai_bulk_set_route_entry_attribute_fn)(
         _In_ uint32_t object_count,
         _In_ const sai_route_entry_t *route_entry,
         _In_ const sai_attribute_t *attr_list,
-        _In_ sai_bulk_op_type_t type,
+        _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
 /**
@@ -266,7 +272,7 @@ typedef sai_status_t (*sai_bulk_set_route_entry_attribute_fn)(
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to get
  * @param[inout] attr_list List of attributes to set on objects, one attribute per object
- * @param[in] type Bulk operation type
+ * @param[in] mode Bulk operation error handling mode
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
@@ -280,7 +286,7 @@ typedef sai_status_t (*sai_bulk_get_route_entry_attribute_fn)(
         _In_ const sai_route_entry_t *route_entry,
         _In_ const uint32_t *attr_count,
         _Inout_ sai_attribute_t **attr_list,
-        _In_ sai_bulk_op_type_t type,
+        _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
 /**
