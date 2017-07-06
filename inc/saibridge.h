@@ -347,6 +347,7 @@ typedef enum _sai_bridge_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
      */
     SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
 
@@ -363,6 +364,7 @@ typedef enum _sai_bridge_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
      */
     SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
 
@@ -379,6 +381,7 @@ typedef enum _sai_bridge_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
      */
     SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
