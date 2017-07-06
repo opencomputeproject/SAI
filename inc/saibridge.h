@@ -223,6 +223,25 @@ typedef enum _sai_bridge_port_attr_t
 } sai_bridge_port_attr_t;
 
 /**
+ * @brief Bridge port counter IDs in sai_get_bridge_port_stats() call
+ */
+typedef enum _sai_bridge_port_stat_t
+{
+    /** Ingress byte stat count */
+    SAI_BRIDGE_PORT_STAT_IN_OCTETS,
+
+    /** Ingress packet stat count */
+    SAI_BRIDGE_PORT_STAT_IN_PACKETS,
+
+    /** Egress byte stat count */
+    SAI_BRIDGE_PORT_STAT_OUT_OCTETS,
+
+    /** Egress packet stat count */
+    SAI_BRIDGE_PORT_STAT_OUT_PACKETS
+
+} sai_bridge_port_stat_t;
+
+/**
  * @brief Create bridge port
  *
  * @param[out] bridge_port_id Bridge port ID
@@ -273,6 +292,36 @@ typedef sai_status_t (*sai_get_bridge_port_attribute_fn)(
         _In_ sai_object_id_t bridge_port_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Get bridge port statistics counters.
+ *
+ * @param[in] bridge_port_id Bridge port id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_bridge_port_stats_fn)(
+        _In_ sai_object_id_t bridge_port_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_bridge_port_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear bridge port statistics counters.
+ *
+ * @param[in] bridge_port_id Bridge port id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_bridge_port_stats_fn)(
+        _In_ sai_object_id_t bridge_port_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_bridge_port_stat_t *counter_ids);
 
 /**
  * @brief Attribute data for #SAI_BRIDGE_ATTR_TYPE
@@ -358,6 +407,25 @@ typedef enum _sai_bridge_attr_t
 } sai_bridge_attr_t;
 
 /**
+ * @brief Bridge counter IDs in sai_get_bridge_stats() call
+ */
+typedef enum _sai_bridge_stat_t
+{
+    /** Ingress byte stat count */
+    SAI_BRIDGE_STAT_IN_OCTETS,
+
+    /** Ingress packet stat count */
+    SAI_BRIDGE_STAT_IN_PACKETS,
+
+    /** Egress byte stat count */
+    SAI_BRIDGE_STAT_OUT_OCTETS,
+
+    /** Egress packet stat count */
+    SAI_BRIDGE_STAT_OUT_PACKETS
+
+} sai_bridge_stat_t;
+
+/**
  * @brief Create bridge
  *
  * @param[out] bridge_id Bridge ID
@@ -410,6 +478,36 @@ typedef sai_status_t (*sai_get_bridge_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Get bridge statistics counters.
+ *
+ * @param[in] bridge_id Bridge id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_bridge_stats_fn)(
+        _In_ sai_object_id_t bridge_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_bridge_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear bridge statistics counters.
+ *
+ * @param[in] bridge_id Bridge id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_bridge_stats_fn)(
+        _In_ sai_object_id_t bridge_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_bridge_stat_t *counter_ids);
+
+/**
  * @brief Bridge methods table retrieved with sai_api_query()
  */
 typedef struct _sai_bridge_api_t
@@ -418,10 +516,14 @@ typedef struct _sai_bridge_api_t
     sai_remove_bridge_fn                remove_bridge;
     sai_set_bridge_attribute_fn         set_bridge_attribute;
     sai_get_bridge_attribute_fn         get_bridge_attribute;
+    sai_get_bridge_stats_fn             get_bridge_stats;
+    sai_clear_bridge_stats_fn           clear_bridge_stats;
     sai_create_bridge_port_fn           create_bridge_port;
     sai_remove_bridge_port_fn           remove_bridge_port;
     sai_set_bridge_port_attribute_fn    set_bridge_port_attribute;
     sai_get_bridge_port_attribute_fn    get_bridge_port_attribute;
+    sai_get_bridge_port_stats_fn        get_bridge_port_stats;
+    sai_clear_bridge_port_stats_fn      clear_bridge_port_stats;
 } sai_bridge_api_t;
 
 /**
