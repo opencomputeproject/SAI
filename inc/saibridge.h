@@ -227,13 +227,13 @@ typedef enum _sai_bridge_port_attr_t
  */
 typedef enum _sai_bridge_port_stat_t
 {
-    /*Ingress byte stat count*/
+    /** Ingress byte stat count */
     SAI_BRIDGE_PORT_STAT_IN_OCTETS,
-    /*Ingress packet stat count*/
+    /** Ingress packet stat count */
     SAI_BRIDGE_PORT_STAT_IN_PACKETS,
-    /*Egress byte stat count*/
+    /** Egress byte stat count */
     SAI_BRIDGE_PORT_STAT_OUT_OCTETS,
-    /*Egress packet stat count*/
+    /** Egress packet stat count */
     SAI_BRIDGE_PORT_STAT_OUT_PACKETS
 
 } sai_bridge_port_stat_t;
@@ -408,13 +408,13 @@ typedef enum _sai_bridge_attr_t
  */
 typedef enum _sai_bridge_stat_t
 {
-    /*Ingress byte stat count*/
+    /** Ingress byte stat count */
     SAI_BRIDGE_STAT_IN_OCTETS,
-    /*Ingress packet stat count*/
+    /** Ingress packet stat count */
     SAI_BRIDGE_STAT_IN_PACKETS,
-    /*Egress byte stat count*/
+    /** Egress byte stat count */
     SAI_BRIDGE_STAT_OUT_OCTETS,
-    /*Egress packet stat count*/
+    /** Egress packet stat count */
     SAI_BRIDGE_STAT_OUT_PACKETS
 
 } sai_bridge_stat_t;
