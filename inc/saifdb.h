@@ -233,7 +233,7 @@ typedef enum _sai_fdb_flush_attr_t
      *
      * @type sai_object_id_t
      * @flags CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_BRIDGE or SAI_OBJECT_TYPE_VLAN
+     * @objects SAI_OBJECT_TYPE_BRIDGE, SAI_OBJECT_TYPE_VLAN
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
