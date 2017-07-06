@@ -232,7 +232,8 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_TAM_TRANSPORTER          = 63,
     SAI_OBJECT_TYPE_TAM_THRESHOLD            = 64,
     SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST     = 65,
-    SAI_OBJECT_TYPE_MAX                      = 66,
+    SAI_OBJECT_TYPE_PORT_POOL                = 66,
+    SAI_OBJECT_TYPE_MAX                      = 67,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
