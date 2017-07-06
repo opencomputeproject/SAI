@@ -289,6 +289,22 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_XOFF_SIZE,
 
     /**
+     * @brief Attach WRED ID to pool
+     *
+     * WRED Drop/ECN marking based on pool thresholds will happen only
+     * when one of queue referring to this buffer pool configured
+     * with non default value for SAI_QUEUE_ATTR_WRED_PROFILE_ID.
+     * ID = #SAI_NULL_OBJECT_ID to disable WRED
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_WRED
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_BUFFER_POOL_ATTR_WRED_PROFILE_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_BUFFER_POOL_ATTR_END,
