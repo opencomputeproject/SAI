@@ -1463,10 +1463,10 @@ typedef enum _sai_switch_attr_t
      * @brief Get the list of supported protected object types.
      *        See comment for SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT for more details.
      *
-     * @type sai_s32_list_t
+     * @type sai_s32_list_t sai_object_type_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_SUPPORTED_PROTECTED_OBJECTS,
+    SAI_SWITCH_ATTR_SUPPORTED_PROTECTED_OBJECT_TYPE,
 
     /**
      * @brief End of attributes

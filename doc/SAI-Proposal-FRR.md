@@ -183,7 +183,7 @@ If the next hop group is a Protection type and there is a backup next hop availa
 
 New attribute is added to SAI SWITCH to allow control plane to query the swtiching entity for the
 list of object tpyes that it can monitor.
--  SAI\_SWITCH\_ATTR\_SUPPORTED\_PROTECTED\_OBJECTS
+-  SAI\_SWITCH\_ATTR\_SUPPORTED\_PROTECTED\_OBJECT\_TYPE
 
 # Specification
 
@@ -204,7 +204,7 @@ list of object tpyes that it can monitor.
 +     * @type sai_s32_list_t
 +     * @flags READ_ONLY
 +     */
-+    SAI_SWITCH_ATTR_SUPPORTED_PROTECTED_OBJECTS,
++    SAI_SWITCH_ATTR_SUPPORTED_PROTECTED_OBJECT_TYPE,
 +
     /**
      * @brief End of attributes
