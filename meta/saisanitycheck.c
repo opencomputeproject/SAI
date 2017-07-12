@@ -2150,6 +2150,15 @@ void check_attr_existing_objects(
             META_LOG_DEBUG("Default value (oid) needs to be stored %s", md->attridname);
             break;
 
+        case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
+            
+            /*
+             * Allow qos maps list to enable editing qos map values.
+             * Since on switch initialization there are no qos map objects (all switch qos 
+             * maps attribs are null) this shouldn't be a problem
+             */
+            break;
+
         default:
 
             META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
