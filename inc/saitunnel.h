@@ -594,6 +594,25 @@ typedef enum _sai_tunnel_attr_t
 } sai_tunnel_attr_t;
 
 /**
+ * @brief Tunnel counter IDs in sai_get_tunnel_stats() call
+ */
+typedef enum _sai_tunnel_stat_t
+{
+    /** Ingress byte stat count */
+    SAI_TUNNEL_STAT_IN_OCTETS,
+
+    /** Ingress packet stat count */
+    SAI_TUNNEL_STAT_IN_PACKETS,
+
+    /** Egress byte stat count */
+    SAI_TUNNEL_STAT_OUT_OCTETS,
+
+    /** Egress packet stat count */
+    SAI_TUNNEL_STAT_OUT_PACKETS
+
+} sai_tunnel_stat_t;
+
+/**
  * @brief Create tunnel
  *
  * @param[out] tunnel_id Tunnel id
@@ -644,6 +663,36 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
         _In_ sai_object_id_t tunnel_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Get tunnel statistics counters.
+ *
+ * @param[in] tunnel_id Tunnel id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tunnel_stats_fn)(
+        _In_ sai_object_id_t tunnel_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_tunnel_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear tunnel statistics counters.
+ *
+ * @param[in] tunnel_id Tunnel id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_tunnel_stats_fn)(
+        _In_ sai_object_id_t tunnel_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_tunnel_stat_t *counter_ids);
 
 /**
  * @brief Defines tunnel termination table entry type
@@ -849,6 +898,8 @@ typedef struct _sai_tunnel_api_t
     sai_remove_tunnel_fn                         remove_tunnel;
     sai_set_tunnel_attribute_fn                  set_tunnel_attribute;
     sai_get_tunnel_attribute_fn                  get_tunnel_attribute;
+    sai_get_tunnel_stats_fn                      get_tunnel_stats;
+    sai_clear_tunnel_stats_fn                    clear_tunnel_stats;
     sai_create_tunnel_term_table_entry_fn        create_tunnel_term_table_entry;
     sai_remove_tunnel_term_table_entry_fn        remove_tunnel_term_table_entry;
     sai_set_tunnel_term_table_entry_attribute_fn set_tunnel_term_table_entry_attribute;
