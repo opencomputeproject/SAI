@@ -974,7 +974,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default internal
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4,
 
@@ -985,7 +985,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default internal
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4_IN_IPV4,
 
@@ -996,7 +996,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default internal
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV6,
 
@@ -1038,7 +1038,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default internal
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4,
 
@@ -1049,7 +1049,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default internal
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4_IN_IPV4,
 
@@ -1060,7 +1060,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default internal
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV6,
 
