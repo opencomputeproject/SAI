@@ -477,9 +477,6 @@ void check_attr_object_id_allownull(
                     /* default attr value from another attr may not support null */
                     break;
 
-                case SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL:
-                    break;
-
                 default:
                     META_MD_ASSERT_FAIL(md, "invalid default value type on object id when default is required");
                     break;
@@ -995,6 +992,11 @@ void check_attr_default_value_type(
             break;
 
         case SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL:
+
+            if (md->flags != SAI_ATTR_FLAGS_READ_ONLY)
+            {
+                META_MD_ASSERT_FAIL(md, "default internal currently can be set only on read only objects");
+            }
 
             if (md->objecttype != SAI_OBJECT_TYPE_SWITCH)
             {
