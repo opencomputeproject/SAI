@@ -874,9 +874,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 packets going through ECMP
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4,
 
@@ -884,9 +885,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 in IPv4 packets going through ECMP
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4_IN_IPV4,
 
@@ -894,9 +896,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv6 packets going through ECMP
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV6,
 
@@ -935,9 +938,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 packets going through LAG
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4,
 
@@ -945,9 +949,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 in IPv4 packets going through LAG
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4_IN_IPV4,
 
@@ -955,9 +960,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv6 packets going through LAG
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV6,
 
