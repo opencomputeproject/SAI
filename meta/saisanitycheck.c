@@ -2070,6 +2070,15 @@ void check_attr_existing_objects(
 
             break;
 
+        case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
+            
+            /*
+             * Allow qos maps list to enable editing qos map values.
+             * Since on switch initialization there are no qos map objects (all switch qos 
+             * maps attribs are null) this shouldn't be a problem
+             */
+            break;
+
         default:
 
             META_ASSERT_FAIL(md, "not supported attr value type on existing object");
