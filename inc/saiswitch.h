@@ -1466,6 +1466,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PFC_TC_DLR_INTERVAL,
 
     /**
+     * @brief Get the list of supported protected object types.
+     *        See comment for SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT for more details.
+     *
+     * @type sai_s32_list_t sai_object_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_PROTECTED_OBJECT_TYPE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
