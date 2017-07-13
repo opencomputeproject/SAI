@@ -456,7 +456,7 @@ typedef enum _sai_buffer_profile_attr_t
      * If set, this overrides #SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE.
      *
      * @type sai_buffer_profile_threshold_mode_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE
      */
     SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE,
@@ -465,21 +465,29 @@ typedef enum _sai_buffer_profile_attr_t
      * @brief Dynamic threshold for the shared usage
      *
      * The threshold is set to the 2^n of available buffer of the pool.
-     * Mandatory when SAI_BUFFER_POOL_THRESHOLD_MODE = SAI_BUFFER_THRESHOLD_MODE_DYNAMIC
+     * Mandatory when SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE = SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC
+     * or (when SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE = SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE
+     * and SAI_BUFFER_PROFILE_ATTR_POOL_ID is a pool with
+     * SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE = SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC).
      *
      * @type sai_int8_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE == SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC
      */
     SAI_BUFFER_PROFILE_ATTR_SHARED_DYNAMIC_TH,
 
     /**
      * @brief Static threshold for the shared usage in bytes
      *
-     * Mandatory when SAI_BUFFER_POOL_THRESHOLD_MODE = SAI_BUFFER_THRESHOLD_MODE_STATIC
+     * Mandatory when SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE = SAI_BUFFER_PROFILE_THRESHOLD_MODE_STATIC
+     * or (when SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE = SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE
+     * and SAI_BUFFER_PROFILE_ATTR_POOL_ID is a pool with
+     * SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE = SAI_BUFFER_POOL_THRESHOLD_MODE_STATIC).
      * When set to zero there is no limit for the shared usage.
      *
      * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE == SAI_BUFFER_PROFILE_THRESHOLD_MODE_STATIC
      */
     SAI_BUFFER_PROFILE_ATTR_SHARED_STATIC_TH,
 
