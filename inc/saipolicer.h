@@ -156,7 +156,7 @@ typedef enum _sai_policer_attr_t
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_POLICER_ATTR_METER_TYPE == SAI_POLICER_MODE_TR_TCM
+     * @validonly SAI_POLICER_ATTR_MODE == SAI_POLICER_MODE_TR_TCM
      */
     SAI_POLICER_ATTR_PIR = 0x00000006,
 
