@@ -1380,6 +1380,23 @@ sub ProcessConditionsGeneric
         {
             WriteSource "    .attrid = $attrid,";
             WriteSource "    .condition = { .s32 = $val }";
+
+            my $attrType = lc("$1t") if $attrid =~ /^(SAI_\w+_ATTR_)/;
+
+            my $enumTypeName = $METADATA{$attrType}{$attrid}{type};
+
+            if (defined $SAI_ENUMS{$enumTypeName})
+            {
+                # this condition is enum condition, check if condition value
+                # belongs to that enum
+
+                my @values = @{ $SAI_ENUMS{$enumTypeName}{values} };
+
+                if (not grep( /^$val$/, @values))
+                {
+                    LogError "condition value '$val' in '$cond' on $attr is not present in $enumTypeName";
+                }
+            }
         }
         elsif ($val =~ /^$NUMBER_REGEX$/ and $enumtype =~ /^sai_u?int(\d+)_t$/)
         {
