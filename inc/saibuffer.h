@@ -289,6 +289,22 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_XOFF_SIZE,
 
     /**
+     * @brief Attach WRED ID to pool
+     *
+     * WRED Drop/ECN marking based on pool thresholds will happen only
+     * when one of queue referring to this buffer pool configured
+     * with non default value for SAI_QUEUE_ATTR_WRED_PROFILE_ID.
+     * ID = #SAI_NULL_OBJECT_ID to disable WRED
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_WRED
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_BUFFER_POOL_ATTR_WRED_PROFILE_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_BUFFER_POOL_ATTR_END,
@@ -448,7 +464,10 @@ typedef enum _sai_buffer_profile_attr_t
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
-    SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,
+    SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE,
+
+    /** @ignore - for backward compatibility */
+    SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE = SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE,
 
     /**
      * @brief Shared threshold mode for the buffer profile
@@ -456,7 +475,7 @@ typedef enum _sai_buffer_profile_attr_t
      * If set, this overrides #SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE.
      *
      * @type sai_buffer_profile_threshold_mode_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE
      */
     SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE,
@@ -465,21 +484,29 @@ typedef enum _sai_buffer_profile_attr_t
      * @brief Dynamic threshold for the shared usage
      *
      * The threshold is set to the 2^n of available buffer of the pool.
-     * Mandatory when SAI_BUFFER_POOL_THRESHOLD_MODE = SAI_BUFFER_THRESHOLD_MODE_DYNAMIC
+     * Mandatory when SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE = SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC
+     * or (when SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE = SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE
+     * and SAI_BUFFER_PROFILE_ATTR_POOL_ID is a pool with
+     * SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE = SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC).
      *
      * @type sai_int8_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE == SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC
      */
     SAI_BUFFER_PROFILE_ATTR_SHARED_DYNAMIC_TH,
 
     /**
      * @brief Static threshold for the shared usage in bytes
      *
-     * Mandatory when SAI_BUFFER_POOL_THRESHOLD_MODE = SAI_BUFFER_THRESHOLD_MODE_STATIC
+     * Mandatory when SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE = SAI_BUFFER_PROFILE_THRESHOLD_MODE_STATIC
+     * or (when SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE = SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE
+     * and SAI_BUFFER_PROFILE_ATTR_POOL_ID is a pool with
+     * SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE = SAI_BUFFER_POOL_THRESHOLD_MODE_STATIC).
      * When set to zero there is no limit for the shared usage.
      *
      * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE == SAI_BUFFER_PROFILE_THRESHOLD_MODE_STATIC
      */
     SAI_BUFFER_PROFILE_ATTR_SHARED_STATIC_TH,
 

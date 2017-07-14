@@ -100,7 +100,7 @@ typedef enum _sai_qos_map_attr_t
      * - All traffic class maps to queue 0
      *
      * @type sai_qos_map_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_QOS_MAP_ATTR_MAP_TO_VALUE_LIST = 0x00000001,
 

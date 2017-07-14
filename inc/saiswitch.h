@@ -971,9 +971,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 packets going through ECMP
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4,
 
@@ -981,9 +982,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 in IPv4 packets going through ECMP
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4_IN_IPV4,
 
@@ -991,9 +993,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv6 packets going through ECMP
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV6,
 
@@ -1032,9 +1035,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 packets going through LAG
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4,
 
@@ -1042,9 +1046,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 in IPv4 packets going through LAG
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4_IN_IPV4,
 
@@ -1052,9 +1057,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv6 packets going through LAG
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV6,
 
@@ -1458,6 +1464,15 @@ typedef enum _sai_switch_attr_t
      * @default empty
      */
     SAI_SWITCH_ATTR_PFC_TC_DLR_INTERVAL,
+
+    /**
+     * @brief Get the list of supported protected object types.
+     *        See comment for SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT for more details.
+     *
+     * @type sai_s32_list_t sai_object_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_PROTECTED_OBJECT_TYPE,
 
     /**
      * @brief End of attributes

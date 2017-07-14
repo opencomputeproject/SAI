@@ -124,7 +124,7 @@ typedef enum _sai_policer_attr_t
      * #SAI_POLICER_ATTR_METER_TYPE
      *
      * @type sai_uint64_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default 0
      */
     SAI_POLICER_ATTR_CBS = 0x00000003,
@@ -134,7 +134,7 @@ typedef enum _sai_policer_attr_t
      * #SAI_POLICER_ATTR_METER_TYPE
      *
      * @type sai_uint64_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default 0
      */
     SAI_POLICER_ATTR_CIR = 0x00000004,
@@ -144,7 +144,7 @@ typedef enum _sai_policer_attr_t
      * #SAI_POLICER_ATTR_METER_TYPE
      *
      * @type sai_uint64_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default 0
      */
     SAI_POLICER_ATTR_PBS = 0x00000005,
@@ -154,8 +154,9 @@ typedef enum _sai_policer_attr_t
      * #SAI_POLICER_ATTR_METER_TYPE
      *
      * @type sai_uint64_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_POLICER_ATTR_METER_TYPE == SAI_POLICER_MODE_TR_TCM
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_POLICER_ATTR_MODE == SAI_POLICER_MODE_TR_TCM
      */
     SAI_POLICER_ATTR_PIR = 0x00000006,
 
@@ -163,7 +164,7 @@ typedef enum _sai_policer_attr_t
      * @brief Action to take for Green color packets
      *
      * @type sai_packet_action_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_POLICER_ATTR_GREEN_PACKET_ACTION = 0x00000007,
@@ -172,7 +173,7 @@ typedef enum _sai_policer_attr_t
      * @brief Action to take for Yellow color packets
      *
      * @type sai_packet_action_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_POLICER_ATTR_YELLOW_PACKET_ACTION = 0x00000008,
@@ -183,7 +184,7 @@ typedef enum _sai_policer_attr_t
      * For storm control action should be used as red packet action.
      *
      * @type sai_packet_action_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_POLICER_ATTR_RED_PACKET_ACTION = 0x00000009,
