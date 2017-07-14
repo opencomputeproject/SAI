@@ -388,7 +388,10 @@ typedef enum _sai_bridge_attr_t
      *
      * Provides control on the set of bridge ports on which unknown
      * unicast packets need to be flooded.If null object id is passed,
-     * then flooding will be disabled. Default is to disable flooding.
+     * then flooding will be disabled. Default is to flood to subports
+     * of the bridge.During bridge create, SAI would internally create
+     * an L2MC group and whenever subports are added to the bridge, SAI
+     * would automatically add them to that L2MC group.
      * Valid for SAI_BRIDGE_TYPE_1D.
      *
      * @type sai_object_id_t
@@ -405,7 +408,10 @@ typedef enum _sai_bridge_attr_t
      *
      * Provides control on the set of bridge ports on which unknown
      * multicast packets need to be flooded.If null object id is passed,
-     * then flooding will be disabled. Default is to disable flooding.
+     * then flooding will be disabled. Default is to flood to subports
+     * of the bridge.During bridge create, SAI would internally create
+     * an L2MC group and whenever subports are added to the bridge, SAI
+     * would automatically add them to that L2MC group.
      * Valid for SAI_BRIDGE_TYPE_1D
      *
      * @type sai_object_id_t
@@ -422,7 +428,10 @@ typedef enum _sai_bridge_attr_t
      *
      * Provides control on the set of bridge ports on which broadcast
      * packets need to be flooded.If null object id is passed,
-     * then flooding will be disabled. Default is to disable flooding.
+     * then flooding will be disabled. Default is to flood to subports
+     * of the bridge.During bridge create, SAI would internally create
+     * an L2MC group and whenever subports are added to the bridge, SAI
+     * would automatically add them to that L2MC group.
      * Valid for SAI_BRIDGE_TYPE_1D.
      *
      * @type sai_object_id_t
