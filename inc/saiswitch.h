@@ -243,6 +243,9 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS = SAI_SWITCH_ATTR_START,
 
+    /** @ignore - for backward compatibility */
+    SAI_SWITCH_ATTR_PORT_NUMBER = SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS,
+
     /**
      * @brief Maximum number of supported ports on the switch
      *
@@ -1603,13 +1606,6 @@ typedef enum _sai_switch_attr_t
  * the transceiver type plugged in to the port
  */
 #define SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE    "SAI_HW_PORT_PROFILE_ID_CONFIG_FILE"
-
-/**
- * @def SAI_SWITCH_ATTR_PORT_NUMBER
- *
- * For backward compatibility.
- */
-#define SAI_SWITCH_ATTR_PORT_NUMBER     SAI_SWITCH_ATTR_MAX_NUMBER_OF_SUPPORTED_PORTS
 
 /**
  * @brief Switch shutdown request callback.
