@@ -827,6 +827,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT,
 
     /**
+     * @brief Count of the total number of ranges supported by NPU
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_ACL_RANGE_COUNT,
+
+    /**
+     * @brief ACL capabilities supported by the NPU
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_CAPABILITY,
+
+    /**
      * @brief Multicast snooping capability supported by the NPU
      *
      * @type sai_switch_mcast_snooping_capability_t
@@ -955,9 +971,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 packets going through ECMP
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4,
 
@@ -965,9 +982,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 in IPv4 packets going through ECMP
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV4_IN_IPV4,
 
@@ -975,9 +993,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv6 packets going through ECMP
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_ECMP_HASH_IPV6,
 
@@ -1016,9 +1035,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 packets going through LAG
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4,
 
@@ -1026,9 +1046,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv4 in IPv4 packets going through LAG
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV4_IN_IPV4,
 
@@ -1036,9 +1057,10 @@ typedef enum _sai_switch_attr_t
      * @brief The hash object for IPv6 packets going through LAG
      *
      * @type sai_object_id_t
-     * @flags READ_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HASH
-     * @default internal
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_LAG_HASH_IPV6,
 
@@ -1442,6 +1464,15 @@ typedef enum _sai_switch_attr_t
      * @default empty
      */
     SAI_SWITCH_ATTR_PFC_TC_DLR_INTERVAL,
+
+    /**
+     * @brief Get the list of supported protected object types.
+     *        See comment for SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT for more details.
+     *
+     * @type sai_s32_list_t sai_object_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_PROTECTED_OBJECT_TYPE,
 
     /**
      * @brief End of attributes
