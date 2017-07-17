@@ -281,6 +281,18 @@ typedef enum _sai_vlan_attr_t
     /** Custom range base value */
     SAI_VLAN_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
+    /**
+     * @brief IGMP Snooping enable or disable control for VLAN
+     *
+     * IGMP Snooping enable control for VLAN. Default is
+     * disabled
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_VLAN_ATTR_CUSTOM_IGMP_SNOOPING_ENABLE = SAI_VLAN_ATTR_CUSTOM_RANGE_START,
+
     /** End of custom range base */
     SAI_VLAN_ATTR_CUSTOM_RANGE_END
 
