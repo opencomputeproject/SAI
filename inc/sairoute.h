@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -34,7 +34,7 @@
  */
 
 /**
- * @brief Attribute Id for sai route object
+ * @brief Attribute Id for SAI route object
  */
 typedef enum _sai_route_entry_attr_t
 {
@@ -55,20 +55,24 @@ typedef enum _sai_route_entry_attr_t
     SAI_ROUTE_ENTRY_ATTR_PACKET_ACTION = SAI_ROUTE_ENTRY_ATTR_START,
 
     /**
-     * @brief Packet priority for trap/log actions
+     * @brief Generate User Defined Trap ID for trap/log actions
      *
-     * @type sai_uint8_t
+     * When it is SAI_NULL_OBJECT_ID, then packet will not be trapped.
+     *
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_ROUTE_ENTRY_ATTR_TRAP_PRIORITY,
+    SAI_ROUTE_ENTRY_ATTR_USER_TRAP_ID,
 
     /**
      * @brief Next hop or next hop group id for the packet, or a router interface
      * in case of directly reachable route, or the CPU port in case of IP2ME route
      *
-     * The next hop id is only effective when the packet action is one of the following:
-     * FORWARD, COPY, LOG, TRANSIT
+     * The next hop id is only effective when the packet action is one of the
+     * following: FORWARD, COPY, LOG, TRANSIT.
      *
      * The next hop id can be a generic next hop object, such as next hop, next
      * hop group. Directly reachable routes are the IP subnets that are
@@ -76,6 +80,8 @@ typedef enum _sai_route_entry_attr_t
      * interface id to which the subnet is attached. IP2ME route adds a local
      * router IP address. For such routes, fill the CPU port
      * (#SAI_SWITCH_ATTR_CPU_PORT).
+     * When pointing to a next hop group which is empty, the effective routing
+     * action will be DROP.
      *
      * When it is SAI_NULL_OBJECT_ID, then packet will be dropped.
      *
@@ -146,7 +152,7 @@ typedef struct _sai_route_entry_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_route_entry_fn)(
         _In_ const sai_route_entry_t *route_entry,
@@ -158,9 +164,9 @@ typedef sai_status_t (*sai_create_route_entry_fn)(
  *
  * Note: IP prefix/mask expected in Network Byte Order.
  *
- * @param[in] route_entry - route entry
+ * @param[in] route_entry Route entry
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_route_entry_fn)(
         _In_ const sai_route_entry_t *route_entry);
@@ -171,7 +177,7 @@ typedef sai_status_t (*sai_remove_route_entry_fn)(
  * @param[in] route_entry Route entry
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_route_entry_attribute_fn)(
         _In_ const sai_route_entry_t *route_entry,
@@ -184,7 +190,7 @@ typedef sai_status_t (*sai_set_route_entry_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_route_entry_attribute_fn)(
         _In_ const sai_route_entry_t *route_entry,
@@ -192,14 +198,111 @@ typedef sai_status_t (*sai_get_route_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Bulk create route entry
+ *
+ * @param[in] object_count Number of objects to create
+ * @param[in] route_entry List of object to create
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to create.
+ * @param[in] attr_list List of attributes for every object.
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are created or
+ * #SAI_STATUS_FAILURE when any of the objects fails to create. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_create_route_entry_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_route_entry_t *route_entry,
+        _In_ const uint32_t *attr_count,
+        _In_ const sai_attribute_t **attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk remove route entry
+ *
+ * @param[in] object_count Number of objects to remove
+ * @param[in] route_entry List of objects to remove
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_remove_route_entry_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_route_entry_t *route_entry,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk set attribute on route entry
+ *
+ * @param[in] object_count Number of objects to set attribute
+ * @param[in] route_entry List of objects to set attribute
+ * @param[in] attr_list List of attributes to set on objects, one attribute per object
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_set_route_entry_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_route_entry_t *route_entry,
+        _In_ const sai_attribute_t *attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk get attribute on route entry
+ *
+ * @param[in] object_count Number of objects to set attribute
+ * @param[in] route_entry List of objects to set attribute
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to get
+ * @param[inout] attr_list List of attributes to set on objects, one attribute per object
+ * @param[in] mode Bulk operation error handling mode
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_get_route_entry_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_route_entry_t *route_entry,
+        _In_ const uint32_t *attr_count,
+        _Inout_ sai_attribute_t **attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
  * @brief Router entry methods table retrieved with sai_api_query()
  */
 typedef struct _sai_route_api_t
 {
-    sai_create_route_entry_fn         create_route_entry;
-    sai_remove_route_entry_fn         remove_route_entry;
-    sai_set_route_entry_attribute_fn  set_route_entry_attribute;
-    sai_get_route_entry_attribute_fn  get_route_entry_attribute;
+    sai_create_route_entry_fn                   create_route_entry;
+    sai_remove_route_entry_fn                   remove_route_entry;
+    sai_set_route_entry_attribute_fn            set_route_entry_attribute;
+    sai_get_route_entry_attribute_fn            get_route_entry_attribute;
+
+    sai_bulk_create_route_entry_fn              create_route_entries;
+    sai_bulk_remove_route_entry_fn              remove_route_entries;
+    sai_bulk_set_route_entry_attribute_fn       set_route_entries_attribute;
+    sai_bulk_get_route_entry_attribute_fn       get_route_entries_attribute;
 
 } sai_route_api_t;
 

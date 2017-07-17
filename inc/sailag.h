@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -34,7 +34,7 @@
  */
 
 /**
- * @brief Lag attribute: List of attributes for LAG object
+ * @brief LAG attribute: List of attributes for LAG object
  */
 typedef enum _sai_lag_attr_t
 {
@@ -57,7 +57,7 @@ typedef enum _sai_lag_attr_t
     /**
      * @brief LAG bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a LAG. Enable/Update
+     * Bind (or unbind) an ingress ACL table or ACL group on a LAG. Enable/Update
      * ingress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -73,7 +73,7 @@ typedef enum _sai_lag_attr_t
     /**
      * @brief LAG bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl tables or acl groups on a LAG. Enable/Update
+     * Bind (or unbind) an egress ACL tables or ACL groups on a LAG. Enable/Update
      * egress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -85,6 +85,45 @@ typedef enum _sai_lag_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_LAG_ATTR_EGRESS_ACL,
+
+    /**
+     * @brief Port VLAN ID
+     *
+     * Untagged ingress frames are tagged with Port VLAN ID (PVID)
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan true
+     * @default 1
+     */
+    SAI_LAG_ATTR_PORT_VLAN_ID,
+
+    /**
+     * @brief Default VLAN Priority
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_LAG_ATTR_DEFAULT_VLAN_PRIORITY,
+
+    /**
+     * @brief Dropping of untagged frames on ingress
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_LAG_ATTR_DROP_UNTAGGED,
+
+    /**
+     * @brief Dropping of tagged frames on ingress
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_LAG_ATTR_DROP_TAGGED,
 
     /**
      * @brief End of attributes
@@ -107,9 +146,9 @@ typedef enum _sai_lag_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_lag_fn)(
+typedef sai_status_t (*sai_create_lag_fn)(
         _Out_ sai_object_id_t *lag_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -120,9 +159,9 @@ typedef sai_status_t(*sai_create_lag_fn)(
  *
  * @param[in] lag_id LAG id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_remove_lag_fn)(
+typedef sai_status_t (*sai_remove_lag_fn)(
         _In_ sai_object_id_t lag_id);
 
 /**
@@ -131,7 +170,7 @@ typedef sai_status_t(*sai_remove_lag_fn)(
  * @param[in] lag_id LAG id
  * @param[in] attr Structure containing ID and value to be set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_lag_attribute_fn)(
         _In_ sai_object_id_t lag_id,
@@ -144,7 +183,7 @@ typedef sai_status_t (*sai_set_lag_attribute_fn)(
  * @param[in] attr_count Number of attributes to be get
  * @param[inout] attr_list List of structures containing ID and value to be get
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_lag_attribute_fn)(
         _In_ sai_object_id_t lag_id,
@@ -218,9 +257,9 @@ typedef enum _sai_lag_member_attr_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_lag_member_fn)(
+typedef sai_status_t (*sai_create_lag_member_fn)(
         _Out_ sai_object_id_t *lag_member_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
@@ -231,9 +270,9 @@ typedef sai_status_t(*sai_create_lag_member_fn)(
  *
  * @param[in] lag_member_id LAG Member id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_remove_lag_member_fn)(
+typedef sai_status_t (*sai_remove_lag_member_fn)(
         _In_ sai_object_id_t lag_member_id);
 
 /**
@@ -242,7 +281,7 @@ typedef sai_status_t(*sai_remove_lag_member_fn)(
  * @param[in] lag_member_id LAG Member id
  * @param[in] attr Structure containing ID and value to be set
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_lag_member_attribute_fn)(
         _In_ sai_object_id_t lag_member_id,
@@ -255,7 +294,7 @@ typedef sai_status_t (*sai_set_lag_member_attribute_fn)(
  * @param[in] attr_count Number of attributes to be get
  * @param[inout] attr_list List of structures containing ID and value to be get
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_lag_member_attribute_fn)(
         _In_ sai_object_id_t lag_member_id,

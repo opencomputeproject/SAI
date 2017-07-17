@@ -21,7 +21,7 @@ bool show_switch_links = false;
 bool show_read_only_links = false;
 
 void process_object_type_attributes(
-        _In_ const sai_attr_metadata_t** meta_attr_list,
+        _In_ const sai_attr_metadata_t* const* const meta_attr_list,
         _In_ sai_object_type_t current_object_type)
 {
     std::set<sai_object_type_t> otset;
@@ -37,7 +37,7 @@ void process_object_type_attributes(
             continue;
         }
 
-        bool ro = HAS_FLAG_READ_ONLY(meta->flags);
+        bool ro = SAI_HAS_FLAG_READ_ONLY(meta->flags);
 
         if (ro && !show_read_only_links)
         {
@@ -111,7 +111,7 @@ void process_object_types()
 {
     for (int i = 0; sai_metadata_attr_by_object_type[i] != NULL; ++i)
     {
-        const sai_attr_metadata_t** meta = sai_metadata_attr_by_object_type[i];
+        const sai_attr_metadata_t* const* const meta = sai_metadata_attr_by_object_type[i];
 
         process_object_type_attributes(meta, (sai_object_type_t)i);
     }
@@ -218,7 +218,7 @@ void process_nonobjectid_connections()
         }
     }
 
-    PRINT_NN(PORT, SWITCH, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
+    PRINT_NN(SWITCH, PORT, "[dir=\"none\", color=\"red\", peripheries = 2, penwidth=2.0 , style  = dashed ];\n");
 }
 
 int main(int argc, char** argv)
