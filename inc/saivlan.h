@@ -291,7 +291,7 @@ typedef enum _sai_vlan_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_VLAN_ATTR_CUSTOM_IGMP_SNOOPING_ENABLE = SAI_VLAN_ATTR_CUSTOM_RANGE_START,
+    SAI_VLAN_ATTR_CUSTOM_IGMP_SNOOPING_ENABLE,
 
     /** End of custom range base */
     SAI_VLAN_ATTR_CUSTOM_RANGE_END
