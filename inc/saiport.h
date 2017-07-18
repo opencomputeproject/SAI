@@ -436,7 +436,7 @@ typedef enum _sai_port_attr_t
      * @brief Auto Negotiation configuration
      *
      * @type bool
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default false
      */
     SAI_PORT_ATTR_AUTO_NEG_MODE,
@@ -454,7 +454,7 @@ typedef enum _sai_port_attr_t
      * @brief Media Type
      *
      * @type sai_port_media_type_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default SAI_PORT_MEDIA_TYPE_NOT_PRESENT
      */
     SAI_PORT_ATTR_MEDIA_TYPE,
