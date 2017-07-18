@@ -236,12 +236,23 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_START,
 
     /**
-     * @brief The number of ports on the switch
+     * @brief Number of active(created) ports on the switch
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_PORT_NUMBER = SAI_SWITCH_ATTR_START,
+    SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS = SAI_SWITCH_ATTR_START,
+
+    /** @ignore - for backward compatibility */
+    SAI_SWITCH_ATTR_PORT_NUMBER = SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS,
+
+    /**
+     * @brief Maximum number of supported ports on the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_NUMBER_OF_SUPPORTED_PORTS,
 
     /**
      * @brief Get the port list
