@@ -13,6 +13,7 @@ HQOS
 HQoS
 Hostif
 Inservice
+InSegment
 LAGs
 Linux
 Loopback
@@ -86,6 +87,7 @@ nexthop
 nexthopgroup
 objlist
 optimizations
+outsegment
 param
 pkts
 policer

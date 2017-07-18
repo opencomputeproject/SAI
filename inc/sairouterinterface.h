@@ -47,6 +47,9 @@ typedef enum _sai_router_interface_type_t
     /** Loopback Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
 
+    /** MPLS Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_MPLS_ROUTER,
+
     /** Sub port Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
 

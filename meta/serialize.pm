@@ -247,6 +247,10 @@ sub GetTypeInfoForSerialize
     {
         $TypeInfo{suffix} = "uint16";
     }
+    elsif ($type =~ /^sai_(label_id)_t$/)
+    {
+        $TypeInfo{suffix} = "uint32";
+    }
     elsif ($type =~ /^sai_(cos|queue_index)_t$/)
     {
         $TypeInfo{suffix} = "uint8";
