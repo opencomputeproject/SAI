@@ -145,7 +145,7 @@ typedef enum _sai_bridge_port_attr_t
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT and SAI_BRIDGE_PORT_ATTR_TAGGING_MODE == SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED
+     * @condition SAI_BRIDGE_PORT_ATTR_TAGGING_MODE == SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED
      */
     SAI_BRIDGE_PORT_ATTR_VLAN_ID,
 
