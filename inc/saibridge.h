@@ -88,6 +88,19 @@ typedef enum _sai_bridge_port_type_t
 } sai_bridge_port_type_t;
 
 /**
+ * @brief Attribute data for #SAI_BRIDGE_PORT_ATTR_TAGGING_MODE
+ */
+typedef enum _sai_bridge_port_tagging_mode_t
+{
+    /** Untagged mode */
+    SAI_BRIDGE_PORT_TAGGING_MODE_UNTAGGED,
+
+    /** Tagged mode */
+    SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED,
+
+}sai_bridge_port_tagging_mode_t;
+
+/**
  * @brief SAI attributes for Bridge Port
  */
 typedef enum _sai_bridge_port_attr_t
@@ -118,12 +131,21 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_PORT_ID,
 
     /**
+     * @brief Tagging mode of the bridge port
+     *
+     * @type sai_bridge_port_tagging_mode_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
+     */
+    SAI_BRIDGE_PORT_ATTR_TAGGING_MODE,
+
+    /**
      * @brief Associated Vlan
      *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT and SAI_BRIDGE_PORT_ATTR_TAGGING_MODE == SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED
      */
     SAI_BRIDGE_PORT_ATTR_VLAN_ID,
 
