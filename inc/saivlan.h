@@ -69,6 +69,8 @@ typedef enum _sai_vlan_mcast_lookup_key_type_t
 /**
  * @brief Attribute Id in sai_set_vlan_attribute() and
  * sai_get_vlan_attribute() calls
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_vlan_attr_t
 {
@@ -289,7 +291,6 @@ typedef enum _sai_vlan_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @flags Contains flags
      * @default false
      */
     SAI_VLAN_ATTR_CUSTOM_IGMP_SNOOPING_ENABLE,
