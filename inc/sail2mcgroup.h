@@ -99,6 +99,16 @@ typedef enum _sai_l2mc_group_member_attr_t
     SAI_L2MC_GROUP_MEMBER_ATTR_L2MC_OUTPUT_ID,
 
     /**
+     * @brief L2MC Tunnel Endpoint IP.Valid and mandatory if bridge port
+     * is of type SAI_BRIDGE_PORT_TYPE_TUNNEL.
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_ONLY
+     * @default 0.0.0.0
+     */
+    SAI_L2MC_GROUP_MEMBER_ATTR_L2MC_ENDPOINT_IP,
+
+    /**
      * @brief End of attributes
      */
     SAI_L2MC_GROUP_MEMBER_ATTR_END,

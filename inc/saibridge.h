@@ -223,6 +223,25 @@ typedef enum _sai_bridge_port_attr_t
 } sai_bridge_port_attr_t;
 
 /**
+ * @brief Bridge port counter IDs in sai_get_bridge_port_stats() call
+ */
+typedef enum _sai_bridge_port_stat_t
+{
+    /** Ingress byte stat count */
+    SAI_BRIDGE_PORT_STAT_IN_OCTETS,
+
+    /** Ingress packet stat count */
+    SAI_BRIDGE_PORT_STAT_IN_PACKETS,
+
+    /** Egress byte stat count */
+    SAI_BRIDGE_PORT_STAT_OUT_OCTETS,
+
+    /** Egress packet stat count */
+    SAI_BRIDGE_PORT_STAT_OUT_PACKETS
+
+} sai_bridge_port_stat_t;
+
+/**
  * @brief Create bridge port
  *
  * @param[out] bridge_port_id Bridge port ID
@@ -273,6 +292,36 @@ typedef sai_status_t (*sai_get_bridge_port_attribute_fn)(
         _In_ sai_object_id_t bridge_port_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Get bridge port statistics counters.
+ *
+ * @param[in] bridge_port_id Bridge port id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_bridge_port_stats_fn)(
+        _In_ sai_object_id_t bridge_port_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_bridge_port_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear bridge port statistics counters.
+ *
+ * @param[in] bridge_port_id Bridge port id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_bridge_port_stats_fn)(
+        _In_ sai_object_id_t bridge_port_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_bridge_port_stat_t *counter_ids);
 
 /**
  * @brief Attribute data for #SAI_BRIDGE_ATTR_TYPE
@@ -335,14 +384,64 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_LEARN_DISABLE,
 
     /**
-     * @brief To disable flooding traffic (Broadcast, unknown unicast,
-     * unknown multicast) on a bridge
+     * @brief Unknown unicast flood group.
      *
-     * @type bool
+     * Provides control on the set of bridge ports on which unknown
+     * unicast packets need to be flooded.If null object id is passed,
+     * then flooding will be disabled. Default is to flood to sub-ports
+     * of the bridge.During bridge create, SAI would internally create
+     * an L2MC group and whenever sub-ports are added to the bridge, SAI
+     * would automatically add them to that L2MC group.
+     * Valid for SAI_BRIDGE_TYPE_1D.
+     *
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
      */
-    SAI_BRIDGE_ATTR_FLOOD_DISABLE,
+    SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Unknown multicast flood group.
+     *
+     * Provides control on the set of bridge ports on which unknown
+     * multicast packets need to be flooded.If null object id is passed,
+     * then flooding will be disabled. Default is to flood on sub-ports
+     * of the bridge.During bridge create, SAI would internally create
+     * an L2MC group and whenever sub-ports are added to the bridge, SAI
+     * would automatically add them to that L2MC group.
+     * Valid for SAI_BRIDGE_TYPE_1D
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     */
+    SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Broadcast flood group.
+     *
+     * Provides control on the set of bridge ports on which broadcast
+     * packets need to be flooded.If null object id is passed,
+     * then flooding will be disabled. Default is to flood to sub-ports
+     * of the bridge.During bridge create, SAI would internally create
+     * an L2MC group and whenever sub-ports are added to the bridge, SAI
+     * would automatically add them to that L2MC group.
+     * Valid for SAI_BRIDGE_TYPE_1D.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     */
+    SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
     /**
      * @brief End of attributes
@@ -356,6 +455,25 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_CUSTOM_RANGE_END
 
 } sai_bridge_attr_t;
+
+/**
+ * @brief Bridge counter IDs in sai_get_bridge_stats() call
+ */
+typedef enum _sai_bridge_stat_t
+{
+    /** Ingress byte stat count */
+    SAI_BRIDGE_STAT_IN_OCTETS,
+
+    /** Ingress packet stat count */
+    SAI_BRIDGE_STAT_IN_PACKETS,
+
+    /** Egress byte stat count */
+    SAI_BRIDGE_STAT_OUT_OCTETS,
+
+    /** Egress packet stat count */
+    SAI_BRIDGE_STAT_OUT_PACKETS
+
+} sai_bridge_stat_t;
 
 /**
  * @brief Create bridge
@@ -410,6 +528,36 @@ typedef sai_status_t (*sai_get_bridge_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Get bridge statistics counters.
+ *
+ * @param[in] bridge_id Bridge id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_bridge_stats_fn)(
+        _In_ sai_object_id_t bridge_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_bridge_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear bridge statistics counters.
+ *
+ * @param[in] bridge_id Bridge id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_bridge_stats_fn)(
+        _In_ sai_object_id_t bridge_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_bridge_stat_t *counter_ids);
+
+/**
  * @brief Bridge methods table retrieved with sai_api_query()
  */
 typedef struct _sai_bridge_api_t
@@ -418,10 +566,14 @@ typedef struct _sai_bridge_api_t
     sai_remove_bridge_fn                remove_bridge;
     sai_set_bridge_attribute_fn         set_bridge_attribute;
     sai_get_bridge_attribute_fn         get_bridge_attribute;
+    sai_get_bridge_stats_fn             get_bridge_stats;
+    sai_clear_bridge_stats_fn           clear_bridge_stats;
     sai_create_bridge_port_fn           create_bridge_port;
     sai_remove_bridge_port_fn           remove_bridge_port;
     sai_set_bridge_port_attribute_fn    set_bridge_port_attribute;
     sai_get_bridge_port_attribute_fn    get_bridge_port_attribute;
+    sai_get_bridge_port_stats_fn        get_bridge_port_stats;
+    sai_clear_bridge_port_stats_fn      clear_bridge_port_stats;
 } sai_bridge_api_t;
 
 /**

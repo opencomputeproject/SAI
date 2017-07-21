@@ -3,6 +3,7 @@ ACL - Access Control List
 API - Application Program Interface
 ARP - Address Resolution Protocol
 ASIC - Application Specific Integrated Circuit
+BFD - Bidirectional Forwarding Detection
 BGP - Border Gateway Protocol
 CAM - Content Addressable Memory
 CB - Callback

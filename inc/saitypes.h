@@ -54,6 +54,7 @@ typedef UINT8   sai_mac_t[6];
 typedef UINT32  sai_ip4_t;
 typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
+typedef UINT32  sai_label_id_t;
 
 #include <ws2def.h>
 #include <ws2ipdef.h>
@@ -92,6 +93,7 @@ typedef uint8_t  sai_mac_t[6];
 typedef uint32_t sai_ip4_t;
 typedef uint8_t  sai_ip6_t[16];
 typedef uint32_t sai_switch_hash_seed_t;
+typedef uint32_t sai_label_id_t;
 
 #define _In_
 #define _Out_
@@ -232,7 +234,9 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_TAM_TRANSPORTER          = 63,
     SAI_OBJECT_TYPE_TAM_THRESHOLD            = 64,
     SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST     = 65,
-    SAI_OBJECT_TYPE_MAX                      = 66,
+    SAI_OBJECT_TYPE_PORT_POOL                = 66,
+    SAI_OBJECT_TYPE_INSEG_ENTRY              = 67,
+    SAI_OBJECT_TYPE_MAX                      = 68,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
