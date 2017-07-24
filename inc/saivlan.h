@@ -291,7 +291,7 @@ typedef enum _sai_vlan_attr_t
      * internally create an L2MC group and whenever bridge ports are added
      * to VLAN, SAI would automatically add them to that L2MC group.
      * If traffic type based unknown multicast flood groups attributes are
-     * also provided, those take precedence over this attrtibute as they
+     * also provided, those take precedence over this attribute as they
      * are more specific.
      *
      * @type sai_object_id_t
