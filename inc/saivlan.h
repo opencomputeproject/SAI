@@ -264,14 +264,61 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_META_DATA,
 
     /**
-     * @brief To disable flooding traffic (Broadcast, unknown unicast,
-     * unknown multicast) on a VLAN
+     * @brief Unknown unicast flood group.
      *
-     * @type bool
+     * Provides control on the set of bridge ports on which unknown
+     * unicast packets need to be flooded.If null object id is passed,
+     * then flooding will be disabled. Default is to flood to all bridge
+     * ports which were added as VLAN members.During VLAN create, SAI would
+     * internally create an L2MC group and whenever bridge ports are added
+     * to VLAN, SAI would automatically add them to that L2MC group.
+     *
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_VLAN_ATTR_FLOOD_DISABLE,
+    SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Unknown multicast flood group.
+     *
+     * Provides control on the set of bridge ports on which unknown
+     * multicast packets need to be flooded.If null object id is passed,
+     * then flooding will be disabled. Default is to flood to all bridge
+     * ports which were added as VLAN members.During VLAN create, SAI would
+     * internally create an L2MC group and whenever bridge ports are added
+     * to VLAN, SAI would automatically add them to that L2MC group.
+     * If traffic type based unknown multicast flood groups attributes are
+     * also provided, those take precedence over this attrtibute as they
+     * are more specific.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Broadcast flood group.
+     *
+     * Provides control on the set of bridge ports on which broadcast
+     * packets need to be flooded.If null object id is passed, then
+     * flooding will be disabled. Default is to flood to all bridge
+     * ports which were added as vlan members.During VLAN create, SAI would
+     * internally create an L2MC group and whenever bridge ports are added
+     * to VLAN, SAI would automatically add them to that L2MC group.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_VLAN_ATTR_BROADCAST_FLOOD_GROUP,
 
     /**
      * @brief End of attributes
