@@ -156,28 +156,99 @@ def sai_thrift_get_port_by_bridge_port(client, bp):
 
     return SAI_NULL_OBJECT_ID
 
-def sai_thrift_create_bridge_port(client, port_id):
-    bport_attr1_value = sai_thrift_attribute_value_t(s32=SAI_BRIDGE_PORT_TYPE_PORT)
-    bport_attr1 = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_TYPE,
-                                              value=bport_attr1_value)
+def sai_thrift_create_bridge_sub_port(client, port_id, bridge_id, vlan_id, admin_state = True):
+    bport_oid = sai_thrift_get_bridge_port_by_port(client, port_id)
+    assert (bport_oid != SAI_NULL_OBJECT_ID)
 
-    bport_attr2_value = sai_thrift_attribute_value_t(oid=port_id)
-    bport_attr2 = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_PORT_ID,
-                                              value=bport_attr2_value)
+    status = client.sai_thrift_remove_bridge_port(bport_oid)
+    assert (status == SAI_STATUS_SUCCESS)
 
-    bport_attr3_value = sai_thrift_attribute_value_t(oid=switch.default_1q_bridge)
-    bport_attr3 = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
-                                              value=bport_attr3_value)
+    return sai_thrift_create_bridge_port(client, port_id, SAI_BRIDGE_PORT_TYPE_SUB_PORT, bridge_id, vlan_id, None, admin_state)
 
-    bport_attr_list = [bport_attr1, bport_attr2, bport_attr3]
+def sai_thrift_remove_bridge_sub_port(client, sub_port_id, port_id):
+    bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=False)
+    bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+                                                    value=bport_attr_admin_state_value)
+    client.sai_thrift_set_bridge_port_attribute(sub_port_id, bport_attr_admin_state)
+
+    sai_thrift_flush_fdb_by_bridge_port(client, sub_port_id)
+
+    client.sai_thrift_remove_bridge_port(sub_port_id)
+    sai_thrift_create_bridge_port(client, port_id)
+
+def sai_thrift_create_bridge_rif_port(client, bridge_id, rif_id):
+    return sai_thrift_create_bridge_port(client, None, SAI_BRIDGE_PORT_TYPE_1D_ROUTER, bridge_id, None, rif_id, True)
+
+def sai_thrift_create_bridge_port(client, port_id = None, type = SAI_BRIDGE_PORT_TYPE_PORT, bridge_id = None, vlan_id = None, rif_id = None, admin_state = True):
+    bport_attr_list = []
+
+    bport_attr_type_value = sai_thrift_attribute_value_t(s32=type)
+    bport_attr_type = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_TYPE,
+                                             value=bport_attr_type_value)
+
+    bport_attr_list.append(bport_attr_type)
+
+    if port_id is not None:
+         bport_attr_port_id_value = sai_thrift_attribute_value_t(oid=port_id)
+         bport_attr_port_id = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_PORT_ID,
+                                                value=bport_attr_port_id_value)
+         bport_attr_list.append(bport_attr_port_id)
+   
+    bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=admin_state)
+    bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+                                                    value=bport_attr_admin_state_value)
+    bport_attr_list.append(bport_attr_admin_state)
+
+    if bridge_id is not None:
+        bport_attr_bridge_id_value = sai_thrift_attribute_value_t(oid=bridge_id)
+    else:
+        bport_attr_bridge_id_value = sai_thrift_attribute_value_t(oid=switch.default_1q_bridge)
+
+    bport_attr_bridge_id = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
+                                                  value=bport_attr_bridge_id_value)
+    bport_attr_list.append(bport_attr_bridge_id)
+
+    if vlan_id is not None:
+        bport_attr_vlan_id_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        bport_attr_vlan_id = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_VLAN_ID,
+                                                    value=bport_attr_vlan_id_value)
+        bport_attr_list.append(bport_attr_vlan_id)
+
+    if rif_id is not None:
+        bport_attr_rif_id_value = sai_thrift_attribute_value_t(oid=rif_id)
+        bport_attr_rif_id = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_RIF_ID,
+                                                value=bport_attr_rif_id_value)
+        bport_attr_list.append(bport_attr_rif_id)    
 
     ret = client.sai_thrift_create_bridge_port(bport_attr_list)
     assert (ret.status == SAI_STATUS_SUCCESS)
     assert (ret.data.oid != SAI_NULL_OBJECT_ID)
 
-    attr_value = sai_thrift_attribute_value_t(booldata=1)
-    attr = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE, value=attr_value)
-    client.sai_thrift_set_bridge_port_attribute(ret.data.oid, attr)
+    return ret.data.oid
+
+def sai_thrift_create_bridge(client, type, max_learned_addresses = None, learn_disable = None, flood_disable = None):
+    bridge_attrs = []
+
+    bridge_attr_type_value = sai_thrift_attribute_value_t(s32=type)
+    bridge_attr_type = sai_thrift_attribute_t(id=SAI_BRIDGE_ATTR_TYPE,
+                                              value=bridge_attr_type_value)
+    bridge_attrs.append(bridge_attr_type)
+
+    if max_learned_addresses is not None:
+        bridge_attr_max_learned_addresses_value = sai_thrift_attribute_value_t(u32=max_learned_addresses)
+        bridge_attr_max_learned_addresses = sai_thrift_attribute_t(id=SAI_BRIDGE_ATTR_MAX_LEARNED_ADDRESSES,
+                                                                   value=bridge_attr_max_learned_addresses_value)
+        bridge_attrs.append(bridge_attr_max_learned_addresses)
+
+    if learn_disable is not None:
+        bridge_attr_learn_disable_value = sai_thrift_attribute_value_t(booldata=learn_disable)
+        bridge_attr_learn_disable = sai_thrift_attribute_t(id=SAI_BRIDGE_ATTR_LEARN_DISABLE,
+                                                           value=bridge_attr_learn_disable_value)
+        bridge_attrs.append(bridge_attr_learn_disable)
+
+    ret = client.sai_thrift_create_bridge(bridge_attrs)
+    assert (ret.status == SAI_STATUS_SUCCESS)
+    assert (ret.data.oid != SAI_NULL_OBJECT_ID)
 
     return ret.data.oid
 
@@ -193,11 +264,19 @@ def sai_thrift_get_default_router_id(client):
     default_router_id = client.sai_thrift_get_default_router_id()
     return default_router_id
 
-def sai_thrift_create_fdb(client, vlan_id, mac, port, mac_action):
-    bport_oid = sai_thrift_get_bridge_port_by_port(client, port)
-    assert (bport_oid != SAI_NULL_OBJECT_ID)
+def sai_thrift_create_fdb(client, vlan_id, mac, port, mac_action, bridge_id = None):
+    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac)
 
-    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, vlan_id=vlan_id)
+    if bridge_id is not None:
+        fdb_entry.bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D
+        fdb_entry.bridge_id = bridge_id
+        bport_oid = port
+    else:
+        fdb_entry.bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q
+        fdb_entry.vlan_id = vlan_id
+        bport_oid = sai_thrift_get_bridge_port_by_port(client, port)
+        assert (bport_oid != SAI_NULL_OBJECT_ID)
+
     #value 0 represents static entry, id=0, represents entry type
     fdb_attribute1_value = sai_thrift_attribute_value_t(s32=SAI_FDB_ENTRY_TYPE_STATIC)
     fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_ENTRY_ATTR_TYPE,
@@ -213,8 +292,15 @@ def sai_thrift_create_fdb(client, vlan_id, mac, port, mac_action):
     fdb_attr_list = [fdb_attribute1, fdb_attribute2, fdb_attribute3]
     client.sai_thrift_create_fdb_entry(thrift_fdb_entry=fdb_entry, thrift_attr_list=fdb_attr_list)
 
-def sai_thrift_delete_fdb(client, vlan_id, mac, port):
-    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, vlan_id=vlan_id)
+def sai_thrift_delete_fdb(client, vlan_id, mac, port, bridge_id = None):
+    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac)
+    if bridge_id is not None:
+        fdb_entry.bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D
+        fdb_entry.bridge_id   = bridge_id
+    else:
+        fdb_entry.bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q
+        fdb_entry.vlan_id = vlan_id
+
     client.sai_thrift_delete_fdb_entry(thrift_fdb_entry=fdb_entry)
 
 def sai_thrift_flush_fdb_by_vlan(client, vlan_id):
@@ -226,6 +312,16 @@ def sai_thrift_flush_fdb_by_vlan(client, vlan_id):
                                             value=fdb_attribute2_value)
     fdb_attr_list = [fdb_attribute1, fdb_attribute2]
     client.sai_thrift_flush_fdb_entries(thrift_attr_list=fdb_attr_list)
+
+def sai_thrift_flush_fdb_by_bridge_port(client, bport_id):
+    fdb_attribute1_value = sai_thrift_attribute_value_t(oid=bport_id)
+    fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID,
+                                            value=fdb_attribute1_value)
+    fdb_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
+    fdb_attribute2 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
+                                            value=fdb_attribute2_value)
+    fdb_attr_list = [fdb_attribute1, fdb_attribute2]
+    return client.sai_thrift_flush_fdb_entries(thrift_attr_list=fdb_attr_list)
 
 def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled):
     #v4 enabled
@@ -240,33 +336,45 @@ def sai_thrift_create_virtual_router(client, v4_enabled, v6_enabled):
     vr_id = client.sai_thrift_create_virtual_router(thrift_attr_list=vr_attr_list)
     return vr_id
 
-def sai_thrift_create_router_interface(client, vr_oid, is_port, port_oid, vlan_oid, v4_enabled, v6_enabled, mac):
+def sai_thrift_create_router_interface(client, vr_oid, type, port_oid, vlan_oid, v4_enabled, v6_enabled, mac):
     #vrf attribute
     rif_attr_list = []
     rif_attribute1_value = sai_thrift_attribute_value_t(oid=vr_oid)
     rif_attribute1 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID,
                                             value=rif_attribute1_value)
     rif_attr_list.append(rif_attribute1)
-    if is_port:
+    rif_attribute2_value = sai_thrift_attribute_value_t(s32=type)
+    rif_attribute2 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_TYPE,
+                                            value=rif_attribute2_value)
+    rif_attr_list.append(rif_attribute2)
+
+    if type == SAI_ROUTER_INTERFACE_TYPE_PORT:
         #port type and port id
-        rif_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_ROUTER_INTERFACE_TYPE_PORT)
-        rif_attribute2 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_TYPE,
-                                                value=rif_attribute2_value)
-        rif_attr_list.append(rif_attribute2)
         rif_attribute3_value = sai_thrift_attribute_value_t(oid=port_oid)
         rif_attribute3 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
                                                 value=rif_attribute3_value)
         rif_attr_list.append(rif_attribute3)
-    else:
+    elif type == SAI_ROUTER_INTERFACE_TYPE_VLAN:
         #vlan type and vlan id
-        rif_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_ROUTER_INTERFACE_TYPE_VLAN)
-        rif_attribute2 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_TYPE,
-                                                value=rif_attribute2_value)
-        rif_attr_list.append(rif_attribute2)
         rif_attribute3_value = sai_thrift_attribute_value_t(oid=vlan_oid)
         rif_attribute3 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
                                                 value=rif_attribute3_value)
         rif_attr_list.append(rif_attribute3)
+
+    elif type == SAI_ROUTER_INTERFACE_TYPE_BRIDGE:
+        #no need to specify port or vlan
+        pass
+    elif type == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT:
+        rif_attribute3_value = sai_thrift_attribute_value_t(oid=port_oid)
+        rif_attribute3 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
+                                                value=rif_attribute3_value)
+        rif_attr_list.append(rif_attribute3)
+
+        rif_attribute4_value = sai_thrift_attribute_value_t(oid=vlan_oid)
+        rif_attribute4 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
+                                                value=rif_attribute4_value)
+        rif_attr_list.append(rif_attribute4)
+
 
     #v4_enabled
     rif_attribute4_value = sai_thrift_attribute_value_t(booldata=v4_enabled)
@@ -449,8 +557,8 @@ def sai_thrift_remove_lag_member(client, lag_member_oid):
 
     for a in attrs.attr_list:
         if a.id == SAI_LAG_MEMBER_ATTR_PORT_ID:
-	   port_id = a.value.oid
-           break
+	    port_id = a.value.oid
+            break
 
     assert (port_id != SAI_NULL_OBJECT_ID)
 

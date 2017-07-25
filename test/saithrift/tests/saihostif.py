@@ -97,7 +97,7 @@ class ControlPlaneBaseTest(sai_base_test.ThriftInterfaceDataPlane):
         v6_enabled = 1
 
         vr_id = sai_thrift_get_default_router_id(self.client)
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port, 0, v4_enabled, v6_enabled, router_mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port, 0, v4_enabled, v6_enabled, router_mac)
         self.rifs.append(rif_id1)
         return (vr_id, rif_id1)
 
@@ -529,9 +529,9 @@ class TTLErrorTest(NoPolicyTest):
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
         self.v_routers.append(vr_id)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port1, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
         self.rifs.append(rif_id1)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 2, port2, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
         self.rifs.append(rif_id2)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
