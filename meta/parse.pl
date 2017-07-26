@@ -2404,6 +2404,12 @@ sub CreateObjectInfo
         }
 
         next if $1 eq "NULL" or $1 eq "MAX";
+        
+        if (not defined $OBJTOAPIMAP{$ot})
+        {
+            LogError "$ot is not defined in OBJTOAPIMAP, missing sai_XXX_api_t declaration?";
+            next;
+        }
 
         my $type = "sai_" . lc($1) . "_attr_t";
 
