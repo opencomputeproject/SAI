@@ -218,6 +218,12 @@ sub CreateApiNameTest
 
         my $api = $main::OBJTOAPIMAP{$ot};
 
+        if (not defined $api)
+        {
+            LogError "$ot is not defined in OBJTOAPIMAP, missing sai_XXX_api_t declaration?";
+            next;
+        }
+
         WriteTest "    {";
         WriteTest "        sai_${api}_api_t ${api}_api;";
 
