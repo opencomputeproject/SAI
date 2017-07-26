@@ -141,11 +141,11 @@ typedef enum _sai_bridge_port_attr_t
 
     /**
      * @brief Associated Vlan
-     *
+     * Please note that this is valid only if bridge port tagging mode is tagged
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @condition SAI_BRIDGE_PORT_ATTR_TAGGING_MODE == SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      */
     SAI_BRIDGE_PORT_ATTR_VLAN_ID,
 
