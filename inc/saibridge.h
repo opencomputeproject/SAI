@@ -98,7 +98,7 @@ typedef enum _sai_bridge_port_tagging_mode_t
     /** Tagged mode */
     SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED,
 
-}sai_bridge_port_tagging_mode_t;
+} sai_bridge_port_tagging_mode_t;
 
 /**
  * @brief SAI attributes for Bridge Port
