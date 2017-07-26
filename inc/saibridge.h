@@ -406,14 +406,64 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_LEARN_DISABLE,
 
     /**
-     * @brief To disable flooding traffic (Broadcast, unknown unicast,
-     * unknown multicast) on a bridge
+     * @brief Unknown unicast flood group.
      *
-     * @type bool
+     * Provides control on the set of bridge ports on which unknown
+     * unicast packets need to be flooded.If null object id is passed,
+     * then flooding will be disabled. Default is to flood to sub-ports
+     * of the bridge.During bridge create, SAI would internally create
+     * an L2MC group and whenever sub-ports are added to the bridge, SAI
+     * would automatically add them to that L2MC group.
+     * Valid for SAI_BRIDGE_TYPE_1D.
+     *
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
      */
-    SAI_BRIDGE_ATTR_FLOOD_DISABLE,
+    SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Unknown multicast flood group.
+     *
+     * Provides control on the set of bridge ports on which unknown
+     * multicast packets need to be flooded.If null object id is passed,
+     * then flooding will be disabled. Default is to flood on sub-ports
+     * of the bridge.During bridge create, SAI would internally create
+     * an L2MC group and whenever sub-ports are added to the bridge, SAI
+     * would automatically add them to that L2MC group.
+     * Valid for SAI_BRIDGE_TYPE_1D
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     */
+    SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Broadcast flood group.
+     *
+     * Provides control on the set of bridge ports on which broadcast
+     * packets need to be flooded.If null object id is passed,
+     * then flooding will be disabled. Default is to flood to sub-ports
+     * of the bridge.During bridge create, SAI would internally create
+     * an L2MC group and whenever sub-ports are added to the bridge, SAI
+     * would automatically add them to that L2MC group.
+     * Valid for SAI_BRIDGE_TYPE_1D.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     */
+    SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
     /**
      * @brief End of attributes
