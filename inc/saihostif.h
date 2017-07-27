@@ -1011,6 +1011,17 @@ typedef enum _sai_hostif_packet_attr_t
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
 
     /**
+     * @brief Bridge ID (for receive-only)
+     *
+     * The .1D or .1Q bridge on which the packet was received.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     */
+    SAI_HOSTIF_PACKET_ATTR_BRIDGE_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_PACKET_ATTR_END,
