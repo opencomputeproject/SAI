@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc, Marvell Ltd.
+ *    Dell Products, L.P., Facebook
  *
  * @file    saiuburst.h
  *
@@ -65,100 +65,100 @@ typedef enum _sai_tam_microburst_stat_t
  */
 typedef enum _sai_tam_microburst_attr_t {
 	/**
-	* @brief Start of Attributes
-	*/
+	 * @brief Start of Attributes
+	 */
 	SAI_TAM_MICROBURST_ATTR_START,
 
 	/**
-	* @brief TAM Object
-	*
-	* @type sai_object_id_t
-	* @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-	* @objects SAI_OBJECT_TYPE_TAM
-	*/
+	 * @brief TAM Object
+	 *
+	 * @type sai_object_id_t
+	 * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+	 * @objects SAI_OBJECT_TYPE_TAM
+	 */
 	SAI_TAM_MICROBURST_ATTR_TAM_ID = SAI_TAM_MICROBURST_ATTR_START,
 
 	/**
-	* @brief Statistic for this microburst
-	* 
-	* @type sai_object_id_t
-	* @flags MANDATORY_ON_CREATE
-	* @objects SAI_OBJECT_TYPE_TAM_STAT
-	*/
+	 * @brief Statistic for this microburst
+	 * 
+	 * @type sai_object_id_t
+	 * @flags MANDATORY_ON_CREATE
+	 * @objects SAI_OBJECT_TYPE_TAM_STAT
+	 */
 	SAI_TAM_MICROBURST_ATTR_STATISTIC,
 
 	/**
-	* @brief Watermark Levels
-	*
-    * Breach high/low watermark level for this microburst statistic
-    * in number of bytes. 
-	*
-	* If not specified, the microburst is created without any 
-	* levels, which is effectively disabling the microburst 
-	* monitoring for the statistic. 
-	*
-	* @type uint64_t
-	* @flags CREATE_AND_SET
-	* @default 0
-	*/
+	 * @brief Watermark Levels
+	 *
+	 * Breach high/low watermark level for this microburst statistic
+	 * in number of bytes. 
+	 *
+	 * If not specified, the microburst is created without any 
+	 * levels, which is effectively disabling the microburst 
+	 * monitoring for the statistic. 
+	 *
+	 * @type uint64_t
+	 * @flags CREATE_AND_SET
+	 * @default 0
+	 */
 	SAI_TAM_MICROBURST_ATTR_LEVEL_A,
 
-    /**
-    * @brief Watermark Levels
-    *
-    * Breach low/high watermark level for this microburst statistic
-    * in number of bytes. 
-    *
-    * If not specified, the microburst is created without any 
-    * levels, which is effectively disabling the microburst 
-    * monitoring for the statistic.
-    *
-    * @type uint64_t
-    * @flags CREATE_AND_SET
-    * @default 0
-    */
-    SAI_TAM_MICROBURST_ATTR_LEVEL_B,
+	/**
+	 * @brief Watermark Levels
+	 *
+	 * Breach low/high watermark level for this microburst statistic
+	 * in number of bytes. 
+	 *
+	 * If not specified, the microburst is created without any 
+	 * levels, which is effectively disabling the microburst 
+	 * monitoring for the statistic.
+	 *
+	 * @type uint64_t
+	 * @flags CREATE_AND_SET
+	 * @default 0
+	 */
+	SAI_TAM_MICROBURST_ATTR_LEVEL_B,
 
-    /**
-     * @brief Transporter Object
-     *
-     * Provides the transporter object for this microburst.
-     *
-     * In the absence of a transporter, the default transporter will
-     * be used.
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM_TRANSPORTER
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
+	/**
+	 * @brief Transporter Object
+	 *
+	 * Provides the transporter object for this microburst.
+	 *
+	 * In the absence of a transporter, the default transporter will
+	 * be used.
+	 *
+	 * @type sai_object_id_t
+	 * @flags CREATE_AND_SET
+	 * @objects SAI_OBJECT_TYPE_TAM_TRANSPORTER
+	 * @allownull true
+	 * @default SAI_NULL_OBJECT_ID
+	 */
 	SAI_TAM_MICROBURST_ATTR_TRANSPORTER,
 
 	/**
-    * @brief Buffers/Statistics for inclusion in the snapshot 
-    *  
-	* Specifies the Statistics/Types for the snapshot.
-	* If not specified, all buffers tracked by 
-	* the associated TAM object are included in the snapshot.
-	* When specified, the buffers requested for snapshot must be within the set 
-	* tracked by the associated TAM object.
-	*
-	* @type sai_tam_statistic_id_list 
-	* @allownull true
-	*/
+	 * @brief Buffers/Statistics for inclusion in the snapshot 
+	 *  
+	 * Specifies the Statistics/Types for the snapshot.
+	 * If not specified, all buffers tracked by 
+	 * the associated TAM object are included in the snapshot.
+	 * When specified, the buffers requested for snapshot must be within the set 
+	 * tracked by the associated TAM object.
+	 *
+	 * @type sai_tam_statistic_id_list 
+	 * @allownull true
+	 */
 	SAI_TAM_MICROBURST_ATTR_STAT_TYPES,
 
 	/**
-	* @brief End of Attributes
-	*/
+	 * @brief End of Attributes
+	 */
 	SAI_TAM_MICROBURST_ATTR_END,
 
-    /** Custom range base value */
-    SAI_TAM_MICROBURST_ATTR_CUSTOM_RANGE_START = 0x10000000,
+	/** Custom range base value */
+	SAI_TAM_MICROBURST_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
-    /** End of custom range base */
-    SAI_TAM_MICROBURST_ATTR_CUSTOM_RANGE_END
+	/** End of custom range base */
+	SAI_TAM_MICROBURST_ATTR_CUSTOM_RANGE_END
 
 } sai_tam_microburst_attr_t;
 
@@ -233,7 +233,6 @@ typedef enum _sai_tam_histogram_attr_t
      */
     SAI_TAM_HISTOGRAM_ATTR_CLEAR_MODE,
 
-
     /**
      * @brief Transporter Object
      *
@@ -263,7 +262,6 @@ typedef enum _sai_tam_histogram_attr_t
     SAI_TAM_HISTOGRAM_ATTR_CUSTOM_RANGE_END
 
 } sai_tam_histogram_attr_t;
-
 
 /**
  * @brief Create and return a microburst object
@@ -356,7 +354,7 @@ typedef sai_status_t (*sai_remove_tam_histogram_fn)(
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_tam_histogram_attribute_fn)(
-        _In_ sai_object_id_t        tam_histogram_id,
+        _In_ sai_object_id_t tam_histogram_id,
         _In_ const sai_attribute_t *attr);
 
 /**
@@ -369,8 +367,8 @@ typedef sai_status_t (*sai_set_tam_histogram_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_tam_histogram_attribute_fn)(
-        _In_ sai_object_id_t    tam_histogram_id,
-        _In_ uint32_t           attr_count,
+        _In_ sai_object_id_t tam_histogram_id,
+        _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**

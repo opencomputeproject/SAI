@@ -66,7 +66,6 @@
 #include "saiwred.h"
 #include "saiuburst.h"
 
-
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
  *
