@@ -229,28 +229,28 @@ typedef enum _sai_queue_stat_t
     /** Get/set red color drooped bytes count [uint64_t] */
     SAI_QUEUE_STAT_RED_DROPPED_BYTES = 0x0000000f,
 
-    /** Get/set WRED green color dropped packets count [uint64_t] */
+    /** Get/set WRED green color dropped/marked packets count [uint64_t] */
     SAI_QUEUE_STAT_GREEN_DISCARD_DROPPED_PACKETS = 0x00000010,
 
-    /** Get/set WRED green color dropped bytes count [uint64_t] */
+    /** Get/set WRED green color dropped/marked bytes count [uint64_t] */
     SAI_QUEUE_STAT_GREEN_DISCARD_DROPPED_BYTES = 0x00000011,
 
-    /** Get/set WRED yellow color dropped packets count [uint64_t] */
+    /** Get/set WRED yellow color dropped/masked packets count [uint64_t] */
     SAI_QUEUE_STAT_YELLOW_DISCARD_DROPPED_PACKETS = 0x00000012,
 
-    /** Get/set WRED yellow color dropped bytes count [uint64_t] */
+    /** Get/set WRED yellow color dropped/marked bytes count [uint64_t] */
     SAI_QUEUE_STAT_YELLOW_DISCARD_DROPPED_BYTES = 0x00000013,
 
-    /** Get/set WRED red color dropped packets count [uint64_t] */
+    /** Get/set WRED red color dropped/marked packets count [uint64_t] */
     SAI_QUEUE_STAT_RED_DISCARD_DROPPED_PACKETS = 0x00000014,
 
-    /** Get/set WRED red color dropped bytes count [uint64_t] */
+    /** Get/set WRED red color dropped/marked bytes count [uint64_t] */
     SAI_QUEUE_STAT_RED_DISCARD_DROPPED_BYTES = 0x00000015,
 
-    /** Get/set WRED dropped packets count [uint64_t] */
+    /** Get/set WRED dropped/marked packets count [uint64_t] */
     SAI_QUEUE_STAT_DISCARD_DROPPED_PACKETS = 0x00000016,
 
-    /** Get/set WRED red dropped bytes count [uint64_t] */
+    /** Get/set WRED red dropped/marked bytes count [uint64_t] */
     SAI_QUEUE_STAT_DISCARD_DROPPED_BYTES = 0x00000017,
 
     /** Get current queue occupancy in bytes [uint64_t] */

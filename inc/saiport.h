@@ -1682,28 +1682,28 @@ typedef enum _sai_port_pool_stat_t
     /** SAI port stat if octets */
     SAI_PORT_POOL_STAT_IF_OCTETS,
 
-    /** Get/set WRED green packet count [uint64_t] */
+    /** Get/set WRED green dropped/marked packet count [uint64_t] */
     SAI_PORT_POOL_STAT_GREEN_DISCARD_DROPPED_PACKETS,
 
-    /** Get/set WRED green byte count [uint64_t] */
+    /** Get/set WRED green dropped/marked byte count [uint64_t] */
     SAI_PORT_POOL_STAT_GREEN_DISCARD_DROPPED_BYTES,
 
-    /** Get/set WRED yellow packet count [uint64_t] */
+    /** Get/set WRED yellow dropped/marked packet count [uint64_t] */
     SAI_PORT_POOL_STAT_YELLOW_DISCARD_DROPPED_PACKETS,
 
-    /** Get/set WRED yellow byte count [uint64_t] */
+    /** Get/set WRED yellow dropped/marked byte count [uint64_t] */
     SAI_PORT_POOL_STAT_YELLOW_DISCARD_DROPPED_BYTES,
 
-    /** Get/set WRED red packet count [uint64_t] */
+    /** Get/set WRED red dropped/marked packet count [uint64_t] */
     SAI_PORT_POOL_STAT_RED_DISCARD_DROPPED_PACKETS,
 
-    /** Get/set WRED red byte count [uint64_t] */
+    /** Get/set WRED red dropped/marked byte count [uint64_t] */
     SAI_PORT_POOL_STAT_RED_DISCARD_DROPPED_BYTES,
 
-    /** Get/set WRED dropped packets count [uint64_t] */
+    /** Get/set WRED dropped/marked packets count [uint64_t] */
     SAI_PORT_POOL_STAT_DISCARD_DROPPED_PACKETS,
 
-    /** Get/set WRED dropped bytes count [uint64_t] */
+    /** Get/set WRED dropped/marked bytes count [uint64_t] */
     SAI_PORT_POOL_STAT_DISCARD_DROPPED_BYTES,
 
     /** Get/set packets marked by ECN count [uint64_t] */
