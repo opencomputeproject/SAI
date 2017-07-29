@@ -386,12 +386,13 @@ typedef enum _sai_bridge_attr_t
     /**
      * @brief Unknown unicast flood group.
      *
-     * Provides control on the set of bridge ports on which unknown
-     * unicast packets need to be flooded.If null object id is passed,
-     * then flooding will be disabled. Default is to flood to sub-ports
-     * of the bridge.During bridge create, SAI would internally create
-     * an L2MC group and whenever sub-ports are added to the bridge, SAI
-     * would automatically add them to that L2MC group.
+     * Provides control on the set of bridge ports on which unknown unicast
+     * packets need to be flooded.By default without setting this attribute,
+     * unknown unicast packets would be flooded to all sub-ports of the bridge.
+     * If this attribute is set with a L2MC group id, then unknown unicast packets
+     * would be flooded to the L2MC group members. If this attribute is set
+     * with NULL object id, the default behavior to flood unknown unicast
+     * packets to all sub-ports of the bridge would be restored.
      * Valid for SAI_BRIDGE_TYPE_1D.
      *
      * @type sai_object_id_t
@@ -406,12 +407,13 @@ typedef enum _sai_bridge_attr_t
     /**
      * @brief Unknown multicast flood group.
      *
-     * Provides control on the set of bridge ports on which unknown
-     * multicast packets need to be flooded.If null object id is passed,
-     * then flooding will be disabled. Default is to flood on sub-ports
-     * of the bridge.During bridge create, SAI would internally create
-     * an L2MC group and whenever sub-ports are added to the bridge, SAI
-     * would automatically add them to that L2MC group.
+     * Provides control on the set of bridge ports on which unknown multicast
+     * packets need to be flooded.By default without setting this attribute,
+     * unknown multicast packets would be flooded to all sub-ports of the bridge.
+     * If this attribute is set with a L2MC group id, then unknown multicast packets
+     * would be flooded to the L2MC group members. If this attribute is set
+     * with NULL object id, the default behavior to flood unknown multicast
+     * packets to all sub-ports of the bridge would be restored.
      * Valid for SAI_BRIDGE_TYPE_1D
      *
      * @type sai_object_id_t
@@ -426,13 +428,13 @@ typedef enum _sai_bridge_attr_t
     /**
      * @brief Broadcast flood group.
      *
-     * Provides control on the set of bridge ports on which broadcast
-     * packets need to be flooded.If null object id is passed,
-     * then flooding will be disabled. Default is to flood to sub-ports
-     * of the bridge.During bridge create, SAI would internally create
-     * an L2MC group and whenever sub-ports are added to the bridge, SAI
-     * would automatically add them to that L2MC group.
-     * Valid for SAI_BRIDGE_TYPE_1D.
+     * Provides control on the set of bridge ports on which broadcast packets
+     * need to be flooded.By default without setting this attribute, broadcast
+     * packets would be flooded to all sub-ports of the bridge. If this attribute
+     * is set with a L2MC group id, then broadcast packets would be flooded to the
+     * L2MC group members. If this attribute is set with NULL object id, the default
+     * behavior to flood broadcast packets to all sub-ports of the bridge would be
+     * restored. Valid for SAI_BRIDGE_TYPE_1D.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
