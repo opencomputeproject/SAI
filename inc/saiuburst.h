@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 20XX Microsoft Open Technologies, Inc.
+ * Copyright (c) 2017 Microsoft Open Technologies, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may
  *    not use this file except in compliance with the License. You may obtain
@@ -261,6 +261,7 @@ typedef enum _sai_tam_histogram_attr_t
  * @brief Create and return a microburst object
  *
  * @param[out] tam_microburst_id Microburst object
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of sai_tam_microburst_attr_t attributes
  *
@@ -268,6 +269,7 @@ typedef enum _sai_tam_histogram_attr_t
  */
 typedef sai_status_t (*sai_create_tam_microburst_fn)(
         _Out_ sai_object_id_t *tam_microburst_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -279,7 +281,7 @@ typedef sai_status_t (*sai_create_tam_microburst_fn)(
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_tam_microburst_fn)(
-        _In_ sai_object_id_t *tam_microburst_id);
+        _In_ sai_object_id_t tam_microburst_id);
 
 /**
  * @brief Get values for specified microburst attributes.
@@ -296,18 +298,16 @@ typedef sai_status_t (*sai_get_tam_microburst_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Set microburst attribute value(s).
+ * @brief Set microburst attribute
  *
  * @param[in] tam_microburst_id Microburst object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
+ * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_tam_microburst_attribute_fn)(
         _In_ sai_object_id_t tam_microburst_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Create and return a histogram object
