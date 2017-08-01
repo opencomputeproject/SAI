@@ -1856,7 +1856,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @ignore
      */
-     SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
 
     /**
      * @brief Set metadata to carry forward to next ACL Stage
