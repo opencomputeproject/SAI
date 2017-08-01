@@ -947,6 +947,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_PACKET_ACTION,
 
     /**
+     * @brief Action to be taken when a station movement is detected on static FDB entry
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_DROP
+     */
+    SAI_SWITCH_ATTR_STATIC_FDB_MOVE_ACTION,
+
+    /**
      * @brief SAI ECMP default hash algorithm
      *
      * @type sai_hash_algorithm_t
