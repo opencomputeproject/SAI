@@ -278,16 +278,16 @@ typedef enum _sai_queue_stat_t
     SAI_QUEUE_STAT_YELLOW_WRED_ECN_MARKED_BYTES = 0x0000001f,
 
     /** Get/set WRED red color marked packets count [uint64_t] */
-    SAI_QUEUE_STAT_RED_WRED_ECN_MARKED_PACKETS = 0x0000001d,
+    SAI_QUEUE_STAT_RED_WRED_ECN_MARKED_PACKETS = 0x00000020,
 
     /** Get/set WRED red color marked bytes count [uint64_t] */
-    SAI_QUEUE_STAT_RED_WRED_ECN_MARKED_BYTES = 0x0000001e,
+    SAI_QUEUE_STAT_RED_WRED_ECN_MARKED_BYTES = 0x00000021,
 
     /** Get/set WRED marked packets count [uint64_t] */
-    SAI_QUEUE_STAT_WRED_ECN_MARKED_PACKETS = 0x0000001f,
+    SAI_QUEUE_STAT_WRED_ECN_MARKED_PACKETS = 0x00000022,
 
     /** Get/set WRED red marked bytes count [uint64_t] */
-    SAI_QUEUE_STAT_WRED_ECN_MARKED_BYTES = 0x00000020,
+    SAI_QUEUE_STAT_WRED_ECN_MARKED_BYTES = 0x00000023,
 
     /** Custom range base value */
     SAI_QUEUE_STAT_CUSTOM_RANGE_BASE = 0x10000000
