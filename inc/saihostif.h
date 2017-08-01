@@ -307,6 +307,12 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_TTL_ERROR = 0x00006001,
 
+    /**
+     * @brief Packets trapped when station move is observed with static FDB entry
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_STATIC_FDB_MOVE = 0x00006002,
+
     /* Pipeline discards. For the following traps, packet action is either drop or trap */
 
     /**
