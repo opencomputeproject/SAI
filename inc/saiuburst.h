@@ -198,7 +198,6 @@ typedef enum _sai_tam_histogram_attr_t
      *
      * @type sai_u32_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @default empty
      */
     SAI_TAM_HISTOGRAM_ATTR_BIN_BOUNDARY,
 
