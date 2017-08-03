@@ -22,6 +22,8 @@ MERCHANTABILITY
 Mbps
 Mellanox
 Metadata
+Microburst
+Microbursts
 Multicast
 Netdevice
 OID
@@ -79,6 +81,7 @@ loopback
 lossless
 mcast
 metadata
+microburst
 multi
 multicast
 netdev
@@ -101,6 +104,8 @@ struct
 subnet
 subnets
 tx
+uBurst
+uBursts
 ucast
 unicast
 untagged
