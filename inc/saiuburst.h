@@ -183,7 +183,7 @@ typedef enum _sai_tam_histogram_attr_t
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM_STAT
+     * @objects SAI_OBJECT_TYPE_TAM_STAT, SAI_OBJECT_TYPE_TAM_MICROBURST
      * @default empty
      */
     SAI_TAM_HISTOGRAM_ATTR_STAT_TYPE,
