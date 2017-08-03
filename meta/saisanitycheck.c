@@ -2170,6 +2170,14 @@ void check_attr_existing_objects(
              */
             break;
 
+        case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+
+            /*
+             * Allow for TAM histogram bin boundary
+             */
+
+            break;
+
         default:
 
             META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
