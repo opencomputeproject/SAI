@@ -81,7 +81,7 @@ typedef enum _sai_tam_microburst_attr_t
      * @brief Statistic for this microburst
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_STAT
      */
     SAI_TAM_MICROBURST_ATTR_STATISTIC,
