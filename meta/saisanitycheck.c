@@ -3798,7 +3798,8 @@ void check_object_ro_list(
     if (oi->objecttype == SAI_OBJECT_TYPE_FDB_FLUSH ||
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
             oi->objecttype == SAI_OBJECT_TYPE_SWITCH ||
-            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY)
+            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY ||
+            oi->objecttype == SAI_OBJECT_TYPE_TAM_HISTOGRAM)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can
