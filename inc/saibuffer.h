@@ -331,6 +331,54 @@ typedef enum _sai_buffer_pool_stat_t
     /** Get count of packets dropped in this pool [uint64_t] */
     SAI_BUFFER_POOL_STAT_DROPPED_PACKETS = 0x00000002,
 
+    /** Get/set WRED green dropped packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_GREEN_WRED_DROPPED_PACKETS = 0x00000003,
+
+    /** Get/set WRED green dropped byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_GREEN_WRED_DROPPED_BYTES = 0x00000004,
+
+    /** Get/set WRED yellow dropped packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_YELLOW_WRED_DROPPED_PACKETS = 0x00000005,
+
+    /** Get/set WRED yellow dropped byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_YELLOW_WRED_DROPPED_BYTES = 0x00000006,
+
+    /** Get/set WRED red dropped packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_RED_WRED_DROPPED_PACKETS = 0x00000007,
+
+    /** Get/set WRED red dropped byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_RED_WRED_DROPPED_BYTES = 0x00000008,
+
+    /** Get/set WRED dropped packets count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WRED_DROPPED_PACKETS = 0x00000009,
+
+    /** Get/set WRED dropped bytes count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WRED_DROPPED_BYTES = 0x0000000a,
+
+    /** Get/set WRED green marked packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_GREEN_WRED_ECN_MARKED_PACKETS = 0x0000000b,
+
+    /** Get/set WRED green marked byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_GREEN_WRED_ECN_MARKED_BYTES = 0x0000000c,
+
+    /** Get/set WRED yellow marked packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_YELLOW_WRED_ECN_MARKED_PACKETS = 0x0000000d,
+
+    /** Get/set WRED yellow marked byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_YELLOW_WRED_ECN_MARKED_BYTES = 0x0000000e,
+
+    /** Get/set WRED red marked packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_RED_WRED_ECN_MARKED_PACKETS = 0x0000000f,
+
+    /** Get/set WRED red marked byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_RED_WRED_ECN_MARKED_BYTES = 0x00000010,
+
+    /** Get/set WRED marked packets count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WRED_ECN_MARKED_PACKETS = 0x00000011,
+
+    /** Get/set WRED marked bytes count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WRED_ECN_MARKED_BYTES = 0x00000012,
+
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
