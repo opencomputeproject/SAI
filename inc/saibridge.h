@@ -337,19 +337,19 @@ typedef enum _sai_bridge_type_t
 } sai_bridge_type_t;
 
 /**
- * @brief Attribute data for unknown unicast, unknowm multicast 
+ * @brief Attribute data for unknown unicast, unknown multicast
  * and broadcast flood controls
  */
 typedef enum _sai_bridge_flood_control_type_t
 {
     /** Flood on all sub-ports */
-    SAI_BRIDGE_FLOOD_SUB_PORTS,
+    SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS,
 
     /** Disable flooding */
-    SAI_BRIDGE_FLOOD_NONE,
+    SAI_BRIDGE_FLOOD_CONTROL_TYPE_NONE,
 
     /** Flood on the L2MC group */
-    SAI_BRIDGE_FLOOD_L2MC_GROUP,
+    SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP,
 
 } sai_bridge_flood_control_type_t;
 
@@ -405,18 +405,17 @@ typedef enum _sai_bridge_attr_t
      *
      * @type sai_bridge_flood_control_type_t
      * @flags CREATE_AND_SET
-     * @default SAI_BRIDGE_FLOOD_SUB_PORTS
-     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * @default SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS
      */
-     SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE,
+    SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE,
 
     /**
      * @brief Unknown unicast flood group.
      *
      * Provides control on the set of bridge ports on which unknown unicast
-     * packets need to be flooded. This attribute would be used only when 
+     * packets need to be flooded. This attribute would be used only when
      * the SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE is set as
-     * SAI_BRIDGE_FLOOD_L2MC_GROUP. When this attribute's value is 
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP. When this attribute's value is
      * SAI_NULL_OBJECT_ID, then flooding would be disabled.
      * Valid for SAI_BRIDGE_TYPE_1D.
      *
@@ -425,9 +424,8 @@ typedef enum _sai_bridge_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
-     * @condition SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_BRIDGE_FLOOD_L2MC_GROUP
+     * @validonly SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
      */
     SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
 
@@ -436,8 +434,7 @@ typedef enum _sai_bridge_attr_t
      *
      * @type sai_bridge_flood_control_type_t
      * @flags CREATE_AND_SET
-     * @default SAI_BRIDGE_FLOOD_SUB_PORTS
-     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * @default SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS
      */
     SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE,
 
@@ -447,7 +444,7 @@ typedef enum _sai_bridge_attr_t
      * Provides control on the set of bridge ports on which unknown multicast
      * packets need to be flooded. This attribute would be used only when
      * the SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE is set as
-     * SAI_BRIDGE_FLOOD_L2MC_GROUP. When this attribute's value is
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP.When this attribute's value is
      * SAI_NULL_OBJECT_ID, then flooding would be disabled.
      * Valid for SAI_BRIDGE_TYPE_1D.
      *
@@ -456,9 +453,8 @@ typedef enum _sai_bridge_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
-     * @condition SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_BRIDGE_FLOOD_L2MC_GROUP
+     * @validonly SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
      */
     SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
 
@@ -467,8 +463,7 @@ typedef enum _sai_bridge_attr_t
      *
      * @type sai_bridge_flood_control_type_t
      * @flags CREATE_AND_SET
-     * @default SAI_BRIDGE_FLOOD_SUB_PORTS
-     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * @default SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS
      */
     SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE,
 
@@ -478,7 +473,7 @@ typedef enum _sai_bridge_attr_t
      * Provides control on the set of bridge ports on which broadcast
      * packets need to be flooded. This attribute would be used only when
      * the SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE is set as
-     * SAI_BRIDGE_FLOOD_L2MC_GROUP. When this attribute's value is
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP.When this attribute's value is
      * SAI_NULL_OBJECT_ID, then flooding would be disabled.
      * Valid for SAI_BRIDGE_TYPE_1D.
      *
@@ -487,9 +482,8 @@ typedef enum _sai_bridge_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
-     * @condition SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
-     * SAI_BRIDGE_FLOOD_L2MC_GROUP
+     * @validonly SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
      */
     SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
