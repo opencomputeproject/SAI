@@ -67,6 +67,23 @@ typedef enum _sai_vlan_mcast_lookup_key_type_t
 } sai_vlan_mcast_lookup_key_type_t;
 
 /**
+ * @brief Attribute data for unknown unicast, unknown multicast
+ * and broadcast flood controls
+ */
+typedef enum _sai_vlan_flood_control_type_t
+{
+    /** Flood on all vlan members */
+    SAI_VLAN_FLOOD_CONTROL_TYPE_ALL,
+
+    /** Disable flooding */
+    SAI_VLAN_FLOOD_CONTROL_TYPE_NONE,
+
+    /** Flood on the L2MC group */
+    SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP,
+
+} sai_vlan_flood_control_type_t;
+
+/**
  * @brief Attribute Id in sai_set_vlan_attribute() and
  * sai_get_vlan_attribute() calls
  *
@@ -266,61 +283,86 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_META_DATA,
 
     /**
+     * @brief Unknown unicast flood control type
+     *
+     * @type sai_vlan_flood_control_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_VLAN_FLOOD_CONTROL_TYPE_ALL
+     */
+    SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE,
+
+    /**
      * @brief Unknown unicast flood group.
      *
-     * Provides control on the set of bridge ports on which unknown unicast
-     * packets need to be flooded.By default without setting this attribute,
-     * unknown unicast packets would be flooded to all vlan members. If this
-     * attribute is set with a L2MC group id, then unknown unicast packets
-     * would be flooded to the L2MC group members. If this attribute is set
-     * with NULL object id, the default behavior to flood unknown unicast
-     * packets to all vlan members would be restored.
+     * Provides control on the set of vlan members on which unknown unicast
+     * packets need to be flooded. This attribute would be used only when
+     * the SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE is set as
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP. When this attribute's value is
+     * SAI_NULL_OBJECT_ID, then flooding would be disabled.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP
      */
     SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
 
     /**
+     * @brief Unknown unicast flood control type
+     *
+     * @type sai_vlan_flood_control_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_VLAN_FLOOD_CONTROL_TYPE_ALL
+     */
+    SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE,
+
+    /**
      * @brief Unknown multicast flood group.
      *
-     * Provides control on the set of bridge ports on which unknown multicast
-     * packets need to be flooded.By default without setting this attribute,
-     * unknown multicast packets would be flooded to all vlan members. If this
-     * attribute is set with a L2MC group id, then unknown multicast packets
-     * would be flooded to the L2MC group members. If this attribute is set
-     * with NULL object id, the default behavior to flood unknown multicast
-     * packets to all vlan members would be restored.
-     * If traffic type based unknown multicast flood groups attributes are
-     * also provided, those take precedence over this attribute as they
-     * are more specific.
+     * Provides control on the set of vlan members on which unknown multicast
+     * packets need to be flooded. This attribute would be used only when
+     * the SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE is set as
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP.When this attribute's value is
+     * SAI_NULL_OBJECT_ID, then flooding would be disabled.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP
      */
     SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
 
     /**
+     * @brief Broadcast flood control type
+     *
+     * @type sai_vlan_flood_control_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_VLAN_FLOOD_CONTROL_TYPE_ALL
+     */
+    SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE,
+
+    /**
      * @brief Broadcast flood group.
      *
-     * Provides control on the set of bridge ports on which broadcast packets
-     * need to be flooded.By default without setting this attribute, broadcast
-     * packets would be flooded to all vlan members. If this attribute is set
-     * with a L2MC group id, then broadcast packets would be flooded to the L2MC
-     * group members. If this attribute is set with NULL object id, the default
-     * behavior to flood broadcast packets to all vlan members would be restored.
+     * Provides control on the set of vlan members on which broadcast
+     * packets need to be flooded. This attribute would be used only when
+     * the SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE is set as
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP.When this attribute's value is
+     * SAI_NULL_OBJECT_ID, then flooding would be disabled.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP
      */
     SAI_VLAN_ATTR_BROADCAST_FLOOD_GROUP,
 
