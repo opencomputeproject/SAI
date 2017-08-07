@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -22,8 +22,8 @@
  * @brief   This module defines SAI Router interface
  */
 
-#if !defined (__SAIROUTERINTF_H_)
-#define __SAIROUTERINTF_H_
+#if !defined (__SAIROUTERINTERFACE_H_)
+#define __SAIROUTERINTERFACE_H_
 
 #include <saitypes.h>
 
@@ -38,7 +38,7 @@
  */
 typedef enum _sai_router_interface_type_t
 {
-    /** Port or Lag Router Interface Type */
+    /** Port or LAG Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_PORT,
 
     /** VLAN Router Interface Type */
@@ -47,11 +47,17 @@ typedef enum _sai_router_interface_type_t
     /** Loopback Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
 
+    /** MPLS Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_MPLS_ROUTER,
+
     /** Sub port Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
 
     /** .1D Bridge Router Interface Type */
-    SAI_ROUTER_INTERFACE_TYPE_BRIDGE
+    SAI_ROUTER_INTERFACE_TYPE_BRIDGE,
+
+    /** Q-in-Q Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT,
 
 } sai_router_interface_type_t;
 
@@ -77,7 +83,7 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID = SAI_ROUTER_INTERFACE_ATTR_START,
 
     /**
-     * @brief Type
+     * @brief Router interface type
      *
      * @type sai_router_interface_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -85,7 +91,7 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_TYPE,
 
     /**
-     * @brief Assosiated Port or Lag object id
+     * @brief Associated Port or LAG object id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -95,7 +101,7 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
 
     /**
-     * @brief Assosiated Vlan
+     * @brief Associated Vlan
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -104,13 +110,33 @@ typedef enum _sai_router_interface_attr_t
      */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
 
+    /**
+     * @brief Outer Vlan
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan true
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT
+     */
+    SAI_ROUTER_INTERFACE_ATTR_OUTER_VLAN_ID,
+
+    /**
+     * @brief Inner Vlan
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan true
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT
+     */
+    SAI_ROUTER_INTERFACE_ATTR_INNER_VLAN_ID,
+
     /* READ-WRITE */
 
     /**
      * @brief MAC Address
      *
-     * Not valid when #SAI_ROUTER_INTERFACE_ATTR_TYPE == #SAI_ROUTER_INTERFACE_TYPE_LOOPBACK)
-     * Default to #SAI_VIRTUAL_ROUTER_ATTR_SRC_MAC_ADDRESS if not set on create)
+     * Not valid when #SAI_ROUTER_INTERFACE_ATTR_TYPE ==
+     * #SAI_ROUTER_INTERFACE_TYPE_LOOPBACK.
      *
      * @type sai_mac_t
      * @flags CREATE_AND_SET
@@ -148,10 +174,10 @@ typedef enum _sai_router_interface_attr_t
     /**
      * @brief RIF bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a RIF. Enable/Update
-     * ingress ACL table or ACL group filtering by assigning a valid object id.
-     * Disable ingress filtering by assigning SAI_NULL_OBJECT_ID in the
-     * attribute value.
+     * Bind (or unbind) an ingress ACL table or ACL group on a RIF.
+     * Enable/Update ingress ACL table or ACL group filtering by assigning a
+     * valid object id. Disable ingress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -164,10 +190,10 @@ typedef enum _sai_router_interface_attr_t
     /**
      * @brief RIF bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl table or acl group on a RIF. Enable/Update
-     * egress ACL table or ACL group filtering by assigning a valid object id.
-     * Disable egress filtering by assigning SAI_NULL_OBJECT_ID
-     * in the attribute value.
+     * Bind (or unbind) an egress ACL table or ACL group on a RIF.
+     * Enable/Update egress ACL table or ACL group filtering by assigning a
+     * valid object id. Disable egress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -187,7 +213,7 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_NEIGHBOR_MISS_PACKET_ACTION,
 
     /**
-     * @brief V4 Mcast enable
+     * @brief V4 mcast enable
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -196,7 +222,7 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_V4_MCAST_ENABLE,
 
     /**
-     * @brief V6 Mcast enable
+     * @brief V6 mcast enable
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -220,15 +246,15 @@ typedef enum _sai_router_interface_attr_t
 /**
  * @brief Create router interface.
  *
- * @param[out] rif_id Router interface id
+ * @param[out] router_interface_id Router interface id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_router_interface_fn)(
-        _Out_ sai_object_id_t *rif_id,
+typedef sai_status_t (*sai_create_router_interface_fn)(
+        _Out_ sai_object_id_t *router_interface_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
@@ -236,36 +262,36 @@ typedef sai_status_t(*sai_create_router_interface_fn)(
 /**
  * @brief Remove router interface
  *
- * @param[in] rif_id Router interface id
+ * @param[in] router_interface_id Router interface id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_remove_router_interface_fn)(
-        _In_ sai_object_id_t rif_id);
+typedef sai_status_t (*sai_remove_router_interface_fn)(
+        _In_ sai_object_id_t router_interface_id);
 
 /**
  * @brief Set router interface attribute
  *
- * @param[in] rif_id Router interface id
+ * @param[in] router_interface_id Router interface id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_router_interface_attribute_fn)(
-        _In_ sai_object_id_t rif_id,
+        _In_ sai_object_id_t router_interface_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get router interface attribute
  *
- * @param[in] rif_id Router interface id
+ * @param[in] router_interface_id Router interface id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_router_interface_attribute_fn)(
-        _In_ sai_object_id_t rif_id,
+        _In_ sai_object_id_t router_interface_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -284,4 +310,4 @@ typedef struct _sai_router_interface_api_t
 /**
  * @}
  */
-#endif /** __SAIROUTERINTF_H_ */
+#endif /** __SAIROUTERINTERFACE_H_ */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Microsoft Open Technologies, Inc.
+ * Copyright (c) 2017 Microsoft Open Technologies, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may
  *    not use this file except in compliance with the License. You may obtain
@@ -8,19 +8,18 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc, Marvell Ltd.
+ *    Dell Products, L.P., Facebook, Inc
  *
  * @file    saiuburst.h
  *
- * @brief   This module defines SAI TAM Microbursts Monitoring 
- *          Enhancement interface
+ * @brief   This module defines SAI TAM Microbursts Monitoring interface
  */
 
 #if !defined (__SAIUBURST_H_)
@@ -29,32 +28,31 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIUBURST SAI - TAM Microbursts Monitoring API 
+ * @defgroup SAIUBURST SAI - TAM Microbursts Monitoring API
  *
  * @{
  */
-
 
 /**
  * @brief Enum defining statistics for microburst.
  */
 typedef enum _sai_tam_microburst_stat_t
 {
-    /** get/set last uBurst duration in us [uint64_t] */
+    /** Get/set last uBurst duration in us [uint64_t] */
     SAI_TAM_MICROBURST_STAT_LAST_DURATION = 0x00000000,
 
-    /** get/set longest uBurst duration in us [uint64_t] */
+    /** Get/set longest uBurst duration in us [uint64_t] */
     SAI_TAM_MICROBURST_STAT_LONGEST_DURATION = 0x00000001,
 
-    /** get/set shortest uBurst duration in us [uint64_t] */
+    /** Get/set shortest uBurst duration in us [uint64_t] */
     SAI_TAM_MICROBURST_STAT_SHORTEST_DURATION = 0x00000002,
 
-    /** get/set average uBurst duration in us [uint64_t] */
+    /** Get/set average uBurst duration in us [uint64_t] */
     SAI_TAM_MICROBURST_STAT_AVERAGE_DURATION = 0x00000003,
 
-    /** get/set number of uBursts [uint64_t] */
+    /** Get/set number of uBursts [uint64_t] */
     SAI_TAM_MICROBURST_STAT_NUMBER = 0x00000004,
-    
+
     /** Custom range base value */
     SAI_TAM_MICROBURST_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -63,60 +61,61 @@ typedef enum _sai_tam_microburst_stat_t
 /**
  * @brief TAM Microburst Attributes.
  */
-typedef enum _sai_tam_microburst_attr_t {
-	/**
-	* @brief Start of Attributes
-	*/
-	SAI_TAM_MICROBURST_ATTR_START,
-
-	/**
-	* @brief TAM Object
-	*
-	* @type sai_object_id_t
-	* @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-	* @objects SAI_OBJECT_TYPE_TAM
-	*/
-	SAI_TAM_MICROBURST_ATTR_TAM_ID = SAI_TAM_MICROBURST_ATTR_START,
-
-	/**
-	* @brief Statistic for this microburst
-	* 
-	* @type sai_object_id_t
-	* @flags MANDATORY_ON_CREATE
-	* @objects SAI_OBJECT_TYPE_TAM_STAT
-	*/
-	SAI_TAM_MICROBURST_ATTR_STATISTIC,
-
-	/**
-	* @brief Watermark Levels
-	*
-    * Breach high/low watermark level for this microburst statistic
-    * in number of bytes. 
-	*
-	* If not specified, the microburst is created without any 
-	* levels, which is effectively disabling the microburst 
-	* monitoring for the statistic. 
-	*
-	* @type uint64_t
-	* @flags CREATE_AND_SET
-	* @default 0
-	*/
-	SAI_TAM_MICROBURST_ATTR_LEVEL_A,
+typedef enum _sai_tam_microburst_attr_t
+{
+    /**
+     * @brief Start of Attributes
+     */
+    SAI_TAM_MICROBURST_ATTR_START,
 
     /**
-    * @brief Watermark Levels
-    *
-    * Breach low/high watermark level for this microburst statistic
-    * in number of bytes. 
-    *
-    * If not specified, the microburst is created without any 
-    * levels, which is effectively disabling the microburst 
-    * monitoring for the statistic.
-    *
-    * @type uint64_t
-    * @flags CREATE_AND_SET
-    * @default 0
-    */
+     * @brief TAM Object
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     */
+    SAI_TAM_MICROBURST_ATTR_TAM_ID = SAI_TAM_MICROBURST_ATTR_START,
+
+    /**
+     * @brief Statistic for this microburst
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_STAT
+     */
+    SAI_TAM_MICROBURST_ATTR_STATISTIC,
+
+    /**
+     * @brief Watermark Levels
+     *
+     * Breach high/low watermark level for this microburst statistic
+     * in number of bytes.
+     *
+     * If not specified, the microburst is created without any
+     * levels, which is effectively disabling the microburst
+     * monitoring for the statistic.
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_MICROBURST_ATTR_LEVEL_A,
+
+    /**
+     * @brief Watermark Levels
+     *
+     * Breach low/high watermark level for this microburst statistic
+     * in number of bytes.
+     *
+     * If not specified, the microburst is created without any
+     * levels, which is effectively disabling the microburst
+     * monitoring for the statistic.
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
     SAI_TAM_MICROBURST_ATTR_LEVEL_B,
 
     /**
@@ -133,26 +132,22 @@ typedef enum _sai_tam_microburst_attr_t {
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-	SAI_TAM_MICROBURST_ATTR_TRANSPORTER,
+    SAI_TAM_MICROBURST_ATTR_TRANSPORTER,
 
-	/**
-    * @brief Buffers/Statistics for inclusion in the snapshot 
-    *  
-	* Specifies the Statistics/Types for the snapshot.
-	* If not specified, all buffers tracked by 
-	* the associated TAM object are included in the snapshot.
-	* When specified, the buffers requested for snapshot must be within the set 
-	* tracked by the associated TAM object.
-	*
-	* @type sai_tam_statistic_id_list 
-	* @allownull true
-	*/
-	SAI_TAM_MICROBURST_ATTR_STAT_TYPES,
+    /**
+     * @brief Statistics for inclusion in the microburst
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_STAT
+     * @default empty
+     */
+    SAI_TAM_MICROBURST_ATTR_STATS,
 
-	/**
-	* @brief End of Attributes
-	*/
-	SAI_TAM_MICROBURST_ATTR_END,
+    /**
+     * @brief End of Attributes
+     */
+    SAI_TAM_MICROBURST_ATTR_END,
 
     /** Custom range base value */
     SAI_TAM_MICROBURST_ATTR_CUSTOM_RANGE_START = 0x10000000,
@@ -161,7 +156,6 @@ typedef enum _sai_tam_microburst_attr_t {
     SAI_TAM_MICROBURST_ATTR_CUSTOM_RANGE_END
 
 } sai_tam_microburst_attr_t;
-
 
 /**
  * @brief TAM Histogram Attributes.
@@ -186,10 +180,10 @@ typedef enum _sai_tam_histogram_attr_t
      * @brief Buffers/Statistics for inclusion in histogram
      *
      * Specifies the Statistics/Types for a histogram.
-     * 
+     *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM_STAT
+     * @objects SAI_OBJECT_TYPE_TAM_MICROBURST
      * @default empty
      */
     SAI_TAM_HISTOGRAM_ATTR_STAT_TYPE,
@@ -198,25 +192,24 @@ typedef enum _sai_tam_histogram_attr_t
      * @brief Histogram Bins Lower Boundaries
      *
      * List of lower boundary of each bin for this HISTOGRAM in
-     * number refered object units. The upper boundary of a bin is 
-     * the lower boundary of next bin. The upper boundary of the 
-     * last bin is infinity. 
+     * number referred object units. The upper boundary of a bin is
+     * the lower boundary of next bin. The upper boundary of the
+     * last bin is infinity.
      *
      * @type sai_u32_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @default empty
      */
     SAI_TAM_HISTOGRAM_ATTR_BIN_BOUNDARY,
 
     /**
      * @brief Histogram Resolution
      *
-     * The resolution to read mesure statistics  for inclusion in histogram
-     * May be every statistic object (as packet or microburst) or time interval (as 
-     * for buffer current usage level)
-     * 
-     * @type sai_u32_t
-     * @flags  CREATE_AND_SET
+     * The resolution to read measure statistics for inclusion in histogram
+     * May be every statistic object (as packet or microburst) or time interval
+     * (as for buffer current usage level)
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
      * @default 0
      */
     SAI_TAM_HISTOGRAM_ATTR_RESOLUTION,
@@ -225,23 +218,22 @@ typedef enum _sai_tam_histogram_attr_t
      * @brief Histogram Clear-On-Read Mode
      *
      * If true the histogram bin values are clear on read/transport.
-     * Otherwise values in bins are counting continuasly
-     * 
-     * @type boolean
-     * @flags  CREATE_AND_SET
-     * @default allownull true
+     * Otherwise values in bins are counting continuously.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
      */
     SAI_TAM_HISTOGRAM_ATTR_CLEAR_MODE,
-
 
     /**
      * @brief Transporter Object
      *
-     * Provides the transporter object for this histogram. When the 
-     * data shot is made, this transporter will be used to 'copy' 
-     * the data to the 'transporter-desired' location. In the 
-     * absence of a transporter, the tracker's default transporter 
-     * will be used (DEFAULT). 
+     * Provides the transporter object for this histogram. When the
+     * data shot is made, this transporter will be used to 'copy'
+     * the data to the 'transporter-desired' location. In the
+     * absence of a transporter, the tracker's default transporter
+     * will be used (DEFAULT).
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -264,65 +256,64 @@ typedef enum _sai_tam_histogram_attr_t
 
 } sai_tam_histogram_attr_t;
 
-
 /**
  * @brief Create and return a microburst object
  *
- * @param[out] microburst_id Microburst object
+ * @param[out] tam_microburst_id Microburst object
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of sai_tam_microburst_attr_t attributes
  *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error  
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_create_tam_microburst_fn) (
-	_Out_ sai_object_id_t * microburst_id,
-	_In_ uint32_t attr_count,
-	_In_ const sai_attribute_t * attr_list);
+typedef sai_status_t (*sai_create_tam_microburst_fn)(
+        _Out_ sai_object_id_t *tam_microburst_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Delete a specified microburst object
  *
- * @param[in] microburst_id Microburst object to be removed.
+ * @param[in] tam_microburst_id Microburst object to be removed.
  *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error 
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_remove_tam_microburst_fn) (
-	_In_ sai_object_id_t * microburst_id);
+typedef sai_status_t (*sai_remove_tam_microburst_fn)(
+        _In_ sai_object_id_t tam_microburst_id);
 
 /**
  * @brief Get values for specified microburst attributes.
  *
- * @param[in] microburst_id Microburst object id
+ * @param[in] tam_microburst_id Microburst object id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_get_tam_microburst_attribute_fn) (
-	_In_ sai_object_id_t microburst_id,
-	_In_ uint32_t attr_count,
-	_Inout_ sai_attribute_t * attr_list);
+typedef sai_status_t (*sai_get_tam_microburst_attribute_fn)(
+        _In_ sai_object_id_t tam_microburst_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Set microburst attribute value(s).
+ * @brief Set microburst attribute
  *
- * @param[in] microburst_id Microburst object id
- * @param[in] attr_count Number of attributes 
- * @param[in] attr_list Array of attributes
+ * @param[in] tam_microburst_id Microburst object id
+ * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t(*sai_set_tam_microburst_attribute_fn) (
-	_In_ sai_object_id_t microburst_id,
-	_In_ uint32_t attr_count,
-	_In_ const sai_attribute_t * attr_list);
+typedef sai_status_t (*sai_set_tam_microburst_attribute_fn)(
+        _In_ sai_object_id_t tam_microburst_id,
+        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Create and return a histogram object
  *
  * This creates a histogram in the driver. Via the attributes,
- * caller may indicate a preference for histogram of a specific 
- * set of bins. 
+ * caller may indicate a preference for histogram of a specific
+ * set of bins.
  *
  * @param[out] tam_histogram_id Histogram object
  * @param[in] switch_id Switch object id
@@ -340,7 +331,7 @@ typedef sai_status_t (*sai_create_tam_histogram_fn)(
 /**
  * @brief Delete a specified histogram object and free driver memory
  *
- * @param[in] tam_histogram_id histogram object to be removed.
+ * @param[in] tam_histogram_id Histogram object to be removed.
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
@@ -356,51 +347,51 @@ typedef sai_status_t (*sai_remove_tam_histogram_fn)(
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_tam_histogram_attribute_fn)(
-        _In_ sai_object_id_t        tam_histogram_id,
+        _In_ sai_object_id_t tam_histogram_id,
         _In_ const sai_attribute_t *attr);
 
 /**
  * @brief Get values for specified histogram attributes.
  *
- * @param[in] tam_histogram_id histogram object id
+ * @param[in] tam_histogram_id Histogram object id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_tam_histogram_attribute_fn)(
-        _In_ sai_object_id_t    tam_histogram_id,
-        _In_ uint32_t           attr_count,
+        _In_ sai_object_id_t tam_histogram_id,
+        _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Obtain the values for all bins from a histogram.
  *
- * Values array must supply sufficient memory for values of all 
- * bins as specified for the histogram object. 
+ * Values array must supply sufficient memory for values of all
+ * bins as specified for the histogram object.
  *
- * @param[in] tam_histogram_id histogram object id
- * @param[inout] number_of_bins Number of ins(required/provided)
- * @param[inout] values Statistics (allocated/provided)
+ * @param[in] tam_histogram_id Histogram object id
+ * @param[inout] number_of_counters Number of bins (required/provided)
+ * @param[out] counters Statistics values (allocated/provided)
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_tam_histogram_stats_fn)(
         _In_ sai_object_id_t tam_histogram_id,
-        _Inout_ uint32_t *number_of_bins,
-        _Inout_ uint32_t *bin_values);
+        _Inout_ uint32_t *number_of_counters,
+        _Out_ uint64_t *counters);
 
 typedef struct _sai_uburst_api_t
 {
     sai_create_tam_microburst_fn            create_tam_microburst;
-	sai_remove_tam_microburst_fn            remove_tam_microburst;
-	sai_set_tam_microburst_attribute_fn     set_tam_microburst_attribute;
-	sai_get_tam_microburst_attribute_fn     get_tam_microburst_attribute;
-	sai_create_tam_histogram_fn             create_tam_histogram;
-	sai_remove_tam_histogram_fn             remove_tam_histogram;
-	sai_set_tam_histogram_attribute_fn      set_tam_histogram_attribute;
-	sai_get_tam_histogram_attribute_fn      get_tam_histogram_attribute;
-	sai_get_tam_histogram_stats_fn          get_tam_histogram_stats;
+    sai_remove_tam_microburst_fn            remove_tam_microburst;
+    sai_set_tam_microburst_attribute_fn     set_tam_microburst_attribute;
+    sai_get_tam_microburst_attribute_fn     get_tam_microburst_attribute;
+    sai_create_tam_histogram_fn             create_tam_histogram;
+    sai_remove_tam_histogram_fn             remove_tam_histogram;
+    sai_set_tam_histogram_attribute_fn      set_tam_histogram_attribute;
+    sai_get_tam_histogram_attribute_fn      get_tam_histogram_attribute;
+    sai_get_tam_histogram_stats_fn          get_tam_histogram_stats;
 } sai_uburst_api_t;
 
 /**

@@ -8,7 +8,7 @@
  *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
  *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
  *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
- *    FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
  *
  *    See the Apache Version 2.0 License for specific language governing
  *    permissions and limitations under the License.
@@ -45,19 +45,6 @@ typedef enum _sai_port_type_t
     SAI_PORT_TYPE_CPU,
 
 } sai_port_type_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_BIND_MODE
- */
-typedef enum _sai_port_bind_mode_t
-{
-    /** Port */
-    SAI_PORT_BIND_MODE_PORT,
-
-    /** Sub port */
-    SAI_PORT_BIND_MODE_SUB_PORT,
-
-} sai_port_bind_mode_t;
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_OPER_STATUS
@@ -99,16 +86,16 @@ typedef struct _sai_port_oper_status_notification_t
  */
 typedef enum _sai_port_flow_control_mode_t
 {
-    /** disable flow control for both tx and rx */
+    /** Disable flow control for both tx and rx */
     SAI_PORT_FLOW_CONTROL_MODE_DISABLE,
 
-    /** enable flow control for tx only */
+    /** Enable flow control for tx only */
     SAI_PORT_FLOW_CONTROL_MODE_TX_ONLY,
 
-    /** enable flow control for rx only */
+    /** Enable flow control for rx only */
     SAI_PORT_FLOW_CONTROL_MODE_RX_ONLY,
 
-    /** enable flow control for both tx and rx */
+    /** Enable flow control for both tx and rx */
     SAI_PORT_FLOW_CONTROL_MODE_BOTH_ENABLE,
 
 } sai_port_flow_control_mode_t;
@@ -118,13 +105,13 @@ typedef enum _sai_port_flow_control_mode_t
  */
 typedef enum _sai_port_internal_loopback_mode_t
 {
-    /** disable internal loopback */
+    /** Disable internal loopback */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_NONE,
 
-    /** port internal loopback at phy module */
+    /** Port internal loopback at PHY module */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_PHY,
 
-    /** port internal loopback at mac module */
+    /** Port internal loopback at MAC module */
     SAI_PORT_INTERNAL_LOOPBACK_MODE_MAC
 
 } sai_port_internal_loopback_mode_t;
@@ -138,7 +125,7 @@ typedef enum _sai_port_media_type_t
     SAI_PORT_MEDIA_TYPE_NOT_PRESENT,
 
     /** Media type not known */
-    SAI_PORT_MEDIA_TYPE_UNKNONWN,
+    SAI_PORT_MEDIA_TYPE_UNKNOWN,
 
     /** Media type fiber. Remote advertise medium information as fiber */
     SAI_PORT_MEDIA_TYPE_FIBER,
@@ -373,6 +360,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_REMOTE_ADVERTISED_MEDIA_TYPE,
 
     /**
+     * @brief Query Remote port Advertised OUI Code
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_OUI_CODE,
+
+    /**
      * @brief Number of ingress priority groups
      *
      * @type sai_uint32_t
@@ -381,7 +376,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_NUMBER_OF_INGRESS_PRIORITY_GROUPS,
 
     /**
-     * @brief list of ingress priority groups
+     * @brief List of ingress priority groups
      *
      * @type sai_object_list_t
      * @flags READ_ONLY
@@ -420,7 +415,7 @@ typedef enum _sai_port_attr_t
      * @brief Auto Negotiation configuration
      *
      * @type bool
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default false
      */
     SAI_PORT_ATTR_AUTO_NEG_MODE,
@@ -438,7 +433,7 @@ typedef enum _sai_port_attr_t
      * @brief Media Type
      *
      * @type sai_port_media_type_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default SAI_PORT_MEDIA_TYPE_NOT_PRESENT
      */
     SAI_PORT_ATTR_MEDIA_TYPE,
@@ -502,14 +497,27 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_media_type_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_MEDIA_TYPE_UNKNONWN
+     * @default SAI_PORT_MEDIA_TYPE_UNKNOWN
      */
     SAI_PORT_ATTR_ADVERTISED_MEDIA_TYPE,
 
     /**
+     * @brief Query/Configure Port's Advertised OUI code
+     *
+     * Organizationally Unique Identifier for 25G/50G auto negotiation.
+     * Default is 0x6A737D for Ethernet Consortium
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0x6A737D
+     * @validonly SAI_PORT_ATTR_SPEED == 25000 or SAI_PORT_ATTR_SPEED == 50000
+     */
+    SAI_PORT_ATTR_ADVERTISED_OUI_CODE,
+
+    /**
      * @brief Port VLAN ID
      *
-     * Untagged ingress frames are tagged with Port VLAN ID (PVID)
+     * Untagged ingress frames are tagged with Port VLAN ID (PVID).
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
@@ -526,15 +534,6 @@ typedef enum _sai_port_attr_t
      * @default 0
      */
     SAI_PORT_ATTR_DEFAULT_VLAN_PRIORITY,
-
-    /**
-     * @brief Ingress Filtering (Drop Frames with Unknown VLANs)
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_PORT_ATTR_INGRESS_FILTERING,
 
     /**
      * @brief Dropping of untagged frames on ingress
@@ -592,8 +591,9 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Enable flood (unknown unicast or unknown multicast)
-     * storm control policer on port. Set policer id = #SAI_NULL_OBJECT_ID to
-     * disable policer on port.
+     * storm control policer on port.
+     *
+     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -604,8 +604,9 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID,
 
     /**
-     * @brief Enable broadcast storm control policer on port. Set
-     * Policer id = #SAI_NULL_OBJECT_ID to disable policer on port
+     * @brief Enable broadcast storm control policer on port.
+     *
+     * Set Policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -616,8 +617,9 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_BROADCAST_STORM_CONTROL_POLICER_ID,
 
     /**
-     * @brief Enable multicast storm control policer on port. Set
-     * policer id = #SAI_NULL_OBJECT_ID to disable policer on port
+     * @brief Enable multicast storm control policer on port.
+     *
+     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -639,10 +641,10 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress acl table or acl group on a port. Enable/Update
-     * ingress ACL table or ACL group filtering by assigning the list of valid
-     * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
-     * in the attribute value.
+     * Bind (or unbind) an ingress ACL table or ACL group on a port.
+     * Enable/Update ingress ACL table or ACL group filtering by assigning the
+     * list of valid object id. Disable ingress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -655,10 +657,10 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port bind point for egress ACL object
      *
-     * Bind (or unbind) an egress acl tables or acl group on a port. Enable/Update
-     * egress ACL table or ACL group filtering by assigning the list of valid
-     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
-     * in the attribute value.
+     * Bind (or unbind) an egress ACL tables or ACL group on a port.
+     * Enable/Update egress ACL table or ACL group filtering by assigning the
+     * list of valid object id. Disable egress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -673,7 +675,7 @@ typedef enum _sai_port_attr_t
      *
      * Enable ingress mirroring by assigning list of mirror session object id
      * as attribute value, disable ingress mirroring by assigning object_count
-     * as 0 in objlist
+     * as 0 in objlist.
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
@@ -687,7 +689,7 @@ typedef enum _sai_port_attr_t
      *
      * Enable egress mirroring by assigning list of mirror session object id as
      * attribute value Disable egress mirroring by assigning object_count as 0
-     * in objlist
+     * in objlist.
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
@@ -699,9 +701,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Enable/Disable Samplepacket session
      *
-     * Enable ingress sampling by assigning samplepacket object id
-     * Disable ingress sampling by assigning #SAI_NULL_OBJECT_ID as
-     * attribute value
+     * Enable ingress sampling by assigning samplepacket object id Disable
+     * ingress sampling by assigning #SAI_NULL_OBJECT_ID as attribute value.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -714,9 +715,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Enable/Disable Samplepacket session
      *
-     * Enable egress sampling by assigning samplepacket object id
-     * Disable egress sampling by assigning #SAI_NULL_OBJECT_ID as
-     * attribute value
+     * Enable egress sampling by assigning samplepacket object id Disable
+     * egress sampling by assigning #SAI_NULL_OBJECT_ID as attribute value.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -729,7 +729,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Attach/Detach policer to port
      *
-     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port
+     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -751,9 +751,9 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Enable DOT1P -> TC MAP on port
      *
-     * MAP id = #SAI_NULL_OBJECT_ID to disable map on port.
-     * To enable/disable trust Dot1p, Map ID should be add/remove on port.
-     * Default no map
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * To enable/disable trust Dot1p, map ID should be added/removed on port.
+     * Default no map.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -766,8 +766,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Enable DOT1P -> COLOR MAP on port
      *
-     * MAP id = #SAI_NULL_OBJECT_ID to disable map on port.
-     * To enable/disable trust Dot1p, Map ID should be add/remove on port.
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * To enable/disable trust Dot1p, map ID should be added/removed on port.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -780,9 +780,9 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Enable DSCP -> TC MAP on port
      *
-     * MAP id = #SAI_NULL_OBJECT_ID to disable map on port.
-     * To enable/disable trust DSCP, Map ID should be add/remove on port.
-     * Default no map
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * To enable/disable trust DSCP, map ID should be added/removed on port.
+     * Default no map.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -795,8 +795,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Enable DSCP -> COLOR MAP on port
      *
-     * MAP id = #SAI_NULL_OBJECT_ID to disable map on port.
-     * To enable/disable trust DSCP, Map ID should be add/remove on port.
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * To enable/disable trust DSCP, map ID should be added/removed on port.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -810,7 +810,7 @@ typedef enum _sai_port_attr_t
      * @brief Enable TC -> Queue MAP on port
      *
      * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
-     * Default no map i.e All packets to queue 0
+     * Default no map, i.e. all packets to queue 0.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -824,7 +824,7 @@ typedef enum _sai_port_attr_t
      * @brief Enable TC AND COLOR -> DOT1P MAP
      *
      * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
-     * Default no map
+     * Default no map.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -838,7 +838,7 @@ typedef enum _sai_port_attr_t
      * @brief Enable TC AND COLOR -> DSCP MAP
      *
      * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
-     * Default no map
+     * Default no map.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -877,7 +877,8 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP,
 
     /**
-     * @brief Enable PFC Priority -> Queue MAP
+     * @brief Enable PFC Priority -> Queue MAP.
+     *
      * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
      * Default no map
      *
@@ -890,23 +891,10 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP,
 
     /**
-     * @brief Attach WRED to port
-     *
-     * ID = #SAI_NULL_OBJECT_ID to disable WRED.
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_WRED
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_PORT_ATTR_QOS_WRED_PROFILE_ID,
-
-    /**
      * @brief Scheduler for port, Default no limits.
      *
      * #SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_RATE & #SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE
-     * attributes alone valid. Rest will be ignored
+     * attributes alone valid. Rest will be ignored.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -919,7 +907,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Ingress buffer profiles for port
      *
-     * There can be up to #SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM profiles
+     * There can be up to #SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM profiles.
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
@@ -931,7 +919,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Egress buffer profiles for port
      *
-     * There can be up to #SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM profiles
+     * There can be up to #SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM profiles.
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
@@ -943,7 +931,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Bit vector enable/disable port PFC
      *
-     * Valid from bit 0 to bit 7
+     * Valid from bit 0 to bit 7.
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -954,7 +942,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief User based Meta Data
      *
-     * Value Range #SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE
+     * Value Range #SAI_SWITCH_ATTR_PORT_USER_META_DATA_RANGE.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -993,9 +981,9 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port EEE Configuration
      *
-     * Energy Efficient Ethernet(EEE) is an IEEE 802.3 az standard aiming to
-     * reduce power consumptions on Ethernet ports (native copper ports).
-     * Enable the EEE on port level
+     * Energy Efficient Ethernet(EEE) is an IEEE 802.3az standard aiming to
+     * reduce power consumption on Ethernet ports (native copper ports).
+     * Enable the EEE on port level.
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -1006,8 +994,9 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port EEE IDLE time configuration
      *
-     * Time (in microsecs) to move to Low power state (No traffic), at the end of which MAC transitions to Low power state.
-     * MAX value set more benefit.
+     * Time (in microseconds) to move to Low power state (No traffic), at the
+     * end of which MAC transitions to Low power state. Max value set more
+     * benefit.
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
@@ -1019,7 +1008,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port EEE Wakeup time configuration
      *
-     * Time(in microsecs) to wait before transmitter is leaving Low Power Mode State. Min value set avoid latency.
+     * Time (in microseconds) to wait before transmitter is leaving Low Power
+     * Mode State. Min value set avoid latency.
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
@@ -1029,13 +1019,13 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_EEE_WAKE_TIME,
 
     /**
-     * @brief Port bind mode
+     * @brief List of port pools for the port
      *
-     * @type sai_port_bind_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_BIND_MODE_PORT
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT_POOL
      */
-    SAI_PORT_ATTR_BIND_MODE,
+    SAI_PORT_ATTR_PORT_POOL_LIST,
 
     /**
      * @brief End of attributes
@@ -1055,385 +1045,440 @@ typedef enum _sai_port_attr_t
  */
 typedef enum _sai_port_stat_t
 {
-    /** sai port stat if in octets */
+    /** SAI port stat if in octets */
     SAI_PORT_STAT_IF_IN_OCTETS,
 
-    /** sai port stat if in ucast pkts */
+    /** SAI port stat if in ucast pkts */
     SAI_PORT_STAT_IF_IN_UCAST_PKTS,
 
-    /** sai port stat if in non ucast pkts */
+    /** SAI port stat if in non ucast pkts */
     SAI_PORT_STAT_IF_IN_NON_UCAST_PKTS,
 
-    /** sai port stat if in discards */
+    /** SAI port stat if in discards */
     SAI_PORT_STAT_IF_IN_DISCARDS,
 
-    /** sai port stat if in errors */
+    /** SAI port stat if in errors */
     SAI_PORT_STAT_IF_IN_ERRORS,
 
-    /** sai port stat if in unknown protos */
+    /** SAI port stat if in unknown protocols */
     SAI_PORT_STAT_IF_IN_UNKNOWN_PROTOS,
 
-    /** sai port stat if in broadcast pkts */
+    /** SAI port stat if in broadcast pkts */
     SAI_PORT_STAT_IF_IN_BROADCAST_PKTS,
 
-    /** sai port stat if in multicast pkts */
+    /** SAI port stat if in multicast pkts */
     SAI_PORT_STAT_IF_IN_MULTICAST_PKTS,
 
-    /** sai port stat if in vlan discards */
+    /** SAI port stat if in vlan discards */
     SAI_PORT_STAT_IF_IN_VLAN_DISCARDS,
 
-    /** sai port stat if out octets */
+    /** SAI port stat if out octets */
     SAI_PORT_STAT_IF_OUT_OCTETS,
 
-    /** sai port stat if out ucast pkts */
+    /** SAI port stat if out ucast pkts */
     SAI_PORT_STAT_IF_OUT_UCAST_PKTS,
 
-    /** sai port stat if out non ucast pkts */
+    /** SAI port stat if out non ucast pkts */
     SAI_PORT_STAT_IF_OUT_NON_UCAST_PKTS,
 
-    /** sai port stat if out discards */
+    /** SAI port stat if out discards */
     SAI_PORT_STAT_IF_OUT_DISCARDS,
 
-    /** sai port stat if out errors */
+    /** SAI port stat if out errors */
     SAI_PORT_STAT_IF_OUT_ERRORS,
 
-    /** sai port stat if out qlen */
+    /** SAI port stat if out queue length */
     SAI_PORT_STAT_IF_OUT_QLEN,
 
-    /** sai port stat if out broadcast pkts */
+    /** SAI port stat if out broadcast pkts */
     SAI_PORT_STAT_IF_OUT_BROADCAST_PKTS,
 
-    /** sai port stat if out multicast pkts */
+    /** SAI port stat if out multicast pkts */
     SAI_PORT_STAT_IF_OUT_MULTICAST_PKTS,
 
-    /** sai port stat ether stats drop events */
+    /** SAI port stat ether stats drop events */
     SAI_PORT_STAT_ETHER_STATS_DROP_EVENTS,
 
-    /** sai port stat ether stats multicast pkts */
+    /** SAI port stat ether stats multicast pkts */
     SAI_PORT_STAT_ETHER_STATS_MULTICAST_PKTS,
 
-    /** sai port stat ether stats broadcast pkts */
+    /** SAI port stat ether stats broadcast pkts */
     SAI_PORT_STAT_ETHER_STATS_BROADCAST_PKTS,
 
-    /** sai port stat ether stats undersize pkts */
+    /** SAI port stat ether stats undersized pkts */
     SAI_PORT_STAT_ETHER_STATS_UNDERSIZE_PKTS,
 
-    /** sai port stat ether stats fragments */
+    /** SAI port stat ether stats fragments */
     SAI_PORT_STAT_ETHER_STATS_FRAGMENTS,
 
-    /** sai port stat ether stats pkts 64 octets */
+    /** SAI port stat ether stats pkts 64 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_64_OCTETS,
 
-    /** sai port stat ether stats pkts 65 to 127 octets */
+    /** SAI port stat ether stats pkts 65 to 127 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_65_TO_127_OCTETS,
 
-    /** sai port stat ether stats pkts 128 to 255 octets */
+    /** SAI port stat ether stats pkts 128 to 255 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_128_TO_255_OCTETS,
 
-    /** sai port stat ether stats pkts 256 to 511 octets */
+    /** SAI port stat ether stats pkts 256 to 511 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_256_TO_511_OCTETS,
 
-    /** sai port stat ether stats pkts 512 to 1023 octets */
+    /** SAI port stat ether stats pkts 512 to 1023 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_512_TO_1023_OCTETS,
 
-    /** sai port stat ether stats pkts 1024 to 1518 octets */
+    /** SAI port stat ether stats pkts 1024 to 1518 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_1024_TO_1518_OCTETS,
 
-    /** sai port stat ether stats pkts 1519 to 2047 octets */
+    /** SAI port stat ether stats pkts 1519 to 2047 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_1519_TO_2047_OCTETS,
 
-    /** sai port stat ether stats pkts 2048 to 4095 octets */
+    /** SAI port stat ether stats pkts 2048 to 4095 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_2048_TO_4095_OCTETS,
 
-    /** sai port stat ether stats pkts 4096 to 9216 octets */
+    /** SAI port stat ether stats pkts 4096 to 9216 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_4096_TO_9216_OCTETS,
 
-    /** sai port stat ether stats pkts 9217 to 16383 octets */
+    /** SAI port stat ether stats pkts 9217 to 16383 octets */
     SAI_PORT_STAT_ETHER_STATS_PKTS_9217_TO_16383_OCTETS,
 
-    /** sai port stat ether stats oversize pkts */
+    /** SAI port stat ether stats oversize pkts */
     SAI_PORT_STAT_ETHER_STATS_OVERSIZE_PKTS,
 
-    /** sai port stat ether rx oversize pkts */
+    /** SAI port stat ether rx oversize pkts */
     SAI_PORT_STAT_ETHER_RX_OVERSIZE_PKTS,
 
-    /** sai port stat ether tx oversize pkts */
+    /** SAI port stat ether tx oversize pkts */
     SAI_PORT_STAT_ETHER_TX_OVERSIZE_PKTS,
 
-    /** sai port stat ether stats jabbers */
+    /** SAI port stat ether stats jabbers */
     SAI_PORT_STAT_ETHER_STATS_JABBERS,
 
-    /** sai port stat ether stats octets */
+    /** SAI port stat ether stats octets */
     SAI_PORT_STAT_ETHER_STATS_OCTETS,
 
-    /** sai port stat ether stats pkts */
+    /** SAI port stat ether stats pkts */
     SAI_PORT_STAT_ETHER_STATS_PKTS,
 
-    /** sai port stat ether stats collisions */
+    /** SAI port stat ether stats collisions */
     SAI_PORT_STAT_ETHER_STATS_COLLISIONS,
 
-    /** sai port stat ether stats crc align errors */
+    /** SAI port stat ether stats CRC align errors */
     SAI_PORT_STAT_ETHER_STATS_CRC_ALIGN_ERRORS,
 
-    /** sai port stat ether stats tx no errors */
+    /** SAI port stat ether stats tx no errors */
     SAI_PORT_STAT_ETHER_STATS_TX_NO_ERRORS,
 
-    /** sai port stat ether stats rx no errors */
+    /** SAI port stat ether stats rx no errors */
     SAI_PORT_STAT_ETHER_STATS_RX_NO_ERRORS,
 
-    /** sai port stat ip in receives */
+    /** SAI port stat IP in receives */
     SAI_PORT_STAT_IP_IN_RECEIVES,
 
-    /** sai port stat ip in octets */
+    /** SAI port stat IP in octets */
     SAI_PORT_STAT_IP_IN_OCTETS,
 
-    /** sai port stat ip in ucast pkts */
+    /** SAI port stat IP in ucast pkts */
     SAI_PORT_STAT_IP_IN_UCAST_PKTS,
 
-    /** sai port stat ip in non ucast pkts */
+    /** SAI port stat IP in non ucast pkts */
     SAI_PORT_STAT_IP_IN_NON_UCAST_PKTS,
 
-    /** sai port stat ip in discards */
+    /** SAI port stat IP in discards */
     SAI_PORT_STAT_IP_IN_DISCARDS,
 
-    /** sai port stat ip out octets */
+    /** SAI port stat IP out octets */
     SAI_PORT_STAT_IP_OUT_OCTETS,
 
-    /** sai port stat ip out ucast pkts */
+    /** SAI port stat IP out ucast pkts */
     SAI_PORT_STAT_IP_OUT_UCAST_PKTS,
 
-    /** sai port stat ip out non ucast pkts */
+    /** SAI port stat IP out non ucast pkts */
     SAI_PORT_STAT_IP_OUT_NON_UCAST_PKTS,
 
-    /** sai port stat ip out discards */
+    /** SAI port stat IP out discards */
     SAI_PORT_STAT_IP_OUT_DISCARDS,
 
-    /** sai port stat ipv6 in receives */
+    /** SAI port stat IPv6 in receives */
     SAI_PORT_STAT_IPV6_IN_RECEIVES,
 
-    /** sai port stat ipv6 in octets */
+    /** SAI port stat IPv6 in octets */
     SAI_PORT_STAT_IPV6_IN_OCTETS,
 
-    /** sai port stat ipv6 in ucast pkts */
+    /** SAI port stat IPv6 in ucast pkts */
     SAI_PORT_STAT_IPV6_IN_UCAST_PKTS,
 
-    /** sai port stat ipv6 in non ucast pkts */
+    /** SAI port stat IPv6 in non ucast pkts */
     SAI_PORT_STAT_IPV6_IN_NON_UCAST_PKTS,
 
-    /** sai port stat ipv6 in mcast pkts */
+    /** SAI port stat IPv6 in mcast pkts */
     SAI_PORT_STAT_IPV6_IN_MCAST_PKTS,
 
-    /** sai port stat ipv6 in discards */
+    /** SAI port stat IPv6 in discards */
     SAI_PORT_STAT_IPV6_IN_DISCARDS,
 
-    /** sai port stat ipv6 out octets */
+    /** SAI port stat IPv6 out octets */
     SAI_PORT_STAT_IPV6_OUT_OCTETS,
 
-    /** sai port stat ipv6 out ucast pkts */
+    /** SAI port stat IPv6 out ucast pkts */
     SAI_PORT_STAT_IPV6_OUT_UCAST_PKTS,
 
-    /** sai port stat ipv6 out non ucast pkts */
+    /** SAI port stat IPv6 out non ucast pkts */
     SAI_PORT_STAT_IPV6_OUT_NON_UCAST_PKTS,
 
-    /** sai port stat ipv6 out mcast pkts */
+    /** SAI port stat IPv6 out mcast pkts */
     SAI_PORT_STAT_IPV6_OUT_MCAST_PKTS,
 
-    /** sai port stat ipv6 out discards */
+    /** SAI port stat IPv6 out discards */
     SAI_PORT_STAT_IPV6_OUT_DISCARDS,
 
-    /** get/set WRED green packet count [uint64_t] */
-    SAI_PORT_STAT_GREEN_DISCARD_DROPPED_PACKETS,
+    /** Get/set WRED green packet count [uint64_t] */
+    SAI_PORT_STAT_GREEN_WRED_DROPPED_PACKETS,
 
-    /** get/set WRED green byte count [uint64_t] */
-    SAI_PORT_STAT_GREEN_DISCARD_DROPPED_BYTES,
+    /** Get/set WRED green byte count [uint64_t] */
+    SAI_PORT_STAT_GREEN_WRED_DROPPED_BYTES,
 
-    /** get/set WRED yellow packet count [uint64_t] */
-    SAI_PORT_STAT_YELLOW_DISCARD_DROPPED_PACKETS,
+    /** Get/set WRED yellow packet count [uint64_t] */
+    SAI_PORT_STAT_YELLOW_WRED_DROPPED_PACKETS,
 
-    /** get/set WRED yellow byte count [uint64_t] */
-    SAI_PORT_STAT_YELLOW_DISCARD_DROPPED_BYTES,
+    /** Get/set WRED yellow byte count [uint64_t] */
+    SAI_PORT_STAT_YELLOW_WRED_DROPPED_BYTES,
 
-    /** get/set WRED red packet count [uint64_t] */
-    SAI_PORT_STAT_RED_DISCARD_DROPPED_PACKETS,
+    /** Get/set WRED red packet count [uint64_t] */
+    SAI_PORT_STAT_RED_WRED_DROPPED_PACKETS,
 
-    /** get/set WRED red byte count [uint64_t] */
-    SAI_PORT_STAT_RED_DISCARD_DROPPED_BYTES,
+    /** Get/set WRED red byte count [uint64_t] */
+    SAI_PORT_STAT_RED_WRED_DROPPED_BYTES,
 
-    /** get/set WRED dropped packets count [uint64_t] */
-    SAI_PORT_STAT_DISCARD_DROPPED_PACKETS,
+    /** Get/set WRED dropped packets count [uint64_t] */
+    SAI_PORT_STAT_WRED_DROPPED_PACKETS,
 
-    /** get/set WRED dropped bytes count [uint64_t] */
-    SAI_PORT_STAT_DISCARD_DROPPED_BYTES,
+    /** Get/set WRED dropped bytes count [uint64_t] */
+    SAI_PORT_STAT_WRED_DROPPED_BYTES,
 
-    /** get/set packets marked by ECN count [uint64_t] */
+    /** Get/set packets marked by ECN count [uint64_t] */
     SAI_PORT_STAT_ECN_MARKED_PACKETS,
 
-    /** packet size based packets count rt stat ether in pkts 64 octets */
+    /** Packet size based packets count rt stat ether in pkts 64 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_64_OCTETS,
 
-    /** sai port stat ether in pkts 65 to 127 octets */
+    /** SAI port stat ether in pkts 65 to 127 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_65_TO_127_OCTETS,
 
-    /** sai port stat ether in pkts 128 to 255 octets */
+    /** SAI port stat ether in pkts 128 to 255 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_128_TO_255_OCTETS,
 
-    /** sai port stat ether in pkts 256 to 511 octets */
+    /** SAI port stat ether in pkts 256 to 511 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_256_TO_511_OCTETS,
 
-    /** sai port stat ether in pkts 512 to 1023 octets */
+    /** SAI port stat ether in pkts 512 to 1023 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_512_TO_1023_OCTETS,
 
-    /** sai port stat ether in pkts 1024 to 1518 octets */
+    /** SAI port stat ether in pkts 1024 to 1518 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_1024_TO_1518_OCTETS,
 
-    /** sai port stat ether in pkts 1519 to 2047 octets */
+    /** SAI port stat ether in pkts 1519 to 2047 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_1519_TO_2047_OCTETS,
 
-    /** sai port stat ether in pkts 2048 to 4095 octets */
+    /** SAI port stat ether in pkts 2048 to 4095 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_2048_TO_4095_OCTETS,
 
-    /** sai port stat ether in pkts 4096 to 9216 octets */
+    /** SAI port stat ether in pkts 4096 to 9216 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_4096_TO_9216_OCTETS,
 
-    /** sai port stat ether in pkts 9217 to 16383 octets */
+    /** SAI port stat ether in pkts 9217 to 16383 octets */
     SAI_PORT_STAT_ETHER_IN_PKTS_9217_TO_16383_OCTETS,
 
-    /** sai port stat ether out pkts 64 octets */
+    /** SAI port stat ether out pkts 64 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_64_OCTETS,
 
-    /** sai port stat ether out pkts 65 to 127 octets */
+    /** SAI port stat ether out pkts 65 to 127 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_65_TO_127_OCTETS,
 
-    /** sai port stat ether out pkts 128 to 255 octets */
+    /** SAI port stat ether out pkts 128 to 255 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_128_TO_255_OCTETS,
 
-    /** sai port stat ether out pkts 256 to 511 octets */
+    /** SAI port stat ether out pkts 256 to 511 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_256_TO_511_OCTETS,
 
-    /** sai port stat ether out pkts 512 to 1023 octets */
+    /** SAI port stat ether out pkts 512 to 1023 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_512_TO_1023_OCTETS,
 
-    /** sai port stat ether out pkts 1024 to 1518 octets */
+    /** SAI port stat ether out pkts 1024 to 1518 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_1024_TO_1518_OCTETS,
 
-    /** sai port stat ether out pkts 1519 to 2047 octets */
+    /** SAI port stat ether out pkts 1519 to 2047 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_1519_TO_2047_OCTETS,
 
-    /** sai port stat ether out pkts 2048 to 4095 octets */
+    /** SAI port stat ether out pkts 2048 to 4095 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_2048_TO_4095_OCTETS,
 
-    /** sai port stat ether out pkts 4096 to 9216 octets */
+    /** SAI port stat ether out pkts 4096 to 9216 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_4096_TO_9216_OCTETS,
 
-    /** sai port stat ether out pkts 9217 to 16383 octets */
+    /** SAI port stat ether out pkts 9217 to 16383 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_9217_TO_16383_OCTETS,
 
-    /** get in port current occupancy in bytes [uint64_t] */
+    /** Get in port current occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_IN_CURR_OCCUPANCY_BYTES,
 
-    /** get in port watermark occupancy in bytes [uint64_t] */
+    /** Get in port watermark occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_IN_WATERMARK_BYTES,
 
-    /** get in port current shared occupancy in bytes [uint64_t] */
+    /** Get in port current shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_IN_SHARED_CURR_OCCUPANCY_BYTES,
 
-    /** get in port watermark shared occupancy in bytes [uint64_t] */
+    /** Get in port watermark shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_IN_SHARED_WATERMARK_BYTES,
 
-    /** get out port current occupancy in bytes [uint64_t] */
+    /** Get out port current occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_OUT_CURR_OCCUPANCY_BYTES,
 
-    /** get out port watermark occupancy in bytes [uint64_t] */
+    /** Get out port watermark occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_OUT_WATERMARK_BYTES,
 
-    /** get out port current shared occupancy in bytes [uint64_t] */
+    /** Get out port current shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_OUT_SHARED_CURR_OCCUPANCY_BYTES,
 
-    /** get out port watermark shared occupancy in bytes [uint64_t] */
+    /** Get out port watermark shared occupancy in bytes [uint64_t] */
     SAI_PORT_STAT_OUT_SHARED_WATERMARK_BYTES,
 
-    /** get in port packet drops due to buffers [uint64_t] */
+    /** Get in port packet drops due to buffers [uint64_t] */
     SAI_PORT_STAT_IN_DROPPED_PKTS,
 
-    /** get out port packet drops due to buffers [uint64_t] */
+    /** Get out port packet drops due to buffers [uint64_t] */
     SAI_PORT_STAT_OUT_DROPPED_PKTS,
 
-    /** get the number of pause frames received on the port [uint64_t] */
+    /** Get the number of pause frames received on the port [uint64_t] */
     SAI_PORT_STAT_PAUSE_RX_PKTS,
 
-    /** get the number of pause frames transmitted on the port [uint64_t] */
+    /** Get the number of pause frames transmitted on the port [uint64_t] */
     SAI_PORT_STAT_PAUSE_TX_PKTS,
 
     /** PFC Packet Counters for RX and TX per PFC priority [uint64_t] */
     SAI_PORT_STAT_PFC_0_RX_PKTS,
 
-    /** sai port stat pfc 0 tx pkts */
+    /** SAI port stat PFC 0 tx pkts */
     SAI_PORT_STAT_PFC_0_TX_PKTS,
 
-    /** sai port stat pfc 1 rx pkts */
+    /** SAI port stat PFC 1 rx pkts */
     SAI_PORT_STAT_PFC_1_RX_PKTS,
 
-    /** sai port stat pfc 1 tx pkts */
+    /** SAI port stat PFC 1 tx pkts */
     SAI_PORT_STAT_PFC_1_TX_PKTS,
 
-    /** sai port stat pfc 2 rx pkts */
+    /** SAI port stat PFC 2 rx pkts */
     SAI_PORT_STAT_PFC_2_RX_PKTS,
 
-    /** sai port stat pfc 2 tx pkts */
+    /** SAI port stat PFC 2 tx pkts */
     SAI_PORT_STAT_PFC_2_TX_PKTS,
 
-    /** sai port stat pfc 3 rx pkts */
+    /** SAI port stat PFC 3 rx pkts */
     SAI_PORT_STAT_PFC_3_RX_PKTS,
 
-    /** sai port stat pfc 3 tx pkts */
+    /** SAI port stat PFC 3 tx pkts */
     SAI_PORT_STAT_PFC_3_TX_PKTS,
 
-    /** sai port stat pfc 4 rx pkts */
+    /** SAI port stat PFC 4 rx pkts */
     SAI_PORT_STAT_PFC_4_RX_PKTS,
 
-    /** sai port stat pfc 4 tx pkts */
+    /** SAI port stat PFC 4 tx pkts */
     SAI_PORT_STAT_PFC_4_TX_PKTS,
 
-    /** sai port stat pfc 5 rx pkts */
+    /** SAI port stat PFC 5 rx pkts */
     SAI_PORT_STAT_PFC_5_RX_PKTS,
 
-    /** sai port stat pfc 5 tx pkts */
+    /** SAI port stat PFC 5 tx pkts */
     SAI_PORT_STAT_PFC_5_TX_PKTS,
 
-    /** sai port stat pfc 6 rx pkts */
+    /** SAI port stat PFC 6 rx pkts */
     SAI_PORT_STAT_PFC_6_RX_PKTS,
 
-    /** sai port stat pfc 6 tx pkts */
+    /** SAI port stat PFC 6 tx pkts */
     SAI_PORT_STAT_PFC_6_TX_PKTS,
 
-    /** sai port stat pfc 7 rx pkts */
+    /** SAI port stat PFC 7 rx pkts */
     SAI_PORT_STAT_PFC_7_RX_PKTS,
 
-    /** sai port stat pfc 7 tx pkts */
+    /** SAI port stat PFC 7 tx pkts */
     SAI_PORT_STAT_PFC_7_TX_PKTS,
+
+    /**
+     * @brief PFC pause duration for RX and TX per PFC priority [uint64_t]
+     *
+     * RX pause duration for certain priority is a the duration quanta in ingress pause
+     * frame for that priority (a pause frame received by the switch).
+     * While TX pause duration for certain priority is the duration quanta in egress pause
+     * frame for that priority (a pause frame sent by the switch).
+     */
+    SAI_PORT_STAT_PFC_0_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 0 tx duration */
+    SAI_PORT_STAT_PFC_0_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 1 rx duration */
+    SAI_PORT_STAT_PFC_1_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 1 tx duration */
+    SAI_PORT_STAT_PFC_1_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 2 rx duration */
+    SAI_PORT_STAT_PFC_2_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 2 tx duration */
+    SAI_PORT_STAT_PFC_2_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 3 rx duration */
+    SAI_PORT_STAT_PFC_3_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 3 tx duration */
+    SAI_PORT_STAT_PFC_3_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 4 rx duration */
+    SAI_PORT_STAT_PFC_4_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 4 tx duration */
+    SAI_PORT_STAT_PFC_4_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 5 rx duration */
+    SAI_PORT_STAT_PFC_5_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 5 tx duration */
+    SAI_PORT_STAT_PFC_5_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 6 rx duration */
+    SAI_PORT_STAT_PFC_6_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 6 tx duration */
+    SAI_PORT_STAT_PFC_6_TX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 7 rx duration */
+    SAI_PORT_STAT_PFC_7_RX_PAUSE_DURATION,
+
+    /** SAI port stat PFC 7 tx duration */
+    SAI_PORT_STAT_PFC_7_TX_PAUSE_DURATION,
 
     /** PFC based ON to OFF pause transitions counter per PFC priority [uint64_t] */
     SAI_PORT_STAT_PFC_0_ON2OFF_RX_PKTS,
 
-    /** sai port stat pfc 1 on to off rx pkts */
+    /** SAI port stat PFC 1 on to off rx pkts */
     SAI_PORT_STAT_PFC_1_ON2OFF_RX_PKTS,
 
-    /** sai port stat pfc 2 on to off rx pkts */
+    /** SAI port stat PFC 2 on to off rx pkts */
     SAI_PORT_STAT_PFC_2_ON2OFF_RX_PKTS,
 
-    /** sai port stat pfc 3 on to off rx pkts */
+    /** SAI port stat PFC 3 on to off rx pkts */
     SAI_PORT_STAT_PFC_3_ON2OFF_RX_PKTS,
 
-    /** sai port stat pfc 4 on to off rx pkts */
+    /** SAI port stat PFC 4 on to off rx pkts */
     SAI_PORT_STAT_PFC_4_ON2OFF_RX_PKTS,
 
-    /** sai port stat pfc 5 on to off rx pkts */
+    /** SAI port stat PFC 5 on to off rx pkts */
     SAI_PORT_STAT_PFC_5_ON2OFF_RX_PKTS,
 
-    /** sai port stat pfc 6 on to off rx pkts */
+    /** SAI port stat PFC 6 on to off rx pkts */
     SAI_PORT_STAT_PFC_6_ON2OFF_RX_PKTS,
 
-    /** sai port stat pfc 7 on to off rx pkts */
+    /** SAI port stat PFC 7 on to off rx pkts */
     SAI_PORT_STAT_PFC_7_ON2OFF_RX_PKTS,
 
     /**
@@ -1451,14 +1496,14 @@ typedef enum _sai_port_stat_t
     /**
      * @brief Port Low power mode duration(micro secs) in TX direction [uint64_t].
      *
-     * This Duration is accumulative since EEE enable on port/from last clear stats
+     * This Duration is accumulative since EEE enable on port/from last clear stats.
      */
     SAI_PORT_STAT_EEE_TX_DURATION,
 
     /**
      * @brief Port Low power mode duration(micro secs) in RX direction [uint64_t]
      *
-     * This Duration is accumulative since EEE enable on port/from last clear stats
+     * This Duration is accumulative since EEE enable on port/from last clear stats.
      */
     SAI_PORT_STAT_EEE_RX_DURATION,
 
@@ -1472,19 +1517,20 @@ typedef enum _sai_port_stat_t
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_port_fn)(
         _Out_ sai_object_id_t *port_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
+
 /**
  * @brief Remove port
  *
  * @param[in] port_id Port id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_port_fn)(
         _In_ sai_object_id_t port_id);
@@ -1495,7 +1541,7 @@ typedef sai_status_t (*sai_remove_port_fn)(
  * @param[in] port_id Port id
  * @param[in] attr Attribute
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_port_attribute_fn)(
         _In_ sai_object_id_t port_id,
@@ -1508,7 +1554,7 @@ typedef sai_status_t (*sai_set_port_attribute_fn)(
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_port_attribute_fn)(
         _In_ sai_object_id_t port_id,
@@ -1519,38 +1565,38 @@ typedef sai_status_t (*sai_get_port_attribute_fn)(
  * @brief Get port statistics counters.
  *
  * @param[in] port_id Port id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_port_stats_fn)(
         _In_ sai_object_id_t port_id,
-        _In_ const sai_port_stat_t *counter_ids,
         _In_ uint32_t number_of_counters,
+        _In_ const sai_port_stat_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
  * @brief Clear port statistics counters.
  *
  * @param[in] port_id Port id
- * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_clear_port_stats_fn)(
         _In_ sai_object_id_t port_id,
-        _In_ const sai_port_stat_t *counter_ids,
-        _In_ uint32_t number_of_counters);
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_port_stat_t *counter_ids);
 
 /**
  * @brief Clear port's all statistics counters.
  *
  * @param[in] port_id Port id
  *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_clear_port_all_stats_fn)(
         _In_ sai_object_id_t port_id);
@@ -1560,6 +1606,8 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
  *
  * Passed as a parameter into sai_initialize_switch()
  *
+ * @count data[count]
+ *
  * @param[in] count Number of notifications
  * @param[in] data Array of port operational status
  */
@@ -1568,17 +1616,237 @@ typedef void (*sai_port_state_change_notification_fn)(
         _In_ sai_port_oper_status_notification_t *data);
 
 /**
+ * @brief List of Port buffer pool attributes
+ */
+typedef enum _sai_port_pool_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_PORT_POOL_ATTR_START,
+
+    /**
+     * @brief Port ID
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
+     */
+    SAI_PORT_POOL_ATTR_PORT_ID = SAI_PORT_POOL_ATTR_START,
+
+    /**
+     * @brief Buffer pool id
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
+     */
+    SAI_PORT_POOL_ATTR_BUFFER_POOL_ID,
+
+    /**
+     * @brief Attach WRED to port pool
+     *
+     * ID = #SAI_NULL_OBJECT_ID to disable WRED.
+     *
+     * WRED Drop/ECN marking based on port thresholds will happen only
+     * when one of queue referring to this port configured
+     * with non default value for SAI_QUEUE_ATTR_WRED_PROFILE_ID.
+     * ID = #SAI_NULL_OBJECT_ID to disable WRED
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_WRED
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_POOL_ATTR_QOS_WRED_PROFILE_ID,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_PORT_POOL_ATTR_END,
+
+    /** Custom range base value */
+    SAI_PORT_POOL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_PORT_POOL_ATTR_CUSTOM_RANGE_END
+
+} sai_port_pool_attr_t;
+
+/**
+ * @brief Port pool counter IDs in sai_get_port_pool_stats() call
+ */
+typedef enum _sai_port_pool_stat_t
+{
+    /** SAI port stat if octets */
+    SAI_PORT_POOL_STAT_IF_OCTETS,
+
+    /** Get/set WRED green dropped packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_GREEN_WRED_DROPPED_PACKETS,
+
+    /** Get/set WRED green dropped byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_GREEN_WRED_DROPPED_BYTES,
+
+    /** Get/set WRED yellow dropped packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_YELLOW_WRED_DROPPED_PACKETS,
+
+    /** Get/set WRED yellow dropped byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_YELLOW_WRED_DROPPED_BYTES,
+
+    /** Get/set WRED red dropped packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_RED_WRED_DROPPED_PACKETS,
+
+    /** Get/set WRED red dropped byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_RED_WRED_DROPPED_BYTES,
+
+    /** Get/set WRED dropped packets count [uint64_t] */
+    SAI_PORT_POOL_STAT_WRED_DROPPED_PACKETS,
+
+    /** Get/set WRED dropped bytes count [uint64_t] */
+    SAI_PORT_POOL_STAT_WRED_DROPPED_BYTES,
+
+    /** Get/set WRED green marked packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_GREEN_WRED_ECN_MARKED_PACKETS,
+
+    /** Get/set WRED green marked byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_GREEN_WRED_ECN_MARKED_BYTES,
+
+    /** Get/set WRED yellow marked packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_YELLOW_WRED_ECN_MARKED_PACKETS,
+
+    /** Get/set WRED yellow marked byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_YELLOW_WRED_ECN_MARKED_BYTES,
+
+    /** Get/set WRED red marked packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_RED_WRED_ECN_MARKED_PACKETS,
+
+    /** Get/set WRED red marked byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_RED_WRED_ECN_MARKED_BYTES,
+
+    /** Get/set WRED marked packets count [uint64_t] */
+    SAI_PORT_POOL_STAT_WRED_ECN_MARKED_PACKETS,
+
+    /** Get/set WRED marked bytes count [uint64_t] */
+    SAI_PORT_POOL_STAT_WRED_ECN_MARKED_BYTES,
+
+    /** Get in port current occupancy bytes [uint64_t] */
+    SAI_PORT_POOL_STAT_CURR_OCCUPANCY_BYTES,
+
+    /** Get in port watermark occupancy bytes [uint64_t] */
+    SAI_PORT_POOL_STAT_WATERMARK_BYTES,
+
+    /** Get in port current shared occupancy bytes [uint64_t] */
+    SAI_PORT_POOL_STAT_SHARED_CURR_OCCUPANCY_BYTES,
+
+    /** Get in port watermark shared occupancy bytes [uint64_t] */
+    SAI_PORT_POOL_STAT_SHARED_WATERMARK_BYTES,
+
+    /** Get in port packet drops due to buffers [uint64_t] */
+    SAI_PORT_POOL_STAT_DROPPED_PKTS,
+
+} sai_port_pool_stat_t;
+
+/**
+ * @brief Create port pool
+ *
+ * @param[out] port_pool_id Port pool id
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_port_pool_fn)(
+        _Out_ sai_object_id_t *port_pool_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove port pool
+ *
+ * @param[in] port_pool_id Port pool id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_port_pool_fn)(
+        _In_ sai_object_id_t port_pool_id);
+
+/**
+ * @brief Set port pool attribute value.
+ *
+ * @param[in] port_pool_id Port pool id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_port_pool_attribute_fn)(
+        _In_ sai_object_id_t port_pool_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get port pool attribute value.
+ *
+ * @param[in] port_pool_id Port pool id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_port_pool_attribute_fn)(
+        _In_ sai_object_id_t port_pool_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Get port pool statistics counters.
+ *
+ * @param[in] port_pool_id Port pool id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_port_pool_stats_fn)(
+        _In_ sai_object_id_t port_pool_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_port_pool_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear port pool statistics counters.
+ *
+ * @param[in] port_pool_id Port pool id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_port_pool_stats_fn)(
+        _In_ sai_object_id_t port_pool_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_port_pool_stat_t *counter_ids);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_port_api_t
 {
-    sai_create_port_fn              create_port;
-    sai_remove_port_fn              remove_port;
-    sai_set_port_attribute_fn       set_port_attribute;
-    sai_get_port_attribute_fn       get_port_attribute;
-    sai_get_port_stats_fn           get_port_stats;
-    sai_clear_port_stats_fn         clear_port_stats;
-    sai_clear_port_all_stats_fn     clear_port_all_stats;
+    sai_create_port_fn                create_port;
+    sai_remove_port_fn                remove_port;
+    sai_set_port_attribute_fn         set_port_attribute;
+    sai_get_port_attribute_fn         get_port_attribute;
+    sai_get_port_stats_fn             get_port_stats;
+    sai_clear_port_stats_fn           clear_port_stats;
+    sai_clear_port_all_stats_fn       clear_port_all_stats;
+    sai_create_port_pool_fn           create_port_pool;
+    sai_remove_port_pool_fn           remove_port_pool;
+    sai_set_port_pool_attribute_fn    set_port_pool_attribute;
+    sai_get_port_pool_attribute_fn    get_port_pool_attribute;
+    sai_get_port_pool_stats_fn        get_port_pool_stats;
+    sai_clear_port_pool_stats_fn      clear_port_pool_stats;
 
 } sai_port_api_t;
 
