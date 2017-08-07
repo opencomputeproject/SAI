@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saiqueue.h
  *
@@ -230,28 +230,28 @@ typedef enum _sai_queue_stat_t
     SAI_QUEUE_STAT_RED_DROPPED_BYTES = 0x0000000f,
 
     /** Get/set WRED green color dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_WRED_DROPPED_PACKETS = 0x00000010,
+    SAI_QUEUE_STAT_GREEN_DISCARD_DROPPED_PACKETS = 0x00000010,
 
     /** Get/set WRED green color dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_WRED_DROPPED_BYTES = 0x00000011,
+    SAI_QUEUE_STAT_GREEN_DISCARD_DROPPED_BYTES = 0x00000011,
 
     /** Get/set WRED yellow color dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_WRED_DROPPED_PACKETS = 0x00000012,
+    SAI_QUEUE_STAT_YELLOW_DISCARD_DROPPED_PACKETS = 0x00000012,
 
     /** Get/set WRED yellow color dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_WRED_DROPPED_BYTES = 0x00000013,
+    SAI_QUEUE_STAT_YELLOW_DISCARD_DROPPED_BYTES = 0x00000013,
 
     /** Get/set WRED red color dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_RED_WRED_DROPPED_PACKETS = 0x00000014,
+    SAI_QUEUE_STAT_RED_DISCARD_DROPPED_PACKETS = 0x00000014,
 
     /** Get/set WRED red color dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_RED_WRED_DROPPED_BYTES = 0x00000015,
+    SAI_QUEUE_STAT_RED_DISCARD_DROPPED_BYTES = 0x00000015,
 
     /** Get/set WRED dropped packets count [uint64_t] */
-    SAI_QUEUE_STAT_WRED_DROPPED_PACKETS = 0x00000016,
+    SAI_QUEUE_STAT_DISCARD_DROPPED_PACKETS = 0x00000016,
 
     /** Get/set WRED red dropped bytes count [uint64_t] */
-    SAI_QUEUE_STAT_WRED_DROPPED_BYTES = 0x00000017,
+    SAI_QUEUE_STAT_DISCARD_DROPPED_BYTES = 0x00000017,
 
     /** Get current queue occupancy in bytes [uint64_t] */
     SAI_QUEUE_STAT_CURR_OCCUPANCY_BYTES = 0x00000018,
@@ -264,30 +264,6 @@ typedef enum _sai_queue_stat_t
 
     /** Get watermark queue shared occupancy in bytes [uint64_t] */
     SAI_QUEUE_STAT_SHARED_WATERMARK_BYTES = 0x0000001b,
-
-    /** Get/set WRED green color marked packets count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_WRED_ECN_MARKED_PACKETS = 0x0000001c,
-
-    /** Get/set WRED green color marked bytes count [uint64_t] */
-    SAI_QUEUE_STAT_GREEN_WRED_ECN_MARKED_BYTES = 0x0000001d,
-
-    /** Get/set WRED yellow color marked packets count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_WRED_ECN_MARKED_PACKETS = 0x0000001e,
-
-    /** Get/set WRED yellow color marked bytes count [uint64_t] */
-    SAI_QUEUE_STAT_YELLOW_WRED_ECN_MARKED_BYTES = 0x0000001f,
-
-    /** Get/set WRED red color marked packets count [uint64_t] */
-    SAI_QUEUE_STAT_RED_WRED_ECN_MARKED_PACKETS = 0x00000020,
-
-    /** Get/set WRED red color marked bytes count [uint64_t] */
-    SAI_QUEUE_STAT_RED_WRED_ECN_MARKED_BYTES = 0x00000021,
-
-    /** Get/set WRED marked packets count [uint64_t] */
-    SAI_QUEUE_STAT_WRED_ECN_MARKED_PACKETS = 0x00000022,
-
-    /** Get/set WRED red marked bytes count [uint64_t] */
-    SAI_QUEUE_STAT_WRED_ECN_MARKED_BYTES = 0x00000023,
 
     /** Custom range base value */
     SAI_QUEUE_STAT_CUSTOM_RANGE_BASE = 0x10000000
