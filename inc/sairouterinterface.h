@@ -54,10 +54,7 @@ typedef enum _sai_router_interface_type_t
     SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
 
     /** .1D Bridge Router Interface Type */
-    SAI_ROUTER_INTERFACE_TYPE_BRIDGE,
-
-    /** Q-in-Q Router Interface Type */
-    SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT,
+    SAI_ROUTER_INTERFACE_TYPE_BRIDGE
 
 } sai_router_interface_type_t;
 
@@ -109,26 +106,6 @@ typedef enum _sai_router_interface_attr_t
      * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
      */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
-
-    /**
-     * @brief Outer Vlan
-     *
-     * @type sai_uint16_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @isvlan true
-     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT
-     */
-    SAI_ROUTER_INTERFACE_ATTR_OUTER_VLAN_ID,
-
-    /**
-     * @brief Inner Vlan
-     *
-     * @type sai_uint16_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @isvlan true
-     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT
-     */
-    SAI_ROUTER_INTERFACE_ATTR_INNER_VLAN_ID,
 
     /* READ-WRITE */
 

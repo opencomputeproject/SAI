@@ -1486,26 +1486,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SUPPORTED_PROTECTED_OBJECT_TYPE,
 
     /**
-     * @brief TPID for Outer vlan id
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0x88A8
-     */
-    SAI_SWITCH_ATTR_TPID_OUTER_VLAN,
-
-    /**
-     * @brief TPID for Inner vlan id
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0x8100
-     */
-    SAI_SWITCH_ATTR_TPID_INNER_VLAN,
-
-    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
