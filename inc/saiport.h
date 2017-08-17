@@ -198,6 +198,18 @@ typedef enum _sai_port_fec_mode_t
 } sai_port_fec_mode_t;
 
 /**
+ * @brief Attribute data for 25G #SAI_PORT_ATTR_FEC_STANDARD
+ */
+typedef enum _sai_port_fec_standard_t
+{
+    /** IEEE Standard */
+    SAI_PORT_FEC_STANDARD_IEEE,
+
+    /** Consortium Standard */
+    SAI_PORT_FEC_STANDARD_CONSORTIUM,
+} sai_port_fec_standard_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -341,7 +353,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_REMOTE_ADVERTISED_SPEED,
 
     /**
-     * @brief Query list of Advertised remote port FEC control
+     * @brief Query list of Advertised remote port FEC control via ability bits.  In 10G / 25G IEEE mode, it is the F0,F2,F3 bits.
      *
      * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags READ_ONLY
@@ -349,12 +361,12 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_REMOTE_ADVERTISED_FEC_MODE,
 
     /**
-     * @brief Advertised remote port FEC AN request bit
+     * @brief Requested AN FEC remote port.  In IEEE mode, 10G is represented by a single F1 bit for FEC; so any value other than NONE is positive.  In 25G Consortium mode, it can be a list.
      *
-     * @type bool
+     * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_REMOTE_ADVERTISED_FEC_MODE_REQUEST,
+    SAI_PORT_ATTR_REMOTE_REQUESTED_FEC_MODE,
 
     /**
      * @brief Query list of Remote Port's Advertised HALF-Duplex speed in Mbps
@@ -477,7 +489,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ADVERTISED_SPEED,
 
     /**
-     * @brief Query/Configure list of Advertised port FEC Mode. AN ability bit implicitly set to true.
+     * @brief Query/Configure list of Advertised port FEC Mode via ability bits.  In 10G / 25G IEEE mode, it is the F0,F2,F3 bits.
      *
      * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags CREATE_AND_SET
@@ -486,13 +498,13 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ADVERTISED_FEC_MODE,
 
     /**
-     * @brief Advertised port FEC AN request bit.  True means FEC is requested for 10/40/100G
+     * @brief Requested AN FEC remote port.  In IEEE mode, 10G is represented by a single F1 bit for FEC; so any value other than NONE is positive.  In 25G Consortium mode, it can be a list.
      *
-     * @type bool
+     * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @default empty
      */
-    SAI_PORT_ATTR_ADVERTISED_FEC_MODE_REQUEST,
+    SAI_PORT_ATTR_REQUESTED_FEC_MODE,
 
     /**
      * @brief Query/Configure list of Advertised HALF-Duplex speed in Mbps
@@ -604,6 +616,15 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_FEC_MODE_NONE
      */
     SAI_PORT_ATTR_FEC_MODE,
+
+    /**
+     * @brief Forward Error Correction (FEC) 25G standard selection
+     *
+     * @type sai_port_fec_standard_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_FEC_STANDARD_IEEE
+     */
+    SAI_PORT_ATTR_FEC_STANDARD,
 
     /**
      * @brief FDB Learning mode
