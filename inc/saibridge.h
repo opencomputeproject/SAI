@@ -138,7 +138,7 @@ typedef enum _sai_bridge_port_attr_t
      * @type sai_bridge_port_tagging_mode_t
      * @flags CREATE_AND_SET
      * @default SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      */
     SAI_BRIDGE_PORT_ATTR_TAGGING_MODE,
 
