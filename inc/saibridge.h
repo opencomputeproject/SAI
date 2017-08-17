@@ -133,15 +133,17 @@ typedef enum _sai_bridge_port_attr_t
     /**
      * @brief Tagging mode of the bridge port
      *
+     * Specifies the tagging mode to be used during egress.
+     *
      * @type sai_bridge_port_tagging_mode_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
+     * @default SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      */
     SAI_BRIDGE_PORT_ATTR_TAGGING_MODE,
 
     /**
      * @brief Associated Vlan
-     * Please note that this is valid only if bridge port tagging mode is tagged
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
