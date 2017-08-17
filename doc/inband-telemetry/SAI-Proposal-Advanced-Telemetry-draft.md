@@ -6,7 +6,8 @@ SAI Advanced Network Telemetry API Proposal
  Status      | Draft
  Type        | Standards track
  Created     | 06/18/2017
- SAI-Version | XXX
+ Updated     | 08/17/2017
+ SAI-Version | 1.x
 
 -------------------------------------------------------------------------------
 
@@ -57,226 +58,99 @@ Figure 4 depicts the mirror on drop capability. Switches mirror packets dropped 
 
 This section describes the advanced telemetry API proposal.
 
-## New Header `saitelemetry.h`
-
-### Data Structures and Enumerations
-
-#### Telemetry Attribute
+## Changes to `saiswitch.h` for switch telemetry attributes
 ~~~cpp
-/**
- * @brief Telemetry feature types
- * INT_EP, INT_TRANSIT, POSTCARD are mutually exclusive
- * MOD can coexist with any one of the three above
- */
-typedef enum _sai_telemetry_type_t {
-    /** INT source and sink */
-    SAI_TELEMETRY_TYPE_INT_EP,
-    /** INT transit */
-    SAI_TELEMETRY_TYPE_INT_TRANSIT,
-    /** Postcard */
-    SAI_TELEMETRY_TYPE_POSTCARD,
-    /** Mirror on Drop */
-    SAI_TELEMETRY_TYPE_MOD,
-} sai_telemetry_type_t;
+typedef enum _sai_switch_attr_t
+{
+    ......
+    /**
+     * @brief INT endpoint
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default False
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_INT_EP_ENABLE,
 
-/**
- * @brief Telemetry attributes
- */
-typedef enum _sai_telemetry_attr_t {
-    /** List of telemetry features to enable */
-    SAI_TELEMETRY_ATTR_TYPE_LIST,
-    /** Globally unique switch ID */
-    SAI_TELEMETRY_ATTR_SWITCH_ID,
-    /** List of ERSPAN mirror sessions for sending reports */
-    SAI_TELEMETRY_ATTR_MIRROR_LIST,
+    /**
+     * @brief INT transit
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default False
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_INT_TRANSIT_ENABLE,
 
-    /** INT sink downstream ports */
-    SAI_TELEMETRY_ATTR_INT_SINK_PORT_LIST,
-    /** Reserved DSCP value for INT over L4 */
-    SAI_TELEMETRY_ATTR_INT_DSCP,
-} sai_telemetry_attr_t;
-~~~
+    /**
+     * @brief Packet postcard
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default False
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_POSTCARD_ENABLE,
 
-#### Telemetry report triggering event detection
-~~~cpp
-/** Queue alert report trigger attributes */
-typedef enum _sai_telemetry_queue_alert_attr_t {
-    /** egress port */
-    SAI_TELEMETRY_QUEUE_ALERT_ATTR_EGRESS_PORT,
-    /** queue id */
-    SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_ID,
-    /** queue depth threshold */
-    SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_DEPTH_THRESHOLD,
-    /** queue latency threshold */
-    SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_LATENCY_THRESHOLD,
-} sai_telemetry_queue_alert_attr_t;
+    /**
+     * @brief Mirror on Drop
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default False
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_MIRROR_ON_DROP_ENABLE,
 
-/** Flow alert report trigger attributes */
-typedef enum _sai_telemetry_flow_alert_attr_t {
-    /** Flow state clear cycle */
-    SAI_TELEMETRY_FLOW_ALERT_ATTR_FLOW_STATE_CLEAR_CYCLE,
-    /** Latency sensitivity for flow state change detection */
-    SAI_TELEMETRY_FLOW_ALERT_ATTR_LATENCY_SENSITIVITY,
-} sai_telemetry_flow_alert_attr_t;
-~~~
+    /**
+     * @brief Globally unique switch ID
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_SWITCH_ID,
 
-#### INT-specific attributes
-~~~cpp
-/** INT instructions */
-typedef enum _sai_telemetry_int_instruction_t {
-    /** Switch ID */
-    SAI_TELEMETRY_INT_INST_SWITCH_ID,
-    /** Ingress and egress ports */
-    SAI_TELEMETRY_INT_INST_SWITCH_PORTS,
-    /** Timestamp at ingress */
-    SAI_TELEMETRY_INT_INST_INGRESS_TIMESTAMP,
-    /** Timestamp at egress */
-    SAI_TELEMETRY_INT_INST_EGRESS_TIMESTAMP,
-    /** Queue ID and queue depth */
-    SAI_TELEMETRY_INT_INST_QUEUE_INFO,
-} sai_telemetry_int_instruction_t;
+    /**
+     * @brief List of ERSPAN mirror sessions for sending telemetry reports
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_MIRROR_LIST,
 
-/** INT config session for endpoint switch */
-typedef enum _sai_telemetry_int_session_attr_t {
-    /** INT config session ID */
-    SAI_TELEMETRY_INT_SESSION_ATTR_SESSION_ID
-    /** INT max hop count */
-    SAI_TELEMETRY_INT_SESSION_ATTR_MAX_HOP_COUNT,
-    /** INT instruction list*/
-    SAI_TELEMETRY_INT_SESSION_ATTR_INT_INST_LIST,
-} sai_telemetry_int_session_attr_t;
-~~~
+    /**
+     * @brief Telemetry flow state clear cycle
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_FLOW_STATE_CLEAR_CYCLE,
 
-### SAI API
-~~~cpp
-typedef sai_status_t (*sai_create_telemetry_fn)(
-        _Out_ sai_object_id_t *telemetry_obj,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
+    /**
+     * @brief Latency sensitivity for flow state change detection
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 15
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_LATENCY_SENSITIVITY,
 
-typedef sai_status_t (*sai_remove_telemetry_fn)(
-        _In_ sai_object_id_t *telemetry_obj);
+    /**
+     * @brief INT sink downstream ports
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_INT_SINK_PORT_LIST,
 
-typedef sai_status_t (*sai_get_telemetry_attribute_fn)(
-        _In_    sai_object_id_t telemetry_obj,
-        _In_    uint32_t attr_count,
-        _Inout_ const sai_attribute_t *attr_list);
+    /**
+     * @brief Reserved DSCP value for INT over L4
+     *
+     * @type sai_ternary_field_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_SWITCH_ATTR_TELEMETRY_INT_DSCP,
 
-typedef sai_status_t (*sai_set_telemetry_attribute_fn)(
-        _In_  sai_object_id_t telemetry_obj,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_create_telemetry_watchlist_entry_fn)(
-        _Out_ sai_object_id_t *telemetry_watchlist_entry_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_remove_telemetry_watchlist_entry_fn)(
-        _In_ sai_object_id_t *telemetry_watchlist_entry_id);
-
-typedef sai_status_t (*sai_get_telemetry_watchlist_entry_attribute_fn)(
-        _In_    sai_object_id_t telemetry_watchlist_entry_id,
-        _In_    uint32_t attr_count,
-        _Inout_ const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_telemetry_watchlist_entry_attribute_fn)(
-        _In_  sai_object_id_t telemetry_watchlist_entry_id,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_create_telemetry_queue_alert_fn)(
-        _Out_ sai_object_id_t *telemetry_queue_alert_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_remove_telemetry_queue_alert_fn)(
-        _In_ sai_object_id_t * telemetry_queue_alert_id);
-
-typedef sai_status_t (*sai_get_telemetry_queue_alert_attribute_fn)(
-        _In_    sai_object_id_t telemetry_queue_alert_id,
-        _In_    uint32_t attr_count,
-        _Inout_ const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_telemetry_queue_alert_attribute_fn)(
-        _In_  sai_object_id_t telemetry_queue_alert_id,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_create_telemetry_queue_alert_fn)(
-        _Out_ sai_object_id_t *telemetry_queue_alert_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_remove_telemetry_flow_alert_fn)(
-        _In_ sai_object_id_t * telemetry_flow_alert_id);
-
-typedef sai_status_t (*sai_get_telemetry_flow_alert_attribute_fn)(
-        _In_    sai_object_id_t telemetry_flow_alert_id,
-        _In_    uint32_t attr_count,
-        _Inout_ const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_telemetry_flow_alert_attribute_fn)(
-        _In_  sai_object_id_t telemetry_flow_alert_id,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_create_telemetry_int_session_fn)(
-        _Out_ sai_object_id_t *telemetry_int_session_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_remove_telemetry_int_session_fn)(
-        _In_ sai_object_id_t *telemetry_int_session_id);
-
-typedef sai_status_t (*sai_get_telemetry_int_session_attribute_fn)(
-        _In_    sai_object_id_t telemetry_int_session_id,
-        _In_    uint32_t attr_count,
-        _Inout_ const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_telemetry_int_session_attribute_fn)(
-        _In_  sai_object_id_t telemetry_int_session_id,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_create_telemetry_int_sink_port_fn)(
-        _Out_ sai_object_id_t *telemetry_int_sink_port_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_remove_telemetry_int_sink_port_fn)(
-        _In_ sai_object_id_t *telemetry_int_sink_port_id);
-
-typedef sai_status_t (*sai_get_telemetry_int_sink_port_attribute_fn)(
-        _In_ sai_object_id_t telemetry_int_sink_port_id,
-        _In_  uint32_t attr_count,
-        _Out_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_telemetry_int_sink_port_attribute_fn)(
-        _In_ sai_object_id_t telemetry_int_sink_port_id,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef struct _sai_telemetry_api_t {
-    sai_create_telemetry_fn                       create_telemetry;
-    sai_remove_telemetry_fn                       remove_telemetry;
-    sai_get_telemetry_attribute_fn                get_telemetry_attribute;
-    sai_set_telemetry_attribute_fn                set_telemetry_attribute;
-
-    sai_create_telemetry_queue_alert_fn           create_telemetry_queue_alert;
-    sai_remove_telemetry_queue_alert_fn           remove_telemetry_queue_alert;
-    sai_get_telemetry_queue_alert_attribute_fn    get_telemetry_queue_alert_attribute;
-    sai_set_telemetry_queue_alert_attribute_fn    set_telemetry_queue_alert_attribute;
-
-    sai_create_telemetry_flow_alert_fn            create_telemetry_flow_alert;
-    sai_remove_telemetry_flow_alert_fn            remove_telemetry_flow_alert;
-    sai_get_telemetry_flow_alert_attribute_fn     get_telemetry_flow_alert_attribute;
-    sai_set_telemetry_flow_alert_attribute_fn     set_telemetry_flow_alert_attribute;
-
-    sai_create_telemetry_int_session_fn           create_telemetry_int_session;
-    sai_remove_telemetry_int_session_fn           remove_telemetry_int_session;
-    sai_get_telemetry_int_session_attribute_fn    get_telemetry_int_session_attribute;
-    sai_set_telemetry_int_session_attribute_fn    set_telemetry_int_session_attribute;
-
-    sai_create_telemetry_int_sink_port_fn         create_telemetry_int_sink_port;
-    sai_remove_telemetry_int_sink_port_fn         remove_telemetry_int_sink_port;
-    sai_get_telemetry_int_sink_port_attribute_fn  get_telemetry_int_sink_port_attribute;
-    sai_set_telemetry_int_sink_port_attribute_fn  set_telemetry_int_sink_port_attribute;
-} sai_telemetry_api_t;
+} sai_switch_attr_t;
 ~~~
 
 ## Changes to `saiacl.h` for telemetry watchlist
@@ -284,97 +158,371 @@ typedef struct _sai_telemetry_api_t {
 typedef enum _sai_acl_action_type_t
 {
     ......
+    /** Enable mirror on drop */
+    SAI_ACL_ACTION_TYPE_TELEMETRY_MOD_ENABLE,
 
-    /** Telemetry watch (default: true) */
-    SAI_ACL_ACTION_TYPE_TELEMETRY_WATCH,
-    /** Report every matched packet without event detection (default: false) */
+    /** Enable in-band network telemetry */
+    SAI_ACL_ACTION_TYPE_TELEMETRY_INT_ENABLE,
+
+    /** INT config session ID */
+    SAI_ACL_ACTION_TYPE_TELEMETRY_INT_SESSION,
+
+    /** Enable packet postcard */
+    SAI_ACL_ACTION_TYPE_TELEMETRY_POSTCARD_ENABLE,
+
+    /** Report every packet for the matched flow */
     SAI_ACL_ACTION_TYPE_TELEMETRY_REPORT_ALL,
-    /** Set INT config session ID */
-    SAI_ACL_ACTION_TYPE_TELEMETRY_SET_INT_SESSION_ID,
-} sai_acl_action_type_t;
-~~~
 
-~~~cpp
+} sai_acl_action_type_t;
+
+typedef enum _sai_acl_table_attr_t
+{
+    ......
+    /**
+     * @brief Tunnel VNI
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_VNI,
+
+    /**
+     * @brief Inner EtherType
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_ETHER_TYPE,
+
+    /**
+     * @brief Inner IP Protocol
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_IP_PROTOCOL,
+
+    /**
+     * @brief Inner L4 Src Port
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_L4_SRC_PORT,
+
+    /**
+     * @brief Inner L4 Dst Port
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_L4_DST_PORT,
+
+} sai_acl_table_attr_t;
+
 typedef enum _sai_acl_entry_attr_t
 {
     ......
+    /**
+     * @brief Tunnel VNI
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_VNI,
 
-   /** Tunnel vni */
-   SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_VNI,
+    /**
+     * @brief Inner EtherType
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_ETHER_TYPE,
 
-   /** Telemetry watch (default: true) */
-   SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_WATCH,
-   /** Report every matched packet without event detection (default: false) */
-   SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_REPORT_ALL,
-   /** Set INT config session ID */
-   SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_SET_INT_SESSION_ID,
+    /**
+     * @brief Inner IP Protocol
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_IP_PROTOCOL,
+
+    /**
+     * @brief Inner L4 Src Port
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_L4_SRC_PORT,
+
+    /**
+     * @brief Inner L4 Dst Port
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_L4_DST_PORT,
+
+    /**
+     * @brief Enable mirror on drop
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_MOD_ENABLE,
+
+    /**
+     * @brief Enable in-band network telemetry
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_INT_ENABLE,
+
+    /**
+     * @brief INT config session ID
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_INT_SESSION,
+
+    /**
+     * @brief Enable packet postcard
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_POSTCARD_ENABLE,
+
+    /**
+     * @brief Report every packet for the matched flow
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_REPORT_ALL,
+
 } sai_acl_entry_attr_t;
 ~~~
 
-## Example
-Example of configuring __INT Endpoint__ and __Mirror on Drop__ on a switch
+## New Header `saitelemetry.h`
 
-#### Enable Telemetry Functionality
+### Data Structures and Enumerations
+
 ~~~cpp
-sai_telemetry_query(SAI_API_TELEMETRY, &sai_telemetry_api);
-sai_attribute_t telemetry_attr[5];
-sai_object_id_t telemetry_obj;
-sai_telemetry_type_t telemetry_type_list[2];
+/**
+ * @brief Queue alert report trigger attributes
+ */
+typedef enum _sai_telemetry_queue_alert_attr_t {
+    /**
+     * @brief egress port
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TELEMETRY_QUEUE_ALERT_ATTR_EGRESS_PORT,
 
-/** Enable INT and MoD */
-telemetry_type_list[0] = SAI_TELEMETRY_TYPE_INT_EP;
-telemetry_type_list[1] = SAI_TELEMETRY_TYPE_MOD;
-telemetry_attr[0].id = SAI_TELEMETRY_ATTR_TYPE_LIST;
-telemetry_attr[0].value.telemetry_type_list.count = 2;
-telemetry_attr[0].value.telemetry_type_list.list = telemetry_type_list;
+    /**
+     * @brief queue index
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_ID,
 
-/** Configure globally unique switch ID */
-telemetry_attr[1].id = SAI_TELEMETRY_ATTR_SWITCH_ID;
-telemetry_attr[1].value.u32 = 0xfff222aa;
+    /**
+     * @brief queue depth threshold
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_DEPTH_THRESHOLD,
 
-/** Add telemetry mirror session */
-sai_telemetry_mirror_id_t telemetry_mirror_list[3];
-telemetry_mirror_list[0] = 0;
+    /**
+     * @brief queue latency threshold
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_LATENCY_THRESHOLD
+
+} sai_telemetry_queue_alert_attr_t;
+
+/**
+ * @brief INT config session attributes
+ */
+typedef enum _sai_telemetry_int_session_attr_t {
+    /**
+     * @brief INT config session ID
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TELEMETRY_INT_SESSION_ATTR_SESSION_ID,
+
+    /**
+     * @brief INT max hop count
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_TELEMETRY_INT_SESSION_ATTR_MAX_HOP_COUNT,
+
+    /**
+     * @brief add switch ID in INT instruction
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     */
+    SAI_TELEMETRY_INT_SESSION_ATTR_INST_SWITCH_ID,
+
+    /**
+     * @brief add ingress and egress ports in INT instruction
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     */
+    SAI_TELEMETRY_INT_SESSION_ATTR_INST_SWITCH_PORTS,
+
+    /**
+     * @brief add ingress Timestamp in INT instruction
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     */
+    SAI_TELEMETRY_INT_SESSION_ATTR_INST_INGRESS_TIMESTAMP,
+
+    /**
+     * @brief add egress Timestamp in INT instruction
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     */
+    SAI_TELEMETRY_INT_SESSION_ATTR_INST_EGRESS_TIMESTAMP,
+
+    /**
+     * @brief add queue information in INT instruction
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     */
+    SAI_TELEMETRY_INT_SESSION_ATTR_INST_QUEUE_INFO
+
+} sai_telemetry_int_session_attr_t;
+~~~
+
+### SAI API
+~~~cpp
+typedef sai_status_t (*sai_create_telemetry_queue_alert_fn)(
+        _Out_ sai_object_id_t *telemetry_queue_alert_id,
+        _In_  uint32_t attr_count,
+        _In_  const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_remove_telemetry_queue_alert_fn)(
+        _In_ sai_object_id_t telemetry_queue_alert_id);
+
+typedef sai_status_t (*sai_get_telemetry_queue_alert_attribute_fn)(
+        _In_    sai_object_id_t telemetry_queue_alert_id,
+        _In_    uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_set_telemetry_queue_alert_attribute_fn)(
+        _In_  sai_object_id_t telemetry_queue_alert_id,
+        _In_  const sai_attribute_t *attr);
+
+typedef sai_status_t (*sai_create_telemetry_int_session_fn)(
+        _Out_ sai_object_id_t *telemetry_int_session_id,
+        _In_  uint32_t attr_count,
+        _In_  const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_remove_telemetry_int_session_fn)(
+        _In_ sai_object_id_t telemetry_int_session_id);
+
+typedef sai_status_t (*sai_get_telemetry_int_session_attribute_fn)(
+        _In_    sai_object_id_t telemetry_int_session_id,
+        _In_    uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_set_telemetry_int_session_attribute_fn)(
+        _In_  sai_object_id_t telemetry_int_session_id,
+        _In_  const sai_attribute_t *attr);
+
+typedef struct _sai_telemetry_api_t {
+    sai_create_telemetry_queue_alert_fn           create_telemetry_queue_alert;
+    sai_remove_telemetry_queue_alert_fn           remove_telemetry_queue_alert;
+    sai_get_telemetry_queue_alert_attribute_fn    get_telemetry_queue_alert_attribute;
+    sai_set_telemetry_queue_alert_attribute_fn    set_telemetry_queue_alert_attribute;
+
+    sai_create_telemetry_int_session_fn           create_telemetry_int_session;
+    sai_remove_telemetry_int_session_fn           remove_telemetry_int_session;
+    sai_get_telemetry_int_session_attribute_fn    get_telemetry_int_session_attribute;
+    sai_set_telemetry_int_session_attribute_fn    set_telemetry_int_session_attribute;
+} sai_telemetry_api_t;
+~~~
+
+## Example
+Example of configuring __INT Endpoint__ on a switch
+
+~~~cpp
+sai_attribute_t attr
+// Enable INT endpoint
+attr.id = SAI_SWITCH_ATTR_TELEMETRY_INT_EP_ENABLE;
+attr.value.booldata = true;
+sai_switch_api-> set_switch_attribute(0, &attr);
+
+// Configure globally unique switch ID
+attr.id = SAI_SWITCH_ATTR_TELEMETRY_SWITCH_ID;
+attr.value.u32 = 0xfff222aa;
+sai_switch_api-> set_switch_attribute(0, &attr);
+
+// Add telemetry Erspan session
+attr.id = SAI_SWITCH_ATTR_TELEMETRY_MIRROR_LIST;
+sai_object_id_t telemetry_mirror_list[3];
+telemetry_mirror_list[0] = 0; // previously created Erspan session
 telemetry_mirror_list[1] = 2;
 telemetry_mirror_list[2] = 7;
-telemetry_attr[2].id = SAI_TELEMETRY_ATTR_MIRROR_LIST;
-telemetry_attr[2].value.u16list.count = 3;
-telemetry_attr[2].value.u16list.list = telemetry_mirror_list;
+attr.value.objlist.count = 3;
+attr.value.objlist.list = telemetry_mirror_list;
+sai_switch_api-> set_switch_attribute(0, &attr);
 
-/** Configure DSCP value for INT over L4 */
-telemetry_attr[3].id = SAI_TELEMETRY_ATTR_INT_DSCP;
-telemetry_attr[3].value.telemetry_int_dscp.value = 0x5c;
-telemetry_attr[3].value.telemetry_int_dscp.mask = 0xfc;
+// Configure DSCP value for INT over L4
+attr.id = SAI_SWITCH_ATTR_TELEMETRY_INT_DSCP;
+attr.value.ternaryfield.value = 0x5c;
+attr.value.ternaryfield.mask = 0xfc;
+sai_switch_api-> set_switch_attribute(0, &attr);
 
-/** Specify server-facing downstream ports for INT sink */
-sai_telemetry_port_id_t telemetry_port_list[4];
+// Specify server-facing downstream ports for INT sink
+attr.id = = SAI_SWITCH_ATTR_TELEMETRY_INT_SINK_PORT_LIST;
+sai_object_id_t telemetry_port_list[4];
 telemetry_port_list[0] = 0;
 telemetry_port_list[1] = 4;
 telemetry_port_list[2] = 8;
 telemetry_port_list[3] = 12;
-telemetry_attr[4].id = SAI_TELEMETRY_ATTR_INT_SINK_PORT_LIST;
-telemetry_attr[4].value.objlist.count = 4;
-telemetry_attr[4].value.objlist.list = telemetry_port_list;
+attr.value.objlist.count = 4;
+attr.value.objlist.list = telemetry_port_list;
+sai_switch_api-> set_switch_attribute(0, &attr);
 
-sai_telemetry_api->create_telemetry(&telemetry_obj, 5, telemetry_attr);
-~~~
+// Configure flow-based report trigger - sensitivity to latency change
+attr.id = SAI_SWITCH_ATTR_TELEMETRY_LATENCY_SENSITIVITY;
+attr.value.u16 = 15;
+sai_switch_api-> set_switch_attribute(switch, &attr);
 
-#### Configure Report Trigger
-~~~cpp
-/** Configure flow-based report trigger */
-sai_attribute_t flow_alert_attr[2];
-sai_object_id_t flow_alert_obj;
-flow_alert_attr[0].id = SAI_TELEMETRY_FLOW_ALERT_ATTR_FLOW_STATE_CLEAR_CYCLE;
-flow_alert_attr[0].value.u32 = 1;
-flow_alert_attr[1].id = SAI_TELEMETRY_FLOW_ALERT_ATTR_LATENCY_SENSITIVITY;
-flow_alert_attr[1].value.u16 = 15;
-sai_telemetry_api->create_telemetry_flow_alert(&flow_alert_obj, 2, flow_alert_attr);
+// Configure flow-based report trigger - flow state clear cycle
+attr.id = SAI_SWITCH_ATTR_TELEMETRY_FLOW_STATE_CLEAR_CYCLE;
+attr.value.u16 = 1;
+sai_switch_api-> set_switch_attribute(switch, &attr);
 
-/** Create a queue threshold report trigger */
+// Create a queue threshold report trigger
 sai_attribute_t queue_alert_attr[4];
 sai_object_id_t queue_alert_id;
 queue_alert_attr[0].id = SAI_TELEMETRY_QUEUE_ALERT_ATTR_EGRESS_PORT;
-queue_alert_attr[0].value.u16 = 2;
+queue_alert_attr[0].value.oid = 2;
 queue_alert_attr[1].id = SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_ID;
 queue_alert_attr[1].value.u16 = 0;
 queue_alert_attr[2].id = SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_DEPTH_THRESHOLD;
@@ -382,36 +530,65 @@ queue_alert_attr[2].value.u32 = 100;
 queue_alert_attr[3].id = SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_LATENCY_THRESHOLD;
 queue_alert_attr[3].value.u32 = 1000;
 sai_telemetry_api->create_telemetry_queue_alert(&queue_alert_id, 4, queue_alert_attr);
-~~~
 
-#### Create INT Config Session
-~~~cpp
-/** Create an INT config session */
-sai_attribute_t int_session_attr[3];
+// Create an INT config session
+sai_attribute_t int_session_attr[7];
 sai_object_id_t int_session_id;
-sai_telemetry_int_instruction_t instructions[5];
-instructions[0] = SAI_TELEMETRY_INT_INST_SWITCH_ID;
-instructions[1] = SAI_TELEMETRY_INT_INST_SWITCH_PORTS;
-instructions[2] = SAI_TELEMETRY_INT_INST_INGRESS_TIMESTAMP;
-instructions[3] = SAI_TELEMETRY_INT_INST_EGRESS_TIMESTAMP;
-instructions[4] = SAI_TELEMETRY_INT_INST_QUEUE_INFO;
-int_session_attr[0].id = SAI_TELEMETRY_INT_SESSION_ATTR_INT_INST_LIST;
-int_session_attr[0].value.telemetry_int_inst_list.count = 5;
-int_session_attr[0].value.telemetry_int_inst_list.list = instructions;
+int_session_attr[0].id = SAI_TELEMETRY_INT_SESSION_ATTR_SESSION_ID;
+int_session_attr[0].value.u16 = 1;
 int_session_attr[1].id = SAI_TELEMETRY_INT_SESSION_ATTR_MAX_HOP_COUNT;
 int_session_attr[1].value.u16 = 8;
-int_session_attr[2].id = SAI_TELEMETRY_INT_SESSION_ATTR_SESSION_ID;
-int_session_attr[2].value.u16 = 999;
-sai_telemetry_api->create_telemetry_int_session(&int_session_id, 3, int_session_attr);
-~~~
+int_session_attr[2].id = SAI_TELEMETRY_INT_SESSION_ATTR_INST_SWITCH_ID;
+int_session_attr[2].value.booldata = true;
+int_session_attr[3].id = SAI_TELEMETRY_INT_SESSION_ATTR_INST_SWITCH_PORTS;
+int_session_attr[3].value.booldata = true;
+int_session_attr[4].id = SAI_TELEMETRY_INT_SESSION_ATTR_INST_INGRESS_TIMESTAMP;
+int_session_attr[4].value.booldata = true;
+int_session_attr[5].id = SAI_TELEMETRY_INT_SESSION_ATTR_INST_EGRESS_TIMESTAMP;
+int_session_attr[5].value.booldata = true;
+int_session_attr[6].id = SAI_TELEMETRY_INT_SESSION_ATTR_INST_QUEUE_INFO;
+int_session_attr[6].value.booldata = true;
+sai_telemetry_api->create_telemetry_int_session(&int_session_id, 6, int_session_attr);
 
-#### Add Telemetry Watchlist Entry
-~~~cpp
-/** Add INT watchlist entry */
+// Create an INT watchlist table
+sai_attribute_t acl_table_attr[12];
+sai_object_id_t telemetry_int_watchlist;
+acl_table_attr[0].id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
+acl_table_attr[0].value.s32 = SAI_ACL_STAGE_INGRESS;
+acl_table_attr[1].id = SAI_ACL_TABLE_ATTR_ACL_ACTION_TYPE_LIST;
+int32_t acl_action_list[3];
+acl_action_list[0] = SAI_ACL_ACTION_TYPE_TELEMETRY_INT_ENABLE;
+acl_action_list[1] = SAI_ACL_ACTION_TYPE_TELEMETRY_INT_SESSION;
+acl_action_list[2] = SAI_ACL_ACTION_TYPE_TELEMETRY_REPORT_ALL;
+acl_table_attr[1].value.s32list.count = 3;
+acl_table_attr[1].value.s32list.list = acl_action_list;
+acl_table_attr[2].id = SAI_ACL_TABLE_ATTR_FIELD_ETHER_TYPE;
+acl_table_attr[2].value.booldata = true;
+acl_table_attr[3].id = SAI_ACL_TABLE_ATTR_FIELD_SRC_IP;
+acl_table_attr[3].value.booldata = true;
+acl_table_attr[4].id = SAI_ACL_TABLE_ATTR_FIELD_DST_IP;
+acl_table_attr[4].value.booldata = true;
+acl_table_attr[5].id = SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL;
+acl_table_attr[5].value.booldata = true;
+acl_table_attr[6].id = SAI_ACL_TABLE_ATTR_FIELD_L4_SRC_PORT;
+acl_table_attr[6].value.booldata = true;
+acl_table_attr[7].id = SAI_ACL_TABLE_ATTR_FIELD_L4_DST_PORT;
+acl_table_attr[7].value.booldata = true;
+acl_table_attr[8].id = SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_VNI;
+acl_table_attr[8].value.booldata = true;
+acl_table_attr[9].id = SAI_ACL_TABLE_ATTR_FIELD_INNER_ETHER_TYPE;
+acl_table_attr[9].value.booldata = true;
+acl_table_attr[10].id = SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IP;
+acl_table_attr[10].value.booldata = true;
+acl_table_attr[11].id = SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IP;
+acl_table_attr[11].value.booldata = true;
+sai_acl_api-> create_acl_table(&telemetry_int_watchlist, 0, 12, acl_table_attr);
+
+// Add INT watchlist entry
 sai_attribute_t acl_entry_attr[6];
 sai_object_id_t int_watchlist_entry_id;
 acl_entry_attr[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
-acl_entry_attr[0].value.oid = telemetry_int_watchlist_obj; // previously created
+acl_entry_attr[0].value.oid = telemetry_int_watchlist;
 acl_entry_attr[1].id = SAI_ACL_ENTRY_ATTR_PRIORITY;
 acl_entry_attr[1].value.u32 = 100;
 acl_entry_attr[2].id = SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL;
@@ -420,23 +597,9 @@ acl_entry_attr[2].value.aclfield.mask.u8 = 0xFF;
 acl_entry_attr[3].id = SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT;
 acl_entry_attr[3].value.aclfield.data.u16 = 80;
 acl_entry_attr[3].value.aclfield.mask.u16 = 0xFFFF;
-acl_entry_attr[4].id = SAI_ACL_ACTION_TYPE_TELEMETRY_WATCH;
+acl_entry_attr[4].id = SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_INT_ENABLE;
 acl_entry_attr[4].value.booldata = true;
-acl_entry_attr[5].id = SAI_ACL_ACTION_TYPE_TELEMETRY_SET_INT_SESSION_ID;
-acl_entry_attr[5].value.u16 = 999;
-sai_acl_api->create_acl_entry(&int_watchlist_entry_id, switch_id, 6, acl_entry_attr);
-
-/** Add Mirror on Drop watchlist entry */
-sai_attribute_t acl_entry_attr[4];
-sai_object_id_t mod_watchlist_entry_id;
-acl_entry_attr[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
-acl_entry_attr[0].value.oid = telemetry_mod_watchlist_obj; // previously created
-acl_entry_attr[1].id = SAI_ACL_ENTRY_ATTR_PRIORITY;
-acl_entry_attr[1].value.u16 = 100;
-acl_entry_attr[2].id = SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL;
-acl_entry_attr[2].value.aclfield.data.u8 = 6;
-acl_entry_attr[2].value.aclfield.mask.u8 = 0xFF;
-acl_entry_attr[3].id = SAI_ACL_ACTION_TYPE_TELEMETRY_WATCH;
-acl_entry_attr[3].value.booldata = true;
-sai_telemetry_api-> create_acl_entry(&mod_watchlist_entry_id, switch_id, 4, acl_entry_attr);
+acl_entry_attr[5].id = SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_INT_SESSION;
+acl_entry_attr[5].value.u16 = 1;
+sai_acl_api->create_acl_entry(&int_watchlist_entry_id, 0, 6, acl_entry_attr);
 ~~~
