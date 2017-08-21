@@ -216,7 +216,7 @@ typedef enum _sai_acl_action_type_t
     /** Set egress packet sampling */
     SAI_ACL_ACTION_TYPE_EGRESS_SAMPLEPACKET_ENABLE,
 
-    /** @ignore Set CPU Queue for CPU bound traffic */
+    /** Set CPU Queue for CPU bound traffic */
     SAI_ACL_ACTION_TYPE_SET_CPU_QUEUE,
 
     /** Set metadata to carry forward to next ACL stage */
@@ -1854,7 +1854,6 @@ typedef enum _sai_acl_entry_attr_t
      * flags CREATE_AND_SET
      * objects SAI_OBJECT_TYPE_QUEUE
      *
-     * @ignore
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
 
