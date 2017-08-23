@@ -1850,10 +1850,10 @@ typedef enum _sai_acl_entry_attr_t
      * when packet action specifies the packet needs to be punted
      * to CPU (Trap/Log) or the destination port points to CPU.
      *
-     * type sai_acl_action_data_t sai_object_id_t
-     * flags CREATE_AND_SET
-     * objects SAI_OBJECT_TYPE_QUEUE
-     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QUEUE
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_CPU_QUEUE,
 
