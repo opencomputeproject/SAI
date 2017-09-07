@@ -187,6 +187,21 @@ typedef enum _sai_port_media_type_t
 } sai_port_media_type_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_FEC_MODE
+ */
+typedef enum _sai_port_fec_mode_t
+{
+    /** No FEC */
+    SAI_PORT_FEC_MODE_NONE,
+
+    /** Enable RS-FEC - 25G, 50G, 100G ports */
+    SAI_PORT_FEC_MODE_RS,
+
+    /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
+    SAI_PORT_FEC_MODE_FC,
+} sai_port_fec_mode_t;
+
+/**
  *  Attribute Id in sai_set_port_attribute() and
  *  sai_get_port_attribute() calls
  */
@@ -353,6 +368,15 @@ typedef enum _sai_port_attr_t
     /** FDB Learning mode [sai_port_fdb_learning_mode_t]
        (default to SAI_PORT_LEARN_MODE_HW) */
     SAI_PORT_ATTR_FDB_LEARNING,
+
+    /**
+     * @brief Forward Error Correction (FEC) control
+     *
+     * @type sai_port_fec_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_FEC_MODE_NONE
+     */
+    SAI_PORT_ATTR_FEC_MODE,
 
     /** Update DSCP of outgoing packets [bool]
        (default to FALSE) */
