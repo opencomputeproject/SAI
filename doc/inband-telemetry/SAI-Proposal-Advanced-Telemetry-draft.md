@@ -197,7 +197,7 @@ typedef enum _sai_switch_attr_t
 } sai_switch_attr_t;
 ~~~
 
-## Changes to `saiacl.h` for telemetry watchlist
+## Changes to `saiacl.h` for INT, Postcard and MoD watchlist
 ~~~cpp
 typedef enum _sai_acl_action_type_t
 {
