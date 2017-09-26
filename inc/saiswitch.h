@@ -933,7 +933,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_packet_action_t
      * @flags CREATE_AND_SET
-     * @default SAI_PACKET_ACTION_TRAP
+     * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_SWITCH_ATTR_FDB_BROADCAST_MISS_PACKET_ACTION,
 
@@ -942,7 +942,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_packet_action_t
      * @flags CREATE_AND_SET
-     * @default SAI_PACKET_ACTION_TRAP
+     * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_PACKET_ACTION,
 
