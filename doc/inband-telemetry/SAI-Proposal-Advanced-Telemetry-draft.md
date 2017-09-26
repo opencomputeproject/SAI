@@ -22,7 +22,7 @@ This draft describes the API proposal to enable advanced telemetry capabilities 
 
 __Figure 1: Telemetry data plane workflow__
 
-Figure 1 describes the telemetry data plane functionality at a high level. The telemetry module inspects every data packet without interfering with normal data forwarding pipeline. Different components may be located at different switches in the network. A telemetry watchlist table specifies the flows to monitor. It performs ternary match on the packet headers and switch ports, and provides telemetry action parameters. Packets belonging to the specified flow spaces will be processed by the event detection logic. If a triggering event is detected, the switch will generate a report message to the monitor. The report message includes packet header and switch metadata associated with the packet (e.g., timestamp, ingress/egress ports, queue depth/latency).
+Figure 1 describes the telemetry data plane functionality at a high level. The telemetry module inspects every data packet without interfering with normal data forwarding pipeline. Different components may be located at different switches in the network. A telemetry watchlist table specifies the flows to monitor. It performs ternary match on the packet headers and switch ports, and provides telemetry action parameters. Watchlist is realized through SAI ACL, with a few new field and action attributes added to ACL table and entry objects. Packets belonging to the specified flow spaces will be processed by the event detection logic. If a triggering event is detected, the switch will generate a report message to the monitor. The report message includes packet header and switch metadata associated with the packet (e.g., timestamp, ingress/egress ports, queue depth/latency).
 
 Sections below introduce four different data plane telemetry capabilities: In-band Network Telemetry (INT), Packet Postcards, and Mirror on Drop, and Queue Congestion Report.
 
@@ -45,7 +45,7 @@ An __INT transit__ is a device along the path of a packet from source to sink. I
 
 __Figure 3: Packet Postcards__
 
-Figure 3 shows an example workflow of packet Postcards. Each switch makes its own decision and reports packets info (aka “postcards”) to the monitor individually. Unlike INT, a Postcard switch never modifies the original data packets. INT and Postcard achieve the same flow monitoring capabilities with different data plane approaches. They are __mutually exclusive__ in a network deployment.
+Figure 3 shows an example workflow of packet Postcards. Each switch makes its own decision and reports packets info (aka “postcards”) to the monitor individually. Unlike INT, a Postcard switch never modifies the original data packets. INT and Postcard achieve the same flow monitoring capabilities with different data plane approaches. 
 
 ## Mirror on Drop
 
@@ -79,7 +79,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default False
      */
-    SAI_SWITCH_ATTR_TELEMETRY_INT_EP_ENABLE,
+    SAI_SWITCH_ATTR_TELEMETRY_INT_ENDPOINT_ENABLE,
 
     /**
      * @brief INT transit
@@ -113,7 +113,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default 0
      */
     SAI_SWITCH_ATTR_TELEMETRY_SWITCH_ID,
 
@@ -138,7 +137,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default Switch default virtual router ID
      */
     SAI_SWITCH_ATTR_TELEMETRY_REPORT_VIRTUAL_ROUTER_ID,
 
@@ -147,7 +145,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @default 256
      */
     SAI_SWITCH_ATTR_TELEMETRY_REPORT_TRUNCATE_SIZE,
 
@@ -156,7 +153,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @default: 9999
      */
     SAI_SWITCH_ATTR_TELEMETRY_REPORT_UDP_DST_PORT,
 
@@ -174,7 +170,6 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @default 15
      */
     SAI_SWITCH_ATTR_TELEMETRY_LATENCY_SENSITIVITY,
 
@@ -394,6 +389,7 @@ typedef enum _sai_telemetry_queue_alert_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default UINT32_MAX
      */
     SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_DEPTH_THRESHOLD,
 
@@ -402,6 +398,7 @@ typedef enum _sai_telemetry_queue_alert_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default UINT32_MAX
      */
     SAI_TELEMETRY_QUEUE_ALERT_ATTR_QUEUE_LATENCY_THRESHOLD
 
@@ -415,8 +412,12 @@ typedef enum _sai_telemetry_int_session_attr_t
     /**
      * @brief INT max hop count
      *
+     * The maximum number of hops that are allowed to
+     * add their metadata to the packet
+     *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default 8
      */
     SAI_TELEMETRY_INT_SESSION_ATTR_MAX_HOP_COUNT,
 
@@ -425,6 +426,7 @@ typedef enum _sai_telemetry_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
+     * @default False
      */
     SAI_TELEMETRY_INT_SESSION_ATTR_INST_SWITCH_ID,
 
@@ -433,6 +435,7 @@ typedef enum _sai_telemetry_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
+     * @default False
      */
     SAI_TELEMETRY_INT_SESSION_ATTR_INST_SWITCH_PORTS,
 
@@ -441,6 +444,7 @@ typedef enum _sai_telemetry_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
+     * @default False
      */
     SAI_TELEMETRY_INT_SESSION_ATTR_INST_INGRESS_TIMESTAMP,
 
@@ -449,6 +453,7 @@ typedef enum _sai_telemetry_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
+     * @default False
      */
     SAI_TELEMETRY_INT_SESSION_ATTR_INST_EGRESS_TIMESTAMP,
 
@@ -457,6 +462,7 @@ typedef enum _sai_telemetry_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
+     * @default False
      */
     SAI_TELEMETRY_INT_SESSION_ATTR_INST_QUEUE_INFO
 
@@ -625,7 +631,7 @@ attr.value.u16 = 8890;
 sai_switch_api-> set_switch_attribute(0, &attr);
 
 // Enable INT endpoint
-attr.id = SAI_SWITCH_ATTR_TELEMETRY_INT_EP_ENABLE;
+attr.id = SAI_SWITCH_ATTR_TELEMETRY_INT_ENDPOINT_ENABLE;
 attr.value.booldata = true;
 sai_switch_api-> set_switch_attribute(0, &attr);
 
@@ -686,7 +692,7 @@ sai_telemetry_api->create_telemetry_int_session(&int_session_id, 6, int_session_
 
 // Create an INT watchlist table
 sai_attribute_t acl_table_attr[12];
-sai_object_id_t telemetry_int_watchlist;
+sai_object_id_t int_watchlist_id;
 acl_table_attr[0].id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
 acl_table_attr[0].value.s32 = SAI_ACL_STAGE_INGRESS;
 acl_table_attr[1].id = SAI_ACL_TABLE_ATTR_ACL_ACTION_TYPE_LIST;
@@ -717,13 +723,13 @@ acl_table_attr[10].id = SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_IP;
 acl_table_attr[10].value.booldata = true;
 acl_table_attr[11].id = SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_IP;
 acl_table_attr[11].value.booldata = true;
-sai_acl_api-> create_acl_table(&telemetry_int_watchlist, 0, 12, acl_table_attr);
+sai_acl_api-> create_acl_table(&int_watchlist_id, 0, 12, acl_table_attr);
 
 // Add an INT watchlist entry
 sai_attribute_t acl_entry_attr[6];
 sai_object_id_t int_watchlist_entry_id;
 acl_entry_attr[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
-acl_entry_attr[0].value.oid = telemetry_int_watchlist;
+acl_entry_attr[0].value.oid = int_watchlist_id;
 acl_entry_attr[1].id = SAI_ACL_ENTRY_ATTR_PRIORITY;
 acl_entry_attr[1].value.u32 = 100;
 acl_entry_attr[2].id = SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL;
@@ -737,4 +743,42 @@ acl_entry_attr[4].value.aclaction.enable = true;
 acl_entry_attr[5].id = SAI_ACL_ENTRY_ATTR_ACTION_TELEMETRY_INT_SESSION;
 acl_entry_attr[5].value.aclaction.parameter.oid = int_session_id;
 sai_acl_api->create_acl_entry(&int_watchlist_entry_id, 0, 6, acl_entry_attr);
+
+// Create a Mirror on Drop watchlist table
+sai_attribute_t acl_table_attr[8];
+sai_object_id_t mod_watchlist_id;
+acl_table_attr[0].id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
+acl_table_attr[0].value.s32 = SAI_ACL_STAGE_INGRESS;
+acl_table_attr[1].id = SAI_ACL_TABLE_ATTR_ACL_ACTION_TYPE_LIST;
+int32_t acl_action_list[1];
+acl_action_list[0] = SAI_ACL_ACTION_TYPE_TELEMETRY_MOD_ENABLE;
+acl_table_attr[1].value.s32list.count = 1;
+acl_table_attr[1].value.s32list.list = acl_action_list;
+acl_table_attr[2].id = SAI_ACL_TABLE_ATTR_FIELD_ETHER_TYPE;
+acl_table_attr[2].value.booldata = true;
+acl_table_attr[3].id = SAI_ACL_TABLE_ATTR_FIELD_SRC_IP;
+acl_table_attr[3].value.booldata = true;
+acl_table_attr[4].id = SAI_ACL_TABLE_ATTR_FIELD_DST_IP;
+acl_table_attr[4].value.booldata = true;
+acl_table_attr[5].id = SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL;
+acl_table_attr[5].value.booldata = true;
+acl_table_attr[6].id = SAI_ACL_TABLE_ATTR_FIELD_L4_SRC_PORT;
+acl_table_attr[6].value.booldata = true;
+acl_table_attr[7].id = SAI_ACL_TABLE_ATTR_FIELD_L4_DST_PORT;
+acl_table_attr[7].value.booldata = true;
+sai_acl_api-> create_acl_table(&mod_watchlist_id, 0, 8, acl_table_attr);
+
+// Add a Mirror on Drop watchlist entry
+sai_attribute_t acl_entry_attr[4];
+sai_object_id_t mod_watchlist_entry_id;
+acl_entry_attr[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
+acl_entry_attr[0].value.oid = mod_watchlist_id;
+acl_entry_attr[1].id = SAI_ACL_ENTRY_ATTR_PRIORITY;
+acl_entry_attr[1].value.u32 = 100;
+acl_entry_attr[2].id = SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL;
+acl_entry_attr[2].value.aclfield.data.u8 = 6;
+acl_entry_attr[2].value.aclfield.mask.u8 = 0xFF;
+acl_entry_attr[3].id = SAI_ACL_ACTION_TYPE_TELEMETRY_MOD_ENABLE;
+acl_entry_attr[3].value.aclaction.enable = true;
+sai_acl_api->create_acl_entry(&mod_watchlist_entry_id, 0, 4, acl_entry_attr);
 ~~~
