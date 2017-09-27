@@ -77,3 +77,4 @@ WWW - World Wide Web
 XG - (*,G) Any-source Multicast
 XOFF - Transmitter Off
 XON - Transmitter On
+IGMP - Internet Group Management Protocol

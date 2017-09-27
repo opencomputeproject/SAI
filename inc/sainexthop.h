@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    sainexthop.h
  *
@@ -41,7 +41,7 @@ typedef enum _sai_next_hop_type_t
     /** IP next hop */
     SAI_NEXT_HOP_TYPE_IP,
 
-    /** MPLS(NHLFE) next hop */
+    /** MPLS(outsegment) next hop */
     SAI_NEXT_HOP_TYPE_MPLS,
 
     /** Tunnel next hop */
@@ -175,6 +175,15 @@ typedef enum _sai_next_hop_attr_t
      * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
      */
     SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE,
+
+    /**
+     * @brief Push label
+     *
+     * @type sai_u32_list_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS
+     */
+    SAI_NEXT_HOP_ATTR_LABELSTACK,
 
     /**
      * @brief End of attributes

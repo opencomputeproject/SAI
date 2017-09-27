@@ -63,6 +63,10 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ASSERT_FALSE(x, format, ...)\
     if ((x) == true) { META_ASSERT_FAIL("expected false '" #x "': " format, ##__VA_ARGS__); }
 
+/* custom ranges start are the same for all objects */
+
+#define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
+
 void check_all_enums_name_pointers()
 {
     META_LOG_ENTER();
@@ -169,13 +173,20 @@ void check_all_enums_values()
                 }
                 else
                 {
-                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d", last, value);
+                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
                 }
             }
 
             last = emd->values[j];
 
-            META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
+            if (value >= CUSTOM_ATTR_RANGE_START && value < (2 * CUSTOM_ATTR_RANGE_START))
+            {
+                /* value is in custom range */
+            }
+            else
+            {
+                META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
+            }
         }
 
         META_ASSERT_TRUE(emd->values[j] == -1, "missing guard at the end of enum");
@@ -2159,6 +2170,14 @@ void check_attr_existing_objects(
              */
             break;
 
+        case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+
+            /*
+             * Allow for TAM histogram bin boundary
+             */
+
+            break;
+
         default:
 
             META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
@@ -2549,8 +2568,11 @@ void check_object_infos()
 
             if (last + 1 != (int)am->attrid)
             {
-                if (info->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY &&
-                        info->objecttype != SAI_OBJECT_TYPE_ACL_TABLE)
+                if (is_flag_enum(info->enummetadata))
+                {
+                    /* flags, ok */
+                }
+                else
                 {
                     META_MD_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
                 }
@@ -2561,6 +2583,16 @@ void check_object_infos()
             if (am->attrid >= info->attridstart &&
                     am->attrid < info->attridend)
             {
+                continue;
+            }
+
+            if (am->attrid >= CUSTOM_ATTR_RANGE_START)
+            {
+                /*
+                 * Attribute ID is in custom range, so it will not be in
+                 * regural start .. end range.
+                 */
+
                 continue;
             }
 
@@ -2631,6 +2663,7 @@ void check_non_object_id_object_types()
             {
                 case SAI_ATTR_VALUE_TYPE_MAC:
                 case SAI_ATTR_VALUE_TYPE_INT32:
+                case SAI_ATTR_VALUE_TYPE_UINT32:
                 case SAI_ATTR_VALUE_TYPE_UINT16:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
@@ -3773,7 +3806,8 @@ void check_object_ro_list(
     if (oi->objecttype == SAI_OBJECT_TYPE_FDB_FLUSH ||
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
             oi->objecttype == SAI_OBJECT_TYPE_SWITCH ||
-            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY)
+            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY ||
+            oi->objecttype == SAI_OBJECT_TYPE_TAM_HISTOGRAM)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can

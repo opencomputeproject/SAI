@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saiport.h
  *
@@ -1232,28 +1232,28 @@ typedef enum _sai_port_stat_t
     SAI_PORT_STAT_IPV6_OUT_DISCARDS,
 
     /** Get/set WRED green packet count [uint64_t] */
-    SAI_PORT_STAT_GREEN_DISCARD_DROPPED_PACKETS,
+    SAI_PORT_STAT_GREEN_WRED_DROPPED_PACKETS,
 
     /** Get/set WRED green byte count [uint64_t] */
-    SAI_PORT_STAT_GREEN_DISCARD_DROPPED_BYTES,
+    SAI_PORT_STAT_GREEN_WRED_DROPPED_BYTES,
 
     /** Get/set WRED yellow packet count [uint64_t] */
-    SAI_PORT_STAT_YELLOW_DISCARD_DROPPED_PACKETS,
+    SAI_PORT_STAT_YELLOW_WRED_DROPPED_PACKETS,
 
     /** Get/set WRED yellow byte count [uint64_t] */
-    SAI_PORT_STAT_YELLOW_DISCARD_DROPPED_BYTES,
+    SAI_PORT_STAT_YELLOW_WRED_DROPPED_BYTES,
 
     /** Get/set WRED red packet count [uint64_t] */
-    SAI_PORT_STAT_RED_DISCARD_DROPPED_PACKETS,
+    SAI_PORT_STAT_RED_WRED_DROPPED_PACKETS,
 
     /** Get/set WRED red byte count [uint64_t] */
-    SAI_PORT_STAT_RED_DISCARD_DROPPED_BYTES,
+    SAI_PORT_STAT_RED_WRED_DROPPED_BYTES,
 
     /** Get/set WRED dropped packets count [uint64_t] */
-    SAI_PORT_STAT_DISCARD_DROPPED_PACKETS,
+    SAI_PORT_STAT_WRED_DROPPED_PACKETS,
 
     /** Get/set WRED dropped bytes count [uint64_t] */
-    SAI_PORT_STAT_DISCARD_DROPPED_BYTES,
+    SAI_PORT_STAT_WRED_DROPPED_BYTES,
 
     /** Get/set packets marked by ECN count [uint64_t] */
     SAI_PORT_STAT_ECN_MARKED_PACKETS,
@@ -1682,32 +1682,53 @@ typedef enum _sai_port_pool_stat_t
     /** SAI port stat if octets */
     SAI_PORT_POOL_STAT_IF_OCTETS,
 
-    /** Get/set WRED green packet count [uint64_t] */
-    SAI_PORT_POOL_STAT_GREEN_DISCARD_DROPPED_PACKETS,
+    /** Get/set WRED green dropped packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_GREEN_WRED_DROPPED_PACKETS,
 
-    /** Get/set WRED green byte count [uint64_t] */
-    SAI_PORT_POOL_STAT_GREEN_DISCARD_DROPPED_BYTES,
+    /** Get/set WRED green dropped byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_GREEN_WRED_DROPPED_BYTES,
 
-    /** Get/set WRED yellow packet count [uint64_t] */
-    SAI_PORT_POOL_STAT_YELLOW_DISCARD_DROPPED_PACKETS,
+    /** Get/set WRED yellow dropped packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_YELLOW_WRED_DROPPED_PACKETS,
 
-    /** Get/set WRED yellow byte count [uint64_t] */
-    SAI_PORT_POOL_STAT_YELLOW_DISCARD_DROPPED_BYTES,
+    /** Get/set WRED yellow dropped byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_YELLOW_WRED_DROPPED_BYTES,
 
-    /** Get/set WRED red packet count [uint64_t] */
-    SAI_PORT_POOL_STAT_RED_DISCARD_DROPPED_PACKETS,
+    /** Get/set WRED red dropped packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_RED_WRED_DROPPED_PACKETS,
 
-    /** Get/set WRED red byte count [uint64_t] */
-    SAI_PORT_POOL_STAT_RED_DISCARD_DROPPED_BYTES,
+    /** Get/set WRED red dropped byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_RED_WRED_DROPPED_BYTES,
 
     /** Get/set WRED dropped packets count [uint64_t] */
-    SAI_PORT_POOL_STAT_DISCARD_DROPPED_PACKETS,
+    SAI_PORT_POOL_STAT_WRED_DROPPED_PACKETS,
 
     /** Get/set WRED dropped bytes count [uint64_t] */
-    SAI_PORT_POOL_STAT_DISCARD_DROPPED_BYTES,
+    SAI_PORT_POOL_STAT_WRED_DROPPED_BYTES,
 
-    /** Get/set packets marked by ECN count [uint64_t] */
-    SAI_PORT_POOL_STAT_ECN_MARKED_PACKETS,
+    /** Get/set WRED green marked packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_GREEN_WRED_ECN_MARKED_PACKETS,
+
+    /** Get/set WRED green marked byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_GREEN_WRED_ECN_MARKED_BYTES,
+
+    /** Get/set WRED yellow marked packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_YELLOW_WRED_ECN_MARKED_PACKETS,
+
+    /** Get/set WRED yellow marked byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_YELLOW_WRED_ECN_MARKED_BYTES,
+
+    /** Get/set WRED red marked packet count [uint64_t] */
+    SAI_PORT_POOL_STAT_RED_WRED_ECN_MARKED_PACKETS,
+
+    /** Get/set WRED red marked byte count [uint64_t] */
+    SAI_PORT_POOL_STAT_RED_WRED_ECN_MARKED_BYTES,
+
+    /** Get/set WRED marked packets count [uint64_t] */
+    SAI_PORT_POOL_STAT_WRED_ECN_MARKED_PACKETS,
+
+    /** Get/set WRED marked bytes count [uint64_t] */
+    SAI_PORT_POOL_STAT_WRED_ECN_MARKED_BYTES,
 
     /** Get in port current occupancy bytes [uint64_t] */
     SAI_PORT_POOL_STAT_CURR_OCCUPANCY_BYTES,

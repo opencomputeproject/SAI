@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saiacl.h
  *
@@ -2030,7 +2030,7 @@ typedef enum _sai_acl_range_attr_t
      * Range will include the start and end values.
      * Range Limit cannot be changed after the range is created.
      *
-     * @type sai_uint32_t
+     * @type sai_u32_range_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_ACL_RANGE_ATTR_LIMIT,

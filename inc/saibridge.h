@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saibridge.h
  *
@@ -88,6 +88,19 @@ typedef enum _sai_bridge_port_type_t
 } sai_bridge_port_type_t;
 
 /**
+ * @brief Attribute data for #SAI_BRIDGE_PORT_ATTR_TAGGING_MODE
+ */
+typedef enum _sai_bridge_port_tagging_mode_t
+{
+    /** Untagged mode */
+    SAI_BRIDGE_PORT_TAGGING_MODE_UNTAGGED,
+
+    /** Tagged mode */
+    SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED,
+
+} sai_bridge_port_tagging_mode_t;
+
+/**
  * @brief SAI attributes for Bridge Port
  */
 typedef enum _sai_bridge_port_attr_t
@@ -118,8 +131,19 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_PORT_ID,
 
     /**
-     * @brief Associated Vlan
+     * @brief Tagging mode of the bridge port
      *
+     * Specifies the tagging mode to be used during egress.
+     *
+     * @type sai_bridge_port_tagging_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_BRIDGE_PORT_TAGGING_MODE_TAGGED
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
+     */
+    SAI_BRIDGE_PORT_ATTR_TAGGING_MODE,
+
+    /**
+     * @brief Associated Vlan
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
@@ -156,7 +180,9 @@ typedef enum _sai_bridge_port_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_BRIDGE
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
+     * or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER
+     * or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
      */
     SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
 
@@ -337,6 +363,23 @@ typedef enum _sai_bridge_type_t
 } sai_bridge_type_t;
 
 /**
+ * @brief Attribute data for unknown unicast, unknown multicast
+ * and broadcast flood controls
+ */
+typedef enum _sai_bridge_flood_control_type_t
+{
+    /** Flood on all sub-ports */
+    SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS,
+
+    /** Disable flooding */
+    SAI_BRIDGE_FLOOD_CONTROL_TYPE_NONE,
+
+    /** Flood on the L2MC group */
+    SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP,
+
+} sai_bridge_flood_control_type_t;
+
+/**
  * @brief SAI attributes for Bridge
  */
 typedef enum _sai_bridge_attr_t
@@ -384,14 +427,91 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_LEARN_DISABLE,
 
     /**
-     * @brief To disable flooding traffic (Broadcast, unknown unicast,
-     * unknown multicast) on a bridge
+     * @brief Unknown unicast flood control type
      *
-     * @type bool
+     * @type sai_bridge_flood_control_type_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @default SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS
      */
-    SAI_BRIDGE_ATTR_FLOOD_DISABLE,
+    SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE,
+
+    /**
+     * @brief Unknown unicast flood group.
+     *
+     * Provides control on the set of bridge ports on which unknown unicast
+     * packets need to be flooded. This attribute would be used only when
+     * the SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE is set as
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP. When this attribute's value is
+     * SAI_NULL_OBJECT_ID, then flooding would be disabled.
+     * Valid for SAI_BRIDGE_TYPE_1D.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     */
+    SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Unknown unicast flood control type
+     *
+     * @type sai_bridge_flood_control_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS
+     */
+    SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE,
+
+    /**
+     * @brief Unknown multicast flood group.
+     *
+     * Provides control on the set of bridge ports on which unknown multicast
+     * packets need to be flooded. This attribute would be used only when
+     * the SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE is set as
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP.When this attribute's value is
+     * SAI_NULL_OBJECT_ID, then flooding would be disabled.
+     * Valid for SAI_BRIDGE_TYPE_1D.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     */
+    SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Broadcast flood control type
+     *
+     * @type sai_bridge_flood_control_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS
+     */
+    SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE,
+
+    /**
+     * @brief Broadcast flood group.
+     *
+     * Provides control on the set of bridge ports on which broadcast
+     * packets need to be flooded. This attribute would be used only when
+     * the SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE is set as
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP.When this attribute's value is
+     * SAI_NULL_OBJECT_ID, then flooding would be disabled.
+     * Valid for SAI_BRIDGE_TYPE_1D.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     */
+    SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
     /**
      * @brief End of attributes
