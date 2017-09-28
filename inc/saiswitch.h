@@ -726,6 +726,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_IPMC_ENTRY,
 
     /**
+     * @brief Available ACL Tables
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE,
+
+    /**
+     * @brief Available ACL Table groups
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE_GROUP,
+
+    /**
      * @brief Default trap group
      *
      * Default value after switch initialization:
