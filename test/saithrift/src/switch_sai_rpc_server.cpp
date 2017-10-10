@@ -52,8 +52,7 @@ extern "C" {
 
 #include <saifdb.h>
 #include <saivlan.h>
-#include <sairouter.h>
-#include <sairouterintf.h>
+#include <sairouterinterface.h>
 #include <sairoute.h>
 #include <saiswitch.h>
 #include <saimirror.h>
@@ -218,7 +217,8 @@ public:
 
   void sai_thrift_parse_fdb_entry(const sai_thrift_fdb_entry_t &thrift_fdb_entry, sai_fdb_entry_t *fdb_entry) {
       fdb_entry->vlan_id = (sai_vlan_id_t) thrift_fdb_entry.vlan_id;
-      fdb_entry->bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q;
+      fdb_entry->bridge_id = (sai_object_id_t) thrift_fdb_entry.bridge_id;
+      fdb_entry->bridge_type = (sai_fdb_entry_bridge_type_t) thrift_fdb_entry.bridge_type;
       sai_thrift_string_to_mac(thrift_fdb_entry.mac_address, fdb_entry->mac_address);
   }
 
@@ -699,6 +699,67 @@ public:
 
               default:
                   SAI_THRIFT_LOG_ERR("Failed to parse VLAN attributes.");
+                  break;
+          }
+      }
+  }
+
+  void sai_thrift_parse_bridge_port_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+
+          switch (attribute.id) {
+              case SAI_BRIDGE_PORT_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+
+              case SAI_BRIDGE_PORT_ATTR_ADMIN_STATE:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
+
+              case SAI_BRIDGE_PORT_ATTR_VLAN_ID:
+                  attr_list[i].value.u16 = attribute.value.u16;
+                  break;
+
+              case SAI_BRIDGE_PORT_ATTR_PORT_ID:
+              case SAI_BRIDGE_PORT_ATTR_RIF_ID:
+              case SAI_BRIDGE_PORT_ATTR_TUNNEL_ID:
+              case SAI_BRIDGE_PORT_ATTR_BRIDGE_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+
+              default:
+                  SAI_THRIFT_LOG_ERR("Failed to parse Bridge Port attributes");
+                  break;
+          }
+      }
+  }
+
+  void sai_thrift_parse_bridge_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+
+          switch (attribute.id) {
+              case SAI_BRIDGE_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+
+              case SAI_BRIDGE_ATTR_MAX_LEARNED_ADDRESSES:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+
+              case SAI_BRIDGE_ATTR_LEARN_DISABLE:
+                  attr_list[i].value.booldata = attribute.value.booldata;
+                  break;
+
+              default:
+                  SAI_THRIFT_LOG_ERR("Failed to parse Bridge attributes.");
                   break;
           }
       }
@@ -1540,7 +1601,7 @@ public:
   void sai_thrift_create_bridge_port(sai_thrift_result_t &ret, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
   {
       sai_bridge_api_t *bridge_api;
-      sai_attribute_t *sai_attrs;
+      sai_attribute_t *sai_attrs = nullptr;
 
       SAI_THRIFT_FUNC_LOG();
 
@@ -1550,17 +1611,18 @@ public:
           return;
       }
 
-      sai_attrs = sai_thrift_attribute_list_to_sai(thrift_attr_list);
-      if (!sai_attrs) {
-          ret.status = SAI_STATUS_NO_MEMORY;
-          return;
-      }
+      sai_uint32_t attr_size = thrift_attr_list.size();
 
-      ret.status = bridge_api->create_bridge_port((sai_object_id_t *) &ret.data.oid, gSwitchId, thrift_attr_list.size(), sai_attrs);
+      sai_thrift_alloc_attr(sai_attrs, attr_size);
+
+      sai_thrift_parse_bridge_port_attributes(thrift_attr_list, sai_attrs);
+
+      ret.status = bridge_api->create_bridge_port((sai_object_id_t *) &ret.data.oid, gSwitchId, attr_size, sai_attrs);
       if (ret.status != SAI_STATUS_SUCCESS) {
           SAI_THRIFT_LOG_ERR("failed to create bridge port, status:%d", ret.status);
       }
-      free(sai_attrs);
+
+      sai_thrift_free_attr(sai_attrs);
   }
 
   sai_thrift_status_t sai_thrift_remove_bridge_port(const sai_thrift_object_id_t bridge_port_id)
@@ -1625,6 +1687,7 @@ public:
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_bridge_api_t *bridge_api;
       sai_attribute_t attr;
+      const std::vector<sai_thrift_attribute_t> thrift_attr_list = { thrift_attr };
 
       SAI_THRIFT_FUNC_LOG();
 
@@ -1634,17 +1697,7 @@ public:
           return status;
       }
 
-      attr.id = thrift_attr.id;
-
-      switch (attr.id) {
-          case SAI_BRIDGE_PORT_ATTR_ADMIN_STATE:
-              attr.value.booldata = thrift_attr.value.booldata;
-              break;
-
-          default:
-              attr.value.oid = thrift_attr.value.oid;
-              break;
-      }
+      sai_thrift_parse_bridge_port_attributes(thrift_attr_list, &attr);
 
       return bridge_api->set_bridge_port_attribute(bridge_port_id, &attr);
   }
@@ -1702,6 +1755,48 @@ public:
       sai_attributes_to_sai_thrift_list(attr, attr_count, thrift_attr_list.attr_list);
   }
 
+  void sai_thrift_create_bridge(sai_thrift_result_t &ret, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
+  {
+      sai_bridge_api_t *bridge_api;
+      sai_attribute_t  *sai_attrs = nullptr;
+
+      SAI_THRIFT_FUNC_LOG();
+
+      ret.status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("failed to obtain bridge_api, status:%d", ret.status);
+          return;
+      }
+
+      sai_uint32_t attr_size = thrift_attr_list.size();
+
+      sai_thrift_alloc_attr(sai_attrs, attr_size);
+
+      sai_thrift_parse_bridge_attributes(thrift_attr_list, sai_attrs);
+
+      ret.status = bridge_api->create_bridge((sai_object_id_t *) &ret.data.oid, gSwitchId, attr_size, sai_attrs);
+      if (ret.status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("failed to create bridge, status:%d", ret.status);
+      }
+
+      sai_thrift_free_attr(sai_attrs);
+  }
+
+  sai_thrift_status_t sai_thrift_remove_bridge(const sai_thrift_object_id_t bridge_port_id)
+  {
+      sai_bridge_api_t *bridge_api;
+      sai_status_t status;
+
+      SAI_THRIFT_FUNC_LOG();
+
+      status = sai_api_query(SAI_API_BRIDGE, (void **) &bridge_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("failed to obtain bridge_api, status:%d", status);
+          return status;
+      }
+
+      return bridge_api->remove_bridge((sai_object_id_t) bridge_port_id);
+  }
 
   sai_thrift_object_id_t sai_thrift_create_hostif(const std::vector<sai_thrift_attribute_t> &thrift_attr_list) noexcept
   {
