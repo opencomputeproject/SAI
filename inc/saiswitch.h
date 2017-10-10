@@ -694,6 +694,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEIGHBOR_ENTRY,
 
     /**
+     * @brief Available Next hop group entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_ENTRY,
+
+    /**
      * @brief Available Next hop group member entries
      *
      * @type sai_uint32_t
