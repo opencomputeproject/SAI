@@ -164,6 +164,34 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_ENABLE_PFC_DLDR = 0x00000008,
 
     /**
+     * @brief PFC Deadlock Detection time on a lossless queue.
+     *
+     * A deadlock is assumed to have occurred when a queue is in a XOFF
+     * state for more than this duration. The granularity is millisecond.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     */
+    SAI_QUEUE_ATTR_PFC_DLD_INTERVAL = 0x00000009,
+
+    /**
+     * @brief PFC Deadlock recovery time on a lossless queue.
+     *
+     * The PFC deadlock recovery process will run for this amount of time.
+     * If no PFC pause frames are received during within this period,
+     * then normal state will resume. Otherwise, the recovery process
+     * will restart. If the system remains in a deadlock state then the detection and
+     * recovery will resume again after the configured detection timer interval.
+     * The granularity is millisecond.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     */
+    SAI_QUEUE_ATTR_PFC_DLR_INTERVAL = 0x0000000a,
+
+    /**
      * @brief End of attributes
      */
     SAI_QUEUE_ATTR_END,
