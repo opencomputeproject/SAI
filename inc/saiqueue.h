@@ -173,7 +173,7 @@ typedef enum _sai_queue_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_QUEUE_ATTR_PFC_DLR_START = 0x00000009,
+    SAI_QUEUE_ATTR_PFC_DLR_INIT = 0x00000009,
 
     /**
      * @brief End of attributes
