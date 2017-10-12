@@ -29,7 +29,10 @@ As shown in Figure 1, data plane telemetry can track three classes of events: fl
 * __Drop Report__ to track packet drops.
 * __Queue Report__ to track queue congestions.
 
-## In-band Telemetry 
+## Flow Report
+DTel tracks flow events through different data plane mechanisms, including In-band Telemetry (e.g., INT, iOAM) and Packet Postcard, which are described below.
+
+### In-band Telemetry 
 
 ![INT](figures/INT.png "Figure 2: In-band Network Telemetry")
 
@@ -39,13 +42,13 @@ Figure 2 shows an example workflow of In-band Telemetry. Switches along the rout
 
 Each switch may play the role of __endpoint__ or __transit__ for INT or iOAM enabled packets. Endpoint acts both as __source__ and __sink__. Source initiates INT or iOAM operations by inserting a telemetry header into a packet and thereby instructing down-stream network devices along the routing path to add desired telemetry information into the packet. Sink extracts the telemetry information from the incoming packets and sends telemetry reports to the monitor if triggering flow events are detected. Transit is a device along the path of a packet from a source to a sink. Transit device adds its own telemetry information to the packet as requested by the source.
 
-## Packet Postcard
+### Packet Postcard
 
 ![Postcard](figures/postcard.png "Figure 3: Postcard")
 
 __Figure 3: Packet Postcard__
 
-Figure 3 shows an example workflow of packet Postcards. Each switch makes its own decision and reports packets' info (aka “postcards”) to the monitor individually. Unlike In-band Telemetry, a Postcard switch never modifies the original data packets. In-band Telemetry and Packet Postcard achieve the same flow monitoring capabilities with different data plane approaches.
+Figure 3 shows an example workflow of packet Postcards. Each switch makes its own decision and reports packets info (aka “postcards”) to the monitor individually. Triggering events are detected based on the switch local information such as ingress/egress ports and queueing latency for the monitored flow. Unlike In-band Telemetry, a Postcard switch never modifies the original data packets. In-band Telemetry and Packet Postcard achieve the same flow monitoring capabilities with different data plane approaches.
 
 ## Drop Report
 
