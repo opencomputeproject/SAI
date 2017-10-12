@@ -37,7 +37,7 @@ __Figure 2: In-band Telemetry (INT as an example)__
 
 Figure 2 shows an example workflow of In-band Telemetry. Switches along the route path add switch metadata into the packet header based on the *telemetry instructions* carried in the telemetry header. Different In-band Telemetry mechanisms have been defined, such as [INT](http://p4.org/wp-content/uploads/fixed/INT/INT-current-spec.pdf) proposed by [P4.org](https://p4.org/p4/inband-network-telemetry/), and IETF [iOAM](https://github.com/CiscoDevNet/iOAM). INT and iOAM can share the same SAI framework and most SAI attributes. This proposal focuses on INT, while can be easily extended to support iOAM.
 
-Each switch may play the role of __endpoint__ or __transit__ for INT or iOAM enabled packets. Endpoint acts both as __source__ and __sink__. Source initiates INT or iOAM operations by inserting a telemetry header into a packet and thereby instructing down-stream network devices along the routing path to add desired telemetry information into the packet. Sink extracts the telemetry information from the incoming packets and send telemetry reports to the monitor if triggering flow events are detected. Transit is a device along the path of a packet from a source to a sink. Transit device adds its own telemetry information to the packet as requested by the source.
+Each switch may play the role of __endpoint__ or __transit__ for INT or iOAM enabled packets. Endpoint acts both as __source__ and __sink__. Source initiates INT or iOAM operations by inserting a telemetry header into a packet and thereby instructing down-stream network devices along the routing path to add desired telemetry information into the packet. Sink extracts the telemetry information from the incoming packets and sends telemetry reports to the monitor if triggering flow events are detected. Transit is a device along the path of a packet from a source to a sink. Transit device adds its own telemetry information to the packet as requested by the source.
 
 ## Packet Postcard
 
@@ -62,7 +62,7 @@ __Figure 5: Queue Report__
 
 Figure 5 shows the queue reports functionality. Switches can be configured to report packets that experience congestion or buffer tail drops at specified queues. Congestion is detected by queue depth or latency thresholds, which are configured separately for each individual queue. 
 
-DTel Queue Report is complementary to TAM snapshot. While TAM snapshot reports queue statistics data in bulk on threshold breach, DTel Queue Report can send reports for every packets on congestion start, so that the network monitor can have per-packet full visibility on how the queue is built up.
+DTel Queue Report is complementary to TAM snapshot. While TAM snapshot reports queue statistics data in bulk on threshold breach, DTel Queue Report can send reports for every packet on congestion start, so that the network monitor can have per-packet full visibility on how the queue is built up.
 
 
 # Specification
