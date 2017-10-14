@@ -174,7 +174,6 @@ typedef enum _sai_switch_attr_t
  */
 typedef enum _sai_acl_dtel_flow_op_t
 {
-    ......
     /** No operation */
     SAI_ACL_DTEL_FLOW_OP_NOP,
 
