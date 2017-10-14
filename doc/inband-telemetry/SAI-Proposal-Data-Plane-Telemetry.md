@@ -384,7 +384,7 @@ typedef enum _sai_dtel_queue_report_attr_t
      * @flags CREATE_AND_SET
      * @default UINT32_MAX
      */
-    SAI_DTEL_QUEUE_REPORT_ATTR_LATENCY_THRESHOLD
+    SAI_DTEL_QUEUE_REPORT_ATTR_LATENCY_THRESHOLD,
 
     /**
      * @brief Maximum number of continuous reports after threshold breach
@@ -393,7 +393,7 @@ typedef enum _sai_dtel_queue_report_attr_t
      * @flags CREATE_AND_SET
      * @default 1000
      */
-    SAI_DTEL_QUEUE_REPORT_ATTR_BREACH_QUOTA
+    SAI_DTEL_QUEUE_REPORT_ATTR_BREACH_QUOTA,
 
     /**
      * @brief Send report for packets dropped by the queue
@@ -402,7 +402,7 @@ typedef enum _sai_dtel_queue_report_attr_t
      * @flags CREATE_AND_SET
      * @default False
      */
-    SAI_DTEL_QUEUE_REPORT_ATTR_TAIL_DROP
+    SAI_DTEL_QUEUE_REPORT_ATTR_TAIL_DROP,
 
 } sai_dtel_queue_report_attr_t;
 
@@ -515,7 +515,8 @@ typedef enum _sai_dtel_report_session_attr_t
      * @flags CREATE_AND_SET
      */
     SAI_DTEL_REPORT_SESSION_ATTR_UDP_DST_PORT,
-}
+
+} sai_dtel_report_session_attr_t;
 
 /**
  * @brief Enum defining DTel event types.
