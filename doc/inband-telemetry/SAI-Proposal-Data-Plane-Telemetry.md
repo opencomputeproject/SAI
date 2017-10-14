@@ -152,6 +152,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_SWITCH_ATTR_DTEL_SINK_PORT_LIST,
 
@@ -315,6 +316,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_DTEL_INT_SESSION
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DTEL_INT_SESSION,
 
@@ -363,6 +365,7 @@ typedef enum _sai_dtel_queue_report_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_QUEUE
      */
     SAI_DTEL_QUEUE_REPORT_ATTR_QUEUE_ID,
 
@@ -494,6 +497,7 @@ typedef enum _sai_dtel_report_session_attr_t
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
      */
     SAI_DTEL_REPORT_SESSION_ATTR_VIRTUAL_ROUTER_ID,
 
@@ -557,6 +561,7 @@ typedef enum _sai_dtel_event_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE
+     * @objects SAI_OBJECT_TYPE_DTEL_REPORT_SESSION
      */
     SAI_DTEL_EVENT_ATTR_REPORT_SESSION,
 
