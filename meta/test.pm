@@ -341,6 +341,7 @@ sub CreateStructListTest
     {
         WriteTest "    TEST_ASSERT_TRUE(sizeof($struct) == sizeof(sai_object_list_t), \"struct $struct sizeof is differenat than sai_object_list_t\");";
         WriteTest "    $struct s_$struct;";
+        WriteTest "    memset(&s_$struct,0, sizeof($struct));";
         WriteTest "    count = s_$struct.count;";
         WriteTest "    ptr   = s_$struct.list;";
         WriteTest "    printf(\"$struct %p %u\\n\", ptr, count);";
