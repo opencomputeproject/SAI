@@ -2345,7 +2345,7 @@ void check_attr_condition_met(
 
     uint32_t count = (uint32_t)md->conditionslength;
 
-    sai_attribute_t *attrs = (sai_attribute_t*)alloca(sizeof(sai_attribute_t) * count);
+    sai_attribute_t *attrs = (sai_attribute_t*)malloc(sizeof(sai_attribute_t) * count);
 
     size_t idx = 0;
 
@@ -2398,6 +2398,8 @@ void check_attr_condition_met(
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
+
+    free(attrs);
 }
 
 void check_attr_default_attrvalue(

@@ -869,7 +869,8 @@ void test_serialize_ip6_mask()
         int k;
         for (k = 0; k < n; k++)
         {
-            m[k/8] |= (uint8_t)(0xff << (7 - k%8));
+            uint8_t u = (uint8_t)(0xff << (7 - k%8));
+            m[k/8] |= u;
         }
 
         sprintf(bufn, "%d", n);
@@ -901,7 +902,8 @@ void test_deserialize_ip6_mask()
         int k;
         for (k = 0; k < n; k++)
         {
-            m[k/8] |= (uint8_t)(0xff << (7 - k%8));
+            uint8_t u = (uint8_t)(0xff << (7 - k%8));
+            m[k/8] |= u;
         }
 
         sprintf(bufn, "%d", n);
