@@ -478,7 +478,7 @@ typedef enum _sai_dtel_report_session_attr_t
     /**
      * @brief Telemetry report source IP address
      *
-     * @type sai_ip4_t
+     * @type sai_ip_address_t
      * @flags CREATE_AND_SET
      */
     SAI_DTEL_REPORT_SESSION_ATTR_SRC_IP,
@@ -486,7 +486,7 @@ typedef enum _sai_dtel_report_session_attr_t
     /**
      * @brief Telemetry report destination IP addresses
      *
-     * @type sai_ip4_list_t
+     * @type sai_ip_address_list_t
      * @flags CREATE_AND_SET
      */
     SAI_DTEL_REPORT_SESSION_ATTR_DST_IP_LIST,
