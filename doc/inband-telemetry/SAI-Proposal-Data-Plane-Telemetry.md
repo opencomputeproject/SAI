@@ -742,7 +742,7 @@ event_attr[1].id = SAI_DTEL_EVENT_ATTR_REPORT_SESSION;
 event_attr[1].value.oid = report_session_id;
 event_attr[2].id = SAI_DTEL_EVENT_ATTR_DSCP_VALUE;
 event_attr[3].value.u8 = 1;
-sai_switch_api->create_dtel_report(&flow_state_event_id, 3, event_attr);
+sai_switch_api->create_dtel_event(&flow_state_event_id, 3, event_attr);
 
 sai_object_id_t queue_threshold_event_id;
 event_attr[0].id = SAI_DTEL_EVENT_ATTR_TYPE;
@@ -751,7 +751,7 @@ event_attr[1].id = SAI_DTEL_EVENT_ATTR_REPORT_SESSION;
 event_attr[1].value.oid = report_session_id;
 event_attr[2].id = SAI_DTEL_EVENT_ATTR_DSCP_VALUE;
 event_attr[3].value.u8 = 2;
-sai_switch_api->create_dtel_report(&queue_threshold_event_id, 3, event_attr);
+sai_switch_api->create_dtel_event(&queue_threshold_event_id, 3, event_attr);
 
 sai_object_id_t drop_event_id;
 event_attr[0].id = SAI_DTEL_EVENT_ATTR_TYPE;
@@ -760,7 +760,7 @@ event_attr[1].id = SAI_DTEL_EVENT_ATTR_REPORT_SESSION;
 event_attr[1].value.oid = report_session_id;
 event_attr[2].id = SAI_DTEL_EVENT_ATTR_DSCP_VALUE;
 event_attr[3].value.u8 = 3;
-sai_switch_api->create_dtel_report(&drop_event_id, 3, event_attr);
+sai_switch_api->create_dtel_event(&drop_event_id, 3, event_attr);
 
 // Create a DTel queue report
 sai_attribute_t queue_event_attr[3];
