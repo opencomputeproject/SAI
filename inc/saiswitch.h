@@ -1530,6 +1530,24 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TPID_INNER_VLAN,
 
     /**
+     * @brief Perform CRC check
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_SWITCH_ATTR_CRC_CHECK_ENABLE,
+
+    /**
+     * @brief Perform CRC recalcuation (overwritting FCS value on egress)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_SWITCH_ATTR_CRC_RECALCULATION_ENABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
