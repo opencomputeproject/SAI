@@ -570,7 +570,10 @@ typedef enum _sai_acl_bind_point_type_t
     SAI_ACL_BIND_POINT_TYPE_VLAN,
 
     /** Bind Point Type RIF */
-    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF,
+    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE,
+
+    /** @ignore - for backward compatibility */
+    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE,
 
     /** Bind Point Type Switch */
     SAI_ACL_BIND_POINT_TYPE_SWITCH
