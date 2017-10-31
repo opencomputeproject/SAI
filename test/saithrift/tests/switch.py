@@ -264,18 +264,13 @@ def sai_thrift_get_default_router_id(client):
     default_router_id = client.sai_thrift_get_default_router_id()
     return default_router_id
 
-def sai_thrift_create_fdb(client, vlan_id, mac, port, mac_action, bridge_id = None):
-    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac)
+def sai_thrift_create_fdb(client, bv_id, mac, port, mac_action):
+    bport = sai_thrift_get_bridge_port_by_port(client, port)
+    assert (bport != SAI_NULL_OBJECT_ID)
+    return sai_thrift_create_fdb_bport(client, bv_id, mac, bport, mac_action)
 
-    if bridge_id is not None:
-        fdb_entry.bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D
-        fdb_entry.bridge_id = bridge_id
-        bport_oid = port
-    else:
-        fdb_entry.bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q
-        fdb_entry.vlan_id = vlan_id
-        bport_oid = sai_thrift_get_bridge_port_by_port(client, port)
-        assert (bport_oid != SAI_NULL_OBJECT_ID)
+def sai_thrift_create_fdb_bport(client, bv_id, mac, bport_oid, mac_action):
+    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, bv_id=bv_id)
 
     #value 0 represents static entry, id=0, represents entry type
     fdb_attribute1_value = sai_thrift_attribute_value_t(s32=SAI_FDB_ENTRY_TYPE_STATIC)
@@ -292,20 +287,14 @@ def sai_thrift_create_fdb(client, vlan_id, mac, port, mac_action, bridge_id = No
     fdb_attr_list = [fdb_attribute1, fdb_attribute2, fdb_attribute3]
     client.sai_thrift_create_fdb_entry(thrift_fdb_entry=fdb_entry, thrift_attr_list=fdb_attr_list)
 
-def sai_thrift_delete_fdb(client, vlan_id, mac, port, bridge_id = None):
-    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac)
-    if bridge_id is not None:
-        fdb_entry.bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1D
-        fdb_entry.bridge_id   = bridge_id
-    else:
-        fdb_entry.bridge_type = SAI_FDB_ENTRY_BRIDGE_TYPE_1Q
-        fdb_entry.vlan_id = vlan_id
 
+def sai_thrift_delete_fdb(client, bv_id, mac, port):
+    fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, bv_id=bv_id)
     client.sai_thrift_delete_fdb_entry(thrift_fdb_entry=fdb_entry)
 
-def sai_thrift_flush_fdb_by_vlan(client, vlan_id):
-    fdb_attribute1_value = sai_thrift_attribute_value_t(u16=vlan_id)
-    fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_VLAN_ID,
+def sai_thrift_flush_fdb_by_vlan(client, vlan_oid):
+    fdb_attribute1_value = sai_thrift_attribute_value_t(oid=vlan_oid)
+    fdb_attribute1 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_BV_ID,
                                             value=fdb_attribute1_value)
     fdb_attribute2_value = sai_thrift_attribute_value_t(s32=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
     fdb_attribute2 = sai_thrift_attribute_t(id=SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
