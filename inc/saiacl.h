@@ -138,6 +138,9 @@ typedef enum _sai_acl_action_type_t
     /** Set Redirect */
     SAI_ACL_ACTION_TYPE_REDIRECT,
 
+    /** Set tunnel endpoint IP */
+    SAI_ACL_ACTION_TYPE_ENDPOINT_IP,
+
     /** Redirect Packet to a list of destination which can be a port list */
     SAI_ACL_ACTION_TYPE_REDIRECT_LIST,
 
@@ -1586,18 +1589,38 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Redirect Packet to a destination which can be a port,
-     * LAG, nexthop, nexthopgroup
+     * LAG, nexthop, nexthopgroup, bridge port, L2MC group,IPMC group
+     *
+     * When redirecting to a bridge port, the following behavior will happen according to the bridge port type:
+     * SAI_BRIDGE_PORT_TYPE_PORT - Forward to bridge port, egress vlan will be the pipeline vlan
+     * SAI_BRIDGE_PORT_TYPE_SUB_PORT - Forward to bridge port, egress vlan will be according to corresponding bridge port
+     * SAI_BRIDGE_PORT_TYPE_1Q_ROUTER - Forward to router. RIF will be according to the outer vlan value in the pipeline
+     * SAI_BRIDGE_PORT_TYPE_1D_ROUTER - Forward to router. RIF will be the corresponding 1d bridge RIF
+     * SAI_BRIDGE_PORT_TYPE_TUNNEL - ACL based encap. Tunnel ID will be according to the corresponding bridge port. In
+     * this case, it is mandatory to also supply action endpoint, with endpoint IP value
      *
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_L2MC_GROUP, SAI_OBJECT_TYPE_IPMC_GROUP
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
 
     /**
+     * @brief Tunnel Endpoint IP. mandatory and valid only when redirect action is to SAI_BRIDGE_PORT_TYPE_TUNNEL
+     *
+     * @type sai_acl_action_data_t sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_ENDPOINT_IP,
+
+    /**
      * @brief Redirect Packet to a list of destination which can be
      * a port list.
+     *
+     * This action is deprecated and will be removed in future release. In order to achieve the functionality,
+     * please use redirect action with next hop group or L2MC group or IPMC group.
      *
      * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
