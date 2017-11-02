@@ -736,7 +736,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Available ACL Tables
      *
-     * @type sai_uint32_t
+     * @type sai_acl_resource_list_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE,
@@ -744,7 +744,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Available ACL Table groups
      *
-     * @type sai_uint32_t
+     * @type sai_acl_resource_list_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE_GROUP,
