@@ -550,7 +550,6 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
-     * @condition SAI_TUNNEL_ATTR_ENCAP_ECN_MODE == SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
      */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
@@ -571,7 +570,6 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
-     * @condition SAI_TUNNEL_ATTR_DECAP_ECN_MODE == SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
      */
     SAI_TUNNEL_ATTR_DECAP_MAPPERS,
 
