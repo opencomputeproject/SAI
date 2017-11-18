@@ -1242,7 +1242,7 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
         rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan_oid, v4_enabled, v6_enabled, mac1)
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac2)
 
-        sai_thrift_create_fdb(self.client, vlan_id, dmac1, port1, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, dmac1, port1, mac_action)
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
@@ -1292,7 +1292,7 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_next_hop(nhop2)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
-            sai_thrift_delete_fdb(self.client, vlan_id, dmac1, port1)
+            sai_thrift_delete_fdb(self.client, vlan_oid, dmac1, port1)
 
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
