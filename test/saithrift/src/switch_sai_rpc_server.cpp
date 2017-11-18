@@ -216,9 +216,7 @@ public:
   }
 
   void sai_thrift_parse_fdb_entry(const sai_thrift_fdb_entry_t &thrift_fdb_entry, sai_fdb_entry_t *fdb_entry) {
-      fdb_entry->vlan_id = (sai_vlan_id_t) thrift_fdb_entry.vlan_id;
-      fdb_entry->bridge_id = (sai_object_id_t) thrift_fdb_entry.bridge_id;
-      fdb_entry->bridge_type = (sai_fdb_entry_bridge_type_t) thrift_fdb_entry.bridge_type;
+      fdb_entry->bv_id = (sai_object_id_t) thrift_fdb_entry.bv_id;
       sai_thrift_string_to_mac(thrift_fdb_entry.mac_address, fdb_entry->mac_address);
   }
 
@@ -278,7 +276,6 @@ public:
                   break;
               }
               case SAI_PORT_ATTR_QOS_SCHEDULER_PROFILE_ID:
-              case SAI_PORT_ATTR_QOS_WRED_PROFILE_ID:
               case SAI_PORT_ATTR_QOS_DOT1P_TO_TC_MAP:
               case SAI_PORT_ATTR_QOS_DOT1P_TO_COLOR_MAP:
               case SAI_PORT_ATTR_QOS_DSCP_TO_TC_MAP:
@@ -330,8 +327,8 @@ public:
               case SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID:
                   attr_list[i].value.oid = (sai_object_id_t) attribute.value.oid;
                   break;
-              case SAI_FDB_FLUSH_ATTR_VLAN_ID:
-                  attr_list[i].value.u16 = attribute.value.u16;
+              case SAI_FDB_FLUSH_ATTR_BV_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_FDB_FLUSH_ATTR_ENTRY_TYPE:
                   attr_list[i].value.s32 = attribute.value.s32;
@@ -427,6 +424,23 @@ public:
       }
   }
 
+  void sai_thrift_parse_lag_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it1++) {
+          attribute = (sai_thrift_attribute_t)*it1;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_LAG_ATTR_PORT_VLAN_ID:
+                  attr_list[i].value.u16 = attribute.value.u16;
+                  break;
+              default:
+                  SAI_THRIFT_LOG_ERR("Failed to parse attribute.");
+                  break;
+          }
+      }
+  }
+
   void sai_thrift_parse_lag_member_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it1 = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
@@ -504,7 +518,7 @@ public:
                   break;
 
               case SAI_HOSTIF_ATTR_NAME:
-                  std::memcpy(attr_list[i].value.chardata, attribute.value.chardata.c_str(), HOSTIF_NAME_SIZE);
+                  std::memcpy(attr_list[i].value.chardata, attribute.value.chardata.c_str(), SAI_HOSTIF_NAME_SIZE);
                   break;
 
               default:
@@ -1108,6 +1122,31 @@ public:
           return status;
       }
       status = lag_api->remove_lag((sai_object_id_t)lag_id);
+      return status;
+  }
+
+  sai_thrift_status_t sai_thrift_set_lag_attribute(const sai_thrift_object_id_t lag_id, const sai_thrift_attribute_t& thrift_attr) {
+      sai_status_t status;
+      const std::vector<sai_thrift_attribute_t> thrift_attr_list = { thrift_attr };
+      sai_lag_api_t *lag_api;
+      sai_attribute_t *attr_list = nullptr;
+
+      status = sai_api_query(SAI_API_LAG, (void **) &lag_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      sai_thrift_alloc_attr(attr_list, 1);
+      sai_thrift_parse_lag_attributes(thrift_attr_list, attr_list);
+
+      status = lag_api->set_lag_attribute(lag_id, attr_list);
+      sai_thrift_free_attr(attr_list);
+      if (status != SAI_STATUS_SUCCESS)
+      {
+          SAI_THRIFT_LOG_ERR("Failed to set LAG attribute");
+          return status;
+      }
+
       return status;
   }
 
