@@ -548,8 +548,9 @@ typedef enum _sai_tunnel_attr_t
      * @brief Tunnel encap mappers
      *
      * @type sai_object_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
      */
     SAI_TUNNEL_ATTR_ENCAP_MAPPERS,
 
@@ -568,8 +569,9 @@ typedef enum _sai_tunnel_attr_t
      * @brief Tunnel decap mappers
      *
      * @type sai_object_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
      */
     SAI_TUNNEL_ATTR_DECAP_MAPPERS,
 
