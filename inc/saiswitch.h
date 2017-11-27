@@ -694,6 +694,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEIGHBOR_ENTRY,
 
     /**
+     * @brief Available Next hop group entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_ENTRY,
+
+    /**
      * @brief Available Next hop group member entries
      *
      * @type sai_uint32_t
@@ -724,6 +732,22 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_AVAILABLE_IPMC_ENTRY,
+
+    /**
+     * @brief Available ACL Tables
+     *
+     * @type sai_acl_resource_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE,
+
+    /**
+     * @brief Available ACL Table groups
+     *
+     * @type sai_acl_resource_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE_GROUP,
 
     /**
      * @brief Default trap group
@@ -933,7 +957,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_packet_action_t
      * @flags CREATE_AND_SET
-     * @default SAI_PACKET_ACTION_TRAP
+     * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_SWITCH_ATTR_FDB_BROADCAST_MISS_PACKET_ACTION,
 
@@ -942,7 +966,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_packet_action_t
      * @flags CREATE_AND_SET
-     * @default SAI_PACKET_ACTION_TRAP
+     * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_SWITCH_ATTR_FDB_MULTICAST_MISS_PACKET_ACTION,
 
@@ -1504,6 +1528,24 @@ typedef enum _sai_switch_attr_t
      * @default 0x8100
      */
     SAI_SWITCH_ATTR_TPID_INNER_VLAN,
+
+    /**
+     * @brief Perform CRC check
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_SWITCH_ATTR_CRC_CHECK_ENABLE,
+
+    /**
+     * @brief Perform CRC recalculation (overwriting CRC value on egress)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_SWITCH_ATTR_CRC_RECALCULATION_ENABLE,
 
     /**
      * @brief End of attributes

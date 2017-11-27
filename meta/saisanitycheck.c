@@ -542,6 +542,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
+        case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
 
@@ -2258,6 +2259,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
+        case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
 
@@ -2343,7 +2345,7 @@ void check_attr_condition_met(
 
     uint32_t count = (uint32_t)md->conditionslength;
 
-    sai_attribute_t *attrs = (sai_attribute_t*)alloca(sizeof(sai_attribute_t) * count);
+    sai_attribute_t *attrs = (sai_attribute_t*)malloc(sizeof(sai_attribute_t) * count);
 
     size_t idx = 0;
 
@@ -2396,6 +2398,8 @@ void check_attr_condition_met(
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
+
+    free(attrs);
 }
 
 void check_attr_default_attrvalue(
@@ -3909,7 +3913,7 @@ void check_backward_comparibility_defines()
 
     META_ASSERT_TRUE(sw == SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY, "not equal");
     META_ASSERT_TRUE(trap == SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGHBOR, "not equal");
-    META_ASSERT_TRUE(bind == SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE, "not equal");
+    META_ASSERT_TRUE(bind == SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE, "not equal");
 }
 
 void helper_check_graph_connected(
