@@ -133,7 +133,7 @@ sub IsMetadataStruct
 
     my $key = $refStructInfoEx->{keys}[0];
 
-    return 1 if $refStructInfoEx->{membersHash}{$key}->{file} =~ m!meta/sai\w+.h$!;
+    return 1 if $refStructInfoEx->{membersHash}{$key}->{file} =~ m!(meta/sai\w+.h|^sai(meta\w+.h))$!;
 
     return 0;
 }

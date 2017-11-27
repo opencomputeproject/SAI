@@ -736,7 +736,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Available ACL Tables
      *
-     * @type sai_uint32_t
+     * @type sai_acl_resource_list_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE,
@@ -744,7 +744,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Available ACL Table groups
      *
-     * @type sai_uint32_t
+     * @type sai_acl_resource_list_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE_GROUP,
@@ -1528,6 +1528,24 @@ typedef enum _sai_switch_attr_t
      * @default 0x8100
      */
     SAI_SWITCH_ATTR_TPID_INNER_VLAN,
+
+    /**
+     * @brief Perform CRC check
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_SWITCH_ATTR_CRC_CHECK_ENABLE,
+
+    /**
+     * @brief Perform CRC recalculation (overwriting CRC value on egress)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_SWITCH_ATTR_CRC_RECALCULATION_ENABLE,
 
     /**
      * @brief End of attributes
