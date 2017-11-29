@@ -39,8 +39,8 @@ class L3IPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
@@ -92,8 +92,8 @@ class L3IPv4LpmTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.0'
@@ -149,8 +149,8 @@ class L3IPv6HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
         ip_addr1 = '1234:5678:9abc:def0:4422:1133:5577:99aa'
@@ -210,8 +210,8 @@ class L3IPv6PrefixTest(sai_base_test.ThriftInterfaceDataPlane):
         mac = ''
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
 
         #Create neighbor and neighbor subnet
@@ -276,8 +276,8 @@ class L3IPv6LpmTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
         ip_addr1 = '1234:5678:9abc:def0:0000:0000:0000:0000'
@@ -340,9 +340,9 @@ class L3IPv4EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr1 = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif1 = sai_thrift_create_router_interface(self.client, vr1, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif2 = sai_thrift_create_router_interface(self.client, vr1, 1, port2, 0, v4_enabled, v6_enabled, mac)
-        rif3 = sai_thrift_create_router_interface(self.client, vr1, 1, port3, 0, v4_enabled, v6_enabled, mac)
+        rif1 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif2 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
+        rif3 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
 
         sai_thrift_create_neighbor(self.client, addr_family, rif1, ip_addr1, dmac1)
         sai_thrift_create_neighbor(self.client, addr_family, rif2, ip_addr1, dmac2)
@@ -456,9 +456,9 @@ class L3IPv6EcmpHostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr1 = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif1 = sai_thrift_create_router_interface(self.client, vr1, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif2 = sai_thrift_create_router_interface(self.client, vr1, 1, port2, 0, v4_enabled, v6_enabled, mac)
-        rif3 = sai_thrift_create_router_interface(self.client, vr1, 1, port3, 0, v4_enabled, v6_enabled, mac)
+        rif1 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif2 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
+        rif3 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
 
         sai_thrift_create_neighbor(self.client, addr_family, rif1, ip_addr1, dmac1)
         sai_thrift_create_neighbor(self.client, addr_family, rif2, ip_addr1, dmac2)
@@ -571,10 +571,10 @@ class L3IPv4EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr1 = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif1 = sai_thrift_create_router_interface(self.client, vr1, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif2 = sai_thrift_create_router_interface(self.client, vr1, 1, port2, 0, v4_enabled, v6_enabled, mac)
-        rif3 = sai_thrift_create_router_interface(self.client, vr1, 1, port3, 0, v4_enabled, v6_enabled, mac)
-        rif4 = sai_thrift_create_router_interface(self.client, vr1, 1, port4, 0, v4_enabled, v6_enabled, mac)
+        rif1 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif2 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
+        rif3 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
+        rif4 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
 
         sai_thrift_create_neighbor(self.client, addr_family, rif1, nhop_ip1, dmac1)
         sai_thrift_create_neighbor(self.client, addr_family, rif2, nhop_ip2, dmac2)
@@ -693,10 +693,10 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr1 = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif1 = sai_thrift_create_router_interface(self.client, vr1, 1, port1, 0, v4_enabled, v6_enabled, mac)
-        rif2 = sai_thrift_create_router_interface(self.client, vr1, 1, port2, 0, v4_enabled, v6_enabled, mac)
-        rif3 = sai_thrift_create_router_interface(self.client, vr1, 1, port3, 0, v4_enabled, v6_enabled, mac)
-        rif4 = sai_thrift_create_router_interface(self.client, vr1, 1, port4, 0, v4_enabled, v6_enabled, mac)
+        rif1 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif2 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
+        rif3 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
+        rif4 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
 
         sai_thrift_create_neighbor(self.client, addr_family, rif1, nhop_ip1, dmac1)
         sai_thrift_create_neighbor(self.client, addr_family, rif2, nhop_ip2, dmac2)
@@ -834,8 +834,8 @@ class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
         lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
         lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, lag_id1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
 
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
@@ -891,8 +891,8 @@ class L3IPv6LagTest(sai_base_test.ThriftInterfaceDataPlane):
         lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
         lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, lag_id1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
         ip_addr1 = '4001::1'
@@ -973,10 +973,10 @@ class L3EcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         lag_member_id4 = sai_thrift_create_lag_member(self.client, lag_id2, port4)
         lag_member_id5 = sai_thrift_create_lag_member(self.client, lag_id2, port5)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id2, 0, v4_enabled, v6_enabled, mac)
-        rif_id3 = sai_thrift_create_router_interface(self.client, vr_id, 1, port6, 0, v4_enabled, v6_enabled, mac)
-        rif_id4 = sai_thrift_create_router_interface(self.client, vr_id, 1, port7, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, lag_id1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, lag_id2, 0, v4_enabled, v6_enabled, mac)
+        rif_id3 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port6, 0, v4_enabled, v6_enabled, mac)
+        rif_id4 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port7, 0, v4_enabled, v6_enabled, mac)
 
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
         sai_thrift_create_neighbor(self.client, addr_family, rif_id2, nhop_ip2, dmac2)
@@ -1111,9 +1111,9 @@ class L3EcmpLagTestMini(sai_base_test.ThriftInterfaceDataPlane):
         lag_member11 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
         lag_member12 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, lag_id1, 0, v4_enabled, v6_enabled, mac)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac)
-        rif_id3 = sai_thrift_create_router_interface(self.client, vr_id, 1, port4, 0, v4_enabled, v6_enabled, mac)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, lag_id1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
+        rif_id3 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
 
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, nhop_ip1, dmac1)
         sai_thrift_create_neighbor(self.client, addr_family, rif_id2, nhop_ip2, dmac2)
@@ -1239,10 +1239,10 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan_oid, v4_enabled, v6_enabled, mac1)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac2)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan_oid, v4_enabled, v6_enabled, mac1)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac2)
 
-        sai_thrift_create_fdb(self.client, vlan_id, dmac1, port1, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, dmac1, port1, mac_action)
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
@@ -1292,7 +1292,7 @@ class L3VIIPv4HostTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_next_hop(nhop2)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
-            sai_thrift_delete_fdb(self.client, vlan_id, dmac1, port1)
+            sai_thrift_delete_fdb(self.client, vlan_oid, dmac1, port1)
 
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
@@ -1320,8 +1320,8 @@ class L3IPv4MacRewriteTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, 1, port1, 0, v4_enabled, v6_enabled, mac1)
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, 1, port2, 0, v4_enabled, v6_enabled, mac2)
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac1)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac2)
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         nhop_ip1 = '11.11.11.11'
@@ -1413,8 +1413,8 @@ class L3VlanNeighborMacUpdateTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
-        rif_vlan_id = sai_thrift_create_router_interface(self.client, vr_id, 0, 0, vlan1, v4_enabled, v6_enabled, mac1)
-        rif_port_id = sai_thrift_create_router_interface(self.client, vr_id, 1, port3, 0, v4_enabled, v6_enabled, mac2)
+        rif_vlan_id = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan1, v4_enabled, v6_enabled, mac1)
+        rif_port_id = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac2)
 
         attr_value2 = sai_thrift_attribute_value_t(s32=SAI_BRIDGE_PORT_FDB_LEARNING_MODE_HW)
         attr2 = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_FDB_LEARNING_MODE, value=attr_value2)
@@ -1517,7 +1517,7 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
         for i in xrange(self.total_lag_port):
             self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lags[i % num_of_lags], port_list[i]))
         for i in xrange(num_of_lags):
-            self.lags_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lags[i], 0, self.v4_enabled, self.v6_enabled, ''))
+            self.lags_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, self.lags[i], 0, self.v4_enabled, self.v6_enabled, ''))
         for i in xrange(num_of_lags):
             sai_thrift_create_neighbor(self.client, self.addr_family, self.lags_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
             sai_thrift_create_route(self.client, self.vr_id, self.addr_family, "10.10.%s.0" % str(i+1), self.ip_mask, self.lags_rifs[i])
@@ -1608,7 +1608,7 @@ class L3MultipleLagTest(sai_base_test.ThriftInterfaceDataPlane):
 
         self.src_port = port_list[self.total_lag_port]
         self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
-        rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
+        rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
         num_of_lags = self.total_lag_port
 
         try:
@@ -1657,12 +1657,12 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
         self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[1]))
         for i in range(self.first_changing_port,first_rif_port):
             self.lag_members.append(sai_thrift_create_lag_member(self.client, self.lag, port_list[i]))
-        self.lag_rif = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.lag, 0, self.v4_enabled, self.v6_enabled, '')
+        self.lag_rif = sai_thrift_create_router_interface(self.client, self.vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, self.lag, 0, self.v4_enabled, self.v6_enabled, '')
         sai_thrift_create_neighbor(self.client, self.addr_family, self.lag_rif, "10.10.0.1", self.mac_pool[self.total_changing_ports])
         sai_thrift_create_route(self.client, self.vr_id,self.addr_family, "10.10.0.1", '255.255.255.0', self.lag_rif)
         self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.0.1" , self.lag_rif))
         for i in range(first_rif_port,self.total_changing_ports):
-            self.port_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, 1, port_list[i], 0, self.v4_enabled, self.v6_enabled, ''))
+            self.port_rifs.append(sai_thrift_create_router_interface(self.client, self.vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port_list[i], 0, self.v4_enabled, self.v6_enabled, ''))
         for i in range(len(self.port_rifs)):
             sai_thrift_create_neighbor(self.client, self.addr_family, self.port_rifs[i], "10.10.%s.1" % str(i+1), self.mac_pool[i])
             self.nhops.append(sai_thrift_create_nhop(self.client, self.addr_family, "10.10.%s.1" % str(i+1), self.port_rifs[i]))
@@ -1794,7 +1794,7 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.mac_pool.append('00:11:22:33:44:'+str(50+i))
 
         self.vr_id = sai_thrift_create_virtual_router(self.client, self.v4_enabled, self.v6_enabled)
-        rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, 1, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
+        rif_port_id = sai_thrift_create_router_interface(self.client, self.vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, self.src_port, 0, self.v4_enabled, self.v6_enabled, '')
 
         try:
             # The first iteration will configure port #1 as a lag with only one member
@@ -1812,3 +1812,216 @@ class L3MultipleEcmpLagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif_port_id)
             self.client.sai_thrift_remove_virtual_router(self.vr_id)
             print "END OF TEST"
+
+@group('l3')
+@group('1D')
+class L3BridgeAndSubPortRifTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        print ""
+        switch_init(self.client)
+        v4_enabled = 1
+        v6_enabled = 1
+        vlan1_id = 10
+        vlan2_id = 100
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        port4 = port_list[3]
+
+        mac1 = '00:01:01:01:01:01'
+        ip1 = '11.11.11.1'
+
+        mac2 = '00:02:02:02:02:02'
+        ip2 = '10.10.10.2'
+        ip_addr_subnet = '10.10.10.0'
+        ip_mask = '255.255.255.0'
+
+        mac3 = '00:22:22:22:22:22'
+        ip3 = '10.0.0.1'
+        
+        vlan1_oid = sai_thrift_create_vlan(self.client, vlan1_id)
+        vlan2_oid = sai_thrift_create_vlan(self.client, vlan2_id)
+
+        bridge_id = sai_thrift_create_bridge(self.client, SAI_BRIDGE_TYPE_1D)
+        sai_thrift_vlan_remove_ports(self.client, switch.default_vlan.oid, [port2, port3, port4])
+        bport1_id = sai_thrift_create_bridge_sub_port(self.client, port2, bridge_id, vlan2_id)
+        bport2_id = sai_thrift_create_bridge_sub_port(self.client, port3, bridge_id, vlan2_id)
+        bport3_id = sai_thrift_create_bridge_sub_port(self.client, port4, bridge_id, vlan2_id)
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+        
+        sub_port_rif_oid = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_SUB_PORT, port1, vlan1_oid, v4_enabled, v6_enabled, '')
+        bridge_rif_oid = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_BRIDGE, 0, 0, v4_enabled, v6_enabled, '')
+        bridge_rif_bp = sai_thrift_create_bridge_rif_port(self.client, bridge_id, bridge_rif_oid)
+
+        sai_thrift_create_neighbor(self.client, SAI_IP_ADDR_FAMILY_IPV4, bridge_rif_oid, ip2, mac2)
+        sai_thrift_create_route(self.client, vr_id, SAI_IP_ADDR_FAMILY_IPV4, ip_addr_subnet, ip_mask, bridge_rif_oid)
+
+        local_pkt = simple_tcp_packet(eth_src=mac2,
+                                      eth_dst=mac3,
+                                      dl_vlan_enable=True,
+                                      vlan_vid=vlan2_id,
+                                      ip_src=ip2,
+                                      ip_dst=ip3,
+                                      ip_id=102,
+                                      ip_ttl=64)
+
+        L3_pkt = simple_tcp_packet(eth_src=mac1,
+                                   eth_dst=router_mac,
+                                   ip_src=ip1,
+                                   ip_dst=ip2,
+                                   dl_vlan_enable=True,
+                                   vlan_vid=vlan1_id,
+                                   ip_id=105,
+                                   ip_ttl=64)
+
+        exp_pkt = simple_tcp_packet(eth_src=router_mac,
+                                    eth_dst=mac2,
+                                    ip_src=ip1,
+                                    ip_dst=ip2,
+                                    dl_vlan_enable=True,
+                                    vlan_vid=vlan2_id,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        try:
+            print "Sending packet ({} -> {}) : Sub-port rif (port 1 : vlan {}) -> Bridge rif (flooded)".format(ip1, ip2, vlan1_id)
+            send_packet(self, 0, str(L3_pkt))
+            verify_packets(self, exp_pkt, [1, 2, 3])
+            print "Success"
+
+            print "Sending unknown L2 packet [{} -> {}] to learn FDB and flood within a .1D bridge".format(mac1, mac3)
+            send_packet(self, 1, str(local_pkt))
+            verify_packets(self, local_pkt, [2, 3])
+            print "Success"
+
+            print "Sending packet ({} -> {}) : Sub-port rif (port 1 : vlan {}) -> Bridge rif".format(ip1, ip2, vlan1_id)
+            send_packet(self, 0, str(L3_pkt))
+            verify_packets(self, exp_pkt, [1])
+            print "Success"
+
+        finally:
+            sai_thrift_remove_route(self.client, vr_id, SAI_IP_ADDR_FAMILY_IPV4, ip_addr_subnet, ip_mask, bridge_rif_oid)
+            sai_thrift_remove_neighbor(self.client, SAI_IP_ADDR_FAMILY_IPV4, bridge_rif_oid, ip2, mac2)
+            self.client.sai_thrift_remove_router_interface(sub_port_rif_oid)
+            self.client.sai_thrift_remove_bridge_port(bridge_rif_bp)
+            self.client.sai_thrift_remove_router_interface(bridge_rif_oid)
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+            sai_thrift_remove_bridge_sub_port(self.client, bport1_id, port2)
+            sai_thrift_remove_bridge_sub_port(self.client, bport2_id, port3)
+            sai_thrift_remove_bridge_sub_port(self.client, bport3_id, port4)
+            self.client.sai_thrift_remove_bridge(bridge_id)
+
+            self.client.sai_thrift_remove_vlan(vlan1_oid)
+            self.client.sai_thrift_remove_vlan(vlan2_oid)
+
+            sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port4, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+@group('l3')
+@group('1D')
+class L3SubPortAndVLANRifTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        print ""
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        v4_enabled = 1
+        v6_enabled = 1
+        vlan1_id = 10
+        vlan2_id = 100
+        mac_action = SAI_PACKET_ACTION_FORWARD
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1 = '10.10.10.1'
+        ip_addr1_subnet = '10.10.10.0'
+        ip_mask1 = '255.255.255.0'
+        dmac1 = '00:0a:00:00:00:01'
+
+        ip_addr2 = '11.11.11.1'
+        ip_addr2_subnet = '11.11.11.0'
+        ip_mask2 = '255.255.255.0'
+        dmac2 = '00:0b:00:00:00:01'
+
+        vlan1_oid = sai_thrift_create_vlan(self.client, vlan1_id)
+        vlan2_oid = sai_thrift_create_vlan(self.client, vlan2_id)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan1_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        attr_value = sai_thrift_attribute_value_t(u16=vlan1_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan1_oid, v4_enabled, v6_enabled, '')
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_SUB_PORT, port2, vlan2_oid, v4_enabled, v6_enabled, '')
+
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
+
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
+
+        try:
+            print "Sending packet ({} -> {}) : VLAN {} rif -> Sub-port (port 2 : vlan {}) rif".format(ip_addr1, ip_addr2, vlan1_id, vlan2_id)
+            pkt = simple_tcp_packet(eth_dst=router_mac,
+                                    eth_src=dmac1,
+                                    ip_dst=ip_addr2,
+                                    ip_src=ip_addr1,
+                                    ip_id=105,
+                                    ip_ttl=64,
+                                    dl_vlan_enable=True,
+                                    vlan_vid=vlan1_id)
+            exp_pkt = simple_tcp_packet(eth_dst=dmac2,
+                                        eth_src=router_mac,
+                                        ip_dst=ip_addr2,
+                                        ip_src=ip_addr1,
+                                        ip_id=105,
+                                        ip_ttl=63,
+                                        dl_vlan_enable=True,
+                                        vlan_vid=vlan2_id)
+
+            send_packet(self, 0, str(pkt))
+            verify_packets(self, exp_pkt, [1])
+            print "Success"
+
+            print "Sending packet ({} -> {}) : Sub-port (port 2 : vlan {}) rif -> VLAN {} rif".format(ip_addr2, ip_addr1, vlan2_id, vlan1_id)
+            pkt = simple_tcp_packet(eth_dst=router_mac,
+                                    eth_src=dmac2,
+                                    ip_dst=ip_addr1,
+                                    ip_src=ip_addr2,
+                                    ip_id=105,
+                                    ip_ttl=64,
+                                    dl_vlan_enable=True,
+                                    vlan_vid=vlan2_id)
+            exp_pkt = simple_tcp_packet(eth_dst=dmac1,
+                                        eth_src=router_mac,
+                                        ip_dst=ip_addr1,
+                                        ip_src=ip_addr2,
+                                        ip_id=105,
+                                        ip_ttl=63,
+                                        dl_vlan_enable=True,
+                                        vlan_vid=vlan1_id)
+
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
+            print "Success"
+            
+        finally:
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
+
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan(vlan1_oid)
+            self.client.sai_thrift_remove_vlan(vlan2_oid)
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)

@@ -63,6 +63,10 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ASSERT_FALSE(x, format, ...)\
     if ((x) == true) { META_ASSERT_FAIL("expected false '" #x "': " format, ##__VA_ARGS__); }
 
+/* custom ranges start are the same for all objects */
+
+#define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
+
 void check_all_enums_name_pointers()
 {
     META_LOG_ENTER();
@@ -169,13 +173,20 @@ void check_all_enums_values()
                 }
                 else
                 {
-                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d", last, value);
+                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
                 }
             }
 
             last = emd->values[j];
 
-            META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
+            if (value >= CUSTOM_ATTR_RANGE_START && value < (2 * CUSTOM_ATTR_RANGE_START))
+            {
+                /* value is in custom range */
+            }
+            else
+            {
+                META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
+            }
         }
 
         META_ASSERT_TRUE(emd->values[j] == -1, "missing guard at the end of enum");
@@ -530,8 +541,8 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
-        case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
+        case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
 
@@ -2151,6 +2162,23 @@ void check_attr_existing_objects(
             META_LOG_DEBUG("Default value (oid) needs to be stored %s", md->attridname);
             break;
 
+        case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
+            
+            /*
+             * Allow qos maps list to enable editing qos map values.
+             * Since on switch initialization there are no qos map objects (all switch qos 
+             * maps attribs are null) this shouldn't be a problem
+             */
+            break;
+
+        case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+
+            /*
+             * Allow for TAM histogram bin boundary
+             */
+
+            break;
+
         default:
 
             META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
@@ -2227,11 +2255,11 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
-        case SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
+        case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
 
@@ -2291,20 +2319,20 @@ void check_attr_is_primitive(
     }
 }
 
-void check_attr_condition_in_force(
+void check_attr_condition_met(
         _In_ const sai_attr_metadata_t* md)
 {
     META_LOG_ENTER();
 
     sai_attribute_t attr = { 0 };
 
-    META_ASSERT_FALSE(sai_metadata_is_condition_in_force(NULL, 1, NULL), "condition check failed");
-    META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, 1, NULL), "condition check failed");
-    META_ASSERT_FALSE(sai_metadata_is_condition_in_force(NULL, 1, &attr), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, NULL), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(md, 1, NULL), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, &attr), "condition check failed");
 
     if (!md->isconditional)
     {
-        META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, 1, &attr), "condition check failed");
+        META_ASSERT_FALSE(sai_metadata_is_condition_met(md, 1, &attr), "condition check failed");
         return;
     }
 
@@ -2317,7 +2345,7 @@ void check_attr_condition_in_force(
 
     uint32_t count = (uint32_t)md->conditionslength;
 
-    sai_attribute_t *attrs = (sai_attribute_t*)alloca(sizeof(sai_attribute_t) * count);
+    sai_attribute_t *attrs = (sai_attribute_t*)malloc(sizeof(sai_attribute_t) * count);
 
     size_t idx = 0;
 
@@ -2327,7 +2355,7 @@ void check_attr_condition_in_force(
         attrs[idx].value = md->conditions[idx]->condition; /* copy */
     }
 
-    META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should be met");
+    META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
     if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_OR)
     {
@@ -2336,7 +2364,7 @@ void check_attr_condition_in_force(
             attrs[idx].id ^= (uint32_t)(-1);
         }
 
-        META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
+        META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
 
         /* when condition is "or" then any of attribute should match */
 
@@ -2344,20 +2372,20 @@ void check_attr_condition_in_force(
         {
             /*
              * Since multiple attributes with the same ID are passed,
-             * sai_metadata_is_condition_in_force is using sai_metadata_get_attr_by_id
+             * sai_metadata_is_condition_met is using sai_metadata_get_attr_by_id
              * and only first attribute will be selected.
              */
 
             attrs[idx].id ^= (uint32_t)(-1);
 
-            META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should be met");
+            META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
     else /* AND */
     {
-        META_ASSERT_TRUE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should not be met");
+        META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
 
         /* when condition is "and" then any of wrong attribute should fail condition */
 
@@ -2365,11 +2393,13 @@ void check_attr_condition_in_force(
         {
             attrs[idx].id ^= (uint32_t)(-1);
 
-            META_ASSERT_FALSE(sai_metadata_is_condition_in_force(md, count, attrs), "condition should be met");
+            META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
+
+    free(attrs);
 }
 
 void check_attr_default_attrvalue(
@@ -2480,7 +2510,7 @@ void check_single_attribute(
     check_attr_sai_pointer(md);
     check_attr_brief_description(md);
     check_attr_is_primitive(md);
-    check_attr_condition_in_force(md);
+    check_attr_condition_met(md);
     check_attr_default_attrvalue(md);
 
     define_attr(md);
@@ -2542,8 +2572,11 @@ void check_object_infos()
 
             if (last + 1 != (int)am->attrid)
             {
-                if (info->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY &&
-                        info->objecttype != SAI_OBJECT_TYPE_ACL_TABLE)
+                if (is_flag_enum(info->enummetadata))
+                {
+                    /* flags, ok */
+                }
+                else
                 {
                     META_MD_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
                 }
@@ -2554,6 +2587,16 @@ void check_object_infos()
             if (am->attrid >= info->attridstart &&
                     am->attrid < info->attridend)
             {
+                continue;
+            }
+
+            if (am->attrid >= CUSTOM_ATTR_RANGE_START)
+            {
+                /*
+                 * Attribute ID is in custom range, so it will not be in
+                 * regural start .. end range.
+                 */
+
                 continue;
             }
 
@@ -2624,6 +2667,7 @@ void check_non_object_id_object_types()
             {
                 case SAI_ATTR_VALUE_TYPE_MAC:
                 case SAI_ATTR_VALUE_TYPE_INT32:
+                case SAI_ATTR_VALUE_TYPE_UINT32:
                 case SAI_ATTR_VALUE_TYPE_UINT16:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
@@ -3766,7 +3810,8 @@ void check_object_ro_list(
     if (oi->objecttype == SAI_OBJECT_TYPE_FDB_FLUSH ||
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
             oi->objecttype == SAI_OBJECT_TYPE_SWITCH ||
-            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY)
+            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY ||
+            oi->objecttype == SAI_OBJECT_TYPE_TAM_HISTOGRAM)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can
@@ -3868,7 +3913,7 @@ void check_backward_comparibility_defines()
 
     META_ASSERT_TRUE(sw == SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY, "not equal");
     META_ASSERT_TRUE(trap == SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGHBOR, "not equal");
-    META_ASSERT_TRUE(bind == SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE, "not equal");
+    META_ASSERT_TRUE(bind == SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE, "not equal");
 }
 
 void helper_check_graph_connected(
@@ -3955,7 +4000,7 @@ void check_graph_connected()
             continue;
         }
 
-        META_LOG_WARN("object %s is disconnected from graph",
+        META_ASSERT_FAIL("object %s is disconnected from graph",
                 sai_metadata_all_object_type_infos[i]->objecttypename);
     }
 }

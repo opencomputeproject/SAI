@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saitypes.h
  *
@@ -54,6 +54,7 @@ typedef UINT8   sai_mac_t[6];
 typedef UINT32  sai_ip4_t;
 typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
+typedef UINT32  sai_label_id_t;
 
 #include <ws2def.h>
 #include <ws2ipdef.h>
@@ -92,6 +93,7 @@ typedef uint8_t  sai_mac_t[6];
 typedef uint32_t sai_ip4_t;
 typedef uint8_t  sai_ip6_t[16];
 typedef uint32_t sai_switch_hash_seed_t;
+typedef uint32_t sai_label_id_t;
 
 #define _In_
 #define _Out_
@@ -232,7 +234,11 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_TAM_TRANSPORTER          = 63,
     SAI_OBJECT_TYPE_TAM_THRESHOLD            = 64,
     SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST     = 65,
-    SAI_OBJECT_TYPE_MAX                      = 66,
+    SAI_OBJECT_TYPE_PORT_POOL                = 66,
+    SAI_OBJECT_TYPE_INSEG_ENTRY              = 67,
+    SAI_OBJECT_TYPE_TAM_HISTOGRAM            = 68,
+    SAI_OBJECT_TYPE_TAM_MICROBURST           = 69,
+    SAI_OBJECT_TYPE_MAX                      = 70,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -493,42 +499,6 @@ typedef struct _sai_qos_map_list_t
 
 } sai_qos_map_list_t;
 
-typedef struct _sai_tunnel_map_params_t
-{
-    /** Inner ECN */
-    sai_uint8_t oecn;
-
-    /** Outer ECN */
-    sai_uint8_t uecn;
-
-    /** Vlan id */
-    sai_vlan_id_t vlan_id;
-
-    /** VNI id */
-    sai_uint32_t vni_id;
-
-} sai_tunnel_map_params_t;
-
-typedef struct _sai_tunnel_map_t
-{
-    /** Input parameters to match */
-    sai_tunnel_map_params_t key;
-
-    /** Output map parameters */
-    sai_tunnel_map_params_t value;
-
-} sai_tunnel_map_t;
-
-typedef struct _sai_tunnel_map_list_t
-{
-    /** Number of entries in the map */
-    uint32_t count;
-
-    /** Map list */
-    sai_tunnel_map_t *list;
-
-} sai_tunnel_map_list_t;
-
 typedef struct _sai_map_t
 {
     /** Input key value */
@@ -571,6 +541,76 @@ typedef struct _sai_acl_capability_t
      */
     sai_s32_list_t action_list;
 } sai_acl_capability_t;
+
+/**
+ * @brief Attribute data for SAI_ACL_TABLE_ATTR_STAGE
+ */
+typedef enum _sai_acl_stage_t
+{
+    /** Ingress Stage */
+    SAI_ACL_STAGE_INGRESS,
+
+    /** Egress Stage */
+    SAI_ACL_STAGE_EGRESS,
+
+} sai_acl_stage_t;
+
+/**
+ * @brief Attribute data for SAI_ACL_TABLE_ATTR_BIND_POINT
+ */
+typedef enum _sai_acl_bind_point_type_t
+{
+    /** Bind Point Type Port */
+    SAI_ACL_BIND_POINT_TYPE_PORT,
+
+    /** Bind Point Type LAG */
+    SAI_ACL_BIND_POINT_TYPE_LAG,
+
+    /** Bind Point Type VLAN */
+    SAI_ACL_BIND_POINT_TYPE_VLAN,
+
+    /** Bind Point Type RIF */
+    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE,
+
+    /** @ignore - for backward compatibility */
+    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE,
+
+    /** Bind Point Type Switch */
+    SAI_ACL_BIND_POINT_TYPE_SWITCH
+
+} sai_acl_bind_point_type_t;
+
+/**
+ * @brief Structure for ACL Resource Count
+ */
+typedef struct _sai_acl_resource_t
+{
+    /** ACL stage */
+    sai_acl_stage_t stage;
+
+    /** ACL Bind point */
+    sai_acl_bind_point_type_t bind_point;
+
+    /** Available number of entries */
+    sai_uint32_t avail_num;
+
+} sai_acl_resource_t;
+
+/**
+ * @brief List of available ACL resources at each stage and
+ * each binding point. This shall be returned when queried for
+ * SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE or
+ * SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE_GROUP
+ */
+typedef struct _sai_acl_resource_list_t
+{
+    /** Number of entries */
+    uint32_t count;
+
+    /** Resource list */
+    sai_acl_resource_t *list;
+
+} sai_acl_resource_list_t;
 
 /**
  * @brief Segment Routing Tag Length Value Types
@@ -670,13 +710,13 @@ typedef union _sai_attribute_value_t
     sai_s32_list_t s32list;
     sai_u32_range_t u32range;
     sai_s32_range_t s32range;
-    sai_map_list_t maplist;
     sai_vlan_list_t vlanlist;
     sai_qos_map_list_t qosmap;
-    sai_tunnel_map_list_t tunnelmap;
+    sai_map_list_t maplist;
     sai_acl_field_data_t aclfield;
     sai_acl_action_data_t aclaction;
     sai_acl_capability_t aclcapability;
+    sai_acl_resource_list_t aclresource;
     sai_tlv_list_t tlvlist;
     sai_segment_list_t segmentlist;
 
@@ -688,20 +728,20 @@ typedef struct _sai_attribute_t
     sai_attribute_value_t value;
 } sai_attribute_t;
 
-typedef enum _sai_bulk_op_type_t
+typedef enum _sai_bulk_op_error_mode_t
 {
     /**
-     * @brief Bulk operation stops on the first failed creation
+     * @brief Bulk operation error handling mode where operation stops on the first failed creation
      *
      * Rest of objects will use SAI_STATUS_NON_EXECUTED return status value.
      */
-    SAI_BULK_OP_TYPE_STOP_ON_ERROR,
+    SAI_BULK_OP_ERROR_MODE_STOP_ON_ERROR,
 
     /**
-     * @brief Bulk operation ignores the failures and continues to create other objects
+     * @brief Bulk operation error handling mode where operation ignores the failures and continues to create other objects
      */
-    SAI_BULK_OP_TYPE_INGORE_ERROR,
-} sai_bulk_op_type_t;
+    SAI_BULK_OP_ERROR_MODE_IGNORE_ERROR,
+} sai_bulk_op_error_mode_t;
 
 /**
  * @brief Bulk objects creation.
@@ -711,7 +751,7 @@ typedef enum _sai_bulk_op_type_t
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to create.
  * @param[in] attr_list List of attributes for every object.
- * @param[in] type Bulk operation type.
+ * @param[in] mode Bulk operation error handling mode.
  *
  * @param[out] object_id List of object ids returned
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
@@ -725,7 +765,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
         _In_ uint32_t object_count,
         _In_ const uint32_t *attr_count,
         _In_ const sai_attribute_t **attr_list,
-        _In_ sai_bulk_op_type_t type,
+        _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_object_id_t *object_id,
         _Out_ sai_status_t *object_statuses);
 
@@ -734,7 +774,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
  *
  * @param[in] object_count Number of objects to create
  * @param[in] object_id List of object ids
- * @param[in] type Bulk operation type.
+ * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
  *
  * @return #SAI_STATUS_SUCCESS on success when all objects are removed or #SAI_STATUS_FAILURE when
@@ -744,7 +784,7 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
 typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ uint32_t object_count,
         _In_ const sai_object_id_t *object_id,
-        _In_ sai_bulk_op_type_t type,
+        _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
 /**

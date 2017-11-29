@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saischedulergroup.h
  *
@@ -89,8 +89,10 @@ typedef enum _sai_scheduler_group_attr_t
      * @brief Scheduler id
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_SCHEDULER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SCHEDULER_GROUP_ATTR_SCHEDULER_PROFILE_ID = 0x00000005,
 

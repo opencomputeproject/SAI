@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saiacl.h
  *
@@ -32,44 +32,6 @@
  *
  * @{
  */
-
-/**
- * @brief Attribute data for SAI_ACL_TABLE_ATTR_STAGE
- */
-typedef enum _sai_acl_stage_t
-{
-    /** Ingress Stage */
-    SAI_ACL_STAGE_INGRESS,
-
-    /** Egress Stage */
-    SAI_ACL_STAGE_EGRESS,
-
-} sai_acl_stage_t;
-
-/**
- * @brief Attribute data for SAI_ACL_TABLE_ATTR_BIND_POINT
- */
-typedef enum _sai_acl_bind_point_type_t
-{
-    /** Bind Point Type Port */
-    SAI_ACL_BIND_POINT_TYPE_PORT,
-
-    /** Bind Point Type LAG */
-    SAI_ACL_BIND_POINT_TYPE_LAG,
-
-    /** Bind Point Type VLAN */
-    SAI_ACL_BIND_POINT_TYPE_VLAN,
-
-    /** Bind Point Type RIF */
-    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE,
-
-    /** @ignore - for backward compatibility */
-    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE,
-
-    /** Bind Point Type Switch */
-    SAI_ACL_BIND_POINT_TYPE_SWITCH
-
-} sai_acl_bind_point_type_t;
 
 /**
  * @brief ACL IP Type
@@ -373,20 +335,6 @@ typedef enum _sai_acl_table_group_member_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_PRIORITY,
-
-    /**
-     * @brief Available ACL entries for this table
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_AVAILABLE_ACL_ENTRY,
-
-    /**
-     * @brief Available ACL counters for this table
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_AVAILABLE_ACL_COUNTER,
 
     /**
      * @brief End of attributes
@@ -980,6 +928,20 @@ typedef enum _sai_acl_table_attr_t
      * @objects SAI_OBJECT_TYPE_ACL_ENTRY
      */
     SAI_ACL_TABLE_ATTR_ENTRY_LIST,
+
+    /**
+     * @brief Available ACL entries for this table
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_ENTRY,
+
+    /**
+     * @brief Available ACL counters for this table
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_COUNTER,
 
     /**
      * @brief End of ACL Table attributes
@@ -2030,7 +1992,7 @@ typedef enum _sai_acl_range_attr_t
      * Range will include the start and end values.
      * Range Limit cannot be changed after the range is created.
      *
-     * @type sai_uint32_t
+     * @type sai_u32_range_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_ACL_RANGE_ATTR_LIMIT,

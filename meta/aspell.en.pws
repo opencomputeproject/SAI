@@ -13,14 +13,18 @@ HQOS
 HQoS
 Hostif
 Inservice
+InSegment
 LAGs
 Linux
 Loopback
+Marvell
 MCAST
 MERCHANTABILITY
 Mbps
 Mellanox
 Metadata
+Microburst
+Microbursts
 Multicast
 Netdevice
 OID
@@ -50,6 +54,7 @@ attrvalue
 bool
 boolean
 callee
+checksum
 childs
 const
 decap
@@ -77,6 +82,7 @@ loopback
 lossless
 mcast
 metadata
+microburst
 multi
 multicast
 netdev
@@ -85,6 +91,7 @@ nexthop
 nexthopgroup
 objlist
 optimizations
+outsegment
 param
 pkts
 policer
@@ -98,6 +105,8 @@ struct
 subnet
 subnets
 tx
+uBurst
+uBursts
 ucast
 unicast
 untagged

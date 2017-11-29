@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saibuffer.h
  *
@@ -289,6 +289,22 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_XOFF_SIZE,
 
     /**
+     * @brief Attach WRED ID to pool
+     *
+     * WRED Drop/ECN marking based on pool thresholds will happen only
+     * when one of queue referring to this buffer pool configured
+     * with non default value for SAI_QUEUE_ATTR_WRED_PROFILE_ID.
+     * ID = #SAI_NULL_OBJECT_ID to disable WRED
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_WRED
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_BUFFER_POOL_ATTR_WRED_PROFILE_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_BUFFER_POOL_ATTR_END,
@@ -314,6 +330,54 @@ typedef enum _sai_buffer_pool_stat_t
 
     /** Get count of packets dropped in this pool [uint64_t] */
     SAI_BUFFER_POOL_STAT_DROPPED_PACKETS = 0x00000002,
+
+    /** Get/set WRED green dropped packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_GREEN_WRED_DROPPED_PACKETS = 0x00000003,
+
+    /** Get/set WRED green dropped byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_GREEN_WRED_DROPPED_BYTES = 0x00000004,
+
+    /** Get/set WRED yellow dropped packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_YELLOW_WRED_DROPPED_PACKETS = 0x00000005,
+
+    /** Get/set WRED yellow dropped byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_YELLOW_WRED_DROPPED_BYTES = 0x00000006,
+
+    /** Get/set WRED red dropped packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_RED_WRED_DROPPED_PACKETS = 0x00000007,
+
+    /** Get/set WRED red dropped byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_RED_WRED_DROPPED_BYTES = 0x00000008,
+
+    /** Get/set WRED dropped packets count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WRED_DROPPED_PACKETS = 0x00000009,
+
+    /** Get/set WRED dropped bytes count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WRED_DROPPED_BYTES = 0x0000000a,
+
+    /** Get/set WRED green marked packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_GREEN_WRED_ECN_MARKED_PACKETS = 0x0000000b,
+
+    /** Get/set WRED green marked byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_GREEN_WRED_ECN_MARKED_BYTES = 0x0000000c,
+
+    /** Get/set WRED yellow marked packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_YELLOW_WRED_ECN_MARKED_PACKETS = 0x0000000d,
+
+    /** Get/set WRED yellow marked byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_YELLOW_WRED_ECN_MARKED_BYTES = 0x0000000e,
+
+    /** Get/set WRED red marked packet count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_RED_WRED_ECN_MARKED_PACKETS = 0x0000000f,
+
+    /** Get/set WRED red marked byte count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_RED_WRED_ECN_MARKED_BYTES = 0x00000010,
+
+    /** Get/set WRED marked packets count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WRED_ECN_MARKED_PACKETS = 0x00000011,
+
+    /** Get/set WRED marked bytes count [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WRED_ECN_MARKED_BYTES = 0x00000012,
 
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
@@ -413,9 +477,6 @@ typedef enum _sai_buffer_profile_threshold_mode_t
     /** Dynamic maximum (relative) */
     SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC,
 
-    /** Inherit from buffer pool threshold mode */
-    SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE,
-
 } sai_buffer_profile_threshold_mode_t;
 
 /**
@@ -448,7 +509,10 @@ typedef enum _sai_buffer_profile_attr_t
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
-    SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE,
+    SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE,
+
+    /** @ignore - for backward compatibility */
+    SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE = SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE,
 
     /**
      * @brief Shared threshold mode for the buffer profile
@@ -456,8 +520,7 @@ typedef enum _sai_buffer_profile_attr_t
      * If set, this overrides #SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE.
      *
      * @type sai_buffer_profile_threshold_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_BUFFER_PROFILE_THRESHOLD_MODE_INHERIT_BUFFER_POOL_MODE
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE,
 
@@ -465,21 +528,21 @@ typedef enum _sai_buffer_profile_attr_t
      * @brief Dynamic threshold for the shared usage
      *
      * The threshold is set to the 2^n of available buffer of the pool.
-     * Mandatory when SAI_BUFFER_POOL_THRESHOLD_MODE = SAI_BUFFER_THRESHOLD_MODE_DYNAMIC
      *
      * @type sai_int8_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE == SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC
      */
     SAI_BUFFER_PROFILE_ATTR_SHARED_DYNAMIC_TH,
 
     /**
      * @brief Static threshold for the shared usage in bytes
      *
-     * Mandatory when SAI_BUFFER_POOL_THRESHOLD_MODE = SAI_BUFFER_THRESHOLD_MODE_STATIC
      * When set to zero there is no limit for the shared usage.
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE == SAI_BUFFER_PROFILE_THRESHOLD_MODE_STATIC
      */
     SAI_BUFFER_PROFILE_ATTR_SHARED_STATIC_TH,
 

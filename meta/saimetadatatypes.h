@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saimetadatatypes.h
  *
@@ -315,6 +315,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
 
     /**
+     * @brief Attribute value is ACL resource.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST,
+
+    /**
      * @brief Attribute value is generic map list.
      */
     SAI_ATTR_VALUE_TYPE_MAP_LIST,
@@ -328,11 +333,6 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is QOS map list.
      */
     SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST,
-
-    /**
-     * @brief Attribute value is tunnel map list.
-     */
-    SAI_ATTR_VALUE_TYPE_TUNNEL_MAP_LIST,
 
     /**
      * @brief Attribute value is Segment Route Type Length Value list.

@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    sairouterinterface.h
  *
@@ -47,11 +47,17 @@ typedef enum _sai_router_interface_type_t
     /** Loopback Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
 
+    /** MPLS Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_MPLS_ROUTER,
+
     /** Sub port Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
 
     /** .1D Bridge Router Interface Type */
-    SAI_ROUTER_INTERFACE_TYPE_BRIDGE
+    SAI_ROUTER_INTERFACE_TYPE_BRIDGE,
+
+    /** Q-in-Q Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT,
 
 } sai_router_interface_type_t;
 
@@ -103,6 +109,26 @@ typedef enum _sai_router_interface_attr_t
      * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
      */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
+
+    /**
+     * @brief Outer Vlan
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan true
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT
+     */
+    SAI_ROUTER_INTERFACE_ATTR_OUTER_VLAN_ID,
+
+    /**
+     * @brief Inner Vlan
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan true
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT
+     */
+    SAI_ROUTER_INTERFACE_ATTR_INNER_VLAN_ID,
 
     /* READ-WRITE */
 
@@ -203,6 +229,15 @@ typedef enum _sai_router_interface_attr_t
      * @default false
      */
     SAI_ROUTER_INTERFACE_ATTR_V6_MCAST_ENABLE,
+
+    /**
+     * @brief Loopback enable (whether a packet can ingress and egress same RIF)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_ENABLE,
 
     /**
      * @brief End of attributes

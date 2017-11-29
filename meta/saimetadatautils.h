@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saimetadatautils.h
  *
@@ -128,7 +128,7 @@ extern bool sai_metadata_is_object_type_valid(
         _In_ sai_object_type_t object_type);
 
 /**
- * @brief Check if condition is in force.
+ * @brief Check if condition met.
  *
  * List of attributes will be examined in terms of conditions. This is
  * convenient since user can pass list when calling create API. If
@@ -147,7 +147,7 @@ extern bool sai_metadata_is_object_type_valid(
  * @return True if condition is in force, false otherwise. False will be also
  * returned if any of input pointers is NULL or attribute is not conditional.
  */
-extern bool sai_metadata_is_condition_in_force(
+extern bool sai_metadata_is_condition_met(
         _In_ const sai_attr_metadata_t *metadata,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);

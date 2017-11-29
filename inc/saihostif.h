@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saihostif.h
  *
@@ -307,13 +307,41 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_TTL_ERROR = 0x00006001,
 
+    /**
+     * @brief Packets trapped when station move is observed with static FDB entry
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_STATIC_FDB_MOVE = 0x00006002,
+
+    /* Pipeline discards. For the following traps, packet action is either drop or trap */
+
+    /**
+     * @brief Packets discarded due to egress buffer full
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PIPELINE_DISCARD_EGRESS_BUFFER = 0x00007000,
+
+    /**
+     * @brief Packets discarded by WRED
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PIPELINE_DISCARD_WRED = 0x00007001,
+
+    /**
+     * @brief Packets discarded due to router causes, such as
+     * header checksum, router interface is down,
+     * matching a route with drop action (black holes), etc.
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PIPELINE_DISCARD_ROUTER = 0x00007002,
+
     /** Exception traps custom range start */
-    SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00007000,
+    SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00008000,
 
     /**
      * @brief End of trap types
      */
-    SAI_HOSTIF_TRAP_TYPE_END = 0x00008000
+    SAI_HOSTIF_TRAP_TYPE_END = 0x00009000
 
 } sai_hostif_trap_type_t;
 
@@ -376,6 +404,16 @@ typedef enum _sai_hostif_trap_attr_t
      * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
+
+    /**
+     * @brief Mirror session for the trap
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
+     * @default empty
+     */
+    SAI_HOSTIF_TRAP_ATTR_MIRROR_SESSION,
 
     /**
      * @brief End of attributes
@@ -603,6 +641,37 @@ typedef enum _sai_hostif_type_t
 } sai_hostif_type_t;
 
 /**
+ * @brief Attribute data for SAI_HOSTIF_ATTR_VLAN_TAG
+ */
+typedef enum _sai_hostif_vlan_tag_t
+{
+    /**
+     * @brief Strip vlan tag
+     * Strip vlan tag from the incoming packet
+     * when delivering the packet to host interface.
+     */
+    SAI_HOSTIF_VLAN_TAG_STRIP,
+
+    /**
+     * @brief Keep vlan tag.
+     * When incoming packet is untagged, add PVID tag to the packet when delivering
+     * the packet to host interface.
+     */
+    SAI_HOSTIF_VLAN_TAG_KEEP,
+
+    /**
+     * @brief Keep the packet same as the incoming packet
+     *
+     * The packet delivered to host interface is the same as the original packet.
+     * When the host interface is PORT and LAG, the packet delivered to host interface is the
+     * same as the original packet seen by the PORT and LAG.
+     * When the host interface is VLAN, the packet delivered to host interface will not have tag.
+     */
+    SAI_HOSTIF_VLAN_TAG_ORIGINAL,
+
+} sai_hostif_vlan_tag_t;
+
+/**
  * @brief Host interface attribute IDs
  */
 typedef enum _sai_hostif_attr_t
@@ -663,6 +732,16 @@ typedef enum _sai_hostif_attr_t
      * @default 0
      */
     SAI_HOSTIF_ATTR_QUEUE,
+
+    /**
+     * @brief Strip/keep vlan tag for received packet
+     *
+     * @type sai_hostif_vlan_tag_t
+     * @flags CREATE_AND_SET
+     * @default SAI_HOSTIF_VLAN_TAG_STRIP
+     * @validonly SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
+     */
+    SAI_HOSTIF_ATTR_VLAN_TAG,
 
     /**
      * @brief End of attributes
@@ -977,6 +1056,17 @@ typedef enum _sai_hostif_packet_attr_t
      * @condition SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
      */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
+
+    /**
+     * @brief Bridge ID (for receive-only)
+     *
+     * The .1D or .1Q bridge on which the packet was received.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     */
+    SAI_HOSTIF_PACKET_ATTR_BRIDGE_ID,
 
     /**
      * @brief End of attributes

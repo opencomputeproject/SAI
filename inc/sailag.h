@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    sailag.h
  *
@@ -85,6 +85,45 @@ typedef enum _sai_lag_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_LAG_ATTR_EGRESS_ACL,
+
+    /**
+     * @brief Port VLAN ID
+     *
+     * Untagged ingress frames are tagged with Port VLAN ID (PVID)
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan true
+     * @default 1
+     */
+    SAI_LAG_ATTR_PORT_VLAN_ID,
+
+    /**
+     * @brief Default VLAN Priority
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_LAG_ATTR_DEFAULT_VLAN_PRIORITY,
+
+    /**
+     * @brief Dropping of untagged frames on ingress
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_LAG_ATTR_DROP_UNTAGGED,
+
+    /**
+     * @brief Dropping of tagged frames on ingress
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_LAG_ATTR_DROP_TAGGED,
 
     /**
      * @brief End of attributes

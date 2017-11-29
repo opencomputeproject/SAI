@@ -133,7 +133,7 @@ sub IsMetadataStruct
 
     my $key = $refStructInfoEx->{keys}[0];
 
-    return 1 if $refStructInfoEx->{membersHash}{$key}->{file} =~ m!meta/sai\w+.h$!;
+    return 1 if $refStructInfoEx->{membersHash}{$key}->{file} =~ m!(meta/sai\w+.h|^sai(meta\w+.h))$!;
 
     return 0;
 }
@@ -246,6 +246,10 @@ sub GetTypeInfoForSerialize
     elsif ($type =~ /^sai_(vlan_id)_t$/)
     {
         $TypeInfo{suffix} = "uint16";
+    }
+    elsif ($type =~ /^sai_(label_id)_t$/)
+    {
+        $TypeInfo{suffix} = "uint32";
     }
     elsif ($type =~ /^sai_(cos|queue_index)_t$/)
     {
