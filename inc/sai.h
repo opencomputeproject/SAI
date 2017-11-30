@@ -120,6 +120,9 @@ typedef enum _sai_api_t
     SAI_API_MPLS             = 36, /**< sai_mpls_api_t */
     SAI_API_UBURST           = 37, /**< sai_uburst_api_t */
     SAI_API_MAX              = 38, /**< total number of APIs */
+    /* Start of experimental APIs */
+    SAI_API_DTEL             = SAI_API_MAX, /**< sai_dtel_api_t */
+    SAI_API_EXPERIMENTAL_MAX = SAI_API_MAX + 1,
 } sai_api_t;
 
 /**

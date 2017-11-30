@@ -190,6 +190,12 @@ typedef enum _sai_acl_action_type_t
     /** Set Do Not Learn unknown source MAC */
     SAI_ACL_ACTION_TYPE_SET_DO_NOT_LEARN,
 
+    /** Custom range base value start */
+    SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of Custom range base */
+    SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_END
+
 } sai_acl_action_type_t;
 
 /**

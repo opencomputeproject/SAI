@@ -4,9 +4,9 @@ SAI Data Plane Telemetry API Proposal
 -------------|-----------------------------------------------------------------
  Authors     | Barefoot Networks
  Status      | In review
- Type        | Standards track
+ Type        | Experimental track
  Created     | 06/18/2017
- Updated     | 10/10/2017
+ Updated     | 11/28/2017
  SAI-Version | 1.x
 
 -------------------------------------------------------------------------------
@@ -72,17 +72,19 @@ DTel Queue Report is complementary to TAM snapshot. While TAM snapshot reports q
 
 This section describes the data plane telemetry API proposal. 
 
-## Changes to `saiswitch.h` for switch DTel attributes
+## New header file `experimental/saiswitchextensions.h`
 ~~~cpp
-typedef enum _sai_switch_attr_t
+typedef enum _sai_switch_experimental_attr_t
 {
-    ......
+    /** Start of experimental types */
+    SAI_SWITCH_ATTR_EXPERIMENTAL_START = SAI_SWITCH_ATTR_CUSTOM_RANGE_END + 1,
+    
     /**
      * @brief DTel INT endpoint
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_SWITCH_ATTR_DTEL_INT_ENDPOINT_ENABLE,
 
@@ -91,7 +93,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_SWITCH_ATTR_DTEL_INT_TRANSIT_ENABLE,
     
@@ -100,7 +102,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_SWITCH_ATTR_DTEL_POSTCARD_ENABLE,
 
@@ -109,7 +111,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_SWITCH_ATTR_DTEL_DROP_REPORT_ENABLE,
 
@@ -118,7 +120,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_SWITCH_ATTR_DTEL_QUEUE_REPORT_ENABLE,
 
@@ -164,11 +166,28 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_DTEL_INT_L4_DSCP,
 
-} sai_switch_attr_t;
+} sai_switch_experimental_attr_t;
 ~~~
 
-## Changes to `saiacl.h` for DTel flow and drop watchlists
+## Changes to `saiacl.h` for experimental extensions
 ~~~cpp
+/**
+ * @brief ACL Action Type
+ */
+typedef enum _sai_acl_action_type_t
+{
+    /** Custom range base value start */
+    SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_START = 0x10000000,
+    
+    /** End of Custom range base */
+    SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_END
+}
+~~~
+
+## New header file `experimental/saiaclextensions.h` for DTel watchlists
+~~~cpp
+#include <saiacl.h>
+
 /**
  * @brief DTel flow operation
  */
@@ -188,9 +207,11 @@ typedef enum _sai_acl_dtel_flow_op_t
 
 } sai_acl_dtel_flow_op_t;
 
-typedef enum _sai_acl_action_type_t
+typedef enum _sai_acl_action_experimental_type_t
 {
-    ......
+    /** Start of experimental types */
+    SAI_ACL_ACTION_TYPE_EXPERIMENTAL_START = SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_END + 1,
+    
     /** DTel flow operation */
     SAI_ACL_ACTION_TYPE_DTEL_FLOW_OP,
 
@@ -206,11 +227,15 @@ typedef enum _sai_acl_action_type_t
     /** Report every packet for the matched flow */
     SAI_ACL_ACTION_TYPE_DTEL_REPORT_ALL_PACKETS,
 
-} sai_acl_action_type_t;
+} sai_acl_action_experimental_type_t;
 
-typedef enum _sai_acl_table_attr_t
+typedef enum _sai_acl_table_experimental_attr_t
 {
-    ......
+    /**
+     * @brief Start of experimental attributes
+     */
+    SAI_ACL_TABLE_ATTR_EXPERIMENTAL_START = SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_END + 1,
+
     /**
      * @brief Tunnel VNI
      *
@@ -256,11 +281,15 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_FIELD_INNER_L4_DST_PORT,
 
-} sai_acl_table_attr_t;
+} sai_acl_table_experimental_attr_t;
 
-typedef enum _sai_acl_entry_attr_t
+typedef enum _sai_acl_entry_experimental_attr_t
 {
-    ......
+    /**
+     * @brief Start of experimental attributes
+     */
+    SAI_ACL_ENTRY_ATTR_EXPERIMENTAL_START = SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_END + 1,
+    
     /**
      * @brief Tunnel VNI
      *
@@ -274,6 +303,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_ETHER_TYPE,
 
@@ -290,6 +320,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_L4_SRC_PORT,
 
@@ -298,6 +329,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      */
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_L4_DST_PORT,
 
@@ -308,7 +340,7 @@ typedef enum _sai_acl_entry_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_ACL_DTEL_FLOW_OP_NOP
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_FLOW_OP,
+    SAI_ACL_ENTRY_ATTR_ACTION_ACL_DTEL_FLOW_OP,
 
     /**
      * @brief INT session ID
@@ -316,6 +348,8 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_DTEL_INT_SESSION
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DTEL_INT_SESSION,
 
@@ -324,7 +358,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DTEL_DROP_REPORT_ENABLE,
 
@@ -342,23 +376,36 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DTEL_REPORT_ALL_PACKETS,
 
-} sai_acl_entry_attr_t;
+} sai_acl_entry_experimental_attr_t;
 ~~~
 
-## New Header `saidtel.h`
+## New header file `experimental/saidtel.h`
 
 ### Data Structures and Enumerations
 
 ~~~cpp
 /**
+ * ...
+ * @file        saidtel.h
+ * @brief       This module defines SAI data plane telemetry interface
+ * @description Supported by: Barefoot Networks, Inc. 
+ * @warning     This module is a SAI experimental module. 
+ */
+
+/**
  * @brief Queue report trigger attributes
  */
 typedef enum _sai_dtel_queue_report_attr_t
 {
+    /**
+     * @brief Start of attributes
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_START,
+
     /**
      * @brief Queue object ID
      *
@@ -366,14 +413,13 @@ typedef enum _sai_dtel_queue_report_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_QUEUE
      */
-    SAI_DTEL_QUEUE_REPORT_ATTR_QUEUE_ID,
+    SAI_DTEL_QUEUE_REPORT_ATTR_QUEUE_ID = SAI_DTEL_QUEUE_REPORT_ATTR_START,
 
     /**
      * @brief Queue depth threshold in byte
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default UINT32_MAX
      */
     SAI_DTEL_QUEUE_REPORT_ATTR_DEPTH_THRESHOLD,
 
@@ -382,7 +428,6 @@ typedef enum _sai_dtel_queue_report_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default UINT32_MAX
      */
     SAI_DTEL_QUEUE_REPORT_ATTR_LATENCY_THRESHOLD,
 
@@ -400,9 +445,24 @@ typedef enum _sai_dtel_queue_report_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_DTEL_QUEUE_REPORT_ATTR_TAIL_DROP,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_CUSTOM_RANGE_END
 
 } sai_dtel_queue_report_attr_t;
 
@@ -411,6 +471,11 @@ typedef enum _sai_dtel_queue_report_attr_t
  */
 typedef enum _sai_dtel_int_session_attr_t
 {
+    /**
+     * @brief Start of attributes
+     */
+    SAI_DTEL_INT_SESSION_ATTR_START = SAI_DTEL_INT_SESSION_ATTR_START,
+ 
     /**
      * @brief INT max hop count
      *
@@ -428,7 +493,7 @@ typedef enum _sai_dtel_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_DTEL_INT_SESSION_ATTR_COLLECT_SWITCH_ID,
 
@@ -437,7 +502,7 @@ typedef enum _sai_dtel_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_DTEL_INT_SESSION_ATTR_COLLECT_SWITCH_PORTS,
 
@@ -446,7 +511,7 @@ typedef enum _sai_dtel_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_DTEL_INT_SESSION_ATTR_COLLECT_INGRESS_TIMESTAMP,
 
@@ -455,7 +520,7 @@ typedef enum _sai_dtel_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_DTEL_INT_SESSION_ATTR_COLLECT_EGRESS_TIMESTAMP,
 
@@ -464,10 +529,22 @@ typedef enum _sai_dtel_int_session_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
     SAI_DTEL_INT_SESSION_ATTR_COLLECT_QUEUE_INFO
 
+    /**
+     * @brief End of attributes
+     */
+    SAI_DTEL_INT_SESSION_ATTR_END,
+  
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_END
+ 
 } sai_dtel_int_session_attr_t;
 
 /**
@@ -476,12 +553,17 @@ typedef enum _sai_dtel_int_session_attr_t
 typedef enum _sai_dtel_report_session_attr_t
 {
     /**
+     * @brief Start of attributes
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_START,
+ 
+    /**
      * @brief Telemetry report source IP address
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
      */
-    SAI_DTEL_REPORT_SESSION_ATTR_SRC_IP,
+    SAI_DTEL_REPORT_SESSION_ATTR_SRC_IP = SAI_DTEL_REPORT_SESSION_ATTR_START,
 
     /**
      * @brief Telemetry report destination IP addresses
@@ -516,6 +598,21 @@ typedef enum _sai_dtel_report_session_attr_t
      */
     SAI_DTEL_REPORT_SESSION_ATTR_UDP_DST_PORT,
 
+    /**
+     * @brief End of attributes
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_CUSTOM_RANGE_END
+
 } sai_dtel_report_session_attr_t;
 
 /**
@@ -549,12 +646,17 @@ typedef enum _sai_dtel_event_type_t
 typedef enum _sai_dtel_event_attr_t
 {
     /**
+     * @brief Start of attributes
+     */
+    SAI_DTEL_EVENT_ATTR_START,
+
+    /**
      * @brief DTel event type
      *
      * @type sai_dtel_event_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_DTEL_EVENT_ATTR_TYPE,
+    SAI_DTEL_EVENT_ATTR_TYPE = SAI_DTEL_EVENT_ATTR_START,
 
     /**
      * @brief DTel report session
@@ -566,12 +668,27 @@ typedef enum _sai_dtel_event_attr_t
     SAI_DTEL_EVENT_ATTR_REPORT_SESSION,
 
     /**
-     * @brief DTel report dscp value
+     * @brief DTel report DSCP value
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE
      */
     SAI_DTEL_EVENT_ATTR_DSCP_VALUE,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_DTEL_EVENT_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_EVENT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_DTEL_EVENT_ATTR_CUSTOM_RANGE_END
 
 } sai_dtel_event_attr_t;
 ~~~
