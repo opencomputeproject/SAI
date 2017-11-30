@@ -567,6 +567,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -758,6 +759,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_CONST)
@@ -1672,6 +1674,7 @@ void check_attr_acl_fields(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
 
@@ -1729,6 +1732,7 @@ void check_attr_acl_fields(
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+                case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
                     break;
@@ -2275,6 +2279,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16:
