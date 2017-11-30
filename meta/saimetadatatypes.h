@@ -300,6 +300,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6,
 
     /**
+     * @brief Attribute value is ACL action IP address.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS,
+
+    /**
      * @brief Attribute value is ACL action object id.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID,
