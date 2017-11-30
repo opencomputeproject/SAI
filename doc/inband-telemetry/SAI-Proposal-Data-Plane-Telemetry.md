@@ -72,13 +72,26 @@ DTel Queue Report is complementary to TAM snapshot. While TAM snapshot reports q
 
 This section describes the data plane telemetry API proposal. 
 
-## New header file `experimental/saiswitchextensions.h`
+## New header file `experimental/saidtel.h`
+
+### Data Structures and Enumerations
+
 ~~~cpp
-typedef enum _sai_switch_experimental_attr_t
+/**
+ * ...
+ * @file        saidtel.h
+ * @brief       This module defines SAI data plane telemetry interface
+ * @description Supported by: Barefoot Networks, Inc. 
+ * @warning     This module is a SAI experimental module. 
+ */
+
+/**
+ * @brief DTel attributes
+ *
+ * Only one DTel object per switch can be created.
+ */
+typedef enum _sai_dtel_attr_t
 {
-    /** Start of experimental types */
-    SAI_SWITCH_ATTR_EXPERIMENTAL_START = SAI_SWITCH_ATTR_CUSTOM_RANGE_END + 1,
-    
     /**
      * @brief DTel INT endpoint
      *
@@ -86,7 +99,7 @@ typedef enum _sai_switch_experimental_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_SWITCH_ATTR_DTEL_INT_ENDPOINT_ENABLE,
+    SAI_DTEL_ATTR_INT_ENDPOINT_ENABLE,
 
     /**
      * @brief DTel INT transit
@@ -95,7 +108,7 @@ typedef enum _sai_switch_experimental_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_SWITCH_ATTR_DTEL_INT_TRANSIT_ENABLE,
+    SAI_DTEL_ATTR_INT_TRANSIT_ENABLE,
     
     /**
      * @brief Packet postcard
@@ -104,7 +117,7 @@ typedef enum _sai_switch_experimental_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_SWITCH_ATTR_DTEL_POSTCARD_ENABLE,
+    SAI_DTEL_ATTR_POSTCARD_ENABLE,
 
     /**
      * @brief Drop Report
@@ -113,7 +126,7 @@ typedef enum _sai_switch_experimental_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_SWITCH_ATTR_DTEL_DROP_REPORT_ENABLE,
+    SAI_DTEL_ATTR_DROP_REPORT_ENABLE,
 
     /**
      * @brief Queue Report
@@ -122,7 +135,7 @@ typedef enum _sai_switch_experimental_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_SWITCH_ATTR_DTEL_QUEUE_REPORT_ENABLE,
+    SAI_DTEL_ATTR_QUEUE_REPORT_ENABLE,
 
     /**
      * @brief Globally unique switch ID
@@ -130,7 +143,7 @@ typedef enum _sai_switch_experimental_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      */
-    SAI_SWITCH_ATTR_DTEL_SWITCH_ID,
+    SAI_DTEL_ATTR_SWITCH_ID,
 
     /**
      * @brief DTel flow state clear cycle
@@ -139,7 +152,7 @@ typedef enum _sai_switch_experimental_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_SWITCH_ATTR_DTEL_FLOW_STATE_CLEAR_CYCLE,
+    SAI_DTEL_ATTR_FLOW_STATE_CLEAR_CYCLE,
 
     /**
      * @brief Latency sensitivity for flow state change detection
@@ -147,7 +160,7 @@ typedef enum _sai_switch_experimental_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      */
-    SAI_SWITCH_ATTR_DTEL_LATENCY_SENSITIVITY,
+    SAI_DTEL_ATTR_LATENCY_SENSITIVITY,
 
     /**
      * @brief DTel sink ports
@@ -156,7 +169,7 @@ typedef enum _sai_switch_experimental_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
      */
-    SAI_SWITCH_ATTR_DTEL_SINK_PORT_LIST,
+    SAI_DTEL_ATTR_SINK_PORT_LIST,
 
     /**
      * @brief Reserved DSCP value for INT over L4
@@ -164,9 +177,435 @@ typedef enum _sai_switch_experimental_attr_t
      * @type sai_ternary_field_t
      * @flags CREATE_AND_SET
      */
-    SAI_SWITCH_ATTR_DTEL_INT_L4_DSCP,
+    SAI_DTEL_ATTR_INT_L4_DSCP,
 
-} sai_switch_experimental_attr_t;
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_DTEL_ATTR_CUSTOM_RANGE_END
+
+} sai_dtel_attr_t;
+
+/**
+ * @brief Queue report trigger attributes
+ */
+typedef enum _sai_dtel_queue_report_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_START,
+
+    /**
+     * @brief Queue object ID
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_QUEUE
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_QUEUE_ID = SAI_DTEL_QUEUE_REPORT_ATTR_START,
+
+    /**
+     * @brief Queue depth threshold in byte
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_DEPTH_THRESHOLD,
+
+    /**
+     * @brief Queue latency threshold in nanosecond
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_LATENCY_THRESHOLD,
+
+    /**
+     * @brief Maximum number of continuous reports after threshold breach
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1000
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_BREACH_QUOTA,
+
+    /**
+     * @brief Send report for packets dropped by the queue
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_TAIL_DROP,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_DTEL_QUEUE_REPORT_ATTR_CUSTOM_RANGE_END
+
+} sai_dtel_queue_report_attr_t;
+
+/**
+ * @brief INT session attributes
+ */
+typedef enum _sai_dtel_int_session_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_DTEL_INT_SESSION_ATTR_START = SAI_DTEL_INT_SESSION_ATTR_START,
+ 
+    /**
+     * @brief INT max hop count
+     *
+     * The maximum number of hops that are allowed to
+     * add their metadata to the packet
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 8
+     */
+    SAI_DTEL_INT_SESSION_ATTR_MAX_HOP_COUNT,
+
+    /**
+     * @brief Collect switch ID
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_INT_SESSION_ATTR_COLLECT_SWITCH_ID,
+
+    /**
+     * @brief Collect ingress and egress ports
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_INT_SESSION_ATTR_COLLECT_SWITCH_PORTS,
+
+    /**
+     * @brief Collect ingress timestamp
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_INT_SESSION_ATTR_COLLECT_INGRESS_TIMESTAMP,
+
+    /**
+     * @brief Collect egress timestamp
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_INT_SESSION_ATTR_COLLECT_EGRESS_TIMESTAMP,
+
+    /**
+     * @brief Collect queue information
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_INT_SESSION_ATTR_COLLECT_QUEUE_INFO
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_DTEL_INT_SESSION_ATTR_END,
+  
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_END
+ 
+} sai_dtel_int_session_attr_t;
+
+/**
+ * @brief Telemetry report session attributes
+ */
+typedef enum _sai_dtel_report_session_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_START,
+ 
+    /**
+     * @brief Telemetry report source IP address
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_SRC_IP = SAI_DTEL_REPORT_SESSION_ATTR_START,
+
+    /**
+     * @brief Telemetry report destination IP addresses
+     *
+     * @type sai_ip_address_list_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_DST_IP_LIST,
+
+    /**
+     * @brief Telemetry report virtual router ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_VIRTUAL_ROUTER_ID,
+
+    /**
+     * @brief Telemetry report truncate size
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_TRUNCATE_SIZE,
+
+    /**
+     * @brief Telemetry report UDP destination port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_UDP_DST_PORT,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_DTEL_REPORT_SESSION_ATTR_CUSTOM_RANGE_END
+
+} sai_dtel_report_session_attr_t;
+
+/**
+ * @brief Enum defining DTel event types.
+ */
+typedef enum _sai_dtel_event_type_t
+{
+    /** Report triggered by new flow or flow state (e.g., path, latency) change */
+    SAI_DTEL_EVENT_TYPE_FLOW_STATE,
+
+    /** Report triggered by REPORT_ALL_PACKETS in watchlist entry action */
+    SAI_DTEL_EVENT_TYPE_FLOW_REPORT_ALL_PACKETS,
+
+    /** Report triggered by TCP FLAGS */
+    SAI_DTEL_EVENT_TYPE_FLOW_TCPFLAG,    
+
+    /** Report triggered by queue depth or latency threshold breach */
+    SAI_DTEL_EVENT_TYPE_QUEUE_REPORT_THRESHOLD_BREACH,   
+
+    /** Report triggered by queue tail drop */
+    SAI_DTEL_EVENT_TYPE_QUEUE_REPORT_TAIL_DROP,         
+
+    /** Report triggered by packet drop */
+    SAI_DTEL_EVENT_TYPE_DROP_REPORT,
+
+} sai_dtel_event_type_t;
+
+/**
+ * @brief DTel events attributes
+ */
+typedef enum _sai_dtel_event_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_DTEL_EVENT_ATTR_START,
+
+    /**
+     * @brief DTel event type
+     *
+     * @type sai_dtel_event_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_DTEL_EVENT_ATTR_TYPE = SAI_DTEL_EVENT_ATTR_START,
+
+    /**
+     * @brief DTel report session
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE
+     * @objects SAI_OBJECT_TYPE_DTEL_REPORT_SESSION
+     */
+    SAI_DTEL_EVENT_ATTR_REPORT_SESSION,
+
+    /**
+     * @brief DTel report DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE
+     */
+    SAI_DTEL_EVENT_ATTR_DSCP_VALUE,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_DTEL_EVENT_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_EVENT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_DTEL_EVENT_ATTR_CUSTOM_RANGE_END
+
+} sai_dtel_event_attr_t;
+~~~
+
+### SAI API
+~~~cpp
+typedef sai_status_t (*sai_create_dtel_fn)(
+        _Out_ sai_object_id_t *dtel_id,
+        _In_  uint32_t attr_count,
+        _In_  const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_remove_dtel_fn)(
+        _In_ sai_object_id_t dtel_id);
+
+typedef sai_status_t (*sai_get_dtel_attribute_fn)(
+        _In_    sai_object_id_t dtel_id,
+        _In_    uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_set_dtel_attribute_fn)(
+        _In_  sai_object_id_t dtel_id,
+        _In_  const sai_attribute_t *attr);
+
+typedef sai_status_t (*sai_create_dtel_queue_report_fn)(
+        _Out_ sai_object_id_t *dtel_queue_report_id,
+        _In_  uint32_t attr_count,
+        _In_  const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_remove_dtel_queue_report_fn)(
+        _In_ sai_object_id_t dtel_queue_report_id);
+
+typedef sai_status_t (*sai_get_dtel_queue_report_attribute_fn)(
+        _In_    sai_object_id_t dtel_queue_report_id,
+        _In_    uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_set_dtel_queue_report_attribute_fn)(
+        _In_  sai_object_id_t dtel_queue_report_id,
+        _In_  const sai_attribute_t *attr);
+
+typedef sai_status_t (*sai_create_dtel_int_session_fn)(
+        _Out_ sai_object_id_t *dtel_int_session_id,
+        _In_  uint32_t attr_count,
+        _In_  const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_remove_dtel_int_session_fn)(
+        _In_ sai_object_id_t dtel_int_session_id);
+
+typedef sai_status_t (*sai_get_dtel_int_session_attribute_fn)(
+        _In_    sai_object_id_t dtel_int_session_id,
+        _In_    uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_set_dtel_int_session_attribute_fn)(
+        _In_  sai_object_id_t dtel_int_session_id,
+        _In_  const sai_attribute_t *attr);
+
+typedef sai_status_t (*sai_create_dtel_report_session_fn)(
+        _Out_ sai_object_id_t *dtel_report_session_id,
+        _In_  uint32_t attr_count,
+        _In_  const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_remove_dtel_report_session_fn)(
+        _In_ sai_object_id_t dtel_report_session_id);
+
+typedef sai_status_t (*sai_get_dtel_report_session_attribute_fn)(
+        _In_    sai_object_id_t dtel_report_session_id,
+        _In_    uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_set_dtel_report_session_attribute_fn)(
+        _In_  sai_object_id_t dtel_report_session_id,
+        _In_  const sai_attribute_t *attr);
+
+typedef sai_status_t (*sai_create_dtel_event_fn)(
+        _Out_ sai_object_id_t *dtel_event_id,
+        _In_  uint32_t attr_count,
+        _In_  const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_remove_dtel_event_fn)(
+        _In_ sai_object_id_t dtel_event_id);
+
+typedef sai_status_t (*sai_get_dtel_event_attribute_fn)(
+        _In_    sai_object_id_t dtel_event_id,
+        _In_    uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_set_dtel_event_attribute_fn)(
+        _In_  sai_object_id_t dtel_event_id,
+        _In_  const sai_attribute_t *attr);
+
+typedef struct _sai_dtel_api_t
+{
+    sai_create_dtel_fn                        create_dtel;
+    sai_remove_dtel_fn                        remove_dtel;
+    sai_get_dtel_attribute_fn                 get_dtel_attribute;
+    sai_set_dtel_attribute_fn                 set_dtel_attribute;
+
+    sai_create_dtel_queue_report_fn           create_dtel_queue_report;
+    sai_remove_dtel_queue_report_fn           remove_dtel_queue_report;
+    sai_get_dtel_queue_report_attribute_fn    get_dtel_queue_report_attribute;
+    sai_set_dtel_queue_report_attribute_fn    set_dtel_queue_report_attribute;
+
+    sai_create_dtel_int_session_fn            create_dtel_int_session;
+    sai_remove_dtel_int_session_fn            remove_dtel_int_session;
+    sai_get_dtel_int_session_attribute_fn     get_dtel_int_session_attribute;
+    sai_set_dtel_int_session_attribute_fn     set_dtel_int_session_attribute;
+
+    sai_create_dtel_report_session_fn         create_dtel_report_session;
+    sai_remove_dtel_report_session_fn         remove_dtel_report_session;
+    sai_get_dtel_report_session_attribute_fn  get_dtel_report_session_attribute;
+    sai_set_dtel_report_session_attribute_fn  set_dtel_report_session_attribute;
+
+    sai_create_dtel_event_fn                  create_dtel_event;
+    sai_remove_dtel_event_fn                  remove_dtel_event;
+    sai_get_dtel_event_attribute_fn           get_dtel_event_attribute;
+    sai_set_dtel_event_attribute_fn           set_dtel_event_attribute;
+
+} sai_dtel_api_t;
 ~~~
 
 ## Changes to `saiacl.h` for experimental extensions
@@ -383,452 +822,39 @@ typedef enum _sai_acl_entry_experimental_attr_t
 } sai_acl_entry_experimental_attr_t;
 ~~~
 
-## New header file `experimental/saidtel.h`
-
-### Data Structures and Enumerations
-
-~~~cpp
-/**
- * ...
- * @file        saidtel.h
- * @brief       This module defines SAI data plane telemetry interface
- * @description Supported by: Barefoot Networks, Inc. 
- * @warning     This module is a SAI experimental module. 
- */
-
-/**
- * @brief Queue report trigger attributes
- */
-typedef enum _sai_dtel_queue_report_attr_t
-{
-    /**
-     * @brief Start of attributes
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_START,
-
-    /**
-     * @brief Queue object ID
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_QUEUE
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_QUEUE_ID = SAI_DTEL_QUEUE_REPORT_ATTR_START,
-
-    /**
-     * @brief Queue depth threshold in byte
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_DEPTH_THRESHOLD,
-
-    /**
-     * @brief Queue latency threshold in nanosecond
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_LATENCY_THRESHOLD,
-
-    /**
-     * @brief Maximum number of continuous reports after threshold breach
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 1000
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_BREACH_QUOTA,
-
-    /**
-     * @brief Send report for packets dropped by the queue
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_TAIL_DROP,
-
-    /**
-     * @brief End of attributes
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_END,
-
-    /**
-     * @brief Custom range base value start
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_CUSTOM_RANGE_END
-
-} sai_dtel_queue_report_attr_t;
-
-/**
- * @brief INT session attributes
- */
-typedef enum _sai_dtel_int_session_attr_t
-{
-    /**
-     * @brief Start of attributes
-     */
-    SAI_DTEL_INT_SESSION_ATTR_START = SAI_DTEL_INT_SESSION_ATTR_START,
- 
-    /**
-     * @brief INT max hop count
-     *
-     * The maximum number of hops that are allowed to
-     * add their metadata to the packet
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 8
-     */
-    SAI_DTEL_INT_SESSION_ATTR_MAX_HOP_COUNT,
-
-    /**
-     * @brief Collect switch ID
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_DTEL_INT_SESSION_ATTR_COLLECT_SWITCH_ID,
-
-    /**
-     * @brief Collect ingress and egress ports
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_DTEL_INT_SESSION_ATTR_COLLECT_SWITCH_PORTS,
-
-    /**
-     * @brief Collect ingress timestamp
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_DTEL_INT_SESSION_ATTR_COLLECT_INGRESS_TIMESTAMP,
-
-    /**
-     * @brief Collect egress timestamp
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_DTEL_INT_SESSION_ATTR_COLLECT_EGRESS_TIMESTAMP,
-
-    /**
-     * @brief Collect queue information
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_DTEL_INT_SESSION_ATTR_COLLECT_QUEUE_INFO
-
-    /**
-     * @brief End of attributes
-     */
-    SAI_DTEL_INT_SESSION_ATTR_END,
-  
-    /**
-     * @brief Custom range base value start
-     */
-    SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_END
- 
-} sai_dtel_int_session_attr_t;
-
-/**
- * @brief Telemetry report session attributes
- */
-typedef enum _sai_dtel_report_session_attr_t
-{
-    /**
-     * @brief Start of attributes
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_START,
- 
-    /**
-     * @brief Telemetry report source IP address
-     *
-     * @type sai_ip_address_t
-     * @flags CREATE_AND_SET
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_SRC_IP = SAI_DTEL_REPORT_SESSION_ATTR_START,
-
-    /**
-     * @brief Telemetry report destination IP addresses
-     *
-     * @type sai_ip_address_list_t
-     * @flags CREATE_AND_SET
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_DST_IP_LIST,
-
-    /**
-     * @brief Telemetry report virtual router ID
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_VIRTUAL_ROUTER_ID,
-
-    /**
-     * @brief Telemetry report truncate size
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_TRUNCATE_SIZE,
-
-    /**
-     * @brief Telemetry report UDP destination port
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_UDP_DST_PORT,
-
-    /**
-     * @brief End of attributes
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_END,
-
-    /**
-     * @brief Custom range base value start
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_CUSTOM_RANGE_END
-
-} sai_dtel_report_session_attr_t;
-
-/**
- * @brief Enum defining DTel event types.
- */
-typedef enum _sai_dtel_event_type_t
-{
-    /** Report triggered by new flow or flow state (e.g., path, latency) change */
-    SAI_DTEL_EVENT_TYPE_FLOW_STATE,
-
-    /** Report triggered by REPORT_ALL_PACKETS in watchlist entry action */
-    SAI_DTEL_EVENT_TYPE_FLOW_REPORT_ALL_PACKETS,
-
-    /** Report triggered by TCP FLAGS */
-    SAI_DTEL_EVENT_TYPE_FLOW_TCPFLAG,    
-
-    /** Report triggered by queue depth or latency threshold breach */
-    SAI_DTEL_EVENT_TYPE_QUEUE_REPORT_THRESHOLD_BREACH,   
-
-    /** Report triggered by queue tail drop */
-    SAI_DTEL_EVENT_TYPE_QUEUE_REPORT_TAIL_DROP,         
-
-    /** Report triggered by packet drop */
-    SAI_DTEL_EVENT_TYPE_DROP_REPORT,
-
-} sai_dtel_event_type_t;
-
-/**
- * @brief DTel events attributes
- */
-typedef enum _sai_dtel_event_attr_t
-{
-    /**
-     * @brief Start of attributes
-     */
-    SAI_DTEL_EVENT_ATTR_START,
-
-    /**
-     * @brief DTel event type
-     *
-     * @type sai_dtel_event_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_DTEL_EVENT_ATTR_TYPE = SAI_DTEL_EVENT_ATTR_START,
-
-    /**
-     * @brief DTel report session
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE
-     * @objects SAI_OBJECT_TYPE_DTEL_REPORT_SESSION
-     */
-    SAI_DTEL_EVENT_ATTR_REPORT_SESSION,
-
-    /**
-     * @brief DTel report DSCP value
-     *
-     * @type sai_uint8_t
-     * @flags MANDATORY_ON_CREATE
-     */
-    SAI_DTEL_EVENT_ATTR_DSCP_VALUE,
-
-    /**
-     * @brief End of attributes
-     */
-    SAI_DTEL_EVENT_ATTR_END,
-
-    /**
-     * @brief Custom range base value start
-     */
-    SAI_DTEL_EVENT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_DTEL_EVENT_ATTR_CUSTOM_RANGE_END
-
-} sai_dtel_event_attr_t;
-~~~
-
-### SAI API
-~~~cpp
-typedef sai_status_t (*sai_create_dtel_queue_report_fn)(
-        _Out_ sai_object_id_t *dtel_queue_report_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_remove_dtel_queue_report_fn)(
-        _In_ sai_object_id_t dtel_queue_report_id);
-
-typedef sai_status_t (*sai_get_dtel_queue_report_attribute_fn)(
-        _In_    sai_object_id_t dtel_queue_report_id,
-        _In_    uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_dtel_queue_report_attribute_fn)(
-        _In_  sai_object_id_t dtel_queue_report_id,
-        _In_  const sai_attribute_t *attr);
-
-typedef sai_status_t (*sai_create_dtel_int_session_fn)(
-        _Out_ sai_object_id_t *dtel_int_session_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_remove_dtel_int_session_fn)(
-        _In_ sai_object_id_t dtel_int_session_id);
-
-typedef sai_status_t (*sai_get_dtel_int_session_attribute_fn)(
-        _In_    sai_object_id_t dtel_int_session_id,
-        _In_    uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_dtel_int_session_attribute_fn)(
-        _In_  sai_object_id_t dtel_int_session_id,
-        _In_  const sai_attribute_t *attr);
-
-typedef sai_status_t (*sai_create_dtel_report_session_fn)(
-        _Out_ sai_object_id_t *dtel_report_session_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_remove_dtel_report_session_fn)(
-        _In_ sai_object_id_t dtel_report_session_id);
-
-typedef sai_status_t (*sai_get_dtel_report_session_attribute_fn)(
-        _In_    sai_object_id_t dtel_report_session_id,
-        _In_    uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_dtel_report_session_attribute_fn)(
-        _In_  sai_object_id_t dtel_report_session_id,
-        _In_  const sai_attribute_t *attr);
-
-typedef sai_status_t (*sai_create_dtel_event_fn)(
-        _Out_ sai_object_id_t *dtel_event_id,
-        _In_  uint32_t attr_count,
-        _In_  const sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_remove_dtel_event_fn)(
-        _In_ sai_object_id_t dtel_event_id);
-
-typedef sai_status_t (*sai_get_dtel_event_attribute_fn)(
-        _In_    sai_object_id_t dtel_event_id,
-        _In_    uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_dtel_event_attribute_fn)(
-        _In_  sai_object_id_t dtel_event_id,
-        _In_  const sai_attribute_t *attr);
-
-typedef struct _sai_dtel_api_t
-{
-    sai_create_dtel_report_session_fn         create_dtel_report_session;
-    sai_remove_dtel_report_session_fn         remove_dtel_report_session;
-    sai_get_dtel_report_session_attribute_fn  get_dtel_report_session_attribute;
-    sai_set_dtel_report_session_attribute_fn  set_dtel_report_session_attribute;
-
-    sai_create_dtel_queue_report_fn           create_dtel_queue_report;
-    sai_remove_dtel_queue_report_fn           remove_dtel_queue_report;
-    sai_get_dtel_queue_report_attribute_fn    get_dtel_queue_report_attribute;
-    sai_set_dtel_queue_report_attribute_fn    set_dtel_queue_report_attribute;
-
-    sai_create_dtel_int_session_fn            create_dtel_int_session;
-    sai_remove_dtel_int_session_fn            remove_dtel_int_session;
-    sai_get_dtel_int_session_attribute_fn     get_dtel_int_session_attribute;
-    sai_set_dtel_int_session_attribute_fn     set_dtel_int_session_attribute;
-
-    sai_create_dtel_event_fn                  create_dtel_event;
-    sai_remove_dtel_event_fn                  remove_dtel_event;
-    sai_get_dtel_event_attribute_fn           get_dtel_event_attribute;
-    sai_set_dtel_event_attribute_fn           set_dtel_event_attribute;
-
-} sai_dtel_api_t;
-~~~
-
 ## Example
 Example of configuring __INT Endpoint__ on a switch
 
 ~~~cpp
-sai_attribute_t attr
+// Create a DTel object
+sai_attribute_t dtel_attr[5];
+sai_object_id_t dtel_id;
 // Set globally unique switch ID
-attr.id = SAI_SWITCH_ATTR_DTEL_SWITCH_ID;
-attr.value.u32 = 0xfff222aa;
-sai_switch_api-> set_switch_attribute(0, &attr);
-
+dtel_attr[0].id = SAI_DTEL_ATTR_SWITCH_ID;
+dtel_attr[0].value.u32 = 0xfff222aa;
 // Enable DTel endpoint
-attr.id = SAI_SWITCH_ATTR_DTEL_INT_ENDPOINT_ENABLE;
-attr.value.booldata = true;
-sai_switch_api-> set_switch_attribute(0, &attr);
-
+dtel_attr[1].id = SAI_DTEL_ATTR_INT_ENDPOINT_ENABLE;
+dtel_attr[1].value.booldata = true;
 // Set DSCP value for INT over L4
-attr.id = SAI_SWITCH_ATTR_DTEL_INT_L4_DSCP;
-attr.value.ternaryfield.value = 0x17;
-attr.value.ternaryfield.mask = 0x3f;
-sai_switch_api-> set_switch_attribute(0, &attr);
-
+dtel_attr[2].id = SAI_DTEL_ATTR_INT_L4_DSCP;
+dtel_attr[2].value.ternaryfield.value = 0x17;
+dtel_attr[2].value.ternaryfield.mask = 0x3f;
 // Set DTel sink ports
-attr.id = = SAI_SWITCH_ATTR_DTEL_SINK_PORT_LIST;
+dtel_attr[3].id = = SAI_DTEL_ATTR_SINK_PORT_LIST;
 sai_object_id_t sink_port_list[4];
 sink_port_list[0] = port1_oid;
 sink_port_list[1] = port2_oid;
 sink_port_list[2] = port3_oid;
 sink_port_list[3] = port4_oid;
-attr.value.objlist.count = 4;
-attr.value.objlist.list = sink_port_list;
-sai_switch_api-> set_switch_attribute(0, &attr);
-
+dtel_attr[3].value.objlist.count = 4;
+dtel_attr[3].value.objlist.list = sink_port_list;
 // Set flow-based report trigger - sensitivity to latency change
-attr.id = SAI_SWITCH_ATTR_DTEL_LATENCY_SENSITIVITY;
-attr.value.u16 = 15;
-sai_switch_api-> set_switch_attribute(0, &attr);
-
+dtel_attr[4].id = SAI_DTEL_ATTR_LATENCY_SENSITIVITY;
+dtel_attr[4].value.u16 = 15;
 // Set flow-based report trigger - flow state clear cycle
-attr.id = SAI_SWITCH_ATTR_DTEL_FLOW_STATE_CLEAR_CYCLE;
-attr.value.u16 = 1;
-sai_switch_api-> set_switch_attribute(0, &attr);
+dtel_attr[5].id = SAI_DTEL_ATTR_FLOW_STATE_CLEAR_CYCLE;
+dtel_attr[5].value.u16 = 1;
+sai_switch_api->create_dtel(&dtel_id, 6, dtel_attr);
 
 // Create a DTel report session
 sai_attribute_t report_session_attr[5];

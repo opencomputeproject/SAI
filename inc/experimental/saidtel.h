@@ -28,6 +28,113 @@
 #define __SAIDTEL_H_
 
 #include <saitypes.h>
+
+/**
+ * @brief DTel attributes
+ *
+ * Only one DTel object per switch can be created.
+ */
+typedef enum _sai_dtel_attr_t
+{
+    /**
+     * @brief DTel INT endpoint
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_ATTR_INT_ENDPOINT_ENABLE,
+
+    /**
+     * @brief DTel INT transit
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_ATTR_INT_TRANSIT_ENABLE,
+
+    /**
+     * @brief Packet postcard
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_ATTR_POSTCARD_ENABLE,
+
+    /**
+     * @brief Drop Report
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_ATTR_DROP_REPORT_ENABLE,
+
+    /**
+     * @brief Queue Report
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_DTEL_ATTR_QUEUE_REPORT_ENABLE,
+
+    /**
+     * @brief Globally unique switch ID
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_DTEL_ATTR_SWITCH_ID,
+
+    /**
+     * @brief DTel flow state clear cycle
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_DTEL_ATTR_FLOW_STATE_CLEAR_CYCLE,
+
+    /**
+     * @brief Latency sensitivity for flow state change detection
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_DTEL_ATTR_LATENCY_SENSITIVITY,
+
+    /**
+     * @brief DTel sink ports
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
+     */
+    SAI_DTEL_ATTR_SINK_PORT_LIST,
+
+    /**
+     * @brief Reserved DSCP value for INT over L4
+     *
+     * @type sai_ternary_field_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_DTEL_ATTR_INT_L4_DSCP,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_DTEL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_DTEL_ATTR_CUSTOM_RANGE_END
+
+} sai_dtel_attr_t;
+
 /**
  * @brief Queue report trigger attributes
  */
@@ -331,6 +438,23 @@ typedef enum _sai_dtel_event_attr_t
 
 } sai_dtel_event_attr_t;
 
+typedef sai_status_t (*sai_create_dtel_fn)(
+        _Out_ sai_object_id_t *dtel_id,
+        _In_  uint32_t attr_count,
+        _In_  const sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_remove_dtel_fn)(
+        _In_ sai_object_id_t dtel_id);
+
+typedef sai_status_t (*sai_get_dtel_attribute_fn)(
+        _In_    sai_object_id_t dtel_id,
+        _In_    uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+typedef sai_status_t (*sai_set_dtel_attribute_fn)(
+        _In_  sai_object_id_t dtel_id,
+        _In_  const sai_attribute_t *attr);
+
 typedef sai_status_t (*sai_create_dtel_queue_report_fn)(
         _Out_ sai_object_id_t *dtel_queue_report_id,
         _In_ sai_object_id_t switch_id,
@@ -405,6 +529,11 @@ typedef sai_status_t (*sai_set_dtel_event_attribute_fn)(
 
 typedef struct _sai_dtel_api_t
 {
+    sai_create_dtel_fn                        create_dtel;
+    sai_remove_dtel_fn                        remove_dtel;
+    sai_get_dtel_attribute_fn                 get_dtel_attribute;
+    sai_set_dtel_attribute_fn                 set_dtel_attribute;
+
     sai_create_dtel_queue_report_fn           create_dtel_queue_report;
     sai_remove_dtel_queue_report_fn           remove_dtel_queue_report;
     sai_set_dtel_queue_report_attribute_fn    set_dtel_queue_report_attribute;
