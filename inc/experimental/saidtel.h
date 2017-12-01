@@ -446,14 +446,14 @@ typedef sai_status_t (*sai_create_dtel_fn)(
 typedef sai_status_t (*sai_remove_dtel_fn)(
         _In_ sai_object_id_t dtel_id);
 
+typedef sai_status_t (*sai_set_dtel_attribute_fn)(
+        _In_  sai_object_id_t dtel_id,
+        _In_  const sai_attribute_t *attr);
+
 typedef sai_status_t (*sai_get_dtel_attribute_fn)(
         _In_    sai_object_id_t dtel_id,
         _In_    uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_dtel_attribute_fn)(
-        _In_  sai_object_id_t dtel_id,
-        _In_  const sai_attribute_t *attr);
 
 typedef sai_status_t (*sai_create_dtel_queue_report_fn)(
         _Out_ sai_object_id_t *dtel_queue_report_id,
@@ -464,14 +464,14 @@ typedef sai_status_t (*sai_create_dtel_queue_report_fn)(
 typedef sai_status_t (*sai_remove_dtel_queue_report_fn)(
         _In_ sai_object_id_t dtel_queue_report_id);
 
+typedef sai_status_t (*sai_set_dtel_queue_report_attribute_fn)(
+        _In_ sai_object_id_t dtel_queue_report_id,
+        _In_ const sai_attribute_t *attr);
+
 typedef sai_status_t (*sai_get_dtel_queue_report_attribute_fn)(
         _In_ sai_object_id_t dtel_queue_report_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_dtel_queue_report_attribute_fn)(
-        _In_ sai_object_id_t dtel_queue_report_id,
-        _In_ const sai_attribute_t *attr);
 
 typedef sai_status_t (*sai_create_dtel_int_session_fn)(
         _Out_ sai_object_id_t *dtel_int_session_id,
@@ -482,14 +482,14 @@ typedef sai_status_t (*sai_create_dtel_int_session_fn)(
 typedef sai_status_t (*sai_remove_dtel_int_session_fn)(
         _In_ sai_object_id_t dtel_int_session_id);
 
+typedef sai_status_t (*sai_set_dtel_int_session_attribute_fn)(
+        _In_ sai_object_id_t dtel_int_session_id,
+        _In_ const sai_attribute_t *attr);
+
 typedef sai_status_t (*sai_get_dtel_int_session_attribute_fn)(
         _In_ sai_object_id_t dtel_int_session_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_dtel_int_session_attribute_fn)(
-        _In_ sai_object_id_t dtel_int_session_id,
-        _In_ const sai_attribute_t *attr);
 
 typedef sai_status_t (*sai_create_dtel_report_session_fn)(
         _Out_ sai_object_id_t *dtel_report_session_id,
@@ -500,14 +500,14 @@ typedef sai_status_t (*sai_create_dtel_report_session_fn)(
 typedef sai_status_t (*sai_remove_dtel_report_session_fn)(
         _In_ sai_object_id_t dtel_report_session_id);
 
+typedef sai_status_t (*sai_set_dtel_report_session_attribute_fn)(
+        _In_ sai_object_id_t dtel_report_session_id,
+        _In_ const sai_attribute_t *attr);
+
 typedef sai_status_t (*sai_get_dtel_report_session_attribute_fn)(
         _In_ sai_object_id_t dtel_report_session_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
-
-typedef sai_status_t (*sai_set_dtel_report_session_attribute_fn)(
-        _In_ sai_object_id_t dtel_report_session_id,
-        _In_ const sai_attribute_t *attr);
 
 typedef sai_status_t (*sai_create_dtel_event_fn)(
         _Out_ sai_object_id_t *dtel_event_id,
@@ -518,21 +518,21 @@ typedef sai_status_t (*sai_create_dtel_event_fn)(
 typedef sai_status_t (*sai_remove_dtel_event_fn)(
         _In_ sai_object_id_t dtel_event_id);
 
+typedef sai_status_t (*sai_set_dtel_event_attribute_fn)(
+        _In_ sai_object_id_t dtel_event_id,
+        _In_ const sai_attribute_t *attr);
+
 typedef sai_status_t (*sai_get_dtel_event_attribute_fn)(
         _In_ sai_object_id_t dtel_event_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
-typedef sai_status_t (*sai_set_dtel_event_attribute_fn)(
-        _In_ sai_object_id_t dtel_event_id,
-        _In_ const sai_attribute_t *attr);
-
 typedef struct _sai_dtel_api_t
 {
     sai_create_dtel_fn                        create_dtel;
     sai_remove_dtel_fn                        remove_dtel;
-    sai_get_dtel_attribute_fn                 get_dtel_attribute;
     sai_set_dtel_attribute_fn                 set_dtel_attribute;
+    sai_get_dtel_attribute_fn                 get_dtel_attribute;
 
     sai_create_dtel_queue_report_fn           create_dtel_queue_report;
     sai_remove_dtel_queue_report_fn           remove_dtel_queue_report;
