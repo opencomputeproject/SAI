@@ -349,11 +349,6 @@ typedef enum _sai_attr_value_type_t
      */
     SAI_ATTR_VALUE_TYPE_IP_ADDR_LIST,
 
-    /**
-     * @brief Attribute value is ternary field.
-     */
-    SAI_ATTR_VALUE_TYPE_TERNARY_FIELD,
-
 } sai_attr_value_type_t;
 
 /**

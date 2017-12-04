@@ -238,13 +238,12 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_INSEG_ENTRY              = 67,
     SAI_OBJECT_TYPE_TAM_HISTOGRAM            = 68,
     SAI_OBJECT_TYPE_TAM_MICROBURST           = 69,
-    SAI_OBJECT_TYPE_MAX                      = 70,
-    /* Start of experimental object types */
-    SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT        = SAI_OBJECT_TYPE_MAX,
-    SAI_OBJECT_TYPE_DTEL_INT_SESSION         = SAI_OBJECT_TYPE_MAX + 1,
-    SAI_OBJECT_TYPE_DTEL_REPORT_SESSION      = SAI_OBJECT_TYPE_MAX + 2,
-    SAI_OBJECT_TYPE_DTEL_EVENT               = SAI_OBJECT_TYPE_MAX + 3,
-    SAI_OBJECT_TYPE_EXPERIMENTAL_MAX         = SAI_OBJECT_TYPE_MAX + 4,
+    SAI_OBJECT_TYPE_DTEL                     = 70,
+    SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT        = 71,
+    SAI_OBJECT_TYPE_DTEL_INT_SESSION         = 72,
+    SAI_OBJECT_TYPE_DTEL_REPORT_SESSION      = 73,
+    SAI_OBJECT_TYPE_DTEL_EVENT               = 74,
+    SAI_OBJECT_TYPE_MAX                      = 75,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -688,19 +687,6 @@ typedef struct _sai_segment_list_t
     sai_ip6_t *list;
 } sai_segment_list_t;
 
-typedef struct _sai_ternary_field_t {
-    union {
-        sai_uint8_t u8;
-        sai_uint16_t u16;
-        sai_uint32_t u32;
-    } value;
-    union {
-        sai_uint8_t u8;
-        sai_uint16_t u16;
-        sai_uint32_t u32;
-    } mask;
-} sai_ternary_field_t;
-
 /**
  * @brief Data Type
  *
@@ -744,7 +730,6 @@ typedef union _sai_attribute_value_t
     sai_tlv_list_t tlvlist;
     sai_segment_list_t segmentlist;
     sai_ip_address_list_t ipaddrlist;
-    sai_ternary_field_t ternaryfield;
 
 } sai_attribute_value_t;
 

@@ -118,7 +118,7 @@ typedef enum _sai_dtel_attr_t
     /**
      * @brief Reserved DSCP value for INT over L4
      *
-     * @type sai_ternary_field_t
+     * @type sai_acl_field_data_t
      * @flags CREATE_AND_SET
      */
     SAI_DTEL_ATTR_INT_L4_DSCP,

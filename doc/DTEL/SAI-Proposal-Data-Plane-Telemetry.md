@@ -23,7 +23,7 @@ __Figure 1: Data plane telemetry workflow__
 
 Figure 1 describes the data plane telemetry (DTel) functionality at a high level. The DTel module inspects every data packet without interfering with other packet-processing logic in the switch data plane. Not all the components shown in the figure above may be located in each DTel-capable switch. For example, the watchlist component can be in one switch, and the event detection and telemetry report components can be located in another switch. A telemetry watchlist table specifies the flows to monitor. It performs ternary match on the packet headers and switch ports, and provides telemetry action parameters. Watchlist can be realized through SAI ACL, with a few new fields and actions added to ACL table and entry attributes. Packets that match the watchlist entries with telemetry actions will be processed by the event detection logic. If a triggering event is detected, the switch will generate a telemetry report to the monitor. The report message includes packet header and switch metadata associated with the packet (e.g., timestamp, ingress/egress ports, queue depth/latency).
 
-As shown in Figure 1, data plane telemetry can track three classes of events: flow events, packet drop events, and queue congestion events. Sections below introduce data plane telemetry capabilities for different types of events monitoring: 
+As shown in Figure 1, data plane telemetry can track three classes of events: flow events, packet drop events, and queue congestion events. Sections below introduce data plane telemetry capabilities for different types of events monitoring:
 
 * __In-band Telemetry__ and __Packet Postcards__ to track flow events.
 * __Drop Report__ to track packet drops.
@@ -32,7 +32,7 @@ As shown in Figure 1, data plane telemetry can track three classes of events: fl
 ## Flow Report
 DTel tracks flow events through different data plane mechanisms, including In-band Telemetry (e.g., INT, iOAM) and Packet Postcard, which are described below.
 
-### In-band Telemetry 
+### In-band Telemetry
 
 ![INT](figures/INT.png "Figure 2: In-band Network Telemetry")
 
@@ -63,14 +63,14 @@ Figure 4 depicts the Drop Report capability. Switches send packets that are drop
 
 __Figure 5: Queue Report__
 
-Figure 5 shows the queue reports functionality. Switches can be configured to report packets that experience congestion or buffer tail drops at specified queues. Congestion is detected by queue depth or latency thresholds, which are configured separately for each individual queue. 
+Figure 5 shows the queue reports functionality. Switches can be configured to report packets that experience congestion or buffer tail drops at specified queues. Congestion is detected by queue depth or latency thresholds, which are configured separately for each individual queue.
 
 DTel Queue Report is complementary to TAM snapshot. While TAM snapshot reports queue statistics data in bulk on threshold breach, DTel Queue Report can send reports for every packet on congestion start, so that the network monitor can have per-packet full visibility on how the queue is built up.
 
 
 # Specification
 
-This section describes the data plane telemetry API proposal. 
+This section describes the data plane telemetry API proposal.
 
 ## New header file `experimental/saidtel.h`
 
@@ -81,8 +81,8 @@ This section describes the data plane telemetry API proposal.
  * ...
  * @file        saidtel.h
  * @brief       This module defines SAI data plane telemetry interface
- * @description Supported by: Barefoot Networks, Inc. 
- * @warning     This module is a SAI experimental module. 
+ * @description Supported by: Barefoot Networks, Inc.
+ * @warning     This module is a SAI experimental module.
  */
 
 /**
@@ -109,7 +109,7 @@ typedef enum _sai_dtel_attr_t
      * @default false
      */
     SAI_DTEL_ATTR_INT_TRANSIT_ENABLE,
-    
+
     /**
      * @brief Packet postcard
      *
@@ -174,7 +174,7 @@ typedef enum _sai_dtel_attr_t
     /**
      * @brief Reserved DSCP value for INT over L4
      *
-     * @type sai_ternary_field_t
+     * @type sai_acl_field_data_t
      * @flags CREATE_AND_SET
      */
     SAI_DTEL_ATTR_INT_L4_DSCP,
@@ -270,7 +270,7 @@ typedef enum _sai_dtel_int_session_attr_t
      * @brief Start of attributes
      */
     SAI_DTEL_INT_SESSION_ATTR_START = SAI_DTEL_INT_SESSION_ATTR_START,
- 
+
     /**
      * @brief INT max hop count
      *
@@ -332,7 +332,7 @@ typedef enum _sai_dtel_int_session_attr_t
      * @brief End of attributes
      */
     SAI_DTEL_INT_SESSION_ATTR_END,
-  
+
     /**
      * @brief Custom range base value start
      */
@@ -342,7 +342,7 @@ typedef enum _sai_dtel_int_session_attr_t
      * @brief End of Custom range base
      */
     SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_END
- 
+
 } sai_dtel_int_session_attr_t;
 
 /**
@@ -354,7 +354,7 @@ typedef enum _sai_dtel_report_session_attr_t
      * @brief Start of attributes
      */
     SAI_DTEL_REPORT_SESSION_ATTR_START,
- 
+
     /**
      * @brief Telemetry report source IP address
      *
@@ -621,7 +621,7 @@ typedef enum _sai_acl_action_type_t
 {
     /** Custom range base value start */
     SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_START = 0x10000000,
-    
+
     /** End of Custom range base */
     SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_END
 }
@@ -654,7 +654,7 @@ typedef enum _sai_acl_action_experimental_type_t
 {
     /** Start of experimental types */
     SAI_ACL_ACTION_TYPE_EXPERIMENTAL_START = SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_END + 1,
-    
+
     /** DTel flow operation */
     SAI_ACL_ACTION_TYPE_DTEL_FLOW_OP,
 
@@ -732,7 +732,7 @@ typedef enum _sai_acl_entry_experimental_attr_t
      * @brief Start of experimental attributes
      */
     SAI_ACL_ENTRY_ATTR_EXPERIMENTAL_START = SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_END + 1,
-    
+
     /**
      * @brief Tunnel VNI
      *
