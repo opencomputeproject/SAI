@@ -575,7 +575,7 @@ typedef enum _sai_tunnel_attr_t
      * @brief Tunnel TTL mode (pipe or uniform model)
      *
      * @type sai_tunnel_ttl_mode_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
      * @default SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL
      */
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
@@ -584,7 +584,7 @@ typedef enum _sai_tunnel_attr_t
      * @brief Tunnel DSCP mode (pipe or uniform model)
      *
      * @type sai_tunnel_dscp_mode_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
      * @default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
      */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
