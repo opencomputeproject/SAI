@@ -65,6 +65,8 @@
 #include "saivlan.h"
 #include "saiwred.h"
 #include "saiuburst.h"
+#include "experimental/dtel.h"
+#include "experimental/saiaclextensions.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
