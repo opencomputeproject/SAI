@@ -411,8 +411,13 @@ typedef sai_status_t (*sai_clear_queue_stats_fn)(
  *
  * @param[in] count Number of notifications
  * @param[in] data Array of queue event types
+ *
+ * @return TRUE to indicate that the application will do further 
+ * monitoring and deadlock recovery processing and FALSE to indicate
+ * that application does not manage the recovery process and SAI/SDK 
+ * will continue to manage the deadlock recovery process.
  */
-typedef void (*sai_queue_pfc_deadlock_notification_fn)(
+typedef bool (*sai_queue_pfc_deadlock_notification_fn)(
         _In_ uint32_t count,
         _In_ sai_queue_deadlock_notification_data_t *data);
 
