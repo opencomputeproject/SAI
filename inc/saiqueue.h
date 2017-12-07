@@ -325,7 +325,7 @@ typedef struct _sai_queue_deadlock_notification_data_t
      * else SAI adapter or SDK will manage deadlock recovery
      * and also generate recovery ended notification.
      */
-    bool *app_managed_recovery;
+    bool app_managed_recovery;
 
 } sai_queue_deadlock_notification_data_t;
 
