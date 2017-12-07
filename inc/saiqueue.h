@@ -318,7 +318,8 @@ typedef struct _sai_queue_deadlock_notification_data_t
     /** Deadlock event */
     sai_queue_pfc_deadlock_event_type_t event;
 
-    /** @brief Application based recovery management indicator.
+    /**
+     * @brief Application based recovery management indicator.
      *
      * This is a return value from host adapter.
      * If set to TRUE then host application will manage deadlock recovery
