@@ -423,6 +423,7 @@ typedef struct _sai_acl_action_data_t
         sai_ip6_t ip6;
         sai_object_id_t oid;
         sai_object_list_t objlist;
+        sai_ip_address_t ipaddr;
     } parameter;
 
 } sai_acl_action_data_t;
