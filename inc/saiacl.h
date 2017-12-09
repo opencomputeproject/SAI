@@ -653,6 +653,24 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_L4_DST_PORT,
 
     /**
+     * @brief Inner L4 Src Port
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_L4_SRC_PORT,
+
+    /**
+     * @brief Inner L4 Dst Port
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_L4_DST_PORT,
+
+    /**
      * @brief EtherType
      *
      * @type bool
@@ -662,6 +680,15 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ETHER_TYPE,
 
     /**
+     * @brief Inner EtherType
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_ETHER_TYPE,
+
+    /**
      * @brief IP Protocol
      *
      * @type bool
@@ -669,6 +696,15 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL,
+
+    /**
+     * @brief Inner IP Protocol
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_IP_PROTOCOL,
 
     /**
      * @brief IP Identification
@@ -795,6 +831,15 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_PACKET_VLAN,
+
+    /**
+     * @brief Tunnel VNI
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_VNI,
 
     /* User Based metadata [bool] */
 
@@ -1238,6 +1283,26 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
 
     /**
+     * @brief Inner L4 Src Port
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_L4_SRC_PORT,
+
+    /**
+     * @brief Inner L4 Dst Port
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_L4_DST_PORT,
+
+    /**
      * @brief EtherType
      *
      * @type sai_acl_field_data_t sai_uint16_t
@@ -1248,6 +1313,16 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ETHER_TYPE,
 
     /**
+     * @brief Inner EtherType
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_ETHER_TYPE,
+
+    /**
      * @brief IP Protocol
      *
      * @type sai_acl_field_data_t sai_uint8_t
@@ -1255,6 +1330,15 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL,
+
+    /**
+     * @brief Inner IP Protocol
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_IP_PROTOCOL,
 
     /**
      * @brief IP Identification
@@ -1382,6 +1466,15 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_PACKET_VLAN,
+
+    /**
+     * @brief Tunnel VNI
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_VNI,
 
     /* User Based metadata */
 
