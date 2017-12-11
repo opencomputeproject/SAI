@@ -1048,7 +1048,7 @@ void test_serialize_notifications()
     memset(&data2, 0, sizeof(data2));
 
     res = sai_serialize_queue_pfc_deadlock_notification(buf, 1, &data2);
-    ret = "{\"count\":1,\"data\":[{\"queue_id\":\"oid:0x0\",\"event\":\"SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_DETECTED\"}],\"app_managed_recovery\":false}";
+    ret = "{\"count\":1,\"data\":[{\"queue_id\":\"oid:0x0\",\"event\":\"SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_DETECTED\",\"app_managed_recovery\":false}}]";
     ASSERT_STR_EQ(buf, ret, res);
 
     res = sai_serialize_switch_shutdown_request_notification(buf, switch_id);
