@@ -531,7 +531,7 @@ typedef sai_status_t (*sai_clear_bfd_session_stats_fn)(
  * @count data[count]
  *
  * @param[in] count Number of notifications
- * @param[in] data Array of bfd session state
+ * @param[in] data Array of BFD session state
  */
 typedef void (*sai_bfd_session_state_change_notification_fn)(
         _In_ uint32_t count,
