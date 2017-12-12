@@ -545,6 +545,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
+        case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
 
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
@@ -558,6 +559,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
 
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16:
@@ -750,6 +752,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID:
 
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16:
@@ -801,6 +804,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
+        case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
@@ -976,6 +980,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_TLV_LIST:
                 case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
                 case SAI_ATTR_VALUE_TYPE_MAP_LIST:
+                case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
                     break;
 
                 default:
@@ -1661,6 +1666,11 @@ void check_attr_acl_fields(
                 break;
             }
 
+            if (md->objecttype == SAI_OBJECT_TYPE_DTEL)
+            {
+                break;
+            }
+
             META_MD_ASSERT_FAIL(md, "acl field may only be set on acl field and udf match");
 
             break;
@@ -1723,6 +1733,7 @@ void check_attr_acl_fields(
         {
             switch (md->attrvaluetype)
             {
+                case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16:
@@ -2167,10 +2178,10 @@ void check_attr_existing_objects(
             break;
 
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
-            
+
             /*
              * Allow qos maps list to enable editing qos map values.
-             * Since on switch initialization there are no qos map objects (all switch qos 
+             * Since on switch initialization there are no qos map objects (all switch qos
              * maps attribs are null) this shouldn't be a problem
              */
             break;
@@ -2266,6 +2277,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
+        case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
 
             if (md->isprimitive)
             {
@@ -2274,6 +2286,7 @@ void check_attr_is_primitive(
 
             break;
 
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT16:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT32:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
@@ -3816,7 +3829,10 @@ void check_object_ro_list(
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
             oi->objecttype == SAI_OBJECT_TYPE_SWITCH ||
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY ||
-            oi->objecttype == SAI_OBJECT_TYPE_TAM_HISTOGRAM)
+            oi->objecttype == SAI_OBJECT_TYPE_TAM_HISTOGRAM ||
+            oi->objecttype == SAI_OBJECT_TYPE_DTEL ||
+            oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
+            oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can
