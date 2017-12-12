@@ -1666,7 +1666,9 @@ void check_attr_acl_fields(
                 break;
             }
 
-            if (md->objecttype == SAI_OBJECT_TYPE_DTEL)
+            if (md->objecttype == SAI_OBJECT_TYPE_DTEL &&
+                    md->attrid == SAI_DTEL_ATTR_INT_L4_DSCP &&
+                    md->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8)
             {
                 break;
             }
