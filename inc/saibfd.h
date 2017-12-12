@@ -43,10 +43,10 @@ typedef enum _sai_bfd_session_type_t
     /** Demand Passive Mode */
     SAI_BFD_SESSION_TYPE_DEMAND_PASSIVE,
 
-    /** Asyncronous Active Mode */
+    /** Asynchronous Active Mode */
     SAI_BFD_SESSION_TYPE_ASYNC_ACTIVE,
 
-    /** Asyncronous Passive Mode */
+    /** Asynchronous Passive Mode */
     SAI_BFD_SESSION_TYPE_ASYNC_PASSIVE,
 
 } sai_bfd_session_type_t;
@@ -57,12 +57,12 @@ typedef enum _sai_bfd_session_type_t
 typedef enum _sai_bfd_encapsulation_type_t
 {
     /**
-     * @brief IPinIP Encapsulation | L2 Ethernet header | IP header | Inner IP header | Original bfd packet
+     * @brief IP in IP Encapsulation | L2 Ethernet header | IP header | Inner IP header | Original BFD packet
      */
     SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP,
 
     /**
-     * @brief L3 GRE Tunnel Encapsulation | L2 Ethernet header | IP header | GRE header | Original bfd packet
+     * @brief L3 GRE Tunnel Encapsulation | L2 Ethernet header | IP header | GRE header | Original BFD packet
      */
     SAI_BFD_ENCAPSULATION_TYPE_L3_GRE_TUNNEL,
 
@@ -79,7 +79,7 @@ typedef enum _sai_bfd_session_state_t
     /** BFD Session is Down */
     SAI_BFD_SESSION_STATE_DOWN,
 
-    /** BFD Session is in Init */
+    /** BFD Session is in Initialization */
     SAI_BFD_SESSION_STATE_INIT,
 
     /** BFD Session is Up */
@@ -98,7 +98,7 @@ typedef struct _sai_bfd_session_state_notification_t
 } sai_bfd_session_state_notification_t;
 
 /**
- * @brief SAI attributes for bfd session
+ * @brief SAI attributes for BFD session
  */
 typedef enum _sai_bfd_session_attr_t
 {
@@ -108,7 +108,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_START,
 
     /**
-     * @brief BFD Session type DEMAND/ASYNC
+     * @brief BFD Session type DEMAND/ASYNCHRONOUS
      *
      * @type sai_bfd_session_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -246,7 +246,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_IPHDR_VERSION,
 
     /**
-     * @brief header TOS
+     * @brief IP header TOS
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -254,7 +254,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_TOS,
 
     /**
-     * @brief header TTL
+     * @brief IP header TTL
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -263,7 +263,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_TTL,
 
     /**
-     * @brief source IP
+     * @brief Source IP
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -271,7 +271,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_SRC_IP_ADDRESS,
 
     /**
-     * @brief destination IP
+     * @brief Destination IP
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -279,7 +279,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_DST_IP_ADDRESS,
 
     /**
-     * @brief Tunnel ip header TOS
+     * @brief Tunnel IP header TOS
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -288,7 +288,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_TUNNEL_TOS,
 
     /**
-     * @brief Tunnel ip header TTL
+     * @brief Tunnel IP header TTL
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -343,7 +343,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_ECHO_ENABLE,
 
     /**
-     * @brief Multihop BFD session
+     * @brief Multi hop BFD session
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -438,9 +438,9 @@ typedef enum _sai_bfd_session_stat_t
 } sai_bfd_session_port_stat_t;
 
 /**
- * @brief Create bfd session.
+ * @brief Create BFD session.
  *
- * @param[out] bfd_session_id bfd session id
+ * @param[out] bfd_session_id BFD session id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Value of attributes
@@ -455,9 +455,9 @@ typedef sai_status_t (*sai_create_bfd_session_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove bfd session.
+ * @brief Remove BFD session.
  *
- * @param[in] bfd_session_id bfd session id
+ * @param[in] bfd_session_id BFD session id
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  * error code is returned.
@@ -466,9 +466,9 @@ typedef sai_status_t (*sai_remove_bfd_session_fn)(
         _In_ sai_object_id_t bfd_session_id);
 
 /**
- * @brief Set bfd session attributes.
+ * @brief Set BFD session attributes.
  *
- * @param[in] bfd_session_id bfd session id
+ * @param[in] bfd_session_id BFD session id
  * @param[in] attr Value of attribute
  *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
@@ -479,9 +479,9 @@ typedef sai_status_t (*sai_set_bfd_session_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get bfd session attributes.
+ * @brief Get BFD session attributes.
  *
- * @param[in] bfd_session_id bfd session id
+ * @param[in] bfd_session_id BFD session id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Value of attribute
  *
@@ -494,9 +494,9 @@ typedef sai_status_t (*sai_get_bfd_session_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get bfd session statistics counters.
+ * @brief Get BFD session statistics counters.
  *
- * @param[in] bfd_session_id bfd session id
+ * @param[in] bfd_session_id BFD session id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[out] counters Array of resulting counter values.
@@ -504,15 +504,15 @@ typedef sai_status_t (*sai_get_bfd_session_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_bfd_session_stats_fn)(
-        _In_ sai_object_id_t bfd_seesion_id,
+        _In_ sai_object_id_t bfd_session_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_bfd_session_stat_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear bfd session statistics counters.
+ * @brief Clear BFD session statistics counters.
  *
- * @param[in] bfd_session_id bfd session id
+ * @param[in] bfd_session_id BFD session id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  *
