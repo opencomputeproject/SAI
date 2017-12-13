@@ -235,7 +235,7 @@ typedef enum _sai_bfd_session_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @validonly SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
      */
-    SAI_BFD_SESSION_ATTR_ENCAPSULATION_TYPE,
+    SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE,
 
     /**
      * @brief IP header version
@@ -283,7 +283,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @validonly SAI_BFD_SESSION_ATTR_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
+     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_TOS,
 
@@ -293,7 +293,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 255
-     * @validonly SAI_BFD_SESSION_ATTR_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
+     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_TTL,
 
@@ -302,7 +302,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @validonly SAI_BFD_SESSION_ATTR_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
+     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_SRC_IP_ADDRESS,
 
@@ -311,7 +311,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @validonly SAI_BFD_SESSION_ATTR_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
+     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_DST_IP_ADDRESS,
 
