@@ -325,6 +325,7 @@ typedef struct _sai_queue_deadlock_notification_data_t
      * If set to TRUE then host application will manage deadlock recovery
      * else SAI adapter or SDK will manage deadlock recovery
      * and also generate recovery ended notification.
+     * Applicable only when event is == SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_DETECTED.
      */
     bool app_managed_recovery;
 
