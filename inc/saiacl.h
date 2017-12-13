@@ -93,6 +93,26 @@ typedef enum _sai_acl_ip_frag_t
 } sai_acl_ip_frag_t;
 
 /**
+ * @brief DTEL flow operation
+ * @warning experimental
+ */
+typedef enum _sai_acl_dtel_flow_op_t
+{
+    /** No operation (experimental) */
+    SAI_ACL_DTEL_FLOW_OP_NOP,
+
+    /** In-band Network Telemetry (experimental) */
+    SAI_ACL_DTEL_FLOW_OP_INT,
+
+    /** In-band OAM (experimental) */
+    SAI_ACL_DTEL_FLOW_OP_IOAM,
+
+    /** Packet Postcard (experimental) */
+    SAI_ACL_DTEL_FLOW_OP_POSTCARD,
+
+} sai_acl_dtel_flow_op_t;
+
+/**
  * @brief ACL Action Type
  */
 typedef enum _sai_acl_action_type_t
@@ -192,6 +212,21 @@ typedef enum _sai_acl_action_type_t
 
     /** Set Do Not Learn unknown source MAC */
     SAI_ACL_ACTION_TYPE_SET_DO_NOT_LEARN,
+
+    /** Set DTEL flow operation (experimental) */
+    SAI_ACL_ACTION_TYPE_ACL_DTEL_FLOW_OP,
+
+    /** Set DTEL INT session (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_INT_SESSION,
+
+    /** Enable DTEL drop report (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_DROP_REPORT_ENABLE,
+
+    /** Set DTEL flow sampling (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_FLOW_SAMPLE_PERCENT,
+
+    /** Enable DTEL report for all packets without filtering (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_REPORT_ALL_PACKETS,
 
 } sai_acl_action_type_t;
 
@@ -1965,9 +2000,60 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
 
     /**
+     * @brief DTEL flow operation
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t sai_acl_dtel_flow_op_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_ACL_DTEL_FLOW_OP,
+
+    /**
+     * @brief DTEL INT session ID
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_DTEL_INT_SESSION
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_INT_SESSION,
+
+    /**
+     * @brief Enable DTEL drop report
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_DROP_REPORT_ENABLE,
+
+    /**
+     * @brief DTEL flow sample percentage
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_FLOW_SAMPLE_PERCENT,
+
+    /**
+     * @brief Enable DTEL report for all packets without filtering
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_REPORT_ALL_PACKETS,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_DTEL_REPORT_ALL_PACKETS,
 
     /**
      * @brief End of ACL Entry attributes
