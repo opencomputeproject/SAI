@@ -1006,9 +1006,11 @@ sub ProcessType
         return "${prefix}_INT32";
     }
 
-    if ($type =~ /^sai_acl_action_data_t (sai_\w+_t)$/)
+    if ($type =~ /^sai_acl_action_data_t (bool|sai_\w+_t)$/)
     {
         my $prefix = "SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA";
+
+        return "${prefix}_BOOL" if $1 eq "bool";
 
         return "${prefix}_$ACL_ACTION_TYPES_TO_VT{$1}" if defined $ACL_ACTION_TYPES_TO_VT{$1};
 
@@ -2404,7 +2406,7 @@ sub CreateObjectInfo
         }
 
         next if $1 eq "NULL" or $1 eq "MAX";
-        
+
         if (not defined $OBJTOAPIMAP{$ot})
         {
             LogError "$ot is not defined in OBJTOAPIMAP, missing sai_XXX_api_t declaration?";
