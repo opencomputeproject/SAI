@@ -87,6 +87,9 @@ typedef enum _sai_bfd_session_state_t
 
 } sai_bfd_session_state_t
 
+/**
+ * @brief Defines the operational status of the BFD session
+ */
 typedef struct _sai_bfd_session_state_notification_t
 {
     /** BFD Session id */
@@ -435,7 +438,7 @@ typedef enum _sai_bfd_session_stat_t
     /** Packet Drop stat count */
     SAI_BFD_SESSION_STAT_DROP_PACKETS
 
-} sai_bfd_session_port_stat_t;
+} sai_bfd_session_stat_t;
 
 /**
  * @brief Create BFD session.
