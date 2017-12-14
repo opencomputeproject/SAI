@@ -65,6 +65,7 @@
 #include "saivlan.h"
 #include "saiwred.h"
 #include "saiuburst.h"
+#include "saibfd.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -119,7 +120,8 @@ typedef enum _sai_api_t
     SAI_API_SEGMENTROUTE     = 35, /**< sai_segmentroute_api_t */
     SAI_API_MPLS             = 36, /**< sai_mpls_api_t */
     SAI_API_UBURST           = 37, /**< sai_uburst_api_t */
-    SAI_API_MAX              = 38, /**< total number of APIs */
+    SAI_API_BFD              = 38, /**< sai_bfd_api_t */
+    SAI_API_MAX              = 39, /**< total number of APIs */
 } sai_api_t;
 
 /**
