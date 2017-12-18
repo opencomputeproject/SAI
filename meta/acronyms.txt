@@ -71,6 +71,7 @@ UDP - User Datagram Protocol
 VNI - Virtual Network Interface
 VR - Virtual Router
 VRRP - Virtual Router Redundancy Protocol
+VXLAN - Virtual Extensible LAN
 WCMP - Weighted Cost Multipath
 WRED - Weighted Random Early Detection
 WWW - World Wide Web
