@@ -160,6 +160,16 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_TUNNEL_VNI,
 
     /**
+     * @brief Inner destination MAC address
+     *
+     * @type sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default attrvalue SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
+     */
+    SAI_NEXT_HOP_ATTR_TUNNEL_MAC,
+
+    /**
      * @brief Next hop entry Segment Route SID List
      *
      * @type sai_object_id_t
