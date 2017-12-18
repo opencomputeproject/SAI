@@ -1591,6 +1591,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MIN_BFD_TX,
 
     /**
+     * @brief Default VXLAN router MAC
+     *
+     * @type sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default vendor
+     */
+    SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
