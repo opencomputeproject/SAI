@@ -78,3 +78,5 @@ XG - (*,G) Any-source Multicast
 XOFF - Transmitter Off
 XON - Transmitter On
 IGMP - Internet Group Management Protocol
+OAM - Operations Administration and Maintenance
+DTEL - Data Plane Telemetry

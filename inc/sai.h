@@ -65,6 +65,7 @@
 #include "saivlan.h"
 #include "saiwred.h"
 #include "saiuburst.h"
+#include "saidtel.h"
 #include "saibfd.h"
 
 /**
@@ -120,8 +121,9 @@ typedef enum _sai_api_t
     SAI_API_SEGMENTROUTE     = 35, /**< sai_segmentroute_api_t */
     SAI_API_MPLS             = 36, /**< sai_mpls_api_t */
     SAI_API_UBURST           = 37, /**< sai_uburst_api_t */
-    SAI_API_BFD              = 38, /**< sai_bfd_api_t */
-    SAI_API_MAX              = 39, /**< total number of APIs */
+    SAI_API_DTEL             = 38, /**< sai_dtel_api_t (experimental) */
+    SAI_API_BFD              = 39, /**< sai_bfd_api_t */
+    SAI_API_MAX              = 40, /**< total number of APIs */
 } sai_api_t;
 
 /**
