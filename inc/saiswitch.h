@@ -1556,7 +1556,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      * @default NULL
      */
-    SAI_SWITCH_ATTR_BFD_SESSION_STATE_NOTIFY,
+    SAI_SWITCH_ATTR_BFD_SESSION_STATE_CHANGE_NOTIFY,
 
     /**
      * @brief Number of BFD session in the NPU
@@ -1565,14 +1565,6 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_NUMBER_OF_BFD_SESSION,
-
-    /**
-     * @brief Max number of BFD session NPU supports
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_MAX_BFD_SESSION,
 
     /**
      * @brief Max number of BFD session NPU supports

@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saibfd.h
  *
@@ -85,7 +85,7 @@ typedef enum _sai_bfd_session_state_t
     /** BFD Session is Up */
     SAI_BFD_SESSION_STATE_UP,
 
-} sai_bfd_session_state_t
+} sai_bfd_session_state_t;
 
 /**
  * @brief Defines the operational status of the BFD session
@@ -133,7 +133,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
-     * @validonly SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == true
+     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == true
      */
     SAI_BFD_SESSION_ATTR_VIRTUAL_ROUTER,
 
@@ -143,7 +143,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
-     * @validonly SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
+     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
      */
     SAI_BFD_SESSION_ATTR_PORT,
 
@@ -187,7 +187,7 @@ typedef enum _sai_bfd_session_attr_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0x8100
-     * @validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
+     * Validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
      */
     SAI_BFD_SESSION_ATTR_VLAN_TPID,
 
@@ -197,7 +197,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
+     * Validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
      */
     SAI_BFD_SESSION_ATTR_VLAN_ID,
 
@@ -207,7 +207,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
+     * Validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
      */
     SAI_BFD_SESSION_ATTR_VLAN_PRI,
 
@@ -217,7 +217,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
+     * Validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
      */
     SAI_BFD_SESSION_ATTR_VLAN_CFI,
 
@@ -236,7 +236,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_bfd_encapsulation_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @validonly SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
+     * Validonly SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
      */
     SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE,
 
@@ -253,6 +253,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default 0
      */
     SAI_BFD_SESSION_ATTR_TOS,
 
@@ -286,6 +287,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default 0
      * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_TOS,
@@ -305,7 +307,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
+     * @condition SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_SRC_IP_ADDRESS,
 
@@ -314,7 +316,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
+     * @condition SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_DST_IP_ADDRESS,
 
@@ -323,7 +325,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @validonly SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
+     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
      */
     SAI_BFD_SESSION_ATTR_SRC_MAC_ADDRESS,
 
@@ -332,7 +334,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @validonly SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
+     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
      */
     SAI_BFD_SESSION_ATTR_DST_MAC_ADDRESS,
 
