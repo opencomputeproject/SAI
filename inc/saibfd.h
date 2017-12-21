@@ -30,6 +30,7 @@
 /**
  * @defgroup SAIBFD SAI - BFD specific public APIs and data structures
  *
+ * @{
  */
 
 /**
