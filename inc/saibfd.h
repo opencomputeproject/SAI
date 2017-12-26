@@ -228,7 +228,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type bool
      * @flags CREATE_ONLY
      * @default false
-     * @validonly SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
+     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
      */
     SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID,
 
@@ -237,7 +237,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_bfd_encapsulation_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @validonly SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
+     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
      */
     SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE,
 
