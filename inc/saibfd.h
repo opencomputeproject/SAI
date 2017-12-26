@@ -236,7 +236,6 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_bfd_encapsulation_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
      */
     SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE,
 
