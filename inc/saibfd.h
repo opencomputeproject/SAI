@@ -198,7 +198,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
+     * @condition SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
      */
     SAI_BFD_SESSION_ATTR_VLAN_ID,
 
