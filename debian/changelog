@@ -1,0 +1,11 @@
+saithrift (1.0.4) stable; urgency=medium
+
+  * Update to SAI 1.0.4
+
+ -- Pavel Shirshov <pavelsh@microsoft.com>  Wed, 10 Jan 2018 14:18:00 -0800
+
+saithrift (0.9.4) stable; urgency=medium
+
+  * Initial release.
+
+ -- Pavel Shirshov <pavelsh@microsoft.com>  Fri, 24 Mar 2017 14:23:00 -0800
