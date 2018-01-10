@@ -50,8 +50,6 @@ extern "C" {
 
 #include <saifdb.h>
 #include <saivlan.h>
-#include <sairouter.h>
-#include <sairouterintf.h>
 #include <sairoute.h>
 #include <saiswitch.h>
 #include <saimirror.h>
@@ -685,8 +683,8 @@ public:
         { counter_ids[i] = (sai_vlan_stat_t) *it; }
 
         status = vlan_api->get_vlan_stats((sai_vlan_id_t) vlan_id,
-                                          counter_ids,
                                           number_of_counters,
+                                          counter_ids,
                                           counters);
 
         for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) { thrift_counters.push_back(counters[i]); }
@@ -2101,8 +2099,8 @@ public:
       int32_t number_of_counters = thrift_counter_ids.size();
       status = policer_api->get_policer_stats(
                              (sai_object_id_t) policer_id,
-                             counter_ids,
                              number_of_counters,
+                             counter_ids,
                              counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -2187,8 +2185,8 @@ public:
       }
 
       status = port_api->get_port_stats((sai_object_id_t) port_id,
-                                        counter_ids,
                                         number_of_counters,
+                                        counter_ids,
                                         counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -2321,8 +2319,8 @@ public:
 
       status = queue_api->get_queue_stats(
                              (sai_object_id_t) queue_id,
-                             counter_ids,
                              number_of_counters,
+                             counter_ids,
                              counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -2367,8 +2365,8 @@ public:
 
       status = queue_api->clear_queue_stats(
                              (sai_object_id_t) queue_id,
-                             counter_ids,
-                             number_of_counters);
+                             number_of_counters,
+                             counter_ids);
 
       free(counter_ids);
       return status;
@@ -2493,8 +2491,8 @@ public:
       }
 
       status = buffer_api->get_ingress_priority_group_stats((sai_object_id_t) pg_id,
-                                                            counter_ids,
                                                             number_of_counters,
+                                                            counter_ids,
                                                             counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
