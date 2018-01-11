@@ -1,4 +1,4 @@
-Metadata: [![Build Status](https://sonic-jenkins.westus.cloudapp.azure.com/buildStatus/icon?job=sai-meta-build)](https://sonic-jenkins.westus.cloudapp.azure.com/job/sai-meta-build)
+Metadata: [![Build Status](https://sonic-jenkins.westus2.cloudapp.azure.com/buildStatus/icon?job=sai-meta-build)](https://sonic-jenkins.westus2.cloudapp.azure.com/job/sai-meta-build)
 
 SAI (Switch Abstraction Interface)
 ==============================================
