@@ -1033,8 +1033,8 @@ void test_serialize_notifications()
      * support we need to fix this.
      */
 
-    res = sai_serialize_packet_event_notification(buf, switch_id, buffer, 7, 0, attrs);
-    ret = "{\"switch_id\":\"oid:0x123abc\",\"buffer\":[17,34,51,68,85,102,119],\"buffer_size\":7,\"attr_count\":0,\"attr_list\":null}";
+    res = sai_serialize_packet_event_notification(buf, switch_id, 7, buffer, 0, attrs);
+    ret = "{\"switch_id\":\"oid:0x123abc\",\"buffer_size\":7,\"buffer\":[17,34,51,68,85,102,119],\"attr_count\":0,\"attr_list\":null}";
     ASSERT_STR_EQ(buf, ret, res);
 
     sai_port_oper_status_notification_t data1;
