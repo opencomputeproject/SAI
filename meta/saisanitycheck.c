@@ -2384,7 +2384,11 @@ void check_attr_condition_met(
             attrs[idx].id ^= (uint32_t)(-1);
         }
 
-        META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
+        /*
+         * Condition can actually be met here, since we are supplying unknown attributes
+         * and condition by default attribute can be met
+         * META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
+        */
 
         /* when condition is "or" then any of attribute should match */
 
@@ -3830,6 +3834,7 @@ void check_object_ro_list(
     if (oi->objecttype == SAI_OBJECT_TYPE_FDB_FLUSH ||
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
             oi->objecttype == SAI_OBJECT_TYPE_SWITCH ||
+            oi->objecttype == SAI_OBJECT_TYPE_BFD_SESSION ||
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY ||
             oi->objecttype == SAI_OBJECT_TYPE_TAM_HISTOGRAM ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL ||
