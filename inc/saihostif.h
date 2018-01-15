@@ -1085,8 +1085,8 @@ typedef enum _sai_hostif_packet_attr_t
  * @brief Hostif receive function
  *
  * @param[in] hostif_id Host interface id
- * @param[out] buffer Packet buffer
  * @param[inout] buffer_size Allocated buffer size [in], Actual packet size in bytes [out]
+ * @param[out] buffer Packet buffer
  * @param[inout] attr_count Allocated list size [in], Number of attributes [out]
  * @param[out] attr_list Array of attributes
  *
@@ -1097,8 +1097,8 @@ typedef enum _sai_hostif_packet_attr_t
  */
 typedef sai_status_t (*sai_recv_hostif_packet_fn)(
         _In_ sai_object_id_t hostif_id,
-        _Out_ void *buffer,
         _Inout_ sai_size_t *buffer_size,
+        _Out_ void *buffer,
         _Inout_ uint32_t *attr_count,
         _Out_ sai_attribute_t *attr_list);
 
@@ -1108,8 +1108,8 @@ typedef sai_status_t (*sai_recv_hostif_packet_fn)(
  * @param[in] hostif_id Host interface id.
  *    When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
  *    When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
- * @param[in] buffer Packet buffer
  * @param[in] buffer_size Packet size in bytes
+ * @param[in] buffer Packet buffer
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1117,8 +1117,8 @@ typedef sai_status_t (*sai_recv_hostif_packet_fn)(
  */
 typedef sai_status_t (*sai_send_hostif_packet_fn)(
         _In_ sai_object_id_t hostif_id,
-        _In_ void *buffer,
         _In_ sai_size_t buffer_size,
+        _In_ void *buffer,
         _In_ uint32_t attr_count,
         _In_ sai_attribute_t *attr_list);
 
@@ -1130,15 +1130,15 @@ typedef sai_status_t (*sai_send_hostif_packet_fn)(
  * @objects attr_list SAI_OBJECT_TYPE_HOSTIF_PACKET
  *
  * @param[in] switch_id Switch Object ID
- * @param[in] buffer Packet buffer
  * @param[in] buffer_size Actual packet size in bytes
+ * @param[in] buffer Packet buffer
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  */
 typedef void (*sai_packet_event_notification_fn)(
         _In_ sai_object_id_t switch_id,
-        _In_ const void *buffer,
         _In_ sai_size_t buffer_size,
+        _In_ const void *buffer,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
