@@ -8,7 +8,7 @@ Add support for QinQ router interface and routing-based VxLAN
  Status      | In review
  Type        | Standards track
  Created     | 05/04/2017
- Updated     | 08/03/2017
+ Updated     | 08/03/2018
  SAI-Version | 1.2
 
 -------------------------------------------------------------------------------
@@ -142,21 +142,55 @@ __Figure 2: QinQ to VxLAN SAI Pipeline__
 
 ### QinQ to Vxlan example
 
+We have one customer server (100.100.3.1/24) with outer vlan 100 and inner vlan tag 1 want to 
+talk to VM1 (100.100.1.1/32) and VM2 (100.100.2.1/32). VM1 is in host
+100.100.1.1 and VM2 is in host 100.100.2.1. VM1 is in VXLAN id 2000 and 
+VM2 is in VXLAN id 2001.
+
+When we use riot VXLAN tunnel, the default inner destination mac in the 
+tunnel encap is the ```SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC```.
+
+To reach VM1 from the customer, the switch needs to encap the packet with 
+outer IP 100.100.1.1 and VXLAN id 2000. To reach VM2, the switch needs to encap the packet with 
+outer IP 100.100.2.1 with VXLAN id 2001. For VM2, it we also need to specify
+the inner destination mac "00:12:34:56:78:9a".
+
+To reach the customer from VM1 and VM2, the customer will send VXLAN packet
+with VXLAN id 2000. The switch will decap the packet, using the VXLAN id 2000
+to map to the currect virtual router and then lookup the inner destination IP
+(100.100.3.1/24).
+
+
 ```
+# Main program
+
+sai_attribute_t switch_attr;
+switch_attr.id = SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC;
+switch_attr.value.mac = "00:11:11:11:11:11";
+sai_switch_api->set_switch_attribute(switch_id, &switch_attr);
+
+create_virtual_router(&virtual_router_id);
+
 # create qinq router interface
 status = create_router_interface_qinq(virtual_router_id, 100, 1, &rif);
 
-# create two tunnels for a same virtual router
+# create one tunnel for the virtual router
 status = create_tunnel(virtual_router_id, 2000, &tunnel_id_1);
-status = create_tunnel(virtual_router_id, 2001, &tunnel_id_2);
 
-# create two tunnel nexthops on the virtual router
-status = create_nexthop_tunnel(virtual_router_id, "10.10.10.1", tunnel_id_1, &nexthop_id_1);
-status = create_nexthop_tunnel(virtual_router_id, "20.20.20.1", tunnel_id_2, &nexthop_id_2);
+# create two tunnel nexthops on the virtual router for the two VMs
+status = create_nexthop_tunnel(virtual_router_id, "10.10.10.1", 0, NULL, tunnel_id_1, &nexthop_id_1);
+status = create_nexthop_tunnel(virtual_router_id, "20.20.20.1", 2001, "00:12:34:56:78:9a", tunnel_id_2, &nexthop_id_2);
 
-# create two routes to the two nexthops 
+# create two routes to the two VMs
 status = create_route("100.100.1.1/32", virtual_router_id, nexthop_id_1);
 status = create_route("100.100.2.1/32", virtual_router_id, nexthop_id_2);
+
+# creat the route to the customer server
+status = create_route("100.100.3.0/24", virtual_router_id, nexthop_id_3);
+
+# create tunnel decap for VM to customer server
+status = create_tunnel_termination(tunnel_id_1, "10.10.10.10", &term_table_id);
+
 ```
 
 Create QinQ router interface
@@ -348,18 +382,42 @@ Create nexthop for the tunnel interface
 sai_status_t create_nexthop_tunnel(
     sai_object_id_t router_id, 
     sai_ip4_t host_ip, 
+    sai_uint32_t vni, // optional vni
+    sai_mac_t mac, // inner destination mac
     sai_object_id_t tunnel_id, 
     sai_object_id_t *next_hop_id)
 {
-  sai_attribute_t next_hop_attrs[3];
-  next_hop_attrs[0].id = SAI_NEXT_HOP_ATTR_TYPE;
-  next_hop_attrs[0].value.s32 = SAI_NEXT_HOP_TYPE_IP;
-  next_hop_attrs[1].id = SAI_NEXT_HOP_ATTR_IP;
-  next_hop_attrs[1].value.ip4 = host_ip;
-  next_hop_attrs[2].id = SAI_NEXT_HOP_ATTR_TUNNEL_ID;
-  next_hop_attrs[2].value.oid = tunnel_id;
+  vector<sai_attribute_t> next_hop_attrs;
 
-  sai_status_t status = sai_next_hop_api->create_next_hop(next_hop_id, router_id, 3, next_hop_attrs);
+  sai_attribute_t next_hop_attr;
+
+  next_hop_attr.id = SAI_NEXT_HOP_ATTR_TYPE;
+  next_hop_attr.value.s32 = SAI_NEXT_HOP_TYPE_ENCAP;
+  next_hop_attrs.push_back(next_hop_attr);
+
+  next_hop_attr.id = SAI_NEXT_HOP_ATTR_IP;
+  next_hop_attr.value.ip4 = host_ip;
+  next_hop_attrs.push_back(next_hop_attr);
+
+  next_hop_attr.id = SAI_NEXT_HOP_ATTR_TUNNEL_ID;
+  next_hop_attr.value.oid = tunnel_id;
+  next_hop_attrs.push_back(next_hop_attr);
+  if (vni != 0)
+  {
+     next_hop_attr.id = SAI_NEXT_HOP_ATTR_TUNNEL_VNI;
+     next_hop_attr.value.u32 = vni;
+     next_hop_attrs.push_back(next_hop_attr);
+  }
+
+  if (mac != null)
+  {
+     next_hop_attr.id = SAI_NEXT_HOP_ATTR_TUNNEL_MAC;
+     next_hop_attr.value.mac = mac;
+     next_hop_attrs.push_back(next_hop_attr);
+  }
+
+
+  sai_status_t status = sai_next_hop_api->create_next_hop(next_hop_id, router_id, next_hop_attrs.size(), next_hop_attrs.data());
   return status;
 }
 ```
