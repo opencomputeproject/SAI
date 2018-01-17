@@ -1600,6 +1600,16 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC,
 
     /**
+     * @brief Default VXLAN destination port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 4789
+     */
+    SAI_SWITCH_ATTR_VXLAN_DEFAULT_PORT,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

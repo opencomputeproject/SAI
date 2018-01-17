@@ -169,6 +169,11 @@ switch_attr.id = SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC;
 switch_attr.value.mac = "00:11:11:11:11:11";
 sai_switch_api->set_switch_attribute(switch_id, &switch_attr);
 
+sai_attribute_t switch_attr;
+switch_attr.id = SAI_SWITCH_ATTR_VXLAN_DEFAULT_PORT;
+switch_attr.value.u16 = 12345;
+sai_switch_api->set_switch_attribute(switch_id, &switch_attr);
+
 create_virtual_router(&virtual_router_id);
 
 # create qinq router interface
