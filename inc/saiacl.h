@@ -1108,7 +1108,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_IP,
 
     /**
-     * @brief In-Ports (mask is not needed)
+     * @brief In-Ports which could be a physical or bridge port (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_list_t
      * @flags CREATE_AND_SET
@@ -1118,7 +1118,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS,
 
     /**
-     * @brief Out-Ports (mask is not needed)
+     * @brief Out-Ports which could be a physical or bridge port (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_list_t
      * @flags CREATE_AND_SET
@@ -1128,7 +1128,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS,
 
     /**
-     * @brief In-Port (mask is not needed)
+     * @brief In-Port which could be a physical or bridge port (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
@@ -1138,7 +1138,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
 
     /**
-     * @brief Out-Port (mask is not needed)
+     * @brief Out-Port which could be a physical or bridge port (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
@@ -1148,7 +1148,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
 
     /**
-     * @brief Source port which could be a physical or LAG port
+     * @brief Source port which could be a physical or LAG or bridge port
      * (mask is not needed)
      *
      * @type sai_acl_field_data_t sai_object_id_t
@@ -1548,7 +1548,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Redirect Packet to a destination which can be a port,
-     * LAG, nexthop, nexthopgroup
+     * bridge port, LAG, nexthop, nexthopgroup
      *
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
@@ -1559,7 +1559,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Redirect Packet to a list of destination which can be
-     * a port list.
+     * a port or bridge port list.
      *
      * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
