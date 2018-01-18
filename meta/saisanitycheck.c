@@ -3194,11 +3194,11 @@ void check_mixed_object_list_types()
                 }
                 else
                 {
-                    if (meta->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY &&
-                            meta->attrid == SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST)
+                    if (meta->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
                     {
                         /*
-                         * We make exception for this attribute.
+                         * Allow mixed object types on ACL entries since they can point
+                         * to different object types like PORT or BRIDGE_PORT etc.
                          */
 
                         break;
