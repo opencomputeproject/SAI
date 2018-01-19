@@ -1006,9 +1006,11 @@ sub ProcessType
         return "${prefix}_INT32";
     }
 
-    if ($type =~ /^sai_acl_action_data_t (sai_\w+_t)$/)
+    if ($type =~ /^sai_acl_action_data_t (bool|sai_\w+_t)$/)
     {
         my $prefix = "SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA";
+
+        return "${prefix}_BOOL" if $1 eq "bool";
 
         return "${prefix}_$ACL_ACTION_TYPES_TO_VT{$1}" if defined $ACL_ACTION_TYPES_TO_VT{$1};
 
@@ -1380,6 +1382,23 @@ sub ProcessConditionsGeneric
         {
             WriteSource "    .attrid = $attrid,";
             WriteSource "    .condition = { .s32 = $val }";
+
+            my $attrType = lc("$1t") if $attrid =~ /^(SAI_\w+_ATTR_)/;
+
+            my $enumTypeName = $METADATA{$attrType}{$attrid}{type};
+
+            if (defined $SAI_ENUMS{$enumTypeName})
+            {
+                # this condition is enum condition, check if condition value
+                # belongs to that enum
+
+                my @values = @{ $SAI_ENUMS{$enumTypeName}{values} };
+
+                if (not grep( /^$val$/, @values))
+                {
+                    LogError "condition value '$val' in '$cond' on $attr is not present in $enumTypeName";
+                }
+            }
         }
         elsif ($val =~ /^$NUMBER_REGEX$/ and $enumtype =~ /^sai_u?int(\d+)_t$/)
         {
@@ -1841,6 +1860,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_IP_ADDRESS"     if $type eq "sai_ip_address_t";
     return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"      if $type eq "sai_ip_prefix_t";
     return "SAI_ATTR_VALUE_TYPE_UINT16"         if $type eq "sai_vlan_id_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_label_id_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"          if $type =~ /^sai_\w+_type_t$/; # enum
 
     LogError "invalid struct member value type $type";
@@ -2387,6 +2407,12 @@ sub CreateObjectInfo
 
         next if $1 eq "NULL" or $1 eq "MAX";
 
+        if (not defined $OBJTOAPIMAP{$ot})
+        {
+            LogError "$ot is not defined in OBJTOAPIMAP, missing sai_XXX_api_t declaration?";
+            next;
+        }
+
         my $type = "sai_" . lc($1) . "_attr_t";
 
         my $start = "SAI_" . uc($1) . "_ATTR_START";
@@ -2515,7 +2541,7 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(mac|object_id|vlan_id|ip_address|ip_prefix|\w+_type)_t$/)
+        if (not $type =~ /^sai_(mac|object_id|vlan_id|ip_address|ip_prefix|label_id|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;

@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saihostif.h
  *
@@ -306,6 +306,12 @@ typedef enum _sai_hostif_trap_type_t
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_TTL_ERROR = 0x00006001,
+
+    /**
+     * @brief Packets trapped when station move is observed with static FDB entry
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_STATIC_FDB_MOVE = 0x00006002,
 
     /* Pipeline discards. For the following traps, packet action is either drop or trap */
 
@@ -635,6 +641,37 @@ typedef enum _sai_hostif_type_t
 } sai_hostif_type_t;
 
 /**
+ * @brief Attribute data for SAI_HOSTIF_ATTR_VLAN_TAG
+ */
+typedef enum _sai_hostif_vlan_tag_t
+{
+    /**
+     * @brief Strip vlan tag
+     * Strip vlan tag from the incoming packet
+     * when delivering the packet to host interface.
+     */
+    SAI_HOSTIF_VLAN_TAG_STRIP,
+
+    /**
+     * @brief Keep vlan tag.
+     * When incoming packet is untagged, add PVID tag to the packet when delivering
+     * the packet to host interface.
+     */
+    SAI_HOSTIF_VLAN_TAG_KEEP,
+
+    /**
+     * @brief Keep the packet same as the incoming packet
+     *
+     * The packet delivered to host interface is the same as the original packet.
+     * When the host interface is PORT and LAG, the packet delivered to host interface is the
+     * same as the original packet seen by the PORT and LAG.
+     * When the host interface is VLAN, the packet delivered to host interface will not have tag.
+     */
+    SAI_HOSTIF_VLAN_TAG_ORIGINAL,
+
+} sai_hostif_vlan_tag_t;
+
+/**
  * @brief Host interface attribute IDs
  */
 typedef enum _sai_hostif_attr_t
@@ -695,6 +732,16 @@ typedef enum _sai_hostif_attr_t
      * @default 0
      */
     SAI_HOSTIF_ATTR_QUEUE,
+
+    /**
+     * @brief Strip/keep vlan tag for received packet
+     *
+     * @type sai_hostif_vlan_tag_t
+     * @flags CREATE_AND_SET
+     * @default SAI_HOSTIF_VLAN_TAG_STRIP
+     * @validonly SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
+     */
+    SAI_HOSTIF_ATTR_VLAN_TAG,
 
     /**
      * @brief End of attributes
@@ -1011,6 +1058,17 @@ typedef enum _sai_hostif_packet_attr_t
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
 
     /**
+     * @brief Bridge ID (for receive-only)
+     *
+     * The .1D or .1Q bridge on which the packet was received.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     */
+    SAI_HOSTIF_PACKET_ATTR_BRIDGE_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_PACKET_ATTR_END,
@@ -1027,8 +1085,8 @@ typedef enum _sai_hostif_packet_attr_t
  * @brief Hostif receive function
  *
  * @param[in] hostif_id Host interface id
- * @param[out] buffer Packet buffer
  * @param[inout] buffer_size Allocated buffer size [in], Actual packet size in bytes [out]
+ * @param[out] buffer Packet buffer
  * @param[inout] attr_count Allocated list size [in], Number of attributes [out]
  * @param[out] attr_list Array of attributes
  *
@@ -1039,8 +1097,8 @@ typedef enum _sai_hostif_packet_attr_t
  */
 typedef sai_status_t (*sai_recv_hostif_packet_fn)(
         _In_ sai_object_id_t hostif_id,
-        _Out_ void *buffer,
         _Inout_ sai_size_t *buffer_size,
+        _Out_ void *buffer,
         _Inout_ uint32_t *attr_count,
         _Out_ sai_attribute_t *attr_list);
 
@@ -1050,8 +1108,8 @@ typedef sai_status_t (*sai_recv_hostif_packet_fn)(
  * @param[in] hostif_id Host interface id.
  *    When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
  *    When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
- * @param[in] buffer Packet buffer
  * @param[in] buffer_size Packet size in bytes
+ * @param[in] buffer Packet buffer
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1059,8 +1117,8 @@ typedef sai_status_t (*sai_recv_hostif_packet_fn)(
  */
 typedef sai_status_t (*sai_send_hostif_packet_fn)(
         _In_ sai_object_id_t hostif_id,
-        _In_ void *buffer,
         _In_ sai_size_t buffer_size,
+        _In_ void *buffer,
         _In_ uint32_t attr_count,
         _In_ sai_attribute_t *attr_list);
 
@@ -1072,15 +1130,15 @@ typedef sai_status_t (*sai_send_hostif_packet_fn)(
  * @objects attr_list SAI_OBJECT_TYPE_HOSTIF_PACKET
  *
  * @param[in] switch_id Switch Object ID
- * @param[in] buffer Packet buffer
  * @param[in] buffer_size Actual packet size in bytes
+ * @param[in] buffer Packet buffer
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  */
 typedef void (*sai_packet_event_notification_fn)(
         _In_ sai_object_id_t switch_id,
-        _In_ const void *buffer,
         _In_ sai_size_t buffer_size,
+        _In_ const void *buffer,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    sai.h
  *
@@ -38,6 +38,7 @@
 #include "sailag.h"
 #include "saimcastfdb.h"
 #include "saimirror.h"
+#include "saimpls.h"
 #include "saineighbor.h"
 #include "sainexthopgroup.h"
 #include "sainexthop.h"
@@ -63,6 +64,9 @@
 #include "saivirtualrouter.h"
 #include "saivlan.h"
 #include "saiwred.h"
+#include "saiuburst.h"
+#include "saidtel.h"
+#include "saibfd.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -115,7 +119,11 @@ typedef enum _sai_api_t
     SAI_API_BRIDGE           = 33, /**< sai_bridge_api_t */
     SAI_API_TAM              = 34, /**< sai_tam_api_t */
     SAI_API_SEGMENTROUTE     = 35, /**< sai_segmentroute_api_t */
-    SAI_API_MAX              = 36, /**< total number of APIs */
+    SAI_API_MPLS             = 36, /**< sai_mpls_api_t */
+    SAI_API_UBURST           = 37, /**< sai_uburst_api_t */
+    SAI_API_DTEL             = 38, /**< sai_dtel_api_t (experimental) */
+    SAI_API_BFD              = 39, /**< sai_bfd_api_t */
+    SAI_API_MAX              = 40, /**< total number of APIs */
 } sai_api_t;
 
 /**

@@ -7,7 +7,7 @@ Specification available under the Open Web Foundation Final Specification
 Agreement (OWFa 1.0), which is available at
 http://www.openwebfoundation.org/legal/the-owf-1-0-agreements/owfa-1-0
 Microsoft Corporation, Dell Inc., Mellanox Technologies Ltd., Cavium,
-Centec Networks, Marvell Technology Group, Barefoot Networks, Facebook Inc.,
+Centec Networks, Marvell International Ltd., Barefoot Networks, Facebook Inc.,
 Intel Corporation.
 
 

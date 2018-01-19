@@ -63,6 +63,10 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ASSERT_FALSE(x, format, ...)\
     if ((x) == true) { META_ASSERT_FAIL("expected false '" #x "': " format, ##__VA_ARGS__); }
 
+/* custom ranges start are the same for all objects */
+
+#define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
+
 void check_all_enums_name_pointers()
 {
     META_LOG_ENTER();
@@ -169,13 +173,20 @@ void check_all_enums_values()
                 }
                 else
                 {
-                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d", last, value);
+                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
                 }
             }
 
             last = emd->values[j];
 
-            META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
+            if (value >= CUSTOM_ATTR_RANGE_START && value < (2 * CUSTOM_ATTR_RANGE_START))
+            {
+                /* value is in custom range */
+            }
+            else
+            {
+                META_ASSERT_TRUE(value < 0x10000, "enum value is too big, range?");
+            }
         }
 
         META_ASSERT_TRUE(emd->values[j] == -1, "missing guard at the end of enum");
@@ -531,8 +542,10 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
+        case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
+        case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
 
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
@@ -546,6 +559,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
 
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16:
@@ -555,6 +569,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -737,6 +752,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID:
 
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16:
@@ -746,6 +762,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_CONST)
@@ -787,6 +804,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
+        case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
@@ -962,6 +980,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_TLV_LIST:
                 case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
                 case SAI_ATTR_VALUE_TYPE_MAP_LIST:
+                case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
                     break;
 
                 default:
@@ -1647,6 +1666,13 @@ void check_attr_acl_fields(
                 break;
             }
 
+            if (md->objecttype == SAI_OBJECT_TYPE_DTEL &&
+                    md->attrid == SAI_DTEL_ATTR_INT_L4_DSCP &&
+                    md->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8)
+            {
+                break;
+            }
+
             META_MD_ASSERT_FAIL(md, "acl field may only be set on acl field and udf match");
 
             break;
@@ -1660,6 +1686,7 @@ void check_attr_acl_fields(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
 
@@ -1708,6 +1735,7 @@ void check_attr_acl_fields(
         {
             switch (md->attrvaluetype)
             {
+                case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16:
@@ -1717,6 +1745,7 @@ void check_attr_acl_fields(
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+                case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
                 case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
                     break;
@@ -2150,6 +2179,23 @@ void check_attr_existing_objects(
             META_LOG_DEBUG("Default value (oid) needs to be stored %s", md->attridname);
             break;
 
+        case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
+
+            /*
+             * Allow qos maps list to enable editing qos map values.
+             * Since on switch initialization there are no qos map objects (all switch qos
+             * maps attribs are null) this shouldn't be a problem
+             */
+            break;
+
+        case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+
+            /*
+             * Allow for TAM histogram bin boundary
+             */
+
+            break;
+
         default:
 
             META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
@@ -2230,8 +2276,10 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
+        case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
+        case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
 
             if (md->isprimitive)
             {
@@ -2240,11 +2288,13 @@ void check_attr_is_primitive(
 
             break;
 
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT16:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT32:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_INT8:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_MAC:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT16:
@@ -2315,7 +2365,7 @@ void check_attr_condition_met(
 
     uint32_t count = (uint32_t)md->conditionslength;
 
-    sai_attribute_t *attrs = (sai_attribute_t*)alloca(sizeof(sai_attribute_t) * count);
+    sai_attribute_t *attrs = (sai_attribute_t*)malloc(sizeof(sai_attribute_t) * count);
 
     size_t idx = 0;
 
@@ -2334,7 +2384,11 @@ void check_attr_condition_met(
             attrs[idx].id ^= (uint32_t)(-1);
         }
 
-        META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
+        /*
+         * Condition can actually be met here, since we are supplying unknown attributes
+         * and condition by default attribute can be met
+         * META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
+        */
 
         /* when condition is "or" then any of attribute should match */
 
@@ -2368,6 +2422,8 @@ void check_attr_condition_met(
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
+
+    free(attrs);
 }
 
 void check_attr_default_attrvalue(
@@ -2540,8 +2596,11 @@ void check_object_infos()
 
             if (last + 1 != (int)am->attrid)
             {
-                if (info->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY &&
-                        info->objecttype != SAI_OBJECT_TYPE_ACL_TABLE)
+                if (is_flag_enum(info->enummetadata))
+                {
+                    /* flags, ok */
+                }
+                else
                 {
                     META_MD_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
                 }
@@ -2552,6 +2611,16 @@ void check_object_infos()
             if (am->attrid >= info->attridstart &&
                     am->attrid < info->attridend)
             {
+                continue;
+            }
+
+            if (am->attrid >= CUSTOM_ATTR_RANGE_START)
+            {
+                /*
+                 * Attribute ID is in custom range, so it will not be in
+                 * regural start .. end range.
+                 */
+
                 continue;
             }
 
@@ -2622,6 +2691,7 @@ void check_non_object_id_object_types()
             {
                 case SAI_ATTR_VALUE_TYPE_MAC:
                 case SAI_ATTR_VALUE_TYPE_INT32:
+                case SAI_ATTR_VALUE_TYPE_UINT32:
                 case SAI_ATTR_VALUE_TYPE_UINT16:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
@@ -3124,11 +3194,11 @@ void check_mixed_object_list_types()
                 }
                 else
                 {
-                    if (meta->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY &&
-                            meta->attrid == SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST)
+                    if (meta->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
                     {
                         /*
-                         * We make exception for this attribute.
+                         * Allow mixed object types on ACL entries since they can point
+                         * to different object types like PORT or BRIDGE_PORT etc.
                          */
 
                         break;
@@ -3764,7 +3834,12 @@ void check_object_ro_list(
     if (oi->objecttype == SAI_OBJECT_TYPE_FDB_FLUSH ||
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_PACKET ||
             oi->objecttype == SAI_OBJECT_TYPE_SWITCH ||
-            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY)
+            oi->objecttype == SAI_OBJECT_TYPE_BFD_SESSION ||
+            oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY ||
+            oi->objecttype == SAI_OBJECT_TYPE_TAM_HISTOGRAM ||
+            oi->objecttype == SAI_OBJECT_TYPE_DTEL ||
+            oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
+            oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can
@@ -3866,7 +3941,7 @@ void check_backward_comparibility_defines()
 
     META_ASSERT_TRUE(sw == SAI_SWITCH_ATTR_SWITCH_SHUTDOWN_REQUEST_NOTIFY, "not equal");
     META_ASSERT_TRUE(trap == SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_NEIGHBOR, "not equal");
-    META_ASSERT_TRUE(bind == SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE, "not equal");
+    META_ASSERT_TRUE(bind == SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE, "not equal");
 }
 
 void helper_check_graph_connected(
@@ -3953,7 +4028,7 @@ void check_graph_connected()
             continue;
         }
 
-        META_LOG_WARN("object %s is disconnected from graph",
+        META_ASSERT_FAIL("object %s is disconnected from graph",
                 sai_metadata_all_object_type_infos[i]->objecttypename);
     }
 }

@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saifdb.h
  *
@@ -203,11 +203,12 @@ typedef enum _sai_fdb_flush_entry_type_t
  *
  * 1) Flush all entries in FDB table - Do not specify any attribute
  * 2) Flush all entries by bridge port - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
- * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_VLAN_ID
+ * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_BV_ID with object id as vlan object
+ * 3) Flush all entries by bridge - Set #SAI_FDB_FLUSH_ATTR_BV_ID with object id as bridge object
  * 4) Flush all entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
- *    and #SAI_FDB_FLUSH_ATTR_VLAN_ID
+ *    and #SAI_FDB_FLUSH_ATTR_BV_ID
  * 5) Flush all static entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
- *    #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID, and #SAI_FDB_FLUSH_ATTR_VLAN_ID
+ *    #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID, and #SAI_FDB_FLUSH_ATTR_BV_ID
  */
 typedef enum _sai_fdb_flush_attr_t
 {
@@ -228,14 +229,15 @@ typedef enum _sai_fdb_flush_attr_t
     SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID = SAI_FDB_FLUSH_ATTR_START,
 
     /**
-     * @brief Flush based on VLAN
+     * @brief Flush based on VLAN or Bridge
      *
-     * @type sai_uint16_t
+     * @type sai_object_id_t
      * @flags CREATE_ONLY
-     * @isvlan true
-     * @default 1
+     * @objects SAI_OBJECT_TYPE_BRIDGE, SAI_OBJECT_TYPE_VLAN
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
-    SAI_FDB_FLUSH_ATTR_VLAN_ID,
+    SAI_FDB_FLUSH_ATTR_BV_ID,
 
     /**
      * @brief Flush based on entry type

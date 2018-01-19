@@ -3,6 +3,7 @@ ACL - Access Control List
 API - Application Program Interface
 ARP - Address Resolution Protocol
 ASIC - Application Specific Integrated Circuit
+BFD - Bidirectional Forwarding Detection
 BGP - Border Gateway Protocol
 CAM - Content Addressable Memory
 CB - Callback
@@ -76,3 +77,6 @@ WWW - World Wide Web
 XG - (*,G) Any-source Multicast
 XOFF - Transmitter Off
 XON - Transmitter On
+IGMP - Internet Group Management Protocol
+OAM - Operations Administration and Maintenance
+DTEL - Data Plane Telemetry

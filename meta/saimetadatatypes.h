@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saimetadatatypes.h
  *
@@ -255,6 +255,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST,
 
     /**
+     * @brief Attribute value is ACL action bool.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL,
+
+    /**
      * @brief Attribute value is ACL action 8 bit unsigned integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8,
@@ -300,6 +305,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6,
 
     /**
+     * @brief Attribute value is ACL action IP address.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS,
+
+    /**
      * @brief Attribute value is ACL action object id.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID,
@@ -313,6 +323,11 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is ACL capability.
      */
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
+
+    /**
+     * @brief Attribute value is ACL resource.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST,
 
     /**
      * @brief Attribute value is generic map list.
@@ -338,6 +353,11 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is Segment Route Segment list.
      */
     SAI_ATTR_VALUE_TYPE_SEGMENT_LIST,
+
+    /**
+     * @brief Attribute value is IP address list.
+     */
+    SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST,
 
 } sai_attr_value_type_t;
 

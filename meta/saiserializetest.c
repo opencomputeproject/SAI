@@ -869,7 +869,8 @@ void test_serialize_ip6_mask()
         int k;
         for (k = 0; k < n; k++)
         {
-            m[k/8] |= (uint8_t)(0xff << (7 - k%8));
+            uint8_t u = (uint8_t)(0xff << (7 - k%8));
+            m[k/8] |= u;
         }
 
         sprintf(bufn, "%d", n);
@@ -901,7 +902,8 @@ void test_deserialize_ip6_mask()
         int k;
         for (k = 0; k < n; k++)
         {
-            m[k/8] |= (uint8_t)(0xff << (7 - k%8));
+            uint8_t u = (uint8_t)(0xff << (7 - k%8));
+            m[k/8] |= u;
         }
 
         sprintf(bufn, "%d", n);
@@ -1031,8 +1033,8 @@ void test_serialize_notifications()
      * support we need to fix this.
      */
 
-    res = sai_serialize_packet_event_notification(buf, switch_id, buffer, 7, 0, attrs);
-    ret = "{\"switch_id\":\"oid:0x123abc\",\"buffer\":[17,34,51,68,85,102,119],\"buffer_size\":7,\"attr_count\":0,\"attr_list\":null}";
+    res = sai_serialize_packet_event_notification(buf, switch_id, 7, buffer, 0, attrs);
+    ret = "{\"switch_id\":\"oid:0x123abc\",\"buffer_size\":7,\"buffer\":[17,34,51,68,85,102,119],\"attr_count\":0,\"attr_list\":null}";
     ASSERT_STR_EQ(buf, ret, res);
 
     sai_port_oper_status_notification_t data1;
@@ -1046,7 +1048,7 @@ void test_serialize_notifications()
     memset(&data2, 0, sizeof(data2));
 
     res = sai_serialize_queue_pfc_deadlock_notification(buf, 1, &data2);
-    ret = "{\"count\":1,\"data\":[{\"queue_id\":\"oid:0x0\",\"event\":\"SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_DETECTED\"}]}";
+    ret = "{\"count\":1,\"data\":[{\"queue_id\":\"oid:0x0\",\"event\":\"SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_DETECTED\",\"app_managed_recovery\":false}]}";
     ASSERT_STR_EQ(buf, ret, res);
 
     res = sai_serialize_switch_shutdown_request_notification(buf, switch_id);
