@@ -2498,6 +2498,26 @@ void check_attr_default_attrvalue(
             sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename);
 }
 
+void check_attr_fdb_flush(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->objecttype != SAI_OBJECT_TYPE_FDB_FLUSH)
+    {
+        return;
+    }
+
+    META_ASSERT_FALSE(md->isconditional, "flush attributes should not be conditional");
+    META_ASSERT_FALSE(md->isvalidonly, "flush attributes should not be validonly");
+
+    /*
+     * Primitive check can be relaxed in the future.
+     */
+    META_ASSERT_TRUE(md->isprimitive, "flush attributes should be primitives");
+    META_ASSERT_TRUE(md->flags == SAI_ATTR_FLAGS_CREATE_ONLY, "flush attributes should be create only");
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2536,6 +2556,7 @@ void check_single_attribute(
     check_attr_is_primitive(md);
     check_attr_condition_met(md);
     check_attr_default_attrvalue(md);
+    check_attr_fdb_flush(md);
 
     define_attr(md);
 }
