@@ -432,7 +432,7 @@ typedef struct _sai_tam_threshold_breach_event_t
  */
 typedef void (*sai_tam_event_notification_fn)(
         _In_ uint32_t count,
-        _In_ sai_tam_threshold_breach_event_t *data);
+        _In_ const sai_tam_threshold_breach_event_t *data);
 
 /**
  * @brief TAM Threshold Attributes.

@@ -425,7 +425,7 @@ typedef sai_status_t (*sai_clear_queue_stats_fn)(
  */
 typedef void (*sai_queue_pfc_deadlock_notification_fn)(
         _In_ uint32_t count,
-        _In_ sai_queue_deadlock_notification_data_t *data);
+        _In_ const sai_queue_deadlock_notification_data_t *data);
 
 /**
  * @brief QOS methods table retrieved with sai_api_query()
