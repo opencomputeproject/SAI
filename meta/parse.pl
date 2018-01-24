@@ -3107,9 +3107,9 @@ sub CreateObjectTypeMap
 # MAIN
 #
 
-CheckHeadersStyle() if not defined $optionDisableStyleCheck;
-
 ExtractApiToObjectMap();
+
+CheckHeadersStyle() if not defined $optionDisableStyleCheck;
 
 GetStructLists();
 
