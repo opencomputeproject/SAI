@@ -142,28 +142,31 @@ __Figure 2: QinQ to VxLAN SAI Pipeline__
 
 ### QinQ to Vxlan example
 
-We have one customer server (100.100.3.1/24) with outer vlan 100 and inner vlan tag 1 want to 
+We have customer 1 (C1) server (100.100.3.1/24) with outer vlan 100 and inner vlan tag 1 want to 
 talk to VM1 (100.100.1.1/32) and VM2 (100.100.2.1/32). VM1 is in host
-100.100.1.1 and VM2 is in host 100.100.2.1. VM1 is in VXLAN id 2000 and 
-VM2 is in VXLAN id 2001.
+10.10.10.1 and VM2 is in host 10.10.10.2. VM1 is in VXLAN id 2000 and 
+VM2 is in VXLAN id 2001. We have customer 2 (C2) server (100.101.1.1/24) wants to talk to 
+VM3 (100.101.2.1/32). VM3 is in host 10.10.10.3 with VXLAN id 2005.
 
 When we use riot VXLAN tunnel, the default inner destination mac in the 
-tunnel encap is the ```SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC```.
+tunnel encap is the ```SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC```, e.g, "00:11:11:11:11:11"
 
-To reach VM1 from the customer, the switch needs to encap the packet with 
-outer IP 100.100.1.1 and VXLAN id 2000. To reach VM2, the switch needs to encap the packet with 
-outer IP 100.100.2.1 with VXLAN id 2001. For VM2, it we also need to specify
-the inner destination mac "00:12:34:56:78:9a".
+To reach VM1 from C1, the switch needs to encap the packet with 
+outer IP 10.10.10.1 and VXLAN id 2000. To reach VM2, the switch needs to encap the packet with 
+outer IP 10.10.10.2 with VXLAN id 2001. For VM2, it we also need to specify
+the inner destination mac "00:12:34:56:78:9a". To reach VM3 from C2, the switch
+needs to encap packet with outer IP 10.10.10.3 and VXLAN id 2005.
 
-To reach the customer from VM1 and VM2, the customer will send VXLAN packet
+To reach C1 from VM1 and VM2, VM host will send VXLAN packet
 with VXLAN id 2000. The switch will decap the packet, using the VXLAN id 2000
 to map to the currect virtual router and then lookup the inner destination IP
-(100.100.3.1/24).
+(100.100.3.1/24). To reach C2 from VM3, VM host will send VXLAN packet
+with VXLAN id 2005.
 
+
+![vxlan-riot-topo](figures/vxlan-riot-topo.png "Figure 3: Example")
 
 ```
-# Main program
-
 sai_attribute_t switch_attr;
 switch_attr.id = SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC;
 switch_attr.value.mac = "00:11:11:11:11:11";
@@ -174,28 +177,54 @@ switch_attr.id = SAI_SWITCH_ATTR_VXLAN_DEFAULT_PORT;
 switch_attr.value.u16 = 12345;
 sai_switch_api->set_switch_attribute(switch_id, &switch_attr);
 
-create_virtual_router(&virtual_router_id);
+/*
+ * Setup underlay default route, the nexthop is 1.1.1.1 
+ */
+status = create_route("0.0.0.0/0", default_virtual_route, "1.1.1.1");
 
-# create qinq router interface
-status = create_router_interface_qinq(virtual_router_id, 100, 1, &rif);
+/*
+ * Setup overlay route
+ */
 
-# create one tunnel for the virtual router
-status = create_tunnel(virtual_router_id, 2000, &tunnel_id_1);
+/* create virtual router for C1 */
+create_virtual_router(&virtual_router_id_1);
 
-# create two tunnel nexthops on the virtual router for the two VMs
-status = create_nexthop_tunnel(virtual_router_id, "10.10.10.1", 0, NULL, tunnel_id_1, &nexthop_id_1);
-status = create_nexthop_tunnel(virtual_router_id, "20.20.20.1", 2001, "00:12:34:56:78:9a", tunnel_id_2, &nexthop_id_2);
+/* create virtual router for C2 */
+create_virtual_router(&virtual_router_id_2);
 
-# create two routes to the two VMs
-status = create_route("100.100.1.1/32", virtual_router_id, nexthop_id_1);
-status = create_route("100.100.2.1/32", virtual_router_id, nexthop_id_2);
+/* create qinq router interface for C1 */
+status = create_router_interface_qinq(virtual_router_id_1, 100, 1, &rif_1);
 
-# creat the route to the customer server
-status = create_route("100.100.3.0/24", virtual_router_id, nexthop_id_3);
+/* create port-based router interface for C2 */
+status = create_router_interface_port(virtual_router_id_2, port_id, &rif_2)
 
-# create tunnel decap for VM to customer server
-status = create_tunnel_termination(tunnel_id_1, "10.10.10.10", &term_table_id);
+/* create tunnel */
+status = create_tunnel(virtual_router_id_1, 2000, &tunnel_id, &tunnel_encap_map_id, &tunnel_decap_map_id);
 
+/* add tunnel map entry */
+status = create_encap_tunnel_map_entry(tunnel_encap_map_id, virtual_router_id_2, 2005);
+status = create_decap_tunnel_map_entry(tunnel_decap_map_id, virtual_router_id_2, 2005);
+
+/* create tunnel decap for VM to customer server */
+status = create_tunnel_termination(tunnel_id, "10.10.10.10", &term_table_id);
+
+/* create tunnel nexthop for VM1, VM2 and VM3 */
+status = create_nexthop_tunnel(virtual_router_id_1, "10.10.10.1", 0, NULL, tunnel_id, &nexthop_id_1);
+status = create_nexthop_tunnel(virtual_router_id_1, "10.10.10.2", 2001, "00:12:34:56:78:9a", tunnel_id, &nexthop_id_2);
+status = create_nexthop_tunnel(virtual_router_id_2, "10.10.10.3", 0, NULL, tunnel_id, &nexthop_id_3);
+
+/* create routes for VM1, VM2 and VM3 */
+status = create_route("100.100.1.1/32", virtual_router_id_1, nexthop_id_1);
+status = create_route("100.100.2.1/32", virtual_router_id_1, nexthop_id_2);
+status = create_route("100.101.2.1/32", virtual_router_id_2, nexthop_id_3);
+
+/* create the route to the customer C1 */
+status = create_route("100.100.3.0/24", virtual_router_id_1, rif_1);
+status = create_neighbor("100.100.3.1", rif_1, "00:00:00:00:00:01");
+
+/* create the route to the customer C2 */
+status = create_route("100.101.1.0/24", virtual_router_id_2, rif_2);
+status = create_neighbor("100.101.1.1", rif_2, "00:00:00:00:00:02");
 ```
 
 Create QinQ router interface
@@ -228,6 +257,33 @@ sai_status_t create_router_interface_qinq(
 }
 ```
 
+Create port-based router interface
+
+```
+sai_status_t create_router_interface_port(
+    sai_object_id_t overlay_router_id, 
+    sai_object_id_t port_id,
+    sai_object_id_t *router_intf)
+{
+    sai_status_t status;
+    sai_attribute_t intf_attrs[3];
+
+    intf_attrs[0].id = SAI_ROUTER_INTERFACE_ATTR_VIRTUAL_ROUTER_ID;
+    intf_attrs[0].value.oid = overlay_router_id;
+
+    intf_attrs[1].id = SAI_ROUTER_INTERFACE_ATTR_TYPE;
+    intf_attrs[1].value.s32 = SAI_ROUTER_INTERFACE_TYPE_PORT;
+
+    intf_attrs[2].id = SAI_ROUTER_INTERFACE_ATTR_PORT_ID;
+    intf_attrs[2].value.oid = port_id;
+
+    status = sai_router_intfs_api->create_router_interface(router_intf, switch_id, 3, intf_attrs);
+
+    return status;
+}
+```
+
+
 Create encap/decap mapper
 
 ```
@@ -241,7 +297,7 @@ sai_object_id_t create_encap_tunnel_map()
     attr.value.s32 = SAI_TUNNEL_MAP_TYPE_VIRTUAL_ROUTER_ID_TO_VNI;
     tunnel_map_attrs.push_back(attr);
 
-    sai_tunnel_api->create_tunnel_map(tunnel_encap_map_id, 1, tunnel_map_attrs);
+    sai_tunnel_api->create_tunnel_map(tunnel_map_id, 1, tunnel_map_attrs);
 
     return tunnel_map_id;
 }
@@ -268,7 +324,7 @@ sai_object_id_t create_encap_tunnel_map_entry(
     tunnel_map_entry_attrs.push_back(attr);
 
     attr.id = SAI_TUNNEL_MAP_ENTRY_ATTR_VNI_VALUE;
-    attr.value.oid = vni;
+    attr.value.u32 = vni;
     tunnel_map_entry_attrs.push_back(attr);
 
     sai_tunnel_api->create_tunnel_map(tunnel_map_id, tunnel_map_entry_attrs.size(), tunnel_map_entry_attrs);
@@ -286,7 +342,7 @@ sai_object_id_t create_decap_tunnel_map()
     attr.value.s32 = SAI_TUNNEL_MAP_TYPE_VNI_TO_VIRTUAL_ROUTER_ID;
     tunnel_map_attrs.push_back(attr);
 
-    sai_tunnel_api->create_tunnel_map(tunnel_decap_map_id, 1, tunnel_map_attrs);
+    sai_tunnel_api->create_tunnel_map(tunnel_map_id, 1, tunnel_map_attrs);
 
     return tunnel_map_id;
 }
@@ -309,11 +365,11 @@ sai_object_id_t create_decap_tunnel_map_entry(
     tunnel_map_entry_attrs.push_back(attr);
 
     attr.id = SAI_TUNNEL_MAP_ENTRY_ATTR_VNI_KEY;
-    attr.value.oid = router_id;
+    attr.value.u32 = vni;
     tunnel_map_entry_attrs.push_back(attr);
 
     attr.id = SAI_TUNNEL_MAP_ENTRY_ATTR_VIRTUAL_ROUTER_VALUE;
-    attr.value.oid = vni;
+    attr.value.oid = router_id;
     tunnel_map_entry_attrs.push_back(attr);
 
     sai_tunnel_api->create_tunnel_map(tunnel_map_id, tunnel_map_entry_attrs.size(), tunnel_map_entry_attrs);
@@ -328,7 +384,9 @@ Create tunnel
 sai_status_t create_tunnel(
     sai_object_id_t overlay_id,
     sai_uint32_t vni, 
-    sai_object_id_t *tunnel_id)
+    sai_object_id_t *tunnel_id,
+    sai_object_id_t *tunnel_encap_map_id,
+    sai_object_id_t *tunnel_decap_map_id)
 {
   sai_status_t status;
   sai_attribute_t attr;
@@ -343,11 +401,11 @@ sai_status_t create_tunnel(
   sai_tunnel_map_t encap_map;
   sai_tunnel_map_t decap_map;
 
-  tunnel_encap_map_id = create_encap_tunnel_map();
-  tunnel_decap_map_id = create_decap_tunnel_map();
+  *tunnel_encap_map_id = create_encap_tunnel_map();
+  *tunnel_decap_map_id = create_decap_tunnel_map();
 
-  create_encap_tunnel_map_entry(tunnel_encap_map_id, router_id, vni);
-  create_decap_tunnel_map_entry(tunnel_decap_map_id, vni, router_id);
+  create_encap_tunnel_map_entry(*tunnel_encap_map_id, router_id, vni);
+  create_decap_tunnel_map_entry(*tunnel_decap_map_id, vni, router_id);
 
   // encap ecn mode (copy from outer/standard)
   attr.id = SAI_TUNNEL_ATTR_ENCAP_ECN_MODE;
@@ -355,14 +413,14 @@ sai_status_t create_tunnel(
   tunnel_attrs.push_back(attr);
 
   attr.id = SAI_TUNNEL_ATTR_ENCAP_MAPPERS;
-  attr.value.tunnelmap = { tunnel_encap_map_id };
+  attr.value.tunnelmap = { *tunnel_encap_map_id };
   tunnel_attrs.push_back(attr);
 
   attr.id = SAI_TUNNEL_ATTR_DECAP_ECN_MODE;
   attr.value.s32 = SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED; //SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER;
   tunnel_attrs.push_back(attr);
   attr.id = SAI_TUNNEL_ATTR_DECAP_MAPPERS;
-  attr.value.tunnelmap = { tunnel_decap_map_id };
+  attr.value.tunnelmap = { *tunnel_decap_map_id };
   tunnel_attrs.push_back(attr);
 
   // ttl mode (uniform/pipe)
@@ -397,7 +455,7 @@ sai_status_t create_nexthop_tunnel(
   sai_attribute_t next_hop_attr;
 
   next_hop_attr.id = SAI_NEXT_HOP_ATTR_TYPE;
-  next_hop_attr.value.s32 = SAI_NEXT_HOP_TYPE_ENCAP;
+  next_hop_attr.value.s32 = SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP;
   next_hop_attrs.push_back(next_hop_attr);
 
   next_hop_attr.id = SAI_NEXT_HOP_ATTR_IP;
@@ -407,6 +465,7 @@ sai_status_t create_nexthop_tunnel(
   next_hop_attr.id = SAI_NEXT_HOP_ATTR_TUNNEL_ID;
   next_hop_attr.value.oid = tunnel_id;
   next_hop_attrs.push_back(next_hop_attr);
+
   if (vni != 0)
   {
      next_hop_attr.id = SAI_NEXT_HOP_ATTR_TUNNEL_VNI;
@@ -455,7 +514,31 @@ sai_status_t create_route(
 }
 ```
 
-### Vxlan to QinQ
+Create neighbor
+
+```
+sai_status_t create_neigbhor(
+    sai_ip4_t ip,
+    sai_object_id_t rif_id,
+    sai_mac_t mac)
+{
+  sai_status_t status;
+  sai_neighbor_entry_t neigh_entry;
+  neigh_entry.switch_id = switch_id;
+  neigh_entry.rif_id = rif_id;
+  neigh_entry.ip_address = ip;
+
+  sai_attribute_t attr;
+  attr.id = SAI_NEIGHBOR_ENTRY_ATTR_DST_MAC_ADDRESS;
+  attr.value.mac = mac;
+
+  status = sai_neighbor_api->create_neighbor_entry(&route_entry, 1, &attr);
+  return status;
+}
+```
+
+
+### Vxlan decap
 
 
 Create tunnel termination
@@ -469,7 +552,7 @@ sai_status_t create_tunnel_termination(
   sai_attribute_t attr;
   std::vector<sai_attribute_t> tunnel_attrs;
 
-  attr.id = SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY;
+  attr.id = SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE;
   attr.value.oid = SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP;
   tunnel_attrs.push_back(attr);
 
