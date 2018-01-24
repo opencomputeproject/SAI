@@ -2518,6 +2518,28 @@ void check_attr_fdb_flush(
     META_ASSERT_TRUE(md->flags == SAI_ATTR_FLAGS_CREATE_ONLY, "flush attributes should be create only");
 }
 
+void check_attr_hostif_packet(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->objecttype != SAI_OBJECT_TYPE_HOSTIF_PACKET)
+    {
+        return;
+    }
+
+    META_ASSERT_FALSE(md->isvalidonly, "hostif packet attributes should not be validonly");
+
+    /*
+     * Primitive check can be relaxed in the future.
+     */
+    META_ASSERT_TRUE(md->isprimitive, "hostif packet attributes should be primitives");
+
+    bool flag = SAI_HAS_FLAG_READ_ONLY(md->flags) || SAI_HAS_FLAG_CREATE_ONLY(md->flags);
+
+    META_ASSERT_TRUE(flag, "hostif packet attributes should be read only or create only");
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2557,6 +2579,7 @@ void check_single_attribute(
     check_attr_condition_met(md);
     check_attr_default_attrvalue(md);
     check_attr_fdb_flush(md);
+    check_attr_hostif_packet(md);
 
     define_attr(md);
 }
