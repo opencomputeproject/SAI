@@ -231,13 +231,13 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_V6_MCAST_ENABLE,
 
     /**
-     * @brief Loopback enable (whether a packet can ingress and egress same RIF)
+     * @brief Packet action when a packet ingress and gets routed on the same RIF
      *
-     * @type bool
+     * @type sai_packet_action_t
      * @flags CREATE_AND_SET
-     * @default true
+     * @default SAI_PACKET_ACTION_FORWARD
      */
-    SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_ENABLE,
+    SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION,
 
     /**
      * @brief End of attributes
