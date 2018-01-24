@@ -1118,7 +1118,7 @@ typedef sai_status_t (*sai_recv_hostif_packet_fn)(
 typedef sai_status_t (*sai_send_hostif_packet_fn)(
         _In_ sai_object_id_t hostif_id,
         _In_ sai_size_t buffer_size,
-        _In_ void *buffer,
+        _In_ const void *buffer,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
