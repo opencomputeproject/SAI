@@ -918,6 +918,16 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        isprimitive;
 
+    /**
+     * @brief Notification type
+     *
+     * If attribute value type is POINTER then attribute
+     * value is pointer to switch notification.
+     * Enum sai_switch_notification_type_t is auto generated
+     * so it can't be used here, int will be used instead.
+     */
+    int                                         notificationtype;
+
 } sai_attr_metadata_t;
 
 /*

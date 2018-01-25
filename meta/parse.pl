@@ -1516,6 +1516,15 @@ sub ProcessAttrName
     return "\"$attr\"";
 }
 
+sub ProcessNotificationType
+{
+    my ($attr, $type) = @_;
+
+    return "SAI_SWITCH_NOTIFICATION_TYPE_$1" if $attr =~ /^SAI_SWITCH_ATTR_(\w+)_NOTIFY$/;
+
+    return "-1";
+}
+
 sub ProcessIsAclField
 {
     my $attr = shift;
@@ -1617,6 +1626,7 @@ sub ProcessSingleObjectType
         my $isaclaction     = ProcessIsAclAction($attr);
         my $brief           = ProcessBrief($attr, $meta{brief});
         my $isprimitive     = ProcessIsPrimitive($attr, $meta{type});
+        my $ntftype         = ProcessNotificationType($attr, $meta{type});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -1665,6 +1675,7 @@ sub ProcessSingleObjectType
         WriteSource "    .isreadonly                    = $isreadonly,";
         WriteSource "    .iskey                         = $iskey,";
         WriteSource "    .isprimitive                   = $isprimitive,";
+        WriteSource "    .notificationtype              = $ntftype,";
 
         WriteSource "};";
 
