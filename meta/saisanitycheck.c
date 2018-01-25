@@ -2224,6 +2224,12 @@ void check_attr_sai_pointer(
             {
                 META_MD_ASSERT_FAIL(md, "all pointers should be CREATE_AND_SET");
             }
+
+            META_ASSERT_TRUE(md->notificationtype >= 0, "notification type should be set to value on pointer");
+        }
+        else
+        {
+            META_ASSERT_TRUE(md->notificationtype == -1, "notification type should not be set to value on non pointer");
         }
 
         return;
