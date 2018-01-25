@@ -1613,7 +1613,7 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
  */
 typedef void (*sai_port_state_change_notification_fn)(
         _In_ uint32_t count,
-        _In_ sai_port_oper_status_notification_t *data);
+        _In_ const sai_port_oper_status_notification_t *data);
 
 /**
  * @brief List of Port buffer pool attributes
