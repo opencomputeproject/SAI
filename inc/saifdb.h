@@ -360,7 +360,7 @@ typedef sai_status_t (*sai_flush_fdb_entries_fn)(
  */
 typedef void (*sai_fdb_event_notification_fn)(
         _In_ uint32_t count,
-        _In_ sai_fdb_event_notification_data_t *data);
+        _In_ const sai_fdb_event_notification_data_t *data);
 
 /**
  * @brief FDB method table retrieved with sai_api_query()
