@@ -648,6 +648,11 @@ sub CheckHeadersStyle
                 LogWarning "star should be next to param name $header:$n:$line";
             }
 
+            if ($line =~ /_In_ .+\*/ and not $line =~ /_In_ const/)
+            {
+                LogWarning "pointer input parameters should be const $header:$n:$line";
+            }
+
             if ($line =~ /[^ ]\s*_(In|Out|Inout)_/ and not $line =~ /^#define/)
             {
                 LogWarning "each param should be in separate line $header:$n:$line";

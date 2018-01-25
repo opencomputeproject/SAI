@@ -140,7 +140,7 @@ sai_status_t sai_bulk_get_attribute(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _In_ uint32_t object_count,
-        _In_ sai_object_key_t *object_key,
+        _In_ const sai_object_key_t *object_key,
         _Inout_ uint32_t *attr_count,
         _Inout_ sai_attribute_t **attr_list,
         _Inout_ sai_status_t *object_statuses);
