@@ -230,7 +230,7 @@ typedef enum _sai_wred_attr_t
     /**
      * @brief Green minimum threshold bytes for ECT traffic.
      *        In absence of this attribute, green ECT traffic
-     *        would use SAI_WRED_ATTR_GREEN_MIN_THRESHOLD value as min thrshold.
+     *        would use SAI_WRED_ATTR_GREEN_MIN_THRESHOLD value as min threshold.
      *
      * Range 1 - Max Buffer size.
      *
