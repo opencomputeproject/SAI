@@ -1591,6 +1591,19 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MIN_BFD_TX,
 
     /**
+     * @brief Apply ECN thresholds for ECT traffic.
+     *        Attribute controls whether ECT traffic needs to subjected to WRED 
+     *        thresholds or be subjected to ECN thresholds.
+     *        By default both ECT and non ECT traffic would be subjected to the
+     *        same WRED thresholds.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
