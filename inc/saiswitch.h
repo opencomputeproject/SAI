@@ -1592,7 +1592,7 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief Apply ECN thresholds for ECT traffic.
-     *        Attribute controls whether ECT traffic needs to subjected to WRED 
+     *        Attribute controls whether ECT traffic needs to subjected to WRED
      *        thresholds or be subjected to ECN thresholds.
      *
      * @type bool
