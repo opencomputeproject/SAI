@@ -21,6 +21,7 @@ DLR - Dead Lock Recovery
 DSCP - Differentiated Services Code Point
 ECMP - Equal Cost Multi-Path
 ECN - Explicit Congestion Notification
+ECT - ECN Capable Traffic
 EEE - Electrical and Electronics Engineering
 ERSPAN - Encapsulated Remote SPAN
 FD - File Descriptor
