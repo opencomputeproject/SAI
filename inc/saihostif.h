@@ -257,10 +257,10 @@ typedef enum _sai_hostif_trap_type_t
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
 
-   /**
-    * @brief IP packets to subnet route
-    * (default packet action is drop)
-    */
+    /**
+     * @brief IP packets to subnet route
+     * (default packet action is drop)
+     */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_SUBNET_ROUTE = SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE,
 
     /* Local IP traps */
