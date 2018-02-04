@@ -1028,6 +1028,48 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PORT_POOL_LIST,
 
     /**
+     * @brief Port storm control for Broadcast
+     *
+     * Percentage of the broadcast traffic per ingress port is allowed to pass the pipeline.
+     *
+     * Value 0 to disable broadcast
+     * Value >=100 to allow broadcast to use full bandwidth.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     */
+    SAI_PORT_ATTR_BROADCAST_PERCENTAGE_ALLOWED,
+
+    /**
+     * @brief Port storm control for Multicast
+     *
+     * Percentage of the multicast traffic per ingress port is allowed to pass the pipeline.
+     *
+     * Value 0 to disable multicast
+     * Value >=100 to allow multicast to use full bandwidth.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     */
+    SAI_PORT_ATTR_MULTICAST_PERCENTAGE_ALLOWED,
+
+    /**
+     * @brief Port storm control for unknown unicast
+     *
+     * Percentage of the unknown unicast traffic per ingress port is allowed to pass the pipeline.
+     *
+     * Value 0 to disable unknown unicast
+     * Value >=100 to allow unknown unicast to use full bandwidth.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     */
+    SAI_PORT_ATTR_UNKNOWN_UNICAST_PERCENTAGE_ALLOWED,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
