@@ -74,6 +74,18 @@ typedef enum _sai_ingress_priority_group_attr_t
     SAI_INGRESS_PRIORITY_GROUP_ATTR_INDEX,
 
     /**
+     * @brief Enable priority group ingress packets drop.
+     *
+     * True indicates to drop all the ingress packets for this ingress priority group.
+     * False by default indicates to forward all the ingress packets.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_DROP_PACKETS,
+
+    /**
      * @brief End of attributes
      */
     SAI_INGRESS_PRIORITY_GROUP_ATTR_END,
