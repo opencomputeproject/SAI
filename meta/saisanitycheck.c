@@ -546,6 +546,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
 
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
@@ -805,6 +806,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
@@ -981,6 +983,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
                 case SAI_ATTR_VALUE_TYPE_MAP_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
+                case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
                     break;
 
                 default:
@@ -2286,6 +2289,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
 
             if (md->isprimitive)
             {
