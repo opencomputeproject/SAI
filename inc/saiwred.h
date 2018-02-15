@@ -231,7 +231,6 @@ typedef enum _sai_wred_attr_t
      * @brief Green minimum threshold bytes for ECT traffic.
      *        In absence of this attribute, green ECT traffic
      *        would use SAI_WRED_ATTR_GREEN_MIN_THRESHOLD value as min threshold.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * Range 1 - Max Buffer size.
      *
@@ -248,7 +247,6 @@ typedef enum _sai_wred_attr_t
      * @brief Green maximum threshold for ECT traffic
      *        In absence of this attribute, green ECT traffic
      *        would use SAI_WRED_ATTR_GREEN_MAX_THRESHOLD value as max threshold.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * Range 1 - Max Buffer size.
      * Default to 0 i.e. maximum buffer size.
@@ -264,7 +262,6 @@ typedef enum _sai_wred_attr_t
      * @brief Marking percentage 0 ~ 100 for green ECT traffic
      *        In absence of this attribute, green ECT traffic
      *        would use SAI_WRED_ATTR_GREEN_DROP_PROBABILITY value as marking probability.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -277,7 +274,6 @@ typedef enum _sai_wred_attr_t
      * @brief Yellow minimum threshold for ECT traffic
      *        In absence of this attribute, yellow ECT traffic
      *        would use SAI_WRED_ATTR_YELLOW_MIN_THRESHOLD value as min threshold.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
@@ -293,7 +289,6 @@ typedef enum _sai_wred_attr_t
      * @brief Yellow maximum threshold for ECT traffic
      *        In absence of this attribute, yellow ECT traffic
      *        would use SAI_WRED_ATTR_YELLOW_MAX_THRESHOLD value as max threshold.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
@@ -309,7 +304,6 @@ typedef enum _sai_wred_attr_t
      * @brief Marking percentage 0 ~ 100 for yellow ECT traffic
      *        In absence of this attribute, yellow ECT traffic
      *        would use SAI_WRED_ATTR_YELLOW_DROP_PROBABILITY value as marking probability.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -322,7 +316,6 @@ typedef enum _sai_wred_attr_t
      * @brief Red minimum threshold for ECT traffic
      *        In absence of this attribute, red ECT traffic
      *        would use SAI_WRED_ATTR_RED_MIN_THRESHOLD value as min threshold.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
@@ -338,7 +331,6 @@ typedef enum _sai_wred_attr_t
      * @brief Red maximum threshold for ECT traffic
      *        In absence of this attribute, red ECT traffic
      *        would use SAI_WRED_ATTR_RED_MAX_THRESHOLD value as max threshold.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
@@ -354,7 +346,6 @@ typedef enum _sai_wred_attr_t
      * @brief Marking percentage 0 ~ 100 for red ECT traffic
      *        In absence of this attribute, red ECT traffic
      *        would use SAI_WRED_ATTR_RED_DROP_PROBABILITY value as marking probability.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -365,7 +356,6 @@ typedef enum _sai_wred_attr_t
 
     /**
      * @brief Color unaware minimum threshold for ECT traffic.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
@@ -379,7 +369,6 @@ typedef enum _sai_wred_attr_t
 
     /**
      * @brief Color unaware maximum threshold for ECT traffic.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * Range 1 - Max Buffer size.
      * default to 0 i.e Maximum buffer size
@@ -393,7 +382,6 @@ typedef enum _sai_wred_attr_t
 
     /**
      * @brief Marking percentage 0 ~ 100 for color unaware ECT traffic.
-     *        Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
