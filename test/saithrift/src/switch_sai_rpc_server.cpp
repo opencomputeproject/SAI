@@ -2833,6 +2833,9 @@ public:
               case SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE:
                   attr_list[i].value.u64 = attribute.value.u64;
                   break;
+              case SAI_SCHEDULER_ATTR_SCHEDULING_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
           }
       }
   }
