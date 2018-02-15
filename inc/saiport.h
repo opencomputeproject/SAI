@@ -1481,6 +1481,48 @@ typedef enum _sai_port_stat_t
     /** SAI port stat PFC 7 on to off rx pkts */
     SAI_PORT_STAT_PFC_7_ON2OFF_RX_PKTS,
 
+    /** Frames received that are not an integral number of octets in length and do not pass the FCS check */
+    SAI_PORT_STAT_DOT3_STATS_ALIGNMENT_ERRORS,
+
+    /** Frames received that are an integral number of octets in length but do not pass the FCS check */
+    SAI_PORT_STAT_DOT3_STATS_FCS_ERRORS,
+
+    /** Frames that are involved in a single collision, and are subsequently transmitted successfull */
+    SAI_PORT_STAT_DOT3_STATS_SINGLE_COLLISION_FRAMES,
+
+    /** Frames that are involved in a more than one collision collision, and are subsequently transmitted successfull */
+    SAI_PORT_STAT_DOT3_STATS_MULTIPLE_COLLISION_FRAMES,
+
+    /** Number of times that the SQE TEST ERROR is received */
+    SAI_PORT_STAT_DOT3_STATS_SQE_TEST_ERRORS,
+
+    /** Frames for which the first transmission attempt is delayed because the medium is busy */
+    SAI_PORT_STAT_DOT3_STATS_DEFERRED_TRANSMISSIONS,
+
+    /** Number of times that a collision is detected later than one slotTime into the transmission of a packet */
+    SAI_PORT_STAT_DOT3_STATS_LATE_COLLISIONS,
+
+    /** Frames for which transmission fails due to excessive collisions */
+    SAI_PORT_STAT_DOT3_STATS_EXCESSIVE_COLLISIONS,
+
+    /** Frames for which transmission fails due to an internal MAC sublayer transmit error */
+    SAI_PORT_STAT_DOT3_STATS_INTERNAL_MAC_TRANSMIT_ERRORS,
+
+    /** Number of times that the carrier sense condition was lost or never asserted when attempting to transmit a frame */
+    SAI_PORT_STAT_DOT3_STATS_CARRIER_SENSE_ERRORS,
+
+    /** Frames received that exceed the maximum permitted frame size */
+    SAI_PORT_STAT_DOT3_STATS_FRAME_TOO_LONGS,
+
+    /** Frames for which reception fails due to an internal MAC sublayer receive error */
+    SAI_PORT_STAT_DOT3_STATS_INTERNAL_MAC_RECEIVE_ERRORS,
+
+    /** Number of times there was an invalid data symbol, incremented at most once per carrier event */
+    SAI_PORT_STAT_DOT3_STATS_SYMBOL_ERRORS,
+
+    /** MAC Control frames received that contain an opcode that is not supported by this device */
+    SAI_PORT_STAT_DOT3_CONTROL_IN_UNKNOWN_OPCODES,
+
     /**
      * @brief Number of times port state changed from
      * high power mode to low power mode in TX direction [uint64_t]
