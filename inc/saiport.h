@@ -1487,10 +1487,10 @@ typedef enum _sai_port_stat_t
     /** Frames received that are an integral number of octets in length but do not pass the FCS check */
     SAI_PORT_STAT_DOT3_STATS_FCS_ERRORS,
 
-    /** Frames that are involved in a single collision, and are subsequently transmitted successfull */
+    /** Frames that are involved in a single collision, and are subsequently transmitted successfully */
     SAI_PORT_STAT_DOT3_STATS_SINGLE_COLLISION_FRAMES,
 
-    /** Frames that are involved in a more than one collision collision, and are subsequently transmitted successfull */
+    /** Frames that are involved in a more than one collision collision, and are subsequently transmitted successfully */
     SAI_PORT_STAT_DOT3_STATS_MULTIPLE_COLLISION_FRAMES,
 
     /** Number of times that the SQE TEST ERROR is received */
@@ -1499,7 +1499,7 @@ typedef enum _sai_port_stat_t
     /** Frames for which the first transmission attempt is delayed because the medium is busy */
     SAI_PORT_STAT_DOT3_STATS_DEFERRED_TRANSMISSIONS,
 
-    /** Number of times that a collision is detected later than one slotTime into the transmission of a packet */
+    /** Number of times that a collision is detected later than one slot time into the transmission of a packet */
     SAI_PORT_STAT_DOT3_STATS_LATE_COLLISIONS,
 
     /** Frames for which transmission fails due to excessive collisions */
