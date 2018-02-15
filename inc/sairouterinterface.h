@@ -231,6 +231,15 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_V6_MCAST_ENABLE,
 
     /**
+     * @brief Packet action when a packet ingress and gets routed on the same RIF
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_FORWARD
+     */
+    SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
