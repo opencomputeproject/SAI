@@ -694,7 +694,8 @@ typedef struct _sai_segment_list_t
 /**
  * @brief Defines a lane with its eye values
  */
-typedef struct _sai_port_lane_eye_values_t {
+typedef struct _sai_port_lane_eye_values_t
+{
     uint32_t lane_number;
     int32_t left;
     int32_t right;
@@ -718,7 +719,8 @@ typedef struct _sai_port_lane_eye_values_t {
  * gets such a return code, it may use the returned count member to
  * re-allocate the list and retry.
  */
-typedef struct _sai_port_eye_values_list_t {
+typedef struct _sai_port_eye_values_list_t
+{
     uint32_t count;
     sai_port_lane_eye_values_t *list;
 } sai_port_eye_values_list_t;
