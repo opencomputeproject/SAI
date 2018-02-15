@@ -692,6 +692,38 @@ typedef struct _sai_segment_list_t
 } sai_segment_list_t;
 
 /**
+ * @brief Defines a lane with its eye values
+ */
+typedef struct _sai_port_lane_eye_values_t {
+    uint32_t lane_number;
+    int32_t left;
+    int32_t right;
+    int32_t up;
+    int32_t down;
+} sai_port_lane_eye_values_t;
+
+/**
+ * @brief Defines a port's lanes eye values list
+ *
+ * In get_port_attribute function call, the count member defines the number
+ * of objects which will be returned to the caller in the list member. The
+ * caller must allocate the buffer for the list member and set the count
+ * member to the size of the allocated objects in the list member.
+ *
+ * If the size is large enough to accommodate the list of objects, the
+ * callee must fill the list member and set the count member to the actual
+ * number of objects filled. If the size is not large enough, the callee
+ * must set the count member to the actual number of objects filled in the
+ * list member and return #SAI_STATUS_BUFFER_OVERFLOW. Once the caller
+ * gets such a return code, it may use the returned count member to
+ * re-allocate the list and retry.
+ */
+typedef struct _sai_port_eye_values_list_t {
+    uint32_t count;
+    sai_port_lane_eye_values_t *list;
+} sai_port_eye_values_list_t;
+
+/**
  * @brief Data Type
  *
  * To use enum values as attribute value is sai_int32_t s32
@@ -734,7 +766,7 @@ typedef union _sai_attribute_value_t
     sai_tlv_list_t tlvlist;
     sai_segment_list_t segmentlist;
     sai_ip_address_list_t ipaddrlist;
-
+    sai_port_eye_values_list_t porteyevalues;
 } sai_attribute_value_t;
 
 typedef struct _sai_attribute_t
