@@ -164,6 +164,18 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_ENABLE_PFC_DLDR = 0x00000008,
 
     /**
+     * @brief Enable queue egress packets drop.
+     *
+     * True indicates to drop all the packets when they egress the queue.
+     * False by default indicates to forward all the egress packets.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_QUEUE_ATTR_DROP_PACKETS = 0x00000009,
+
+    /**
      * @brief End of attributes
      */
     SAI_QUEUE_ATTR_END,
