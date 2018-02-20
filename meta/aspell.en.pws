@@ -90,6 +90,7 @@ netdevs
 nexthop
 nexthopgroup
 objlist
+opcode
 optimizations
 outsegment
 param
@@ -102,6 +103,7 @@ samplepacket
 src
 stderr
 struct
+sublayer
 subnet
 subnets
 tx

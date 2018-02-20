@@ -23,6 +23,7 @@ ECMP - Equal Cost Multi-Path
 ECN - Explicit Congestion Notification
 EEE - Electrical and Electronics Engineering
 ERSPAN - Encapsulated Remote SPAN
+FCS - Frame Check Sequence
 FD - File Descriptor
 FDB - Forwarding Data Base
 FEC - Forward Error Correction
@@ -58,6 +59,7 @@ SDK - Software Development Kit
 SG - (S,G) Source-specific multicast
 SNMP - Simple Network Management Protocol
 SPAN - Switched Port Analyzer
+SQE - Signal Quality Errors
 SSH - Secure Shell
 STP - Spanning Tree Protocol
 TC - Traffic Control
