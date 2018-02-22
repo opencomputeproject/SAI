@@ -90,6 +90,8 @@ typedef enum _sai_lag_attr_t
      * @brief Port VLAN ID
      *
      * Untagged ingress frames are tagged with Port VLAN ID (PVID)
+     * Before adding a port as LAG member, the port PVID #SAI_PORT_ATTR_PORT_VLAN_ID
+     * has to be identical to the LAG PVID, otherwise it will be rejected.
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
