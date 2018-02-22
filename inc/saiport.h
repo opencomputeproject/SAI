@@ -169,6 +169,19 @@ typedef enum _sai_port_fec_mode_t
 } sai_port_fec_mode_t;
 
 /**
+ * @brief Priority flow control mode
+ */
+typedef enum _sai_port_priority_flow_control_mode_t
+{
+    /** Same value for RX/TX */
+    SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_COMBINED,
+
+    /** Separate values for RX/TX */
+    SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE,
+
+} sai_port_priority_flow_control_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -929,15 +942,49 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST,
 
     /**
+     * @brief Combined or separate Bit vectors for port PFC RX/TX
+     *
+     * @type sai_port_priority_flow_control_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_COMBINED
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE,
+
+    /**
      * @brief Bit vector enable/disable port PFC
      *
-     * Valid from bit 0 to bit 7.
+     * Valid from bit 0 to bit 7, for combined RX/TX control mode
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
+     * @validonly SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE == SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_COMBINED
      */
     SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL,
+
+    /**
+     * @brief Bit vector enable/disable port PFC RX
+     *
+     * Valid from bit 0 to bit 7, for separate RX/TX control mode
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE == SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_RX,
+
+    /**
+     * @brief Bit vector enable/disable port PFC TX
+     *
+     * Valid from bit 0 to bit 7, for separate RX/TX control mode
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE == SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_TX,
 
     /**
      * @brief User based Meta Data
