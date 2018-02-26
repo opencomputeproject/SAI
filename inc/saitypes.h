@@ -692,7 +692,8 @@ typedef struct _sai_segment_list_t
 } sai_segment_list_t;
 
 /**
- * @brief Defines a lane with its eye values with the values being in mV.
+ * @brief Defines a lane with its eye values with the values being in
+ * millivolts.
  */
 typedef struct _sai_port_lane_eye_values_t
 {
