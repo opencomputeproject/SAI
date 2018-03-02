@@ -1591,6 +1591,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MIN_BFD_TX,
 
     /**
+     * @brief Max number of mirror session NPU supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_MIRROR_SESSION,
+
+    /**
+     * @brief Max number of sampled mirror session NPU supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_SAMPLED_MIRROR_SESSION,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
