@@ -150,7 +150,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_TUNNEL_ID,
 
     /**
-     * @brief Next hop entry VNI
+     * @brief Next hop entry VNI (override tunnel mapper)
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
