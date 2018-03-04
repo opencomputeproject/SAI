@@ -252,21 +252,21 @@ status = create_route("100.100.3.0/24", vrid_1_egress, rif_1);
 status = create_route("100.100.4.0/24", vrid_1_egress, rif_2);
 
 /* create routes for vrid 2 ingress */
-status = create_route("100.100.1.1/32", vrid_1_ingress, nexthop_id_1);
-status = create_route("100.100.2.1/32", vrid_1_ingress, nexthop_id_2);
-status = create_route("100.100.3.0/24", vrid_1_ingress, rif_1);
-status = create_route("100.100.4.0/24", vrid_1_ingress, rif_2);
-status = create_route("100.102.1.0/24", vrid_1_ingress, rif_3);
+status = create_route("100.100.1.1/32", vrid_2_ingress, nexthop_id_1);
+status = create_route("100.100.2.1/32", vrid_2_ingress, nexthop_id_2);
+status = create_route("100.100.3.0/24", vrid_2_ingress, rif_1);
+status = create_route("100.100.4.0/24", vrid_2_ingress, rif_2);
+status = create_route("100.102.1.0/24", vrid_2_ingress, rif_3);
 
 /* create routes for vrid 2 egress */
-status = create_route("100.102.1.0/24", vrid_1_egress, rif_3);
+status = create_route("100.102.1.0/24", vrid_2_egress, rif_3);
 
 /* create routes fro vrid 3 ingress */
 status = create_route("100.101.2.1/32", vrid_3_ingress, nexthop_id_3);
-status = create_route("100.101.1.0/24", vrid_1_ingress, rif_4);
+status = create_route("100.101.1.0/24", vrid_3_ingress, rif_4);
 
 /* create routes for vrid 3 egress */
-status = create_route("100.101.1.0/24", vrid_1_egress, rif_4);
+status = create_route("100.101.1.0/24", vrid_3_egress, rif_4);
 ```
 
 Create QinQ router interface
