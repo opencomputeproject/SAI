@@ -169,6 +169,19 @@ typedef enum _sai_port_fec_mode_t
 } sai_port_fec_mode_t;
 
 /**
+ * @brief Priority flow control mode
+ */
+typedef enum _sai_port_priority_flow_control_mode_t
+{
+    /** Same value for RX/TX */
+    SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_COMBINED,
+
+    /** Separate values for RX/TX */
+    SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE,
+
+} sai_port_priority_flow_control_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -929,15 +942,49 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST,
 
     /**
+     * @brief Combined or separate Bit vectors for port PFC RX/TX
+     *
+     * @type sai_port_priority_flow_control_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_COMBINED
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE,
+
+    /**
      * @brief Bit vector enable/disable port PFC
      *
-     * Valid from bit 0 to bit 7.
+     * Valid from bit 0 to bit 7, for combined RX/TX control mode
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
+     * @validonly SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE == SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_COMBINED
      */
     SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL,
+
+    /**
+     * @brief Bit vector enable/disable port PFC RX
+     *
+     * Valid from bit 0 to bit 7, for separate RX/TX control mode
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE == SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_RX,
+
+    /**
+     * @brief Bit vector enable/disable port PFC TX
+     *
+     * Valid from bit 0 to bit 7, for separate RX/TX control mode
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE == SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_TX,
 
     /**
      * @brief User based Meta Data
@@ -1480,6 +1527,48 @@ typedef enum _sai_port_stat_t
 
     /** SAI port stat PFC 7 on to off rx pkts */
     SAI_PORT_STAT_PFC_7_ON2OFF_RX_PKTS,
+
+    /** Frames received that are not an integral number of octets in length and do not pass the FCS check */
+    SAI_PORT_STAT_DOT3_STATS_ALIGNMENT_ERRORS,
+
+    /** Frames received that are an integral number of octets in length but do not pass the FCS check */
+    SAI_PORT_STAT_DOT3_STATS_FCS_ERRORS,
+
+    /** Frames that are involved in a single collision, and are subsequently transmitted successfully */
+    SAI_PORT_STAT_DOT3_STATS_SINGLE_COLLISION_FRAMES,
+
+    /** Frames that are involved in a more than one collision collision, and are subsequently transmitted successfully */
+    SAI_PORT_STAT_DOT3_STATS_MULTIPLE_COLLISION_FRAMES,
+
+    /** Number of times that the SQE TEST ERROR is received */
+    SAI_PORT_STAT_DOT3_STATS_SQE_TEST_ERRORS,
+
+    /** Frames for which the first transmission attempt is delayed because the medium is busy */
+    SAI_PORT_STAT_DOT3_STATS_DEFERRED_TRANSMISSIONS,
+
+    /** Number of times that a collision is detected later than one slot time into the transmission of a packet */
+    SAI_PORT_STAT_DOT3_STATS_LATE_COLLISIONS,
+
+    /** Frames for which transmission fails due to excessive collisions */
+    SAI_PORT_STAT_DOT3_STATS_EXCESSIVE_COLLISIONS,
+
+    /** Frames for which transmission fails due to an internal MAC sublayer transmit error */
+    SAI_PORT_STAT_DOT3_STATS_INTERNAL_MAC_TRANSMIT_ERRORS,
+
+    /** Number of times that the carrier sense condition was lost or never asserted when attempting to transmit a frame */
+    SAI_PORT_STAT_DOT3_STATS_CARRIER_SENSE_ERRORS,
+
+    /** Frames received that exceed the maximum permitted frame size */
+    SAI_PORT_STAT_DOT3_STATS_FRAME_TOO_LONGS,
+
+    /** Frames for which reception fails due to an internal MAC sublayer receive error */
+    SAI_PORT_STAT_DOT3_STATS_INTERNAL_MAC_RECEIVE_ERRORS,
+
+    /** Number of times there was an invalid data symbol, incremented at most once per carrier event */
+    SAI_PORT_STAT_DOT3_STATS_SYMBOL_ERRORS,
+
+    /** MAC Control frames received that contain an opcode that is not supported by this device */
+    SAI_PORT_STAT_DOT3_CONTROL_IN_UNKNOWN_OPCODES,
 
     /**
      * @brief Number of times port state changed from

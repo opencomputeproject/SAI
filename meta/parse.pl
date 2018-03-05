@@ -2389,7 +2389,7 @@ sub CreateApisQuery
         WriteSource "    {";
         WriteSource "        count++;";
         WriteSource "        const char *name = sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_status_t, status);";
-        WriteSource "        SAI_META_LOG_WARN(\"failed to query api $api: %s (%d)\", name, status);";
+        WriteSource "        SAI_META_LOG_NOTICE(\"failed to query api $api: %s (%d)\", name, status);";
         WriteSource "    }";
     }
 
