@@ -1624,7 +1624,7 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_MAX_SAMPLED_MIRROR_SESSION,
-    
+
     /**
      * @brief End of attributes
      */
