@@ -132,6 +132,9 @@ typedef enum _sai_next_hop_group_attr_t
 
 } sai_next_hop_group_attr_t;
 
+/**
+ * @brief Attribute id for next hop group member
+ */
 typedef enum _sai_next_hop_group_member_attr_t
 {
     /**
