@@ -1601,6 +1601,7 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE,
 
+    /**
      * @brief Default VXLAN router MAC (inner destination MAC for VXLAN encapsulation)
      *
      * @type sai_mac_t
