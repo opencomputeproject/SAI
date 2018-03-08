@@ -62,6 +62,19 @@ typedef enum _sai_erspan_encapsulation_type_t
 } sai_erspan_encapsulation_type_t;
 
 /**
+ * @brief Mirror session congestion mode
+ */
+typedef enum _sai_mirror_session_congestion_mode_t
+{
+    /** Mirroring traffic is independent from original traffic, original traffic not affected by congestion of mirroring traffic */
+    SAI_MIRROR_SESSION_CONGESTION_MODE_INDEPENDENT,
+
+    /** Mirroring traffic is correlated with original traffic, and can cause back pressure and discards of original traffic if there is congestion */
+    SAI_MIRROR_SESSION_CONGESTION_MODE_CORRELATED,
+
+} sai_mirror_session_congestion_mode_t;
+
+/**
  * @brief SAI attributes for mirror session
  */
 typedef enum _sai_mirror_session_attr_t
@@ -111,6 +124,15 @@ typedef enum _sai_mirror_session_attr_t
      * @default 1
      */
     SAI_MIRROR_SESSION_ATTR_SAMPLE_RATE,
+
+    /**
+     * @brief Controls whether mirroring traffic can cause back pressure and packet drop of the original traffic
+     *
+     * @type sai_mirror_session_congestion_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_MIRROR_SESSION_CONGESTION_MODE_INDEPENDENT
+     */
+     SAI_MIRROR_SESSION_ATTR_CONGESTION_MODE,
 
     /**
      * @brief Class-of-Service (Traffic Class)
