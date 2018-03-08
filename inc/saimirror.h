@@ -132,7 +132,7 @@ typedef enum _sai_mirror_session_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_MIRROR_SESSION_CONGESTION_MODE_INDEPENDENT
      */
-     SAI_MIRROR_SESSION_ATTR_CONGESTION_MODE,
+    SAI_MIRROR_SESSION_ATTR_CONGESTION_MODE,
 
     /**
      * @brief Class-of-Service (Traffic Class)
