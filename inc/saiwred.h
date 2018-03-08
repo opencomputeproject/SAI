@@ -228,6 +228,181 @@ typedef enum _sai_wred_attr_t
     SAI_WRED_ATTR_ECN_MARK_MODE = 0x0000000d,
 
     /**
+     * @brief Green minimum threshold bytes for ECT traffic.
+     *        In absence of this attribute, green ECT traffic
+     *        would use SAI_WRED_ATTR_GREEN_MIN_THRESHOLD value as min threshold.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * Range 1 - Max Buffer size.
+     *
+     * Default to 0 i.e. maximum buffer size.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_GREEN_MIN_THRESHOLD = 0x0000000e,
+
+    /**
+     * @brief Green maximum threshold for ECT traffic
+     *        In absence of this attribute, green ECT traffic
+     *        would use SAI_WRED_ATTR_GREEN_MAX_THRESHOLD value as max threshold.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * Range 1 - Max Buffer size.
+     * Default to 0 i.e. maximum buffer size.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_GREEN_MAX_THRESHOLD = 0x0000000f,
+
+    /**
+     * @brief Marking percentage 0 ~ 100 for green ECT traffic
+     *        In absence of this attribute, green ECT traffic
+     *        would use SAI_WRED_ATTR_GREEN_DROP_PROBABILITY value as marking probability.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_GREEN_MARK_PROBABILITY = 0x00000010,
+
+    /**
+     * @brief Yellow minimum threshold for ECT traffic
+     *        In absence of this attribute, yellow ECT traffic
+     *        would use SAI_WRED_ATTR_YELLOW_MIN_THRESHOLD value as min threshold.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * Range 1 - Max Buffer size.
+     * default to 0 i.e Maximum buffer size
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_YELLOW_MIN_THRESHOLD = 0x00000011,
+
+    /**
+     * @brief Yellow maximum threshold for ECT traffic
+     *        In absence of this attribute, yellow ECT traffic
+     *        would use SAI_WRED_ATTR_YELLOW_MAX_THRESHOLD value as max threshold.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * Range 1 - Max Buffer size.
+     * default to 0 i.e Maximum buffer size
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_YELLOW_MAX_THRESHOLD = 0x00000012,
+
+    /**
+     * @brief Marking percentage 0 ~ 100 for yellow ECT traffic
+     *        In absence of this attribute, yellow ECT traffic
+     *        would use SAI_WRED_ATTR_YELLOW_DROP_PROBABILITY value as marking probability.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_YELLOW or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_YELLOW_MARK_PROBABILITY = 0x00000013,
+
+    /**
+     * @brief Red minimum threshold for ECT traffic
+     *        In absence of this attribute, red ECT traffic
+     *        would use SAI_WRED_ATTR_RED_MIN_THRESHOLD value as min threshold.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * Range 1 - Max Buffer size.
+     * default to 0 i.e Maximum buffer size
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_RED_MIN_THRESHOLD = 0x00000014,
+
+    /**
+     * @brief Red maximum threshold for ECT traffic
+     *        In absence of this attribute, red ECT traffic
+     *        would use SAI_WRED_ATTR_RED_MAX_THRESHOLD value as max threshold.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * Range 1 - Max Buffer size.
+     * default to 0 i.e Maximum buffer size
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_RED_MAX_THRESHOLD = 0x00000015,
+
+    /**
+     * @brief Marking percentage 0 ~ 100 for red ECT traffic
+     *        In absence of this attribute, red ECT traffic
+     *        would use SAI_WRED_ATTR_RED_DROP_PROBABILITY value as marking probability.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_GREEN_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_YELLOW_RED or SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_RED_MARK_PROBABILITY = 0x00000016,
+
+    /**
+     * @brief Color unaware minimum threshold for ECT traffic.
+     *
+     * Range 1 - Max Buffer size.
+     * default to 0 i.e Maximum buffer size
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_COLOR_UNAWARE_MIN_THRESHOLD = 0x00000017,
+
+    /**
+     * @brief Color unaware maximum threshold for ECT traffic.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * Range 1 - Max Buffer size.
+     * default to 0 i.e Maximum buffer size
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_COLOR_UNAWARE_MAX_THRESHOLD = 0x00000018,
+
+    /**
+     * @brief Marking percentage 0 ~ 100 for color unaware ECT traffic.
+     *
+     * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 100
+     * @validonly SAI_WRED_ATTR_ECN_MARK_MODE == SAI_ECN_MARK_MODE_ALL
+     */
+    SAI_WRED_ATTR_ECN_COLOR_UNAWARE_MARK_PROBABILITY = 0x00000019,
+
+    /**
      * @brief End of attributes
      */
     SAI_WRED_ATTR_END,
