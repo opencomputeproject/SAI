@@ -236,6 +236,16 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_INGRESS_FILTERING,
 
     /**
+     * @brief Egress filtering (drop frames with unknown VLANs at egress)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     */
+    SAI_BRIDGE_PORT_ATTR_EGRESS_FILTERING,
+
+    /**
      * @brief End of attributes
      */
     SAI_BRIDGE_PORT_ATTR_END,
