@@ -1591,6 +1591,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MIN_BFD_TX,
 
     /**
+     * @brief Apply ECN thresholds for ECT traffic.
+     *        Attribute controls whether ECT traffic needs to subjected to WRED
+     *        thresholds or be subjected to ECN thresholds.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE,
+
+    /**
      * @brief Default VXLAN router MAC (inner destination MAC for VXLAN encapsulation)
      *
      * @type sai_mac_t
