@@ -539,7 +539,7 @@ typedef sai_status_t (*sai_clear_bfd_session_stats_fn)(
  */
 typedef void (*sai_bfd_session_state_change_notification_fn)(
         _In_ uint32_t count,
-        _In_ sai_bfd_session_state_notification_t *data);
+        _In_ const sai_bfd_session_state_notification_t *data);
 
 /**
  * @brief BFD method table retrieved with sai_api_query()

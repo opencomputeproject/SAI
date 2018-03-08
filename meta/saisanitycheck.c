@@ -2224,6 +2224,12 @@ void check_attr_sai_pointer(
             {
                 META_MD_ASSERT_FAIL(md, "all pointers should be CREATE_AND_SET");
             }
+
+            META_ASSERT_TRUE(md->notificationtype >= 0, "notification type should be set to value on pointer");
+        }
+        else
+        {
+            META_ASSERT_TRUE(md->notificationtype == -1, "notification type should not be set to value on non pointer");
         }
 
         return;
@@ -2498,6 +2504,48 @@ void check_attr_default_attrvalue(
             sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename);
 }
 
+void check_attr_fdb_flush(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->objecttype != SAI_OBJECT_TYPE_FDB_FLUSH)
+    {
+        return;
+    }
+
+    META_ASSERT_FALSE(md->isconditional, "flush attributes should not be conditional");
+    META_ASSERT_FALSE(md->isvalidonly, "flush attributes should not be validonly");
+
+    /*
+     * Primitive check can be relaxed in the future.
+     */
+    META_ASSERT_TRUE(md->isprimitive, "flush attributes should be primitives");
+    META_ASSERT_TRUE(md->flags == SAI_ATTR_FLAGS_CREATE_ONLY, "flush attributes should be create only");
+}
+
+void check_attr_hostif_packet(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->objecttype != SAI_OBJECT_TYPE_HOSTIF_PACKET)
+    {
+        return;
+    }
+
+    META_ASSERT_FALSE(md->isvalidonly, "hostif packet attributes should not be validonly");
+
+    /*
+     * Primitive check can be relaxed in the future.
+     */
+    META_ASSERT_TRUE(md->isprimitive, "hostif packet attributes should be primitives");
+
+    bool flag = SAI_HAS_FLAG_READ_ONLY(md->flags) || SAI_HAS_FLAG_CREATE_ONLY(md->flags);
+
+    META_ASSERT_TRUE(flag, "hostif packet attributes should be read only or create only");
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2536,6 +2584,8 @@ void check_single_attribute(
     check_attr_is_primitive(md);
     check_attr_condition_met(md);
     check_attr_default_attrvalue(md);
+    check_attr_fdb_flush(md);
+    check_attr_hostif_packet(md);
 
     define_attr(md);
 }

@@ -24,6 +24,7 @@ ECN - Explicit Congestion Notification
 ECT - ECN Capable Transport
 EEE - Electrical and Electronics Engineering
 ERSPAN - Encapsulated Remote SPAN
+FCS - Frame Check Sequence
 FD - File Descriptor
 FDB - Forwarding Data Base
 FEC - Forward Error Correction
@@ -59,6 +60,7 @@ SDK - Software Development Kit
 SG - (S,G) Source-specific multicast
 SNMP - Simple Network Management Protocol
 SPAN - Switched Port Analyzer
+SQE - Signal Quality Errors
 SSH - Secure Shell
 STP - Spanning Tree Protocol
 TC - Traffic Control
@@ -72,6 +74,7 @@ UDP - User Datagram Protocol
 VNI - Virtual Network Interface
 VR - Virtual Router
 VRRP - Virtual Router Redundancy Protocol
+VXLAN - Virtual Extensible LAN
 WCMP - Weighted Cost Multipath
 WRED - Weighted Random Early Detection
 WWW - World Wide Web

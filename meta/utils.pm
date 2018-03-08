@@ -60,13 +60,13 @@ sub LogInfo
 sub LogWarning
 {
     $warnings++;
-    print color('bright_yellow') . "@_" . color('reset') . "\n";
+    print color('bright_yellow') . "WARNING: @_" . color('reset') . "\n";
 }
 
 sub LogError
 {
     $errors++;
-    print color('bright_red') . "@_" . color('reset') . "\n";
+    print color('bright_red') . "ERROR: @_" . color('reset') . "\n";
 }
 
 sub WriteFile

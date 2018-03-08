@@ -1516,6 +1516,15 @@ sub ProcessAttrName
     return "\"$attr\"";
 }
 
+sub ProcessNotificationType
+{
+    my ($attr, $type) = @_;
+
+    return "SAI_SWITCH_NOTIFICATION_TYPE_$1" if $attr =~ /^SAI_SWITCH_ATTR_(\w+)_NOTIFY$/;
+
+    return "-1";
+}
+
 sub ProcessIsAclField
 {
     my $attr = shift;
@@ -1617,6 +1626,7 @@ sub ProcessSingleObjectType
         my $isaclaction     = ProcessIsAclAction($attr);
         my $brief           = ProcessBrief($attr, $meta{brief});
         my $isprimitive     = ProcessIsPrimitive($attr, $meta{type});
+        my $ntftype         = ProcessNotificationType($attr, $meta{type});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -1665,6 +1675,7 @@ sub ProcessSingleObjectType
         WriteSource "    .isreadonly                    = $isreadonly,";
         WriteSource "    .iskey                         = $iskey,";
         WriteSource "    .isprimitive                   = $isprimitive,";
+        WriteSource "    .notificationtype              = $ntftype,";
 
         WriteSource "};";
 
@@ -2378,7 +2389,7 @@ sub CreateApisQuery
         WriteSource "    {";
         WriteSource "        count++;";
         WriteSource "        const char *name = sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_status_t, status);";
-        WriteSource "        SAI_META_LOG_WARN(\"failed to query api $api: %s (%d)\", name, status);";
+        WriteSource "        SAI_META_LOG_NOTICE(\"failed to query api $api: %s (%d)\", name, status);";
         WriteSource "    }";
     }
 
@@ -3107,9 +3118,9 @@ sub CreateObjectTypeMap
 # MAIN
 #
 
-CheckHeadersStyle() if not defined $optionDisableStyleCheck;
-
 ExtractApiToObjectMap();
+
+CheckHeadersStyle() if not defined $optionDisableStyleCheck;
 
 GetStructLists();
 

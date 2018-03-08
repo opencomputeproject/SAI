@@ -101,6 +101,18 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TRUNCATE_SIZE,
 
     /**
+     * @brief Mirror sample rate. Every 1/sample_rate the packets will be mirrored.
+     *
+     * Value 0 to no sampling
+     * Value 1 to every packet sampling (normal mirror)
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1
+     */
+    SAI_MIRROR_SESSION_ATTR_SAMPLE_RATE,
+
+    /**
      * @brief Class-of-Service (Traffic Class)
      *
      * @type sai_uint8_t
