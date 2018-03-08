@@ -241,7 +241,7 @@ typedef enum _sai_bridge_port_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
      */
     SAI_BRIDGE_PORT_ATTR_EGRESS_FILTERING,
 
