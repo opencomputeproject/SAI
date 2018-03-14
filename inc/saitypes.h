@@ -241,12 +241,6 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_MAX                      = 70,
 } sai_object_type_t;
 
-typedef struct _sai_u8_list_t
-{
-    uint32_t count;
-    uint8_t *list;
-} sai_u8_list_t;
-
 /**
  * @brief Defines a s8 list or string
  *
@@ -258,36 +252,44 @@ typedef struct _sai_s8_list_t
     int8_t *list;
 } sai_s8_list_t;
 
+/**
+ * @brief Defines a u16 list or string
+ *
+ * String should be null terminated and count should include '\0'.
+ */
 typedef struct _sai_u16_list_t
 {
     uint32_t count;
     uint16_t *list;
 } sai_u16_list_t;
 
+/**
+ * @brief Defines a u16 list or string
+ *
+ * String should be null terminated and count should include '\0'.
+ */
 typedef struct _sai_s16_list_t
 {
     uint32_t count;
     int16_t *list;
 } sai_s16_list_t;
 
+/**
+ * @brief Defines a u32 list or string
+ *
+ * String should be null terminated and count should include '\0'.
+ */
 typedef struct _sai_u32_list_t
 {
     uint32_t count;
     uint32_t *list;
 } sai_u32_list_t;
 
-typedef struct _sai_s32_list_t
-{
-    uint32_t count;
-    int32_t *list;
-} sai_s32_list_t;
-
-typedef struct _sai_u32_range_t
-{
-    uint32_t min;
-    uint32_t max;
-} sai_u32_range_t;
-
+/**
+ * @brief Defines a s32 range
+ *
+ * Range defined by two integer min and max.
+ */
 typedef struct _sai_s32_range_t
 {
     int32_t min;
@@ -307,6 +309,9 @@ typedef struct _sai_vlan_list_t
 
 } sai_vlan_list_t;
 
+/**
+ * @brief IP address family
+ */
 typedef enum _sai_ip_addr_family_t
 {
     SAI_IP_ADDR_FAMILY_IPV4,
@@ -315,6 +320,9 @@ typedef enum _sai_ip_addr_family_t
 
 } sai_ip_addr_family_t;
 
+/**
+ * @brief Defines a ip address data structure
+ */
 typedef struct _sai_ip_address_t
 {
     sai_ip_addr_family_t addr_family;
@@ -324,13 +332,24 @@ typedef struct _sai_ip_address_t
     } addr;
 } sai_ip_address_t;
 
+/**
+ * @brief Defines a ip prefix data structure 
+ * contain address and mask
+ */
 typedef struct _sai_ip_prefix_t
 {
+    /**
+    * @brief IP address
+    */
     sai_ip_addr_family_t addr_family;
     union _ip_prefix_addr {
         sai_ip4_t ip4;
         sai_ip6_t ip6;
     } addr;
+    
+    /**
+    * @brief IP Mask
+    */
     union _ip_prefix_mask {
         sai_ip4_t ip4;
         sai_ip6_t ip6;
@@ -479,9 +498,12 @@ typedef struct _sai_qos_map_params_t
 
 } sai_qos_map_params_t;
 
+/**
+* @brief Defines Qos map data structure contain key value pair.
+*/
 typedef struct _sai_qos_map_t
 {
-    /** Input parameters to match */
+    /** Input map parameters */
     sai_qos_map_params_t key;
 
     /** Output map parameters */
@@ -489,6 +511,9 @@ typedef struct _sai_qos_map_t
 
 } sai_qos_map_t;
 
+/**
+* @brief Defines Qos map list data structure.
+*/
 typedef struct _sai_qos_map_list_t
 {
     /** Number of entries in the map */
@@ -499,6 +524,9 @@ typedef struct _sai_qos_map_list_t
 
 } sai_qos_map_list_t;
 
+/**
+* @brief Defines map data structure contain key value pair.
+*/
 typedef struct _sai_map_t
 {
     /** Input key value */
@@ -509,6 +537,9 @@ typedef struct _sai_map_t
 
 } sai_map_t;
 
+/**
+* @brief Defines map list data structure.
+*/
 typedef struct _sai_map_list_t
 {
     /** Number of entries in the map */
@@ -722,12 +753,18 @@ typedef union _sai_attribute_value_t
 
 } sai_attribute_value_t;
 
+/**
+ * @brief Defines sai_attribute data structure contain Id, Value Pair
+ */
 typedef struct _sai_attribute_t
 {
     sai_attr_id_t id;
     sai_attribute_value_t value;
 } sai_attribute_t;
 
+/**
+* @brief Bulk operation error mode
+*/
 typedef enum _sai_bulk_op_error_mode_t
 {
     /**
