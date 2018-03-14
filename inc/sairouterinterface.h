@@ -240,6 +240,19 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION,
 
     /**
+     * @brief RIF creation is a virtual RIF.
+     *
+     * Create a Virtual RIF object, which only programs the ingress router mac.
+     * This simplifies the management of VRRP backup role/master role as defined
+     * by RFC 5798 (or similar proprietary protocols).
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ROUTER_INTERFACE_ATTR_IS_VIRTUAL,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
