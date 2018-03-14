@@ -169,6 +169,7 @@ sai_status_t sai_bulk_get_attribute(
 /**
  * @brief Query attribute capability
  *
+ * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
  * @param[in] attr_id SAI attribute ID
  * @param[out] attr_capability Capability per operation
@@ -176,6 +177,7 @@ sai_status_t sai_bulk_get_attribute(
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_query_attribute_capability(
+        _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _In_ sai_attr_id_t attr_id,
         _Out_ sai_attr_capability_t *attr_capability);
@@ -183,6 +185,7 @@ sai_status_t sai_query_attribute_capability(
 /**
  * @brief Query an enum attribute (enum or enum list) list of implemented enum values
  *
+ * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
  * @param[in] attr_id SAI attribute ID
  * @param[inout] enum_values_capability List of implemented enum values
@@ -190,6 +193,7 @@ sai_status_t sai_query_attribute_capability(
  * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if list size insufficient, failure status code on error
  */
 sai_status_t sai_query_attribute_enum_values_capability(
+        _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _In_ sai_attr_id_t attr_id,
         _Inout_ sai_s32_list_t *enum_values_capability);
