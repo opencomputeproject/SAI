@@ -1643,7 +1643,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_s32_list_t sai_stats_mode_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_SUPPORTED_STATISTICS_EXTENDED_MODES,
+    SAI_SWITCH_ATTR_SUPPORTED_EXTENDED_STATS_MODE,
 
     /**
      * @brief End of attributes
