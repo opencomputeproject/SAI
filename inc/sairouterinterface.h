@@ -242,9 +242,9 @@ typedef enum _sai_router_interface_attr_t
     /**
      * @brief RIF creation is a virtual RIF.
      *
-     * Create a Virtual RIF object, which only programs the ingress router mac.
-     * This simplifies the management of VRRP backup role/master role as defined
-     * by RFC 5798 (or similar proprietary protocols).
+     * Create a Virtual RIF object, which only programs the ingress router MAC.
+     * This simplifies the management of VRRP's master role configuration to the
+     * SAI adapter, as defined by RFC 5798 (or similar proprietary protocols).
      *
      * @type bool
      * @flags CREATE_ONLY
