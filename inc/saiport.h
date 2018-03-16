@@ -1651,7 +1651,7 @@ typedef sai_status_t (*sai_get_port_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get port statistics counters.
+ * @brief Get port statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] port_id Port id
  * @param[in] number_of_counters Number of counters in the array
@@ -1664,6 +1664,24 @@ typedef sai_status_t (*sai_get_port_stats_fn)(
         _In_ sai_object_id_t port_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_port_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get port statistics counters extended.
+ *
+ * @param[in] port_id Port id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_port_stats_ext_fn)(
+        _In_ sai_object_id_t port_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_port_stat_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -1889,7 +1907,7 @@ typedef sai_status_t (*sai_get_port_pool_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get port pool statistics counters.
+ * @brief Get port pool statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] port_pool_id Port pool id
  * @param[in] number_of_counters Number of counters in the array
@@ -1902,6 +1920,24 @@ typedef sai_status_t (*sai_get_port_pool_stats_fn)(
         _In_ sai_object_id_t port_pool_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_port_pool_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get port pool statistics counters extended.
+ *
+ * @param[in] port_pool_id Port pool id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_port_pool_stats_ext_fn)(
+        _In_ sai_object_id_t port_pool_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_port_pool_stat_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -1928,6 +1964,7 @@ typedef struct _sai_port_api_t
     sai_set_port_attribute_fn         set_port_attribute;
     sai_get_port_attribute_fn         get_port_attribute;
     sai_get_port_stats_fn             get_port_stats;
+    sai_get_port_stats_ext_fn         get_port_stats_ext;
     sai_clear_port_stats_fn           clear_port_stats;
     sai_clear_port_all_stats_fn       clear_port_all_stats;
     sai_create_port_pool_fn           create_port_pool;
@@ -1935,6 +1972,7 @@ typedef struct _sai_port_api_t
     sai_set_port_pool_attribute_fn    set_port_pool_attribute;
     sai_get_port_pool_attribute_fn    get_port_pool_attribute;
     sai_get_port_pool_stats_fn        get_port_pool_stats;
+    sai_get_port_pool_stats_ext_fn    get_port_pool_stats_ext;
     sai_clear_port_pool_stats_fn      clear_port_pool_stats;
 
 } sai_port_api_t;

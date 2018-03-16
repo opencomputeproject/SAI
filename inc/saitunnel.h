@@ -691,7 +691,7 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get tunnel statistics counters.
+ * @brief Get tunnel statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] tunnel_id Tunnel id
  * @param[in] number_of_counters Number of counters in the array
@@ -704,6 +704,24 @@ typedef sai_status_t (*sai_get_tunnel_stats_fn)(
         _In_ sai_object_id_t tunnel_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_tunnel_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get tunnel statistics counters extended.
+ *
+ * @param[in] tunnel_id Tunnel id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tunnel_stats_ext_fn)(
+        _In_ sai_object_id_t tunnel_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_tunnel_stat_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -925,6 +943,7 @@ typedef struct _sai_tunnel_api_t
     sai_set_tunnel_attribute_fn                  set_tunnel_attribute;
     sai_get_tunnel_attribute_fn                  get_tunnel_attribute;
     sai_get_tunnel_stats_fn                      get_tunnel_stats;
+    sai_get_tunnel_stats_ext_fn                  get_tunnel_stats_ext;
     sai_clear_tunnel_stats_fn                    clear_tunnel_stats;
     sai_create_tunnel_term_table_entry_fn        create_tunnel_term_table_entry;
     sai_remove_tunnel_term_table_entry_fn        remove_tunnel_term_table_entry;
