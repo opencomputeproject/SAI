@@ -802,6 +802,19 @@ typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
+typedef enum _sai_stats_mode_t
+{
+    /**
+     * @brief Read statistics
+     */
+    SAI_STATS_MODE_READ,
+
+    /**
+     * @brief Read and clear after reading
+     */
+    SAI_STATS_MODE_READ_AND_CLEAR,
+} sai_stats_mode_t;
+
 /**
  * @}
  */

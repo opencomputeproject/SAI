@@ -1591,6 +1591,61 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MIN_BFD_TX,
 
     /**
+     * @brief Apply ECN thresholds for ECT traffic.
+     *        Attribute controls whether ECT traffic needs to subjected to WRED
+     *        thresholds or be subjected to ECN thresholds.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE,
+
+    /**
+     * @brief Default VXLAN router MAC (inner destination MAC for VXLAN encapsulation)
+     *
+     * @type sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default vendor
+     */
+    SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC,
+
+    /**
+     * @brief Default VXLAN destination UDP port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 4789
+     */
+    SAI_SWITCH_ATTR_VXLAN_DEFAULT_PORT,
+
+    /**
+     * @brief Max number of mirror session NPU supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_MIRROR_SESSION,
+
+    /**
+     * @brief Max number of sampled mirror session NPU supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_SAMPLED_MIRROR_SESSION,
+
+    /**
+     * @brief Get the list of supported get statistics extended modes
+     *        Empty list should be returned if get statistics extended is not supported at all
+     *
+     * @type sai_s32_list_t sai_stats_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_EXTENDED_STATS_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

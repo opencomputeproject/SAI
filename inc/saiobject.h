@@ -62,6 +62,27 @@ typedef struct _sai_object_key_t
 } sai_object_key_t;
 
 /**
+ * @brief Structure for attribute capabilities per operation
+ */
+typedef struct _sai_attr_capability_t
+{
+    /**
+     * @brief Create is implemented
+     */
+    bool create_implemented;
+
+    /**
+     * @brief Set is implemented
+     */
+    bool set_implemented;
+
+    /**
+     * @brief Get is implemented
+     */
+    bool get_implemented;
+} sai_attr_capability_t;
+
+/**
  * @brief Get maximum number of attributes for an object type
  *
  * @param[in] switch_id SAI Switch object id
@@ -140,10 +161,42 @@ sai_status_t sai_bulk_get_attribute(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _In_ uint32_t object_count,
-        _In_ sai_object_key_t *object_key,
+        _In_ const sai_object_key_t *object_key,
         _Inout_ uint32_t *attr_count,
         _Inout_ sai_attribute_t **attr_list,
         _Inout_ sai_status_t *object_statuses);
+
+/**
+ * @brief Query attribute capability
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[in] attr_id SAI attribute ID
+ * @param[out] attr_capability Capability per operation
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+sai_status_t sai_query_attribute_capability(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ sai_attr_id_t attr_id,
+        _Out_ sai_attr_capability_t *attr_capability);
+
+/**
+ * @brief Query an enum attribute (enum or enum list) list of implemented enum values
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[in] attr_id SAI attribute ID
+ * @param[inout] enum_values_capability List of implemented enum values
+ *
+ * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if list size insufficient, failure status code on error
+ */
+sai_status_t sai_query_attribute_enum_values_capability(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ sai_attr_id_t attr_id,
+        _Inout_ sai_s32_list_t *enum_values_capability);
 
 /**
  * @}

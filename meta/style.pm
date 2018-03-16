@@ -224,13 +224,13 @@ sub CheckFunctionsParams
         next if not $fname =~ /_fn$/; # below don't apply for global functions
 
         if (not $fnparams =~ /^(\w+)(| attr| attr_count attr_list| switch_id attr_count attr_list)$/ and
-            not $fname =~ /_(stats|notification)_fn$|^sai_(send|recv|bulk)_|^sai_meta/)
+            not $fname =~ /_(stats|stats_ext|notification)_fn$|^sai_(send|recv|bulk)_|^sai_meta/)
         {
             LogWarning "wrong param names: $fnparams: $fname";
             LogWarning " expected: $params[0](| attr| attr_count attr_list| switch_id attr_count attr_list)";
         }
 
-        if ($fname =~ /^sai_(get|set|create|remove)_(\w+?)(_attribute)?(_stats)?_fn/)
+        if ($fname =~ /^sai_(get|set|create|remove)_(\w+?)(_attribute)?(_stats|_stats_ext)?_fn/)
         {
             my $pattern = $2;
             my $first = $params[0];
@@ -350,6 +350,15 @@ sub CheckDoxygenCommentFormating
     }
 }
 
+sub IsObjectName
+{
+    my $ot = shift;
+
+    return 1 if defined $main::OBJTOAPIMAP{$ot} or defined $main::OBJTOAPIMAP{uc("SAI_OBJECT_TYPE_".$ot)};
+
+    return 0;
+}
+
 sub CheckFunctionNaming
 {
     my ($header, $n, $line) = @_;
@@ -359,12 +368,34 @@ sub CheckFunctionNaming
     my $typename = $1;
     my $name = $2;
 
+    if ($name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|remove_all_neighbor_entries|profile_get_value|profile_get_next_value)$/)
+    {
+        # ok
+    }
+    elsif ($name =~/^(get|clear)_(\w+?)_(all_)?stats(_ext)?$/)
+    {
+        LogWarning "not object name $2 in $name" if not IsObjectName($2);
+    }
+    elsif ($name =~ /^(create|remove|get|set)_(\w+?)(_attribute)?$/)
+    {
+        my $n = $2;
+
+        $n =~ s/_entries$/_entry/ if $typename =~/^bulk/;
+        $n =~ s/s$// if $typename =~/^bulk/;
+
+        LogWarning "not object name $n in $name" if not IsObjectName($n);
+    }
+    else
+    {
+        LogWarning "Line not matching any name pattern: $line";
+    }
+
     if ($typename ne $name and not $typename =~ /^bulk_/)
     {
         LogWarning "function not matching $typename vs $name in $header:$n:$line";
     }
 
-    if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?|clear_\w+_stats$/)
+    if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?$|^clear_\w+_stats$/)
     {
         # exceptions
         return if $name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value)$/;
@@ -646,6 +677,11 @@ sub CheckHeadersStyle
             if ($line =~ /_[IO].+\w+\* /)
             {
                 LogWarning "star should be next to param name $header:$n:$line";
+            }
+
+            if ($line =~ /_In_ .+\*/ and not $line =~ /_In_ const/)
+            {
+                LogWarning "pointer input parameters should be const $header:$n:$line";
             }
 
             if ($line =~ /[^ ]\s*_(In|Out|Inout)_/ and not $line =~ /^#define/)

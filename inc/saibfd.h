@@ -498,7 +498,7 @@ typedef sai_status_t (*sai_get_bfd_session_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get BFD session statistics counters.
+ * @brief Get BFD session statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] bfd_session_id BFD session id
  * @param[in] number_of_counters Number of counters in the array
@@ -511,6 +511,24 @@ typedef sai_status_t (*sai_get_bfd_session_stats_fn)(
         _In_ sai_object_id_t bfd_session_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_bfd_session_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get BFD session statistics counters extended.
+ *
+ * @param[in] bfd_session_id BFD session id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_bfd_session_stats_ext_fn)(
+        _In_ sai_object_id_t bfd_session_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_bfd_session_stat_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -539,7 +557,7 @@ typedef sai_status_t (*sai_clear_bfd_session_stats_fn)(
  */
 typedef void (*sai_bfd_session_state_change_notification_fn)(
         _In_ uint32_t count,
-        _In_ sai_bfd_session_state_notification_t *data);
+        _In_ const sai_bfd_session_state_notification_t *data);
 
 /**
  * @brief BFD method table retrieved with sai_api_query()
@@ -551,6 +569,7 @@ typedef struct _sai_bfd_api_t
     sai_set_bfd_session_attribute_fn     set_bfd_session_attribute;
     sai_get_bfd_session_attribute_fn     get_bfd_session_attribute;
     sai_get_bfd_session_stats_fn         get_bfd_session_stats;
+    sai_get_bfd_session_stats_ext_fn     get_bfd_session_stats_ext;
     sai_clear_bfd_session_stats_fn       clear_bfd_session_stats;
 
 } sai_bfd_api_t;

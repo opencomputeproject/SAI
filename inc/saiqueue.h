@@ -164,6 +164,18 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_ENABLE_PFC_DLDR = 0x00000008,
 
     /**
+     * @brief Start PFC deadlock recovery on a lossless queue.
+     *
+     * If the attribute is true, start the recovery and ignore if recovery has been started.
+     * If the attribute is false, stop the recovery and ignore if recovery hasn't been started.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_QUEUE_ATTR_PFC_DLR_INIT = 0x00000009,
+
+    /**
      * @brief End of attributes
      */
     SAI_QUEUE_ATTR_END,
@@ -384,7 +396,7 @@ typedef sai_status_t (*sai_get_queue_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get queue statistics counters.
+ * @brief Get queue statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] queue_id Queue id
  * @param[in] number_of_counters Number of counters in the array
@@ -397,6 +409,24 @@ typedef sai_status_t (*sai_get_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_queue_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get queue statistics counters extended.
+ *
+ * @param[in] queue_id Queue id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_queue_stats_ext_fn)(
+        _In_ sai_object_id_t queue_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_queue_stat_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -425,7 +455,7 @@ typedef sai_status_t (*sai_clear_queue_stats_fn)(
  */
 typedef void (*sai_queue_pfc_deadlock_notification_fn)(
         _In_ uint32_t count,
-        _In_ sai_queue_deadlock_notification_data_t *data);
+        _In_ const sai_queue_deadlock_notification_data_t *data);
 
 /**
  * @brief QOS methods table retrieved with sai_api_query()
@@ -437,6 +467,7 @@ typedef struct _sai_queue_api_t
     sai_set_queue_attribute_fn   set_queue_attribute;
     sai_get_queue_attribute_fn   get_queue_attribute;
     sai_get_queue_stats_fn       get_queue_stats;
+    sai_get_queue_stats_ext_fn   get_queue_stats_ext;
     sai_clear_queue_stats_fn     clear_queue_stats;
 
 } sai_queue_api_t;
