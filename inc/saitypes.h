@@ -242,6 +242,17 @@ typedef enum _sai_object_type_t
 } sai_object_type_t;
 
 /**
+ * @brief Defines a u8 list or string
+ *
+ * String should be null terminated and count should include '\0'.
+ */
+typedef struct _sai_u8_list_t
+{	
+    uint32_t count;	
+    uint8_t *list;	
+} sai_u8_list_t;
+
+/**
  * @brief Defines a s8 list or string
  *
  * String should be null terminated and count should include '\0'.
@@ -284,6 +295,28 @@ typedef struct _sai_u32_list_t
     uint32_t count;
     uint32_t *list;
 } sai_u32_list_t;
+
+/**
+ * @brief Defines a s32 list or string
+ *
+ * String should be null terminated and count should include '\0'.
+ */
+typedef struct _sai_s32_list_t
+{
+    uint32_t count;
+    int32_t *list;
+} sai_s32_list_t;
+
+/**
+ * @brief Defines a u32 range
+ *
+ * Range defined by two integer min and max.
+ */
+typedef struct _sai_u32_range_t
+{
+    uint32_t min;
+    uint32_t max;
+} sai_u32_range_t;
 
 /**
  * @brief Defines a s32 range
