@@ -149,6 +149,10 @@ typedef enum _sai_log_level_t
 
 /**
 * @brief Defines sai profile get value function pointer
+* @param[in] Switch profile id 
+* @param[in] Const pointer to variable 
+*
+* @return integer const char pointer
 */
 typedef const char* (*sai_profile_get_value_fn)(
         _In_ sai_switch_profile_id_t profile_id,
@@ -156,6 +160,11 @@ typedef const char* (*sai_profile_get_value_fn)(
 
 /**
 * @brief Defines sai profile get next value function pointer
+* @param[in] Switch profile id 
+* @param[in] Const double pointer to variable 
+* @param[in] Const double pointer to Value
+*
+* @return integer value
 */
 typedef int (*sai_profile_get_next_value_fn)(
         _In_ sai_switch_profile_id_t profile_id,
