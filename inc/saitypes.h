@@ -354,7 +354,7 @@ typedef enum _sai_ip_addr_family_t
 } sai_ip_addr_family_t;
 
 /**
- * @brief Defines a ip address data structure
+ * @brief Defines a IP address data structure
  */
 typedef struct _sai_ip_address_t
 {
@@ -366,23 +366,19 @@ typedef struct _sai_ip_address_t
 } sai_ip_address_t;
 
 /**
- * @brief Defines a ip prefix data structure 
+ * @brief Defines a IP prefix data structure 
  * contain address and mask
  */
 typedef struct _sai_ip_prefix_t
 {
-    /**
-    * @brief IP address
-    */
+    /** IP address family */
     sai_ip_addr_family_t addr_family;
     union _ip_prefix_addr {
         sai_ip4_t ip4;
         sai_ip6_t ip6;
     } addr;
     
-    /**
-    * @brief IP Mask
-    */
+    /** IP Mask */
     union _ip_prefix_mask {
         sai_ip4_t ip4;
         sai_ip6_t ip6;
@@ -396,14 +392,10 @@ typedef struct _sai_ip_prefix_t
  */
 typedef struct _sai_acl_field_data_t
 {
-    /**
-     * @brief Match enable/disable
-     */
+    /** Match enable/disable */
     bool enable;
 
-    /**
-     * @brief Field match mask
-     */
+    /** Field match mask */
     union _mask {
         sai_uint8_t u8;
         sai_int8_t s8;
@@ -417,10 +409,8 @@ typedef struct _sai_acl_field_data_t
         sai_u8_list_t u8list;
     } mask;
 
-    /**
-     * @brief Expected AND result using match mask above with packet field
-     * value where applicable.
-     */
+    /** Expected AND result using match mask above with packet 
+     * field value where applicable. */
     union _data {
         bool booldata;
         sai_uint8_t u8;
@@ -445,14 +435,10 @@ typedef struct _sai_acl_field_data_t
  */
 typedef struct _sai_acl_action_data_t
 {
-    /**
-     * @brief Action enable/disable
-     */
+    /** Action enable/disable */
     bool enable;
 
-    /**
-     * @brief Action parameter
-     */
+    /** Action parameter */
     union _parameter {
         sai_uint8_t u8;
         sai_int8_t s8;
@@ -474,19 +460,13 @@ typedef struct _sai_acl_action_data_t
  */
 typedef enum _sai_packet_color_t
 {
-    /**
-     * @brief Color Green
-     */
+    /** Color Green */
     SAI_PACKET_COLOR_GREEN,
 
-    /**
-     * @brief Color Yellow
-     */
+    /** Color Yellow */
     SAI_PACKET_COLOR_YELLOW,
 
-    /**
-     * @brief Color Red
-     */
+    /** Color Red */
     SAI_PACKET_COLOR_RED,
 
 } sai_packet_color_t;
@@ -532,8 +512,8 @@ typedef struct _sai_qos_map_params_t
 } sai_qos_map_params_t;
 
 /**
-* @brief Defines Qos map data structure contain key value pair.
-*/
+ * @brief Defines QOS map data structure contain key value pair.
+ */
 typedef struct _sai_qos_map_t
 {
     /** Input map parameters */
@@ -545,8 +525,8 @@ typedef struct _sai_qos_map_t
 } sai_qos_map_t;
 
 /**
-* @brief Defines Qos map list data structure.
-*/
+ * @brief Defines QOS map list data structure.
+ */
 typedef struct _sai_qos_map_list_t
 {
     /** Number of entries in the map */
@@ -558,8 +538,8 @@ typedef struct _sai_qos_map_list_t
 } sai_qos_map_list_t;
 
 /**
-* @brief Defines map data structure contain key value pair.
-*/
+ * @brief Defines map data structure contain key value pair.
+ */
 typedef struct _sai_map_t
 {
     /** Input key value */
@@ -571,8 +551,8 @@ typedef struct _sai_map_t
 } sai_map_t;
 
 /**
-* @brief Defines map list data structure.
-*/
+ * @brief Defines map list data structure.
+ */
 typedef struct _sai_map_list_t
 {
     /** Number of entries in the map */
@@ -796,8 +776,8 @@ typedef struct _sai_attribute_t
 } sai_attribute_t;
 
 /**
-* @brief Bulk operation error mode
-*/
+ * @brief Bulk operation error mode
+ */
 typedef enum _sai_bulk_op_error_mode_t
 {
     /**
