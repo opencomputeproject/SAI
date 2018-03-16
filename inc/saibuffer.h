@@ -176,7 +176,7 @@ typedef sai_status_t (*sai_get_ingress_priority_group_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get ingress priority group statistics counters.
+ * @brief Get ingress priority group statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] ingress_priority_group_id Ingress priority group id
  * @param[in] number_of_counters Number of counters in the array
@@ -189,6 +189,24 @@ typedef sai_status_t (*sai_get_ingress_priority_group_stats_fn)(
         _In_ sai_object_id_t ingress_priority_group_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_ingress_priority_group_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get ingress priority group statistics counters extended.
+ *
+ * @param[in] ingress_priority_group_id Ingress priority group id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_ingress_priority_group_stats_ext_fn)(
+        _In_ sai_object_id_t ingress_priority_group_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_ingress_priority_group_stat_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -437,7 +455,7 @@ typedef sai_status_t (*sai_get_buffer_pool_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get buffer pool statistics counters.
+ * @brief Get buffer pool statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] buffer_pool_id Buffer pool id
  * @param[in] number_of_counters Number of counters in the array
@@ -450,6 +468,24 @@ typedef sai_status_t (*sai_get_buffer_pool_stats_fn)(
         _In_ sai_object_id_t buffer_pool_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_buffer_pool_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get buffer pool statistics counters extended.
+ *
+ * @param[in] buffer_pool_id Buffer pool id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_buffer_pool_stats_ext_fn)(
+        _In_ sai_object_id_t buffer_pool_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_buffer_pool_stat_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -675,12 +711,14 @@ typedef struct _sai_buffer_api_t
     sai_set_buffer_pool_attribute_fn                set_buffer_pool_attribute;
     sai_get_buffer_pool_attribute_fn                get_buffer_pool_attribute;
     sai_get_buffer_pool_stats_fn                    get_buffer_pool_stats;
+    sai_get_buffer_pool_stats_ext_fn                get_buffer_pool_stats_ext;
     sai_clear_buffer_pool_stats_fn                  clear_buffer_pool_stats;
     sai_create_ingress_priority_group_fn            create_ingress_priority_group;
     sai_remove_ingress_priority_group_fn            remove_ingress_priority_group;
     sai_set_ingress_priority_group_attribute_fn     set_ingress_priority_group_attribute;
     sai_get_ingress_priority_group_attribute_fn     get_ingress_priority_group_attribute;
     sai_get_ingress_priority_group_stats_fn         get_ingress_priority_group_stats;
+    sai_get_ingress_priority_group_stats_ext_fn     get_ingress_priority_group_stats_ext;
     sai_clear_ingress_priority_group_stats_fn       clear_ingress_priority_group_stats;
     sai_create_buffer_profile_fn                    create_buffer_profile;
     sai_remove_buffer_profile_fn                    remove_buffer_profile;
