@@ -244,7 +244,23 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_DTEL_REPORT_SESSION      = 73, /**< experimental */
     SAI_OBJECT_TYPE_DTEL_EVENT               = 74, /**< experimental */
     SAI_OBJECT_TYPE_BFD_SESSION              = 75,
-    SAI_OBJECT_TYPE_MAX                      = 76,
+    SAI_OBJECT_TYPE_TAM_MATH_FUNC            = 76,
+    SAI_OBJECT_TYPE_TAM_REPORT               = 77,
+    SAI_OBJECT_TYPE_TAM_EVENT_THRESHOLD      = 78,
+    SAI_OBJECT_TYPE_TAM_TEL_NE               = 79,
+    SAI_OBJECT_TYPE_TAM_TEL_SWITCH           = 80,
+    SAI_OBJECT_TYPE_TAM_TEL_FABRIC           = 81,
+    SAI_OBJECT_TYPE_TAM_TEL_FLOW             = 82,
+    SAI_OBJECT_TYPE_TAM_TEL_INT              = 83,
+    SAI_OBJECT_TYPE_TAM_TRANSPORT            = 84,
+    SAI_OBJECT_TYPE_TAM_IFA_HDR              = 85,
+    SAI_OBJECT_TYPE_TAM_IFA_PROBE            = 86,
+    SAI_OBJECT_TYPE_TAM_PROBE                = 87,
+    SAI_OBJECT_TYPE_TAM_TELEMETRY            = 88,
+    SAI_OBJECT_TYPE_TAM_COLLECTOR            = 89,
+    SAI_OBJECT_TYPE_TAM_EVENT_ACTION         = 90,
+    SAI_OBJECT_TYPE_TAM_EVENT                = 91,
+    SAI_OBJECT_TYPE_MAX                      = 92,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
