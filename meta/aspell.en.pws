@@ -9,9 +9,16 @@ Enum
 EtherType
 FC
 Facebook
+Func
+func
+HDR
+Hdr
 HQOS
 HQoS
 Hostif
+int
+INT
+Inband
 Inservice
 InSegment
 LAGs
@@ -26,6 +33,7 @@ Metadata
 Microburst
 Microbursts
 Multicast
+ne
 Netdevice
 OID
 OIDs
@@ -66,6 +74,7 @@ dst
 egressing
 encap
 enum
+flow
 fprintf
 functionalities
 hmac
@@ -85,6 +94,7 @@ metadata
 microburst
 multi
 multicast
+Nano
 netdev
 netdevs
 nexthop
@@ -96,10 +106,13 @@ outsegment
 param
 pkts
 policer
+QoS
+qos
 rv
 rx
 sai
 samplepacket
+sFlow
 src
 stderr
 struct
