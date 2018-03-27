@@ -693,7 +693,7 @@ typedef struct _sai_segment_list_t
 
 /**
  * @brief Defines a lane with its eye values with the up and down values
- * being in mV and left and and right being in mUI.
+ * being in mV and left and right being in mUI.
  */
 typedef struct _sai_port_lane_eye_values_t
 {
