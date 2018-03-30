@@ -311,7 +311,7 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
 
     /**
-     * @brief Unknown unicast flood control type
+     * @brief Unknown multicast flood control type
      *
      * @type sai_vlan_flood_control_type_t
      * @flags CREATE_AND_SET
@@ -570,7 +570,7 @@ typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get vlan statistics counters.
+ * @brief Get vlan statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] vlan_id VLAN id
  * @param[in] number_of_counters Number of counters in the array
@@ -583,6 +583,24 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
         _In_ sai_object_id_t vlan_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_vlan_stat_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get vlan statistics counters extended.
+ *
+ * @param[in] vlan_id VLAN id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_vlan_stats_ext_fn)(
+        _In_ sai_object_id_t vlan_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_vlan_stat_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -615,6 +633,7 @@ typedef struct _sai_vlan_api_t
     sai_bulk_object_create_fn           create_vlan_members;
     sai_bulk_object_remove_fn           remove_vlan_members;
     sai_get_vlan_stats_fn               get_vlan_stats;
+    sai_get_vlan_stats_ext_fn           get_vlan_stats_ext;
     sai_clear_vlan_stats_fn             clear_vlan_stats;
 
 } sai_vlan_api_t;

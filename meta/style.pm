@@ -224,13 +224,13 @@ sub CheckFunctionsParams
         next if not $fname =~ /_fn$/; # below don't apply for global functions
 
         if (not $fnparams =~ /^(\w+)(| attr| attr_count attr_list| switch_id attr_count attr_list)$/ and
-            not $fname =~ /_(stats|notification)_fn$|^sai_(send|recv|bulk)_|^sai_meta/)
+            not $fname =~ /_(stats|stats_ext|notification)_fn$|^sai_(send|recv|bulk)_|^sai_meta/)
         {
             LogWarning "wrong param names: $fnparams: $fname";
             LogWarning " expected: $params[0](| attr| attr_count attr_list| switch_id attr_count attr_list)";
         }
 
-        if ($fname =~ /^sai_(get|set|create|remove)_(\w+?)(_attribute)?(_stats)?_fn/)
+        if ($fname =~ /^sai_(get|set|create|remove)_(\w+?)(_attribute)?(_stats|_stats_ext)?_fn/)
         {
             my $pattern = $2;
             my $first = $params[0];
@@ -372,7 +372,7 @@ sub CheckFunctionNaming
     {
         # ok
     }
-    elsif ($name =~/^(get|clear)_(\w+?)_(all_)?stats$/)
+    elsif ($name =~/^(get|clear)_(\w+?)_(all_)?stats(_ext)?$/)
     {
         LogWarning "not object name $2 in $name" if not IsObjectName($2);
     }

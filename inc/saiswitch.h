@@ -1637,6 +1637,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_SAMPLED_MIRROR_SESSION,
 
     /**
+     * @brief Get the list of supported get statistics extended modes
+     *        Empty list should be returned if get statistics extended is not supported at all
+     *
+     * @type sai_s32_list_t sai_stats_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_EXTENDED_STATS_MODE,
+
+    /**
      * @brief Uninitialize data plane upon removal of switch object
      *
      * Typical use case for tear down of the host adapter, is to remove the switch ID,
