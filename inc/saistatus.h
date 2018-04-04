@@ -47,7 +47,7 @@
 /**
  * @brief Status success
  */
-#define SAI_STATUS_SUCCESS                                          0x00000000L
+#define SAI_STATUS_SUCCESS                                         (0x00000000L)
 
 /**
  * @brief General failure
