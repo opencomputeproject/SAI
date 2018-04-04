@@ -1648,7 +1648,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Split Horizon ID range
      *
-     * The range should start from a non-zero value. 
+     * The range should start from a non-zero value.
      *
      * @type sai_u32_range_t
      * @flags READ_ONLY
