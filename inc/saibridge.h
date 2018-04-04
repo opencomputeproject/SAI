@@ -246,6 +246,36 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_EGRESS_FILTERING,
 
     /**
+     * @brief Ingress Split Horizon ID.
+     *
+     * If ingress split horizon id of ingress bridge port is equal to egress split horizon id of egress bridge port,
+     * then packets should be discarded. Valid non-zero split horizon id range can be queried using the switch
+     * attribute SAI_SWITCH_ATTR_SPLIT_HORIZON_ID_RANGE. With the default zero split horizon id, split horizon checks are
+     * not performed.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
+     */
+    SAI_BRIDGE_PORT_ATTR_INGRESS_SPLIT_HORIZON_ID,
+
+    /**
+     * @brief Egress Split Horizon ID.
+     *
+     * If ingress split horizon id of ingress bridge port is equal to egress split horizon id of egress bridge port,
+     * then packets should be discarded. Valid non-zero split horizon id range can be queried using the switch
+     * attribute SAI_SWITCH_ATTR_SPLIT_HORIZON_ID_RANGE. With the default zero split horizon id, split horizon checks are
+     * not performed.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
+     */
+    SAI_BRIDGE_PORT_ATTR_EGRESS_SPLIT_HORIZON_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_BRIDGE_PORT_ATTR_END,
