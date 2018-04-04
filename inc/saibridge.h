@@ -253,7 +253,7 @@ typedef enum _sai_bridge_port_attr_t
      * attribute SAI_SWITCH_ATTR_SPLIT_HORIZON_ID_RANGE. With the default zero split horizon id, split horizon checks are
      * not performed.
      *
-     * @type uint32_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
      * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_TYPE_ATTR == SAI_BRIDGE_PORT_TYPE_TUNNEL
@@ -268,7 +268,7 @@ typedef enum _sai_bridge_port_attr_t
      * attribute SAI_SWITCH_ATTR_SPLIT_HORIZON_ID_RANGE. With the default zero split horizon id, split horizon checks are
      * not performed.
      *
-     * @type uint32_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
      * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_TYPE_ATTR == SAI_BRIDGE_PORT_TYPE_TUNNEL
