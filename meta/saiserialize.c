@@ -17,7 +17,7 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
- * @file    saimetadatautils.c
+ * @file    saiserialize.c
  *
  * @brief   This module defines SAI Metadata Serialize
  */

@@ -554,6 +554,8 @@ sub CheckMetadataSourceFiles
         # skip auto generated headers
 
         next if $file eq "saimetadata.h";
+        next if $file eq "saimetadata.c";
+        next if $file eq "saimetadatatest.c";
 
         my $data = ReadHeaderFile($file);
 

@@ -17,7 +17,7 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
- * @file    saiserialize.h
+ * @file    saiserializetest.c
  *
  * @brief   This module defines SAI Serialize Test
  */
