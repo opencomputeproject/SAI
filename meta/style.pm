@@ -570,6 +570,11 @@ sub CheckMetadataSourceFiles
             $n++;
 
             LogWarning "found trailing spaces in $file:$n: $line" if $line =~ /\s+$/;
+
+            if ($line =~ /[^\t\x20-\x7e]/)
+            {
+                LogWarning "line contains non ascii characters $file:$n: $line";
+            }
         }
     }
 }
