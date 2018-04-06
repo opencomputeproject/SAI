@@ -359,6 +359,11 @@ typedef enum _sai_attr_value_type_t
      */
     SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST,
 
+    /**
+     * @brief Attribute value is port eye values list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST,
+
 } sai_attr_value_type_t;
 
 /**
@@ -629,6 +634,41 @@ typedef struct _sai_enum_metadata_t
     bool                            containsflags;
 
 } sai_enum_metadata_t;
+
+/**
+ * @brief Defines attribute capability metadata.
+ */
+typedef struct _sai_attr_capability_metadata_t
+{
+    /**
+     * @brief Vendor ID.
+     *
+     * Used to distinguish different capabilities of
+     * the same attribute for different ASIC instances.
+     */
+    uint64_t                    vendorid;
+
+    /**
+     * @brief Operation capability.
+     *
+     * Defines which operation is supported on specific attribute.
+     */
+    sai_attr_capability_t       operationcapability;
+
+    /**
+     * @brief Enum values count.
+     *
+     * When attribute is and enum, this list defines
+     * enum values supported by vendor on that attribute.
+     */
+    const size_t                enumvaluescount;
+
+    /**
+     * @brief Enum values count.
+     */
+    const int* const            enumvalues;
+
+} sai_attr_capability_metadata_t;
 
 /**
  * @brief Defines attribute metadata.
@@ -927,6 +967,25 @@ typedef struct _sai_attr_metadata_t
      * so it can't be used here, int will be used instead.
      */
     int                                         notificationtype;
+
+    /**
+     * @brief Attribute capabilities.
+     *
+     * Represents attribute capability for each specific ASIC. Since each
+     * vendor may support different capabilities for each attribute, this field
+     * is optional. Also, since SAI API supports multiple switches (switch ids)
+     * at the same time, then switches may support different capabilities on
+     * different attributes. Vendor ID is provided inside capability struct for
+     * difference.
+     *
+     * This data is designed for vendor internal usage.
+     */
+    const sai_attr_capability_metadata_t* const* const capability;
+
+    /**
+     * @brief Length of attribute capabilities.
+     */
+    size_t                                      capabilitylength;
 
 } sai_attr_metadata_t;
 

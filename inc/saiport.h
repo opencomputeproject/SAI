@@ -397,6 +397,14 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_INGRESS_PRIORITY_GROUP_LIST,
 
+    /**
+     * @brief List of port's lanes eye values
+     *
+     * @type sai_port_eye_values_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_EYE_VALUES,
+
     /* READ-WRITE */
 
     /**

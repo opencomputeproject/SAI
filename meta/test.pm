@@ -373,7 +373,7 @@ sub CreateSerializeStructsTest
         next if $struct =~ /^acl_action_data$/;
         next if $struct =~ /^acl_field_data$/;
         next if $struct =~ /^attribute$/;
-        next if $struct =~ /^(attr_condition|attr_metadata|enum_metadata|object_key|object_type_info)$/;
+        next if $struct =~ /^(attr_condition|attr_metadata|enum_metadata|object_key|object_type_info|attr_capability_metadata)$/;
         next if $struct =~ /^(object_key|rev_graph_member|service_method_table|struct_member_info|object_meta_key)$/;
 
         # not implemented yet

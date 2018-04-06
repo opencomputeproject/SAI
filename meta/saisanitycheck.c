@@ -546,6 +546,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
 
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
@@ -805,6 +806,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
 
             if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
             {
@@ -981,6 +983,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
                 case SAI_ATTR_VALUE_TYPE_MAP_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
+                case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
                     break;
 
                 default:
@@ -2286,6 +2289,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_TLV_LIST:
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
 
             if (md->isprimitive)
             {
@@ -2546,6 +2550,56 @@ void check_attr_hostif_packet(
     META_ASSERT_TRUE(flag, "hostif packet attributes should be read only or create only");
 }
 
+void check_attr_capability(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->capability == NULL)
+    {
+        META_ASSERT_TRUE(md->capabilitylength == 0, "capability length should be zero when capability is not defined");
+        return;
+    }
+
+    META_ASSERT_TRUE(md->capabilitylength != 0, "capability length should not be zero when capability is not defined");
+
+    size_t i = 0;
+
+    for (; i < md->capabilitylength; ++i)
+    {
+        const sai_attr_capability_metadata_t* cap = md->capability[i];
+
+        if (md->isreadonly)
+        {
+            META_ASSERT_FALSE(cap->operationcapability.create_implemented,
+                    "create must be false on readonly attribute, %s", md->attridname);
+
+            META_ASSERT_FALSE(cap->operationcapability.set_implemented,
+                    "set must be false on readonly attribute, %s", md->attridname);
+        }
+
+        if (md->iscreateonly)
+        {
+            META_ASSERT_FALSE(cap->operationcapability.set_implemented,
+                    "set must be false on createonly attribute, %s", md->attridname);
+        }
+
+        if (md->ismandatoryoncreate)
+        {
+            META_ASSERT_TRUE(cap->operationcapability.create_implemented,
+                    "create must be true on mandatoryoncreate attribute, %s", md->attridname);
+        }
+
+        if (!md->isenum)
+        {
+            META_ASSERT_NULL(cap->enumvalues);
+            META_ASSERT_TRUE(cap->enumvaluescount == 0, "enum values can't be defined when attribute %s is not enum", md->attridname);
+        }
+    }
+
+    META_ASSERT_NULL(md->capability[i]); /* guard */
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2586,6 +2640,7 @@ void check_single_attribute(
     check_attr_default_attrvalue(md);
     check_attr_fdb_flush(md);
     check_attr_hostif_packet(md);
+    check_attr_capability(md);
 
     define_attr(md);
 }

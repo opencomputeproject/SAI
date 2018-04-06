@@ -1,0 +1,24 @@
+# sample attribute capability file
+@skip
+
+@attr SAI_PORT_ATTR_SUPPORTED_MEDIA_TYPE
+@vendorid 0
+@capability GET
+@enumcapability SAI_PORT_MEDIA_TYPE_FIBER, SAI_PORT_MEDIA_TYPE_COPPER
+
+@attr SAI_SAMPLEPACKET_ATTR_TYPE
+@vendorid 0
+@capability CREATE, GET
+
+@attr SAI_SAMPLEPACKET_ATTR_TYPE
+@vendorid 0x123456
+@capability CREATE
+
+@attr SAI_PORT_ATTR_OPER_STATUS
+@vendorid 0
+@capability GET
+@enumcapability SAI_PORT_OPER_STATUS_UNKNOWN, SAI_PORT_OPER_STATUS_UP, SAI_PORT_OPER_STATUS_DOWN
+
+@attr SAI_SWITCH_ATTR_INIT_SWITCH
+@vendorid 0
+@capability CREATE, GET
