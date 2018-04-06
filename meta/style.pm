@@ -1,4 +1,27 @@
 #!/usr/bin/perl
+#
+# Copyright (c) 2014 Microsoft Open Technologies, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+#
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+#
+# @file    style.pm
+#
+# @brief   This module defines SAI Metadata Style Parser
+#
 
 package style;
 
@@ -137,7 +160,7 @@ sub ExtractComments
     return $comments;
 }
 
-sub CheckHeaderHeader
+sub CheckHeaderLicense
 {
     my ($data, $file) = @_;
 
@@ -160,9 +183,13 @@ sub CheckHeaderHeader
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
- *
 _END_
 ;
+
+    $header =~ s/^( \*|\/\*\*)/#/gm if $data =~ /^#/;
+
+    # remove first line (shell definition)
+    $data =~ s/^#.+\n// if $data =~ /^#/;
 
     my $is = substr($data, 0, length($header));
 
@@ -518,6 +545,42 @@ sub GetAcronyms
     return @acronyms;
 }
 
+sub CheckMetadataSourceFiles
+{
+    my @files = GetMetadataSourceFiles();
+
+    for my $file (@files)
+    {
+        # skip auto generated headers
+
+        next if $file eq "saimetadata.h";
+        next if $file eq "saimetadata.c";
+        next if $file eq "saimetadatatest.c";
+
+        my $data = ReadHeaderFile($file);
+
+        CheckHeaderLicense($data, $file);
+
+        LogError "missing declaration '\@file    $file'" if (not $data =~ /[*#]\s+\@file\s+\Q$file\E$/m);
+
+        my @lines = split/\n/,$data;
+
+        my $n = 0;
+
+        for my $line(@lines)
+        {
+            $n++;
+
+            LogWarning "found trailing spaces in $file:$n: $line" if $line =~ /\s+$/;
+
+            if ($line =~ /[^\t\x20-\x7e]/)
+            {
+                LogWarning "line contains non ascii characters $file:$n: $line";
+            }
+        }
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -541,6 +604,8 @@ sub CheckHeadersStyle
     my %wordsToCheck = ();
     my %wordsChecked = ();
 
+    CheckMetadataSourceFiles();
+
     my @headers = GetHeaderFiles();
     my @metaheaders = GetMetaHeaderFiles();
 
@@ -558,7 +623,7 @@ sub CheckHeadersStyle
 
         my $oncedefCount = 0;
 
-        CheckHeaderHeader($data, $header);
+        CheckHeaderLicense($data, $header);
         CheckFunctionsParams($data, $header);
         CheckDoxygenCommentFormating($data, $header);
         CheckQuadApi($data, $header);
