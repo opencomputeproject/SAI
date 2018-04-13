@@ -206,6 +206,19 @@ const sai_object_type_info_t* sai_metadata_get_object_type_info(
     return NULL;
 }
 
+bool sai_metadata_is_object_type_oid(
+        _In_ sai_object_type_t object_type)
+{
+    const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(object_type);
+
+    if (oti != NULL)
+    {
+        return oti->isobjectid;
+    }
+
+    return false;
+}
+
 bool sai_metadata_is_object_type_valid(
         _In_ sai_object_type_t object_type)
 {

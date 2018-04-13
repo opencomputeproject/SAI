@@ -4204,6 +4204,11 @@ void check_acl_user_defined_field()
             SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX, "expected true");
 }
 
+void check_label_size()
+{
+    META_ASSERT_TRUE(sizeof(sai_label_id_t) == sizeof(uint32_t), "label is expected to be 32 bit");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4242,6 +4247,7 @@ int main(int argc, char **argv)
     check_graph_connected();
     check_get_attr_metadata();
     check_acl_user_defined_field();
+    check_label_size();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 
