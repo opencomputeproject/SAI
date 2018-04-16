@@ -581,6 +581,48 @@ sub CheckMetadataSourceFiles
     }
 }
 
+sub CheckInOutParams
+{
+    my ($header, $n, $line) = @_;
+
+    return if not $line =~ /  _(In|Out|Inout)_ /;
+    return if $header eq "saiserialize.h";
+    return if $header eq "saimetadatalogger.h";
+
+    LogError "not matching parm line: $header:$n: $line" if not $line =~ /  _(In|Out|Inout)_ (const )?(\w+)( \*| \*\*| )(\w+)[\),]/;
+
+    my $inout = $1;
+    my $const = (not defined $2) ? "" : "const";
+    my $type = $3;
+    my $ptr = $4;
+    my $param = $5;
+
+    if ($type eq "sai_object_id_t" and not $line =~ /_In_ sai_object_id_t \w+|_In_ const sai_object_id_t \*\w+|_Out_ sai_object_id_t \*\w+/)
+    {
+        LogError "wrong in/out param mix: $header:$n:$line";
+    }
+
+    if ($type eq "sai_attribute_t" and not $line =~ /_In_ const sai_attribute_t \*\*?\w+|_Inout_ sai_attribute_t \*\*?\w+/)
+    {
+        return if $header eq "saihostif.h";
+
+        LogError "wrong in/out param mix: $header:$n:$line";
+    }
+
+    # TODO we should know if type is simple or struct/union
+
+    return if $line =~ /_In_ \w+ \w+/ and $const eq "";      # non const types without pointer should be In
+    return if $line =~ /_Inout_ \w+ \*\w+/ and $const eq ""; # non const types with pointer should be Inout
+    return if $line =~ /_Out_ \w+ \*\w+/ and $const eq "";   # non const types with pointer should be Out
+    return if $line =~ /_In_ const \w+ \*\*?\w+/;            # const types with pointer should be In
+
+    return if $line =~ /_Out_ const char \*\*\w+/;
+    return if $line =~ /_Out_ void \*\*\w+/;
+    return if $line =~ /_Inout_ sai_attribute_t \*\*\w+/;
+
+    LogWarning "Not supported param prefixes, FIXME: $header:$n $line";
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -643,6 +685,7 @@ sub CheckHeadersStyle
             $n++;
 
             CheckFunctionNaming($header, $n, $line);
+            CheckInOutParams($header, $n, $line);
 
             $oncedefCount++ if $line =~/\b$oncedef\b/;
 
@@ -739,7 +782,7 @@ sub CheckHeadersStyle
                 LogWarning "no space after '}' $header:$n:$line" if (not $line =~ /^\s*\* /);
             }
 
-            if ($line =~ /_[IO].+\w+\* /)
+            if ($line =~ /_[IO].+\w+\*\*? /)
             {
                 LogWarning "star should be next to param name $header:$n:$line";
             }
