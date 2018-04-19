@@ -39,6 +39,7 @@ use cap;
 
 our $XMLDIR = "xml";
 our $INCLUDE_DIR = "../inc/";
+our $EXPERIMENTAL_DIR = "../experimental/";
 
 our %SAI_ENUMS = ();
 our %METADATA = ();
@@ -50,6 +51,9 @@ our %ALL_STRUCTS = ();
 our %OBJECT_TYPE_MAP = ();
 our %SAI_DEFINES = ();
 our %EXTRA_RANGE_DEFINES = ();
+our %EXTENSIONS_ENUMS = ();
+our %EXTENSIONS_ATTRS = ();
+our %EXPERIMENTAL_OBJECTS = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY|DYNAMIC|SPECIAL";
 
@@ -119,7 +123,7 @@ sub ProcessTagType
         return $val;
     }
 
-    if ($val =~/^sai_\w+_t$/ and not $val =~ /_attr_t/)
+    if ($val =~/^sai_\w+_t$/ and not $val =~ /_attr_(extensions_)?t/)
     {
         return $val;
     }
@@ -252,6 +256,11 @@ sub ProcessTagDefault
     if ($val eq "disabled")
     {
         # for aclfield and aclaction
+        return $val;
+    }
+
+    if ($val eq "\"\"")
+    {
         return $val;
     }
 
@@ -403,6 +412,16 @@ sub ProcessEnumSection
 
         my $enumprefix = uc $1;
 
+        if ($enumtypename =~ /_extensions_t$/)
+        {
+            LogDebug "removing extension prefix from $enumtypename";
+
+            # remove extensions suffix on all extensions since they will be merged together
+            $enumprefix =~ s/EXTENSIONS_$//;
+
+            $EXTENSIONS_ENUMS{$enumtypename} = "${enumprefix}_t";
+        }
+
         if (defined $SAI_ENUMS{$enumtypename})
         {
             LogError "duplicated enum $enumtypename";
@@ -469,7 +488,7 @@ sub ProcessEnumSection
 
         $SAI_ENUMS{$enumtypename}{values} = \@values;
 
-        next if not $enumtypename =~ /^(sai_(\w+)_attr_)t$/;
+        next if not $enumtypename =~ /^(sai_(\w+)_attr_(extensions_)?)t$/;
 
         my $prefix = uc$1;
 
@@ -613,7 +632,7 @@ sub ProcessTypedefSection
             next;
         }
 
-        next if not $typedefname =~ /^sai_(\w+)_attr_t$/;
+        next if not $typedefname =~ /^sai_(\w+)_attr_(extensions_)?t$/;
 
         # this enum is attribute definition for object
 
@@ -846,6 +865,8 @@ sub ProcessXmlFile
 sub ProcessSingleEnum
 {
     my ($key, $typedef, $prefix) = @_;
+
+    $prefix =~ s/EXTENSIONS_$// if ($typedef =~ /_extensions_t$/);
 
     my $enum = $SAI_ENUMS{$key};
 
@@ -1181,6 +1202,8 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default eq "disabled";
 
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default eq "\"\"";
+
     LogError "invalid default value type '$default' on $attr";
 
     return "";
@@ -1239,6 +1262,10 @@ sub ProcessDefaultValue
     elsif ($default =~ /^disabled$/ and $type =~ /^(sai_acl_action_data_t|sai_acl_field_data_t) /)
     {
         WriteSource "$val = { .$VALUE_TYPES{$1} = { .enable = false } };";
+    }
+    elsif ($default =~ /^""$/ and $type eq "char")
+    {
+        WriteSource "$val = { .chardata = { 0 } };";
     }
     else
     {
@@ -1715,6 +1742,15 @@ sub ProcessCapabilityLen
     return scalar(keys %{$CAPABILITIES{$attr}});
 }
 
+sub ProcessIsExtensionAttr
+{
+    my ($attr, $type) = @_;
+
+    return "true" if defined $EXTENSIONS_ATTRS{$attr};
+
+    return "false";
+}
+
 sub ProcessSingleObjectType
 {
     my ($typedef, $objecttype) = @_;
@@ -1769,6 +1805,7 @@ sub ProcessSingleObjectType
         my $ntftype         = ProcessNotificationType($attr, $meta{type});
         my $cap             = ProcessCapability($attr, $meta{type}, $enummetadata);
         my $caplen          = ProcessCapabilityLen($attr, $meta{type});
+        my $isextensionattr = ProcessIsExtensionAttr($attr, $meta{type});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -1820,6 +1857,7 @@ sub ProcessSingleObjectType
         WriteSource "    .notificationtype              = $ntftype,";
         WriteSource "    .capability                    = $cap,";
         WriteSource "    .capabilitylength              = $caplen,";
+        WriteSource "    .isextensionattr               = $isextensionattr,";
 
         WriteSource "};";
 
@@ -1967,6 +2005,10 @@ sub CreateMetadataForAttributes
 
     WriteHeader "extern const size_t sai_metadata_attr_by_object_type_count;";
     WriteSource "const size_t sai_metadata_attr_by_object_type_count = $count;";
+
+    WriteSectionComment "Define SAI_OBJECT_TYPE_EXTENSIONS_MAX";
+
+    WriteHeader "#define SAI_OBJECT_TYPE_EXTENSIONS_MAX $count";
 }
 
 sub CreateEnumHelperMethod
@@ -1991,7 +2033,7 @@ sub CreateEnumHelperMethods
 
     for my $key (sort keys %SAI_ENUMS)
     {
-        next if $key =~/_attr_t$/;
+        next if $key =~/_attr_(extensions_)?t$/;
 
         CreateEnumHelperMethod($key);
     }
@@ -2491,6 +2533,12 @@ sub CreateApisStruct
     }
 
     WriteHeader "} sai_apis_t;";
+
+    my $count = scalar @apis;
+
+    WriteSectionComment "Define SAI_API_EXTENSIONS_MAX";
+
+    WriteHeader "#define SAI_API_EXTENSIONS_MAX $count";
 }
 
 sub CreateApisQuery
@@ -2546,6 +2594,15 @@ sub CreateApisQuery
     WriteHeader "        _Inout_ sai_apis_t *apis);";
 }
 
+sub ProcessIsExperimental
+{
+    my $ot = shift;
+
+    return "true" if defined $EXPERIMENTAL_OBJECTS{$ot};
+
+    return "false";
+}
+
 sub CreateObjectInfo
 {
     WriteSectionComment "Object info metadata";
@@ -2588,6 +2645,7 @@ sub CreateObjectInfo
         my $structmemberscount  = ProcessStructMembersCount($struct, $ot);
         my $revgraph            = ProcessRevGraph($ot);
         my $revgraphcount       = ProcessRevGraphCount($ot);
+        my $isexperimental      = ProcessIsExperimental($ot);
         my $attrmetalength      = @{ $SAI_ENUMS{$type}{values} };
 
         my $create = ProcessCreate($struct, $ot);
@@ -2615,6 +2673,7 @@ sub CreateObjectInfo
         WriteSource "    .remove               = $remove,";
         WriteSource "    .set                  = $set,";
         WriteSource "    .get                  = $get,";
+        WriteSource "    .isexperimental       = $isexperimental,";
         WriteSource "};";
     }
 
@@ -2878,8 +2937,13 @@ sub ExtractApiToObjectMap
     #
 
     my @headers = GetHeaderFiles();
+    my @exheaders = GetExperimentalHeaderFiles();
 
-    for my $header (@headers)
+    my %exh = map { $_ => 1 } @exheaders;
+
+    my @merged = (@headers, @exheaders);
+
+    for my $header (@merged)
     {
         my $data = ReadHeaderFile($header);
 
@@ -2922,16 +2986,20 @@ sub ExtractApiToObjectMap
 
         $shortapi =~ s/_//g;
 
-        my $correct = "sai$shortapi.h";
+        my $correct = (defined $exh{$header}) ? "saiexperimental$shortapi.h" : "sai$shortapi.h";
 
         if ($header ne $correct)
         {
-            LogWarning "File $header should be named $correct";
+            LogWarning "File $header should be named '$correct'";
         }
+
+        # NOTE: those maps will include experimental extensions
 
         for my $obj(@objects)
         {
             $OBJTOAPIMAP{$obj} = $api;
+
+            $EXPERIMENTAL_OBJECTS{uc($obj)} = 1 if $correct =~ /^saiexperimental/;
         }
 
         $APITOOBJMAP{$api} = \@objects;
@@ -3210,6 +3278,8 @@ sub WriteHeaderHeader
     WriteHeader "#define __SAI_METADATA_H__";
 
     WriteHeader "#include <sai.h>";
+    WriteHeader "#include <saiextensions.h>";
+
     WriteHeader "#include \"saimetadatatypes.h\"";
     WriteHeader "#include \"saimetadatautils.h\"";
     WriteHeader "#include \"saimetadatalogger.h\"";
@@ -3285,9 +3355,45 @@ sub LoadCapabilities
     %CAPABILITIES = %{ GetCapabilities() };
 }
 
+sub MergeExtensionsEnums
+{
+    for my $exenum (sort keys%EXTENSIONS_ENUMS)
+    {
+        if (not $exenum =~ /^(sai_\w+)_extensions_t$/)
+        {
+            LogError "Enum $exenum is not extension enum";
+            next;
+        }
+
+        my $enum = "$1_t";
+
+        if (not defined $SAI_ENUMS{$enum})
+        {
+            LogError "Enum $exenum is extending not existing enum $enum";
+            next;
+        }
+
+        my @exvalues = @{ $SAI_ENUMS{$exenum}{values} };
+
+        my @values = @{ $SAI_ENUMS{$enum}{values} };
+
+        push@values,@exvalues;
+
+        $SAI_ENUMS{$enum}{values} = \@values;
+
+        next if not $exenum =~/_attr_extensions_t/;
+
+        for my $exvalue (@exvalues)
+        {
+            $EXTENSIONS_ATTRS{$exvalue} = 1;
+
+            $METADATA{$enum}{$exvalue} = $METADATA{$exenum}{$exvalue};
+        }
+    }
+}
+
 #
 # MAIN
-#
 #
 
 LoadCapabilities();
@@ -3301,6 +3407,8 @@ GetStructLists();
 PopulateValueTypes();
 
 ProcessXmlFiles();
+
+MergeExtensionsEnums();
 
 CreateObjectTypeMap();
 

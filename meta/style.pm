@@ -589,7 +589,11 @@ sub CheckInOutParams
     return if $header eq "saiserialize.h";
     return if $header eq "saimetadatalogger.h";
 
-    LogError "not matching parm line: $header:$n: $line" if not $line =~ /  _(In|Out|Inout)_ (const )?(\w+)( \*| \*\*| )(\w+)[\),]/;
+    if (not $line =~ /  _(In|Out|Inout)_ (const )?(\w+)( \*| \*\*| )(\w+)[\),]/)
+    {
+        LogError "not matching param line: $header:$n: $line";
+        return;
+    }
 
     my $inout = $1;
     my $const = (not defined $2) ? "" : "const";
@@ -650,8 +654,9 @@ sub CheckHeadersStyle
 
     my @headers = GetHeaderFiles();
     my @metaheaders = GetMetaHeaderFiles();
+    my @exheaders = GetExperimentalHeaderFiles();
 
-    @headers = (@headers, @metaheaders);
+    @headers = (@headers, @metaheaders, @exheaders);
 
     for my $header (@headers)
     {
@@ -720,7 +725,7 @@ sub CheckHeadersStyle
                 LogWarning "not expected number of spaces after * (1,4,8) $header $n:$line";
             }
 
-            if ($line =~ /\*\s+[^ ].*  / and not $line =~ /\* \@(brief|file)/)
+            if ($line =~ /\*\s+[^ ].*  / and not $line =~ /\* \@(brief|file|note)/)
             {
                 if (not $line =~ /const.+const\s+\w+;/)
                 {
