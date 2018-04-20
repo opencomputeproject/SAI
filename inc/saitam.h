@@ -354,49 +354,13 @@ typedef enum _sai_tam_attr_t
     SAI_TAM_ATTR_MATH_REPORT_LIST,
 
     /**
-     * @brief Tam Telemetry NE objects associated with this tam
+     * @brief Tam Telemetry type objects associated with this tam
      *
      * @type sai_object_list_t
      * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_TEL_NE
+     * @objects SAI_OBJECT_TYPE_TAM_TEL_TYPE
      */
-    SAI_TAM_ATTR_TELEMETRY_NE_LIST,
-
-    /**
-     * @brief Tam Telemetry SWITCH objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_TEL_SWITCH
-     */
-    SAI_TAM_ATTR_TELEMETRY_SWITCH_LIST,
-
-    /**
-     * @brief Tam Telemetry FABRIC objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_TEL_FABRIC
-     */
-    SAI_TAM_ATTR_TELEMETRY_FABRIC_LIST,
-
-    /**
-     * @brief Tam Telemetry FLOW objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_TEL_FLOW
-     */
-    SAI_TAM_ATTR_TELEMETRY_FLOW_LIST,
-
-    /**
-     * @brief Tam Telemetry INT objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_TEL_INT
-     */
-    SAI_TAM_ATTR_TELEMETRY_INT_LIST,
+    SAI_TAM_ATTR_TELEMETRY_TYPE_LIST,
 
     /**
      * @brief Tam telemetry objects associated with this tam
@@ -1621,7 +1585,7 @@ typedef enum _sai_tam_math_func_attr_t
 } sai_tam_math_func_attr_t;
 
 /**
- * @brief Create and return a match function object
+ * @brief Create and return a math function object
  * @param[out] tam_math_func_id Object id for math function
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
@@ -1685,7 +1649,7 @@ typedef enum _sai_tam_event_threshold_attr_t
     /**
      * @brief High water mark %
      *
-     * @type sai_uint32_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 90
      */
@@ -1694,7 +1658,7 @@ typedef enum _sai_tam_event_threshold_attr_t
     /**
      * @brief Low Water Mark %
      *
-     * @type sai_uint32_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 10
      */
@@ -1834,18 +1798,25 @@ typedef enum _sai_tam_telemetry_type_t
 } sai_tam_telemetry_type_t;
 
 /**
- * @brief INT telemetry attributes
+ * @brief Telemetry type attributes
  */
-typedef enum _sai_tam_tel_int_attr_t
+typedef enum _sai_tam_tel_type_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
-    SAI_TAM_TEL_INT_ATTR_START,
+    SAI_TAM_TEL_TYPE_ATTR_START,
 
     /**
-     * @brief INT template Id
+     * @brief Telemetry type
+     *
+     * @type sai_tam_telemetry_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_TEL_TYPE_ATTR_TAM_TELEMETRY_TYPE = SAI_TAM_TEL_TYPE_ATTR_START,
+
+    /**
+     * @brief INT - Template Id
      *
      * Template id indicates the supported metadata header.
      * Device can support one or more template IDs
@@ -1854,10 +1825,10 @@ typedef enum _sai_tam_tel_int_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_TAM_TEL_INT_ATTR_TEMPLATE_ID = SAI_TAM_TEL_INT_ATTR_START,
+    SAI_TAM_TEL_TYPE_ATTR_INT_TEMPLATE_ID,
 
     /**
-     * @brief Switch Identifier
+     * @brief INT - Switch Identifier
      *
      * Switch Identifier can be an encoded number or an IP address
      *
@@ -1865,306 +1836,134 @@ typedef enum _sai_tam_tel_int_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_TAM_TEL_INT_ATTR_SWITCH_IDENTIFIER,
+    SAI_TAM_TEL_TYPE_ATTR_INT_SWITCH_IDENTIFIER,
 
     /**
-     * @brief Math func attached
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM_MATH_FUNC
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_TAM_TEL_INT_ATTR_MATH_FUNC,
-
-    /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_TEL_INT_ATTR_TAM_ID,
-
-    /**
-     * @brief End of Attributes
-     */
-    SAI_TAM_TEL_INT_ATTR_END,
-
-    /** Custom range base value */
-    SAI_TAM_TEL_INT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_TEL_INT_ATTR_CUSTOM_RANGE_END
-
-} sai_tam_tel_int_attr_t;
-
-/**
- * @brief Create and return a telemetry int object
- *
- * @param[out] tam_tel_int_id Telemetry int object
- * @param[in] switch_id Switch object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_create_tam_tel_int_fn)(
-        _Out_ sai_object_id_t *tam_tel_int_id,
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
-
-/**
- * @brief Deletes a specified telemetry int object
- *
- * @param[in] tam_tel_int_id Telemetry int object id
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_remove_tam_tel_int_fn)(
-        _In_ sai_object_id_t tam_tel_int_id);
-
-/**
- * @brief Get values for specified telemetry int object attributes
- *
- * @param[in] tam_tel_int_id Telemetry int object id
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_tam_tel_int_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_int_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief Set value for a specified telemetry int object attribute
- *
- * @param[in] tam_tel_int_id Telemetry int object id
- * @param[in] attr Attribute
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_set_tam_tel_int_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_int_id,
-        _In_ const sai_attribute_t *attr);
-
-/**
- * @brief Flow telemetry attributes
- */
-typedef enum _sai_tam_tel_flow_attr_t
-{
-
-    /**
-     * @brief Start of Attributes
-     */
-    SAI_TAM_TEL_FLOW_ATTR_START,
-
-    /**
-     * @brief Flow ID
+     * @brief Flow - Flow ID
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_TAM_TEL_TYPE_ATTR_TAM_TELEMETRY_TYPE == SAI_TAM_TELEMETRY_TYPE_FLOW
      */
-    SAI_TAM_TEL_FLOW_ATTR_ID = SAI_TAM_TEL_FLOW_ATTR_START,
+    SAI_TAM_TEL_TYPE_ATTR_FLOW_ID,
 
     /**
-     * @brief Elephant flows - Elephant/Mice classification
+     * @brief Flow - Elephant flows: Elephant/Mice classification
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_TAM_TEL_FLOW_ATTR_ENABLE_CLASSIFICATION,
+    SAI_TAM_TEL_TYPE_ATTR_FLOW_CLASSIFICATION_ENABLE,
 
     /**
-     * @brief Flow duration in Milliseconds
+     * @brief Flow - Duration in Milliseconds
      *
      * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_TAM_TEL_FLOW_ATTR_DURATION,
+    SAI_TAM_TEL_TYPE_ATTR_FLOW_DURATION,
 
     /**
-     * @brief Flow size in Kilo Bytes
+     * @brief Flow - Size in Kilo Bytes
      *
      * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_TAM_TEL_FLOW_ATTR_SIZE,
+    SAI_TAM_TEL_TYPE_ATTR_FLOW_SIZE,
 
     /**
-     * @brief Flow action (report object)
+     * @brief Flow - Action (report object)
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_REPORT
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_TAM_TEL_FLOW_ATTR_ACTION,
+    SAI_TAM_TEL_TYPE_ATTR_FLOW_ACTION,
 
     /**
-     * @brief Math func attached
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM_MATH_FUNC
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_TAM_TEL_FLOW_ATTR_MATH_FUNC,
-
-    /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_TEL_FLOW_ATTR_TAM_ID,
-
-    /**
-     * @brief End of Attributes
-     */
-    SAI_TAM_TEL_FLOW_ATTR_END,
-
-    /** Custom range base value */
-    SAI_TAM_TEL_FLOW_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_TEL_FLOW_ATTR_CUSTOM_RANGE_END
-
-} sai_tam_tel_flow_attr_t;
-
-/**
- * @brief Create and return a telemetry flow object
- *
- * @param[out] tam_tel_flow_id Telemetry flow object
- * @param[in] switch_id Switch object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_create_tam_tel_flow_fn)(
-        _Out_ sai_object_id_t *tam_tel_flow_id,
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
-
-/**
- * @brief Deletes a specified telemetry flow object
- *
- * @param[in] tam_tel_flow_id Telemetry flow object id
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_remove_tam_tel_flow_fn)(
-        _In_ sai_object_id_t tam_tel_flow_id);
-
-/**
- * @brief Get values for specified telemetry flow object attributes
- *
- * @param[in] tam_tel_flow_id Telemetry flow object id
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_tam_tel_flow_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_flow_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief Set value for a specified telemetry flow object attribute
- *
- * @param[in] tam_tel_flow_id Telemetry flow object id
- * @param[in] attr Attribute
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_set_tam_tel_flow_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_flow_id,
-        _In_ const sai_attribute_t *attr);
-
-/**
- * @brief Switch telemetry attributes
- */
-typedef enum _sai_tam_tel_switch_attr_t
-{
-
-    /**
-     * @brief Start of Attributes
-     */
-    SAI_TAM_TEL_SWITCH_ATTR_START,
-
-    /**
-     * @brief Collect Port stats
+     * @brief Switch - Collect Port stats
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_TAM_TEL_SWITCH_ATTR_ENABLE_PORT_STATS = SAI_TAM_TEL_SWITCH_ATTR_START,
+    SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_PORT_STATS,
 
     /**
-     * @brief Collect virtual queue stats
+     * @brief Switch - Collect virtual queue stats
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_TAM_TEL_SWITCH_ATTR_ENABLE_VRTUAL_QUEUE_STATS,
+    SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_VIRTUAL_QUEUE_STATS,
 
     /**
-     * @brief Collect switch output queue stats
+     * @brief Switch - Collect output queue stats
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_TAM_TEL_SWITCH_ATTR_ENABLE_OUTPUT_QUEUE_STATS,
+    SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_OUTPUT_QUEUE_STATS,
 
     /**
-     * @brief Collect MMU stats
+     * @brief Switch - Collect MMU stats
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_TAM_TEL_SWITCH_ATTR_ENABLE_MMU_STATS,
+    SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_MMU_STATS,
 
     /**
-     * @brief Collect switch fabric stats
+     * @brief Switch - Collect fabric stats
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_TAM_TEL_SWITCH_ATTR_ENABLE_FABRIC_STATS,
+    SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_FABRIC_STATS,
 
     /**
-     * @brief Collect switch filter stats
+     * @brief Switch - Collect filter stats
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_TAM_TEL_SWITCH_ATTR_ENABLE_FILTER_STATS,
+    SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_FILTER_STATS,
 
     /**
-     * @brief Collect Resource utilization stats
+     * @brief Switch - Collect Resource utilization stats
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_TAM_TEL_SWITCH_ATTR_ENABLE_RESOURCE_UTILIZATION_STATS,
+    SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_RESOURCE_UTILIZATION_STATS,
+
+    /**
+     * @brief Fabric - Collect Queue information
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_TEL_TYPE_ATTR_FABRIC_Q,
+
+    /**
+     * @brief NE - Collect information
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_TEL_TYPE_ATTR_NE_ENABLE,
 
     /**
      * @brief Math func attached
@@ -2175,7 +1974,7 @@ typedef enum _sai_tam_tel_switch_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_TAM_TEL_SWITCH_ATTR_MATH_FUNC,
+    SAI_TAM_TEL_TYPE_ATTR_MATH_FUNC,
 
     /**
      * @brief TAM Object
@@ -2184,280 +1983,70 @@ typedef enum _sai_tam_tel_switch_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM
      */
-    SAI_TAM_TEL_SWITCH_ATTR_TAM_ID,
+    SAI_TAM_TEL_TYPE_ATTR_TAM_ID,
 
     /**
      * @brief End of Attributes
      */
-    SAI_TAM_TEL_SWITCH_ATTR_END,
+    SAI_TAM_TEL_TYPE_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_TEL_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_TAM_TEL_TYPE_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_TAM_TEL_SWITCH_ATTR_CUSTOM_RANGE_END
-
-} sai_tam_tel_switch_attr_t;
+    SAI_TAM_TEL_TYPE_ATTR_CUSTOM_RANGE_END
+} sai_tam_tel_type_attr_t;
 
 /**
- * @brief Create and return a telemetry switch object
+ * @brief Create and return a telemetry type object
  *
- * @param[out] tam_tel_switch_id Telemetry switch object
+ * @param[out] tam_tel_type_id Telemetry type object
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_create_tam_tel_switch_fn)(
-        _Out_ sai_object_id_t *tam_tel_switch_id,
+typedef sai_status_t (*sai_create_tam_tel_type_fn)(
+        _Out_ sai_object_id_t *tam_tel_type_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Deletes a specified telemetry switch object
+ * @brief Deletes a specified telemetry type object
  *
- * @param[in] tam_tel_switch_id Telemetry switch object id
+ * @param[in] tam_tel_type_id Telemetry type object id
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_remove_tam_tel_switch_fn)(
-        _In_ sai_object_id_t tam_tel_switch_id);
+typedef sai_status_t (*sai_remove_tam_tel_type_fn)(
+        _In_ sai_object_id_t tam_tel_type_id);
 
 /**
- * @brief Get values for specified telemetry switch object attributes
+ * @brief Get values for specified telemetry type object attributes
  *
- * @param[in] tam_tel_switch_id Telemetry switch object id
+ * @param[in] tam_tel_type_id Telemetry type object id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_get_tam_tel_switch_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_switch_id,
+typedef sai_status_t (*sai_get_tam_tel_type_attribute_fn)(
+        _In_ sai_object_id_t tam_tel_type_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Set value for a specified telemetry switch object attribute
+ * @brief Set value for a specified telemetry type object attribute
  *
- * @param[in] tam_tel_switch_id Telemetry switch object id
+ * @param[in] tam_tel_type_id Telemetry type object id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_set_tam_tel_switch_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_switch_id,
-        _In_ const sai_attribute_t *attr);
-
-/**
- * @brief Fabric telemetry attributes
- */
-typedef enum _sai_tam_tel_fabric_attr_t
-{
-
-    /**
-     * @brief Start of Attributes
-     */
-    SAI_TAM_TEL_FABRIC_ATTR_START,
-
-    /**
-     * @brief Collect fabric Queue information
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_TAM_TEL_FABRIC_ATTR_FABRIC_Q = SAI_TAM_TEL_FABRIC_ATTR_START,
-
-    /**
-     * @brief Math func attached
-     * @type sai_object_id_t
-     *
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM_MATH_FUNC
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_TAM_TEL_FABRIC_ATTR_MATH_FUNC,
-
-    /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_TEL_FABRIC_ATTR_TAM_ID,
-
-    /**
-     * @brief End of Attributes
-     */
-    SAI_TAM_TEL_FABRIC_ATTR_END,
-
-    /** Custom range base value */
-    SAI_TAM_TEL_FABRIC_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_TEL_FABRIC_ATTR_CUSTOM_RANGE_END
-
-} sai_tam_tel_fabric_attr_t;
-
-/**
- * @brief Create and return a telemetry fabric object
- *
- * @param[out] tam_tel_fabric_id Telemetry fabric object
- * @param[in] switch_id Switch object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_create_tam_tel_fabric_fn)(
-        _Out_ sai_object_id_t *tam_tel_fabric_id,
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
-
-/**
- * @brief Deletes a specified telemetry fabric object
- *
- * @param[in] tam_tel_fabric_id Telemetry fabric object id
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_remove_tam_tel_fabric_fn)(
-        _In_ sai_object_id_t tam_tel_fabric_id);
-
-/**
- * @brief Get values for specified telemetry fabric object attributes
- *
- * @param[in] tam_tel_fabric_id Telemetry fabric object id
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_tam_tel_fabric_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_fabric_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief Set value for a specified telemetry fabric object attribute
- *
- * @param[in] tam_tel_fabric_id Telemetry fabric object id
- * @param[in] attr Attribute
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_set_tam_tel_fabric_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_fabric_id,
-        _In_ const sai_attribute_t *attr);
-
-/**
- * @brief Networking Element telemetry attributes
- */
-typedef enum _sai_tam_tel_ne_attr_t
-{
-
-    /**
-     * @brief Start of Attributes
-     */
-    SAI_TAM_TEL_NE_ATTR_START,
-
-    /**
-     * @brief Collect networking element information
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_TAM_TEL_NE_ATTR_ENABLE_NE = SAI_TAM_TEL_NE_ATTR_START,
-
-    /**
-     * @brief Math func attached
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM_MATH_FUNC
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_TAM_TEL_NE_ATTR_MATH_FUNC,
-
-    /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_TEL_NE_ATTR_TAM_ID,
-
-    /**
-     * @brief End of Attributes
-     */
-    SAI_TAM_TEL_NE_ATTR_END,
-
-    /** Custom range base value */
-    SAI_TAM_TEL_NE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_TEL_NE_ATTR_CUSTOM_RANGE_END
-
-} sai_tam_tel_ne_attr_t;
-
-/**
- * @brief Create and return a telemetry NE object
- *
- * @param[out] tam_tel_ne_id Telemetry NE object
- * @param[in] switch_id Switch object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_create_tam_tel_ne_fn)(
-        _Out_ sai_object_id_t *tam_tel_ne_id,
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
-
-/**
- * @brief Deletes a specified telemetry NE object
- *
- * @param[in] tam_tel_ne_id Telemetry NE object id
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_remove_tam_tel_ne_fn)(
-        _In_ sai_object_id_t tam_tel_ne_id);
-
-/**
- * @brief Get values for specified telemetry NE object attributes
- *
- * @param[in] tam_tel_ne_id Telemetry NE object id
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_tam_tel_ne_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_ne_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief Set value for a specified telemetry NE object attribute
- *
- * @param[in] tam_tel_ne_id Telemetry NE object id
- * @param[in] attr Attribute
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_set_tam_tel_ne_attribute_fn)(
-        _In_ sai_object_id_t tam_tel_ne_id,
+typedef sai_status_t (*sai_set_tam_tel_type_attribute_fn)(
+        _In_ sai_object_id_t tam_tel_type_id,
         _In_ const sai_attribute_t *attr);
 
 /**
@@ -2637,7 +2226,7 @@ typedef enum _sai_tam_telemetry_attr_t
      * @type sai_object_id_t
      *
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM_TEL_NE, SAI_OBJECT_TYPE_TAM_TEL_SWITCH, SAI_OBJECT_TYPE_TAM_TEL_FABRIC, SAI_OBJECT_TYPE_TAM_TEL_FLOW, SAI_OBJECT_TYPE_TAM_TEL_INT
+     * @objects SAI_OBJECT_TYPE_TAM_TEL_TYPE
      */
     SAI_TAM_TELEMETRY_ATTR_TAM_TYPE_LIST = SAI_TAM_TELEMETRY_ATTR_START,
 
@@ -3382,30 +2971,10 @@ typedef struct _sai_tam_api_t
     sai_set_tam_event_threshold_attribute_fn  set_tam_event_threshold_attribute;
     sai_get_tam_event_threshold_attribute_fn  get_tam_event_threshold_attribute;
 
-    sai_create_tam_tel_int_fn                 create_tam_tel_int;
-    sai_remove_tam_tel_int_fn                 remove_tam_tel_int;
-    sai_set_tam_tel_int_attribute_fn          set_tam_tel_int_attribute;
-    sai_get_tam_tel_int_attribute_fn          get_tam_tel_int_attribute;
-
-    sai_create_tam_tel_flow_fn                create_tam_tel_flow;
-    sai_remove_tam_tel_flow_fn                remove_tam_tel_flow;
-    sai_set_tam_tel_flow_attribute_fn         set_tam_tel_flow_attribute;
-    sai_get_tam_tel_flow_attribute_fn         get_tam_tel_flow_attribute;
-
-    sai_create_tam_tel_fabric_fn              create_tam_tel_fabric;
-    sai_remove_tam_tel_fabric_fn              remove_tam_tel_fabric;
-    sai_set_tam_tel_fabric_attribute_fn       set_tam_tel_fabric_attribute;
-    sai_get_tam_tel_fabric_attribute_fn       get_tam_tel_fabric_attribute;
-
-    sai_create_tam_tel_switch_fn              create_tam_tel_switch;
-    sai_remove_tam_tel_switch_fn              remove_tam_tel_switch;
-    sai_set_tam_tel_switch_attribute_fn       set_tam_tel_switch_attribute;
-    sai_get_tam_tel_switch_attribute_fn       get_tam_tel_switch_attribute;
-
-    sai_create_tam_tel_ne_fn                  create_tam_tel_ne;
-    sai_remove_tam_tel_ne_fn                  remove_tam_tel_ne;
-    sai_set_tam_tel_ne_attribute_fn           set_tam_tel_ne_attribute;
-    sai_get_tam_tel_ne_attribute_fn           get_tam_tel_ne_attribute;
+    sai_create_tam_tel_type_fn                create_tam_tel_type;
+    sai_remove_tam_tel_type_fn                remove_tam_tel_type;
+    sai_set_tam_tel_type_attribute_fn         set_tam_tel_type_attribute;
+    sai_get_tam_tel_type_attribute_fn         get_tam_tel_type_attribute;
 
     sai_create_tam_transport_fn               create_tam_transport;
     sai_remove_tam_transport_fn               remove_tam_transport;
