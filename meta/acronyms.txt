@@ -54,6 +54,7 @@ PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
 PFC - Priority Flow Control
 PIR - Peak Information Rate
+QOS - Quality of Service
 PROTO - Protocol
 RARP - Reverse Address Resolution Protocol
 RFC - Request For Comment
