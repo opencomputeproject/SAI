@@ -45,7 +45,8 @@ typedef enum _sai_api_extensions_t
 
     SAI_API_FPGA = SAI_API_EXTENSIONS_RANGE_START, /**< Experimental module: access to NPU registers */
 
-    /** Add new experimental APIs above this line */
+    /* Add new experimental APIs above this line */
+
     SAI_API_EXTENSIONS_RANGE_START_END
 
 } sai_api_extensions_t;
