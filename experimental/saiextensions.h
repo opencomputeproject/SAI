@@ -32,7 +32,6 @@
 #include "saiswitchextensions.h"
 
 /* new experimental object type includes */
-#include "saiexperimentalfpga.h"
 
 /**
  * @brief Extensions to SAI APIs
@@ -43,8 +42,6 @@ typedef enum _sai_api_extensions_t
 {
     SAI_API_EXTENSIONS_RANGE_START = SAI_API_MAX,
 
-    SAI_API_FPGA = SAI_API_EXTENSIONS_RANGE_START, /**< Experimental module: access to NPU registers */
-
     /* Add new experimental APIs above this line */
 
     SAI_API_EXTENSIONS_RANGE_START_END
@@ -52,4 +49,3 @@ typedef enum _sai_api_extensions_t
 } sai_api_extensions_t;
 
 #endif /* __SAIEXTENSIONS_H_ */
-

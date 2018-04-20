@@ -90,6 +90,14 @@ defined_attr_t* defined_attributes = NULL;
 
 #define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
 
+bool is_extensions_enum(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    return strstr(emd->name, "_extensions_t") != NULL;
+}
+
 void check_all_enums_name_pointers()
 {
     META_LOG_ENTER();
@@ -111,7 +119,17 @@ void check_all_enums_name_pointers()
         META_ASSERT_NOT_NULL(emd->valuesnames);
         META_ASSERT_NOT_NULL(emd->valuesshortnames);
 
-        META_ASSERT_TRUE(emd->valuescount > 0, "enum must have some values");
+        if (is_extensions_enum(emd))
+        {
+            /* allow empty extensions enums */
+
+            if (emd->valuescount == 0)
+                META_LOG_WARN("enum %s has no values", emd->name);
+        }
+        else
+        {
+            META_ASSERT_TRUE(emd->valuescount > 0, "enum must have some values");
+        }
 
         size_t j = 0;
 
@@ -214,7 +232,7 @@ void check_all_enums_values()
 
         META_ASSERT_TRUE(emd->values[j] == -1, "missing guard at the end of enum");
 
-        if (flags != emd->containsflags)
+        if (emd->valuescount > 0 && flags != emd->containsflags)
         {
             META_ENUM_ASSERT_FAIL(emd, "enum flags: %d but declared as %d", flags, emd->containsflags);
         }

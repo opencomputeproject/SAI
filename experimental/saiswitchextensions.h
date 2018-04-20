@@ -36,14 +36,6 @@ typedef enum _sai_switch_attr_extensions_t
 {
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START = SAI_SWITCH_ATTR_END,
 
-    /**
-     * @brief Ids of FPGAs supported by the switch
-     *
-     * @type sai_u32_list_t
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_FPGA_IDS = SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START,
-
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_END
 
 } sai_switch_attr_extensions_t;

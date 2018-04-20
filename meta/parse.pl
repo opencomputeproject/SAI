@@ -469,7 +469,8 @@ sub ProcessEnumSection
         {
             my $valuescount = @values;
 
-            if ($valuescount == 0)
+            # allow empty enum on extensions
+            if ($valuescount == 0 and not $enumtypename =~ /_extensions_t$/)
             {
                 LogError "enum $enumtypename is empty, after removing suffixed entries _START/_END/_CUSTOM_RANGE_BASE";
                 LogError "  those suffixes are reserved for range markers and are removed by metadata parser, don't use them";
@@ -477,12 +478,15 @@ sub ProcessEnumSection
                 next;
             }
 
-            my $last = $values[$#values];
-
-            if ($last eq "${enumprefix}MAX")
+            if ($valuescount > 0)
             {
-                $last =  pop @values;
-                LogInfo "Removing last element $last";
+                my $last = $values[$#values];
+
+                if ($last eq "${enumprefix}MAX")
+                {
+                    $last =  pop @values;
+                    LogInfo "Removing last element $last";
+                }
             }
         }
 
