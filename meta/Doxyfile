@@ -748,6 +748,7 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = ../inc/
+INPUT                  += ../experimental/
 INPUT                  += saimetadatatypes.h
 INPUT                  += saimetadatautils.h
 INPUT                  += saimetadatalogger.h

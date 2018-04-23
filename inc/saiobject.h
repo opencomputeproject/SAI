@@ -115,28 +115,28 @@ typedef struct _sai_attr_capability_t
  *
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
- * @param[inout] count Maximum number of attribute for an object type
+ * @param[out] count Maximum number of attribute for an object type
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_get_maximum_attribute_count(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
-        _Inout_ uint32_t *count);
+        _Out_ uint32_t *count);
 
 /**
  * @brief Get the number of objects present in SAI
  *
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
- * @param[inout] count Number of objects in SAI
+ * @param[out] count Number of objects in SAI
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_get_object_count(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
-        _Inout_ uint32_t *count);
+        _Out_ uint32_t *count);
 
 /**
  * @brief Get the list of object keys present in SAI

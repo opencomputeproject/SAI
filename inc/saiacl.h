@@ -2255,14 +2255,14 @@ typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
  *
  * @param[in] acl_table_id ACL table id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
         _In_ sai_object_id_t acl_table_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL entry
@@ -2307,14 +2307,14 @@ typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
  *
  * @param[in] acl_entry_id ACL entry id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
         _In_ sai_object_id_t acl_entry_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL counter
@@ -2359,14 +2359,14 @@ typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
  *
  * @param[in] acl_counter_id ACL counter id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
         _In_ sai_object_id_t acl_counter_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL Range
@@ -2410,14 +2410,14 @@ typedef sai_status_t (*sai_set_acl_range_attribute_fn)(
  *
  * @param[in] acl_range_id ACL range id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
         _In_ sai_object_id_t acl_range_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL Table Group
@@ -2462,14 +2462,14 @@ typedef sai_status_t (*sai_set_acl_table_group_attribute_fn)(
  *
  * @param[in] acl_table_group_id ACL table group id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL Table Group Member
@@ -2514,14 +2514,14 @@ typedef sai_status_t (*sai_set_acl_table_group_member_attribute_fn)(
  *
  * @param[in] acl_table_group_member_id ACL table group member id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_member_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Port methods table retrieved with sai_api_query()

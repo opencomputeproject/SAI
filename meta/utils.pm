@@ -163,6 +163,11 @@ sub GetMetaHeaderFiles
     return GetHeaderFiles(".");
 }
 
+sub GetExperimentalHeaderFiles
+{
+    return GetHeaderFiles($main::EXPERIMENTAL_DIR);
+}
+
 sub GetFilesByRegex
 {
     my ($dir,$regex) = @_;
@@ -192,13 +197,16 @@ sub GetMetadataSourceFiles
 
 sub ReadHeaderFile
 {
-    my $filename = shift;
+    my $file = shift;
 
     local $/ = undef;
 
     # first search file in meta directory
 
-    $filename = "$main::INCLUDE_DIR/$filename" if not -f $filename;
+    my $filename = $file;
+
+    $filename = "$main::INCLUDE_DIR/$file" if not -e $filename;
+    $filename = "$main::EXPERIMENTAL_DIR/$file" if not -e $filename;
 
     open FILE, $filename or die "Couldn't open file $filename: $!";
 
@@ -351,8 +359,8 @@ BEGIN
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
     LogDebug LogInfo LogWarning LogError
-    WriteFile GetHeaderFiles GetMetaHeaderFiles GetMetadataSourceFiles ReadHeaderFile
-    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
+    WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile
+    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder Trim
     Trim ExitOnErrors
     WriteHeader WriteSource WriteTest WriteMetaDataFiles WriteSectionComment
     $errors $warnings $NUMBER_REGEX

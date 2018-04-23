@@ -222,7 +222,7 @@ bool sai_metadata_is_object_type_oid(
 bool sai_metadata_is_object_type_valid(
         _In_ sai_object_type_t object_type)
 {
-    return object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_MAX;
+    return object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_EXTENSIONS_MAX;
 }
 
 bool sai_metadata_is_condition_met(

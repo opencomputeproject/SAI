@@ -90,6 +90,14 @@ defined_attr_t* defined_attributes = NULL;
 
 #define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
 
+bool is_extensions_enum(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    return strstr(emd->name, "_extensions_t") != NULL;
+}
+
 void check_all_enums_name_pointers()
 {
     META_LOG_ENTER();
@@ -111,7 +119,17 @@ void check_all_enums_name_pointers()
         META_ASSERT_NOT_NULL(emd->valuesnames);
         META_ASSERT_NOT_NULL(emd->valuesshortnames);
 
-        META_ASSERT_TRUE(emd->valuescount > 0, "enum must have some values");
+        if (is_extensions_enum(emd))
+        {
+            /* allow empty extensions enums */
+
+            if (emd->valuescount == 0)
+                META_LOG_WARN("enum %s has no values", emd->name);
+        }
+        else
+        {
+            META_ASSERT_TRUE(emd->valuescount > 0, "enum must have some values");
+        }
 
         size_t j = 0;
 
@@ -214,7 +232,7 @@ void check_all_enums_values()
 
         META_ASSERT_TRUE(emd->values[j] == -1, "missing guard at the end of enum");
 
-        if (flags != emd->containsflags)
+        if (emd->valuescount > 0 && flags != emd->containsflags)
         {
             META_ENUM_ASSERT_FAIL(emd, "enum flags: %d but declared as %d", flags, emd->containsflags);
         }
@@ -279,7 +297,10 @@ void check_attr_by_object_type()
 {
     META_LOG_ENTER();
 
-    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == SAI_OBJECT_TYPE_MAX, "invalid object type count in metadata");
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_EXTENSIONS_MAX - SAI_OBJECT_TYPE_MAX < 50, "too many experimental object types");
+
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX <= SAI_OBJECT_TYPE_EXTENSIONS_MAX, "invalid object type count in metadata");
+    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == SAI_OBJECT_TYPE_EXTENSIONS_MAX, "invalid object type count in metadata");
 
     size_t i = 0;
 
@@ -300,7 +321,7 @@ void check_attr_by_object_type()
             META_ASSERT_TRUE(current == i, "object type must be equal on object type list");
             META_ASSERT_TRUE(index < 200, "object defines > 200 attributes, metadata bug?");
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
-            META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_MAX, "object type must be < MAX");
+            META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_EXTENSIONS_MAX, "object type must be < MAX");
 
             /* META_LOG_DEBUG("processing indexer %lu", index); */
 
@@ -313,13 +334,20 @@ void check_attr_by_object_type()
     META_ASSERT_NULL(sai_metadata_attr_by_object_type[i]);
 }
 
+bool is_valid_object_type(
+        _In_ sai_object_type_t ot)
+{
+    META_LOG_ENTER();
+
+    return (ot > SAI_OBJECT_TYPE_NULL) && (ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX);
+}
+
 void check_attr_object_type(
         _In_ const sai_attr_metadata_t* md)
 {
     META_LOG_ENTER();
 
-    if ((md->objecttype <= SAI_OBJECT_TYPE_NULL) ||
-            (md->objecttype >= SAI_OBJECT_TYPE_MAX))
+    if (!is_valid_object_type(md->objecttype))
     {
         META_MD_ASSERT_FAIL(md, "invalid object type value %d", md->objecttype);
     }
@@ -662,8 +690,7 @@ void check_attr_allowed_object_types(
     {
         sai_object_type_t ot = md->allowedobjecttypes[i];
 
-        if ((ot <= SAI_OBJECT_TYPE_NULL) ||
-                (ot >= SAI_OBJECT_TYPE_MAX))
+        if (!is_valid_object_type(ot))
         {
             META_MD_ASSERT_FAIL(md, "invalid allowed object type: %d", ot);
         }
@@ -807,6 +834,13 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
             break;
+
+        case SAI_ATTR_VALUE_TYPE_CHARDATA:
+
+            if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_CONST)
+            {
+                break;
+            }
 
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
@@ -1539,8 +1573,7 @@ void check_attr_allow_flags(
     {
         sai_object_type_t ot = md->allowedobjecttypes[index];
 
-        if (ot > SAI_OBJECT_TYPE_NULL &&
-                ot < SAI_OBJECT_TYPE_MAX)
+        if (is_valid_object_type(ot))
         {
             continue;
         }
@@ -2176,6 +2209,7 @@ void check_attr_existing_objects(
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_UINT16:
         case SAI_ATTR_VALUE_TYPE_UINT32:
+        case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_UINT8:
 
             /*
@@ -2623,6 +2657,23 @@ void check_attr_capability(
     META_ASSERT_NULL(md->capability[i]); /* guard */
 }
 
+void check_attr_extension_flag(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    const sai_object_type_info_t* oi = sai_metadata_get_object_type_info(md->objecttype);
+
+    if (md->attrid >= oi->attridend && md->attrid < CUSTOM_ATTR_RANGE_START)
+    {
+        META_ASSERT_TRUE(md->isextensionattr, "atribute %s expected to be extension", md->attridname);
+    }
+    else
+    {
+        META_ASSERT_FALSE(md->isextensionattr, "atribute %s not expected to be extension", md->attridname);
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2664,6 +2715,7 @@ void check_single_attribute(
     check_attr_fdb_flush(md);
     check_attr_hostif_packet(md);
     check_attr_capability(md);
+    check_attr_extension_flag(md);
 
     define_attr(md);
 }
@@ -2687,7 +2739,7 @@ void check_object_infos()
 
     size_t i = SAI_OBJECT_TYPE_NULL;
 
-    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
@@ -2715,6 +2767,8 @@ void check_object_infos()
 
         /* check all listed attributes under this object type */
 
+        bool has_extensions_attrs = false;
+
         for (; meta[index] != NULL; ++index)
         {
             const sai_attr_metadata_t* am = meta[index];
@@ -2732,6 +2786,11 @@ void check_object_infos()
                 {
                     META_MD_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
                 }
+            }
+
+            if (am->isextensionattr)
+            {
+                has_extensions_attrs = true;
             }
 
             last = (int)am->attrid;
@@ -2752,6 +2811,12 @@ void check_object_infos()
                 continue;
             }
 
+            if (am->attrid >= info->attridend && am->isextensionattr)
+            {
+                /* extensions attribute id can be beyond attr id end range */
+                continue;
+            }
+
             META_MD_ASSERT_FAIL(am, "attr is is not in start .. end range");
         }
 
@@ -2762,6 +2827,10 @@ void check_object_infos()
             if (is_flag_enum(info->enummetadata))
             {
                 /* ok, flags */
+            }
+            else if (has_extensions_attrs)
+            {
+                /* ok, extension attribute */
             }
             else
             {
@@ -2778,7 +2847,7 @@ void check_non_object_id_object_types()
 
     size_t i = SAI_OBJECT_TYPE_NULL;
 
-    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
@@ -2871,7 +2940,7 @@ void check_non_object_id_object_types()
                         META_ASSERT_FAIL("fdb flush or hostif packet can't be used as object in nonobjectid struct");
                     }
 
-                    if (ot > SAI_OBJECT_TYPE_NULL && ot < SAI_OBJECT_TYPE_MAX)
+                    if (is_valid_object_type(ot))
                     {
                         if (ot == SAI_OBJECT_TYPE_SWITCH)
                         {
@@ -2930,7 +2999,7 @@ void check_non_object_id_object_attrs()
 
     size_t i = SAI_OBJECT_TYPE_NULL;
 
-    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
@@ -2975,7 +3044,7 @@ void check_attr_sorted_by_id_name()
 
     const char *last = "AAA";
 
-    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 500,
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 800,
             "there should be at least 500 attributes in total");
 
     for (; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
@@ -3180,12 +3249,12 @@ void check_objects_for_loops()
 {
     META_LOG_ENTER();
 
-    sai_object_type_t visited_objects[SAI_OBJECT_TYPE_MAX];
-    uint32_t visited_attributes[SAI_OBJECT_TYPE_MAX];
+    sai_object_type_t visited_objects[SAI_OBJECT_TYPE_EXTENSIONS_MAX];
+    uint32_t visited_attributes[SAI_OBJECT_TYPE_EXTENSIONS_MAX];
 
     size_t i = SAI_OBJECT_TYPE_NULL;
 
-    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
@@ -3194,8 +3263,8 @@ void check_objects_for_loops()
             continue;
         }
 
-        memset(visited_objects, 0, SAI_OBJECT_TYPE_MAX * sizeof(sai_object_type_t));
-        memset(visited_attributes, 0, SAI_OBJECT_TYPE_MAX * sizeof(uint32_t));
+        memset(visited_objects, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(sai_object_type_t));
+        memset(visited_attributes, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(uint32_t));
 
         check_objects_for_loops_recursive(info, visited_objects, visited_attributes, 0);
     }
@@ -3233,7 +3302,7 @@ void check_read_only_attributes()
 
     size_t i = SAI_OBJECT_TYPE_NULL;
 
-    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
@@ -3501,7 +3570,7 @@ void check_reverse_graph_for_non_object_id()
 
     size_t i = SAI_OBJECT_TYPE_NULL;
 
-    for (; i <= SAI_OBJECT_TYPE_MAX; ++i)
+    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
     {
         sai_object_type_t objecttype = (sai_object_type_t)i;
 
@@ -4009,6 +4078,12 @@ void check_object_ro_list(
         }
     }
 
+    if (oi->isexperimental)
+    {
+        META_LOG_WARN("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        return;
+    }
+
     META_ASSERT_FAIL("%s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
 }
 
@@ -4036,6 +4111,21 @@ void check_reverse_graph_count(
     META_ASSERT_NULL(oi->revgraphmembers[i]);
 }
 
+void check_experimental_flag(
+        _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    if (oi->objecttype >= SAI_OBJECT_TYPE_MAX)
+    {
+        META_ASSERT_TRUE(oi->isexperimental, "object %s is expected to be marked as experimental", oi->objecttypename);
+    }
+    else
+    {
+        META_ASSERT_FALSE(oi->isexperimental, "object %s is expected to not be marked as experimental", oi->objecttypename);
+    }
+}
+
 void check_single_object_info(
         _In_ const sai_object_type_info_t *oi)
 {
@@ -4046,14 +4136,17 @@ void check_single_object_info(
     check_enum_to_attr_map(oi);
     check_object_ro_list(oi);
     check_reverse_graph_count(oi);
+    check_experimental_flag(oi);
 }
 
 void check_api_max()
 {
     META_LOG_ENTER();
 
-    META_ASSERT_TRUE(sai_metadata_enum_sai_api_t.valuescount == SAI_API_MAX,
-            "SAI_API_MAX should be equal to number of SAI_API*");
+    META_ASSERT_TRUE(SAI_API_MAX <= SAI_API_EXTENSIONS_MAX, "expected api MAX to be less equal than extensions MAX");
+
+    META_ASSERT_TRUE(sai_metadata_enum_sai_api_t.valuescount == SAI_API_EXTENSIONS_MAX,
+            "SAI_API_EXTENSIONS_MAX should be equal to number of SAI_API*");
 }
 
 
@@ -4141,18 +4234,28 @@ void check_graph_connected()
      * Check if all objects are used and are not "disconnected" from the graph.
      */
 
-    sai_object_type_t visited[SAI_OBJECT_TYPE_MAX];
+    sai_object_type_t visited[SAI_OBJECT_TYPE_EXTENSIONS_MAX];
 
-    memset(visited, 0, SAI_OBJECT_TYPE_MAX * sizeof(sai_object_type_t));
+    memset(visited, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(sai_object_type_t));
 
     helper_check_graph_connected(SAI_OBJECT_TYPE_PORT, visited);
 
     int i = 0;
 
-    for (; i < SAI_OBJECT_TYPE_MAX; ++i)
+    for (; i < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
     {
         if (visited[i] == (sai_object_type_t)i)
         {
+            continue;
+        }
+
+        if (sai_metadata_all_object_type_infos[i]->isexperimental)
+        {
+            /* allow experimental obejct types to be disconnected from main graph */
+
+            META_LOG_WARN("experimental object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
             continue;
         }
 
@@ -4169,7 +4272,7 @@ void check_get_attr_metadata()
 
     int ot = 0;
 
-    for (; ot < SAI_OBJECT_TYPE_MAX; ++ot)
+    for (; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++ot)
     {
         const sai_attr_metadata_t* const* mda = sai_metadata_attr_by_object_type[ot];
 
@@ -4251,7 +4354,7 @@ int main(int argc, char **argv)
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 
-    for (; i < SAI_OBJECT_TYPE_MAX; ++i)
+    for (; i < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
     {
         check_single_object_info(sai_metadata_all_object_type_infos[i]);
     }

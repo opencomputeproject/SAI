@@ -63,9 +63,9 @@ WARNINGS = \
 	-Wvariadic-macros \
 	-Wwrite-strings
 
-CFLAGS += -I../inc $(WARNINGS)
+CFLAGS += -I../inc -I../experimental $(WARNINGS)
 
-DEPS = $(wildcard ../inc/*.h)
+DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
 
 OBJ = saimetadata.o saimetadatautils.o saiserialize.o
