@@ -73,7 +73,11 @@ typedef enum _sai_port_oper_status_t
  */
 typedef struct _sai_port_oper_status_notification_t
 {
-    /** Port id */
+    /**
+     * @brief Port id.
+     *
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_LAG
+     */
     sai_object_id_t port_id;
 
     /** Port operational status */

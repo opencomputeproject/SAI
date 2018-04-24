@@ -41,23 +41,51 @@
  */
 
 /**
+ * @extraparam sai_object_type_t object_type
+ */
+typedef union _sai_object_key_entry_t
+{
+    /**
+     * @brief Key is object ID.
+     *
+     * @validonly sai_metadata_is_object_type_oid(object_type) == true
+     */
+    sai_object_id_t           object_id;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_FDB_ENTRY */
+    sai_fdb_entry_t           fdb_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY */
+    sai_neighbor_entry_t      neighbor_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_ROUTE_ENTRY */
+    sai_route_entry_t         route_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_MCAST_FDB_ENTRY */
+    sai_mcast_fdb_entry_t     mcast_fdb_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_L2MC_ENTRY */
+    sai_l2mc_entry_t          l2mc_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_IPMC_ENTRY */
+    sai_ipmc_entry_t          ipmc_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_INSEG_ENTRY */
+    sai_inseg_entry_t         inseg_entry;
+
+} sai_object_key_entry_t;
+
+/**
  * @brief Structure for bulk retrieval of object ids, attribute and values for
  * each object-type. Key will be used in case of object-types not having
  * object-ids.
+ *
+ * @extraparam sai_object_type_t object_type
  */
 typedef struct _sai_object_key_t
 {
-    union _object_key {
-        sai_object_id_t           object_id;
-        sai_fdb_entry_t           fdb_entry;
-        sai_neighbor_entry_t      neighbor_entry;
-        sai_route_entry_t         route_entry;
-        sai_mcast_fdb_entry_t     mcast_fdb_entry;
-        sai_l2mc_entry_t          l2mc_entry;
-        sai_ipmc_entry_t          ipmc_entry;
-        sai_inseg_entry_t         inseg_entry;
-
-    } key;
+    /** @passparam object_type */
+    sai_object_key_entry_t key;
 
 } sai_object_key_t;
 
