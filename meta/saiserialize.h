@@ -614,64 +614,97 @@ int sai_deserialize_ip6_mask(
         _Out_ sai_ip6_t ip6_mask);
 
 /**
- * @brief Serialize HMAC.
- *
- * XXX: subject to auto serialize
+ * @brief Serialize pointer.
  *
  * @param[out] buffer Output buffer for serialized value.
- * @param[in] hmac HMAC to be serialized.
+ * @param[in] pointer Pointer to be serialized.
  *
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_hmac(
+int sai_serialize_pointer(
         _Out_ char *buffer,
-        _In_ const sai_hmac_t *hmac);
+        _In_ sai_pointer_t pointer);
 
 /**
- * @brief Deserialize HMAC.
- *
- * XXX: subject to auto deserialize
+ * @brief Deserialize pointer.
  *
  * @param[in] buffer Input buffer to be examined.
- * @param[out] hmac Deserialized value.
+ * @param[out] pointer Deserialized value.
  *
  * @return Number of characters consumed from the buffer,
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_deserialize_hmac(
+int sai_deserialize_pointer(
         _In_ const char *buffer,
-        _Out_ sai_hmac_t *hmac);
+        _Out_ sai_pointer_t *pointer);
 
 /**
- * @brief Serialize TLV.
+ * @brief Serialize enum list.
  *
- * XXX: subject to auto serialize
+ * If enum metadata is null, then list is serialized using
+ * sai_serialize_s32_list and it will not contain quotes.
  *
  * @param[out] buffer Output buffer for serialized value.
- * @param[in] tlv TLV to be serialized.
+ * @param[in] meta Enum metadata used to serialize.
+ * @param[in] s32_list List of enum values to be serialized.
  *
  * @return Number of characters written to buffer excluding '\0',
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_serialize_tlv(
+int sai_serialize_enum_list(
         _Out_ char *buffer,
-        _In_ const sai_tlv_t *tlv);
+        _In_ const sai_enum_metadata_t *meta,
+        _In_ const sai_s32_list_t *s32_list);
 
 /**
- * @brief Deserialize TLV.
+ * @brief Deserialize enum list.
  *
- * XXX: subject to auto deserialize
+ * If enum metadata is null, then list is deserialized using
+ * sai_deserialize_s32_list and it will not contain quotes.
  *
  * @param[in] buffer Input buffer to be examined.
- * @param[out] tlv Deserialized value.
+ * @param[in] meta Enum metadata.
+ * @param[out] s32_list Deserialized value.
  *
  * @return Number of characters consumed from the buffer,
  * or #SAI_SERIALIZE_ERROR on error.
  */
-int sai_deserialize_tlv(
+int sai_deserialize_enum_list(
         _In_ const char *buffer,
-        _Out_ sai_tlv_t *tlv);
+        _In_ const sai_enum_metadata_t *meta,
+        _Out_ sai_s32_list_t *s32_list);
+
+/**
+ * @brief Serialize attribute id.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] meta Attribute metadata.
+ * @param[in] attr_id Attribute id to be serialized
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_attr_id(
+        _Out_ char *buffer,
+        _In_ const sai_attr_metadata_t *meta,
+        _In_ sai_attr_id_t attr_id);
+
+/**
+ * @brief Deserialize attribute id.
+ *
+ * Metadata is not needed since attribute ID is serialized as string, and it
+ * can point to unique attribute metadata.
+ *
+ * @param[in] buffer Input buffer to be examined.
+ * @param[out] attr_id Deserialized attribute id.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_deserialize_attr_id(
+        _In_ const char *buffer,
+        _Out_ sai_attr_id_t *attr_id);
 
 /**
  * @brief Serialize SAI attribute.

@@ -324,7 +324,11 @@ typedef enum _sai_queue_pfc_deadlock_event_type_t
  */
 typedef struct _sai_queue_deadlock_notification_data_t
 {
-    /** Queue id */
+    /**
+     * @brief Queue id
+     *
+     * @objects SAI_OBJECT_TYPE_QUEUE
+     */
     sai_object_id_t queue_id;
 
     /** Deadlock event */

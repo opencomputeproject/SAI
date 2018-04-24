@@ -128,6 +128,16 @@ extern bool sai_metadata_is_object_type_valid(
         _In_ sai_object_type_t object_type);
 
 /**
+ * @brief Checks whether object type is OID object type.
+ *
+ * @param[in] object_type Object type to be checked.
+ *
+ * @return True if object type is OID type, false otherwise.
+ */
+extern bool sai_metadata_is_object_type_oid(
+        _In_ sai_object_type_t object_type);
+
+/**
  * @brief Check if condition met.
  *
  * List of attributes will be examined in terms of conditions. This is

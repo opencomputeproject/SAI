@@ -68,6 +68,7 @@ dst
 egressing
 encap
 enum
+extraparam
 fprintf
 functionalities
 hmac
@@ -99,6 +100,7 @@ opcode
 optimizations
 outsegment
 param
+passparam
 pkts
 policer
 rv

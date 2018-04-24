@@ -48,6 +48,8 @@ typedef struct _sai_object_meta_key_t
 
     /**
      * @brief The key.
+     *
+     * @passparam objecttype
      */
     sai_object_key_t            objectkey;
 

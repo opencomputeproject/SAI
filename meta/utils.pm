@@ -41,25 +41,44 @@ our $HEADER_CONTENT = "";
 our $SOURCE_CONTENT = "";
 our $TEST_CONTENT = "";
 
+my $identLevel = 0;
+
+sub GetIdent
+{
+    my $content = shift;
+
+    return ""                       if $content =~ /\\$/;
+    return "    "                   if $content =~ /^\s*_(In|Out)/;
+    return "    " x --$identLevel   if $content =~ /^\s*}/;
+    return "    " x $identLevel++   if $content =~ /{$/;
+    return "    " x $identLevel;
+}
+
 sub WriteHeader
 {
     my $content = shift;
 
-    $HEADER_CONTENT .= $content . "\n";
+    my $ident = GetIdent($content);
+
+    $HEADER_CONTENT .= $ident . $content . "\n";
 }
 
 sub WriteSource
 {
     my $content = shift;
 
-    $SOURCE_CONTENT .= $content . "\n";
+    my $ident = GetIdent($content);
+
+    $SOURCE_CONTENT .= $ident . $content . "\n";
 }
 
 sub WriteTest
 {
     my $content = shift;
 
-    $TEST_CONTENT .= $content . "\n";
+    my $ident = ""; # TODO tests should have it's own ident, since it's different file GetIdent($content);
+
+    $TEST_CONTENT .= $ident . $content . "\n";
 }
 
 sub WriteSectionComment
@@ -70,26 +89,47 @@ sub WriteSectionComment
     WriteSource "\n/* $content */\n";
 }
 
+sub GetCallerInfo
+{
+    return "" if not defined $main::optionShowLogCaller;
+
+    my ($package, $filename, $line, $sub) = caller(1);
+
+    my $logLine = $line;
+
+    ($package, $filename, $line, $sub) = caller(2);
+
+    return "$sub($logLine): ";
+}
+
 sub LogDebug
 {
-    print color('bright_blue') . "@_" . color('reset') . "\n" if $main::optionPrintDebug;
+    my $sub = GetCallerInfo();
+
+    print color('bright_blue') . "$sub@_" . color('reset') . "\n" if $main::optionPrintDebug;
 }
 
 sub LogInfo
 {
-    print color('bright_green') . "@_" . color('reset') . "\n";
+    my $sub = GetCallerInfo();
+
+    print color('bright_green') . "$sub@_" . color('reset') . "\n";
 }
 
 sub LogWarning
 {
+    my $sub = GetCallerInfo();
+
     $warnings++;
-    print color('bright_yellow') . "WARNING: @_" . color('reset') . "\n";
+    print color('bright_yellow') . "WARNING: $sub@_" . color('reset') . "\n";
 }
 
 sub LogError
 {
+    my $sub = GetCallerInfo();
+
     $errors++;
-    print color('bright_red') . "ERROR: @_" . color('reset') . "\n";
+    print color('bright_red') . "ERROR: $sub@_" . color('reset') . "\n";
 }
 
 sub WriteFile
@@ -185,6 +225,8 @@ sub GetNonObjectIdStructNames
 
     my @headers = GetHeaderFiles();
 
+    # TODO must support experimental extensions
+
     for my $header (@headers)
     {
         my $data = ReadHeaderFile($header);
@@ -229,9 +271,9 @@ sub GetStructLists
 
 sub IsSpecialObject
 {
-    my $ot = shift;
+    my $objectType = shift;
 
-    return ($ot eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $ot eq "SAI_OBJECT_TYPE_HOSTIF_PACKET");
+    return ($objectType eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $objectType eq "SAI_OBJECT_TYPE_HOSTIF_PACKET");
 }
 
 sub SanityCheckContent
@@ -303,6 +345,15 @@ sub Trim
     return $value;
 }
 
+sub ExitOnErrors
+{
+    return if $errors == 0;
+
+    LogError "please corret all $errors error(s) before continue";
+
+    exit 1;
+}
+
 BEGIN
 {
     our @ISA    = qw(Exporter);
@@ -310,6 +361,7 @@ BEGIN
     LogDebug LogInfo LogWarning LogError
     WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile
     GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder Trim
+    Trim ExitOnErrors
     WriteHeader WriteSource WriteTest WriteMetaDataFiles WriteSectionComment
     $errors $warnings $NUMBER_REGEX
     $HEADER_CONTENT $SOURCE_CONTENT $TEST_CONTENT

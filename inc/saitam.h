@@ -386,6 +386,8 @@ typedef struct _sai_tam_threshold_breach_event_t
 {
     /**
      * @brief Threshold ID
+     *
+     * @objects SAI_OBJECT_TYPE_TAM_THRESHOLD
      */
     sai_object_id_t threshold_id;
 
@@ -405,6 +407,7 @@ typedef struct _sai_tam_threshold_breach_event_t
      * This field is valid only when is_snapshot_valid is set to true.
      *
      * @objects SAI_OBJECT_TYPE_TAM_SNAPSHOT
+     * @validonly is_snapshot_valid == true
      */
     sai_object_id_t tam_snapshot_id;
 
