@@ -375,10 +375,14 @@ typedef sai_status_t (*sai_get_tam_histogram_attribute_fn)(
  * @param[out] counters Statistics values (allocated/provided)
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ *
+ * @count counter_ids[number_of_counters]
+ * @count counters[number_of_counters]
  */
 typedef sai_status_t (*sai_get_tam_histogram_stats_fn)(
         _In_ sai_object_id_t tam_histogram_id,
-        _Inout_ uint32_t *number_of_counters,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_tam_microburst_stat_t *counter_ids,
         _Out_ uint64_t *counters);
 
 typedef struct _sai_uburst_api_t
