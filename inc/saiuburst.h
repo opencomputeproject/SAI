@@ -371,8 +371,9 @@ typedef sai_status_t (*sai_get_tam_histogram_attribute_fn)(
  * bins as specified for the histogram object.
  *
  * @param[in] tam_histogram_id Histogram object id
- * @param[inout] number_of_counters Number of bins (required/provided)
- * @param[out] counters Statistics values (allocated/provided)
+ * @param[in] number_of_counters Number of counters to get
+ * @param[in] counter_ids Counter IDs to get
+ * @param[out] counters Statistics values
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  *
