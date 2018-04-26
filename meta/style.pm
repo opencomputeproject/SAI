@@ -60,7 +60,7 @@ sub RunAspell
 
     for my $res (@result)
     {
-        if ($res =~/error/i)
+        if ($res =~ /error/i)
         {
             LogError "aspell error: $res";
             last;
@@ -78,13 +78,13 @@ sub RunAspell
         {
             for my $k (@keys)
             {
-                if ($k =~/(^$word|$word$)/)
+                if ($k =~ /(^$word|$word$)/)
                 {
                     $where = $wordsToCheck{$k};
                     last;
                 }
 
-                $where = $wordsToCheck{$k} if ($k =~/$word/);
+                $where = $wordsToCheck{$k} if ($k =~ /$word/);
             }
         }
         else
@@ -288,7 +288,7 @@ sub CheckNonDoxygenComments
         my $comment = $1;
         my $stick = $3;
 
-        if (($comment =~/\W\@\w+/is) or defined $stick)
+        if (($comment =~ /\W\@\w+/is) or defined $stick)
         {
             LogWarning "candidate for doxygen comment in $file:\n$comment";
             LogWarning "comment sticked to $stick" if defined $stick;
@@ -399,7 +399,7 @@ sub CheckFunctionNaming
     {
         # ok
     }
-    elsif ($name =~/^(get|clear)_(\w+?)_(all_)?stats(_ext)?$/)
+    elsif ($name =~ /^(get|clear)_(\w+?)_(all_)?stats(_ext)?$/)
     {
         LogWarning "not object name $2 in $name" if not IsObjectName($2);
     }
@@ -407,8 +407,8 @@ sub CheckFunctionNaming
     {
         my $n = $2;
 
-        $n =~ s/_entries$/_entry/ if $typename =~/^bulk/;
-        $n =~ s/s$// if $typename =~/^bulk/;
+        $n =~ s/_entries$/_entry/ if $typename =~ /^bulk/;
+        $n =~ s/s$// if $typename =~ /^bulk/;
 
         LogWarning "not object name $n in $name" if not IsObjectName($n);
     }
@@ -698,7 +698,7 @@ sub CheckHeadersStyle
             CheckFunctionNaming($header, $n, $line);
             CheckInOutParams($header, $n, $line);
 
-            $oncedefCount++ if $line =~/\b$oncedef\b/;
+            $oncedefCount++ if $line =~ /\b$oncedef\b/;
 
             # detect multiple empty lines
 
@@ -838,7 +838,7 @@ sub CheckHeadersStyle
                 }
             }
 
-            if ($line =~/\s+$/)
+            if ($line =~ /\s+$/)
             {
                 LogWarning "line ends in whitespace $header $n: $line";
             }
@@ -873,7 +873,7 @@ sub CheckHeadersStyle
                 next if $line =~ /$word.h/;
                 next if not $line =~ /\*/; # must contain star, so will be comment
                 next if "$pre$word" =~ m!http://$word$!;
-                next if ($line =~/\@param\[\w+\]\s+$word /); # skip word if word is param name
+                next if ($line =~ /\@param\[\w+\]\s+$word /); # skip word if word is param name
 
                 LogWarning "Word '$word' should use capital letters $header $n:$line";
             }
@@ -890,17 +890,17 @@ sub CheckHeadersStyle
 
                     next if $word =~ /^($pattern)$/; # capital words
 
-                    next if ($line =~/\@validonly\s+\w+->\w+/); # skip valionly code
-                    next if ($line =~/\@passparam\s+\w+/);      # skip passparam
-                    next if ($line =~/\@extraparam\s+\w+/);     # skip extraparam
-                    next if ($line =~/\@param\[\w+\]\s+$word /); # skip word if word is param name
+                    next if ($line =~ /\@validonly\s+\w+->\w+/); # skip valionly code
+                    next if ($line =~ /\@passparam\s+\w+/);      # skip passparam
+                    next if ($line =~ /\@extraparam\s+\w+/);     # skip extraparam
+                    next if ($line =~ /\@param\[\w+\]\s+$word /); # skip word if word is param name
 
                     # look into good and bad words hash to speed things up
 
                     next if defined $exceptions{$word};
-                    next if $word =~/^sai\w+/i;
-                    next if $word =~/0x\S+L/;
-                    next if "$pre$word" =~/802.\d+\w+/;
+                    next if $word =~ /^sai\w+/i;
+                    next if $word =~ /0x\S+L/;
+                    next if "$pre$word" =~ /802.\d+\w+/;
 
                     next if defined $wordsChecked{$word};
 

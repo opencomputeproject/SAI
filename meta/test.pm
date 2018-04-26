@@ -404,11 +404,27 @@ sub CreatePassParamsForSerializeTest
         if (not defined $pointer)
         {
             WriteTest "    memset(&$paramName, 0, sizeof($paramType));";
+
+            if ($paramType eq "sai_object_type_t")
+            {
+                WriteTest "    $paramName = SAI_OBJECT_TYPE_PORT;";
+            }
         }
 
         if (defined $pointer and $paramType eq "sai_attr_metadata_t")
         {
-            WriteTest "    $paramName = sai_metadata_get_attr_metadata(SAI_OBJECT_TYPE_SWITCH, SAI_SWITCH_ATTR_PORT_NUMBER);";
+            if ($structName =~ /acl_field_data/)
+            {
+                WriteTest "    $paramName = sai_metadata_get_attr_metadata(SAI_OBJECT_TYPE_ACL_ENTRY, SAI_ACL_ENTRY_ATTR_FIELD_SRC_IP);";
+            }
+            elsif ($structName =~ /acl_action/)
+            {
+                WriteTest "    $paramName = sai_metadata_get_attr_metadata(SAI_OBJECT_TYPE_ACL_ENTRY, SAI_ACL_ENTRY_ATTR_ACTION_COUNTER);";
+            }
+            else
+            {
+                WriteTest "    $paramName = sai_metadata_get_attr_metadata(SAI_OBJECT_TYPE_SWITCH, SAI_SWITCH_ATTR_PORT_NUMBER);";
+            }
         }
     }
 
@@ -427,6 +443,11 @@ sub CreateSerializeSingleStructTest
     WriteTest "    fflush(stdout);";
     WriteTest "    $structName $structBase;";
     WriteTest "    memset(&$structBase, 0, sizeof($structName));";
+
+    if ($structName eq "sai_object_meta_key_t")
+    {
+        WriteTest "    $structBase.objecttype = SAI_OBJECT_TYPE_PORT;";
+    }
 
     my $passParams = CreatePassParamsForSerializeTest($refStructInfoEx);
 

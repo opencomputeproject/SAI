@@ -4240,7 +4240,7 @@ void check_graph_connected()
 
     helper_check_graph_connected(SAI_OBJECT_TYPE_PORT, visited);
 
-    int i = 0;
+    size_t i = 0;
 
     for (; i < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
     {
@@ -4270,7 +4270,7 @@ void check_get_attr_metadata()
 
     int count = 0;
 
-    int ot = 0;
+    size_t ot = 0;
 
     for (; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++ot)
     {

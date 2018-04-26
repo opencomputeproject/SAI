@@ -297,7 +297,7 @@ sub ProcessStructValidOnly
 
     $tagValue =~ s/\s+/ /g;
 
-    if ($tagValue =~/\bor\b.*\band\b|\band\b.*\bor\b/)
+    if ($tagValue =~ /\bor\b.*\band\b|\band\b.*\bor\b/)
     {
         LogError "mixed conditions and/or is not supported: $tagValue";
         return undef;
@@ -307,7 +307,7 @@ sub ProcessStructValidOnly
     {
         # it can be single value (struct member or param) or param pointer
 
-        if (not $cond =~/^(\w+|\w+->\w+|sai_metadata_\w+\(\w+\)) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
+        if (not $cond =~ /^(\w+|\w+->\w+|sai_metadata_\w+\(\w+\)) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
             LogError "invalid condition tag value '$tagValue' ($cond), expected (\\w+|\\w+->\\w+) == true|false|SAI_ENUM|number";
             return undef;
@@ -492,11 +492,11 @@ sub ExtractStructInfoEx
 
         $type = $1 if $type =~ /^(.+) _sai_\w+_t::(?:\w+|::)+(.*)$/;
 
-        my $typeSuffix= $2;
+        my $typeSuffix = $2;
 
         if ($typeSuffix ne "")
         {
-            if ($typeSuffix =~/^\[\d+\]$/)
+            if ($typeSuffix =~ /^\[\d+\]$/)
             {
                 $type .= $typeSuffix;
             }
@@ -517,7 +517,7 @@ sub ExtractStructInfoEx
         $M{file} = $file;
         $M{name} = $name;
         $M{idx}  = $idx++;
-        $M{union} = $member->{type}[0]->{ref}[0]->{refid} if $member->{definition}[0] =~/union /;
+        $M{union} = $member->{type}[0]->{ref}[0]->{refid} if $member->{definition}[0] =~ /union /;
 
         ProcessStructDescription(\%M, $desc);
 
@@ -532,7 +532,7 @@ sub ExtractStructInfoEx
 
     $Struct{members} = \@StructMembers;
     $Struct{keys} = \@keys;
-    $Struct{baseName} = ($structName =~/^sai_(\w+)_t$/) ? $1 : $structName;
+    $Struct{baseName} = ($structName =~ /^sai_(\w+)_t$/) ? $1 : $structName;
     $Struct{baseName} =~ s/^_//;
     $Struct{union} = 1 if $ref->{compounddef}[0]->{kind} eq "union";
 

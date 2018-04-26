@@ -41,7 +41,7 @@ sub CreateSerializeForEnums
 
     for my $key (sort keys %main::SAI_ENUMS)
     {
-        next if $key =~/_attr_t$/;
+        next if $key =~ /_attr_t$/;
 
         if (not $key =~ /^sai_(\w+)_t$/)
         {
@@ -53,7 +53,7 @@ sub CreateSerializeForEnums
 
         WriteHeader "extern int sai_serialize_$suffix(";
         WriteHeader "_Out_ char *buffer,";
-        WriteHeader "_In_ $key $suffix);";
+        WriteHeader "_In_ $key $suffix);\n";
 
         WriteSource "int sai_serialize_$suffix(";
         WriteSource "_Out_ char *buffer,";
@@ -170,7 +170,7 @@ sub EmitSerializeFunctionHeader
             }
         }
 
-        WriteHeader "_In_ const $structName *$structBase);";
+        WriteHeader "_In_ const $structName *$structBase);\n";
         WriteSource "_In_ const $structName *$structBase)";
     }
 }
@@ -227,7 +227,7 @@ sub GetTypeInfoForSerialize
     {
         # treat void* as uint8_t*
 
-        $TypeInfo{suffix}   = "uint8";
+        $TypeInfo{suffix} = "uint8";
         $TypeInfo{castName} = "(const uint8_t*)";
     }
     elsif ($type =~ /^sai_ip6_t$/)
@@ -567,7 +567,7 @@ sub GetConditionForSerialize
 
     my $condition = shift @conditions;
 
-    if (not $condition =~/^(\w+|\w+->\w+|sai_metadata_\w+\(\w+\)) == (\w+)$/)
+    if (not $condition =~ /^(\w+|\w+->\w+|sai_metadata_\w+\(\w+\)) == (\w+)$/)
     {
         LogWarning "invalid condition '$condition' on '$name' in '$structName'";
         return "";
@@ -611,7 +611,7 @@ sub EmitSerializeValidOnlyFooter
 
     my $footer = "";
 
-    $footer = "}\n" if defined $refMembersHash->{ $refTypeInfo->{name} }->{validonly};
+    $footer = "}" if defined $refMembersHash->{ $refTypeInfo->{name} }->{validonly};
 
     WriteSource $footer;
 }
@@ -917,7 +917,7 @@ sub EmitDeserializeFunctionHeader
             }
         }
 
-        WriteHeader "_Out_ $structName *$structBase);";
+        WriteHeader "_Out_ $structName *$structBase);\n";
         WriteSource "_Out_ $structName *$structBase)";
     }
 }
@@ -954,7 +954,7 @@ sub EmitDeserializeValidOnlyFooter
 
     my $footer = "";
 
-    $footer = "}\n" if defined $refMembersHash->{ $refTypeInfo->{name} }->{validonly};
+    $footer = "}" if defined $refMembersHash->{ $refTypeInfo->{name} }->{validonly};
 
     WriteSource $footer;
 }
@@ -1069,7 +1069,7 @@ sub EmitDeserializeArray
 
     my ($countMemberName, $countType) = GetCounterNameAndType($refStructInfoEx, $refTypeInfo);
 
-    if (not $countMemberName =~/^$NUMBER_REGEX$/)
+    if (not $countMemberName =~ /^$NUMBER_REGEX$/)
     {
         WriteSource "if (strncmp(buf, \"null\", 4) == 0)";
         WriteSource "{";
@@ -1087,7 +1087,7 @@ sub EmitDeserializeArray
     # char[32] or something similar
     #
 
-    if (not $countMemberName =~/^$NUMBER_REGEX$/)
+    if (not $countMemberName =~ /^$NUMBER_REGEX$/)
     {
         WriteSource "$refTypeInfo->{memberName} = calloc(($countMemberName), sizeof($refTypeInfo->{noptrtype}));\n";
     }
@@ -1216,7 +1216,7 @@ sub CreateDeserializeForEnums
 
     for my $key (sort keys %main::SAI_ENUMS)
     {
-        next if $key =~/_attr_t$/;
+        next if $key =~ /_attr_t$/;
 
         if (not $key =~ /^sai_(\w+)_t$/)
         {
@@ -1228,7 +1228,7 @@ sub CreateDeserializeForEnums
 
         WriteHeader "extern int sai_deserialize_$suffix(";
         WriteHeader "_In_ const char *buffer,";
-        WriteHeader "_Out_ $key *$suffix);";
+        WriteHeader "_Out_ $key *$suffix);\n";
 
         WriteSource "int sai_deserialize_$suffix(";
         WriteSource "_In_ const char *buffer,";
