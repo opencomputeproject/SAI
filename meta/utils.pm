@@ -360,7 +360,7 @@ BEGIN
     our @EXPORT = qw/
     LogDebug LogInfo LogWarning LogError
     WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile
-    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder Trim
+    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
     Trim ExitOnErrors
     WriteHeader WriteSource WriteTest WriteMetaDataFiles WriteSectionComment
     $errors $warnings $NUMBER_REGEX

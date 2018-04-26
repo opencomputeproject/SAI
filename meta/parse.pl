@@ -114,7 +114,7 @@ sub ProcessTagType
 
     return $val if $val =~ /^(bool|char)$/;
 
-    return $val if $val =~/^sai_\w+_t$/ and not $val =~ /_attr_(extensions_)?t/;
+    return $val if $val =~ /^sai_\w+_t$/ and not $val =~ /_attr_(extensions_)?t/;
 
     return $val if $val =~ /^sai_pointer_t sai_\w+_notification_fn$/;
 
@@ -179,7 +179,7 @@ sub ProcessTagCondition
 
     my @conditions = split/\s+(?:or|and)\s+/,$val;
 
-    if ($val =~/or.+and|and.+or/)
+    if ($val =~ /or.+and|and.+or/)
     {
         LogError "mixed conditions and/or is not supported: $val";
         return undef;
@@ -187,7 +187,7 @@ sub ProcessTagCondition
 
     for my $cond (@conditions)
     {
-        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
+        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
             LogError "invalid condition tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM|number";
             return undef;
@@ -207,20 +207,17 @@ sub ProcessTagDefault
 {
     my ($type, $value, $val) = @_;
 
-    return $val if $val =~/^(empty|internal|vendor|const)/;
+    return $val if $val =~ /^(empty|internal|vendor|const)/;
 
-    return $val if $val =~/^(attrvalue) SAI_\w+_ATTR_\w+$/;
+    return $val if $val =~ /^(attrvalue) SAI_\w+_ATTR_\w+$/;
 
-    return $val if $val =~/^(true|false|NULL|SAI_\w+|$NUMBER_REGEX)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/;
+    return $val if $val =~ /^(true|false|NULL|SAI_\w+|$NUMBER_REGEX)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/;
 
-    return $val if $val =~/^0\.0\.0\.0$/;
+    return $val if $val =~ /^0\.0\.0\.0$/;
 
     return $val if $val eq "disabled";
 
-    if ($val eq "\"\"")
-    {
-        return $val;
-    }
+    return $val if $val eq "\"\"";
 
     LogError "invalid default tag value '$val' on $type $value";
     return undef;
@@ -237,7 +234,7 @@ sub ProcessTagIsVlan
 {
     my ($type, $value, $val) = @_;
 
-    return $val if $val =~/^(true|false)$/i;
+    return $val if $val =~ /^(true|false)$/i;
 
     LogError "isvlan tag value '$val', expected true/false";
     return undef;
@@ -316,8 +313,8 @@ sub ProcessDescription
 
     my $order = join(":",@order);
 
-    return if $order =~/^$rightOrder$/;
-    return if $order =~/^ignore$/;
+    return if $order =~ /^$rightOrder$/;
+    return if $order =~ /^ignore$/;
 
     LogWarning "metadata tags are not in right order: $order on $value";
     LogWarning "   correct order: $rightOrder or ignore";
@@ -395,7 +392,7 @@ sub ProcessEnumSection
 
             my $eitemd = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
 
-            if ($eitemd =~/\@ignore/)
+            if ($eitemd =~ /\@ignore/)
             {
                 LogInfo "Ignoring $enumvaluename";
                 next;
@@ -407,7 +404,7 @@ sub ProcessEnumSection
 
             LogWarning "Value $enumvaluename of $enumtypename is not prefixed as $enumprefix" if not $enumvaluename =~ /^$enumprefix/;
 
-            if (not $enumvaluename =~/^[A-Z0-9_]+$/)
+            if (not $enumvaluename =~ /^[A-Z0-9_]+$/)
             {
                 LogError "enum $enumvaluename uses characters outside [A-Z0-9_]+";
             }
@@ -415,6 +412,7 @@ sub ProcessEnumSection
 
         # remove unnecessary attributes
         my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
+
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(CUSTOM_RANGE_BASE)$/, @values);
 
@@ -454,6 +452,7 @@ sub ProcessEnumSection
         # remove unnecessary attributes
         @values = @{ $SAI_ENUMS{$enumtypename}{values} };
         @values = grep(!/^${prefix}(CUSTOM_RANGE_|FIELD_|ACTION_)?(START|END)$/, @values);
+
         $SAI_ENUMS{$enumtypename}{values} = \@values;
 
         # this is attribute
@@ -845,7 +844,6 @@ sub ProcessSingleEnum
     }
 
     WriteSource "-1"; # guard
-
     WriteSource "};";
 
     WriteSource "const char* const sai_metadata_${typedef}_enum_values_names[] = {";
@@ -981,6 +979,7 @@ sub CreateMetadataHeaderAndSource
         WriteSource "SAI_OBJECT_TYPE_" . uc($objtype). ",";
     }
 
+    WriteSource "-1";
     WriteSource "};";
 }
 
@@ -1120,6 +1119,7 @@ sub ProcessObjects
         WriteSource "$obj,";
     }
 
+    WriteSource "-1"; # guard
     WriteSource "};";
 
     return "sai_metadata_${attr}_allowed_objects";
@@ -1261,7 +1261,7 @@ sub ProcessStoreDefaultValue
 
     # at this point we can't determine whether object is non object id
 
-    if (defined $value and $value =~/vendor|attrvalue/)
+    if (defined $value and $value =~ /vendor|attrvalue/)
     {
         return "true";
     }
@@ -1270,7 +1270,7 @@ sub ProcessStoreDefaultValue
 
     $flags = "@flags";
 
-    if ($flags =~/MANDATORY/ and $flags =~ /CREATE_AND_SET/)
+    if ($flags =~ /MANDATORY/ and $flags =~ /CREATE_AND_SET/)
     {
         return "true";
     }
@@ -1442,7 +1442,6 @@ sub ProcessConditionsGeneric
     }
 
     WriteSource "NULL";
-
     WriteSource "};";
 
     return "sai_metadata_${name}s_${attr}";
@@ -1829,23 +1828,23 @@ sub CheckEnumNaming
 {
     my ($attr, $type) = @_;
 
-    LogError "can't match sai type on '$type'" if not $type =~/.*sai_(\w+)_t/;
+    LogError "can't match sai type on '$type'" if not $type =~ /.*sai_(\w+)_t/;
 
     my $enumTypeName = uc($1);
 
     return if $attr =~ /_${enumTypeName}_LIST$/;
     return if $attr =~ /_$enumTypeName$/;
 
-    $attr =~/SAI_(\w+?)_ATTR(_\w+)/;
+    $attr =~ /SAI_(\w+?)_ATTR(_\w+)/;
 
     my $attrObjectType = $1;
     my $attrSuffix = $2;
 
-    if ($enumTypeName =~/^${attrObjectType}_(\w+)$/)
+    if ($enumTypeName =~ /^${attrObjectType}_(\w+)$/)
     {
         my $enumTypeNameSuffix = $1;
 
-        return if $attrSuffix =~/_$enumTypeNameSuffix$/;
+        return if $attrSuffix =~ /_$enumTypeNameSuffix$/;
 
         LogError "enum starts by object type $attrObjectType but not ending on $enumTypeNameSuffix in $enumTypeName";
     }
@@ -1966,7 +1965,7 @@ sub CreateMetadataForAttributes
 
     WriteSectionComment "Define SAI_OBJECT_TYPE_EXTENSIONS_MAX";
 
-    WriteHeader "#define SAI_OBJECT_TYPE_EXTENSIONS_MAX $count";
+    WriteHeader "#define SAI_OBJECT_TYPE_EXTENSIONS_MAX ((sai_object_type_t)$count)";
 }
 
 sub CreateEnumHelperMethod
@@ -1982,7 +1981,7 @@ sub CreateEnumHelperMethod
     WriteSource "}";
 
     WriteHeader "extern const char* sai_metadata_get_$1_name(";
-    WriteHeader "_In_ $key value);";
+    WriteHeader "_In_ $key value);\n";
 }
 
 sub CreateEnumHelperMethods
@@ -1991,7 +1990,7 @@ sub CreateEnumHelperMethods
 
     for my $key (sort keys %SAI_ENUMS)
     {
-        next if $key =~/_attr_(extensions_)?t$/;
+        next if $key =~ /_attr_(extensions_)?t$/;
 
         CreateEnumHelperMethod($key);
     }
@@ -2267,7 +2266,7 @@ sub ProcessRevGraph
         WriteSource "&$mn,";
     }
 
-    WriteSource "NULL,";
+    WriteSource "NULL";
 
     WriteSource "};";
 
@@ -2478,7 +2477,7 @@ sub CreateApisStruct
 
         $api = lc($1);
 
-        next if $api =~/unspecified/;
+        next if $api =~ /unspecified/;
 
         WriteHeader "sai_${api}_api_t* ${api}_api;";
     }
@@ -2489,7 +2488,7 @@ sub CreateApisStruct
 
     WriteSectionComment "Define SAI_API_EXTENSIONS_MAX";
 
-    WriteHeader "#define SAI_API_EXTENSIONS_MAX $count";
+    WriteHeader "#define SAI_API_EXTENSIONS_MAX ((sai_api_t)$count)";
 }
 
 sub CreateApisQuery
@@ -2872,7 +2871,7 @@ sub CheckApiDefines
 
     for my $api (@apis)
     {
-        my $short = lc($1) if $api =~/SAI_API_(\w+)/;
+        my $short = lc($1) if $api =~ /SAI_API_(\w+)/;
 
         next if $short eq "unspecified";
 
@@ -3076,7 +3075,7 @@ sub ProcessStructItem
 {
     my ($type, $struct) = @_;
 
-    $type = $1 if $struct =~ /^sai_(\w+)_list_t$/ and $type =~/^(\w+)\*$/;
+    $type = $1 if $struct =~ /^sai_(\w+)_list_t$/ and $type =~ /^(\w+)\*$/;
 
     return if defined $ProcessedItems{$type};
 
@@ -3084,9 +3083,9 @@ sub ProcessStructItem
 
     return if $type eq "bool";
 
-    return if $type =~/^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
-    return if $type =~/^u?int\d+_t/;
-    return if $type =~/^sai_[su]\d+_list_t/;
+    return if $type =~ /^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
+    return if $type =~ /^u?int\d+_t/;
+    return if $type =~ /^sai_[su]\d+_list_t/;
 
     if ($type eq "sai_object_id_t" or $type eq "sai_object_list_t")
     {
@@ -3150,8 +3149,8 @@ sub CheckAttributeValueUnion
         my $type = $Union{$key}{type};
 
         next if $type eq "char[32]";
-        next if $type =~/sai_u?int\d+_t/;
-        next if $type =~/sai_[su]\d+_list_t/;
+        next if $type =~ /sai_u?int\d+_t/;
+        next if $type =~ /sai_[su]\d+_list_t/;
 
         next if grep(/^$type$/, @primitives);
 
@@ -3340,7 +3339,7 @@ sub ExtractUnionsInfo
         $SAI_UNIONS{$name}{file}    = $file;
         $SAI_UNIONS{$name}{name}    = $name;
         $SAI_UNIONS{$name}{def}     = $def;
-        $SAI_UNIONS{$name}{nested}  = 1 if $def =~/::/;
+        $SAI_UNIONS{$name}{nested}  = 1 if $def =~ /::/;
 
         my %s = ExtractStructInfoEx($name, $file);
 
@@ -3380,7 +3379,7 @@ sub MergeExtensionsEnums
 
         $SAI_ENUMS{$enum}{values} = \@values;
 
-        next if not $exenum =~/_attr_extensions_t/;
+        next if not $exenum =~ /_attr_extensions_t/;
 
         for my $exvalue (@exvalues)
         {
