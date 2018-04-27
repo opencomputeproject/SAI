@@ -1,3 +1,27 @@
+#
+# Copyright (c) 2014 Microsoft Open Technologies, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+#
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+#
+# @file    Makefile
+#
+# @brief   This module defines SAI Metadata Makefile
+#
+
 WARNINGS = \
 	-ansi \
 	-Wall \
@@ -39,9 +63,9 @@ WARNINGS = \
 	-Wvariadic-macros \
 	-Wwrite-strings
 
-CFLAGS += -I../inc $(WARNINGS)
+CFLAGS += -I../inc -I../experimental $(WARNINGS)
 
-DEPS = $(wildcard ../inc/*.h)
+DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
 
 OBJ = saimetadata.o saimetadatautils.o saiserialize.o
@@ -59,7 +83,7 @@ xml: $(DEPS) Doxyfile $(CONSTHEADERS)
 	doxygen Doxyfile 2>&1 | perl -npe '$$e=1 if /warning/i; END{exit $$e}'
 	touch xml
 
-EXTRA = acronyms.txt aspell.en.pws *.pm
+EXTRA = acronyms.txt aspell.en.pws *.pm *.cap
 
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl parse.pl

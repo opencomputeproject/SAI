@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAISAMPLEPACKET SAI - samplepacket specific public APIs and data structures
+ * @defgroup SAISAMPLEPACKET SAI - Samplepacket specific public APIs and data structures
  *
  * @{
  */

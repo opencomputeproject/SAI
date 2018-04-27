@@ -1,4 +1,27 @@
 #!/usr/bin/perl
+#
+# Copyright (c) 2014 Microsoft Open Technologies, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+#
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+#
+# @file    style.pm
+#
+# @brief   This module defines SAI Metadata Style Parser
+#
 
 package style;
 
@@ -37,7 +60,7 @@ sub RunAspell
 
     for my $res (@result)
     {
-        if ($res =~/error/i)
+        if ($res =~ /error/i)
         {
             LogError "aspell error: $res";
             last;
@@ -55,13 +78,13 @@ sub RunAspell
         {
             for my $k (@keys)
             {
-                if ($k =~/(^$word|$word$)/)
+                if ($k =~ /(^$word|$word$)/)
                 {
                     $where = $wordsToCheck{$k};
                     last;
                 }
 
-                $where = $wordsToCheck{$k} if ($k =~/$word/);
+                $where = $wordsToCheck{$k} if ($k =~ /$word/);
             }
         }
         else
@@ -137,7 +160,7 @@ sub ExtractComments
     return $comments;
 }
 
-sub CheckHeaderHeader
+sub CheckHeaderLicense
 {
     my ($data, $file) = @_;
 
@@ -160,9 +183,13 @@ sub CheckHeaderHeader
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
- *
 _END_
 ;
+
+    $header =~ s/^( \*|\/\*\*)/#/gm if $data =~ /^#/;
+
+    # remove first line (shell definition)
+    $data =~ s/^#.+\n// if $data =~ /^#/;
 
     my $is = substr($data, 0, length($header));
 
@@ -261,7 +288,7 @@ sub CheckNonDoxygenComments
         my $comment = $1;
         my $stick = $3;
 
-        if (($comment =~/\W\@\w+/is) or defined $stick)
+        if (($comment =~ /\W\@\w+/is) or defined $stick)
         {
             LogWarning "candidate for doxygen comment in $file:\n$comment";
             LogWarning "comment sticked to $stick" if defined $stick;
@@ -372,7 +399,7 @@ sub CheckFunctionNaming
     {
         # ok
     }
-    elsif ($name =~/^(get|clear)_(\w+?)_(all_)?stats(_ext)?$/)
+    elsif ($name =~ /^(get|clear)_(\w+?)_(all_)?stats(_ext)?$/)
     {
         LogWarning "not object name $2 in $name" if not IsObjectName($2);
     }
@@ -380,8 +407,8 @@ sub CheckFunctionNaming
     {
         my $n = $2;
 
-        $n =~ s/_entries$/_entry/ if $typename =~/^bulk/;
-        $n =~ s/s$// if $typename =~/^bulk/;
+        $n =~ s/_entries$/_entry/ if $typename =~ /^bulk/;
+        $n =~ s/s$// if $typename =~ /^bulk/;
 
         LogWarning "not object name $n in $name" if not IsObjectName($n);
     }
@@ -457,12 +484,18 @@ sub CheckStructAlignment
 {
     my ($data, $file) = @_;
 
-    return if $file eq "saitypes.h";
+    # return if $file eq "saitypes.h";
 
-    while ($data =~ m!typedef\s+struct\s+_(sai_\w+_t)(.+?)\1;!igs)
+    while ($data =~ m!typedef\s+(?:struct|union)\s+_(sai_\w+)(.+?)}\s*(\w+);!igs)
     {
         my $struct = $1;
         my $inner = $2;
+        my $enddef = $3;
+
+        if ($struct ne $enddef)
+        {
+            LogError "expected same names for _$struct $enddef";
+        }
 
         # we use space in regex since \s will capture \n
 
@@ -478,7 +511,7 @@ sub CheckStructAlignment
 
             if ($1 ne $spaces or (length($2) != length($inside) and $struct =~ /_api_t/))
             {
-                LogWarning "$struct items has invalid column ident: $file: $itemname";
+                LogError "$struct items has invalid column ident: $file: $itemname";
             }
         }
     }
@@ -518,6 +551,88 @@ sub GetAcronyms
     return @acronyms;
 }
 
+sub CheckMetadataSourceFiles
+{
+    my @files = GetMetadataSourceFiles();
+
+    for my $file (@files)
+    {
+        # skip auto generated headers
+
+        next if $file eq "saimetadata.h";
+        next if $file eq "saimetadata.c";
+        next if $file eq "saimetadatatest.c";
+
+        my $data = ReadHeaderFile($file);
+
+        CheckHeaderLicense($data, $file);
+
+        LogError "missing declaration '\@file    $file'" if (not $data =~ /[*#]\s+\@file\s+\Q$file\E$/m);
+
+        my @lines = split/\n/,$data;
+
+        my $n = 0;
+
+        for my $line(@lines)
+        {
+            $n++;
+
+            LogWarning "found trailing spaces in $file:$n: $line" if $line =~ /\s+$/;
+
+            if ($line =~ /[^\t\x20-\x7e]/)
+            {
+                LogWarning "line contains non ascii characters $file:$n: $line";
+            }
+        }
+    }
+}
+
+sub CheckInOutParams
+{
+    my ($header, $n, $line) = @_;
+
+    return if not $line =~ /  _(In|Out|Inout)_ /;
+    return if $header eq "saiserialize.h";
+    return if $header eq "saimetadatalogger.h";
+
+    if (not $line =~ /  _(In|Out|Inout)_ (const )?(\w+)( \*| \*\*| )(\w+)[\),]/)
+    {
+        LogError "not matching param line: $header:$n: $line";
+        return;
+    }
+
+    my $inout = $1;
+    my $const = (not defined $2) ? "" : "const";
+    my $type = $3;
+    my $ptr = $4;
+    my $param = $5;
+
+    if ($type eq "sai_object_id_t" and not $line =~ /_In_ sai_object_id_t \w+|_In_ const sai_object_id_t \*\w+|_Out_ sai_object_id_t \*\w+/)
+    {
+        LogError "wrong in/out param mix: $header:$n:$line";
+    }
+
+    if ($type eq "sai_attribute_t" and not $line =~ /_In_ const sai_attribute_t \*\*?\w+|_Inout_ sai_attribute_t \*\*?\w+/)
+    {
+        return if $header eq "saihostif.h";
+
+        LogError "wrong in/out param mix: $header:$n:$line";
+    }
+
+    # TODO we should know if type is simple or struct/union
+
+    return if $line =~ /_In_ \w+ \w+/ and $const eq "";      # non const types without pointer should be In
+    return if $line =~ /_Inout_ \w+ \*\w+/ and $const eq ""; # non const types with pointer should be Inout
+    return if $line =~ /_Out_ \w+ \*\w+/ and $const eq "";   # non const types with pointer should be Out
+    return if $line =~ /_In_ const \w+ \*\*?\w+/;            # const types with pointer should be In
+
+    return if $line =~ /_Out_ const char \*\*\w+/;
+    return if $line =~ /_Out_ void \*\*\w+/;
+    return if $line =~ /_Inout_ sai_attribute_t \*\*\w+/;
+
+    LogWarning "Not supported param prefixes, FIXME: $header:$n $line";
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -541,10 +656,13 @@ sub CheckHeadersStyle
     my %wordsToCheck = ();
     my %wordsChecked = ();
 
+    CheckMetadataSourceFiles();
+
     my @headers = GetHeaderFiles();
     my @metaheaders = GetMetaHeaderFiles();
+    my @exheaders = GetExperimentalHeaderFiles();
 
-    @headers = (@headers, @metaheaders);
+    @headers = (@headers, @metaheaders, @exheaders);
 
     for my $header (@headers)
     {
@@ -558,7 +676,7 @@ sub CheckHeadersStyle
 
         my $oncedefCount = 0;
 
-        CheckHeaderHeader($data, $header);
+        CheckHeaderLicense($data, $header);
         CheckFunctionsParams($data, $header);
         CheckDoxygenCommentFormating($data, $header);
         CheckQuadApi($data, $header);
@@ -578,8 +696,9 @@ sub CheckHeadersStyle
             $n++;
 
             CheckFunctionNaming($header, $n, $line);
+            CheckInOutParams($header, $n, $line);
 
-            $oncedefCount++ if $line =~/\b$oncedef\b/;
+            $oncedefCount++ if $line =~ /\b$oncedef\b/;
 
             # detect multiple empty lines
 
@@ -612,15 +731,15 @@ sub CheckHeadersStyle
                 LogWarning "not expected number of spaces after * (1,4,8) $header $n:$line";
             }
 
-            if ($line =~ /\*\s+[^ ].*  / and not $line =~ /\* \@(brief|file)/)
+            if ($line =~ /\*\s+[^ ].*  / and not $line =~ /\* \@(brief|file|note)/)
             {
-                if (not $line =~ /const.+const\s+\w+;/)
+                if (not $line =~ /const.+const\s+\w+;/ and not $line =~ m!\\$!)
                 {
                     LogWarning "too many spaces after *\\s+ $header $n:$line";
                 }
             }
 
-            if ($line =~ /(typedef|{|}|_In\w+|_Out\w+)( [^ ].*  |  )/ and not $line =~ /typedef\s+u?int/i)
+            if ($line =~ /(typedef|{|}|_In\w+|_Out\w+)( [^ ].*  |  )/ and not $line =~ /typedef\s+u?int/i and not $line =~ m!\\$!)
             {
                 LogWarning "too many spaces $header $n:$line";
             }
@@ -674,7 +793,7 @@ sub CheckHeadersStyle
                 LogWarning "no space after '}' $header:$n:$line" if (not $line =~ /^\s*\* /);
             }
 
-            if ($line =~ /_[IO].+\w+\* /)
+            if ($line =~ /_[IO].+\w+\*\*? /)
             {
                 LogWarning "star should be next to param name $header:$n:$line";
             }
@@ -719,7 +838,7 @@ sub CheckHeadersStyle
                 }
             }
 
-            if ($line =~/\s+$/)
+            if ($line =~ /\s+$/)
             {
                 LogWarning "line ends in whitespace $header $n: $line";
             }
@@ -754,7 +873,7 @@ sub CheckHeadersStyle
                 next if $line =~ /$word.h/;
                 next if not $line =~ /\*/; # must contain star, so will be comment
                 next if "$pre$word" =~ m!http://$word$!;
-                next if ($line =~/\@param\[\w+\]\s+$word /); # skip word if word is param name
+                next if ($line =~ /\@param\[\w+\]\s+$word /); # skip word if word is param name
 
                 LogWarning "Word '$word' should use capital letters $header $n:$line";
             }
@@ -771,14 +890,17 @@ sub CheckHeadersStyle
 
                     next if $word =~ /^($pattern)$/; # capital words
 
-                    next if ($line =~/\@param\[\w+\]\s+$word /); # skip word if word is param name
+                    next if ($line =~ /\@validonly\s+\w+->\w+/); # skip valionly code
+                    next if ($line =~ /\@passparam\s+\w+/);      # skip passparam
+                    next if ($line =~ /\@extraparam\s+\w+/);     # skip extraparam
+                    next if ($line =~ /\@param\[\w+\]\s+$word /); # skip word if word is param name
 
                     # look into good and bad words hash to speed things up
 
                     next if defined $exceptions{$word};
-                    next if $word =~/^sai\w+/i;
-                    next if $word =~/0x\S+L/;
-                    next if "$pre$word" =~/802.\d+\w+/;
+                    next if $word =~ /^sai\w+/i;
+                    next if $word =~ /0x\S+L/;
+                    next if "$pre$word" =~ /802.\d+\w+/;
 
                     next if defined $wordsChecked{$word};
 
@@ -793,7 +915,7 @@ sub CheckHeadersStyle
                 LogWarning "move '{' to new line in typedef $header $n:$line";
             }
 
-            if ($line =~ /^[^*]*union/ and not $line =~ /union _\w+/)
+            if ($line =~ /^[^*]*union/ and not $line =~ /union _\w+\b/)
             {
                 LogError "all unions must be named $header $n:$line";
             }
@@ -808,9 +930,10 @@ sub CheckHeadersStyle
             next if $line =~ /^int sai_\w+\($/;             # methods returning int
             next if $line =~ /^extern /;            # extern in metadata
             next if $line =~ /^[{}#\/]/;            # start end of struct, define, start of comment
-            next if $line =~ /^ {8}(_In|_Out|\.\.\.)/;     # function arguments
+            next if $line =~ /^ {8}(_In|_Out|\.\.\.)/;      # function arguments
             next if $line =~ /^ {4}(sai_)/i;        # sai struct entry or SAI enum
             next if $line =~ /^ {4}\/\*/;           # doxygen start
+            next if $line =~ /^ {8}\/\*/;           # doxygen start
             next if $line =~ /^ {5}\*/;             # doxygen comment continue
             next if $line =~ /^ {8}sai_/;           # union entry
             next if $line =~ /^ {4}union/;          # union
@@ -821,8 +944,9 @@ sub CheckHeadersStyle
             next if $line =~ /^ {4}(true|false)/;   # bool definition
             next if $line =~ /^ {4}(const|size_t|else)/; # const in meta headers
             next if $line =~ /^(void|bool) /;       # function return
-
-            next if $line =~ m![^\\]\\$!; # macro multiline
+            next if $line =~ m![^\\]\\$!;           # macro multiline
+            next if $line =~ /^ {4}(\w+);$/;        # union entries
+            next if $line =~ /^union _sai_\w+ {/;   # union entries
 
             LogWarning "Header doesn't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
         }

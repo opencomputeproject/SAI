@@ -1,4 +1,27 @@
 #!/usr/bin/perl
+#
+# Copyright (c) 2014 Microsoft Open Technologies, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+#
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+#
+# @file    test.pm
+#
+# @brief   This module defines SAI Metadata Test Parser
+#
 
 package test;
 
@@ -350,12 +373,93 @@ sub CreateStructListTest
     WriteTest "}";
 }
 
+sub CreatePassParamsForSerializeTest
+{
+    my $refStructInfoEx = shift;
+
+    my $structName = $refStructInfoEx->{name};
+
+    return "" if not defined $refStructInfoEx->{extraparam};
+
+    my @params = @{ $refStructInfoEx->{extraparam} };
+
+    my $passParams = "";
+
+    for my $param (@params)
+    {
+        if (not $param =~ m!^(const\s+)?(\w+)(\s+|\s*(\*)\s*)?(\w+)$!)
+        {
+            LogWarning "failed to parse extra param '$param' on $structName";
+            next;
+        }
+
+        my $paramType = $2;
+        my $pointer = 1 if defined $4;
+        my $paramName = $5;
+
+        $passParams .= "$paramName, ";
+
+        WriteTest "    $param;";
+
+        if (not defined $pointer)
+        {
+            WriteTest "    memset(&$paramName, 0, sizeof($paramType));";
+
+            if ($paramType eq "sai_object_type_t")
+            {
+                WriteTest "    $paramName = SAI_OBJECT_TYPE_PORT;";
+            }
+        }
+
+        if (defined $pointer and $paramType eq "sai_attr_metadata_t")
+        {
+            if ($structName =~ /acl_field_data/)
+            {
+                WriteTest "    $paramName = sai_metadata_get_attr_metadata(SAI_OBJECT_TYPE_ACL_ENTRY, SAI_ACL_ENTRY_ATTR_FIELD_SRC_IP);";
+            }
+            elsif ($structName =~ /acl_action/)
+            {
+                WriteTest "    $paramName = sai_metadata_get_attr_metadata(SAI_OBJECT_TYPE_ACL_ENTRY, SAI_ACL_ENTRY_ATTR_ACTION_COUNTER);";
+            }
+            else
+            {
+                WriteTest "    $paramName = sai_metadata_get_attr_metadata(SAI_OBJECT_TYPE_SWITCH, SAI_SWITCH_ATTR_PORT_NUMBER);";
+            }
+        }
+    }
+
+    return $passParams;
+}
+
+sub CreateSerializeSingleStructTest
+{
+    my $refStructInfoEx = shift;
+
+    my $structName = $refStructInfoEx->{name};
+    my $structBase = $refStructInfoEx->{baseName};
+
+    WriteTest "  {";
+    WriteTest "    printf(\"serializing $structName ... \");";
+    WriteTest "    fflush(stdout);";
+    WriteTest "    $structName $structBase;";
+    WriteTest "    memset(&$structBase, 0, sizeof($structName));";
+
+    if ($structName eq "sai_object_meta_key_t")
+    {
+        WriteTest "    $structBase.objecttype = SAI_OBJECT_TYPE_PORT;";
+    }
+
+    my $passParams = CreatePassParamsForSerializeTest($refStructInfoEx);
+
+    WriteTest "    ret = sai_serialize_$structBase(buf, $passParams&$structBase);";
+    WriteTest "    TEST_ASSERT_TRUE(ret > 0, \"failed to serialize $structName\");";
+    WriteTest "    printf(\"serialized $structName: %s\\n\", buf);";
+    WriteTest "  }";
+}
+
 sub CreateSerializeStructsTest
 {
-    #
     # make sure that all structs can be serialized fine
-
-    my %StructLists = GetStructLists();
 
     DefineTestName "serialize_structs";
 
@@ -367,23 +471,41 @@ sub CreateSerializeStructsTest
     for my $structname (sort keys %main::ALL_STRUCTS)
     {
         next if $structname  =~ /_api_t$/;
+        next if $structname  eq "sai_service_method_table_t";
 
-        my $struct = $1 if $structname =~ /^sai_(\w+)_t$/;
 
-        next if $struct =~ /^acl_action_data$/;
-        next if $struct =~ /^acl_field_data$/;
-        next if $struct =~ /^attribute$/;
-        next if $struct =~ /^(attr_condition|attr_metadata|enum_metadata|object_key|object_type_info)$/;
-        next if $struct =~ /^(object_key|rev_graph_member|service_method_table|struct_member_info|object_meta_key)$/;
+        my %structInfoEx = ExtractStructInfoEx($structname, "struct_");
 
-        # not implemented yet
-        next if $struct =~ /^(hmac|tlv)$/;
+        # TODO add tag "noserialize"
 
-        WriteTest "    $structname $struct;";
-        WriteTest "    memset(&$struct, 0, sizeof($structname));";
-        WriteTest "    ret = sai_serialize_$struct(buf, &$struct);";
-        WriteTest "    TEST_ASSERT_TRUE(ret > 0, \"failed to serialize $structname\");";
-        WriteTest "    printf(\"serialized $structname: %s\\n\", buf);";
+        next if defined $structInfoEx{ismetadatastruct} and $structname ne "sai_object_meta_key_t";
+
+        # TODO for all structs with attributes, we should iterate via all attributes
+        # defined in metadata
+
+        CreateSerializeSingleStructTest(\%structInfoEx);
+    }
+
+    WriteTest "}";
+}
+
+sub CreateSerializeUnionsTest
+{
+    # make sure that all unions can be serialized fine
+
+    DefineTestName "serialize_unions";
+
+    WriteTest "{";
+    WriteTest "    char buf[0x4000];";
+    WriteTest "    int ret;";
+
+    for my $unionTypeName (sort keys %main::SAI_UNIONS)
+    {
+        next if not $unionTypeName =~ /^sai_(\w+)_t$/;
+
+        my %structInfoEx = ExtractStructInfoEx($unionTypeName, "union_");
+
+        CreateSerializeSingleStructTest(\%structInfoEx);
     }
 
     WriteTest "}";
@@ -449,7 +571,11 @@ sub CreateTests
 
     CreateStructListTest();
 
+    # TODO tests for notifications
+
     CreateSerializeStructsTest();
+
+    CreateSerializeUnionsTest();
 
     WriteTestMain();
 }

@@ -1,4 +1,27 @@
 #!/usr/bin/perl
+#
+# Copyright (c) 2014 Microsoft Open Technologies, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+#
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+#
+# @file    utils.pm
+#
+# @brief   This module defines SAI Metadata Utils Parser
+#
 
 package utils;
 
@@ -18,25 +41,44 @@ our $HEADER_CONTENT = "";
 our $SOURCE_CONTENT = "";
 our $TEST_CONTENT = "";
 
+my $identLevel = 0;
+
+sub GetIdent
+{
+    my $content = shift;
+
+    return ""                       if $content =~ /\\$/;
+    return "    "                   if $content =~ /^\s*_(In|Out)/;
+    return "    " x --$identLevel   if $content =~ /^\s*}/;
+    return "    " x $identLevel++   if $content =~ /{$/;
+    return "    " x $identLevel;
+}
+
 sub WriteHeader
 {
     my $content = shift;
 
-    $HEADER_CONTENT .= $content . "\n";
+    my $ident = GetIdent($content);
+
+    $HEADER_CONTENT .= $ident . $content . "\n";
 }
 
 sub WriteSource
 {
     my $content = shift;
 
-    $SOURCE_CONTENT .= $content . "\n";
+    my $ident = GetIdent($content);
+
+    $SOURCE_CONTENT .= $ident . $content . "\n";
 }
 
 sub WriteTest
 {
     my $content = shift;
 
-    $TEST_CONTENT .= $content . "\n";
+    my $ident = ""; # TODO tests should have it's own ident, since it's different file GetIdent($content);
+
+    $TEST_CONTENT .= $ident . $content . "\n";
 }
 
 sub WriteSectionComment
@@ -47,26 +89,47 @@ sub WriteSectionComment
     WriteSource "\n/* $content */\n";
 }
 
+sub GetCallerInfo
+{
+    return "" if not defined $main::optionShowLogCaller;
+
+    my ($package, $filename, $line, $sub) = caller(1);
+
+    my $logLine = $line;
+
+    ($package, $filename, $line, $sub) = caller(2);
+
+    return "$sub($logLine): ";
+}
+
 sub LogDebug
 {
-    print color('bright_blue') . "@_" . color('reset') . "\n" if $main::optionPrintDebug;
+    my $sub = GetCallerInfo();
+
+    print color('bright_blue') . "$sub@_" . color('reset') . "\n" if $main::optionPrintDebug;
 }
 
 sub LogInfo
 {
-    print color('bright_green') . "@_" . color('reset') . "\n";
+    my $sub = GetCallerInfo();
+
+    print color('bright_green') . "$sub@_" . color('reset') . "\n";
 }
 
 sub LogWarning
 {
+    my $sub = GetCallerInfo();
+
     $warnings++;
-    print color('bright_yellow') . "WARNING: @_" . color('reset') . "\n";
+    print color('bright_yellow') . "WARNING: $sub@_" . color('reset') . "\n";
 }
 
 sub LogError
 {
+    my $sub = GetCallerInfo();
+
     $errors++;
-    print color('bright_red') . "ERROR: @_" . color('reset') . "\n";
+    print color('bright_red') . "ERROR: $sub@_" . color('reset') . "\n";
 }
 
 sub WriteFile
@@ -100,15 +163,50 @@ sub GetMetaHeaderFiles
     return GetHeaderFiles(".");
 }
 
+sub GetExperimentalHeaderFiles
+{
+    return GetHeaderFiles($main::EXPERIMENTAL_DIR);
+}
+
+sub GetFilesByRegex
+{
+    my ($dir,$regex) = @_;
+
+    $dir = $main::INCLUDE_DIR if not defined $dir;
+
+    opendir(my $dh, $dir) or die "Can't opendir $dir: $!";
+
+    my @files = grep { /$regex/ and -f "$dir/$_" } readdir($dh);
+
+    closedir $dh;
+
+    return sort @files;
+}
+
+sub GetMetadataSourceFiles
+{
+    my $dir = ".";
+
+    my @sources;
+
+    push @sources, GetFilesByRegex($dir, '^\w+\.(pm|pl|h|cpp|c)$');
+    push @sources, GetFilesByRegex($dir, '^Makefile$');
+
+    return @sources;
+}
+
 sub ReadHeaderFile
 {
-    my $filename = shift;
+    my $file = shift;
 
     local $/ = undef;
 
     # first search file in meta directory
 
-    $filename = "$main::INCLUDE_DIR/$filename" if not -e $filename;
+    my $filename = $file;
+
+    $filename = "$main::INCLUDE_DIR/$file" if not -e $filename;
+    $filename = "$main::EXPERIMENTAL_DIR/$file" if not -e $filename;
 
     open FILE, $filename or die "Couldn't open file $filename: $!";
 
@@ -126,6 +224,8 @@ sub GetNonObjectIdStructNames
     my %structs;
 
     my @headers = GetHeaderFiles();
+
+    # TODO must support experimental extensions
 
     for my $header (@headers)
     {
@@ -171,9 +271,9 @@ sub GetStructLists
 
 sub IsSpecialObject
 {
-    my $ot = shift;
+    my $objectType = shift;
 
-    return ($ot eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $ot eq "SAI_OBJECT_TYPE_HOSTIF_PACKET");
+    return ($objectType eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $objectType eq "SAI_OBJECT_TYPE_HOSTIF_PACKET");
 }
 
 sub SanityCheckContent
@@ -245,13 +345,23 @@ sub Trim
     return $value;
 }
 
+sub ExitOnErrors
+{
+    return if $errors == 0;
+
+    LogError "please corret all $errors error(s) before continue";
+
+    exit 1;
+}
+
 BEGIN
 {
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
     LogDebug LogInfo LogWarning LogError
-    WriteFile GetHeaderFiles GetMetaHeaderFiles ReadHeaderFile
-    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder Trim
+    WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile
+    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
+    Trim ExitOnErrors
     WriteHeader WriteSource WriteTest WriteMetaDataFiles WriteSectionComment
     $errors $warnings $NUMBER_REGEX
     $HEADER_CONTENT $SOURCE_CONTENT $TEST_CONTENT

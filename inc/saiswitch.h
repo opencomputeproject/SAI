@@ -1646,6 +1646,21 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SUPPORTED_EXTENDED_STATS_MODE,
 
     /**
+     * @brief Uninitialize data plane upon removal of switch object
+     *
+     * Typical use case for tear down of the host adapter, is to remove the switch ID,
+     * which will stop all data and control plane, as leaving data plane open without
+     * control can be a security risk.
+     * However, on some scenarios, such as fast boot, host adapter would like to set
+     * this value to false, call remove switch, and have the data plane still running.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_SWITCH_ATTR_UNINIT_DATA_PLANE_ON_REMOVAL,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -1773,6 +1788,8 @@ typedef enum _sai_switch_attr_t
  * Adapter DLL may request a shutdown due to an unrecoverable failure
  * or a maintenance operation
  *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
  * @param[in] switch_id Switch Id
  */
 typedef void (*sai_switch_shutdown_request_notification_fn)(
@@ -1780,6 +1797,8 @@ typedef void (*sai_switch_shutdown_request_notification_fn)(
 
 /**
  * @brief Switch operational state change notification
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
  *
  * @param[in] switch_id Switch Id
  * @param[in] switch_oper_status New switch operational state

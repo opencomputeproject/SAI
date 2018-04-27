@@ -1,4 +1,27 @@
 #!/usr/bin/perl
+#
+# Copyright (c) 2014 Microsoft Open Technologies, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+#
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+#
+# @file    xmlutils.pm
+#
+# @brief   This module defines SAI Metadata Xml Utils Parser
+#
 
 package xmlutils;
 
@@ -127,6 +150,8 @@ sub ReadXml
 {
     my $filename = shift;
 
+    $filename = "$main::XMLDIR/$filename" if not -f $filename;
+
     if (defined $main::optionUseXmlSimple)
     {
         my $xs = XML::Simple->new();
@@ -184,7 +209,7 @@ sub GetXmlFiles
 
     while (readdir $dh)
     {
-        next if not /^sai\w*_8h\.xml$/i;
+        next if not /^\w+\.xml$/i or not -f "$dir/$_";
 
         push @files,$_;
     }
@@ -192,6 +217,24 @@ sub GetXmlFiles
     closedir $dh;
 
     return sort @files;
+}
+
+sub GetSaiXmlFiles
+{
+    my $dir = shift;
+
+    my @files = GetXmlFiles($dir);
+
+    return grep { /^sai\w*_8h\.xml$/ } @files;
+}
+
+sub GetXmlUnionFiles
+{
+    my $dir = shift;
+
+    my @files = GetXmlFiles($dir);
+
+    return grep { /^union_\w*\.xml$/ } @files;
 }
 
 sub ProcessStructCount
@@ -246,9 +289,100 @@ sub ProcessStructObjects
     return \@objectTypes;
 }
 
+sub ProcessStructValidOnly
+{
+    my ($structName, $tagValue) = @_;
+
+    my @conditions = split/\s+(?:or|and)\s+/,$tagValue;
+
+    $tagValue =~ s/\s+/ /g;
+
+    if ($tagValue =~ /\bor\b.*\band\b|\band\b.*\bor\b/)
+    {
+        LogError "mixed conditions and/or is not supported: $tagValue";
+        return undef;
+    }
+
+    for my $cond (@conditions)
+    {
+        # it can be single value (struct member or param) or param pointer
+
+        if (not $cond =~ /^(\w+|\w+->\w+|sai_metadata_\w+\(\w+\)) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
+        {
+            LogError "invalid condition tag value '$tagValue' ($cond), expected (\\w+|\\w+->\\w+) == true|false|SAI_ENUM|number";
+            return undef;
+        }
+    }
+
+    LogDebug "adding conditions @conditions on $structName";
+
+    return \@conditions;
+}
+
+sub ProcessStructExtraParam
+{
+    my ($structName, $tagValue, $previousTagValue) = @_;
+
+    my @params = ();
+
+    @params = @{ $previousTagValue } if defined $previousTagValue;
+
+    if (not $tagValue =~ /^((const\s+)?\w+(\s+|\s*\*\s*)\w+)$/)
+    {
+        LogError "unable to parse extraparam '$tagValue' on $structName";
+        return undef;
+    }
+
+    push @params, $1;
+
+    LogDebug "adding extraparam '$1' on $structName";
+
+    return \@params;
+}
+
+sub ProcessStructPassParam
+{
+    my ($structName, $tagValue, $previousTagValue) = @_;
+
+    my @params = ();
+
+    @params = @{ $previousTagValue } if defined $previousTagValue;
+
+    if (not $tagValue =~ /^(&?\w+|\w+->\w+)$/)
+    {
+        LogError "unable to parse passparam '$tagValue' on $structName";
+        return undef;
+    }
+
+    push @params, $1;
+
+    LogDebug "adding passparam '$1' on $structName";
+
+    return \@params;
+}
+
+sub ProcessStructSuffix
+{
+    my ($structName, $tagValue) = @_;
+
+    if (not $tagValue =~ /^(\w+)/)
+    {
+        LogError "unable to parse suffix '$tagValue' on $structName";
+        return undef;
+    }
+
+    LogDebug "adding suffix '$1' on $structName";
+
+    return $1;
+}
+
 my %STRUCT_TAGS = (
         "count"       , \&ProcessStructCount,
         "objects"     , \&ProcessStructObjects,
+        "validonly"   , \&ProcessStructValidOnly,
+        "passparam"   , \&ProcessStructPassParam,
+        "extraparam"  , \&ProcessStructExtraParam,
+        "suffix"      , \&ProcessStructSuffix,
         );
 
 sub ProcessStructDescription
@@ -291,6 +425,8 @@ sub ExtractStructInfoEx
 {
     my ($structName, $prefix) = @_;
 
+    LogDebug "processing struct/union $structName: prefix: $prefix";
+
     my %Struct = (name => $structName);
 
     my $filename = "${prefix}${structName}.xml";
@@ -300,6 +436,11 @@ sub ExtractStructInfoEx
     $filename = $prefix if -e "$main::XMLDIR/$prefix" and $prefix =~ /\.xml$/;
 
     my $file = "$main::XMLDIR/$filename"; # example: xml/struct__sai__fdb__entry__t.xml
+
+    if (not -e $file)
+    {
+        $file =~ s/struct_/union_/;
+    }
 
     # read xml, we need to get each struct field and it's type and description
 
@@ -315,9 +456,9 @@ sub ExtractStructInfoEx
 
     my @members = @{ $sections[0]->{memberdef} };
 
-    if (scalar @members < 2)
+    if (scalar @members < 1)
     {
-        LogError "there must be at least 2 members in struct $structName";
+        LogError "there must be at least 1 member in struct $structName";
         return %Struct;
     }
 
@@ -325,7 +466,7 @@ sub ExtractStructInfoEx
 
     ProcessStructDescription(\%Struct, $desc);
 
-    $Struct{$desc} = $desc;
+    $Struct{desc} = $desc;
 
     my $idx = 0;
 
@@ -351,11 +492,11 @@ sub ExtractStructInfoEx
 
         $type = $1 if $type =~ /^(.+) _sai_\w+_t::(?:\w+|::)+(.*)$/;
 
-        my $typeSuffix= $2;
+        my $typeSuffix = $2;
 
         if ($typeSuffix ne "")
         {
-            if ($typeSuffix =~/^\[\d+\]$/)
+            if ($typeSuffix =~ /^\[\d+\]$/)
             {
                 $type .= $typeSuffix;
             }
@@ -376,6 +517,7 @@ sub ExtractStructInfoEx
         $M{file} = $file;
         $M{name} = $name;
         $M{idx}  = $idx++;
+        $M{union} = $member->{type}[0]->{ref}[0]->{refid} if $member->{definition}[0] =~ /union /;
 
         ProcessStructDescription(\%M, $desc);
 
@@ -383,11 +525,16 @@ sub ExtractStructInfoEx
 
         push @StructMembers, \%M;
         push @keys, $name;
+
+        $Struct{ismetadatastruct} = 1 if $file =~ m!meta/sai\w+.h$|saimeta\w+!;
+        $Struct{containsfnpointer} = 1 if $type =~ /^sai_\w+_fn$/;
     }
 
     $Struct{members} = \@StructMembers;
     $Struct{keys} = \@keys;
-    $Struct{baseName} = $1 if $structName =~/^sai_(\w+)_t$/;
+    $Struct{baseName} = ($structName =~ /^sai_(\w+)_t$/) ? $1 : $structName;
+    $Struct{baseName} =~ s/^_//;
+    $Struct{union} = 1 if $ref->{compounddef}[0]->{kind} eq "union";
 
     return %Struct;
 }
@@ -459,7 +606,7 @@ BEGIN
 {
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
-    ReadXml UnescapeXml GetXmlFiles
+    ReadXml UnescapeXml GetSaiXmlFiles GetXmlUnionFiles
     ExtractDescription ExtractStructInfo ExtractStructInfoEx
     /;
 }

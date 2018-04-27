@@ -1195,7 +1195,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_object_list_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS,
@@ -1205,7 +1205,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_object_list_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS,
@@ -1215,7 +1215,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
@@ -1225,7 +1225,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
@@ -1236,7 +1236,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_PORT,
@@ -1691,7 +1691,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_L2MC_GROUP, SAI_OBJECT_TYPE_IPMC_GROUP
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_L2MC_GROUP, SAI_OBJECT_TYPE_IPMC_GROUP
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
@@ -1714,7 +1714,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
@@ -1972,7 +1972,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_EGRESS_BLOCK_PORT_LIST,
@@ -2255,14 +2255,14 @@ typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
  *
  * @param[in] acl_table_id ACL table id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
         _In_ sai_object_id_t acl_table_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL entry
@@ -2307,14 +2307,14 @@ typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
  *
  * @param[in] acl_entry_id ACL entry id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
         _In_ sai_object_id_t acl_entry_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL counter
@@ -2359,14 +2359,14 @@ typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
  *
  * @param[in] acl_counter_id ACL counter id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
         _In_ sai_object_id_t acl_counter_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL Range
@@ -2410,14 +2410,14 @@ typedef sai_status_t (*sai_set_acl_range_attribute_fn)(
  *
  * @param[in] acl_range_id ACL range id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
         _In_ sai_object_id_t acl_range_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL Table Group
@@ -2462,14 +2462,14 @@ typedef sai_status_t (*sai_set_acl_table_group_attribute_fn)(
  *
  * @param[in] acl_table_group_id ACL table group id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL Table Group Member
@@ -2514,14 +2514,14 @@ typedef sai_status_t (*sai_set_acl_table_group_member_attribute_fn)(
  *
  * @param[in] acl_table_group_member_id ACL table group member id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_member_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Port methods table retrieved with sai_api_query()

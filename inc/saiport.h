@@ -73,7 +73,11 @@ typedef enum _sai_port_oper_status_t
  */
 typedef struct _sai_port_oper_status_notification_t
 {
-    /** Port id */
+    /**
+     * @brief Port id.
+     *
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_LAG
+     */
     sai_object_id_t port_id;
 
     /** Port operational status */
@@ -396,6 +400,14 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP
      */
     SAI_PORT_ATTR_INGRESS_PRIORITY_GROUP_LIST,
+
+    /**
+     * @brief List of port's lanes eye values
+     *
+     * @type sai_port_eye_values_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_EYE_VALUES,
 
     /* READ-WRITE */
 

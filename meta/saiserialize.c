@@ -1,3 +1,27 @@
+/**
+ * Copyright (c) 2014 Microsoft Open Technologies, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *    not use this file except in compliance with the License. You may obtain
+ *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+ *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+ *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+ *
+ *    See the Apache Version 2.0 License for specific language governing
+ *    permissions and limitations under the License.
+ *
+ *    Microsoft would like to thank the following companies for their review and
+ *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+ *
+ * @file    saiserialize.c
+ *
+ * @brief   This module defines SAI Metadata Serialize
+ */
+
 #include <arpa/inet.h>
 #include <byteswap.h>
 #include <ctype.h>
@@ -475,7 +499,7 @@ int sai_deserialize_mac(
 
 int sai_serialize_enum(
         _Out_ char *buffer,
-        _In_ const sai_enum_metadata_t* meta,
+        _In_ const sai_enum_metadata_t *meta,
         _In_ int32_t value)
 {
     if (meta == NULL)
@@ -500,7 +524,7 @@ int sai_serialize_enum(
 
 int sai_deserialize_enum(
         _In_ const char *buffer,
-        _In_ const sai_enum_metadata_t* meta,
+        _In_ const sai_enum_metadata_t *meta,
         _Out_ int32_t *value)
 {
     if (meta == NULL)
@@ -593,7 +617,6 @@ int sai_deserialize_ip4(
         _In_ const char *buffer,
         _Out_ sai_ip4_t *ip4)
 {
-    /* TODO we may need to reverse pointer */
     return sai_deserialize_ip(buffer, AF_INET, (uint8_t*)ip4);
 }
 
@@ -907,26 +930,158 @@ int sai_deserialize_ip6_mask(
     return res;
 }
 
-int sai_serialize_hmac(
+int sai_serialize_pointer(
         _Out_ char *buffer,
-        _In_ const sai_hmac_t *hmac)
+        _In_ sai_pointer_t pointer)
+{
+    return sprintf(buffer, "ptr:0x%p", pointer);
+}
+
+int sai_deserialize_pointer(
+        _In_ const char *buffer,
+        _Out_ sai_pointer_t *pointer)
+{
+    int read;
+
+    int n = sscanf(buffer, "ptr:0x%16p%n", pointer, &read);
+
+    if (n == 1 && sai_serialize_is_char_allowed(buffer[read]))
+    {
+        return read;
+    }
+
+    SAI_META_LOG_WARN("failed to deserialize '%.*s' as pointer", MAX_CHARS_PRINT, buffer);
+    return SAI_SERIALIZE_ERROR;
+}
+
+int sai_serialize_enum_list(
+        _Out_ char *buf,
+        _In_ const sai_enum_metadata_t *meta,
+        _In_ const sai_s32_list_t *list)
+{
+    if (meta == NULL)
+    {
+        return sai_serialize_s32_list(buf, list);
+    }
+
+    char *begin_buf = buf;
+    int ret;
+
+    buf += sprintf(buf, "{");
+
+    buf += sprintf(buf, "\"count\":");
+
+    if (list->list == NULL || list->count == 0)
+    {
+        buf += sprintf(buf, "null");
+    }
+    else
+    {
+        buf += sprintf(buf, "[");
+
+        uint32_t idx;
+
+        for (idx = 0; idx < list->count; idx++)
+        {
+            if (idx != 0)
+            {
+                buf += sprintf(buf, ",");
+            }
+
+            buf += sprintf(buf, "\"");
+
+            ret = sai_serialize_enum(buf, meta, list->list[idx]);
+
+            if (ret < 0)
+            {
+                SAI_META_LOG_WARN("failed to serialize enum_list");
+                return SAI_SERIALIZE_ERROR;
+            }
+
+            buf += sprintf(buf, "\"");
+        }
+
+        buf += sprintf(buf, "]");
+    }
+
+    buf += sprintf(buf, "}");
+
+    return (int)(buf - begin_buf);
+}
+
+int sai_deserialize_enum_list(
+        _In_ const char *buffer,
+        _In_ const sai_enum_metadata_t *meta,
+        _Out_ sai_s32_list_t *list)
 {
     SAI_META_LOG_WARN("not implemented");
     return SAI_SERIALIZE_ERROR;
 }
 
-int sai_serialize_tlv(
-        _Out_ char *buffer,
-        _In_ const sai_tlv_t *tlv)
+int sai_serialize_attr_id(
+        _Out_ char *buf,
+        _In_ const sai_attr_metadata_t *meta,
+        _In_ sai_attr_id_t attr_id)
+{
+    strcpy(buf, meta->attridname);
+
+    return (int)strlen(buf);
+}
+
+int sai_deserialize_attr_id(
+        _In_ const char *buffer,
+        _Out_ sai_attr_id_t *attr_id)
 {
     SAI_META_LOG_WARN("not implemented");
     return SAI_SERIALIZE_ERROR;
 }
 
 int sai_serialize_attribute(
-        _Out_ char *buffer,
+        _Out_ char *buf,
         _In_ const sai_attr_metadata_t *meta,
-        _In_ const sai_attribute_t *attr)
+        _In_ const sai_attribute_t *attribute)
+{
+    char *begin_buf = buf;
+    int ret;
+
+    /* can be auto generated */
+
+    buf += sprintf(buf, "{");
+
+    buf += sprintf(buf, "\"id\":");
+
+    buf += sprintf(buf, "\"");
+
+    ret = sai_serialize_attr_id(buf, meta, attribute->id);
+
+    if (ret < 0)
+    {
+        SAI_META_LOG_WARN("failed to serialize attr id");
+        return SAI_SERIALIZE_ERROR;
+    }
+
+    buf += sprintf(buf, "\"");
+
+    buf += sprintf(buf, "\"value\":");
+
+    ret = sai_serialize_attribute_value(buf, meta, &attribute->value);
+
+    if (ret < 0)
+    {
+        SAI_META_LOG_WARN("failed to serialize attribute value");
+        return SAI_SERIALIZE_ERROR;
+    }
+
+    buf += ret;
+
+    buf += sprintf(buf, "}");
+
+    return (int)(buf - begin_buf);
+}
+
+int sai_deserialize_attribute(
+        _In_ const char *buffer,
+        _Out_ sai_attribute_t *attribute)
 {
     SAI_META_LOG_WARN("not implemented");
     return SAI_SERIALIZE_ERROR;

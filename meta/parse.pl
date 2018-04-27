@@ -1,4 +1,27 @@
 #!/usr/bin/perl
+#
+# Copyright (c) 2014 Microsoft Open Technologies, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+#
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+#
+# @file    parse.pl
+#
+# @brief   This module defines SAI Metadata Parser
+#
 
 use strict;
 use warnings;
@@ -12,11 +35,14 @@ use xmlutils;
 use style;
 use test;
 use serialize;
+use cap;
 
 our $XMLDIR = "xml";
 our $INCLUDE_DIR = "../inc/";
+our $EXPERIMENTAL_DIR = "../experimental/";
 
 our %SAI_ENUMS = ();
+our %SAI_UNIONS = ();
 our %METADATA = ();
 our %NON_OBJECT_ID_STRUCTS = ();
 our %NOTIFICATIONS = ();
@@ -26,8 +52,12 @@ our %ALL_STRUCTS = ();
 our %OBJECT_TYPE_MAP = ();
 our %SAI_DEFINES = ();
 our %EXTRA_RANGE_DEFINES = ();
+our %REVGRAPH = ();
+our %EXTENSIONS_ENUMS = ();
+our %EXTENSIONS_ATTRS = ();
+our %EXPERIMENTAL_OBJECTS = ();
 
-my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY|DYNAMIC|SPECIAL";
+my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 
 # TAGS HANDLERS
 
@@ -46,12 +76,13 @@ my %ATTR_TAGS = (
         );
 
 my %options = ();
-getopts("dsAS", \%options);
+getopts("dsASl", \%options);
 
 our $optionPrintDebug        = 1 if defined $options{d};
 our $optionDisableAspell     = 1 if defined $options{A};
 our $optionUseXmlSimple      = 1 if defined $options{s};
 our $optionDisableStyleCheck = 1 if defined $options{S};
+our $optionShowLogCaller     = 1 if defined $options{l};
 
 # LOGGING FUNCTIONS HELPERS
 
@@ -69,46 +100,23 @@ my %ACL_ACTION_TYPES_TO_VT = ();
 my %VALUE_TYPES = ();
 my %VALUE_TYPES_TO_VT = ();
 
+my %CAPABILITIES = ();
+
 sub ProcessTagType
 {
     my ($type, $value, $val) = @_;
 
-    if ($val =~/^sai_s32_list_t sai_\w+_t$/)
-    {
-        return $val;
-    }
+    return $val if $val =~ /^sai_s32_list_t sai_\w+_t$/;
 
-    if ($val =~/^sai_acl_field_data_t (sai_\w+_t|bool)$/)
-    {
-        return $val;
-    }
+    return $val if $val =~ /^sai_acl_field_data_t (sai_\w+_t|bool)$/;
 
-    if ($val =~/^sai_acl_action_data_t (sai_\w+_t|bool)$/)
-    {
-        return $val;
-    }
+    return $val if $val =~ /^sai_acl_action_data_t (sai_\w+_t|bool)$/;
 
-    if ($val =~ /^(bool|char)$/)
-    {
-        return $val;
-    }
+    return $val if $val =~ /^(bool|char)$/;
 
-    if ($val =~/^sai_\w+_t$/ and not $val =~ /_attr_t/)
-    {
-        return $val;
-    }
+    return $val if $val =~ /^sai_\w+_t$/ and not $val =~ /_attr_(extensions_)?t/;
 
-    if ($val =~/^sai_pointer_t (sai_\w+_fn)$/)
-    {
-        my $pointerfn = $1;
-
-        if (not $pointerfn =~ /^sai_\w+_(callback|notification)_fn$/)
-        {
-            LogWarning "function name $pointerfn should be in format sai_\\w+_(callback|notification)_fn";
-        }
-
-        return $val;
-    }
+    return $val if $val =~ /^sai_pointer_t sai_\w+_notification_fn$/;
 
     LogError "invalid type tag value '$val' expected sai type or enum";
 
@@ -159,13 +167,10 @@ sub ProcessTagAllowNull
 {
     my ($type, $value, $val) = @_;
 
-    if (not $val =~/^(true|false)$/i)
-    {
-        LogError "allownull tag value '$val', expected true/false";
-        return undef;
-    }
+    return $val if $val =~ /^(true|false)$/;
 
-    return $val;
+    LogError "allownull tag value '$val', expected true/false";
+    return undef;
 }
 
 sub ProcessTagCondition
@@ -174,7 +179,7 @@ sub ProcessTagCondition
 
     my @conditions = split/\s+(?:or|and)\s+/,$val;
 
-    if ($val =~/or.+and|and.+or/)
+    if ($val =~ /or.+and|and.+or/)
     {
         LogError "mixed conditions and/or is not supported: $val";
         return undef;
@@ -182,7 +187,7 @@ sub ProcessTagCondition
 
     for my $cond (@conditions)
     {
-        if (not $cond =~/^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
+        if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
             LogError "invalid condition tag value '$val' ($cond), expected SAI_ENUM == true|false|SAI_ENUM|number";
             return undef;
@@ -202,32 +207,17 @@ sub ProcessTagDefault
 {
     my ($type, $value, $val) = @_;
 
-    if ($val =~/^(empty|internal|vendor|const)/)
-    {
-        return $val;
-    }
+    return $val if $val =~ /^(empty|internal|vendor|const)/;
 
-    if ($val =~/^(attrvalue) SAI_\w+_ATTR_\w+$/)
-    {
-        return $val;
-    }
+    return $val if $val =~ /^(attrvalue) SAI_\w+_ATTR_\w+$/;
 
-    if ($val =~/^(true|false|NULL|SAI_\w+|$NUMBER_REGEX)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/)
-    {
-        return $val;
-    }
+    return $val if $val =~ /^(true|false|NULL|SAI_\w+|$NUMBER_REGEX)$/ and not $val =~ /_ATTR_|OBJECT_TYPE/;
 
-    if ($val =~/^0\.0\.0\.0$/)
-    {
-        # currently we only support default ip address
-        return $val;
-    }
+    return $val if $val =~ /^0\.0\.0\.0$/;
 
-    if ($val eq "disabled")
-    {
-        # for aclfield and aclaction
-        return $val;
-    }
+    return $val if $val eq "disabled";
+
+    return $val if $val eq "\"\"";
 
     LogError "invalid default tag value '$val' on $type $value";
     return undef;
@@ -235,7 +225,7 @@ sub ProcessTagDefault
 
 sub ProcessTagIgnore
 {
-    my ($type, $value, $val) = @_;
+    # just return true if tag is defined
 
     return "true";
 }
@@ -244,7 +234,7 @@ sub ProcessTagIsVlan
 {
     my ($type, $value, $val) = @_;
 
-    return $val if $val =~/^(true|false)$/i;
+    return $val if $val =~ /^(true|false)$/i;
 
     LogError "isvlan tag value '$val', expected true/false";
     return undef;
@@ -298,9 +288,7 @@ sub ProcessDescription
 
         push @order,$tag;
 
-        $val =~ s/\s+/ /g;
-        $val =~ s/^\s*//;
-        $val =~ s/\s*$//;
+        $val = Trim $val;
 
         if (not defined $ATTR_TAGS{$tag})
         {
@@ -315,21 +303,18 @@ sub ProcessDescription
         $METADATA{$type}{$value}{attrid}        = $value;
     }
 
-    $brief =~ s/^\s*//;
-    $brief =~ s/\s*$//;
+    $brief = Trim $brief;
 
     $METADATA{$type}{$value}{brief} = $brief if $brief ne "";
 
-    my $count = @order;
-
-    return if $count == 0;
+    return if scalar@order == 0;
 
     my $rightOrder = 'type:flags(:objects)?(:allownull)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?';
 
     my $order = join(":",@order);
 
-    return if $order =~/^$rightOrder$/;
-    return if $order =~/^ignore$/;
+    return if $order =~ /^$rightOrder$/;
+    return if $order =~ /^ignore$/;
 
     LogWarning "metadata tags are not in right order: $order on $value";
     LogWarning "   correct order: $rightOrder or ignore";
@@ -377,6 +362,16 @@ sub ProcessEnumSection
 
         my $enumprefix = uc $1;
 
+        if ($enumtypename =~ /_extensions_t$/)
+        {
+            LogDebug "removing extension prefix from $enumtypename";
+
+            # remove extensions suffix on all extensions since they will be merged together
+            $enumprefix =~ s/EXTENSIONS_$//;
+
+            $EXTENSIONS_ENUMS{$enumtypename} = "${enumprefix}_t";
+        }
+
         if (defined $SAI_ENUMS{$enumtypename})
         {
             LogError "duplicated enum $enumtypename";
@@ -397,7 +392,7 @@ sub ProcessEnumSection
 
             my $eitemd = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
 
-            if ($eitemd =~/\@ignore/)
+            if ($eitemd =~ /\@ignore/)
             {
                 LogInfo "Ignoring $enumvaluename";
                 next;
@@ -409,7 +404,7 @@ sub ProcessEnumSection
 
             LogWarning "Value $enumvaluename of $enumtypename is not prefixed as $enumprefix" if not $enumvaluename =~ /^$enumprefix/;
 
-            if (not $enumvaluename =~/^[A-Z0-9_]+$/)
+            if (not $enumvaluename =~ /^[A-Z0-9_]+$/)
             {
                 LogError "enum $enumvaluename uses characters outside [A-Z0-9_]+";
             }
@@ -417,6 +412,7 @@ sub ProcessEnumSection
 
         # remove unnecessary attributes
         my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
+
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(CUSTOM_RANGE_BASE)$/, @values);
 
@@ -424,7 +420,8 @@ sub ProcessEnumSection
         {
             my $valuescount = @values;
 
-            if ($valuescount == 0)
+            # allow empty enum on extensions
+            if ($valuescount == 0 and not $enumtypename =~ /_extensions_t$/)
             {
                 LogError "enum $enumtypename is empty, after removing suffixed entries _START/_END/_CUSTOM_RANGE_BASE";
                 LogError "  those suffixes are reserved for range markers and are removed by metadata parser, don't use them";
@@ -432,24 +429,30 @@ sub ProcessEnumSection
                 next;
             }
 
-            my $last = $values[$#values];
-
-            if ($last eq "${enumprefix}MAX")
+            if ($valuescount > 0)
             {
-                $last =  pop @values;
-                LogInfo "Removing last element $last";
+                my $last = $values[$#values];
+
+                if ($last eq "${enumprefix}MAX")
+                {
+                    $last =  pop @values;
+                    LogInfo "Removing last element $last";
+                }
             }
         }
 
         $SAI_ENUMS{$enumtypename}{values} = \@values;
 
-        next if not $enumtypename =~ /^(sai_(\w+)_attr_)t$/;
+        next if not $enumtypename =~ /^(sai_(\w+)_attr_(extensions_)?)t$/;
+
+        # TODO put to SAI_ATTR_ENUMS
 
         my $prefix = uc$1;
 
         # remove unnecessary attributes
         @values = @{ $SAI_ENUMS{$enumtypename}{values} };
         @values = grep(!/^${prefix}(CUSTOM_RANGE_|FIELD_|ACTION_)?(START|END)$/, @values);
+
         $SAI_ENUMS{$enumtypename}{values} = \@values;
 
         # this is attribute
@@ -587,7 +590,7 @@ sub ProcessTypedefSection
             next;
         }
 
-        next if not $typedefname =~ /^sai_(\w+)_attr_t$/;
+        next if not $typedefname =~ /^sai_(\w+)_attr_(extensions_)?t$/;
 
         # this enum is attribute definition for object
 
@@ -813,13 +816,15 @@ sub ProcessXmlFile
 
         ProcessEnumSection($section) if ($section->{kind} eq "enum");
 
-        ProcessTypedefSection($section) if ($section->{kind} eq "typedef");
+        ProcessTypedefSection($section) if $section->{kind} eq "typedef";
     }
 }
 
 sub ProcessSingleEnum
 {
     my ($key, $typedef, $prefix) = @_;
+
+    $prefix =~ s/EXTENSIONS_$// if ($typedef =~ /_extensions_t$/);
 
     my $enum = $SAI_ENUMS{$key};
 
@@ -835,21 +840,20 @@ sub ProcessSingleEnum
 
         LogWarning "Value $value of $typedef is not prefixed as $prefix" if not $value =~ /^$prefix/;
 
-        WriteSource "    $value,";
+        WriteSource "$value,";
     }
 
-    WriteSource "    -1"; # guard
-
+    WriteSource "-1"; # guard
     WriteSource "};";
 
     WriteSource "const char* const sai_metadata_${typedef}_enum_values_names[] = {";
 
     for my $value (@values)
     {
-        WriteSource "    \"$value\",";
+        WriteSource "\"$value\",";
     }
 
-    WriteSource "    NULL";
+    WriteSource "NULL";
     WriteSource "};";
 
     WriteSource "const char* const sai_metadata_${typedef}_enum_values_short_names[] = {";
@@ -858,10 +862,10 @@ sub ProcessSingleEnum
     {
         $value =~ s/^${prefix}//;
 
-        WriteSource "    \"$value\",";
+        WriteSource "\"$value\",";
     }
 
-    WriteSource "    NULL";
+    WriteSource "NULL";
     WriteSource "};";
 
     my $count = @values;
@@ -869,12 +873,12 @@ sub ProcessSingleEnum
     WriteHeader "extern const sai_enum_metadata_t sai_metadata_enum_$typedef;";
 
     WriteSource "const sai_enum_metadata_t sai_metadata_enum_$typedef = {";
-    WriteSource "    .name              = \"${typedef}\",";
-    WriteSource "    .valuescount       = $count,";
-    WriteSource "    .values            = (const int*)sai_metadata_${typedef}_enum_values,";
-    WriteSource "    .valuesnames       = sai_metadata_${typedef}_enum_values_names,";
-    WriteSource "    .valuesshortnames  = sai_metadata_${typedef}_enum_values_short_names,";
-    WriteSource "    .containsflags     = $flags,";
+    WriteSource ".name              = \"${typedef}\",";
+    WriteSource ".valuescount       = $count,";
+    WriteSource ".values            = (const int*)sai_metadata_${typedef}_enum_values,";
+    WriteSource ".valuesnames       = sai_metadata_${typedef}_enum_values_names,";
+    WriteSource ".valuesshortnames  = sai_metadata_${typedef}_enum_values_short_names,";
+    WriteSource ".containsflags     = $flags,";
     WriteSource "};";
 
     return $count;
@@ -893,6 +897,8 @@ sub ProcessExtraRangeDefines
 sub CreateMetadataHeaderAndSource
 {
     WriteSource "#include <stdio.h>";
+    WriteSource "#include <string.h>";
+    WriteSource "#include <stdlib.h>";
     WriteSource "#include \"saimetadata.h\"";
 
     WriteSectionComment "Enums metadata";
@@ -923,10 +929,10 @@ sub CreateMetadataHeaderAndSource
 
         my $typedef = $1;
 
-        WriteSource "    &sai_metadata_enum_$typedef,";
+        WriteSource "&sai_metadata_enum_$typedef,";
     }
 
-    WriteSource "    NULL";
+    WriteSource "NULL";
     WriteSource "};";
 
     my $count = keys %SAI_ENUMS;
@@ -941,19 +947,16 @@ sub CreateMetadataHeaderAndSource
 
     for my $key (sort keys %SAI_ENUMS)
     {
-        if (not $key =~ /^(sai_\w+_attr_t)$/)
-        {
-            next;
-        }
+        next if not $key =~ /^(sai_\w+_attr_t)$/;
 
         my $typedef = $1;
 
-        WriteSource "    &sai_metadata_enum_$typedef,";
+        WriteSource "&sai_metadata_enum_$typedef,";
 
         $count++;
     }
 
-    WriteSource "    NULL";
+    WriteSource "NULL";
     WriteSource "};";
 
     WriteHeader "extern const size_t sai_metadata_attr_enums_count;";
@@ -973,9 +976,10 @@ sub CreateMetadataHeaderAndSource
         my $typedef = $1;
         my $objtype = $2;
 
-        WriteSource "    SAI_OBJECT_TYPE_" . uc($objtype). ",";
+        WriteSource "SAI_OBJECT_TYPE_" . uc($objtype). ",";
     }
 
+    WriteSource "-1";
     WriteSource "};";
 }
 
@@ -1112,9 +1116,10 @@ sub ProcessObjects
             return "";
         }
 
-        WriteSource "    $obj,";
+        WriteSource "$obj,";
     }
 
+    WriteSource "-1"; # guard
     WriteSource "};";
 
     return "sai_metadata_${attr}_allowed_objects";
@@ -1154,6 +1159,8 @@ sub ProcessDefaultValueType
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^0\.0\.0\.0$/;
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default eq "disabled";
+
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default eq "\"\"";
 
     LogError "invalid default value type '$default' on $attr";
 
@@ -1214,6 +1221,10 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .$VALUE_TYPES{$1} = { .enable = false } };";
     }
+    elsif ($default =~ /^""$/ and $type eq "char")
+    {
+        WriteSource "$val = { .chardata = { 0 } };";
+    }
     else
     {
         LogError "invalid default value '$default' on $attr ($type)";
@@ -1250,7 +1261,7 @@ sub ProcessStoreDefaultValue
 
     # at this point we can't determine whether object is non object id
 
-    if (defined $value and $value =~/vendor|attrvalue/)
+    if (defined $value and $value =~ /vendor|attrvalue/)
     {
         return "true";
     }
@@ -1259,7 +1270,7 @@ sub ProcessStoreDefaultValue
 
     $flags = "@flags";
 
-    if ($flags =~/MANDATORY/ and $flags =~ /CREATE_AND_SET/)
+    if ($flags =~ /MANDATORY/ and $flags =~ /CREATE_AND_SET/)
     {
         return "true";
     }
@@ -1375,8 +1386,8 @@ sub ProcessConditionsGeneric
 
         if ($val eq "true" or $val eq "false")
         {
-            WriteSource "    .attrid = $attrid,";
-            WriteSource "    .condition = { .booldata = $val }";
+            WriteSource ".attrid = $attrid,";
+            WriteSource ".condition = { .booldata = $val }";
         }
         elsif ($val =~ /^SAI_/)
         {
@@ -1405,8 +1416,8 @@ sub ProcessConditionsGeneric
             my $n = $1;
             my $item = ($enumtype =~ /uint/) ? "u$n" : "s$n";
 
-            WriteSource "    .attrid = $attrid,";
-            WriteSource "    .condition = { .$item = $val }";
+            WriteSource ".attrid = $attrid,";
+            WriteSource ".condition = { .$item = $val }";
         }
         else
         {
@@ -1425,13 +1436,12 @@ sub ProcessConditionsGeneric
 
     for my $cond (@conditions)
     {
-        WriteSource "    &sai_metadata_${name}_${attr}_$count,";
+        WriteSource "&sai_metadata_${name}_${attr}_$count,";
 
         $count++;
     }
 
-    WriteSource "    NULL";
-
+    WriteSource "NULL";
     WriteSource "};";
 
     return "sai_metadata_${name}s_${attr}";
@@ -1575,6 +1585,129 @@ sub ProcessIsPrimitive
     return "true";
 }
 
+sub ProcessCapability
+{
+    my ($attr, $type, $enummetadata) = @_;
+
+    return "NULL" if not defined $CAPABILITIES{$attr};
+
+    my %CAP = %{ $CAPABILITIES{$attr} };
+
+    my $count = 0;
+
+    my @values = ();
+
+    for my $vid (sort keys %CAP)
+    {
+        my $enumcount = 0;
+        my $enumvalues = "NULL";
+
+        if (defined $CAP{$vid}{enumcapability})
+        {
+            if (not $enummetadata =~ /sai_metadata_enum_((sai_\w+_)t)/)
+            {
+                LogError "enum capability defined on $attr, but attribute is not enum";
+                next;
+            }
+
+            my $enumtype = $1;
+            my $prefix = uc($2);
+
+            my @values = @{ $CAP{$vid}{enumcapability} };
+
+            $enumcount = scalar @values;
+
+            WriteSource "const int sai_metadata_enumcapability_${attr}_$vid\[\] = {";
+
+            my %vals = ();
+
+            for my $v (@values)
+            {
+                LogError "enumvalue $v on capability $attr($vid) is not of type $enumtype" if not $v =~ /^$prefix/;
+
+                LogError "enumvalue $v on capability $attr($vid) is already defined" if defined $vals{$v};
+
+                $vals{$v} = 1;
+
+                WriteSource "   $v,";
+            }
+
+            WriteSource "   -1,";
+            WriteSource "};";
+
+            $enumvalues = "sai_metadata_enumcapability_${attr}_$vid";
+        }
+
+        if (not defined $CAP{$vid}{capability})
+        {
+            LogError "capability for $attr is not defined";
+            next;
+        }
+
+        WriteSource "const sai_attr_capability_metadata_t sai_metadata_attr_capability_${attr}_$count = {";
+
+        my %cap = ();
+
+        for my $c (@{ $CAP{$vid}{capability} })
+        {
+            $cap{$c} = 1;
+        }
+
+        my $create = (defined $cap{"CREATE"}) ? "true" : "false";
+        my $get = (defined $cap{"GET"}) ? "true" : "false";
+        my $set = (defined $cap{"SET"}) ? "true" : "false";
+
+        WriteSource "    .vendorid = $vid,";
+        WriteSource "    .operationcapability = {";
+        WriteSource "       .create_implemented = $create,";
+        WriteSource "       .set_implemented = $set,";
+        WriteSource "       .get_implemented = $get,";
+        WriteSource "    },";
+
+        WriteSource "    .enumvaluescount = $enumcount,";
+        WriteSource "    .enumvalues = $enumvalues,";
+
+        WriteSource "};";
+
+        $count++;
+    }
+
+    WriteSource "const sai_attr_capability_metadata_t* const sai_metadata_attr_capability_${attr}\[\] = {";
+
+    $count = 0;
+
+    for my $vid (sort keys %CAP)
+    {
+        WriteSource "    &sai_metadata_attr_capability_${attr}_$count,";
+
+        $count++;
+    }
+
+    WriteSource "    NULL";
+
+    WriteSource "};";
+
+    return "sai_metadata_attr_capability_$attr";
+}
+
+sub ProcessCapabilityLen
+{
+    my ($attr, $type) = @_;
+
+    return 0 if not defined $CAPABILITIES{$attr};
+
+    return scalar(keys %{$CAPABILITIES{$attr}});
+}
+
+sub ProcessIsExtensionAttr
+{
+    my ($attr, $type) = @_;
+
+    return "true" if defined $EXTENSIONS_ATTRS{$attr};
+
+    return "false";
+}
+
 sub ProcessSingleObjectType
 {
     my ($typedef, $objecttype) = @_;
@@ -1627,6 +1760,9 @@ sub ProcessSingleObjectType
         my $brief           = ProcessBrief($attr, $meta{brief});
         my $isprimitive     = ProcessIsPrimitive($attr, $meta{type});
         my $ntftype         = ProcessNotificationType($attr, $meta{type});
+        my $cap             = ProcessCapability($attr, $meta{type}, $enummetadata);
+        my $caplen          = ProcessCapabilityLen($attr, $meta{type});
+        my $isextensionattr = ProcessIsExtensionAttr($attr, $meta{type});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -1636,46 +1772,49 @@ sub ProcessSingleObjectType
 
         WriteSource "const sai_attr_metadata_t sai_metadata_attr_$attr = {";
 
-        WriteSource "    .objecttype                    = $objecttype,";
-        WriteSource "    .attrid                        = $attr,";
-        WriteSource "    .attridname                    = $attrname,";
-        WriteSource "    .brief                         = $brief,";
-        WriteSource "    .attrvaluetype                 = $type,";
-        WriteSource "    .flags                         = $flags,";
-        WriteSource "    .allowedobjecttypes            = $objects,";
-        WriteSource "    .allowedobjecttypeslength      = $objectslen,";
-        WriteSource "    .allowrepetitiononlist         = $allowrepeat,";
-        WriteSource "    .allowmixedobjecttypes         = $allowmixed,";
-        WriteSource "    .allowemptylist                = $allowempty,";
-        WriteSource "    .allownullobjectid             = $allownull,";
-        WriteSource "    .isoidattribute                = ($objectslen > 0),";
-        WriteSource "    .defaultvaluetype              = $defvaltype,";
-        WriteSource "    .defaultvalue                  = $defval,";
-        WriteSource "    .defaultvalueobjecttype        = $defvalot,";
-        WriteSource "    .defaultvalueattrid            = $defvalattrid,";
-        WriteSource "    .storedefaultvalue             = $storedefaultval,";
-        WriteSource "    .isenum                        = $isenum,";
-        WriteSource "    .isenumlist                    = $isenumlist,";
-        WriteSource "    .enummetadata                  = $enummetadata,";
-        WriteSource "    .conditiontype                 = $conditiontype,";
-        WriteSource "    .conditions                    = $conditions,";
-        WriteSource "    .conditionslength              = $conditionslen,";
-        WriteSource "    .isconditional                 = ($conditionslen != 0),";
-        WriteSource "    .validonlytype                 = $validonlytype,";
-        WriteSource "    .validonly                     = $validonly,";
-        WriteSource "    .validonlylength               = $validonlylen,";
-        WriteSource "    .isvalidonly                   = ($validonlylen != 0),";
-        WriteSource "    .getsave                       = $getsave,";
-        WriteSource "    .isvlan                        = $isvlan,";
-        WriteSource "    .isaclfield                    = $isaclfield,";
-        WriteSource "    .isaclaction                   = $isaclaction,";
-        WriteSource "    .ismandatoryoncreate           = $ismandatoryoncreate,";
-        WriteSource "    .iscreateonly                  = $iscreateonly,";
-        WriteSource "    .iscreateandset                = $iscreateandset,";
-        WriteSource "    .isreadonly                    = $isreadonly,";
-        WriteSource "    .iskey                         = $iskey,";
-        WriteSource "    .isprimitive                   = $isprimitive,";
-        WriteSource "    .notificationtype              = $ntftype,";
+        WriteSource ".objecttype                    = $objecttype,";
+        WriteSource ".attrid                        = $attr,";
+        WriteSource ".attridname                    = $attrname,";
+        WriteSource ".brief                         = $brief,";
+        WriteSource ".attrvaluetype                 = $type,";
+        WriteSource ".flags                         = $flags,";
+        WriteSource ".allowedobjecttypes            = $objects,";
+        WriteSource ".allowedobjecttypeslength      = $objectslen,";
+        WriteSource ".allowrepetitiononlist         = $allowrepeat,";
+        WriteSource ".allowmixedobjecttypes         = $allowmixed,";
+        WriteSource ".allowemptylist                = $allowempty,";
+        WriteSource ".allownullobjectid             = $allownull,";
+        WriteSource ".isoidattribute                = ($objectslen > 0),";
+        WriteSource ".defaultvaluetype              = $defvaltype,";
+        WriteSource ".defaultvalue                  = $defval,";
+        WriteSource ".defaultvalueobjecttype        = $defvalot,";
+        WriteSource ".defaultvalueattrid            = $defvalattrid,";
+        WriteSource ".storedefaultvalue             = $storedefaultval,";
+        WriteSource ".isenum                        = $isenum,";
+        WriteSource ".isenumlist                    = $isenumlist,";
+        WriteSource ".enummetadata                  = $enummetadata,";
+        WriteSource ".conditiontype                 = $conditiontype,";
+        WriteSource ".conditions                    = $conditions,";
+        WriteSource ".conditionslength              = $conditionslen,";
+        WriteSource ".isconditional                 = ($conditionslen != 0),";
+        WriteSource ".validonlytype                 = $validonlytype,";
+        WriteSource ".validonly                     = $validonly,";
+        WriteSource ".validonlylength               = $validonlylen,";
+        WriteSource ".isvalidonly                   = ($validonlylen != 0),";
+        WriteSource ".getsave                       = $getsave,";
+        WriteSource ".isvlan                        = $isvlan,";
+        WriteSource ".isaclfield                    = $isaclfield,";
+        WriteSource ".isaclaction                   = $isaclaction,";
+        WriteSource ".ismandatoryoncreate           = $ismandatoryoncreate,";
+        WriteSource ".iscreateonly                  = $iscreateonly,";
+        WriteSource ".iscreateandset                = $iscreateandset,";
+        WriteSource ".isreadonly                    = $isreadonly,";
+        WriteSource ".iskey                         = $iskey,";
+        WriteSource ".isprimitive                   = $isprimitive,";
+        WriteSource ".notificationtype              = $ntftype,";
+        WriteSource ".capability                    = $cap,";
+        WriteSource ".capabilitylength              = $caplen,";
+        WriteSource ".isextensionattr               = $isextensionattr,";
 
         WriteSource "};";
 
@@ -1689,23 +1828,23 @@ sub CheckEnumNaming
 {
     my ($attr, $type) = @_;
 
-    LogError "can't match sai type on '$type'" if not $type =~/.*sai_(\w+)_t/;
+    LogError "can't match sai type on '$type'" if not $type =~ /.*sai_(\w+)_t/;
 
     my $enumTypeName = uc($1);
 
     return if $attr =~ /_${enumTypeName}_LIST$/;
     return if $attr =~ /_$enumTypeName$/;
 
-    $attr =~/SAI_(\w+?)_ATTR(_\w+)/;
+    $attr =~ /SAI_(\w+?)_ATTR(_\w+)/;
 
     my $attrObjectType = $1;
     my $attrSuffix = $2;
 
-    if ($enumTypeName =~/^${attrObjectType}_(\w+)$/)
+    if ($enumTypeName =~ /^${attrObjectType}_(\w+)$/)
     {
         my $enumTypeNameSuffix = $1;
 
-        return if $attrSuffix =~/_$enumTypeNameSuffix$/;
+        return if $attrSuffix =~ /_$enumTypeNameSuffix$/;
 
         LogError "enum starts by object type $attrObjectType but not ending on $enumTypeNameSuffix in $enumTypeName";
     }
@@ -1793,10 +1932,10 @@ sub CreateMetadataForAttributes
         {
             next if defined $METADATA{$type}{$value}{ignore};
 
-            WriteSource "    &sai_metadata_attr_$value,";
+            WriteSource "&sai_metadata_attr_$value,";
         }
 
-        WriteSource "    NULL";
+        WriteSource "NULL";
         WriteSource "};";
     }
 
@@ -1813,16 +1952,20 @@ sub CreateMetadataForAttributes
 
         my $type = "sai_" . lc($1) . "_attr_t";
 
-        WriteSource "    sai_metadata_object_type_$type,";
+        WriteSource "sai_metadata_object_type_$type,";
     }
 
-    WriteSource "    NULL";
+    WriteSource "NULL";
     WriteSource "};";
 
     my $count = @objects;
 
     WriteHeader "extern const size_t sai_metadata_attr_by_object_type_count;";
     WriteSource "const size_t sai_metadata_attr_by_object_type_count = $count;";
+
+    WriteSectionComment "Define SAI_OBJECT_TYPE_EXTENSIONS_MAX";
+
+    WriteHeader "#define SAI_OBJECT_TYPE_EXTENSIONS_MAX ((sai_object_type_t)$count)";
 }
 
 sub CreateEnumHelperMethod
@@ -1832,13 +1975,13 @@ sub CreateEnumHelperMethod
     return if not $key =~ /^sai_(\w+)_t/;
 
     WriteSource "const char* sai_metadata_get_$1_name(";
-    WriteSource "        _In_ $key value)";
+    WriteSource "_In_ $key value)";
     WriteSource "{";
-    WriteSource "    return sai_metadata_get_enum_value_name(&sai_metadata_enum_$key, value);";
+    WriteSource "return sai_metadata_get_enum_value_name(&sai_metadata_enum_$key, value);";
     WriteSource "}";
 
     WriteHeader "extern const char* sai_metadata_get_$1_name(";
-    WriteHeader "        _In_ $key value);";
+    WriteHeader "_In_ $key value);\n";
 }
 
 sub CreateEnumHelperMethods
@@ -1847,7 +1990,7 @@ sub CreateEnumHelperMethods
 
     for my $key (sort keys %SAI_ENUMS)
     {
-        next if $key =~/_attr_t$/;
+        next if $key =~ /_attr_(extensions_)?t$/;
 
         CreateEnumHelperMethod($key);
     }
@@ -1902,7 +2045,7 @@ sub ProcessStructObjects
 
     for my $obj (@{ $objects })
     {
-        WriteSource "    $obj,";
+        WriteSource "$obj,";
     }
 
     WriteSource "};";
@@ -1952,9 +2095,9 @@ sub ProcessStructGetOid
     my $fname = "sai_metadata_struct_member_get_sai_${rawname}_t_${key}";
 
     WriteSource "sai_object_id_t $fname(";
-    WriteSource "        _In_ const sai_object_meta_key_t *object_meta_key)";
+    WriteSource "_In_ const sai_object_meta_key_t *object_meta_key)";
     WriteSource "{";
-    WriteSource "    return object_meta_key->objectkey.key.${rawname}.${key};";
+    WriteSource "return object_meta_key->objectkey.key.${rawname}.${key};";
     WriteSource "}";
 
     return $fname;
@@ -1969,10 +2112,10 @@ sub ProcessStructSetOid
     my $fname = "sai_metadata_struct_member_set_sai_${rawname}_t_${key}";
 
     WriteSource "void $fname(";
-    WriteSource "        _Inout_ sai_object_meta_key_t *object_meta_key,";
-    WriteSource "        _In_ sai_object_id_t oid)";
+    WriteSource "_Inout_ sai_object_meta_key_t *object_meta_key,";
+    WriteSource "_In_ sai_object_id_t oid)";
     WriteSource "{";
-    WriteSource "    object_meta_key->objectkey.key.${rawname}.${key} = oid;";
+    WriteSource "object_meta_key->objectkey.key.${rawname}.${key} = oid;";
     WriteSource "}";
 
     return $fname;
@@ -2004,15 +2147,15 @@ sub ProcessStructMembers
 
         WriteSource "const sai_struct_member_info_t sai_metadata_struct_member_sai_${rawname}_t_$key = {";
 
-        WriteSource "    .membervaluetype           = $valuetype,";
-        WriteSource "    .membername                = \"$key\",";
-        WriteSource "    .isvlan                    = $isvlan,";
-        WriteSource "    .allowedobjecttypes        = $objects,";
-        WriteSource "    .allowedobjecttypeslength  = $objectlen,";
-        WriteSource "    .isenum                    = $isenum,";
-        WriteSource "    .enummetadata              = $enumdata,";
-        WriteSource "    .getoid                    = $getoid,";
-        WriteSource "    .setoid                    = $setoid,";
+        WriteSource ".membervaluetype           = $valuetype,";
+        WriteSource ".membername                = \"$key\",";
+        WriteSource ".isvlan                    = $isvlan,";
+        WriteSource ".allowedobjecttypes        = $objects,";
+        WriteSource ".allowedobjecttypeslength  = $objectlen,";
+        WriteSource ".isenum                    = $isenum,";
+        WriteSource ".enummetadata              = $enumdata,";
+        WriteSource ".getoid                    = $getoid,";
+        WriteSource ".setoid                    = $setoid,";
 
         # TODO allow null
 
@@ -2028,10 +2171,10 @@ sub ProcessStructMembers
 
     for my $key (@keys)
     {
-        WriteSource "    &sai_metadata_struct_member_sai_${rawname}_t_$key,";
+        WriteSource "&sai_metadata_struct_member_sai_${rawname}_t_$key,";
     }
 
-    WriteSource "    NULL";
+    WriteSource "NULL";
     WriteSource "};";
 
     return "sai_metadata_struct_members_sai_${rawname}_t";
@@ -2091,15 +2234,15 @@ sub ProcessRevGraph
 
         WriteSource "const sai_rev_graph_member_t $membername = {";
 
-        WriteSource "    .objecttype          = $objectType,";
-        WriteSource "    .depobjecttype       = $depObjectType,";
+        WriteSource ".objecttype          = $objectType,";
+        WriteSource ".depobjecttype       = $depObjectType,";
 
         if ($attrId =~ /^SAI_\w+_ATTR_\w+/)
         {
             # this is attribute
 
-            WriteSource "    .attrmetadata        = &sai_metadata_attr_$attrId,";
-            WriteSource "    .structmember        = NULL,";
+            WriteSource ".attrmetadata        = &sai_metadata_attr_$attrId,";
+            WriteSource ".structmember        = NULL,";
         }
         else
         {
@@ -2107,8 +2250,8 @@ sub ProcessRevGraph
 
             my $DEPOT = lc ($1) if $depObjectType =~ /SAI_OBJECT_TYPE_(\w+)/;
 
-            WriteSource "    .attrmetadata        = NULL,";
-            WriteSource "    .structmember        = &sai_metadata_struct_member_sai_${DEPOT}_t_$attrId,";
+            WriteSource ".attrmetadata        = NULL,";
+            WriteSource ".structmember        = &sai_metadata_struct_member_sai_${DEPOT}_t_$attrId,";
         }
 
         WriteSource "};";
@@ -2120,10 +2263,10 @@ sub ProcessRevGraph
 
     for my $mn (@membernames)
     {
-        WriteSource "    &$mn,";
+        WriteSource "&$mn,";
     }
 
-    WriteSource "    NULL,";
+    WriteSource "NULL";
 
     WriteSource "};";
 
@@ -2132,18 +2275,11 @@ sub ProcessRevGraph
 
 sub ProcessRevGraphCount
 {
-    my %REVGRAPH = GetReverseDependencyGraph();
-
     my $objectType = shift;
 
-    if (not defined $REVGRAPH{$objectType})
-    {
-        return 0;
-    }
+    return 0 if not defined $REVGRAPH{$objectType};
 
-    my $count = @{ $REVGRAPH{$objectType} };
-
-    return $count;
+    return scalar @{ $REVGRAPH{$objectType} };
 }
 
 sub CreateStructNonObjectId
@@ -2189,30 +2325,30 @@ sub ProcessCreate
     my $api = $OBJTOAPIMAP{$ot};
 
     WriteSource "sai_status_t sai_metadata_generic_create_$ot(";
-    WriteSource "        _Inout_ sai_object_meta_key_t *meta_key,";
-    WriteSource "        _In_ sai_object_id_t switch_id,";
-    WriteSource "        _In_ uint32_t attr_count,";
-    WriteSource "        _In_ const sai_attribute_t *attr_list)";
+    WriteSource "_Inout_ sai_object_meta_key_t *meta_key,";
+    WriteSource "_In_ sai_object_id_t switch_id,";
+    WriteSource "_In_ uint32_t attr_count,";
+    WriteSource "_In_ const sai_attribute_t *attr_list)";
     WriteSource "{";
 
     if (IsSpecialObject($ot))
     {
-        WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+        WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
     }
     elsif (not defined $struct)
     {
         if ($small eq "switch")
         {
-            WriteSource "    return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, attr_count, attr_list);";
+            WriteSource "return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, attr_count, attr_list);";
         }
         else
         {
-            WriteSource "    return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, switch_id, attr_count, attr_list);";
+            WriteSource "return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, switch_id, attr_count, attr_list);";
         }
     }
     else
     {
-        WriteSource "    return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+        WriteSource "return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.$small, attr_count, attr_list);";
     }
 
     WriteSource "}";
@@ -2230,20 +2366,20 @@ sub ProcessRemove
     my $api = $OBJTOAPIMAP{$ot};
 
     WriteSource "sai_status_t sai_metadata_generic_remove_$ot(";
-    WriteSource "        _In_ const sai_object_meta_key_t *meta_key)";
+    WriteSource "_In_ const sai_object_meta_key_t *meta_key)";
     WriteSource "{";
 
     if (IsSpecialObject($ot))
     {
-        WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+        WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
     }
     elsif (not defined $struct)
     {
-        WriteSource "    return sai_metadata_sai_${api}_api->remove_$small(meta_key->objectkey.key.object_id);";
+        WriteSource "return sai_metadata_sai_${api}_api->remove_$small(meta_key->objectkey.key.object_id);";
     }
     else
     {
-        WriteSource "    return sai_metadata_sai_${api}_api->remove_$small(&meta_key->objectkey.key.$small);";
+        WriteSource "return sai_metadata_sai_${api}_api->remove_$small(&meta_key->objectkey.key.$small);";
     }
 
     WriteSource "}";
@@ -2261,21 +2397,21 @@ sub ProcessSet
     my $api = $OBJTOAPIMAP{$ot};
 
     WriteSource "sai_status_t sai_metadata_generic_set_$ot(";
-    WriteSource "        _In_ const sai_object_meta_key_t *meta_key,";
-    WriteSource "        _In_ const sai_attribute_t *attr)";
+    WriteSource "_In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "_In_ const sai_attribute_t *attr)";
     WriteSource "{";
 
     if (IsSpecialObject($ot))
     {
-        WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+        WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
     }
     elsif (not defined $struct)
     {
-        WriteSource "    return sai_metadata_sai_${api}_api->set_${small}_attribute(meta_key->objectkey.key.object_id, attr);";
+        WriteSource "return sai_metadata_sai_${api}_api->set_${small}_attribute(meta_key->objectkey.key.object_id, attr);";
     }
     else
     {
-        WriteSource "    return sai_metadata_sai_${api}_api->set_${small}_attribute(&meta_key->objectkey.key.$small, attr);";
+        WriteSource "return sai_metadata_sai_${api}_api->set_${small}_attribute(&meta_key->objectkey.key.$small, attr);";
     }
 
     WriteSource "}";
@@ -2293,22 +2429,22 @@ sub ProcessGet
     my $api = $OBJTOAPIMAP{$ot};
 
     WriteSource "sai_status_t sai_metadata_generic_get_$ot(";
-    WriteSource "        _In_ const sai_object_meta_key_t *meta_key,";
-    WriteSource "        _In_ uint32_t attr_count,";
-    WriteSource "        _Inout_ sai_attribute_t *attr_list)";
+    WriteSource "_In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "_In_ uint32_t attr_count,";
+    WriteSource "_Inout_ sai_attribute_t *attr_list)";
     WriteSource "{";
 
     if (IsSpecialObject($ot))
     {
-        WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+        WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
     }
     elsif (not defined $struct)
     {
-        WriteSource "    return sai_metadata_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
+        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
     }
     else
     {
-        WriteSource "    return sai_metadata_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
     }
 
     WriteSource "}";
@@ -2341,12 +2477,18 @@ sub CreateApisStruct
 
         $api = lc($1);
 
-        next if $api =~/unspecified/;
+        next if $api =~ /unspecified/;
 
-        WriteHeader "    sai_${api}_api_t* ${api}_api;";
+        WriteHeader "sai_${api}_api_t* ${api}_api;";
     }
 
     WriteHeader "} sai_apis_t;";
+
+    my $count = scalar @apis;
+
+    WriteSectionComment "Define SAI_API_EXTENSIONS_MAX";
+
+    WriteHeader "#define SAI_API_EXTENSIONS_MAX ((sai_api_t)$count)";
 }
 
 sub CreateApisQuery
@@ -2354,57 +2496,68 @@ sub CreateApisQuery
     WriteSectionComment "SAI API query";
 
     WriteHeader "typedef sai_status_t (*sai_api_query_fn)(";
-    WriteHeader "        _In_ sai_api_t sai_api_id,";
-    WriteHeader "        _Out_ void** api_method_table);";
+    WriteHeader "_In_ sai_api_t sai_api_id,";
+    WriteHeader "_Out_ void** api_method_table);";
 
     # for switch we need to generate wrapper, for others we can use pointers
     # so we don't need to use meta key then
 
     WriteSource "int sai_metadata_apis_query(";
-    WriteSource "        _In_ const sai_api_query_fn api_query,";
-    WriteSource "        _Inout_ sai_apis_t *apis)";
+    WriteSource "_In_ const sai_api_query_fn api_query,";
+    WriteSource "_Inout_ sai_apis_t *apis)";
     WriteSource "{";
-    WriteSource "    sai_status_t status = SAI_STATUS_SUCCESS;";
-    WriteSource "    int count = 0;";
+    WriteSource "sai_status_t status = SAI_STATUS_SUCCESS;";
+    WriteSource "int count = 0;";
 
-    WriteSource "    if (api_query == NULL)";
-    WriteSource "    {";
+    WriteSource "if (api_query == NULL)";
+    WriteSource "{";
 
     for my $key (sort keys %APITOOBJMAP)
     {
-        WriteSource "        sai_metadata_sai_${key}_api = NULL;";
-        WriteSource "        apis->${key}_api = NULL;";
+        WriteSource "sai_metadata_sai_${key}_api = NULL;";
+        WriteSource "apis->${key}_api = NULL;";
     }
 
-    WriteSource "        return count;";
-    WriteSource "    }";
+    WriteSource "return count;";
+    WriteSource "}";
 
     for my $key (sort keys %APITOOBJMAP)
     {
         my $api = uc("SAI_API_${key}");
 
-        WriteSource "    status = api_query($api, (void**)&sai_metadata_sai_${key}_api);";
-        WriteSource "    apis->${key}_api = sai_metadata_sai_${key}_api;";
-        WriteSource "    if (status != SAI_STATUS_SUCCESS)";
-        WriteSource "    {";
-        WriteSource "        count++;";
-        WriteSource "        const char *name = sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_status_t, status);";
-        WriteSource "        SAI_META_LOG_NOTICE(\"failed to query api $api: %s (%d)\", name, status);";
-        WriteSource "    }";
+        WriteSource "status = api_query($api, (void**)&sai_metadata_sai_${key}_api);";
+        WriteSource "apis->${key}_api = sai_metadata_sai_${key}_api;";
+        WriteSource "if (status != SAI_STATUS_SUCCESS)";
+        WriteSource "{";
+        WriteSource "count++;";
+        WriteSource "const char *name = sai_metadata_get_enum_value_name(&sai_metadata_enum_sai_status_t, status);";
+        WriteSource "SAI_META_LOG_NOTICE(\"failed to query api $api: %s (%d)\", name, status);";
+        WriteSource "}";
     }
 
-    WriteSource "    return count; /* number of unsuccesfull apis */";
+    WriteSource "return count; /* number of unsuccesfull apis */";
 
     WriteSource "}";
 
     WriteHeader "extern int sai_metadata_apis_query(";
-    WriteHeader "        _In_ const sai_api_query_fn api_query,";
-    WriteHeader "        _Inout_ sai_apis_t *apis);";
+    WriteHeader "_In_ const sai_api_query_fn api_query,";
+    WriteHeader "_Inout_ sai_apis_t *apis);";
+}
+
+sub ProcessIsExperimental
+{
+    my $ot = shift;
+
+    return "true" if defined $EXPERIMENTAL_OBJECTS{$ot};
+
+    return "false";
 }
 
 sub CreateObjectInfo
 {
     WriteSectionComment "Object info metadata";
+
+    %REVGRAPH = GetReverseDependencyGraph();
 
     my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
 
@@ -2444,6 +2597,7 @@ sub CreateObjectInfo
         my $structmemberscount  = ProcessStructMembersCount($struct, $ot);
         my $revgraph            = ProcessRevGraph($ot);
         my $revgraphcount       = ProcessRevGraphCount($ot);
+        my $isexperimental      = ProcessIsExperimental($ot);
         my $attrmetalength      = @{ $SAI_ENUMS{$type}{values} };
 
         my $create = ProcessCreate($struct, $ot);
@@ -2454,23 +2608,26 @@ sub CreateObjectInfo
         WriteHeader "extern const sai_object_type_info_t sai_metadata_object_type_info_$ot;";
 
         WriteSource "const sai_object_type_info_t sai_metadata_object_type_info_$ot = {";
-        WriteSource "    .objecttype           = $ot,";
-        WriteSource "    .objecttypename       = \"$ot\",";
-        WriteSource "    .attridstart          = $start,";
-        WriteSource "    .attridend            = $end,";
-        WriteSource "    .enummetadata         = $enum,";
-        WriteSource "    .attrmetadata         = sai_metadata_object_type_$type,";
-        WriteSource "    .attrmetadatalength   = $attrmetalength,";
-        WriteSource "    .isnonobjectid        = $isnonobjectid,";
-        WriteSource "    .isobjectid           = !$isnonobjectid,";
-        WriteSource "    .structmembers        = $structmembers,";
-        WriteSource "    .structmemberscount   = $structmemberscount,";
-        WriteSource "    .revgraphmembers      = $revgraph,";
-        WriteSource "    .revgraphmemberscount = $revgraphcount,";
-        WriteSource "    .create               = $create,";
-        WriteSource "    .remove               = $remove,";
-        WriteSource "    .set                  = $set,";
-        WriteSource "    .get                  = $get,";
+
+        WriteSource ".objecttype           = $ot,";
+        WriteSource ".objecttypename       = \"$ot\",";
+        WriteSource ".attridstart          = $start,";
+        WriteSource ".attridend            = $end,";
+        WriteSource ".enummetadata         = $enum,";
+        WriteSource ".attrmetadata         = sai_metadata_object_type_$type,";
+        WriteSource ".attrmetadatalength   = $attrmetalength,";
+        WriteSource ".isnonobjectid        = $isnonobjectid,";
+        WriteSource ".isobjectid           = !$isnonobjectid,";
+        WriteSource ".structmembers        = $structmembers,";
+        WriteSource ".structmemberscount   = $structmemberscount,";
+        WriteSource ".revgraphmembers      = $revgraph,";
+        WriteSource ".revgraphmemberscount = $revgraphcount,";
+        WriteSource ".create               = $create,";
+        WriteSource ".remove               = $remove,";
+        WriteSource ".set                  = $set,";
+        WriteSource ".get                  = $get,";
+        WriteSource ".isexperimental       = $isexperimental,";
+
         WriteSource "};";
     }
 
@@ -2490,14 +2647,14 @@ sub CreateObjectInfo
 
         if ($1 eq "NULL" or $1 eq "MAX")
         {
-            WriteSource "    NULL,";
+            WriteSource "NULL,";
             next;
         }
 
-        WriteSource "    &sai_metadata_object_type_info_$ot,";
+        WriteSource "&sai_metadata_object_type_info_$ot,";
     }
 
-    WriteSource "    NULL";
+    WriteSource "NULL";
     WriteSource "};";
 }
 
@@ -2512,9 +2669,7 @@ sub ExtractObjectsFromDesc
         my $tag = $1;
         my $val = $2;
 
-        $val =~ s/\s+/ /g;
-        $val =~ s/^\s*//;
-        $val =~ s/\s*$//;
+        $val = Trim $val;
 
         next if not $tag eq "objects";
 
@@ -2531,6 +2686,8 @@ sub ProcessSingleNonObjectId
     my @types = @{ $SAI_ENUMS{sai_object_type_t}{values} };
 
     my $structname = "sai_${rawname}_t";
+
+    LogDebug "ProcessSingleNonObjectId: processing $structname";
 
     my $ot = "SAI_OBJECT_TYPE_" .uc(${rawname});
 
@@ -2588,12 +2745,10 @@ sub ProcessNonObjectIdObjects
     }
 }
 
-sub CreateListOfAllAttributes
+sub GetHashOfAllAttributes
 {
     # list will be used to find attribute metadata
     # based on attribute string name
-
-    WriteSectionComment "List of all attributes";
 
     my %ATTRIBUTES = ();
 
@@ -2621,19 +2776,43 @@ sub CreateListOfAllAttributes
         }
     }
 
-    WriteSource "const sai_attr_metadata_t* const sai_metadata_attr_sorted_by_id_name[] = {";
+    return %ATTRIBUTES;
+}
+
+sub CheckCapabilities
+{
+    my %ATTRIBUTES = GetHashOfAllAttributes();
+
+    for my $attr (keys %CAPABILITIES)
+    {
+        next if defined $ATTRIBUTES{$attr};
+
+        LogError "capability attribute $attr not found on all attributes list";
+    }
+}
+
+sub CreateListOfAllAttributes
+{
+    # list will be used to find attribute metadata
+    # based on attribute string name
+
+    WriteSectionComment "List of all attributes";
+
+    my %ATTRIBUTES = GetHashOfAllAttributes();
+
     WriteHeader "extern const sai_attr_metadata_t* const sai_metadata_attr_sorted_by_id_name[];";
+    WriteSource "const sai_attr_metadata_t* const sai_metadata_attr_sorted_by_id_name[] = {";
 
     my @keys = sort keys %ATTRIBUTES;
 
     for my $attr (@keys)
     {
-        WriteSource "    &sai_metadata_attr_$attr,";
+        WriteSource "&sai_metadata_attr_$attr,";
     }
 
     my $count = @keys;
 
-    WriteSource "    NULL";
+    WriteSource "NULL";
     WriteSource "};";
 
     WriteSource "const size_t sai_metadata_attr_sorted_by_id_name_count = $count;";
@@ -2660,7 +2839,7 @@ sub CheckApiStructNames
             next;
         }
 
-        my $api = lc($1);
+        my $api = lc $1;
 
         my $structName = "sai_${api}_api_t";
 
@@ -2692,7 +2871,7 @@ sub CheckApiDefines
 
     for my $api (@apis)
     {
-        my $short = lc($1) if $api =~/SAI_API_(\w+)/;
+        my $short = lc($1) if $api =~ /SAI_API_(\w+)/;
 
         next if $short eq "unspecified";
 
@@ -2712,8 +2891,13 @@ sub ExtractApiToObjectMap
     #
 
     my @headers = GetHeaderFiles();
+    my @exheaders = GetExperimentalHeaderFiles();
 
-    for my $header (@headers)
+    my %exh = map { $_ => 1 } @exheaders;
+
+    my @merged = (@headers, @exheaders);
+
+    for my $header (@merged)
     {
         my $data = ReadHeaderFile($header);
 
@@ -2756,16 +2940,20 @@ sub ExtractApiToObjectMap
 
         $shortapi =~ s/_//g;
 
-        my $correct = "sai$shortapi.h";
+        my $correct = (defined $exh{$header}) ? "saiexperimental$shortapi.h" : "sai$shortapi.h";
 
         if ($header ne $correct)
         {
-            LogWarning "File $header should be named $correct";
+            LogWarning "File $header should be named '$correct'";
         }
+
+        # NOTE: those maps will include experimental extensions
 
         for my $obj(@objects)
         {
             $OBJTOAPIMAP{$obj} = $api;
+
+            $EXPERIMENTAL_OBJECTS{uc($obj)} = 1 if $correct =~ /^saiexperimental/;
         }
 
         $APITOOBJMAP{$api} = \@objects;
@@ -2793,7 +2981,7 @@ sub GetReverseDependencyGraph
 
         my $otname = $1;
 
-        my $typedef = lc("sai_${otname}_attr_t");
+        my $typedef = lc "sai_${otname}_attr_t";
 
         next if $ot =~ /^SAI_OBJECT_TYPE_(MAX|NULL)$/;
 
@@ -2823,10 +3011,12 @@ sub GetReverseDependencyGraph
                 if (not defined $REVGRAPH{$usedot})
                 {
                     my @arr = ();
+
                     $REVGRAPH{$usedot} = \@arr;
                 }
 
                 my $ref = $REVGRAPH{$usedot};
+
                 push@$ref,"$ot,$attrid";
             }
         }
@@ -2848,10 +3038,12 @@ sub GetReverseDependencyGraph
                 if (not defined $REVGRAPH{$usedot})
                 {
                     my @arr = ();
+
                     $REVGRAPH{$usedot} = \@arr;
                 }
 
                 my $ref = $REVGRAPH{$usedot};
+
                 push@$ref,"$ot,$key";
             }
         }
@@ -2871,6 +3063,8 @@ sub WriteLoggerVariables
     # but now seems to be unnecessary
     #
 
+    WriteSectionComment "Loglevel variables";
+
     WriteSource "volatile sai_log_level_t sai_metadata_log_level = SAI_LOG_LEVEL_NOTICE;";
     WriteSource "volatile sai_metadata_log_fn sai_metadata_log = NULL;";
 }
@@ -2879,9 +3073,9 @@ my %ProcessedItems = ();
 
 sub ProcessStructItem
 {
-    my ($type, $struct, $allowPointers) = @_;
+    my ($type, $struct) = @_;
 
-    $type = $1 if $struct =~ /^sai_(\w+)_list_t$/ and $type =~/^(\w+)\*$/;
+    $type = $1 if $struct =~ /^sai_(\w+)_list_t$/ and $type =~ /^(\w+)\*$/;
 
     return if defined $ProcessedItems{$type};
 
@@ -2889,9 +3083,9 @@ sub ProcessStructItem
 
     return if $type eq "bool";
 
-    return if $type =~/^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
-    return if $type =~/^u?int\d+_t/;
-    return if $type =~/^sai_[su]\d+_list_t/;
+    return if $type =~ /^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
+    return if $type =~ /^u?int\d+_t/;
+    return if $type =~ /^sai_[su]\d+_list_t/;
 
     if ($type eq "sai_object_id_t" or $type eq "sai_object_list_t")
     {
@@ -2955,12 +3149,12 @@ sub CheckAttributeValueUnion
         my $type = $Union{$key}{type};
 
         next if $type eq "char[32]";
-        next if $type =~/sai_u?int\d+_t/;
-        next if $type =~/sai_[su]\d+_list_t/;
+        next if $type =~ /sai_u?int\d+_t/;
+        next if $type =~ /sai_[su]\d+_list_t/;
 
         next if grep(/^$type$/, @primitives);
 
-        ProcessStructItem($type, "sai_attribute_value_t", 1);
+        ProcessStructItem($type, "sai_attribute_value_t");
     }
 }
 
@@ -2983,7 +3177,7 @@ sub CreateNotificationStruct
             next;
         }
 
-        WriteHeader "    $name on_$1;";
+        WriteHeader "$name on_$1;";
     }
 
     WriteHeader "} sai_switch_notifications_t;";
@@ -3018,7 +3212,7 @@ sub CreateNotificationEnum
 
         $name = uc $1;
 
-        WriteHeader "    ${prefix}$name,";
+        WriteHeader "${prefix}$name,";
 
         push @values, "${prefix}$name";
     }
@@ -3044,6 +3238,8 @@ sub WriteHeaderHeader
     WriteHeader "#define __SAI_METADATA_H__";
 
     WriteHeader "#include <sai.h>";
+    WriteHeader "#include <saiextensions.h>";
+
     WriteHeader "#include \"saimetadatatypes.h\"";
     WriteHeader "#include \"saimetadatautils.h\"";
     WriteHeader "#include \"saimetadatalogger.h\"";
@@ -3057,14 +3253,12 @@ sub WriteHeaderFotter
 
 sub ProcessXmlFiles
 {
-    for my $file (GetXmlFiles($XMLDIR))
+    for my $file (GetSaiXmlFiles($XMLDIR))
     {
         LogInfo "Processing $file";
 
         ProcessXmlFile("$XMLDIR/$file");
     }
-
-    #print Dumper %SAI_ENUMS;
 }
 
 sub ProcessValues
@@ -3075,10 +3269,10 @@ sub ProcessValues
     {
         my $type = $refUnion->{$key}->{type};
 
+        next if $type eq "char[32]" or $type eq "bool";
+
         if (not $type =~ /^sai_(\w+)_t$/)
         {
-            next if $type eq "char[32]" or $type eq "bool";
-
             LogWarning "skipping type $type, FIXME";
             next;
         }
@@ -3100,11 +3294,11 @@ sub PopulateValueTypes
 
     ProcessValues(\%Union, \%VALUE_TYPES, \%VALUE_TYPES_TO_VT);
 
-    %Union = ExtractStructInfo("sai_acl_action_data_t", "union__sai__acl__action__data__t_1_1__parameter.xml");
+    %Union = ExtractStructInfo("sai_acl_action_parameter_t", "union_");
 
     ProcessValues(\%Union, \%ACL_ACTION_TYPES, \%ACL_ACTION_TYPES_TO_VT);
 
-    %Union = ExtractStructInfo("sai_acl_field_data_t", "union__sai__acl__field__data__t_1_1__data.xml");
+    %Union = ExtractStructInfo("sai_acl_field_data_data_t", "union_");
 
     ProcessValues(\%Union, \%ACL_FIELD_TYPES, \%ACL_FIELD_TYPES_TO_VT);
 }
@@ -3114,11 +3308,97 @@ sub CreateObjectTypeMap
     map { $OBJECT_TYPE_MAP{$_} = $_ } @{ $SAI_ENUMS{sai_object_type_t}{values} };
 }
 
+sub ExtractUnionsInfo
+{
+    my @files = GetXmlUnionFiles($XMLDIR);
+
+    for my $file (@files)
+    {
+        my $ref = ReadXml $file;
+
+        my $kind = $ref->{compounddef}[0]->{kind};
+
+        if ($kind ne "union")
+        {
+            LogError "expected '$file' to contain union but kind is '$kind'";
+            next;
+        }
+
+        my $def = $ref->{compounddef}[0]->{compoundname}[0];
+
+        if (not $def =~ /^(_sai_\w+::)*_(\w+)$/)
+        {
+            LogWarning "union name '$def' not match pattern: (_sai_\\w+::)*(_\\w+)";
+            next;
+        }
+
+        my $name = $2;
+
+        LogError "Name $name should be in format sai_\\w+_t" if not $name =~ /^sai_\w+_t$/;
+
+        $SAI_UNIONS{$name}{file}    = $file;
+        $SAI_UNIONS{$name}{name}    = $name;
+        $SAI_UNIONS{$name}{def}     = $def;
+        $SAI_UNIONS{$name}{nested}  = 1 if $def =~ /::/;
+
+        my %s = ExtractStructInfoEx($name, $file);
+
+        # NOTE: validonly tag must exists on each member and is checked on serialize function
+        # NOTE: extraparam tag must on struct description and is checked on serialize function
+    }
+}
+
+sub LoadCapabilities
+{
+    %CAPABILITIES = %{ GetCapabilities() };
+}
+
+sub MergeExtensionsEnums
+{
+    for my $exenum (sort keys%EXTENSIONS_ENUMS)
+    {
+        if (not $exenum =~ /^(sai_\w+)_extensions_t$/)
+        {
+            LogError "Enum $exenum is not extension enum";
+            next;
+        }
+
+        my $enum = "$1_t";
+
+        if (not defined $SAI_ENUMS{$enum})
+        {
+            LogError "Enum $exenum is extending not existing enum $enum";
+            next;
+        }
+
+        my @exvalues = @{ $SAI_ENUMS{$exenum}{values} };
+
+        my @values = @{ $SAI_ENUMS{$enum}{values} };
+
+        push@values,@exvalues;
+
+        $SAI_ENUMS{$enum}{values} = \@values;
+
+        next if not $exenum =~ /_attr_extensions_t/;
+
+        for my $exvalue (@exvalues)
+        {
+            $EXTENSIONS_ATTRS{$exvalue} = 1;
+
+            $METADATA{$enum}{$exvalue} = $METADATA{$exenum}{$exvalue};
+        }
+    }
+}
+
 #
 # MAIN
 #
 
+LoadCapabilities();
+
 ExtractApiToObjectMap();
+
+ExtractUnionsInfo();
 
 CheckHeadersStyle() if not defined $optionDisableStyleCheck;
 
@@ -3127,6 +3407,8 @@ GetStructLists();
 PopulateValueTypes();
 
 ProcessXmlFiles();
+
+MergeExtensionsEnums();
 
 CreateObjectTypeMap();
 
@@ -3157,6 +3439,8 @@ CreateApisQuery();
 CreateObjectInfo();
 
 CreateListOfAllAttributes();
+
+CheckCapabilities();
 
 CheckApiStructNames();
 
