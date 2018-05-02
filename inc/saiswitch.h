@@ -1661,6 +1661,16 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_UNINIT_DATA_PLANE_ON_REMOVAL,
 
     /**
+     * @brief Split Horizon ID range
+     *
+     * The range should start from a non-zero value.
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SPLIT_HORIZON_ID_RANGE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
