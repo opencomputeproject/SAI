@@ -13,14 +13,14 @@
 
 SAI Extensions are used for introducing:
 
-- --Experimental &#39;custom&#39; object attributes
-- --Experimental SAI modules (new SAI objects)
+- Experimental &#39;custom&#39; object attributes
+- Experimental SAI modules (new SAI objects)
 
 The goals of defining SAI extensions are to:
 
-- --Allow innovation
-- --Increase velocity
-- --Provide a formalism for publishing experimental features
+- Allow innovation
+- Increase velocity
+- Provide a formalism for publishing experimental features
 
 ## Experimental Extensions Concepts
 
@@ -48,21 +48,21 @@ Experimental extensions are included in the experimental directory. For instance
 
 #include &lt;saiport.h&gt;
 
-typedef enum \_sai\_port\_experimental\_attr\_t
+typedef enum _sai_port_experimental_attr_t
 
 {
 
-    /\* Start after the last attribute of the &quot;official&quot; SAI API object \*/
+    /* Start after the last attribute of the &quot;official&quot; SAI API object */
 
-    SAI\_PORT\_ATTR\_EXPERIMENTAL\_CAPABILITY\_X = SAI\_PORT\_ATTR\_END, /\* From saiport.h \*/
+    SAI_PORT_ATTR_EXPERIMENTAL_CAPABILITY_X = SAI_PORT_ATTR_END, /* From saiport.h */
 
-    SAI\_PORT\_ATTR\_EXPERIMENTAL\_CAPABILITY\_Y,
+    SAI_PORT_ATTR_EXPERIMENTAL_CAPABILITY_Y,
 
-    SAI\_PORT\_ATTR\_EXPERIMENTAL\_CAPABILITY\_Z,
+    SAI_PORT_ATTR_EXPERIMENTAL_CAPABILITY_Z,
 
     …
 
-} sai\_port\_experimental\_attr\_t;
+} sai_port_experimental_attr_t;
 
 A file called sai **module** extensions.h contains enum values specific to extension attributes, e.g. saiportextensions.h. It is recommended (but not mandatory!) to use the keyword EXPERIMENTAL when defining experimental attributes – this allows developers to easily detect usage of extension attributes in source code.
 
@@ -98,39 +98,39 @@ saiextensions.h
 
 #include &lt;sai.h&gt;
 
-typedef enum \_sai\_api\_extensions\_t
+typedef enum _sai_api_extensions_t
 
 {
 
-**    SAI\_API\_EXTENSIONS\_RANGE\_START = SAI\_API\_MAX,**
+    SAI_API_EXTENSIONS_RANGE_START = SAI_API_MAX,
 
-**    SAI\_API\_NEW\_MODULE = SAI\_API\_EXTENSIONS\_RANGE\_START,**
+    SAI_API_NEW_MODULE = SAI_API_EXTENSIONS_RANGE_START,
 
-**    /\* Add new experimental APIs above this line \*/**
+    /* Add new experimental APIs above this line */
 
-**   **  **SAI\_API\_EXTENSIONS\_RANGE\_START\_END**
+    SAI_API_EXTENSIONS_RANGE_START_END
 
-**…**
+…
 
-} sai\_api\_extensions\_t;
+} sai_api_extensions_t;
 
 saitypesextensions.h
 
 #include &lt;saitypes.h&gt;
 
-typedef enum \_sai\_object\_type\_extensions\_t
+typedef enum _sai_object_type_extensions_t
 
 {
 
-    SAI\_OBJECT\_TYPE\_EXTENSIONS\_RANGE\_START = SAI\_OBJECT\_TYPE\_MAX,
+    SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START = SAI_OBJECT_TYPE_MAX,
 
-    SAI\_OBJECT\_TYPE\_NEW\_OBJECT = SAI\_OBJECT\_TYPE\_EXTENSIONS\_RANGE\_START,
+    SAI_OBJECT_TYPE_NEW_OBJECT = SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START,
 
-    /\* Add new experimental object types above this line \*/
+    /* Add new experimental object types above this line */
 
-    SAI\_OBJECT\_TYPE\_EXTENSIONS\_RANGE\_END
+    SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
 
-} sai\_object\_type\_extensions\_t;
+} sai_object_type_extensions_t;
 
 Reasoning: use separate files to avoid code churn for saitypes and sai.h.
 
@@ -148,41 +148,41 @@ In this case, the vendor A adds an LED State attribute to the saiportextensions.
 
 **experimental/saiportextensions.h**
 
-typedef enum \_sai\_port\_extensions\_attr\_t {
+typedef enum _sai_port_extensions_attr_t {
 
 …
 
-    **SAI\_PORT\_ATTR\_LED\_STATE = SAI\_PORT\_ATTR\_CUSTOM\_RANGE\_START,**
+    SAI_PORT_ATTR_LED_STATE = SAI_PORT_ATTR_CUSTOM_RANGE_START,
 
     …
 
-} sai\_port\_attr\_extensions\_t;
+} sai_port_attr_extensions_t;
 
-_// Data type for the experimental attribute LED\_STATE_
+_// Data type for the experimental attribute LED_STATE_
 
 /\*\*
 
- \* @brief Attribute data for SAI\_PORT\_ATTR\_LED\_STATE
+ \* @brief Attribute data for SAI_PORT_ATTR_LED_STATE
 
  \*/
 
-typedef enum \_sai\_port\_led\_state\_t
+typedef enum _sai_port_led_state_t
 
 {
 
-    /\*\* Unknown \*/
+    /** Unknown */
 
-    SAI\_PORT\_LED\_STATE\_UNKNOWN,
+    SAI_PORT_LED_STATE_UNKNOWN,
 
-    /\*\* ON \*/
+    /** ON */
 
-    SAI\_PORT\_LED\_ON,
+    SAI_PORT_LED_ON,
 
-    /\*\* Down \*/
+    /** Down */
 
-    SAI\_PORT\_LED\_OFF,
+    SAI_PORT_LED_OFF,
 
-} sai\_port\_led\_state\_t;
+} sai_port_led_state_t;
 
 
 
@@ -196,13 +196,13 @@ typedef enum \_sai\_port\_led\_state\_t
 
 …
 
-sai\_attribute\_t attr;
+sai_attribute_t attr;
 
-attr.id = **SAI\_PORT\_ATTR\_LED\_STATE;**
+attr.id = **SAI_PORT_ATTR_LED_STATE;**
 
-attr.u32.value = **SAI\_PORT\_LED\_ON** ;
+attr.u32.value = **SAI_PORT_LED_ON** ;
 
-sai\_status\_t status = sai\_set\_port\_attribute(port\_id, &amp;attr);
+sai_status_t status = sai_set_port_attribute(port_id, &amp;attr);
 
 …
 
@@ -218,70 +218,70 @@ SAI community members A and B may agree to define a common experimental API for 
 
 saiextensions.h defines:
 
-typedef enum \_sai\_api\_extensions\_t
+typedef enum _sai_api_extensions_t
 
 {
 
-**   ** SAI\_API\_EXTENSIONS\_RANGE\_START = SAI\_API\_MAX,
+**   ** SAI_API_EXTENSIONS_RANGE_START = SAI_API_MAX,
 
-    **SAI\_API\_PROTO\_X** = SAI\_API\_EXTENSIONS\_RANGE\_START,
+    **SAI_API_PROTO_X** = SAI_API_EXTENSIONS_RANGE_START,
 
     /\* Add new experimental APIs above this line \*/
 
-    SAI\_API\_EXTENSIONS\_RANGE\_START\_END
+    SAI_API_EXTENSIONS_RANGE_START_END
 
-} sai\_api\_extensions\_t;
+} sai_api_extensions_t;
 
 saitypesextensions.h defines :
 
-typedef enum \_sai\_object\_type\_extensions\_t
+typedef enum _sai_object_type_extensions_t
 
 {
 
-    SAI\_OBJECT\_TYPE\_EXTENSIONS\_RANGE\_START = SAI\_OBJECT\_TYPE\_MAX,
+    SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START = SAI_OBJECT_TYPE_MAX,
 
-    **SAI\_OBJECT\_TYPE\_PROTO\_X** = SAI\_OBJECT\_TYPE\_EXTENSIONS\_RANGE\_START,
+    **SAI_OBJECT_TYPE_PROTO_X** = SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START,
 
     …
 
-    SAI\_OBJECT\_TYPE\_EXTENSIONS\_RANGE\_END
+    SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
 
-} sai\_object\_type\_extensions\_t;
+} sai_object_type_extensions_t;
 
-An experimental PROTO\_X extension header file must be defined:
+An experimental PROTO_X extension header file must be defined:
 
 **experimental/saiextensionprotox.h**
 
 …
 
-typedef sai\_status\_t (\*sai\_protoX\_object\_create\_fn)(\_Out\_ sai\_object\_id\_t \*protoX\_id, …);
+typedef sai_status_t (\*sai_protoX_object_create_fn)(_Out_ sai_object_id_t \*protoX_id, …);
 
 …
 
-typedef struct \_sai\_protoX\_api\_t {
+typedef struct _sai_protoX_api_t {
 
-   sai\_protoX\_object\_create\_fn protoX\_obj\_create\_fn;
+   sai_protoX_object_create_fn protoX_obj_create_fn;
 
-   sai\_protoX\_object\_delete\_fn protoX\_obj\_delete\_fn;
-
-…
-
-} sai\_protoX\_api\_t;
+   sai_protoX_object_delete_fn protoX_obj_delete_fn;
 
 …
 
-The experimental PROTO\_X API module must use the SAI API general approach – define create, get, set and delete functions.
+} sai_protoX_api_t;
+
+…
+
+The experimental PROTO_X API module must use the SAI API general approach – define create, get, set and delete functions.
 
 ### Host Adapter – Experimental Module
 
-A host adapter implementation must include the PROTO\_X extension module header file. Using an experimental module follows the same approach as for any other modules.
+A host adapter implementation must include the PROTO_X extension module header file. Using an experimental module follows the same approach as for any other modules.
 
 #include &quot;experimental/saiextensionprotox.h&quot;
 
 …
 
-sai\_protoX\_api\_t sai\_protoX\_api\_tbl;
+sai_protoX_api_t sai_protoX_api_tbl;
 
-sai\_status\_t status = sai\_api\_query(SAI\_API\_PROTO\_X, (void )&amp;sai\_protoX\_api\_tbl);
+sai_status_t status = sai_api_query(SAI_API_PROTO_X, (void )&amp;sai_protoX_api_tbl);
 
 …
