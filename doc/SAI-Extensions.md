@@ -52,7 +52,7 @@ typedef enum _sai_port_experimental_attr_t
 
 {
 
-    /* Start after the last attribute of the &quot;official&quot; SAI API object */
+    /* Start after the last attribute of the official SAI API object */
 
     SAI_PORT_ATTR_EXPERIMENTAL_CAPABILITY_X = SAI_PORT_ATTR_END, /* From saiport.h */
 
