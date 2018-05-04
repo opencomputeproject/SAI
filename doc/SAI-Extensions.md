@@ -222,11 +222,12 @@ typedef enum _sai_api_extensions_t
 
 {
 
-**   ** SAI_API_EXTENSIONS_RANGE_START = SAI_API_MAX,
+   SAI_API_EXTENSIONS_RANGE_START = SAI_API_MAX,
 
-    **SAI_API_PROTO_X** = SAI_API_EXTENSIONS_RANGE_START,
-
-    /\* Add new experimental APIs above this line \*/
+    
+	SAI_API_PROTO_X = SAI_API_EXTENSIONS_RANGE_START,
+	
+    /* Add new experimental APIs above this line */
 
     SAI_API_EXTENSIONS_RANGE_START_END
 
@@ -240,7 +241,7 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START = SAI_OBJECT_TYPE_MAX,
 
-    **SAI_OBJECT_TYPE_PROTO_X** = SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START,
+    SAI_OBJECT_TYPE_PROTO_X = SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START,
 
     …
 
