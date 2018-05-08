@@ -79,24 +79,24 @@ typedef enum _sai_bfd_session_state_t
 typedef enum _sai_bfd_session_diag_t
 {
 	  /** BFD No Diagnostic */
-    SAI_BFD_SESSION_DIAG_NONE                           = 0,  
+    SAI_BFD_SESSION_DIAG_NONE                           = 0,
     /** BFD Control Detection Time Expired */
-    SAI_BFD_SESSION_DIAG_TIME_EXPIRED                   = 1,  
+    SAI_BFD_SESSION_DIAG_TIME_EXPIRED                   = 1,
     /** BFD Echo Function Failed */
-    SAI_BFD_SESSION_DIAG_ECHO_FAIL                      = 2,  
+    SAI_BFD_SESSION_DIAG_ECHO_FAIL                      = 2,
     /**  BFD Neighbor Signaled Session Down */
-    SAI_BFD_SESSION_DIAG_NEIGHBOR_DOWN                  = 3,  
+    SAI_BFD_SESSION_DIAG_NEIGHBOR_DOWN                  = 3,
     /** BFD Forwarding Plane Reset */
-    SAI_BFD_SESSION_DIAG_FORWARDING_RESET               = 4,  
+    SAI_BFD_SESSION_DIAG_FORWARDING_RESET               = 4,
     /** BFD Path Down */
-    SAI_BFD_SESSION_DIAG_PATH_DOWN                      = 5,  
+    SAI_BFD_SESSION_DIAG_PATH_DOWN                      = 5,
     /** BFD Concatenated Path Down */
-    SAI_BFD_SESSION_DIAG_CONCATENTED_PATH_DOWN          = 6,  
+    SAI_BFD_SESSION_DIAG_CONCATENTED_PATH_DOWN          = 6,
     /** BFD Administratively Down */
-    SAI_BFD_SESSION_DIAG_ADMINISTRATIVELY_DOWN          = 7,  
+    SAI_BFD_SESSION_DIAG_ADMINISTRATIVELY_DOWN          = 7,
     /** BFD Reverse Concatenated Path Down */
-    SAI_BFD_SESSION_DIAG_REVERSE_CONCATENTED_PATH_DOWN  = 8,   
-      
+    SAI_BFD_SESSION_DIAG_REVERSE_CONCATENTED_PATH_DOWN  = 8,
+
 }sai_bfd_session_diag_t;
 
 /**
@@ -128,8 +128,8 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_bfd_session_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_BFD_SESSION_ATTR_TYPE = SAI_BFD_SESSION_ATTR_START, 
-    
+    SAI_BFD_SESSION_ATTR_TYPE = SAI_BFD_SESSION_ATTR_START,
+
     /**
      * @brief Hardware lookup valid
      *
@@ -148,14 +148,14 @@ typedef enum _sai_bfd_session_attr_t
      * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == true
      */
     SAI_BFD_SESSION_ATTR_VIRTUAL_ROUTER,
-   
+
     /**
      * @brief For BFD transmit, include destination port and Encapsulation format
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      */
-   SAI_BFD_SESSION_ATTR_NEXT_HOP_ID,   
+   SAI_BFD_SESSION_ATTR_NEXT_HOP_ID,
 
    /**
      * @brief Local diag
@@ -164,14 +164,14 @@ typedef enum _sai_bfd_session_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_BFD_SESSION_ATTR_LOCAL_DIAG,
-    
+
     /**
      * @brief Remote diag
      *
      * @type sai_bfd_session_diag_t
      * @flags READ_ONLY
      */
-    SAI_BFD_SESSION_ATTR_REMOTE_DIAG,   
+    SAI_BFD_SESSION_ATTR_REMOTE_DIAG,
 
     /**
      * @brief Local discriminator
@@ -197,7 +197,7 @@ typedef enum _sai_bfd_session_attr_t
      */
     SAI_BFD_SESSION_ATTR_UDP_SRC_PORT,
 
- 
+
     /**
      * @brief IP header version
      *
@@ -239,8 +239,8 @@ typedef enum _sai_bfd_session_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_BFD_SESSION_ATTR_DST_IP_ADDRESS,
-    
-    
+
+
 
     /**
      * @brief To enable echo function on BFD session
@@ -295,7 +295,7 @@ typedef enum _sai_bfd_session_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_BFD_SESSION_ATTR_MULTIPLIER,
-    
+
     /**
      * @brief Detect time Multiplier,the value of Detect Mult received from the remote system
      *
@@ -329,7 +329,7 @@ typedef enum _sai_bfd_session_attr_t
      * @flags READ_ONLY
      */
     SAI_BFD_SESSION_ATTR_STATE,
-    
+
      /**
      * @brief Remote Session State
      *
@@ -337,7 +337,7 @@ typedef enum _sai_bfd_session_attr_t
      * @flags READ_ONLY
      */
     SAI_BFD_SESSION_ATTR_REMOTE_STATE,
-    
+
     /**
      * @brief Actual Transmit interval  in microseconds
      *
@@ -361,7 +361,7 @@ typedef enum _sai_bfd_session_attr_t
      * @default false
      */
      SAI_BFD_SESSION_ATTR_TX_ENABLE,
-     
+
     /**
      * @brief End of attributes
      */

@@ -1589,7 +1589,7 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_MIN_BFD_TX,
-    
+
      /**
      * @brief Timer negotiation supported by switch
      *
@@ -1597,16 +1597,16 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_BFD_SUPPORTED_TIMER_NEGOTIATION,
-    
-    
+
+
      /**
      * @brief Max number of intervals in timer negotiation supported by switch
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_BFD_MAX_NUMBER_OF_INTRERVALS    
-    
+    SAI_SWITCH_ATTR_BFD_MAX_NUMBER_OF_INTRERVALS,
+
     /**
      * @brief  rx interval list in timer negotiation
      *
@@ -1615,7 +1615,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_AND_SET
      */
     SAI_SWITCH_ATTR_BFD_SUPPORTED_MIN_BFD_RX_LIST,
-    
+
       /**
      * @brief tx interval list in timer negotiation
      *
@@ -1623,7 +1623,7 @@ typedef enum _sai_switch_attr_t
      * @objects sai_uint32_t
      * @flags CREATE_AND_SET
      */
-    SAI_SWITCH_ATTR_BFD_SUPPORTED_MIN_BFD_TX_LIST,    
+    SAI_SWITCH_ATTR_BFD_SUPPORTED_MIN_BFD_TX_LIST,
 
     /**
      * @brief Apply ECN thresholds for ECT traffic.
