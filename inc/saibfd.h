@@ -52,22 +52,6 @@ typedef enum _sai_bfd_session_type_t
 
 } sai_bfd_session_type_t;
 
-/**
- * @brief SAI type of encapsulation for BFD
- */
-typedef enum _sai_bfd_encapsulation_type_t
-{
-    /**
-     * @brief IP in IP Encapsulation | L2 Ethernet header | IP header | Inner IP header | Original BFD packet
-     */
-    SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP,
-
-    /**
-     * @brief L3 GRE Tunnel Encapsulation | L2 Ethernet header | IP header | GRE header | Original BFD packet
-     */
-    SAI_BFD_ENCAPSULATION_TYPE_L3_GRE_TUNNEL,
-
-} sai_bfd_encapsulation_type_t;
 
 /**
  * @brief SAI BFD session state
@@ -87,6 +71,33 @@ typedef enum _sai_bfd_session_state_t
     SAI_BFD_SESSION_STATE_UP,
 
 } sai_bfd_session_state_t;
+
+
+/**
+ @brief  SAI BFD diag
+*/
+typedef enum _sai_bfd_session_diag_t
+{
+	  /** BFD No Diagnostic */
+    SAI_BFD_SESSION_DIAG_NONE                           = 0,  
+    /** BFD Control Detection Time Expired */
+    SAI_BFD_SESSION_DIAG_TIME_EXPIRED                   = 1,  
+    /** BFD Echo Function Failed */
+    SAI_BFD_SESSION_DIAG_ECHO_FAIL                      = 2,  
+    /**  BFD Neighbor Signaled Session Down */
+    SAI_BFD_SESSION_DIAG_NEIGHBOR_DOWN                  = 3,  
+    /** BFD Forwarding Plane Reset */
+    SAI_BFD_SESSION_DIAG_FORWARDING_RESET               = 4,  
+    /** BFD Path Down */
+    SAI_BFD_SESSION_DIAG_PATH_DOWN                      = 5,  
+    /** BFD Concatenated Path Down */
+    SAI_BFD_SESSION_DIAG_CONCATENTED_PATH_DOWN          = 6,  
+    /** BFD Administratively Down */
+    SAI_BFD_SESSION_DIAG_ADMINISTRATIVELY_DOWN          = 7,  
+    /** BFD Reverse Concatenated Path Down */
+    SAI_BFD_SESSION_DIAG_REVERSE_CONCATENTED_PATH_DOWN  = 8,   
+      
+}sai_bfd_session_diag_t;
 
 /**
  * @brief Defines the operational status of the BFD session
@@ -117,8 +128,8 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_bfd_session_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_BFD_SESSION_ATTR_TYPE = SAI_BFD_SESSION_ATTR_START,
-
+    SAI_BFD_SESSION_ATTR_TYPE = SAI_BFD_SESSION_ATTR_START, 
+    
     /**
      * @brief Hardware lookup valid
      *
@@ -137,16 +148,30 @@ typedef enum _sai_bfd_session_attr_t
      * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == true
      */
     SAI_BFD_SESSION_ATTR_VIRTUAL_ROUTER,
-
+   
     /**
-     * @brief Destination Port
+     * @brief For BFD transmit, include destination port and Encapsulation format
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
-     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
+     * @flags CREATE_AND_SET
      */
-    SAI_BFD_SESSION_ATTR_PORT,
+   SAI_BFD_SESSION_ATTR_NEXT_HOP_ID,   
+
+   /**
+     * @brief Local diag
+     *
+     * @type sai_bfd_session_diag_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_BFD_SESSION_ATTR_LOCAL_DIAG,
+    
+    /**
+     * @brief Remote diag
+     *
+     * @type sai_bfd_session_diag_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_REMOTE_DIAG,   
 
     /**
      * @brief Local discriminator
@@ -172,73 +197,7 @@ typedef enum _sai_bfd_session_attr_t
      */
     SAI_BFD_SESSION_ATTR_UDP_SRC_PORT,
 
-    /**
-     * @brief Class-of-Service (Traffic Class)
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_BFD_SESSION_ATTR_TC,
-
-    /**
-     * @brief L2 header TPID.
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0x8100
-     * @validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
-     */
-    SAI_BFD_SESSION_ATTR_VLAN_TPID,
-
-    /**
-     * @brief L2 header VLAN Id.
-     *
-     * @type sai_uint16_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @isvlan true
-     * @condition SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
-     */
-    SAI_BFD_SESSION_ATTR_VLAN_ID,
-
-    /**
-     * @brief L2 header packet priority (3 bits).
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     * @validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
-     */
-    SAI_BFD_SESSION_ATTR_VLAN_PRI,
-
-    /**
-     * @brief L2 header Vlan CFI (1 bit).
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     * @validonly SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID == true
-     */
-    SAI_BFD_SESSION_ATTR_VLAN_CFI,
-
-    /**
-     * @brief Vlan header valid
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_BFD_SESSION_ATTR_VLAN_HEADER_VALID,
-
-    /**
-     * @brief Encapsulation type
-     *
-     * @type sai_bfd_encapsulation_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE,
-
+ 
     /**
      * @brief IP header version
      *
@@ -280,62 +239,8 @@ typedef enum _sai_bfd_session_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_BFD_SESSION_ATTR_DST_IP_ADDRESS,
-
-    /**
-     * @brief Tunnel IP header TOS
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
-     */
-    SAI_BFD_SESSION_ATTR_TUNNEL_TOS,
-
-    /**
-     * @brief Tunnel IP header TTL
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 255
-     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
-     */
-    SAI_BFD_SESSION_ATTR_TUNNEL_TTL,
-
-    /**
-     * @brief Tunnel source IP
-     *
-     * @type sai_ip_address_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
-     */
-    SAI_BFD_SESSION_ATTR_TUNNEL_SRC_IP_ADDRESS,
-
-    /**
-     * @brief Tunnel destination IP
-     *
-     * @type sai_ip_address_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
-     */
-    SAI_BFD_SESSION_ATTR_TUNNEL_DST_IP_ADDRESS,
-
-    /**
-     * @brief L2 source MAC address
-     *
-     * @type sai_mac_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
-     */
-    SAI_BFD_SESSION_ATTR_SRC_MAC_ADDRESS,
-
-    /**
-     * @brief L2 destination MAC address
-     *
-     * @type sai_mac_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
-     */
-    SAI_BFD_SESSION_ATTR_DST_MAC_ADDRESS,
+    
+    
 
     /**
      * @brief To enable echo function on BFD session
@@ -365,7 +270,8 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_CBIT,
 
     /**
-     * @brief Minimum Transmit interval in microseconds
+     * @brief Minimum Transmit interval in microseconds(Desired Min TX Interval),that the local
+      system would like to use when transmitting BFD Control packets.
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -373,23 +279,34 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_MIN_TX,
 
     /**
-     * @brief Minimum Receive interval in microseconds
+     * @brief Minimum Receive interval in microseconds(Required Min RX Interval),that the local
+      system would like to use when transmitting BFD Control packets.
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_BFD_SESSION_ATTR_MIN_RX,
 
-    /**
-     * @brief Detect time Multiplier
+
+   /**
+     * @brief The desired Detection Time multiplier for BFD Control packets on the local system
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_BFD_SESSION_ATTR_MULTIPLIER,
+    
+    /**
+     * @brief Detect time Multiplier,the value of Detect Mult received from the remote system
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_REMOTE_MULTIPLIER,
 
     /**
-     * @brief Minimum Remote Transmit interval in microseconds
+     * @brief Minimum Remote Transmit interval in microseconds,that the remote
+      system would like to use when transmitting BFD Control packets.
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -397,7 +314,8 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_REMOTE_MIN_TX,
 
     /**
-     * @brief Minimum Remote Receive interval in microseconds
+     * @brief Minimum Remote Receive interval in microseconds,that the remote
+      system would like to use when transmitting BFD Control packets.
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -411,7 +329,39 @@ typedef enum _sai_bfd_session_attr_t
      * @flags READ_ONLY
      */
     SAI_BFD_SESSION_ATTR_STATE,
+    
+     /**
+     * @brief Remote Session State
+     *
+     * @type sai_bfd_session_diag_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_REMOTE_STATE,
+    
+    /**
+     * @brief Actual Transmit interval  in microseconds
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_ACTUAL_TX,
+    /**
+     * @brief Actual Receive interval in microseconds
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_ACTUAL_RX,
 
+     /**
+     * @brief Enable transmit BFD packet periodic in Asynchronous mode
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+     SAI_BFD_SESSION_ATTR_TX_ENABLE,
+     
     /**
      * @brief End of attributes
      */
