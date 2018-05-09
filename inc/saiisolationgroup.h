@@ -36,7 +36,7 @@
 /**
  * @brief Isolation group type
  */
-typedef enum _sai_next_hop_group_type_t
+typedef enum _sai_isolation_group_type_t
 {
     /** Isolation group consists of ports.*/
     SAI_ISOLATION_GROUP_TYPE_PORT,
