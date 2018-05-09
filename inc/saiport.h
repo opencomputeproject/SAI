@@ -1012,7 +1012,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Egress block port list
      *
-     * Needs to be deprecated. Use isolation group intead.
+     * Needs to be deprecated. Isolation group can be used instead.
      *
      * Traffic ingressing on this port and egressing out of the ports in the
      * given port list will be dropped.
@@ -1092,7 +1092,8 @@ typedef enum _sai_port_attr_t
      * @brief Isolation group id
      *
      * Packets ingressing on the port should not be forwarded to the
-     * members present in the isolation group.
+     * members present in the isolation group.The isolation group type
+     * should be SAI_ISOLATION_GROUP_TYPE_PORT.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET

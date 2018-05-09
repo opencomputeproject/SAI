@@ -105,6 +105,11 @@ typedef enum _sai_isolation_group_member_attr_t
     /**
      * @brief Isolation group member object
      *
+     * If the isolation group type is SAI_ISOLATION_GROUP_TYPE_PORT,
+     * then the object should be of type SAI_OBJECT_TYPE_PORT. If the
+     * isolation group type is SAI_ISOLATION_GROUP_TYPE_BRIDGE_PORT,
+     * then the object should be of type SAI_OBJECT_TYPE_BRIDGE_PORT.
+     *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT

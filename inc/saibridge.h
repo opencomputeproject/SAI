@@ -249,7 +249,8 @@ typedef enum _sai_bridge_port_attr_t
      * @brief Isolation group id
      *
      * Packets ingressing on the bridge port should not be forwarded to the
-     * members present in the isolation group.
+     * members present in the isolation group.The isolation group type should
+     * SAI_ISOLATION_GROUP_TYPE_BRIDGE_PORT.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
