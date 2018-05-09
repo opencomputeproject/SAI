@@ -38,7 +38,7 @@
  */
 typedef enum _sai_isolation_group_type_t
 {
-    /** Isolation group consists of ports.*/
+    /** Isolation group consists of ports. */
     SAI_ISOLATION_GROUP_TYPE_PORT,
 
     /** Isolation group consists of bridge ports. */
