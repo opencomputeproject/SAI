@@ -275,7 +275,7 @@ typedef struct _sai_u16_list_t
 } sai_u16_list_t;
 
 /**
- * @brief Defines a u16 list or string
+ * @brief Defines a s16 list or string
  *
  * String should be null terminated and count should include '\0'.
  */
@@ -366,7 +366,7 @@ typedef struct _sai_ip_address_t
 } sai_ip_address_t;
 
 /**
- * @brief Defines a IP prefix data structure 
+ * @brief Defines a IP prefix data structure
  * contain address and mask
  */
 typedef struct _sai_ip_prefix_t
@@ -377,7 +377,7 @@ typedef struct _sai_ip_prefix_t
         sai_ip4_t ip4;
         sai_ip6_t ip6;
     } addr;
-    
+
     /** IP Mask */
     union _ip_prefix_mask {
         sai_ip4_t ip4;
@@ -409,7 +409,7 @@ typedef struct _sai_acl_field_data_t
         sai_u8_list_t u8list;
     } mask;
 
-    /** Expected AND result using match mask above with packet 
+    /** Expected AND result using match mask above with packet
      * field value where applicable. */
     union _data {
         bool booldata;
