@@ -290,7 +290,6 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x00004004,
 
-
     /**
      * @brief Packets trapped when first BFD packet(Received BFD packet's Your Discriminator with 0) arrive at local system.
      * (default packet action is drop)
@@ -302,7 +301,6 @@ typedef enum _sai_hostif_trap_type_t
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BFD_TIMER_NEGOTIATION = 0x00004006,
-
 
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,

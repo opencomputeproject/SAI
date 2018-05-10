@@ -1590,7 +1590,7 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_MIN_BFD_TX,
 
-     /**
+    /**
      * @brief Timer negotiation supported by switch
      *
      * @type sai_uint32_t
@@ -1598,8 +1598,7 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_BFD_SUPPORTED_TIMER_NEGOTIATION,
 
-
-     /**
+    /**
      * @brief Max number of intervals in timer negotiation supported by switch
      *
      * @type sai_uint32_t
@@ -1608,20 +1607,20 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_BFD_MAX_NUMBER_OF_INTRERVALS,
 
     /**
-     * @brief  rx interval list in timer negotiation
+     * @brief  Receive interval list in timer negotiation
      *
-     * @type sai_object_list_t
-     * @objects sai_uint32_t
+     * @type sai_u32_list_t
      * @flags CREATE_AND_SET
+     * @default empty
      */
     SAI_SWITCH_ATTR_BFD_SUPPORTED_MIN_BFD_RX_LIST,
 
-      /**
-     * @brief tx interval list in timer negotiation
+    /**
+     * @brief Transmit interval list in timer negotiation
      *
-     * @type sai_object_list_t
-     * @objects sai_uint32_t
+     * @type sai_u32_list_t
      * @flags CREATE_AND_SET
+     * @default empty
      */
     SAI_SWITCH_ATTR_BFD_SUPPORTED_MIN_BFD_TX_LIST,
 

@@ -52,7 +52,6 @@ typedef enum _sai_bfd_session_type_t
 
 } sai_bfd_session_type_t;
 
-
 /**
  * @brief SAI BFD session state
  */
@@ -72,32 +71,39 @@ typedef enum _sai_bfd_session_state_t
 
 } sai_bfd_session_state_t;
 
-
 /**
- @brief  SAI BFD diag
-*/
+ * @brief SAI BFD diagnostic
+ */
 typedef enum _sai_bfd_session_diag_t
 {
-	  /** BFD No Diagnostic */
-    SAI_BFD_SESSION_DIAG_NONE                           = 0,
-    /** BFD Control Detection Time Expired */
-    SAI_BFD_SESSION_DIAG_TIME_EXPIRED                   = 1,
-    /** BFD Echo Function Failed */
-    SAI_BFD_SESSION_DIAG_ECHO_FAIL                      = 2,
-    /**  BFD Neighbor Signaled Session Down */
-    SAI_BFD_SESSION_DIAG_NEIGHBOR_DOWN                  = 3,
-    /** BFD Forwarding Plane Reset */
-    SAI_BFD_SESSION_DIAG_FORWARDING_RESET               = 4,
-    /** BFD Path Down */
-    SAI_BFD_SESSION_DIAG_PATH_DOWN                      = 5,
-    /** BFD Concatenated Path Down */
-    SAI_BFD_SESSION_DIAG_CONCATENTED_PATH_DOWN          = 6,
-    /** BFD Administratively Down */
-    SAI_BFD_SESSION_DIAG_ADMINISTRATIVELY_DOWN          = 7,
-    /** BFD Reverse Concatenated Path Down */
-    SAI_BFD_SESSION_DIAG_REVERSE_CONCATENTED_PATH_DOWN  = 8,
+    /** BFD No Diagnostic */
+    SAI_BFD_SESSION_DIAG_NONE = 0,
 
-}sai_bfd_session_diag_t;
+    /** BFD Control Detection Time Expired */
+    SAI_BFD_SESSION_DIAG_TIME_EXPIRED,
+
+    /** BFD Echo Function Failed */
+    SAI_BFD_SESSION_DIAG_ECHO_FAIL,
+
+    /**  BFD Neighbor Signaled Session Down */
+    SAI_BFD_SESSION_DIAG_NEIGHBOR_DOWN,
+
+    /** BFD Forwarding Plane Reset */
+    SAI_BFD_SESSION_DIAG_FORWARDING_RESET,
+
+    /** BFD Path Down */
+    SAI_BFD_SESSION_DIAG_PATH_DOWN,
+
+    /** BFD Concatenated Path Down */
+    SAI_BFD_SESSION_DIAG_CONCATENTED_PATH_DOWN,
+
+    /** BFD Administratively Down */
+    SAI_BFD_SESSION_DIAG_ADMINISTRATIVELY_DOWN,
+
+    /** BFD Reverse Concatenated Path Down */
+    SAI_BFD_SESSION_DIAG_REVERSE_CONCATENTED_PATH_DOWN,
+
+} sai_bfd_session_diag_t;
 
 /**
  * @brief Defines the operational status of the BFD session
@@ -154,11 +160,14 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
-   SAI_BFD_SESSION_ATTR_NEXT_HOP_ID,
+    SAI_BFD_SESSION_ATTR_NEXT_HOP_ID,
 
-   /**
-     * @brief Local diag
+    /**
+     * @brief Local diagnostic
      *
      * @type sai_bfd_session_diag_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -166,7 +175,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_LOCAL_DIAG,
 
     /**
-     * @brief Remote diag
+     * @brief Remote diagnostic
      *
      * @type sai_bfd_session_diag_t
      * @flags READ_ONLY
@@ -196,7 +205,6 @@ typedef enum _sai_bfd_session_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_BFD_SESSION_ATTR_UDP_SRC_PORT,
-
 
     /**
      * @brief IP header version
@@ -240,8 +248,6 @@ typedef enum _sai_bfd_session_attr_t
      */
     SAI_BFD_SESSION_ATTR_DST_IP_ADDRESS,
 
-
-
     /**
      * @brief To enable echo function on BFD session
      *
@@ -271,7 +277,7 @@ typedef enum _sai_bfd_session_attr_t
 
     /**
      * @brief Minimum Transmit interval in microseconds(Desired Min TX Interval),that the local
-      system would like to use when transmitting BFD Control packets.
+     * system would like to use when transmitting BFD Control packets.
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -280,15 +286,14 @@ typedef enum _sai_bfd_session_attr_t
 
     /**
      * @brief Minimum Receive interval in microseconds(Required Min RX Interval),that the local
-      system would like to use when transmitting BFD Control packets.
+     * system would like to use when transmitting BFD Control packets.
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_BFD_SESSION_ATTR_MIN_RX,
 
-
-   /**
+    /**
      * @brief The desired Detection Time multiplier for BFD Control packets on the local system
      *
      * @type sai_uint8_t
@@ -297,7 +302,7 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_MULTIPLIER,
 
     /**
-     * @brief Detect time Multiplier,the value of Detect Mult received from the remote system
+     * @brief Detect time Multiplier,the value of Detect Multiplier received from the remote system
      *
      * @type sai_uint8_t
      * @flags READ_ONLY
@@ -306,7 +311,7 @@ typedef enum _sai_bfd_session_attr_t
 
     /**
      * @brief Minimum Remote Transmit interval in microseconds,that the remote
-      system would like to use when transmitting BFD Control packets.
+     * system would like to use when transmitting BFD Control packets.
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -315,7 +320,7 @@ typedef enum _sai_bfd_session_attr_t
 
     /**
      * @brief Minimum Remote Receive interval in microseconds,that the remote
-      system would like to use when transmitting BFD Control packets.
+     * system would like to use when transmitting BFD Control packets.
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -330,10 +335,10 @@ typedef enum _sai_bfd_session_attr_t
      */
     SAI_BFD_SESSION_ATTR_STATE,
 
-     /**
+    /**
      * @brief Remote Session State
      *
-     * @type sai_bfd_session_diag_t
+     * @type sai_bfd_session_state_t
      * @flags READ_ONLY
      */
     SAI_BFD_SESSION_ATTR_REMOTE_STATE,
@@ -345,6 +350,7 @@ typedef enum _sai_bfd_session_attr_t
      * @flags READ_ONLY
      */
     SAI_BFD_SESSION_ATTR_ACTUAL_TX,
+
     /**
      * @brief Actual Receive interval in microseconds
      *
@@ -353,14 +359,14 @@ typedef enum _sai_bfd_session_attr_t
      */
     SAI_BFD_SESSION_ATTR_ACTUAL_RX,
 
-     /**
+    /**
      * @brief Enable transmit BFD packet periodic in Asynchronous mode
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-     SAI_BFD_SESSION_ATTR_TX_ENABLE,
+    SAI_BFD_SESSION_ATTR_TX_ENABLE,
 
     /**
      * @brief End of attributes
