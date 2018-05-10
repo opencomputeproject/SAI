@@ -248,8 +248,8 @@ typedef enum _sai_object_type_t
  */
 typedef struct _sai_u8_list_t
 {
-    uint32_t count;	
-    uint8_t *list;	
+    uint32_t count;
+    uint8_t *list;
 } sai_u8_list_t;
 
 /**
