@@ -44,6 +44,7 @@ L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
 MAC - Medium Access Control
+MLD - Multicast Listener Discovery
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
 NHLFE - Next Hop Label Forwarding Entry
