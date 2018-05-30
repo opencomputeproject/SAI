@@ -61,6 +61,16 @@ typedef enum _sai_l2mc_group_attr_t
     SAI_L2MC_GROUP_ATTR_L2MC_MEMBER_LIST,
 
     /**
+     * @brief L2MC group id
+     *
+     * This attribute only takes effect when the value(type is SAI_OBJECT_TYPE_L2MC_GROUP) is not equal to SAI_NULL_OBJECT_ID
+     * @type sai_uint64_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_L2MC_GROUP_ATTR_L2MC_GROUP_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_L2MC_GROUP_ATTR_END,
@@ -123,6 +133,17 @@ typedef enum _sai_l2mc_group_member_attr_t
 
 /**
  * @brief Create L2MC group
+ *
+ * There is no problem with sharing member group mechanism in L2MC
+ * entry,but we suggest to use 1:1 mechanism because of the
+ * convenience of the L2MC member to be updated
+ *
+ * If there is no SAI_L2MC_GROUP_ATTR_L2MC_GROUP_ID in attribute list,
+ * or the value of SAI_L2MC_GROUP_ATTR_L2MC_GROUP_ID attribute is zero,
+ * It means that the upper layer user(usually SONIC) wants to create
+ * a new L2MC group object id. If there is SAI_L2MC_GROUP_ATTR_L2MC_GROUP_ID
+ * in attribute list, the expected behavior is that the sai_create_l2mc_group_fn
+ * reuse the L2MC group object id
  *
  * @param[out] l2mc_group_id L2MC group id
  * @param[in] switch_id Switch id

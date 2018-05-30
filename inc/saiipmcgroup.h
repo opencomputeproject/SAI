@@ -61,6 +61,16 @@ typedef enum _sai_ipmc_group_attr_t
     SAI_IPMC_GROUP_ATTR_IPMC_MEMBER_LIST,
 
     /**
+     * @brief IPMC group id
+     *
+     * This attribute only takes effect when the value(type is SAI_OBJECT_TYPE_IPMC_GROUP) is not equal to SAI_NULL_OBJECT_ID
+     * @type sai_uint64_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_IPMC_GROUP_ATTR_IPMC_GROUP_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_IPMC_GROUP_ATTR_END,
@@ -113,6 +123,23 @@ typedef enum _sai_ipmc_group_member_attr_t
 
 /**
  * @brief Create IPMC group
+ *
+ * In multiple NPU scenario,the ingress NPU need to allocate a H/W resource
+ * called the IPMC index which will be indexed into table to give the ports
+ * list on which a multicast packet should go out, the other egress NPUs will
+ * use the IPMC index to read H/W table directly without going through the
+ * lookup process based on packet's (S,G/x,G).From the point of view of the
+ * upper users(SONIC),the IPMC member are sets of router interface,and the
+ * same IPMC member can share a group,but from the point of view of NPU,i
+ * finally,the group member need to convert to port list,so the relationship
+ * between IPMC Group and IPMC entry must be 1:1
+ *
+ * If there is no SAI_IPMC_GROUP_ATTR_IPMC_GROUP_ID in attribute list, or
+ * the value of SAI_IPMC_GROUP_ATTR_IPMC_GROUP_ID attribute is zero, It
+ * means that the upper layer user(usually SONIC) wants to create a new
+ * IPMC group object id. If there is SAI_IPMC_GROUP_ATTR_IPMC_GROUP_ID
+ * in attribute list, the expected behavior is that the
+ * sai_create_ipmc_group_fn reuse the IPMC group object id
  *
  * @param[out] ipmc_group_id IPMC group id
  * @param[in] switch_id Switch id
