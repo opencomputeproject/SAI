@@ -287,7 +287,6 @@ def sai_thrift_create_fdb_bport(client, bv_id, mac, bport_oid, mac_action):
     fdb_attr_list = [fdb_attribute1, fdb_attribute2, fdb_attribute3]
     client.sai_thrift_create_fdb_entry(thrift_fdb_entry=fdb_entry, thrift_attr_list=fdb_attr_list)
 
-
 def sai_thrift_delete_fdb(client, bv_id, mac, port):
     fdb_entry = sai_thrift_fdb_entry_t(mac_address=mac, bv_id=bv_id)
     client.sai_thrift_delete_fdb_entry(thrift_fdb_entry=fdb_entry)
@@ -587,6 +586,44 @@ def sai_thrift_create_hostif(client,
     attr_list.append(atr)
 
     return client.sai_thrift_create_hostif(attr_list)
+
+def sai_thrift_create_hostif_table_entry(client,
+                                         hif_table_entry_type,
+                                         channel_type,
+                                         obj_id=None,
+                                         trap_id=None,
+                                         hif_oid=None):
+    attr_list=[]
+
+    atr_value=sai_thrift_attribute_value_t(s32=hif_table_entry_type)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    if obj_id != None:
+        atr_value=sai_thrift_attribute_value_t(oid=obj_id)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TABLE_ENTRY_ATTR_OBJ_ID,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    if trap_id != None:
+        atr_value=sai_thrift_attribute_value_t(oid=trap_id)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    atr_value=sai_thrift_attribute_value_t(s32=channel_type)
+    atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE,
+                               value=atr_value)
+    attr_list.append(atr)
+
+    if hif_oid != None:
+        atr_value=sai_thrift_attribute_value_t(oid=hif_oid)
+        atr=sai_thrift_attribute_t(id=SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
+                                   value=atr_value)
+        attr_list.append(atr)
+
+    return client.sai_thrift_create_hostif_table_entry(attr_list)
 
 def sai_thrift_create_hostif_trap(client,
                                   trap_type,
@@ -1066,7 +1103,7 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
         attribute7 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_SRC_MAC_ADDRESS,
                                             value=attribute7_value)
         mirror_attr_list.append(attribute7)
-       
+
         #dst mac
         attribute8_value = sai_thrift_attribute_value_t(mac=dst_mac)
         attribute8 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_DST_MAC_ADDRESS,
@@ -1115,7 +1152,7 @@ def sai_thrift_create_scheduler_profile(client, max_rate, algorithm=0):
                                        value=attribute_value)
     scheduler_attr_list.append(attribute)
     attribute_value = sai_thrift_attribute_value_t(s32=algorithm)
-    attribute = sai_thrift_attribute_t(id=SAI_SCHEDULER_ATTR_SCHEDULING_ALGORITHM ,
+    attribute = sai_thrift_attribute_t(id=SAI_SCHEDULER_ATTR_SCHEDULING_TYPE,
                                        value=attribute_value)
     scheduler_attr_list.append(attribute)
     scheduler_profile_id = client.sai_thrift_create_scheduler_profile(scheduler_attr_list)
