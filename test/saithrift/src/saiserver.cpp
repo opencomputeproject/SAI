@@ -359,6 +359,7 @@ main(int argc, char* argv[])
 
     start_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
 
+    const sai_log_level_t log_level = SAI_LOG_LEVEL_NOTICE;
 
     sai_log_set(SAI_API_ACL, log_level);
     sai_log_set(SAI_API_BRIDGE, log_level);
