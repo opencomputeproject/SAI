@@ -4,3 +4,6 @@
 [submodule "test/saithrift/ctypesgen"]
 	path = test/saithrift/ctypesgen
 	url = https://github.com/davidjamesca/ctypesgen
+[submodule "p4_compiler"]
+	path = p4_compiler
+	url = https://github.com/Mellanox/sai_p4_compiler.git
