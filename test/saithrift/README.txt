@@ -20,13 +20,14 @@ Note. It is also desired to install the doxygen package: sudo apt install doxyge
 
 * Run experiments
 
-Note. The assumption is that your build machine, test machine and switch (where SAI is executed) are based on the same Linux distribution.
-Otherwise, please setup an appropriate cross-compile environment to generate saiserver.
+Note. The assumption is that your build machine, test machine (test client) and switch (where SAI is executed) are based on the same Linux distribution.
+Otherwise, please setup an appropriate cross-compile environment to generate 'saiserver' and the 'libthrift-0.9.2.so' to be executed on the switch (test server).
 
   Switch (server) side:
 
     1. Install thrift library on the switch
-    For instance, you can copy libthrift-0.9.2.so obtained at step 3 above to: /usr/lib/x86_64-linux-gnu or /usr/lib
+
+    For instance, you can copy libthrift-0.9.2.so obtained at step 3 above to: /usr/lib/x86_64-linux-gnu or /usr/lib (on the switch)
 
     2. Copy saiserver binary to the switch
 
@@ -35,20 +36,21 @@ Otherwise, please setup an appropriate cross-compile environment to generate sai
 
     ldd saiserver
 
+    If all libraries are present, execute:
+
       ./saiserver -p profile.ini -f portmap.ini
 
-      You can find the sample configuration for mellanox sn2700 under src/msn_2700 directory
+      You can find a sample configuration for mellanox sn2700 under src/msn_2700 directory
 
   Client side (test machine):
 
     1. Install ptf on the client
 
-    2. Install sai thrift client library on the server
+    2. Install the SAI thrift client library on the (client) test machine
 
     Use the source code in: SAI/test/saithrift
-    (you may need to execute this as a privileged user: sudo)
 
-         python setup.py install
+         sudo python setup.py install
 
     3. Copy tests directory to the test machine (client)
 
@@ -73,8 +75,10 @@ Otherwise, please setup an appropriate cross-compile environment to generate sai
 
        or the desired branch.
 
-       You must clone the ptf repo separately:
+       You must clone the ptf repo separately. For instance:
 
         git clone https://github.com/p4lang/ptf.git
 
-       Look for the 'ptf' Python script in the cloned directory.
+       Note. Always look for the latest link provided at https://github.com/opencomputeproject/SAI/tree/master/test.
+
+       Use the 'ptf' Python script in the cloned directory.
