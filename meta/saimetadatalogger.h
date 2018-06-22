@@ -74,27 +74,27 @@ extern volatile sai_log_level_t sai_metadata_log_level;
  * If logger function is NULL, stderr is used to print messages. Also, fprintf
  * function will validate parameters at compilation time.
  */
-#define SAI_META_LOG(loglevel,format,...)\
-    if (loglevel >= sai_metadata_log_level)\
-{\
-    if (sai_metadata_log == NULL) /* or syslog? */ \
-        fprintf(stderr, "%s:%d %s: " format "\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__);\
-    else\
-        sai_metadata_log(loglevel, __FILE__, __LINE__, __func__, format, ##__VA_ARGS__);\
+#define SAI_META_LOG(loglevel,format,...)                                                       \
+    if (loglevel >= sai_metadata_log_level)                                                     \
+{                                                                                               \
+    if (sai_metadata_log == NULL) /* or syslog? */                                              \
+        fprintf(stderr, "%s:%d %s: " format "\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__); \
+    else                                                                                        \
+        sai_metadata_log(loglevel, __FILE__, __LINE__, __func__, format, ##__VA_ARGS__);        \
 }
 
 /*
  * Helper macros.
  */
 
-#define SAI_META_LOG_ENTER()                SAI_META_LOG(SAI_LOG_LEVEL_DEBUG, ":> enter");
-#define SAI_META_LOG_DEBUG(format,...)      SAI_META_LOG(SAI_LOG_LEVEL_DEBUG, ":- " format, ##__VA_ARGS__)
-#define SAI_META_LOG_INFO(format,...)       SAI_META_LOG(SAI_LOG_LEVEL_INFO, ":- " format, ##__VA_ARGS__)
-#define SAI_META_LOG_NOTICE(format,...)     SAI_META_LOG(SAI_LOG_LEVEL_NOTICE, ":- " format, ##__VA_ARGS__)
-#define SAI_META_LOG_WARN(format,...)       SAI_META_LOG(SAI_LOG_LEVEL_WARN, ":- " format, ##__VA_ARGS__)
-#define SAI_META_LOG_ERROR(format,...)      SAI_META_LOG(SAI_LOG_LEVEL_ERROR, ":- " format, ##__VA_ARGS__)
+#define SAI_META_LOG_ENTER()                SAI_META_LOG(SAI_LOG_LEVEL_DEBUG,    ":> enter");
+#define SAI_META_LOG_DEBUG(format,...)      SAI_META_LOG(SAI_LOG_LEVEL_DEBUG,    ":- " format, ##__VA_ARGS__)
+#define SAI_META_LOG_INFO(format,...)       SAI_META_LOG(SAI_LOG_LEVEL_INFO,     ":- " format, ##__VA_ARGS__)
+#define SAI_META_LOG_NOTICE(format,...)     SAI_META_LOG(SAI_LOG_LEVEL_NOTICE,   ":- " format, ##__VA_ARGS__)
+#define SAI_META_LOG_WARN(format,...)       SAI_META_LOG(SAI_LOG_LEVEL_WARN,     ":- " format, ##__VA_ARGS__)
+#define SAI_META_LOG_ERROR(format,...)      SAI_META_LOG(SAI_LOG_LEVEL_ERROR,    ":- " format, ##__VA_ARGS__)
 #define SAI_META_LOG_CRITICAL(format,...)   SAI_META_LOG(SAI_LOG_LEVEL_CRITICAL, ":- " format, ##__VA_ARGS__)
-#define SAI_META_LOG_EXIT()                 SAI_META_LOG(SAI_LOG_LEVEL_DEBUG, ":< exit");
+#define SAI_META_LOG_EXIT()                 SAI_META_LOG(SAI_LOG_LEVEL_DEBUG,    ":< exit");
 
 /**
  * @}

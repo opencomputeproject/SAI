@@ -105,7 +105,7 @@ sub ProcessCapCapability
 
     for my $cap (@cap)
     {
-        if (not $cap=~ /^(CREATE|GET|SET)$/)
+        if (not $cap =~ /^(CREATE|GET|SET)$/)
         {
             LogError "invalid capability tag value '$val' ($cap)";
             return undef;
@@ -125,7 +125,7 @@ sub ProcessCapEnumCapability
 
     for my $cap (@cap)
     {
-        if (not $cap=~ /^SAI_[0-9A-Z_]+$/)
+        if (not $cap =~ /^SAI_[0-9A-Z_]+$/)
         {
             LogError "invalid enum capability tag value '$val' ($cap)";
             return undef;

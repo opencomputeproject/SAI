@@ -222,6 +222,9 @@ typedef enum _sai_acl_action_type_t
     /** Enable DTEL drop report (experimental) */
     SAI_ACL_ACTION_TYPE_DTEL_DROP_REPORT_ENABLE,
 
+    /** Enable DTEL tail drop reporting (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_TAIL_DROP_REPORT_ENABLE,
+
     /** Set DTEL flow sampling (experimental) */
     SAI_ACL_ACTION_TYPE_DTEL_FLOW_SAMPLE_PERCENT,
 
@@ -2029,6 +2032,16 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DTEL_DROP_REPORT_ENABLE,
+
+    /**
+     * @brief Enable DTEL tail drop reporting
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_TAIL_DROP_REPORT_ENABLE,
 
     /**
      * @brief DTEL flow sample percentage

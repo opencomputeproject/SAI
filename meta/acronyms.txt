@@ -19,6 +19,7 @@ DLDR - Dead Lock Detection and Recovery
 DLL - Dynamic Link Library
 DLR - Dead Lock Recovery
 DSCP - Differentiated Services Code Point
+DTEL - Data Plane Telemetry
 ECMP - Equal Cost Multi-Path
 ECN - Explicit Congestion Notification
 ECT - ECN Capable Transport
@@ -28,11 +29,13 @@ FCS - Frame Check Sequence
 FD - File Descriptor
 FDB - Forwarding Data Base
 FEC - Forward Error Correction
+FPGA - Field Programmable Gate Array
 GRE - Generic Routing Encapsulation
 HW - Hardware
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
 IEEE - Institute of Electrical and Electronics Engineers
+IGMP - Internet Group Management Protocol
 IP - Internet Protocol
 IP2ME - IP packets to local router IP
 IPMC - Intelligent Platform Management Controller
@@ -45,6 +48,7 @@ MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
 NHLFE - Next Hop Label Forwarding Entry
 NPU - Numeric Processing Unit
+OAM - Operations Administration and Maintenance
 OUI - Organizationally Unique Identifier
 PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
@@ -81,6 +85,3 @@ WWW - World Wide Web
 XG - (*,G) Any-source Multicast
 XOFF - Transmitter Off
 XON - Transmitter On
-IGMP - Internet Group Management Protocol
-OAM - Operations Administration and Maintenance
-DTEL - Data Plane Telemetry

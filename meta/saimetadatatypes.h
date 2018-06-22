@@ -48,6 +48,8 @@ typedef struct _sai_object_meta_key_t
 
     /**
      * @brief The key.
+     *
+     * @passparam objecttype
      */
     sai_object_key_t            objectkey;
 
@@ -987,6 +989,11 @@ typedef struct _sai_attr_metadata_t
      */
     size_t                                      capabilitylength;
 
+    /**
+     * @brief Indicates whether attribute is extension attribute.
+     */
+    bool                                        isextensionattr;
+
 } sai_attr_metadata_t;
 
 /*
@@ -1263,6 +1270,11 @@ typedef struct _sai_object_type_info_t
      * @brief Get function pointer
      */
     const sai_meta_generic_get_fn                   get;
+
+    /**
+     * @brief Indicates whether object type is experimental.
+     */
+    bool                                            isexperimental;
 
 } sai_object_type_info_t;
 
