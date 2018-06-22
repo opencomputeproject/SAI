@@ -45,6 +45,19 @@ Otherwise, please setup an appropriate cross-compile environment to generate 'sa
   Client side (test machine):
 
     1. Install ptf on the client
+       Use the link to PTF - e.g. ptf @ fe3c89 provided at:
+
+       https://github.com/opencomputeproject/SAI/tree/master/test
+
+       or the desired branch.
+
+       You must clone the ptf repo separately. For instance:
+
+        git clone https://github.com/p4lang/ptf.git
+
+       Note. Always look for the latest link provided at https://github.com/opencomputeproject/SAI/tree/master/test.
+
+       Use the 'ptf' Python script in the cloned directory.
 
     2. Install the SAI thrift client library on the (client) test machine
 
@@ -69,16 +82,3 @@ Otherwise, please setup an appropriate cross-compile environment to generate 'sa
 
     sample configuration for mellanox sn2700 under src/msn_2700 directory: default_interface_to_front_map.ini
 
-    ptf: Use the link to PTF - e.g. ptf @ fe3c89 provided at:
-
-       https://github.com/opencomputeproject/SAI/tree/master/test
-
-       or the desired branch.
-
-       You must clone the ptf repo separately. For instance:
-
-        git clone https://github.com/p4lang/ptf.git
-
-       Note. Always look for the latest link provided at https://github.com/opencomputeproject/SAI/tree/master/test.
-
-       Use the 'ptf' Python script in the cloned directory.
