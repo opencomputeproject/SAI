@@ -1,12 +1,18 @@
-* Build prerequisites
+* Build prerequisites: python 2.7
 
     1. SAI header files should be installed in /usr/include/sai/
 
-    2. Vender specific SAI library (-lsai)
+    2. Vendor specific SAI library (-lsai)
 
     3. Apache thrift 0.9.2
+    You can download thrift source packages from: http://archive.apache.org/dist/thrift
+    Installation instructions at: https://thrift.apache.org/docs/install/
+    Note. Use: ./configure --prefix=/usr . The default is to install in /usr/local
+    Please refer to ./configure --help for more details.
 
-    4. ctypesgen
+    4. ctypesgen: sudo -H pip install ctypesgen
+
+Note. It is also desired to install the doxygen package: apt install doxygen
 
 * Build the saiserver and SAI thrift client python library
 
@@ -14,28 +20,61 @@
 
 * Run experiments
 
+Note. The assumption is that your build machine and switch where SAI is executed are based on the same Linux distribution.
+Otherwise, please use setup an appropriate cross-compile environment.
+
   Switch side:
 
     1. Install thrift library on the switch
+    For instance, you can copy libthrift-0.9.2.so obtained at step 3 above to: /usr/lib/x86_64-linux-gnu or /usr/lib
 
     2. Copy saiserver binary to the switch
 
     3. Run sai server
+    Please make sure that you have all needed libraries (.so) on the switch:
+
+    ldd saiserver
 
       ./saiserver -p profile.ini -f portmap.ini
 
       You can find the sample configuration for mellanox sn2700 under src/msn_2700 directory
 
-  Server side:
+  Client side (test machine):
 
     1. Install ptf on the client
 
     2. Install sai thrift client library on the server
 
-         tar xzf saithrift-0.9.tar.gz
-         cd saithrift-0.9
+    Use the source code in: SAI/test/saithrift
+    (you may need to execute this as a privileged user: sudo)
+
          python setup.py install
 
     3. Copy tests directory to client
 
-    sudo ptf --test-dir tests switch.L3IPv4HostTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' -t "server='10.0.0.1';port_map_file='default_interface_to_front_map.ini'"
+    sudo ptf --test-dir tests sail3.L3IPv4HostTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' -t "server='10.0.0.1';port_map_file='default_interface_to_front_map.ini'"
+
+    Note. Existing test cases are stored in the directory:
+
+    SAI/test/saithrift/tests
+
+    sail3.L3IPv4HostTest refers to file: sail3.py, test case L3IPv4HostTest
+    Examine the sail3.py file for details.
+
+    eth1 and eth2 in the command above refer to the clien (test machine) interfaces
+
+    server='10.0.0.1' is the IP address of the switch (it must be accessible from the test machine)
+
+    sample configuration for mellanox sn2700 under src/msn_2700 directory: default_interface_to_front_map.ini
+
+    ptf: Use the link to PTF - e.g. ptf @ fe3c89 provided at:
+
+       https://github.com/opencomputeproject/SAI/tree/master/test
+
+       or the desired branch.
+
+       You must clone the ptf repo separately, e.g. from https://github.com/p4lang/ptf/tree/fe3cd89e332d9b0e673230e06a1a7ff29d688df5
+
+        git clone https://github.com/p4lang/ptf.git
+
+       Look for the 'ptf' Python script in the cloned directory.
