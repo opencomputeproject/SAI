@@ -272,8 +272,8 @@ typedef enum _sai_router_interface_attr_t
 } sai_router_interface_attr_t;
 
 /**
-* @brief Router interface counter IDs in sai_get_router_interface_stats() call
-*/
+ * @brief Router interface counter IDs in sai_get_router_interface_stats() call
+ */
 typedef enum _sai_router_interface_stat_t
 {
     /** Ingress byte stat count */
