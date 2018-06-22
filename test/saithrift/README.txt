@@ -12,7 +12,7 @@
 
     4. ctypesgen: sudo -H pip install ctypesgen
 
-Note. It is also desired to install the doxygen package: apt install doxygen
+Note. It is also desired to install the doxygen package: sudo apt install doxygen
 
 * Build the saiserver and SAI thrift client python library
 
@@ -20,10 +20,10 @@ Note. It is also desired to install the doxygen package: apt install doxygen
 
 * Run experiments
 
-Note. The assumption is that your build machine and switch where SAI is executed are based on the same Linux distribution.
-Otherwise, please use setup an appropriate cross-compile environment.
+Note. The assumption is that your build machine, test machine and switch (where SAI is executed) are based on the same Linux distribution.
+Otherwise, please setup an appropriate cross-compile environment to generate saiserver.
 
-  Switch side:
+  Switch (server) side:
 
     1. Install thrift library on the switch
     For instance, you can copy libthrift-0.9.2.so obtained at step 3 above to: /usr/lib/x86_64-linux-gnu or /usr/lib
@@ -50,7 +50,7 @@ Otherwise, please use setup an appropriate cross-compile environment.
 
          python setup.py install
 
-    3. Copy tests directory to client
+    3. Copy tests directory to the test machine (client)
 
     sudo ptf --test-dir tests sail3.L3IPv4HostTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' -t "server='10.0.0.1';port_map_file='default_interface_to_front_map.ini'"
 
@@ -61,9 +61,9 @@ Otherwise, please use setup an appropriate cross-compile environment.
     sail3.L3IPv4HostTest refers to file: sail3.py, test case L3IPv4HostTest
     Examine the sail3.py file for details.
 
-    eth1 and eth2 in the command above refer to the clien (test machine) interfaces
+    eth1 and eth2 in the command above refer to the client (test machine) interfaces.
 
-    server='10.0.0.1' is the IP address of the switch (it must be accessible from the test machine)
+    server='10.0.0.1' is the IP address of the switch (server) - it must be accessible from the test machine (client)
 
     sample configuration for mellanox sn2700 under src/msn_2700 directory: default_interface_to_front_map.ini
 
@@ -73,7 +73,7 @@ Otherwise, please use setup an appropriate cross-compile environment.
 
        or the desired branch.
 
-       You must clone the ptf repo separately, e.g. from https://github.com/p4lang/ptf/tree/fe3cd89e332d9b0e673230e06a1a7ff29d688df5
+       You must clone the ptf repo separately:
 
         git clone https://github.com/p4lang/ptf.git
 
