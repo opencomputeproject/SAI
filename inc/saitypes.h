@@ -56,6 +56,12 @@ typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
 typedef UINT32  sai_label_id_t;
 
+typedef struct timespec
+{
+    uint64_t tv_sec;
+    uint32_t tv_nsec;
+} timespec_t;
+
 #include <ws2def.h>
 #include <ws2ipdef.h>
 
@@ -82,6 +88,7 @@ typedef enum
 #include <stdint.h>
 #include <stdbool.h>
 #include <sys/types.h>
+#include <time.h>
 
 typedef int32_t  sai_status_t;
 typedef uint32_t sai_switch_profile_id_t;
@@ -118,6 +125,7 @@ typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
+typedef struct timespec sai_timespec_t;
 
 /**
  * @def SAI_NULL_OBJECT_ID
@@ -1001,6 +1009,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST */
     sai_port_eye_values_list_t porteyevalues;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TIMESPEC */
+    sai_timespec_t timespec;
 } sai_attribute_value_t;
 
 /**
