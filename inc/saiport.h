@@ -1087,6 +1087,17 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PORT_POOL_LIST,
 
     /**
+     * @brief Pause port egress
+     *
+     * Enable/Disable egress pause of a port.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_EGRESS_PAUSE_ENABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
