@@ -7,3 +7,9 @@
 [submodule "p4_compiler"]
 	path = p4_compiler
 	url = https://github.com/Mellanox/sai_p4_compiler
+[submodule "behavioral-model"]
+	path = bm/behavioral-model
+	url = https://github.com/p4lang/behavioral-model.git
+[submodule "bm/behavioral-model"]
+	path = bm/behavioral-model
+	url = https://github.com/p4lang/behavioral-model.git
