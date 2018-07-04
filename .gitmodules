@@ -5,7 +5,7 @@
 	path = test/saithrift/ctypesgen
 	url = https://github.com/davidjamesca/ctypesgen
 [submodule "p4_compiler"]
-	path = p4_compiler
+	path = flexsai/p4
 	url = https://github.com/Mellanox/sai_p4_compiler
 [submodule "behavioral-model"]
 	path = bm/behavioral-model
