@@ -422,6 +422,13 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief List of ACL bind point where this ACL can be applied
      *
+     * (Default = empty) - if the bind point is empty during create or
+     * ACL Table that is previously bound is unbound, then it is expected that
+     * there is no real hardware resource that is being utilized. In this case,
+     * application is not expected to query for SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_ENTRY
+     * or SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_COUNTER. If it is queried, the result is
+     * undefined
+     *
      * @type sai_s32_list_t sai_acl_bind_point_type_t
      * @flags CREATE_ONLY
      * @default empty
