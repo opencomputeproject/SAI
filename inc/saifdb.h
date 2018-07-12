@@ -190,7 +190,7 @@ typedef enum _sai_fdb_flush_entry_type_t
     SAI_FDB_FLUSH_ENTRY_TYPE_STATIC,
 
     /** Flush static and dynamic FDB entries */
-    SAI_FDB_FLUSH_ENTRY_TYPE_STATIC_DYNAMIC,
+    SAI_FDB_FLUSH_ENTRY_TYPE_ALL,
 
 } sai_fdb_flush_entry_type_t;
 
@@ -199,7 +199,7 @@ typedef enum _sai_fdb_flush_entry_type_t
  *
  * For example, if you want to flush all static entries, set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE
  * = #SAI_FDB_FLUSH_ENTRY_TYPE_STATIC. If you want to flush both static and dynamic entries,
- * then set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE = SAI_FDB_FLUSH_ENTRY_TYPE_STATIC_DYNAMIC.
+ * then set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE = SAI_FDB_FLUSH_ENTRY_TYPE_ALL.
  * The API uses AND operation when multiple attributes are specified.
  *
  * For example:
