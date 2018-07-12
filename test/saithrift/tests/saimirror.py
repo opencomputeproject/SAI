@@ -43,24 +43,18 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
         mirror_type=SAI_MIRROR_SESSION_TYPE_LOCAL
         mac_action = SAI_PACKET_ACTION_FORWARD
         vlan_remote_id = 2
-        sai_thrift_create_fdb(self.client, vlan_remote_id, mac3, port3, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_remote_id, mac2, port2, mac_action)
 
         # Put ports under test in VLAN 2
-        vlan_id = 1
-        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
         vlan_remote_oid = sai_thrift_create_vlan(self.client, vlan_remote_id)
         vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
-        vlan_member1a = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
         vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
-        vlan_member2a = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
         vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
-        vlan_member3a = sai_thrift_create_vlan_member(self.client, vlan_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        sai_thrift_create_fdb(self.client, vlan_remote_oid, mac3, port3, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_remote_oid, mac2, port2, mac_action)
 
         # Remove ports from default VLAN
-        self.client.sai_thrift_remove_vlan_member(vlan_member1a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member2a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member3a)
+        sai_thrift_vlan_remove_ports(self.client, switch.default_vlan.oid, [port1, port2, port3])
 
         # Set PVID
         attr_value = sai_thrift_attribute_value_t(u16=vlan_remote_id)
@@ -69,7 +63,7 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
         self.client.sai_thrift_set_port_attribute(port2, attr)
         self.client.sai_thrift_set_port_attribute(port3, attr)
 
-        spanid=sai_thrift_create_mirror_session(self.client,mirror_type=mirror_type,port=monitor_port,vlan=vlan_oid,vlan_priority=0,vlan_tpid=0,vlan_header_valid=False,src_mac=None,dst_mac=None,src_ip=None,dst_ip=None,encap_type=0,iphdr_version=0,ttl=0,tos=0,gre_type=0)
+        spanid=sai_thrift_create_mirror_session(self.client,mirror_type=mirror_type,port=monitor_port,vlan=None,vlan_priority=0,vlan_tpid=0,vlan_header_valid=False,src_mac=None,dst_mac=None,src_ip=None,dst_ip=None,encap_type=0,iphdr_version=0,ttl=0,tos=0,gre_type=0)
         attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=1,object_id_list=[spanid]))
 
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attrb_value)
@@ -128,8 +122,8 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 2, pkt2)
             verify_each_packet_on_each_port(self, [m,pkt2], ports=[0,1])
         finally:
-            sai_thrift_delete_fdb(self.client, 2, mac3, port3)
-            sai_thrift_delete_fdb(self.client, 2, mac2, port2)
+            sai_thrift_delete_fdb(self.client, vlan_remote_oid, mac3, port3)
+            sai_thrift_delete_fdb(self.client, vlan_remote_oid, mac2, port2)
 
             # Remove ports from mirror destination
             attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[spanid]))
@@ -148,9 +142,9 @@ class spanmonitor(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_vlan(vlan_remote_oid)
 
             # Add ports back to default VLAN
-            vlan_member1a = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
-            vlan_member2a = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
-            vlan_member3a = sai_thrift_create_vlan_member(self.client, vlan_oid, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member1a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member2a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member3a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -194,24 +188,17 @@ class erspanmonitor(sai_base_test.ThriftInterfaceDataPlane):
         vlan_remote_id = 3
         mac_action = SAI_PACKET_ACTION_FORWARD
 
-        sai_thrift_create_fdb(self.client, vlan_remote_id, mac3, port3, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_remote_id, mac2, port2, mac_action)
-
         # Put ports under test in VLAN 3
-        vlan_id = 1
-        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
         vlan_remote_oid = sai_thrift_create_vlan(self.client, vlan_remote_id)
         vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
-        vlan_member1a = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
         vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
-        vlan_member2a = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
         vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
-        vlan_member3a = sai_thrift_create_vlan_member(self.client, vlan_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        sai_thrift_create_fdb(self.client, vlan_remote_oid, mac3, port3, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_remote_oid, mac2, port2, mac_action)
 
         # Remove ports from default VLAN
-        self.client.sai_thrift_remove_vlan_member(vlan_member1a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member2a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member3a)
+        sai_thrift_vlan_remove_ports(self.client, switch.default_vlan.oid, [port1, port2, port3])
 
         # Set PVID
         attr_value = sai_thrift_attribute_value_t(u16=vlan_remote_id)
@@ -344,8 +331,8 @@ class erspanmonitor(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 2, pkt2)
             verify_each_packet_on_each_port(self, [pkt2,m2], ports=[1,0])#FIXME need to properly implement
         finally:
-            sai_thrift_delete_fdb(self.client, 3, mac2, port2)
-            sai_thrift_delete_fdb(self.client, 3, mac3, port3)
+            sai_thrift_delete_fdb(self.client, vlan_remote_oid, mac2, port2)
+            sai_thrift_delete_fdb(self.client, vlan_remote_oid, mac3, port3)
 
             # Remove ports from mirror destination
             attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[erspanid]))
@@ -364,9 +351,9 @@ class erspanmonitor(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_vlan(vlan_remote_oid)
 
             # Add ports back to default VLAN
-            vlan_member1a = sai_thrift_create_vlan_member(self.client, 1, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
-            vlan_member2a = sai_thrift_create_vlan_member(self.client, 1, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
-            vlan_member3a = sai_thrift_create_vlan_member(self.client, 1, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member1a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member2a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member3a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -405,24 +392,17 @@ class erspan_novlan_monitor(sai_base_test.ThriftInterfaceDataPlane):
         vlan_remote_id = 3
         mac_action = SAI_PACKET_ACTION_FORWARD
 
-        sai_thrift_create_fdb(self.client, vlan_remote_id, mac3, port3, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_remote_id, mac2, port2, mac_action)
-
         # Put ports under test in VLAN 3
-        vlan_id = 1
-        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
         vlan_remote_oid = sai_thrift_create_vlan(self.client, vlan_remote_id)
         vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
-        vlan_member1a = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
         vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
-        vlan_member2a = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
         vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
-        vlan_member3a = sai_thrift_create_vlan_member(self.client, vlan_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        sai_thrift_create_fdb(self.client, vlan_remote_oid, mac3, port3, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_remote_oid, mac2, port2, mac_action)
 
         # Remove ports from default VLAN
-        self.client.sai_thrift_remove_vlan_member(vlan_member1a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member2a)
-        self.client.sai_thrift_remove_vlan_member(vlan_member3a)
+        sai_thrift_vlan_remove_ports(self.client, switch.default_vlan.oid, [port1, port2, port3])
 
         # Set PVID
         attr_value = sai_thrift_attribute_value_t(u16=vlan_remote_id)
@@ -552,8 +532,8 @@ class erspan_novlan_monitor(sai_base_test.ThriftInterfaceDataPlane):
             send_packet(self, 2, pkt2)
             verify_each_packet_on_each_port(self, [pkt2,m2], ports=[1,0])#FIXME need to properly implement
         finally:
-            sai_thrift_delete_fdb(self.client, 3, mac2, port2)
-            sai_thrift_delete_fdb(self.client, 3, mac3, port3)
+            sai_thrift_delete_fdb(self.client, vlan_remote_oid, mac2, port2)
+            sai_thrift_delete_fdb(self.client, vlan_remote_oid, mac3, port3)
 
             # Remove ports from mirror destination
             attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[erspanid]))
@@ -572,9 +552,9 @@ class erspan_novlan_monitor(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_vlan(vlan_remote_oid)
 
             # Add ports back to default VLAN
-            vlan_member1a = sai_thrift_create_vlan_member(self.client, 1, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
-            vlan_member2a = sai_thrift_create_vlan_member(self.client, 1, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
-            vlan_member3a = sai_thrift_create_vlan_member(self.client, 1, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member1a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member2a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member3a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -607,8 +587,8 @@ class IngressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
 
-        sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac1, port1, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac2, port2, mac_action)
 
         # setup local mirror session
         mirror_type = SAI_MIRROR_SESSION_TYPE_LOCAL
@@ -683,8 +663,8 @@ class IngressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_mirror_session(ingress_mirror_id)
 
-            sai_thrift_delete_fdb(self.client, vlan_id, mac1, port1)
-            sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac1, port1)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac2, port2)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -720,8 +700,8 @@ class IngressRSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
 
-        sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac1, port1, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac2, port2, mac_action)
 
         # setup remote mirror session
         mirror_type = SAI_MIRROR_SESSION_TYPE_REMOTE
@@ -780,8 +760,8 @@ class IngressRSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_mirror_session(ingress_mirror_id)
 
-            sai_thrift_delete_fdb(self.client, vlan_id, mac1, port1)
-            sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac1, port1)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac2, port2)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -816,8 +796,8 @@ class IngressERSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
 
-        sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac1, port1, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac2, port2, mac_action)
 
         # setup enhanced remote mirror session
         mirror_type = SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
@@ -906,8 +886,8 @@ class IngressERSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_mirror_session(ingress_mirror_id)
 
-            sai_thrift_delete_fdb(self.client, vlan_id, mac1, port1)
-            sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac1, port1)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac2, port2)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -941,8 +921,8 @@ class EgressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
 
-        sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac1, port1, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac2, port2, mac_action)
 
         # setup local mirror session
         mirror_type = SAI_MIRROR_SESSION_TYPE_LOCAL
@@ -992,8 +972,8 @@ class EgressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_mirror_session(egress_mirror_id)
 
-            sai_thrift_delete_fdb(self.client, vlan_id, mac1, port1)
-            sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac1, port1)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac2, port2)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
@@ -1027,8 +1007,8 @@ class EgressERSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
         attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
         self.client.sai_thrift_set_port_attribute(port1, attr)
 
-        sai_thrift_create_fdb(self.client, vlan_id, mac1, port1, mac_action)
-        sai_thrift_create_fdb(self.client, vlan_id, mac2, port2, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac1, port1, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac2, port2, mac_action)
 
         # setup enhanced remote mirror session
         mirror_type = SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
@@ -1118,8 +1098,8 @@ class EgressERSpanMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_mirror_session(egress_mirror_id)
 
-            sai_thrift_delete_fdb(self.client, vlan_id, mac1, port1)
-            sai_thrift_delete_fdb(self.client, vlan_id, mac2, port2)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac1, port1)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac2, port2)
 
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
