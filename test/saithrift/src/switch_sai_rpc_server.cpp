@@ -243,7 +243,7 @@ public:
           switch (attribute.id) {
               case SAI_PORT_ATTR_ADMIN_STATE:
               case SAI_PORT_ATTR_UPDATE_DSCP:
-              case SAI_PORT_ATTR_EGRESS_PAUSE_ENABLE:
+              case SAI_PORT_ATTR_PKT_TX_ENABLE:
                   attr_list[i].value.booldata = attribute.value.booldata;
                   break;
               case SAI_PORT_ATTR_PORT_VLAN_ID:
