@@ -1091,7 +1091,7 @@ typedef enum _sai_port_attr_t
      *
      * Enable/Disable packet transmission of a port. When packet transmission
      * is disabled on a port, packets are still subject to regular ingress and egress
-     * admission control to determine the actions on a packet---whether it is
+     * admission control to determine the actions on a packet: whether it is
      * dropped (immediately or after timeout), or whether it is kept in buffers
      * internal to the switch before packet transmission is enabled on the port.
      *
