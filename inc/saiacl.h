@@ -204,7 +204,7 @@ typedef enum _sai_acl_action_type_t
     /** Set metadata to carry forward to next ACL stage */
     SAI_ACL_ACTION_TYPE_SET_ACL_META_DATA,
 
-    /** Egress block port list */
+    /** Egress block port list. To be deprecated */
     SAI_ACL_ACTION_TYPE_EGRESS_BLOCK_PORT_LIST,
 
     /** Set user defined trap id */
@@ -227,6 +227,9 @@ typedef enum _sai_acl_action_type_t
 
     /** Enable DTEL report for all packets without filtering (experimental) */
     SAI_ACL_ACTION_TYPE_DTEL_REPORT_ALL_PACKETS,
+
+    /** Set isolation group to prevent traffic to members of isolation group */
+    SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
 
 } sai_acl_action_type_t;
 
@@ -1967,6 +1970,9 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Egress block port list
      *
+     * This action would be deprecated in future release. To achieve this
+     * functionality use isolation group.
+     *
      * Packets matching the ACL entry and egressing out of the ports in the
      * given port list will be dropped.
      *
@@ -2049,6 +2055,16 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DTEL_REPORT_ALL_PACKETS,
+
+    /**
+     * @brief Set isolation group (isolation group object id)
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ISOLATION_GROUP
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ISOLATION_GROUP,
 
     /**
      * @brief End of Rule Actions
