@@ -999,9 +999,18 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
+     * @brief Bridge Type
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_BRIDGE_TYPE,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_BRIDGE_TYPE,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -1661,9 +1670,22 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
+     * @brief Bridge Type
+     *
+     * This is to qualify the bridge type of the packet.
+     * The value will be of type sai_bridge_type_t
+     * Example: SAI_BRIDGE_TYPE_1Q or SAI_BRIDGE_TYPE_1D.
+     *
+     * @type sai_acl_field_data_t sai_s32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_BRIDGE_TYPE,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_BRIDGE_TYPE,
 
     /*
      * Actions [sai_acl_action_data_t]
