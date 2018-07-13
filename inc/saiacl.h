@@ -1676,7 +1676,7 @@ typedef enum _sai_acl_entry_attr_t
      * The value will be of type sai_bridge_type_t
      * Example: SAI_BRIDGE_TYPE_1Q or SAI_BRIDGE_TYPE_1D.
      *
-     * @type sai_acl_field_data_t sai_s32_t
+     * @type sai_acl_field_data_t sai_int32_t
      * @flags CREATE_AND_SET
      * @default disabled
      */
