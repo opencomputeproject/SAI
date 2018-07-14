@@ -1670,7 +1670,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
-     * @brief Bridge Type
+     * @brief Bridge Type (field mask is not needed)
      *
      * This is to qualify the bridge type of the packet.
      * The value will be of type sai_bridge_type_t
