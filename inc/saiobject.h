@@ -125,7 +125,7 @@ sai_status_t sai_get_maximum_attribute_count(
         _Out_ uint32_t *count);
 
 /**
- * @brief Get the number of objects present in SAI
+ * @brief Get the number of objects present in SAI. Deprecated for backward compatibility.
  *
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
@@ -139,19 +139,20 @@ sai_status_t sai_get_object_count(
         _Out_ uint32_t *count);
 
 /**
- * @brief Get the list of object keys present in SAI
+ * @brief Get the number of and list of object keys present in SAI if enough large
+ * list provided, otherwise get the number of object keys only.
  *
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
- * @param[in] object_count Number of objects in SAI
+ * @param[inout] object_count Number of objects in SAI
  * @param[inout] object_list List of SAI objects or keys
  *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if list size insufficient, failure status code on error
  */
 sai_status_t sai_get_object_key(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
-        _In_ uint32_t object_count,
+        _Inout_ uint32_t *object_count,
         _Inout_ sai_object_key_t *object_list);
 
 /**
