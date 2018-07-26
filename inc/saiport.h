@@ -1103,6 +1103,7 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_ISOLATION_GROUP,
 
+    /**
      * @brief Port packet transmission enable
      *
      * Enable/Disable packet transmission of a port. When packet transmission
