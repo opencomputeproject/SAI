@@ -1103,6 +1103,20 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_ISOLATION_GROUP,
 
+     * @brief Port packet transmission enable
+     *
+     * Enable/Disable packet transmission of a port. When packet transmission
+     * is disabled on a port, packets are still subject to regular ingress and egress
+     * admission control to determine the actions on a packet: whether it is
+     * dropped (immediately or after timeout), or whether it is kept in buffers
+     * internal to the switch before packet transmission is enabled on the port.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_PORT_ATTR_PKT_TX_ENABLE,
+
     /**
      * @brief End of attributes
      */
