@@ -1803,8 +1803,7 @@ public:
       }
 
       attr[0].id = SAI_BRIDGE_PORT_ATTR_TYPE;
-      attr[1].id = SAI_BRIDGE_PORT_ATTR_BRIDGE_ID;
-      attr_count = 2;
+      attr_count = 1;
 
       status = bridge_api->get_bridge_port_attribute(bridge_port_id, attr_count, attr);
       if (status != SAI_STATUS_SUCCESS) {
