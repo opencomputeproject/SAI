@@ -1,0 +1,47 @@
+{
+    "set_bridge_id" : {
+        "sai_params":[
+            {
+                "type": "sai_object_id_t",
+                "object_type": "SAI_OBJECT_TYPE_BRIDGE",
+                "name": "bridge_id"
+            }]
+    },
+    "vxlan_tunnel_encap" :{
+        "sai_params":[
+            {
+            "type": "sai_object_id_t",
+            "object_type": "SAI_OBJECT_TYPE_TUNNEL",
+            "name": "tunnel_id"
+        },
+        {
+            "type": "sai_ip_address_t",
+            "object_type": "",
+            "name": "underlay_dip"
+        }]
+    },
+    "set_metadata_reg": {
+        "sai_params":[
+            {
+            "type": "sai_uint16_t",
+            "object_type": "",
+            "name": "meta_reg"
+        }]
+    }, 
+    "go_to_router": {
+        "sai_params":[
+            {
+                "type": "sai_object_id_t",
+                "object_type": "SAI_OBJECT_TYPE_VIRTUAL_ROUTER",
+                "name": "vr_id"
+            }]
+    },
+    "go_to_port": {
+        "sai_params":[
+            {
+                "type": "sai_object_id_t",
+                "object_type": "SAI_OBJECT_TYPE_PORT",
+                "name": "port_id"
+            }]
+    }
+}
