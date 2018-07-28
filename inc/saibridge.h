@@ -542,9 +542,9 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
     /**
-     * @brief 1D bridge bind point for ingress ACL object
+     * @brief 802.1D Bridge bind point for ingress ACL object
      *
-     * Bind (or unbind) an ingress ACL table or ACL group on a 1D Bridge . Enable/Update
+     * Bind (or unbind) an ingress ACL table or ACL group on a 1D Bridge. Enable/Update
      * ingress ACL table or ACL group filtering by assigning the list of valid
      * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
@@ -559,7 +559,7 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_INGRESS_ACL,
 
     /**
-     * @brief 1D bind point for egress ACL object
+     * @brief 802.1D Bridge bind point for egress ACL object
      *
      * Bind (or unbind) an egress ACL table or ACL group on a 1D Bridge. Enable/Update
      * egress ACL table or ACL group filtering by assigning the list of valid

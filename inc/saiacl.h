@@ -1683,7 +1683,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * This is to match the bridge type of the packet.
      * This would be useful when the ACL table/group is
-     * bound to a switch bindpoint and the ACL needs to
+     * bound to a switch bind point and the ACL needs to
      * be applied only on bridges of type 802.ID or only
      * on the 802.1Q bridge.The value for this match will
      * the enum values of sai_bridge_type_t.
@@ -1700,7 +1700,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * This is to match the packet's Bridge ID.
      * This will be useful when the ACL table/group
-     * is bound to a switch bindpoint and the rules need
+     * is bound to a switch bind point and the rules need
      * to identify the Bridge on which the packet is
      * present.
      *
