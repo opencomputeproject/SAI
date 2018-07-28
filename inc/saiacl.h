@@ -1008,9 +1008,18 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_BRIDGE_TYPE,
 
     /**
+     * @brief Bridge ID
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_BRIDGE_ID,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_BRIDGE_TYPE,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_BRIDGE_ID,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -1672,9 +1681,13 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Bridge Type (field mask is not needed)
      *
-     * This is to qualify the bridge type of the packet.
-     * The value will be of type sai_bridge_type_t
-     * Example: SAI_BRIDGE_TYPE_1Q or SAI_BRIDGE_TYPE_1D.
+     * This is to match the bridge type of the packet.
+     * This would be useful when the ACL table/group is
+     * bound to a switch bindpoint and the ACL needs to
+     * be applied only on bridges of type 802.ID or only
+     * on the 802.1Q bridge.The value for this match will
+     * the enum values of sai_bridge_type_t.
+     * i.e. SAI_BRIDGE_TYPE_1Q or SAI_BRIDGE_TYPE_1D.
      *
      * @type sai_acl_field_data_t sai_int32_t
      * @flags CREATE_AND_SET
@@ -1683,9 +1696,24 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_BRIDGE_TYPE,
 
     /**
+     * @brief Bridge ID (mask is not needed)
+     *
+     * This is to match the packet's Bridge ID.
+     * This will be useful when the ACL table/group
+     * is bound to a switch bindpoint and the rules need
+     * to identify the Bridge on which the packet is
+     * present.
+     *
+     * @type sai_acl_field_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_BRIDGE_ID,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_BRIDGE_TYPE,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_BRIDGE_ID,
 
     /*
      * Actions [sai_acl_action_data_t]
