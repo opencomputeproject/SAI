@@ -1706,6 +1706,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BRIDGE
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_BRIDGE_ID,
