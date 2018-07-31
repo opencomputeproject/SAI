@@ -741,7 +741,7 @@ typedef union _sai_attribute_value_t
     sai_segment_list_t segmentlist;
     sai_ip_address_list_t ipaddrlist;
     sai_timespec_t timespec;
-	
+
 } sai_attribute_value_t;
 
 typedef struct _sai_attribute_t
