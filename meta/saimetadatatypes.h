@@ -366,6 +366,11 @@ typedef enum _sai_attr_value_type_t
      */
     SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST,
 
+    /**
+     * @brief Attribute value is timespec.
+     */
+    SAI_ATTR_VALUE_TYPE_TIMESPEC,
+
 } sai_attr_value_type_t;
 
 /**
