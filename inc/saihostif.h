@@ -201,6 +201,18 @@ typedef enum _sai_hostif_trap_type_t
     /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_UDLD = 0x0000000b,
 
+    /**
+     * @brief PTP traffic (EtherType = 0x88F7 or UDP dst port == 319 or UDP dst port == 320)
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PTP = 0x00000010,
+
+    /**
+     * @brief PTP packet sent from CPU with updated TX timestamp
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PTP_TX_EVENT = 0x00000011,
+
     /** Switch traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
 
@@ -1048,7 +1060,7 @@ typedef enum _sai_hostif_packet_attr_t
      *
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
-     * Applicable for use-case like samplepacket traps.
+     * Applicable for use-case like samplepacket traps or PTP TX event
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -1067,6 +1079,16 @@ typedef enum _sai_hostif_packet_attr_t
      * @objects SAI_OBJECT_TYPE_BRIDGE
      */
     SAI_HOSTIF_PACKET_ATTR_BRIDGE_ID,
+
+    /**
+     * @brief Timestamp
+     *
+     * The timestamp on which the packet was received, or sent for PTP TX event.
+     *
+     * @type sai_timespec_t
+     * @flags READ_ONLY
+     */
+    SAI_HOSTIF_PACKET_ATTR_TIMESTAMP,
 
     /**
      * @brief End of attributes

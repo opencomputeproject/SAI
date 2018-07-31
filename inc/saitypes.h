@@ -119,6 +119,12 @@ typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
 
+typedef struct _sai_timespec_t
+{
+    uint64_t tv_sec;
+    uint32_t tv_nsec;
+} sai_timespec_t;
+
 /**
  * @def SAI_NULL_OBJECT_ID
  * SAI NULL object ID
@@ -734,6 +740,7 @@ typedef union _sai_attribute_value_t
     sai_tlv_list_t tlvlist;
     sai_segment_list_t segmentlist;
     sai_ip_address_list_t ipaddrlist;
+    sai_timespec_t timespec;
 
 } sai_attribute_value_t;
 
