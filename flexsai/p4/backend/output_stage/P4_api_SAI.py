@@ -7,7 +7,7 @@ import json
 from datetime import datetime
 from shutil import copy2
 from glob import glob
-import aux
+import P4_aux as aux
 
 
 def api_set_lib_paths(lib, template_dir):
