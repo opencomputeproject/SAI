@@ -2,7 +2,6 @@
 # deps:  P4c-bmv2
 
 ################################################################
-# from aux_functions import *
 from subprocess import call, Popen, PIPE
 import re
 import os
@@ -47,7 +46,7 @@ print args
 ################################################################
 # local imports
 sys.path.append(os.path.join(args.backend_path,'output_stage'))
-import aux
+import P4_aux as aux
 # import P4_base_layer as base
 
 ####################################################################
