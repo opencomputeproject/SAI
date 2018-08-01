@@ -31,12 +31,15 @@ FDB - Forwarding Data Base
 FEC - Forward Error Correction
 FPGA - Field Programmable Gate Array
 GRE - Generic Routing Encapsulation
+GRPC - GRPC Remote Procedure Call
 HW - Hardware
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
 IEEE - Institute of Electrical and Electronics Engineers
+IFA  - Inband Flow Analyzer
 IGMP - Internet Group Management Protocol
 IP - Internet Protocol
+IPFIX - IP Flow Information Export
 IP2ME - IP packets to local router IP
 IPMC - Intelligent Platform Management Controller
 L2 - Layer 2
@@ -44,6 +47,7 @@ L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
 MAC - Medium Access Control
+MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
 NHLFE - Next Hop Label Forwarding Entry
@@ -56,21 +60,25 @@ PFC - Priority Flow Control
 PIR - Peak Information Rate
 PTP - Precision time protocol
 QOS - Quality of Service
+PROTO - Protocol
 RARP - Reverse Address Resolution Protocol
 RFC - Request For Comment
 RPF - Reverse Path Forwarding
 RSPAN - Remote Span
 SAI - Switch Abstraction Interface
 SDK - Software Development Kit
+SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
 SNMP - Simple Network Management Protocol
 SPAN - Switched Port Analyzer
 SQE - Signal Quality Errors
 SSH - Secure Shell
+SSL - Secure Socket Layer
 STP - Spanning Tree Protocol
 TC - Traffic Control
 TCAM - Ternary Content Addressable Memory
 TCP - Transmission Control Protocol
+TLS - Transport Layer Security
 TOS - Type Of Service
 TPID - Tag Protocol Identifier
 TTL - Time to Leave
