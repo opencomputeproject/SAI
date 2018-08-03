@@ -1042,7 +1042,7 @@ void test_serialize_neighbor_entry()
     sai_neighbor_entry_t ne;
 
     ne.switch_id = 0x123;
-    ne.vr_id = 0xfab; 
+    ne.vr_id = 0xfab;
     ne.rif_id = 0xfab;
 
     ne.ip_address.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
@@ -1078,7 +1078,7 @@ void test_deserialize_neighbor_entry()
     sai_neighbor_entry_t ne;
 
     ne.switch_id = 0x123;
-    ne.vr_id = 0xfab; 
+    ne.vr_id = 0xfab;
     ne.rif_id = 0xfab;
 
     ne.ip_address.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
