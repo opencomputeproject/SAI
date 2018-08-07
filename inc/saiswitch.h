@@ -824,6 +824,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_RESTART_WARM,
 
     /**
+     * @brief Warm boot recovery
+     *
+     * Start warm boot recovery when set to true
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_WARM_RECOVER,
+
+    /**
      * @brief Type of restart supported
      *
      * @type sai_switch_restart_type_t
