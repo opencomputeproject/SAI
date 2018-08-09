@@ -81,37 +81,37 @@ typedef enum _sai_acl_table_attr_extensions_t
 } sai_acl_table_attr_extensions_t;
 
 /**
- * @brief Attribute Id for sai_acl_slice
+ * @brief Attribute Id for sai_extensions_acl_slice
  *
  * @flags Contains flags
  */
-typedef enum _sai_acl_slice_attr_extensions_t
+typedef enum _sai_extensions_acl_slice_attr_extensions_t
 {
     /**
      * @brief Table attributes start
      */
-    SAI_ACL_SLICE_ATTR_EXTENSIONS_RANGE_START,
+    SAI_EXTENSIONS_ACL_SLICE_ATTR_EXTENSIONS_RANGE_START,
 
     /**
      * @brief Get the ACL slice id
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_EXTENSIONS_SLICE_ID,
+    SAI_EXTENSIONS_ACL_SLICE_ATTR_EXTENSIONS_SLICE_ID,
 
     /**
      * @brief Get the ACL slice pipe id
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_EXTENSIONS_SLICE_PIPE_ID,
+    SAI_EXTENSIONS_ACL_SLICE_ATTR_EXTENSIONS_SLICE_PIPE_ID,
 
     /**
      * @brief Get the ACL slice stage
      * @type sai_acl_stage_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_EXTENSIONS_ACL_STAGE,
+    SAI_EXTENSIONS_ACL_SLICE_ATTR_EXTENSIONS_ACL_STAGE,
 
     /**
      * @brief Get the object_id list of the ACL table present
@@ -121,14 +121,14 @@ typedef enum _sai_acl_slice_attr_extensions_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE
      * @default internal
      */
-    SAI_ACL_SLICE_ATTR_EXTENSIONS_ACL_TABLE_LIST,
+    SAI_EXTENSIONS_ACL_SLICE_ATTR_EXTENSIONS_ACL_TABLE_LIST,
 
     /**
      * @brief Number of entries used in the slice
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_EXTENSIONS_USED_ACL_ENTRY,
+    SAI_EXTENSIONS_ACL_SLICE_ATTR_EXTENSIONS_USED_ACL_ENTRY,
 
     /**
      * @brief Number of free entry space available in
@@ -136,13 +136,13 @@ typedef enum _sai_acl_slice_attr_extensions_t
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_EXTENSIONS_AVAILABLE_ACL_ENTRY,
+    SAI_EXTENSIONS_ACL_SLICE_ATTR_EXTENSIONS_AVAILABLE_ACL_ENTRY,
 
     /**
      * @brief End of ACL slice attributes
      */
-    SAI_ACL_SLICE_ATTR_EXTENSIONS_RANGE_END,
+    SAI_EXTENSIONS_ACL_SLICE_ATTR_EXTENSIONS_RANGE_END,
 
-} sai_acl_slice_attr_extensions_t;
+} sai_extentions_acl_slice_attr_extensions_t;
 
 #endif /** __SAIACLEXTENSIONS_H_ */

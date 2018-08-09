@@ -42,10 +42,10 @@ typedef enum _sai_switch_attr_extensions_t
      *
      * @type sai_object_list_t
      * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_ACL_SLICE
+     * @objects SAI_OBJECT_TYPE_EXTENSIONS_ACL_SLICE
      * @default internal
      */
-    SAI_SWITCH_ATTR_ACL_SLICE_LIST,
+    SAI_SWITCH_ATTR_EXTENSIONS_ACL_SLICE_LIST,
 
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_END
 
