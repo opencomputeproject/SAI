@@ -19,19 +19,13 @@
  *
  * @file    saiaclextensions.h
  *
- * @brief   This module defines SAI ACL extentions interface
+ * @brief   This module defines acl extensions of the Switch Abstraction Interface (SAI)
  */
 
 #if !defined (__SAIACLEXTENSIONS_H_)
 #define __SAIACLEXTENSIONS_H_
 
 #include <saiacl.h>
-
-/**
- * @defgroup SAIACL EXTENTIONS SAI - ACL specific API definitions
- *
- * @{
- */
 
 /**
  * @brief Attribute Id for sai_acl_table
@@ -136,7 +130,7 @@ typedef enum _sai_acl_slice_experimental_attr_t
     SAI_ACL_SLICE_ATTR_USED_ACL_ENTRY,
 
     /**
-     * @biief Number of free entry space available in
+     * @brief Number of free entry space available in
      *        the current slice
      * @type  sai_uint32_t
      * @flags READ_ONLY
@@ -156,7 +150,4 @@ typedef enum _sai_acl_slice_experimental_attr_t
 
 } sai_acl_slice_experimental_attr_t;
 
-/**
- * @}
- */
 #endif /** __SAIACLEXTENSIONS_H_ */
