@@ -61,8 +61,8 @@ typedef enum _sai_acl_table_extensions_attr_t
 
     /**
      * @brief Number of used entries for all pipes
-     *        1st entry in the list points to pipe-0,2nd points to pipe-1 and so on.
-     * @type  sai_u32_list_t
+     *        1st entry in the list points to pipe-0,next points to pipe-1 and so on.
+     * @type sai_u32_list_t
      * @flags READ_ONLY
      */
     SAI_ACL_TABLE_EXTENSIONS_ATTR_USED_ACL_ENTRY_LIST,
@@ -70,8 +70,8 @@ typedef enum _sai_acl_table_extensions_attr_t
     /**
      * @brief Number of free entry space available in
      *        the current table for all pipes
-     *        1st entry in the list points to pipe-0,2nd points to pipe-1 and so on.
-     * @type  sai_u32_list_t
+     *        1st entry in the list points to pipe-0,next points to pipe-1 and so on.
+     * @type sai_u32_list_t
      * @flags READ_ONLY
      */
     SAI_ACL_TABLE_EXTENSIONS_ATTR_AVAILABLE_ACL_ENTRY_LIST,
@@ -94,21 +94,21 @@ typedef enum _sai_acl_slice_extensions_attr_t
 
     /**
      * @brief Get the ACL slice id
-     * @type  sai_uint32_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
      */
     SAI_ACL_SLICE_EXTENSIONS_ATTR_SLICE_ID,
 
     /**
      * @brief Get the ACL slice pipe id
-     * @type  sai_uint32_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
      */
     SAI_ACL_SLICE_EXTENSIONS_ATTR_SLICE_PIPE_ID,
 
     /**
      * @brief Get the ACL slice stage
-     * @type  sai_acl_stage_t
+     * @type sai_acl_stage_t
      * @flags READ_ONLY
      */
     SAI_ACL_SLICE_EXTENSIONS_ATTR_ACL_STAGE,
@@ -125,7 +125,7 @@ typedef enum _sai_acl_slice_extensions_attr_t
 
     /**
      * @brief Number of entries used in the slice
-     * @type  sai_uint32_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
      */
     SAI_ACL_SLICE_EXTENSIONS_ATTR_USED_ACL_ENTRY,
@@ -133,7 +133,7 @@ typedef enum _sai_acl_slice_extensions_attr_t
     /**
      * @brief Number of free entry space available in
      *        the current slice
-     * @type  sai_uint32_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
      */
     SAI_ACL_SLICE_EXTENSIONS_ATTR_AVAILABLE_ACL_ENTRY,
