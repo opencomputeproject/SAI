@@ -19,7 +19,7 @@
  *
  * @file    saiaclextensions.h
  *
- * @brief   This module defines acl extensions of the Switch Abstraction Interface (SAI)
+ * @brief   This module defines ACL extensions of the Switch Abstraction Interface (SAI)
  */
 
 #if !defined (__SAIACLEXTENSIONS_H_)
@@ -32,15 +32,16 @@
  *
  * @flags Contains flags
  */
-typedef enum _sai_acl_table_experimental_attr_t
+typedef enum _sai_acl_table_extensions_attr_t
 {
-    SAI_ACL_TABLE_ATTR_EXTENSIONS_RANGE_START = SAI_ACL_TABLE_ATTR_END,
+    SAI_ACL_TABLE_EXTENSIONS_ATTR_RANGE_START = SAI_ACL_TABLE_ATTR_END,
+
     /**
      * @brief Table priority
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_TABLE_ATTR_PRIORITY,
+    SAI_ACL_TABLE_EXTENSIONS_ATTR_PRIORITY,
 
     /**
      * @brief Packet is flagged to be dropped in pipeline.
@@ -49,68 +50,68 @@ typedef enum _sai_acl_table_experimental_attr_t
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_DROP_MARKED,
+    SAI_ACL_TABLE_EXTENSIONS_ATTR_FIELD_DROP_MARKED,
 
     /**
      * @brief Table group id
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_ACL_TABLE_ATTR_GROUP_ID,
+    SAI_ACL_TABLE_EXTENSIONS_ATTR_GROUP_ID,
 
     /**
      * @brief Number of used entries for all pipes
-     *        1st entry in the list points to pipe-0,2nd->pipe-1 and so on.
+     *        1st entry in the list points to pipe-0,2nd points to pipe-1 and so on.
      * @type  sai_u32_list_t
      * @flags READ_ONLY
      */
-    SAI_ACL_TABLE_ATTR_USED_ACL_ENTRY_LIST,
+    SAI_ACL_TABLE_EXTENSIONS_ATTR_USED_ACL_ENTRY_LIST,
 
     /**
      * @brief Number of free entry space available in
      *        the current table for all pipes
-     *        1st entry in the list points to pipe-0,2nd->pipe-1 and so on.
+     *        1st entry in the list points to pipe-0,2nd points to pipe-1 and so on.
      * @type  sai_u32_list_t
      * @flags READ_ONLY
      */
-    SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_ENTRY_LIST,
+    SAI_ACL_TABLE_EXTENSIONS_ATTR_AVAILABLE_ACL_ENTRY_LIST,
 
-    SAI_ACL_TABLE_ATTR_EXTENSIONS_RANGE_END
+    SAI_ACL_TABLE_EXTENSIONS_ATTR_RANGE_END
 
-}sai_acl_table_experimental_attr_t;
+} sai_acl_table_extensions_attr_t;
 
 /**
  * @brief Attribute Id for sai_acl_slice
  *
  * @flags Contains flags
  */
-typedef enum _sai_acl_slice_experimental_attr_t
+typedef enum _sai_acl_slice_extensions_attr_t
 {
     /**
      * @brief Table attributes start
      */
-    SAI_ACL_SLICE_ATTR_START,
+    SAI_ACL_SLICE_EXTENSIONS_ATTR_START,
 
     /**
      * @brief Get the ACL slice id
      * @type  sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_SLICE_ID,
+    SAI_ACL_SLICE_EXTENSIONS_ATTR_SLICE_ID,
 
     /**
      * @brief Get the ACL slice pipe id
      * @type  sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_SLICE_PIPE_ID,
+    SAI_ACL_SLICE_EXTENSIONS_ATTR_SLICE_PIPE_ID,
 
     /**
      * @brief Get the ACL slice stage
      * @type  sai_acl_stage_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_SLICE_STAGE,
+    SAI_ACL_SLICE_EXTENSIONS_ATTR_ACL_STAGE,
 
     /**
      * @brief Get the object_id list of the ACL table present
@@ -120,14 +121,14 @@ typedef enum _sai_acl_slice_experimental_attr_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE
      * @default internal
      */
-    SAI_ACL_SLICE_ATTR_ACL_TABLE_LIST,
+    SAI_ACL_SLICE_EXTENSIONS_ATTR_ACL_TABLE_LIST,
 
     /**
      * @brief Number of entries used in the slice
      * @type  sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_USED_ACL_ENTRY,
+    SAI_ACL_SLICE_EXTENSIONS_ATTR_USED_ACL_ENTRY,
 
     /**
      * @brief Number of free entry space available in
@@ -135,19 +136,13 @@ typedef enum _sai_acl_slice_experimental_attr_t
      * @type  sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ACL_SLICE_ATTR_AVAILABLE_ACL_ENTRY,
+    SAI_ACL_SLICE_EXTENSIONS_ATTR_AVAILABLE_ACL_ENTRY,
 
     /**
      * @brief End of ACL slice attributes
      */
-    SAI_ACL_SLICE_ATTR_END,
+    SAI_ACL_SLICE_EXTENSIONS_ATTR_END,
 
-    /**
-     * @brief Custom range base value start
-     */
-    SAI_ACL_SLICE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-    SAI_ACL_SLICE_ATTR_CUSTOM_RANGE_END
-
-} sai_acl_slice_experimental_attr_t;
+} sai_acl_slice_extensions_attr_t;
 
 #endif /** __SAIACLEXTENSIONS_H_ */
