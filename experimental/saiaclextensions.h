@@ -26,6 +26,7 @@
 #define __SAIACLEXTENSIONS_H_
 
 #include <saiacl.h>
+#include <saitypesextensions.h>
 
 /**
  * @brief Attribute Id for sai_acl_table
@@ -143,6 +144,6 @@ typedef enum _sai_extensions_acl_slice_attr_extensions_t
      */
     SAI_EXTENSIONS_ACL_SLICE_ATTR_EXTENSIONS_RANGE_END,
 
-} sai_extentions_acl_slice_attr_extensions_t;
+} sai_extensions_acl_slice_attr_extensions_t;
 
 #endif /** __SAIACLEXTENSIONS_H_ */
