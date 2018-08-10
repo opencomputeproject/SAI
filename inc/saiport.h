@@ -1012,6 +1012,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Egress block port list
      *
+     * Needs to be deprecated. Isolation group can be used instead.
+     *
      * Traffic ingressing on this port and egressing out of the ports in the
      * given port list will be dropped.
      *
@@ -1085,6 +1087,21 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_PORT_POOL
      */
     SAI_PORT_ATTR_PORT_POOL_LIST,
+
+    /**
+     * @brief Isolation group id
+     *
+     * Packets ingressing on the port should not be forwarded to the
+     * members present in the isolation group.The isolation group type
+     * should be SAI_ISOLATION_GROUP_TYPE_PORT.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ISOLATION_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_ISOLATION_GROUP,
 
     /**
      * @brief Port packet transmission enable
