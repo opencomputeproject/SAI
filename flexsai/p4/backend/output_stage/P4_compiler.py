@@ -39,10 +39,10 @@ elif os.path.isabs(args.output_path)==False:
 		args.output_path
 		)
 
-print 'argv: '
-print sys.argv
-print 'args:'
-print args
+print('argv: ')
+print(sys.argv)
+print('args:')
+print(args)
 ################################################################
 # local imports
 sys.path.append(os.path.join(args.backend_path,'output_stage'))
@@ -138,7 +138,7 @@ class FlexLib(object):
 							try:
 								new_line = visio_dicts[i][(table.flexPipe,pipe_index[table.flexPipe])].replace('__TEXT__',table_text)
 							except KeyError:
-								print 'Warning: [visio: %s] table skipped, no place in template'%visio
+								print('Warning: [visio: %s] table skipped, no place in template'%visio)
 								pass
 							o.write(new_line)
 							pipe_index[table.flexPipe] +=1
@@ -147,7 +147,7 @@ class FlexLib(object):
 						o.write(line)
 	
 	def get_header_key(self,key0,key1):
- 		if args.verbose : print ('getting key: %s.%s'%(key0,key1))
+		if args.verbose : print ('getting key: %s.%s'%(key0,key1))
 		# if key0 in self.sai_fixed_headers:
 			# inner = self.sai_fixed_headers[key0]
 			# if key1 in inner:
@@ -245,7 +245,7 @@ def interp_p4c_json_stage_output(lib,json_path):
 	# bmv2 json doesn't save tables in order, need to search by 'base_default_next' field
 
 	print('interp ' + json_path)
-	with open(json_path,'rb') as json_file:
+	with open(json_path,'r') as json_file:
 		j = json.load(json_file)
 		for pipe in lib.flexPipes:
 			# TODO (readability) make dict prio to prevent the below loop
@@ -264,7 +264,7 @@ def interp_p4c_json_stage_output(lib,json_path):
 			while inserted_tables < len(tables) and next_table_name != None:
 				for table in tables:
 					table_name = table['name'] 
-					if args.verbose : print "pipe %s. table %s" % (pipe, table_name)
+					if args.verbose : print("pipe %s. table %s" % (pipe, table_name))
 					if table_name != next_table_name and next_table_name != None:
 						continue
 					table_size = table['max_size']
@@ -294,7 +294,7 @@ def interp_p4c_json_stage_output(lib,json_path):
 							# key_params.append(key['mlnx_extract']);
 							# custom_key_offset.append(i)
 							# if args.verbose : print 'getting custom key ' + json_target
-						if args.verbose : print 'getting predefined key ' + json_target
+						if args.verbose : print('getting predefined key ' + json_target)
 											
 					#print key_params
 					if (len(custom_key_offset) > 1):
@@ -308,10 +308,10 @@ def interp_p4c_json_stage_output(lib,json_path):
 					#TODO- process static entries
 					if args.verbose  and 'entries' in table:
 						for ent in table['entries']:
-							print ent['match_key']
+							print(ent['match_key'])
 							# add to table
 					next_table_name = table['base_default_next']
-			if args.verbose  : print 'inserted tables: %d'%inserted_tables
+			if args.verbose  : print ('inserted tables: %d'%inserted_tables)
 			lib.pipe_table_count[pipe]=inserted_tables		
 	return
 
@@ -336,8 +336,8 @@ def is_field_pre_extracted(json_obj, header, field_name):
 								if len(fldlist) == 4: 
 									return fldlist[3]
 								else:
-									print 'Error parsing header field: ' + fld
-									print fldlist
+									print('Error parsing header field: ' + fld)
+									print(fldlist)
 									exit(0)
 					break
 			break
@@ -361,11 +361,11 @@ if args.create_visio:
 print('\n==================================\nCreating %s API \n=================================='%args.api)
 if args.api == 'P4runtime':
 	# import P4_api_grta as api
-	print "This version doesn't support P4rt api"
+	print ("This version doesn't support P4rt api")
 	exit(1)
 if args.api == 'SDK': 
 	# import P4_api_SDK as api
-	print "This version doesn't support SDK api"
+	print ("This version doesn't support SDK api")
 	exit(1)
 if args.api == 'SAI':
 	import P4_api_SAI as api
