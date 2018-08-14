@@ -124,19 +124,19 @@ int main_wrapper(int argc, char *const argv[]) {
 #include "p4c_python.cpp"
 
     static int py_argc = 8; //TODO find a better way to use this
-    char * py_argv[py_argc];
-    py_argv[0] = (char*) "P4_compiler.py";
-    py_argv[1] = (char*) "-b";
-    py_argv[2] = (char*) compiler_path.c_str(); 
+    wchar_t * py_argv[py_argc];
+    py_argv[0] = Py_DecodeLocale("P4_compiler.py", NULL);
+    py_argv[1] = Py_DecodeLocale("-b", NULL);
+    py_argv[2] = Py_DecodeLocale(compiler_path.c_str(), NULL); 
     // py_argv[3] = (char*) "-o"; 
     // py_argv[4] = (char*) "output"; //TODO: add possibility to change output path(?)
-    py_argv[3] = (char*) "-p";
-    py_argv[4] = (char*) options.p4RuntimeJsonFile.c_str();
-    py_argv[5] = (char*) "--api";
-    py_argv[6] = (char*) "SAI";
-    py_argv[7] = (char*) options.outputFile.c_str();
+    py_argv[3] = Py_DecodeLocale("-p", NULL);
+    py_argv[4] = Py_DecodeLocale(options.p4RuntimeJsonFile.c_str(), NULL);
+    py_argv[5] = Py_DecodeLocale("--api", NULL);
+    py_argv[6] = Py_DecodeLocale("SAI", NULL);
+    py_argv[7] = Py_DecodeLocale(options.outputFile.c_str(), NULL);
     
-    Py_SetProgramName((char*)"sai_json_compiler");
+    Py_SetProgramName(Py_DecodeLocale("sai_json_compiler", NULL));
     Py_Initialize();
     PySys_SetArgv(py_argc, py_argv);
     std::string compiler = compiler_path + "/output_stage/P4_compiler.py";
