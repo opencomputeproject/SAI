@@ -831,7 +831,7 @@ typedef enum _sai_switch_attr_t
      * This hint is set after boot.
      * In case of host adapter restart, host adapter can pass boot type in
      * #SAI_KEY_BOOT_TYPE. In case of host adapter recovery, host adapter can
-     * pass a hint about the boot type and reocvery, in this flag.
+     * pass a hint about the boot type and recovery, in this flag.
      *
      * @type bool
      * @flags CREATE_AND_SET
