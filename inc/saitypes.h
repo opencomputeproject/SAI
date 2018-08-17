@@ -119,6 +119,12 @@ typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
 
+typedef struct _sai_timespec_t
+{
+    uint64_t tv_sec;
+    uint32_t tv_nsec;
+} sai_timespec_t;
+
 /**
  * @def SAI_NULL_OBJECT_ID
  * SAI NULL object ID
@@ -244,7 +250,9 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_DTEL_REPORT_SESSION      = 73, /**< experimental */
     SAI_OBJECT_TYPE_DTEL_EVENT               = 74, /**< experimental */
     SAI_OBJECT_TYPE_BFD_SESSION              = 75,
-    SAI_OBJECT_TYPE_MAX                      = 76,
+    SAI_OBJECT_TYPE_ISOLATION_GROUP          = 76,
+    SAI_OBJECT_TYPE_ISOLATION_GROUP_MEMBER   = 77,
+    SAI_OBJECT_TYPE_MAX                      = 78,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -1001,6 +1009,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST */
     sai_port_eye_values_list_t porteyevalues;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TIMESPEC */
+    sai_timespec_t timespec;
 } sai_attribute_value_t;
 
 /**
