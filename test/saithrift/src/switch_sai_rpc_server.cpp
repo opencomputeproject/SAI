@@ -243,6 +243,7 @@ public:
           switch (attribute.id) {
               case SAI_PORT_ATTR_ADMIN_STATE:
               case SAI_PORT_ATTR_UPDATE_DSCP:
+              case SAI_PORT_ATTR_PKT_TX_ENABLE:
                   attr_list[i].value.booldata = attribute.value.booldata;
                   break;
               case SAI_PORT_ATTR_PORT_VLAN_ID:
@@ -1802,8 +1803,7 @@ public:
       }
 
       attr[0].id = SAI_BRIDGE_PORT_ATTR_TYPE;
-      attr[1].id = SAI_BRIDGE_PORT_ATTR_BRIDGE_ID;
-      attr_count = 2;
+      attr_count = 1;
 
       status = bridge_api->get_bridge_port_attribute(bridge_port_id, attr_count, attr);
       if (status != SAI_STATUS_SUCCESS) {

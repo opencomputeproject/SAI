@@ -1,0 +1,14 @@
+{
+    "scalars": {
+        "in_port_metadata_t.ingress_port": "INGRESS_PORT",
+        "out_port_metadata_t.egress_port": "EGRESS_PORT",
+        "in_rif_metadata_t.ingress_rif": "INGRESS_RIF",
+        "out_rif_metadata_t.egress_rif": "EGRESS_RIF"
+    },
+    "standard_metadata": {
+        "metadata_reg": "METADATA_REG"
+    },
+    "ip.v4": {
+        "dst_addr":  "DST_IP_ADDR"
+    }
+}

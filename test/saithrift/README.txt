@@ -69,6 +69,8 @@ Otherwise, please setup an appropriate cross-compile environment to generate 'sa
 
     sudo ptf --test-dir tests sail3.L3IPv4HostTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' -t "server='10.0.0.1';port_map_file='default_interface_to_front_map.ini'"
 
+    sample configuration for mellanox sn2700 under src/msn_2700 directory: default_interface_to_front_map.ini
+
     Note. Existing test cases are stored in the directory:
 
     SAI/test/saithrift/tests
@@ -80,5 +82,7 @@ Otherwise, please setup an appropriate cross-compile environment to generate 'sa
 
     server='10.0.0.1' is the IP address of the switch (server) - it must be accessible from the test machine (client)
 
-    sample configuration for mellanox sn2700 under src/msn_2700 directory: default_interface_to_front_map.ini
+    3. Copy tests directory to client
+    
+    4. Copy generated src/gen-py directory to client
 
