@@ -2642,6 +2642,20 @@ typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Get ACL slice attribute
+ *
+ * @param[in] sai_object_id_t SAI ACL slice object id
+ * @param[in] attr_count Number of attributes
+ * @param[out] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_acl_slice_attribute_fn)(
+        _In_ sai_object_id_t acl_entry_id,
+        _In_ uint32_t attr_count,
+        _Out_ sai_attribute_t *attr_list);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_acl_api_t
