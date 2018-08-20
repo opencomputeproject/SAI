@@ -2646,7 +2646,7 @@ typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
  *
  * @param[in] sai_object_id_t SAI ACL slice object id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
