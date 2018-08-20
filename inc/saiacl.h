@@ -1047,6 +1047,23 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /**
+     * @brief Number of used entries for all pipes
+     *        1st entry in the list points to pipe-0,next points to pipe-1 and so on.
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_ATTR_USED_ACL_ENTRY_LIST,
+
+    /**
+     * @brief Number of free entry space available in
+     *        the current table for all pipes
+     *        1st entry in the list points to pipe-0,next points to pipe-1 and so on.
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_ENTRY_LIST,
+
+    /**
      * @brief End of Custom range base
      */
     SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_END
@@ -2233,6 +2250,71 @@ typedef enum _sai_acl_range_attr_t
 } sai_acl_range_attr_t;
 
 /**
+ * @brief Attribute Id for sai_acl_slice
+ *
+ * @flags Contains flags
+ */
+typedef enum _sai_acl_slice_attr_t
+{
+    /**
+     * @brief Table attributes start
+     */
+    SAI_ACL_SLICE_ATTR_RANGE_START,
+
+    /**
+     * @brief Get the ACL slice id
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_SLICE_ATTR_SLICE_ID,
+
+    /**
+     * @brief Get the ACL slice pipe id
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_SLICE_ATTR_SLICE_PIPE_ID,
+
+    /**
+     * @brief Get the ACL slice stage
+     * @type sai_acl_stage_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_SLICE_ATTR_ACL_STAGE,
+
+    /**
+     * @brief Get the object_id list of the ACL table present
+     *        in the current slice
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
+     * @default internal
+     */
+    SAI_ACL_SLICE_ATTR_ACL_TABLE_LIST,
+
+    /**
+     * @brief Number of entries used in the slice
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_SLICE_ATTR_USED_ACL_ENTRY,
+
+    /**
+     * @brief Number of free entry space available in
+     *        the current slice
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_SLICE_ATTR_AVAILABLE_ACL_ENTRY,
+
+    /**
+     * @brief End of ACL slice attributes
+     */
+    SAI_ACL_SLICE_ATTR_RANGE_END,
+
+} sai_acl_slice_attr_t;
+
+/**
  * @brief Create an ACL table
  *
  * @param[out] acl_table_id The ACL table id
@@ -2572,6 +2654,7 @@ typedef struct _sai_acl_api_t
     sai_remove_acl_table_group_member_fn        remove_acl_table_group_member;
     sai_set_acl_table_group_member_attribute_fn set_acl_table_group_member_attribute;
     sai_get_acl_table_group_member_attribute_fn get_acl_table_group_member_attribute;
+    sai_get_acl_slice_attribute_fn              get_acl_slice_attribute;
 } sai_acl_api_t;
 
 /**

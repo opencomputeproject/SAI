@@ -1668,6 +1668,16 @@ typedef enum _sai_switch_attr_t
     /** Custom range base value */
     SAI_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
+    /**
+     * @brief Get the ACL slice list
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_SLICE
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_ACL_SLICE_LIST,
+
     /** End of custom range base */
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END
 
