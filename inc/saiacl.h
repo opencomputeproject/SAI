@@ -2275,7 +2275,7 @@ typedef enum _sai_acl_slice_attr_t
     /**
      * @brief Table attributes start
      */
-    SAI_ACL_SLICE_ATTR_RANGE_START,
+    SAI_ACL_SLICE_ATTR_START,
 
     /**
      * @brief Get the ACL slice id
@@ -2326,7 +2326,7 @@ typedef enum _sai_acl_slice_attr_t
     /**
      * @brief End of ACL slice attributes
      */
-    SAI_ACL_SLICE_ATTR_RANGE_END,
+    SAI_ACL_SLICE_ATTR_END,
 
 } sai_acl_slice_attr_t;
 
