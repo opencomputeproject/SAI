@@ -2644,7 +2644,7 @@ typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
 /**
  * @brief Get ACL slice attribute
  *
- * @param[in] sai_object_id_t SAI ACL slice object id
+ * @param[in] acl_slice_id ACL slice id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
