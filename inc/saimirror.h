@@ -93,12 +93,12 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
 
     /**
-     * @brief Destination/Analyzer/Monitor Port
+     * @brief Destination/Analyzer/Monitor Port. SAI_NULL_OBJECT_ID is to flood within RSPAN VLAN
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
-     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_LOCAL or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
+     * @allownull true
      */
     SAI_MIRROR_SESSION_ATTR_MONITOR_PORT,
 
