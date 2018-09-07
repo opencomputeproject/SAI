@@ -94,9 +94,7 @@ typedef enum _sai_mirror_session_attr_t
 
     /**
      * @brief Destination/Analyzer/Monitor Port.
-     * SAI_NULL_OBJECT_ID is valid only when SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
-     * For remote mirror session when monitor port is null then all members of the VLAN becomes the monitor port.
-     * Also need to add/remove monitor ports whenever add/remove members occurs on that VLAN.
+     * null valid only for remote session and adds all VLAN members as monitor port
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
