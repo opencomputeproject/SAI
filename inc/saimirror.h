@@ -93,7 +93,10 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
 
     /**
-     * @brief Destination/Analyzer/Monitor Port. SAI_NULL_OBJECT_ID is to flood within RSPAN VLAN
+     * @brief Destination/Analyzer/Monitor Port.
+     * SAI_NULL_OBJECT_ID is valid only when SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * For remote mirror session when monitor port is null then all members of the VLAN becomes the monitor port.
+     * Also need to add/remove monitor ports whenever add/remove members occurs on that VLAN.
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
