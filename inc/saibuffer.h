@@ -397,6 +397,12 @@ typedef enum _sai_buffer_pool_stat_t
     /** Get/set WRED marked bytes count [uint64_t] */
     SAI_BUFFER_POOL_STAT_WRED_ECN_MARKED_BYTES = 0x00000012,
 
+    /** Get current headroom pool occupancy in bytes [uint64_t] */
+    SAI_BUFFER_POOL_STAT_XOFF_CURR_OCCUPANCY_BYTES = 0x00000013,
+
+    /** Get headroom pool occupancy in bytes [uint64_t] */
+    SAI_BUFFER_POOL_STAT_XOFF_WATERMARK_BYTES = 0x00000014,
+
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
