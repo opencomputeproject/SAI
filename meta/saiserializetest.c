@@ -1236,21 +1236,6 @@ void test_serialize_notifications()
     res = sai_serialize_switch_state_change_notification(buf, switch_id, SAI_SWITCH_OPER_STATUS_UP);
     ret = "{\"switch_id\":\"oid:0x123abc\",\"switch_oper_status\":\"SAI_SWITCH_OPER_STATUS_UP\"}";
     ASSERT_STR_EQ(buf, ret, res);
-
-    sai_tam_threshold_breach_event_t data3;
-    memset(&data3, 0, sizeof(data3));
-
-    res = sai_serialize_tam_event_notification(buf, 1, &data3);
-    ret = "{\"count\":1,\"data\":[{\"threshold_id\":\"oid:0x0\",\"is_report_valid\":false,\"value\":0}]}";
-    ASSERT_STR_EQ(buf, ret, res);
-
-    memset(&data3, 0, sizeof(data3));
-
-    data3.is_report_valid = true;
-
-    res = sai_serialize_tam_event_notification(buf, 1, &data3);
-    ret = "{\"count\":1,\"data\":[{\"threshold_id\":\"oid:0x0\",\"is_report_valid\":true,\"tam_report_id\":\"oid:0x0\",\"value\":0}]}";
-    ASSERT_STR_EQ(buf, ret, res);
 }
 
 void sai_serialize_log(

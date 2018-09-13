@@ -176,6 +176,17 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_PFC_DLR_INIT = 0x00000009,
 
     /**
+     * @brief Port bind point for TAM object
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_QUEUE_ATTR_TAM_OBJECT,
+
+    /**
      * @brief End of attributes
      */
     SAI_QUEUE_ATTR_END,
