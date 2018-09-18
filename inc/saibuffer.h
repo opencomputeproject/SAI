@@ -323,6 +323,17 @@ typedef enum _sai_buffer_pool_attr_t
     SAI_BUFFER_POOL_ATTR_WRED_PROFILE_ID,
 
     /**
+     * @brief Buffer pool bind point for TAM object
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_BUFFER_POOL_ATTR_TAM_OBJECT,
+
+    /**
      * @brief End of attributes
      */
     SAI_BUFFER_POOL_ATTR_END,
