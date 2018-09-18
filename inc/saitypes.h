@@ -738,6 +738,9 @@ typedef enum _sai_tam_bind_point_type_t
     /** Bind Point Type VLAN */
     SAI_TAM_BIND_POINT_TYPE_VLAN,
 
+    /** Bind Point Type Buffer pool */
+    SAI_TAM_BIND_POINT_TYPE_BUFFER_POOL,
+
     /** Bind Point Type Switch */
     SAI_TAM_BIND_POINT_TYPE_SWITCH
 
