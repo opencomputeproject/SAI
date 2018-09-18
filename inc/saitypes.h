@@ -725,6 +725,25 @@ typedef enum _sai_acl_bind_point_type_t
 } sai_acl_bind_point_type_t;
 
 /**
+ * @brief Attribute data for SAI_ACL_TABLE_ATTR_BIND_POINT
+ */
+typedef enum _sai_tam_bind_point_type_t
+{
+    /** Bind Point Type Port */
+    SAI_TAM_BIND_POINT_TYPE_PORT,
+
+    /** Bind Point Type LAG */
+    SAI_TAM_BIND_POINT_TYPE_LAG,
+
+    /** Bind Point Type VLAN */
+    SAI_TAM_BIND_POINT_TYPE_VLAN,
+
+    /** Bind Point Type Switch */
+    SAI_TAM_BIND_POINT_TYPE_SWITCH
+
+} sai_tam_bind_point_type_t;
+
+/**
  * @brief Structure for ACL Resource Count
  */
 typedef struct _sai_acl_resource_t

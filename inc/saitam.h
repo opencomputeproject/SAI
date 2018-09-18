@@ -44,112 +44,31 @@ typedef enum _sai_tam_attr_t
     SAI_TAM_ATTR_START,
 
     /**
-     * @brief Tam IFA HDR objects associated with this tam
+     * @brief Tam telemetry objects associated with this tam
      *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_IFA_HDR
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_TELEMETRY
      */
-    SAI_TAM_ATTR_IFA_HDR_LIST = SAI_TAM_ATTR_START,
-
-    /**
-     * @brief Tam IFA probe objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_IFA_PROBE
-     */
-    SAI_TAM_ATTR_IFA_PROBE_LIST,
+    SAI_TAM_ATTR_TELEMETRY_OBJECT_ID = SAI_TAM_ATTR_START,
 
     /**
      * @brief Tam Probes associated with this tam
      *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_PROBE
      */
-    SAI_TAM_ATTR_PROBE_LIST,
-
-    /**
-     * @brief Tam Math functions associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_MATH_FUNC
-     */
-    SAI_TAM_ATTR_MATH_FUNC_LIST,
-
-    /**
-     * @brief Tam report objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_REPORT
-     */
-    SAI_TAM_ATTR_MATH_REPORT_LIST,
-
-    /**
-     * @brief Tam Telemetry type objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_TEL_TYPE
-     */
-    SAI_TAM_ATTR_TELEMETRY_TYPE_LIST,
-
-    /**
-     * @brief Tam telemetry objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_TELEMETRY
-     */
-    SAI_TAM_ATTR_TELEMETRY_LIST,
-
-    /**
-     * @brief Tam transport objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_TRANSPORT
-     */
-    SAI_TAM_ATTR_TRANSPORT_LIST,
-
-    /**
-     * @brief Tam event threshold objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_EVENT_THRESHOLD
-     */
-    SAI_TAM_ATTR_EVENT_THRESHOLD_LIST,
-
-    /**
-     * @brief Tam collector objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
-     */
-    SAI_TAM_ATTR_COLLECTOR_LIST,
-
-    /**
-     * @brief Tam event action objects associated with this tam
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_EVENT_ACTION
-     */
-    SAI_TAM_ATTR_EVENT_ACTION_LIST,
+    SAI_TAM_ATTR_PROBE_OBJECT_ID,
 
     /**
      * @brief Tam event objects associated with this tam
      *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_EVENT
      */
-    SAI_TAM_ATTR_EVENT_LIST,
+    SAI_TAM_ATTR_EVENT_OBJECT_ID,
 
     /**
      * @brief End of Attributes
@@ -221,56 +140,6 @@ typedef sai_status_t (*sai_get_tam_attribute_fn)(
         _In_ sai_object_id_t tam_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief TAM Threshold Breach Event notification
- */
-typedef struct _sai_tam_threshold_breach_event_t
-{
-    /**
-     * @brief Threshold ID
-     */
-    sai_object_id_t threshold_id;
-
-    /**
-     * @brief Report Valid
-     *
-     * Indicates whether the tam_report_id field points to a valid object.
-     */
-    bool is_report_valid;
-
-    /**
-     * @brief Report Id
-     *
-     * This field is valid only when is_report_valid is set to true.
-     *
-     * @objects SAI_OBJECT_TYPE_TAM_REPORT
-     * @validonly is_report_valid == true
-     */
-    sai_object_id_t tam_report_id;
-
-    /**
-     * @brief Threshold / Statistic value for the breach event
-     */
-    uint64_t value;
-
-} sai_tam_threshold_breach_event_t;
-
-/**
- * @brief TAM event notification function
- *
- * Provides the callback function to be invoked upon a threshold breach.
- * In the absence of a callback function, the event will be ignored (DEFAULT)
- * If neither of callback nor transporter is provided, no report is made.
- *
- * @count data[count]
- *
- * @param[in] count Number of events
- * @param[in] data Pointer to TAM events data array
- */
-typedef void (*sai_tam_event_notification_fn)(
-        _In_ uint32_t count,
-        _In_ const sai_tam_threshold_breach_event_t *data);
 
 /**
  * @brief IFA(Inband Flow Analyzer) header Object Attributes
@@ -446,15 +315,6 @@ typedef enum _sai_tam_ifa_hdr_attr_t
     SAI_TAM_IFA_HDR_ATTR_SEQ_NUMBER,
 
     /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_IFA_HDR_ATTR_TAM_ID,
-
-    /**
      * @brief End of Attributes
      */
     SAI_TAM_IFA_HDR_ATTR_END,
@@ -618,15 +478,6 @@ typedef enum _sai_tam_ifa_probe_attr_t
     SAI_TAM_IFA_PROBE_ATTR_IFA_HDR,
 
     /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_IFA_PROBE_ATTR_TAM_ID,
-
-    /**
      * @brief End of Attributes
      */
     SAI_TAM_IFA_PROBE_ATTR_END,
@@ -737,15 +588,6 @@ typedef enum _sai_tam_probe_attr_t
     SAI_TAM_PROBE_ATTR_HDR,
 
     /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_PROBE_ATTR_HDR_TAM_ID,
-
-    /**
      * @brief End of Attributes
      */
     SAI_TAM_PROBE_ATTR_END,
@@ -853,15 +695,6 @@ typedef enum _sai_tam_math_func_attr_t
      * @default SAI_TAM_TEL_MATH_FUNC_TYPE_NONE
      */
     SAI_TAM_MATH_FUNC_ATTR_TAM_TEL_MATH_FUNC_TYPE = SAI_TAM_MATH_FUNC_ATTR_START,
-
-    /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_MATH_FUNC_ATTR_TAM_ID,
 
     /**
      * @brief Add Math func attributes below
@@ -986,15 +819,6 @@ typedef enum _sai_tam_event_threshold_attr_t
      * @default 0
      */
     SAI_TAM_EVENT_THRESHOLD_ATTR_ABS_VALUE,
-
-    /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_EVENT_THRESHOLD_ATTR_TAM_ID,
 
     /**
      * @brief End of Attributes
@@ -1273,13 +1097,26 @@ typedef enum _sai_tam_tel_type_attr_t
     SAI_TAM_TEL_TYPE_ATTR_MATH_FUNC,
 
     /**
-     * @brief TAM Object
+     * @brief Tam report type
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM_REPORT
      */
-    SAI_TAM_TEL_TYPE_ATTR_TAM_ID,
+    SAI_TAM_TEL_TYPE_ATTR_REPORT_ID,
+
+    /**
+     * @brief List of TAM bind points where this group will be applied.
+     *
+     * TAM group bind point list - create only attribute required for TAM
+     * telemetry type to let the user specify his intention to allow the
+     * source to generate data.
+     *
+     * @type sai_s32_list_t sai_tam_bind_point_type_t
+     * @flags CREATE_ONLY
+     * @default empty
+     */
+    SAI_TAM_TEL_TYPE_ATTR_TAM_BIND_POINT_TYPE_LIST,
 
     /**
      * @brief End of Attributes
@@ -1409,15 +1246,6 @@ typedef enum _sai_tam_report_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_TAM_REPORT_ATTR_TYPE = SAI_TAM_REPORT_ATTR_START,
-
-    /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_REPORT_ATTR_TAM_ID,
 
     /**
      * @brief Statistic for this histogram
@@ -1568,15 +1396,6 @@ typedef enum _sai_tam_telemetry_attr_t
     SAI_TAM_TELEMETRY_ATTR_COLLECTOR_LIST,
 
     /**
-     * @brief Tam report type
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_TAM_REPORT
-     */
-    SAI_TAM_TELEMETRY_ATTR_REPORT_ID,
-
-    /**
      * @brief Tam event reporting unit
      *
      * @type sai_tam_reporting_unit_t
@@ -1595,15 +1414,6 @@ typedef enum _sai_tam_telemetry_attr_t
      * @default 1
      */
     SAI_TAM_TELEMETRY_ATTR_REPORTING_INTERVAL,
-
-    /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_TELEMETRY_ATTR_TAM_ID,
 
     /**
      * @brief End of Attributes
@@ -1771,15 +1581,6 @@ typedef enum _sai_tam_transport_attr_t
     SAI_TAM_TRANSPORT_ATTR_TRANSPORT_AUTH_TYPE,
 
     /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_TRANSPORT_ATTR_TAM_ID,
-
-    /**
      * @brief End of Attributes
      */
     SAI_TAM_TRANSPORT_ATTR_END,
@@ -1925,15 +1726,6 @@ typedef enum _sai_tam_collector_attr_t
     SAI_TAM_COLLECTOR_ATTR_DSCP_VALUE,
 
     /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_COLLECTOR_ATTR_TAM_ID,
-
-    /**
      * @brief End of Attributes
      */
     SAI_TAM_COLLECTOR_ATTR_END,
@@ -2055,10 +1847,8 @@ typedef enum _sai_tam_event_action_attr_t
      * @brief Report Object
      *
      * @type sai_object_id_t
-     * @flags CREATE_AND_SET
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_REPORT
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_EVENT_ACTION_ATTR_REPORT_TYPE = SAI_TAM_EVENT_ACTION_ATTR_START,
 
@@ -2069,25 +1859,6 @@ typedef enum _sai_tam_event_action_attr_t
      * @default 0
      */
     SAI_TAM_EVENT_ACTION_ATTR_QOS_ACTION_TYPE,
-
-    /**
-     * @brief Action type Next Hop
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_NEXT_HOP
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_TAM_EVENT_ACTION_ATTR_NEXTHOP_TYPE,
-
-    /**
-     * @brief TAM Object
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
-     */
-    SAI_TAM_EVENT_ACTION_ATTR_TAM_ID,
 
     /**
      * @brief End of Attributes
@@ -2200,13 +1971,17 @@ typedef enum _sai_tam_event_attr_t
     SAI_TAM_EVENT_ATTR_THRESHOLD,
 
     /**
-     * @brief TAM Object
+     * @brief List of TAM bind points where this group will be applied.
      *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_TAM
+     * TAM group bind point list - create only attribute required for TAM
+     * event type to let the user specify his intention to allow the
+     * source to generate events.
+     *
+     * @type sai_s32_list_t sai_tam_bind_point_type_t
+     * @flags CREATE_ONLY
+     * @default empty
      */
-    SAI_TAM_EVENT_ATTR_TAM_ID,
+    SAI_TAM_EVENT_ATTR_TAM_BIND_POINT_TYPE_LIST,
 
     /**
      * @brief End of Attributes
@@ -2272,6 +2047,27 @@ typedef sai_status_t (*sai_get_tam_event_attribute_fn)(
 typedef sai_status_t (*sai_set_tam_event_attribute_fn)(
         _In_ sai_object_id_t tam_event_id,
         _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief TAM event callback
+ *
+ * @count attr_list[attr_count]
+ * @count buffer[buffer_size]
+ * @objects attr_list SAI_OBJECT_TYPE_TAM_EVENT_ACTION
+ * @objects tam_event_id SAI_OBJECT_TYPE_TAM_EVENT
+ *
+ * @param[in] tam_event_id Create Event Object ID
+ * @param[in] buffer_size Actual packet size in bytes
+ * @param[in] buffer Packet buffer
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ */
+typedef void (*sai_tam_event_notification_fn)(
+        _In_ sai_object_id_t tam_event_id,
+        _In_ sai_size_t buffer_size,
+        _In_ const void *buffer,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief SAI TAM API set
