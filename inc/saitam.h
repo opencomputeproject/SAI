@@ -46,20 +46,22 @@ typedef enum _sai_tam_attr_t
     /**
      * @brief Tam telemetry objects associated with this tam
      *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_TELEMETRY
+     * @default empty
      */
-    SAI_TAM_ATTR_TELEMETRY_OBJECT_ID = SAI_TAM_ATTR_START,
+    SAI_TAM_ATTR_TELEMETRY_OBJECTS_LIST = SAI_TAM_ATTR_START,
 
     /**
      * @brief Tam Probes associated with this tam
      *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_PROBE
+     * @default empty
      */
-    SAI_TAM_ATTR_PROBE_OBJECT_ID,
+    SAI_TAM_ATTR_PROBE_OBJECTS_LIST,
 
     /**
      * @brief Tam event objects associated with this tam
@@ -69,6 +71,19 @@ typedef enum _sai_tam_attr_t
      * @objects SAI_OBJECT_TYPE_TAM_EVENT
      */
     SAI_TAM_ATTR_EVENT_OBJECT_ID,
+
+    /**
+     * @brief List of TAM bind points where this object will be applied.
+     *
+     * TAM group bind point list - create only attribute required for TAM
+     * object to let the user specify his intention to allow the
+     * source to generate data.
+     *
+     * @type sai_s32_list_t sai_tam_bind_point_type_t
+     * @flags CREATE_ONLY
+     * @default empty
+     */
+    SAI_TAM_ATTR_TAM_BIND_POINT_TYPE_LIST,
 
     /**
      * @brief End of Attributes
@@ -1106,19 +1121,6 @@ typedef enum _sai_tam_tel_type_attr_t
     SAI_TAM_TEL_TYPE_ATTR_REPORT_ID,
 
     /**
-     * @brief List of TAM bind points where this group will be applied.
-     *
-     * TAM group bind point list - create only attribute required for TAM
-     * telemetry type to let the user specify his intention to allow the
-     * source to generate data.
-     *
-     * @type sai_s32_list_t sai_tam_bind_point_type_t
-     * @flags CREATE_ONLY
-     * @default empty
-     */
-    SAI_TAM_TEL_TYPE_ATTR_TAM_BIND_POINT_TYPE_LIST,
-
-    /**
      * @brief End of Attributes
      */
     SAI_TAM_TEL_TYPE_ATTR_END,
@@ -1479,6 +1481,24 @@ typedef sai_status_t (*sai_get_tam_telemetry_attribute_fn)(
 typedef sai_status_t (*sai_set_tam_telemetry_attribute_fn)(
         _In_ sai_object_id_t tam_telemetry_id,
         _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief TAM telemetry data get API
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ * @param[inout] buffer_size Actual buffer size in bytes
+ * @param[out] buffer Data buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+sai_status_t sai_tam_telemetry_data_get(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list,
+        _Inout_ sai_size_t *buffer_size,
+        _Out_ void *buffer);
 
 /**
  * @brief Transport Types
@@ -1971,19 +1991,6 @@ typedef enum _sai_tam_event_attr_t
     SAI_TAM_EVENT_ATTR_THRESHOLD,
 
     /**
-     * @brief List of TAM bind points where this group will be applied.
-     *
-     * TAM group bind point list - create only attribute required for TAM
-     * event type to let the user specify his intention to allow the
-     * source to generate events.
-     *
-     * @type sai_s32_list_t sai_tam_bind_point_type_t
-     * @flags CREATE_ONLY
-     * @default empty
-     */
-    SAI_TAM_EVENT_ATTR_TAM_BIND_POINT_TYPE_LIST,
-
-    /**
      * @brief End of Attributes
      */
     SAI_TAM_EVENT_ATTR_END,
@@ -2057,8 +2064,8 @@ typedef sai_status_t (*sai_set_tam_event_attribute_fn)(
  * @objects tam_event_id SAI_OBJECT_TYPE_TAM_EVENT
  *
  * @param[in] tam_event_id Create Event Object ID
- * @param[in] buffer_size Actual packet size in bytes
- * @param[in] buffer Packet buffer
+ * @param[in] buffer_size Actual buffer size in bytes
+ * @param[in] buffer Data buffer
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  */
@@ -2148,5 +2155,3 @@ typedef struct _sai_tam_api_t
  * @}
  */
 #endif /** __SAITAM_H_ */
-
-
