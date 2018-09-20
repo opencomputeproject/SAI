@@ -383,7 +383,7 @@ typedef sai_status_t (*sai_get_tam_histogram_attribute_fn)(
 typedef sai_status_t (*sai_get_tam_histogram_stats_fn)(
         _In_ sai_object_id_t tam_histogram_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_tam_microburst_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 typedef struct _sai_uburst_api_t

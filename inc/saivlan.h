@@ -582,7 +582,7 @@ typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
         _In_ sai_object_id_t vlan_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_vlan_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -599,7 +599,7 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
 typedef sai_status_t (*sai_get_vlan_stats_ext_fn)(
         _In_ sai_object_id_t vlan_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_vlan_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -615,7 +615,7 @@ typedef sai_status_t (*sai_get_vlan_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_vlan_stats_fn)(
         _In_ sai_object_id_t vlan_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_vlan_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief VLAN methods table retrieved with sai_api_query()
