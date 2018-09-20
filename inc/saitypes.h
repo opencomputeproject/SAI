@@ -55,6 +55,7 @@ typedef UINT32  sai_ip4_t;
 typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
 typedef UINT32  sai_label_id_t;
+typedef UINT32  sai_stat_id_t;
 
 #include <ws2def.h>
 #include <ws2ipdef.h>
@@ -94,6 +95,7 @@ typedef uint32_t sai_ip4_t;
 typedef uint8_t  sai_ip6_t[16];
 typedef uint32_t sai_switch_hash_seed_t;
 typedef uint32_t sai_label_id_t;
+typedef uint32_t sai_stat_id_t;
 
 #define _In_
 #define _Out_
