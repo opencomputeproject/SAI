@@ -510,7 +510,7 @@ typedef sai_status_t (*sai_get_bfd_session_attribute_fn)(
 typedef sai_status_t (*sai_get_bfd_session_stats_fn)(
         _In_ sai_object_id_t bfd_session_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_bfd_session_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -527,7 +527,7 @@ typedef sai_status_t (*sai_get_bfd_session_stats_fn)(
 typedef sai_status_t (*sai_get_bfd_session_stats_ext_fn)(
         _In_ sai_object_id_t bfd_session_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_bfd_session_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -543,7 +543,7 @@ typedef sai_status_t (*sai_get_bfd_session_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_bfd_session_stats_fn)(
         _In_ sai_object_id_t bfd_session_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_bfd_session_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief BFD session state change notification

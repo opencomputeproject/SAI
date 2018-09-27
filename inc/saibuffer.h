@@ -188,7 +188,7 @@ typedef sai_status_t (*sai_get_ingress_priority_group_attribute_fn)(
 typedef sai_status_t (*sai_get_ingress_priority_group_stats_fn)(
         _In_ sai_object_id_t ingress_priority_group_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_ingress_priority_group_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -205,7 +205,7 @@ typedef sai_status_t (*sai_get_ingress_priority_group_stats_fn)(
 typedef sai_status_t (*sai_get_ingress_priority_group_stats_ext_fn)(
         _In_ sai_object_id_t ingress_priority_group_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_ingress_priority_group_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -221,7 +221,7 @@ typedef sai_status_t (*sai_get_ingress_priority_group_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_ingress_priority_group_stats_fn)(
         _In_ sai_object_id_t ingress_priority_group_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_ingress_priority_group_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Enum defining buffer pool types.
@@ -397,6 +397,12 @@ typedef enum _sai_buffer_pool_stat_t
     /** Get/set WRED marked bytes count [uint64_t] */
     SAI_BUFFER_POOL_STAT_WRED_ECN_MARKED_BYTES = 0x00000012,
 
+    /** Get current headroom pool occupancy in bytes [uint64_t] */
+    SAI_BUFFER_POOL_STAT_XOFF_ROOM_CURR_OCCUPANCY_BYTES = 0x00000013,
+
+    /** Get headroom pool occupancy in bytes [uint64_t] */
+    SAI_BUFFER_POOL_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000014,
+
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -467,7 +473,7 @@ typedef sai_status_t (*sai_get_buffer_pool_attribute_fn)(
 typedef sai_status_t (*sai_get_buffer_pool_stats_fn)(
         _In_ sai_object_id_t buffer_pool_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_buffer_pool_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -484,7 +490,7 @@ typedef sai_status_t (*sai_get_buffer_pool_stats_fn)(
 typedef sai_status_t (*sai_get_buffer_pool_stats_ext_fn)(
         _In_ sai_object_id_t buffer_pool_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_buffer_pool_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -500,7 +506,7 @@ typedef sai_status_t (*sai_get_buffer_pool_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_buffer_pool_stats_fn)(
         _In_ sai_object_id_t buffer_pool_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_buffer_pool_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Enum defining buffer profile threshold modes
