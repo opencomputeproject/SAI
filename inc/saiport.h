@@ -1119,6 +1119,17 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PKT_TX_ENABLE,
 
     /**
+     * @brief Port bind point for TAM object
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_TAM_OBJECT,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
