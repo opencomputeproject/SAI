@@ -66,11 +66,12 @@ typedef enum _sai_tam_attr_t
     /**
      * @brief Tam event objects associated with this tam
      *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_EVENT
+     * @default empty
      */
-    SAI_TAM_ATTR_EVENT_OBJECT_ID,
+    SAI_TAM_ATTR_EVENT_OBJECTS_LIST,
 
     /**
      * @brief List of TAM bind points where this object will be applied.
@@ -776,6 +777,32 @@ typedef sai_status_t (*sai_set_tam_math_func_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
+ * @brief TAM event threshold unit
+ */
+typedef enum _sai_tam_event_threshold_unit_t
+{
+    /**
+     * @brief Event threshold unit nanosecond
+     */
+    SAI_TAM_EVENT_THRESHOLD_UNIT_NANOSEC = 0,
+
+    /**
+     * @brief Event threshold unit micro second
+     */
+    SAI_TAM_EVENT_THRESHOLD_UNIT_USEC,
+
+    /**
+     * @brief Event threshold unit millisecond
+     */
+    SAI_TAM_EVENT_THRESHOLD_UNIT_MSEC,
+
+    /**
+     * @brief Event threshold unit percent
+     */
+    SAI_TAM_EVENT_THRESHOLD_UNIT_PERCENT
+} sai_tam_event_threshold_unit_t;
+
+/**
  * @brief Event Threshold Attributes
  */
 typedef enum _sai_tam_event_threshold_attr_t
@@ -830,6 +857,15 @@ typedef enum _sai_tam_event_threshold_attr_t
      * @default 0
      */
     SAI_TAM_EVENT_THRESHOLD_ATTR_ABS_VALUE,
+
+    /**
+     * @brief Tam event threshold unit
+     *
+     * @type sai_tam_event_threshold_unit_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TAM_EVENT_THRESHOLD_UNIT_MSEC
+     */
+    SAI_TAM_EVENT_THRESHOLD_ATTR_UNIT,
 
     /**
      * @brief End of Attributes
@@ -1023,6 +1059,24 @@ typedef enum _sai_tam_tel_type_attr_t
      * @default false
      */
     SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_PORT_STATS,
+
+    /**
+     * @brief Switch - Collect Port stats ingress
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_PORT_STATS_INGRESS,
+
+    /**
+     * @brief Switch - Collect Port stats egress
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_TEL_TYPE_ATTR_SWITCH_ENABLE_PORT_STATS_EGRESS,
 
     /**
      * @brief Switch - Collect virtual queue stats
@@ -1394,7 +1448,7 @@ typedef enum _sai_tam_telemetry_attr_t
     SAI_TAM_TELEMETRY_ATTR_COLLECTOR_LIST,
 
     /**
-     * @brief Tam event reporting unit
+     * @brief Tam telemetry reporting unit
      *
      * @type sai_tam_reporting_unit_t
      * @flags CREATE_AND_SET
