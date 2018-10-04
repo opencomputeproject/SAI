@@ -3417,6 +3417,11 @@ void check_mixed_object_list_types()
                         break;
                     }
 
+                    if (meta->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION)
+                    {
+                        break;
+                    }
+
                     /*
                      * For non read only attributes, there should be a good
                      * reason why object list should support mixed object
