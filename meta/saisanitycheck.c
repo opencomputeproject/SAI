@@ -2258,6 +2258,19 @@ void check_attr_existing_objects(
 
             break;
 
+        case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+
+            /*
+             * Allow object list for selected objects (for now).
+             */
+
+            if (md->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION)
+            {
+                break;
+            }
+
+            META_MD_ASSERT_FAIL(md, "object list is not supported on this object type");
+
         default:
 
             META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
