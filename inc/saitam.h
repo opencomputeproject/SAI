@@ -944,21 +944,25 @@ typedef enum _sai_tam_telemetry_type_t
 
     /**
      * @brief Switch silicon TAM
+     * All the data relevant to switch
      */
     SAI_TAM_TELEMETRY_TYPE_SWITCH,
 
     /**
      * @brief Fabric TAM
+     * All the data relevant to switch fabric
      */
     SAI_TAM_TELEMETRY_TYPE_FABRIC,
 
     /**
      * @brief Flow TAM
+     * All the data relevant to a given flow
      */
     SAI_TAM_TELEMETRY_TYPE_FLOW,
 
     /**
-     * @brief Networking element TAM
+     * @brief INT TAM
+     * All the data relevant on a per packet basis
      */
     SAI_TAM_TELEMETRY_TYPE_INT
 
@@ -1142,7 +1146,7 @@ typedef enum _sai_tam_tel_type_attr_t
     SAI_TAM_TEL_TYPE_ATTR_FABRIC_Q,
 
     /**
-     * @brief NE - Collect information
+     * @brief NE - Collect information of networking element
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -1539,6 +1543,7 @@ typedef enum _sai_tam_transport_type_t
 {
     /**
      * @brief Transport None
+     * This is usually used for local host
      */
     SAI_TAM_TRANSPORT_TYPE_NONE,
 
@@ -1551,11 +1556,6 @@ typedef enum _sai_tam_transport_type_t
      * @brief Transport UDP
      */
     SAI_TAM_TRANSPORT_TYPE_UDP,
-
-    /**
-     * @brief Transport INT
-     */
-    SAI_TAM_TRANSPORT_TYPE_INT,
 
     /**
      * @brief Transport GRPC
@@ -1631,6 +1631,16 @@ typedef enum _sai_tam_transport_attr_t
      * @default SAI_TAM_TRANSPORT_AUTH_TYPE_NONE
      */
     SAI_TAM_TRANSPORT_ATTR_TRANSPORT_AUTH_TYPE,
+
+    /**
+     * @brief Transport MTU size
+     * Driver must ensure the size of packet do not exceed MTU size
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1500
+     */
+    SAI_TAM_TRANSPORT_ATTR_MTU,
 
     /**
      * @brief End of Attributes
@@ -1850,36 +1860,46 @@ typedef enum _sai_tam_event_type_t
 
     /**
      * @brief New flow or flow state change event
+     * This event is used to monitoring the state of flow
+     * A flow can be learned, aged, or classified
      */
     SAI_TAM_EVENT_TYPE_FLOW_STATE,
 
     /**
      * @brief Watchlist event
+     * Instead of a single flow, a group flows can be monitored
      */
     SAI_TAM_EVENT_TYPE_FLOW_WATCHLIST,
 
     /**
      * @brief Flow TCP FLAGS event
+     * All TCP Flags are monitored for change
      */
     SAI_TAM_EVENT_TYPE_FLOW_TCPFLAG,
 
     /**
      * @brief Queue depth or latency threshold event
+     * Queue occupancy threshold
      */
     SAI_TAM_EVENT_TYPE_QUEUE_THRESHOLD,
 
     /**
      * @brief Queue tail drop event
+     * Number of packets dropped as tail drops because
+     * the queue is full
      */
     SAI_TAM_EVENT_TYPE_QUEUE_TAIL_DROP,
 
     /**
      * @brief Packet drop event
+     * Simple drop of packets for any reason
      */
     SAI_TAM_EVENT_TYPE_PACKET_DROP,
 
     /**
      * @brief Switch resource utilization threshold event
+     * Any resource utilization when exceeds a threshold
+     * For example, route table if 90% full can generate an event
      */
     SAI_TAM_EVENT_TYPE_RESOURCE_UTILIZATION,
 } sai_tam_event_type_t;

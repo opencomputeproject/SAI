@@ -55,7 +55,7 @@ message EnterpriseSensors {
 
 extend EnterpriseSensors {
     // re-use IANA assigned numbers
-    optional SAISwitchSensors bcm = 2636;
+    optional SAISwitchSensors sai = 2636;
 }
 
 message SAISwitchSensors {

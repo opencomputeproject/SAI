@@ -19,7 +19,7 @@ syntax = "proto2";
 import "sai_tam_main.proto";
 
 extend SAISwitchSensors {
-    optional GPort bcm_interface_ext = 3;
+    optional GPort sai_interface_ext = 3;
 }
 
 message GPort {
@@ -28,7 +28,7 @@ message GPort {
             
 message InterfaceInfos {
     required string if_name                = 1 [(telemetry_options).is_key = true];
-    required uint64 init_time              = 2;     // time when if/stats last reset
+    optional uint64 init_time              = 2;     // time when if/stats last reset
 
     // Internal Port ID
     optional uint32 if_pid                 = 3;
@@ -72,25 +72,25 @@ message InterfaceInfos {
 
 message InterfaceStats {
     // Counter: the total number of packets sent/rcvd by this interface
-    required uint64 if_pkts        = 1 [(telemetry_options).is_counter = true];
+    optional uint64 if_pkts        = 1 [(telemetry_options).is_counter = true];
 
     // Counter: the total number of bytes sent/rcvd by this interface
-    required uint64 if_octets      = 2 [(telemetry_options).is_counter = true];
+    optional uint64 if_octets      = 2 [(telemetry_options).is_counter = true];
 
     // Rate: the rate at which packets are sent/rcvd by this interface (in packets/sec)
-    required uint64 if_1sec_pkts   = 3 [(telemetry_options).is_gauge = true];
+    optional uint64 if_1sec_pkts   = 3 [(telemetry_options).is_gauge = true];
 
     // Rate: the rate at which bytes are sent/rcvd by this interface
-    required uint64 if_1sec_octets = 4 [(telemetry_options).is_gauge = true];
+    optional uint64 if_1sec_octets = 4 [(telemetry_options).is_gauge = true];
 
     // Counter: total no of unicast packets sent/rcvd by this interface
-    required uint64 if_uc_pkts = 5 [(telemetry_options).is_counter = true];
+    optional uint64 if_uc_pkts = 5 [(telemetry_options).is_counter = true];
 
     // Counter: total no of multicast packets sent/rcvd by this interface
-    required uint64 if_mc_pkts = 6 [(telemetry_options).is_counter = true];
+    optional uint64 if_mc_pkts = 6 [(telemetry_options).is_counter = true];
 
     // Counter: total no of broadcast packets sent/rcvd by this interface
-    required uint64 if_bc_pkts = 7 [(telemetry_options).is_counter = true];
+    optional uint64 if_bc_pkts = 7 [(telemetry_options).is_counter = true];
 
     // Counter: total no of error packets sent/rcvd by this interface
     optional uint64 if_error       = 8 [(telemetry_options).is_counter = true];
