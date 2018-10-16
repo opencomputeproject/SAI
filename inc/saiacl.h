@@ -975,7 +975,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /**
-     * @brief BTH Opcode
+     * @brief Base Transport Header opcode field
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -984,7 +984,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_BTH_OPCODE,
 
     /**
-     * @brief AETH Syndrome
+     * @brief Ack_extented Transport Header syndrome field
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -1648,7 +1648,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /**
-     * @brief BTH Opcode (8 bits)
+     * @brief Base Transport Header opcode field
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
@@ -1657,7 +1657,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_BTH_OPCODE,
 
     /**
-     * @brief AETH Syndrome (8 bits)
+     * @brief Ack_extented Transport Header syndrome field
      *
      * @type sai_acl_field_data_t sai_uint8_t
      * @flags CREATE_AND_SET
