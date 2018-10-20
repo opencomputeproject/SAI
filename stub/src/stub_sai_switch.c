@@ -54,6 +54,11 @@ sai_status_t stub_switch_max_temp_get(_In_ const sai_object_key_t   *key,
                                       _In_ uint32_t                  attr_index,
                                       _Inout_ vendor_cache_t        *cache,
                                       void                          *arg);
+sai_status_t stub_switch_current_temp_get(_In_ const sai_object_key_t   *key,
+                                          _Inout_ sai_attribute_value_t *value,
+                                          _In_ uint32_t                  attr_index,
+                                          _Inout_ vendor_cache_t        *cache,
+                                          void                          *arg);
 sai_status_t stub_switch_default_stp_get(_In_ const sai_object_key_t   *key,
                                          _Inout_ sai_attribute_value_t *value,
                                          _In_ uint32_t                  attr_index,
@@ -192,6 +197,8 @@ static const sai_attribute_entry_t        switch_attribs[] = {
       "Switch operational status", SAI_ATTR_VAL_TYPE_S32 },
     { SAI_SWITCH_ATTR_MAX_TEMP, false, false, false, true,
       "Switch maximum temperature", SAI_ATTR_VAL_TYPE_S32 },
+    { SAI_SWITCH_ATTR_CURRENT_TEMP, false, false, false, true,
+      "Switch current temperature", SAI_ATTR_VAL_TYPE_S32 },
     { SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY, false, false, false, true,
       "Switch ACL table min prio", SAI_ATTR_VAL_TYPE_U32 },
     { SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY, false, false, false, true,
@@ -281,6 +288,11 @@ static const sai_vendor_attribute_entry_t switch_vendor_attribs[] = {
       { false, false, false, true },
       { false, false, false, true },
       stub_switch_max_temp_get, NULL,
+      NULL, NULL },
+    { SAI_SWITCH_ATTR_CURRENT_TEMP,
+      { false, false, false, true },
+      { false, false, false, true },
+      stub_switch_current_temp_get, NULL,
       NULL, NULL },
     { SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
       { false, false, false, true },
@@ -853,6 +865,22 @@ sai_status_t stub_switch_max_temp_get(_In_ const sai_object_key_t   *key,
                                       _In_ uint32_t                  attr_index,
                                       _Inout_ vendor_cache_t        *cache,
                                       void                          *arg)
+{
+    STUB_LOG_ENTER();
+
+    value->s32 = 50;
+
+    STUB_LOG_EXIT();
+    return SAI_STATUS_SUCCESS;
+}
+
+/* The average value of the temperature
+ * retrieved from the switch sensors, in Celsius [int32_t] */
+sai_status_t stub_switch_current_temp_get(_In_ const sai_object_key_t   *key,
+                                          _Inout_ sai_attribute_value_t *value,
+                                          _In_ uint32_t                  attr_index,
+                                          _Inout_ vendor_cache_t        *cache,
+                                          void                          *arg)
 {
     STUB_LOG_ENTER();
 

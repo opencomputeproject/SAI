@@ -410,6 +410,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_TEMP,
 
     /**
+     * @brief The average value of the temperature
+     * retrieved from the switch sensors
+     *
+     * Value in Celsius.
+     *
+     * @type sai_int32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_CURRENT_TEMP,
+
+    /**
      * @brief Minimum priority for ACL table
      *
      * @type sai_uint32_t
