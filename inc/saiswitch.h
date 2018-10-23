@@ -410,8 +410,8 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_TEMP,
 
     /**
-     * @brief The average value of the temperature
-     * retrieved from the switch sensors
+     * @brief The average of temperature readings over all
+     * sensors in the switch
      *
      * Value in Celsius.
      *
