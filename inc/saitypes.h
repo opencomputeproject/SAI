@@ -739,6 +739,9 @@ typedef enum _sai_acl_bind_point_type_t
  */
 typedef enum _sai_tam_bind_point_type_t
 {
+    /** Bind Point Type Queue */
+    SAI_TAM_BIND_POINT_TYPE_QUEUE,
+
     /** Bind Point Type Port */
     SAI_TAM_BIND_POINT_TYPE_PORT,
 
