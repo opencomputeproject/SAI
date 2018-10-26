@@ -2553,6 +2553,17 @@ sub ProcessIsExperimental
     return "false";
 }
 
+sub ProcessStatEnum
+{
+    my $shortot = shift;
+
+    my $statenumname = "sai_${shortot}_stat_t";
+
+    return "&sai_metadata_enum_$statenumname" if defined $SAI_ENUMS{$statenumname};
+
+    return "NULL";
+}
+
 sub CreateObjectInfo
 {
     WriteSectionComment "Object info metadata";
@@ -2577,6 +2588,8 @@ sub CreateObjectInfo
             next;
         }
 
+        my $shortot = lc($1);
+
         my $type = "sai_" . lc($1) . "_attr_t";
 
         my $start = "SAI_" . uc($1) . "_ATTR_START";
@@ -2598,6 +2611,7 @@ sub CreateObjectInfo
         my $revgraph            = ProcessRevGraph($ot);
         my $revgraphcount       = ProcessRevGraphCount($ot);
         my $isexperimental      = ProcessIsExperimental($ot);
+        my $statenum            = ProcessStatEnum($shortot);
         my $attrmetalength      = @{ $SAI_ENUMS{$type}{values} };
 
         my $create = ProcessCreate($struct, $ot);
@@ -2627,6 +2641,7 @@ sub CreateObjectInfo
         WriteSource ".set                  = $set,";
         WriteSource ".get                  = $get,";
         WriteSource ".isexperimental       = $isexperimental,";
+        WriteSource ".statenum             = $statenum,";
 
         WriteSource "};";
     }
@@ -3158,6 +3173,20 @@ sub CheckAttributeValueUnion
     }
 }
 
+sub CheckStatEnum
+{
+    for my $key (keys %SAI_ENUMS)
+    {
+        next if not $key =~ /sai_(\w+)_stat_t/;
+
+        my $ot = uc("SAI_OBJECT_TYPE_$1");
+
+        next if defined $OBJECT_TYPE_MAP{$ot};
+
+        LogError "stat enum defined $key but no object type $ot exists";
+    }
+}
+
 sub CreateNotificationStruct
 {
     #
@@ -3447,6 +3476,8 @@ CheckApiStructNames();
 CheckApiDefines();
 
 CheckAttributeValueUnion();
+
+CheckStatEnum();
 
 CreateNotificationStruct();
 
