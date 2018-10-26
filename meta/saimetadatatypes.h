@@ -1281,6 +1281,11 @@ typedef struct _sai_object_type_info_t
      */
     bool                                            isexperimental;
 
+    /**
+     * @brief Points to enum sai_OBJECT_TYPE_stat_t if object supports stats.
+     */
+    const sai_enum_metadata_t* const                statenum;
+
 } sai_object_type_info_t;
 
 /**

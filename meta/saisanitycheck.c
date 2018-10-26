@@ -2749,6 +2749,32 @@ void check_single_object_type_attributes(
     }
 }
 
+void check_stat_enums()
+{
+    META_LOG_ENTER();
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    int count = 0;
+
+    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        if (info->statenum != NULL)
+        {
+            count++;
+        }
+    }
+
+    META_ASSERT_TRUE(count > 12, "at least some sai_object_type_into_t->statenum must be populated");
+}
+
 void check_object_infos()
 {
     META_LOG_ENTER();
@@ -4353,6 +4379,7 @@ int main(int argc, char **argv)
     }
 
     check_object_infos();
+    check_stat_enums();
     check_attr_sorted_by_id_name();
     check_non_object_id_object_types();
     check_non_object_id_object_attrs();
