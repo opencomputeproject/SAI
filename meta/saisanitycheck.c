@@ -2753,6 +2753,11 @@ void check_stat_enums()
 {
     META_LOG_ENTER();
 
+    /*
+     * Purpose of this check is to find out if object types that have
+     * statistics (like PORT, etc) have stat enum values populated.
+     */
+
     size_t i = SAI_OBJECT_TYPE_NULL;
 
     int count = 0;
@@ -2772,7 +2777,7 @@ void check_stat_enums()
         }
     }
 
-    META_ASSERT_TRUE(count > 12, "at least some sai_object_type_into_t->statenum must be populated");
+    META_ASSERT_TRUE(count > 10, "at least some sai_object_type_into_t->statenum must be populated");
 }
 
 void check_object_infos()
@@ -2918,6 +2923,8 @@ void check_non_object_id_object_types()
 
         int member_supports_switch_id = 0;
 
+        int lastoffset = -1;
+
         for (; j < info->structmemberscount; ++j)
         {
             META_ASSERT_NOT_NULL(info->structmembers[j]);
@@ -2925,6 +2932,11 @@ void check_non_object_id_object_types()
             const sai_struct_member_info_t *m = info->structmembers[j];
 
             META_ASSERT_NOT_NULL(m->membername);
+
+            META_ASSERT_TRUE(m->size > 0, "struct member size must be greater than zero");
+            META_ASSERT_TRUE((int)m->offset > lastoffset, "struct member offset must increase from member to member");
+
+            lastoffset = (int)m->offset;
 
             switch (m->membervaluetype)
             {
