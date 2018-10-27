@@ -899,6 +899,7 @@ sub CreateMetadataHeaderAndSource
     WriteSource "#include <stdio.h>";
     WriteSource "#include <string.h>";
     WriteSource "#include <stdlib.h>";
+    WriteSource "#include <stddef.h>";
     WriteSource "#include \"saimetadata.h\"";
 
     WriteSectionComment "Enums metadata";
@@ -2121,6 +2122,20 @@ sub ProcessStructSetOid
     return $fname;
 }
 
+sub ProcessStructOffset
+{
+    my ($type, $key, $rawname) = @_;
+
+    return "offsetof(sai_${rawname}_t,$key)";
+}
+
+sub ProcessStructSize
+{
+    my ($type, $key, $rawname) = @_;
+
+    return "sizeof($type)";
+}
+
 sub ProcessStructMembers
 {
     my ($struct, $ot, $rawname) = @_;
@@ -2144,6 +2159,8 @@ sub ProcessStructMembers
         my $enumdata    = ProcessStructEnumData($struct->{$key}{type});
         my $getoid      = ProcessStructGetOid($struct->{$key}{type}, $key, $rawname);
         my $setoid      = ProcessStructSetOid($struct->{$key}{type}, $key, $rawname);
+        my $offset      = ProcessStructOffset($struct->{$key}{type}, $key, $rawname);
+        my $size        = ProcessStructSize($struct->{$key}{type}, $key, $rawname);
 
         WriteSource "const sai_struct_member_info_t sai_metadata_struct_member_sai_${rawname}_t_$key = {";
 
@@ -2156,6 +2173,8 @@ sub ProcessStructMembers
         WriteSource ".enummetadata              = $enumdata,";
         WriteSource ".getoid                    = $getoid,";
         WriteSource ".setoid                    = $setoid,";
+        WriteSource ".offset                    = $offset,";
+        WriteSource ".size                      = $size,";
 
         # TODO allow null
 
