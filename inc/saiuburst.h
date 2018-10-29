@@ -370,7 +370,7 @@ typedef sai_status_t (*sai_get_tam_histogram_attribute_fn)(
  * Values array must supply sufficient memory for values of all
  * bins as specified for the histogram object.
  *
- * @param[in] tam_histogram_id Histogram object id
+ * @param[in] tam_microburst_id Microburst object id
  * @param[in] number_of_counters Number of counters to get
  * @param[in] counter_ids Counter IDs to get
  * @param[out] counters Statistics values
@@ -380,11 +380,43 @@ typedef sai_status_t (*sai_get_tam_histogram_attribute_fn)(
  * @count counter_ids[number_of_counters]
  * @count counters[number_of_counters]
  */
-typedef sai_status_t (*sai_get_tam_histogram_stats_fn)(
-        _In_ sai_object_id_t tam_histogram_id,
+typedef sai_status_t (*sai_get_tam_microburst_stats_fn)(
+        _In_ sai_object_id_t tam_microburst_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
+
+/**
+ * @brief Obtain the values for all bins from a histogram.
+ *
+ * @param[in] tam_microburst_id Microburst id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_microburst_stats_ext_fn)(
+        _In_ sai_object_id_t tam_microburst_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear port pool statistics counters.
+ *
+ * @param[in] microburst_id Microburst id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_tam_microburst_stats_fn)(
+        _In_ sai_object_id_t microburst_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
 
 typedef struct _sai_uburst_api_t
 {
@@ -392,11 +424,13 @@ typedef struct _sai_uburst_api_t
     sai_remove_tam_microburst_fn            remove_tam_microburst;
     sai_set_tam_microburst_attribute_fn     set_tam_microburst_attribute;
     sai_get_tam_microburst_attribute_fn     get_tam_microburst_attribute;
+    sai_get_tam_microburst_stats_fn         get_tam_microburst_stats;
+    sai_get_tam_microburst_stats_ext_fn     get_tam_microburst_stats_ext;
+    sai_clear_tam_microburst_stats_fn       clear_tam_microburst_stats;
     sai_create_tam_histogram_fn             create_tam_histogram;
     sai_remove_tam_histogram_fn             remove_tam_histogram;
     sai_set_tam_histogram_attribute_fn      set_tam_histogram_attribute;
     sai_get_tam_histogram_attribute_fn      get_tam_histogram_attribute;
-    sai_get_tam_histogram_stats_fn          get_tam_histogram_stats;
 } sai_uburst_api_t;
 
 /**
