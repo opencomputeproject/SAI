@@ -3305,6 +3305,10 @@ sub CreateSwitchNotificationAttributesList
 
     WriteHeader "extern const size_t sai_metadata_switch_notify_attr_count;";
     WriteSource "const size_t sai_metadata_switch_notify_attr_count = $count;";
+
+    WriteSectionComment "Define SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT";
+
+    WriteHeader "#define SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT $count";
 }
 
 sub WriteHeaderHeader
