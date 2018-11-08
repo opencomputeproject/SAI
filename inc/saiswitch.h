@@ -399,6 +399,24 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_OPER_STATUS,
 
     /**
+     * @brief Maximum number of temperature sensors available.
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_NUMBER_OF_TEMP_SENSORS,
+
+    /**
+     * @brief List of temperature readings from all sensors.
+     *
+     * Values in Celsius.
+     *
+     * @type sai_s32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TEMP_LIST,
+
+    /**
      * @brief The current value of the maximum temperature
      * retrieved from the switch sensors
      *
@@ -408,6 +426,17 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_MAX_TEMP,
+
+    /**
+     * @brief The average of temperature readings over all
+     * sensors in the switch
+     *
+     * Value in Celsius.
+     *
+     * @type sai_int32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVERAGE_TEMP,
 
     /**
      * @brief Minimum priority for ACL table
