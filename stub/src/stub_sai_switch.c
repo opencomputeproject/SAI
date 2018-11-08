@@ -206,7 +206,7 @@ static const sai_attribute_entry_t        switch_attribs[] = {
     { SAI_SWITCH_ATTR_OPER_STATUS, false, false, false, true,
       "Switch operational status", SAI_ATTR_VAL_TYPE_S32 },
     { SAI_SWITCH_ATTR_MAX_NUMBER_OF_TEMP_SENSORS, false, false, false, true,
-      "Switch Maximum sensors", SAI_ATTR_VAL_TYPE_U32 },
+      "Switch Maximum sensors", SAI_ATTR_VAL_TYPE_U8 },
     { SAI_SWITCH_ATTR_TEMP_LIST, false, false, false, true,
       "Switch temperature list", SAI_ATTR_VAL_TYPE_S32LIST},
     { SAI_SWITCH_ATTR_MAX_TEMP, false, false, false, true,
