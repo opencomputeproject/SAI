@@ -5,6 +5,17 @@ Priority: optional
 Build-Depends: dh-exec (>=0.3), debhelper (>= 9)
 Standards-Version: 1.3.0
 
+Package: saiserver
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Pre-Depends}
+Description: This package contains SAI thrift server
+
+Package: saiserver-dbg
+Architecture: any
+Depends: saiserver (= ${binary:Version}), ${misc:Depends}
+Section: debug
+Description: debugging symbols for SAI thrift server
+
 Package: libsaithrift-dev
 Architecture: any
 Depends: ${shlibs:Depends}
