@@ -4368,7 +4368,37 @@ void check_acl_user_defined_field()
 
 void check_label_size()
 {
+    SAI_META_LOG_ENTER();
+
     META_ASSERT_TRUE(sizeof(sai_label_id_t) == sizeof(uint32_t), "label is expected to be 32 bit");
+}
+
+void check_switch_notify_list()
+{
+    SAI_META_LOG_ENTER();
+
+    size_t i;
+
+    for (i = 0; i < sai_metadata_switch_notify_attr_count; ++i)
+    {
+        META_ASSERT_NOT_NULL(sai_metadata_switch_notify_attr[i]);
+    }
+
+    /* check for NULL guard */
+
+    META_ASSERT_NULL(sai_metadata_switch_notify_attr[i]);
+}
+
+void check_defines()
+{
+    SAI_META_LOG_ENTER();
+
+    /*
+     * Check if defines are equal to their static values.
+     */
+
+    META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT == sai_metadata_switch_notify_attr_count, "notify define must be equal");
+    META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT > 3, "there must be at least 3 notifications defined");
 }
 
 int main(int argc, char **argv)
@@ -4411,6 +4441,8 @@ int main(int argc, char **argv)
     check_get_attr_metadata();
     check_acl_user_defined_field();
     check_label_size();
+    check_switch_notify_list();
+    check_defines();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 
