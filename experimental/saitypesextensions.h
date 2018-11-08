@@ -36,6 +36,7 @@ typedef enum _sai_object_type_extensions_t
 {
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START = SAI_OBJECT_TYPE_MAX,
 
+    SAI_OBJECT_TYPE_ACL_SLICE,
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END

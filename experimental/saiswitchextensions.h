@@ -26,6 +26,7 @@
 #define __SAISWITCHEXTENSIONS_H_
 
 #include <saitypes.h>
+#include <saiswitch.h>
 
 /**
  * @brief SAI switch attribute extensions.
@@ -35,6 +36,16 @@
 typedef enum _sai_switch_attr_extensions_t
 {
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START = SAI_SWITCH_ATTR_END,
+
+    /**
+     * @brief Get all ACL slice objects
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_SLICE
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_EXTENSIONS_ACL_SLICE_LIST,
 
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_END
 
