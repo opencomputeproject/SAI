@@ -405,7 +405,7 @@ typedef sai_status_t (*sai_get_tam_microburst_stats_ext_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear port pool statistics counters.
+ * @brief Clear TAM microburst statistics counters.
  *
  * @param[in] microburst_id Microburst id
  * @param[in] number_of_counters Number of counters in the array
