@@ -407,14 +407,14 @@ typedef sai_status_t (*sai_get_tam_microburst_stats_ext_fn)(
 /**
  * @brief Clear TAM microburst statistics counters.
  *
- * @param[in] microburst_id Microburst id
+ * @param[in] tam_microburst_id TAM microburst id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_clear_tam_microburst_stats_fn)(
-        _In_ sai_object_id_t microburst_id,
+        _In_ sai_object_id_t tam_microburst_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_stat_id_t *counter_ids);
 
