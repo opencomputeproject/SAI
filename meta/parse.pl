@@ -56,6 +56,7 @@ our %REVGRAPH = ();
 our %EXTENSIONS_ENUMS = ();
 our %EXTENSIONS_ATTRS = ();
 our %EXPERIMENTAL_OBJECTS = ();
+our %OBJECT_TYPE_TO_STATS_MAP = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 
@@ -2916,6 +2917,89 @@ sub CheckApiDefines
     }
 }
 
+sub ExtractStatsFunctionMap
+{
+    #
+    # Purpose is to get statistics functions consistent
+    # with stat_t defined for them
+    #
+
+    my @headers = GetHeaderFiles();
+    my @exheaders = GetExperimentalHeaderFiles();
+
+    my @merged = (@headers, @exheaders);
+
+    my %otmap = ();
+
+    for my $header (@merged)
+    {
+        my $data = ReadHeaderFile($header);
+
+        next if not $data =~ m!(sai_\w+_api_t)(.+?)\1;!igs;
+
+        my $apis = $2;
+
+        my @fns = $apis =~ /sai_(\w+_stats(?:_ext)?)_fn/g;
+
+        for my $fn (@fns)
+        {
+            # exceptions
+
+            next if $fn eq "clear_port_all_stats";
+            next if $fn eq "get_tam_snapshot_stats";
+
+            if (not $fn =~ /^(?:get|clear)_(\w+)_stats(?:_ext)?$/)
+            {
+                LogWarning "Invalid stats function name: $fn";
+            }
+
+            my $ot = $1;
+            my @statfns = ();
+
+            $otmap{$ot} = \@statfns if not defined $otmap{$ot};
+
+            my $ref = $otmap{$ot};
+
+            push@$ref,$fn;
+        }
+    }
+
+    %OBJECT_TYPE_TO_STATS_MAP = %otmap;
+}
+
+sub CheckObjectTypeStatitics
+{
+    #
+    # Purpose is to check if each defined statistics for object type has 3 stat
+    # functions defined and if there is corresponding obejct type for stat enum
+    #
+
+    for my $ot (sort keys %OBJECT_TYPE_TO_STATS_MAP)
+    {
+        my $ref = $OBJECT_TYPE_TO_STATS_MAP{$ot};
+        my $stats = "@$ref";
+
+        # each object type that supports statistics should have 3 stat functions (and in that order)
+
+        my $expected = "get_${ot}_stats get_${ot}_stats_ext clear_${ot}_stats";
+
+        next if $stats eq $expected;
+
+        LogWarning uc($ot) . " has only '$stats' functions, expected: $expected";
+    }
+
+    for my $key (keys %SAI_ENUMS)
+    {
+        next if not $key =~ /sai_(\w+)_stat_t/;
+
+        my $ot = $1;
+
+        next if defined $OBJECT_TYPE_TO_STATS_MAP{$ot};
+
+        LogWarning "stats $key are defined, but no API 3 stat functions defined for $ot";
+    }
+}
+
 sub ExtractApiToObjectMap
 {
     #
@@ -3479,6 +3563,8 @@ LoadCapabilities();
 
 ExtractApiToObjectMap();
 
+ExtractStatsFunctionMap();
+
 ExtractUnionsInfo();
 
 CheckHeadersStyle() if not defined $optionDisableStyleCheck;
@@ -3530,6 +3616,8 @@ CheckApiDefines();
 CheckAttributeValueUnion();
 
 CheckStatEnum();
+
+CheckObjectTypeStatitics();
 
 CreateNotificationStruct();
 
