@@ -10,7 +10,7 @@ Created     | 20/11/2018
 -------------------------------------------------------------------------------
 
 
-## Motivation/Use-case
+## Overview
 The motivation for SAI Packet Action Group comes from the requirement for supporting OpenFlow Groups. OpenFlow specification defines the concept of OpenFlow Groups. An OpenFlow Group consists of list of action buckets. Each action bucket has a set of actions. The action buckets which need to be executed within the OpenFlow Group depends on the type of the OpenFlow Group. OpenFlow currently defines 4 types of groups viz.
 
 1. **All**          - Execute actions inside all the action buckets. This group is used for multicast or broadcast kind of usecases. The packet is replicated for each bucket.
@@ -19,8 +19,9 @@ The motivation for SAI Packet Action Group comes from the requirement for suppor
 4. **FAST FAILOVER** - Execute the first live action bucket in the action bucket.  
  Each action bucket is associated with a specific port/lag that controls whether that bucket is live/active. The action bucket are evaluated in the order defined by the group and the first bucket with an active port/lag is selected.
 
-The OpenFlow Groups can be used to achieve different forwarding behaviors like flooding, multicasting, multipathing etc. Even though the OpenFlow Group resembles some of the existing SAI objects like L2MC Group, Next hop Group and Next hop object, some of functionalities/use-cases of what the OpenFlow Controller expects cannot be achieved using the current SAI objects.
+The OpenFlow Groups can be used to achieve different forwarding behaviors like flooding, multicasting, multipathing etc. Even though the OpenFlow Group resembles some of the existing SAI objects like L2MC Group, Next hop Group and Next hop object, some of functionalities/use-cases of what the OpenFlow Controller expects cannot be achieved using the current SAI objects.  
 
+The subsequent section has example uses cases for openflow groups.
 
 
 ## Example Use Cases
@@ -29,7 +30,7 @@ The OpenFlow Groups can be used to achieve different forwarding behaviors like f
 
 Assume the OpenFlow Controller wants to match packets with MAC SA=0xaa, MAC DA=0xbb, VLAN=10 and  
 replicate the packet to three ports say port 10, port 20 and port 30 in the following way:
-1.  In the copy to port 10, the VLAN should be set 20.
+1. In the copy to port 10, the VLAN should be set 20.
 2. In the copy to port 20, the VLAN should be set 30 and the MAC DA should be set as 0xCC.
 3. In the copy to port 30, the MAC SA should be set as 0xDD.
 
@@ -84,205 +85,7 @@ The port to be monitored on each bucket would be provided by the controller. If 
 
 ## SAI Header Changes
 
-##### Changes to existing SAI header file
-In sai.h
-1. New object for SAI Packet Action Group
-
-```
-    SAI_API_ISOLATION_GROUP     = 40, /**< sai_isolation_group_api_t */
-+   SAI_API_PACKET_ACTION_GROUP = 41, /**< sai_packet_action_group_api_t */
-    SAI_API_MAX                 = 42, /**< total number of APIs */
-} sai_api_t;
-
-```
-
-In saitypes.h
-1. Add new structure for packet action group actions
-2. Include the new structure in the sai_attribute_value_t structure
-
-```
-/**
- * @brief Packet Action Group Action Type
- */
-typedef enum _sai_packet_action_group_action_type_t
-{
-    /** @brief Set Packet Src MAC Address.
-      * @type sai_mac_t
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_SRC_MAC,
-
-    /** @brief Set Packet Dst MAC Address.
-     *  @type sai_mac_t  
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_DST_MAC,
-
-    /** @brief Set Packet Outer Vlan Id.
-     *  @type sai_uint16_t
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_ID,
-
-    /** @brief Set Packet Outer Vlan Priority.
-     *  @type sai_uint8_t
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_PRI,
-
-    /** @brief Redirect to Port/LAG.
-     *  @type sai_object_id_t
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT,
-
-    /** @brief Decrement TTL.
-     *  @type bool
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_DECREMENT_TTL,
-
-    /** @brief Set Class-of-Service.
-     *  @type sai_uint8_t
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_TC,
-
-    /** @brief Set Packet Color.
-     *  @type sai_uint8_t
-     */
-     SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_COLOR,
-
-    /** @brief Set Packet Inner Vlan Id.
-     *  @type sai_uint16_t
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_INNER_VLAN_ID,
-
-    /** @brief Set Packet Inner Vlan Priority.
-     *  @type sai_uint8_t
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_INNER_VLAN_PRI,
-
-    /** @brief Set Packet DSCP.
-     *  @type sai_uint8_t
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_DSCP,
-
-} sai_packet_action_group_action_type_t;
-
-/**
- * @brief Packet Action Group Action
- */
-typedef struct _sai_packet_action_group_action_t
-{
-  /**
-   * @brief Action type
-   */
-   sai_packet_action_group_action_type_t action_type;
-
-  /**
-   * @brief Action Value based on the action type
-   */
-   union _action_value {
-     bool booldata;
-     sai_uint8_t u8;
-     sai_uint16_t u16;
-     sai_uint32_t u32;
-     sai_mac_t mac;
-     sai_object_id_t oid;
-   } action_value;
-
-} sai_packet_action_group_action_t;
-
-/**
- * @brief Packet Action Group Action List
- */   
-typedef _sai_packet_action_group_action_list_t
-{
-  /** Number of packet action group actions */
-  sai_uint32_t count;
-
-  /**Action list */
-  sai_packet_action_group_action_t *list;
-
-} sai_packet_action_group_action_list_t;
-
-
-/**
- * @brief Data Type
- *
- * To use enum values as attribute value is sai_int32_t s32
- *
- * @extraparam const sai_attr_metadata_t *meta
- */
-typedef union _sai_attribute_value_t
-{
-
-.
-.
-.
-
-/** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST
- */
-sai_ip_address_list_t ipaddrlist;
-
-/** @validonly meta->attrvaluetype ==  SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST */
-sai_port_eye_values_list_t porteyevalues;
-
-/** @validonly meta->attrvaluetype ==  SAI_ATTR_VALUE_TYPE_TIMESPEC */
-sai_timespec_t timespec;
-
-+/** @validonly meta->attrvaluetype ==
-SAI_ATTR_VALUE_TYPE_PACKET_ACTION_GROUP_ACTION_LIST */ 
-+ sai_packet_action_group_action_list_t pktactionlist;
-
-} sai_attribute_value_t;
-
-```
-In saiacl.h
-1. Add new action type 
-
-
-```
-
-   /** Set isolation group to prevent traffic to members of isolation group */
-       SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
-
-+  /** Set packet action group */
-+      SAI_ACL_ACTION_TYPE_SET_PACKET_ACTION_GROUP
-
-   } sai_acl_action_type_t;
-```
-
-2. Add new action for ACL entry 
-
-```
-+   /**
-+    * @brief Set packet action group (packet action group object id)
-+    *
-+    * @type sai_acl_action_data_t sai_object_id_t
-+    * @flags CREATE_AND_SET
-+    * @objects SAI_OBJECT_TYPE_PACKET_ACTION_GROUP
-+    * @default disabled
-+    */
-+   SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_ACTION_GROUP,
-
-    /**
-     * @brief End of Rule Actions
-     */
-    SAI_ACL_ENTRY_ATTR_ACTION_END =
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_ACTION_GROUP,
-
-    /**
-     * @brief End of ACL Entry attributes
-     */
-    SAI_ACL_ENTRY_ATTR_END,
-
-    /** Custom range base value */
-    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_START
-    = 0x10000000,
-
-    /** End of custom range base
-     */
-    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_END
-
-    } sai_acl_entry_attr_t;
-```    
-
-##### New header file for Packet Action Group Object
+#### New header file for Packet Action Group Object
 
 The attributes for the Packet Action Group and Packet Action Group member are defined in the new file:
 ```
@@ -587,3 +390,202 @@ typedef struct _sai_packet_action_group_api_t
 } sai_packet_action_group_api_t;
 
 ```
+
+##### Changes to existing SAI header file
+**In sai.h**
+1. New object for SAI Packet Action Group
+
+```
+    SAI_API_ISOLATION_GROUP     = 40, /**< sai_isolation_group_api_t */
++   SAI_API_PACKET_ACTION_GROUP = 41, /**< sai_packet_action_group_api_t */
+    SAI_API_MAX                 = 42, /**< total number of APIs */
+} sai_api_t;
+
+```
+
+**In saitypes.h**
+1. Add new structure for packet action group actions
+2. Include the new structure in the sai_attribute_value_t structure
+
+```
+/**
+ * @brief Packet Action Group Action Type
+ */
+typedef enum _sai_packet_action_group_action_type_t
+{
+    /** @brief Set Packet Src MAC Address.
+      * @type sai_mac_t
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_SRC_MAC,
+
+    /** @brief Set Packet Dst MAC Address.
+     *  @type sai_mac_t
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_DST_MAC,
+
+    /** @brief Set Packet Outer Vlan Id.
+     *  @type sai_uint16_t
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_ID,
+
+    /** @brief Set Packet Outer Vlan Priority.
+     *  @type sai_uint8_t
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_PRI,
+
+    /** @brief Redirect to Port/LAG.
+     *  @type sai_object_id_t
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT,
+
+    /** @brief Decrement TTL.
+     *  @type bool
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_DECREMENT_TTL,
+
+    /** @brief Set Class-of-Service.
+     *  @type sai_uint8_t
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_TC,
+
+    /** @brief Set Packet Color.
+     *  @type sai_uint8_t
+     */
+     SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_COLOR,
+
+    /** @brief Set Packet Inner Vlan Id.
+     *  @type sai_uint16_t
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_INNER_VLAN_ID,
+
+    /** @brief Set Packet Inner Vlan Priority.
+     *  @type sai_uint8_t
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_INNER_VLAN_PRI,
+
+    /** @brief Set Packet DSCP.
+     *  @type sai_uint8_t
+     */
+    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_DSCP,
+
+} sai_packet_action_group_action_type_t;
+
+/**
+ * @brief Packet Action Group Action
+ */
+typedef struct _sai_packet_action_group_action_t
+{
+  /**
+   * @brief Action type
+   */
+   sai_packet_action_group_action_type_t action_type;
+
+  /**
+   * @brief Action Value based on the action type
+   */
+   union _action_value {
+     bool booldata;
+     sai_uint8_t u8;
+     sai_uint16_t u16;
+     sai_uint32_t u32;
+     sai_mac_t mac;
+     sai_object_id_t oid;
+   } action_value;
+
+} sai_packet_action_group_action_t;
+
+/**
+ * @brief Packet Action Group Action List
+ */
+typedef _sai_packet_action_group_action_list_t
+{
+  /** Number of packet action group actions */
+  sai_uint32_t count;
+
+  /**Action list */
+  sai_packet_action_group_action_t *list;
+
+} sai_packet_action_group_action_list_t;
+
+
+/**
+ * @brief Data Type
+ *
+ * To use enum values as attribute value is sai_int32_t s32
+ *
+ * @extraparam const sai_attr_metadata_t *meta
+ */
+typedef union _sai_attribute_value_t
+{
+
+.
+.
+.
+
+/** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST
+ */
+sai_ip_address_list_t ipaddrlist;
+
+/** @validonly meta->attrvaluetype ==  SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST */
+sai_port_eye_values_list_t porteyevalues;
+
+/** @validonly meta->attrvaluetype ==  SAI_ATTR_VALUE_TYPE_TIMESPEC */
+sai_timespec_t timespec;
+
++/** @validonly meta->attrvaluetype ==
+SAI_ATTR_VALUE_TYPE_PACKET_ACTION_GROUP_ACTION_LIST */
++ sai_packet_action_group_action_list_t pktactionlist;
+
+} sai_attribute_value_t;
+
+```
+**In saiacl.h**
+
+1. Add new action type
+2. Add new action for ACL entry
+
+
+```
+
+   /** Set isolation group to prevent traffic to members of isolation group */
+       SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
+
++  /** Set packet action group */
++      SAI_ACL_ACTION_TYPE_SET_PACKET_ACTION_GROUP
+
+   } sai_acl_action_type_t;
+```
+
+```
++   /**
++    * @brief Set packet action group (packet action group object id)
++    *
++    * @type sai_acl_action_data_t sai_object_id_t
++    * @flags CREATE_AND_SET
++    * @objects SAI_OBJECT_TYPE_PACKET_ACTION_GROUP
++    * @default disabled
++    */
++   SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_ACTION_GROUP,
+
+    /**
+     * @brief End of Rule Actions
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_END =
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_ACTION_GROUP,
+
+    /**
+     * @brief End of ACL Entry attributes
+     */
+    SAI_ACL_ENTRY_ATTR_END,
+
+    /** Custom range base value */
+    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_START
+    = 0x10000000,
+
+    /** End of custom range base
+     */
+    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_END
+
+    } sai_acl_entry_attr_t;
+```
+
