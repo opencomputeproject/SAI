@@ -261,20 +261,20 @@ typedef enum _sai_table_tunnel_route_entry_attr_t
 /**
  * @brief Counter IDs in sai_get_table_vnet_entry_stats() call
  */
-typedef enum _sai_table_vnet_stat_t
+typedef enum _sai_table_vnet_entry_stat_t
 {
-    SAI_TABLE_VNET_STAT_TABLE_VNET_HIT_PACKETS,
-    SAI_TABLE_VNET_STAT_TABLE_VNET_HIT_OCTETS,
-} sai_table_vnet_stat_t;
+    SAI_TABLE_VNET_ENTRY_STAT_HIT_PACKETS,
+    SAI_TABLE_VNET_ENTRY_STAT_HIT_OCTETS,
+} sai_table_vnet_entry_stat_t;
 
 /**
  * @brief Counter IDs in sai_get_table_tunnel_route_entry_stats() call
  */
-typedef enum _sai_table_tunnel_route_stat_t
+typedef enum _sai_table_tunnel_route_entry_stat_t
 {
-    SAI_TABLE_TUNNEL_ROUTE_STAT_TABLE_TUNNEL_ROUTE_HIT_PACKETS,
-    SAI_TABLE_TUNNEL_ROUTE_STAT_TABLE_TUNNEL_ROUTE_HIT_OCTETS,
-} sai_table_tunnel_route_stat_t;
+    SAI_TABLE_TUNNEL_ROUTE_ENTRY_STAT_HIT_PACKETS,
+    SAI_TABLE_TUNNEL_ROUTE_ENTRY_STAT_HIT_OCTETS,
+} sai_table_tunnel_route_entry_stat_t;
 
 /**
  * @brief Create table_vnet_entry
@@ -341,7 +341,7 @@ typedef sai_status_t (*sai_get_table_vnet_entry_attribute_fn)(
 typedef sai_status_t (*sai_get_table_vnet_entry_stats_fn)(
         _In_ sai_object_id_t table_vnet_entry_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_table_vnet_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -358,7 +358,7 @@ typedef sai_status_t (*sai_get_table_vnet_entry_stats_fn)(
 typedef sai_status_t (*sai_get_table_vnet_entry_stats_ext_fn)(
         _In_ sai_object_id_t table_vnet_entry_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_table_vnet_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -374,7 +374,7 @@ typedef sai_status_t (*sai_get_table_vnet_entry_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_table_vnet_entry_stats_fn)(
         _In_ sai_object_id_t table_vnet_entry_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_table_vnet_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Create table_tunnel_route_entry
@@ -441,7 +441,7 @@ typedef sai_status_t (*sai_get_table_tunnel_route_entry_attribute_fn)(
 typedef sai_status_t (*sai_get_table_tunnel_route_entry_stats_fn)(
         _In_ sai_object_id_t table_tunnel_route_entry_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_table_tunnel_route_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -458,7 +458,7 @@ typedef sai_status_t (*sai_get_table_tunnel_route_entry_stats_fn)(
 typedef sai_status_t (*sai_get_table_tunnel_route_entry_stats_ext_fn)(
         _In_ sai_object_id_t table_tunnel_route_entry_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_table_tunnel_route_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -474,7 +474,7 @@ typedef sai_status_t (*sai_get_table_tunnel_route_entry_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_table_tunnel_route_entry_stats_fn)(
         _In_ sai_object_id_t table_tunnel_route_entry_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_table_tunnel_route_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 typedef struct _sai_bmtor_api_t
 {
