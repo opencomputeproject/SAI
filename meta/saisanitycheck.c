@@ -2258,6 +2258,19 @@ void check_attr_existing_objects(
 
             break;
 
+        case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+
+            /*
+             * Allow object list for selected objects (for now).
+             */
+
+            if (md->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION)
+            {
+                break;
+            }
+
+            META_MD_ASSERT_FAIL(md, "object list is not supported on this object type");
+
         default:
 
             META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
@@ -2736,6 +2749,37 @@ void check_single_object_type_attributes(
     }
 }
 
+void check_stat_enums()
+{
+    META_LOG_ENTER();
+
+    /*
+     * Purpose of this check is to find out if object types that have
+     * statistics (like PORT, etc) have stat enum values populated.
+     */
+
+    size_t i = SAI_OBJECT_TYPE_NULL;
+
+    int count = 0;
+
+    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    {
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
+
+        if (info == NULL)
+        {
+            continue;
+        }
+
+        if (info->statenum != NULL)
+        {
+            count++;
+        }
+    }
+
+    META_ASSERT_TRUE(count > 10, "at least some sai_object_type_into_t->statenum must be populated");
+}
+
 void check_object_infos()
 {
     META_LOG_ENTER();
@@ -2879,6 +2923,8 @@ void check_non_object_id_object_types()
 
         int member_supports_switch_id = 0;
 
+        int lastoffset = -1;
+
         for (; j < info->structmemberscount; ++j)
         {
             META_ASSERT_NOT_NULL(info->structmembers[j]);
@@ -2886,6 +2932,11 @@ void check_non_object_id_object_types()
             const sai_struct_member_info_t *m = info->structmembers[j];
 
             META_ASSERT_NOT_NULL(m->membername);
+
+            META_ASSERT_TRUE(m->size > 0, "struct member size must be greater than zero");
+            META_ASSERT_TRUE((int)m->offset > lastoffset, "struct member offset must increase from member to member");
+
+            lastoffset = (int)m->offset;
 
             switch (m->membervaluetype)
             {
@@ -3401,6 +3452,11 @@ void check_mixed_object_list_types()
                          * to different object types like PORT or BRIDGE_PORT etc.
                          */
 
+                        break;
+                    }
+
+                    if (meta->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION)
+                    {
                         break;
                     }
 
@@ -4312,7 +4368,37 @@ void check_acl_user_defined_field()
 
 void check_label_size()
 {
+    SAI_META_LOG_ENTER();
+
     META_ASSERT_TRUE(sizeof(sai_label_id_t) == sizeof(uint32_t), "label is expected to be 32 bit");
+}
+
+void check_switch_notify_list()
+{
+    SAI_META_LOG_ENTER();
+
+    size_t i;
+
+    for (i = 0; i < sai_metadata_switch_notify_attr_count; ++i)
+    {
+        META_ASSERT_NOT_NULL(sai_metadata_switch_notify_attr[i]);
+    }
+
+    /* check for NULL guard */
+
+    META_ASSERT_NULL(sai_metadata_switch_notify_attr[i]);
+}
+
+void check_defines()
+{
+    SAI_META_LOG_ENTER();
+
+    /*
+     * Check if defines are equal to their static values.
+     */
+
+    META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT == sai_metadata_switch_notify_attr_count, "notify define must be equal");
+    META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT > 3, "there must be at least 3 notifications defined");
 }
 
 int main(int argc, char **argv)
@@ -4335,6 +4421,7 @@ int main(int argc, char **argv)
     }
 
     check_object_infos();
+    check_stat_enums();
     check_attr_sorted_by_id_name();
     check_non_object_id_object_types();
     check_non_object_id_object_attrs();
@@ -4354,6 +4441,8 @@ int main(int argc, char **argv)
     check_get_attr_metadata();
     check_acl_user_defined_field();
     check_label_size();
+    check_switch_notify_list();
+    check_defines();
 
     i = SAI_OBJECT_TYPE_NULL + 1;
 

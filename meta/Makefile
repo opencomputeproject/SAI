@@ -63,6 +63,10 @@ WARNINGS = \
 	-Wvariadic-macros \
 	-Wwrite-strings
 
+BINS = doxygen perl dot
+
+$(foreach bin,$(BINS),$(if $(shell which $(bin)),,$(error "Missing $(bin) in PATH")))
+
 CFLAGS += -I../inc -I../experimental $(WARNINGS)
 
 DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h)

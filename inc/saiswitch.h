@@ -399,6 +399,24 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_OPER_STATUS,
 
     /**
+     * @brief Maximum number of temperature sensors available.
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_NUMBER_OF_TEMP_SENSORS,
+
+    /**
+     * @brief List of temperature readings from all sensors.
+     *
+     * Values in Celsius.
+     *
+     * @type sai_s32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TEMP_LIST,
+
+    /**
      * @brief The current value of the maximum temperature
      * retrieved from the switch sensors
      *
@@ -408,6 +426,17 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_MAX_TEMP,
+
+    /**
+     * @brief The average of temperature readings over all
+     * sensors in the switch
+     *
+     * Value in Celsius.
+     *
+     * @type sai_int32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVERAGE_TEMP,
 
     /**
      * @brief Minimum priority for ACL table
@@ -1675,6 +1704,25 @@ typedef enum _sai_switch_attr_t
      * @default true
      */
     SAI_SWITCH_ATTR_UNINIT_DATA_PLANE_ON_REMOVAL,
+
+    /**
+     * @brief Instruct SAI to execute switch pre-shutdown
+     *
+     * Indicates controlled switch pre-shutdown as first step of warm shutdown.
+     * This hint is optional, SAI application could skip this step and
+     * go directly to warm shutdown.
+     * This hint should be ignored, if at the time SAI receives this hint,
+     * SAI_SWITCH_ATTR_RESTART_WARM is NOT already set to TRUE.
+     * The scope of pre-shutdown is to backup SAI/SDK data, but leave CPU port
+     * active for some final control plane traffic to go out.
+     * TRUE - Execute switch pre-shutdown for warm shutdown
+     * FALSE - No-op, does NOT mean cancelling already executed pre-shutdown
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_PRE_SHUTDOWN,
 
     /**
      * @brief End of attributes

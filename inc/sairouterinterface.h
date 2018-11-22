@@ -130,6 +130,16 @@ typedef enum _sai_router_interface_attr_t
      */
     SAI_ROUTER_INTERFACE_ATTR_INNER_VLAN_ID,
 
+    /**
+     * @brief Associated 1D Bridge
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_BRIDGE
+     */
+    SAI_ROUTER_INTERFACE_ATTR_BRIDGE_ID,
+
     /* READ-WRITE */
 
     /**
