@@ -1706,6 +1706,25 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_UNINIT_DATA_PLANE_ON_REMOVAL,
 
     /**
+     * @brief Instruct SAI to execute switch pre-shutdown
+     *
+     * Indicates controlled switch pre-shutdown as first step of warm shutdown.
+     * This hint is optional, SAI application could skip this step and
+     * go directly to warm shutdown.
+     * This hint should be ignored, if at the time SAI receives this hint,
+     * SAI_SWITCH_ATTR_RESTART_WARM is NOT already set to TRUE.
+     * The scope of pre-shutdown is to backup SAI/SDK data, but leave CPU port
+     * active for some final control plane traffic to go out.
+     * TRUE - Execute switch pre-shutdown for warm shutdown
+     * FALSE - No-op, does NOT mean cancelling already executed pre-shutdown
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_PRE_SHUTDOWN,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
