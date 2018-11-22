@@ -60,10 +60,10 @@ computed selection algorithm say based on the hash of the packet.
 
 ##### c) Use case for Openflow Group Type INDIRECT
 
-Assume the OpenFlow Controller wants to match packets with DIP=20.0.0.0/24 subnet and forward those packets to port 10 by changing the VLAN to 50 and MAC DA to 0xee.
+Assume the OpenFlow Controller wants to match packets with DIP=20.0.0.0/24 subnet and forward those packets to port 10 by changing the VLAN to 20 and MAC DA to 0xee.
 Openflow Controller also wants to use the same group for matching packets with DIP=20.0.0.X.
 To achieve this functionality, the controller would use a group of type INDIRECT and have a single action bucket with the following packet modifications:
-* Action bucket 1 - Set VLAN = 50, Set MAC DA=0xee, Output port to 10.  
+* Action bucket 1 - Set VLAN = 20, Set MAC DA=0xee, Output port to 10.  
 
 The controller would use the same group for forwarding packets with DIP 20.0.0.X and 30.0.0.X. In case the controller wants to alter the path the flows to port 20 with VLAN set to 30, the controller can modify the indirect group and the flows would converge and choose the new path faster.
 
@@ -262,7 +262,7 @@ typedef enum _sai_packet_action_group_member_attr_t
     SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_END,
 
     /** Custom range base value */
-    SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_CUSTOM_RANGE_START  = 0x10000000,
+    SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
     SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_CUSTOM_RANGE_END
@@ -532,8 +532,7 @@ sai_port_eye_values_list_t porteyevalues;
 /** @validonly meta->attrvaluetype ==  SAI_ATTR_VALUE_TYPE_TIMESPEC */
 sai_timespec_t timespec;
 
-+/** @validonly meta->attrvaluetype ==
-SAI_ATTR_VALUE_TYPE_PACKET_ACTION_GROUP_ACTION_LIST */
++/** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PACKET_ACTION_GROUP_ACTION_LIST */
 + sai_packet_action_group_action_list_t pktactionlist;
 
 } sai_attribute_value_t;
@@ -570,8 +569,7 @@ SAI_ATTR_VALUE_TYPE_PACKET_ACTION_GROUP_ACTION_LIST */
     /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END =
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_ACTION_GROUP,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_ACTION_GROUP,
 
     /**
      * @brief End of ACL Entry attributes
@@ -579,8 +577,7 @@ SAI_ATTR_VALUE_TYPE_PACKET_ACTION_GROUP_ACTION_LIST */
     SAI_ACL_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_START
-    = 0x10000000,
+    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base
      */
