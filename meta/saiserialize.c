@@ -1060,7 +1060,9 @@ int sai_serialize_attribute(
         return SAI_SERIALIZE_ERROR;
     }
 
-    buf += sprintf(buf, "\"");
+    buf += ret;
+
+    buf += sprintf(buf, "\",");
 
     buf += sprintf(buf, "\"value\":");
 
