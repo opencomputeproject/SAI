@@ -934,7 +934,7 @@ int sai_serialize_pointer(
         _Out_ char *buffer,
         _In_ sai_pointer_t pointer)
 {
-    return sprintf(buffer, "ptr:0x%p", pointer);
+    return sprintf(buffer, "ptr:%p", pointer);
 }
 
 int sai_deserialize_pointer(

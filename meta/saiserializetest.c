@@ -1305,9 +1305,22 @@ void test_serialize_attr_value_pointer()
 
     res = sai_serialize_attribute(buf, meta, &attr);
 
-    ret = "{\"id\":\"SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY\",\"value\":{\"ptr\":\"ptr:0x0xaabb\"}}";
+    ret = "{\"id\":\"SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY\",\"value\":{\"ptr\":\"ptr:0xaabb\"}}";
 
     ASSERT_STR_EQ(buf, ret, res);
+}
+
+void test_deserialize_pointer()
+{
+    sai_pointer_t ptr = 0;
+    int res;
+
+    const char *buf = "ptr:0x1122334455667788";
+
+    res = sai_deserialize_pointer(buf, &ptr);
+
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == (sai_pointer_t)0x1122334455667788, "not equal pointer");
 }
 
 int main()
@@ -1360,6 +1373,8 @@ int main()
     test_serialize_ip6_mask();
 
     test_serialize_attr_value_pointer();
+
+    test_deserialize_pointer();
 
     /* test generated methods */
 
