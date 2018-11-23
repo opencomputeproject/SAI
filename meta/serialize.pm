@@ -218,7 +218,7 @@ sub GetTypeInfoForSerialize
 
     $TypeInfo{suffix} = ($type =~ /sai_(\w+)_t/) ? $1 : $type;
 
-    if ($type =~ /^(bool|sai_size_t|sai_pointer_t)$/)
+    if ($type =~ /^(bool|sai_size_t)$/)
     {
         # ok
         $TypeInfo{deamp} = "&";
@@ -306,6 +306,13 @@ sub GetTypeInfoForSerialize
     }
     elsif ($type =~ m/^sai_object_id_t$/)
     {
+        $TypeInfo{needQuote} = 1;
+        $TypeInfo{deamp} = "&";
+    }
+    elsif ($type =~ /^sai_pointer_t$/)
+    {
+        # need quote since "ptr:" is added on serialize
+
         $TypeInfo{needQuote} = 1;
         $TypeInfo{deamp} = "&";
     }
