@@ -1315,24 +1315,25 @@ void test_deserialize_pointer()
     sai_pointer_t ptr = 0;
     int res;
 
-    if (sizeof(sai_pointer_t) == sizeof(uint32_t))
-    {
-        const char *buf = "ptr:0x11223344";
+#if INTPTR_MAX == INT32_MAX
 
-        res = sai_deserialize_pointer(buf, &ptr);
+    const char *buf = "ptr:0x11223344";
 
-        ASSERT_TRUE(res > 0, "expected success");
-        ASSERT_TRUE(ptr == (sai_pointer_t)0x11223344, "not equal pointer");
-    }
-    else
-    {
-        const char *buf = "ptr:0x1122334455667788";
+    res = sai_deserialize_pointer(buf, &ptr);
 
-        res = sai_deserialize_pointer(buf, &ptr);
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == (sai_pointer_t)0x11223344, "not equal pointer");
 
-        ASSERT_TRUE(res > 0, "expected success");
-        ASSERT_TRUE(ptr == (sai_pointer_t)0x1122334455667788, "not equal pointer");
-    }
+#else
+
+    const char *buf = "ptr:0x1122334455667788";
+
+    res = sai_deserialize_pointer(buf, &ptr);
+
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == (sai_pointer_t)0x1122334455667788, "not equal pointer");
+
+#endif
 }
 
 int main()
