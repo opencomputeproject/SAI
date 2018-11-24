@@ -1312,23 +1312,33 @@ void test_serialize_attr_value_pointer()
 
 void test_deserialize_pointer()
 {
+    char buf[0x100 * PRIMITIVE_BUFFER_SIZE];
     sai_pointer_t ptr = 0;
     int res;
 
-#if INTPTR_MAX == INT32_MAX
+    res = sai_serialize_pointer(buf, ptr);
 
-    const char *buf = "ptr:0x11223344";
+    ASSERT_STR_EQ(buf, "ptr:(nil)", res);
 
     res = sai_deserialize_pointer(buf, &ptr);
+
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == 0, "expected pointer to be null");
+
+#if INTPTR_MAX == INT32_MAX
+
+    const char *buf1 = "ptr:0x11223344";
+
+    res = sai_deserialize_pointer(buf1, &ptr);
 
     ASSERT_TRUE(res > 0, "expected success");
     ASSERT_TRUE(ptr == (sai_pointer_t)0x11223344, "not equal pointer");
 
 #else
 
-    const char *buf = "ptr:0x1122334455667788";
+    const char *buf1 = "ptr:0x1122334455667788";
 
-    res = sai_deserialize_pointer(buf, &ptr);
+    res = sai_deserialize_pointer(buf1, &ptr);
 
     ASSERT_TRUE(res > 0, "expected success");
     ASSERT_TRUE(ptr == (sai_pointer_t)0x1122334455667788, "not equal pointer");
