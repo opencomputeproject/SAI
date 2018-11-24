@@ -250,6 +250,11 @@ sub CheckFunctionsParams
         my @params = $comment =~ /\@param\[\w+]\s+(\.\.\.|\w+)/gis;
         my @fnparams = $fn =~ /_(?:In|Out|Inout)_.+?(\.\.\.|\w+)\s*[,\)]/gis;
 
+        for my $p (@params)
+        {
+            LogWarning "param $p in $fname should not be prefixed sai_" if $p =~ /sai_/;
+        }
+
         my $params = "@params";
         my $fnparams = "@fnparams";
 
