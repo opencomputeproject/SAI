@@ -1039,6 +1039,7 @@ typedef enum _sai_tam_transport_attr_t
 
     /**
      * @brief Transport src port
+     * Value of -1 can be used a hint to compute ephemeral value
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
