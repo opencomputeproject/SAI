@@ -426,6 +426,7 @@ typedef enum _sai_tam_telemetry_type_t
     /**
      * @brief Switch silicon TAM
      * All the data relevant to switch
+     * e.g. route, port, queue statistics
      */
     SAI_TAM_TELEMETRY_TYPE_SWITCH,
 
@@ -585,6 +586,15 @@ typedef enum _sai_tam_tel_type_attr_t
      * @default false
      */
     SAI_TAM_TEL_TYPE_ATTR_NE_ENABLE,
+
+    /**
+     * @brief DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_TEL_TYPE_ATTR_DSCP_VALUE,
 
     /**
      * @brief Math function attached
