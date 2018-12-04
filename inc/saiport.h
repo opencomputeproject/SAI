@@ -409,6 +409,14 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_EYE_VALUES,
 
+    /**
+     * @brief Operational speed in Mbps
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_OPER_SPEED,
+
     /* READ-WRITE */
 
     /**
@@ -421,6 +429,8 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Speed in Mbps
+     *
+     * On get, returns the configured port speed.
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
