@@ -412,6 +412,9 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Operational speed in Mbps
      *
+     * If port is down, the returned value should be zero.
+     * If auto negotiation is on, the returned value should be the negotiated speed.
+     *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
