@@ -591,121 +591,114 @@ sai_timespec_t timespec;
 ```
 /* Creation of packet action group of type all with 3 group members */
 
+sai_status_t sai_rc;
+sai_attribute_t group_attr;
+sai_attribute_t group_mem_attrs[3];
 sai_object_id_t pkt_action_group_id;
 sai_object_id_t pkt_action_group_mem_1_id;
 sai_object_id_t pkt_action_group_mem_2_id;
 sai_object_id_t pkt_action_group_mem_3_id;
-sai_attribute_t group_attr;
-sai_attribute_t group_mem_attrs[3];
-sai_status_t sai_rc;
 sai_packet_action_group_action_t actions[3];
 sai_packet_action_group_action_list_t group_action_list;
 
-group_attr.id = SAI_PACKET_ACTION_GROUP_ATTR_TYPE;
-group_attr.value.s32 = SAI_PACKET_ACTION_GROUP_TYPE_ALL;
+group_attr.id                          = SAI_PACKET_ACTION_GROUP_ATTR_TYPE;
+group_attr.value.s32                   = SAI_PACKET_ACTION_GROUP_TYPE_ALL;
 
-sai_rc = sai_create_packet_action_group(&pkt_action_group_id, switch_id, 1,
-&group_attr);
+sai_rc = sai_create_packet_action_group(&pkt_action_group_id, switch_id, 1,&group_attr);
+
 
 /*First member creation*/
-group_mem_attrs[0].id =
-SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_PACKET_ACTION_GROUP_ID;
-group_mem_attrs[0].value.oid = pkt_action_group_id;
 
-group_mem_attrs[1].id = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
-group_mem_attrs[1].value.s32 = SAI_PACKET_ACTION_GROUP_TYPE_ALL;
+/*Assume first member's actions are to set VLAN 10 and redirect those packets to port 10*/
 
-/*Assume first member's actions are to set VLAN 10 and redirect those packets
-to port 10*/
+group_mem_attrs[0].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_PACKET_ACTION_GROUP_ID;
+group_mem_attrs[0].value.oid           = pkt_action_group_id;
 
-actions[0].type = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_ID;
-actions[0].action_value.u16 = 10;
+group_mem_attrs[1].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
+group_mem_attrs[1].value.s32           = SAI_PACKET_ACTION_GROUP_TYPE_ALL;
 
-actions[1].type = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT;
-actions[1].action_value.oid = port10_oid;
 
-group_action_list.count = 2;
-group_action_list.list = &actions[0];
+actions[0].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_ID;
+actions[0].action_value.u16            = 10;
+actions[1].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT;
+actions[1].action_value.oid            = port10_oid;
 
-group_mem_attrs[2].id = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
+group_action_list.count                = 2;
+group_action_list.list                 = &actions[0];
+group_mem_attrs[2].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
 group_mem_attrs[2].value.pktactionlist = group_action_list;
 
-sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_1_id,
-switch_id, 3, &group_mem_attrs);
+sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_1_id,switch_id, 3, &group_mem_attrs);
+
 
 /*Second member creation*/
 
 /*Assume second member's actions are to set VLAN 20, set the destination mac
 as 0xCC and redirect those packets to port 20*/
 
-actions[0].type = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_ID;
-actions[0].action_value.u16 = 10;
+actions[0].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_ID;
+actions[0].action_value.u16            = 10;
+actions[1].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_DST_MAC;
+actions[1].action_value.mac[0]         = 0xCC;
+actions[2].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT;
+actions[2].action_value.oid            = port20_oid;
 
-actions[1].type = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_DST_MAC;
-actions[1].action_value.mac[0] = 0xCC;
-
-actions[2].type = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT;
-actions[2].action_value.oid = port20_oid;
-
-group_action_list.count = 3;
-group_action_list.list = &actions[0];
-
-group_mem_attrs[2].id = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
+group_action_list.count                = 3;
+group_action_list.list                 = &actions[0];
+group_mem_attrs[2].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
 group_mem_attrs[2].value.pktactionlist = group_action_list;
 
-sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_2_id,
-switch_id, 3, &group_mem_attrs);
+sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_2_id, switch_id, 3, &group_mem_attrs);
+
 
 /*Third member creation*/
 
 /*Assume third member's actions are to set the source mac as 0xDD and redirect
 those packets to port 30*/
 
-actions[0].type = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_SRC_MAC;
-actions[0].action_value.mac[0] = 0xDD;
+actions[0].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_SRC_MAC;
+actions[0].action_value.mac[0]         = 0xDD;
+actions[1].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT;
+actions[1].action_value.oid            = port30_oid;
 
-actions[1].type = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT;
-actions[1].action_value.oid = port30_oid;
-
-group_action_list.count = 2;
-group_action_list.list = &actions[0];
-
-group_mem_attrs[2].id = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
+group_action_list.count                = 2;
+group_action_list.list                 = &actions[0];
+group_mem_attrs[2].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
 group_mem_attrs[2].value.pktactionlist = group_action_list;
 
-sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_3_id,
-switch_id, 3, &group_mem_attrs);
+sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_3_id,switch_id, 3, &group_mem_attrs);
+
 
 /*The packet action group can be used as an action in ACL entry.*/
 
-/* Assume packet action group should be enforced for packets with  src
-mac=0xaa, dst mac=0xbb and vlan = 10. Here we create an ACL entry for matching
-those packets and apply the packet group action. */
+/* Assume packet action group should be enforced for packets with  src mac=0xaa, dst mac=0xbb 
+   and vlan = 10. Here we create an ACL entry for matching those packets and apply the packet
+   group action. */
 
-sai_object_id_t sai_acl_entry_id;
 sai_attribute_t acl_attrs[5];
+sai_object_id_t sai_acl_entry_id;
+sai_mac_t exact_match_mask = {0xff,0xff,0xff,0xff,0xff,0xff};
 
-acl_attrs[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
-acl_attrs[0].value.oid = acl_table_id; /*Asssuming ACL table already created*/
-sai_mac_t exact_match_mask = {0xff,0xff,0xff,0xff,0xff,0xff}
+acl_attrs[0].id                            = SAI_ACL_ENTRY_ATTR_TABLE_ID;
+acl_attrs[0].value.oid                     = acl_table_id; /*Asssuming ACL table already created*/
 
-acl_attrs[1].id = SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC;
-acl_attrs[1].value.aclfield.enable = 1;
-acl_attrs[1].value.aclfield.data.mac[0]=0xAA;
-acl_attrs[1].value.aclfield.mask.mac = exact_match_mask;
+acl_attrs[1].id                            = SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC;
+acl_attrs[1].value.aclfield.enable         = 1;
+acl_attrs[1].value.aclfield.data.mac[0]    = 0xAA;
+acl_attrs[1].value.aclfield.mask.mac       = exact_match_mask;
 
-acl_attrs[2].id = SAI_ACL_ENTRY_ATTR_FIELD_DST_MAC;
-acl_attrs[2].value.aclfield.enable = 1;
-acl_attrs[2].value.aclfield.data.mac[0]=0xBB;
-acl_attrs[2].value.aclfield.mask.mac = exact_match_mask;
+acl_attrs[2].id                            = SAI_ACL_ENTRY_ATTR_FIELD_DST_MAC;
+acl_attrs[2].value.aclfield.enable         = 1;
+acl_attrs[2].value.aclfield.data.mac[0]    = 0xBB;
+acl_attrs[2].value.aclfield.mask.mac       = exact_match_mask;
 
-acl_attrs[3].id = SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID;
-acl_attrs[3].value.aclfield.enable = 1;
-acl_attrs[3].value.aclfield.data.u16 = 10;
-acl_attrs[3].value.aclfield.mask.u16 = 0xffff;
+acl_attrs[3].id                            = SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_ID;
+acl_attrs[3].value.aclfield.enable         = 1;
+acl_attrs[3].value.aclfield.data.u16       = 10;
+acl_attrs[3].value.aclfield.mask.u16       = 0xffff;
 
-acl_attrs[4].id = SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_ACTION_GROUP;
-acl_attrs[4].value.aclaction.enable = 1;
+acl_attrs[4].id                            = SAI_ACL_ENTRY_ATTR_ACTION_SET_PACKET_ACTION_GROUP;
+acl_attrs[4].value.aclaction.enable        = 1;
 acl_attrs[4].value.aclaction.parameter.oid = pkt_action_group_id;
 
 sai_rc = sai_create_acl_entry(&sai_acl_entry_id, switch_id, 5, &acl_attrs[0]);
