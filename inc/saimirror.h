@@ -291,6 +291,17 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE,
 
     /**
+     * @brief Mirror session policer object ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_MIRROR_SESSION_ATTR_POLICER,
+
+    /**
      * @brief End of attributes
      */
     SAI_MIRROR_SESSION_ATTR_END,
