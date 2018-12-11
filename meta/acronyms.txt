@@ -34,6 +34,7 @@ GRE - Generic Routing Encapsulation
 HW - Hardware
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
+ICMPV6 - Internet Control Message Procotol for IPv6
 IEEE - Institute of Electrical and Electronics Engineers
 IGMP - Internet Group Management Protocol
 IP - Internet Protocol
