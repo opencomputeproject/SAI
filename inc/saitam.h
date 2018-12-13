@@ -1049,7 +1049,8 @@ typedef enum _sai_tam_transport_attr_t
 
     /**
      * @brief Transport src port
-     * Value of -1 can be used a hint to compute ephemeral value
+     * Value of -1 can be used a hint to compute ephemeral
+     * or entropy value
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1480,10 +1481,21 @@ typedef enum _sai_tam_event_attr_t
      * @brief Tam event threshold attr Object
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_EVENT_THRESHOLD
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_EVENT_ATTR_THRESHOLD,
+
+    /**
+     * @brief DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_EVENT_ATTR_DSCP_VALUE,
 
     /**
      * @brief End of Attributes
