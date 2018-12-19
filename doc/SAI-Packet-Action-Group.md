@@ -9,79 +9,79 @@ Created     | 20/11/2018
 
 -------------------------------------------------------------------------------
 
+## Overview 
 
-## Overview
-The motivation for SAI Packet Action Group comes from the requirement for supporting OpenFlow Groups. OpenFlow specification defines the concept of OpenFlow Groups. An OpenFlow Group consists of list of action buckets. Each action bucket has a set of actions. The action buckets which need to be executed within the OpenFlow Group depends on the type of the OpenFlow Group. OpenFlow currently defines 4 types of groups viz.
+### Need for packet action group
 
-1. **All**          - Execute actions inside all the action buckets. This group is used for multicast or broadcast kind of usecases. The packet is replicated for each bucket.
-2. **SELECT**       - Execute any one of the action bucket in the group based on a switch computed selection algorithm.    Example: Hash on packet fields or simple round robin, etc. Each bucket can optionally be given preference using weights.
-3. **INDIRECT**     - Execute the single defined action bucket. This group supports only a single action bucket and is mainly intended for faster and efficient convergence when there is a need to modify a common action across multiple flow entries.
-4. **FAST FAILOVER** - Execute the first live action bucket in the action bucket.  
- Each action bucket is associated with a specific port/lag that controls whether that bucket is live/active. The action bucket are evaluated in the order defined by the group and the first bucket with an active port/lag is selected.
+In the current SAI model, we do not have mechanism to match on a packet flow and replicate/load-balance packets on different ports with each copy having different packet field modifications.Using the current SAI ACL model we can match on a packet flow and replicate packets on different ports but having unique packet modification on each replicated copy is not possible.  
 
-The OpenFlow Groups can be used to achieve different forwarding behaviors like flooding, multicasting, multipathing etc. Even though the OpenFlow Group resembles some of the existing SAI objects like L2MC Group, Next hop Group and Next hop object, some of functionalities/use-cases of what the OpenFlow Controller expects cannot be achieved using the current SAI objects.  
+#### Examples
 
-The subsequent section has example uses cases for openflow groups.
+##### Example 1
 
-
-## Example Use Cases
-
-##### a) Use case for OpenFlow Group Type ALL
-
-Assume the OpenFlow Controller wants to match packets with MAC SA=0xaa, MAC DA=0xbb, VLAN=10 and  
+Assume the requirement is to match packets with MAC SA=0xaa, MAC DA=0xbb, VLAN=10 and
 replicate the packet to three ports say port 10, port 20 and port 30 in the following way:
 1. In the copy to port 10, the VLAN should be set 20.
 2. In the copy to port 20, the VLAN should be set 30 and the MAC DA should be set as 0xCC.
 3. In the copy to port 30, the MAC SA should be set as 0xDD.
 
-To achieve this functionality, the Controller would use a group of type ALL and have 3 action buckets.  
-Each of the action bucket would replicate the packet to one port.  
-The corresponding packet actions would also be present in the action bucket.
-* Action bucket 1 - Set VLAN = 20, Output port 10.
-* Action bucket 2 - Set VLAN = 30, Set MAC DA=0xCC, Output port 30.
-* Action bucket 3 - Set MAC SA=0xDD, Output port 40.
-
 ![allgroup](figures/all_group.png "Packet Action Group Type - ALL")
 
-##### b) Use case for OpenFlow Group Type SELECT
+##### Example 2
 
-Assume the OpenFlow Controller wants to match packets with MAC SA=0xaa, MAC DA=0xbb, VLAN=10 and  
-wants to load balance the packets onto two ports say port 10 and port 20 in the following way:
+Assume the requirement is to match packets with MAC SA=0xaa, MAC DA=0xbb, VLAN=10 and
+load balance the packets onto two ports say port 10 and port 20 in the following way:
 1.  Set VLAN 20, Output port 10.
 2.  Set VLAN 30, Output port 20.
 
-To achieve this functionality, the controller would use a group of type SELECT and have 2 action buckets.  
-A packet which matches the criteria would be subjected to only one of the action bucket based on switch   
-computed selection algorithm say based on the hash of the packet.
-* Action bucket 1 - Set VLAN = 20, Output port 10.
-* Action bucket 2 - Set VLAN = 30, Output port 20.
-
 ![selectgroup](figures/select_group.png "Packet Action Group Type - SELECT")
 
-##### c) Use case for Openflow Group Type INDIRECT
-
-Assume the OpenFlow Controller wants to match packets with DIP=20.0.0.0/24 subnet and forward those packets to port 10 by changing the VLAN to 20 and MAC DA to 0xee.
-Openflow Controller also wants to use the same group for matching packets with DIP=20.0.0.X.
-To achieve this functionality, the controller would use a group of type INDIRECT and have a single action bucket with the following packet modifications:
-* Action bucket 1 - Set VLAN = 20, Set MAC DA=0xee, Output port to 10.  
-
-The controller would use the same group for forwarding packets with DIP 20.0.0.X and 30.0.0.X. In case the controller wants to alter the path the flows to port 20 with VLAN set to 30, the controller can modify the indirect group and the flows would converge and choose the new path faster.
+##### Example 3                                                             
+Assume the requirement is to match packets with DIP=20.0.0.0/24 subnet and forward those packets to port 10 by changing the VLAN to 20 and MAC DA to 0xee.
 
 ![indirectgroup](figures/indirect_group.png "Packet Action Group Type - INDIRECT")
+ 
 
-##### d) Use case for Openflow Group Type FAST FAILOVER
+##### Example 4
+Assume the requirement is to setup 2 backup failover paths for certain traffic patterns say for
+IP subnet 30.0.0.0/24 on UDP port 16000 and have packet modifications in the following way:
 
-Assume the controller wants to setup 2 backup failover paths for certain traffic patterns say for
-IP subnet 30.0.0.0/24 on UDP port 16000.  
-To achieve this the controller would create a fast failover group with 3 actions bucket, the first bucket would act as the primary path and the other two action buckets would act as backup paths.
-
-* Action bucket 1 - Set VLAN 100, Output port 10   ---> Primary path
-* Action bucket 2 - Set VLAN 200, Output port 20 ---> First backup path (Would be active if action bucket 1 fails)
-* Action bucket 3 - Set VLAN 300, Output port 30 ---> Second backup path (Would be active if both action buckets 1 and 2 fail)
-
-The port to be monitored on each bucket would be provided by the controller. If the monitored port fails in the action bucket, the next action bucket whose monitored port is active is chosen to forward traffic.
+1. Set VLAN 100, Output port 10   ---> This should act as primary path
+2. Set VLAN 200, Output port 20   ---> First backup path 
+3. Set VLAN 300, Output port 30   ---> Second backup path
 
 ![fastfailovergroup](figures/fast_failover_group.png "Packet Action Group Type - FAST FAILOVER")
+
+
+The above requirements cannot be acheived using the current SAI model. 
+
+
+### SAI Packet action group  
+
+The SAI packet action group provides a mechanism to replicate or load-balance packets with each replicated/load-balanced packet having different packet modifications. The packet action group contains packet group members. The order of execution of actions present in group members depends on the packet action group type.
+
+The packet action group type and the its usecases are given below
+
+1. **All**          - Execute actions inside all the group members. This group type is used for multicast or broadcast kind of usecases.
+2. **SELECT**       - Execute actions in any one of the group member  based on a switch computed selection algorithm.    Example: Hash on packet fields or simple round robin, etc. Each bucket can optionally be given preference using weights.
+3. **INDIRECT**     - Execute actions in the single group member. This group type is mainly intended for faster and efficient convergence when there is a need to modify a common action across multiple flow entries.
+4. **FAST FAILOVER** - Execute actions  of the first active group member. Each group member is associated with a specific port/lag that controls whether that member is active. The group members are evaluated in the order defined by the group and the first member with an active port/lag is selected.
+
+The packet group members contain the list of packet modifications which need to performed on the packet. They would have additional optional attributes based on the group to which the member belongs. For example if the member belongs to a group of type SELECT, optionally a weight attribute can be provided to influence the choice of this member. If the member belongs to a group of type FAST_FAILOVER, the port/lag object which needs to be monitored for triggering a failover can be provided.
+
+The details of the group and group member attributes are provided in new proposed header.
+
+The packet action group is envisioned to be in the ingress pipeline and can be specified as an ACL action currently. The following figure represent the packet action group logically
+
+![logicalfig](figures/Packet_action_group_logical_flow.png "Logical Diagram") 
+
+
+### Use-case
+
+The usecase for SAI Packet Action Group comes from the requirement for supporting OpenFlow Groups. OpenFlow specification defines the concept of OpenFlow Groups. An OpenFlow Group consists of list of action buckets. Each action bucket has a set of actions. The action buckets which need to be executed within the OpenFlow Group depends on the type of the OpenFlow Group.
+
+The OpenFlow Groups can be used to achieve different forwarding behaviors like flooding, multicasting, multipathing etc. Even though the OpenFlow Group resembles some of the existing SAI objects like L2MC Group, Next hop Group and Next hop object, some of functionalities/use-cases of what the OpenFlow Controller expects cannot be achieved using the current SAI objects.  
+
 
 ## SAI Header Changes
 
