@@ -64,6 +64,16 @@ typedef enum _sai_tam_attr_t
     SAI_TAM_ATTR_EVENT_OBJECTS_LIST,
 
     /**
+     * @brief Tam INT objects associated with this tam
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_INT
+     * @default empty
+     */
+    SAI_TAM_ATTR_INT_OBJECTS_LIST,
+
+    /**
      * @brief List of TAM bind points where this object will be applied.
      *
      * TAM group bind point list - create only attribute required for TAM
@@ -411,6 +421,702 @@ typedef sai_status_t (*sai_set_tam_event_threshold_attribute_fn)(
         _In_ sai_object_id_t tam_event_threshold_id,
         _In_ const sai_attribute_t *attr);
 
+typedef enum _sai_tam_int_flow_type_t
+{
+    /**
+     * @brief Flow type IPv4
+     */
+    SAI_TAM_INT_FLOW_TYPE_IPV4,
+
+    /**
+     * @brief Flow type IPv6
+     */
+    SAI_TAM_INT_FLOW_TYPE_IPV6,
+
+    /**
+     * @brief Flow type MPLS
+     */
+    SAI_TAM_INT_FLOW_TYPE_MPLS,
+
+    /**
+     * @brief Flow type tunnel
+     */
+    SAI_TAM_INT_FLOW_TYPE_TUNNEL
+
+} sai_tam_int_flow_type_t;
+
+typedef enum _sai_tam_int_flow_attr_t
+{
+    /**
+     * @brief Start of Attributes
+     */
+    SAI_TAM_INT_FLOW_ATTR_START,
+
+    /**
+     * @brief Type of flow
+     *
+     * @type sai_tam_int_flow_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_FLOW_ATTR_TYPE = SAI_TAM_INT_FLOW_ATTR_START,
+
+    /**
+     * @brief Flow source IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_TAM_INT_FLOW_ATTR_SRC_IP_ADDRESS,
+
+    /**
+     * @brief Flow source IP mask
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_TAM_INT_FLOW_ATTR_SRC_IP_MASK,
+
+    /**
+     * @brief Flow destination IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_TAM_INT_FLOW_ATTR_DST_IP_ADDRESS,
+
+    /**
+     * @brief Flow destination IP mask
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_TAM_INT_FLOW_ATTR_DST_IP_MASK,
+
+    /**
+     * @brief Flow protocol id
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_ATTR_PROTOCOL_TYPE,
+
+    /**
+     * @brief Flow source port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_ATTR_PROTO_SPORT,
+
+    /**
+     * @brief Flow destination port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_ATTR_PROTO_DPORT,
+
+    /**
+     * @brief Flow VXLAN VNID
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_ATTR_VXLAN_VNID,
+
+    /**
+     * @brief Flow inner source IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_TAM_INT_FLOW_ATTR_INNER_SRC_IP_ADDRESS,
+
+    /**
+     * @brief Flow inner destination IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_TAM_INT_FLOW_ATTR_INNER_DST_IP_ADDRESS,
+
+    /**
+     * @brief Flow inner protocol id
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_ATTR_INNER_PROTOCOL_TYPE,
+
+    /**
+     * @brief Flow inner source port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_ATTR_INNER_PROTO_SPORT,
+
+    /**
+     * @brief Flow inner destination port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_ATTR_INNER_PROTO_DPORT,
+
+    /**
+     * @brief Flow identifier
+     * this can be used to qualify a flow
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_ATTR_FLOW_ID,
+
+    /**
+     * @brief Flow counter
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_INT_FLOW_COUNTER
+     * @default empty
+     */
+    SAI_TAM_INT_FLOW_ATTR_COUNTER_LIST,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_TAM_INT_FLOW_ATTR_END,
+
+    /** Custom range base value */
+    SAI_TAM_INT_FLOW_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_TAM_INT_FLOW_ATTR_CUSTOM_RANGE_END
+
+} sai_tam_int_flow_attr_t;
+
+/**
+ * @brief Attribute Id for sai_tam_int_flow_counter
+ */
+typedef enum _sai_tam_int_flow_counter_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_TAM_INT_FLOW_COUNTER_ATTR_START,
+
+    /**
+     * @brief SAI TAM INT Flow object id
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_FLOW_COUNTER_ATTR_TABLE_ID = SAI_TAM_INT_FLOW_COUNTER_ATTR_START,
+
+    /**
+     * @brief Enable/disable packet count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_TAM_INT_FLOW_COUNTER_ATTR_ENABLE_PACKET_COUNT,
+
+    /**
+     * @brief Enable/disable byte count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_TAM_INT_FLOW_COUNTER_ATTR_ENABLE_BYTE_COUNT,
+
+    /**
+     * @brief Get/set packet count
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_COUNTER_ATTR_PACKETS,
+
+    /**
+     * @brief Get/set byte count
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_FLOW_COUNTER_ATTR_BYTES,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_TAM_INT_FLOW_COUNTER_ATTR_END,
+
+    /** Custom range base value */
+    SAI_TAM_INT_FLOW_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_TAM_INT_FLOW_COUNTER_ATTR_CUSTOM_RANGE_END
+
+} sai_tam_int_flow_counter_attr_t;
+
+/**
+ * @brief Create and return a INT flow object
+ *
+ * @param[out] tam_int_flow_id INT Flow object
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_tam_int_flow_fn)(
+        _Out_ sai_object_id_t *tam_int_flow_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Deletes a specified INT Flow object
+ *
+ * @param[in] tam_int_flow_id INT Flow object id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_tam_int_flow_fn)(
+        _In_ sai_object_id_t tam_int_flow_id);
+
+/**
+ * @brief Get values for specified INT Flow object attributes
+ *
+ * @param[in] tam_int_flow_id INT Flow object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_int_flow_attribute_fn)(
+        _In_ sai_object_id_t tam_int_flow_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Set value for a specified INT Flow object attribute
+ *
+ * @param[in] tam_int_flow_id INT Flow object id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_tam_int_flow_attribute_fn)(
+        _In_ sai_object_id_t tam_int_flow_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Create a TAM INT flow counter
+ *
+ * @param[out] tam_int_flow_counter_id The TAM INT flow counter id
+ * @param[in] switch_id The switch Object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_tam_int_flow_counter_fn)(
+        _Out_ sai_object_id_t *tam_int_flow_counter_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Delete an TAM INT flow counter
+ *
+ * @param[in] tam_int_flow_counter_id The TAM INT flow counter id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_tam_int_flow_counter_fn)(
+        _In_ sai_object_id_t tam_int_flow_counter_id);
+
+/**
+ * @brief Set ACL TAM INT flow attribute
+ *
+ * @param[in] tam_int_flow_counter_id The TAM INT flow counter id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_tam_int_flow_counter_attribute_fn)(
+        _In_ sai_object_id_t tam_int_flow_counter_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get ACL TAM INT flow attribute
+ *
+ * @param[in] tam_int_flow_counter_id The TAM INT flow counter id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_int_flow_counter_attribute_fn)(
+        _In_ sai_object_id_t tam_int_flow_counter_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+typedef enum _sai_tam_int_node_type_t
+{
+    /**
+     * @brief Initiator node
+     * This node is responsible for inserting
+     * IOAM/IFA header and metadata
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_INT_NODE_TYPE_INITIATIOR,
+
+    /**
+     * @brief Transit node
+     * This node is responsible for inserting
+     * IOAM/IFA metadata only
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_INT_NODE_TYPE_TRANSIT,
+
+    /**
+     * @brief Terminator node
+     * This node is responsible for strip
+     * IOAM/IFA header and metadata, and
+     * forward/drop the packet
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_INT_NODE_TYPE_TERMINATOR
+
+} sai_tam_int_node_type_t;
+
+/**
+ * @brief TAM INT types
+ */
+typedef enum _sai_tam_int_type_t
+{
+    /**
+     * @brief INT type IOAM
+     */
+    SAI_TAM_INT_TYPE_IOAM,
+
+    /**
+     * @brief INT type IFA1
+     */
+    SAI_TAM_INT_TYPE_IFA1,
+
+    /**
+     * @brief INT type IFA2
+     */
+    SAI_TAM_INT_TYPE_IFA2,
+
+    /**
+     * @brief INT type vendor extension
+     */
+    SAI_TAM_INT_TYPE_EXTN
+
+} sai_tam_int_type_t;
+
+/**
+ * @brief Attributes for TAM INT
+ */
+typedef enum _sai_tam_int_attr_t
+{
+
+    /**
+     * @brief Start of Attributes
+     */
+    SAI_TAM_INT_ATTR_START,
+
+    /**
+     * @brief Type of INT method
+     *
+     * @type sai_tam_int_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_ATTR_TYPE = SAI_TAM_INT_ATTR_START,
+
+    /**
+     * @brief IOAM trace type
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IOAM
+     */
+    SAI_TAM_INT_ATTR_IOAM_TRACE_TYPE,
+
+    /**
+     * @brief Probe Marker 1
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1
+     */
+    SAI_TAM_INT_ATTR_IFA1_PB1,
+
+    /**
+     * @brief Probe Marker 2
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1
+     */
+    SAI_TAM_INT_ATTR_IFA1_PB2,
+
+    /**
+     * @brief Inline or Clone mode
+     * Inline mode will insert header and metadata in live packet
+     * Clone mode will insert header and metadata in cloned packet
+     *
+     * @type bool
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
+     */
+    SAI_TAM_INT_ATTR_IFA2_INLINE,
+
+    /**
+     * @brief Protocol value used for INT
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_PROTO,
+
+    /**
+     * @brief Trace vector value
+     * trace vector is used to specified the fields
+     * of interest in metadata header
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_TRACE_VECTOR,
+
+    /**
+     * @brief Action vector value
+     * action vector is used to specified the actions
+     * of interest on metadata header
+     * value of 0 means no actions of interest
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_ACTION_VECTOR,
+
+    /**
+     * @brief INT node type
+     *
+     * @type sai_tam_int_node_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_TAM_INT_ATTR_TAM_INT_NODE_TYPE,
+
+    /**
+     * @brief Flow group for monitoring
+     * Null flow group means that all the flows on the
+     * bind point need to be monitored
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_INT_FLOW
+     * @default empty
+     */
+    SAI_TAM_INT_ATTR_TAM_INT_FLOW_LIST,
+
+    /**
+     * @brief Maximum number of hope allowed in the path
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_MAX_HOP_COUNT,
+
+    /**
+     * @brief Maximum length of metadata stack, always word aligned
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_MAX_LENGTH,
+
+    /**
+     * @brief Metadata name space ID
+     * name space id defines the applicable format of metadata header
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_NAME_SPACE_ID,
+
+    /**
+     * @brief Metadata name space ID scope
+     * name space id scope is global or local
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_INT_ATTR_NAME_SPACE_ID_GLOBAL,
+
+    /**
+     * @brief Enable/Disable Samplepacket session
+     *
+     * Enable ingress sampling by assigning samplepacket object id Disable
+     * ingress sampling by assigning #SAI_NULL_OBJECT_ID as attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TAM_INT_ATTR_INGRESS_SAMPLEPACKET_ENABLE,
+
+    /**
+     * @brief Collector object list
+     * @type sai_object_list_t
+     *
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
+     * @default empty
+     */
+    SAI_TAM_INT_ATTR_COLLECTOR_LIST,
+
+    /**
+     * @brief DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_DSCP_VALUE,
+
+    /**
+     * @brief Math function attached
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_MATH_FUNC
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TAM_INT_ATTR_MATH_FUNC,
+
+    /**
+     * @brief Tam report type
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM_REPORT
+     */
+    SAI_TAM_INT_ATTR_REPORT_ID,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_TAM_INT_ATTR_END,
+
+    /** Custom range base value */
+    SAI_TAM_INT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_TAM_INT_ATTR_CUSTOM_RANGE_END
+
+} sai_tam_int_attr_t;
+
+/**
+ * @brief Create and return a INT type object
+ *
+ * @param[out] tam_int_id INT object
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_tam_int_fn)(
+        _Out_ sai_object_id_t *tam_int_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Deletes a specified INT object
+ *
+ * @param[in] tam_int_id INT type object id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_tam_int_fn)(
+        _In_ sai_object_id_t tam_int_id);
+
+/**
+ * @brief Get values for specified INT object attributes
+ *
+ * @param[in] tam_int_id INT object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_int_attribute_fn)(
+        _In_ sai_object_id_t tam_int_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Set value for a specified INT object attribute
+ *
+ * @param[in] tam_int_id INT object id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_tam_int_attribute_fn)(
+        _In_ sai_object_id_t tam_int_id,
+        _In_ const sai_attribute_t *attr);
+
 /**
  * @brief TAM telemetry types supported
  */
@@ -478,15 +1184,6 @@ typedef enum _sai_tam_tel_type_attr_t
      * @default 0
      */
     SAI_TAM_TEL_TYPE_ATTR_INT_SWITCH_IDENTIFIER,
-
-    /**
-     * @brief Flow - Flow ID
-     *
-     * type sai_uint32_t
-     * flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * condition SAI_TAM_TEL_TYPE_ATTR_TAM_TELEMETRY_TYPE == SAI_TAM_TELEMETRY_TYPE_FLOW
-     * SAI_TAM_TEL_TYPE_ATTR_FLOW_ID,
-     */
 
     /**
      * @brief Switch - Collect Port stats
@@ -1629,6 +2326,21 @@ typedef struct _sai_tam_api_t
     sai_remove_tam_event_threshold_fn         remove_tam_event_threshold;
     sai_set_tam_event_threshold_attribute_fn  set_tam_event_threshold_attribute;
     sai_get_tam_event_threshold_attribute_fn  get_tam_event_threshold_attribute;
+
+    sai_create_tam_int_fn                     create_tam_int;
+    sai_remove_tam_int_fn                     remove_tam_int;
+    sai_set_tam_int_attribute_fn              set_tam_int_attribute;
+    sai_get_tam_int_attribute_fn              get_tam_int_attribute;
+
+    sai_create_tam_int_flow_fn                create_tam_int_flow;
+    sai_remove_tam_int_flow_fn                remove_tam_int_flow;
+    sai_set_tam_int_flow_attribute_fn         set_tam_int_flow_attribute;
+    sai_get_tam_int_flow_attribute_fn         get_tam_int_flow_attribute;
+
+    sai_create_tam_int_flow_counter_fn        create_tam_int_flow_counter;
+    sai_remove_tam_int_flow_counter_fn        remove_tam_int_flow_counter;
+    sai_set_tam_int_flow_counter_attribute_fn set_tam_int_flow_counter_attribute;
+    sai_get_tam_int_flow_counter_attribute_fn get_tam_int_flow_counter_attribute;
 
     sai_create_tam_tel_type_fn                create_tam_tel_type;
     sai_remove_tam_tel_type_fn                remove_tam_tel_type;

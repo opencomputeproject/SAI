@@ -37,8 +37,11 @@ HW - Hardware
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
 IEEE - Institute of Electrical and Electronics Engineers
-IFA  - Inband Flow Analyzer
+IFA - Inband Flow Analyzer
+IFA1 - Inband Flow Analyzer version 1
+IFA2 - Inband Flow Analyzer version 2
 IGMP - Internet Group Management Protocol
+IOAM - In-situ Operations And Management
 IP - Internet Protocol
 IPFIX - IP Flow Information Export
 IP2ME - IP packets to local router IP
@@ -85,6 +88,7 @@ TTL - Time to Leave
 UDF - User-Defined Field
 UDP - User Datagram Protocol
 VNI - Virtual Network Interface
+VNID - Virtual Network Identifier
 VR - Virtual Router
 VRRP - Virtual Router Redundancy Protocol
 VXLAN - Virtual Extensible LAN
