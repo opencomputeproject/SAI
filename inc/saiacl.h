@@ -872,6 +872,24 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ICMP_CODE,
 
     /**
+     * @brief ICMP Type for IPv6
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_ICMPV6_TYPE,
+
+    /**
+     * @brief ICMP Code for IPv6
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_ICMPV6_CODE,
+
+    /**
      * @brief Vlan Tags
      *
      * @type bool
@@ -1523,6 +1541,24 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ICMP_CODE,
+
+    /**
+     * @brief ICMP Type for IPv6
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_ICMPV6_TYPE,
+
+    /**
+     * @brief ICMP Code for IPv6
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_ICMPV6_CODE,
 
     /**
      * @brief Number of VLAN Tags
