@@ -1,5 +1,7 @@
 # BMTOR Overview
 
+![](https://github.com/marian-pritsak/SAI/blob/patch-2/doc/saibmtor/VXLAN%20pipe.PNG)
+
 SAI BMTOR API defines a new kind of a routing table that allows a route entry to be in multiple VRF at the same time. In the standard router, exact match is done on VRF ID and lpm on prefix. In BMTOR tunnel table, every VRF ID is assigned a single bit in a bitvector instead of some integer number, which allows us to match on multiple VRF IDs at the same time without duplicating route entries for each VRF.
 
 In standard router, VRF (VNET) classification is done by assigning router interface to virtual router. BMTOR API allows a user do classification based on either:
