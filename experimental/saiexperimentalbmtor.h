@@ -216,14 +216,14 @@ typedef enum _sai_table_tunnel_route_entry_attr_t
     SAI_TABLE_TUNNEL_ROUTE_ENTRY_ATTR_DST_IP_KEY,
 
     /**
-     * @brief Action to_tunnel parameter next_hop_group
+     * @brief Action to_tunnel parameter next_hop
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP
      * @condition SAI_TABLE_TUNNEL_ROUTE_ENTRY_ATTR_ACTION == SAI_TABLE_TUNNEL_ROUTE_ENTRY_ACTION_TO_TUNNEL
      */
-    SAI_TABLE_TUNNEL_ROUTE_ENTRY_ATTR_NEXT_HOP_GROUP,
+    SAI_TABLE_TUNNEL_ROUTE_ENTRY_ATTR_NEXT_HOP,
 
     /**
      * @brief Action to_port parameter port_id
