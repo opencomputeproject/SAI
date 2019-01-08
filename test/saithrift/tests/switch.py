@@ -1145,10 +1145,11 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
                                             value=attribute13_value)
         mirror_attr_list.append(attribute13)
 
-        attribute14_value = sai_thrift_attribute_value_t(booldata=vlan_header_valid)
-        attribute14 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID,
-                                            value=attribute14_value)
-        mirror_attr_list.append(attribute14)
+        if vlan_header_valid is not None:
+            attribute14_value = sai_thrift_attribute_value_t(booldata=vlan_header_valid)
+            attribute14 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID,
+                                                value=attribute14_value)
+            mirror_attr_list.append(attribute14)
 
     mirror_id = client.sai_thrift_create_mirror_session(mirror_attr_list)
     return mirror_id

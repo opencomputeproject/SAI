@@ -563,6 +563,315 @@ class erspan_novlan_monitor(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_set_port_attribute(port3, attr)
 
 @group('mirror')
+class erspan_vlan_set_monitor(sai_base_test.ThriftInterfaceDataPlane):
+    '''
+    This test performs erspan monitoring
+    From port2(source port) we send traffic to port 3
+    erspan mirror packets are expected on port 1(monitor port)
+    '''
+    def runTest(self):
+        print
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        mac3='00:00:00:00:00:33'
+        mac2='00:00:00:00:00:22'
+        monitor_port=port1
+        source_port=port2
+        mirror_type=SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
+        src_mac='00:00:00:00:11:22'
+        dst_mac='00:00:00:00:11:33'
+        encap_type=SAI_ERSPAN_ENCAPSULATION_TYPE_MIRROR_L3_GRE_TUNNEL
+        ip_version=0x4
+        tos=0x3c
+        ttl=0xf0
+        gre_type=0x88be
+        src_ip='17.18.19.0'
+        dst_ip='33.19.20.0'
+        addr_family=0
+        vlan_id = 2
+        vlan_remote_id = 3
+        mac_action = SAI_PACKET_ACTION_FORWARD
+
+        # Put ports under test in VLAN 3
+        vlan_remote_oid = sai_thrift_create_vlan(self.client, vlan_remote_id)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_remote_oid, port3, SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        sai_thrift_create_fdb(self.client, vlan_remote_oid, mac3, port3, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_remote_oid, mac2, port2, mac_action)
+
+        # Remove ports from default VLAN
+        sai_thrift_vlan_remove_ports(self.client, switch.default_vlan.oid, [port1, port2, port3])
+
+        # Set PVID
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_remote_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+        self.client.sai_thrift_set_port_attribute(port3, attr)
+
+        erspanid=sai_thrift_create_mirror_session(self.client,mirror_type=mirror_type,port=monitor_port,vlan=None,vlan_priority=None,vlan_tpid=None,vlan_header_valid=None,src_mac=src_mac,dst_mac=dst_mac,src_ip=src_ip,dst_ip=dst_ip,encap_type=encap_type,iphdr_version=ip_version,ttl=ttl,tos=tos,gre_type=gre_type)
+
+        attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=1,object_id_list=[erspanid]))
+
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attrb_value)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attrb_value)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+
+        pkt = simple_tcp_packet(eth_dst='00:00:00:00:00:33',
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.0.0.1',
+                                dl_vlan_enable=True,
+                                vlan_vid=3,
+                                ip_id=101,
+                                ip_ttl=64)
+
+        pkt2 = simple_tcp_packet(eth_dst='00:00:00:00:00:22',
+                                eth_src='00:33:33:33:33:33',
+                                dl_vlan_enable=True,
+                                vlan_vid=3,
+                                ip_dst='10.0.0.1',
+                                ip_id=101,
+                                ip_ttl=64)
+
+        pkt3 = simple_tcp_packet(eth_dst='00:00:00:00:00:22',
+                                eth_src='00:33:33:33:33:33',
+                                dl_vlan_enable=True,
+                                vlan_vid=3,
+                                ip_dst='10.0.0.1',
+                                ip_id=101,
+                                ip_ttl=64)
+
+        exp_pkt1= ipv4_erspan_platform_pkt(pktlen=142,
+                                    eth_dst='00:00:00:00:11:33',
+                                    eth_src='00:00:00:00:11:22',
+                                    ip_id=0,
+                                    ip_ttl=240,
+                                    ip_tos=0x3c,
+                                    ip_ihl=5,
+                                    ip_src='17.18.19.0',
+                                    ip_dst='33.19.20.0',
+                                    version=2,
+                                    mirror_id=(erspanid & 0x3FFFFFFF),
+                                    inner_frame=pkt
+                                    )
+
+        exp_pkt2= ipv4_erspan_platform_pkt(pktlen=142,
+                                    eth_dst='00:00:00:00:11:33',
+                                    eth_src='00:00:00:00:11:22',
+                                    ip_id=0,
+                                    ip_ttl=240,
+                                    ip_tos=0x3c,
+                                    ip_ihl=5,
+                                    ip_src='17.18.19.0',
+                                    ip_dst='33.19.20.0',
+                                    version=2,
+                                    mirror_id=(erspanid & 0x3FFFFFFF),
+                                    inner_frame=pkt3
+                                    )
+
+        exp_vlan_pkt1= ipv4_erspan_platform_pkt(pktlen=142,
+                                    eth_dst='00:00:00:00:11:33',
+                                    eth_src='00:00:00:00:11:22',
+                                    dl_vlan_enable=True,
+                                    vlan_vid=2,
+                                    ip_id=0,
+                                    ip_ttl=240,
+                                    ip_tos=0x3c,
+                                    ip_ihl=5,
+                                    ip_src='17.18.19.0',
+                                    ip_dst='33.19.20.0',
+                                    version=2,
+                                    mirror_id=(erspanid & 0x3FFFFFFF),
+                                    inner_frame=pkt
+                                    )
+
+        exp_vlan_pkt2= ipv4_erspan_platform_pkt(pktlen=142,
+                                    eth_dst='00:00:00:00:11:33',
+                                    eth_src='00:00:00:00:11:22',
+                                    dl_vlan_enable=True,
+                                    vlan_vid=2,
+                                    ip_id=0,
+                                    ip_ttl=240,
+                                    ip_tos=0x3c,
+                                    ip_ihl=5,
+                                    ip_src='17.18.19.0',
+                                    ip_dst='33.19.20.0',
+                                    version=2,
+                                    mirror_id=(erspanid & 0x3FFFFFFF),
+                                    inner_frame=pkt3
+                                    )
+
+        m1=Mask(exp_pkt1)
+        m1.set_do_not_care_scapy(ptf.packet.IP,'tos')
+        m1.set_do_not_care_scapy(ptf.packet.IP,'frag')
+        m1.set_do_not_care_scapy(ptf.packet.IP,'flags')
+        m1.set_do_not_care_scapy(ptf.packet.IP,'chksum')
+        m1.set_do_not_care_scapy(ptf.packet.GRE,'proto')
+        m1.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'platf_id')
+        m1.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'info1')
+        m1.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'info2')
+            
+        m1.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'span_id')
+        m1.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'timestamp')
+        m1.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'sgt_other')
+        m1.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'direction')
+        m1.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'version')
+        m1.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'vlan')
+        m1.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'priority')
+        m1.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'truncated')
+        m1.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'unknown2')
+
+        m2=Mask(exp_pkt2)
+        m2.set_do_not_care_scapy(ptf.packet.IP,'tos')
+        m2.set_do_not_care_scapy(ptf.packet.IP,'frag')
+        m2.set_do_not_care_scapy(ptf.packet.IP,'flags')
+        m2.set_do_not_care_scapy(ptf.packet.IP,'chksum')
+        m2.set_do_not_care_scapy(ptf.packet.GRE,'proto')
+        m2.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'platf_id')
+        m2.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'info1')
+        m2.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'info2')
+            
+        m2.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'span_id')
+        m2.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'timestamp')
+        m2.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'sgt_other')
+        m2.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'direction')
+        m2.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'version')
+        m2.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'vlan')
+        m2.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'priority')
+        m2.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'truncated')
+        m2.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'unknown2')
+
+        m1_vlan=Mask(exp_vlan_pkt1)
+        m1_vlan.set_do_not_care_scapy(ptf.packet.IP,'tos')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.IP,'frag')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.IP,'flags')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.IP,'chksum')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.GRE,'proto')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'platf_id')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'info1')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'info2')
+            
+        m1_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'span_id')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'timestamp')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'sgt_other')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'direction')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'version')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'vlan')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'priority')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'truncated')
+        m1_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'unknown2')
+
+        m2_vlan=Mask(exp_vlan_pkt2)
+        m2_vlan.set_do_not_care_scapy(ptf.packet.IP,'tos')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.IP,'frag')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.IP,'flags')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.IP,'chksum')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.GRE,'proto')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'platf_id')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'info1')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.PlatformSpecific, 'info2')
+            
+        m2_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'span_id')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'timestamp')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'sgt_other')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'direction')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'version')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'vlan')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'priority')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'truncated')
+        m2_vlan.set_do_not_care_scapy(ptf.packet.ERSPAN_III, 'unknown2')
+
+        n=Mask(pkt2)
+        n.set_do_not_care_scapy(ptf.packet.IP,'len')
+        n.set_do_not_care_scapy(ptf.packet.IP,'chksum')
+
+        try:
+            # in tuple: 0 is device number, 2 is port number
+            # this tuple uniquely identifies a port
+            # for ingress mirroring
+            print "Checking INGRESS ERSPAN Mirroring"
+            print "Sending packet port 2 -> port 3 (00:22:22:22:22:22 -> 00:00:00:00:00:33)"
+            send_packet(self, 1, pkt)
+            verify_each_packet_on_each_port(self, [m1,pkt], ports=[0,2])#FIXME need to properly implement
+            # for egress mirroring
+            print "Checking EGRESS ERSPAN Mirroring"
+            print "Sending packet port 3 -> port 2 (00:33:33:33:33:33 -> 00:00:00:00:00:22)"
+            send_packet(self, 2, pkt2)
+            verify_each_packet_on_each_port(self, [pkt2,m2], ports=[1,0])#FIXME need to properly implement
+
+            # Set vlan header valid to true
+            attr_value = sai_thrift_attribute_value_t(booldata=True)
+            attr = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID, value=attr_value)
+            self.client.sai_thrift_set_mirror_session_attribute(erspanid, attr)
+
+            # Set vlan id
+            attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+            attr = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_mirror_session_attribute(erspanid, attr)
+
+            print "Checking INGRESS ERSPAN Mirroring"
+            print "Sending packet port 2 -> port 3 (00:22:22:22:22:22 -> 00:00:00:00:00:33)"
+            send_packet(self, 1, pkt)
+            verify_each_packet_on_each_port(self, [m1_vlan,pkt], ports=[0,2])#FIXME need to properly implement
+
+            print "Checking EGRESS ERSPAN Mirroring"
+            print "Sending packet port 3 -> port 2 (00:33:33:33:33:33 -> 00:00:00:00:00:22)"
+            send_packet(self, 2, pkt2)
+            verify_each_packet_on_each_port(self, [pkt2,m2_vlan], ports=[1,0])#FIXME need to properly implement
+
+            # Set vlan header valid to false
+            attr_value = sai_thrift_attribute_value_t(booldata=False)
+            attr = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID, value=attr_value)
+            self.client.sai_thrift_set_mirror_session_attribute(erspanid, attr)
+
+            print "Checking INGRESS ERSPAN Mirroring"
+            print "Sending packet port 2 -> port 3 (00:22:22:22:22:22 -> 00:00:00:00:00:33)"
+            send_packet(self, 1, pkt)
+            verify_each_packet_on_each_port(self, [m1,pkt], ports=[0,2])#FIXME need to properly implement
+
+            print "Checking EGRESS ERSPAN Mirroring"
+            print "Sending packet port 3 -> port 2 (00:33:33:33:33:33 -> 00:00:00:00:00:22)"
+            send_packet(self, 2, pkt2)
+            verify_each_packet_on_each_port(self, [pkt2,m2], ports=[1,0])#FIXME need to properly implement
+
+        finally:
+            sai_thrift_delete_fdb(self.client, vlan_remote_oid, mac2, port2)
+            sai_thrift_delete_fdb(self.client, vlan_remote_oid, mac3, port3)
+
+            # Remove ports from mirror destination
+            attrb_value = sai_thrift_attribute_value_t(objlist=sai_thrift_object_list_t(count=0,object_id_list=[erspanid]))
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_MIRROR_SESSION, value=attrb_value)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_EGRESS_MIRROR_SESSION, value=attrb_value)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+
+            # Now you can remove destination
+            self.client.sai_thrift_remove_mirror_session(erspanid)
+
+            # Remove ports from VLAN 3
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_remove_vlan_member(vlan_member3)
+            self.client.sai_thrift_remove_vlan(vlan_remote_oid)
+
+            # Add ports back to default VLAN
+            vlan_member1a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member2a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_member3a = sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+            self.client.sai_thrift_set_port_attribute(port3, attr)
+
+@group('mirror')
 class IngressLocalMirrorTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print
