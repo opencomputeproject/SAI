@@ -219,8 +219,8 @@ sub CreateApiNameTest
 
     my @objects = @{ $main::SAI_ENUMS{sai_object_type_t}{values} };
 
-    WriteTest "    sai_object_type_t checked[SAI_OBJECT_TYPE_MAX];";
-    WriteTest "    memset(checked, 0, SAI_OBJECT_TYPE_MAX * sizeof(sai_object_type_t));";
+    WriteTest "    sai_object_type_t checked[SAI_OBJECT_TYPE_EXTENSIONS_MAX];";
+    WriteTest "    memset(checked, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(sai_object_type_t));";
 
     WriteTest "    void *dummy = NULL;";
 
