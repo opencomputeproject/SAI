@@ -126,7 +126,7 @@ typedef enum _sai_acl_action_type_t
     /** Redirect Packet to a list of destination which can be a port list */
     SAI_ACL_ACTION_TYPE_REDIRECT_LIST,
 
-    /** Drop Packet */
+    /** Packet Action */
     SAI_ACL_ACTION_TYPE_PACKET_ACTION,
 
     /** Flood Packet on Vlan domain */
