@@ -14,6 +14,7 @@ CIDR - Classless Inter Domain Routing
 CIR - Committed Information Rate
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
+DHCP - Dynamic Host Configuration Protocol
 DLD - Dead Lock Detection
 DLDR - Dead Lock Detection and Recovery
 DLL - Dynamic Link Library

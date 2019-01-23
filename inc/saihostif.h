@@ -236,7 +236,10 @@ typedef enum _sai_hostif_trap_type_t
     /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE = 0x00002001,
 
-    /** Default packet action is forward */
+    /**
+     * @brief DHCP traffic (UDP ports 67, 68), either L3 broadcast or unicast
+     * to local router IP address (default packet action is forward)
+     */
     SAI_HOSTIF_TRAP_TYPE_DHCP = 0x00002002,
 
     /** Default packet action is forward */
