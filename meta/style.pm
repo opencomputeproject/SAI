@@ -982,7 +982,7 @@ sub CheckHeadersStyle
             next if $line =~ /^(void|bool) /;       # function return
             next if $line =~ m![^\\]\\$!;           # macro multiline
             next if $line =~ /^ {4}(\w+);$/;        # union entries
-            next if $line =~ /^union _sai_\w+ {/;   # union entries
+            next if $line =~ /^union _sai_\w+ \{/;  # union entries
 
             LogWarning "Header doesn't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
         }
