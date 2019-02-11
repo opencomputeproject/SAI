@@ -231,6 +231,12 @@ typedef enum _sai_acl_action_type_t
     /** Enable DTEL report for all packets without filtering (experimental) */
     SAI_ACL_ACTION_TYPE_DTEL_REPORT_ALL_PACKETS,
 
+    /** Enable insertion of INT metadata */
+    SAI_ACL_ACTION_TYPE_INSERT_INT,
+
+    /** Enable deletion of INT metadata */
+    SAI_ACL_ACTION_TYPE_DELETE_INT,
+
     /** Set isolation group to prevent traffic to members of isolation group */
     SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
 
@@ -2075,6 +2081,24 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DTEL_REPORT_ALL_PACKETS,
+
+    /**
+     * @brief Enable INT metadata insertion
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INSERT_INT,
+
+    /**
+     * @brief Enable INT metadata deletion
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DELETE_INT,
 
     /**
      * @brief Set isolation group (isolation group object id)
