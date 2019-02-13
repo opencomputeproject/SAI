@@ -65,7 +65,7 @@ The packet action group type and the its usecases are given below
 1. **All**          - Execute actions inside all the group members. This group type is used for multicast or broadcast kind of usecases.
 2. **SELECT**       - Execute actions in any one of the group member  based on a switch computed selection algorithm.    Example: Hash on packet fields or simple round robin, etc. Each bucket can optionally be given preference using weights.
 3. **INDIRECT**     - Execute actions in the single group member. This group type is mainly intended for faster and efficient convergence when there is a need to modify a common action across multiple flow entries.
-4. **FAST FAILOVER** - Execute actions  of the first active group member. Each group member is associated with a specific port/lag that controls whether that member is active. The group members are evaluated in the order defined by the group and the first member with an active port/lag is selected.
+4. **FAST FAILOVER** - Execute actions  of the first active group member. Each group member is associated with a specific port/lag that controls whether that member is active. The port/lag is considered active as long as it is able to forward traffic.The group members are evaluated in the order defined by the group by the switching entity and the first member with an active port/lag is selected.It is preferred that in case the active member fails the switching entity automatically takes next active member. However different NPUs have different capabilities and some NPUs need control plane to select the active member.
 
 The packet group members contain the list of packet modifications which need to performed on the packet. They would have additional optional attributes based on the group to which the member belongs. For example if the member belongs to a group of type SELECT, optionally a weight attribute can be provided to influence the choice of this member. If the member belongs to a group of type FAST_FAILOVER, the port/lag object which needs to be monitored for triggering a failover can be provided.
 
@@ -147,6 +147,19 @@ typedef enum _sai_packet_action_group_attr_t
     SAI_PACKET_ACTION_GROUP_ATTR_PACKET_ACTION_GROUP_MEMBER_LIST,
 
     /**
+     * @brief Packet action active group member. 
+     *
+     * If not specified or is set as SAI_NULL_OBJECT_ID, the first member acts as the active member in 
+     * the group. 
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_PACKET_ACTION_GROUP_ATTR_TYPE ==  SAI_PACKET_ACTION_GROUP_TYPE_FAST_FAILOVER
+     */
+    SAI_PACKET_ACTION_GROUP_ACTIVE_MEMBER, 
+
+    /**
      * @brief End of attributes
      */
     SAI_PACKET_ACTION_GROUP_ATTR_END,
@@ -195,16 +208,25 @@ typedef enum _sai_packet_action_group_member_attr_t
 
     /**
      * @brief Packet Action Group Action List
-     *
-     * If the action list is not provided or does not contain
-     * any output action, then traffic destined to this member
-     * should be dropped.
      *    
      * @type sai_packet_action_group_action_list_t pktactionlist
      * @flags CREATE_AND_SET
      * @default empty
      */
     SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_ACTION_LIST,
+
+    /**
+     * @brief Packet Action Group Redirect Port/LAG interface
+     *
+     * This is the egress port/LAG interface out of which the packet needs to be
+     * sent out of the member. If this object is set as SAI_NULL_OBJECT_ID or
+     * is not specified. Then the packet needs to be dropped.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_REDIRECT_INTERFACE,
 
     /**
      * @brief Packet Action Group Member Weight
@@ -223,7 +245,8 @@ typedef enum _sai_packet_action_group_member_attr_t
     /**
      * @brief The object to be monitored for this member.
      *
-     * If the monitored object for the member fails, the switching entity
+     * If the monitored object for the member fails, i.e. when port/lag cannot
+     * forward traffic in the data plane, the switching entity
      * marks the failover status of the member as  
      * SAI_PACKET_ACTION_GROUP_MEMBER_STATUS_INACTIVE and does
      * not use it to forward traffic. If a next member exists (if any) whose monitored
@@ -433,11 +456,6 @@ typedef enum _sai_packet_action_group_action_type_t
      */
     SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_PRI,
 
-    /** @brief Redirect to Port/LAG.
-     *  @type sai_object_id_t
-     */
-    SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT,
-
     /** @brief Decrement TTL.
      *  @type bool
      */
@@ -593,7 +611,7 @@ sai_timespec_t timespec;
 
 sai_status_t sai_rc;
 sai_attribute_t group_attr;
-sai_attribute_t group_mem_attrs[3];
+sai_attribute_t group_mem_attrs[4];
 sai_object_id_t pkt_action_group_id;
 sai_object_id_t pkt_action_group_mem_1_id;
 sai_object_id_t pkt_action_group_mem_2_id;
@@ -620,15 +638,16 @@ group_mem_attrs[1].value.s32           = SAI_PACKET_ACTION_GROUP_TYPE_ALL;
 
 actions[0].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_OUTER_VLAN_ID;
 actions[0].action_value.u16            = 10;
-actions[1].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT;
-actions[1].action_value.oid            = port10_oid;
 
-group_action_list.count                = 2;
+group_action_list.count                = 1;
 group_action_list.list                 = &actions[0];
 group_mem_attrs[2].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
 group_mem_attrs[2].value.pktactionlist = group_action_list;
 
-sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_1_id,switch_id, 3, &group_mem_attrs);
+group_mem_attrs[3].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_REDIRECT_INTERFACE;
+group_mem_attrs[3].value.oid           = port10_oid;
+
+sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_1_id,switch_id, 4, &group_mem_attrs);
 
 
 /*Second member creation*/
@@ -640,15 +659,17 @@ actions[0].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET
 actions[0].action_value.u16            = 10;
 actions[1].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_DST_MAC;
 actions[1].action_value.mac[0]         = 0xCC;
-actions[2].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT;
-actions[2].action_value.oid            = port20_oid;
 
-group_action_list.count                = 3;
+group_action_list.count                = 2;
 group_action_list.list                 = &actions[0];
 group_mem_attrs[2].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
 group_mem_attrs[2].value.pktactionlist = group_action_list;
 
-sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_2_id, switch_id, 3, &group_mem_attrs);
+group_mem_attrs[3].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_REDIRECT_INTERFACE;
+group_mem_attrs[3].value.oid           = port20_oid;
+
+
+sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_2_id, switch_id, 4, &group_mem_attrs);
 
 
 /*Third member creation*/
@@ -658,15 +679,17 @@ those packets to port 30*/
 
 actions[0].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_SET_SRC_MAC;
 actions[0].action_value.mac[0]         = 0xDD;
-actions[1].type                        = SAI_PACKET_ACTION_GROUP_ACTION_TYPE_REDIRECT;
-actions[1].action_value.oid            = port30_oid;
 
-group_action_list.count                = 2;
+group_action_list.count                = 1;
 group_action_list.list                 = &actions[0];
 group_mem_attrs[2].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_TYPE;
 group_mem_attrs[2].value.pktactionlist = group_action_list;
 
-sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_3_id,switch_id, 3, &group_mem_attrs);
+group_mem_attrs[3].id                  = SAI_PACKET_ACTION_GROUP_MEMBER_ATTR_REDIRECT_INTERFACE;
+group_mem_attrs[3].value.oid           = port30_oid;
+
+
+sai_rc = sai_create_packet_action_group_member(&pkt_action_group_mem_3_id,switch_id, 4, &group_mem_attrs);
 
 
 /*The packet action group can be used as an action in ACL entry.*/
