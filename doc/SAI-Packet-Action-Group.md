@@ -507,7 +507,6 @@ typedef struct _sai_packet_action_group_action_t
      sai_uint16_t u16;
      sai_uint32_t u32;
      sai_mac_t mac;
-     sai_object_id_t oid;
    } action_value;
 
 } sai_packet_action_group_action_t;
