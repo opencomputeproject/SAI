@@ -64,6 +64,16 @@ typedef enum _sai_tam_attr_t
     SAI_TAM_ATTR_EVENT_OBJECTS_LIST,
 
     /**
+     * @brief Tam INT objects associated with this tam
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_INT
+     * @default empty
+     */
+    SAI_TAM_ATTR_INT_OBJECTS_LIST,
+
+    /**
      * @brief List of TAM bind points where this object will be applied.
      *
      * TAM group bind point list - create only attribute required for TAM
@@ -412,6 +422,304 @@ typedef sai_status_t (*sai_set_tam_event_threshold_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
+ * @brief TAM INT types
+ */
+typedef enum _sai_tam_int_type_t
+{
+    /**
+     * @brief INT type IOAM
+     */
+    SAI_TAM_INT_TYPE_IOAM,
+
+    /**
+     * @brief INT type IFA1
+     */
+    SAI_TAM_INT_TYPE_IFA1,
+
+    /**
+     * @brief INT type IFA2
+     */
+    SAI_TAM_INT_TYPE_IFA2,
+
+    /**
+     * @brief INT type P4
+     */
+    SAI_TAM_INT_TYPE_P4
+
+} sai_tam_int_type_t;
+
+/**
+ * @brief Attributes for TAM INT
+ */
+typedef enum _sai_tam_int_attr_t
+{
+
+    /**
+     * @brief Start of Attributes
+     */
+    SAI_TAM_INT_ATTR_START,
+
+    /**
+     * @brief Type of INT method
+     *
+     * @type sai_tam_int_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_ATTR_TYPE = SAI_TAM_INT_ATTR_START,
+
+    /**
+     * @brief Device Identifier
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_ATTR_DEVICE_ID,
+
+    /**
+     * @brief IOAM trace type
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IOAM
+     */
+    SAI_TAM_INT_ATTR_IOAM_TRACE_TYPE,
+
+    /**
+     * @brief Probe Marker 1
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1
+     */
+    SAI_TAM_INT_ATTR_IFA1_PB1,
+
+    /**
+     * @brief Probe Marker 2
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1
+     */
+    SAI_TAM_INT_ATTR_IFA1_PB2,
+
+    /**
+     * @brief Inline or Clone mode
+     * Inline mode will insert header and metadata in live packet
+     * Clone mode will insert header and metadata in cloned packet
+     *
+     * @type bool
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
+     */
+    SAI_TAM_INT_ATTR_IFA2_INLINE,
+
+    /**
+     * @brief Protocol value used for INT
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
+     */
+    SAI_TAM_INT_ATTR_PROTOCOL,
+
+    /**
+     * @brief Trace vector value
+     * trace vector is used to specified the fields
+     * of interest in metadata header
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_TRACE_VECTOR,
+
+    /**
+     * @brief Action vector value
+     * action vector is used to specified the actions
+     * of interest on metadata header
+     * value of 0 means no actions of interest
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_ACTION_VECTOR,
+
+    /**
+     * @brief INT bind point for ACL object
+     *
+     * Bind (or unbind) an ACL table or ACL group. Enable/Update
+     * ACL table or ACL group filtering for INT insertion.
+     * Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TAM_INT_ATTR_ACL_GROUP,
+
+    /**
+     * @brief Maximum number of hope allowed in the path
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_MAX_HOP_COUNT,
+
+    /**
+     * @brief Maximum length of metadata stack, always word aligned
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_MAX_LENGTH,
+
+    /**
+     * @brief Metadata name space ID
+     * name space id defines the applicable format of metadata header
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_NAME_SPACE_ID,
+
+    /**
+     * @brief Metadata name space ID scope
+     * name space id scope is global or local
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_INT_ATTR_NAME_SPACE_ID_GLOBAL,
+
+    /**
+     * @brief Enable/Disable Samplepacket session
+     *
+     * Enable ingress sampling by assigning samplepacket object id Disable
+     * ingress sampling by assigning #SAI_NULL_OBJECT_ID as attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TAM_INT_ATTR_INGRESS_SAMPLEPACKET_ENABLE,
+
+    /**
+     * @brief Collector object list
+     * @type sai_object_list_t
+     *
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
+     * @default empty
+     */
+    SAI_TAM_INT_ATTR_COLLECTOR_LIST,
+
+    /**
+     * @brief DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_DSCP_VALUE,
+
+    /**
+     * @brief Math function attached
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_MATH_FUNC
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TAM_INT_ATTR_MATH_FUNC,
+
+    /**
+     * @brief Tam report type
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM_REPORT
+     */
+    SAI_TAM_INT_ATTR_REPORT_ID,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_TAM_INT_ATTR_END,
+
+    /** Custom range base value */
+    SAI_TAM_INT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_TAM_INT_ATTR_CUSTOM_RANGE_END
+
+} sai_tam_int_attr_t;
+
+/**
+ * @brief Create and return a INT type object
+ *
+ * @param[out] tam_int_id INT object
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_tam_int_fn)(
+        _Out_ sai_object_id_t *tam_int_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Deletes a specified INT object
+ *
+ * @param[in] tam_int_id INT type object id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_tam_int_fn)(
+        _In_ sai_object_id_t tam_int_id);
+
+/**
+ * @brief Get values for specified INT object attributes
+ *
+ * @param[in] tam_int_id INT object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_int_attribute_fn)(
+        _In_ sai_object_id_t tam_int_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Set value for a specified INT object attribute
+ *
+ * @param[in] tam_int_id INT object id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_tam_int_attribute_fn)(
+        _In_ sai_object_id_t tam_int_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
  * @brief TAM telemetry types supported
  */
 typedef enum _sai_tam_telemetry_type_t
@@ -441,6 +749,13 @@ typedef enum _sai_tam_telemetry_type_t
      * All the data relevant to a given flow
      */
     SAI_TAM_TELEMETRY_TYPE_FLOW,
+
+    /**
+     * @brief INT TAM
+     * All the data relevant on a per packet basis
+     */
+    SAI_TAM_TELEMETRY_TYPE_INT
+
 } sai_tam_telemetry_type_t;
 
 /**
@@ -460,6 +775,17 @@ typedef enum _sai_tam_tel_type_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_TAM_TEL_TYPE_ATTR_TAM_TELEMETRY_TYPE = SAI_TAM_TEL_TYPE_ATTR_START,
+
+    /**
+     * @brief INT - Switch Identifier
+     *
+     * Switch Identifier can be an encoded number or an IP address
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_TEL_TYPE_ATTR_INT_SWITCH_IDENTIFIER,
 
     /**
      * @brief Switch - Collect Port stats
@@ -1602,6 +1928,11 @@ typedef struct _sai_tam_api_t
     sai_remove_tam_event_threshold_fn         remove_tam_event_threshold;
     sai_set_tam_event_threshold_attribute_fn  set_tam_event_threshold_attribute;
     sai_get_tam_event_threshold_attribute_fn  get_tam_event_threshold_attribute;
+
+    sai_create_tam_int_fn                     create_tam_int;
+    sai_remove_tam_int_fn                     remove_tam_int;
+    sai_set_tam_int_attribute_fn              set_tam_int_attribute;
+    sai_get_tam_int_attribute_fn              get_tam_int_attribute;
 
     sai_create_tam_tel_type_fn                create_tam_tel_type;
     sai_remove_tam_tel_type_fn                remove_tam_tel_type;
