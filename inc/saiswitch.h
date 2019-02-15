@@ -1511,6 +1511,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PFC_TC_DLD_INTERVAL_RANGE,
 
     /**
+     * @brief PFC Deadlock Detection timer polling interval in milliseconds.
+     *
+     * PFC Deadlock Detection timer polling interval
+     *
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLD_TIMER_INTERVAL,
+
+    /**
      * @brief PFC Deadlock Detection timer interval in milliseconds.
      *
      * If the monitored queue is in XOFF state for more than this duration then
