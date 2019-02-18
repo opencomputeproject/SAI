@@ -1515,7 +1515,6 @@ typedef enum _sai_switch_attr_t
      *
      * PFC Deadlock Detection timer polling interval
      *
-     *
      * @type sai_map_list_t
      * @flags CREATE_AND_SET
      * @default empty

@@ -384,7 +384,6 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_OUI_CODE,
 
-
     /**
      * @brief Enable ingress port rate
      *
@@ -397,7 +396,6 @@ typedef enum _sai_port_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_INGRESS_RATE,
-
 
     /**
      * @brief Enable egress port rate
