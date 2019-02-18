@@ -278,6 +278,7 @@ service switch_sai_rpc {
     //neighbor API
     sai_thrift_status_t sai_thrift_create_neighbor_entry(1: sai_thrift_neighbor_entry_t thrift_neighbor_entry, 2: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_neighbor_entry(1: sai_thrift_neighbor_entry_t thrift_neighbor_entry);
+    sai_thrift_status_t sai_thrift_set_neighbor_entry_attribute(1: sai_thrift_neighbor_entry_t thrift_neighbor_entry, 2: list<sai_thrift_attribute_t> thrift_attr);
 
     //switch API
     sai_thrift_attribute_list_t sai_thrift_get_switch_attribute();
