@@ -932,9 +932,9 @@ int sai_deserialize_ip6_mask(
 
 int sai_serialize_pointer(
         _Out_ char *buffer,
-        _In_ sai_pointer_t pointer)
+        _In_ const sai_pointer_t pointer)
 {
-    return sprintf(buffer, "ptr:0x%p", pointer);
+    return sprintf(buffer, "ptr:%p", pointer);
 }
 
 int sai_deserialize_pointer(
@@ -943,7 +943,7 @@ int sai_deserialize_pointer(
 {
     int read;
 
-    int n = sscanf(buffer, "ptr:0x%16p%n", pointer, &read);
+    int n = sscanf(buffer, "ptr:%p%n", pointer, &read);
 
     if (n == 1 && sai_serialize_is_char_allowed(buffer[read]))
     {
@@ -1060,7 +1060,9 @@ int sai_serialize_attribute(
         return SAI_SERIALIZE_ERROR;
     }
 
-    buf += sprintf(buf, "\"");
+    buf += ret;
+
+    buf += sprintf(buf, "\",");
 
     buf += sprintf(buf, "\"value\":");
 

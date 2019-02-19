@@ -880,7 +880,7 @@ public:
 
         status = vlan_api->get_vlan_stats((sai_vlan_id_t) vlan_id,
                                           number_of_counters,
-                                          counter_ids,
+                                          (const sai_stat_id_t *)counter_ids,
                                           counters);
 
         for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) { thrift_counters.push_back(counters[i]); }
@@ -2709,6 +2709,25 @@ public:
       return status;
   }
 
+  sai_thrift_status_t sai_thrift_set_mirror_session_attribute(const sai_thrift_object_id_t session_id, const sai_thrift_attribute_t &thrift_attr) {
+      printf("sai_thrift_set_mirror_session\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_mirror_api_t *mirror_api;
+      status = sai_api_query(SAI_API_MIRROR, (void **) &mirror_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      std::vector<sai_thrift_attribute_t> thrift_attr_list;
+      thrift_attr_list.push_back(thrift_attr);
+      sai_attribute_t attr;
+      sai_thrift_parse_mirror_session_attributes(thrift_attr_list, &attr);
+      status = mirror_api->set_mirror_session_attribute((sai_object_id_t)session_id, &attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to set mirror session attributes.");
+      }
+      return status;
+  }
+
   void sai_thrift_parse_policer_attributes(sai_attribute_t *attr_list,
                                            const std::vector<sai_thrift_attribute_t> &thrift_attr_list) const noexcept
   {
@@ -2861,7 +2880,7 @@ public:
 
       sai_thrift_alloc_array(counters, number_of_counters);
 
-      status = policer_api->get_policer_stats(thrift_policer_id, number_of_counters, counter_ids, counters);
+      status = policer_api->get_policer_stats(thrift_policer_id, number_of_counters, (const sai_stat_id_t *)counter_ids, counters);
 
       if (status == SAI_STATUS_SUCCESS)
       {
@@ -2889,7 +2908,7 @@ public:
       auto counter_ids = reinterpret_cast<const sai_policer_stat_t*>(thrift_counter_ids.data());
       sai_size_t number_of_counters = thrift_counter_ids.size();
 
-      status = policer_api->clear_policer_stats(thrift_policer_id, number_of_counters, counter_ids);
+      status = policer_api->clear_policer_stats(thrift_policer_id, number_of_counters, (const sai_stat_id_t *)counter_ids);
 
       if (status == SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_DBG("Exited."); return status; }
@@ -2977,7 +2996,7 @@ public:
 
       status = port_api->get_port_stats((sai_object_id_t) port_id,
                                         number_of_counters,
-                                        counter_ids,
+                                        (const sai_stat_id_t *)counter_ids,
                                         counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -3111,7 +3130,7 @@ public:
       status = queue_api->get_queue_stats(
                              (sai_object_id_t) queue_id,
                              number_of_counters,
-                             counter_ids,
+                             (const sai_stat_id_t *)counter_ids,
                              counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -3157,7 +3176,7 @@ public:
       status = queue_api->clear_queue_stats(
                              (sai_object_id_t) queue_id,
                              number_of_counters,
-                             counter_ids);
+                             (const sai_stat_id_t *)counter_ids);
 
       free(counter_ids);
       return status;
@@ -3283,7 +3302,7 @@ public:
 
       status = buffer_api->get_ingress_priority_group_stats((sai_object_id_t) pg_id,
                                                             number_of_counters,
-                                                            counter_ids,
+                                                            (const sai_stat_id_t *)counter_ids,
                                                             counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {

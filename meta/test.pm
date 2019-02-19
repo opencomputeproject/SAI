@@ -219,8 +219,8 @@ sub CreateApiNameTest
 
     my @objects = @{ $main::SAI_ENUMS{sai_object_type_t}{values} };
 
-    WriteTest "    sai_object_type_t checked[SAI_OBJECT_TYPE_MAX];";
-    WriteTest "    memset(checked, 0, SAI_OBJECT_TYPE_MAX * sizeof(sai_object_type_t));";
+    WriteTest "    sai_object_type_t checked[SAI_OBJECT_TYPE_EXTENSIONS_MAX];";
+    WriteTest "    memset(checked, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(sai_object_type_t));";
 
     WriteTest "    void *dummy = NULL;";
 
@@ -511,6 +511,26 @@ sub CreateSerializeUnionsTest
     WriteTest "}";
 }
 
+sub CreateStatEnumTest
+{
+    # make sure that all objects with stats are populated
+
+    DefineTestName "statenum_defined";
+
+    WriteTest "{";
+
+    for my $key (sort keys %main::SAI_ENUMS)
+    {
+        next if not $key =~ /sai_(\w+)_stat_t/;
+
+        my $ot = uc("SAI_OBJECT_TYPE_$1");
+
+        WriteTest "    TEST_ASSERT_TRUE(sai_metadata_object_type_info_${ot}".".statenum != NULL, \"statenum field for object $ot must be populated\");";
+    }
+
+    WriteTest "}";
+}
+
 sub WriteTestHeader
 {
     #
@@ -576,6 +596,8 @@ sub CreateTests
     CreateSerializeStructsTest();
 
     CreateSerializeUnionsTest();
+
+    CreateStatEnumTest();
 
     WriteTestMain();
 }

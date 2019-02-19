@@ -500,6 +500,9 @@ typedef struct _sai_acl_field_data_t
  */
 typedef union _sai_acl_action_parameter_t
 {
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL */
+    bool booldata;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8 */
     sai_uint8_t u8;
 

@@ -199,14 +199,14 @@ sai_status_t sai_api_initialize(
  * @brief Retrieve a pointer to the C-style method table for desired SAI
  * functionality as specified by the given sai_api_id.
  *
- * @param[in] sai_api_id SAI API ID
+ * @param[in] api SAI API ID
  * @param[out] api_method_table Caller allocated method table. The table must
  * remain valid until the sai_api_uninitialize() is called.
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_api_query(
-        _In_ sai_api_t sai_api_id,
+        _In_ sai_api_t api,
         _Out_ void **api_method_table);
 
 /**
@@ -222,30 +222,30 @@ sai_status_t sai_api_uninitialize(void);
  *
  * The default log level is #SAI_LOG_LEVEL_WARN.
  *
- * @param[in] sai_api_id SAI API ID
+ * @param[in] api SAI API ID
  * @param[in] log_level Log level
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_log_set(
-        _In_ sai_api_t sai_api_id,
+        _In_ sai_api_t api,
         _In_ sai_log_level_t log_level);
 
 /**
  * @brief Query SAI object type.
  *
- * @param[in] sai_object_id Object id
+ * @param[in] object_id Object id
  *
  * @return #SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
  * Otherwise, return a valid SAI object type SAI_OBJECT_TYPE_XXX.
  */
 sai_object_type_t sai_object_type_query(
-        _In_ sai_object_id_t sai_object_id);
+        _In_ sai_object_id_t object_id);
 
 /**
  * @brief Query SAI switch id.
  *
- * @param[in] sai_object_id Object id
+ * @param[in] object_id Object id
  *
  * @return #SAI_NULL_OBJECT_ID when sai_object_id is not valid.
  * Otherwise, return a valid SAI_OBJECT_TYPE_SWITCH object on which
@@ -253,7 +253,7 @@ sai_object_type_t sai_object_type_query(
  * as input parameter it should return itself.
  */
 sai_object_id_t sai_switch_id_query(
-        _In_ sai_object_id_t sai_object_id);
+        _In_ sai_object_id_t object_id);
 
 /**
  * @brief Generate dump file. The dump file may include SAI state information and vendor SDK information.

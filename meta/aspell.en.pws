@@ -96,6 +96,7 @@ netdevs
 nexthop
 nexthopgroup
 objlist
+offsetof
 opcode
 optimizations
 outsegment
@@ -107,6 +108,7 @@ rv
 rx
 sai
 samplepacket
+sizeof
 src
 stderr
 struct
@@ -128,3 +130,7 @@ warmboot
 watchlist
 wildcard
 www
+pre
+serdes
+idriver
+ipredriver
