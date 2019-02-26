@@ -403,6 +403,7 @@ public:
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
+                  break;
               case SAI_ROUTER_INTERFACE_ATTR_MTU:
                   attr_list[i].value.u32 = attribute.value.u32;
                   break;
