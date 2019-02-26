@@ -1517,7 +1517,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_SWITCH_ATTR_PFC_TC_DLD_TIMER_INTERVAL,
 
