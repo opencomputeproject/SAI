@@ -89,3 +89,5 @@ WWW - World Wide Web
 XG - (*,G) Any-source Multicast
 XOFF - Transmitter Off
 XON - Transmitter On
+NRZ - Non Return to Zero
+PAM4 - Pulse Amplitude Modulation
