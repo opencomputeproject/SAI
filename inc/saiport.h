@@ -177,7 +177,7 @@ typedef enum _sai_port_fec_mode_t
     /** Enable RS-FEC - CL108/RS528 - 25G, 50G NRZ ports */
     SAI_PORT_FEC_MODE_CL108_RS,
 
-    /** Enable RS-FEC - CL134/RS544 - 50G PAM4 ports*/
+    /** Enable RS-FEC - CL134/RS544 - 50G PAM4 ports */
     SAI_PORT_FEC_MODE_CL134_RS,
 
     /** Enable RS-FEC - CL119/RS544 - 100G, 200G, 400G PAM4 ports */
