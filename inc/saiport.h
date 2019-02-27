@@ -171,7 +171,7 @@ typedef enum _sai_port_fec_mode_t
     /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
     SAI_PORT_FEC_MODE_FC,
 
-    /** Enable RS-FEC – CL91/RS528 - 100G NRZ ports */
+    /** Enable RS-FEC - CL91/RS528 - 100G NRZ ports */
     SAI_PORT_FEC_MODE_CL91_RS,
 
     /** Enable RS-FEC - CL108/RS528 - 25G, 50G NRZ ports */
