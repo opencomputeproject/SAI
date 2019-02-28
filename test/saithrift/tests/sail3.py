@@ -2025,3 +2025,145 @@ class L3SubPortAndVLANRifTest(sai_base_test.ThriftInterfaceDataPlane):
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
+
+@group('l3')
+class L3DirectedBroadcast (sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        """
+        Description:
+        i) L3DirectedBroadcast I:
+        Send IPv4 packet to a broadcast IP. The packet must have unicast
+        destination MAC (Gateway MAC) and a broadcast destination IP (like 192.168.0.255).
+        Verify that the packet is sent out on all member ports of VLAN if the outgoing
+        interface is a VLAN RIF.
+
+        ii) L3DirectedBroadcast II:
+        After executing L3DirectedBroadcast I, add and remove ports to the VLAN.
+        When a port is added, the L3 broadcast traffic must also be forwarded on
+        the newly added member port and similar test to be executed by removing
+        existing member port from VLAN.
+
+        Steps:
+        1. Create VLAN 10 and associate 3 untagged ports (port 1,2,3) as the member port of VLAN 10.
+        2. Set the Ports attribute value of "Port VLAN ID 10" for the port 1, 2, 3
+        3. Create Virtual router V1 and enable V4.
+        4. Create VLAN virtual interfaces "RIF Id1" and set the interface type as VLAN
+        5. Create virtual interfaces "RIF Id2" and set the interface type as PORT
+        6. Create IPv4 neighbor entry with IP (192.168.0.255) and dmac1(ff:ff:ff:ff:ff:ff) and asociate with "RIF Id1".
+        7. Send the IPv4 broadcast packet, which have unicast destination mac and broadcast destination IP.
+        8. Add  new  port to vlan 10.
+        9. Set the Port attributes
+        10. Send the IPv4 broadcast packet, which have unicast destination mac and broadcast destination IP.
+        11. Remove port from vlan 10
+        12. Send the IPv4 broadcast packet, which have unicast destination mac and broadcast destination IP.
+        13. clean up.
+        """
+
+        print "Sending packet port 1 -> port 2 (10.10.10.1 -> 192.168.0.255 [id = 101])"
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        port4 = port_list[3]
+        v4_enabled = 1
+        v6_enabled = 0
+        vlan_id = 10
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1 = '192.168.0.255'
+        dmac1 = 'ff:ff:ff:ff:ff:ff'
+        mac = ''
+        ### create vlan
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+
+        ### create vlan membership with ports
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        vlan_member3 = sai_thrift_create_vlan_member(self.client, vlan_oid, port3, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+        ### Assign PVLAN ID with ports
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+        self.client.sai_thrift_set_port_attribute(port3, attr)
+
+        ### create virtual router
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        ### create router interface
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan_oid, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
+
+        ### create neighbor
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+
+        time.sleep(1)
+        try:
+            # send the test packet(s)
+            pkt = simple_tcp_packet(eth_dst=router_mac,
+                                eth_src='00:0b:00:00:00:01',
+                                ip_dst='192.168.0.255',
+                                ip_src='10.10.10.1',
+                                ip_id=105,
+                                ip_ttl=64)
+            exp_pkt = simple_tcp_packet(
+                                eth_src=router_mac,
+                                eth_dst='ff:ff:ff:ff:ff:ff',
+                                ip_dst='192.168.0.255',
+                                ip_src='10.10.10.1',
+                                ip_id=105,
+                                ip_ttl=63)
+
+            ### Sending the traffic from Port4
+            send_packet(self, 3, str(pkt))
+
+            ### Verifying the traffic @ Port1,Port2 & Port3
+            verify_packets(self, exp_pkt, [0, 1, 2])
+
+            ### L3DirectedBroadcast_II test case steps
+            ### remove vlan membership from Port2
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            time.sleep(2)
+
+            ### Sending the traffic from Port4
+            send_packet(self, 3, str(pkt))
+
+            ### Verify traffic @ Port1 and Port3
+            verify_packets(self, exp_pkt, [0, 2])
+
+            ### Re-add vlan membership from Port2
+            vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            time.sleep(2)
+
+            ### Sending the traffic from Port4
+            send_packet(self, 3, str(pkt))
+
+            ### Verifying the traffic @ Port1,Port2 & Port3
+            verify_packets(self, exp_pkt, [0, 1, 2])
+
+        finally:
+            ### remove neighbor entry
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+
+            ### remove router interface
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
+
+            ### remove vlan membership ports
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_remove_vlan_member(vlan_member3)
+
+            ### remove vlan
+            self.client.sai_thrift_remove_vlan(vlan_oid)
+
+            ### remove viratual router
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+            ### Assign ports into default vlan
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+            self.client.sai_thrift_set_port_attribute(port3, attr)
