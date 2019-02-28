@@ -2025,3 +2025,364 @@ class L3SubPortAndVLANRifTest(sai_base_test.ThriftInterfaceDataPlane):
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
+
+@group('l3')
+class L3IPv4NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        """
+        Description:
+        Create two VLAN router interfaces in same VRF. Create nhop and route for
+        destination. Learn ARP for the nhop and check FDB table for the MAC learnt from
+        the ARP packet in that VLAN. Simulate FDB age-out by clearing the FDB entry or
+        wait for age-out time. After the FDB entry is cleared, the layer 3 traffic via
+        this nhop must take the action as specified by SAI switch attribute
+        SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION
+
+        Steps:
+        1. Create VLAN 100, 200 in the database
+        2. Associate 2 untagged ports (port 1, 2) as the member port of VLAN 100 and 200 respectively.
+        3. Set port attribute values of "Port VLAN ID 100, 200" for the ports 1 and 2 respectively.
+        4. Create Virtual router V1 and enable V4.
+        5. Create two virtual router interfaces and set the interface type as "PORT".
+        6. Send ARP packet from port 1 and learn the MAC1 in VLAN 100.
+        7. Create IPv4 neighbor entry with MAC1 and asociate with "RIF Id1".
+        8. Create next hop, route to reach the neighbor (MAC1).
+        9. Send traffic on port 2 and observe traffic forwarding to port 1.
+        10. Change the port attribute of port 1 to SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION
+            with value SAI_PACKET_ACTION_DROP
+
+        Part1:
+        11. Flush the FDB table entry and re-send the packet from port
+        12. Observe the SAI switch take the action according to the switch attribute.
+
+        Part2:
+        13. Wait for the FDB entry age out time and resend the traffic from Port 2
+        14. Observe the SAI switch take the action according to the switch attribute.
+        15. Restore the Switch attribute to FORWARD and remove the router interface and
+            change the port attribute to default VLAN.
+
+        """
+
+        print "\nSending packet port 1 -> port 2 (11.11.11.1 -> 10.10.10.1 [id = 101])"
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        v4_enabled = 1
+        v6_enabled = 0
+        vlan1_id = 100
+        vlan2_id = 200
+        mac_action = SAI_PACKET_ACTION_FORWARD
+        fdb_default_aging_time = 0
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1 = '10.10.10.1'
+        ip_addr_subnet = '192.168.0.0'
+        ip_mask = '255.255.255.0'
+        dmac1 = '00:0a:0a:0a:00:01'
+        dmac2 = '00:0b:0b:0b:00:01'
+        fdb_aging_time = 10
+        mac = ''
+
+        vlan1_oid = sai_thrift_create_vlan(self.client, vlan1_id)
+        vlan2_oid = sai_thrift_create_vlan(self.client, vlan2_id)
+
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan1_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan2_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        attr_value = sai_thrift_attribute_value_t(u16=vlan1_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+
+        attr_value1 = sai_thrift_attribute_value_t(u16=vlan2_id)
+        attr1 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value1)
+        self.client.sai_thrift_set_port_attribute(port2, attr1)
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan1_oid, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan2_oid, v4_enabled, v6_enabled, mac)
+
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, nhop1)
+
+        arp_req_pkt = simple_arp_packet(eth_dst='ff:ff:ff:ff:ff:ff',
+                                        eth_src=dmac1,
+                                        vlan_vid=100,
+                                        arp_op=1,     # ARP request
+                                        ip_snd='10.10.10.1',
+                                        ip_tgt='10.10.10.2',
+                                        hw_snd=dmac1,
+                                        hw_tgt='00:00:00:00:00:00')
+
+        print "Send ARP request packet from port1 for mac learning and then send test packet..."
+        send_packet(self, 0, str(arp_req_pkt))
+
+        # Wait for the MAC learning
+        time.sleep(1)
+
+        try:
+            # Send IP packet from port 2 to 1 that have FDB table update with MAC1 of nhop1
+            pkt = simple_tcp_packet(pktlen=144,
+                                eth_dst=router_mac,
+                                eth_src=dmac2,
+                                ip_src='11.11.11.1',
+                                ip_dst='192.168.0.1',
+                                dl_vlan_enable=True,
+                                vlan_vid=200,
+                                ip_id=105,
+                                ip_ttl=64)
+
+            exp_pkt = simple_tcp_packet(pktlen=144,
+                                eth_dst=dmac1,
+                                eth_src=router_mac,
+                                ip_dst='192.168.0.1',
+                                ip_src='11.11.11.1',
+                                dl_vlan_enable=True,
+                                vlan_vid=100,
+                                ip_id=105,
+                                ip_ttl=63)
+
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
+            print "Test unicast packet with unicast miss action=DROP"
+            attr_value = sai_thrift_attribute_value_t(s32=SAI_PACKET_ACTION_DROP)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            # Flush FDB entry learned on the Router interface Port 1
+            self.client.sai_thrift_flush_fdb_entries(thrift_attr_list=[])
+            time.sleep(1)
+
+            send_packet(self, 1, str(pkt))
+            verify_no_packet(self, exp_pkt, 1)
+
+            # Again learn FDB entry by send ARP request packet from port 1
+            send_packet(self, 0, str(arp_req_pkt))
+
+            time.sleep(1)
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
+
+            attr_value = sai_thrift_attribute_value_t(u32=fdb_aging_time)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            # Wait for the aging timer (2 times of fdb age out) to expiry the FDB entry.
+            time.sleep(fdb_aging_time * 2 + 1)
+
+            send_packet(self, 1, str(pkt))
+            verify_no_packet(self, exp_pkt, 1)
+
+        finally:
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan1_oid)
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan2_oid)
+
+            # Restore the unicast miss action=FORWARD'
+            attr_value = sai_thrift_attribute_value_t(s32=mac_action)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            # Restore the FDB age out to default value to zero
+            attr_value = sai_thrift_attribute_value_t(u32=fdb_default_aging_time)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, nhop1)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_remove_vlan(vlan1_oid)
+            self.client.sai_thrift_remove_vlan(vlan2_oid)
+
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+
+@group('l3')
+class L3IPv6NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        """
+        Description:
+        Same as "L3IPv4NeighborFdbAgeoutTest" for IPv6 neighbor by clearing/deleting
+        the learnt FDB entry for the IPv6 neighbor
+
+        Steps:
+        1. Create VLAN 100, 200 in the database
+        2. Associate 2 untagged ports (port 1, 2) as the member port of VLAN 100 and 200 respectively.
+        3. Set port attribute values of "Port VLAN ID 100, 200" for the ports 1 and 2 respectively.
+        4. Create Virtual router V1 and enable V6.
+        5. Create two virtual router interfaces and set the interface type as "PORT".
+        6. Send Broadcast packet from port 1 and verify the FDB entry for the MAC1 in VLAN 100.
+        7. Create IPv6 neighbor entry with MAC1 and asociate with ""RIF Id1"".
+        8. Create next hop, route to reach the neighbor (MAC1).
+        9. Send traffic on port 2 and observe traffic forwarding to port 1.
+        10. Change the port attribute of port 1 to SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION
+            with value SAI_PACKET_ACTION_DROP
+
+        Part1:
+        11. Flush the FDB table entry and re-send the packet from port
+        12. Observer the SAI switch take the action according to the switch attribute.
+
+        Part2:
+        13. Wait for the FDB entry age out time and resend the traffic from Port 2
+        14. Observer the SAI switch take the action according to the switch attribute.
+
+        15. Restore the Switch attribute to FORWARD and remove the router interface and
+            change the port attribute to default VLAN.
+        """
+        print
+        print "Sending packet port 1 -> port 2 (2001:1111::1 -> 2001:1000::1 [id = 101])"
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        v4_enabled = 0
+        v6_enabled = 1
+        vlan1_id = 100
+        vlan2_id = 200
+        mac_action = SAI_PACKET_ACTION_FORWARD
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV6
+        ip_addr1 = '2001:1000::1'
+        ip_addr_subnet = '3001:1000::0'
+        ip_mask = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000'
+
+        ip_addr2 = '2001:1111::1'
+        ip_addr2_subnet = '2001:1111::0'
+        ip_mask2 = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:0000'
+        dmac1 = '00:0a:0a:0a:00:01'
+        dmac2 = '00:0b:0b:0b:00:01'
+        mac = ''
+        fdb_aging_time = 15
+        fdb_default_aging_time = 0
+
+        vlan1_oid = sai_thrift_create_vlan(self.client, vlan1_id)
+        vlan2_oid = sai_thrift_create_vlan(self.client, vlan2_id)
+
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan1_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan2_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        attr_value = sai_thrift_attribute_value_t(u16=vlan1_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+
+        attr_value1 = sai_thrift_attribute_value_t(u16=vlan2_id)
+        attr1 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value1)
+        self.client.sai_thrift_set_port_attribute(port2, attr1)
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan1_oid, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan2_oid, v4_enabled, v6_enabled, mac)
+
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, nhop1)
+        pkt1 = simple_tcpv6_packet(pktlen=104,
+                                 eth_dst='ff:ff:ff:ff:ff:ff',
+                                 eth_src=dmac1,
+                                 ipv6_dst='2001:1000::2',
+                                 ipv6_src='2001:1000::1',
+                                 dl_vlan_enable=True,
+                                 vlan_vid=100,
+                                 ipv6_hlim=64)
+
+        try:
+            print "Send Broadcast packet from port1  for mac leanring and then send  test packet..."
+            send_packet(self, 0, str(pkt1))
+            # Wait for the MAC learning
+            time.sleep(1)
+
+            # Send IP packet from port 2 to 1 that have FDB table update with MAC1 of nhop1
+
+            pkt = simple_tcpv6_packet(pktlen=104,
+                                eth_dst=router_mac,
+                                eth_src=dmac2,
+                                ipv6_src='2001:1111::1',
+                                ipv6_dst='3001:1000::1',
+                                dl_vlan_enable=True,
+                                vlan_vid=200,
+                                ipv6_hlim=64)
+
+            exp_pkt = simple_tcpv6_packet(pktlen=104,
+                                eth_dst=dmac1,
+                                eth_src=router_mac,
+                                ipv6_dst='3001:1000::1',
+                                ipv6_src='2001:1111::1',
+                                dl_vlan_enable=True,
+                                vlan_vid=100,
+                                ipv6_hlim=63)
+
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
+            print "Test unicast packet with unicast miss action=DROP"
+            attr_value = sai_thrift_attribute_value_t(s32=SAI_PACKET_ACTION_DROP)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            # Flush FDB entry learned on the Router interface Port 1
+            self.client.sai_thrift_flush_fdb_entries(thrift_attr_list=[])
+            time.sleep(1)
+            send_packet(self, 1, str(pkt))
+            verify_no_other_packets(self)
+
+            # Again learn FDB entry by send broadcast packet from port 1
+            send_packet(self, 0, str(pkt1))
+
+            time.sleep(2)
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
+
+            attr_value = sai_thrift_attribute_value_t(u32=fdb_aging_time)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            # Wait for the aging timer (2 times of the FDB ageout value) to expiry the FDB entry.
+            time.sleep(fdb_aging_time * 2 + 1)
+
+            send_packet(self, 1, str(pkt))
+            #verify_no_other_packets(self)
+            verify_no_packet(self, exp_pkt, 0)
+
+        finally:
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan1_oid)
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan2_oid)
+
+            # Restore the unicast miss action=FORWARD'
+            attr_value = sai_thrift_attribute_value_t(s32=mac_action)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_UNICAST_MISS_PACKET_ACTION, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            # Restore the FDB age out to default value to zero
+            attr_value = sai_thrift_attribute_value_t(u32=fdb_default_aging_time)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, nhop1)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
+
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
+
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+
+            self.client.sai_thrift_remove_vlan(vlan1_oid)
+            self.client.sai_thrift_remove_vlan(vlan2_oid)
+
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+
