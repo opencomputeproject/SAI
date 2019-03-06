@@ -1237,19 +1237,12 @@ void test_serialize_notifications()
     ret = "{\"switch_id\":\"oid:0x123abc\",\"switch_oper_status\":\"SAI_SWITCH_OPER_STATUS_UP\"}";
     ASSERT_STR_EQ(buf, ret, res);
 
-    sai_tam_threshold_breach_event_t data3;
-    memset(&data3, 0, sizeof(data3));
+    char buffer1[7] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };
 
-    res = sai_serialize_tam_event_notification(buf, 1, &data3);
-    ret = "{\"count\":1,\"data\":[{\"threshold_id\":\"oid:0x0\",\"is_snapshot_valid\":false,\"value\":0}]}";
-    ASSERT_STR_EQ(buf, ret, res);
+    sai_attribute_t attrs1[1];
 
-    memset(&data3, 0, sizeof(data3));
-
-    data3.is_snapshot_valid = true;
-
-    res = sai_serialize_tam_event_notification(buf, 1, &data3);
-    ret = "{\"count\":1,\"data\":[{\"threshold_id\":\"oid:0x0\",\"is_snapshot_valid\":true,\"tam_snapshot_id\":\"oid:0x0\",\"value\":0}]}";
+    res = sai_serialize_tam_event_notification(buf, 1, 7, buffer1, 0, attrs1);
+    ret = "{\"tam_event_id\":\"oid:0x1\",\"buffer_size\":7,\"buffer\":[17,34,51,68,85,102,119],\"attr_count\":0,\"attr_list\":null}";
     ASSERT_STR_EQ(buf, ret, res);
 }
 

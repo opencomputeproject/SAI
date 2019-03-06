@@ -1403,17 +1403,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
 
     /**
-     * @brief TAM event notification callback function passed to the adapter.
-     *
-     * Use sai_tam_event_notification_fn as notification function.
-     *
-     * @type sai_pointer_t sai_tam_event_notification_fn
-     * @flags CREATE_AND_SET
-     * @default NULL
-     */
-    SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
-
-    /**
      * @brief Enable SAI function call fast mode, which executes calls very quickly
      *
      * @type bool
@@ -1704,6 +1693,32 @@ typedef enum _sai_switch_attr_t
      * @default true
      */
     SAI_SWITCH_ATTR_UNINIT_DATA_PLANE_ON_REMOVAL,
+
+    /**
+     * @brief TAM bind point
+     *
+     * Bind (or unbind) the TAM object.
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_TAM_OBJECT_ID,
+
+    /**
+     * @brief Event notification callback
+     * function passed to the adapter.
+     *
+     * Use sai_tam_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
 
     /**
      * @brief Instruct SAI to execute switch pre-shutdown
