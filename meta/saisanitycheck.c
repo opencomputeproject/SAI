@@ -4116,7 +4116,6 @@ void check_object_ro_list(
             oi->objecttype == SAI_OBJECT_TYPE_SWITCH ||
             oi->objecttype == SAI_OBJECT_TYPE_BFD_SESSION ||
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY ||
-            oi->objecttype == SAI_OBJECT_TYPE_TAM_HISTOGRAM ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT)
