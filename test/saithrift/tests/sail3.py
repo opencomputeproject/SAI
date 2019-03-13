@@ -2146,10 +2146,11 @@ class L3IPv4NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
         6. Create next hop, route to reach the neighbor (MAC1).
         7. Send test packet from port 1 with src_mac = MAC1 address and dst_mac = router MAC.
         8. Send traffic on port 2 and observe traffic forwarding to port 1.
-        9. Change the source MAC address (MAC3) and re-send the packet from port 1 and verify FDB entry.
-        10. Send IP packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
-        11. Remove the router interface and change the port attribute to default VLAN.
-        12. Remove the vlan members and VLAN 100,200 from the database.
+        9. Change the neighbor attribute to update with new MAC (MAC3)
+        10. Change the source MAC address (MAC3) and re-send the packet from port 1 and verify FDB entry.
+        11. Send IP packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
+        12. Remove the router interface and change the port attribute to default VLAN.
+        13. Remove the vlan members and VLAN 100,200 from the database.
         """
 
         print "Sending packet port 1 -> switch (for learning purpuse)"
@@ -2315,10 +2316,11 @@ class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
         6. Create next hop, route to reach the neighbor (MAC1).
         7. Send test packet from port 1 with src_mac = MAC1 address and dst_mac = router MAC.
         8. Send traffic on port 2 and observe traffic forwarding to port 1.
-        9. Change the source MAC address (MAC3) and re-send the packet from port 1 and verify FDB entry.
-        10. Send IPv6 packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
-        11. Remove the router interface and change the port attribute to default VLAN.
-        12. Remove the vlan members and VLAN 100,200 from the database.
+        9. Change the neighbor attribute to update with new MAC (MAC3)
+        10. Change the source MAC address (MAC3) and re-send the packet from port 1 and verify FDB entry.
+        11. Send IPv6 packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
+        12. Remove the router interface and change the port attribute to default VLAN.
+        13. Remove the vlan members and VLAN 100,200 from the database.
         """
         print
         print "Sending packet port 2 -> port 1 (2001:1111::1 -> 3001:1000::1) \n"
@@ -2368,7 +2370,7 @@ class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
                                  eth_src=dmac1,
                                  ipv6_dst='2001:1000::2',
                                  ipv6_src='2001:1000::1',
-                                 dl_vlan_enable=False,
+                                 dl_vlan_enable=True,
                                  vlan_vid=100,
                                  ipv6_hlim=64)
 

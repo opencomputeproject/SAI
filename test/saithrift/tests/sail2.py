@@ -959,7 +959,7 @@ class L2MacMoveTestI (sai_base_test.ThriftInterfaceDataPlane):
             ### Sending packet from Port1
             send_packet(self, 0, str(pkt1))
 
-            ### verify the packet @ Port2
+            ### verify the packet @ Port2 and Port3
             verify_packets(self, exp_pkt1, [1, 2])
 
             ### Sending packet from Port2
@@ -973,10 +973,10 @@ class L2MacMoveTestI (sai_base_test.ThriftInterfaceDataPlane):
             ### Sending packet from Port1
             send_packet(self, 0, str(pkt1))
 
-            ### verify the packet @ Port3
+            ### verify the packet @ Port2
             verify_packets(self, exp_pkt1, [1])
 
-            ### verify the packet @ Port3
+            ### verify no packet @ Port3
             verify_no_packet(self, exp_pkt1, 2)
 
             time.sleep(1)
@@ -992,7 +992,7 @@ class L2MacMoveTestI (sai_base_test.ThriftInterfaceDataPlane):
             ### Send packet (src_mac=MAC1 and dst_mac=MAC2) from port 1
             send_packet(self, 0, str(pkt1))
 
-            ### verify the packet @ Port3 & Port2
+            ### verify the packet @ Port3 & no packet @ Port2
             verify_packets(self, exp_pkt1, [2])
             verify_no_packet(self, exp_pkt1, 1)
 
@@ -1026,12 +1026,12 @@ class L2MacMoveTestII (sai_base_test.ThriftInterfaceDataPlane):
         forwarding and ensure that traffic is now forwarded to the newly learnt port.
 
         Steps:
-        1. Create VLAN 10 and associate 2 untagged ports (port 1,2) as the member port of VLAN 10.
-        2. Set attribute value of "Port VLAN ID 10" for the ports 1, 2
+        1. Create VLAN 10 and associate 3 untagged ports (port 1,2,3) as the member port of VLAN 10.
+        2. Set attribute value of "Port VLAN ID 10" for the ports 1,2,3
         3. Create Virtual router V1 and enable V4.
         4. Create  virtual router interfaces and set the interface type as VLAN for VLAN 10
-           and create one more port3 (RIF Id2).
-        5. Create IPv6 neighbor entry with MAC1 and asociate with "RIF Id1".
+           and create one more port4 (RIF Id2).
+        5. Create IPv4 neighbor entry with MAC1 and asociate with "RIF Id1".
         6. Send test packet from port 1 with src_mac = MAC1 address.
         7. Send IP packet from port 3 with dst_mac= MAC1 and observe traffic forwarding to port 1.
         8. Send IP packet from port 2 with src_mac = MAC1 and verify the FDB entry, which have learnt via Port 2.
@@ -1080,7 +1080,7 @@ class L2MacMoveTestII (sai_base_test.ThriftInterfaceDataPlane):
         rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan_oid, v4_enabled, v6_enabled, mac)
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
 
-        ### create neighbor and next hop
+        ### create neighbor
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
 
         try:
@@ -1118,7 +1118,7 @@ class L2MacMoveTestII (sai_base_test.ThriftInterfaceDataPlane):
             ### Send test packet from port 1 with src_mac = MAC1 address.
             send_packet(self, 0, str(pkt1))
 
-            ### Verifying the traffic received @ Port2
+            ### Verifying the traffic received @ Port2 and Port3
             verify_packets(self, exp_pkt1, [1 ,2])
 
             time.sleep(1)
@@ -1134,7 +1134,7 @@ class L2MacMoveTestII (sai_base_test.ThriftInterfaceDataPlane):
             ### Send IP packet from port 2 with src_mac = MAC1 and verify the FDB entry.
             send_packet(self, 1, str(pkt1))
 
-            ### Verifying the traffic @ Port3
+            ### Verifying the traffic @ Port1 and Port3
             verify_packets(self, exp_pkt1, [0, 2])
 
             time.sleep(1)
@@ -1185,9 +1185,9 @@ class L2MacMoveTestIII (sai_base_test.ThriftInterfaceDataPlane):
         Steps:
         1. Create VLAN 10 and associate 3 untagged ports (port 1,2,3) as the member port of VLAN 10.
         2. Set attribute value of "Port VLAN ID 10" for the ports 1, 2, 3
-        3. Create Virtual router V1 and enable V4.
+        3. Create Virtual router V1 and enable V6.
         4. Create  virtual router interfaces and set the interface type as VLAN
-        5. Create IPv4 neighbor entry with MAC1 and asociate with "RIF Id1".
+        5. Create IPv6 neighbor entry with MAC1 and asociate with "RIF Id1".
         6. Send test packet from port 1 with src_mac = MAC1 address.
         7. Send IP packet from port 3 with dst_mac= MAC1 and observe traffic forwarding to port 1.
         8. Send IP packet from port 2 with src_mac = MAC1 and verify the FDB entry.
@@ -1238,7 +1238,7 @@ class L2MacMoveTestIII (sai_base_test.ThriftInterfaceDataPlane):
         rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan_oid, v4_enabled, v6_enabled, mac)
         rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
 
-        ### create neighbor and next hop
+        ### create neighbor
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
 
         try:
