@@ -165,7 +165,7 @@ typedef enum _sai_port_fec_mode_t
     /** No FEC */
     SAI_PORT_FEC_MODE_NONE,
 
-    /** Enable RS-FEC - 25G, 50G, 100G ports */
+    /** Enable RS-FEC - default mode selected based on speed, lane count and electrical modulation */
     SAI_PORT_FEC_MODE_RS,
 
     /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
