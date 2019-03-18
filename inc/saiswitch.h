@@ -95,7 +95,12 @@ typedef enum _sai_packet_action_t
      * Packet action on the data plane remains unchanged.
      */
 
-    /** Copy Packet to CPU. */
+    /**
+     * @brief Packet action copy
+     *
+     * Copy Packet to CPU without interfering the original packet action in the
+     * pipeline.
+     */
     SAI_PACKET_ACTION_COPY,
 
     /** Cancel copy the packet to CPU. */
@@ -103,10 +108,30 @@ typedef enum _sai_packet_action_t
 
     /** Combination of Packet Actions */
 
-    /** This is a combination of SAI packet action COPY and DROP. */
+    /**
+     * @brief Packet action trap
+     *
+     * This is a combination of SAI packet action COPY and DROP:
+     * A copy of the original packet is sent to CPU port, the original
+     * packet is forcefully dropped from the pipeline.
+     */
     SAI_PACKET_ACTION_TRAP,
 
-    /** This is a combination of SAI packet action COPY and FORWARD. */
+#define SAI_PACKET_ACTION_BIFURCATE SAI_PACKET_ACTION_LOG
+
+    /**
+     * @brief Packet action bifurcate
+     *
+     * This is a combination of SAI packet action COPY and FORWARD:
+     * A copy of the original packet is sent to CPU port, the original
+     * packet is forcefully forwarded in the pipeline.
+     *
+     * Using SAI_PACKET_ACTION_BIFURCATE is preferred over SAI_PACKET_ACTION_LOG.
+
+     * Deprecate warning: SAI_PACKET_ACTION_LOG will be deprecated due to
+     * confusion with action SAI_PACKET_ACTION_COPY.
+     * For now, name aliasing is provided to prevent sudden build failures.
+     */
     SAI_PACKET_ACTION_LOG,
 
     /** This is a combination of SAI packet action COPY_CANCEL and DROP */
