@@ -2051,12 +2051,13 @@ class L3IPv4EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
         pointing has zero members. Verify that traffic is dropped
 
         Steps:
-        1. Create Virtual router V1 and enable v4 and v6.
+        1. Create Virtual router V1 and enable IPv4 and IPv6.
         2. Create three virtual router interfaces and set the interface type as "PORT" for ports 1, 2, 3.
         3. Create IPv4 neighbor entry (192.168.0.1, 192.168.1.1) with MAC1, MAC2 and associate with "RIF ids (id1 to 2)".
-        4. Create two next hops (nhop) to reach the neighbor entry.
-        5. Create nhop group "nhop_group1" and group members (nhop_gmember1, nhop_gmember2) and associate with (nhop_group1).
-        6. Create route entry with /24 mask (i.e 10.10.10.1/255.255.255.0) through "nhop_group1".
+        4. Create two next hops (nhop1 & nhop2) and associate with RIFs (Id 1 & 2) respectively.
+        5. Create next-hop group "nhop_group1".
+        6. Create group members (nhop_gmember1, nhop_gmember2) for "nhop_group1" ,associated with  next-hops (nhop1 & nho2) respectively.
+        7. Create route entry with /24 mask (i.e 10.10.10.1/255.255.255.0) through "nhop_group1".
 
         Part1:
         1. Send 10,000 streams from port 3 with destination IP (10.10.10.1/24) and varying src_mac,src_ip,dst_ip, sport
@@ -2382,12 +2383,13 @@ class L3IPv6EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
         Same as L3IPv4EcmpGroupMemberTest II for IPv6 destination
 
         Steps:
-        1. Create Virtual router V1 and enable v4 and v6.
+        1. Create Virtual router V1 and enable IPv4 and IPv6.
         2. Create three virtual router interfaces and set the interface type as "PORT" for ports 1, 2, 3.
         3. Create IPv6 neighbor entry (2001:2001::1, 2002:2002::1) with MAC1, MAC2 and associate with "RIF ids (id1 to 2)".
-        4. Create two next hops (nhop) to reach the neighbor entry.
-        5. Create nhop group "nhop_group1" and group members (nhop_gmember1, nhop_gmember2) and associate with (nhop_group1).
-        6. Create route entry with /64 mask (i.e 3000:1000::1/64) through "nhop_group1".
+        4. Create two next hops (nhop1 & nhop2) and associate with RIFs (Id 1 & 2) respectively.
+        5. Create next-hop group "nhop_group1".
+        6. Create group members (nhop_gmember1, nhop_gmember2) for "nhop_group1" ,associated with  next-hops (nhop1 & nho2) respectively.
+        7. Create route entry with /64 mask (i.e 3000:1000::1/64) through "nhop_group1".
 
         Part1:
         1. Send 10,000 streams from port 3 with destination IP (3000:1000::1/64) and observe the
