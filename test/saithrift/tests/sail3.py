@@ -2242,7 +2242,11 @@ class L3IPv4NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
             # Change the neighbor attribute to update with new MAC
             sai_thrift_set_neighbor_attribute(self.client, addr_family, rif_vlan_id1, ip_addr1, mac_port3)
 
+            print "Expect no packet with Dst MAC1 after neighbor attribute set to MAC3"
+            send_packet(self, 1, str(L3_pkt))
+            verify_no_packet(self, exp_pkt, 0)
 
+            # learn mac MAC3
             arp_req_pkt2 = simple_arp_packet(eth_dst='ff:ff:ff:ff:ff:ff',
                                         eth_src=mac_port3,
                                         vlan_vid=vlan_id1,
