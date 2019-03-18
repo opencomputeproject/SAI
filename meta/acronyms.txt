@@ -90,4 +90,5 @@ XG - (*,G) Any-source Multicast
 XOFF - Transmitter Off
 XON - Transmitter On
 NRZ - Non Return to Zero
-PAM4 - Pulse Amplitude Modulation
+PAM - Pulse Amplitude Modulation
+PAM4 - Pulse Amplitude Modulation with four amplitude levels
