@@ -72,7 +72,12 @@ typedef enum _sai_vlan_mcast_lookup_key_type_t
  */
 typedef enum _sai_vlan_flood_control_type_t
 {
-    /** Flood on all vlan members */
+    /**
+     * Flood on all vlan members
+     * When setting all to broadcast or unknown multicast flood, it also includes
+     * flooding to the router. When setting all to unknown unicast flood, it does
+     * not include flooding to the router
+     */
     SAI_VLAN_FLOOD_CONTROL_TYPE_ALL,
 
     /** Disable flooding */
@@ -80,6 +85,12 @@ typedef enum _sai_vlan_flood_control_type_t
 
     /** Flood on the L2MC group */
     SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP,
+
+    /**
+     * Flood on all vlan members, without the router
+     * In addition, flood on the supplied L2MC group
+     */
+    SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
 
 } sai_vlan_flood_control_type_t;
 
@@ -306,7 +317,9 @@ typedef enum _sai_vlan_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or
+     * SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
 
@@ -334,7 +347,9 @@ typedef enum _sai_vlan_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or
+     * SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
 
@@ -362,7 +377,9 @@ typedef enum _sai_vlan_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
-     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or
+     * SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_VLAN_ATTR_BROADCAST_FLOOD_GROUP,
 
