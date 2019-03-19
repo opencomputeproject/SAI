@@ -2042,7 +2042,7 @@ class L3IPv4NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
         1. Create VLAN 100, 200 in the database
         2. Associate 2 untagged ports (port 1, 2) as the member port of VLAN 100 and 200 respectively.
         3. Set port attribute values of "Port VLAN ID 100, 200" for the ports 1 and 2 respectively.
-        4. Create Virtual router V1 and enable V4.
+        4. Create Virtual router V1 and enable IPv4.
         5. Create two virtual router interfaces and set the interface type as "PORT".
         6. Send ARP packet from port 1 and learn the MAC1 in VLAN 100.
         7. Create IPv4 neighbor entry with MAC1 and asociate with "RIF Id1".
@@ -2052,13 +2052,14 @@ class L3IPv4NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
             with value SAI_PACKET_ACTION_DROP
 
         Part1:
-        11. Flush the FDB table entry and re-send the packet from port
+        11. Flush the FDB table entry and send the packet.
         12. Observe the SAI switch take the action according to the switch attribute.
 
         Part2:
-        13. Wait for the FDB entry age out time and resend the traffic from Port 2
-        14. Observe the SAI switch take the action according to the switch attribute.
-        15. Restore the Switch attribute to FORWARD and remove the router interface and
+        13. Send ARP packet from port 1 to learn the MAC entry in the FDB table.
+        14. Wait for the FDB entry age out time and resend the traffic from Port 2
+        15. Observe the SAI switch take the action according to the switch attribute.
+        16. Restore the Switch attribute to FORWARD and remove the router interface and
             change the port attribute to default VLAN.
 
         """
@@ -2218,7 +2219,7 @@ class L3IPv6NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
         1. Create VLAN 100, 200 in the database
         2. Associate 2 untagged ports (port 1, 2) as the member port of VLAN 100 and 200 respectively.
         3. Set port attribute values of "Port VLAN ID 100, 200" for the ports 1 and 2 respectively.
-        4. Create Virtual router V1 and enable V6.
+        4. Create Virtual router V1 and enable IPv6.
         5. Create two virtual router interfaces and set the interface type as "PORT".
         6. Send Broadcast packet from port 1 and verify the FDB entry for the MAC1 in VLAN 100.
         7. Create IPv6 neighbor entry with MAC1 and asociate with ""RIF Id1"".
@@ -2228,14 +2229,15 @@ class L3IPv6NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
             with value SAI_PACKET_ACTION_DROP
 
         Part1:
-        11. Flush the FDB table entry and re-send the packet from port
+        11. Flush the FDB table entry and send the packet
         12. Observer the SAI switch take the action according to the switch attribute.
 
         Part2:
-        13. Wait for the FDB entry age out time and resend the traffic from Port 2
-        14. Observer the SAI switch take the action according to the switch attribute.
+        13. Send ARP packet from port 1 to learn the MAC entry in the FDB table.
+        14. Wait for the FDB entry age out time and resend the traffic from Port 2
+        15. Observer the SAI switch take the action according to the switch attribute.
 
-        15. Restore the Switch attribute to FORWARD and remove the router interface and
+        16. Restore the Switch attribute to FORWARD and remove the router interface and
             change the port attribute to default VLAN.
         """
         print
