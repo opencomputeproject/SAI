@@ -2140,21 +2140,22 @@ class L3IPv4NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
         Steps:
         1. Create VLAN 100, 200 in the database
         2. Associate 2 tagged ports (port 1, 2) as the member port of VLAN 100 and 200 respectively.
-        3. Create Virtual router V1 and enable V4.
+        3. Create Virtual router V1 and enable IPv4.
         4. Create two virtual router interfaces and set the interface type as VLAN
         5. Create IPv4 neighbor entry with MAC1 and asociate with ""RIF Id1"".
         6. Create next hop, route to reach the neighbor (MAC1).
         7. Send test packet from port 1 with src_mac = MAC1 address and dst_mac = router MAC.
         8. Send traffic on port 2 and observe traffic forwarding to port 1.
         9. Change the neighbor attribute to update with new MAC (MAC3)
-        10. Change the source MAC address (MAC3) and re-send the packet from port 1 and verify FDB entry.
-        11. Send IP packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
-        12. Remove the router interface and change the port attribute to default VLAN.
-        13. Remove the vlan members and VLAN 100,200 from the database.
+        10. Send IPv4 packet from port 1 with src_mac = MAC1 address and ensure its dropped by DUT.
+        11. Change the source MAC address (MAC3) and send the ARP packet from port 1 and learn FDB entry with MAC3.
+        12. Send IP packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
+        13. Remove the router interface and change the port attribute to default VLAN.
+        14. Remove the vlan members and VLAN 100,200 from the database.
         """
 
         print "Sending packet port 1 -> switch (for learning purpuse)"
-        print "and then sending packet from port 2 (11.11.11.1) -> port 1 (192.168.0.1 through the router)"
+        print "Sending packet from port 2 (11.11.11.1) -> port 1 (192.168.0.1 through the router)"
 
         switch_init(self.client)
         v4_enabled = 1
@@ -2314,17 +2315,18 @@ class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
         Steps:
         1. Create VLAN 100, 200 in the database
         2. Associate 2 tagged ports (port 1, 2) as the member port of VLAN 100 and 200 respectively.
-        3. Create Virtual router V1 and enable V6.
+        3. Create Virtual router V1 and enable IPv6.
         4. Create two virtual router interfaces and set the interface type as VLAN
         5. Create IPv6 neighbor entry with MAC1 and asociate with ""RIF Id1"".
         6. Create next hop, route to reach the neighbor (MAC1).
         7. Send test packet from port 1 with src_mac = MAC1 address and dst_mac = router MAC.
         8. Send traffic on port 2 and observe traffic forwarding to port 1.
         9. Change the neighbor attribute to update with new MAC (MAC3)
-        10. Change the source MAC address (MAC3) and re-send the packet from port 1 and verify FDB entry.
-        11. Send IPv6 packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
-        12. Remove the router interface and change the port attribute to default VLAN.
-        13. Remove the vlan members and VLAN 100,200 from the database.
+        10. Send IPv6 packet from port 1 with src_mac = MAC1 address and ensure its dropped by DUT.
+        11. Change the source MAC address (MAC3) and send the broadcast packet from port 1 and learn FDB entry with MAC3.
+        12. Send IPv6 packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
+        13. Remove the router interface and change the port attribute to default VLAN.
+        14. Remove the vlan members and VLAN 100,200 from the database.
         """
         print
         print "Sending packet port 2 -> port 1 (2001:1111::1 -> 3001:1000::1) \n"
@@ -2379,7 +2381,7 @@ class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
                                  ipv6_hlim=64)
 
             print "Send Broadcast packet from port1 to learn MAC1 using test packet..."
-            print "and then sending packet from port 2 -> port 1 (through the router) \n"
+            print "Sending packet from port 2 -> port 1 (through the router) \n"
             send_packet(self, 0, str(test_pkt))
 
             time.sleep(1)
@@ -2407,6 +2409,10 @@ class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
             # Update the neighbor MAC entry
             sai_thrift_set_neighbor_attribute(self.client, addr_family, rif_id1, ip_addr1, dmac3)
 
+            print "Expect no packet with Dst MAC1 after neighbor attribute set to MAC3"
+            send_packet(self, 1, str(pkt))
+            verify_no_packet(self, exp_pkt, 0)
+
             # Construct test packet with new MAC
             test_pkt = simple_tcpv6_packet(eth_dst='ff:ff:ff:ff:ff:ff',
                                  eth_src=dmac3,
@@ -2417,7 +2423,6 @@ class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
                                  ipv6_hlim=64)
 
             print "Send Broadcast packet from port1 to learn MAC3 using test packet..."
-            print "and then sending packet from port 2 -> port 1 (through the router) "
 
             send_packet(self, 0, str(test_pkt))
             time.sleep(1)
