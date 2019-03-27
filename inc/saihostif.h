@@ -663,7 +663,10 @@ typedef enum _sai_hostif_type_t
     SAI_HOSTIF_TYPE_NETDEV,
 
     /** File descriptor */
-    SAI_HOSTIF_TYPE_FD
+    SAI_HOSTIF_TYPE_FD,
+
+    /** Generic netlink */
+    SAI_HOSTIF_TYPE_GENETLINK
 
 } sai_hostif_type_t;
 
@@ -738,7 +741,7 @@ typedef enum _sai_hostif_attr_t
      *
      * @type char
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
+     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV or SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_GENETLINK
      */
     SAI_HOSTIF_ATTR_NAME,
 
@@ -769,6 +772,16 @@ typedef enum _sai_hostif_attr_t
      * @validonly SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
      */
     SAI_HOSTIF_ATTR_VLAN_TAG,
+
+    /**
+     * @brief Set the Generic netlink (multicast) port id on which the packets/buffers
+     * are received on this host interface
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_HOSTIF_ATTR_GENETLINK_PORT_ID,
 
     /**
      * @brief End of attributes
@@ -875,7 +888,10 @@ typedef enum _sai_hostif_table_entry_channel_type_t
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_LOGICAL_PORT,
 
     /** Receive packets via Linux netdev L3 interface */
-    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3,
+
+    /** Receive packets via Linux generic netlink interface */
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_GENETLINK
 
 } sai_hostif_table_entry_channel_type_t;
 
