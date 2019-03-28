@@ -117,20 +117,13 @@ typedef enum _sai_packet_action_t
      */
     SAI_PACKET_ACTION_TRAP,
 
-#define SAI_PACKET_ACTION_BIFURCATE SAI_PACKET_ACTION_LOG
-
     /**
-     * @brief Packet action bifurcate
+     * @brief Packet action log
      *
      * This is a combination of SAI packet action COPY and FORWARD:
      * A copy of the original packet is sent to CPU port, the original
-     * packet is forcefully forwarded in the pipeline.
-     *
-     * Using SAI_PACKET_ACTION_BIFURCATE is preferred over SAI_PACKET_ACTION_LOG.
-
-     * Deprecate warning: SAI_PACKET_ACTION_LOG will be deprecated due to
-     * confusion with action SAI_PACKET_ACTION_COPY.
-     * For now, name aliasing is provided to prevent sudden build failures.
+     * packet, if it was desinated to be droped in the original pipeline,
+     * change the pipeline action to forward (cancel drop).
      */
     SAI_PACKET_ACTION_LOG,
 
