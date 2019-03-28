@@ -122,7 +122,7 @@ typedef enum _sai_packet_action_t
      *
      * This is a combination of SAI packet action COPY and FORWARD:
      * A copy of the original packet is sent to CPU port, the original
-     * packet, if it was desinated to be droped in the original pipeline,
+     * packet, if it was to be dropped in the original pipeline,
      * change the pipeline action to forward (cancel drop).
      */
     SAI_PACKET_ACTION_LOG,
