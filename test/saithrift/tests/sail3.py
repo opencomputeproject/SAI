@@ -813,19 +813,19 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
 class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         '''
-	    Create a VRF with IPv4 and IPv6 enabled. Create 4 router interfaces in the same VRF.
+	Create a VRF with IPv4 and IPv6 enabled. Create 4 router interfaces in the same VRF.
         Create a route (/24 mask) with nhop and neighbor entry in three router interfaces. 
         Send 100 streams with varying 5-tuple combinations to the destination IP on one port and verify distribution on the 
         three router interfaces for which the nhops are present. Change the ECMP hash seed value to 10 and verify distribution.
 	   
-	    '''
+	'''
 	   
-        print "Sending packet port4 -> port1,port2,port3 "
+        print "Sending packet port4 -> port1,port2,port3 (192.168.6.1 to 10.10.10.1) "
         switch_init(self.client)
         port1 = port_list[0]
         port2 = port_list[1]
         port3 = port_list[2]
-	    port4 = port_list[3]
+	port4 = port_list[3]
         v4_enabled = 1
         v6_enabled = 1
         mac = ''
@@ -845,14 +845,14 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
         ip_mask = '255.255.255.0'
         destmac1 = '00:11:22:33:44:51'
         destmac2 = '00:11:22:33:44:52'
-	    destmac3 = '00:11:22:33:44:53'
+	destmac3 = '00:11:22:33:44:53'
 
         virtual_router = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
         router_interface1 = sai_thrift_create_router_interface(self.client, virtual_router, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
         router_interface2 = sai_thrift_create_router_interface(self.client, virtual_router, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
         router_interface3 = sai_thrift_create_router_interface(self.client, virtual_router, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
-	    router_interface4 = sai_thrift_create_router_interface(self.client, virtual_router, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
+	router_interface4 = sai_thrift_create_router_interface(self.client, virtual_router, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
 
         sai_thrift_create_neighbor(self.client, addr_family,  router_interface1, ip_addr1, destmac1)
         sai_thrift_create_neighbor(self.client, addr_family,  router_interface2, ip_addr2, destmac2)
@@ -860,19 +860,19 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
 
         next_hop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, router_interface1)
         next_hop2 = sai_thrift_create_nhop(self.client, addr_family, ip_addr2, router_interface2)
-	    next_hop3 = sai_thrift_create_nhop(self.client, addr_family, ip_addr3, router-interface3)
+	next_hop3 = sai_thrift_create_nhop(self.client, addr_family, ip_addr3, router-interface3)
 
 
         nexthop_group = sai_thrift_create_next_hop_group(self.client)
 
         nexthop_gmember1 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop1)
         nexthop_gmember2 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop2)
-	    nexthop_gmember3 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop3)
+	nexthop_gmember3 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop3)
 
 
         #sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr1_subnet, ip_mask, router_interface1)
         #sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr2_subnet, ip_mask, router_interface2)
-	    #sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr3_subnet, ip_mask, router_interface3)
+	#sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr3_subnet, ip_mask, router_interface3)
 
         sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr4, ip_mask, nexthop_group)
 
@@ -957,7 +957,7 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED, value=attr_value)
             self.client.sai_thrift_set_switch_attribute(attr)
 			
-	        for i in range(1, maximum_packets):
+	    for i in range(1, maximum_packets):
                 packet = simple_tcp_packet(eth_dst=router_mac,
                                 eth_src='00:22:22:22:22:22',
                                 ip_dst= ip_destination,
@@ -1021,22 +1021,22 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_next_hop_group_member(nexthop_gmember1)
             self.client.sai_thrift_remove_next_hop_group_member(nexthop_gmember2)
-	        self.client.sai_thrift_remove_next_hop_group_member(nexthop_gmember3)
+	    self.client.sai_thrift_remove_next_hop_group_member(nexthop_gmember3)
 
             self.client.sai_thrift_remove_next_hop_group(nexthop_group)
 
             self.client.sai_thrift_remove_next_hop(next_hop1)
             self.client.sai_thrift_remove_next_hop(next_hop2)
-	        self.client.sai_thrift_remove_next_hop(next_hop3)
+	    self.client.sai_thrift_remove_next_hop(next_hop3)
 
             sai_thrift_remove_neighbor(self.client, addr_family, router_interface1, ip_addr1, destmac1)
             sai_thrift_remove_neighbor(self.client, addr_family, router_interface2, ip_addr2, destmac2)
-	        sai_thrift_remove_neighbor(self.client, addr_family, router_interface3, ip_addr3, destmac3)
+	    sai_thrift_remove_neighbor(self.client, addr_family, router_interface3, ip_addr3, destmac3)
 
             self.client.sai_thrift_remove_router_interface(router_interface1)
             self.client.sai_thrift_remove_router_interface(router_interface2)
             self.client.sai_thrift_remove_router_interface(router_interface3)
-	        self.client.sai_thrift_remove_router_interface(router_interface4)
+	    self.client.sai_thrift_remove_router_interface(router_interface4)
 
             self.client.sai_thrift_remove_virtual_router(virtual_router)
 
