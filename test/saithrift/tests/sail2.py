@@ -527,9 +527,8 @@ class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
         finally:
 
             sai_thrift_delete_fdb(self.client, vlan_oid, mac1, lag_id1)
-            sai_thrift_delete_fdb(self.client, vlan_oid, mac2, port4)
 			
-			attr_value = sai_thrift_attribute_value_t(u32=0)
+	    attr_value = sai_thrift_attribute_value_t(u32=0)
             attr = sai_thrift_attribute_t(id= SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED, value=attr_value)
             self.client.sai_thrift_set_switch_attribute(attr)
 
