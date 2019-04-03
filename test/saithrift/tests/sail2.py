@@ -681,6 +681,88 @@ class L2BridgeSubPortFloodTest(sai_base_test.ThriftInterfaceDataPlane):
             for port in sai_port_list:
                 sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port, SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
+                
+                
+   
+
+@group('l2')
+@group('1D')
+class L2BridgePortTestI(sai_base_test.ThriftInterfaceDataPlane):
+
+    def runTest(self):
+        '''
+        Create a bridge-port and verify traffic forwarding.
+        Disable bridge-port admin state and verify packets are dropped.
+        '''
+        
+        print "Sending L2 packet port 0 -> port 1"
+        vlan_id = 10
+        mac1 = '00:11:11:11:11:11'
+        mac2 = '00:22:22:22:22:22'
+        hw_port1 = 0
+        hw_port2 = 1
+        switch_init2(self.client)
+        port1 = port_list[hw_port1]
+        port2 = port_list[hw_port2]
+        bridge_port1 = br_port_list[port1]
+        bridge_port2 = br_port_list[port2]
+
+        # Create 1D Bridge
+
+        bridge_type = SAI_BRIDGE_TYPE_1D
+        bridge_attr_value = sai_thrift_attribute_value_t(s32=bridge_type)
+        bridge_attr = sai_thrift_attribute_t(id=SAI_BRIDGE_ATTR_TYPE, value=bridge_attr_value)
+        bridge = self.client.sai_thrift_create_bridge([bridge_attr])
+
+        # Create Bridge ports
+        bridge_port_type = SAI_BRIDGE_PORT_TYPE_SUB_PORT
+        self.client.sai_thrift_remove_bridge_port(bridge_port1)
+        self.client.sai_thrift_remove_bridge_port(bridge_port2)
+        bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, vlan_id, bridge)
+        bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, vlan_id, bridge)
+
+        # Create FDB Entries:
+        mac_action = SAI_PACKET_ACTION_FORWARD
+        fdb_entry_type = SAI_FDB_ENTRY_TYPE_STATIC
+        sai_thrift_create_fdb(self.client, mac1, bridge_type,vlan_id, None, bridge, bridge_port1, mac_action, fdb_entry_type)
+        sai_thrift_create_fdb(self.client, mac2, bridge_type,vlan_id, None, bridge, bridge_port2, mac_action, fdb_entry_type)
+
+
+
+	    pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
+                                eth_src='00:11:11:11:11:11',
+                                ip_dst='10.0.0.1',
+                                ip_id=101,
+                                ip_ttl=64)
+ 
+	    try:
+
+            send_packet(self, hw_port1, str(pkt))
+            verify_packets(self, pkt, [hw_port2])
+            #setting admin state value
+            bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=False)
+            bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+                                                            value=bport_attr_admin_state_value)
+            client.sai_thrift_set_bridge_port_attribute(bridge_port1, bport_attr_admin_state)
+            client.sai_thrift_set_bridge_port_attribute(bridge_port2, bport_attr_admin_state)
+            send_packet(self, hw_port1, str(pkt))
+            verify_packets(self, pkt, [hw_port2])
+
+	    finally:
+
+            sai_thrift_delete_fdb(self.client, mac1, None, bridge_type, bridge)
+            sai_thrift_delete_fdb(self.client, mac2, None, bridge_type, bridge)
+            vlan_id = 1
+            bridge_port_type = SAI_BRIDGE_PORT_TYPE_PORT
+            self.client.sai_thrift_remove_bridge_port(bridge_port1)
+            self.client.sai_thrift_remove_bridge_port(bridge_port2)
+            bridge_port1 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port1, None, default_bridge)
+            bridge_port2 = sai_thrift_create_bridge_port(self.client, bridge_port_type, port2, None, default_bridge)
+            self.client.sai_thrift_remove_bridge(bridge)
+            br_port_list[port1] = bridge_port1
+            br_port_list[port2] = bridge_port2             
+               
+     
 @group('l2')
 @group('1D')
 class L2BridgeSubPortFDBTest(sai_base_test.ThriftInterfaceDataPlane):
