@@ -894,40 +894,40 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
                     print " %s packets are sent ...." % (i)
 
                 packet = simple_tcp_packet(eth_dst=router_mac,
-                                eth_src=src_mac,
-                                ip_dst=ip_destination,
-                                ip_src=ip_source,
-                                tcp_sport=source_port,
-                                tcp_dport=destination_port,
-                                ip_id=106,
-                                ip_ttl=64) 
+                                           eth_src=src_mac,
+                                           ip_dst=ip_destination,
+                                           ip_src=ip_source,
+                                           tcp_sport=source_port,
+                                           tcp_dport=destination_port,
+                                           ip_id=106,
+                                           ip_ttl=64) 
                 #expected packet at port1 
                 expected_packet1 = simple_tcp_packet(eth_dst='00:11:22:33:44:51',   
-                                              eth_src=router_mac,
-                                              ip_dst= ip_destination,
-                                              ip_src=ip_source,
-                                              tcp_sport=source_port,
-                                              tcp_dport=destination_port,
-                                              ip_id=106,
-                                              ip_ttl=63)  
+                                                     eth_src=router_mac,
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,
+                                                     ip_id=106,
+                                                     ip_ttl=63)  
                 #expected packet at port2 
                 expected_packet2 = simple_tcp_packet(eth_dst='00:11:22:33:44:52',
-                                              eth_src = router_mac,     
-                                              ip_dst= ip_destination,
-                                              ip_src=ip_source,
-                                              tcp_sport=source_port,
-                                              tcp_dport=destination_port,     
-                                              ip_id =106,       
-                                              ip_ttl=63) 
+                                                     eth_src = router_mac,     
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,     
+                                                     ip_id =106,       
+                                                     ip_ttl=63) 
                 #expected packet at port3  
                 expected_packet3 = simple_tcp_packet(eth_dst='00:11:22:33:44:53',
-                                              eth_src = router_mac,     
-                                              ip_dst= ip_destination,
-                                              ip_src=ip_source,
-                                              tcp_sport=source_port,
-                                              tcp_dport=destination_port,   
-                                              ip_id =106,       
-                                              ip_ttl=63) 
+                                                     eth_src = router_mac,     
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,   
+                                                     ip_id =106,       
+                                                     ip_ttl=63) 
 
 
                 send_packet(self, 3, str(packet)) 
@@ -959,40 +959,40 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
 			
 	    for i in range(1, maximum_packets):
                 packet = simple_tcp_packet(eth_dst=router_mac,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst= ip_destination,
-                                ip_src=ip_source,
-                                tcp_sport=source_port,
-                                tcp_dport=destination_port,
-                                ip_id=106,
-                                ip_ttl=64) 
+                                           eth_src='00:22:22:22:22:22',
+                                           ip_dst= ip_destination,
+                                           ip_src=ip_source,
+                                           tcp_sport=source_port,
+                                           tcp_dport=destination_port,
+                                           ip_id=106,
+                                           ip_ttl=64) 
                 #packet at port1 
                 expected_packet1 = simple_tcp_packet(eth_dst='00:11:22:33:44:51',   
-                                              eth_src=router_mac,
-                                              ip_dst= ip_destination,
-                                              ip_src=ip_source,
-                                              tcp_sport=source_port,
-                                              tcp_dport=destination_port,
-                                              ip_id=106,
-                                              ip_ttl=63)  
+                                                     eth_src=router_mac,
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,
+                                                     ip_id=106,
+                                                     ip_ttl=63)  
                 #packet at port2 
                 expected_packet2 = simple_tcp_packet(eth_dst='00:11:22:33:44:52',
-                                              eth_src = router_mac,     
-                                              ip_dst= ip_destination,
-                                              ip_src=ip_source,
-                                              tcp_sport=source_port,
-                                              tcp_dport=destination_port,   
-                                              ip_id =106,       
-                                              ip_ttl=63) 
+                                                     eth_src = router_mac,     
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,   
+                                                     ip_id =106,       
+                                                     ip_ttl=63) 
                 #packet at port3  
                 expected_packet3 = simple_tcp_packet(eth_dst='00:11:22:33:44:53',
-                                              eth_src = router_mac,     
-                                              ip_dst= ip_destination,
-                                              ip_src=ip_source,
-                                              tcp_sport=source_port,
-                                              tcp_dport=destination_port,     
-                                              ip_id =106,       
-                                              ip_ttl=63) 
+                                                     eth_src = router_mac,     
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,     
+                                                     ip_id =106,       
+                                                     ip_ttl=63) 
 
 
                 send_packet(self, 3, str(packet)) 
