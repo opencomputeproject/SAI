@@ -385,14 +385,14 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
 class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         
-		"""
+	"""
         Create a LAG group with 4 ports 1 through 4. Setup static FDB entries for the LAG and send packet to this destination MAC address. 
         Send 100 packets with varying 5-tuple and check order/sequence of the distribution of packets received on ports 1 through 4. 
         Change the LAG Hash seed value to 10 and compare the order/sequence of the distribution of packets received for the same set of 100 packets on ports 1 through 4. 
         Verify that it is different after changing the hash seedimport socket
         """
         
-		switch_init(self.client)
+	switch_init(self.client)
         vlan_id = 10
         port1 = port_list[0]
         port2 = port_list[1]
@@ -427,7 +427,7 @@ class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_fdb(self.client, vlan_oid, mac1, lag_id1, mac_action)
 
         try:    
-			max_itrs = 101
+	    max_itrs = 101
             count1 = [0, 0, 0, 0]
             laglist1=list()
             src_mac_start = '00:22:22:22:22:'
@@ -443,11 +443,11 @@ class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
                 ip_dst = ip_dst_start + str(i % 99).zfill(3)    
                                 
                 pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
-				                        eth_src=src_mac,
-										ip_dst=ip_dst,
+				        eth_src=src_mac,
+					ip_dst=ip_dst,
                                         ip_src=ip_src,
                                         tcp_sport=sport,
-										tcp_dport=dport,
+					tcp_dport=dport,
                                         ip_id=109,
                                         ip_ttl=64)
 
@@ -486,7 +486,7 @@ class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
             print ("sending 100 packets to verify the order/sequence of distribution ")
                         
             for i in range(0, max_itrs):
-			    src_mac = src_mac_start + str(i % 99).zfill(2)
+	        src_mac = src_mac_start + str(i % 99).zfill(2)
                 ip_src = ip_src_start + str(i % 99).zfill(3)
                 ip_dst = ip_dst_start + str(i % 99).zfill(3)    
                                 
@@ -522,7 +522,7 @@ class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
                 if(laglist1[i]==laglist2[i]):
                     order_check+=1
                 
-			print ("checking the order/sequence matches in both distribution:" ,order_check)
+	    print ("checking the order/sequence matches in both distribution:" ,order_check)
 
         finally:
 
