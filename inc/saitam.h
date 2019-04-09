@@ -1567,7 +1567,7 @@ typedef void (*sai_tam_event_notification_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-sai_status_t sai_tam_telemetry_get_data(
+sai_status_t (*sai_tam_telemetry_get_data_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list,
@@ -1632,6 +1632,8 @@ typedef struct _sai_tam_api_t
     sai_remove_tam_event_fn                   remove_tam_event;
     sai_set_tam_event_attribute_fn            set_tam_event_attribute;
     sai_get_tam_event_attribute_fn            get_tam_event_attribute;
+    
+    sai_tam_telemetry_get_data_fn             get_tam_data;
 } sai_tam_api_t;
 
 /**
