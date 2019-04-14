@@ -999,6 +999,14 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        isextensionattr;
 
+    /**
+     * @brief Tells if attribute is a resource type.
+     *
+     * If true, attribute is used in getting object type availability
+     * to distinguish between pools of resources.
+     */
+    bool                                        isresourcetype;
+
 } sai_attr_metadata_t;
 
 /*

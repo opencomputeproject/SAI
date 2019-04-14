@@ -3100,6 +3100,11 @@ void check_non_object_id_object_attrs()
 
             META_ASSERT_NOT_NULL(m);
 
+            if (m->isresourcetype)
+            {
+                continue;
+            }
+
             switch ((int)m->flags)
             {
                 case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:

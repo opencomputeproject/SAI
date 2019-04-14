@@ -106,6 +106,7 @@ typedef enum _sai_next_hop_group_attr_t
      *
      * @type sai_next_hop_group_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isresourcetype true
      */
     SAI_NEXT_HOP_GROUP_ATTR_TYPE,
 

@@ -266,6 +266,23 @@ sai_status_t sai_dbg_generate_dump(
         _In_ const char *dump_file_name);
 
 /**
+ * @brief Get SAI object type resource availability.
+ *
+ * @param[in] object_type SAI object type
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list List of attributes that to distinguish resource
+ * @param[out] count Available objects left
+ *
+ * @return #SAI_STATUS_NOT_SUPPORTED if the given object type does not support resource accounting.
+ * Otherwise, return #SAI_STATUS_SUCCESS.
+ */
+sai_status_t sai_object_type_get_availability(
+        _In_ sai_object_type_t object_type,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list,
+        _Out_ uint64_t *count);
+
+/**
  * @}
  */
 #endif /** __SAI_H_ */
