@@ -93,6 +93,7 @@ UDP - User Datagram Protocol
 VNI - Virtual Network Interface
 VNID - Virtual Network Identifier
 VR - Virtual Router
+VRF - Virtual Route Forwarding
 VRRP - Virtual Router Redundancy Protocol
 VXLAN - Virtual Extensible LAN
 WCMP - Weighted Cost Multipath

@@ -34,118 +34,292 @@
  */
 
 /**
- * @brief Attribute data for NAT Range Type
+ * @brief NAT Entry Attributes
  */
-typedef enum _sai_nat_field_range_type_t
+typedef enum _sai_nat_entry_attr_t
 {
-    /** L4 Source Port Range */
-    SAI_NAT_FIELD_RANGE_TYPE_L4_SRC_PORT_RANGE,
-
-    /** L4 Destination Port Range */
-    SAI_NAT_FIELD_RANGE_TYPE_L4_DST_PORT_RANGE,
-
-    /** IP address Range */
-    SAI_NAT_FIELD_RANGE_TYPE_NAT_IP_RANGE,
-
-} sai_nat_field_range_type_t;
-
-/**
- * @brief Attribute Id for NAT Range Object
- */
-typedef enum _sai_nat_range_attr_t
-{
-    /**
-     * @brief Start of attributes
-     */
-    SAI_NAT_RANGE_ATTR_START,
 
     /**
-     * @brief Range type
-     *
-     * Mandatory to pass only one of the range types defined in
-     * sai_nat_field_range_type_t enum during NAT Range Creation.
-     * Range Type cannot be changed after the range is created.
-     *
-     * @type sai_nat_field_range_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @brief Start of Attributes
      */
-    SAI_NAT_RANGE_ATTR_NAT_FIELD_RANGE_TYPE = SAI_NAT_RANGE_ATTR_START,
+    SAI_NAT_ENTRY_ATTR_START,
 
     /**
-     * @brief Start and End of NAT Range
+     * @brief NAT IP address translated from
      *
-     * Range will include the start and end values.
-     * Range Limit cannot be changed after the range is created.
-     *
-     * @type sai_u32_range_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
      */
-    SAI_NAT_RANGE_ATTR_LIMIT,
+    SAI_NAT_ENTRY_ATTR_FROM_IP = SAI_NAT_ENTRY_ATTR_START,
 
     /**
-     * @brief End of attributes
+     * @brief NAT IP address translated to
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
      */
-    SAI_NAT_RANGE_ATTR_END,
+    SAI_NAT_ENTRY_ATTR_TO_IP,
+
+    /**
+     * @brief NAT Port address translated from
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_NAT_ENTRY_ATTR_FROM_PORT,
+
+    /**
+     * @brief NAT Port address translated to
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_NAT_ENTRY_ATTR_TO_PORT,
+
+    /**
+     * @brief IP Protocol
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ENTRY_ATTR_IP_PROTOCOL,
+
+    /**
+     * @brief VRF ID
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ENTRY_ATTR_FIELD_VRF_ID,
+
+    /**
+     * @brief Enable/disable packet count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT,
+
+    /**
+     * @brief Enable/disable byte count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_NAT_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_NAT_RANGE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_NAT_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_NAT_RANGE_ATTR_CUSTOM_RANGE_END
+    SAI_NAT_ENTRY_ATTR_CUSTOM_RANGE_END
 
-} sai_nat_range_attr_t;
+} sai_nat_entry_attr_t;
 
 /**
- * @brief Create and return a NAT range object
+ * @brief Create and return a NAT object
  *
- * @param[out] nat_range_id NAT range object
+ * @param[out] nat_entry_id NAT pool object
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_create_nat_range_fn)(
-        _Out_ sai_object_id_t *nat_range_id,
+typedef sai_status_t (*sai_create_nat_entry_fn)(
+        _Out_ sai_object_id_t *nat_entry_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Deletes a specified NAT range_object.
+ * @brief Deletes a specified NAT entry object.
  *
- * Deleting a NAT range_object also deletes single specified NAT range.
+ * Deleting a NAT entry object does not delete reference to it.
  *
- * @param[in] nat_range_id NAT object to be removed.
+ * @param[in] nat_entry_id NAT object to be removed.
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_remove_nat_range_fn)(
-        _In_ sai_object_id_t nat_range_id);
+typedef sai_status_t (*sai_remove_nat_entry_fn)(
+        _In_ sai_object_id_t nat_entry_id);
 
 /**
- * @brief Set NAT range attribute value(s).
+ * @brief Set NAT entry attribute value(s).
  *
- * @param[in] nat_range_id NAT range id
+ * @param[in] nat_entry_id NAT entry id
  * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_set_nat_range_attribute_fn)(
-        _In_ sai_object_id_t nat_range_id,
+typedef sai_status_t (*sai_set_nat_entry_attribute_fn)(
+        _In_ sai_object_id_t nat_entry_id,
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get values for specified NAT range attributes.
+ * @brief Get values for specified NAT entry attributes.
  *
- * @param[in] nat_range_id NAT range object id
+ * @param[in] nat_entry_id NAT entry object id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_get_nat_range_attribute_fn)(
-        _In_ sai_object_id_t nat_range_id,
+typedef sai_status_t (*sai_get_nat_entry_attribute_fn)(
+        _In_ sai_object_id_t nat_entry_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief NAT Type
+ */
+typedef enum _sai_nat_type_t
+{
+    /** No NAT */
+    SAI_NAT_TYPE_NONE,
+
+    /** Source NAT */
+    SAI_NAT_TYPE_SOURCE_NAT,
+
+    /** Destination NAT */
+    SAI_NAT_TYPE_DESTINATION_NAT,
+
+} sai_nat_type_t;
+
+/**
+ * @brief NAT Counter Attributes
+ */
+typedef enum _sai_nat_counter_attr_t
+{
+
+    /**
+     * @brief Start of Attributes
+     */
+    SAI_NAT_COUNTER_ATTR_START,
+
+    /**
+     * @brief NAT Type defined in sai_nat_type_t
+     * @type sai_nat_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_NAT_TYPE_NONE
+     */
+    SAI_NAT_COUNTER_ATTR_NAT_TYPE  = SAI_NAT_COUNTER_ATTR_START,
+
+    /**
+     * @brief NAT Zone ID
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_COUNTER_ATTR_ZONE_ID,
+
+    /**
+     * @brief Enable/disable discard count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_NAT_COUNTER_ATTR_ENABLE_DISCARD,
+
+    /**
+     * @brief Enable/disable translation needed count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_NAT_COUNTER_ATTR_ENABLE_TRANSLATION_NEEDED,
+
+    /**
+     * @brief Enable/disable translations count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_NAT_COUNTER_ATTR_ENABLE_TRANSLATIONS,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_NAT_COUNTER_ATTR_END,
+
+    /** Custom range base value */
+    SAI_NAT_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_NAT_COUNTER_ATTR_CUSTOM_RANGE_END
+
+} sai_nat_counter_attr_t;
+
+/**
+ * @brief Create and return a NAT counter object
+ *
+ * @param[out] nat_counter_id NAT counter object
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_nat_counter_fn)(
+        _Out_ sai_object_id_t *nat_counter_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Deletes a specified NAT counter object.
+ *
+ * Deleting a NAT counter object does not delete reference to it.
+ *
+ * @param[in] nat_counter_id NAT object to be removed.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_nat_counter_fn)(
+        _In_ sai_object_id_t nat_counter_id);
+
+/**
+ * @brief Set NAT counter attribute value(s).
+ *
+ * @param[in] nat_counter_id NAT counter id
+ * @param[in] attr Attribute to set
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_nat_counter_attribute_fn)(
+        _In_ sai_object_id_t nat_counter_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get values for specified NAT counter attributes.
+ *
+ * @param[in] nat_counter_id NAT counter object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_nat_counter_attribute_fn)(
+        _In_ sai_object_id_t nat_counter_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -161,31 +335,48 @@ typedef enum _sai_nat_attr_t
     SAI_NAT_ATTR_START,
 
     /**
-     * @brief Range Type defined in sai_nat_range_type_t
+     * @brief NAT Type defined in sai_nat_type_t
+     * @type sai_nat_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_NAT_TYPE_NONE
+     */
+    SAI_NAT_ATTR_NAT_TYPE  = SAI_NAT_ATTR_START,
+
+    /**
+     * @brief NAT Inside Zone ID
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ATTR_FROM_ZONE_ID,
+
+    /**
+     * @brief NAT Outside Zone ID
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ATTR_TO_ZONE_ID,
+
+    /**
+     * @brief NAT rules in the group
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_NAT_RANGE
+     * @objects SAI_OBJECT_TYPE_NAT_ENTRY
      * @default empty
      */
-    SAI_NAT_ATTR_NAT_RANGE_OBJECT_LIST  = SAI_NAT_ATTR_START,
+    SAI_NAT_ATTR_NAT_ENTRY_LIST,
 
     /**
-     * @brief NAT timeout in milliseconds
-     *
-     * @type sai_uint32_t
+     * @brief NAT counter in the group
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
-     * @default 100
+     * @objects SAI_OBJECT_TYPE_NAT_COUNTER
+     * @default empty
      */
-    SAI_NAT_ATTR_TIMEOUT,
-
-    /**
-     * @brief NAT port translation
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default true
-     */
-    SAI_NAT_ATTR_PORT_TRANSLATION,
+    SAI_NAT_ATTR_NAT_COUNTER_LIST,
 
     /**
      * @brief End of Attributes
@@ -268,10 +459,15 @@ typedef struct _sai_nat_api_t
     sai_set_nat_attribute_fn                       set_nat_attribute;
     sai_get_nat_attribute_fn                       get_nat_attribute;
 
-    sai_create_nat_range_fn                        create_nat_range;
-    sai_remove_nat_range_fn                        remove_nat_range;
-    sai_set_nat_range_attribute_fn                 set_nat_range_attribute;
-    sai_get_nat_range_attribute_fn                 get_nat_range_attribute;
+    sai_create_nat_entry_fn                        create_nat_entry;
+    sai_remove_nat_entry_fn                        remove_nat_entry;
+    sai_set_nat_entry_attribute_fn                 set_nat_entry_attribute;
+    sai_get_nat_entry_attribute_fn                 get_nat_entry_attribute;
+
+    sai_create_nat_counter_fn                      create_nat_counter;
+    sai_remove_nat_counter_fn                      remove_nat_counter;
+    sai_set_nat_counter_attribute_fn               set_nat_counter_attribute;
+    sai_get_nat_counter_attribute_fn               get_nat_counter_attribute;
 } sai_nat_api_t;
 
 /**

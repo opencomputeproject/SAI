@@ -269,6 +269,15 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_IS_VIRTUAL,
 
     /**
+     * @brief NAT Zone ID
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ROUTER_INTERFACE_ATTR_NAT_ZONE_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,

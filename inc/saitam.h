@@ -1560,8 +1560,8 @@ typedef void (*sai_tam_event_notification_fn)(
  * @brief TAM telemetry data get API
  *
  * @param[in] switch_id SAI Switch object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
+ * @param[in] obj_list SAI Switch object list
+ * @param[in] clear_on_read Flag to clear the read data
  * @param[inout] buffer_size Actual buffer size in bytes
  * @param[out] buffer Data buffer
  *
@@ -1569,8 +1569,8 @@ typedef void (*sai_tam_event_notification_fn)(
  */
 sai_status_t sai_tam_telemetry_get_data(
         _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list,
+        _In_ sai_object_list_t obj_list,
+        _In_ bool clear_on_read,
         _Inout_ sai_size_t *buffer_size,
         _Out_ void *buffer);
 
