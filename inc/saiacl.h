@@ -234,6 +234,9 @@ typedef enum _sai_acl_action_type_t
     /** Enable insertion of INT metadata */
     SAI_ACL_ACTION_TYPE_INSERT_INT,
 
+    /** Bind a TAM INT object */
+    SAI_ACL_ACTION_TYPE_TAM_INT,
+
     /** Enable deletion of INT metadata */
     SAI_ACL_ACTION_TYPE_DELETE_INT,
 
@@ -2090,6 +2093,22 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_INSERT_INT,
+
+    /**
+     * @brief ACL bind point for TAM INT object
+     *
+     * Bind (or unbind) a TAM INT object.
+     * Note that an ACL entry may bind a TAM INT object, or conversely a
+     * TAM INT object may bind an ACL table or ACL group. In the latter
+     * case, SAI_NULL_OBJECT_ID should be assigned as the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_INT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TAM_INT,
 
     /**
      * @brief Enable INT metadata deletion
