@@ -237,24 +237,27 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_BRIDGE_PORT              = 58,
     SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY         = 59,
     SAI_OBJECT_TYPE_TAM                      = 60,
-    SAI_OBJECT_TYPE_TAM_STAT                 = 61,
-    SAI_OBJECT_TYPE_TAM_SNAPSHOT             = 62,
-    SAI_OBJECT_TYPE_TAM_TRANSPORTER          = 63,
-    SAI_OBJECT_TYPE_TAM_THRESHOLD            = 64,
-    SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST     = 65,
-    SAI_OBJECT_TYPE_PORT_POOL                = 66,
-    SAI_OBJECT_TYPE_INSEG_ENTRY              = 67,
-    SAI_OBJECT_TYPE_TAM_HISTOGRAM            = 68,
-    SAI_OBJECT_TYPE_TAM_MICROBURST           = 69,
-    SAI_OBJECT_TYPE_DTEL                     = 70, /**< experimental */
-    SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT        = 71, /**< experimental */
-    SAI_OBJECT_TYPE_DTEL_INT_SESSION         = 72, /**< experimental */
-    SAI_OBJECT_TYPE_DTEL_REPORT_SESSION      = 73, /**< experimental */
-    SAI_OBJECT_TYPE_DTEL_EVENT               = 74, /**< experimental */
-    SAI_OBJECT_TYPE_BFD_SESSION              = 75,
-    SAI_OBJECT_TYPE_ISOLATION_GROUP          = 76,
-    SAI_OBJECT_TYPE_ISOLATION_GROUP_MEMBER   = 77,
-    SAI_OBJECT_TYPE_MAX                      = 78,
+    SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST     = 61,
+    SAI_OBJECT_TYPE_PORT_POOL                = 62,
+    SAI_OBJECT_TYPE_INSEG_ENTRY              = 63,
+    SAI_OBJECT_TYPE_DTEL                     = 64, /**< experimental */
+    SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT        = 65, /**< experimental */
+    SAI_OBJECT_TYPE_DTEL_INT_SESSION         = 66, /**< experimental */
+    SAI_OBJECT_TYPE_DTEL_REPORT_SESSION      = 67, /**< experimental */
+    SAI_OBJECT_TYPE_DTEL_EVENT               = 68, /**< experimental */
+    SAI_OBJECT_TYPE_BFD_SESSION              = 69,
+    SAI_OBJECT_TYPE_ISOLATION_GROUP          = 70,
+    SAI_OBJECT_TYPE_ISOLATION_GROUP_MEMBER   = 71,
+    SAI_OBJECT_TYPE_TAM_MATH_FUNC            = 72,
+    SAI_OBJECT_TYPE_TAM_REPORT               = 73,
+    SAI_OBJECT_TYPE_TAM_EVENT_THRESHOLD      = 74,
+    SAI_OBJECT_TYPE_TAM_TEL_TYPE             = 75,
+    SAI_OBJECT_TYPE_TAM_TRANSPORT            = 76,
+    SAI_OBJECT_TYPE_TAM_TELEMETRY            = 77,
+    SAI_OBJECT_TYPE_TAM_COLLECTOR            = 78,
+    SAI_OBJECT_TYPE_TAM_EVENT_ACTION         = 79,
+    SAI_OBJECT_TYPE_TAM_EVENT                = 80,
+    SAI_OBJECT_TYPE_MAX                      = 81,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -730,6 +733,28 @@ typedef enum _sai_acl_bind_point_type_t
     SAI_ACL_BIND_POINT_TYPE_SWITCH
 
 } sai_acl_bind_point_type_t;
+
+/**
+ * @brief Attribute data for SAI_TAM_TABLE_ATTR_BIND_POINT
+ */
+typedef enum _sai_tam_bind_point_type_t
+{
+    /** Bind Point Type Queue */
+    SAI_TAM_BIND_POINT_TYPE_QUEUE,
+
+    /** Bind Point Type Port */
+    SAI_TAM_BIND_POINT_TYPE_PORT,
+
+    /** Bind Point Type LAG */
+    SAI_TAM_BIND_POINT_TYPE_LAG,
+
+    /** Bind Point Type VLAN */
+    SAI_TAM_BIND_POINT_TYPE_VLAN,
+
+    /** Bind Point Type Switch */
+    SAI_TAM_BIND_POINT_TYPE_SWITCH
+
+} sai_tam_bind_point_type_t;
 
 /**
  * @brief Structure for ACL Resource Count

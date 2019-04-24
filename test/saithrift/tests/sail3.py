@@ -2026,6 +2026,441 @@ class L3SubPortAndVLANRifTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port1, attr)
 
+@group('mtu')
+class L3MtuTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        """
+        Description:
+        Send L3 destined packet with max interface MTU and verify forwarding. With L3
+        destined packet, verifying the forwarding behavior also ensures IP MTU value
+        configured for the router interface. Increase the packet size beyond the
+        configured MTU value and verify the behavior. Default action is to drop
+        packets exceeding configured MTU
+
+        Steps:
+        Part 1:
+           1. Create virtual router V1.
+           2. Create two  router interface R1 and R2.
+           3. Create next-hop and route.
+           4. Set IP mtu 1500 for router interface R1 and R2.
+           5. Send L3 IP packet of size 1500 bytes. (or packet size as per MTU size.) to port R2
+
+        Part 2:
+           6. Send Oversized packet (Packet size > MTU) to port R2.
+
+        """
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        v4_enabled = 1
+        v6_enabled = 1
+        mac = ''
+        port_mtu = 1500
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
+
+        attr_mtu_value = sai_thrift_attribute_value_t(u32=port_mtu)
+        attr_mtu = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_MTU, value=attr_mtu_value)
+        self.client.sai_thrift_set_router_interface_attribute(rif_id1, attr_mtu)
+        self.client.sai_thrift_set_router_interface_attribute(rif_id2, attr_mtu)
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1 = '10.10.10.1'
+        ip_addr1_subnet = '10.10.10.0'
+        ip_mask1 = '255.255.255.0'
+        dmac1 = '00:11:22:33:44:55'
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
+
+        # send the test packet(s)
+        pkt1 = simple_ip_packet(pktlen=1500,
+                                eth_dst=router_mac,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+
+        exp_pkt1 = simple_ip_packet(pktlen=1500,
+                                eth_dst='00:11:22:33:44:55',
+                                eth_src=router_mac,
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=63)
+
+        pkt2 = simple_ip_packet(pktlen=1600,
+                                eth_dst=router_mac,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+
+        exp_pkt2 = simple_ip_packet(pktlen=1600,
+                                eth_dst='00:11:22:33:44:55',
+                                eth_src=router_mac,
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=63)
+        try:
+            send_packet(self, 1, str(pkt1))
+            verify_packet(self, exp_pkt1, 0)
+            # send ip packet to interface 1 to interface 0 (Packet size > MTU)
+            send_packet(self, 1, str(pkt2))
+            verify_no_packet(self, exp_pkt2, 0)
+        finally:
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
+
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+
+@group('l3')
+class L3IPv4NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        """
+        Description:
+        Create two VLAN router interfaces in the same VRF. Create nhop, route and
+        neighbor entry for destination. Send packet on one router interface and
+        verify packet received on the other router interface. Simulate a MAC address
+        change for the neighbor entry and verify traffic. The packet must now be
+        forwarded with the new MAC address as destination MAC
+
+        Steps:
+        1. Create VLAN 100, 200 in the database
+        2. Associate 2 tagged ports (port 1, 2) as the member port of VLAN 100 and 200 respectively.
+        3. Create Virtual router V1 and enable IPv4.
+        4. Create two virtual router interfaces and set the interface type as VLAN
+        5. Create IPv4 neighbor entry with MAC1 and asociate with ""RIF Id1"".
+        6. Create next hop, route to reach the neighbor (MAC1).
+        7. Send test packet from port 1 with src_mac = MAC1 address and dst_mac = router MAC.
+        8. Send traffic on port 2 and observe traffic forwarding to port 1.
+        9. Change the neighbor attribute to update with new MAC (MAC3)
+        10. Send IPv4 packet from port 1 with src_mac = MAC1 address and ensure its dropped by DUT.
+        11. Change the source MAC address (MAC3) and send the ARP packet from port 1 and learn FDB entry with MAC3.
+        12. Send IP packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
+        13. Remove the router interface and change the port attribute to default VLAN.
+        14. Remove the vlan members and VLAN 100,200 from the database.
+        """
+
+        print "Sending packet port 1 -> switch (for learning purpuse)"
+        print "Sending packet from port 2 (11.11.11.1) -> port 1 (192.168.0.1 through the router)"
+
+        switch_init(self.client)
+        v4_enabled = 1
+        v6_enabled = 0
+        vlan_id1 = 100
+        vlan_id2 = 200
+        port1 = port_list[0]
+        port2 = port_list[1]
+        mac_action = SAI_PACKET_ACTION_FORWARD
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1 = '10.10.10.1'
+        ip_addr_subnet = '192.168.0.0'
+        ip_mask1 = '255.255.255.0'
+        mac_port1 = '00:0a:00:00:00:01'
+        mac_port2 = '00:0a:00:00:00:02'
+        mac_port3 = '00:0a:00:00:00:03'
+        mac1 = ''
+        mac2 = ''
+        mac3 = ''
+
+        vlan1 = sai_thrift_create_vlan(self.client, vlan_id1)
+        vlan2 = sai_thrift_create_vlan(self.client, vlan_id2)
+
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan1, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan2, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        attr_value1 = sai_thrift_attribute_value_t(u16=vlan_id1)
+        attr1 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value1)
+        self.client.sai_thrift_set_port_attribute(port1, attr1)
+
+        attr_value2 = sai_thrift_attribute_value_t(u16=vlan_id2)
+        attr2 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value2)
+        self.client.sai_thrift_set_port_attribute(port2, attr2)
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif_vlan_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan1, v4_enabled, v6_enabled, mac1)
+        rif_vlan_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan2, v4_enabled, v6_enabled, mac2)
+
+        sai_thrift_create_neighbor(self.client, addr_family, rif_vlan_id1, ip_addr1, mac_port1)
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_vlan_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
+
+        arp_req_pkt = simple_arp_packet(eth_dst='ff:ff:ff:ff:ff:ff',
+                                        eth_src=mac_port1,
+                                        vlan_vid=100,
+                                        arp_op=1,     # ARP request
+                                        ip_snd='10.10.10.1',
+                                        ip_tgt='10.10.10.2',
+                                        hw_snd=mac_port1,
+                                        hw_tgt='00:00:00:00:00:00')
+
+
+        print "Send ARP request packet from port1 ..."
+        send_packet(self, 0, str(arp_req_pkt))
+
+        try:
+
+            #sending L3 packet from port 2 through router to port 1 that update the fdb with is MAC
+            L3_pkt = simple_tcp_packet(pktlen=144,
+                                       eth_dst=router_mac,
+                                       eth_src=mac_port2,
+                                       ip_src='11.11.11.1',
+                                       ip_dst='192.168.0.1',
+                                       dl_vlan_enable=True,
+                                       vlan_vid=vlan_id2,
+                                       ip_id=105,
+                                       ip_ttl=64)
+
+            exp_pkt = simple_tcp_packet(pktlen=144,
+                                       eth_dst=mac_port1,
+                                       eth_src=router_mac,
+                                       ip_dst='192.168.0.1',
+                                       ip_src='11.11.11.1',
+                                       dl_vlan_enable=True,
+                                       vlan_vid=vlan_id1,
+                                       ip_id=105,
+                                       ip_ttl=63)
+
+            send_packet(self, 1, str(L3_pkt))
+
+            verify_packets(self, exp_pkt, [0])
+
+            # Change the neighbor attribute to update with new MAC
+            sai_thrift_set_neighbor_attribute(self.client, addr_family, rif_vlan_id1, ip_addr1, mac_port3)
+
+            print "Expect no packet with Dst MAC1 after neighbor attribute set to MAC3"
+            send_packet(self, 1, str(L3_pkt))
+            verify_no_packet(self, exp_pkt, 0)
+
+            # learn mac MAC3
+            arp_req_pkt2 = simple_arp_packet(eth_dst='ff:ff:ff:ff:ff:ff',
+                                        eth_src=mac_port3,
+                                        vlan_vid=vlan_id1,
+                                        arp_op=1,     # ARP request
+                                        ip_snd='10.10.10.1',
+                                        ip_tgt='10.10.10.2',
+                                        hw_snd=mac_port3,
+                                        hw_tgt='00:00:00:00:00:00')
+
+            send_packet(self, 0, str(arp_req_pkt2))
+
+            L3_pkt1 = simple_tcp_packet(pktlen=104,
+                                       eth_dst=router_mac,
+                                       eth_src=mac_port2,
+                                       ip_dst='192.168.0.1',
+                                       ip_src='11.11.11.1',
+                                       dl_vlan_enable=True,
+                                       vlan_vid=vlan_id2,
+                                       ip_id=105,
+                                       ip_ttl=64)
+            exp_pkt1 = simple_tcp_packet(pktlen=104,
+                                       eth_dst=mac_port3,
+                                       eth_src=router_mac,
+                                       dl_vlan_enable=True,
+                                       vlan_vid=vlan_id1,
+                                       ip_dst='192.168.0.1',
+                                       ip_src='11.11.11.1',
+                                       ip_id=105,
+                                       ip_ttl=63)
+
+            send_packet(self, 1, str(L3_pkt1))
+            verify_packets(self, exp_pkt1, [0])
+
+        finally:
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan1)
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan2)
+
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_vlan_id1, ip_addr1, mac_port3)
+
+            self.client.sai_thrift_remove_router_interface(rif_vlan_id1)
+            self.client.sai_thrift_remove_router_interface(rif_vlan_id2)
+
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+
+            self.client.sai_thrift_remove_vlan(vlan1)
+            self.client.sai_thrift_remove_vlan(vlan2)
+
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+
+@group('l3')
+class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        """
+        Description:
+        Same as "L3IPv4NeighborMacTest" but for IPv6 neighbor
+
+        Steps:
+        1. Create VLAN 100, 200 in the database
+        2. Associate 2 tagged ports (port 1, 2) as the member port of VLAN 100 and 200 respectively.
+        3. Create Virtual router V1 and enable IPv6.
+        4. Create two virtual router interfaces and set the interface type as VLAN
+        5. Create IPv6 neighbor entry with MAC1 and asociate with ""RIF Id1"".
+        6. Create next hop, route to reach the neighbor (MAC1).
+        7. Send test packet from port 1 with src_mac = MAC1 address and dst_mac = router MAC.
+        8. Send traffic on port 2 and observe traffic forwarding to port 1.
+        9. Change the neighbor attribute to update with new MAC (MAC3)
+        10. Send IPv6 packet from port 1 with src_mac = MAC1 address and ensure its dropped by DUT.
+        11. Change the source MAC address (MAC3) and send the broadcast packet from port 1 and learn FDB entry with MAC3.
+        12. Send IPv6 packet from port 2 and verify the traffic forwarded to port 1 with new MAC address (MAC3) as destination MAC.
+        13. Remove the router interface and change the port attribute to default VLAN.
+        14. Remove the vlan members and VLAN 100,200 from the database.
+        """
+        print
+        print "Sending packet port 2 -> port 1 (2001:1111::1 -> 3001:1000::1) \n"
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        v4_enabled = 0
+        v6_enabled = 1
+        vlan1_id = 100
+        vlan2_id = 200
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV6
+        ip_addr1 = '2001:1000::1'
+        ip_addr_subnet = '3001:1000::0'
+        ip_mask1 = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000'
+        dmac1 = '00:0a:00:00:00:01'
+        dmac2 = '00:0b:00:00:00:01'
+        mac1 = ''
+        dmac3 = '00:0c:00:00:00:01'
+
+        vlan1_oid = sai_thrift_create_vlan(self.client, vlan1_id)
+        vlan2_oid = sai_thrift_create_vlan(self.client, vlan2_id)
+
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan1_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan2_oid, port2, SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        attr_value = sai_thrift_attribute_value_t(u16=vlan1_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+
+        attr_value1 = sai_thrift_attribute_value_t(u16=vlan2_id)
+        attr1 = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value1)
+        self.client.sai_thrift_set_port_attribute(port2, attr1)
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan1_oid, v4_enabled, v6_enabled, mac1)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan2_oid, v4_enabled, v6_enabled, mac1)
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
+
+        try:
+
+            test_pkt = simple_tcpv6_packet(eth_dst='ff:ff:ff:ff:ff:ff',
+                                 eth_src=dmac1,
+                                 ipv6_dst='2001:1000::2',
+                                 ipv6_src='2001:1000::1',
+                                 dl_vlan_enable=True,
+                                 vlan_vid=100,
+                                 ipv6_hlim=64)
+
+            print "Send Broadcast packet from port1 to learn MAC1 using test packet..."
+            print "Sending packet from port 2 -> port 1 (through the router) \n"
+            send_packet(self, 0, str(test_pkt))
+
+            time.sleep(1)
+
+            pkt = simple_tcpv6_packet(
+                                eth_dst=router_mac,
+                                eth_src=dmac2,
+                                ipv6_dst='3001:1000::1',
+                                ipv6_src='2001:1111::1',
+                                dl_vlan_enable=True,
+                                vlan_vid=vlan2_id,
+                                ipv6_hlim=64)
+
+            exp_pkt = simple_tcpv6_packet(
+                                eth_dst=dmac1,
+                                eth_src=router_mac,
+                                ipv6_dst='3001:1000::1',
+                                ipv6_src='2001:1111::1',
+                                dl_vlan_enable=True,
+                                vlan_vid=vlan1_id,
+                                ipv6_hlim=63)
+
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt, [0])
+            # Update the neighbor MAC entry
+            sai_thrift_set_neighbor_attribute(self.client, addr_family, rif_id1, ip_addr1, dmac3)
+
+            print "Expect no packet with Dst MAC1 after neighbor attribute set to MAC3"
+            send_packet(self, 1, str(pkt))
+            verify_no_packet(self, exp_pkt, 0)
+
+            # Construct test packet with new MAC
+            test_pkt = simple_tcpv6_packet(eth_dst='ff:ff:ff:ff:ff:ff',
+                                 eth_src=dmac3,
+                                 ipv6_dst='2001:1000::2',
+                                 ipv6_src='2001:1000::1',
+                                 dl_vlan_enable=True,
+                                 vlan_vid=100,
+                                 ipv6_hlim=64)
+
+            print "Send Broadcast packet from port1 to learn MAC3 using test packet..."
+
+            send_packet(self, 0, str(test_pkt))
+            time.sleep(1)
+            exp_pkt1 = simple_tcpv6_packet(
+                                eth_dst=dmac3,
+                                eth_src=router_mac,
+                                ipv6_dst='3001:1000::1',
+                                ipv6_src='2001:1111::1',
+                                dl_vlan_enable=True,
+                                vlan_vid=vlan1_id,
+                                ipv6_hlim=63)
+
+            send_packet(self, 1, str(pkt))
+            verify_packets(self, exp_pkt1, [0])
+
+        finally:
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan1_oid)
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan2_oid)
+
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac3)
+
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
+
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+
+            self.client.sai_thrift_remove_vlan(vlan1_oid)
+            self.client.sai_thrift_remove_vlan(vlan2_oid)
+
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+            
 @group('l3')
 class L3DirectedBroadcast (sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
@@ -2044,7 +2479,7 @@ class L3DirectedBroadcast (sai_base_test.ThriftInterfaceDataPlane):
         existing member port from VLAN.
 
         Steps:
-        Part 1 : Directed Broadcast  in Transit Switch:
+        Part 1 : Directed Broadcast in Transit Switch:
         1. Create virtual router V1 and enable IPv4.
         2. Create two virtual router interfaces RIF Id1 and RIF Id2 and set the interface type as PORT.
         3. Create IPv4 neighbor entry (12.0.0.2) with MAC1 and associate with "RIF id 1".

@@ -291,6 +291,9 @@ public:
               case SAI_PORT_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
+              case SAI_PORT_ATTR_MTU:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
               default:
                   break;
           }
@@ -400,6 +403,10 @@ public:
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_ROUTER_INTERFACE_ATTR_MTU:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
               default:
                   break;
           }
@@ -1338,6 +1345,23 @@ public:
       }
       sai_thrift_parse_neighbor_entry(thrift_neighbor_entry, &neighbor_entry);
       status = neighbor_api->remove_neighbor_entry(&neighbor_entry);
+      return status;
+  }
+
+  sai_thrift_status_t sai_thrift_set_neighbor_entry_attribute(const sai_thrift_neighbor_entry_t& thrift_neighbor_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr) {
+      printf("sai_thrift_set_neighbor_entry_attribute\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_neighbor_api_t *neighbor_api;
+      status = sai_api_query(SAI_API_NEIGHBOR, (void **) &neighbor_api);
+      sai_neighbor_entry_t neighbor_entry;
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_thrift_parse_neighbor_entry(thrift_neighbor_entry, &neighbor_entry);
+      sai_attribute_t *attr= (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr.size());
+      sai_thrift_parse_neighbor_attributes(thrift_attr, attr);
+      status = neighbor_api->set_neighbor_entry_attribute(&neighbor_entry, attr);
+      free(attr);
       return status;
   }
 
@@ -3107,6 +3131,16 @@ public:
       thrift_port_status.id = SAI_PORT_ATTR_OPER_STATUS;
       thrift_port_status.value.s32 =  port_oper_status_attribute.value.s32;
       attr_list.push_back(thrift_port_status);
+
+      sai_attribute_t port_mtu_status_attribute;
+      sai_thrift_attribute_t thrift_port_mtu;
+      port_mtu_status_attribute.id = SAI_PORT_ATTR_MTU;
+      port_api->get_port_attribute(port_id, 1, &port_mtu_status_attribute);
+
+      thrift_attr_list.attr_count = 6;
+      thrift_port_mtu.id = SAI_PORT_ATTR_MTU;
+      thrift_port_mtu.value.u32 =  port_mtu_status_attribute.value.u32;
+      attr_list.push_back(thrift_port_mtu);
   }
 
   void sai_thrift_get_queue_stats(std::vector<int64_t> & thrift_counters,
