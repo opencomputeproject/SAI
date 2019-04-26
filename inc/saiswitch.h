@@ -581,6 +581,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
 
     /**
+     * @brief Max number of STP instances that NPU supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_STP_INSTANCE,
+
+    /**
      * @brief Default SAI Virtual Router ID
      *
      * Must return #SAI_STATUS_OBJECT_IN_USE when try to delete this VR ID.
