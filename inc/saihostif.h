@@ -317,6 +317,18 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x00004004,
 
+    /**
+     * @brief BFD traffic (UDP dst port == 3784 or UDP dst port == 4784) to local
+     * router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFD = 0x00004005,
+
+    /**
+     * @brief BFDV6 traffic (UDP dst port == 3784 or UDP dst port == 4784) to
+     * local router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFDV6 = 0x00004006,
+
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
 
