@@ -3301,6 +3301,25 @@ public:
     }
   }
 
+  void sai_thrift_get_buffer_pool_stats(std::vector<int64_t> &thrift_counters,
+                                        const sai_thrift_object_id_t buffer_pool_id,
+                                        const std::vector<sai_thrift_buffer_pool_stat_counter_t> &thrift_counter_ids) {
+      printf("sai_thrift_get_buffer_pool_stats\n");
+
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_buffer_api_t *buffer_api;
+      status = sai_api_query(SAI_API_BUFFER, (void **) &buffer_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return;
+      }
+
+      thrift_counters.reserve(thrift_counter_ids.size());
+      status = buffer_api->get_buffer_pool_stats((sai_object_id_t)buffer_pool_id,
+                                                 (uint32_t)thrift_counter_ids.size(),
+                                                 (sai_buffer_pool_stat_t *)thrift_counter_ids.data(),
+                                                 (uint64_t *)thrift_counters.data());
+  }
+
   sai_thrift_status_t sai_thrift_set_priority_group_attribute(const sai_thrift_object_id_t pg_id, const sai_thrift_attribute_t& thrift_attr) {
       printf("sai_thrift_set_priority_group_attribute\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
