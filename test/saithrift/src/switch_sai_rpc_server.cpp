@@ -3324,10 +3324,6 @@ public:
           SAI_THRIFT_LOG_ERR("Failed to get_buffer_pool_stats, status: %d", status);
           thrift_counters.resize(0);
       }
-      printf("thrift_counters size: %zu\n", thrift_counters.size());
-      for (int i = 0; i < thrift_counters.size(); i++) {
-          printf("thrift_counters index %d, value %ld\n", i, thrift_counters[i]);
-      }
   }
 
   sai_thrift_status_t sai_thrift_set_priority_group_attribute(const sai_thrift_object_id_t pg_id, const sai_thrift_attribute_t& thrift_attr) {
