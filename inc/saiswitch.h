@@ -1510,6 +1510,25 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PFC_DLR_PACKET_ACTION,
 
     /**
+     * @brief PFC Deadlock Detection timer polling interval range in milliseconds
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLD_TIMER_INTERVAL_RANGE,
+
+    /**
+     * @brief PFC Deadlock Detection timer polling interval in milliseconds.
+     *
+     * PFC Deadlock Detection timer polling interval
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLD_TIMER_INTERVAL,
+
+    /**
      * @brief  PFC Deadlock Detection timer interval range
      *
      * @type sai_u32_range_t

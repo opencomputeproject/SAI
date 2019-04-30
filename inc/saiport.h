@@ -1182,6 +1182,32 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SERDES_IPREDRIVER,
 
     /**
+     * @brief Enable ingress port rate
+     *
+     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_INGRESS_RATE,
+
+    /**
+     * @brief Enable egress port rate
+     *
+     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_EGRESS_RATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
