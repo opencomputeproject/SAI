@@ -593,34 +593,6 @@ typedef enum _sai_tam_int_attr_t
     SAI_TAM_INT_ATTR_METADATA_FRAGMENT_ENABLE,
 
     /**
-     * @brief Enable TAM INT flow reports
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_DIRECT_EXPORT
-     * @default disabled
-     */
-    SAI_TAM_INT_ATTR_REPORT_FLOW,
-
-    /**
-     * @brief Enable TAM INT drop reports
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_TAM_INT_ATTR_REPORT_DROPS,
-
-    /**
-     * @brief Enable TAM INT tail drop reports
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_TAM_INT_ATTR_REPORT_TAIL_DROPS,
-
-    /**
      * @brief TAM INT should report all packets without filtering
      *
      * @type bool
