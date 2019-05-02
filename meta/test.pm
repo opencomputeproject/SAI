@@ -248,7 +248,7 @@ sub CreateApiNameTest
         }
 
         WriteTest "    {";
-        WriteTest "        sai_${api}_api_t ${api}_api;";
+        WriteTest "        sai_${api}_api_t ${api}_api = { 0 };";
 
         if (defined $main::NON_OBJECT_ID_STRUCTS{$ot})
         {

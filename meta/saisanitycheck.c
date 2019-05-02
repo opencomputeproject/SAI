@@ -852,6 +852,8 @@ void check_attr_default_required(
                 break;
             }
 
+            META_MD_ASSERT_FAIL(md, "default value on chardata const");
+
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:

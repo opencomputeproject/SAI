@@ -757,14 +757,14 @@ void test_deserialize_ip_prefix()
     uint16_t ip6[] = { 0x1111, 0x2222, 0x3303, 0x4444, 0x5555, 0x6666, 0xaaaa, 0xbbbb };
     uint16_t mask[16];
 
-    memset(mask, 0xff, 16);
+    memset(mask, 0xff, sizeof(mask));
     res = sai_deserialize_ip_prefix("1111:2222:333:4444:5555:6666:aaaa:bbbb/128", &prefix);
     ASSERT_TRUE(prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV6, "expected true");
     ASSERT_TRUE(memcmp(prefix.addr.ip6, ip6, 16) == 0, "expected true");
     ASSERT_TRUE(memcmp(prefix.mask.ip6, mask, 16) == 0, "expected true");
     ASSERT_TRUE(res == (int)strlen("1111:2222:333:4444:5555:6666:aaaa:bbbb/128"), "expected true: %d", res);
 
-    memset(mask, 0, 16);
+    memset(mask, 0, sizeof(mask));
     memset(mask, 0xff, 8);
     ((uint8_t*)mask)[8] = 0x80;
 
@@ -777,7 +777,7 @@ void test_deserialize_ip_prefix()
     ASSERT_TRUE(memcmp(prefix.addr.ip6, ip6a, 16) == 0, "expected true");
     ASSERT_TRUE(memcmp(prefix.mask.ip6, mask, 16) == 0, "expected true");
 
-    memset(mask, 0, 16);
+    memset(mask, 0, sizeof(mask));
     res = sai_deserialize_ip_prefix("1::ff/0", &prefix);
     ASSERT_TRUE(prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV6, "expected true");
     ASSERT_TRUE(res == (int)strlen("1::ff/0"), "expected true");
@@ -787,7 +787,7 @@ void test_deserialize_ip_prefix()
 
     uint16_t ip6b[] = { 0, 0, 0, 0, 0, 0, 0, 0x100 };
 
-    memset(mask, 0xff, 16);
+    memset(mask, 0xff, sizeof(mask));
     res = sai_deserialize_ip_prefix("::1/128", &prefix);
     ASSERT_TRUE(prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV6, "expected true");
     ASSERT_TRUE(res == (int)strlen("::1/128"), "expected true");
