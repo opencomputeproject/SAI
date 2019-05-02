@@ -234,11 +234,14 @@ typedef enum _sai_acl_action_type_t
     /** Enable insertion of INT metadata */
     SAI_ACL_ACTION_TYPE_INSERT_INT,
 
-    /** Bind a TAM INT object */
-    SAI_ACL_ACTION_TYPE_TAM_INT,
-
     /** Enable deletion of INT metadata */
     SAI_ACL_ACTION_TYPE_DELETE_INT,
+
+    /** Enable reports of INT metadata */
+    SAI_ACL_ACTION_TYPE_REPORT_INT,
+
+    /** Bind a TAM INT object */
+    SAI_ACL_ACTION_TYPE_TAM_INT,
 
     /** Set isolation group to prevent traffic to members of isolation group */
     SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
@@ -2095,6 +2098,24 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_INSERT_INT,
 
     /**
+     * @brief Enable INT metadata deletion
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DELETE_INT,
+
+    /**
+     * @brief Enable INT metadata reports
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_REPORT_INT,
+
+    /**
      * @brief ACL bind point for TAM INT object
      *
      * Bind (or unbind) a TAM INT object.
@@ -2105,19 +2126,11 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_INT
+     * @condition SAI_ACL_ENTRY_ATTR_ACTION_INSERT_INT == true or SAI_ACL_ENTRY_ATTR_ACTION_DELETE_INT == true or SAI_ACL_ENTRY_ATTR_ACTION_REPORT_INT = true
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_ACL_ENTRY_ATTR_ACTION_TAM_INT,
-
-    /**
-     * @brief Enable INT metadata deletion
-     *
-     * @type sai_acl_action_data_t bool
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_ACTION_DELETE_INT,
 
     /**
      * @brief Set isolation group (isolation group object id)

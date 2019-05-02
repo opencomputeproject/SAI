@@ -289,6 +289,11 @@ typedef enum _sai_tam_event_threshold_unit_t
      * @brief Event threshold unit percent
      */
     SAI_TAM_EVENT_THRESHOLD_UNIT_PERCENT
+
+    /**
+     * @brief Event threshold unit cells
+     */
+    SAI_TAM_EVENT_THRESHOLD_UNIT_CELLS
 } sai_tam_event_threshold_unit_t;
 
 /**
@@ -573,6 +578,21 @@ typedef enum _sai_tam_int_attr_t
     SAI_TAM_INT_ATTR_P4_INT_INSTRUCTION_BITMAP,
 
     /**
+     * @brief Enable metadata fragmentation
+     *
+     * When there is insufficient space in the packet to add INT
+     * metadata for this hop (e.g. MTU would be exceeded), the device
+     * may remove the metadata from the packet, send a report to the
+     * collector, and insert its metadata before forwarding the packet.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @condition SAI_TAM_INT_ATTR_TYPE != SAI_TAM_INT_TYPE_DIRECT_EXPORT
+     * @default disabled
+     */
+    SAI_TAM_INT_ATTR_METADATA_FRAGMENT_ENABLE,
+
+    /**
      * @brief Enable TAM INT flow reports
      *
      * @type bool
@@ -644,7 +664,7 @@ typedef enum _sai_tam_int_attr_t
     SAI_TAM_INT_ATTR_ACL_GROUP,
 
     /**
-     * @brief Maximum number of hope allowed in the path
+     * @brief Maximum number of hops allowed in the path
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -704,15 +724,6 @@ typedef enum _sai_tam_int_attr_t
      * @default empty
      */
     SAI_TAM_INT_ATTR_COLLECTOR_LIST,
-
-    /**
-     * @brief DSCP value in reports generated for this TAM INT object
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_TAM_INT_ATTR_REPORT_DSCP_VALUE,
 
     /**
      * @brief Math function attached
@@ -1150,6 +1161,17 @@ typedef enum _sai_tam_report_attr_t
      * @default empty
      */
     SAI_TAM_REPORT_ATTR_HISTOGRAM_BIN_BOUNDARY,
+
+    /**
+     * @brief Maximum number of reports to generate after an event
+     *
+     * Note: The value 0 indicates that there is no quota
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_REPORT_ATTR_QUOTA,
 
     /**
      * @brief End of Attributes
