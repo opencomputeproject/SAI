@@ -335,7 +335,9 @@ typedef enum _sai_tunnel_ttl_mode_t
      *
      * Where the TTL field is preserved end-to-end by copying into the outer
      * header on encapsulation and copying from the outer header on
-     * decapsulation.
+     * decapsulation. This is applicable for inner IP packets. If the inner
+     * packet is a non-IP packet, then the value is undefined and implementaion
+     * can chose a valid/meaningful outer TTL value, say in the case of Vxlan encap.
      */
     SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL,
 
@@ -363,7 +365,9 @@ typedef enum _sai_tunnel_dscp_mode_t
      *
      * Where the DSCP field is preserved end-to-end by copying into the
      * outer header on encapsulation and copying from the outer header on
-     * decapsulation.
+     * decapsulation. This is applicable for inner IP packets. If the inner
+     * packet is a non-IP packet, then the value is undefined and implementaion
+     * can chose a valid/meaningful outer DSCP value, say in the case of Vxlan encap.
      */
     SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL,
 
