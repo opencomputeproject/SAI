@@ -36,93 +36,11 @@ sai_switch_api_t* sai_switch_api;
 
 std::map<std::string, std::string> gProfileMap;
 std::map<std::set<int>, std::string> gPortMap;
-std::map<std::sai_fdb_entry_t, std::sai_object_id_t>gFDB_map;
-std::map<std::sai_fdb_entry_t, std::sai_object_id_t>::iterator gFDB_mapIt;
-
-
 sai_object_id_t gSwitchId; ///< SAI switch global object ID.
 
 void on_switch_state_change(_In_ sai_object_id_t switch_id,
                             _In_ sai_switch_oper_status_t switch_oper_status)//
 {
-}
-
-void on_fdb_event(_In_ uint32_t count,
-                  _In_ sai_fdb_event_notification_data_t *data)           
-//Creating a fdb map which stores the entries learned,delete the flushed and aged entries .
-{
-  
-  	sai_fdb_event_t event_type;
-	  sai_fdb_entry_t fdb_entry;
-	  uint32_t attr_count;
-    sai_attribute_t *attr;
-    sai_object_id_t bv_id;	
-    sai_object_id_t bport_id;
-
-	  attr=data->attr;
-    event_type=data->event_type;
-    fdb_entry = data->fdb_entry;
-    bv_id =fdb_entry.bv_id;
-	  attr_count = data ->attr_count;
-
-    for (uint32_t i=0; i< attr_count; i++){
-         if(attr[i].id == SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID)
-               bport_id = attr[i].value.oid;
-      }
-           
-  	sai_fdb_entry_t fdb_m;
-	  sai_object_id_t b_id;
-	
-    if(event_type == SAI_FDB_EVENT_LEARNED)
-      {    
-        gFDB_map.insert(std::pair<std::sai_fdb_entry_t,std::sai_fdb_event_t(fdb_entry,bport_id));      
-      }  
-                
-		
-	  else if(event_type ==SAI_FDB_EVENT_FLUSHED )
-       {    
-        if ( bv_id == 0 && bport_id == 0 )
-			       gFDB_map.clear();	  
-        else{  
-             for(gFDB_mapIt = gFDB_map.begin() ; gFDB_mapIt!= gFDB_map.end() ; gFDB_mapIt++)
-                {  
-				           fdb_m = gFDB_mapIt->first;
-				           b_id = gFDB_mapIt->second; 				
-                  
-                   if(bport_id == 0 && bv_id == fdb_m.bv_id )
-						             gFDB_map.erase(gFDB_mapIt);
-
-					         else if(bv_id==0 && bport_id == b_id)
-						             gFDB_map.erase(gFDB_mapIt);
-					
-					         else if(bv_id == fdb_m.bv_id && bport_id == b_id)	
-						             gFDB_map.erase(gFDB_mapIt);	
-			            }
-	             }
-         }
-
-		else if(event_type == SAI_FDB_EVENT_MOVE)
-		{     
-			for(gFDB_mapIt = gFDB_map.begin() ; gFDB_mapIt!= gFDB_map.end() ; gFDB_mapIt++)
-				{                       
-				     fdb_m = gFDB_mapIt->first;
-			       if(fdb_entry.mac_address == fdb_m.mac_address && bv_id == fdb_m.bv_id)
-						 (*gFDB_mapIt).second =  bport_id ;
-        }
-     }
-
-
-
-    else{                 
-			for(gFDB_mapIt = gFDB_map.begin() ; gFDB_mapIt!= gFDB_map.end() ; gFDB_mapIt++)
-				  {                       
-				   fdb_m = gFDB_mapIt->first;
-	         if(fdb_entry.mac_address == fdb_m.mac_address && bv_id == fdb_m.bv_id)
-						     gFDB_map.erase(gFDB_mapIt);
-				  }
-
-			}
-
 }
 
 void on_port_state_change(_In_ uint32_t count,
