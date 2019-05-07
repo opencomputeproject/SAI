@@ -738,6 +738,29 @@ public:
       return status;
   }
 
+void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list) {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      std_sai_thrift_attr_vctr_t::const_iterator cit = thrift_attr_list.begin();
+
+      for (sai_uint32_t i = 0; i < thrift_attr_list.size(); i++, cit++)
+      {
+          sai_thrift_attribute_t attribute = *cit;
+          attr_list[i].id = attribute.id;
+
+          switch (attribute.id)
+          {
+              case SAI_VLAN_ATTR_VLAN_ID:
+                  attr_list[i].value.u16 = attribute.value.u16;
+                  break;
+
+              default:
+                  SAI_THRIFT_LOG_ERR("Failed to parse VLAN attributes.");
+                  break;
+          }
+      }
+  }
+	
   void sai_thrift_parse_bridge_port_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
