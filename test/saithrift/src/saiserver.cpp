@@ -36,10 +36,16 @@ sai_switch_api_t* sai_switch_api;
 
 std::map<std::string, std::string> gProfileMap;
 std::map<std::set<int>, std::string> gPortMap;
+
 sai_object_id_t gSwitchId; ///< SAI switch global object ID.
 
 void on_switch_state_change(_In_ sai_object_id_t switch_id,
                             _In_ sai_switch_oper_status_t switch_oper_status)//
+{
+}
+
+void on_fdb_event(_In_ uint32_t count,
+                  _In_ sai_fdb_event_notification_data_t *data)
 {
 }
 
