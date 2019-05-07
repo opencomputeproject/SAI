@@ -738,7 +738,7 @@ public:
       return status;
   }
 
-void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list) {
+  void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list) {
       SAI_THRIFT_LOG_DBG("Called.");
 
       std_sai_thrift_attr_vctr_t::const_iterator cit = thrift_attr_list.begin();
@@ -760,7 +760,7 @@ void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_a
           }
       }
   }
-	
+
   void sai_thrift_parse_bridge_port_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
