@@ -288,7 +288,17 @@ typedef enum _sai_tam_event_threshold_unit_t
     /**
      * @brief Event threshold unit percent
      */
-    SAI_TAM_EVENT_THRESHOLD_UNIT_PERCENT
+    SAI_TAM_EVENT_THRESHOLD_UNIT_PERCENT,
+
+    /**
+     * @brief Event threshold unit byte count
+     */
+    SAI_TAM_EVENT_THRESHOLD_UNIT_BYTES,
+
+    /**
+     * @brief Event threshold unit packet count
+     */
+    SAI_TAM_EVENT_THRESHOLD_UNIT_PACKETS
 } sai_tam_event_threshold_unit_t;
 
 /**
@@ -1645,6 +1655,21 @@ typedef enum _sai_tam_event_type_t
      * For example, route table if 90% full can generate an event
      */
     SAI_TAM_EVENT_TYPE_RESOURCE_UTILIZATION,
+
+    /**
+     * @brief Ingress priority group shared occupancy threshold event
+     */
+    SAI_TAM_EVENT_TYPE_IPG_SHARED,
+
+    /**
+     * @brief Ingress priority group XOFF room threshold event
+     */
+    SAI_TAM_EVENT_TYPE_IPG_XOFF_ROOM,
+
+    /**
+     * @brief Buffer service pool threshold event
+     */
+    SAI_TAM_EVENT_TYPE_BSP,
 } sai_tam_event_type_t;
 
 /**

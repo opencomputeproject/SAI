@@ -66,6 +66,17 @@ typedef enum _sai_ingress_priority_group_attr_t
     SAI_INGRESS_PRIORITY_GROUP_ATTR_PORT,
 
     /**
+     * @brief TAM id
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_TAM,
+
+    /**
      * @brief PG index
      *
      * @type sai_uint8_t
@@ -294,6 +305,17 @@ typedef enum _sai_buffer_pool_attr_t
      * @default SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC
      */
     SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE,
+
+    /**
+     * @brief TAM id
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_BUFFER_POOL_ATTR_TAM,
 
     /**
      * @brief Shared headroom pool size in bytes for lossless traffic.
