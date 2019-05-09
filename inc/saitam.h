@@ -289,6 +289,11 @@ typedef enum _sai_tam_event_threshold_unit_t
      * @brief Event threshold unit percent
      */
     SAI_TAM_EVENT_THRESHOLD_UNIT_PERCENT
+
+    /**
+     * @brief Event threshold unit cells
+     */
+    SAI_TAM_EVENT_THRESHOLD_UNIT_CELLS
 } sai_tam_event_threshold_unit_t;
 
 /**
@@ -442,9 +447,19 @@ typedef enum _sai_tam_int_type_t
     SAI_TAM_INT_TYPE_IFA2,
 
     /**
-     * @brief INT type P4
+     * @brief INT type P4 INT v1
      */
-    SAI_TAM_INT_TYPE_P4
+    SAI_TAM_INT_TYPE_P4_INT_1,
+
+    /**
+     * @brief INT type P4 INT v2
+     */
+    SAI_TAM_INT_TYPE_P4_INT_2,
+
+    /**
+     * @brief Direct Export (aka postcard)
+     */
+    SAI_TAM_INT_TYPE_DIRECT_EXPORT
 
 } sai_tam_int_type_t;
 
@@ -485,22 +500,29 @@ typedef enum _sai_tam_int_attr_t
     SAI_TAM_INT_ATTR_IOAM_TRACE_TYPE,
 
     /**
-     * @brief Probe Marker 1
+     * @brief First 4 octets of Probe Marker value that indicates INT presence
      *
      * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1
+     * @flags CREATE_AND_SET
      */
-    SAI_TAM_INT_ATTR_IFA1_PB1,
+    SAI_TAM_INT_ATTR_INT_PRESENCE_PB1,
 
     /**
-     * @brief Probe Marker 2
+     * @brief Second 4 octets of Probe Marker value that indicates INT presence
      *
      * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1
+     * @flags CREATE_AND_SET
      */
-    SAI_TAM_INT_ATTR_IFA1_PB2,
+    SAI_TAM_INT_ATTR_INT_PRESENCE_PB2,
+
+    /**
+     * @brief DSCP value that indicates presence of INT in a packet
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_INT_PRESENCE_DSCP_VALUE,
 
     /**
      * @brief Inline or Clone mode
@@ -509,18 +531,16 @@ typedef enum _sai_tam_int_attr_t
      *
      * @type bool
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
      */
-    SAI_TAM_INT_ATTR_IFA2_INLINE,
+    SAI_TAM_INT_ATTR_INLINE,
 
     /**
-     * @brief Protocol value used for INT
+     * @brief L3 protocol value that indicates presence of INT in a packet
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
      */
-    SAI_TAM_INT_ATTR_PROTOCOL,
+    SAI_TAM_INT_ATTR_INT_PRESENCE_L3_PROTOCOL,
 
     /**
      * @brief Trace vector value
@@ -529,7 +549,7 @@ typedef enum _sai_tam_int_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @isvlan false
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
      * @default 0
      */
     SAI_TAM_INT_ATTR_TRACE_VECTOR,
@@ -542,10 +562,62 @@ typedef enum _sai_tam_int_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @isvlan false
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
      * @default 0
      */
     SAI_TAM_INT_ATTR_ACTION_VECTOR,
+
+    /**
+     * @brief P4 INT instruction bitmap
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_2
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_P4_INT_INSTRUCTION_BITMAP,
+
+    /**
+     * @brief Enable metadata fragmentation
+     *
+     * When there is insufficient space in the packet to add INT
+     * metadata for this hop (e.g. MTU would be exceeded), the device
+     * may remove the metadata from the packet, send a report to the
+     * collector, and insert its metadata before forwarding the packet.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @condition SAI_TAM_INT_ATTR_TYPE != SAI_TAM_INT_TYPE_DIRECT_EXPORT
+     * @default disabled
+     */
+    SAI_TAM_INT_ATTR_METADATA_FRAGMENT_ENABLE,
+
+    /**
+     * @brief TAM INT should report all packets without filtering
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_TAM_INT_ATTR_REPORT_ALL_PACKETS,
+
+    /**
+     * @brief TAM INT flow liveness period in seconds
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_INT_ATTR_FLOW_LIVENESS_PERIOD,
+
+    /**
+     * @brief Latency sensitivity for flow state change detection
+     * in units of 2^n nanoseconds
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_TAM_INT_ATTR_LATENCY_SENSITIVITY,
 
     /**
      * @brief INT bind point for ACL object
@@ -564,7 +636,7 @@ typedef enum _sai_tam_int_attr_t
     SAI_TAM_INT_ATTR_ACL_GROUP,
 
     /**
-     * @brief Maximum number of hope allowed in the path
+     * @brief Maximum number of hops allowed in the path
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -573,7 +645,7 @@ typedef enum _sai_tam_int_attr_t
     SAI_TAM_INT_ATTR_MAX_HOP_COUNT,
 
     /**
-     * @brief Maximum length of metadata stack, always word aligned
+     * @brief Maximum length of metadata stack, in units of 4 octet words
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -624,15 +696,6 @@ typedef enum _sai_tam_int_attr_t
      * @default empty
      */
     SAI_TAM_INT_ATTR_COLLECTOR_LIST,
-
-    /**
-     * @brief DSCP value
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_TAM_INT_ATTR_DSCP_VALUE,
 
     /**
      * @brief Math function attached
@@ -1070,6 +1133,17 @@ typedef enum _sai_tam_report_attr_t
      * @default empty
      */
     SAI_TAM_REPORT_ATTR_HISTOGRAM_BIN_BOUNDARY,
+
+    /**
+     * @brief Maximum number of reports to generate after an event
+     *
+     * Note: The value 0 indicates that there is no quota
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_REPORT_ATTR_QUOTA,
 
     /**
      * @brief End of Attributes
