@@ -1758,18 +1758,27 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PRE_SHUTDOWN,
 
     /**
-     * @brief NAT bind point
+     * @brief NAT zone counter bind point
      *
-     * Bind (or unbind) the NAT object.
+     * Bind (or unbind) the NAT zone counter object.
      * SAI_NULL_OBJECT_ID in the attribute value.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_NAT
+     * @objects SAI_OBJECT_TYPE_NAT_ZONE_COUNTER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_SWITCH_ATTR_NAT_OBJECT_ID,
+    SAI_SWITCH_ATTR_NAT_ZONE_COUNTER_OBJECT_ID,
+
+    /**
+     * @brief Enable NAT function
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_NAT_ENABLE,
 
     /**
      * @brief End of attributes

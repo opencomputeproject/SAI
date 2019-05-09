@@ -1,7 +1,21 @@
+SAI NAT Proposal
+-------------------------------------------------------------------------------
+ Title       | SAI Network Address Translation
+-------------|-----------------------------------------------------------------
+ Authors     | Jai Kumar, Broadcom Inc.
+ Status      | In review
+ Type        | Standards track
+ Created     | 04/15/2019
+ Updated     | 04/22/2019
+ SAI-Version | TBD
+
+-------------------------------------------------------------------------------
+
+
 # SAI NAT API
 This document proposes set of API to configure NAT feature. API set is generic to configure various types of NAT. Besides configuration there is a need to read the NAT table for aging. Reading of data is achieved using the TAM GET API.
 
-## NAT Types
+## 1.0 NAT Types
 In basic NAT, SNAT is performed for outbound (internal zone to public zone) traffic, and DNAT is performed for inbound (public zone to internal zone) traffic. XDuring outbound NAT processing, SNAT is performed and the SIP of the packet is replaced.
 
 In the reverse direction, DNAT operation is performed in which the DIP of the packet is replaced.
@@ -15,283 +29,283 @@ Network address port translation is very similar to basic NAT with addition of l
 - Double NAT
 Double NAT is a NAT variation in which both source and destination IP addresses are modified as a packet crosses the zone boundary. Double NAT is typically used to fully interconnect subnets in two incompatible address zones. One common case involves merging enterprise networks using private overlapping address spaces.
 
-## Configuring NAT zones
+## 2.0 Configuring NAT zones
 NAT zones are configured for translation. Only when packet crosses across NAT zones then NAT translation is done. SONiC will configure interfaces as a member of the zones. Zone ID is passed in the API setting up NAT rules.
 
 A new uint8_t Zone ID attribute is added in sai_router_interface_attr_t.
 > “SAI_ROUTER_INTERFACE_NAT_ZONE_ID”
 > set_router_interface_attribute() API is used to set the NAT Zone ID.
 
-## Enabling NAT in switch
-There is no separate API to enable NAT on a switch.
-SAI NAT driver should detect the presence of NAT object in switch object. If non NULL value is present in switch object for NAT then enable the HW global register with NAT.
+## 3.0 Enabling NAT in switch
+NAT feature is enabled at the switch level. SAI driver must handle this attribute and set corresponding HW register. Some of the settings can be
+-	Global config register
+-	Control settings for NAT miss packets for dynamic NAT
 
-Similarly detect the absence of NAT object in switch and if NULL then disable the HW global register for NAT.
+A new boolean field is added to sai_switch_attr in saiswitch.h
+> “SAI_SWITCH_ATTR_NAT_ENABLE”
+> set_switch_attribute() API is used to enable/disable NAT feature.
 
-## NAT Object Workflow
+## 4.0 Enable Traps for SNAT and DNAT Miss Packets
+Following two traps are added to hostif. Hostif driver MUST enable these traps for SNAT and DNAT miss in hw for receiving the packets. 
+SNAT/DNAT miss packets are received on a regular netdev channel to the application.
+
+- “SAI_HOSTIF_TRAP_TYPE_SNAT_MISS”
+- “SAI_HOSTIF_TRAP_TYPE_DNAT_MISS”
+
+## 5.0 NAT Object Workflow
 Following is a logical representation of SAI NAT objects
 
->Example 1: SNAT and DNAT
-From Zone ID: 100
+### 5.1 Example 1: Symmetric SNAT and DNAT
+> From Zone ID: 100
 To Zone ID: 200
 VRF: None
-STATIC_NAT|65.55.42.1:1024 
+Packet Count: Enable
+Byte Count: Enable
+ExternalEndpoint: 65.55.42.1:1024 
 InternalEndpoint: 10.0.0.1:6000
-STATIC_NAT|65.55.42.1:1025
-InternalEndpoint: 10.0.0.2:6000
-STATIC_NAT|65.55.42.1:1026
-InternalEndpoint: 10.0.0.3:6000
 
-##### Step 1: Create a Source NAT Entry object:
+##### Step 1: Create a Source and Destination NAT Entry object:
 ```sh
-# First Translation
-sai_nat_entry_attr_list[0].id = SAI_NAT_ENTRY_ATTR_FROM_IP;
-sai_nat_entry_attr_list[0].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[0].value.ipaddr.ip4 = 10.0.0.1; 
+sai_attribute_t nat_entry_attr[10];
+nat_entry_t snat_entry;
 
->sai_nat_entry_attr_list[1].id = SAI_NAT_ENTRY_ATTR_TO_IP;
-sai_nat_entry_attr_list[1].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[1].value.ipaddr.ip4 = 65.55.42.1; 
+nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
+nat_entry_attr[0].value = SAI_NAT_TYPE_SOURCE_NAT;
 
->sai_nat_entry_attr_list[2].id = SAI_NAT_ENTRY_ATTR_FROM_PORT;
-sai_nat_entry_attr_list[2].value.u16 = 6000;
+nat_entry_attr[1].id = SAI_NAT_ENTRY_ATTR_SRC_IP;
+nat_entry_attr[1].value.u32 = 65.55.42.1; //example string
 
-sai_nat_entry_attr_list[3].id = SAI_NAT_ENTRY_ATTR_TO _PORT;
-sai_nat_entry_attr_list[3].value.u16 = 1024;
+nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_L4_SRC_PORT;
+nat_entry_attr[2].value.u16 = 1024;
 
-sai_nat_entry_attr_list[4].id = SAI_NAT_ENTRY_ATTR_IP_PROTOCOL;
-sai_nat_entry_attr_list[4].value.u8 = 17; 
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
+nat_entry_attr[3].value.u32 = 200;
 
-# Second Translation
-sai_nat_entry_attr_list[5].id = SAI_NAT_ENTRY_ATTR_FROM_IP;
-sai_nat_entry_attr_list[5].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[5].value.ipaddr.ip4 = 10.0.0.2; 
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
+nat_entry_attr[4].value.u32 = 100;
 
-sai_nat_entry_attr_list[6].id = SAI_NAT_ENTRY_ATTR_TO_IP;
-sai_nat_entry_attr_list[6].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[6].value.ipaddr.ip4 = 65.55.42.1; 
+nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[5].value.bool = true;
 
-sai_nat_entry_attr_list[7].id = SAI_NAT_ENTRY_ATTR_FROM_PORT;
-sai_nat_entry_attr_list[7].value.u16 = 6000;
+nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[6].value.bool = true;
 
-sai_nat_entry_attr_list[8].id = SAI_NAT_ENTRY_ATTR_TO _PORT;
-sai_nat_entry_attr_list[8].value.u16 = 1025;
+attr_count = 7;
 
-sai_nat_entry_attr_list[9].id = SAI_NAT_ENTRY_ATTR_IP_PROTOCOL;
-sai_nat_entry_attr_list[9].value.u8 = 17; 
+memset(&snat_etnry, 0, sizeof(nat_etnry));
 
-# Third Translation
-sai_nat_entry_attr_list[10].id = SAI_NAT_ENTRY_ATTR_FROM_IP;
-sai_nat_entry_attr_list[10].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[10].value.ipaddr.ip4 = 10.0.0.3; 
+snat_entry.data.key.src_ip = 10.0.0.1;
+snat_entry.data.mask.src_ip = 0xffffffff;
+snat_entry.data.key.l4_src_port = 6000;
+snat_entry.data.mask.l4_src_port = 0xffff;
+snat_entry.data.key.proto = 17;
+snat_entry.data.mask.proto = 0xff;
 
-sai_nat_entry_attr_list[11].id = SAI_NAT_ENTRY_ATTR_TO_IP;
-sai_nat_entry_attr_list[11].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[11].value.ipaddr.ip4 = 65.55.42.1; 
 
-sai_nat_entry_attr_list[12].id = SAI_NAT_ENTRY_ATTR_FROM_PORT;
-sai_nat_entry_attr_list[12].value.u16 = 6000;
+create_nat_entry(&snat_entry, attr_count, nat_entry_attr);
 
-sai_nat_entry_attr_list[13].id = SAI_NAT_ENTRY_ATTR_TO _PORT;
-sai_nat_entry_attr_list[13].value.u16 = 1026;
-
-sai_nat_entry_attr_list[14].id = SAI_NAT_ENTRY_ATTR_IP_PROTOCOL;
-sai_nat_entry_attr_list[14].value.u8 = 17; 
-
-nat_entry_attr_count = 15;
-sai_create_nat_entry_fn(
-    &sai_src_nat_entry_obj,
-    switch_id,
-    nat_entry_attr_count,
-    sai_nat_entry_attr_list);
 ```
 
 ##### Step 2: Create a Destination NAT Entry object:
 ```sh
-# First Translation
-sai_nat_entry_attr_list[0].id = SAI_NAT_ENTRY_ATTR_FROM_IP;
-sai_nat_entry_attr_list[0].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[0].value.ipaddr.ip4 = 65.55.42.1; 
 
-sai_nat_entry_attr_list[1].id = SAI_NAT_ENTRY_ATTR_TO_IP;
-sai_nat_entry_attr_list[1].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[1].value.ipaddr.ip4 = 10.0.0.1; 
+sai_attribute_t nat_entry_attr[10];
+nat_entry_t dnat_entry;
 
-sai_nat_entry_attr_list[2].id = SAI_NAT_ENTRY_ATTR_FROM_PORT;
-sai_nat_entry_attr_list[2].value.u16 = 1024;
+nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
+nat_entry_attr[0].value = SAI_NAT_TYPE_DESTINATION_NAT;
 
-sai_nat_entry_attr_list[3].id = SAI_NAT_ENTRY_ATTR_TO _PORT;
-sai_nat_entry_attr_list[3].value.u16 = 6000; 
+nat_entry_attr[1].id = SAI_NAT_ENTRY_ATTR_DST_IP;
+nat_entry_attr[1].value.u32 = 10.0.0.1; //example string
 
-sai_nat_entry_attr_list[4].id = SAI_NAT_ENTRY_ATTR_IP_PROTOCOL;
-sai_nat_entry_attr_list[4].value.u8 = 17; 
+nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_L4_DST_PORT;
+nat_entry_attr[2].value.u16 = 6000;
 
-# Second Translation
-sai_nat_entry_attr_list[5].id = SAI_NAT_ENTRY_ATTR_FROM_IP;
-sai_nat_entry_attr_list[5].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[5].value.ipaddr.ip4 = 65.55.42.1; 
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
+nat_entry_attr[3].value.u32 = 100;
 
-sai_nat_entry_attr_list[6].id = SAI_NAT_ENTRY_ATTR_TO_IP;
-sai_nat_entry_attr_list[6].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[6].value.ipaddr.ip4 = 10.0.0.2; 
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
+nat_entry_attr[4].value.u32 =200;
 
-sai_nat_entry_attr_list[7].id = SAI_NAT_ENTRY_ATTR_FROM_PORT;
-sai_nat_entry_attr_list[7].value.u16 = 1025;
+nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[5].value.bool = true;
 
-sai_nat_entry_attr_list[8].id = SAI_NAT_ENTRY_ATTR_TO _PORT;
-sai_nat_entry_attr_list[8].value.u16 = 6000;
+nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[6].value.bool = true;
 
-sai_nat_entry_attr_list[9].id = SAI_NAT_ENTRY_ATTR_IP_PROTOCOL;
-sai_nat_entry_attr_list[9].value.u8 = 17; 
+attr_count = 7;
 
-# Third Translation
-sai_nat_entry_attr_list[10].id = SAI_NAT_ENTRY_ATTR_FROM_IP;
-sai_nat_entry_attr_list[10].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[10].value.ipaddr.ip4 = 65.55.42.1;  
+memset(&dnat_etnry, 0, sizeof(nat_etnry));
 
-sai_nat_entry_attr_list[11].id = SAI_NAT_ENTRY_ATTR_TO_IP;
-sai_nat_entry_attr_list[11].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-sai_nat_entry_attr_list[11].value.ipaddr.ip4 = 10.0.0.3; 
+dnat_entry.data.key.dst_ip = 65.55.42.1;
+dnat_entry.data.mask.dst_ip = 0xffffffff;
+dnat_entry.data.key.l4_dst_port = 1024;
+dnat_entry.data.mask.l4_dst_port = 0xffff;
+dnat_entry.data.key.proto = 17;
+dnat_entry.data.mask.proto = 0xff;
 
-sai_nat_entry_attr_list[12].id = SAI_NAT_ENTRY_ATTR_FROM_PORT;
-sai_nat_entry_attr_list[12].value.u16 = 1026;
+create_nat_entry(&dnat_entry, attr_count, nat_entry_attr);
 
-sai_nat_entry_attr_list[13].id = SAI_NAT_ENTRY_ATTR_TO _PORT;
-sai_nat_entry_attr_list[13].value.u16 = 6000;
-
-sai_nat_entry_attr_list[14].id = SAI_NAT_ENTRY_ATTR_IP_PROTOCOL;
-sai_nat_entry_attr_list[14].value.u8 = 17; 
-
-nat_entry_attr_count = 15;
-sai_create_nat_entry_fn(
-    &sai_dst_nat_entry_obj,
-    switch_id,
-    nat_entry_attr_count,
-    sai_nat_entry_attr_list);
 ```
 
-##### Step 3.1: Create a SNAT counter object:
+### 5.2 Example 2: Double NAT
+> From Zone ID: 100
+To Zone ID: 200
+VRF: None
+Packet Count: Enable
+Byte Count: Enable
+SNAT Entry
+ExternalEndpoint: 138.76.28.1 
+InternalEndpoint: 200.200.200.1
+DNAT Entry
+ExternalEndpoint: 200.200.200.100
+InternalEndpoint: 172.16.1.100
+
+##### Step 1: Create a Double NAT Entry:
 ```sh
-sai_nat_counter_list[0].id = SAI_NAT_COUNTER_ATTR_NAT_TYPE;
-sai_nat_counter_list[0].value.u32 = SAI_NAT_SOURCE_NAT;
+sai_attribute_t nat_entry_attr[10];
+nat_entry_t dbl_nat_entry;
 
-sai_nat_counter_list[1].id = SAI_NAT_COUNTER_ATTRZONE_ID;
-sai_nat_counter_list[1].value.u8 = 100; 
+nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
+nat_entry_attr[0].value = SAI_NAT_TYPE_DOUBLE_NAT;
 
-sai_nat_counter_list[2].id = SAI_NAT_COUNTER_ATTR_ENABLE_DISCARD;
-sai_nat_counter_list[2].value = true;
-sai_nat_counter_list[3].id = SAI_NAT_COUNTER_ATTR_ENABLE_TRANSLATION_NEEDED;
-sai_nat_counter_list[3].value = true;
+nat_entry_attr[1].id = SAI_NAT_ENTRY_ATTR_SRC_IP;
+nat_entry_attr[1].value.u32 = 138.76.28.1; //example string
 
-sai_nat_counter_list[4].id = SAI_NAT_COUNTER_ATTR_ENABLE_TRANSLATIONS;
-sai_nat_counter_list[4].value = true;
+nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_DST_IP;
+nat_entry_attr[2].value.u32 = 200.200.200.100; //example string
 
-nat_attr_count = 5;
-sai_create_nat_counter_fn(
-    &sai_src_nat_counter_obj,
-    switch_id,
-    nat_attr_count,
-    sai_nat_attr_list);
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
+nat_entry_attr[3].value.u32 = 100;
+
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
+nat_entry_attr[4].value.u32 =200;
+
+nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[5].value.bool = true;
+
+nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[6].value.bool = true;
+
+attr_count = 7;
+
+memset(&dbl_nat_etnry, 0, sizeof(nat_etnry));
+
+dbl_nat_entry.data.key.src_ip = 200.200.200.1;
+dbl_nat_entry.data.mask.src_ip = 0xffffffff;
+dbl_nat_entry.data.key.dst_ip = 172.16.1.100;
+dbl_nat_entry.data.mask.dst_ip = 0xffffffff;
+
+create_nat_entry(&dbl_nat_entry, attr_count, nat_entry_attr);
+
 ```
+## 6.0 NAT Exceptions
+NAT exceptions can be defined using the NAT entry. In that case they will be placed in the SNAT/DNAT table. Operator MUST consider defining the exceptions so as not to collide with other NAT entries.
+An override NAT exception can be created using the ACL rule. A new ACL action is defined in saiacl.h
 
-##### Step 3.2: Create a SNAT object:
+> SAI_ACL_ENTRY_ATTR_ACTION_NO_NAT
+
+In SAI pipeline if there is a ACL match with action NO_NAT and there is also a match in SNAT/DNAT table then ACL match result always takes precedence.
+
+### 6.1 NAT exception using NAT Entry
+> From Zone ID: 100
+To Zone ID: 200
+VRF: None
+SNAT Exclusion
+&nbsp;&nbsp;&nbsp;&nbsp;if (InternalEndpoint == 200.200.200.1:1023) AND (From_Zone == 100) AND (To_ZONE == 200)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NO_NAT
+##### Step 1: Create a SNAT Exception Entry:
 ```sh
-sai_nat_attr_list[0].id = SAI_NAT_ATTR_NAT_TYPE;
-sai_nat_attr_list[0].value.u32 = SAI_NAT_SOURCE_NAT;
+sai_attribute_t nat_entry_attr[10];
+nat_entry_t no_nat_entry;
 
-sai_nat_attr_list[1].id = SAI_NAT_ATTR_FROM_ZONE_ID;
-sai_nat_attr_list[1].value.u8 = 100; 
+nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
+nat_entry_attr[0].value = SAI_NAT_TYPE_NO_NAT;
 
-sai_nat_attr_list[2].id = SAI_NAT_ATTR_TO_ZONE_ID;
-sai_nat_attr_list[2].value.u8 = 200; 
+nat_entry_attr[1].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
+nat_entry_attr[1].value.u32 = 200;
 
-sai_nat_attr_list[3].id = SAI_NAT_ATTR_NAT_ENTRY_LIST;
-sai_nat_attr_list[3].value.objectlist.count = 1;
-sai_nat_attr_list[3].value.objectlist.list[0] = sai_src_nat_entry_obj; 
+nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
+nat_entry_attr[2].value.u32 =100;
 
-sai_nat_attr_list[4].id = SAI_NAT_ATTR_NAT_COUNTER_LIST;
-sai_nat_attr_list[4].value.objectlist.count = 1;
-sai_nat_attr_list[4].value.objectlist.list[0] = sai_src_nat_counter_obj; 
+attr_count = 3;
 
-nat_attr_count = 5;
-sai_create_nat_fn(
-    &sai_src_nat_obj,
-    switch_id,
-    nat_attr_count,
-    sai_nat_attr_list);
+memset(&no_nat_etnry, 0, sizeof(no_nat_etnry));
+no_nat_entry.data.key.src_ip = 200.200.200.1;
+no_nat_entry.data.mask.src_ip = 0xffffffff;
+no_nat_entry.data.key.l4_src_port = 1023;
+no_nat_entry.data.mask.l4_src_port = 0xffff;
+
+create_nat_entry(&no_nat_entry, attr_count, nat_entry_attr);
 ```
 
-##### Step 4: Create a DNAT object:
-```sh
-sai_nat_attr_list[0].id = SAI_NAT_ATTR_NAT_TYPE;
-sai_nat_attr_list[0].value.u32 = SAI_NAT_TYPE_DESTINATION_NAT;
 
-sai_nat_attr_list[1].id = SAI_NAT_ATTR_FROM_ZONE_ID;
-sai_nat_attr_list[1].value.u8 = 200; 
-
-sai_nat_attr_list[2].id = SAI_NAT_ATTR_TO_ZONE_ID;
-sai_nat_attr_list[2].value.u8 = 100; 
-
-sai_nat_attr_list[3].id = SAI_NAT_ATTR_NAT_ENTRY_LIST;
-sai_nat_attr_list[3].value.objectlist.count = 1; 
-sai_nat_attr_list[3].value.objectlist.list[0] = sai_dst_nat_entry_obj; 
-
-nat_attr_count = 4;
-    sai_create_nat_fn(
-    &sai_dst_nat_obj,
-    switch_id,
-    nat_attr_count,
-    sai_nat_attr_list);
-```
-## NAT Per flow and Zone Counters
+## NAT Per Zone Counters
 Following per zone statistics is provided by the hardware for NAT feature.
 - DNAT_DISACARDS/SNAT_DISCARDS – If Packet is not TCP/UDP and/or is a fragmentated IP packet. 
 - DNAT_TRANSLATION_NEEDED/SNAT_TRANSLATION_NEEDED – If there is NAT table lookup miss for TCP/UDP packets, then this counter is incremented.
 - DNAT_TRANSLATIONS/SNAT_TRANSLATIONS – If NAT table lookup is a hit, then this counter is incremented.
 
-Counters can be attached to per NAT entry to gather per flow statistics. Per NAT entry stat is enabled in the entry attributes.
-
-> Per zone counters are created using sai_create_nat_counter_fn() API.
-
-NAT counters can be extracted using TAM streaming interface or by using TAM GET API.
-This document proposes to use TAM GET API for time to market reasons. Same NAT counters and data format can be streamed as well using SAI TAM driver.
-
-## GET API for reading NAT Table entries and hit bit
-Besides NAT counters there is a HITBIT table as well which is used to age the NAT entries.
-
-Dynamic NAT entries for a given flow need to be aged once the flow ceases to exist. In this proposal aging is performed by the NOS. NOS retrieves the hitbit table periodically at a configured time aging interface. If the hitbit is not SET for a given entry, the entry is removed from the NAT table using the *sai_remove_nat_entry_fn()* API.
-
-HITBIT table data is retrieved using the TAM proposed generic GET API. 
-Advantage of using TAM GET API is that normalized data for the hitibit data can also be streamed to local NOS, or to an external collector or to multi chip system.
-Some hardware may not perform "clear on read" or NOS may want to control the operation "clear on read". For this reason a separate boolean attribute "CLEAR_ON_READ" is specified 
-
-TAM object is bound to NAT object for stats and hitbit table.
-
-Following is a simple GET API invocation for pulling NAT entry creates under source and destination nat entry objects. One or more objects can be specified in a single invocation. API is name 
-
-
-> sai_tam_telemetry_get_data(switch_id, objlist, clear_on_read, buffer_size, buffer);
-
-
-##### Invoke GET API
+##### Step 1: Create a NAT Zone Counter Object for Source NAT Zone 100:
 ```sh
-objlist.list[0].id = SAI_OBJECT_TYPE_NAT_ENTRY;
-objlist.list[0].value = sai_src_nat_obj;
-objlist.list[1].id = SAI_OBJECT_TYPE_NAT_ENTRY;
-objlist.list[1].value = sai_dst_nat_obj;
+sai_attribute_t nat_zone_counter_attr[10];
 
-objlist.count = 2;
+nat_zone_counter_attr[0].id = SAI_NAT_ZONE_COUNTER_ATTR_NAT_TYPE;
+nat_zone_counter _attr[0].value = SAI_NAT_TYPE_SOURCE_NAT;
 
-buffer_size = 2048; /* Bytes */
-buffer = malloc(buffer_size);
-sai_tam_telemetry_pull_data(
-    switch_id,
-    attr_count,
-    attr_list,
-    buffer_size,
-    buffer);
+nat_zone_counter_attr[1].id = SAI_NAT_ZONE_COUNTER_ATTR_ZONE_ID;
+nat_zone_counter_attr[1].value.u32 = 100;
+
+nat_zone_counter_attr[2].id = SAI_NAT_ZONE_COUNTER_ATTR_ENABLE_TRANSLATION_NEEDED;
+nat_zone_counter_attr[2].value.bool = true;
+
+nat_zone_counter_attr[3].id = SAI_NAT_ZONE_COUNTER_ATTR_ENABLE_DISCARD;
+nat_zone_counter_attr[3].value.bool = true;
+
+nat_zone_counter_attr[4].id = SAI_NAT_ZONE_COUNTER_ATTR_ENABLE_TRANSLATIONS;
+nat_zone_counter_attr[4].value.bool = true;
+
+attr_count = 5;
+
+nat_zone100_counter_id = 
+create_nat_zone_counter(switch_id, attr_count, nat_zone_counter_attr);
 ```
 
+
+## Get Hit Bit, NAT Zone and Per NAT Entry Stats
+Besides per NAT entry and per Zone counters there is hit bit value as. Hit bit is used to age the dynamic entries installed in HW.
+In this proposal aging is performed by the NOS. NOS retrieves the hitbit table periodically at a configured time aging interface. If the hitbit is not SET for a given entry, the entry is removed from the NAT table using the sai_remove_entry_fn() API.
+
+Per NAT entry stats and hit bit is retrieved by “get_nat_entry_attributes()”.
+##### Step 1: Read SNAT entry hit bit and packet/byte count:
+```sh
+sai_attribute_t nat_entry_attr[10];
+
+nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_HIT_BIT;
+
+nat_entry_attr[1].id = SAI_NAT_ENTRY_ATTR_BYTE_COUNT;
+
+nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_PACKET_COUNT;
+
+attr_count = 3;
+
+get_nat_entry_attributes(snat_entry, attr_count, nat_entry_attr);
+```
+
+##### Step 2: Read SNAT Zone 100 Translations Done Packet Count:
+```sh
+sai_attribute_t nat_zone_counter_attr[10];
+
+nat_zone_counter_attr[0].id = SAI_NAT_ZONE_COUNTER_ATTR_NAT_TYPE;
+nat_zone_counter _attr[0].value = SAI_NAT_TYPE_SOURCE_NAT;
+
+nat_zone_counter_attr[1].id = SAI_NAT_ZONE_COUNTER_ATTR_ZONE_ID;
+nat_zone_counter_attr[1].value.u32 = 100;
+
+nat_zone_counter_attr[2].id = SAI_NAT_ZONE_COUNTER_ATTR_TRANSLATIONS_PACKET_COUNT;
+
+get_nat_zone_counter_attributes(nat_zone100_counter_id, attr_count, nat_zone_counter_attr);
+```
 
 
 

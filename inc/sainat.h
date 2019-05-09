@@ -34,158 +34,6 @@
  */
 
 /**
- * @brief NAT Entry Attributes
- */
-typedef enum _sai_nat_entry_attr_t
-{
-
-    /**
-     * @brief Start of Attributes
-     */
-    SAI_NAT_ENTRY_ATTR_START,
-
-    /**
-     * @brief NAT IP address translated from
-     *
-     * @type sai_ip_address_t
-     * @flags CREATE_AND_SET
-     * @default 0.0.0.0
-     */
-    SAI_NAT_ENTRY_ATTR_FROM_IP = SAI_NAT_ENTRY_ATTR_START,
-
-    /**
-     * @brief NAT IP address translated to
-     *
-     * @type sai_ip_address_t
-     * @flags CREATE_AND_SET
-     * @default 0.0.0.0
-     */
-    SAI_NAT_ENTRY_ATTR_TO_IP,
-
-    /**
-     * @brief NAT Port address translated from
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
-     */
-    SAI_NAT_ENTRY_ATTR_FROM_PORT,
-
-    /**
-     * @brief NAT Port address translated to
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
-     */
-    SAI_NAT_ENTRY_ATTR_TO_PORT,
-
-    /**
-     * @brief IP Protocol
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_NAT_ENTRY_ATTR_IP_PROTOCOL,
-
-    /**
-     * @brief VRF ID
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_NAT_ENTRY_ATTR_FIELD_VRF_ID,
-
-    /**
-     * @brief Enable/disable packet count
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT,
-
-    /**
-     * @brief Enable/disable byte count
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT,
-
-    /**
-     * @brief End of Attributes
-     */
-    SAI_NAT_ENTRY_ATTR_END,
-
-    /** Custom range base value */
-    SAI_NAT_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_NAT_ENTRY_ATTR_CUSTOM_RANGE_END
-
-} sai_nat_entry_attr_t;
-
-/**
- * @brief Create and return a NAT object
- *
- * @param[out] nat_entry_id NAT pool object
- * @param[in] switch_id Switch object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_create_nat_entry_fn)(
-        _Out_ sai_object_id_t *nat_entry_id,
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
-
-/**
- * @brief Deletes a specified NAT entry object.
- *
- * Deleting a NAT entry object does not delete reference to it.
- *
- * @param[in] nat_entry_id NAT object to be removed.
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_remove_nat_entry_fn)(
-        _In_ sai_object_id_t nat_entry_id);
-
-/**
- * @brief Set NAT entry attribute value(s).
- *
- * @param[in] nat_entry_id NAT entry id
- * @param[in] attr Attribute to set
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_set_nat_entry_attribute_fn)(
-        _In_ sai_object_id_t nat_entry_id,
-        _In_ const sai_attribute_t *attr);
-
-/**
- * @brief Get values for specified NAT entry attributes.
- *
- * @param[in] nat_entry_id NAT entry object id
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_nat_entry_attribute_fn)(
-        _In_ sai_object_id_t nat_entry_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
  * @brief NAT Type
  */
 typedef enum _sai_nat_type_t
@@ -199,18 +47,21 @@ typedef enum _sai_nat_type_t
     /** Destination NAT */
     SAI_NAT_TYPE_DESTINATION_NAT,
 
+    /** Double NAT */
+    SAI_NAT_TYPE_DOUBLE_NAT,
+
 } sai_nat_type_t;
 
 /**
- * @brief NAT Counter Attributes
+ * @brief NAT Entry Attributes for Match
  */
-typedef enum _sai_nat_counter_attr_t
+typedef enum _sai_nat_entry_attr_t
 {
 
     /**
      * @brief Start of Attributes
      */
-    SAI_NAT_COUNTER_ATTR_START,
+    SAI_NAT_ENTRY_ATTR_START,
 
     /**
      * @brief NAT Type defined in sai_nat_type_t
@@ -218,129 +69,7 @@ typedef enum _sai_nat_counter_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_NAT_TYPE_NONE
      */
-    SAI_NAT_COUNTER_ATTR_NAT_TYPE  = SAI_NAT_COUNTER_ATTR_START,
-
-    /**
-     * @brief NAT Zone ID
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_NAT_COUNTER_ATTR_ZONE_ID,
-
-    /**
-     * @brief Enable/disable discard count
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_NAT_COUNTER_ATTR_ENABLE_DISCARD,
-
-    /**
-     * @brief Enable/disable translation needed count
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_NAT_COUNTER_ATTR_ENABLE_TRANSLATION_NEEDED,
-
-    /**
-     * @brief Enable/disable translations count
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_NAT_COUNTER_ATTR_ENABLE_TRANSLATIONS,
-
-    /**
-     * @brief End of Attributes
-     */
-    SAI_NAT_COUNTER_ATTR_END,
-
-    /** Custom range base value */
-    SAI_NAT_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_NAT_COUNTER_ATTR_CUSTOM_RANGE_END
-
-} sai_nat_counter_attr_t;
-
-/**
- * @brief Create and return a NAT counter object
- *
- * @param[out] nat_counter_id NAT counter object
- * @param[in] switch_id Switch object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_create_nat_counter_fn)(
-        _Out_ sai_object_id_t *nat_counter_id,
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
-
-/**
- * @brief Deletes a specified NAT counter object.
- *
- * Deleting a NAT counter object does not delete reference to it.
- *
- * @param[in] nat_counter_id NAT object to be removed.
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_remove_nat_counter_fn)(
-        _In_ sai_object_id_t nat_counter_id);
-
-/**
- * @brief Set NAT counter attribute value(s).
- *
- * @param[in] nat_counter_id NAT counter id
- * @param[in] attr Attribute to set
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_set_nat_counter_attribute_fn)(
-        _In_ sai_object_id_t nat_counter_id,
-        _In_ const sai_attribute_t *attr);
-
-/**
- * @brief Get values for specified NAT counter attributes.
- *
- * @param[in] nat_counter_id NAT counter object id
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_nat_counter_attribute_fn)(
-        _In_ sai_object_id_t nat_counter_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief NAT Attributes
- */
-typedef enum _sai_nat_attr_t
-{
-
-    /**
-     * @brief Start of Attributes
-     */
-    SAI_NAT_ATTR_START,
-
-    /**
-     * @brief NAT Type defined in sai_nat_type_t
-     * @type sai_nat_type_t
-     * @flags CREATE_AND_SET
-     * @default SAI_NAT_TYPE_NONE
-     */
-    SAI_NAT_ATTR_NAT_TYPE  = SAI_NAT_ATTR_START,
+    SAI_NAT_ENTRY_ATTR_NAT_TYPE  = SAI_NAT_ENTRY_ATTR_START,
 
     /**
      * @brief NAT Inside Zone ID
@@ -349,7 +78,7 @@ typedef enum _sai_nat_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_NAT_ATTR_FROM_ZONE_ID,
+    SAI_NAT_ENTRY_ATTR_FROM_ZONE_ID,
 
     /**
      * @brief NAT Outside Zone ID
@@ -358,95 +87,521 @@ typedef enum _sai_nat_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_NAT_ATTR_TO_ZONE_ID,
+    SAI_NAT_ENTRY_ATTR_TO_ZONE_ID,
 
     /**
-     * @brief NAT rules in the group
-     * @type sai_object_list_t
+     * @brief Replace source IPv4 address in packet.
+     * NAT actions will be
+     *    (source/destination/both is identified by type of NAT)
+     *    - replace IP address
+     *    - replace layer 4 source port
+     *    - replace layer 4 destination port
+     *
+     * @type sai_ip4_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_NAT_ENTRY
-     * @default empty
+     * @default 0.0.0.0
      */
-    SAI_NAT_ATTR_NAT_ENTRY_LIST,
+    SAI_NAT_ENTRY_ATTR_SRC_IP,
 
     /**
-     * @brief NAT counter in the group
-     * @type sai_object_list_t
+     * @brief Replace destination IPv4 address in packet.
+     * NAT actions will be
+     *    (source/destination/both is identified by type of NAT)
+     *
+     * @type sai_ip4_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_NAT_COUNTER
-     * @default empty
+     * @default 0.0.0.0
      */
-    SAI_NAT_ATTR_NAT_COUNTER_LIST,
+    SAI_NAT_ENTRY_ATTR_DST_IP,
 
     /**
-     * @brief End of Attributes
+     * @brief Replace L4 source port in packet.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
      */
-    SAI_NAT_ATTR_END,
+    SAI_NAT_ENTRY_ATTR_L4_SRC_PORT,
+
+    /**
+     * @brief Replace L4 destination port in packet.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_NAT_ENTRY_ATTR_L4_DST_PORT,
+
+    /**
+     * @brief Enable/disable packet count
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT,
+
+    /**
+     * @brief Per NAT entry packet count
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ENTRY_ATTR_PACKET_COUNT,
+
+    /**
+     * @brief Enable/disable byte count
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT,
+
+    /**
+     * @brief Per NAT entry byte count
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ENTRY_ATTR_BYTE_COUNT,
+
+    /**
+     * @brief NAT entry hit bit clear on read flag
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NAT_ENTRY_ATTR_HIT_BIT_COR,
+
+    /**
+     * @brief Per NAT entry hit bit state
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NAT_ENTRY_ATTR_HIT_BIT,
+
+    /**
+     * @brief End of NAT Entry attributes
+     */
+    SAI_NAT_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_NAT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_NAT_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_NAT_ATTR_CUSTOM_RANGE_END
+    SAI_NAT_ENTRY_ATTR_CUSTOM_RANGE_END
 
-} sai_nat_attr_t;
+} sai_nat_entry_attr_t;
+
+/**
+ * @brief NAT entry keys
+ */
+typedef struct _sai_nat_entry_key_t
+{
+
+    /**
+     * @brief IPv4 source address
+     */
+    sai_ip4_t src_ip;
+
+    /**
+     * @brief IPv4 destination address
+     */
+    sai_ip4_t dst_ip;
+
+    /**
+     * @brief IP protocol value
+     */
+    sai_uint8_t proto;
+
+    /**
+     * @brief IP layer 4 source port
+     */
+    sai_uint16_t l4_src_port;
+
+    /**
+     * @brief IP layer 4 destination port
+     */
+    sai_uint16_t l4_dst_port;
+
+} sai_nat_entry_key_t;
+
+/**
+ * @brief NAT entry key masks
+ */
+typedef struct _sai_nat_entry_mask_t
+{
+
+    /**
+     * @brief IPv4 source address mask
+     */
+    sai_ip4_t src_ip;
+
+    /**
+     * @brief IPv4 destination address mask
+     */
+    sai_ip4_t dst_ip;
+
+    /**
+     * @brief IP protocol mask
+     */
+    sai_uint8_t proto;
+
+    /**
+     * @brief IP layer 4 source port mask
+     */
+    sai_uint16_t l4_src_port;
+
+    /**
+     * @brief IP layer 4 destination port mask
+     */
+    sai_uint16_t l4_dst_port;
+
+} sai_nat_entry_mask_t;
+
+typedef struct _sai_nat_entry_data_t
+{
+
+    /**
+     * @brief NAT entry keys
+     */
+    sai_nat_entry_key_t key;
+
+    /**
+     * @brief NAT entry keys
+     */
+    sai_nat_entry_mask_t mask;
+
+} sai_nat_entry_data_t;
+
+/**
+ * @brief NAT entry
+ */
+typedef struct _sai_nat_entry_t
+{
+
+    /**
+     * @brief Switch ID
+     *
+     * @objects SAI_OBJECT_TYPE_SWITCH
+     */
+    sai_object_id_t switch_id;
+
+    /**
+     * @brief Virtual Router
+     *
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     */
+    sai_object_id_t vr_id;
+
+    /**
+     * @brief NAT entry data
+     */
+    sai_nat_entry_data_t data;
+
+} sai_nat_entry_t;
 
 /**
  * @brief Create and return a NAT object
  *
- * @param[out] nat_id NAT object
+ * @param[in] nat_entry NAT entry
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_nat_entry_fn)(
+        _In_ const sai_nat_entry_t *nat_entry,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove NAT entry
+ *
+ * @param[in] nat_entry NAT entry to be removed.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_nat_entry_fn)(
+        _In_ const sai_nat_entry_t *nat_entry);
+
+/**
+ * @brief Set NAT entry attribute value(s).
+ *
+ * @param[in] nat_entry NAT entry
+ * @param[in] attr Attribute to set
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_nat_entry_attribute_fn)(
+        _In_ const sai_nat_entry_t *nat_entry,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get values for specified NAT entry attributes.
+ *
+ * @param[in] nat_entry NAT entry
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_nat_entry_attribute_fn)(
+        _In_ const sai_nat_entry_t *nat_entry,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Bulk create NAT entry
+ *
+ * @param[in] object_count Number of objects to create
+ * @param[in] nat_entry List of object to create
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to create.
+ * @param[in] attr_list List of attributes for every object.
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are created or
+ * #SAI_STATUS_FAILURE when any of the objects fails to create. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_create_nat_entry_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_nat_entry_t *nat_entry,
+        _In_ const uint32_t *attr_count,
+        _In_ const sai_attribute_t **attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk remove NAT entry
+ *
+ * @param[in] object_count Number of objects to remove
+ * @param[in] nat_entry List of objects to remove
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_remove_nat_entry_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_nat_entry_t *nat_entry,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk set attribute on NAT entry
+ *
+ * @param[in] object_count Number of objects to set attribute
+ * @param[in] nat_entry List of objects to set attribute
+ * @param[in] attr_list List of attributes to set on objects, one attribute per object
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_set_nat_entry_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_nat_entry_t *nat_entry,
+        _In_ const sai_attribute_t *attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk get attribute on NAT entry
+ *
+ * @param[in] object_count Number of objects to set attribute
+ * @param[in] nat_entry List of objects to set attribute
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to get
+ * @param[inout] attr_list List of attributes to set on objects, one attribute per object
+ * @param[in] mode Bulk operation error handling mode
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_get_nat_entry_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_nat_entry_t *nat_entry,
+        _In_ const uint32_t *attr_count,
+        _Inout_ sai_attribute_t **attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief NAT zone counters for each NAT type
+ */
+typedef enum _sai_nat_zone_counter_attr_t
+{
+
+    /**
+     * @brief Start of Attributes
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_START,
+
+    /**
+     * @brief NAT Type defined in sai_nat_type_t
+     * @type sai_nat_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_NAT_TYPE_NONE
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_NAT_TYPE  = SAI_NAT_ZONE_COUNTER_ATTR_START,
+
+    /**
+     * @brief NAT Zone ID
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_ZONE_ID,
+
+    /**
+     * @brief Enable/disable discard count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_ENABLE_DISCARD,
+
+    /**
+     * @brief Discard packet count
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_DISCARD_PACKET_COUNT,
+
+    /**
+     * @brief Enable/disable translation needed count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_ENABLE_TRANSLATION_NEEDED,
+
+    /**
+     * @brief Translation needed packet count
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_TRANSLATION_NEEDED_PACKET_COUNT,
+
+    /**
+     * @brief Enable/disable translations count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_ENABLE_TRANSLATIONS,
+
+    /**
+     * @brief Translations performed packet count
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_TRANSLATIONS_PACKET_COUNT,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_NAT_ZONE_COUNTER_ATTR_END,
+
+    /** Custom range base value */
+    SAI_NAT_ZONE_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_NAT_ZONE_COUNTER_ATTR_CUSTOM_RANGE_END
+
+} sai_nat_zone_counter_attr_t;
+
+/**
+ * @brief Create and return a NAT zone counter object
+ *
+ * @param[out] nat_zone_counter_id NAT counter object
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_create_nat_fn)(
-        _Out_ sai_object_id_t *nat_id,
+typedef sai_status_t (*sai_create_nat_zone_counter_fn)(
+        _Out_ sai_object_id_t *nat_zone_counter_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Deletes a specified NAT object.
+ * @brief Deletes a specified NAT zone_counter object.
  *
- * Deleting a NAT object also deletes single specified NAT.
+ * Deleting a NAT counter object does not delete reference to it.
  *
- * @param[in] nat_id NAT object to be removed.
+ * @param[in] nat_zone_counter_id NAT object to be removed.
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_remove_nat_fn)(
-        _In_ sai_object_id_t nat_id);
+typedef sai_status_t (*sai_remove_nat_zone_counter_fn)(
+        _In_ sai_object_id_t nat_zone_counter_id);
 
 /**
- * @brief Set NAT attribute value(s).
+ * @brief Set NAT zone counter attribute value(s).
  *
- * @param[in] nat_id NAT id
+ * @param[in] nat_zone_counter_id NAT zone counter id
  * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_set_nat_attribute_fn)(
-        _In_ sai_object_id_t nat_id,
+typedef sai_status_t (*sai_set_nat_zone_counter_attribute_fn)(
+        _In_ sai_object_id_t nat_zone_counter_id,
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get values for specified NAT attributes.
+ * @brief Get values for specified NAT zone counter attributes.
  *
- * @param[in] nat_id NAT object id
+ * @param[in] nat_zone_counter_id NAT counter zone object id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_get_nat_attribute_fn)(
-        _In_ sai_object_id_t nat_id,
+typedef sai_status_t (*sai_get_nat_zone_counter_attribute_fn)(
+        _In_ sai_object_id_t nat_zone_counter_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief SAI NAT API set
+ * @brief NAT API Router entry methods table retrieved with sai_api_query()
  */
 typedef struct _sai_nat_api_t
 {
@@ -454,20 +609,20 @@ typedef struct _sai_nat_api_t
     /**
      * @brief SAI NAT API set
      */
-    sai_create_nat_fn                              create_nat;
-    sai_remove_nat_fn                              remove_nat;
-    sai_set_nat_attribute_fn                       set_nat_attribute;
-    sai_get_nat_attribute_fn                       get_nat_attribute;
+    sai_create_nat_entry_fn                   create_nat_entry;
+    sai_remove_nat_entry_fn                   remove_nat_entry;
+    sai_set_nat_entry_attribute_fn            set_nat_entry_attribute;
+    sai_get_nat_entry_attribute_fn            get_nat_entry_attribute;
 
-    sai_create_nat_entry_fn                        create_nat_entry;
-    sai_remove_nat_entry_fn                        remove_nat_entry;
-    sai_set_nat_entry_attribute_fn                 set_nat_entry_attribute;
-    sai_get_nat_entry_attribute_fn                 get_nat_entry_attribute;
+    sai_bulk_create_nat_entry_fn              create_nat_entries;
+    sai_bulk_remove_nat_entry_fn              remove_nat_entries;
+    sai_bulk_set_nat_entry_attribute_fn       set_nat_entries_attribute;
+    sai_bulk_get_nat_entry_attribute_fn       get_nat_entries_attribute;
 
-    sai_create_nat_counter_fn                      create_nat_counter;
-    sai_remove_nat_counter_fn                      remove_nat_counter;
-    sai_set_nat_counter_attribute_fn               set_nat_counter_attribute;
-    sai_get_nat_counter_attribute_fn               get_nat_counter_attribute;
+    sai_create_nat_zone_counter_fn            create_nat_zone_counter;
+    sai_remove_nat_zone_counter_fn            remove_nat_zone_counter;
+    sai_set_nat_zone_counter_attribute_fn     set_nat_zone_counter_attribute;
+    sai_get_nat_zone_counter_attribute_fn     get_nat_zone_counter_attribute;
 } sai_nat_api_t;
 
 /**

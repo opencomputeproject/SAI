@@ -231,6 +231,9 @@ typedef enum _sai_acl_action_type_t
     /** Enable DTEL report for all packets without filtering (experimental) */
     SAI_ACL_ACTION_TYPE_DTEL_REPORT_ALL_PACKETS,
 
+    /** Set NAT exception rule */
+    SAI_ACL_ACTION_TYPE_NO_NAT,
+
     /** Set isolation group to prevent traffic to members of isolation group */
     SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
 
@@ -2147,6 +2150,15 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DTEL_REPORT_ALL_PACKETS,
+
+    /**
+     * @brief Set NAT exception rule
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_NO_NAT,
 
     /**
      * @brief Set isolation group (isolation group object id)

@@ -1227,6 +1227,10 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .chardata = { 0 } };";
     }
+    elsif ($default =~ /^0\.0\.0\.0$/ and $type =~ /^(sai_ip4_t)/)
+    {
+        WriteSource "$val = { 0 };";
+    }
     else
     {
         LogError "invalid default value '$default' on $attr ($type)";
@@ -2018,6 +2022,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_UINT16"         if $type eq "sai_vlan_id_t";
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_label_id_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"          if $type =~ /^sai_\w+_type_t$/; # enum
+    return "SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA" if $type eq "sai_nat_entry_data_t";
 
     LogError "invalid struct member value type $type";
 
@@ -2744,7 +2749,7 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(mac|object_id|vlan_id|ip_address|ip_prefix|label_id|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|label_id|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;

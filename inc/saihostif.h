@@ -281,6 +281,18 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_UNKNOWN_L3_MULTICAST = 0x0000200e,
 
+    /**
+     * @brief Source NAT miss packets
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_SNAT_MISS = 0x0000200f,
+
+    /**
+     * @brief Destination NAT miss packets
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_DNAT_MISS = 0x00002010,
+
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
 
