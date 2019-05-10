@@ -100,8 +100,19 @@ typedef enum _sai_nat_entry_attr_t
      * @type sai_ip4_t
      * @flags CREATE_AND_SET
      * @default 0.0.0.0
+     * @validonly SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_SOURCE_NAT or SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DOUBLE_NAT
      */
     SAI_NAT_ENTRY_ATTR_SRC_IP,
+
+    /**
+     * @brief Mask for source IPv4 address in packet.
+     *
+     * @type sai_ip4_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_SOURCE_NAT or SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DOUBLE_NAT
+     */
+    SAI_NAT_ENTRY_ATTR_SRC_IP_MASK,
 
     /**
      * @brief Replace destination IPv4 address in packet.
@@ -111,8 +122,19 @@ typedef enum _sai_nat_entry_attr_t
      * @type sai_ip4_t
      * @flags CREATE_AND_SET
      * @default 0.0.0.0
+     * @validonly SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DESTINATION_NAT or SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DOUBLE_NAT
      */
     SAI_NAT_ENTRY_ATTR_DST_IP,
+
+    /**
+     * @brief Mask for destination IPv4 address in packet.
+     *
+     * @type sai_ip4_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DESTINATION_NAT or SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DOUBLE_NAT
+     */
+    SAI_NAT_ENTRY_ATTR_DST_IP_MASK,
 
     /**
      * @brief Replace L4 source port in packet.

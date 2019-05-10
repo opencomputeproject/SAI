@@ -3,10 +3,12 @@ SAI NAT Proposal
  Title       | SAI Network Address Translation
 -------------|-----------------------------------------------------------------
  Authors     | Jai Kumar, Broadcom Inc.
+             | Rita Hui, Microsoft Inc.
+             | Matty Kadosh, Mellanox Inc.
  Status      | In review
  Type        | Standards track
  Created     | 04/15/2019
- Updated     | 04/22/2019
+ Updated     | 05/10/2019
  SAI-Version | TBD
 
 -------------------------------------------------------------------------------
@@ -53,9 +55,11 @@ SNAT/DNAT miss packets are received on a regular netdev channel to the applicati
 - “SAI_HOSTIF_TRAP_TYPE_DNAT_MISS”
 
 ## 5.0 NAT Object Workflow
-Following is a logical representation of SAI NAT objects
+ NAT or Network Address translation is used to avoid exposing the Internal or private IP addresses when the Host systems in an enterprise network or Datacenter communicate with external internet servers . The main advantage of using NAT is to reduce the usage of the Public IP addresses allocated for an enterprise or Data center.NAT feature allows the capability to change the Src IP address , Destination IP address , Src TCP/UDP port number or Destination TCP/UDP port number for an IP packet undergoing L3  routing in the switch.
 
-### 5.1 Example 1: Symmetric SNAT and DNAT
+### 5.1 Symmetric SNAT and DNAT
+For directional symmetric flows there is always a corresponding DNAT entry for each SNAT entry. SAI APIs do not allow implicit installation of reverse direction NAT entry. SAI API MUST be invoked for both SNAT and DNAT entry to be installed.
+
 > From Zone ID: 100
 To Zone ID: 200
 VRF: None
@@ -148,7 +152,9 @@ create_nat_entry(&dnat_entry, attr_count, nat_entry_attr);
 
 ```
 
-### 5.2 Example 2: Double NAT
+### 5.2 Double NAT
+Double NAT is a nat variant where both the Src and Dest IP gets modified when a packet crosses the address zone. Generally used when conflicting addresses are used in the private networks which conflicts with the public IP addresses. Double NAT overrides SNAT or DNAT actions in the SAI pipeline.
+
 > From Zone ID: 100
 To Zone ID: 200
 VRF: None
@@ -176,10 +182,10 @@ nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_DST_IP;
 nat_entry_attr[2].value.u32 = 200.200.200.100; //example string
 
 nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
-nat_entry_attr[3].value.u32 = 100;
+nat_entry_attr[3].value.u32 = 200;
 
 nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
-nat_entry_attr[4].value.u32 =200;
+nat_entry_attr[4].value.u32 =100;
 
 nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
 nat_entry_attr[5].value.bool = true;
@@ -199,6 +205,54 @@ dbl_nat_entry.data.mask.dst_ip = 0xffffffff;
 create_nat_entry(&dbl_nat_entry, attr_count, nat_entry_attr);
 
 ```
+### 5.3 Subnet NAT
+Subnet-based NAT replaces only the subnet prefix in the IP address, leaving the rest of the IP address unchanged. Subnet-based NAT is a simple implementation of basic NAT. For example, a private network is interconnected with a public network through a switch enabling subnet-based basic NAT. The public address for the private network (128.17.18.0/24 ) is 200.0.0.0/24. In the inbound direction, for a packet with DIP = 200.0.0.1, the subnet-based Basic NAT router will replace the subnet prefix 200.0.0/24 with new subnet prefix 128.17.18/24, and keep the host address .1/8. The translated SIP is 128.17.18.1.
+In the outbound direction, the SIP is translated in same fashion.
+> From Zone ID: 100
+To Zone ID: 200
+VRF: None
+Packet Count: Enable
+Byte Count: Enable
+DNAT Entry
+ExternalEndpoint: 200.0.0.0/24
+InternalEndpoint: 128.17.18.0/24
+
+##### Step 1: Create a Destination NAT Entry object:
+```sh
+
+sai_attribute_t nat_entry_attr[10];
+nat_entry_t subnet_nat_entry;
+
+nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
+nat_entry_attr[0].value = SAI_NAT_TYPE_DESTINATION_NAT;
+
+nat_entry_attr[1].id = SAI_NAT_ENTRY_ATTR_DST_IP;
+nat_entry_attr[1].value.u32 = 128.17.18.0; //example string
+
+nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_DST_IP_MASK;
+nat_entry_attr[2].value.u32 = 0xffffff00;
+
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
+nat_entry_attr[3].value.u32 = 200;
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
+nat_entry_attr[4].value.u32 =100;
+
+nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[5].value.bool = true;
+
+nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[6].value.bool = true;
+
+attr_count = 7;
+
+memset(&subnet_nat_etnry, 0, sizeof(nat_etnry));
+
+subnet_nat_entry.data.key.dst_ip = 200.0.0.0;
+subnet_nat_entry.data.mask.dst_ip = 0xffffff00;
+
+create_nat_entry(&subnet_nat_entry, attr_count, nat_entry_attr);
+```
+
 ## 6.0 NAT Exceptions
 NAT exceptions can be defined using the NAT entry. In that case they will be placed in the SNAT/DNAT table. Operator MUST consider defining the exceptions so as not to collide with other NAT entries.
 An override NAT exception can be created using the ACL rule. A new ACL action is defined in saiacl.h
@@ -230,7 +284,7 @@ nat_entry_attr[2].value.u32 =100;
 
 attr_count = 3;
 
-memset(&no_nat_etnry, 0, sizeof(no_nat_etnry));
+memset(&no_nat_etnry, 0, sizeof(nat_etnry));
 no_nat_entry.data.key.src_ip = 200.200.200.1;
 no_nat_entry.data.mask.src_ip = 0xffffffff;
 no_nat_entry.data.key.l4_src_port = 1023;
