@@ -298,7 +298,7 @@ typedef enum _sai_tam_event_threshold_unit_t
     /**
      * @brief Event threshold unit packet count
      */
-    SAI_TAM_EVENT_THRESHOLD_UNIT_PACKETS
+    SAI_TAM_EVENT_THRESHOLD_UNIT_PACKETS,
 
     /**
      * @brief Event threshold unit cells
@@ -474,6 +474,36 @@ typedef enum _sai_tam_int_type_t
 } sai_tam_int_type_t;
 
 /**
+ * @brief Type of indication of INT presence in a packet
+ */
+typedef enum _sai_tam_int_presence_type_t
+{
+    /**
+     * @brief Indication of INT presence in a packet is undefined
+     *
+     * This type can be used when all indications of INT presence
+     * in a packet are defined in well known specifications
+     */
+    SAI_TAM_INT_PRESENCE_TYPE_UNDEFINED,
+
+    /**
+     * @brief INT presence type probe marker
+     */
+    SAI_TAM_INT_PRESENCE_TYPE_PB,
+
+    /**
+     * @brief INT presence type L3 protocol
+     */
+    SAI_TAM_INT_PRESENCE_TYPE_L3_PROTOCOL,
+
+    /**
+     * @brief INT presence type DSCP
+     */
+    SAI_TAM_INT_PRESENCE_TYPE_DSCP
+
+} sai_tam_int_presence_type_t;
+
+/**
  * @brief Attributes for TAM INT
  */
 typedef enum _sai_tam_int_attr_t
@@ -503,17 +533,28 @@ typedef enum _sai_tam_int_attr_t
     /**
      * @brief IOAM trace type
      *
+     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IOAM
+     *
      * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IOAM
+     * @flags CREATE_AND_SET
+     * @default 0
      */
     SAI_TAM_INT_ATTR_IOAM_TRACE_TYPE,
+
+    /**
+     * @brief Type of indication of INT presence in a packet
+     *
+     * @type sai_tam_int_presence_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_INT_ATTR_INT_PRESENCE_TYPE,
 
     /**
      * @brief First 4 octets of Probe Marker value that indicates INT presence
      *
      * @type sai_uint32_t
-     * @flags CREATE_AND_SET
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_INT_PRESENCE_TYPE == SAI_TAM_INT_PRESENCE_TYPE_PB
      */
     SAI_TAM_INT_ATTR_INT_PRESENCE_PB1,
 
@@ -521,7 +562,8 @@ typedef enum _sai_tam_int_attr_t
      * @brief Second 4 octets of Probe Marker value that indicates INT presence
      *
      * @type sai_uint32_t
-     * @flags CREATE_AND_SET
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_INT_PRESENCE_TYPE == SAI_TAM_INT_PRESENCE_TYPE_PB
      */
     SAI_TAM_INT_ATTR_INT_PRESENCE_PB2,
 
@@ -529,8 +571,8 @@ typedef enum _sai_tam_int_attr_t
      * @brief DSCP value that indicates presence of INT in a packet
      *
      * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_INT_PRESENCE_TYPE == SAI_TAM_INT_PRESENCE_TYPE_DSCP
      */
     SAI_TAM_INT_ATTR_INT_PRESENCE_DSCP_VALUE,
 
@@ -549,6 +591,7 @@ typedef enum _sai_tam_int_attr_t
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TAM_INT_ATTR_INT_PRESENCE_TYPE == SAI_TAM_INT_PRESENCE_TYPE_L3_PROTOCOL
      */
     SAI_TAM_INT_ATTR_INT_PRESENCE_L3_PROTOCOL,
 
@@ -557,9 +600,11 @@ typedef enum _sai_tam_int_attr_t
      * trace vector is used to specified the fields
      * of interest in metadata header
      *
+     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
+     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
+     * @isvlan false
      * @default 0
      */
     SAI_TAM_INT_ATTR_TRACE_VECTOR,
@@ -570,9 +615,11 @@ typedef enum _sai_tam_int_attr_t
      * of interest on metadata header
      * value of 0 means no actions of interest
      *
+     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
+     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
+     * @isvlan false
      * @default 0
      */
     SAI_TAM_INT_ATTR_ACTION_VECTOR,
@@ -580,9 +627,11 @@ typedef enum _sai_tam_int_attr_t
     /**
      * @brief P4 INT instruction bitmap
      *
+     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_2
+     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @condition SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_2
+     * @isvlan false
      * @default 0
      */
     SAI_TAM_INT_ATTR_P4_INT_INSTRUCTION_BITMAP,
@@ -595,10 +644,11 @@ typedef enum _sai_tam_int_attr_t
      * may remove the metadata from the packet, send a report to the
      * collector, and insert its metadata before forwarding the packet.
      *
+     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE != SAI_TAM_INT_TYPE_DIRECT_EXPORT
+     *
      * @type bool
      * @flags CREATE_AND_SET
-     * @condition SAI_TAM_INT_ATTR_TYPE != SAI_TAM_INT_TYPE_DIRECT_EXPORT
-     * @default disabled
+     * @default false
      */
     SAI_TAM_INT_ATTR_METADATA_FRAGMENT_ENABLE,
 
@@ -607,15 +657,16 @@ typedef enum _sai_tam_int_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default disabled
+     * @default false
      */
     SAI_TAM_INT_ATTR_REPORT_ALL_PACKETS,
 
     /**
-     * @brief TAM INT flow liveness period in seconds
+     * @brief TAM INT flow liveliness period in seconds
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      * @default 0
      */
     SAI_TAM_INT_ATTR_FLOW_LIVENESS_PERIOD,
@@ -626,6 +677,7 @@ typedef enum _sai_tam_int_attr_t
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default 20
      */
     SAI_TAM_INT_ATTR_LATENCY_SENSITIVITY,
 
