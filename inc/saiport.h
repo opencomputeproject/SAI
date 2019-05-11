@@ -1182,6 +1182,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SERDES_IPREDRIVER,
 
     /**
+     * @brief Enable/Disable Port Link Training
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_LINK_TRAINING_ENABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
