@@ -868,12 +868,7 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
         nexthop_gmember1 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop1)
         nexthop_gmember2 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop2)
 	nexthop_gmember3 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop3)
-
-
-        #sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr1_subnet, ip_mask, router_interface1)
-        #sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr2_subnet, ip_mask, router_interface2)
-	#sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr3_subnet, ip_mask, router_interface3)
-
+	
         sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr4, ip_mask, nexthop_group)
 
         try:   
@@ -933,7 +928,6 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
                 send_packet(self, 3, str(packet)) 
                 rcv_idx = verify_any_packet_any_port(self, [expected_packet1, expected_packet2, expected_packet3], [0, 1, 2])
                 count[rcv_idx] += 1
-            
                 source_port += 1
                 destination_port += 1
 
@@ -957,6 +951,15 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED, value=attr_value)
             self.client.sai_thrift_set_switch_attribute(attr)
 			
+	    
+            count = [0, 0, 0]
+            maximum_packets = 101	   
+	    src_mac_start = '00:22:22:22:22:'
+            ip_src_start = '192.168.6.'
+            ip_dst_start = '10.10.10.'
+            destination_port = 0x80
+            source_port = 0x1234
+	    
 	    for i in range(1, maximum_packets):
                 packet = simple_tcp_packet(eth_dst=router_mac,
                                            eth_src='00:22:22:22:22:22',
