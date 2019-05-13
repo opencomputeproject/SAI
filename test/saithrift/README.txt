@@ -67,7 +67,7 @@ Otherwise, please setup an appropriate cross-compile environment to generate 'sa
 
     3. Copy tests directory to the test machine (client)
 
-    sudo ptf --test-dir tests sail3.L3IPv4HostTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' -t "server='10.0.0.1';port_map_file='default_interface_to_front_map.ini'"
+    sudo ptf --test-dir tests sail3.L3IPv4HostTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' -t "server='10.0.0.1';port_map_file='default_interface_to_front_map.ini';chip_type='bcm'"
 
     sample configuration for mellanox sn2700 under src/msn_2700 directory: default_interface_to_front_map.ini
 
@@ -81,6 +81,8 @@ Otherwise, please setup an appropriate cross-compile environment to generate 'sa
     eth1 and eth2 in the command above refer to the client (test machine) interfaces.
 
     server='10.0.0.1' is the IP address of the switch (server) - it must be accessible from the test machine (client)
+
+    chip_type='bcm' is the asic type of the switch - some test cases may need this parameter
 
     3. Copy tests directory to client
     
