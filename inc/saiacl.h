@@ -2124,7 +2124,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Enable INT drop reports
      *
-     * @type bool
+     * @type sai_acl_action_data_t bool
      * @flags CREATE_AND_SET
      * @default disabled
      */
@@ -2133,7 +2133,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Enable INT tail drop reports
      *
-     * @type bool
+     * @type sai_acl_action_data_t bool
      * @flags CREATE_AND_SET
      * @default disabled
      */
@@ -2147,12 +2147,13 @@ typedef enum _sai_acl_entry_attr_t
      * TAM INT object may bind an ACL table or ACL group. In the latter
      * case, SAI_NULL_OBJECT_ID should be assigned as the attribute value.
      *
-     * @type sai_object_id_t
+     * Note: Applicable only when SAI_ACL_ENTRY_ATTR_ACTION_INT_INSERT == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_DELETE == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_FLOW == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_DROPS == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_TAIL_DROPS == true
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_INT
-     * @condition SAI_ACL_ENTRY_ATTR_ACTION_INT_INSERT == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_DELETE == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_FLOW = true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_DROPS == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_TAIL_DROPS == true
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_TAM_INT_OBJECT,
 
