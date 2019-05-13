@@ -68,11 +68,10 @@ typedef enum _sai_ingress_priority_group_attr_t
     /**
      * @brief TAM id
      *
-     * @type sai_object_id_t
-     * @flags CREATE_ONLY
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
     SAI_INGRESS_PRIORITY_GROUP_ATTR_TAM,
 
@@ -309,11 +308,10 @@ typedef enum _sai_buffer_pool_attr_t
     /**
      * @brief TAM id
      *
-     * @type sai_object_id_t
-     * @flags CREATE_ONLY
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
     SAI_BUFFER_POOL_ATTR_TAM,
 
