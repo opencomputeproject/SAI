@@ -409,6 +409,17 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_EYE_VALUES,
 
+    /**
+     * @brief Operational speed in Mbps
+     *
+     * If port is down, the returned value should be zero.
+     * If auto negotiation is on, the returned value should be the negotiated speed.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_OPER_SPEED,
+
     /* READ-WRITE */
 
     /**
@@ -421,6 +432,8 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Speed in Mbps
+     *
+     * On get, returns the configured port speed.
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -1128,6 +1141,54 @@ typedef enum _sai_port_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_TAM_OBJECT,
+
+    /**
+     * @brief Port serdes control pre-emphasis
+     *
+     * List of port serdes pre-emphasis values. The values are of type sai_u32_list_t
+     * where the count is number lanes in a port and the list specifies list of values
+     * to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_ATTR_SERDES_PREEMPHASIS,
+
+    /**
+     * @brief Port serdes control idriver
+     *
+     * List of port serdes idriver values. The values are of type sai_u32_list_t
+     * where the count is number lanes in a port and the list specifies list of values
+     * to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_ATTR_SERDES_IDRIVER,
+
+    /**
+     * @brief Port serdes control ipredriver
+     *
+     * List of port serdes ipredriver values. The values are of type sai_u32_list_t
+     * where the count is number lanes in a port and the list specifies list of values
+     * to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_ATTR_SERDES_IPREDRIVER,
+
+    /**
+     * @brief Enable/Disable Port Link Training
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_LINK_TRAINING_ENABLE,
 
     /**
      * @brief End of attributes

@@ -200,6 +200,32 @@ _END_
     LogWarning "Wrong header in $file, is:\n$is\n should be:\n\n$header";
 }
 
+sub CheckStatsFunction
+{
+    my ($fname,$fn,$fnparams) = @_;
+
+    return if $fname eq "sai_clear_port_all_stats_fn"; # exception
+    return if $fname eq "sai_get_tam_snapshot_stats_fn"; # exception
+
+    if (not $fname =~ /^sai_((get|clear)_(\w+)_stats|get_\w+_stats_ext)_fn$/)
+    {
+        LogWarning "wrong stat function name: $fname, expected: sai_(get|clear)_\\w+_stats(_ext)?_fn";
+    }
+
+    if (not $fnparams =~ /^\w+_id number_of_counters counter_ids( (mode )?counters)?$/)
+    {
+        LogWarning "invalid stat function $fname params names: $fnparams";
+    }
+
+    my @paramtypes = $fn =~ /_(?:In|Out|Inout)_\s*(.+?)\s*(?:\w+?)\s*[,\)]/gis;
+    my $ptypes = "@paramtypes";
+
+    if (not $ptypes =~ /^sai_object_id_t uint32_t const sai_stat_id_t \*( (sai_stats_mode_t )?uint64_t \*)?$/)
+    {
+        LogWarning "invalid stat function $fname param types: $ptypes";
+    }
+}
+
 sub CheckFunctionsParams
 {
     #
@@ -223,6 +249,11 @@ sub CheckFunctionsParams
 
         my @params = $comment =~ /\@param\[\w+]\s+(\.\.\.|\w+)/gis;
         my @fnparams = $fn =~ /_(?:In|Out|Inout)_.+?(\.\.\.|\w+)\s*[,\)]/gis;
+
+        for my $p (@params)
+        {
+            LogWarning "param $p in $fname should not be prefixed sai_" if $p =~ /sai_/;
+        }
 
         my $params = "@params";
         my $fnparams = "@fnparams";
@@ -275,6 +306,11 @@ sub CheckFunctionsParams
             {
                 LogWarning "first param should be called ${pattern} but is $first in $fname: $file";
             }
+        }
+
+        if ($fname =~ /^sai_\w+_stats_/)
+        {
+            CheckStatsFunction($fname,$fn,$fnparams);
         }
     }
 }
@@ -946,7 +982,7 @@ sub CheckHeadersStyle
             next if $line =~ /^(void|bool) /;       # function return
             next if $line =~ m![^\\]\\$!;           # macro multiline
             next if $line =~ /^ {4}(\w+);$/;        # union entries
-            next if $line =~ /^union _sai_\w+ {/;   # union entries
+            next if $line =~ /^union _sai_\w+ \{/;  # union entries
 
             LogWarning "Header doesn't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
         }

@@ -278,6 +278,7 @@ service switch_sai_rpc {
     //neighbor API
     sai_thrift_status_t sai_thrift_create_neighbor_entry(1: sai_thrift_neighbor_entry_t thrift_neighbor_entry, 2: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_neighbor_entry(1: sai_thrift_neighbor_entry_t thrift_neighbor_entry);
+    sai_thrift_status_t sai_thrift_set_neighbor_entry_attribute(1: sai_thrift_neighbor_entry_t thrift_neighbor_entry, 2: list<sai_thrift_attribute_t> thrift_attr);
 
     //switch API
     sai_thrift_attribute_list_t sai_thrift_get_switch_attribute();
@@ -343,6 +344,7 @@ service switch_sai_rpc {
     // Mirror API
     sai_thrift_object_id_t sai_thrift_create_mirror_session(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_mirror_session(1: sai_thrift_object_id_t session_id);
+    sai_thrift_status_t sai_thrift_set_mirror_session_attribute(1: sai_thrift_object_id_t session_id, 2: sai_thrift_attribute_t thrift_attr);
 
     // Policer API
     sai_thrift_object_id_t sai_thrift_create_policer(1: list<sai_thrift_attribute_t> thrift_attr_list);

@@ -4,6 +4,7 @@ API - Application Program Interface
 ARP - Address Resolution Protocol
 ASIC - Application Specific Integrated Circuit
 BFD - Bidirectional Forwarding Detection
+BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
 CAM - Content Addressable Memory
 CB - Callback
@@ -14,6 +15,7 @@ CIDR - Classless Inter Domain Routing
 CIR - Committed Information Rate
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
+DHCP - Dynamic Host Configuration Protocol
 DLD - Dead Lock Detection
 DLDR - Dead Lock Detection and Recovery
 DLL - Dynamic Link Library
@@ -36,6 +38,7 @@ GRPC - GRPC Remote Procedure Call
 HW - Hardware
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
+ICMPV6 - Internet Control Message Procotol for IPv6
 IEEE - Institute of Electrical and Electronics Engineers
 IFA - Inband Flow Analyzer
 IFA1 - Inband Flow Analyzer version 1
@@ -50,6 +53,7 @@ L2 - Layer 2
 L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
+LPM - Longest Prefix Match
 MAC - Medium Access Control
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching

@@ -477,6 +477,20 @@ def sai_thrift_remove_neighbor(client, addr_family, rif_id, ip_addr, dmac):
     neighbor_entry = sai_thrift_neighbor_entry_t(rif_id=rif_id, ip_address=ipaddr)
     client.sai_thrift_remove_neighbor_entry(neighbor_entry)
 
+def sai_thrift_set_neighbor_attribute(client, addr_family, rif_id, ip_addr, dmac):
+    if addr_family == SAI_IP_ADDR_FAMILY_IPV4:
+        addr = sai_thrift_ip_t(ip4=ip_addr)
+        ipaddr = sai_thrift_ip_address_t(addr_family=SAI_IP_ADDR_FAMILY_IPV4, addr=addr)
+    else:
+        addr = sai_thrift_ip_t(ip6=ip_addr)
+        ipaddr = sai_thrift_ip_address_t(addr_family=SAI_IP_ADDR_FAMILY_IPV6, addr=addr)
+    neighbor_attribute1_value = sai_thrift_attribute_value_t(mac=dmac)
+    neighbor_attribute1 = sai_thrift_attribute_t(id=SAI_NEIGHBOR_ENTRY_ATTR_DST_MAC_ADDRESS,
+                                                 value=neighbor_attribute1_value)
+    neighbor_attr_list = [neighbor_attribute1]
+    neighbor_entry = sai_thrift_neighbor_entry_t(rif_id=rif_id, ip_address=ipaddr)
+    return client.sai_thrift_set_neighbor_entry_attribute(neighbor_entry, neighbor_attr_list)
+
 def sai_thrift_create_next_hop_group(client):
     nhop_group_atr1_value = sai_thrift_attribute_value_t(s32=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
     nhop_group_atr1 = sai_thrift_attribute_t(id=SAI_NEXT_HOP_GROUP_ATTR_TYPE,
@@ -1145,10 +1159,11 @@ def sai_thrift_create_mirror_session(client, mirror_type, port,
                                             value=attribute13_value)
         mirror_attr_list.append(attribute13)
 
-        attribute14_value = sai_thrift_attribute_value_t(booldata=vlan_header_valid)
-        attribute14 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID,
-                                            value=attribute14_value)
-        mirror_attr_list.append(attribute14)
+        if vlan_header_valid is not None:
+            attribute14_value = sai_thrift_attribute_value_t(booldata=vlan_header_valid)
+            attribute14 = sai_thrift_attribute_t(id=SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID,
+                                                value=attribute14_value)
+            mirror_attr_list.append(attribute14)
 
     mirror_id = client.sai_thrift_create_mirror_session(mirror_attr_list)
     return mirror_id

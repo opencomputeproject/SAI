@@ -56,6 +56,7 @@ our %REVGRAPH = ();
 our %EXTENSIONS_ENUMS = ();
 our %EXTENSIONS_ATTRS = ();
 our %EXPERIMENTAL_OBJECTS = ();
+our %OBJECT_TYPE_TO_STATS_MAP = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 
@@ -899,6 +900,7 @@ sub CreateMetadataHeaderAndSource
     WriteSource "#include <stdio.h>";
     WriteSource "#include <string.h>";
     WriteSource "#include <stdlib.h>";
+    WriteSource "#include <stddef.h>";
     WriteSource "#include \"saimetadata.h\"";
 
     WriteSectionComment "Enums metadata";
@@ -2121,6 +2123,20 @@ sub ProcessStructSetOid
     return $fname;
 }
 
+sub ProcessStructOffset
+{
+    my ($type, $key, $rawname) = @_;
+
+    return "offsetof(sai_${rawname}_t,$key)";
+}
+
+sub ProcessStructSize
+{
+    my ($type, $key, $rawname) = @_;
+
+    return "sizeof($type)";
+}
+
 sub ProcessStructMembers
 {
     my ($struct, $ot, $rawname) = @_;
@@ -2144,6 +2160,8 @@ sub ProcessStructMembers
         my $enumdata    = ProcessStructEnumData($struct->{$key}{type});
         my $getoid      = ProcessStructGetOid($struct->{$key}{type}, $key, $rawname);
         my $setoid      = ProcessStructSetOid($struct->{$key}{type}, $key, $rawname);
+        my $offset      = ProcessStructOffset($struct->{$key}{type}, $key, $rawname);
+        my $size        = ProcessStructSize($struct->{$key}{type}, $key, $rawname);
 
         WriteSource "const sai_struct_member_info_t sai_metadata_struct_member_sai_${rawname}_t_$key = {";
 
@@ -2156,6 +2174,8 @@ sub ProcessStructMembers
         WriteSource ".enummetadata              = $enumdata,";
         WriteSource ".getoid                    = $getoid,";
         WriteSource ".setoid                    = $setoid,";
+        WriteSource ".offset                    = $offset,";
+        WriteSource ".size                      = $size,";
 
         # TODO allow null
 
@@ -2553,6 +2573,17 @@ sub ProcessIsExperimental
     return "false";
 }
 
+sub ProcessStatEnum
+{
+    my $shortot = shift;
+
+    my $statenumname = "sai_${shortot}_stat_t";
+
+    return "&sai_metadata_enum_$statenumname" if defined $SAI_ENUMS{$statenumname};
+
+    return "NULL";
+}
+
 sub CreateObjectInfo
 {
     WriteSectionComment "Object info metadata";
@@ -2577,6 +2608,8 @@ sub CreateObjectInfo
             next;
         }
 
+        my $shortot = lc($1);
+
         my $type = "sai_" . lc($1) . "_attr_t";
 
         my $start = "SAI_" . uc($1) . "_ATTR_START";
@@ -2598,6 +2631,7 @@ sub CreateObjectInfo
         my $revgraph            = ProcessRevGraph($ot);
         my $revgraphcount       = ProcessRevGraphCount($ot);
         my $isexperimental      = ProcessIsExperimental($ot);
+        my $statenum            = ProcessStatEnum($shortot);
         my $attrmetalength      = @{ $SAI_ENUMS{$type}{values} };
 
         my $create = ProcessCreate($struct, $ot);
@@ -2627,6 +2661,7 @@ sub CreateObjectInfo
         WriteSource ".set                  = $set,";
         WriteSource ".get                  = $get,";
         WriteSource ".isexperimental       = $isexperimental,";
+        WriteSource ".statenum             = $statenum,";
 
         WriteSource "};";
     }
@@ -2879,6 +2914,89 @@ sub CheckApiDefines
         {
             LogError "$api is defined in sai.h but no corresponding struct for objects found";
         }
+    }
+}
+
+sub ExtractStatsFunctionMap
+{
+    #
+    # Purpose is to get statistics functions consistent
+    # with stat_t defined for them
+    #
+
+    my @headers = GetHeaderFiles();
+    my @exheaders = GetExperimentalHeaderFiles();
+
+    my @merged = (@headers, @exheaders);
+
+    my %otmap = ();
+
+    for my $header (@merged)
+    {
+        my $data = ReadHeaderFile($header);
+
+        next if not $data =~ m!(sai_\w+_api_t)(.+?)\1;!igs;
+
+        my $apis = $2;
+
+        my @fns = $apis =~ /sai_(\w+_stats(?:_ext)?)_fn/g;
+
+        for my $fn (@fns)
+        {
+            # exceptions
+
+            next if $fn eq "clear_port_all_stats";
+            next if $fn eq "get_tam_snapshot_stats";
+
+            if (not $fn =~ /^(?:get|clear)_(\w+)_stats(?:_ext)?$/)
+            {
+                LogWarning "Invalid stats function name: $fn";
+            }
+
+            my $ot = $1;
+            my @statfns = ();
+
+            $otmap{$ot} = \@statfns if not defined $otmap{$ot};
+
+            my $ref = $otmap{$ot};
+
+            push@$ref,$fn;
+        }
+    }
+
+    %OBJECT_TYPE_TO_STATS_MAP = %otmap;
+}
+
+sub CheckObjectTypeStatitics
+{
+    #
+    # Purpose is to check if each defined statistics for object type has 3 stat
+    # functions defined and if there is corresponding obejct type for stat enum
+    #
+
+    for my $ot (sort keys %OBJECT_TYPE_TO_STATS_MAP)
+    {
+        my $ref = $OBJECT_TYPE_TO_STATS_MAP{$ot};
+        my $stats = "@$ref";
+
+        # each object type that supports statistics should have 3 stat functions (and in that order)
+
+        my $expected = "get_${ot}_stats get_${ot}_stats_ext clear_${ot}_stats";
+
+        next if $stats eq $expected;
+
+        LogWarning uc($ot) . " has only '$stats' functions, expected: $expected";
+    }
+
+    for my $key (keys %SAI_ENUMS)
+    {
+        next if not $key =~ /sai_(\w+)_stat_t/;
+
+        my $ot = $1;
+
+        next if defined $OBJECT_TYPE_TO_STATS_MAP{$ot};
+
+        LogWarning "stats $key are defined, but no API 3 stat functions defined for $ot";
     }
 }
 
@@ -3158,6 +3276,20 @@ sub CheckAttributeValueUnion
     }
 }
 
+sub CheckStatEnum
+{
+    for my $key (keys %SAI_ENUMS)
+    {
+        next if not $key =~ /sai_(\w+)_stat_t/;
+
+        my $ot = uc("SAI_OBJECT_TYPE_$1");
+
+        next if defined $OBJECT_TYPE_MAP{$ot};
+
+        LogError "stat enum defined $key but no object type $ot exists";
+    }
+}
+
 sub CreateNotificationStruct
 {
     #
@@ -3228,6 +3360,39 @@ sub CreateNotificationEnum
     WriteSectionComment "Get sai_switch_notification_type_t helper method";
 
     CreateEnumHelperMethod("sai_switch_notification_type_t");
+}
+
+sub CreateSwitchNotificationAttributesList
+{
+    #
+    # create notification attributes list for easy use on places where only
+    # notifications must be processed instead of looping through all switch
+    # attributes
+    #
+
+    WriteSectionComment "SAI Switch Notification Attributes List";
+
+    WriteHeader "extern const sai_attr_metadata_t* const sai_metadata_switch_notify_attr[];";
+    WriteSource "const sai_attr_metadata_t* const sai_metadata_switch_notify_attr[] = {";
+
+    for my $name (sort keys %NOTIFICATIONS)
+    {
+        next if not $name =~ /^sai_(\w+)_notification_fn/;
+
+        WriteSource "&sai_metadata_attr_SAI_SWITCH_ATTR_" . uc($1) . "_NOTIFY,";
+    }
+
+    WriteSource "NULL";
+    WriteSource "};";
+
+    my $count = scalar(keys %NOTIFICATIONS);
+
+    WriteHeader "extern const size_t sai_metadata_switch_notify_attr_count;";
+    WriteSource "const size_t sai_metadata_switch_notify_attr_count = $count;";
+
+    WriteSectionComment "Define SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT";
+
+    WriteHeader "#define SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT $count";
 }
 
 sub WriteHeaderHeader
@@ -3398,6 +3563,8 @@ LoadCapabilities();
 
 ExtractApiToObjectMap();
 
+ExtractStatsFunctionMap();
+
 ExtractUnionsInfo();
 
 CheckHeadersStyle() if not defined $optionDisableStyleCheck;
@@ -3448,9 +3615,15 @@ CheckApiDefines();
 
 CheckAttributeValueUnion();
 
+CheckStatEnum();
+
+CheckObjectTypeStatitics();
+
 CreateNotificationStruct();
 
 CreateNotificationEnum();
+
+CreateSwitchNotificationAttributesList();
 
 CreateSerializeMethods();
 

@@ -757,14 +757,14 @@ void test_deserialize_ip_prefix()
     uint16_t ip6[] = { 0x1111, 0x2222, 0x3303, 0x4444, 0x5555, 0x6666, 0xaaaa, 0xbbbb };
     uint16_t mask[16];
 
-    memset(mask, 0xff, 16);
+    memset(mask, 0xff, sizeof(mask));
     res = sai_deserialize_ip_prefix("1111:2222:333:4444:5555:6666:aaaa:bbbb/128", &prefix);
     ASSERT_TRUE(prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV6, "expected true");
     ASSERT_TRUE(memcmp(prefix.addr.ip6, ip6, 16) == 0, "expected true");
     ASSERT_TRUE(memcmp(prefix.mask.ip6, mask, 16) == 0, "expected true");
     ASSERT_TRUE(res == (int)strlen("1111:2222:333:4444:5555:6666:aaaa:bbbb/128"), "expected true: %d", res);
 
-    memset(mask, 0, 16);
+    memset(mask, 0, sizeof(mask));
     memset(mask, 0xff, 8);
     ((uint8_t*)mask)[8] = 0x80;
 
@@ -777,7 +777,7 @@ void test_deserialize_ip_prefix()
     ASSERT_TRUE(memcmp(prefix.addr.ip6, ip6a, 16) == 0, "expected true");
     ASSERT_TRUE(memcmp(prefix.mask.ip6, mask, 16) == 0, "expected true");
 
-    memset(mask, 0, 16);
+    memset(mask, 0, sizeof(mask));
     res = sai_deserialize_ip_prefix("1::ff/0", &prefix);
     ASSERT_TRUE(prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV6, "expected true");
     ASSERT_TRUE(res == (int)strlen("1::ff/0"), "expected true");
@@ -787,7 +787,7 @@ void test_deserialize_ip_prefix()
 
     uint16_t ip6b[] = { 0, 0, 0, 0, 0, 0, 0, 0x100 };
 
-    memset(mask, 0xff, 16);
+    memset(mask, 0xff, sizeof(mask));
     res = sai_deserialize_ip_prefix("::1/128", &prefix);
     ASSERT_TRUE(prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV6, "expected true");
     ASSERT_TRUE(res == (int)strlen("::1/128"), "expected true");
@@ -1281,6 +1281,64 @@ void sai_serialize_log(
     printf("%s:%s:%s:%d: %s\n", logbuffer, file, func, line, buffer);
 }
 
+void test_serialize_attr_value_pointer()
+{
+    char buf[0x100 * PRIMITIVE_BUFFER_SIZE];
+    int res;
+    const char* ret;
+
+    sai_attribute_t attr;
+
+    attr.id = SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY;
+    attr.value.ptr = (sai_pointer_t)0xaabb;
+
+    const sai_attr_metadata_t *meta = sai_metadata_get_attr_metadata(
+            SAI_OBJECT_TYPE_SWITCH,
+            SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY);
+
+    res = sai_serialize_attribute(buf, meta, &attr);
+
+    ret = "{\"id\":\"SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY\",\"value\":{\"ptr\":\"ptr:0xaabb\"}}";
+
+    ASSERT_STR_EQ(buf, ret, res);
+}
+
+void test_deserialize_pointer()
+{
+    char buf[0x100 * PRIMITIVE_BUFFER_SIZE];
+    sai_pointer_t ptr = 0;
+    int res;
+
+    res = sai_serialize_pointer(buf, ptr);
+
+    ASSERT_STR_EQ(buf, "ptr:(nil)", res);
+
+    res = sai_deserialize_pointer(buf, &ptr);
+
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == 0, "expected pointer to be null");
+
+#if INTPTR_MAX == INT32_MAX
+
+    const char *buf1 = "ptr:0x11223344";
+
+    res = sai_deserialize_pointer(buf1, &ptr);
+
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == (sai_pointer_t)0x11223344, "not equal pointer");
+
+#else
+
+    const char *buf1 = "ptr:0x1122334455667788";
+
+    res = sai_deserialize_pointer(buf1, &ptr);
+
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == (sai_pointer_t)0x1122334455667788, "not equal pointer");
+
+#endif
+}
+
 int main()
 {
 
@@ -1329,6 +1387,10 @@ int main()
 
     test_serialize_ip4_mask();
     test_serialize_ip6_mask();
+
+    test_serialize_attr_value_pointer();
+
+    test_deserialize_pointer();
 
     /* test generated methods */
 

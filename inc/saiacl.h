@@ -126,7 +126,7 @@ typedef enum _sai_acl_action_type_t
     /** Redirect Packet to a list of destination which can be a port list */
     SAI_ACL_ACTION_TYPE_REDIRECT_LIST,
 
-    /** Drop Packet */
+    /** Packet Action */
     SAI_ACL_ACTION_TYPE_PACKET_ACTION,
 
     /** Flood Packet on Vlan domain */
@@ -890,6 +890,24 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ICMP_CODE,
 
     /**
+     * @brief ICMP Type for IPv6
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_ICMPV6_TYPE,
+
+    /**
+     * @brief ICMP Code for IPv6
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_ICMPV6_CODE,
+
+    /**
      * @brief Vlan Tags
      *
      * @type bool
@@ -991,6 +1009,24 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
+
+    /**
+     * @brief Base Transport Header opcode field
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_BTH_OPCODE,
+
+    /**
+     * @brief Ack_extented Transport Header syndrome field
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_AETH_SYNDROME,
 
     /**
      * @brief User Defined Field Groups
@@ -1525,6 +1561,24 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ICMP_CODE,
 
     /**
+     * @brief ICMP Type for IPv6
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_ICMPV6_TYPE,
+
+    /**
+     * @brief ICMP Code for IPv6
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_ICMPV6_CODE,
+
+    /**
      * @brief Number of VLAN Tags
      *
      * @type sai_acl_field_data_t sai_packet_vlan_t
@@ -1646,6 +1700,24 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
+
+    /**
+     * @brief Base Transport Header opcode field
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_BTH_OPCODE,
+
+    /**
+     * @brief Ack_extented Transport Header syndrome field
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_AETH_SYNDROME,
 
     /**
      * @brief User Defined Field data for the UDF Groups in ACL Table

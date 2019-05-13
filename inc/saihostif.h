@@ -236,7 +236,10 @@ typedef enum _sai_hostif_trap_type_t
     /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE = 0x00002001,
 
-    /** Default packet action is forward */
+    /**
+     * @brief DHCP traffic (UDP ports 67, 68), either L3 broadcast or unicast
+     * to local router IP address (default packet action is forward)
+     */
     SAI_HOSTIF_TRAP_TYPE_DHCP = 0x00002002,
 
     /** Default packet action is forward */
@@ -313,6 +316,18 @@ typedef enum _sai_hostif_trap_type_t
      * local router IP address (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x00004004,
+
+    /**
+     * @brief BFD traffic (UDP dst port == 3784 or UDP dst port == 4784) to local
+     * router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFD = 0x00004005,
+
+    /**
+     * @brief BFDV6 traffic (UDP dst port == 3784 or UDP dst port == 4784) to
+     * local router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFDV6 = 0x00004006,
 
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
@@ -403,7 +418,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default attrvalue SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY
-     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
 
@@ -414,7 +429,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
      * @default empty
-     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
 
@@ -425,7 +440,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @default attrvalue SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP
-     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
 

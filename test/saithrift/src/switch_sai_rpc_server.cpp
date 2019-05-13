@@ -291,6 +291,9 @@ public:
               case SAI_PORT_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
+              case SAI_PORT_ATTR_MTU:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
               default:
                   break;
           }
@@ -400,6 +403,10 @@ public:
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_ROUTER_INTERFACE_ATTR_MTU:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
               default:
                   break;
           }
@@ -880,7 +887,7 @@ public:
 
         status = vlan_api->get_vlan_stats((sai_vlan_id_t) vlan_id,
                                           number_of_counters,
-                                          counter_ids,
+                                          (const sai_stat_id_t *)counter_ids,
                                           counters);
 
         for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) { thrift_counters.push_back(counters[i]); }
@@ -1338,6 +1345,23 @@ public:
       }
       sai_thrift_parse_neighbor_entry(thrift_neighbor_entry, &neighbor_entry);
       status = neighbor_api->remove_neighbor_entry(&neighbor_entry);
+      return status;
+  }
+
+  sai_thrift_status_t sai_thrift_set_neighbor_entry_attribute(const sai_thrift_neighbor_entry_t& thrift_neighbor_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr) {
+      printf("sai_thrift_set_neighbor_entry_attribute\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_neighbor_api_t *neighbor_api;
+      status = sai_api_query(SAI_API_NEIGHBOR, (void **) &neighbor_api);
+      sai_neighbor_entry_t neighbor_entry;
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_thrift_parse_neighbor_entry(thrift_neighbor_entry, &neighbor_entry);
+      sai_attribute_t *attr= (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr.size());
+      sai_thrift_parse_neighbor_attributes(thrift_attr, attr);
+      status = neighbor_api->set_neighbor_entry_attribute(&neighbor_entry, attr);
+      free(attr);
       return status;
   }
 
@@ -2709,6 +2733,25 @@ public:
       return status;
   }
 
+  sai_thrift_status_t sai_thrift_set_mirror_session_attribute(const sai_thrift_object_id_t session_id, const sai_thrift_attribute_t &thrift_attr) {
+      printf("sai_thrift_set_mirror_session\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_mirror_api_t *mirror_api;
+      status = sai_api_query(SAI_API_MIRROR, (void **) &mirror_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      std::vector<sai_thrift_attribute_t> thrift_attr_list;
+      thrift_attr_list.push_back(thrift_attr);
+      sai_attribute_t attr;
+      sai_thrift_parse_mirror_session_attributes(thrift_attr_list, &attr);
+      status = mirror_api->set_mirror_session_attribute((sai_object_id_t)session_id, &attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to set mirror session attributes.");
+      }
+      return status;
+  }
+
   void sai_thrift_parse_policer_attributes(sai_attribute_t *attr_list,
                                            const std::vector<sai_thrift_attribute_t> &thrift_attr_list) const noexcept
   {
@@ -2861,7 +2904,7 @@ public:
 
       sai_thrift_alloc_array(counters, number_of_counters);
 
-      status = policer_api->get_policer_stats(thrift_policer_id, number_of_counters, counter_ids, counters);
+      status = policer_api->get_policer_stats(thrift_policer_id, number_of_counters, (const sai_stat_id_t *)counter_ids, counters);
 
       if (status == SAI_STATUS_SUCCESS)
       {
@@ -2889,7 +2932,7 @@ public:
       auto counter_ids = reinterpret_cast<const sai_policer_stat_t*>(thrift_counter_ids.data());
       sai_size_t number_of_counters = thrift_counter_ids.size();
 
-      status = policer_api->clear_policer_stats(thrift_policer_id, number_of_counters, counter_ids);
+      status = policer_api->clear_policer_stats(thrift_policer_id, number_of_counters, (const sai_stat_id_t *)counter_ids);
 
       if (status == SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_DBG("Exited."); return status; }
@@ -2977,7 +3020,7 @@ public:
 
       status = port_api->get_port_stats((sai_object_id_t) port_id,
                                         number_of_counters,
-                                        counter_ids,
+                                        (const sai_stat_id_t *)counter_ids,
                                         counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -3088,6 +3131,16 @@ public:
       thrift_port_status.id = SAI_PORT_ATTR_OPER_STATUS;
       thrift_port_status.value.s32 =  port_oper_status_attribute.value.s32;
       attr_list.push_back(thrift_port_status);
+
+      sai_attribute_t port_mtu_status_attribute;
+      sai_thrift_attribute_t thrift_port_mtu;
+      port_mtu_status_attribute.id = SAI_PORT_ATTR_MTU;
+      port_api->get_port_attribute(port_id, 1, &port_mtu_status_attribute);
+
+      thrift_attr_list.attr_count = 6;
+      thrift_port_mtu.id = SAI_PORT_ATTR_MTU;
+      thrift_port_mtu.value.u32 =  port_mtu_status_attribute.value.u32;
+      attr_list.push_back(thrift_port_mtu);
   }
 
   void sai_thrift_get_queue_stats(std::vector<int64_t> & thrift_counters,
@@ -3111,7 +3164,7 @@ public:
       status = queue_api->get_queue_stats(
                              (sai_object_id_t) queue_id,
                              number_of_counters,
-                             counter_ids,
+                             (const sai_stat_id_t *)counter_ids,
                              counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -3157,7 +3210,7 @@ public:
       status = queue_api->clear_queue_stats(
                              (sai_object_id_t) queue_id,
                              number_of_counters,
-                             counter_ids);
+                             (const sai_stat_id_t *)counter_ids);
 
       free(counter_ids);
       return status;
@@ -3283,7 +3336,7 @@ public:
 
       status = buffer_api->get_ingress_priority_group_stats((sai_object_id_t) pg_id,
                                                             number_of_counters,
-                                                            counter_ids,
+                                                            (const sai_stat_id_t *)counter_ids,
                                                             counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
