@@ -388,7 +388,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
         For SONiC
         Vlan broadcast and known unicast test. Verify the broacast packet reaches all ports in the vlan and unicast packet reach specific port. 
         Steps:
-        1. remove all ports from default vlan
+        1. remove all testing ports from default vlan
         2. create vlan 10
         3. add n-1 ports to vlan 10
         4. add mac for each port
@@ -407,7 +407,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
             mac_list.append("00:00:00:00:00:%02x" %(i+1))
         mac_action = SAI_PACKET_ACTION_FORWARD
 
-        sai_thrift_vlan_remove_all_ports(self.client, switch.default_vlan.oid)
+        sai_thrift_vlan_remove_ports(self.client, switch.default_vlan.oid, port_list)
 
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
         for i in range (0, len(port_list)-1):
@@ -438,7 +438,7 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
                                     eth_src='00:00:00:00:00:01',
                                     ip_dst='10.0.0.1',
                                     ip_id=101,
-                                    ip_ttl=64)	
+                                    ip_ttl=64)
                 send_packet(self, ingress_port, str(ucast_pkt))
                 verify_packets(self, ucast_pkt, [i])
 
@@ -449,6 +449,9 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
             for i in range (0, len(port_list)-1):
                 sai_thrift_delete_fdb(self.client, vlan_oid, mac_list[i], port_list[i])
                 self.client.sai_thrift_set_port_attribute(port_list[i], attr)
+
+            #'00:00:00:00:00:01' is learned on port 1, but not be removed after test
+            sai_thrift_delete_fdb(self.client, vlan_oid,'00:00:00:00:00:01', port_list[0])
 
             for vlan_member in vlan_member_list:
                 self.client.sai_thrift_remove_vlan_member(vlan_member)
