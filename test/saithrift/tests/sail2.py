@@ -389,7 +389,7 @@ class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
         Create a LAG group with 4 ports 1 through 4. Setup static FDB entries for the LAG and send packet to this destination MAC address. 
         Send 100 packets with varying 5-tuple and check order/sequence of the distribution of packets received on ports 1 through 4. 
         Change the LAG Hash seed value to 10 and compare the order/sequence of the distribution of packets received for the same set of 100 packets on ports 1 through 4. 
-        Verify that it is different after changing the hash seedimport socket
+        Verify that it is different after changing the hash seed.
         """
         
 	switch_init(self.client)
@@ -511,7 +511,7 @@ class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
                 send_packet(self, 4, str(pkt))
                 rcv_idx = verify_any_packet_any_port(self, [exp_pkt], [0, 1, 2, 3])
                 count2[rcv_idx] += 1
-                laglist1.append(rcv_idx)
+                laglist2.append(rcv_idx)
                 sport += 1
                 dport += 1
                  
@@ -519,10 +519,10 @@ class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
 
             order_check=0		
             for i in range(0,max_itrn):
-                if(laglist1[i]==laglist2[i]):
+                if(laglist1[i] != laglist2[i]):
                     order_check+=1
                 
-	    print ("checking the order/sequence matches in both distribution:" ,order_check)
+	    print ("checking the difference in order/sequence before and after changing hash seed value:" ,order_check)
 
         finally:
 
