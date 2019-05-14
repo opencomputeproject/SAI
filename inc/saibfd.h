@@ -432,7 +432,8 @@ typedef enum _sai_bfd_session_attr_t
      * @brief Offload type
      *
      * @type sai_bfd_session_offload_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
+     * @default SAI_BFD_SESSION_OFFLOAD_TYPE_NONE
      */
     SAI_BFD_SESSION_ATTR_BFD_SESSION_OFFLOAD_TYPE,
 
