@@ -444,6 +444,9 @@ public:
               case SAI_LAG_ATTR_PORT_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
                   break;
+              case SAI_LAG_ATTR_INGRESS_ACL:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
               default:
                   SAI_THRIFT_LOG_ERR("Failed to parse attribute.");
                   break;
