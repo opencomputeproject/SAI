@@ -120,6 +120,18 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER,
 
     /**
+     * @brief Attach a list of counters
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_COUNTER_ID_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
