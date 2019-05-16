@@ -105,6 +105,18 @@ typedef enum _sai_route_entry_attr_t
     SAI_ROUTE_ENTRY_ATTR_META_DATA,
 
     /**
+     * @brief Attach a list of counters
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_ROUTE_ENTRY_ATTR_COUNTER_ID_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTE_ENTRY_ATTR_END,

@@ -166,6 +166,18 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_ENDPOINT_IP,
 
     /**
+     * @brief Attach a list of counters
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_FDB_ENTRY_ATTR_COUNTER_ID_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_FDB_ENTRY_ATTR_END,
