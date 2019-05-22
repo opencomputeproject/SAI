@@ -598,7 +598,7 @@ class L2ARPRequestReplyFDBLearningTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_packets(self, pkt, [0])
 
         finally:
-            sai_thrift_flush_fdb_by_vlan(self.client, vlan_id)
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan_oid)
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
 
