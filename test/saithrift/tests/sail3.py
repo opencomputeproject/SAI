@@ -2113,62 +2113,13 @@ class L3IPv4EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_route(self.client, vr1, addr_family, ip_addr4, ip_mask1, nhop_group1)
         # send the test packet(s)
         try:
-            count = [0, 0]
             max_itrs = 10001
-            src_mac_start = '00:22:22:22:22:'
-            ip_src_start = '192.168.12.'
-            ip_dst_start = '10.10.10.'
-            dport = 0x80
-            sport = 0x1234
+            ports = [0,1]
+            member = 2
             var_gmember3 = False
-
             print "sending %s packets to verify distribution on 2 ecmp group members" %(max_itrs - 1)
+            self.verifyEcmpPktDistribution(max_itrs,ports,member)
 
-            for i in range(1, max_itrs):
-                src_mac = src_mac_start + str(i % 99).zfill(2)
-                ip_src = ip_src_start + str(i % 99).zfill(3)
-                ip_dst = ip_dst_start + str(i % 99).zfill(3)
-                if (i%1000) == 0:
-                    print " %s packets sent ...." % (i)
-                pkt = simple_tcp_packet(
-                                eth_dst=router_mac,
-                                eth_src=src_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=64)
-                exp_pkt1 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:55',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
-                exp_pkt2 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:56',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
-                send_packet(self, 2, str(pkt))
-                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [0, 1])
-                count[rcv_idx] += 1
-
-                sport += 1
-                dport += 1
-
-            for i in range(0, 2):
-                print "Packet received on port %s  >> %s" % (i, count[i])
-                self.assertTrue((count[i] >= ((max_itrs / 2) * 0.8)),
-                                "Not all paths are equally balanced, %s" % count)
-            print "All paths are  balanced with two members"
             #  Create another router interface and interface type as PORT.
             rif4 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
 
@@ -2180,171 +2131,35 @@ class L3IPv4EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_create_route(self.client, vr1, addr_family, ip_addr4, ip_mask1, nhop_group1)
 
             var_gmember3 = True
-            count = [0, 0, 0]
             max_itrs = 101
-
+            ports = [0,1,3]
+            member=3
             print "sending %s packets to verify distribution on 3 ports after adding one more ecmp group member" %(max_itrs - 1)
+            self.verifyEcmpPktDistribution(max_itrs,ports,member)
 
-            for i in range(1, max_itrs):
-                src_mac = src_mac_start + str(i % 99).zfill(2)
-                ip_src = ip_src_start + str(i % 99).zfill(3)
-                ip_dst = ip_dst_start + str(i % 99).zfill(3)
-                if (i % 100) == 0:
-                    print "Sending %s packet " % (i)
-                pkt = simple_tcp_packet(
-                                eth_dst=router_mac,
-                                eth_src=src_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=64)
-                exp_pkt1 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:55',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
-                exp_pkt2 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:56',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
-
-                exp_pkt3 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:57',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
-
-                send_packet(self, 2, str(pkt))
-                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3], [0, 1, 3])
-                count[rcv_idx] += 1
-                sport += 1
-                dport += 1
-
-            for i in range(0, 3):
-                print "Packet received on port %s  >> %s" % (i, count[i])
-                self.assertTrue((count[i] >= ((max_itrs / 3) * 0.8)),
-                                "Not all paths are equally balanced, %s" % count)
-            print "All paths are  balanced with three members"
             # L3IPv4EcmpGroupMemberTest_II test case
             # Remove the nhop bound with router interface 1, and verify the traffic flows towards the ECMP route.
-            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember1)
-
-            count = [0, 0]
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember3)
+            time.sleep(2)
             max_itrs = 101
-            itr_count = 0
+            ports = [0,1]
+            member=2
 
             print "sending %s packets to verify distribution on 2 ports after removing one ecmp group member" %(max_itrs - 1 )
-
-            for i in range(1, max_itrs):
-                src_mac = src_mac_start + str(i % 99).zfill(2)
-                ip_src = ip_src_start + str(i % 99).zfill(3)
-                ip_dst = ip_dst_start + str(i % 99).zfill(3)
-                pkt = simple_tcp_packet(
-                                eth_dst=router_mac,
-                                eth_src=src_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=64)
-                exp_pkt1 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:56',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
-                exp_pkt2 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:57',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
-
-                send_packet(self, 2, str(pkt))
-                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [1, 3])
-                count[rcv_idx] += 1
-                sport += 1
-                dport += 1
-
-            for i in range(0, 2):
-                print "Packet received on port %s  >> %s" % (i, count[i])
-                self.assertTrue((count[i] >= ((max_itrs / 2) * 0.8)),
-                                "Not all paths are equally balanced, %s" % count)
-            print "All paths are  balanced with two members"
+            self.verifyEcmpPktDistribution(max_itrs,ports,member)
 
             # Ecmp - iii
             # Remove next hop group members
 
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember1)
             self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember2)
-            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember3)
             time.sleep(2)
-            # Send traffic from port 3 with destination IP (10.10.10.1/24) and observe the traffic should drop
-            max_itrs = 100
-            for i in range(0, max_itrs):
-                src_mac = src_mac_start + str(i % 99).zfill(2)
-                ip_src = ip_src_start + str(i % 99).zfill(3)
-                ip_dst = ip_dst_start + str(i % 99).zfill(3)
-                pkt = simple_tcp_packet(
-                                eth_dst=router_mac,
-                                eth_src=src_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=64)
-                exp_pkt1 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:55',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
-                exp_pkt2 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:56',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
-                exp_pkt3 = simple_tcp_packet(
-                                eth_dst='00:11:22:33:44:57',
-                                eth_src=router_mac,
-                                ip_dst=ip_dst,
-                                ip_src=ip_src,
-                                tcp_sport=sport,
-                                tcp_dport=dport,
-                                ip_id=106,
-                                ip_ttl=63)
 
-                send_packet(self, 2, str(pkt))
-                verify_no_other_packets(self)
+            # Send traffic from port 3 with destination IP (10.10.10.1/24) and observe the traffic should drop
+            max_itrs = 101
+            ports = [1,2]
+            member=0
+            self.verifyEcmpPktDistribution(max_itrs,ports,member)
 
         finally:
             sai_thrift_remove_route(self.client, vr1, addr_family, ip_addr4, ip_mask1, nhop_group1)
@@ -2368,6 +2183,81 @@ class L3IPv4EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_router_interface(rif3)
 
             self.client.sai_thrift_remove_virtual_router(vr1)
+
+    def verifyEcmpPktDistribution(self,max_itrs,ports,member):
+        src_mac_start = '00:22:22:22:22:'
+        ip_src_start = '192.168.12.'
+        ip_dst_start = '10.10.10.'
+        dport = 0x80
+        sport = 0x1234
+        eth_dst_ip1 = '00:11:22:33:44:55'
+        eth_dst_ip2 = '00:11:22:33:44:56'
+        eth_dst_ip3 = '00:11:22:33:44:57'
+        if member==2:
+            count=[0,0]
+        elif(member==3):
+            count=[0,0,0]
+
+        for i in range(0, max_itrs):
+            src_mac = src_mac_start + str(i % 99).zfill(2)
+            ip_src = ip_src_start + str(i % 99).zfill(3)
+            ip_dst = ip_dst_start + str(i % 99).zfill(3)
+            pkt = simple_tcp_packet(
+                             eth_dst=router_mac,
+                             eth_src=src_mac,
+                             ip_dst=ip_dst,
+                             ip_src=ip_src,
+                             tcp_sport=sport,
+                             tcp_dport=dport,
+                             ip_id=106,
+                             ip_ttl=64)
+            exp_pkt1 = simple_tcp_packet(
+                             eth_dst=eth_dst_ip1,
+                             eth_src=router_mac,
+                             ip_dst=ip_dst,
+                             ip_src=ip_src,
+                             tcp_sport=sport,
+                             tcp_dport=dport,
+                             ip_id=106,
+                             ip_ttl=63)
+            exp_pkt2 = simple_tcp_packet(
+                             eth_dst=eth_dst_ip2,
+                             eth_src=router_mac,
+                             ip_dst=ip_dst,
+                             ip_src=ip_src,
+                             tcp_sport=sport,
+                             tcp_dport=dport,
+                             ip_id=106,
+                             ip_ttl=63)
+            exp_pkt3 = simple_tcp_packet(
+                             eth_dst=eth_dst_ip3,
+                             eth_src=router_mac,
+                             ip_dst=ip_dst,
+                             ip_src=ip_src,
+                             tcp_sport=sport,
+                             tcp_dport=dport,
+                             ip_id=106,
+                             ip_ttl=63)
+
+            send_packet(self, 2, str(pkt))
+            if member==0:
+                verify_no_other_packets(self)
+            elif member==2:
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2],ports)
+                count[rcv_idx] += 1
+            elif member==3:
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3],ports)
+                count[rcv_idx] += 1
+            sport += 1
+            dport += 1
+        if member!=0:
+            for i in range(0,member):
+                print "Packet received on port %s  >> %s" % (i, count[i])
+                self.assertTrue((count[i] >= ((max_itrs / member) * 0.8)),
+                                      "Not all paths are equally balanced, %s" % count)
+            print "All paths are  balanced with %s members" % member
+
+
 
 
 @group('l3')
@@ -2453,64 +2343,16 @@ class L3IPv6EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_route(self.client, vr1, addr_family, ip_addr4_subnet, ip_mask1, nhop_group1)
 
         # send the test packet(s)
+
         try:
-            count = [0, 0]
             max_itrs = 10001
-            src_mac_start = '00:22:22:22:22:'
-            ipv6_src_start = '2010:2010::'
-            ipv6_dst_start = '3000:1000::'
             dport = 0x80
             sport = 0x1234
+            ports = [0,1]
+            member=2
             var_gmember3 = False
             print "sending %s packets to verify distribution on 2 ecmp group members" %(max_itrs - 1)
-
-            for i in range(1, max_itrs):
-                src_mac = src_mac_start + str(i % 99).zfill(2)
-                ipv6_src = ipv6_src_start + str(i % 99).zfill(3)
-                ipv6_dst = ipv6_dst_start + str(i % 99).zfill(3)
-                if (i % 1000) == 0:
-                    print "%s packets sent " % (i)
-                pkt = simple_tcpv6_packet(
-                                    eth_dst=router_mac,
-                                    eth_src=src_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=64)
-
-                exp_pkt1 = simple_tcpv6_packet(
-                                    eth_dst='00:11:22:33:44:55',
-                                    eth_src=router_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=63)
-
-                exp_pkt2 = simple_tcpv6_packet(
-                                    eth_dst='00:11:22:33:44:56',
-                                    eth_src=router_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=63)
-
-                send_packet(self, 2, str(pkt))
-                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [0, 1])
-                count[rcv_idx] += 1
-                sport += 1
-                dport += 1
-
-            for i in range(0, 2):
-                print "Packet received on port %s  >> %s" % (i, count[i])
-                self.assertTrue((count[i] >= ((max_itrs / 2) * 0.8)),
-                                "Not all paths are equally balanced, %s" % count)
-            print "All paths are balanced with two members"
+            self.verifyEcmpPktDistributionIpv6(max_itrs,ports,member)
 
             rif4 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
             sai_thrift_create_neighbor(self.client, addr_family, rif4, ip_addr3, dmac3)
@@ -2519,121 +2361,22 @@ class L3IPv6EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_create_route(self.client, vr1, addr_family, ip_addr4_subnet, ip_mask1, nhop_group1)
 
             var_gmember3 = True
-            count = [0, 0, 0]
-            max_itrs = 101
-
+            max_itrs = 121
+            ports = [0,1,3]
+            member=3
             print "sending %s packets to verify distribution on 3 ports after adding one more ecmp group member" %(max_itrs - 1)
+            self.verifyEcmpPktDistributionIpv6(max_itrs,ports,member)
 
-            for i in range(1, max_itrs):
-                src_mac = src_mac_start + str(i % 99).zfill(2)
-                ipv6_src = ipv6_src_start + str(i % 99).zfill(3)
-                ipv6_dst = ipv6_dst_start + str(i % 99).zfill(3)
-                pkt = simple_tcpv6_packet(
-                                    eth_dst=router_mac,
-                                    eth_src=src_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=64)
-
-                exp_pkt1 = simple_tcpv6_packet(
-                                    eth_dst='00:11:22:33:44:55',
-                                    eth_src=router_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=63)
-
-                exp_pkt2 = simple_tcpv6_packet(
-                                    eth_dst='00:11:22:33:44:56',
-                                    eth_src=router_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=63)
-
-                exp_pkt3 = simple_tcpv6_packet(
-                                    eth_dst='00:11:22:33:44:57',
-                                    eth_src=router_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=63)
-
-                send_packet(self, 2, str(pkt))
-                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3], [0, 1, 3])
-                count[rcv_idx] += 1
-                sport += 1
-                dport += 1
-
-            for i in range(0, 3):
-                print "Packet received on port %s  >> %s" % (i, count[i])
-                self.assertTrue((count[i] >= ((max_itrs / 3) * 0.8)),
-                                "Not all paths are equally balanced, %s" % count)
-            print "All paths are  balanced with three members"
             # Remove the nhop bound with router interface 1, and verify the traffic flows towards the ECMP route.
-            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember1)
-            time.sleep(2)
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember3)
+            time.sleep(5)
             # Reset the count value after removal of the nhop member
-            count = [0, 0]
             max_itrs = 101
-
+            ports = [0,1]
+            member=2
             print "sending %s packets to verify distribution on 2 ports after removing one ecmp group member" %(max_itrs - 1 )
+            self.verifyEcmpPktDistributionIpv6(max_itrs,ports,member)
 
-            for i in range(1, max_itrs):
-                src_mac = src_mac_start + str(i % 99).zfill(2)
-                ipv6_src = ipv6_src_start + str(i % 99).zfill(3)
-                ipv6_dst = ipv6_dst_start + str(i % 99).zfill(3)
-                pkt = simple_tcpv6_packet(
-                                    eth_dst=router_mac,
-                                    eth_src=src_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=64)
-
-                exp_pkt1 = simple_tcpv6_packet(
-                                    eth_dst='00:11:22:33:44:56',
-                                    eth_src=router_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=63)
-
-                exp_pkt2 = simple_tcpv6_packet(
-                                    eth_dst='00:11:22:33:44:57',
-                                    eth_src=router_mac,
-                                    ipv6_dst=ipv6_dst,
-                                    ipv6_src=ipv6_src,
-                                    dl_vlan_enable=False,
-                                    tcp_sport=sport,
-                                    tcp_dport=dport,
-                                    ipv6_hlim=63)
-
-                send_packet(self, 2, str(pkt))
-                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [1, 3])
-                count[rcv_idx] += 1
-
-                sport += 1
-                dport += 1
-
-            for i in range(0, 2):
-                print "Packet received on port %s  >> %s" % (i, count[i])
-                self.assertTrue((count[i] >= ((max_itrs / 2) * 0.8)),
-                                "Not all paths are equally balanced, %s" % count)
-            print "All paths are balanced with two members"
         finally:
             sai_thrift_remove_route(self.client, vr1, addr_family, ip_addr4_subnet, ip_mask1, nhop_group1)
             self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember2)
@@ -2653,4 +2396,77 @@ class L3IPv6EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
                 self.client.sai_thrift_remove_router_interface(rif4)
 
             self.client.sai_thrift_remove_virtual_router(vr1)
+
+    def verifyEcmpPktDistributionIpv6(self,max_itrs,ports,member):
+        src_mac_start = '00:22:22:22:22:'
+        ipv6_src_start = '2010:2010::'
+        ipv6_dst_start = '3000:1000::'
+        dport = 0x80
+        sport = 0x1234
+        eth_dst_ip1 = '00:11:22:33:44:55'
+        eth_dst_ip2 = '00:11:22:33:44:56'
+        eth_dst_ip3 = '00:11:22:33:44:57'
+        if member==2:
+            count=[0,0]
+        elif(member==3):
+            count=[0,0,0]
+
+        for i in range(0, max_itrs):
+            src_mac = src_mac_start + str(i % 99).zfill(2)
+            ipv6_src = ipv6_src_start + str(i % 99).zfill(3)
+            ipv6_dst = ipv6_dst_start + str(i % 99).zfill(3)
+            pkt = simple_tcpv6_packet(
+                              eth_dst=router_mac,
+                              eth_src=src_mac,
+                              ipv6_dst=ipv6_dst,
+                              ipv6_src=ipv6_src,
+                              dl_vlan_enable=False,
+                              tcp_sport=sport,
+                              tcp_dport=dport,
+                              ipv6_hlim=64)
+            exp_pkt1 = simple_tcpv6_packet(
+                              eth_dst=eth_dst_ip1,
+                              eth_src=router_mac,
+                              ipv6_dst=ipv6_dst,
+                              ipv6_src=ipv6_src,
+                              dl_vlan_enable=False,
+                              tcp_sport=sport,
+                              tcp_dport=dport,
+                              ipv6_hlim=63)
+            exp_pkt2 = simple_tcpv6_packet(
+                              eth_dst=eth_dst_ip2,
+                              eth_src=router_mac,
+                              ipv6_dst=ipv6_dst,
+                              ipv6_src=ipv6_src,
+                              dl_vlan_enable=False,
+                              tcp_sport=sport,
+                              tcp_dport=dport,
+                              ipv6_hlim=63)
+            exp_pkt3 = simple_tcpv6_packet(
+                              eth_dst=eth_dst_ip3,
+                              eth_src=router_mac,
+                              ipv6_dst=ipv6_dst,
+                              ipv6_src=ipv6_src,
+                              dl_vlan_enable=False,
+                              tcp_sport=sport,
+                              tcp_dport=dport,
+                              ipv6_hlim=63)
+
+           send_packet(self, 2, str(pkt))
+            if member==0:
+                verify_no_other_packets(self)
+            elif member==2:
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2],ports)
+                count[rcv_idx] += 1
+            elif member==3:
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3],ports)
+                count[rcv_idx] += 1
+            sport += 1
+            dport += 1
+        if member!=0:
+            for i in range(0,member):
+                print "Packet received on port %s  >> %s" % (i, count[i])
+                self.assertTrue((count[i] >= ((max_itrs / member) * 0.8)),
+                                      "Not all paths are equally balanced, %s" % count)
+            print "All paths are  balanced with %s members" % member
 
