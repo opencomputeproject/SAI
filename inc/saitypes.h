@@ -1002,7 +1002,7 @@ typedef union _sai_attribute_value_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_VLAN_LIST */
     sai_vlan_list_t vlanlist;
 
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MAP_LIST */
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST */
     sai_qos_map_list_t qosmap;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MAP_LIST */
