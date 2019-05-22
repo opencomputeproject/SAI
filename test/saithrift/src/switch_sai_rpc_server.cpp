@@ -121,6 +121,12 @@ public:
       return (j == 12);
   }
 
+  const std::string mac_to_sai_thrift_string(uint8_t m[6]){
+      char macstr[32];
+      sprintf(macstr, "%02x:%02x:%02x:%02x:%02x:%02x", m[0], m[1], m[2], m[3], m[4], m[5]);
+      return(macstr);
+  }
+  
   void sai_thrift_string_to_v4_ip(const std::string s, unsigned int *m) {
       unsigned char r=0;
       unsigned int i;
@@ -737,42 +743,42 @@ public:
       free(attr_list);
       return status;
   }
- sai_thrift_attribute_list_t sai_thrift_get_fdb_entries ()
- {       
-     sai_fdb_entry_t fdb_entry;
-     uint32_t attr_count;
-     sai_attribute_t *attr;
-     sai_mac_t mac_address;
-     sai_object_id_t bv_id;	
-     sai_object_id_t bport_id;
+//listing all the fdb entries from map	
+  void sai_thrift_get_fdb_entries (sai_thrift_attribute_list_t& thrift_attr_list){
+      sai_fdb_entry_t fdb_entry;
+      uint32_t attr_count;
+      sai_attribute_t *attr;
+      sai_mac_t mac_address;
+      sai_object_id_t bv_id;	
+      sai_object_id_t bport_id;
+             
+      extern std::map<std::sai_fdb_entry_t, std::sai_object_id_t>  gFdbMap;
+     
+      sai_thrift_attribute_list_t  thrift_attr_list;
+      attr_count =    gFdbMap.size();
+      thrift_attr_list.attr_count = attr_count;
+      std::vector<sai_thrift_attribute_t>  fdb_entry_list;
+   	 
+      sai_fdb_entry_t fdb_m;
+      sai_object_id_t b_id;        
+
+      for (auto it = gFdbMap.begin(); it != gFdbMap.end() ;it++){
+          fdb_m = it->first;
+	  b_id = it->second; 	
+		
+          sai_thrift_attribute_t thrift_fdb_entry;		 
+
+          thrift_fdb_entry.id = (sai_thrift_object_id_t)b_id;
+	  thrift_fdb_entry.value.oid =(sai_thrift_object_id_t)fdb_m.bv_id;	
+          thrift_fdb_entry.value.mac = mac_to_sai_thrift_string(fdb_m. mac_address) ;
         
-	      
-     extern std::map<std::sai_fdb_entry_t, std::sai_object_id_t>gFDB_map;
-     std::map<std::sai_fdb_entry_t, std::sai_object_id_t>::iterator gFDB_mapIt;
-
-     sai_thrift_attribute_list_t fdb_list;
-
-     attr_count =  gFDB_map.size();
-     fdb_list.attr_count = attr_count;
-     std::vector<sai_thrift_attribute_t>  fdb_entry_list;
-
-     sai_fdb_entry_t fdb_m;
-     sai_object_id_t b_id;        
-
-     for (gFDB_mapIt = gFDB_map.begin(); gFDB_mapIt != gFDB_map.end() ;gFDB_mapIt++){
-         fdb_m = gFDB_mapIt->first;
-	 b_id = gFDB_mapIt->second; 				
-	 sai_thrift_attribute_t thrift_fdb_entry;		 
-
-         thrift_fdb_entry.id = (sai_thrift_object_id_t)b_id;
-	 thrift_fdb_entry.value.mac=fdb_m. mac_address;
-	 thrift_fdb_entry.value.oid=(sai_thrift_object_id_t)fdb_m.bv_id;	   
-	 fdb_entry_list.push_back(thrift_fdb_entry);
-     }			
-         fdb_list.attr_list =  fdb_entry_list ;  
-         return(fdb_list);
-}
-
+          fdb_entry_list.push_back(thrift_fdb_entry);
+      }			
+      
+      thrift_attr_list.attr_list =  fdb_entry_list ;  
+      return;
+  }
+  
   void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list) {
       SAI_THRIFT_LOG_DBG("Called.");
 
