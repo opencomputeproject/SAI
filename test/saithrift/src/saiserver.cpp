@@ -90,13 +90,13 @@ void on_fdb_event(_In_ uint32_t count,
 	                
                     if(bport_id == 0 && bv_id == fdb_m.bv_id)
                         gFdbMap.erase(it--);
-                    else if(bv_id==0 && bport_id == b_id)
-		        gFdbMap.erase(it--);
+                    else if(bv_id==0 && bport_id == b_id)		
+                        gFdbMap.erase(it--);
                     else if(bv_id == fdb_m.bv_id && bport_id == b_id)
                         gFdbMap.erase(it--);	
 	        }
-	    }    
-	    break;
+	    }
+            break;
 	      
         case SAI_FDB_EVENT_MOVE:
 	    for(auto it = gFdbMap.begin() ; it!= gFdbMap.end() ; it++)
@@ -105,9 +105,9 @@ void on_fdb_event(_In_ uint32_t count,
                 
                 if(fdb_entry.mac_address == fdb_m.mac_address && bv_id == fdb_m.bv_id)
 	            it->second =  bport_id;
-            }
-	    break;
-         
+	    }
+            break;
+        
         case SAI_FDB_EVENT_AGED:
             for(auto it = gFdbMap.begin() ; it!= gFdbMap.end() ; it++)
             {
@@ -117,9 +117,8 @@ void on_fdb_event(_In_ uint32_t count,
 	            gFdbMap.erase(it--);
             }
 	    break;
-	      
-	default:
-	    printf("unknown event");
+        default:
+            printf("unknown event");
     	    break;
     }
     
