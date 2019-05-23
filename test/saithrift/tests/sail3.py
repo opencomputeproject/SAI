@@ -3005,3 +3005,448 @@ class L3IPv6NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_set_port_attribute(port1, attr)
             self.client.sai_thrift_set_port_attribute(port2, attr)
 
+
+@group('l3')
+@group('ecmp')
+class L3IPv4EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        '''
+        Description:
+        i) L3IPv4EcmpGroupMemberTest I:
+        Create a VRF with IPv4 and IPv6 enabled. Create three router interfaces in
+        the same VRF. Create a route (24 mask) with nhop and neighbor entry in two
+        router interfaces. Send 10,000 streams with varying 5 tuple combinations to
+        the destination IP on one port and verify distribution on the two router
+        interfaces for which the nhops are present. Create another router interface
+        and add nhop and neighbor entry over this interface to the route configured above.
+        NH group object shall be updated and verify traffic distribution to the newly added nhop.
+
+        ii) L3IPv4EcmpGroupMemberTest II:
+        After executing L3IPv4EcmpGroupMemberTest  I, remove the nhop entry on router interface 1
+        from the route while traffic flow is still active. Verify the traffic is not forwarded to
+        removed nhop and distribution happens on the remaining set of nhops.
+
+        iii) L3IPv4EcmpGroupMemberTest III (Zero member):
+        Same as L3IPv4EcmpGroupMemberTest but the ECMP group object to which the route is
+        pointing has zero members. Verify that traffic is dropped
+
+        Steps:
+        1. Create Virtual router V1 and enable IPv4 and IPv6.
+        2. Create three virtual router interfaces and set the interface type as "PORT" for ports 1, 2, 3.
+        3. Create IPv4 neighbor entry (192.168.0.1, 192.168.1.1) with MAC1, MAC2 and associate with "RIF ids (id1 to 2)".
+        4. Create two next hops (nhop1 & nhop2) and associate with RIFs (Id 1 & 2) respectively.
+        5. Create next-hop group "nhop_group1".
+        6. Create group members (nhop_gmember1, nhop_gmember2) for "nhop_group1" ,associated with  next-hops (nhop1 & nho2) respectively.
+        7. Create route entry with /24 mask (i.e 10.10.10.1/255.255.255.0) through "nhop_group1".
+
+        Part1:
+        1. Send 10,000 streams from port 3 with destination IP (10.10.10.1/24) and varying src_mac,src_ip,dst_ip, sport
+        and dport ,Observe the traffic distribution on all the two router interface, which have next hop present.
+
+        Part2:
+        1. Create another router interface and interface type as PORT.
+        2. Create new nhop and neighbor entry (192.168.2.1) over the router interface (port 3) towards the ECMP route (i.e 10.10.10.1/24).
+
+        Clean up by remove the nhop, neighbor, route and the router interface.
+        '''
+
+        print "Sending packet port 3 -> port 1 ,2 (192.168.12.1  -> 10.10.10.1 [id = 106])"
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        port4 = port_list[3]
+        v4_enabled = 1
+        v6_enabled = 0
+        mac = ''
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1 = '192.168.0.1'
+        ip_addr2 = '192.168.1.1'
+        ip_addr3 = '192.168.2.1'
+        ip_addr4 = '10.10.10.0'
+        ip_addr1_subnet = '192.168.0.0'
+        ip_addr2_subnet = '192.168.1.0'
+        ip_addr3_subnet = '192.168.2.0'
+        ip_mask1 = '255.255.255.0'
+        dmac1 = '00:11:22:33:44:55'
+        dmac2 = '00:11:22:33:44:56'
+        dmac3 = '00:11:22:33:44:57'
+
+        vr1 = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif1 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif2 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
+        rif3 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
+
+        sai_thrift_create_neighbor(self.client, addr_family, rif1, ip_addr1, dmac1)
+        sai_thrift_create_neighbor(self.client, addr_family, rif2, ip_addr2, dmac2)
+
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif1)
+        nhop2 = sai_thrift_create_nhop(self.client, addr_family, ip_addr2, rif2)
+
+        nhop_group1 = sai_thrift_create_next_hop_group(self.client)
+
+        nhop_gmember1 = sai_thrift_create_next_hop_group_member(self.client, nhop_group1, nhop1)
+        nhop_gmember2 = sai_thrift_create_next_hop_group_member(self.client, nhop_group1, nhop2)
+
+        sai_thrift_create_route(self.client, vr1, addr_family, ip_addr4, ip_mask1, nhop_group1)
+        # send the test packet(s)
+        try:
+            max_itrs = 10001
+            ports = [0,1]
+            member = 2
+            var_gmember3 = False
+            print "sending %s packets to verify distribution on 2 ecmp group members" %(max_itrs - 1)
+            self.verifyEcmpPktDistribution(max_itrs,ports,member)
+
+            #  Create another router interface and interface type as PORT.
+            rif4 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
+
+            #  Create new nhop and neighbor entry (192.168.2.1) over the router interface (port 4) towards the ECMP route (i.e 10.10.10.1/24).
+            sai_thrift_create_neighbor(self.client, addr_family, rif4, ip_addr3, dmac3)
+            nhop3 = sai_thrift_create_nhop(self.client, addr_family, ip_addr3, rif4)
+
+            nhop_gmember3 = sai_thrift_create_next_hop_group_member(self.client, nhop_group1, nhop3)
+            sai_thrift_create_route(self.client, vr1, addr_family, ip_addr4, ip_mask1, nhop_group1)
+
+            var_gmember3 = True
+            max_itrs = 101
+            ports = [0,1,3]
+            member=3
+            print "sending %s packets to verify distribution on 3 ports after adding one more ecmp group member" %(max_itrs - 1)
+            self.verifyEcmpPktDistribution(max_itrs,ports,member)
+
+            # L3IPv4EcmpGroupMemberTest_II test case
+            # Remove the nhop bound with router interface 1, and verify the traffic flows towards the ECMP route.
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember3)
+            time.sleep(2)
+            max_itrs = 101
+            ports = [0,1]
+            member=2
+
+            print "sending %s packets to verify distribution on 2 ports after removing one ecmp group member" %(max_itrs - 1 )
+            self.verifyEcmpPktDistribution(max_itrs,ports,member)
+
+            # Ecmp - iii
+            # Remove next hop group members
+
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember1)
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember2)
+            time.sleep(2)
+
+            # Send traffic from port 3 with destination IP (10.10.10.1/24) and observe the traffic should drop
+            max_itrs = 101
+            ports = [1,2]
+            member=0
+            self.verifyEcmpPktDistribution(max_itrs,ports,member)
+
+        finally:
+            sai_thrift_remove_route(self.client, vr1, addr_family, ip_addr4, ip_mask1, nhop_group1)
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember1)
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember2)
+            if var_gmember3:
+                self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember3)
+                self.client.sai_thrift_remove_next_hop(nhop3)
+                sai_thrift_remove_neighbor(self.client, addr_family, rif2, ip_addr2, dmac3)
+                self.client.sai_thrift_remove_next_hop_group(nhop_group1)
+                self.client.sai_thrift_remove_router_interface(rif4)
+
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            self.client.sai_thrift_remove_next_hop(nhop2)
+
+            sai_thrift_remove_neighbor(self.client, addr_family, rif1, ip_addr1, dmac1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif2, ip_addr2, dmac2)
+
+            self.client.sai_thrift_remove_router_interface(rif1)
+            self.client.sai_thrift_remove_router_interface(rif2)
+            self.client.sai_thrift_remove_router_interface(rif3)
+
+            self.client.sai_thrift_remove_virtual_router(vr1)
+
+    def verifyEcmpPktDistribution(self,max_itrs,ports,member):
+        src_mac_start = '00:22:22:22:22:'
+        ip_src_start = '192.168.12.'
+        ip_dst_start = '10.10.10.'
+        dport = 0x80
+        sport = 0x1234
+        eth_dst_ip1 = '00:11:22:33:44:55'
+        eth_dst_ip2 = '00:11:22:33:44:56'
+        eth_dst_ip3 = '00:11:22:33:44:57'
+        if member==2:
+            count=[0,0]
+        elif(member==3):
+            count=[0,0,0]
+
+        for i in range(0, max_itrs):
+            src_mac = src_mac_start + str(i % 99).zfill(2)
+            ip_src = ip_src_start + str(i % 99).zfill(3)
+            ip_dst = ip_dst_start + str(i % 99).zfill(3)
+            pkt = simple_tcp_packet(
+                             eth_dst=router_mac,
+                             eth_src=src_mac,
+                             ip_dst=ip_dst,
+                             ip_src=ip_src,
+                             tcp_sport=sport,
+                             tcp_dport=dport,
+                             ip_id=106,
+                             ip_ttl=64)
+            exp_pkt1 = simple_tcp_packet(
+                             eth_dst=eth_dst_ip1,
+                             eth_src=router_mac,
+                             ip_dst=ip_dst,
+                             ip_src=ip_src,
+                             tcp_sport=sport,
+                             tcp_dport=dport,
+                             ip_id=106,
+                             ip_ttl=63)
+            exp_pkt2 = simple_tcp_packet(
+                             eth_dst=eth_dst_ip2,
+                             eth_src=router_mac,
+                             ip_dst=ip_dst,
+                             ip_src=ip_src,
+                             tcp_sport=sport,
+                             tcp_dport=dport,
+                             ip_id=106,
+                             ip_ttl=63)
+            exp_pkt3 = simple_tcp_packet(
+                             eth_dst=eth_dst_ip3,
+                             eth_src=router_mac,
+                             ip_dst=ip_dst,
+                             ip_src=ip_src,
+                             tcp_sport=sport,
+                             tcp_dport=dport,
+                             ip_id=106,
+                             ip_ttl=63)
+
+            send_packet(self, 2, str(pkt))
+            if member==0:
+                verify_no_other_packets(self)
+            elif member==2:
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2],ports)
+                count[rcv_idx] += 1
+            elif member==3:
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3],ports)
+                count[rcv_idx] += 1
+            sport += 1
+            dport += 1
+        if member!=0:
+            for i in range(0,member):
+                print "Packet received on port %s  >> %s" % (i, count[i])
+                self.assertTrue((count[i] >= ((max_itrs / member) * 0.8)),
+                                      "Not all paths are equally balanced, %s" % count)
+            print "All paths are  balanced with %s members" % member
+
+
+
+
+@group('l3')
+@group('ecmp')
+class L3IPv6EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        '''
+        Description:
+        i) L3IPv6EcmpGroupMemberTest I:
+        Same as L3IPv4EcmpGroupMemberTest I for IPv6 destination
+
+        ii) L3IPv6EcmpGroupMemberTest II:
+        Same as L3IPv4EcmpGroupMemberTest II for IPv6 destination
+
+        Steps:
+        1. Create Virtual router V1 and enable IPv4 and IPv6.
+        2. Create three virtual router interfaces and set the interface type as "PORT" for ports 1, 2, 3.
+        3. Create IPv6 neighbor entry (2001:2001::1, 2002:2002::1) with MAC1, MAC2 and associate with "RIF ids (id1 to 2)".
+        4. Create two next hops (nhop1 & nhop2) and associate with RIFs (Id 1 & 2) respectively.
+        5. Create next-hop group "nhop_group1".
+        6. Create group members (nhop_gmember1, nhop_gmember2) for "nhop_group1" ,associated with  next-hops (nhop1 & nho2) respectively.
+        7. Create route entry with /64 mask (i.e 3000:1000::1/64) through "nhop_group1".
+
+        Part1:
+        1. Send 10,000 streams from port 3 with destination IP (3000:1000::1/64) and observe the
+        traffic distribution on all the two router interface, which have next hop present.
+
+        Part2:
+        1. Create another router interface and interface type as PORT.
+        2. Create new nhop and neighbor entry (2003:2003::1) over the router interface (port 3) towards the ECMP route (i.e 3000:1000::1/64).
+        3. Observe the nexthop entry should be updated and traffic should distribute through the newly added nhop (2003:2003::1).
+
+        Part1 (L3IPv6EcmpGroupMemberTest II) :
+        1. Send traffic from port 3 with destination IP (3000:1000::1/64) and varying src_mac, sport,
+        src_ip and observe the traffic distribution on all the three router interface, which have next hop present.
+        2. Remove the nhop bound with router interface 1, while the traffic flows towards the ECMP route.
+        3. Observe the traffic is not distributed over the removed nexthop (2001:2001::1) interface.
+
+        Clean up by remove the nhop, neighbor, route and the router interface.
+        '''
+
+        print "Sending packet port 3 -> port 1 ,2 (2010:2010::1  -> 3000:1000::1 [id = 101])"
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        port4 = port_list[3]
+        v4_enabled = 0
+        v6_enabled = 1
+        mac = ''
+        addr_family = SAI_IP_ADDR_FAMILY_IPV6
+        ip_addr1 = '2001:2001::1'
+        ip_addr2 = '2002:2002::1'
+        ip_addr3 = '2003:2003::1'
+
+        ip_addr1_subnet = '2001:2001::0'
+        ip_addr2_subnet = '2002:2002::0'
+        ip_addr3_subnet = '2003:2003::0'
+        ip_addr4_subnet = '3000:1000::0'
+
+        ip_mask1 = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000'
+        dmac1 = '00:11:22:33:44:55'
+        dmac2 = '00:11:22:33:44:56'
+        dmac3 = '00:11:22:33:44:57'
+
+        vr1 = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif1 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif2 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
+        rif3 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
+
+        sai_thrift_create_neighbor(self.client, addr_family, rif1, ip_addr1, dmac1)
+        sai_thrift_create_neighbor(self.client, addr_family, rif2, ip_addr2, dmac2)
+
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif1)
+        nhop2 = sai_thrift_create_nhop(self.client, addr_family, ip_addr2, rif2)
+
+        nhop_group1 = sai_thrift_create_next_hop_group(self.client)
+
+        nhop_gmember1 = sai_thrift_create_next_hop_group_member(self.client, nhop_group1, nhop1)
+        nhop_gmember2 = sai_thrift_create_next_hop_group_member(self.client, nhop_group1, nhop2)
+
+        sai_thrift_create_route(self.client, vr1, addr_family, ip_addr4_subnet, ip_mask1, nhop_group1)
+
+        # send the test packet(s)
+
+        try:
+            max_itrs = 10001
+            dport = 0x80
+            sport = 0x1234
+            ports = [0,1]
+            member=2
+            var_gmember3 = False
+            print "sending %s packets to verify distribution on 2 ecmp group members" %(max_itrs - 1)
+            self.verifyEcmpPktDistributionIpv6(max_itrs,ports,member)
+
+            rif4 = sai_thrift_create_router_interface(self.client, vr1, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
+            sai_thrift_create_neighbor(self.client, addr_family, rif4, ip_addr3, dmac3)
+            nhop3 = sai_thrift_create_nhop(self.client, addr_family, ip_addr3, rif4)
+            nhop_gmember3 = sai_thrift_create_next_hop_group_member(self.client, nhop_group1, nhop3)
+            sai_thrift_create_route(self.client, vr1, addr_family, ip_addr4_subnet, ip_mask1, nhop_group1)
+
+            var_gmember3 = True
+            max_itrs = 121
+            ports = [0,1,3]
+            member=3
+            print "sending %s packets to verify distribution on 3 ports after adding one more ecmp group member" %(max_itrs - 1)
+            self.verifyEcmpPktDistributionIpv6(max_itrs,ports,member)
+
+            # Remove the nhop bound with router interface 1, and verify the traffic flows towards the ECMP route.
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember3)
+            time.sleep(5)
+            # Reset the count value after removal of the nhop member
+            max_itrs = 101
+            ports = [0,1]
+            member=2
+            print "sending %s packets to verify distribution on 2 ports after removing one ecmp group member" %(max_itrs - 1 )
+            self.verifyEcmpPktDistributionIpv6(max_itrs,ports,member)
+
+        finally:
+            sai_thrift_remove_route(self.client, vr1, addr_family, ip_addr4_subnet, ip_mask1, nhop_group1)
+            self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember2)
+            self.client.sai_thrift_remove_next_hop_group(nhop_group1)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            self.client.sai_thrift_remove_next_hop(nhop2)
+
+            sai_thrift_remove_neighbor(self.client, addr_family, rif1, ip_addr1, dmac1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif2, ip_addr2, dmac2)
+            self.client.sai_thrift_remove_router_interface(rif1)
+            self.client.sai_thrift_remove_router_interface(rif2)
+            self.client.sai_thrift_remove_router_interface(rif3)
+            if var_gmember3:
+                self.client.sai_thrift_remove_next_hop_group_member(nhop_gmember3)
+                self.client.sai_thrift_remove_next_hop(nhop3)
+                sai_thrift_remove_neighbor(self.client, addr_family, rif2, ip_addr2, dmac3)
+                self.client.sai_thrift_remove_router_interface(rif4)
+
+            self.client.sai_thrift_remove_virtual_router(vr1)
+
+    def verifyEcmpPktDistributionIpv6(self,max_itrs,ports,member):
+        src_mac_start = '00:22:22:22:22:'
+        ipv6_src_start = '2010:2010::'
+        ipv6_dst_start = '3000:1000::'
+        dport = 0x80
+        sport = 0x1234
+        eth_dst_ip1 = '00:11:22:33:44:55'
+        eth_dst_ip2 = '00:11:22:33:44:56'
+        eth_dst_ip3 = '00:11:22:33:44:57'
+        if member==2:
+            count=[0,0]
+        elif(member==3):
+            count=[0,0,0]
+
+        for i in range(0, max_itrs):
+            src_mac = src_mac_start + str(i % 99).zfill(2)
+            ipv6_src = ipv6_src_start + str(i % 99).zfill(3)
+            ipv6_dst = ipv6_dst_start + str(i % 99).zfill(3)
+            pkt = simple_tcpv6_packet(
+                              eth_dst=router_mac,
+                              eth_src=src_mac,
+                              ipv6_dst=ipv6_dst,
+                              ipv6_src=ipv6_src,
+                              dl_vlan_enable=False,
+                              tcp_sport=sport,
+                              tcp_dport=dport,
+                              ipv6_hlim=64)
+            exp_pkt1 = simple_tcpv6_packet(
+                              eth_dst=eth_dst_ip1,
+                              eth_src=router_mac,
+                              ipv6_dst=ipv6_dst,
+                              ipv6_src=ipv6_src,
+                              dl_vlan_enable=False,
+                              tcp_sport=sport,
+                              tcp_dport=dport,
+                              ipv6_hlim=63)
+            exp_pkt2 = simple_tcpv6_packet(
+                              eth_dst=eth_dst_ip2,
+                              eth_src=router_mac,
+                              ipv6_dst=ipv6_dst,
+                              ipv6_src=ipv6_src,
+                              dl_vlan_enable=False,
+                              tcp_sport=sport,
+                              tcp_dport=dport,
+                              ipv6_hlim=63)
+            exp_pkt3 = simple_tcpv6_packet(
+                              eth_dst=eth_dst_ip3,
+                              eth_src=router_mac,
+                              ipv6_dst=ipv6_dst,
+                              ipv6_src=ipv6_src,
+                              dl_vlan_enable=False,
+                              tcp_sport=sport,
+                              tcp_dport=dport,
+                              ipv6_hlim=63)
+
+           send_packet(self, 2, str(pkt))
+            if member==0:
+                verify_no_other_packets(self)
+            elif member==2:
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2],ports)
+                count[rcv_idx] += 1
+            elif member==3:
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3],ports)
+                count[rcv_idx] += 1
+            sport += 1
+            dport += 1
+        if member!=0:
+            for i in range(0,member):
+                print "Packet received on port %s  >> %s" % (i, count[i])
+                self.assertTrue((count[i] >= ((max_itrs / member) * 0.8)),
+                                      "Not all paths are equally balanced, %s" % count)
+            print "All paths are  balanced with %s members" % member
+
