@@ -752,7 +752,7 @@ public:
       sai_object_id_t bv_id;	
       sai_object_id_t bport_id;
              
-      extern std::map<std::sai_fdb_entry_t, std::sai_object_id_t>  gFdbMap;
+      extern std::map<sai_fdb_entry_t, sai_object_id_t>  gFdbMap;
      
       sai_thrift_attribute_list_t  thrift_attr_list;
       attr_count =    gFdbMap.size();
