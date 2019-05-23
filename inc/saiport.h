@@ -1132,6 +1132,17 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PKT_TX_ENABLE,
 
     /**
+     * @brief Port bind point for TAM object
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_TAM_OBJECT,
+
+    /**
      * @brief Port serdes control pre-emphasis
      *
      * List of port serdes pre-emphasis values. The values are of type sai_u32_list_t
@@ -1169,6 +1180,15 @@ typedef enum _sai_port_attr_t
      * @default internal
      */
     SAI_PORT_ATTR_SERDES_IPREDRIVER,
+
+    /**
+     * @brief Enable/Disable Port Link Training
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_LINK_TRAINING_ENABLE,
 
     /**
      * @brief End of attributes

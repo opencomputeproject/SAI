@@ -95,7 +95,12 @@ typedef enum _sai_packet_action_t
      * Packet action on the data plane remains unchanged.
      */
 
-    /** Copy Packet to CPU. */
+    /**
+     * @brief Packet action copy
+     *
+     * Copy Packet to CPU without interfering the original packet action in the
+     * pipeline.
+     */
     SAI_PACKET_ACTION_COPY,
 
     /** Cancel copy the packet to CPU. */
@@ -103,10 +108,23 @@ typedef enum _sai_packet_action_t
 
     /** Combination of Packet Actions */
 
-    /** This is a combination of SAI packet action COPY and DROP. */
+    /**
+     * @brief Packet action trap
+     *
+     * This is a combination of SAI packet action COPY and DROP:
+     * A copy of the original packet is sent to CPU port, the original
+     * packet is forcefully dropped from the pipeline.
+     */
     SAI_PACKET_ACTION_TRAP,
 
-    /** This is a combination of SAI packet action COPY and FORWARD. */
+    /**
+     * @brief Packet action log
+     *
+     * This is a combination of SAI packet action COPY and FORWARD:
+     * A copy of the original packet is sent to CPU port, the original
+     * packet, if it was to be dropped in the original pipeline,
+     * change the pipeline action to forward (cancel drop).
+     */
     SAI_PACKET_ACTION_LOG,
 
     /** This is a combination of SAI packet action COPY_CANCEL and DROP */
@@ -561,6 +579,14 @@ typedef enum _sai_switch_attr_t
      * @default internal
      */
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
+
+    /**
+     * @brief Max number of STP instances that NPU supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_STP_INSTANCE,
 
     /**
      * @brief Default SAI Virtual Router ID
@@ -1403,17 +1429,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
 
     /**
-     * @brief TAM event notification callback function passed to the adapter.
-     *
-     * Use sai_tam_event_notification_fn as notification function.
-     *
-     * @type sai_pointer_t sai_tam_event_notification_fn
-     * @flags CREATE_AND_SET
-     * @default NULL
-     */
-    SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
-
-    /**
      * @brief Enable SAI function call fast mode, which executes calls very quickly
      *
      * @type bool
@@ -1704,6 +1719,32 @@ typedef enum _sai_switch_attr_t
      * @default true
      */
     SAI_SWITCH_ATTR_UNINIT_DATA_PLANE_ON_REMOVAL,
+
+    /**
+     * @brief TAM bind point
+     *
+     * Bind (or unbind) the TAM object.
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_TAM_OBJECT_ID,
+
+    /**
+     * @brief Event notification callback
+     * function passed to the adapter.
+     *
+     * Use sai_tam_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
 
     /**
      * @brief Instruct SAI to execute switch pre-shutdown
