@@ -757,19 +757,19 @@ public:
       sai_thrift_attribute_list_t  thrift_attr_list;
       attr_count =    gFdbMap.size();
       thrift_attr_list.attr_count = attr_count;
-      std::vector<sai_thrift_attribute_t>  fdb_entry_list;
+      std::list<sai_thrift_attribute_t>  fdb_entry_list;
    	 
       sai_fdb_entry_t fdb_m;
       sai_object_id_t b_id;        
-
+      
       for (auto it = gFdbMap.begin(); it != gFdbMap.end() ;it++){
           fdb_m = it->first;
-	  b_id = it->second; 	
-		
+          b_id = it->second; 	
+      	
           sai_thrift_attribute_t thrift_fdb_entry;		 
-
+      
           thrift_fdb_entry.id = (sai_thrift_object_id_t)b_id;
-	  thrift_fdb_entry.value.oid =(sai_thrift_object_id_t)fdb_m.bv_id;	
+          thrift_fdb_entry.value.oid =(sai_thrift_object_id_t)fdb_m.bv_id;	
           thrift_fdb_entry.value.mac = mac_to_sai_thrift_string(fdb_m. mac_address) ;
         
           fdb_entry_list.push_back(thrift_fdb_entry);
