@@ -57,14 +57,15 @@ typedef enum _sai_bfd_session_type_t
  */
 typedef enum _sai_bfd_session_offload_type_t
 {
+
+    /** No Offload: No offload supported */
+    SAI_BFD_SESSION_OFFLOAD_TYPE_NONE = 0,
+
     /** Full Offload: both session establishment and sustenance */
-    SAI_BFD_SESSION_OFFLOAD_TYPE_FULL = 0,
+    SAI_BFD_SESSION_OFFLOAD_TYPE_FULL,
 
     /** Sustenance Offload: Session Sustenance only. */
     SAI_BFD_SESSION_OFFLOAD_TYPE_SUSTENANCE,
-
-    /** No Offload: No offload supported */
-    SAI_BFD_SESSION_OFFLOAD_TYPE_NONE,
 
 } sai_bfd_session_offload_type_t;
 
