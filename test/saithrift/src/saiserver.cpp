@@ -77,7 +77,7 @@ void on_fdb_event(_In_ uint32_t count,
 	     gFdbMap.insert(std::pair<std::sai_fdb_entry_t,std::sai_fdb_event_t>(fdb_entry,bport_id));  
              break;             
 	  	
-	 case SAI_FDB_EVENT_FLUSHED: 
+	  case SAI_FDB_EVENT_FLUSHED: 
              if ( bv_id == 0 && bport_id == 0 )
 	         gFdbMap.clear();	
                    
