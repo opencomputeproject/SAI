@@ -37,7 +37,7 @@ sai_switch_api_t* sai_switch_api;
 std::map<std::string, std::string> gProfileMap;
 std::map<std::set<int>, std::string> gPortMap;
 
-std::map<std::sai_fdb_entry_t, std::sai_object_id_t>gFdbMap;
+std::map<sai_fdb_entry_t, sai_object_id_t>gFdbMap;
 
 sai_object_id_t gSwitchId; ///< SAI switch global object ID.
 
