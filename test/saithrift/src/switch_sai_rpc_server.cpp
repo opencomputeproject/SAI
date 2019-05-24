@@ -745,37 +745,37 @@ public:
   }
 //listing all the fdb entries from map	
   void sai_thrift_get_fdb_entries (sai_thrift_attribute_list_t& thrift_attr_list){
-      sai_fdb_entry_t fdb_entry;
       uint32_t attr_count;
       sai_attribute_t *attr;
       sai_mac_t mac_address;
       sai_object_id_t bv_id;	
       sai_object_id_t bport_id;
+      sai_fdb_entry_t fdb_entry;  
              
-      extern std::map<sai_fdb_entry_t, sai_object_id_t>  gFdbMap;
+      extern std::map<sai_fdb_entry_t, sai_object_id_t> gFdbMap;
      
-      sai_thrift_attribute_list_t  thrift_attr_list;
-      attr_count =    gFdbMap.size();
+      sai_thrift_attribute_list_t thrift_attr_list;
+      attr_count = gFdbMap.size();
       thrift_attr_list.attr_count = attr_count;
-      std::list<sai_thrift_attribute_t>  fdb_entry_list;
+      std::list<sai_thrift_attribute_t> fdb_entry_list;
    	 
       sai_fdb_entry_t fdb_m;
       sai_object_id_t b_id;        
       
-      for (auto it = gFdbMap.begin(); it != gFdbMap.end() ;it++){
+      for (auto it = gFdbMap.begin(); it != gFdbMap.end(); it++){
           fdb_m = it->first;
           b_id = it->second; 	
       	
           sai_thrift_attribute_t thrift_fdb_entry;		 
       
           thrift_fdb_entry.id = (sai_thrift_object_id_t)b_id;
-          thrift_fdb_entry.value.oid =(sai_thrift_object_id_t)fdb_m.bv_id;	
+          thrift_fdb_entry.value.oid = (sai_thrift_object_id_t)fdb_m.bv_id;	
           thrift_fdb_entry.value.mac = mac_to_sai_thrift_string(fdb_m. mac_address) ;
         
           fdb_entry_list.push_back(thrift_fdb_entry);
       }			
       
-      thrift_attr_list.attr_list =  fdb_entry_list ;  
+      thrift_attr_list.attr_list = fdb_entry_list ;  
       return;
   }
   
