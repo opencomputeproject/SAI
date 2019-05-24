@@ -55,13 +55,14 @@ void on_fdb_event(_In_ uint32_t count,
     sai_attribute_t *attr;
     sai_object_id_t bv_id;	
     sai_object_id_t bport_id;
-    attr=data->attr;
-    event_type=data->event_type;
+	
+    attr = data->attr;
+    event_type = data->event_type;
     fdb_entry = data->fdb_entry;
-    bv_id =fdb_entry.bv_id;
+    bv_id = fdb_entry.bv_id;
     attr_count = data ->attr_count;
     
-    for (uint32_t i=0; i< attr_count; i++)
+    for (uint32_t i = 0; i < attr_count; i++)
     {
         if(attr[i].id == SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID)
             bport_id = attr[i].value.oid;
@@ -82,14 +83,14 @@ void on_fdb_event(_In_ uint32_t count,
             
             else
             {    
-                for(auto it = gFdbMap.begin() ; it!= gFdbMap.end() ; it++)
+                for(auto it = gFdbMap.begin(); it != gFdbMap.end(); it++)
                 {   
                     fdb_m = it->first;                  
                     b_id = it->second; 				
 	                
                     if(bport_id == 0 && bv_id == fdb_m.bv_id)
                         it = gFdbMap.erase(it);
-                    else if(bv_id==0 && bport_id == b_id)		
+                    else if(bv_id == 0 && bport_id == b_id)		
                         it = gFdbMap.erase(it);
                     else if(bv_id == fdb_m.bv_id && bport_id == b_id)
                         it = gFdbMap.erase(it);
@@ -98,17 +99,17 @@ void on_fdb_event(_In_ uint32_t count,
             break;
 	      
         case SAI_FDB_EVENT_MOVE:
-            for(auto it = gFdbMap.begin() ; it!= gFdbMap.end() ; it++)
+            for(auto it = gFdbMap.begin(); it != gFdbMap.end(); it++)
             {
                 fdb_m = it->first;
                 
                 if(fdb_entry.mac_address == fdb_m.mac_address && bv_id == fdb_m.bv_id)
-                    it->second =  bport_id;
+                    it->second = bport_id;
             }
             break;
         
         case SAI_FDB_EVENT_AGED:
-            for(auto it = gFdbMap.begin() ; it!= gFdbMap.end() ; it++)
+            for(auto it = gFdbMap.begin(); it != gFdbMap.end(); it++)
             {
                 fdb_m = it->first;
                 
