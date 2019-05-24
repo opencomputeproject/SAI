@@ -1567,7 +1567,7 @@ public:
               break;
           case SAI_SWITCH_ATTR_FDB_AGING_TIME:
               attr->value.u32 = thrift_attr.value.u32;
-              break;	      
+              break;
           default:
               printf("unknown thrift_attr id: %d\n", thrift_attr.id);
       }
