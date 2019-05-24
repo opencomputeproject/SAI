@@ -379,7 +379,7 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
             attr_value = sai_thrift_attribute_value_t(u16=1)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port4, attr)
-          
+
 @group('l2')
 @group('sonic')
 class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
