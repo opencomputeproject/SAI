@@ -122,7 +122,6 @@ void on_fdb_event(_In_ uint32_t count,
             printf("unknown event");
             break;
     }
-    
 }     
 
 void on_port_state_change(_In_ uint32_t count,
