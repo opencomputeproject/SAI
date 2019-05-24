@@ -55,7 +55,6 @@ void on_fdb_event(_In_ uint32_t count,
     sai_attribute_t *attr;
     sai_object_id_t bv_id;	
     sai_object_id_t bport_id;
-    
     attr=data->attr;
     event_type=data->event_type;
     fdb_entry = data->fdb_entry;
@@ -89,11 +88,11 @@ void on_fdb_event(_In_ uint32_t count,
                     b_id = it->second; 				
 	                
                     if(bport_id == 0 && bv_id == fdb_m.bv_id)
-                        gFdbMap.erase(it--);
+                        it = gFdbMap.erase(it);
                     else if(bv_id==0 && bport_id == b_id)		
-                        gFdbMap.erase(it--);
+                        it = gFdbMap.erase(it);
                     else if(bv_id == fdb_m.bv_id && bport_id == b_id)
-                        gFdbMap.erase(it--);
+                        it = gFdbMap.erase(it);
                 }
             }
             break;
@@ -114,7 +113,7 @@ void on_fdb_event(_In_ uint32_t count,
                 fdb_m = it->first;
                 
                 if(fdb_entry.mac_address == fdb_m.mac_address && bv_id == fdb_m.bv_id)
-                    gFdbMap.erase(it--);
+                    it = gFdbMap.erase(it);
             }
             break;
         
