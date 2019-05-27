@@ -436,7 +436,7 @@ typedef enum _sai_bfd_session_attr_t
      * @flags CREATE_ONLY
      * @default SAI_BFD_SESSION_OFFLOAD_TYPE_NONE
      */
-    SAI_BFD_SESSION_ATTR_BFD_SESSION_OFFLOAD_TYPE,
+    SAI_BFD_SESSION_ATTR_OFFLOAD_TYPE,
 
     /**
      * @brief End of attributes
