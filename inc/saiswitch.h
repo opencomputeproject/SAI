@@ -131,7 +131,15 @@ typedef enum _sai_packet_action_t
     SAI_PACKET_ACTION_DENY,
 
     /** This is a combination of SAI packet action COPY_CANCEL and FORWARD */
-    SAI_PACKET_ACTION_TRANSIT
+    SAI_PACKET_ACTION_TRANSIT,
+
+    /**
+     * @brief Packet action redirect cancel
+     *
+     * It applys for both CPU and Data Plane Packets.
+     * This cancels the packet redirection.
+     */
+    SAI_PACKET_ACTION_REDIRECT_CANCEL
 
 } sai_packet_action_t;
 
