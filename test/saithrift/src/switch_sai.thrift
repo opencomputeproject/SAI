@@ -155,7 +155,7 @@ struct sai_thrift_qos_map_list_t {
 
 struct sai_thrift_fdb_values_t {
     1: sai_thrift_object_id_t bport_id;
-	2: sai_thrift_fdb_entry_t thrift_fdb_entry;
+    2: sai_thrift_fdb_entry_t thrift_fdb_entry;
 }
 
 union sai_thrift_attribute_value_t {
