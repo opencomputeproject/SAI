@@ -136,8 +136,8 @@ typedef enum _sai_packet_action_t
     /**
      * @brief Packet action redirect cancel
      *
-     * It applys for both CPU and Data Plane Packets.
-     * This cancels the packet redirection.
+     * It applies for both CPU and Data Plane Packets.
+     * Cancel the packet redirection.
      */
     SAI_PACKET_ACTION_REDIRECT_CANCEL
 
