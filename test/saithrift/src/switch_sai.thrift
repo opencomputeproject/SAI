@@ -153,6 +153,11 @@ struct sai_thrift_qos_map_list_t {
     2: list<sai_thrift_qos_map_t> map_list;
 }
 
+struct sai_thrift_fdb_values_t {
+    1: sai_thrift_object_id_t bport_id;
+	2: sai_thrift_fdb_entry_t thrift_fdb_entry;
+}
+
 union sai_thrift_attribute_value_t {
     1:  bool booldata;
     2:  string chardata;
@@ -176,6 +181,7 @@ union sai_thrift_attribute_value_t {
     20: sai_thrift_u32_list_t u32list;
     21: sai_thrift_s32_list_t s32list;
     22: sai_thrift_qos_map_list_t qosmap;
+    23: sai_thrift_fdb_values_t fdb_values;
 }
 
 struct sai_thrift_attribute_t {
