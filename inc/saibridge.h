@@ -411,7 +411,13 @@ typedef enum _sai_bridge_type_t
  */
 typedef enum _sai_bridge_flood_control_type_t
 {
-    /** Flood on all sub-ports */
+    /**
+     * @brief Flood on all sub-ports
+     *
+     * When setting sub-ports to broadcast or unknown multicast flood, it also
+     * includes flooding to the router. When setting sub-ports to unknown
+     * unicast flood, it does not include flooding to the router
+     */
     SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS,
 
     /** Disable flooding */
@@ -419,6 +425,14 @@ typedef enum _sai_bridge_flood_control_type_t
 
     /** Flood on the L2MC group */
     SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP,
+
+    /**
+     * @brief Flood on all sub-ports and L2MC group
+     *
+     * Flood on all sub-ports, without the router
+     * In addition, flood on the supplied L2MC group
+     */
+    SAI_BRIDGE_FLOOD_CONTROL_TYPE_COMBINED
 
 } sai_bridge_flood_control_type_t;
 
@@ -494,7 +508,9 @@ typedef enum _sai_bridge_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP or
+     * SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
 
@@ -523,7 +539,9 @@ typedef enum _sai_bridge_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP or
+     * SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
 
@@ -552,7 +570,9 @@ typedef enum _sai_bridge_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
-     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP or
+     * SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
+     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
