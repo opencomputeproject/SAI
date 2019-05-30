@@ -739,6 +739,8 @@ typedef enum _sai_hostif_attr_t
      * The maximum number of characters for the name is SAI_HOSTIF_NAME_SIZE - 1 since
      * it needs the terminating null byte ('\0') at the end.
      *
+     * If Hostif is a generic netlink, this indicates the generic netlink family name.
+     *
      * @type char
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV or SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_GENETLINK
