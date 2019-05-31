@@ -100,8 +100,9 @@ void on_fdb_event(_In_ uint32_t count,
             {
                 fdb_m = it->first;
                 b_id = it->second; 
-                
-                if (fdb_entry.mac_address == fdb_m.mac_address && bv_id == fdb_m.bv_id)
+                int n = memcmp ( fdb_entry.mac_address, fdb_m.mac_address, 6);
+		    
+                if (n == 0 && bv_id == fdb_m.bv_id)
                     it->second = bport_id;
             }
             break;  
@@ -110,8 +111,9 @@ void on_fdb_event(_In_ uint32_t count,
             {
                 fdb_m = it->first;
                 b_id = it->second; 
-                  
-                if (fdb_entry.mac_address == fdb_m.mac_address && bv_id == fdb_m.bv_id)
+                int n = memcmp ( fdb_entry.mac_address, fdb_m.mac_address, 6);  
+                
+                if (n == 0 && bv_id == fdb_m.bv_id)
                     it = gFdbMap.erase(it);    	
             }
             break;
