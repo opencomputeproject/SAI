@@ -29,7 +29,7 @@ In saivlan.h
 typedef enum _sai_vlan_private_vlan_type_t
 {
 	/** Not a private VLAN */
-	SAI_VLAN_PRIVATE_VLAN_TYPE_DEFAULT,
+	SAI_VLAN_PRIVATE_VLAN_TYPE_NONE,
 
 	/** Primary VLAN */
 	SAI_VLAN_PRIVATE_VLAN_TYPE_PRIMARY,
@@ -80,6 +80,28 @@ typedef enum _sai_vlan_attr_t
 +	 *
 +     */
 +	 SAI_VLAN_ATTR_PRIMARY_VLAN_ID,
++
++    /**
++     * @brief Isolated VLAN ID for a Primary VLAN
++     *
++     * @type sai_object_id_t
++     * @flags READ_ONLY
++	 * @objects SAI_OBJECT_TYPE_VLAN
++     * @validonly SAI_VLAN_ATTR_PRIVATE_VLAN_TYPE ==
++     * SAI_VLAN_PRIVATE_VLAN_TYPE_PRIMARY
++     */
++	 SAI_VLAN_ATTR_ASSOCIATED_ISOLATED_VLAN_ID,
++
++    /**
++     * @brief List of Community VLAN IDs for a Primary VLAN
++     *
++     * @type sai_object_list_t
++     * @flags READ_ONLY
++	 * @objects SAI_OBJECT_TYPE_VLAN
++     * @validonly SAI_VLAN_ATTR_PRIVATE_VLAN_TYPE ==
++     * SAI_VLAN_PRIVATE_VLAN_TYPE_PRIMARY
++     */
++	 SAI_VLAN_ATTR_ASSOCIATED_COMMUNITY_VLAN_LIST,
 +
     /**
     .
