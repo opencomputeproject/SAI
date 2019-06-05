@@ -3,12 +3,12 @@ SAI NAT Proposal
  Title       | SAI Network Address Translation
 -------------|-----------------------------------------------------------------
  Authors     | Jai Kumar, Broadcom Inc.
-             | Rita Hui, Microsoft Inc.
-             | Matty Kadosh, Mellanox Inc.
+.| Rita Hui, Microsoft Inc.
+.| Matty Kadosh, Mellanox Inc.
  Status      | In review
  Type        | Standards track
  Created     | 04/15/2019
- Updated     | 05/10/2019
+ Updated     | 04/22/2019
  SAI-Version | TBD
 
 -------------------------------------------------------------------------------
@@ -245,12 +245,36 @@ nat_entry_attr[6].value.bool = true;
 
 attr_count = 7;
 
-memset(&subnet_nat_etnry, 0, sizeof(nat_etnry));
+memset(&subnet_nat_entry, 0, sizeof(nat_entry));
 
 subnet_nat_entry.data.key.dst_ip = 200.0.0.0;
 subnet_nat_entry.data.mask.dst_ip = 0xffffff00;
 
 create_nat_entry(&subnet_nat_entry, attr_count, nat_entry_attr);
+```
+### 5.4 DNAT Miss 
+For dynamic NAT, translation is setup by the control plane based on the miss. This section describes how a DNAT entry is setup to trigger a miss for a given pool. Same steps are followed for SNAT Miss.
+Workflow will create a NAT entry with single attribute of type DNAT. This means that for this DNAT entry the translation is not yet learned.
+
+```sh
+
+sai_attribute_t nat_entry_attr[10];
+nat_entry_t dnat_miss_entry;
+
+nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
+nat_entry_attr[0].value = SAI_NAT_TYPE_DESTINATION_NAT;
+
+attr_count = 1;
+
+memset(&dnat_miss_entry, 0, sizeof(nat_etnry));
+
+dnat_miss_entry.data.key.dst_ip = 65.55.42.1;
+dnat_miss_entry.data.mask.dst_ip = 0xffffffff;
+dnat_miss_entry.data.key.l4_dst_port = 1024;
+dnat_miss_entry.data.mask.l4_dst_port = 0xffff;
+dnat_miss_entry.data.key.proto = 17;
+dnat_miss_entry.data.mask.proto = 0xff;
+create_nat_entry(&dnat_miss_entry, attr_count, nat_entry_attr);
 ```
 
 ## 6.0 NAT Exceptions
