@@ -689,11 +689,11 @@ typedef enum _sai_tam_int_attr_t
      * Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
-     * @type sai_object_id_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
     SAI_TAM_INT_ATTR_ACL_GROUP,
 
@@ -1312,10 +1312,11 @@ typedef enum _sai_tam_telemetry_attr_t
 
     /**
      * @brief TAM tel type object list
-     * @type sai_object_id_t
+     * @type sai_object_list_t
      *
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_TEL_TYPE
+     * @default empty
      */
     SAI_TAM_TELEMETRY_ATTR_TAM_TYPE_LIST = SAI_TAM_TELEMETRY_ATTR_START,
 
