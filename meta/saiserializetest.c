@@ -228,7 +228,7 @@ void test_deserialize_object_id()
 
         sai_object_id_t ref;
         int len;
-        sscanf(valid_oids[n], "oid:0x%lx%n", &ref, &len);
+        sscanf(valid_oids[n], "oid:0x%"PRIx64"%n", &ref, &len);
 
         ASSERT_TRUE(res == len, "expected true");
         ASSERT_TRUE(oid == ref, "expected true");
