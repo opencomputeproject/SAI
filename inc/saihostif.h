@@ -455,6 +455,14 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_MIRROR_SESSION,
 
     /**
+     * @brief Number of packets received for the trap
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_HOSTIF_TRAP_ATTR_RX_PKTS,
+
+    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_TRAP_ATTR_END,
