@@ -3432,7 +3432,7 @@ class L3IPv6EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
                               tcp_dport=dport,
                               ipv6_hlim=63)
 
-           send_packet(self, 2, str(pkt))
+            send_packet(self, 2, str(pkt))
             if member==0:
                 verify_no_other_packets(self)
             elif member==2:
