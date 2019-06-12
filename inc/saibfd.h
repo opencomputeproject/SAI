@@ -84,6 +84,11 @@ typedef enum _sai_bfd_encapsulation_type_t
      */
     SAI_BFD_ENCAPSULATION_TYPE_L3_GRE_TUNNEL,
 
+    /**
+     * @brief No Encapsulation
+     */
+    SAI_BFD_ENCAPSULATION_TYPE_NONE,
+
 } sai_bfd_encapsulation_type_t;
 
 /**
@@ -437,6 +442,30 @@ typedef enum _sai_bfd_session_attr_t
      * @default SAI_BFD_SESSION_OFFLOAD_TYPE_NONE
      */
     SAI_BFD_SESSION_ATTR_OFFLOAD_TYPE,
+
+    /**
+     * @brief Negotiated Transmit interval in microseconds
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_NEGOTIATED_TX,
+
+    /**
+     * @brief Negotiated Receive interval in microseconds
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_NEGOTIATED_RX,
+
+    /**
+     * @brief Diagnostic code field as specified by RFC
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_LOCAL_DIAG,
 
     /**
      * @brief End of attributes
