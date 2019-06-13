@@ -3100,7 +3100,7 @@ void check_non_object_id_object_attrs()
 
             META_ASSERT_NOT_NULL(m);
 
-            if (m->isresourcetype)
+            if (m->isresourcetype && (int)m->flags == SAI_ATTR_FLAGS_READ_ONLY)
             {
                 continue;
             }
