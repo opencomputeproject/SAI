@@ -463,6 +463,7 @@ typedef enum _sai_acl_table_attr_t
      * @type sai_uint32_t
      * @flags CREATE_ONLY
      * @default 0
+     * @isresourcetype true
      */
     SAI_ACL_TABLE_ATTR_SIZE,
 
@@ -1110,6 +1111,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ACL_TABLE
+     * @isresourcetype true
      */
     SAI_ACL_ENTRY_ATTR_TABLE_ID = SAI_ACL_ENTRY_ATTR_START,
 
