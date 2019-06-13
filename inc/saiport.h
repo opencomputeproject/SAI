@@ -193,8 +193,11 @@ typedef enum _sai_port_ptp_mode_t
     /** No special processing for PTP packets */
     SAI_PORT_PTP_MODE_NONE,
 
-    /** Timestamp the PTP packets */
-    SAI_PORT_PTP_MODE_TIMESTAMP,
+    /** Single-step Timestamp mode for the PTP packets */
+    SAI_PORT_PTP_MODE_SINGLE_STEP_TIMESTAMP,
+
+    /** Two-step Timestamp mode for the PTP packets */
+    SAI_PORT_PTP_MODE_TWO_STEP_TIMESTAMP,
 
 } sai_port_ptp_mode_t;
 
