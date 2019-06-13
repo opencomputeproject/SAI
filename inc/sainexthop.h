@@ -116,6 +116,7 @@ typedef enum _sai_next_hop_attr_t
      * @brief Next hop entry type
      *
      * @type sai_next_hop_type_t
+     * @isresourcetype true
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_ATTR_START,
