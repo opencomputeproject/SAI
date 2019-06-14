@@ -77,7 +77,7 @@ API for getting stats values looks similar to what is defined today per object t
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_get_counter_stats_fn)(
+typedef sai_status_t (*sai_get_counter_stats_ext_fn)(
         _In_ sai_object_id_t counter_id,
         _In_ uint32_t number_of_stats,
         _In_ const sai_stat_id_t *stat_ids,
@@ -90,3 +90,24 @@ typedef sai_status_t (*sai_get_counter_stats_fn)(
 * Detaching a counter from an object does not clear it's stats values.
 * Attaching a counter to an object does not clear it's stats values.
 * Counter can be attached to multiple objects at the same time.
+
+## Usage example
+```
+sai_attribute_t counter_attr;
+attr.id = SAI_COUNTER_ATTR_TYPE;
+attr.value.s32 = SAI_COUNTER_TYPE_REGULAR;
+
+sai_object_id_t counter_id;
+sai_status_t rc = sai_counter_api->create_counter(&counter_id, g_switch_id, 1, &attr);
+
+sai_attribute_t route_attr;
+attr.id = SAI_ROUTE_ENTRY_COUNTER_ID;
+attr.value.oid = counter_id;
+rc = sai_route_api->set_route_entry_attribute(route_entry, route_attr);
+
+sai_stat_id_t stat_ids[] = { SAI_COUNTER_STAT_PACKETS, SAI_COUNTER_STAT_BYTES };
+uint64_t stats[2];
+rc = sai_counter_api->sai_get_counter_stats_ext(counter_id, 2, stat_ids, stats);
+
+printf("Route packets %lu bytes %lu\n");
+```
