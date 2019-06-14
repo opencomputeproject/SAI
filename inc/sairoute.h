@@ -112,6 +112,7 @@ typedef enum _sai_route_entry_attr_t
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_ROUTE_ENTRY_ATTR_COUNTER_ID,

@@ -127,6 +127,7 @@ typedef enum _sai_next_hop_group_attr_t
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_NEXT_HOP_GROUP_ATTR_COUNTER_ID,
