@@ -1,4 +1,4 @@
-# Generic SAI Counters and Resources
+# Generic SAI Counters
 
 Title       | Critical Resource Monitor
 ------------|----------------
@@ -39,16 +39,16 @@ typedef enum _sai_route_entry_attr_t
 {
     …
          /**
-     * @brief Attach a list of counters
+     * @brief Attach a counter
      *
      * When it is empty, then packet hits won't be counted
      *
-     * @type sai_object_list_t
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_COUNTER
      * @default empty
      */
-    SAI_ROUTE_ENTRY_ATTR_COUNTER_ID_LIST,
+    SAI_ROUTE_ENTRY_ATTR_COUNTER_ID,
 
     /**
      * @brief End of attributes
