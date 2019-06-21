@@ -3450,3 +3450,130 @@ class L3IPv6EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
                                       "Not all paths are equally balanced, %s" % count)
             print "All paths are  balanced with %s members" % member
 
+@group('l3')
+class L3IPv4_32Test (sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        '''
+        Description:
+        i) Add a route entry with /32 prefix (e.g. 10.1.1.1/32 via NH1) and a neighbor
+        entry for the same IP address (e.g. 10.1.1.1 MAC1 Port1). Send traffic and verify that
+        the packet takes the path specified by the /32 route entry and not the neighbor path.
+        ii) After executing "L3IPv4/32Test I", delete the route entry with /32.
+        Ensure the packet must be now be forwarded using the neighbor/host entry.
+        iii) After executing "L3IPv4/32Test  II", readd the same route entry with /32.
+        Ensure that the packet now take the path as specified by the route and not by the
+        previously programmed neighbor entry path.
+
+        Steps:
+        1. Create a Virtual router V1 and enable V4.
+        2. Create two router interfaces "RIF R1, R2, R3" and set the interface type as SAI_ROUTER_INTERFACE_TYPE_PORT.
+        3. Create route entry with /32 prefix (i.e 10.1.1.1/255.255.255.255) through NH1
+        4. Create IPv4 neighbor entry (NH1  10.1.1.1) with MAC1 and associate with RIF R1
+        5. Send traffic traffic from Port3 and verify traffic forwarded at port 2.
+        6. Remove the route/32 through NH1.
+        7. Send the traffic from Port3 and verify the forwarded to Port1.
+        8. Add the route/32 through NH1. it followed the route path instead next hop neighbour path.
+        9. Remove the route entry with /32 through NH1
+        10. Send the traffic from Port3 and verify the forwarded to Port2.
+        11. Remove the route and next hop NH1.
+        12. Remove the neighbour.
+        13. Remove router interface RIF R1, R2 and R3.
+        14. Remove Virtual router V1.
+        '''
+
+        print "Sending packet port 2 -> port 1 (192.168.0.1 -> 10.1.1.1/32 [id = 101])"
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        v4_enabled = 1
+        v6_enabled = 0
+        mac = ''
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1 = '10.1.1.1'
+        ip_addr2 = '20.20.20.1'
+        ip_addr1_subnet = '10.1.1.1'
+        ip_mask1 = '255.255.255.255'
+        dmac1 = '00:11:22:33:44:55'
+        dmac2 = '00:11:22:33:44:56'
+
+        ### create virtual router
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        ### create router interfaces
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
+        rif_id3 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
+
+        ### create neighbor and next hop
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr2, rif_id2)
+
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+
+        ### create route
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+        time.sleep(5)
+
+        # send the test packet(s)
+        pkt = simple_tcp_packet(eth_dst=router_mac,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.1.1.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt1 = simple_tcp_packet(
+                                eth_dst='00:11:22:33:44:56',
+                                eth_src=router_mac,
+                                ip_dst='10.1.1.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=63)
+        exp_pkt2 = simple_tcp_packet(
+                                eth_dst='00:11:22:33:44:55',
+                                eth_src=router_mac,
+                                ip_dst='10.1.1.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=63)
+
+        try:
+            ### Sending the traffic from Port3
+            send_packet(self, 2, str(pkt))
+
+            ### Verifying the traffic @ Port2 via  route path
+            verify_packets(self, exp_pkt1, [1])
+
+            ### Remove the route/32 through nhop1
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+            time.sleep(3)
+
+            ### Sending the traffic from Port3
+            send_packet(self, 2, str(pkt))
+
+            ### Verifying the traffic @ Port1 , via neighbor path
+            verify_packets(self, exp_pkt2, [0])
+
+            ### Add the route/32 through nhop1
+            sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+            time.sleep(3)
+
+            ### Sending the traffic from Port3
+            send_packet(self, 2, str(pkt))
+
+            ### Verifying the traffic @ Port2, via route path
+            verify_packets(self, exp_pkt1, [1])
+
+        finally:
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
+
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_router_interface(rif_id2)
+            self.client.sai_thrift_remove_router_interface(rif_id3)
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
+
