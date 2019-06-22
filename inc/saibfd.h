@@ -460,12 +460,28 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_NEGOTIATED_RX,
 
     /**
-     * @brief Diagnostic code field as specified by RFC
+     * @brief Local Diagnostic code field as specified by RFC
      *
      * @type sai_uint8_t
      * @flags READ_ONLY
      */
     SAI_BFD_SESSION_ATTR_LOCAL_DIAG,
+
+    /**
+     * @brief Remote Diagnostic code field
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_REMOTE_DIAG,
+
+    /**
+     * @brief Remote time Multiplier
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_BFD_SESSION_ATTR_REMOTE_MULTIPLIER,
 
     /**
      * @brief End of attributes
