@@ -763,6 +763,9 @@ public:
               case SAI_VLAN_ATTR_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
                   break;
+              case SAI_VLAN_ATTR_INGRESS_ACL:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
 
               default:
                   SAI_THRIFT_LOG_ERR("Failed to parse VLAN attributes.");
@@ -930,6 +933,31 @@ public:
       attr_list.push_back(thrift_vlan_member_list_attribute);
       free(vlan_member_list_object_attribute.value.objlist.list);
   }
+
+  sai_thrift_status_t sai_thrift_set_vlan_attribute(const sai_thrift_object_id_t vlan_oid, const sai_thrift_attribute_t& thrift_attr)  {
+    sai_status_t status;
+    const std::vector<sai_thrift_attribute_t> thrift_attr_list = { thrift_attr };
+    sai_vlan_api_t *vlan_api;
+    sai_attribute_t *attr_list = nullptr;
+
+    status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_thrift_alloc_attr(attr_list, 1);
+    sai_thrift_parse_vlan_attributes(thrift_attr_list, attr_list);
+
+    status = vlan_api->set_vlan_attribute(vlan_oid, attr_list);
+    sai_thrift_free_attr(attr_list);
+    if (status != SAI_STATUS_SUCCESS)
+    {
+        SAI_THRIFT_LOG_ERR("Failed to set VLAN attribute");
+        return status;
+    }
+
+    return status;
+  }
+
 
   sai_thrift_object_id_t sai_thrift_create_vlan_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_create_vlan_member\n");
