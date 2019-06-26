@@ -1082,6 +1082,7 @@ class L2MacMoveTestII (sai_base_test.ThriftInterfaceDataPlane):
 
         ### create neighbor
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
 
         try:
             # send the test packet(s)
@@ -1149,6 +1150,7 @@ class L2MacMoveTestII (sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_flush_fdb_by_vlan(self.client, vlan_oid)
 
             ### remove neighbor and next hop entries
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
 
             ### remove router interface
@@ -1240,6 +1242,7 @@ class L2MacMoveTestIII (sai_base_test.ThriftInterfaceDataPlane):
 
         ### create neighbor
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
 
         try:
             # send the test packet(s)
@@ -1302,8 +1305,8 @@ class L2MacMoveTestIII (sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_flush_fdb_by_vlan(self.client, vlan_oid)
 
             ### remove neighbor and next hop entries
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
-            sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
 
             ### remove router interface
             self.client.sai_thrift_remove_router_interface(rif_id1)
