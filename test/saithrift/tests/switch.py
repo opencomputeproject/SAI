@@ -923,6 +923,13 @@ def sai_thrift_create_acl_entry(client,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
+    #Ip destination
+    if ip_dst != None:
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(ip4=ip_dst), mask =sai_thrift_acl_mask_t(ip4=ip_dst_mask)))
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_DST_IP,
+                                           value=attribute_value)
+        acl_attr_list.append(attribute)
+
     #Input ports
     if in_port_list:
         acl_port_list = sai_thrift_object_list_t(count=len(in_port_list), object_id_list=in_port_list)
