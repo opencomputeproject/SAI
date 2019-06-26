@@ -1176,6 +1176,8 @@ class L3AclTableTestI(sai_base_test.ThriftInterfaceDataPlane):
         vlan_id = 100
         mac_action = SAI_PACKET_ACTION_FORWARD
         mac1 = ''
+        acl_entry_id = SAI_NULL_OBJECT_ID
+        acl_table_id = SAI_NULL_OBJECT_ID
 
         # "Creating VLAN ID"
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
@@ -1395,6 +1397,14 @@ class L3AclTableGroupTestI(sai_base_test.ThriftInterfaceDataPlane):
         vlan_id = 100
         mac_action = SAI_PACKET_ACTION_FORWARD
         mac1 = ''
+
+        acl_table_group_member_id1 = SAI_NULL_OBJECT_ID
+        acl_table_group_member_id2 = SAI_NULL_OBJECT_ID
+        acl_entry_id1 = SAI_NULL_OBJECT_ID
+        acl_entry_id2 = SAI_NULL_OBJECT_ID
+        acl_table_id1 = SAI_NULL_OBJECT_ID
+        acl_table_id2 = SAI_NULL_OBJECT_ID
+        acl_table_group_id = SAI_NULL_OBJECT_ID
 
         # Creating VLAN
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
