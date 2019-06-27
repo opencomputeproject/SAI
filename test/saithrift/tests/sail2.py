@@ -1056,7 +1056,7 @@ class L2MacMoveTestII (sai_base_test.ThriftInterfaceDataPlane):
         ip_addr1 = '192.168.0.1'
         ip_addr2 = '10.10.10.1'
         ip_addr1_subnet = '192.168.0.0'
-        ip_mask1 = '255.255.255.0'
+        ip_mask1 = '255.255.0.0'
 
         ### create vlan
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
