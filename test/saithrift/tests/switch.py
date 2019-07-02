@@ -904,21 +904,21 @@ def sai_thrift_create_acl_entry(client,
 
     #MAC source
     if mac_src != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(mac=mac_src), mask = sai_thrift_acl_mask_t(mac=mac_src_mask)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(mac=mac_src), mask = sai_thrift_acl_mask_t(mac=mac_src_mask), enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
     #MAC destination
     if mac_dst != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(mac=mac_dst), mask = sai_thrift_acl_mask_t(mac=mac_dst_mask)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(mac=mac_dst), mask = sai_thrift_acl_mask_t(mac=mac_dst_mask), enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_DST_MAC,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
     #Ip source
     if ip_src != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(ip4=ip_src), mask =sai_thrift_acl_mask_t(ip4=ip_src_mask)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(ip4=ip_src), mask =sai_thrift_acl_mask_t(ip4=ip_src_mask), enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_SRC_IP,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -926,7 +926,7 @@ def sai_thrift_create_acl_entry(client,
     #Input ports
     if in_port_list:
         acl_port_list = sai_thrift_object_list_t(count=len(in_port_list), object_id_list=in_port_list)
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(objlist=acl_port_list)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(objlist=acl_port_list), enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -934,21 +934,21 @@ def sai_thrift_create_acl_entry(client,
     #Output ports
     if out_port_list:
         acl_port_list = sai_thrift_object_list_t(count=len(out_port_list), object_id_list=out_port_list)
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(objlist=acl_port_list)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(objlist=acl_port_list), enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
     #Input port
     if in_port != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=in_port)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=in_port), enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
 
     #Output port
     if out_port != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=out_port)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=out_port), enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -956,7 +956,8 @@ def sai_thrift_create_acl_entry(client,
     #L4 Source port
     if src_l4_port != None:
         attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=src_l4_port),
-                                                                                            mask = sai_thrift_acl_mask_t(u16=U16MASKFULL)))
+                                                                                            mask = sai_thrift_acl_mask_t(u16=U16MASKFULL),
+                                                                                            enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -964,7 +965,8 @@ def sai_thrift_create_acl_entry(client,
     #L4 Destination port
     if dst_l4_port != None:
         attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(u16=dst_l4_port),
-                                                                                            mask = sai_thrift_acl_mask_t(u16=U16MASKFULL)))
+                                                                                            mask = sai_thrift_acl_mask_t(u16=U16MASKFULL),
+                                                                                            enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
                                            value=attribute_value)
         acl_attr_list.append(attribute)
@@ -978,13 +980,15 @@ def sai_thrift_create_acl_entry(client,
 
     #Ingress mirroring
     if ingress_mirror != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=ingress_mirror)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=ingress_mirror),
+                                                                                            enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS, value=attribute_value)
         acl_attr_list.append(attribute)
 
     #Egress mirroring
     if egress_mirror != None:
-        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=egress_mirror)))
+        attribute_value = sai_thrift_attribute_value_t(aclfield=sai_thrift_acl_field_data_t(data = sai_thrift_acl_data_t(oid=egress_mirror),
+                                                                                            enable = True))
         attribute = sai_thrift_attribute_t(id=SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS, value=attribute_value)
         acl_attr_list.append(attribute)
 
