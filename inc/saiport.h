@@ -451,6 +451,16 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_OPER_SPEED,
 
+    /**
+     * @brief Operational FEC mode
+     *
+     * If auto negotiation is on, the returned value should be the negotiated FEC mode.
+     *
+     * @type sai_port_fec_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_OPER_FEC_MODE,
+
     /* READ-WRITE */
 
     /**
