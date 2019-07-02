@@ -53,6 +53,23 @@ typedef enum _sai_bfd_session_type_t
 } sai_bfd_session_type_t;
 
 /**
+ * @brief SAI offload type of BFD session
+ */
+typedef enum _sai_bfd_session_offload_type_t
+{
+
+    /** No Offload: No offload supported */
+    SAI_BFD_SESSION_OFFLOAD_TYPE_NONE = 0,
+
+    /** Full Offload: both session establishment and sustenance */
+    SAI_BFD_SESSION_OFFLOAD_TYPE_FULL,
+
+    /** Sustenance Offload: Session Sustenance only. */
+    SAI_BFD_SESSION_OFFLOAD_TYPE_SUSTENANCE,
+
+} sai_bfd_session_offload_type_t;
+
+/**
  * @brief SAI type of encapsulation for BFD
  */
 typedef enum _sai_bfd_encapsulation_type_t
@@ -411,6 +428,15 @@ typedef enum _sai_bfd_session_attr_t
      * @flags READ_ONLY
      */
     SAI_BFD_SESSION_ATTR_STATE,
+
+    /**
+     * @brief Offload type
+     *
+     * @type sai_bfd_session_offload_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_BFD_SESSION_OFFLOAD_TYPE_NONE
+     */
+    SAI_BFD_SESSION_ATTR_OFFLOAD_TYPE,
 
     /**
      * @brief End of attributes

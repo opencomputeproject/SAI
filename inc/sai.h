@@ -28,6 +28,7 @@
 #include "saiacl.h"
 #include "saibridge.h"
 #include "saibuffer.h"
+#include "saicounter.h"
 #include "saifdb.h"
 #include "saihash.h"
 #include "saihostif.h"
@@ -64,7 +65,6 @@
 #include "saivirtualrouter.h"
 #include "saivlan.h"
 #include "saiwred.h"
-#include "saiuburst.h"
 #include "saidtel.h"
 #include "saibfd.h"
 #include "saiisolationgroup.h"
@@ -121,10 +121,10 @@ typedef enum _sai_api_t
     SAI_API_TAM              = 34, /**< sai_tam_api_t */
     SAI_API_SEGMENTROUTE     = 35, /**< sai_segmentroute_api_t */
     SAI_API_MPLS             = 36, /**< sai_mpls_api_t */
-    SAI_API_UBURST           = 37, /**< sai_uburst_api_t */
-    SAI_API_DTEL             = 38, /**< sai_dtel_api_t (experimental) */
-    SAI_API_BFD              = 39, /**< sai_bfd_api_t */
-    SAI_API_ISOLATION_GROUP  = 40, /**< sai_isolation_group_api_t */
+    SAI_API_DTEL             = 37, /**< sai_dtel_api_t (experimental) */
+    SAI_API_BFD              = 38, /**< sai_bfd_api_t */
+    SAI_API_ISOLATION_GROUP  = 39, /**< sai_isolation_group_api_t */
+    SAI_API_COUNTER          = 40, /**< sai_counter_api_t */
     SAI_API_MAX              = 41, /**< total number of APIs */
 } sai_api_t;
 
