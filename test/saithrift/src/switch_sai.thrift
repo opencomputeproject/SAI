@@ -34,6 +34,7 @@ typedef i32 sai_thrift_policer_stat_counter_t
 typedef i32 sai_thrift_port_stat_counter_t
 typedef i32 sai_thrift_queue_stat_counter_t
 typedef i32 sai_thrift_pg_stat_counter_t
+typedef i32 sai_thrift_buffer_pool_stat_counter_t
 typedef i32 sai_thrift_policer_stat_t
 
 struct sai_thrift_fdb_entry_t {
@@ -376,12 +377,15 @@ service switch_sai_rpc {
     // Buffer API
     sai_thrift_object_id_t sai_thrift_create_buffer_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_object_id_t sai_thrift_create_pool_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    list<i64> sai_thrift_get_buffer_pool_stats(
+                        1: sai_thrift_object_id_t buffer_pool_id,
+                        2: list<sai_thrift_buffer_pool_stat_counter_t> counter_ids);
     sai_thrift_status_t sai_thrift_set_priority_group_attribute(1: sai_thrift_object_id_t pg_id,
                                                                 2: sai_thrift_attribute_t thrift_attr)
     list<i64> sai_thrift_get_pg_stats(
-                         1: sai_thrift_object_id_t pg_id,
-                         2: list<sai_thrift_pg_stat_counter_t> counter_ids,
-                         3: i32 number_of_counters);
+                        1: sai_thrift_object_id_t pg_id,
+                        2: list<sai_thrift_pg_stat_counter_t> counter_ids,
+                        3: i32 number_of_counters);
 
     // WRED API
     sai_thrift_object_id_t sai_thrift_create_wred_profile(1: list<sai_thrift_attribute_t> thrift_attr_list);
