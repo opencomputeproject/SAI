@@ -2167,6 +2167,7 @@ class L3IPv4NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
+        ip_addr1_subnet = '10.10.10.0'
         ip_addr_subnet = '192.168.0.0'
         ip_mask1 = '255.255.255.0'
         mac_port1 = '00:0a:00:00:00:01'
@@ -2198,6 +2199,7 @@ class L3IPv4NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_neighbor(self.client, addr_family, rif_vlan_id1, ip_addr1, mac_port1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_vlan_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_vlan_id1)
 
         arp_req_pkt = simple_arp_packet(eth_dst='ff:ff:ff:ff:ff:ff',
                                         eth_src=mac_port1,
@@ -2284,6 +2286,7 @@ class L3IPv4NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_flush_fdb_by_vlan(self.client, vlan1)
             sai_thrift_flush_fdb_by_vlan(self.client, vlan2)
 
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_vlan_id1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_vlan_id1, ip_addr1, mac_port3)
@@ -2340,6 +2343,7 @@ class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
         ip_addr1 = '2001:1000::1'
+        ip_addr1_subnet = '2001:1000::0'
         ip_addr_subnet = '3001:1000::0'
         ip_mask1 = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000'
         dmac1 = '00:0a:00:00:00:01'
@@ -2368,6 +2372,7 @@ class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
 
         try:
 
@@ -2441,6 +2446,7 @@ class L3IPv6NeighborMacTest(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_flush_fdb_by_vlan(self.client, vlan1_oid)
             sai_thrift_flush_fdb_by_vlan(self.client, vlan2_oid)
 
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac3)
@@ -2536,6 +2542,7 @@ class L3DirectedBroadcast (sai_base_test.ThriftInterfaceDataPlane):
 
         # Create route for the broadcast address with unicast nexthop
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask2, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2, ip_mask2, rif_id1)
 
         time.sleep(1)
         try:
@@ -2562,6 +2569,7 @@ class L3DirectedBroadcast (sai_base_test.ThriftInterfaceDataPlane):
             # Remove route having nhop1, nhop1 and neighbor
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask2, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr2, ip_mask2, rif_id1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr2, dmac2)
             # remove router interface
             self.client.sai_thrift_remove_router_interface(rif_id1)
@@ -2588,7 +2596,7 @@ class L3DirectedBroadcast (sai_base_test.ThriftInterfaceDataPlane):
 
             # Create neighbor for the target subnet with broadcast IP when penultimate switch
             sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
-
+            sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1, ip_mask2, rif_id1)
 
             exp_pkt1 = simple_tcp_packet(
                                 eth_src=router_mac,
@@ -2627,6 +2635,7 @@ class L3DirectedBroadcast (sai_base_test.ThriftInterfaceDataPlane):
 
             if penultimate_conf:
                 # remove neighbor
+                sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1, ip_mask2, rif_id1)
                 sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
                 # remove vlan membership ports
                 self.client.sai_thrift_remove_vlan_member(vlan_member1)
@@ -2698,6 +2707,7 @@ class L3IPv4NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
+        ip_addr1_subnet = '10.10.10.0'
         ip_addr_subnet = '192.168.0.0'
         ip_mask = '255.255.255.0'
         dmac1 = '00:0a:0a:0a:00:01'
@@ -2727,6 +2737,7 @@ class L3IPv4NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
 
         arp_req_pkt = simple_arp_packet(eth_dst='ff:ff:ff:ff:ff:ff',
                                         eth_src=dmac1,
@@ -2810,6 +2821,7 @@ class L3IPv4NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
             self.client.sai_thrift_set_switch_attribute(attr)
 
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
@@ -2870,6 +2882,7 @@ class L3IPv6NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV6
         ip_addr1 = '2001:1000::1'
+        ip_addr1_subnet = '2001:1000::0'
         ip_addr_subnet = '3001:1000::0'
         ip_mask = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000'
 
@@ -2904,6 +2917,7 @@ class L3IPv6NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
         pkt1 = simple_tcpv6_packet(pktlen=104,
                                  eth_dst='ff:ff:ff:ff:ff:ff',
                                  eth_src=dmac1,
@@ -2984,6 +2998,7 @@ class L3IPv6NeighborFdbAgeoutTest(sai_base_test.ThriftInterfaceDataPlane):
             attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
             self.client.sai_thrift_set_switch_attribute(attr)
 
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
