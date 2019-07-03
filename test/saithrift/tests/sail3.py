@@ -3496,9 +3496,13 @@ class L3LpbkSubnetTest(sai_base_test.ThriftInterfaceDataPlane):
         ip_addr1_subnet = '10.10.10.0'
         ip_mask1 = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
+        ip_addr_subnet = '10.10.0.0'
+        ip_mask = '255.255.0.0'
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, rif_id1)
+
 
         # send the test packet(s)
         pkt = simple_tcp_packet(eth_dst=router_mac,
