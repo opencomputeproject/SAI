@@ -3494,7 +3494,10 @@ class L3IPv4_32Test (sai_base_test.ThriftInterfaceDataPlane):
         ip_addr1 = '10.1.1.1'
         ip_addr2 = '20.20.20.1'
         ip_addr1_subnet = '10.1.1.1'
+        ip_addr2_subnet = '20.20.20.0'
+        ip_addr_subnet = '10.1.1.0'
         ip_mask1 = '255.255.255.255'
+        ip_mask  = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:56'
 
@@ -3514,6 +3517,9 @@ class L3IPv4_32Test (sai_base_test.ThriftInterfaceDataPlane):
 
         ### create route
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, rif_id1 )
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask, rif_id2)
+
         time.sleep(5)
 
         # send the test packet(s)
