@@ -1713,11 +1713,14 @@ class L3AclTableGroupTestII(sai_base_test.ThriftInterfaceDataPlane):
 
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
+        ip_addr1_subnet = '10.10.10.0'
         ip_addr_subnet1 = '11.11.11.0'
         ip_mask = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
         ip_addr2 = '192.168.0.1'
+        ip_addr2_subnet ='192.168.0.0'
         ip_addr_subnet2 = '12.12.12.0'
+        ip_mask2 ='255.255.0.0'
         dmac2 = '00:11:22:33:44:56'
 
         # Creating Neighbor, NHop and Route
@@ -1729,6 +1732,9 @@ class L3AclTableGroupTestII(sai_base_test.ThriftInterfaceDataPlane):
 
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet1, ip_mask, nhop1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet2, ip_mask, nhop2)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask, rif_id2)
+
 
         sai_thrift_create_fdb(self.client, vlan_oid, dmac2, port2, mac_action)
 
@@ -1765,7 +1771,20 @@ class L3AclTableGroupTestII(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_dst='12.12.12.1',
                                 ip_id=105,
                                 ip_ttl=63)
-
+        acl_table_group_member_id1 = SAI_NULL_OBJECT_ID
+        acl_table_group_member_id2 = SAI_NULL_OBJECT_ID
+        acl_table_group_member_id3 = SAI_NULL_OBJECT_ID
+        acl_table_group_member_id4 = SAI_NULL_OBJECT_ID
+        acl_entry_id1 = SAI_NULL_OBJECT_ID
+        acl_entry_id2 = SAI_NULL_OBJECT_ID
+        acl_entry_id3 = SAI_NULL_OBJECT_ID
+        acl_entry_id4 = SAI_NULL_OBJECT_ID
+        acl_table_id1 = SAI_NULL_OBJECT_ID
+        acl_table_id2 = SAI_NULL_OBJECT_ID
+        acl_table_id3 = SAI_NULL_OBJECT_ID
+        acl_table_id4 = SAI_NULL_OBJECT_ID
+        acl_table_group_id1 = SAI_NULL_OBJECT_ID
+        acl_table_group_id2 = SAI_NULL_OBJECT_ID
 
         try:
             print "No ACL is applied: Expecting packets to go through"
@@ -1800,7 +1819,7 @@ class L3AclTableGroupTestII(sai_base_test.ThriftInterfaceDataPlane):
                                                                         group_type)
 
             # setup ACL to block based on Destination IP
-           table_stage = SAI_ACL_STAGE_INGRESS
+            table_stage = SAI_ACL_STAGE_INGRESS
             table_bind_point_list = [SAI_ACL_BIND_POINT_TYPE_LAG, SAI_ACL_BIND_POINT_TYPE_VLAN]
             entry_priority = SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY
             action = SAI_PACKET_ACTION_DROP
@@ -1872,7 +1891,7 @@ class L3AclTableGroupTestII(sai_base_test.ThriftInterfaceDataPlane):
                                                         egress_mirror_id)
 
             # create ACL table #2
-           print "Creating ACL Table 2 for VLAN for src based"
+            print "Creating ACL Table 2 for VLAN for src based"
             acl_table_id2 = sai_thrift_create_acl_table(
                                                         self.client,
                                                         table_stage,
@@ -2077,9 +2096,9 @@ class L3AclTableGroupTestII(sai_base_test.ThriftInterfaceDataPlane):
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
             sai_thrift_remove_lag_member(self.client, lag_member_id1)
-            self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
+            self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan(vlan_oid)
