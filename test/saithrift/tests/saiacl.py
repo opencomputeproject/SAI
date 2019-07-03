@@ -1707,6 +1707,8 @@ class L3AclTableTestII(sai_base_test.ThriftInterfaceDataPlane):
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
         ip_mask1 = '255.255.255.0'
+        ip_addr_subnet = '10.10.0.0'
+        ip_mask = '255.255.0.0'
         dmac1 = '00:11:22:33:44:55'
         ip_addr2 = '192.168.0.1'
         ip_addr3_subnet = '12.12.12.0'
@@ -1716,6 +1718,7 @@ class L3AclTableTestII(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr3_subnet, ip_mask1, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
 
         # send the test packet(s)
         pkt = simple_tcp_packet(pktlen=100,
@@ -1733,6 +1736,9 @@ class L3AclTableTestII(sai_base_test.ThriftInterfaceDataPlane):
                                 ip_dst='12.12.12.1',
                                 ip_id=105,
                                 ip_ttl=63)
+
+        acl_entry_id = SAI_NULL_OBJECT_ID
+        acl_table_id = SAI_NULL_OBJECT_ID
 
         try:
             print "Sending packet port 2 -> port 1 (192.168.0.1 -> 12.12.12.1 [id = 105])"
@@ -1896,11 +1902,12 @@ class L3AclTableTestII(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
             sai_thrift_remove_lag_member(self.client, lag_member_id1)
-            self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
+            self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
             self.client.sai_thrift_remove_vlan(vlan_oid)
 
 
