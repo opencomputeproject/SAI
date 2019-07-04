@@ -1707,7 +1707,7 @@ class L3AclTableTestII(sai_base_test.ThriftInterfaceDataPlane):
         addr_family = SAI_IP_ADDR_FAMILY_IPV4
         ip_addr1 = '10.10.10.1'
         ip_mask1 = '255.255.255.0'
-        ip_addr_subnet = '10.10.0.0'
+        ip_addr1_subnet = '10.10.0.0'
         ip_mask = '255.255.0.0'
         dmac1 = '00:11:22:33:44:55'
         ip_addr2 = '192.168.0.1'
@@ -1844,6 +1844,12 @@ class L3AclTableTestII(sai_base_test.ThriftInterfaceDataPlane):
 
             # ===== L3AclTableTest_III verification =======
             print "\n\nChanging bind type from VLAN to Port"
+            # Unbinding from vlan
+            attr_value = sai_thrift_attribute_value_t(oid=SAI_NULL_OBJECT_ID)
+            attr = sai_thrift_attribute_t(id=SAI_VLAN_ATTR_INGRESS_ACL, value=attr_value)
+            self.client.sai_thrift_set_vlan_attribute(vlan_oid, attr)
+
+            #binding acl  to port
             attr_value = sai_thrift_attribute_value_t(oid=acl_table_id)
             attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_INGRESS_ACL, value=attr_value)
             self.client.sai_thrift_set_port_attribute(port2, attr)
@@ -1899,6 +1905,7 @@ class L3AclTableTestII(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_acl_entry(acl_entry_id)
             self.client.sai_thrift_remove_acl_table(acl_table_id)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr3_subnet, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
             sai_thrift_remove_lag_member(self.client, lag_member_id1)
