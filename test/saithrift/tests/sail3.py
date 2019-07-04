@@ -3530,6 +3530,7 @@ class L3LpbkSubnetTest(sai_base_test.ThriftInterfaceDataPlane):
             verify_no_packet(self, exp_pkt, 0)
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
             attr_value = sai_thrift_attribute_value_t(s32=SAI_PACKET_ACTION_FORWARD)
