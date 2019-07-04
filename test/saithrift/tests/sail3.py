@@ -3517,7 +3517,7 @@ class L3IPv4_32Test (sai_base_test.ThriftInterfaceDataPlane):
 
         ### create route
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, rif_id1 )
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, rif_id1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask, rif_id2)
 
         time.sleep(5)
@@ -3573,6 +3573,9 @@ class L3IPv4_32Test (sai_base_test.ThriftInterfaceDataPlane):
 
         finally:
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet,  ip_mask, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask, rif_id2)
+
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
