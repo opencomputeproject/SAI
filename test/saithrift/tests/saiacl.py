@@ -1733,7 +1733,7 @@ class L3AclTableGroupTestII(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet1, ip_mask, nhop1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet2, ip_mask, nhop2)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
-        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask, rif_id2)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
 
 
         sai_thrift_create_fdb(self.client, vlan_oid, dmac2, port2, mac_action)
@@ -2091,6 +2091,9 @@ class L3AclTableGroupTestII(sai_base_test.ThriftInterfaceDataPlane):
             # Cleanup router config
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet1, ip_mask, nhop1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet2, ip_mask, nhop2)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
+
             self.client.sai_thrift_remove_next_hop(nhop1)
             self.client.sai_thrift_remove_next_hop(nhop2)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
