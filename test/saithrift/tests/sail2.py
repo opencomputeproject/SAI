@@ -518,7 +518,7 @@ class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
             print ("The distribution of packet after changing hash seed:" , count2)
 
             order_check=0		
-            for i in range(0,max_itrn):
+            for i in range(0,max_itrs):
                 if(laglist1[i] != laglist2[i]):
                     order_check+=1
                 
