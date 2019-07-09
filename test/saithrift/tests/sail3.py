@@ -807,6 +807,244 @@ class L3IPv6EcmpLpmTest(sai_base_test.ThriftInterfaceDataPlane):
 
             self.client.sai_thrift_remove_virtual_router(vr1)
 
+            
+@group('l3')
+@group('ecmp')
+class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        '''
+	Create a VRF with IPv4 and IPv6 enabled. Create 4 router interfaces in the same VRF.
+        Create a route (/24 mask) with nhop and neighbor entry in three router interfaces. 
+        Send 100 streams with varying 5-tuple combinations to the destination IP on one port and verify distribution on the 
+        three router interfaces for which the nhops are present. Change the ECMP hash seed value to 10 and verify distribution.
+	   
+	'''
+	   
+        print "Sending packet port4 -> port1,port2,port3 (192.168.6.1 to 10.10.10.1) "
+        switch_init(self.client)
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+	port4 = port_list[3]
+        v4_enabled = 1
+        v6_enabled = 1
+        mac = ''
+        hash_seed = 10
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        
+        ip_addr1 = '192.168.1.1'
+        ip_addr2 = '192.168.2.1'
+        ip_addr3 = '192.168.3.1'
+        ip_addr4 = '10.10.10.0'
+        
+        ip_addr1_subnet = '192.168.1.0'
+        ip_addr2_subnet = '192.168.2.0'
+        ip_addr3_subnet = '192.168.3.0'
+       
+        ip_mask = '255.255.255.0'
+        destmac1 = '00:11:22:33:44:51'
+        destmac2 = '00:11:22:33:44:52'
+	destmac3 = '00:11:22:33:44:53'
+
+        virtual_router = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        router_interface1 = sai_thrift_create_router_interface(self.client, virtual_router, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+        router_interface2 = sai_thrift_create_router_interface(self.client, virtual_router, SAI_ROUTER_INTERFACE_TYPE_PORT, port2, 0, v4_enabled, v6_enabled, mac)
+        router_interface3 = sai_thrift_create_router_interface(self.client, virtual_router, SAI_ROUTER_INTERFACE_TYPE_PORT, port3, 0, v4_enabled, v6_enabled, mac)
+	router_interface4 = sai_thrift_create_router_interface(self.client, virtual_router, SAI_ROUTER_INTERFACE_TYPE_PORT, port4, 0, v4_enabled, v6_enabled, mac)
+
+        sai_thrift_create_neighbor(self.client, addr_family,  router_interface1, ip_addr1, destmac1)
+        sai_thrift_create_neighbor(self.client, addr_family,  router_interface2, ip_addr2, destmac2)
+        sai_thrift_create_neighbor(self.client, addr_family,  router_interface3, ip_addr3, destmac3)
+
+        next_hop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, router_interface1)
+        next_hop2 = sai_thrift_create_nhop(self.client, addr_family, ip_addr2, router_interface2)
+	next_hop3 = sai_thrift_create_nhop(self.client, addr_family, ip_addr3, router_interface3)
+
+
+        nexthop_group = sai_thrift_create_next_hop_group(self.client)
+
+        nexthop_gmember1 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop1)
+        nexthop_gmember2 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop2)
+	nexthop_gmember3 = sai_thrift_create_next_hop_group_member(self.client, nexthop_group, next_hop3)
+	
+        sai_thrift_create_route(self.client, virtual_router, addr_family, ip_addr4, ip_mask, nexthop_group)
+
+        try:   
+            count = [0, 0, 0]
+            maximum_packets = 101
+            src_mac_start = '00:22:22:22:22:'
+            ip_src_start = '192.168.6.'
+            ip_dst_start = '10.10.10.'
+            destination_port = 0x80
+            source_port = 0x1234
+               
+            for i in range(1, maximum_packets):
+               
+                src_mac = src_mac_start + str(i % 99).zfill(2)
+                ip_source = ip_src_start + str(i % 99).zfill(3)
+                ip_destination= ip_dst_start + str(i % 99).zfill(3)
+                if (i%100) == 0:
+                    print " %s packets are sent ...." % (i)
+
+                packet = simple_tcp_packet(eth_dst=router_mac,
+                                           eth_src=src_mac,
+                                           ip_dst=ip_destination,
+                                           ip_src=ip_source,
+                                           tcp_sport=source_port,
+                                           tcp_dport=destination_port,
+                                           ip_id=106,
+                                           ip_ttl=64) 
+                #expected packet at port1 
+                expected_packet1 = simple_tcp_packet(eth_dst='00:11:22:33:44:51',   
+                                                     eth_src=router_mac,
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,
+                                                     ip_id=106,
+                                                     ip_ttl=63)  
+                #expected packet at port2 
+                expected_packet2 = simple_tcp_packet(eth_dst='00:11:22:33:44:52',
+                                                     eth_src = router_mac,     
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,     
+                                                     ip_id =106,       
+                                                     ip_ttl=63) 
+                #expected packet at port3  
+                expected_packet3 = simple_tcp_packet(eth_dst='00:11:22:33:44:53',
+                                                     eth_src = router_mac,     
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,   
+                                                     ip_id =106,       
+                                                     ip_ttl=63) 
+
+
+                send_packet(self, 3, str(packet)) 
+                rcv_idx = verify_any_packet_any_port(self, [expected_packet1, expected_packet2, expected_packet3], [0, 1, 2])
+                count[rcv_idx] += 1
+                source_port += 1
+                destination_port += 1
+
+            print "Packet distribution With default HashSeed value"
+
+            for i in range(0,3):
+                print "packets received at port interface : " + i  
+                print (count[i])
+                if (count[i] >= ( maximum_packets/ 3) * 0.8):
+                    print "Not all paths are equally balanced, %s" % count
+                print "ALL paths are balanced with three members"    
+
+
+          
+
+            #HASHING SECTION:
+
+            print "Changing HASH SEED value from default to 10"
+
+            attr_value = sai_thrift_attribute_value_t(u32=hash_seed)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+			
+	    
+            count = [0, 0, 0]
+            maximum_packets = 101	   
+	    src_mac_start = '00:22:22:22:22:'
+            ip_src_start = '192.168.6.'
+            ip_dst_start = '10.10.10.'
+            destination_port = 0x80
+            source_port = 0x1234
+	    
+	    for i in range(1, maximum_packets):
+                packet = simple_tcp_packet(eth_dst=router_mac,
+                                           eth_src='00:22:22:22:22:22',
+                                           ip_dst= ip_destination,
+                                           ip_src=ip_source,
+                                           tcp_sport=source_port,
+                                           tcp_dport=destination_port,
+                                           ip_id=106,
+                                           ip_ttl=64) 
+                #packet at port1 
+                expected_packet1 = simple_tcp_packet(eth_dst='00:11:22:33:44:51',   
+                                                     eth_src=router_mac,
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,
+                                                     ip_id=106,
+                                                     ip_ttl=63)  
+                #packet at port2 
+                expected_packet2 = simple_tcp_packet(eth_dst='00:11:22:33:44:52',
+                                                     eth_src = router_mac,     
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,   
+                                                     ip_id =106,       
+                                                     ip_ttl=63) 
+                #packet at port3  
+                expected_packet3 = simple_tcp_packet(eth_dst='00:11:22:33:44:53',
+                                                     eth_src = router_mac,     
+                                                     ip_dst= ip_destination,
+                                                     ip_src=ip_source,
+                                                     tcp_sport=source_port,
+                                                     tcp_dport=destination_port,     
+                                                     ip_id =106,       
+                                                     ip_ttl=63) 
+
+
+                send_packet(self, 3, str(packet)) 
+                rcv_idx = verify_any_packet_any_port(self, [expected_packet1, expected_packet2, expected_packet3], [0, 1, 2])
+                count[rcv_idx] += 1
+                source_port += 1
+                destination_port += 1
+            
+            print "Packet distribution After changing HashSeed value"
+
+            for i in range(0,3):
+                print ("packets received at port interface : " + i)  
+                print (count[i])
+                if (count[i] >= ( maximum_packets/ 3) * 0.8):
+                    print "Not all paths are equally balanced, %s" % count
+                print "ALL paths are balanced with three members"    
+	
+	finally:
+            
+            sai_thrift_remove_route(self.client, virtual_router, addr_family, ip_addr4, ip_mask, nexthop_group)
+
+            attr_value = sai_thrift_attribute_value_t(u32=0)
+            attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+
+            self.client.sai_thrift_remove_next_hop_group_member(nexthop_gmember1)
+            self.client.sai_thrift_remove_next_hop_group_member(nexthop_gmember2)
+	    self.client.sai_thrift_remove_next_hop_group_member(nexthop_gmember3)
+
+            self.client.sai_thrift_remove_next_hop_group(nexthop_group)
+
+            self.client.sai_thrift_remove_next_hop(next_hop1)
+            self.client.sai_thrift_remove_next_hop(next_hop2)
+	    self.client.sai_thrift_remove_next_hop(next_hop3)
+
+            sai_thrift_remove_neighbor(self.client, addr_family, router_interface1, ip_addr1, destmac1)
+            sai_thrift_remove_neighbor(self.client, addr_family, router_interface2, ip_addr2, destmac2)
+	    sai_thrift_remove_neighbor(self.client, addr_family, router_interface3, ip_addr3, destmac3)
+
+            self.client.sai_thrift_remove_router_interface(router_interface1)
+            self.client.sai_thrift_remove_router_interface(router_interface2)
+            self.client.sai_thrift_remove_router_interface(router_interface3)
+	    self.client.sai_thrift_remove_router_interface(router_interface4)
+
+            self.client.sai_thrift_remove_virtual_router(virtual_router)
+
+          
+            
 @group('l3')
 @group('lag')
 class L3IPv4LagTest(sai_base_test.ThriftInterfaceDataPlane):
