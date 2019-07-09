@@ -455,6 +455,19 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_MIRROR_SESSION,
 
     /**
+     * @brief Attach a counter
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_HOSTIF_TRAP_ATTR_COUNTER_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_TRAP_ATTR_END,

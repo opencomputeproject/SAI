@@ -1176,6 +1176,8 @@ class L3AclTableTestI(sai_base_test.ThriftInterfaceDataPlane):
         vlan_id = 100
         mac_action = SAI_PACKET_ACTION_FORWARD
         mac1 = ''
+        acl_entry_id = SAI_NULL_OBJECT_ID
+        acl_table_id = SAI_NULL_OBJECT_ID
 
         # "Creating VLAN ID"
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
@@ -1201,6 +1203,8 @@ class L3AclTableTestI(sai_base_test.ThriftInterfaceDataPlane):
         ip_mask1 = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
         ip_addr2 = '192.168.0.1'
+        ip_addr2_subnet = '192.168.0.0'
+        ip_mask2 = '255.255.0.0'
         ip_addr3_subnet = '11.11.11.0'
         dmac2 = '00:11:22:33:44:56'
 
@@ -1208,6 +1212,7 @@ class L3AclTableTestI(sai_base_test.ThriftInterfaceDataPlane):
         sai_thrift_create_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr2, rif_id2)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr3_subnet, ip_mask1, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
 
         sai_thrift_create_fdb(self.client, vlan_oid, dmac2, port2, mac_action)
 
@@ -1335,13 +1340,14 @@ class L3AclTableTestI(sai_base_test.ThriftInterfaceDataPlane):
             # cleanup ACL
             self.client.sai_thrift_remove_acl_entry(acl_entry_id)
             self.client.sai_thrift_remove_acl_table(acl_table_id)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr3_subnet, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac1)
             sai_thrift_remove_lag_member(self.client, lag_member_id1)
-            self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
+            self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan(vlan_oid)
@@ -1396,6 +1402,14 @@ class L3AclTableGroupTestI(sai_base_test.ThriftInterfaceDataPlane):
         mac_action = SAI_PACKET_ACTION_FORWARD
         mac1 = ''
 
+        acl_table_group_member_id1 = SAI_NULL_OBJECT_ID
+        acl_table_group_member_id2 = SAI_NULL_OBJECT_ID
+        acl_entry_id1 = SAI_NULL_OBJECT_ID
+        acl_entry_id2 = SAI_NULL_OBJECT_ID
+        acl_table_id1 = SAI_NULL_OBJECT_ID
+        acl_table_id2 = SAI_NULL_OBJECT_ID
+        acl_table_group_id = SAI_NULL_OBJECT_ID
+
         # Creating VLAN
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
         vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
@@ -1421,12 +1435,15 @@ class L3AclTableGroupTestI(sai_base_test.ThriftInterfaceDataPlane):
         ip_mask1 = '255.255.255.0'
         dmac1 = '00:11:22:33:44:55'
         ip_addr2 = '192.168.0.1'
+        ip_addr2_subnet = '192.168.0.0'
+        ip_mask2 = '255.255.0.0'
         dmac2 = '00:11:22:33:44:56'
 
         # Creating Neighbor, NHop and Route
         sai_thrift_create_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
         nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr2, rif_id2)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
         sai_thrift_create_fdb(self.client, vlan_oid, dmac2, port2, mac_action)
 
         # send the test packet(s)
@@ -1623,13 +1640,14 @@ class L3AclTableGroupTestI(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_acl_table(acl_table_id2)
             self.client.sai_thrift_remove_acl_table_group(acl_table_group_id)
             # Cleanup router config
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr2_subnet, ip_mask2, rif_id2)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask1, nhop1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id2, ip_addr2, dmac2)
             sai_thrift_remove_lag_member(self.client, lag_member_id1)
-            self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_router_interface(rif_id1)
             self.client.sai_thrift_remove_router_interface(rif_id2)
+            self.client.sai_thrift_remove_lag(lag_id1)
             self.client.sai_thrift_remove_virtual_router(vr_id)
             self.client.sai_thrift_remove_vlan_member(vlan_member1)
             self.client.sai_thrift_remove_vlan(vlan_oid)

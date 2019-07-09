@@ -407,6 +407,9 @@ public:
               case SAI_ROUTER_INTERFACE_ATTR_MTU:
                   attr_list[i].value.u32 = attribute.value.u32;
                   break;
+              case SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
               default:
                   break;
           }
@@ -2283,20 +2286,24 @@ public:
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6:
             case SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6:
+                attr_list[i].value.aclfield.enable = attribute.value.aclfield.enable;
                 sai_thrift_string_to_v6_ip(attribute.value.aclfield.data.ip6, attr_list[i].value.aclfield.data.ip6);
                 sai_thrift_string_to_v6_ip(attribute.value.aclfield.mask.ip6, attr_list[i].value.aclfield.mask.ip6);
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC:
             case SAI_ACL_ENTRY_ATTR_FIELD_DST_MAC:
+                attr_list[i].value.aclfield.enable = attribute.value.aclfield.enable;
                 sai_thrift_string_to_mac(attribute.value.aclfield.data.mac, attr_list[i].value.aclfield.data.mac);
                 sai_thrift_string_to_mac(attribute.value.aclfield.mask.mac, attr_list[i].value.aclfield.mask.mac);
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_SRC_IP:
             case SAI_ACL_ENTRY_ATTR_FIELD_DST_IP:
+                attr_list[i].value.aclfield.enable = attribute.value.aclfield.enable;
                 sai_thrift_string_to_v4_ip(attribute.value.aclfield.data.ip4, &attr_list[i].value.aclfield.data.ip4);
                 sai_thrift_string_to_v4_ip(attribute.value.aclfield.mask.ip4, &attr_list[i].value.aclfield.mask.ip4);
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT:
+                attr_list[i].value.aclfield.enable   = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS:
@@ -2307,11 +2314,13 @@ public:
                     oid_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
                     for(int j = 0; j < count; j++, it++)
                         *(oid_list + j) = (sai_object_id_t) *it;
-                    attr_list[i].value.aclfield.data.objlist.list =  oid_list;
+                    attr_list[i].value.aclfield.enable             = attribute.value.aclfield.enable;
+                    attr_list[i].value.aclfield.data.objlist.list  =  oid_list;
                     attr_list[i].value.aclfield.data.objlist.count =  count;
                 }
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT:
+                attr_list[i].value.aclfield.enable   = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
             /*
@@ -2327,6 +2336,7 @@ public:
             case SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT:
             case SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT:
             case SAI_ACL_ENTRY_ATTR_FIELD_ETHER_TYPE:
+                attr_list[i].value.aclfield.enable   = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.u16 = attribute.value.aclfield.data.u16;
                 attr_list[i].value.aclfield.mask.u16 = attribute.value.aclfield.mask.u16;
                 break;
@@ -2340,24 +2350,30 @@ public:
             case SAI_ACL_ENTRY_ATTR_FIELD_ACL_IP_TYPE:
             case SAI_ACL_ENTRY_ATTR_FIELD_ACL_IP_FRAG:
             case SAI_ACL_ENTRY_ATTR_FIELD_TC:
+                attr_list[i].value.aclfield.enable  = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.u8 = attribute.value.aclfield.data.u8;
                 attr_list[i].value.aclfield.mask.u8 = attribute.value.aclfield.mask.u8;
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_IPV6_FLOW_LABEL:
+                attr_list[i].value.aclfield.enable   = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.u16 = attribute.value.aclfield.data.u16;
                 attr_list[i].value.aclfield.mask.u16 = attribute.value.aclfield.mask.u16;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS:
+                attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
                 attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS:
+                attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
                 attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
+                attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
+                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_COUNTER:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
+                attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
+                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION:
                 attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
@@ -3302,6 +3318,31 @@ public:
                 break;
         }
     }
+  }
+
+  void sai_thrift_get_buffer_pool_stats(std::vector<int64_t> &thrift_counters,
+                                        const sai_thrift_object_id_t buffer_pool_id,
+                                        const std::vector<sai_thrift_buffer_pool_stat_counter_t> &thrift_counter_ids) {
+      printf("sai_thrift_get_buffer_pool_stats\n");
+
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_buffer_api_t *buffer_api;
+      status = sai_api_query(SAI_API_BUFFER, (void **) &buffer_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to query buffer_api, status: %d", status);
+          return;
+      }
+
+      thrift_counters.reserve(thrift_counter_ids.size());
+      thrift_counters.resize(thrift_counter_ids.size(), 0);
+      status = buffer_api->get_buffer_pool_stats((sai_object_id_t)buffer_pool_id,
+                                                 (uint32_t)thrift_counter_ids.size(),
+                                                 (sai_buffer_pool_stat_t *)thrift_counter_ids.data(),
+                                                 (uint64_t *)thrift_counters.data());
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to get_buffer_pool_stats, status: %d", status);
+          thrift_counters.resize(0);
+      }
   }
 
   sai_thrift_status_t sai_thrift_set_priority_group_attribute(const sai_thrift_object_id_t pg_id, const sai_thrift_attribute_t& thrift_attr) {
