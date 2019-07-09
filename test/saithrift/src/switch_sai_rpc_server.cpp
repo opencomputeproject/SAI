@@ -407,6 +407,9 @@ public:
               case SAI_ROUTER_INTERFACE_ATTR_MTU:
                   attr_list[i].value.u32 = attribute.value.u32;
                   break;
+              case SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
               default:
                   break;
           }

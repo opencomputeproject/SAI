@@ -3465,3 +3465,92 @@ class L3IPv6EcmpGroupMemberTest(sai_base_test.ThriftInterfaceDataPlane):
                                       "Not all paths are equally balanced, %s" % count)
             print "All paths are  balanced with %s members" % member
 
+@group('l3')
+class L3LpbkSubnetTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        """
+        Description:
+        Send traffic on a layer 3 router interface destined to an IPv4 address within
+        the same subnet. Have the nhop entry learnt on the same interface as incoming
+        interface. Verify that packet is send out on the same outgoing interface as
+        the incoming interface. Set the SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION
+        attribute to drop and verify that packet is not send out on the same outgoing
+        RIF as incoming RIF.
+
+        Steps:
+        Part 1:
+          1. Create Virtual Router V1 and enable v4 and v6.
+          2. Create a virtual router interface (rif_id1) and set the interface type as "PORT" for port1.
+          3. Create IPv4 neighbor entry (10.10.10.1) with MAC1 and associate with "RIF id 1".
+          4. Create next hop entry as rif_id1 (Loopback).
+          5. Send traffic on router interface rif_id1.
+          6. Verify the packet on port1.
+          7. Packet should received at port1.
+        Part 2:
+          1. Set router interface rif_id1 attribute as SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION
+          2. set the action as drop.
+          3. Send traffic on router interface rif_id1.
+          4. Verify the packet on port1.
+          5. Packet should not received at port1.
+
+        Clean up by remove the nhop, neighbor, route and the router interface.
+        """
+
+        switch_init(self.client)
+        port1 = port_list[0]
+        v4_enabled = 1
+        v6_enabled = 1
+        mac = ''
+
+        vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
+
+        rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_PORT, port1, 0, v4_enabled, v6_enabled, mac)
+
+        addr_family = SAI_IP_ADDR_FAMILY_IPV4
+        ip_addr1 = '10.10.10.1'
+        ip_addr1_subnet = '10.10.10.0'
+        ip_mask1 = '255.255.255.0'
+        dmac1 = '00:11:22:33:44:55'
+        ip_addr_subnet = '10.10.0.0'
+        ip_mask = '255.255.0.0'
+        sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+        nhop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, rif_id1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+        sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, rif_id1)
+
+
+        # send the test packet(s)
+        pkt = simple_tcp_packet(eth_dst=router_mac,
+                                eth_src='00:22:22:33:44:55',
+                                ip_dst='10.10.10.1',
+                                ip_src='10.10.10.2',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(
+                                eth_dst='00:11:22:33:44:55',
+                                eth_src=router_mac,
+                                ip_src='10.10.10.2',
+                                ip_dst='10.10.10.1',
+                                ip_id=105,
+                                ip_ttl=63)
+        try:
+            send_packet(self, 0, str(pkt))
+            verify_packets(self, exp_pkt, [0])
+
+            attr_value = sai_thrift_attribute_value_t(s32=SAI_PACKET_ACTION_DROP)
+            attr = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION, value=attr_value)
+            self.client.sai_thrift_set_router_interface_attribute(rif_id1, attr)
+
+            send_packet(self, 0, str(pkt))
+            verify_no_packet(self, exp_pkt, 0)
+        finally:
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, nhop1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr_subnet, ip_mask, rif_id1)
+            self.client.sai_thrift_remove_next_hop(nhop1)
+            sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
+            attr_value = sai_thrift_attribute_value_t(s32=SAI_PACKET_ACTION_FORWARD)
+            attr = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION, value=attr_value)
+            self.client.sai_thrift_set_router_interface_attribute(rif_id1, attr)
+            self.client.sai_thrift_remove_router_interface(rif_id1)
+            self.client.sai_thrift_remove_virtual_router(vr_id)
+
