@@ -860,7 +860,7 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
 
         next_hop1 = sai_thrift_create_nhop(self.client, addr_family, ip_addr1, router_interface1)
         next_hop2 = sai_thrift_create_nhop(self.client, addr_family, ip_addr2, router_interface2)
-	next_hop3 = sai_thrift_create_nhop(self.client, addr_family, ip_addr3, router-interface3)
+	next_hop3 = sai_thrift_create_nhop(self.client, addr_family, ip_addr3, router_interface3)
 
 
         nexthop_group = sai_thrift_create_next_hop_group(self.client)
@@ -1013,9 +1013,9 @@ class L3IPv4EcmpHashSeedTest(sai_base_test.ThriftInterfaceDataPlane):
                     print "Not all paths are equally balanced, %s" % count
                 print "ALL paths are balanced with three members"    
 	
-	    finally:
+	finally:
             
-            sai_thrift_remove_route(self.client, virtual_router, addr_family, ip_addr4, ip_mask, nhop_group)
+            sai_thrift_remove_route(self.client, virtual_router, addr_family, ip_addr4, ip_mask, nexthop_group)
 
             attr_value = sai_thrift_attribute_value_t(u32=0)
             attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED, value=attr_value)
