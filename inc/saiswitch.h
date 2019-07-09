@@ -95,7 +95,12 @@ typedef enum _sai_packet_action_t
      * Packet action on the data plane remains unchanged.
      */
 
-    /** Copy Packet to CPU. */
+    /**
+     * @brief Packet action copy
+     *
+     * Copy Packet to CPU without interfering the original packet action in the
+     * pipeline.
+     */
     SAI_PACKET_ACTION_COPY,
 
     /** Cancel copy the packet to CPU. */
@@ -103,10 +108,23 @@ typedef enum _sai_packet_action_t
 
     /** Combination of Packet Actions */
 
-    /** This is a combination of SAI packet action COPY and DROP. */
+    /**
+     * @brief Packet action trap
+     *
+     * This is a combination of SAI packet action COPY and DROP:
+     * A copy of the original packet is sent to CPU port, the original
+     * packet is forcefully dropped from the pipeline.
+     */
     SAI_PACKET_ACTION_TRAP,
 
-    /** This is a combination of SAI packet action COPY and FORWARD. */
+    /**
+     * @brief Packet action log
+     *
+     * This is a combination of SAI packet action COPY and FORWARD:
+     * A copy of the original packet is sent to CPU port, the original
+     * packet, if it was to be dropped in the original pipeline,
+     * change the pipeline action to forward (cancel drop).
+     */
     SAI_PACKET_ACTION_LOG,
 
     /** This is a combination of SAI packet action COPY_CANCEL and DROP */
@@ -561,6 +579,14 @@ typedef enum _sai_switch_attr_t
      * @default internal
      */
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
+
+    /**
+     * @brief Max number of STP instances that NPU supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_STP_INSTANCE,
 
     /**
      * @brief Default SAI Virtual Router ID
@@ -1607,6 +1633,22 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_MAX_BFD_SESSION,
+
+    /**
+     * @brief List of BFD session offloads that are supported for IPv4
+     *
+     * @type sai_s32_list_t sai_bfd_session_offload_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_IPV4_BFD_SESSION_OFFLOAD_TYPE,
+
+    /**
+     * @brief List of BFD session offloads that are supported for IPv6
+     *
+     * @type sai_s32_list_t sai_bfd_session_offload_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_IPV6_BFD_SESSION_OFFLOAD_TYPE,
 
     /**
      * @brief Minimum Receive interval NPU supports in microseconds

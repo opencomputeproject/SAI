@@ -4,6 +4,7 @@ API - Application Program Interface
 ARP - Address Resolution Protocol
 ASIC - Application Specific Integrated Circuit
 BFD - Bidirectional Forwarding Detection
+BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
 CAM - Content Addressable Memory
 CB - Callback

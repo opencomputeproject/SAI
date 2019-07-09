@@ -325,7 +325,7 @@ int sai_serialize_uint64(
         _Out_ char *buffer,
         _In_ uint64_t u64)
 {
-    return sprintf(buffer, "%lu", u64);
+    return sprintf(buffer, "%"PRIu64, u64);
 }
 
 #define SAI_BASE_10 10
@@ -372,7 +372,7 @@ int sai_serialize_int64(
         _Out_ char *buffer,
         _In_ int64_t s64)
 {
-    return sprintf(buffer, "%ld", s64);
+    return sprintf(buffer, "%"PRId64, s64);
 }
 
 int sai_deserialize_int64(
@@ -443,7 +443,7 @@ int sai_serialize_object_id(
         _Out_ char *buffer,
         _In_ sai_object_id_t oid)
 {
-    return sprintf(buffer, "oid:0x%lx", oid);
+    return sprintf(buffer, "oid:0x%"PRIx64, oid);
 }
 
 int sai_deserialize_object_id(
@@ -452,7 +452,7 @@ int sai_deserialize_object_id(
 {
     int read;
 
-    int n = sscanf(buffer, "oid:0x%16lx%n", oid, &read);
+    int n = sscanf(buffer, "oid:0x%16"PRIx64"%n", oid, &read);
 
     if (n == 1 && sai_serialize_is_char_allowed(buffer[read]))
     {
