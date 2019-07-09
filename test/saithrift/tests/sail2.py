@@ -711,18 +711,39 @@ class L2BridgePortTestI(sai_base_test.ThriftInterfaceDataPlane):
                                 eth_src='00:11:11:11:11:11',
                                 ip_dst='10.0.0.1',
                                 ip_id=101,
-                                ip_ttl=64)
+                                ip_ttl=64,
+			        dl_vlan_enable=True,
+                                vlan_vid=vlan_id)
         
         try:
+	    #setting admin state value to true
+	    bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=True)
+            bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+                                                            value=bport_attr_admin_state_value)
+            client.sai_thrift_set_bridge_port_attribute(bport1_id, bport_attr_admin_state)
+	    
+	    bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=True)
+            bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+                                                            value=bport_attr_admin_state_value)
+            client.sai_thrift_set_bridge_port_attribute(bport2_id, bport_attr_admin_state)
+	    
+	    #sending packet
             send_packet(self, 0, str(pkt))
-            verify_packets(self, pkt, 1)
-            #setting admin state value
+            verify_packets(self, pkt, [1])
+	    
+            #setting admin state value to false
             bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=False)
             bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
                                                             value=bport_attr_admin_state_value)
-            client.sai_thrift_set_bridge_port_attribute(bridge_port1, bport_attr_admin_state)
+            client.sai_thrift_set_bridge_port_attribute(bport1_id, bport_attr_admin_state)
+	    
+	    bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=False)
+            bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+                                                            value=bport_attr_admin_state_value)
+            client.sai_thrift_set_bridge_port_attribute(bport2_id, bport_attr_admin_state)
+	    
             send_packet(self, 0, str(pkt))
-            verify_packets(self, pkt, 1)
+            verify_no_packet(self, pkt, [1])
         
 	finally:
             sai_thrift_remove_bridge_sub_port(self.client, bport1_id, port1)
