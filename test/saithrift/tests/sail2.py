@@ -381,6 +381,175 @@ class L2LagTest(sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_set_port_attribute(port4, attr)
 
 @group('l2')
+@group('lag')
+class LagHashseedTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        
+	"""
+        Create a LAG group with 4 ports 1 through 4. Setup static FDB entries for the LAG and send packet to this destination MAC address. 
+        Send 100 packets with varying 5-tuple and check order/sequence of the distribution of packets received on ports 1 through 4. 
+        Change the LAG Hash seed value to 10 and compare the order/sequence of the distribution of packets received for the same set of 100 packets on ports 1 through 4. 
+        Verify that it is different after changing the hash seed.
+        """
+        
+	switch_init(self.client)
+        vlan_id = 10
+        port1 = port_list[0]
+        port2 = port_list[1]
+        port3 = port_list[2]
+        port4 = port_list[3]
+        port5 = port_list[4]
+        mac1 = '00:11:11:11:11:11'
+        mac_action = SAI_PACKET_ACTION_FORWARD
+        lag_hashseed_value=10
+
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+        
+        lag_id1 = sai_thrift_create_lag(self.client, [])
+
+        sai_thrift_vlan_remove_all_ports(self.client, switch.default_vlan.oid)
+
+        lag_member_id1 = sai_thrift_create_lag_member(self.client, lag_id1, port1)
+        lag_member_id2 = sai_thrift_create_lag_member(self.client, lag_id1, port2)
+        lag_member_id3 = sai_thrift_create_lag_member(self.client, lag_id1, port3)
+        lag_member_id4 = sai_thrift_create_lag_member(self.client, lag_id1, port4)
+
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, lag_id1, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port5, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        attr = sai_thrift_attribute_t(id=SAI_LAG_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_lag_attribute(lag_id1, attr)
+
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port5, attr)
+
+        sai_thrift_create_fdb(self.client, vlan_oid, mac1, lag_id1, mac_action)
+
+        try:    
+	    max_itrs = 101
+            count1 = [0, 0, 0, 0]
+            laglist1=list()
+            src_mac_start = '00:22:22:22:22:'
+            ip_src_start = '192.168.12.'
+            ip_dst_start = '10.10.10.'
+            dport = 0x80
+            sport = 0x1234
+            print ("sending 100 packets to verify the order/sequence of distribution ")
+                        
+            for i in range(0, max_itrs):
+                src_mac = src_mac_start + str(i % 99).zfill(2)
+                ip_src = ip_src_start + str(i % 99).zfill(3)
+                ip_dst = ip_dst_start + str(i % 99).zfill(3)    
+                                
+                pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+				        eth_src=src_mac,
+					ip_dst=ip_dst,
+                                        ip_src=ip_src,
+                                        tcp_sport=sport,
+					tcp_dport=dport,
+                                        ip_id=109,
+                                        ip_ttl=64)
+
+                exp_pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                            eth_src=src_mac,
+                                            ip_dst=ip_dst,
+                                            ip_src=ip_src,
+                                            tcp_sport=sport,
+                                            tcp_dport=dport,
+                                            ip_id=109,
+                                            ip_ttl=64)
+
+                send_packet(self, 4, str(pkt))
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt], [0, 1, 2, 3])
+                count1[rcv_idx] += 1
+                laglist1.append(rcv_idx)
+                sport += 1
+                dport += 1
+        
+            print ("The distribution of packets with default hash seed value:",count1)
+
+            attr_value = sai_thrift_attribute_value_t(u32=lag_hashseed_value)
+            attr = sai_thrift_attribute_t(id= SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+                
+            #sending packets again		
+            count2 = [0, 0, 0, 0]
+            laglist2=list()
+            max_itrs = 101
+            src_mac_start = '00:22:22:22:22:'
+            ip_src_start = '192.168.12.'
+            ip_dst_start = '10.10.10.'
+            dport = 0x80
+            sport = 0x1234
+			
+            print ("sending 100 packets to verify the order/sequence of distribution ")
+                        
+            for i in range(0, max_itrs):
+	        src_mac = src_mac_start + str(i % 99).zfill(2)
+                ip_src = ip_src_start + str(i % 99).zfill(3)
+                ip_dst = ip_dst_start + str(i % 99).zfill(3)    
+                                
+                pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                        eth_src=src_mac,
+                                        ip_dst=ip_dst,
+                                        ip_src=ip_src,
+                                        tcp_sport=sport,
+                                        tcp_dport=dport,
+                                        ip_id=109,
+                                        ip_ttl=64)
+
+                exp_pkt = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                            eth_src=src_mac,
+                                            ip_dst=ip_dst,
+                                            ip_src=ip_src,
+                                            tcp_sport=sport,
+                                            tcp_dport=dport,
+                                            ip_id=109,
+                                            ip_ttl=64)
+
+                send_packet(self, 4, str(pkt))
+                rcv_idx = verify_any_packet_any_port(self, [exp_pkt], [0, 1, 2, 3])
+                count2[rcv_idx] += 1
+                laglist2.append(rcv_idx)
+                sport += 1
+                dport += 1
+                 
+            print ("The distribution of packet after changing hash seed:" , count2)
+
+            order_check=0		
+            for i in range(0,max_itrs):
+                if(laglist1[i] != laglist2[i]):
+                    order_check+=1
+                
+	    print ("checking the difference in order/sequence before and after changing hash seed value:" ,order_check)
+
+        finally:
+
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac1, lag_id1)
+			
+	    attr_value = sai_thrift_attribute_value_t(u32=0)
+            attr = sai_thrift_attribute_t(id= SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED, value=attr_value)
+            self.client.sai_thrift_set_switch_attribute(attr)
+
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+
+            sai_thrift_remove_lag_member(self.client, lag_member_id1)
+            sai_thrift_remove_lag_member(self.client, lag_member_id2)
+            sai_thrift_remove_lag_member(self.client, lag_member_id3)
+            sai_thrift_remove_lag_member(self.client, lag_member_id4)	
+            sai_thrift_remove_lag(self.client, lag_id1)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
+
+            for port in sai_port_list:
+                sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port5, attr)
+            
+@group('l2')
 @group('sonic')
 class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
