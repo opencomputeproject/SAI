@@ -743,7 +743,7 @@ class L2BridgePortTestI(sai_base_test.ThriftInterfaceDataPlane):
             client.sai_thrift_set_bridge_port_attribute(bport2_id, bport_attr_admin_state)
 	    
             send_packet(self, 0, str(pkt))
-            verify_no_packet(self, pkt, [1])
+            verify_no_packet(self, pkt, 1)
         
 	finally:
             sai_thrift_remove_bridge_sub_port(self.client, bport1_id, port1)
