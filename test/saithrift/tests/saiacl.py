@@ -1904,7 +1904,7 @@ class L3AclTableTestII(sai_base_test.ThriftInterfaceDataPlane):
             # cleanup ACL
             self.client.sai_thrift_remove_acl_entry(acl_entry_id)
             self.client.sai_thrift_remove_acl_table(acl_table_id)
-            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr3_subnet, ip_mask1, rif_id1)
+            sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr3_subnet, ip_mask1, nhop1)
             sai_thrift_remove_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask, rif_id1)
             self.client.sai_thrift_remove_next_hop(nhop1)
             sai_thrift_remove_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
