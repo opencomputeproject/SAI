@@ -1635,6 +1635,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_BFD_SESSION,
 
     /**
+     * @brief List of BFD session offloads that are supported for IPv4
+     *
+     * @type sai_s32_list_t sai_bfd_session_offload_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_IPV4_BFD_SESSION_OFFLOAD_TYPE,
+
+    /**
+     * @brief List of BFD session offloads that are supported for IPv6
+     *
+     * @type sai_s32_list_t sai_bfd_session_offload_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_IPV6_BFD_SESSION_OFFLOAD_TYPE,
+
+    /**
      * @brief Minimum Receive interval NPU supports in microseconds
      *
      * @type sai_uint32_t

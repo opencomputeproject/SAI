@@ -1823,7 +1823,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
 
     /**
-     * @brief Drop Packet
+     * @brief Packet Action
      *
      * @type sai_acl_action_data_t sai_packet_action_t
      * @flags CREATE_AND_SET

@@ -1034,7 +1034,7 @@ event_attr[0].value.s32 = SAI_DTEL_EVENT_TYPE_FLOW_STATE;
 event_attr[1].id = SAI_DTEL_EVENT_ATTR_REPORT_SESSION;
 event_attr[1].value.oid = report_session_id;
 event_attr[2].id = SAI_DTEL_EVENT_ATTR_DSCP_VALUE;
-event_attr[3].value.u8 = 1;
+event_attr[2].value.u8 = 1;
 sai_switch_api->create_dtel_event(&flow_state_event_id, switch_id, 3, event_attr);
 
 sai_object_id_t queue_threshold_event_id;
@@ -1043,7 +1043,7 @@ event_attr[0].value.s32 = SAI_DTEL_EVENT_TYPE_QUEUE_REPORT_THRESHOLD_BREACH;
 event_attr[1].id = SAI_DTEL_EVENT_ATTR_REPORT_SESSION;
 event_attr[1].value.oid = report_session_id;
 event_attr[2].id = SAI_DTEL_EVENT_ATTR_DSCP_VALUE;
-event_attr[3].value.u8 = 2;
+event_attr[2].value.u8 = 2;
 sai_switch_api->create_dtel_event(&queue_threshold_event_id, switch_id, 3, event_attr);
 
 sai_object_id_t drop_event_id;
@@ -1052,7 +1052,7 @@ event_attr[0].value.s32 = SAI_DTEL_EVENT_TYPE_DROP_REPORT;
 event_attr[1].id = SAI_DTEL_EVENT_ATTR_REPORT_SESSION;
 event_attr[1].value.oid = report_session_id;
 event_attr[2].id = SAI_DTEL_EVENT_ATTR_DSCP_VALUE;
-event_attr[3].value.u8 = 3;
+event_attr[2].value.u8 = 3;
 sai_switch_api->create_dtel_event(&drop_event_id, switch_id, 3, event_attr);
 
 // Create a DTEL queue report
@@ -1108,7 +1108,7 @@ acl_table_attr[6].id = SAI_ACL_TABLE_ATTR_FIELD_L4_SRC_PORT;
 acl_table_attr[6].value.booldata = true;
 acl_table_attr[7].id = SAI_ACL_TABLE_ATTR_FIELD_L4_DST_PORT;
 acl_table_attr[7].value.booldata = true;
-sai_acl_api-> create_acl_table(&flow_watchlist_id, switch_id, 12, acl_table_attr);
+sai_acl_api-> create_acl_table(&flow_watchlist_id, switch_id, 8, acl_table_attr);
 
 // Add an INT watchlist entry
 sai_attribute_t acl_entry_attr[6];
