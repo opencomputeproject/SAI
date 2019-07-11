@@ -51,3 +51,31 @@ For example, different types of route entries are distinguished by the following
      */
     SAI_ROUTE_ENTRY_ATTR_IP_ADDR_FAMILY,
 ```
+
+## Examples
+```
+sai_attribute_t attr;
+sai_status_t status;
+uint64_t count;
+
+attr.id = SAI_ROUTE_ENTRY_ATTR_IP_ADDR_FAMILY;
+attr.value.s32 = SAI_IP_ADDR_FAMILY_IPV4;
+
+/* Get available v4 routes */
+status = sai_object_type_get_availability(g_switch_id, SAI_OBJECT_TYPE_ROUTE, 1, &attr, &count);
+
+attr.id = SAI_ROUTE_ENTRY_ATTR_IP_ADDR_FAMILY;
+attr.value.s32 = SAI_IP_ADDR_FAMILY_IPV6;
+
+/* Get available v6 routes */
+status = sai_object_type_get_availability(g_switch_id, SAI_OBJECT_TYPE_ROUTE, 1, &attr, &count);
+
+attr.id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
+attr.value.oid = g_table_id;
+
+/* Get available ACL entries for a given table id */
+status = sai_object_type_get_availability(g_switch_id, SAI_OBJECT_TYPE_ACL_ENTRY, 1, &attr, &count);
+```
+
+## API behavior for the shared resource pools
+If two objects share the same resource pool, e.g. IPv4 and IPv6 routes, then the object availability returned by the API is with an assumption that no other object type from that same pool is going to be created.
