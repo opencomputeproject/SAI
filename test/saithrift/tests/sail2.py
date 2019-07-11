@@ -716,17 +716,6 @@ class L2BridgePortTestI(sai_base_test.ThriftInterfaceDataPlane):
                                 vlan_vid=vlan_id)
         
         try:
-	    #setting admin state value to true
-	    bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=True)
-            bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
-                                                            value=bport_attr_admin_state_value)
-            client.sai_thrift_set_bridge_port_attribute(bport1_id, bport_attr_admin_state)
-	    
-	    bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=True)
-            bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
-                                                            value=bport_attr_admin_state_value)
-            client.sai_thrift_set_bridge_port_attribute(bport2_id, bport_attr_admin_state)
-	    
 	    #sending packet
             send_packet(self, 0, str(pkt))
             verify_packets(self, pkt, [1])
