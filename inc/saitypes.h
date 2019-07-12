@@ -257,8 +257,9 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_TAM_COLLECTOR            = 78,
     SAI_OBJECT_TYPE_TAM_EVENT_ACTION         = 79,
     SAI_OBJECT_TYPE_TAM_EVENT                = 80,
-    SAI_OBJECT_TYPE_COUNTER                  = 81,
-    SAI_OBJECT_TYPE_MAX                      = 82,
+    SAI_OBJECT_TYPE_TAM_INT                  = 81,
+    SAI_OBJECT_TYPE_COUNTER                  = 82,
+    SAI_OBJECT_TYPE_MAX                      = 83,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -753,7 +754,13 @@ typedef enum _sai_tam_bind_point_type_t
     SAI_TAM_BIND_POINT_TYPE_VLAN,
 
     /** Bind Point Type Switch */
-    SAI_TAM_BIND_POINT_TYPE_SWITCH
+    SAI_TAM_BIND_POINT_TYPE_SWITCH,
+
+    /** Bind Point Type Ingress Priority Group */
+    SAI_TAM_BIND_POINT_TYPE_IPG,
+
+    /** Bind Point Type Buffer Service Pool */
+    SAI_TAM_BIND_POINT_TYPE_BSP,
 
 } sai_tam_bind_point_type_t;
 
