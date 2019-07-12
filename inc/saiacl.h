@@ -231,6 +231,24 @@ typedef enum _sai_acl_action_type_t
     /** Enable DTEL report for all packets without filtering (experimental) */
     SAI_ACL_ACTION_TYPE_DTEL_REPORT_ALL_PACKETS,
 
+    /** Enable insertion of INT metadata */
+    SAI_ACL_ACTION_TYPE_INT_INSERT,
+
+    /** Enable deletion of INT metadata */
+    SAI_ACL_ACTION_TYPE_INT_DELETE,
+
+    /** Enable reports of INT metadata */
+    SAI_ACL_ACTION_TYPE_INT_REPORT_FLOW,
+
+    /** Enable INT drop reports */
+    SAI_ACL_ACTION_TYPE_INT_REPORT_DROPS,
+
+    /** Enable INT tail drop reports */
+    SAI_ACL_ACTION_TYPE_INT_REPORT_TAIL_DROPS,
+
+    /** Bind a TAM INT object */
+    SAI_ACL_ACTION_TYPE_TAM_INT_OBJECT,
+
     /** Set isolation group to prevent traffic to members of isolation group */
     SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
 
@@ -2147,6 +2165,69 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DTEL_REPORT_ALL_PACKETS,
+
+    /**
+     * @brief Enable INT metadata insertion
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_INSERT,
+
+    /**
+     * @brief Enable INT metadata deletion
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_DELETE,
+
+    /**
+     * @brief Enable INT metadata reports
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_FLOW,
+
+    /**
+     * @brief Enable INT drop reports
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_DROPS,
+
+    /**
+     * @brief Enable INT tail drop reports
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_TAIL_DROPS,
+
+    /**
+     * @brief ACL bind point for TAM INT object
+     *
+     * Bind (or unbind) a TAM INT object.
+     * Note that an ACL entry may bind a TAM INT object, or conversely a
+     * TAM INT object may bind an ACL table or ACL group. In the latter
+     * case, SAI_NULL_OBJECT_ID should be assigned as the attribute value.
+     *
+     * Note: Applicable only when SAI_ACL_ENTRY_ATTR_ACTION_INT_INSERT == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_DELETE == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_FLOW == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_DROPS == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_TAIL_DROPS == true
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_INT
+     * @allownull true
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TAM_INT_OBJECT,
 
     /**
      * @brief Set isolation group (isolation group object id)

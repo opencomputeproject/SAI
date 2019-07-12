@@ -1742,11 +1742,10 @@ typedef enum _sai_switch_attr_t
      * Bind (or unbind) the TAM object.
      * SAI_NULL_OBJECT_ID in the attribute value.
      *
-     * @type sai_object_id_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
     SAI_SWITCH_ATTR_TAM_OBJECT_ID,
 
