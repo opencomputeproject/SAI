@@ -186,6 +186,22 @@ typedef enum _sai_port_priority_flow_control_mode_t
 } sai_port_priority_flow_control_mode_t;
 
 /**
+ * @brief PTP mode
+ */
+typedef enum _sai_port_ptp_mode_t
+{
+    /** No special processing for PTP packets */
+    SAI_PORT_PTP_MODE_NONE,
+
+    /** Single-step Timestamp mode for the PTP packets */
+    SAI_PORT_PTP_MODE_SINGLE_STEP_TIMESTAMP,
+
+    /** Two-step Timestamp mode for the PTP packets */
+    SAI_PORT_PTP_MODE_TWO_STEP_TIMESTAMP,
+
+} sai_port_ptp_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -1134,11 +1150,10 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port bind point for TAM object
      *
-     * @type sai_object_id_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
     SAI_PORT_ATTR_TAM_OBJECT,
 
@@ -1189,6 +1204,15 @@ typedef enum _sai_port_attr_t
      * @default false
      */
     SAI_PORT_ATTR_LINK_TRAINING_ENABLE,
+
+    /**
+     * @brief Configure PTP mode on the port
+     *
+     * @type sai_port_ptp_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PTP_MODE_NONE
+     */
+    SAI_PORT_ATTR_PTP_MODE,
 
     /**
      * @brief End of attributes

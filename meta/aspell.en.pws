@@ -93,6 +93,7 @@ multi
 multicast
 netdev
 netdevs
+netlink
 nexthop
 nexthopgroup
 objlist
