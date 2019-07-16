@@ -855,6 +855,68 @@ class L2BridgeSubPortFloodTest(sai_base_test.ThriftInterfaceDataPlane):
 
 @group('l2')
 @group('1D')
+class L2BridgePortTestI(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        '''
+        Create a bridge-port and verify traffic forwarding.
+        Disable bridge-port admin state and verify packets are dropped.
+        '''
+        switch_init(self.client)
+        vlan_id = 10
+        mac1 = '00:11:11:11:11:11'
+        mac2 = '00:22:22:22:22:22'
+        port1 = port_list[0]
+        port2 = port_list[1]
+	
+	sai_thrift_vlan_remove_all_ports(self.client, switch.default_vlan.oid)
+
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+         
+        # Create 1D Bridge
+        bridge_id = sai_thrift_create_bridge(self.client, SAI_BRIDGE_TYPE_1D)
+        
+        # Create Bridge ports
+        bport1_id = sai_thrift_create_bridge_sub_port(self.client, port1, bridge_id, vlan_id)
+        bport2_id = sai_thrift_create_bridge_sub_port(self.client, port2, bridge_id, vlan_id)
+        
+        pkt = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
+                                eth_src='00:11:11:11:11:11',
+                                ip_dst='10.0.0.1',
+                                ip_id=101,
+                                ip_ttl=64,
+			        dl_vlan_enable=True,
+                                vlan_vid=vlan_id)
+        
+        try:
+	    #sending packet
+            send_packet(self, 0, str(pkt))
+            verify_packets(self, pkt, [1])
+	    
+            #setting admin state value to false
+            bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=False)
+            bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+                                                            value=bport_attr_admin_state_value)
+            client.sai_thrift_set_bridge_port_attribute(bport1_id, bport_attr_admin_state)
+	    
+	    bport_attr_admin_state_value = sai_thrift_attribute_value_t(booldata=False)
+            bport_attr_admin_state = sai_thrift_attribute_t(id=SAI_BRIDGE_PORT_ATTR_ADMIN_STATE,
+                                                            value=bport_attr_admin_state_value)
+            client.sai_thrift_set_bridge_port_attribute(bport2_id, bport_attr_admin_state)
+	    
+            send_packet(self, 0, str(pkt))
+            verify_no_packet(self, pkt, 1)
+        
+	finally:
+            sai_thrift_remove_bridge_sub_port(self.client, bport1_id, port1)
+            sai_thrift_remove_bridge_sub_port(self.client, bport2_id, port2)
+            self.client.sai_thrift_remove_bridge(bridge_id)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
+            
+            for port in sai_port_list:
+                sai_thrift_create_vlan_member(self.client, switch.default_vlan.oid, port, SAI_VLAN_TAGGING_MODE_UNTAGGED)            
+     
+@group('l2')
+@group('1D')
 class L2BridgeSubPortFDBTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
         print ""
