@@ -11,7 +11,7 @@ SAI-Version | 1.5
 ## Overview
 ASICs can provide a set of debug counters for certain object types.
 Debug counters belong to certain families, each family is for cetain object type.
-The content of a specific debug counter instance can be defined by the application.
+The content of a specific debug counter instance can be defined by the application. Once configured, a debug counter is automatically attached to all object instances of the relevant object type.
 Counting every statistics of every family might be too resource intensive, therefor the debug counters provide an efficient way to count and aggregate only the needed information.
 
 ## Debug counter object type
