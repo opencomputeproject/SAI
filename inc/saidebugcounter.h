@@ -55,6 +55,8 @@ typedef enum _sai_debug_counter_type_t
  */
 typedef enum _sai_port_in_drop_reason_t
 {
+    /* L2 reasons */
+
     /** Source MAC is multicast */
     SAI_PORT_IN_DROP_REASON_SMAC_MULTICAST,
 
@@ -78,6 +80,17 @@ typedef enum _sai_port_in_drop_reason_t
     /** Ingress STP filter */
     SAI_PORT_IN_DROP_REASON_INGRESS_STP_FILTER,
 
+    /** Unicast FDB table action discard */
+    SAI_PORT_IN_DROP_REASON_FDB_UC_DISCARD,
+
+    /** Multicast FDB table empty tx list */
+    SAI_PORT_IN_DROP_REASON_FDB_MC_DISCARD,
+
+    /** Port loopback filter */
+    SAI_PORT_IN_DROP_REASON_LOOPBACK_FILTER,
+
+    /* L3 reasons */
+
 } sai_port_in_drop_reason_t;
 
 /**
@@ -86,7 +99,7 @@ typedef enum _sai_port_in_drop_reason_t
 typedef enum _sai_port_out_drop_reason_t
 {
     /** Egress VLAN filter */
-    SAI_PORT_IN_DROP_REASON_EGRESS_VLAN_FILTER,
+    SAI_PORT_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
 
 } sai_port_out_drop_reason_t;
 
