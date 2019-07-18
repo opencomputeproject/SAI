@@ -1736,6 +1736,18 @@ typedef enum _sai_port_stat_t
      */
     SAI_PORT_STAT_EEE_RX_DURATION,
 
+    /** Port stat in drop reasons range start */
+    SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00010000,
+
+    /** Port stat in drop reasons range end */
+    SAI_PORT_STAT_IN_DROP_REASON_RANGE_END = 0x0001ffff,
+
+    /** Port stat out drop reasons range start */
+    SAI_PORT_STAT_OUT_DROP_REASON_RANGE_BASE = 0x00020000,
+
+    /** Port stat out drop reasons range end */
+    SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x0002ffff,
+
 } sai_port_stat_t;
 
 /**
