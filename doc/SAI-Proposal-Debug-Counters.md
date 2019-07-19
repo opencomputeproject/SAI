@@ -11,18 +11,18 @@ SAI-Version | 1.5
 ## Overview
 ASICs can provide a set of debug counters for certain object types.
 Debug counters belong to certain families, each family is for cetain object type.
-The content of a specific debug counter instance can be defined by the application. Once configured, a debug counter is automatically attached to all object instances of the relevant object type.
-Counting every statistics of every family might be too resource intensive, therefor the debug counters provide an efficient way to count and aggregate only the needed information.
+The content of a specific debug counter instance can be defined by the application.
+Counting every statistics of every family might be too resource intensive, therefore the debug counters provide an efficient way to count and aggregate only the needed information.
 
 ## Debug counter object type
 For the counter object, a sai_counter_stat_t enum is defined:
 ```
 typedef enum _sai_debug_counter_type_t
 {
-    /** Port in drop reasons */
+    /** Port in drop reasons. Base object : SAI_OBJECT_TYPE_PORT */
     SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS,
 
-    /** Port out drop reasons */
+    /** Port out drop reasons. Base object : SAI_OBJECT_TYPE_PORT */
     SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS,
 
 } sai_debug_counter_type_t;
@@ -113,6 +113,15 @@ typedef enum _sai_debug_counter_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_DEBUG_COUNTER_ATTR_INDEX,
+	
+    /**
+     * @brief Bind method to base object
+     *
+     * @type sai_debug_counter_bind_method_t
+     * @flags CREATE_ONLY
+     * @default SAI_DEBUG_COUNTER_BIND_METHOD_AUTOMATIC
+     */
+    SAI_DEBUG_COUNTER_ATTR_BIND_METHOD,	
 
     /**
      * @brief List of port in drop reasons that will be counted
@@ -148,6 +157,34 @@ typedef enum _sai_debug_counter_attr_t
     SAI_DEBUG_COUNTER_ATTR_CUSTOM_RANGE_END
 
 } sai_debug_counter_attr_t;
+```
+
+### Binding a debug counter
+```
+typedef enum _sai_debug_counter_bind_method_t
+{
+    /** Bind automatically to all instances of base object */
+    SAI_DEBUG_COUNTER_BIND_METHOD_AUTOMATIC,
+
+} sai_debug_counter_bind_method_t;
+```
+
+With automatic bind method, once configured, a debug counter is automatically attached to all object instances of the relevant object type.
+Future extension may require binding only to certain object instances of the relevant object type. A possible extension will be to add SAI_DEBUG_COUNTER_BIND_METHOD_MANUAL.
+In addition, adding object list of bounded counters in the relevant object type. For example, in case of port drop reasons, adding
+
+```
+/**
+ * @brief Attach a list of debug counter
+ *
+
+ *
+ * @type sai_object_list_t
+ * @flags CREATE_AND_SET
+ * @objects SAI_OBJECT_TYPE_DEBUG_COUNTER
+ * @default empty
+ */
+SAI_PORT_ATTR_DEBUG_COUNTER_LIST,
 ```
 
 ### Reading a debug counter

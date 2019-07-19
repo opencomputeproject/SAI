@@ -42,13 +42,23 @@
  */
 typedef enum _sai_debug_counter_type_t
 {
-    /** Port in drop reasons */
+    /** Port in drop reasons. Base object : SAI_OBJECT_TYPE_PORT */
     SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS,
 
-    /** Port out drop reasons */
+    /** Port out drop reasons. Base object : SAI_OBJECT_TYPE_PORT */
     SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS,
 
 } sai_debug_counter_type_t;
+
+/**
+* @brief Debug counter bind method
+*/
+typedef enum _sai_debug_counter_bind_method_t
+{
+    /** Bind automatically to all instances of base object */
+    SAI_DEBUG_COUNTER_BIND_METHOD_AUTOMATIC,
+
+} sai_debug_counter_bind_method_t;
 
 /**
  * @brief Attribute data for port in drop reasons
@@ -133,6 +143,15 @@ typedef enum _sai_debug_counter_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_DEBUG_COUNTER_ATTR_INDEX,
+
+    /**
+     * @brief Bind method to base object
+     *
+     * @type sai_debug_counter_bind_method_t
+     * @flags CREATE_ONLY
+     * @default SAI_DEBUG_COUNTER_BIND_METHOD_AUTOMATIC
+     */
+    SAI_DEBUG_COUNTER_ATTR_BIND_METHOD,
 
     /**
      * @brief List of port in drop reasons that will be counted
