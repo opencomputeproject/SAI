@@ -63,17 +63,18 @@ my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 # TAGS HANDLERS
 
 my %ATTR_TAGS = (
-        "type"      , \&ProcessTagType,
-        "flags"     , \&ProcessTagFlags,
-        "objects"   , \&ProcessTagObjects,
-        "allownull" , \&ProcessTagAllowNull,
-        "condition" , \&ProcessTagCondition,
-        "validonly" , \&ProcessTagCondition, # since validonly uses same format as condition
-        "default"   , \&ProcessTagDefault,
-        "ignore"    , \&ProcessTagIgnore,
-        "isvlan"    , \&ProcessTagIsVlan,
-        "getsave"   , \&ProcessTagGetSave,
-        "range"     , \&ProcessTagRange,
+        "type"           , \&ProcessTagType,
+        "flags"          , \&ProcessTagFlags,
+        "objects"        , \&ProcessTagObjects,
+        "allownull"      , \&ProcessTagAllowNull,
+        "condition"      , \&ProcessTagCondition,
+        "validonly"      , \&ProcessTagCondition, # since validonly uses same format as condition
+        "default"        , \&ProcessTagDefault,
+        "ignore"         , \&ProcessTagIgnore,
+        "isvlan"         , \&ProcessTagIsVlan,
+        "getsave"        , \&ProcessTagGetSave,
+        "range"          , \&ProcessTagRange,
+        "isresourcetype" , \&ProcessTagIsRecourceType,
         );
 
 my %options = ();
@@ -241,6 +242,16 @@ sub ProcessTagIsVlan
     return undef;
 }
 
+sub ProcessTagIsRecourceType
+{
+    my ($type, $value, $val) = @_;
+
+    return $val if $val =~ /^(true|false)$/i;
+
+    LogError "isresourcetype tag value '$val', expected true/false";
+    return undef;
+}
+
 sub ProcessTagRange
 {
     my ($type, $attrName, $value) = @_;
@@ -310,7 +321,7 @@ sub ProcessDescription
 
     return if scalar@order == 0;
 
-    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?';
+    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?(:isresourcetype)?';
 
     my $order = join(":",@order);
 
@@ -1100,6 +1111,15 @@ sub ProcessAllowNull
     return "false";
 }
 
+sub ProcessIsResourceType
+{
+    my ($value,$isresourcetype) = @_;
+
+    return $isresourcetype if defined $isresourcetype;
+
+    return "false";
+}
+
 sub ProcessObjects
 {
     my ($attr, $objects) = @_;
@@ -1765,6 +1785,7 @@ sub ProcessSingleObjectType
         my $cap             = ProcessCapability($attr, $meta{type}, $enummetadata);
         my $caplen          = ProcessCapabilityLen($attr, $meta{type});
         my $isextensionattr = ProcessIsExtensionAttr($attr, $meta{type});
+        my $isresourcetype  = ProcessIsResourceType($attr, $meta{isresourcetype});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -1817,6 +1838,7 @@ sub ProcessSingleObjectType
         WriteSource ".capability                    = $cap,";
         WriteSource ".capabilitylength              = $caplen,";
         WriteSource ".isextensionattr               = $isextensionattr,";
+        WriteSource ".isresourcetype                = $isresourcetype,";
 
         WriteSource "};";
 
