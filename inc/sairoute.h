@@ -104,6 +104,17 @@ typedef enum _sai_route_entry_attr_t
      */
     SAI_ROUTE_ENTRY_ATTR_META_DATA,
 
+    /** READ-ONLY */
+
+    /**
+     * @brief Route entry IP address family
+     *
+     * @type sai_ip_addr_family_t
+     * @flags READ_ONLY
+     * @isresourcetype true
+     */
+    SAI_ROUTE_ENTRY_ATTR_IP_ADDR_FAMILY,
+
     /**
      * @brief Attach a counter
      *
