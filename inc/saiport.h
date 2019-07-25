@@ -186,6 +186,22 @@ typedef enum _sai_port_priority_flow_control_mode_t
 } sai_port_priority_flow_control_mode_t;
 
 /**
+ * @brief PTP mode
+ */
+typedef enum _sai_port_ptp_mode_t
+{
+    /** No special processing for PTP packets */
+    SAI_PORT_PTP_MODE_NONE,
+
+    /** Single-step Timestamp mode for the PTP packets */
+    SAI_PORT_PTP_MODE_SINGLE_STEP_TIMESTAMP,
+
+    /** Two-step Timestamp mode for the PTP packets */
+    SAI_PORT_PTP_MODE_TWO_STEP_TIMESTAMP,
+
+} sai_port_ptp_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -409,6 +425,17 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_EYE_VALUES,
 
+    /**
+     * @brief Operational speed in Mbps
+     *
+     * If port is down, the returned value should be zero.
+     * If auto negotiation is on, the returned value should be the negotiated speed.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_OPER_SPEED,
+
     /* READ-WRITE */
 
     /**
@@ -421,6 +448,8 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Speed in Mbps
+     *
+     * On get, returns the configured port speed.
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -1119,6 +1148,73 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PKT_TX_ENABLE,
 
     /**
+     * @brief Port bind point for TAM object
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @default empty
+     */
+    SAI_PORT_ATTR_TAM_OBJECT,
+
+    /**
+     * @brief Port serdes control pre-emphasis
+     *
+     * List of port serdes pre-emphasis values. The values are of type sai_u32_list_t
+     * where the count is number lanes in a port and the list specifies list of values
+     * to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_ATTR_SERDES_PREEMPHASIS,
+
+    /**
+     * @brief Port serdes control idriver
+     *
+     * List of port serdes idriver values. The values are of type sai_u32_list_t
+     * where the count is number lanes in a port and the list specifies list of values
+     * to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_ATTR_SERDES_IDRIVER,
+
+    /**
+     * @brief Port serdes control ipredriver
+     *
+     * List of port serdes ipredriver values. The values are of type sai_u32_list_t
+     * where the count is number lanes in a port and the list specifies list of values
+     * to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_ATTR_SERDES_IPREDRIVER,
+
+    /**
+     * @brief Enable/Disable Port Link Training
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_LINK_TRAINING_ENABLE,
+
+    /**
+     * @brief Configure PTP mode on the port
+     *
+     * @type sai_port_ptp_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PTP_MODE_NONE
+     */
+    SAI_PORT_ATTR_PTP_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -1707,7 +1803,7 @@ typedef sai_status_t (*sai_get_port_attribute_fn)(
 typedef sai_status_t (*sai_get_port_stats_fn)(
         _In_ sai_object_id_t port_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_port_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -1724,7 +1820,7 @@ typedef sai_status_t (*sai_get_port_stats_fn)(
 typedef sai_status_t (*sai_get_port_stats_ext_fn)(
         _In_ sai_object_id_t port_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_port_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -1740,7 +1836,7 @@ typedef sai_status_t (*sai_get_port_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_port_stats_fn)(
         _In_ sai_object_id_t port_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_port_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Clear port's all statistics counters.
@@ -1963,7 +2059,7 @@ typedef sai_status_t (*sai_get_port_pool_attribute_fn)(
 typedef sai_status_t (*sai_get_port_pool_stats_fn)(
         _In_ sai_object_id_t port_pool_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_port_pool_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -1980,7 +2076,7 @@ typedef sai_status_t (*sai_get_port_pool_stats_fn)(
 typedef sai_status_t (*sai_get_port_pool_stats_ext_fn)(
         _In_ sai_object_id_t port_pool_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_port_pool_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -1996,7 +2092,7 @@ typedef sai_status_t (*sai_get_port_pool_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_port_pool_stats_fn)(
         _In_ sai_object_id_t port_pool_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_port_pool_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Port methods table retrieved with sai_api_query()

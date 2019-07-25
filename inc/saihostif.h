@@ -236,7 +236,10 @@ typedef enum _sai_hostif_trap_type_t
     /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE = 0x00002001,
 
-    /** Default packet action is forward */
+    /**
+     * @brief DHCP traffic (UDP ports 67, 68), either L3 broadcast or unicast
+     * to local router IP address (default packet action is forward)
+     */
     SAI_HOSTIF_TRAP_TYPE_DHCP = 0x00002002,
 
     /** Default packet action is forward */
@@ -313,6 +316,18 @@ typedef enum _sai_hostif_trap_type_t
      * local router IP address (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x00004004,
+
+    /**
+     * @brief BFD traffic (UDP dst port == 3784 or UDP dst port == 4784) to local
+     * router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFD = 0x00004005,
+
+    /**
+     * @brief BFDV6 traffic (UDP dst port == 3784 or UDP dst port == 4784) to
+     * local router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFDV6 = 0x00004006,
 
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
@@ -403,7 +418,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default attrvalue SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY
-     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
 
@@ -414,7 +429,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
      * @default empty
-     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
 
@@ -425,7 +440,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @default attrvalue SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP
-     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
 
@@ -438,6 +453,19 @@ typedef enum _sai_hostif_trap_attr_t
      * @default empty
      */
     SAI_HOSTIF_TRAP_ATTR_MIRROR_SESSION,
+
+    /**
+     * @brief Attach a counter
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_HOSTIF_TRAP_ATTR_COUNTER_ID,
 
     /**
      * @brief End of attributes
@@ -660,7 +688,10 @@ typedef enum _sai_hostif_type_t
     SAI_HOSTIF_TYPE_NETDEV,
 
     /** File descriptor */
-    SAI_HOSTIF_TYPE_FD
+    SAI_HOSTIF_TYPE_FD,
+
+    /** Generic netlink */
+    SAI_HOSTIF_TYPE_GENETLINK
 
 } sai_hostif_type_t;
 
@@ -733,9 +764,11 @@ typedef enum _sai_hostif_attr_t
      * The maximum number of characters for the name is SAI_HOSTIF_NAME_SIZE - 1 since
      * it needs the terminating null byte ('\0') at the end.
      *
+     * If Hostif is a generic netlink, this indicates the generic netlink family name.
+     *
      * @type char
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
+     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV or SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_GENETLINK
      */
     SAI_HOSTIF_ATTR_NAME,
 
@@ -766,6 +799,16 @@ typedef enum _sai_hostif_attr_t
      * @validonly SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
      */
     SAI_HOSTIF_ATTR_VLAN_TAG,
+
+    /**
+     * @brief Set the Generic netlink (multicast) port id on which the packets/buffers
+     * are received on this host interface
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_HOSTIF_ATTR_GENETLINK_PORT_ID,
 
     /**
      * @brief End of attributes
@@ -872,7 +915,10 @@ typedef enum _sai_hostif_table_entry_channel_type_t
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_LOGICAL_PORT,
 
     /** Receive packets via Linux netdev L3 interface */
-    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3,
+
+    /** Receive packets via Linux generic netlink interface */
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_GENETLINK
 
 } sai_hostif_table_entry_channel_type_t;
 
@@ -929,12 +975,12 @@ typedef enum _sai_hostif_table_entry_attr_t
     /**
      * @brief Host interface table entry action target host interface object
      *
-     * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE = #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
+     * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE = #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD or #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_GENETLINK
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_HOSTIF
-     * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
+     * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD or SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_GENETLINK
      */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
 

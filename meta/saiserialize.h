@@ -624,7 +624,7 @@ int sai_deserialize_ip6_mask(
  */
 int sai_serialize_pointer(
         _Out_ char *buffer,
-        _In_ sai_pointer_t pointer);
+        _In_ const sai_pointer_t pointer);
 
 /**
  * @brief Deserialize pointer.

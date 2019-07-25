@@ -999,6 +999,14 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        isextensionattr;
 
+    /**
+     * @brief Tells if attribute is a resource type.
+     *
+     * If true, attribute is used in getting object type availability
+     * to distinguish between pools of resources.
+     */
+    bool                                        isresourcetype;
+
 } sai_attr_metadata_t;
 
 /*
@@ -1092,6 +1100,19 @@ typedef struct _sai_struct_member_info_t
      * will set its value.
      */
     const sai_meta_set_struct_member_oid_fn             setoid;
+
+    /**
+     * @brief Member offset from the struct beginning in bytes.
+     *
+     * Macro offsetof is used to calculate this field, and it value can be
+     * different depending on compiler setting for struct packing.
+     */
+    size_t                                              offset;
+
+    /**
+     * @brief Member size using sizeof operator.
+     */
+    size_t                                              size;
 
 } sai_struct_member_info_t;
 
@@ -1280,6 +1301,11 @@ typedef struct _sai_object_type_info_t
      * @brief Indicates whether object type is experimental.
      */
     bool                                            isexperimental;
+
+    /**
+     * @brief Points to enum sai_OBJECT_TYPE_stat_t if object supports stats.
+     */
+    const sai_enum_metadata_t* const                statenum;
 
 } sai_object_type_info_t;
 

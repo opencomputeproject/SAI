@@ -63,6 +63,10 @@ WARNINGS = \
 	-Wvariadic-macros \
 	-Wwrite-strings
 
+BINS = doxygen perl dot
+
+$(foreach bin,$(BINS),$(if $(shell which $(bin)),,$(error "Missing $(bin) in PATH")))
+
 CFLAGS += -I../inc -I../experimental $(WARNINGS)
 
 DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h)
@@ -86,7 +90,7 @@ xml: $(DEPS) Doxyfile $(CONSTHEADERS)
 EXTRA = acronyms.txt aspell.en.pws *.pm *.cap
 
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
-	perl parse.pl
+	perl -I. parse.pl
 
 HEADERS = saimetadata.h $(CONSTHEADERS)
 

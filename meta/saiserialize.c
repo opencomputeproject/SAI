@@ -325,7 +325,7 @@ int sai_serialize_uint64(
         _Out_ char *buffer,
         _In_ uint64_t u64)
 {
-    return sprintf(buffer, "%lu", u64);
+    return sprintf(buffer, "%"PRIu64, u64);
 }
 
 #define SAI_BASE_10 10
@@ -372,7 +372,7 @@ int sai_serialize_int64(
         _Out_ char *buffer,
         _In_ int64_t s64)
 {
-    return sprintf(buffer, "%ld", s64);
+    return sprintf(buffer, "%"PRId64, s64);
 }
 
 int sai_deserialize_int64(
@@ -443,7 +443,7 @@ int sai_serialize_object_id(
         _Out_ char *buffer,
         _In_ sai_object_id_t oid)
 {
-    return sprintf(buffer, "oid:0x%lx", oid);
+    return sprintf(buffer, "oid:0x%"PRIx64, oid);
 }
 
 int sai_deserialize_object_id(
@@ -452,7 +452,7 @@ int sai_deserialize_object_id(
 {
     int read;
 
-    int n = sscanf(buffer, "oid:0x%16lx%n", oid, &read);
+    int n = sscanf(buffer, "oid:0x%16"PRIx64"%n", oid, &read);
 
     if (n == 1 && sai_serialize_is_char_allowed(buffer[read]))
     {
@@ -932,9 +932,9 @@ int sai_deserialize_ip6_mask(
 
 int sai_serialize_pointer(
         _Out_ char *buffer,
-        _In_ sai_pointer_t pointer)
+        _In_ const sai_pointer_t pointer)
 {
-    return sprintf(buffer, "ptr:0x%p", pointer);
+    return sprintf(buffer, "ptr:%p", pointer);
 }
 
 int sai_deserialize_pointer(
@@ -943,7 +943,7 @@ int sai_deserialize_pointer(
 {
     int read;
 
-    int n = sscanf(buffer, "ptr:0x%16p%n", pointer, &read);
+    int n = sscanf(buffer, "ptr:%p%n", pointer, &read);
 
     if (n == 1 && sai_serialize_is_char_allowed(buffer[read]))
     {
@@ -1060,7 +1060,9 @@ int sai_serialize_attribute(
         return SAI_SERIALIZE_ERROR;
     }
 
-    buf += sprintf(buf, "\"");
+    buf += ret;
+
+    buf += sprintf(buf, "\",");
 
     buf += sprintf(buf, "\"value\":");
 

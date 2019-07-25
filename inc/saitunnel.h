@@ -440,6 +440,7 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_tunnel_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isresourcetype true
      */
     SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_ATTR_START,
 
@@ -451,7 +452,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN
      */
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
 
@@ -703,7 +704,7 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
 typedef sai_status_t (*sai_get_tunnel_stats_fn)(
         _In_ sai_object_id_t tunnel_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_tunnel_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -720,7 +721,7 @@ typedef sai_status_t (*sai_get_tunnel_stats_fn)(
 typedef sai_status_t (*sai_get_tunnel_stats_ext_fn)(
         _In_ sai_object_id_t tunnel_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_tunnel_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -736,7 +737,7 @@ typedef sai_status_t (*sai_get_tunnel_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_tunnel_stats_fn)(
         _In_ sai_object_id_t tunnel_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_tunnel_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Defines tunnel termination table entry type
