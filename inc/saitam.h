@@ -474,7 +474,7 @@ typedef enum _sai_tam_int_type_t
     /**
      * @brief Telemetry data at the end of the packet
      */
-    SAI_TAM_INT_TYPE_TAIL_TIMESTAMP,
+    SAI_TAM_INT_TYPE_IFA1_TAILSTAMP,
 
 } sai_tam_int_type_t;
 
