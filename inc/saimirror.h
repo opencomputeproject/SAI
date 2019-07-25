@@ -310,6 +310,7 @@ typedef enum _sai_mirror_session_attr_t
      */
     SAI_MIRROR_SESSION_ATTR_MONITOR_PORTLIST,
 
+    /**
      * @brief Mirror session policer object ID
      *
      * @type sai_object_id_t
