@@ -1764,7 +1764,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief List of supported object types
      *
-     * A list of object types (sai_oject_type_t) that the SAI adapter can
+     * A list of object types (sai_object_type_t) that the SAI adapter can
      * support.
      *
      * @type sai_s32_list_t sai_object_type_t
