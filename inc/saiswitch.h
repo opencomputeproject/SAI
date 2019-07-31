@@ -781,6 +781,30 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_IPMC_ENTRY,
 
     /**
+     * @brief Available SNAT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_SNAT_ENTRY,
+
+    /**
+     * @brief Available DNAT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DNAT_ENTRY,
+
+    /**
+     * @brief Available Double NAT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DOBULE_NAT_ENTRY,
+
+    /**
      * @brief Available ACL Tables
      *
      * @type sai_acl_resource_list_t
