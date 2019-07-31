@@ -28,6 +28,7 @@
 #include "saiacl.h"
 #include "saibridge.h"
 #include "saibuffer.h"
+#include "saicounter.h"
 #include "saifdb.h"
 #include "saihash.h"
 #include "saihostif.h"
@@ -125,7 +126,8 @@ typedef enum _sai_api_t
     SAI_API_BFD              = 38, /**< sai_bfd_api_t */
     SAI_API_ISOLATION_GROUP  = 39, /**< sai_isolation_group_api_t */
     SAI_API_NAT              = 40, /**< sai_nat_api_t */
-    SAI_API_MAX              = 41, /**< total number of APIs */
+    SAI_API_COUNTER          = 41, /**< sai_counter_api_t */
+    SAI_API_MAX              = 42, /**< total number of APIs */
 } sai_api_t;
 
 /**
@@ -266,6 +268,25 @@ sai_object_id_t sai_switch_id_query(
  */
 sai_status_t sai_dbg_generate_dump(
         _In_ const char *dump_file_name);
+
+/**
+ * @brief Get SAI object type resource availability.
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list List of attributes that to distinguish resource
+ * @param[out] count Available objects left
+ *
+ * @return #SAI_STATUS_NOT_SUPPORTED if the given object type does not support resource accounting.
+ * Otherwise, return #SAI_STATUS_SUCCESS.
+ */
+sai_status_t sai_object_type_get_availability(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list,
+        _Out_ uint64_t *count);
 
 /**
  * @}

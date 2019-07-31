@@ -259,7 +259,9 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_TAM_EVENT                = 80,
     SAI_OBJECT_TYPE_NAT_ZONE_COUNTER         = 81,
     SAI_OBJECT_TYPE_NAT_ENTRY                = 82,
-    SAI_OBJECT_TYPE_MAX                      = 83,
+    SAI_OBJECT_TYPE_TAM_INT                  = 83,
+    SAI_OBJECT_TYPE_COUNTER                  = 84,
+    SAI_OBJECT_TYPE_MAX                      = 85,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -754,7 +756,13 @@ typedef enum _sai_tam_bind_point_type_t
     SAI_TAM_BIND_POINT_TYPE_VLAN,
 
     /** Bind Point Type Switch */
-    SAI_TAM_BIND_POINT_TYPE_SWITCH
+    SAI_TAM_BIND_POINT_TYPE_SWITCH,
+
+    /** Bind Point Type Ingress Priority Group */
+    SAI_TAM_BIND_POINT_TYPE_IPG,
+
+    /** Bind Point Type Buffer Service Pool */
+    SAI_TAM_BIND_POINT_TYPE_BSP,
 
 } sai_tam_bind_point_type_t;
 
@@ -1004,7 +1012,7 @@ typedef union _sai_attribute_value_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_VLAN_LIST */
     sai_vlan_list_t vlanlist;
 
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MAP_LIST */
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST */
     sai_qos_map_list_t qosmap;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MAP_LIST */

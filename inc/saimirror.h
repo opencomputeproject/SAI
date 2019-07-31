@@ -93,11 +93,12 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
 
     /**
-     * @brief Destination/Analyzer/Monitor Port
+     * @brief Destination/Analyzer/Monitor Port.
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
+     * @condition SAI_MIRROR_SESSION_ATTR_MONITOR_PORTLIST_VALID == false
      */
     SAI_MIRROR_SESSION_ATTR_MONITOR_PORT,
 
@@ -289,6 +290,25 @@ typedef enum _sai_mirror_session_attr_t
      * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE,
+
+    /**
+     * @brief Monitor port list is valid
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_MIRROR_SESSION_ATTR_MONITOR_PORTLIST_VALID,
+
+    /**
+     * @brief Destination/Analyzer/Monitor Port List.
+     *
+     * @type sai_object_list_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
+     * @condition SAI_MIRROR_SESSION_ATTR_MONITOR_PORTLIST_VALID == true
+     */
+    SAI_MIRROR_SESSION_ATTR_MONITOR_PORTLIST,
 
     /**
      * @brief Mirror session policer object ID

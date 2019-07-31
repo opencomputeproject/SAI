@@ -106,6 +106,7 @@ typedef enum _sai_next_hop_group_attr_t
      *
      * @type sai_next_hop_group_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isresourcetype true
      */
     SAI_NEXT_HOP_GROUP_ATTR_TYPE,
 
@@ -118,6 +119,19 @@ typedef enum _sai_next_hop_group_attr_t
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      */
     SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER,
+
+    /**
+     * @brief Attach a counter
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_COUNTER_ID,
 
     /**
      * @brief End of attributes

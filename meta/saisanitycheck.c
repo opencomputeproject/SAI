@@ -854,6 +854,8 @@ void check_attr_default_required(
                 break;
             }
 
+            META_MD_ASSERT_FAIL(md, "default value on chardata const");
+
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
@@ -3103,6 +3105,11 @@ void check_non_object_id_object_attrs()
             const sai_attr_metadata_t* m = meta[idx];
 
             META_ASSERT_NOT_NULL(m);
+
+            if (m->isresourcetype && (int)m->flags == SAI_ATTR_FLAGS_READ_ONLY)
+            {
+                continue;
+            }
 
             switch ((int)m->flags)
             {

@@ -581,6 +581,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
 
     /**
+     * @brief Max number of STP instances that NPU supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_STP_INSTANCE,
+
+    /**
      * @brief Default SAI Virtual Router ID
      *
      * Must return #SAI_STATUS_OBJECT_IN_USE when try to delete this VR ID.
@@ -1651,6 +1659,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_BFD_SESSION,
 
     /**
+     * @brief List of BFD session offloads that are supported for IPv4
+     *
+     * @type sai_s32_list_t sai_bfd_session_offload_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_IPV4_BFD_SESSION_OFFLOAD_TYPE,
+
+    /**
+     * @brief List of BFD session offloads that are supported for IPv6
+     *
+     * @type sai_s32_list_t sai_bfd_session_offload_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_IPV6_BFD_SESSION_OFFLOAD_TYPE,
+
+    /**
      * @brief Minimum Receive interval NPU supports in microseconds
      *
      * @type sai_uint32_t
@@ -1742,11 +1766,10 @@ typedef enum _sai_switch_attr_t
      * Bind (or unbind) the TAM object.
      * SAI_NULL_OBJECT_ID in the attribute value.
      *
-     * @type sai_object_id_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
     SAI_SWITCH_ATTR_TAM_OBJECT_ID,
 
