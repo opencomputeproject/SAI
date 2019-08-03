@@ -1229,6 +1229,8 @@ typedef enum _sai_port_attr_t
 
 /**
  * @brief Port counter IDs in sai_get_port_stats() call
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_port_stat_t
 {
