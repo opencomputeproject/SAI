@@ -243,14 +243,14 @@ typedef sai_status_t (*sai_get_debug_counter_attribute_fn)(
 /**
  * @brief Counter methods table retrieved with sai_api_query()
  */
-typedef struct _sai_counter_api_t
+typedef struct _sai_debug_counter_api_t
 {
     sai_create_debug_counter_fn        create_debug_counter;
     sai_remove_debug_counter_fn        remove_debug_counter;
     sai_set_debug_counter_attribute_fn set_debug_counter_attribute;
     sai_get_debug_counter_attribute_fn get_debug_counter_attribute;
 
-} sai_counter_api_t;
+} sai_debug_counter_api_t;
 
 /**
  * @}
