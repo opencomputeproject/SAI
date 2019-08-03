@@ -101,6 +101,20 @@ typedef enum _sai_port_in_drop_reason_t
 
     /* L3 reasons */
 
+    /** IPv4 Unicast Destination IP is link local (Destination IP=169.254.0.0/16) */
+    SAI_PORT_IN_DROP_REASON_DIP_LINK_LOCAL,
+
+    /** IPv4 Source IP is link local (Source IP=169.254.0.0/16) */
+    SAI_PORT_IN_DROP_REASON_SIP_LINK_LOCAL,
+
+    /** packet size is larger than the MTU **/
+    SAI_PORT_IN_DROP_REASON_EXCEEDS_MTU,
+
+    /* ACL reasons */
+
+    /** packet is dropped due to configured ACL rules **/
+    SAI_PORT_IN_DROP_REASON_ACL_DISCARD
+
 } sai_port_in_drop_reason_t;
 
 /**
@@ -110,6 +124,9 @@ typedef enum _sai_port_out_drop_reason_t
 {
     /** Egress VLAN filter */
     SAI_PORT_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
+
+    /** packet is destined for neighboring device but neighbor device link is down **/
+    SAI_PORT_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
 } sai_port_out_drop_reason_t;
 
