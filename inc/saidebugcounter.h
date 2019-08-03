@@ -17,13 +17,13 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
- * @file    saicounter.h
+ * @file    saidebugcounter.h
  *
- * @brief   This module defines SAI Counter interface
+ * @brief   This module defines SAI Debug Counter interface
  *
  * @par Abstract
  *
- *    This module defines SAI Counter API.
+ *    This module defines SAI Debug Counter API.
  */
 
 #if !defined (__SAIDEBUGCOUNTER_H_)
@@ -42,17 +42,17 @@
  */
 typedef enum _sai_debug_counter_type_t
 {
-    /** Port in drop reasons. Base object : SAI_OBJECT_TYPE_PORT */
+    /** Port in drop reasons. Base object: SAI_OBJECT_TYPE_PORT */
     SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS,
 
-    /** Port out drop reasons. Base object : SAI_OBJECT_TYPE_PORT */
+    /** Port out drop reasons. Base object: SAI_OBJECT_TYPE_PORT */
     SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS,
 
 } sai_debug_counter_type_t;
 
 /**
-* @brief Debug counter bind method
-*/
+ * @brief Debug counter bind method
+ */
 typedef enum _sai_debug_counter_bind_method_t
 {
     /** Bind automatically to all instances of base object */
@@ -73,13 +73,13 @@ typedef enum _sai_port_in_drop_reason_t
     /** Source MAC equals Destination MAC */
     SAI_PORT_IN_DROP_REASON_SMAC_EQUALS_DMAC,
 
-    /** Destination MAC is Reserved (DMAC=01-80-C2-00-00-0x) */
+    /** Destination MAC is Reserved (Destination MAC=01-80-C2-00-00-0x) */
     SAI_PORT_IN_DROP_REASON_DMAC_RESERVED,
 
-    /** 
+    /**
      * @brief VLAN tag not allowed
      *
-     * Frame tagged when port is dropping tagged, 
+     * Frame tagged when port is dropping tagged,
      * or untagged when dropping untagged
      */
     SAI_PORT_IN_DROP_REASON_VLAN_TAG_NOT_ALLOWED,
@@ -159,7 +159,7 @@ typedef enum _sai_debug_counter_attr_t
      * @type sai_s32_list_t sai_port_in_drop_reason_t
      * @flags CREATE_AND_SET
      * @default empty
-     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE == 
+     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE ==
      * SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS
      */
     SAI_DEBUG_COUNTER_ATTR_PORT_IN_DROP_REASON_LIST,
@@ -170,7 +170,7 @@ typedef enum _sai_debug_counter_attr_t
      * @type sai_s32_list_t sai_port_out_drop_reason_t
      * @flags CREATE_AND_SET
      * @default empty
-     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE == 
+     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE ==
      * SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS
      */
     SAI_DEBUG_COUNTER_ATTR_PORT_OUT_DROP_REASON_LIST,
