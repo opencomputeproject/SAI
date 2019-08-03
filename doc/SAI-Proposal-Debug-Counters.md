@@ -66,7 +66,21 @@ typedef enum _sai_port_in_drop_reason_t
     /** Port loopback filter */
     SAI_PORT_IN_DROP_REASON_LOOPBACK_FILTER,
 
-    /* L3 reasons */	
+    /* L3 reasons */
+	
+    /** IPv4 Unicast Destination IP is link local (Destination IP=169.254.0.0/16) */
+    SAI_PORT_IN_DROP_REASON_DIP_LINK_LOCAL,
+
+    /** IPv4 Source IP is link local (Source IP=169.254.0.0/16) */
+    SAI_PORT_IN_DROP_REASON_SIP_LINK_LOCAL,
+
+    /** Packet size is larger than the MTU */
+    SAI_PORT_IN_DROP_REASON_EXCEEDS_MTU,
+
+    /* ACL reasons */
+
+    /** Packet is dropped due to configured ACL rules */
+    SAI_PORT_IN_DROP_REASON_ACL_DISCARD	
 
 } sai_port_in_drop_reason_t;
 ```
@@ -77,6 +91,9 @@ typedef enum _sai_port_out_drop_reason_t
 {
     /** Egress VLAN filter */
     SAI_PORT_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
+	
+    /** Packet is destined for neighboring device but neighbor device link is down */
+    SAI_PORT_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,	
 
 } sai_port_out_drop_reason_t;
 ```
@@ -94,6 +111,17 @@ typedef enum _sai_debug_counter_attr_t
      */
     SAI_DEBUG_COUNTER_ATTR_START,
 
+    /* READ-ONLY */
+
+    /**
+     * @brief Object stat index
+     * Index is added to base start
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_DEBUG_COUNTER_ATTR_INDEX = SAI_DEBUG_COUNTER_ATTR_START,
+	
     /* READ-WRITE */
 
     /**
@@ -103,17 +131,8 @@ typedef enum _sai_debug_counter_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isresourcetype true
      */
-    SAI_DEBUG_COUNTER_ATTR_TYPE = SAI_DEBUG_COUNTER_ATTR_START,
+    SAI_DEBUG_COUNTER_ATTR_TYPE,
 
-    /**
-     * @brief Object stat index
-     * Index is added to base start
-     *
-     * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_DEBUG_COUNTER_ATTR_INDEX,
-	
     /**
      * @brief Bind method to base object
      *
@@ -208,30 +227,36 @@ Application can query the amount of ASIC available debug counters of certain fam
 
 ## Usage example
 ```
-sai_attribute_t debug_counter_attr[3];
-debug_counter_attr[0].id = SAI_COUNTER_ATTR_TYPE;
+sai_attribute_t debug_counter_attr[2];
+debug_counter_attr[0].id = SAI_DEBUG_COUNTER_ATTR_TYPE;
 debug_counter_attr[0].value.s32 = SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS;
-debug_counter_attr[1].id = SAI_COUNTER_ATTR_INDEX;
-debug_counter_attr[1].value.u32 = 0;
-debug_counter_attr[2].id = SAI_DEBUG_COUNTER_ATTR_PORT_IN_DROP_REASON_LIST;
-debug_counter_attr[2].value.s32list.count = 3;
+debug_counter_attr[1].id = SAI_DEBUG_COUNTER_ATTR_PORT_IN_DROP_REASON_LIST;
+debug_counter_attr[1].value.s32list.count = 3;
 sai_port_in_drop_reason_t in_drop_reason1[] = {SAI_PORT_IN_DROP_REASON_SMAC_MULTICAST, SAI_PORT_IN_DROP_REASON_SMAC_EQUALS_DMAC, SAI_PORT_IN_DROP_REASON_DMAC_RESERVED};
-debug_counter_attr[2].value.s32list.list = in_drop_reason1;
+debug_counter_attr[1].value.s32list.list = in_drop_reason1;
 sai_object_id_t debug_counter_id1;
-sai_status_t rc = sai_debug_counter_api->create_counter(&debug_counter_id1, g_switch_id, 3, &debug_counter_attr);
+sai_status_t rc = sai_debug_counter_api->create_debug_counter(&debug_counter_id1, g_switch_id, 2, debug_counter_attr);
 
-debug_counter_attr[0].id = SAI_COUNTER_ATTR_TYPE;
+debug_counter_attr[0].id = SAI_DEBUG_COUNTER_ATTR_INDEX;
+sai_status_t rc = sai_debug_counter_api->get_debug_counter_attribute(debug_counter_id1, 1, debug_counter_attr);
+unsigned int debug_counter_index1;
+debug_counter_index1 = debug_counter_attr[0].value.u32;
+
+debug_counter_attr[0].id = SAI_DEBUG_COUNTER_ATTR_TYPE;
 debug_counter_attr[0].value.s32 = SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS;
-debug_counter_attr[1].id = SAI_COUNTER_ATTR_INDEX;
-debug_counter_attr[1].value.u32 = 1;
-debug_counter_attr[2].id = SAI_DEBUG_COUNTER_ATTR_PORT_IN_DROP_REASON_LIST;
-debug_counter_attr[2].value.s32list.count = 2;
+debug_counter_attr[1].id = SAI_DEBUG_COUNTER_ATTR_PORT_IN_DROP_REASON_LIST;
+debug_counter_attr[1].value.s32list.count = 2;
 sai_port_in_drop_reason_t in_drop_reason2[] = {SAI_PORT_IN_DROP_REASON_VLAN_TAG_NOT_ALLOWED, SAI_PORT_IN_DROP_REASON_INGRESS_STP_FILTER};
-debug_counter_attr[2].value.s32list.list = in_drop_reason2;
+debug_counter_attr[1].value.s32list.list = in_drop_reason2;
 sai_object_id_t debug_counter_id2;
-sai_status_t rc = sai_debug_counter_api->create_counter(&debug_counter_id2, g_switch_id, 3, &debug_counter_attr);
+sai_status_t rc = sai_debug_counter_api->create_debug_counter(&debug_counter_id2, g_switch_id, 2, debug_counter_attr);
 
-sai_port_stat_t stat_ids[] = { SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE, SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE+1 };
+debug_counter_attr[0].id = SAI_DEBUG_COUNTER_ATTR_INDEX;
+sai_status_t rc = sai_debug_counter_api->get_debug_counter_attribute(debug_counter_id2, 1, debug_counter_attr);
+unsigned int debug_counter_index2;
+debug_counter_index2 = debug_counter_attr[0].value.u32;
+
+sai_port_stat_t stat_ids[] = { SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE + debug_counter_index1, SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE + debug_counter_index2 };
 uint64_t stats[2];
 rc = sai_port_api->sai_get_counter_stats_ext(port_id, 2, stat_ids, stats);
 printf("Port XXX In DROP_REASON_SMAC_MULTICAST + DROP_REASON_SMAC_EQUALS_DMAC + DROP_REASON_DMAC_RESERVED %lu\n", stats[0]);

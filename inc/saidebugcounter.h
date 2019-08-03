@@ -141,6 +141,17 @@ typedef enum _sai_debug_counter_attr_t
      */
     SAI_DEBUG_COUNTER_ATTR_START,
 
+    /* READ-ONLY */
+
+    /**
+     * @brief Object stat index
+     * Index is added to base start
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_DEBUG_COUNTER_ATTR_INDEX = SAI_DEBUG_COUNTER_ATTR_START,
+
     /* READ-WRITE */
 
     /**
@@ -150,16 +161,7 @@ typedef enum _sai_debug_counter_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isresourcetype true
      */
-    SAI_DEBUG_COUNTER_ATTR_TYPE = SAI_DEBUG_COUNTER_ATTR_START,
-
-    /**
-     * @brief Object stat index
-     * Index is added to base start
-     *
-     * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_DEBUG_COUNTER_ATTR_INDEX,
+    SAI_DEBUG_COUNTER_ATTR_TYPE,
 
     /**
      * @brief Bind method to base object
