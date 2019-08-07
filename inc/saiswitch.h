@@ -679,7 +679,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Switch total buffer size in KB
      *
-     * @type sai_uint32_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE,
@@ -1760,6 +1760,17 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
+
+    /**
+     * @brief List of supported object types
+     *
+     * A list of object types (sai_oject_type_t) that the SAI adapter can
+     * support.
+     *
+     * @type sai_s32_list_t sai_object_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_OBJECT_TYPE_LIST,
 
     /**
      * @brief Instruct SAI to execute switch pre-shutdown
