@@ -3374,7 +3374,7 @@ public:
       thrift_counters.resize(thrift_counter_ids.size(), 0);
       status = buffer_api->get_buffer_pool_stats((sai_object_id_t)buffer_pool_id,
                                                  (uint32_t)thrift_counter_ids.size(),
-                                                 (sai_buffer_pool_stat_t *)thrift_counter_ids.data(),
+                                                 (const sai_stat_id_t *)thrift_counter_ids.data(),
                                                  (uint64_t *)thrift_counters.data());
       if (status != SAI_STATUS_SUCCESS) {
           SAI_THRIFT_LOG_ERR("Failed to get_buffer_pool_stats, status: %d", status);
