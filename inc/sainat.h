@@ -229,6 +229,9 @@ typedef enum _sai_nat_entry_attr_t
 
 /**
  * @brief NAT entry keys
+ * API can be invoked with extra keys present.
+ * Driver MUST pick the right set of keys for a
+ * given NAT type.
  */
 typedef struct _sai_nat_entry_key_t
 {

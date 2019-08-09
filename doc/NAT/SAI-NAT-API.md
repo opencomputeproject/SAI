@@ -5,11 +5,12 @@ SAI NAT Proposal
  Authors     | Jai Kumar, Broadcom Inc.
 .| Rita Hui, Microsoft Inc.
 .| Matty Kadosh, Mellanox Inc.
- Status      | In review
+.| Mickey Spiegel, Barefoot Inc.
+ Status      | Approved
  Type        | Standards track
  Created     | 04/15/2019
- Updated     | 04/22/2019
- SAI-Version | TBD
+ Updated     | 09/09/2019
+ SAI-Version | 1.5
 
 -------------------------------------------------------------------------------
 
@@ -252,29 +253,28 @@ subnet_nat_entry.data.mask.dst_ip = 0xffffff00;
 
 create_nat_entry(&subnet_nat_entry, attr_count, nat_entry_attr);
 ```
-### 5.4 DNAT Miss 
-For dynamic NAT, translation is setup by the control plane based on the miss. This section describes how a DNAT entry is setup to trigger a miss for a given pool. Same steps are followed for SNAT Miss.
-Workflow will create a NAT entry with single attribute of type DNAT. This means that for this DNAT entry the translation is not yet learned.
+### 5.4 DNAT Pool Configuration 
+For dynamic NAT, translation is setup by the control plane based on the miss. This section describes how a DNAT pool entry is setup to trigger a miss for a given prefix pool. Workflow will create a DNAT pool entry with single attribute of type DNAT_POOL. Packets matching DNAT pool prefix will either result in a hit or a miss based on if the dnat translation is installed in hardware or not.
 
 ```sh
 
 sai_attribute_t nat_entry_attr[10];
-nat_entry_t dnat_miss_entry;
+nat_entry_t dnat_pool_entry;
 
 nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
-nat_entry_attr[0].value = SAI_NAT_TYPE_DESTINATION_NAT;
+nat_entry_attr[0].value = SAI_NAT_TYPE_DESTINATION_NAT_POOL;
 
 attr_count = 1;
 
-memset(&dnat_miss_entry, 0, sizeof(nat_etnry));
+memset(&dnat_pool_entry, 0, sizeof(nat_etnry));
 
-dnat_miss_entry.data.key.dst_ip = 65.55.42.1;
-dnat_miss_entry.data.mask.dst_ip = 0xffffffff;
-dnat_miss_entry.data.key.l4_dst_port = 1024;
-dnat_miss_entry.data.mask.l4_dst_port = 0xffff;
-dnat_miss_entry.data.key.proto = 17;
-dnat_miss_entry.data.mask.proto = 0xff;
-create_nat_entry(&dnat_miss_entry, attr_count, nat_entry_attr);
+dnat_pool_entry.data.key.dst_ip = 65.55.42.1;
+dnat_pool_entry.data.mask.dst_ip = 0xffffffff;
+dnat_pool_entry.data.key.l4_dst_port = 1024;
+dnat_pool_entry.data.mask.l4_dst_port = 0xffff;
+dnat_pool_entry.data.key.proto = 17;
+dnat_pool_entry.data.mask.proto = 0xff;
+create_nat_entry(&dnat_pool_entry, attr_count, nat_entry_attr);
 ```
 
 ## 6.0 NAT Exceptions
@@ -385,5 +385,59 @@ nat_zone_counter_attr[2].id = SAI_NAT_ZONE_COUNTER_ATTR_TRANSLATIONS_PACKET_COUN
 get_nat_zone_counter_attributes(nat_zone100_counter_id, attr_count, nat_zone_counter_attr);
 ```
 
+## 7.0 Error Conditions
+NAT entry is comprised of keys and attributes. Attributes are guarded by run time metadata check with validonly flag. For example following condition states that attribute source IP is valid only if NAT type is SNAT or Double NAT.
 
+```sh
+ /**
+     * @brief Replace source IPv4 address in packet.
+     * NAT actions will be
+     *    (source/destination/both is identified by type of NAT)
+     *    - replace IP address
+     *    - replace layer 4 source port
+     *    - replace layer 4 destination port
+     *
+     * @type sai_ip4_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_SOURCE_NAT or SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DOUBLE_NAT
+     */
+    SAI_NAT_ENTRY_ATTR_SRC_IP,
+```
 
+Similar check is not possible for the keys in NAT entry given that NAT type is not a match field but a result of a match. To handle such conditions even if SAI API invocator may specify extra keys, SAI driver MUST pick up the correct set of keys based on NAT type in the attribute. For example, in the following example NAT type is DNAT where src_ip and src_mask are present in keys. SAI driver MUST ignore extra keys in such cases.
+
+```sh
+sai_attribute_t nat_entry_attr[10];
+nat_entry_t subnet_nat_entry;
+
+nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
+nat_entry_attr[0].value = SAI_NAT_TYPE_DESTINATION_NAT;
+
+nat_entry_attr[1].id = SAI_NAT_ENTRY_ATTR_DST_IP;
+nat_entry_attr[1].value.u32 = 128.17.18.0; //example string
+
+nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_DST_IP_MASK;
+nat_entry_attr[2].value.u32 = 0xffffff00;
+
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
+nat_entry_attr[3].value.u32 = 200;
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
+nat_entry_attr[4].value.u32 =100;
+
+nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[5].value.bool = true;
+
+nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[6].value.bool = true;
+
+attr_count = 7;
+
+memset(&subnet_nat_entry, 0, sizeof(nat_entry));
+
+subnet_nat_entry.data.key.dst_ip = 200.0.0.0;
+subnet_nat_entry.data.mask.dst_ip = 0xffffff00;
+aubnet_nat_entry.data.key.src_ip = 100.0.0.0;
+subnet_nat_entry.data.mask.src_ip = 0xffffff00;
+create_nat_entry(&subnet_nat_entry, attr_count, nat_entry_attr);
+```
