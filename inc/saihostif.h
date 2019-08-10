@@ -46,6 +46,11 @@
 #define SAI_HOSTIF_NAME_SIZE 16
 
 /**
+ * @brief Defines maximum length of generic netlink multicast group name
+ */
+#define SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE 16
+
+/**
  * @brief Host interface trap group attributes
  */
 typedef enum _sai_hostif_trap_group_attr_t
@@ -801,14 +806,17 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_VLAN_TAG,
 
     /**
-     * @brief Set the Generic netlink (multicast) port id on which the packets/buffers
+     * @brief Name [char[SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE]]
+     *
+     * The maximum number of characters for the name is SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE - 1
+     * Set the Generic netlink multicast group name on which the packets/buffers
      * are received on this host interface
      *
-     * @type sai_uint32_t
+     * @type char
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default ""
      */
-    SAI_HOSTIF_ATTR_GENETLINK_PORT_ID,
+    SAI_HOSTIF_ATTR_GENETLINK_MCGRP_NAME,
 
     /**
      * @brief End of attributes
