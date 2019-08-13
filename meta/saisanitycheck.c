@@ -1544,16 +1544,6 @@ void check_attr_enum_list_validonly(
         {
             META_MD_ASSERT_FAIL(md, "marked as enum list but wrong attr value type");
         }
-
-        if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
-        {
-            /*
-             * This restriction can be removed if necessary so far i don't see
-             * any enum list that are marked as valid only.
-             */
-
-            META_MD_ASSERT_FAIL(md, "validonly enum list not supported yet");
-        }
     }
 }
 

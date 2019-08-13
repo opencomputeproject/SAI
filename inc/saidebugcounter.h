@@ -99,6 +99,9 @@ typedef enum _sai_port_in_drop_reason_t
     /** Port loopback filter */
     SAI_PORT_IN_DROP_REASON_LOOPBACK_FILTER,
 
+    /** Packet size is larger than the L2 (Port) MTU */
+    SAI_PORT_IN_DROP_REASON_EXCEEDS_L2_MTU,
+
     /* L3 reasons */
 
     /** IPv4 Unicast Destination IP is link local (Destination IP=169.254.0.0/16) */
@@ -107,8 +110,8 @@ typedef enum _sai_port_in_drop_reason_t
     /** IPv4 Source IP is link local (Source IP=169.254.0.0/16) */
     SAI_PORT_IN_DROP_REASON_SIP_LINK_LOCAL,
 
-    /** Packet size is larger than the MTU */
-    SAI_PORT_IN_DROP_REASON_EXCEEDS_MTU,
+    /** Packet size is larger than the L3 (Router Interface) MTU */
+    SAI_PORT_IN_DROP_REASON_EXCEEDS_L3_MTU,
 
     /* ACL reasons */
 
