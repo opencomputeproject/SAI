@@ -813,8 +813,8 @@ typedef enum _sai_hostif_attr_t
      * are received on this host interface
      *
      * @type char
-     * @flags CREATE_AND_SET
-     * @default ""
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_GENETLINK
      */
     SAI_HOSTIF_ATTR_GENETLINK_MCGRP_NAME,
 
