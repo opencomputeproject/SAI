@@ -119,7 +119,8 @@ typedef enum _sai_port_in_drop_reason_t
     /** Packet size is larger than the L3 (Router Interface) MTU */
     SAI_PORT_IN_DROP_REASON_EXCEEDS_L3_MTU,
 
-    /** @brief Packet is destined for neighboring device but neighbor device link is down
+    /**
+     * @brief Packet is destined for neighboring device but neighbor device link is down
      *
      * Counted on ingress link
      */
@@ -148,13 +149,14 @@ typedef enum _sai_port_out_drop_reason_t
     /* L3 reasons */
 
     /** Any L3 pipeline drop */
-    SAI_PORT_IN_DROP_REASON_L3_ANY,
+    SAI_PORT_OUT_DROP_REASON_L3_ANY,
 
-    /** @brief Packet is destined for neighboring device but neighbor device link is down
+    /**
+     * @brief Packet is destined for neighboring device but neighbor device link is down
      *
      * Counted on egress link
      */
-    SAI_PORT_IN_DROP_REASON_L3_EGRESS_LINK_DOWN,
+    SAI_PORT_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
 } sai_port_out_drop_reason_t;
 
