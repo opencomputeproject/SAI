@@ -577,6 +577,40 @@ typedef enum _sai_bridge_attr_t
     SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
     /**
+     * @brief Bind point on 1D bridge for ingress ACL object.
+     *
+     * Bind (or unbind) an ingress ACL table or ACL group on a 1D Bridge. Enable/Update
+     * ingress ACL table or ACL group filtering by assigning the list of valid
+     * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     */
+    SAI_BRIDGE_ATTR_INGRESS_ACL,
+
+    /**
+     * @brief Bind point on 1D bridge for egress ACL object.
+     *
+     * Bind (or unbind) an egress ACL table or ACL group on a 1D Bridge. Enable/Update
+     * egress ACL table or ACL group filtering by assigning the list of valid
+     * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     */
+    SAI_BRIDGE_ATTR_EGRESS_ACL,
+
+    /**
      * @brief End of attributes
      */
     SAI_BRIDGE_ATTR_END,
