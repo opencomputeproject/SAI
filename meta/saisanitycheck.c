@@ -4330,10 +4330,19 @@ void check_graph_connected()
 
         if (sai_metadata_all_object_type_infos[i]->isexperimental)
         {
-            /* allow experimental obejct types to be disconnected from main graph */
+            /* allow experimental object types to be disconnected from main graph */
 
             META_LOG_WARN("experimental object %s is disconnected from graph",
                     sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
+        if (SAI_OBJECT_TYPE_DEBUG_COUNTER == i) {
+            /*
+             * Allow debug counters to be disconnected from main graph
+             * as use case is by querying base object stats and not by direct reference
+             */
 
             continue;
         }

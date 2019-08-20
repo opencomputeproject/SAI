@@ -67,6 +67,9 @@ typedef enum _sai_port_in_drop_reason_t
 {
     /* L2 reasons */
 
+    /** Any L2 pipeline drop */
+    SAI_PORT_IN_DROP_REASON_L2_ANY,
+
     /** Source MAC is multicast */
     SAI_PORT_IN_DROP_REASON_SMAC_MULTICAST,
 
@@ -104,6 +107,9 @@ typedef enum _sai_port_in_drop_reason_t
 
     /* L3 reasons */
 
+    /** Any L3 pipeline drop */
+    SAI_PORT_IN_DROP_REASON_L3_ANY,
+
     /** IPv4 Unicast Destination IP is link local (Destination IP=169.254.0.0/16) */
     SAI_PORT_IN_DROP_REASON_DIP_LINK_LOCAL,
 
@@ -112,6 +118,12 @@ typedef enum _sai_port_in_drop_reason_t
 
     /** Packet size is larger than the L3 (Router Interface) MTU */
     SAI_PORT_IN_DROP_REASON_EXCEEDS_L3_MTU,
+
+    /** @brief Packet is destined for neighboring device but neighbor device link is down
+     *
+     * Counted on ingress link
+     */
+    SAI_PORT_IN_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
     /* ACL reasons */
 
@@ -125,11 +137,24 @@ typedef enum _sai_port_in_drop_reason_t
  */
 typedef enum _sai_port_out_drop_reason_t
 {
+    /* L2 reasons */
+
+    /** Any L2 pipeline drop */
+    SAI_PORT_OUT_DROP_REASON_L2_ANY,
+
     /** Egress VLAN filter */
     SAI_PORT_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
 
-    /** Packet is destined for neighboring device but neighbor device link is down */
-    SAI_PORT_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
+    /* L3 reasons */
+
+    /** Any L3 pipeline drop */
+    SAI_PORT_IN_DROP_REASON_L3_ANY,
+
+    /** @brief Packet is destined for neighboring device but neighbor device link is down
+     *
+     * Counted on egress link
+     */
+    SAI_PORT_IN_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
 } sai_port_out_drop_reason_t;
 

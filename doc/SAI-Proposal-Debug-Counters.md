@@ -209,21 +209,27 @@ SAI_PORT_ATTR_DEBUG_COUNTER_LIST,
 ### Reading a debug counter
 ```
     /** Port stat in drop reasons range start */
-    SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00010000,
+    SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
     /** Port stat in drop reasons range end */
-    SAI_PORT_STAT_IN_DROP_REASON_RANGE_END = 0x0001ffff,
+    SAI_PORT_STAT_IN_DROP_REASON_RANGE_END = 0x00001fff,
 
     /** Port stat out drop reasons range start */
-    SAI_PORT_STAT_OUT_DROP_REASON_RANGE_BASE = 0x00020000,
+    SAI_PORT_STAT_OUT_DROP_REASON_RANGE_BASE = 0x00002000,
 
     /** Port stat out drop reasons range end */
-    SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x0002ffff,
+    SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
 ```
 
 ### Checking debug counter capability
 Application can query the ASIC support for counters of certain family by sai_query_attribute_enum_values_capability
 Application can query the amount of ASIC available debug counters of certain family by generic CRM sai_object_type_get_availability, using SAI_DEBUG_COUNTER_ATTR_TYPE as an attribute if needed
+
+### Counting packet which is dropped by multiple reasons
+Per debug counter instance, a packet drop is counted once, even if a packet is dropped by multiple reasons at the same pipleine stage which the counter tracks.
+For example, consider a packet which is dropped by reason 1 and 2, both at the same pipeline stage.
+Debug counter A tracks both reason 1 and 2, counter B is tracking reason 1, counter C is tracking reason 2.
+Counters A, B, C all will increase by 1
 
 ## Usage example
 ```
