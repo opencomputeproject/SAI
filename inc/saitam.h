@@ -1159,8 +1159,8 @@ typedef enum _sai_tam_report_mode_t
     /** Report all events */
     SAI_TAM_REPORT_MODE_ALL = 0,
 
-    /** Report in an aggregate mode */
-    SAI_TAM_REPORT_MODE_AGGREGATE,
+    /** Report in a bulk mode */
+    SAI_TAM_REPORT_MODE_BULK,
 
 } sai_tam_report_mode_t;
 
@@ -1232,10 +1232,10 @@ typedef enum _sai_tam_report_attr_t
     /**
      * @brief Report Interval in micro seconds
      *
-     * Note: valid only if SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_AGGREGATE
+     * Note: valid only if SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_BULK
      *
      * @type sai_uint32_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default 1000
      */
     SAI_TAM_REPORT_ATTR_REPORT_INTERVAL,
