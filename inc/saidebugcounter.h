@@ -99,8 +99,8 @@ typedef enum _sai_port_in_drop_reason_t
     /** Multicast FDB table empty tx list */
     SAI_PORT_IN_DROP_REASON_FDB_MC_DISCARD,
 
-    /** Port loopback filter */
-    SAI_PORT_IN_DROP_REASON_LOOPBACK_FILTER,
+    /** Port L2 loopback filter (packet egressing on the same port+VID as ingressed) */
+    SAI_PORT_IN_DROP_REASON_L2_LOOPBACK_FILTER,
 
     /** Packet size is larger than the L2 (Port) MTU */
     SAI_PORT_IN_DROP_REASON_EXCEEDS_L2_MTU,
@@ -110,14 +110,128 @@ typedef enum _sai_port_in_drop_reason_t
     /** Any L3 pipeline drop */
     SAI_PORT_IN_DROP_REASON_L3_ANY,
 
+    /** Packet size is larger than the L3 (Router Interface) MTU */
+    SAI_PORT_IN_DROP_REASON_EXCEEDS_L3_MTU,
+
+    /** TTL expired */
+    SAI_PORT_IN_DROP_REASON_TTL,
+
+    /** RIF L3 loopback filter (packet egressing on the same RIF as ingressed) */
+    SAI_PORT_IN_DROP_REASON_L3_LOOPBACK_FILTER,
+
+    /**
+     * @brief Non routeable packet
+     *
+     * IGMP v1 v2 v3 membership query
+     * IGMP v1 membership report
+     * IGMP v2 membership report
+     * IGMP v2 leave group
+     * IGMP v3 membership report
+     */
+    SAI_PORT_IN_DROP_REASON_NON_ROUTEABLE,
+
+    /** Destination MAC is the router MAC, however packet is not routeable (isn't IP or MPLS) */
+    SAI_PORT_IN_DROP_REASON_NO_L3_HEADER,
+
+    /**
+     * @brief IP Header error
+     *
+     * Due to header checksum or bad IPVer or IPv4 IHL too short
+     */
+    SAI_PORT_IN_DROP_REASON_IP_HEADER_ERROR,
+
+    /** UC Destination IP with non UC (MC or BC) Destination MAC */
+    SAI_PORT_IN_DROP_REASON_UC_DIP_MC_DMAC,
+
+    /**
+     * @brief Destination IP is loopback address
+     *
+     * for ipv4: Destination IP=127.0.0.0/8
+     * for ipv6: Destination IP=::1/128 OR Destination IP=0:0:0:0:0:ffff:7f00:0/104
+     */
+    SAI_PORT_IN_DROP_REASON_DIP_LOOPBACK,
+
+    /**
+     * @brief Source IP is loopback address
+     *
+     * for ipv4: Source IP=127.0.0.0/8
+     * for ipv6: Source IP=::1/128
+     */
+    SAI_PORT_IN_DROP_REASON_SIP_LOOPBACK,
+
+    /**
+     * @brief Source IP is multicast address
+     *
+     * for ipv4: Source IP=224.0.0.0/4
+     * for ipv6: Source IP=FF00::/8
+     */
+    SAI_PORT_IN_DROP_REASON_SIP_MC,
+
+    /**
+     * @brief Source IP is in class E
+     *
+     * ipv4 AND Source IP=240.0.0.0/4 AND Source IP!=255.255.255.255
+     */
+    SAI_PORT_IN_DROP_REASON_SIP_CLASS_E,
+
+    /**
+     * @brief Source IP unspecified
+     *
+     * for ipv4: Source IP=0.0.0.0/32
+     * for ipv6: Source IP=::0
+     */
+    SAI_PORT_IN_DROP_REASON_SIP_CLASS_E,
+
+    /**
+     * @brief Destination IP is multicast but Destination MAC isn't
+     *
+     * Destination IP is multicast AND
+     * for ipv4: Destination MAC!={01-00-5E-0 (25 bits), dip[22:0]}
+     * for ipv6: Destination MAC!={33-33, DIP[31:0]}
+     */
+    SAI_PORT_IN_DROP_REASON_MC_DMAC_MISMATCH,
+
+    /** Source IP equals Destination IP */
+    SAI_PORT_IN_DROP_REASON_SIP_EQUALS_DIP,
+
+    /** IPv4 Source IP is limited broadcast (Source IP=255.255.255.255) */
+    SAI_PORT_IN_DROP_REASON_SIP_BC,
+
+    /** IPv4 Destination IP is local network (Destination IP=0.0.0.0/8) */
+    SAI_PORT_IN_DROP_REASON_DIP_LOCAL,
+
     /** IPv4 Unicast Destination IP is link local (Destination IP=169.254.0.0/16) */
     SAI_PORT_IN_DROP_REASON_DIP_LINK_LOCAL,
 
     /** IPv4 Source IP is link local (Source IP=169.254.0.0/16) */
     SAI_PORT_IN_DROP_REASON_SIP_LINK_LOCAL,
 
-    /** Packet size is larger than the L3 (Router Interface) MTU */
-    SAI_PORT_IN_DROP_REASON_EXCEEDS_L3_MTU,
+    /** IPv6 destination in multicast scope 0 reserved (Destination IP=ff:x0:/16) */
+    SAI_PORT_IN_DROP_REASON_IPV6_MC_SCOPE0,
+
+    /** IPv6 destination in multicast scope 1 interface-local (Destination IP=ff:x1:/16) */
+    SAI_PORT_IN_DROP_REASON_IPV6_MC_SCOPE1,
+
+    /** Ingress RIF is disabled */
+    SAI_PORT_IN_DROP_REASON_IRIF_DISABLED,
+
+    /** Egress RIF is disabled */
+    SAI_PORT_IN_DROP_REASON_ERIF_DISABLED,
+
+    /** IPv4 Routing table (LPM) unicast miss */
+    SAI_PORT_IN_DROP_REASON_LPM4_MISS,
+
+    /** IPv6 Routing table (LPM) unicast miss */
+    SAI_PORT_IN_DROP_REASON_LPM6_MISS,
+
+    /** Blackhole route (discard by route entry) */
+    SAI_PORT_IN_DROP_REASON_BLACKHOLE_ROUTE,
+
+    /** Blackhole ARP/Neighbor (discard by ARP or neighbor entries) */
+    SAI_PORT_IN_DROP_REASON_BLACKHOLE_ARP,
+
+    /** Unresolved next hop (missing ARP entry) */
+    SAI_PORT_IN_DROP_REASON_UNRESOLVED_NEXT_HOP,
 
     /**
      * @brief Packet is destined for neighboring device but neighbor device link is down
@@ -126,10 +240,22 @@ typedef enum _sai_port_in_drop_reason_t
      */
     SAI_PORT_IN_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
+    /* Tunnel reasons */
+
+    /**
+     * @brief Packet decapsulation failed
+     *
+     * e.g. : need to decapsulate too many bytes, remained packet is too short
+     */
+    SAI_PORT_IN_DROP_REASON_DECAP_ERROR,
+
     /* ACL reasons */
 
     /** Packet is dropped due to configured ACL rules */
-    SAI_PORT_IN_DROP_REASON_ACL_DISCARD
+    SAI_PORT_IN_DROP_REASON_ACL_DISCARD,
+
+    /** Custom range base value */
+    SAI_PORT_IN_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_port_in_drop_reason_t;
 
@@ -157,6 +283,9 @@ typedef enum _sai_port_out_drop_reason_t
      * Counted on egress link
      */
     SAI_PORT_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
+
+    /** Custom range base value */
+    SAI_PORT_OUT_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_port_out_drop_reason_t;
 
