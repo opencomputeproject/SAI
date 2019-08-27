@@ -180,7 +180,7 @@ typedef enum _sai_port_in_drop_reason_t
      * for IPv4: Source IP=0.0.0.0/32
      * for IPv6: Source IP=::0
      */
-    SAI_PORT_IN_DROP_REASON_SIP_CLASS_E,
+    SAI_PORT_IN_DROP_REASON_SIP_UNSPECIFIED,
 
     /**
      * @brief Destination IP is multicast but destination MAC isn't
