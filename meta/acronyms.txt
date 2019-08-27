@@ -44,6 +44,7 @@ IFA - Inband Flow Analyzer
 IFA1 - Inband Flow Analyzer version 1
 IFA2 - Inband Flow Analyzer version 2
 IGMP - Internet Group Management Protocol
+IHL - Internet Header Length
 IOAM - In-situ Operations And Management
 IP - Internet Protocol
 IPFIX - IP Flow Information Export
