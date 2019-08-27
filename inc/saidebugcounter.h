@@ -147,7 +147,7 @@ typedef enum _sai_port_in_drop_reason_t
      * @brief Destination IP is loopback address
      *
      * for IPv4: Destination IP=127.0.0.0/8
-     * for IPv6: Destination IP=::1/128 OR Destination IP=0:0:0:0:0:FFFF:7F00:0/104
+     * for IPv6: Destination IP=::1/128 OR Destination IP=0:0:0:0:0:ffff:7f00:0/104
      */
     SAI_PORT_IN_DROP_REASON_DIP_LOOPBACK,
 
@@ -245,7 +245,7 @@ typedef enum _sai_port_in_drop_reason_t
     /**
      * @brief Packet decapsulation failed
      *
-     * e.g. : need to decap too many bytes, remaining packet is too short
+     * e.g.: need to decap too many bytes, remaining packet is too short
      */
     SAI_PORT_IN_DROP_REASON_DECAP_ERROR,
 
