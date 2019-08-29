@@ -48,10 +48,20 @@ typedef enum _sai_debug_counter_type_t
     /** Port out drop reasons. Base object: SAI_OBJECT_TYPE_PORT */
     SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS,
 
-    /** Switch in drop reasons. Base object: SAI_OBJECT_TYPE_SWITCH */
+    /**
+     * @brief Switch in drop reasons
+     *
+     * Base object: SAI_OBJECT_TYPE_SWITCH.
+     * Values for all ports in the switch are summed up by switch counter
+     */
     SAI_DEBUG_COUNTER_TYPE_SWITCH_IN_DROP_REASONS,
 
-    /** Switch out drop reasons. Base object: SAI_OBJECT_TYPE_SWITCH */
+    /**
+     * @brief Switch out drop reasons
+     *
+     * Base object: SAI_OBJECT_TYPE_SWITCH.
+     * Values for all ports in the switch are summed up by switch counter
+     */
     SAI_DEBUG_COUNTER_TYPE_SWITCH_OUT_DROP_REASONS,
 
 } sai_debug_counter_type_t;

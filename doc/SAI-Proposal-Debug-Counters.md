@@ -25,77 +25,252 @@ typedef enum _sai_debug_counter_type_t
     /** Port out drop reasons. Base object : SAI_OBJECT_TYPE_PORT */
     SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS,
 
+    /**
+     * @brief Switch in drop reasons
+     *
+     * Base object: SAI_OBJECT_TYPE_SWITCH.
+     * Values for all ports in the switch are summed up by switch counter
+     */
+    SAI_DEBUG_COUNTER_TYPE_SWITCH_IN_DROP_REASONS,
+
+    /**
+     * @brief Switch out drop reasons
+     *
+     * Base object: SAI_OBJECT_TYPE_SWITCH.
+     * Values for all ports in the switch are summed up by switch counter
+     */
+    SAI_DEBUG_COUNTER_TYPE_SWITCH_OUT_DROP_REASONS,
+
 } sai_debug_counter_type_t;
 ```
 
-## Debug counter port in drop reason family
+## Debug counter in drop reason family
 ```
-typedef enum _sai_port_in_drop_reason_t
+typedef enum _sai_in_drop_reason_t
 {
     /* L2 reasons */
-	
+
+    /** Any L2 pipeline drop */
+    SAI_IN_DROP_REASON_L2_ANY,
+
     /** Source MAC is multicast */
-    SAI_PORT_IN_DROP_REASON_SMAC_MULTICAST,
+    SAI_IN_DROP_REASON_SMAC_MULTICAST,
 
-    /** Source MAC equals Destination MAC */
-    SAI_PORT_IN_DROP_REASON_SMAC_EQUALS_DMAC,
+    /** Source MAC equals destination MAC */
+    SAI_IN_DROP_REASON_SMAC_EQUALS_DMAC,
 
-    /** Destination MAC is Reserved (DMAC=01-80-C2-00-00-0x) */
-    SAI_PORT_IN_DROP_REASON_DMAC_RESERVED,
+    /** Destination MAC is Reserved (Destination MAC=01-80-C2-00-00-0x) */
+    SAI_IN_DROP_REASON_DMAC_RESERVED,
 
-    /** 
+    /**
      * @brief VLAN tag not allowed
      *
-     * Frame tagged when port is dropping tagged, 
+     * Frame tagged when port is dropping tagged,
      * or untagged when dropping untagged
      */
-    SAI_PORT_IN_DROP_REASON_VLAN_TAG_NOT_ALLOWED,
+    SAI_IN_DROP_REASON_VLAN_TAG_NOT_ALLOWED,
 
     /** Ingress VLAN filter */
-    SAI_PORT_IN_DROP_REASON_INGRESS_VLAN_FILTER,
+    SAI_IN_DROP_REASON_INGRESS_VLAN_FILTER,
 
     /** Ingress STP filter */
-    SAI_PORT_IN_DROP_REASON_INGRESS_STP_FILTER,
-	
+    SAI_IN_DROP_REASON_INGRESS_STP_FILTER,
+
     /** Unicast FDB table action discard */
-    SAI_PORT_IN_DROP_REASON_FDB_UC_DISCARD,
+    SAI_IN_DROP_REASON_FDB_UC_DISCARD,
 
     /** Multicast FDB table empty tx list */
-    SAI_PORT_IN_DROP_REASON_FDB_MC_DISCARD,
+    SAI_IN_DROP_REASON_FDB_MC_DISCARD,
 
-    /** Port loopback filter */
-    SAI_PORT_IN_DROP_REASON_LOOPBACK_FILTER,
+    /** Port L2 loopback filter (packet egressing on the same port+VLAN as ingressing) */
+    SAI_IN_DROP_REASON_L2_LOOPBACK_FILTER,
+
+    /** Packet size is larger than the L2 (Port) MTU */
+    SAI_IN_DROP_REASON_EXCEEDS_L2_MTU,
 
     /* L3 reasons */
-	
-    /** IPv4 Unicast Destination IP is link local (Destination IP=169.254.0.0/16) */
-    SAI_PORT_IN_DROP_REASON_DIP_LINK_LOCAL,
+
+    /** Any L3 pipeline drop */
+    SAI_IN_DROP_REASON_L3_ANY,
+
+    /** Packet size is larger than the L3 (Router Interface) MTU */
+    SAI_IN_DROP_REASON_EXCEEDS_L3_MTU,
+
+    /** TTL expired */
+    SAI_IN_DROP_REASON_TTL,
+
+    /** RIF L3 loopback filter (packet egressing on the same RIF as ingressing) */
+    SAI_IN_DROP_REASON_L3_LOOPBACK_FILTER,
+
+    /**
+     * @brief Non routable packet
+     *
+     * IGMP v1 v2 v3 membership query
+     * IGMP v1 membership report
+     * IGMP v2 membership report
+     * IGMP v2 leave group
+     * IGMP v3 membership report
+     */
+    SAI_IN_DROP_REASON_NON_ROUTABLE,
+
+    /** Destination MAC is the router MAC, however packet is not routable (isn't IP or MPLS) */
+    SAI_IN_DROP_REASON_NO_L3_HEADER,
+
+    /**
+     * @brief IP Header error
+     *
+     * Due to header checksum or bad IP version or IPv4 IHL too short
+     */
+    SAI_IN_DROP_REASON_IP_HEADER_ERROR,
+
+    /** Unicast destination IP with non unicast (multicast or broadcast) destination MAC */
+    SAI_IN_DROP_REASON_UC_DIP_MC_DMAC,
+
+    /**
+     * @brief Destination IP is loopback address
+     *
+     * for IPv4: Destination IP=127.0.0.0/8
+     * for IPv6: Destination IP=::1/128 OR Destination IP=0:0:0:0:0:ffff:7f00:0/104
+     */
+    SAI_IN_DROP_REASON_DIP_LOOPBACK,
+
+    /**
+     * @brief Source IP is loopback address
+     *
+     * for IPv4: Source IP=127.0.0.0/8
+     * for IPv6: Source IP=::1/128
+     */
+    SAI_IN_DROP_REASON_SIP_LOOPBACK,
+
+    /**
+     * @brief Source IP is multicast address
+     *
+     * for IPv4: Source IP=224.0.0.0/4
+     * for IPv6: Source IP=FF00::/8
+     */
+    SAI_IN_DROP_REASON_SIP_MC,
+
+    /**
+     * @brief Source IP is in class E
+     *
+     * IPv4 AND Source IP=240.0.0.0/4 AND Source IP!=255.255.255.255
+     */
+    SAI_IN_DROP_REASON_SIP_CLASS_E,
+
+    /**
+     * @brief Source IP unspecified
+     *
+     * for IPv4: Source IP=0.0.0.0/32
+     * for IPv6: Source IP=::0
+     */
+    SAI_IN_DROP_REASON_SIP_UNSPECIFIED,
+
+    /**
+     * @brief Destination IP is multicast but destination MAC isn't
+     *
+     * Destination IP is multicast AND
+     * for IPv4: Destination MAC!={01-00-5E-0 (25 bits), dip[22:0]}
+     * for IPv6: Destination MAC!={33-33, DIP[31:0]}
+     */
+    SAI_IN_DROP_REASON_MC_DMAC_MISMATCH,
+
+    /** Source IP equals destination IP */
+    SAI_IN_DROP_REASON_SIP_EQUALS_DIP,
+
+    /** IPv4 source IP is limited broadcast (Source IP=255.255.255.255) */
+    SAI_IN_DROP_REASON_SIP_BC,
+
+    /** IPv4 destination IP is local network (Destination IP=0.0.0.0/8) */
+    SAI_IN_DROP_REASON_DIP_LOCAL,
+
+    /** IPv4 unicast destination IP is link local (Destination IP=169.254.0.0/16) */
+    SAI_IN_DROP_REASON_DIP_LINK_LOCAL,
 
     /** IPv4 Source IP is link local (Source IP=169.254.0.0/16) */
-    SAI_PORT_IN_DROP_REASON_SIP_LINK_LOCAL,
+    SAI_IN_DROP_REASON_SIP_LINK_LOCAL,
 
-    /** Packet size is larger than the MTU */
-    SAI_PORT_IN_DROP_REASON_EXCEEDS_MTU,
+    /** IPv6 destination in multicast scope 0 reserved (Destination IP=ff:x0:/16) */
+    SAI_IN_DROP_REASON_IPV6_MC_SCOPE0,
+
+    /** IPv6 destination in multicast scope 1 interface-local (Destination IP=ff:x1:/16) */
+    SAI_IN_DROP_REASON_IPV6_MC_SCOPE1,
+
+    /** Ingress RIF is disabled */
+    SAI_IN_DROP_REASON_IRIF_DISABLED,
+
+    /** Egress RIF is disabled */
+    SAI_IN_DROP_REASON_ERIF_DISABLED,
+
+    /** IPv4 Routing table (LPM) unicast miss */
+    SAI_IN_DROP_REASON_LPM4_MISS,
+
+    /** IPv6 Routing table (LPM) unicast miss */
+    SAI_IN_DROP_REASON_LPM6_MISS,
+
+    /** Black hole route (discard by route entry) */
+    SAI_IN_DROP_REASON_BLACKHOLE_ROUTE,
+
+    /** Black hole ARP/Neighbor (discard by ARP or neighbor entries) */
+    SAI_IN_DROP_REASON_BLACKHOLE_ARP,
+
+    /** Unresolved next hop (missing ARP entry) */
+    SAI_IN_DROP_REASON_UNRESOLVED_NEXT_HOP,
+
+    /**
+     * @brief Packet is destined for neighboring device but neighbor device link is down
+     *
+     * Counted on ingress link
+     */
+    SAI_IN_DROP_REASON_L3_EGRESS_LINK_DOWN,
+
+    /* Tunnel reasons */
+
+    /**
+     * @brief Packet decapsulation failed
+     *
+     * e.g.: need to decap too many bytes, remaining packet is too short
+     */
+    SAI_IN_DROP_REASON_DECAP_ERROR,
 
     /* ACL reasons */
 
     /** Packet is dropped due to configured ACL rules */
-    SAI_PORT_IN_DROP_REASON_ACL_DISCARD	
+    SAI_IN_DROP_REASON_ACL_DISCARD,
 
-} sai_port_in_drop_reason_t;
+    /** Custom range base value */
+    SAI_IN_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
+
+} sai_in_drop_reason_t;
 ```
 
-## Debug counter port out drop reason family
+## Debug counter out drop reason family
 ```
-typedef enum _sai_port_out_drop_reason_t
+typedef enum _sai_out_drop_reason_t
 {
-    /** Egress VLAN filter */
-    SAI_PORT_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
-	
-    /** Packet is destined for neighboring device but neighbor device link is down */
-    SAI_PORT_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,	
+    /* L2 reasons */
 
-} sai_port_out_drop_reason_t;
+    /** Any L2 pipeline drop */
+    SAI_OUT_DROP_REASON_L2_ANY,
+
+    /** Egress VLAN filter */
+    SAI_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
+
+    /* L3 reasons */
+
+    /** Any L3 pipeline drop */
+    SAI_OUT_DROP_REASON_L3_ANY,
+
+    /**
+     * @brief Packet is destined for neighboring device but neighbor device link is down
+     *
+     * Counted on egress link
+     */
+    SAI_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
+
+    /** Custom range base value */
+    SAI_OUT_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
+
+} sai_out_drop_reason_t;
 ```
 
 ### Configuring a debug counter
@@ -143,26 +318,26 @@ typedef enum _sai_debug_counter_attr_t
     SAI_DEBUG_COUNTER_ATTR_BIND_METHOD,	
 
     /**
-     * @brief List of port in drop reasons that will be counted
+     * @brief List of in drop reasons that will be counted
      *
-     * @type sai_s32_list_t sai_port_in_drop_reason_t
+     * @type sai_s32_list_t sai_in_drop_reason_t
      * @flags CREATE_AND_SET
      * @default empty
-     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE == 
-     * SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS
+     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE == SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS or
+     * SAI_DEBUG_COUNTER_ATTR_TYPE == SAI_DEBUG_COUNTER_TYPE_SWITCH_IN_DROP_REASONS
      */
-    SAI_DEBUG_COUNTER_ATTR_PORT_IN_DROP_REASON_LIST,
+    SAI_DEBUG_COUNTER_ATTR_IN_DROP_REASON_LIST,
 
     /**
-     * @brief List of port out drop reasons that will be counted
+     * @brief List of out drop reasons that will be counted
      *
-     * @type sai_s32_list_t sai_port_out_drop_reason_t
+     * @type sai_s32_list_t sai_out_drop_reason_t
      * @flags CREATE_AND_SET
      * @default empty
-     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE == 
-     * SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS
+     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE == SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS or
+     * SAI_DEBUG_COUNTER_ATTR_TYPE == SAI_DEBUG_COUNTER_TYPE_SWITCH_OUT_DROP_REASONS
      */
-    SAI_DEBUG_COUNTER_ATTR_PORT_OUT_DROP_REASON_LIST,
+    SAI_DEBUG_COUNTER_ATTR_OUT_DROP_REASON_LIST,
 
     /**
      * @brief End of attributes
@@ -219,6 +394,18 @@ SAI_PORT_ATTR_DEBUG_COUNTER_LIST,
 
     /** Port stat out drop reasons range end */
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
+
+    /** Switch stat in drop reasons range start */
+    SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
+
+    /** Switch stat in drop reasons range end */
+    SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_END = 0x00001fff,
+
+    /** Switch stat out drop reasons range start */
+    SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_BASE = 0x00002000,
+
+    /** Switch stat out drop reasons range end */
+    SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
 ```
 
 ### Checking debug counter capability
@@ -236,9 +423,9 @@ Counters A, B, C all will increase by 1
 sai_attribute_t debug_counter_attr[2];
 debug_counter_attr[0].id = SAI_DEBUG_COUNTER_ATTR_TYPE;
 debug_counter_attr[0].value.s32 = SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS;
-debug_counter_attr[1].id = SAI_DEBUG_COUNTER_ATTR_PORT_IN_DROP_REASON_LIST;
+debug_counter_attr[1].id = SAI_DEBUG_COUNTER_ATTR_IN_DROP_REASON_LIST;
 debug_counter_attr[1].value.s32list.count = 3;
-sai_port_in_drop_reason_t in_drop_reason1[] = {SAI_PORT_IN_DROP_REASON_SMAC_MULTICAST, SAI_PORT_IN_DROP_REASON_SMAC_EQUALS_DMAC, SAI_PORT_IN_DROP_REASON_DMAC_RESERVED};
+sai_port_in_drop_reason_t in_drop_reason1[] = {SAI_IN_DROP_REASON_SMAC_MULTICAST, SAI_IN_DROP_REASON_SMAC_EQUALS_DMAC, SAI_IN_DROP_REASON_DMAC_RESERVED};
 debug_counter_attr[1].value.s32list.list = in_drop_reason1;
 sai_object_id_t debug_counter_id1;
 sai_status_t rc = sai_debug_counter_api->create_debug_counter(&debug_counter_id1, g_switch_id, 2, debug_counter_attr);
@@ -250,9 +437,9 @@ debug_counter_index1 = debug_counter_attr[0].value.u32;
 
 debug_counter_attr[0].id = SAI_DEBUG_COUNTER_ATTR_TYPE;
 debug_counter_attr[0].value.s32 = SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS;
-debug_counter_attr[1].id = SAI_DEBUG_COUNTER_ATTR_PORT_IN_DROP_REASON_LIST;
+debug_counter_attr[1].id = SAI_DEBUG_COUNTER_ATTR_IN_DROP_REASON_LIST;
 debug_counter_attr[1].value.s32list.count = 2;
-sai_port_in_drop_reason_t in_drop_reason2[] = {SAI_PORT_IN_DROP_REASON_VLAN_TAG_NOT_ALLOWED, SAI_PORT_IN_DROP_REASON_INGRESS_STP_FILTER};
+sai_port_in_drop_reason_t in_drop_reason2[] = {SAI_IN_DROP_REASON_VLAN_TAG_NOT_ALLOWED, SAI_IN_DROP_REASON_INGRESS_STP_FILTER};
 debug_counter_attr[1].value.s32list.list = in_drop_reason2;
 sai_object_id_t debug_counter_id2;
 sai_status_t rc = sai_debug_counter_api->create_debug_counter(&debug_counter_id2, g_switch_id, 2, debug_counter_attr);
