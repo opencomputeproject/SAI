@@ -5,6 +5,7 @@ SAI NAT Proposal
  Authors     | Jai Kumar, Broadcom Inc.
 .| Rita Hui, Microsoft Inc.
 .| Matty Kadosh, Mellanox Inc.
+.| Marian Pritsak, Mellanox Inc.
 .| Mickey Spiegel, Barefoot Inc.
  Status      | Approved
  Type        | Standards track
@@ -50,10 +51,11 @@ A new boolean field is added to sai_switch_attr in saiswitch.h
 
 ## 4.0 Enable Traps for SNAT and DNAT Miss Packets
 Following two traps are added to hostif. Hostif driver MUST enable these traps for SNAT and DNAT miss in hw for receiving the packets. 
-SNAT/DNAT miss packets are received on a regular netdev channel to the application.
+SNAT/DNAT/HARIPIN miss packets are received on a regular netdev channel to the application.
 
 - “SAI_HOSTIF_TRAP_TYPE_SNAT_MISS”
 - “SAI_HOSTIF_TRAP_TYPE_DNAT_MISS”
+- "SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN"
 
 ## 5.0 NAT Object Workflow
  NAT or Network Address translation is used to avoid exposing the Internal or private IP addresses when the Host systems in an enterprise network or Datacenter communicate with external internet servers . The main advantage of using NAT is to reduce the usage of the Public IP addresses allocated for an enterprise or Data center.NAT feature allows the capability to change the Src IP address , Destination IP address , Src TCP/UDP port number or Destination TCP/UDP port number for an IP packet undergoing L3  routing in the switch.
@@ -154,7 +156,7 @@ create_nat_entry(&dnat_entry, attr_count, nat_entry_attr);
 ```
 
 ### 5.2 Double NAT
-Double NAT is a nat variant where both the Src and Dest IP gets modified when a packet crosses the address zone. Generally used when conflicting addresses are used in the private networks which conflicts with the public IP addresses. Double NAT overrides SNAT or DNAT actions in the SAI pipeline.
+Double NAT is a nat variant where both the Src and Dest IP gets modified when a packet crosses the address zone. Generally used when conflicting addresses are used in the private networks which conflicts with the public IP addresses. Double NAT overrides SNAT or DNAT actions in the SAI pipeline. Reverse entry should be created in similar manner.
 
 > From Zone ID: 100
 To Zone ID: 200
@@ -208,7 +210,8 @@ create_nat_entry(&dbl_nat_entry, attr_count, nat_entry_attr);
 ```
 ### 5.3 Subnet NAT
 Subnet-based NAT replaces only the subnet prefix in the IP address, leaving the rest of the IP address unchanged. Subnet-based NAT is a simple implementation of basic NAT. For example, a private network is interconnected with a public network through a switch enabling subnet-based basic NAT. The public address for the private network (128.17.18.0/24 ) is 200.0.0.0/24. In the inbound direction, for a packet with DIP = 200.0.0.1, the subnet-based Basic NAT router will replace the subnet prefix 200.0.0/24 with new subnet prefix 128.17.18/24, and keep the host address .1/8. The translated SIP is 128.17.18.1.
-In the outbound direction, the SIP is translated in same fashion.
+In the outbound direction, the SIP is translated in same fashion. Reverse entry should be created in similar manner.
+
 > From Zone ID: 100
 To Zone ID: 200
 VRF: None
@@ -270,10 +273,7 @@ memset(&dnat_pool_entry, 0, sizeof(nat_etnry));
 
 dnat_pool_entry.data.key.dst_ip = 65.55.42.1;
 dnat_pool_entry.data.mask.dst_ip = 0xffffffff;
-dnat_pool_entry.data.key.l4_dst_port = 1024;
-dnat_pool_entry.data.mask.l4_dst_port = 0xffff;
-dnat_pool_entry.data.key.proto = 17;
-dnat_pool_entry.data.mask.proto = 0xff;
+
 create_nat_entry(&dnat_pool_entry, attr_count, nat_entry_attr);
 ```
 
