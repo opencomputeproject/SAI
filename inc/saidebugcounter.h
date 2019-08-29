@@ -50,7 +50,7 @@ typedef enum _sai_debug_counter_type_t
 
     /** Switch in drop reasons. Base object: SAI_OBJECT_TYPE_SWITCH */
     SAI_DEBUG_COUNTER_TYPE_SWITCH_IN_DROP_REASONS,
-    
+
     /** Switch out drop reasons. Base object: SAI_OBJECT_TYPE_SWITCH */
     SAI_DEBUG_COUNTER_TYPE_SWITCH_OUT_DROP_REASONS,
 

@@ -1800,11 +1800,11 @@ typedef enum _sai_switch_attr_t
  */
 typedef enum _sai_switch_stat_t
 {
-    /** Switch stat summarizing all ports if in discards */
-    SAI_PORT_STAT_IF_IN_DISCARDS,
+    /** Switch stat summing up all ports if in discards */
+    SAI_SWITCH_STAT_IF_IN_DISCARDS,
 
-    /** Switch stat summarizing all ports if out discards */
-    SAI_PORT_STAT_IF_OUT_DISCARDS,
+    /** Switch stat summing up all ports if out discards */
+    SAI_SWITCH_STAT_IF_OUT_DISCARDS,
 
     /** Switch stat in drop reasons range start */
     SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
