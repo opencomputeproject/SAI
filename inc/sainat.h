@@ -50,6 +50,9 @@ typedef enum _sai_nat_type_t
     /** Double NAT */
     SAI_NAT_TYPE_DOUBLE_NAT,
 
+    /** Destination NAT Pool */
+    SAI_NAT_TYPE_DESTINATION_NAT_POOL,
+
 } sai_nat_type_t;
 
 /**
@@ -65,6 +68,7 @@ typedef enum _sai_nat_entry_attr_t
 
     /**
      * @brief NAT Type defined in sai_nat_type_t
+     *
      * @type sai_nat_type_t
      * @flags CREATE_AND_SET
      * @default SAI_NAT_TYPE_NONE
@@ -221,6 +225,9 @@ typedef enum _sai_nat_entry_attr_t
 
 /**
  * @brief NAT entry keys
+ * API can be invoked with extra keys present.
+ * Driver MUST pick the right set of keys for a
+ * given NAT type.
  */
 typedef struct _sai_nat_entry_key_t
 {

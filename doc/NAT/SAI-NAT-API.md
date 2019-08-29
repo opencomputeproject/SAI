@@ -5,11 +5,13 @@ SAI NAT Proposal
  Authors     | Jai Kumar, Broadcom Inc.
 .| Rita Hui, Microsoft Inc.
 .| Matty Kadosh, Mellanox Inc.
- Status      | In review
+.| Marian Pritsak, Mellanox Inc.
+.| Mickey Spiegel, Barefoot Inc.
+ Status      | Approved
  Type        | Standards track
  Created     | 04/15/2019
- Updated     | 04/22/2019
- SAI-Version | TBD
+ Updated     | 09/09/2019
+ SAI-Version | 1.5
 
 -------------------------------------------------------------------------------
 
@@ -49,10 +51,11 @@ A new boolean field is added to sai_switch_attr in saiswitch.h
 
 ## 4.0 Enable Traps for SNAT and DNAT Miss Packets
 Following two traps are added to hostif. Hostif driver MUST enable these traps for SNAT and DNAT miss in hw for receiving the packets. 
-SNAT/DNAT miss packets are received on a regular netdev channel to the application.
+SNAT/DNAT/HARIPIN miss packets are received on a regular netdev channel to the application.
 
 - “SAI_HOSTIF_TRAP_TYPE_SNAT_MISS”
 - “SAI_HOSTIF_TRAP_TYPE_DNAT_MISS”
+- "SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN"
 
 ## 5.0 NAT Object Workflow
  NAT or Network Address translation is used to avoid exposing the Internal or private IP addresses when the Host systems in an enterprise network or Datacenter communicate with external internet servers . The main advantage of using NAT is to reduce the usage of the Public IP addresses allocated for an enterprise or Data center.NAT feature allows the capability to change the Src IP address , Destination IP address , Src TCP/UDP port number or Destination TCP/UDP port number for an IP packet undergoing L3  routing in the switch.
@@ -153,7 +156,7 @@ create_nat_entry(&dnat_entry, attr_count, nat_entry_attr);
 ```
 
 ### 5.2 Double NAT
-Double NAT is a nat variant where both the Src and Dest IP gets modified when a packet crosses the address zone. Generally used when conflicting addresses are used in the private networks which conflicts with the public IP addresses. Double NAT overrides SNAT or DNAT actions in the SAI pipeline.
+Double NAT is a nat variant where both the Src and Dest IP gets modified when a packet crosses the address zone. Generally used when conflicting addresses are used in the private networks which conflicts with the public IP addresses. Double NAT overrides SNAT or DNAT actions in the SAI pipeline. Reverse entry should be created in similar manner.
 
 > From Zone ID: 100
 To Zone ID: 200
@@ -207,7 +210,8 @@ create_nat_entry(&dbl_nat_entry, attr_count, nat_entry_attr);
 ```
 ### 5.3 Subnet NAT
 Subnet-based NAT replaces only the subnet prefix in the IP address, leaving the rest of the IP address unchanged. Subnet-based NAT is a simple implementation of basic NAT. For example, a private network is interconnected with a public network through a switch enabling subnet-based basic NAT. The public address for the private network (128.17.18.0/24 ) is 200.0.0.0/24. In the inbound direction, for a packet with DIP = 200.0.0.1, the subnet-based Basic NAT router will replace the subnet prefix 200.0.0/24 with new subnet prefix 128.17.18/24, and keep the host address .1/8. The translated SIP is 128.17.18.1.
-In the outbound direction, the SIP is translated in same fashion.
+In the outbound direction, the SIP is translated in same fashion. Reverse entry should be created in similar manner.
+
 > From Zone ID: 100
 To Zone ID: 200
 VRF: None
@@ -252,29 +256,25 @@ subnet_nat_entry.data.mask.dst_ip = 0xffffff00;
 
 create_nat_entry(&subnet_nat_entry, attr_count, nat_entry_attr);
 ```
-### 5.4 DNAT Miss 
-For dynamic NAT, translation is setup by the control plane based on the miss. This section describes how a DNAT entry is setup to trigger a miss for a given pool. Same steps are followed for SNAT Miss.
-Workflow will create a NAT entry with single attribute of type DNAT. This means that for this DNAT entry the translation is not yet learned.
+### 5.4 DNAT Pool Configuration 
+For dynamic NAT, translation is setup by the control plane based on the miss. This section describes how a DNAT pool entry is setup to trigger a miss for a given prefix pool. Workflow will create a DNAT pool entry with single attribute of type DNAT_POOL. Packets matching DNAT pool prefix will either result in a hit or a miss based on if the dnat translation is installed in hardware or not.
 
 ```sh
 
 sai_attribute_t nat_entry_attr[10];
-nat_entry_t dnat_miss_entry;
+nat_entry_t dnat_pool_entry;
 
 nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
-nat_entry_attr[0].value = SAI_NAT_TYPE_DESTINATION_NAT;
+nat_entry_attr[0].value = SAI_NAT_TYPE_DESTINATION_NAT_POOL;
 
 attr_count = 1;
 
-memset(&dnat_miss_entry, 0, sizeof(nat_etnry));
+memset(&dnat_pool_entry, 0, sizeof(nat_etnry));
 
-dnat_miss_entry.data.key.dst_ip = 65.55.42.1;
-dnat_miss_entry.data.mask.dst_ip = 0xffffffff;
-dnat_miss_entry.data.key.l4_dst_port = 1024;
-dnat_miss_entry.data.mask.l4_dst_port = 0xffff;
-dnat_miss_entry.data.key.proto = 17;
-dnat_miss_entry.data.mask.proto = 0xff;
-create_nat_entry(&dnat_miss_entry, attr_count, nat_entry_attr);
+dnat_pool_entry.data.key.dst_ip = 65.55.42.1;
+dnat_pool_entry.data.mask.dst_ip = 0xffffffff;
+
+create_nat_entry(&dnat_pool_entry, attr_count, nat_entry_attr);
 ```
 
 ## 6.0 NAT Exceptions
@@ -385,5 +385,59 @@ nat_zone_counter_attr[2].id = SAI_NAT_ZONE_COUNTER_ATTR_TRANSLATIONS_PACKET_COUN
 get_nat_zone_counter_attributes(nat_zone100_counter_id, attr_count, nat_zone_counter_attr);
 ```
 
+## 7.0 Error Conditions
+NAT entry is comprised of keys and attributes. Attributes are guarded by run time metadata check with validonly flag. For example following condition states that attribute source IP is valid only if NAT type is SNAT or Double NAT.
 
+```sh
+ /**
+     * @brief Replace source IPv4 address in packet.
+     * NAT actions will be
+     *    (source/destination/both is identified by type of NAT)
+     *    - replace IP address
+     *    - replace layer 4 source port
+     *    - replace layer 4 destination port
+     *
+     * @type sai_ip4_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_SOURCE_NAT or SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DOUBLE_NAT
+     */
+    SAI_NAT_ENTRY_ATTR_SRC_IP,
+```
 
+Similar check is not possible for the keys in NAT entry given that NAT type is not a match field but a result of a match. To handle such conditions even if SAI API invocator may specify extra keys, SAI driver MUST pick up the correct set of keys based on NAT type in the attribute. For example, in the following example NAT type is DNAT where src_ip and src_mask are present in keys. SAI driver MUST ignore extra keys in such cases.
+
+```sh
+sai_attribute_t nat_entry_attr[10];
+nat_entry_t subnet_nat_entry;
+
+nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
+nat_entry_attr[0].value = SAI_NAT_TYPE_DESTINATION_NAT;
+
+nat_entry_attr[1].id = SAI_NAT_ENTRY_ATTR_DST_IP;
+nat_entry_attr[1].value.u32 = 128.17.18.0; //example string
+
+nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_DST_IP_MASK;
+nat_entry_attr[2].value.u32 = 0xffffff00;
+
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
+nat_entry_attr[3].value.u32 = 200;
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
+nat_entry_attr[4].value.u32 =100;
+
+nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[5].value.bool = true;
+
+nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[6].value.bool = true;
+
+attr_count = 7;
+
+memset(&subnet_nat_entry, 0, sizeof(nat_entry));
+
+subnet_nat_entry.data.key.dst_ip = 200.0.0.0;
+subnet_nat_entry.data.mask.dst_ip = 0xffffff00;
+aubnet_nat_entry.data.key.src_ip = 100.0.0.0;
+subnet_nat_entry.data.mask.src_ip = 0xffffff00;
+create_nat_entry(&subnet_nat_entry, attr_count, nat_entry_attr);
+```
