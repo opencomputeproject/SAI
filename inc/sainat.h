@@ -101,7 +101,7 @@ typedef enum _sai_nat_entry_attr_t
     SAI_NAT_ENTRY_ATTR_SRC_IP_MASK,
 
     /**
-     * @brief Replace destination IPv4 address in packet.
+     * @brief Replace virtual router id associate with DST_IP
      * NAT actions will be
      *    (source/destination/both is identified by type of NAT)
      *
