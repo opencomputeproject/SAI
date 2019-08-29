@@ -72,24 +72,6 @@ typedef enum _sai_nat_entry_attr_t
     SAI_NAT_ENTRY_ATTR_NAT_TYPE  = SAI_NAT_ENTRY_ATTR_START,
 
     /**
-     * @brief NAT Inside Zone ID
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_NAT_ENTRY_ATTR_FROM_ZONE_ID,
-
-    /**
-     * @brief NAT Outside Zone ID
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_NAT_ENTRY_ATTR_TO_ZONE_ID,
-
-    /**
      * @brief Replace source IPv4 address in packet.
      * NAT actions will be
      *    (source/destination/both is identified by type of NAT)
@@ -113,6 +95,20 @@ typedef enum _sai_nat_entry_attr_t
      * @validonly SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_SOURCE_NAT or SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DOUBLE_NAT
      */
     SAI_NAT_ENTRY_ATTR_SRC_IP_MASK,
+
+    /**
+     * @brief Replace destination IPv4 address in packet.
+     * NAT actions will be
+     *    (source/destination/both is identified by type of NAT)
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DESTINATION_NAT or SAI_NAT_ENTRY_ATTR_NAT_TYPE == SAI_NAT_TYPE_DOUBLE_NAT
+     */
+    SAI_NAT_ENTRY_ATTR_VR_ID,
 
     /**
      * @brief Replace destination IPv4 address in packet.

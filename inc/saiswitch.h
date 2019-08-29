@@ -810,7 +810,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_AVAILABLE_DOBULE_NAT_ENTRY,
+    SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAT_ENTRY,
 
     /**
      * @brief Available ACL Tables
