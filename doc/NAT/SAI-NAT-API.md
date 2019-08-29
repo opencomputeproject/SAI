@@ -20,7 +20,7 @@ SAI NAT Proposal
 This document proposes set of API to configure NAT feature. API set is generic to configure various types of NAT. Besides configuration there is a need to read the NAT table for aging. Reading of data is achieved using the TAM GET API.
 
 ## 1.0 NAT Types
-In basic NAT, SNAT is performed for outbound (internal zone to public zone) traffic, and DNAT is performed for inbound (public zone to internal zone) traffic. XDuring outbound NAT processing, SNAT is performed and the SIP of the packet is replaced.
+In basic NAT, SNAT is performed for outbound (internal zone to public zone) traffic, and DNAT is performed for inbound (public zone to internal zone) traffic. During outbound NAT processing, SNAT is performed and the SIP of the packet is replaced.
 
 In the reverse direction, DNAT operation is performed in which the DIP of the packet is replaced.
 
@@ -50,8 +50,8 @@ A new boolean field is added to sai_switch_attr in saiswitch.h
 > set_switch_attribute() API is used to enable/disable NAT feature.
 
 ## 4.0 Enable Traps for SNAT and DNAT Miss Packets
-Following two traps are added to hostif. Hostif driver MUST enable these traps for SNAT and DNAT miss in hw for receiving the packets. 
-SNAT/DNAT/HARIPIN miss packets are received on a regular netdev channel to the application.
+Following three traps are added to hostif. Hostif driver MUST enable these traps for SNAT, DNAT and HAIRPIN miss in hw for receiving the packets. 
+SNAT/DNAT/HAIRPIN miss packets are received on a regular netdev channel to the application.
 
 - “SAI_HOSTIF_TRAP_TYPE_SNAT_MISS”
 - “SAI_HOSTIF_TRAP_TYPE_DNAT_MISS”
@@ -63,9 +63,7 @@ SNAT/DNAT/HARIPIN miss packets are received on a regular netdev channel to the a
 ### 5.1 Symmetric SNAT and DNAT
 For directional symmetric flows there is always a corresponding DNAT entry for each SNAT entry. SAI APIs do not allow implicit installation of reverse direction NAT entry. SAI API MUST be invoked for both SNAT and DNAT entry to be installed.
 
-> From Zone ID: 100
-To Zone ID: 200
-VRF: None
+> VRF: None
 Packet Count: Enable
 Byte Count: Enable
 ExternalEndpoint: 65.55.42.1:1024 
@@ -85,19 +83,13 @@ nat_entry_attr[1].value.u32 = 65.55.42.1; //example string
 nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_L4_SRC_PORT;
 nat_entry_attr[2].value.u16 = 1024;
 
-nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
-nat_entry_attr[3].value.u32 = 200;
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[3].value.bool = true;
 
-nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
-nat_entry_attr[4].value.u32 = 100;
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[4].value.bool = true;
 
-nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
-nat_entry_attr[5].value.bool = true;
-
-nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
-nat_entry_attr[6].value.bool = true;
-
-attr_count = 7;
+attr_count = 5;
 
 memset(&snat_etnry, 0, sizeof(nat_etnry));
 
@@ -128,19 +120,13 @@ nat_entry_attr[1].value.u32 = 10.0.0.1; //example string
 nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_L4_DST_PORT;
 nat_entry_attr[2].value.u16 = 6000;
 
-nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
-nat_entry_attr[3].value.u32 = 100;
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[3].value.bool = true;
 
-nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
-nat_entry_attr[4].value.u32 =200;
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[4].value.bool = true;
 
-nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
-nat_entry_attr[5].value.bool = true;
-
-nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
-nat_entry_attr[6].value.bool = true;
-
-attr_count = 7;
+attr_count = 5;
 
 memset(&dnat_etnry, 0, sizeof(nat_etnry));
 
@@ -158,9 +144,7 @@ create_nat_entry(&dnat_entry, attr_count, nat_entry_attr);
 ### 5.2 Double NAT
 Double NAT is a nat variant where both the Src and Dest IP gets modified when a packet crosses the address zone. Generally used when conflicting addresses are used in the private networks which conflicts with the public IP addresses. Double NAT overrides SNAT or DNAT actions in the SAI pipeline. Reverse entry should be created in similar manner.
 
-> From Zone ID: 100
-To Zone ID: 200
-VRF: None
+> VRF: None
 Packet Count: Enable
 Byte Count: Enable
 SNAT Entry
@@ -184,19 +168,13 @@ nat_entry_attr[1].value.u32 = 138.76.28.1; //example string
 nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_DST_IP;
 nat_entry_attr[2].value.u32 = 200.200.200.100; //example string
 
-nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
-nat_entry_attr[3].value.u32 = 200;
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[3].value.bool = true;
 
-nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
-nat_entry_attr[4].value.u32 =100;
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[4].value.bool = true;
 
-nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
-nat_entry_attr[5].value.bool = true;
-
-nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
-nat_entry_attr[6].value.bool = true;
-
-attr_count = 7;
+attr_count = 5;
 
 memset(&dbl_nat_etnry, 0, sizeof(nat_etnry));
 
@@ -212,9 +190,7 @@ create_nat_entry(&dbl_nat_entry, attr_count, nat_entry_attr);
 Subnet-based NAT replaces only the subnet prefix in the IP address, leaving the rest of the IP address unchanged. Subnet-based NAT is a simple implementation of basic NAT. For example, a private network is interconnected with a public network through a switch enabling subnet-based basic NAT. The public address for the private network (128.17.18.0/24 ) is 200.0.0.0/24. In the inbound direction, for a packet with DIP = 200.0.0.1, the subnet-based Basic NAT router will replace the subnet prefix 200.0.0/24 with new subnet prefix 128.17.18/24, and keep the host address .1/8. The translated SIP is 128.17.18.1.
 In the outbound direction, the SIP is translated in same fashion. Reverse entry should be created in similar manner.
 
-> From Zone ID: 100
-To Zone ID: 200
-VRF: None
+> VRF: None
 Packet Count: Enable
 Byte Count: Enable
 DNAT Entry
@@ -236,18 +212,13 @@ nat_entry_attr[1].value.u32 = 128.17.18.0; //example string
 nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_DST_IP_MASK;
 nat_entry_attr[2].value.u32 = 0xffffff00;
 
-nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
-nat_entry_attr[3].value.u32 = 200;
-nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
-nat_entry_attr[4].value.u32 =100;
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[3].value.bool = true;
 
-nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
-nat_entry_attr[5].value.bool = true;
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[4].value.bool = true;
 
-nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
-nat_entry_attr[6].value.bool = true;
-
-attr_count = 7;
+attr_count = 5;
 
 memset(&subnet_nat_entry, 0, sizeof(nat_entry));
 
@@ -278,44 +249,12 @@ create_nat_entry(&dnat_pool_entry, attr_count, nat_entry_attr);
 ```
 
 ## 6.0 NAT Exceptions
-NAT exceptions can be defined using the NAT entry. In that case they will be placed in the SNAT/DNAT table. Operator MUST consider defining the exceptions so as not to collide with other NAT entries.
+NAT exceptions can be defined in the ACL entry. Operator MUST consider defining the exceptions so as not to collide with other NAT entries.
 An override NAT exception can be created using the ACL rule. A new ACL action is defined in saiacl.h
 
 > SAI_ACL_ENTRY_ATTR_ACTION_NO_NAT
 
 In SAI pipeline if there is a ACL match with action NO_NAT and there is also a match in SNAT/DNAT table then ACL match result always takes precedence.
-
-### 6.1 NAT exception using NAT Entry
-> From Zone ID: 100
-To Zone ID: 200
-VRF: None
-SNAT Exclusion
-&nbsp;&nbsp;&nbsp;&nbsp;if (InternalEndpoint == 200.200.200.1:1023) AND (From_Zone == 100) AND (To_ZONE == 200)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NO_NAT
-##### Step 1: Create a SNAT Exception Entry:
-```sh
-sai_attribute_t nat_entry_attr[10];
-nat_entry_t no_nat_entry;
-
-nat_entry_attr[0].id = SAI_NAT_ENTRY_ATTR_NAT_TYPE;
-nat_entry_attr[0].value = SAI_NAT_TYPE_NO_NAT;
-
-nat_entry_attr[1].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
-nat_entry_attr[1].value.u32 = 200;
-
-nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
-nat_entry_attr[2].value.u32 =100;
-
-attr_count = 3;
-
-memset(&no_nat_etnry, 0, sizeof(nat_etnry));
-no_nat_entry.data.key.src_ip = 200.200.200.1;
-no_nat_entry.data.mask.src_ip = 0xffffffff;
-no_nat_entry.data.key.l4_src_port = 1023;
-no_nat_entry.data.mask.l4_src_port = 0xffff;
-
-create_nat_entry(&no_nat_entry, attr_count, nat_entry_attr);
-```
 
 
 ## NAT Per Zone Counters
@@ -420,18 +359,13 @@ nat_entry_attr[1].value.u32 = 128.17.18.0; //example string
 nat_entry_attr[2].id = SAI_NAT_ENTRY_ATTR_DST_IP_MASK;
 nat_entry_attr[2].value.u32 = 0xffffff00;
 
-nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_TO_ZONE;
-nat_entry_attr[3].value.u32 = 200;
-nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_FROM_ZONE;
-nat_entry_attr[4].value.u32 =100;
+nat_entry_attr[3].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
+nat_entry_attr[3].value.bool = true;
 
-nat_entry_attr[5].id = SAI_NAT_ENTRY_ATTR_ENABLE_PACKET_COUNT;
-nat_entry_attr[5].value.bool = true;
+nat_entry_attr[4].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
+nat_entry_attr[4].value.bool = true;
 
-nat_entry_attr[6].id = SAI_NAT_ENTRY_ATTR_ENABLE_BYTE_COUNT;
-nat_entry_attr[6].value.bool = true;
-
-attr_count = 7;
+attr_count = 5;
 
 memset(&subnet_nat_entry, 0, sizeof(nat_entry));
 
