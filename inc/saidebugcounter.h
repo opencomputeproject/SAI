@@ -48,6 +48,12 @@ typedef enum _sai_debug_counter_type_t
     /** Port out drop reasons. Base object: SAI_OBJECT_TYPE_PORT */
     SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS,
 
+    /** Switch in drop reasons. Base object: SAI_OBJECT_TYPE_SWITCH */
+    SAI_DEBUG_COUNTER_TYPE_SWITCH_IN_DROP_REASONS,
+    
+    /** Switch out drop reasons. Base object: SAI_OBJECT_TYPE_SWITCH */
+    SAI_DEBUG_COUNTER_TYPE_SWITCH_OUT_DROP_REASONS,
+
 } sai_debug_counter_type_t;
 
 /**
@@ -61,23 +67,23 @@ typedef enum _sai_debug_counter_bind_method_t
 } sai_debug_counter_bind_method_t;
 
 /**
- * @brief Attribute data for port in drop reasons
+ * @brief Attribute data for in drop reasons
  */
-typedef enum _sai_port_in_drop_reason_t
+typedef enum _sai_in_drop_reason_t
 {
     /* L2 reasons */
 
     /** Any L2 pipeline drop */
-    SAI_PORT_IN_DROP_REASON_L2_ANY,
+    SAI_IN_DROP_REASON_L2_ANY,
 
     /** Source MAC is multicast */
-    SAI_PORT_IN_DROP_REASON_SMAC_MULTICAST,
+    SAI_IN_DROP_REASON_SMAC_MULTICAST,
 
     /** Source MAC equals destination MAC */
-    SAI_PORT_IN_DROP_REASON_SMAC_EQUALS_DMAC,
+    SAI_IN_DROP_REASON_SMAC_EQUALS_DMAC,
 
     /** Destination MAC is Reserved (Destination MAC=01-80-C2-00-00-0x) */
-    SAI_PORT_IN_DROP_REASON_DMAC_RESERVED,
+    SAI_IN_DROP_REASON_DMAC_RESERVED,
 
     /**
      * @brief VLAN tag not allowed
@@ -85,39 +91,39 @@ typedef enum _sai_port_in_drop_reason_t
      * Frame tagged when port is dropping tagged,
      * or untagged when dropping untagged
      */
-    SAI_PORT_IN_DROP_REASON_VLAN_TAG_NOT_ALLOWED,
+    SAI_IN_DROP_REASON_VLAN_TAG_NOT_ALLOWED,
 
     /** Ingress VLAN filter */
-    SAI_PORT_IN_DROP_REASON_INGRESS_VLAN_FILTER,
+    SAI_IN_DROP_REASON_INGRESS_VLAN_FILTER,
 
     /** Ingress STP filter */
-    SAI_PORT_IN_DROP_REASON_INGRESS_STP_FILTER,
+    SAI_IN_DROP_REASON_INGRESS_STP_FILTER,
 
     /** Unicast FDB table action discard */
-    SAI_PORT_IN_DROP_REASON_FDB_UC_DISCARD,
+    SAI_IN_DROP_REASON_FDB_UC_DISCARD,
 
     /** Multicast FDB table empty tx list */
-    SAI_PORT_IN_DROP_REASON_FDB_MC_DISCARD,
+    SAI_IN_DROP_REASON_FDB_MC_DISCARD,
 
     /** Port L2 loopback filter (packet egressing on the same port+VLAN as ingressing) */
-    SAI_PORT_IN_DROP_REASON_L2_LOOPBACK_FILTER,
+    SAI_IN_DROP_REASON_L2_LOOPBACK_FILTER,
 
     /** Packet size is larger than the L2 (Port) MTU */
-    SAI_PORT_IN_DROP_REASON_EXCEEDS_L2_MTU,
+    SAI_IN_DROP_REASON_EXCEEDS_L2_MTU,
 
     /* L3 reasons */
 
     /** Any L3 pipeline drop */
-    SAI_PORT_IN_DROP_REASON_L3_ANY,
+    SAI_IN_DROP_REASON_L3_ANY,
 
     /** Packet size is larger than the L3 (Router Interface) MTU */
-    SAI_PORT_IN_DROP_REASON_EXCEEDS_L3_MTU,
+    SAI_IN_DROP_REASON_EXCEEDS_L3_MTU,
 
     /** TTL expired */
-    SAI_PORT_IN_DROP_REASON_TTL,
+    SAI_IN_DROP_REASON_TTL,
 
     /** RIF L3 loopback filter (packet egressing on the same RIF as ingressing) */
-    SAI_PORT_IN_DROP_REASON_L3_LOOPBACK_FILTER,
+    SAI_IN_DROP_REASON_L3_LOOPBACK_FILTER,
 
     /**
      * @brief Non routable packet
@@ -128,20 +134,20 @@ typedef enum _sai_port_in_drop_reason_t
      * IGMP v2 leave group
      * IGMP v3 membership report
      */
-    SAI_PORT_IN_DROP_REASON_NON_ROUTABLE,
+    SAI_IN_DROP_REASON_NON_ROUTABLE,
 
     /** Destination MAC is the router MAC, however packet is not routable (isn't IP or MPLS) */
-    SAI_PORT_IN_DROP_REASON_NO_L3_HEADER,
+    SAI_IN_DROP_REASON_NO_L3_HEADER,
 
     /**
      * @brief IP Header error
      *
      * Due to header checksum or bad IP version or IPv4 IHL too short
      */
-    SAI_PORT_IN_DROP_REASON_IP_HEADER_ERROR,
+    SAI_IN_DROP_REASON_IP_HEADER_ERROR,
 
     /** Unicast destination IP with non unicast (multicast or broadcast) destination MAC */
-    SAI_PORT_IN_DROP_REASON_UC_DIP_MC_DMAC,
+    SAI_IN_DROP_REASON_UC_DIP_MC_DMAC,
 
     /**
      * @brief Destination IP is loopback address
@@ -149,7 +155,7 @@ typedef enum _sai_port_in_drop_reason_t
      * for IPv4: Destination IP=127.0.0.0/8
      * for IPv6: Destination IP=::1/128 OR Destination IP=0:0:0:0:0:ffff:7f00:0/104
      */
-    SAI_PORT_IN_DROP_REASON_DIP_LOOPBACK,
+    SAI_IN_DROP_REASON_DIP_LOOPBACK,
 
     /**
      * @brief Source IP is loopback address
@@ -157,7 +163,7 @@ typedef enum _sai_port_in_drop_reason_t
      * for IPv4: Source IP=127.0.0.0/8
      * for IPv6: Source IP=::1/128
      */
-    SAI_PORT_IN_DROP_REASON_SIP_LOOPBACK,
+    SAI_IN_DROP_REASON_SIP_LOOPBACK,
 
     /**
      * @brief Source IP is multicast address
@@ -165,14 +171,14 @@ typedef enum _sai_port_in_drop_reason_t
      * for IPv4: Source IP=224.0.0.0/4
      * for IPv6: Source IP=FF00::/8
      */
-    SAI_PORT_IN_DROP_REASON_SIP_MC,
+    SAI_IN_DROP_REASON_SIP_MC,
 
     /**
      * @brief Source IP is in class E
      *
      * IPv4 AND Source IP=240.0.0.0/4 AND Source IP!=255.255.255.255
      */
-    SAI_PORT_IN_DROP_REASON_SIP_CLASS_E,
+    SAI_IN_DROP_REASON_SIP_CLASS_E,
 
     /**
      * @brief Source IP unspecified
@@ -180,7 +186,7 @@ typedef enum _sai_port_in_drop_reason_t
      * for IPv4: Source IP=0.0.0.0/32
      * for IPv6: Source IP=::0
      */
-    SAI_PORT_IN_DROP_REASON_SIP_UNSPECIFIED,
+    SAI_IN_DROP_REASON_SIP_UNSPECIFIED,
 
     /**
      * @brief Destination IP is multicast but destination MAC isn't
@@ -189,56 +195,56 @@ typedef enum _sai_port_in_drop_reason_t
      * for IPv4: Destination MAC!={01-00-5E-0 (25 bits), dip[22:0]}
      * for IPv6: Destination MAC!={33-33, DIP[31:0]}
      */
-    SAI_PORT_IN_DROP_REASON_MC_DMAC_MISMATCH,
+    SAI_IN_DROP_REASON_MC_DMAC_MISMATCH,
 
     /** Source IP equals destination IP */
-    SAI_PORT_IN_DROP_REASON_SIP_EQUALS_DIP,
+    SAI_IN_DROP_REASON_SIP_EQUALS_DIP,
 
     /** IPv4 source IP is limited broadcast (Source IP=255.255.255.255) */
-    SAI_PORT_IN_DROP_REASON_SIP_BC,
+    SAI_IN_DROP_REASON_SIP_BC,
 
     /** IPv4 destination IP is local network (Destination IP=0.0.0.0/8) */
-    SAI_PORT_IN_DROP_REASON_DIP_LOCAL,
+    SAI_IN_DROP_REASON_DIP_LOCAL,
 
     /** IPv4 unicast destination IP is link local (Destination IP=169.254.0.0/16) */
-    SAI_PORT_IN_DROP_REASON_DIP_LINK_LOCAL,
+    SAI_IN_DROP_REASON_DIP_LINK_LOCAL,
 
     /** IPv4 Source IP is link local (Source IP=169.254.0.0/16) */
-    SAI_PORT_IN_DROP_REASON_SIP_LINK_LOCAL,
+    SAI_IN_DROP_REASON_SIP_LINK_LOCAL,
 
     /** IPv6 destination in multicast scope 0 reserved (Destination IP=ff:x0:/16) */
-    SAI_PORT_IN_DROP_REASON_IPV6_MC_SCOPE0,
+    SAI_IN_DROP_REASON_IPV6_MC_SCOPE0,
 
     /** IPv6 destination in multicast scope 1 interface-local (Destination IP=ff:x1:/16) */
-    SAI_PORT_IN_DROP_REASON_IPV6_MC_SCOPE1,
+    SAI_IN_DROP_REASON_IPV6_MC_SCOPE1,
 
     /** Ingress RIF is disabled */
-    SAI_PORT_IN_DROP_REASON_IRIF_DISABLED,
+    SAI_IN_DROP_REASON_IRIF_DISABLED,
 
     /** Egress RIF is disabled */
-    SAI_PORT_IN_DROP_REASON_ERIF_DISABLED,
+    SAI_IN_DROP_REASON_ERIF_DISABLED,
 
     /** IPv4 Routing table (LPM) unicast miss */
-    SAI_PORT_IN_DROP_REASON_LPM4_MISS,
+    SAI_IN_DROP_REASON_LPM4_MISS,
 
     /** IPv6 Routing table (LPM) unicast miss */
-    SAI_PORT_IN_DROP_REASON_LPM6_MISS,
+    SAI_IN_DROP_REASON_LPM6_MISS,
 
     /** Black hole route (discard by route entry) */
-    SAI_PORT_IN_DROP_REASON_BLACKHOLE_ROUTE,
+    SAI_IN_DROP_REASON_BLACKHOLE_ROUTE,
 
     /** Black hole ARP/Neighbor (discard by ARP or neighbor entries) */
-    SAI_PORT_IN_DROP_REASON_BLACKHOLE_ARP,
+    SAI_IN_DROP_REASON_BLACKHOLE_ARP,
 
     /** Unresolved next hop (missing ARP entry) */
-    SAI_PORT_IN_DROP_REASON_UNRESOLVED_NEXT_HOP,
+    SAI_IN_DROP_REASON_UNRESOLVED_NEXT_HOP,
 
     /**
      * @brief Packet is destined for neighboring device but neighbor device link is down
      *
      * Counted on ingress link
      */
-    SAI_PORT_IN_DROP_REASON_L3_EGRESS_LINK_DOWN,
+    SAI_IN_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
     /* Tunnel reasons */
 
@@ -247,47 +253,47 @@ typedef enum _sai_port_in_drop_reason_t
      *
      * e.g.: need to decap too many bytes, remaining packet is too short
      */
-    SAI_PORT_IN_DROP_REASON_DECAP_ERROR,
+    SAI_IN_DROP_REASON_DECAP_ERROR,
 
     /* ACL reasons */
 
     /** Packet is dropped due to configured ACL rules */
-    SAI_PORT_IN_DROP_REASON_ACL_DISCARD,
+    SAI_IN_DROP_REASON_ACL_DISCARD,
 
     /** Custom range base value */
-    SAI_PORT_IN_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_IN_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
 
-} sai_port_in_drop_reason_t;
+} sai_in_drop_reason_t;
 
 /**
- * @brief Attribute data for port out drop reasons
+ * @brief Attribute data for out drop reasons
  */
-typedef enum _sai_port_out_drop_reason_t
+typedef enum _sai_out_drop_reason_t
 {
     /* L2 reasons */
 
     /** Any L2 pipeline drop */
-    SAI_PORT_OUT_DROP_REASON_L2_ANY,
+    SAI_OUT_DROP_REASON_L2_ANY,
 
     /** Egress VLAN filter */
-    SAI_PORT_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
+    SAI_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
 
     /* L3 reasons */
 
     /** Any L3 pipeline drop */
-    SAI_PORT_OUT_DROP_REASON_L3_ANY,
+    SAI_OUT_DROP_REASON_L3_ANY,
 
     /**
      * @brief Packet is destined for neighboring device but neighbor device link is down
      *
      * Counted on egress link
      */
-    SAI_PORT_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
+    SAI_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
     /** Custom range base value */
-    SAI_PORT_OUT_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_OUT_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
 
-} sai_port_out_drop_reason_t;
+} sai_out_drop_reason_t;
 
 /**
  * @brief Attribute Id in sai_set_counter_attribute() and
@@ -332,26 +338,26 @@ typedef enum _sai_debug_counter_attr_t
     SAI_DEBUG_COUNTER_ATTR_BIND_METHOD,
 
     /**
-     * @brief List of port in drop reasons that will be counted
+     * @brief List of in drop reasons that will be counted
      *
-     * @type sai_s32_list_t sai_port_in_drop_reason_t
+     * @type sai_s32_list_t sai_in_drop_reason_t
      * @flags CREATE_AND_SET
      * @default empty
-     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE ==
-     * SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS
+     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE == SAI_DEBUG_COUNTER_TYPE_PORT_IN_DROP_REASONS or
+     * SAI_DEBUG_COUNTER_ATTR_TYPE == SAI_DEBUG_COUNTER_TYPE_SWITCH_IN_DROP_REASONS
      */
-    SAI_DEBUG_COUNTER_ATTR_PORT_IN_DROP_REASON_LIST,
+    SAI_DEBUG_COUNTER_ATTR_IN_DROP_REASON_LIST,
 
     /**
-     * @brief List of port out drop reasons that will be counted
+     * @brief List of out drop reasons that will be counted
      *
-     * @type sai_s32_list_t sai_port_out_drop_reason_t
+     * @type sai_s32_list_t sai_out_drop_reason_t
      * @flags CREATE_AND_SET
      * @default empty
-     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE ==
-     * SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS
+     * @validonly SAI_DEBUG_COUNTER_ATTR_TYPE == SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS or
+     * SAI_DEBUG_COUNTER_ATTR_TYPE == SAI_DEBUG_COUNTER_TYPE_SWITCH_OUT_DROP_REASONS
      */
-    SAI_DEBUG_COUNTER_ATTR_PORT_OUT_DROP_REASON_LIST,
+    SAI_DEBUG_COUNTER_ATTR_OUT_DROP_REASON_LIST,
 
     /**
      * @brief End of attributes
