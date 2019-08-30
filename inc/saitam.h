@@ -1232,11 +1232,10 @@ typedef enum _sai_tam_report_attr_t
     /**
      * @brief Report Interval in micro seconds
      *
-     * Note: valid only if SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_BULK
-     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 1000
+     * @validonly SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_BULK
      */
     SAI_TAM_REPORT_ATTR_REPORT_INTERVAL,
 
