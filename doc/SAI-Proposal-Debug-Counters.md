@@ -234,8 +234,38 @@ typedef enum _sai_in_drop_reason_t
 
     /* ACL reasons */
 
-    /** Packet is dropped due to configured ACL rules */
-    SAI_IN_DROP_REASON_ACL_DISCARD,
+    /** Packet is dropped due to configured ACL rules, all stages/bind points combinations */
+    SAI_IN_DROP_REASON_ACL_ANY,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, port binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_PORT,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, LAG binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_LAG,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, VLAN binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_VLAN,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, RIF binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_RIF,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, switch binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_SWITCH,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, port binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_PORT,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, LAG binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_LAG,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, VLAN binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_VLAN,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, RIF binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_RIF,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, switch binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_SWITCH,
 
     /** Custom range base value */
     SAI_IN_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
@@ -410,6 +440,11 @@ SAI_PORT_ATTR_DEBUG_COUNTER_LIST,
 
 ### Checking debug counter capability
 Application can query the ASIC support for counters of certain family by sai_query_attribute_enum_values_capability
+
+Consider a case where a certain ASIC can only count the value of 2 drop reasons A and B together, meaning only A+B can be tracked. The ASIC can also count drop reason C independently.
+Future extension of query enum capabilities might return a list of lists. If a certain drop reason can be counted by itself, it will be in a separate list. 
+If certain drop reasons can be counted only together, they will be in one list. So for our example, capability list will be {{A,B},{C}}
+
 Application can query the amount of ASIC available debug counters of certain family by generic CRM sai_object_type_get_availability, using SAI_DEBUG_COUNTER_ATTR_TYPE as an attribute if needed
 
 ### Counting packet which is dropped by multiple reasons
@@ -418,7 +453,14 @@ For example, consider a packet which is dropped by reason 1 and 2, both at the s
 Debug counter A tracks both reason 1 and 2, counter B is tracking reason 1, counter C is tracking reason 2.
 Counters A, B, C all will increase by 1
 
-## Usage example
+### Debug counter behavior when traffic checker is disabled
+ASIC can be configured to ignore some of the checkers for drop conditions.
+For example, ASIC can be configured with NOP for SIP=DIP traffic instead of dropping such traffic.
+Or SAI allows configuring SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION=FORWARD for L3 loopback traffic.
+If such a checker is configured to forward traffic, packet won't be dropped and counter measuring the relevant drop reason won't increase for traffic hitting the condition.
+Drop counter is only increased when a packet is actually dropped.
+
+### Usage example - creating and quering debug counters
 ```
 sai_attribute_t debug_counter_attr[2];
 debug_counter_attr[0].id = SAI_DEBUG_COUNTER_ATTR_TYPE;
@@ -454,4 +496,31 @@ uint64_t stats[2];
 rc = sai_port_api->sai_get_counter_stats_ext(port_id, 2, stat_ids, stats);
 printf("Port XXX In DROP_REASON_SMAC_MULTICAST + DROP_REASON_SMAC_EQUALS_DMAC + DROP_REASON_DMAC_RESERVED %lu\n", stats[0]);
 printf("Port XXX In DROP_REASON_VLAN_TAG_NOT_ALLOWED + DROP_REASON_INGRESS_STP_FILTER %lu\n", stats[1]);
+```
+
+### Usage example - query capabilities
+```
+sai_s32_list_t        enum_caps_list;
+int32_t               enums_caps[100];
+enum_caps_list.count = 100;
+enum_caps_list.list = enums_caps;
+/* Get supported in drop reasons */
+sai_query_attribute_enum_values_capability(switch_id1, SAI_OBJECT_TYPE_DEBUG_COUNTER, SAI_DEBUG_COUNTER_ATTR_IN_DROP_REASON_LIST, &enum_caps_list);
+int ii;
+for (ii=0; ii<enum_caps_list.count; ii++) {
+  printf("reason ID %d supported", enum_caps_list.list[ii]);
+}
+```
+
+## Usage example - query available debug counters
+```
+sai_attribute_t attr;
+sai_status_t status;
+uint64_t count;
+
+attr.id = SAI_DEBUG_COUNTER_ATTR_TYPE;
+attr.value.s32 = SAI_DEBUG_COUNTER_TYPE_PORT_OUT_DROP_REASONS;
+
+/* Get available port out drop reasons debug counters */
+status = sai_object_type_get_availability(switch_id1, SAI_OBJECT_TYPE_DEBUG_COUNTER, 1, &attr, &count);
 ```

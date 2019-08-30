@@ -267,8 +267,38 @@ typedef enum _sai_in_drop_reason_t
 
     /* ACL reasons */
 
-    /** Packet is dropped due to configured ACL rules */
-    SAI_IN_DROP_REASON_ACL_DISCARD,
+    /** Packet is dropped due to configured ACL rules, all stages/bind points combinations */
+    SAI_IN_DROP_REASON_ACL_ANY,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, port binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_PORT,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, LAG binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_LAG,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, VLAN binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_VLAN,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, RIF binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_RIF,
+
+    /** Packet is dropped due to configured ACL rules, ingress stage, switch binding */
+    SAI_IN_DROP_REASON_ACL_INGRESS_SWITCH,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, port binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_PORT,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, LAG binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_LAG,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, VLAN binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_VLAN,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, RIF binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_RIF,
+
+    /** Packet is dropped due to configured ACL rules, egress stage, switch binding */
+    SAI_IN_DROP_REASON_ACL_EGRESS_SWITCH,
 
     /** Custom range base value */
     SAI_IN_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
