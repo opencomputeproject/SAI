@@ -371,6 +371,11 @@ typedef enum _sai_attr_value_type_t
      */
     SAI_ATTR_VALUE_TYPE_TIMESPEC,
 
+    /**
+     * @brief Attribute value is NAT data.
+     */
+    SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA,
+
 } sai_attr_value_type_t;
 
 /**
