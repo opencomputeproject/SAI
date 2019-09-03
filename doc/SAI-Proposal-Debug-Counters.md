@@ -440,10 +440,8 @@ SAI_PORT_ATTR_DEBUG_COUNTER_LIST,
 
 ### Checking debug counter capability
 Application can query the ASIC support for counters of certain family by sai_query_attribute_enum_values_capability
-
-Consider a case where a certain ASIC can only count the value of 2 drop reasons A and B together, meaning only A+B can be tracked. The ASIC can also count drop reason C independently.
-Future extension of query enum capabilities might return a list of lists. If a certain drop reason can be counted by itself, it will be in a separate list. 
-If certain drop reasons can be counted only together, they will be in one list. So for our example, capability list will be {{A,B},{C}}
+SAI will return the list of implemented drop reasons, each reason is implemented independantly of others.
+If there is a case of dependency between drop reasons, for example the ASIC can only track several reasons summed up together, it is suggested the ASIC vendor will add a new combined drop reason. 
 
 Application can query the amount of ASIC available debug counters of certain family by generic CRM sai_object_type_get_availability, using SAI_DEBUG_COUNTER_ATTR_TYPE as an attribute if needed
 
