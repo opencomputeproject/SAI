@@ -679,7 +679,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Switch total buffer size in KB
      *
-     * @type sai_uint32_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE,
@@ -787,6 +787,30 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_AVAILABLE_IPMC_ENTRY,
+
+    /**
+     * @brief Available SNAT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_SNAT_ENTRY,
+
+    /**
+     * @brief Available DNAT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DNAT_ENTRY,
+
+    /**
+     * @brief Available Double NAT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAT_ENTRY,
 
     /**
      * @brief Available ACL Tables
@@ -1779,6 +1803,29 @@ typedef enum _sai_switch_attr_t
      * @default false
      */
     SAI_SWITCH_ATTR_PRE_SHUTDOWN,
+
+    /**
+     * @brief NAT zone counter bind point
+     *
+     * Bind (or unbind) the NAT zone counter object.
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NAT_ZONE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_NAT_ZONE_COUNTER_OBJECT_ID,
+
+    /**
+     * @brief Enable NAT function
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_NAT_ENABLE,
 
     /**
      * @brief End of attributes

@@ -122,6 +122,7 @@ union sai_thrift_acl_parameter_t {
     8: sai_thrift_ip4_t ip4;
     9: sai_thrift_ip6_t ip6;
     10: sai_thrift_object_id_t oid;
+    11: sai_thrift_object_list_t objlist;
 }
 
 struct sai_thrift_acl_action_data_t {

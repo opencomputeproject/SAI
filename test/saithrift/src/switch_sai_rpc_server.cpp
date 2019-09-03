@@ -289,6 +289,7 @@ public:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP:
               case SAI_PORT_ATTR_INGRESS_ACL:
+              case SAI_PORT_ATTR_EGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
               case SAI_PORT_ATTR_MTU:
@@ -2305,7 +2306,11 @@ public:
       }
   }
 
-  void sai_thrift_parse_acl_entry_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+  void sai_thrift_parse_acl_entry_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list,
+                                             sai_object_id_t **in_ports_list,
+                                             sai_object_id_t **out_ports_list,
+                                             sai_object_id_t **ingress_mirror_list,
+                                             sai_object_id_t **egress_mirror_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
       for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
@@ -2346,13 +2351,12 @@ public:
             case SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS:
                 {
                     int count = attribute.value.aclfield.data.objlist.object_id_list.size();
-                    sai_object_id_t *oid_list = NULL;
                     std::vector<sai_thrift_object_id_t>::const_iterator it = attribute.value.aclfield.data.objlist.object_id_list.begin();
-                    oid_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
+                    *in_ports_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
                     for(int j = 0; j < count; j++, it++)
-                        *(oid_list + j) = (sai_object_id_t) *it;
+                        (*in_ports_list)[j] = (sai_object_id_t) *it;
                     attr_list[i].value.aclfield.enable             = attribute.value.aclfield.enable;
-                    attr_list[i].value.aclfield.data.objlist.list  =  oid_list;
+                    attr_list[i].value.aclfield.data.objlist.list  =  *in_ports_list;
                     attr_list[i].value.aclfield.data.objlist.count =  count;
                 }
                 break;
@@ -2360,9 +2364,18 @@ public:
                 attr_list[i].value.aclfield.enable   = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
-            /*
             case SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS:
-            */
+                {
+                    int count = attribute.value.aclfield.data.objlist.object_id_list.size();
+                    std::vector<sai_thrift_object_id_t>::const_iterator it = attribute.value.aclfield.data.objlist.object_id_list.begin();
+                    *out_ports_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
+                    for(int j = 0; j < count; j++, it++)
+                        (*out_ports_list)[j] = (sai_object_id_t) *it;
+                    attr_list[i].value.aclfield.enable             = attribute.value.aclfield.enable;
+                    attr_list[i].value.aclfield.data.objlist.list  =  *out_ports_list;
+                    attr_list[i].value.aclfield.data.objlist.count =  count;
+                }
+                break;
             case SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_PRI:
             case SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_CFI:
             case SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_PRI:
@@ -2397,12 +2410,28 @@ public:
                 attr_list[i].value.aclfield.mask.u16 = attribute.value.aclfield.mask.u16;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS:
-                attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
-                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
+                {
+                    int count = attribute.value.aclaction.parameter.objlist.object_id_list.size();
+                    std::vector<sai_thrift_object_id_t>::const_iterator it = attribute.value.aclaction.parameter.objlist.object_id_list.begin();
+                    *ingress_mirror_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
+                    for(int j = 0; j < count; j++, it++)
+                        (*ingress_mirror_list)[j] = (sai_object_id_t) *it;
+                    attr_list[i].value.aclaction.enable = attribute.value.aclaction.enable;
+                    attr_list[i].value.aclaction.parameter.objlist.list  =  *ingress_mirror_list;
+                    attr_list[i].value.aclaction.parameter.objlist.count =  count;
+                }
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS:
-                attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
-                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
+                {
+                    int count = attribute.value.aclaction.parameter.objlist.object_id_list.size();
+                    std::vector<sai_thrift_object_id_t>::const_iterator it = attribute.value.aclaction.parameter.objlist.object_id_list.begin();
+                    *egress_mirror_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
+                    for(int j = 0; j < count; j++, it++)
+                        (*egress_mirror_list)[j] = (sai_object_id_t) *it;
+                    attr_list[i].value.aclaction.enable = attribute.value.aclaction.enable;
+                    attr_list[i].value.aclaction.parameter.objlist.list  =  *egress_mirror_list;
+                    attr_list[i].value.aclaction.parameter.objlist.count =  count;
+                }
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER:
                 attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
@@ -2569,11 +2598,21 @@ public:
           return status;
       }
 
+      sai_object_id_t *in_ports_list = NULL;
+      sai_object_id_t *out_ports_list = NULL;
+      sai_object_id_t *ingress_mirror_list = NULL;
+      sai_object_id_t *egress_mirror_list = NULL;
       sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
-      sai_thrift_parse_acl_entry_attributes(thrift_attr_list, attr_list);
+      sai_thrift_parse_acl_entry_attributes(thrift_attr_list, attr_list,
+                                            &in_ports_list, &out_ports_list,
+                                            &ingress_mirror_list, &egress_mirror_list);
       uint32_t attr_count = thrift_attr_list.size();
       status = acl_api->create_acl_entry(&acl_entry, gSwitchId, attr_count, attr_list);
       free(attr_list);
+      if (in_ports_list) free(in_ports_list);
+      if (out_ports_list) free(out_ports_list);
+      if (ingress_mirror_list) free(ingress_mirror_list);
+      if (egress_mirror_list) free(egress_mirror_list);
       return acl_entry;
   }
 
@@ -3374,7 +3413,7 @@ public:
       thrift_counters.resize(thrift_counter_ids.size(), 0);
       status = buffer_api->get_buffer_pool_stats((sai_object_id_t)buffer_pool_id,
                                                  (uint32_t)thrift_counter_ids.size(),
-                                                 (sai_buffer_pool_stat_t *)thrift_counter_ids.data(),
+                                                 (const sai_stat_id_t *)thrift_counter_ids.data(),
                                                  (uint64_t *)thrift_counters.data());
       if (status != SAI_STATUS_SUCCESS) {
           SAI_THRIFT_LOG_ERR("Failed to get_buffer_pool_stats, status: %d", status);

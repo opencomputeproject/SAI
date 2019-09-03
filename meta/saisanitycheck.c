@@ -623,6 +623,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV4:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
+        case SAI_ATTR_VALUE_TYPE_IPV4:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -843,6 +844,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
+        case SAI_ATTR_VALUE_TYPE_IPV4:
             break;
 
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
@@ -2424,6 +2426,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_UINT8:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
+        case SAI_ATTR_VALUE_TYPE_IPV4:
 
             if (!md->isprimitive)
             {
@@ -2963,6 +2966,7 @@ void check_non_object_id_object_types()
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+                case SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA:
                     break;
 
                 default:
