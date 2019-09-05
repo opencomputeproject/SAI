@@ -1156,6 +1156,20 @@ typedef enum _sai_tam_report_type_t
 } sai_tam_report_type_t;
 
 /**
+ * @brief Enum defining reporting modes.
+ */
+typedef enum _sai_tam_report_mode_t
+{
+
+    /** Report all events */
+    SAI_TAM_REPORT_MODE_ALL = 0,
+
+    /** Report in a bulk mode */
+    SAI_TAM_REPORT_MODE_BULK,
+
+} sai_tam_report_mode_t;
+
+/**
  * @brief Attributes for TAM report
  */
 typedef enum _sai_tam_report_attr_t
@@ -1211,6 +1225,24 @@ typedef enum _sai_tam_report_attr_t
      * @default 0
      */
     SAI_TAM_REPORT_ATTR_QUOTA,
+
+    /**
+     * @brief Report Mode
+     * @type sai_tam_report_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TAM_REPORT_MODE_ALL
+     */
+    SAI_TAM_REPORT_ATTR_REPORT_MODE,
+
+    /**
+     * @brief Report Interval in micro seconds
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1000
+     * @validonly SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_BULK
+     */
+    SAI_TAM_REPORT_ATTR_REPORT_INTERVAL,
 
     /**
      * @brief End of Attributes
