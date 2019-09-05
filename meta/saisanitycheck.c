@@ -1546,16 +1546,6 @@ void check_attr_enum_list_validonly(
         {
             META_MD_ASSERT_FAIL(md, "marked as enum list but wrong attr value type");
         }
-
-        if (md->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
-        {
-            /*
-             * This restriction can be removed if necessary so far i don't see
-             * any enum list that are marked as valid only.
-             */
-
-            META_MD_ASSERT_FAIL(md, "validonly enum list not supported yet");
-        }
     }
 }
 
@@ -4177,6 +4167,12 @@ void check_object_ro_list(
         return;
     }
 
+    if (SAI_OBJECT_TYPE_DEBUG_COUNTER == oi->objecttype)
+    {
+        META_LOG_WARN("debug counter object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        return;
+    }
+
     META_ASSERT_FAIL("%s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
 }
 
@@ -4344,9 +4340,21 @@ void check_graph_connected()
 
         if (sai_metadata_all_object_type_infos[i]->isexperimental)
         {
-            /* allow experimental obejct types to be disconnected from main graph */
+            /* allow experimental object types to be disconnected from main graph */
 
             META_LOG_WARN("experimental object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
+        if (SAI_OBJECT_TYPE_DEBUG_COUNTER == i) {
+            /*
+             * Allow debug counters to be disconnected from main graph
+             * as use case is by querying base object stats and not by direct reference
+             */
+
+            META_LOG_WARN("debug counter object %s is disconnected from graph",
                     sai_metadata_all_object_type_infos[i]->objecttypename);
 
             continue;

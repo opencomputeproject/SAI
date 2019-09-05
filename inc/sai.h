@@ -69,6 +69,7 @@
 #include "saibfd.h"
 #include "sainat.h"
 #include "saiisolationgroup.h"
+#include "saidebugcounter.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -127,7 +128,8 @@ typedef enum _sai_api_t
     SAI_API_ISOLATION_GROUP  = 39, /**< sai_isolation_group_api_t */
     SAI_API_NAT              = 40, /**< sai_nat_api_t */
     SAI_API_COUNTER          = 41, /**< sai_counter_api_t */
-    SAI_API_MAX              = 42, /**< total number of APIs */
+    SAI_API_DEBUG_COUNTER    = 42, /**< sai_debug_counter_api_t */
+    SAI_API_MAX              = 43, /**< total number of APIs */
 } sai_api_t;
 
 /**
