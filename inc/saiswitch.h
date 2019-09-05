@@ -1841,6 +1841,27 @@ typedef enum _sai_switch_attr_t
 } sai_switch_attr_t;
 
 /**
+ * @brief Switch counter IDs in sai_get_switch_stats() call
+ *
+ * @flags Contains flags
+ */
+typedef enum _sai_switch_stat_t
+{
+    /** Switch stat in drop reasons range start */
+    SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
+
+    /** Switch stat in drop reasons range end */
+    SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_END = 0x00001fff,
+
+    /** Switch stat out drop reasons range start */
+    SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_BASE = 0x00002000,
+
+    /** Switch stat out drop reasons range end */
+    SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
+
+} sai_switch_stat_t;
+
+/**
  * @def SAI_SWITCH_ATTR_MAX_KEY_STRING_LEN
  * Maximum length of switch attribute key string that can be set using key=value
  */
@@ -2031,6 +2052,54 @@ typedef sai_status_t (*sai_get_switch_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Get switch statistics counters. Deprecated for backward compatibility.
+ *
+ * @param[in] switch_id Switch id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_switch_stats_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get switch statistics counters extended.
+ *
+ * @param[in] switch_id Switch id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_switch_stats_ext_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear switch statistics counters.
+ *
+ * @param[in] switch_id Switch id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_switch_stats_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
+
+/**
  * @brief Switch method table retrieved with sai_api_query()
  */
 typedef struct _sai_switch_api_t
@@ -2039,6 +2108,9 @@ typedef struct _sai_switch_api_t
     sai_remove_switch_fn            remove_switch;
     sai_set_switch_attribute_fn     set_switch_attribute;
     sai_get_switch_attribute_fn     get_switch_attribute;
+    sai_get_switch_stats_fn         get_switch_stats;
+    sai_get_switch_stats_ext_fn     get_switch_stats_ext;
+    sai_clear_switch_stats_fn       clear_switch_stats;
 
 } sai_switch_api_t;
 
