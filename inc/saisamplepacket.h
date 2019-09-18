@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saisamplepacket.h
  *
@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAISAMPLEPACKET SAI - samplepacket specific public APIs and data structures
+ * @defgroup SAISAMPLEPACKET SAI - Samplepacket specific public APIs and data structures
  *
  * @{
  */

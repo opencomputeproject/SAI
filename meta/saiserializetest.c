@@ -1,3 +1,28 @@
+/**
+ * Copyright (c) 2014 Microsoft Open Technologies, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *    not use this file except in compliance with the License. You may obtain
+ *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+ *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+ *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+ *
+ *    See the Apache Version 2.0 License for specific language governing
+ *    permissions and limitations under the License.
+ *
+ *    Microsoft would like to thank the following companies for their review and
+ *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+ *
+ * @file    saiserializetest.c
+ *
+ * @brief   This module defines SAI Serialize Test
+ */
+
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -204,7 +229,7 @@ void test_deserialize_object_id()
 
         sai_object_id_t ref;
         int len;
-        sscanf(valid_oids[n], "oid:0x%lx%n", &ref, &len);
+        sscanf(valid_oids[n], "oid:0x%"PRIx64"%n", &ref, &len);
 
         ASSERT_TRUE(res == len, "expected true");
         ASSERT_TRUE(oid == ref, "expected true");
@@ -733,14 +758,14 @@ void test_deserialize_ip_prefix()
     uint16_t ip6[] = { 0x1111, 0x2222, 0x3303, 0x4444, 0x5555, 0x6666, 0xaaaa, 0xbbbb };
     uint16_t mask[16];
 
-    memset(mask, 0xff, 16);
+    memset(mask, 0xff, sizeof(mask));
     res = sai_deserialize_ip_prefix("1111:2222:333:4444:5555:6666:aaaa:bbbb/128", &prefix);
     ASSERT_TRUE(prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV6, "expected true");
     ASSERT_TRUE(memcmp(prefix.addr.ip6, ip6, 16) == 0, "expected true");
     ASSERT_TRUE(memcmp(prefix.mask.ip6, mask, 16) == 0, "expected true");
     ASSERT_TRUE(res == (int)strlen("1111:2222:333:4444:5555:6666:aaaa:bbbb/128"), "expected true: %d", res);
 
-    memset(mask, 0, 16);
+    memset(mask, 0, sizeof(mask));
     memset(mask, 0xff, 8);
     ((uint8_t*)mask)[8] = 0x80;
 
@@ -753,7 +778,7 @@ void test_deserialize_ip_prefix()
     ASSERT_TRUE(memcmp(prefix.addr.ip6, ip6a, 16) == 0, "expected true");
     ASSERT_TRUE(memcmp(prefix.mask.ip6, mask, 16) == 0, "expected true");
 
-    memset(mask, 0, 16);
+    memset(mask, 0, sizeof(mask));
     res = sai_deserialize_ip_prefix("1::ff/0", &prefix);
     ASSERT_TRUE(prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV6, "expected true");
     ASSERT_TRUE(res == (int)strlen("1::ff/0"), "expected true");
@@ -763,7 +788,7 @@ void test_deserialize_ip_prefix()
 
     uint16_t ip6b[] = { 0, 0, 0, 0, 0, 0, 0, 0x100 };
 
-    memset(mask, 0xff, 16);
+    memset(mask, 0xff, sizeof(mask));
     res = sai_deserialize_ip_prefix("::1/128", &prefix);
     ASSERT_TRUE(prefix.addr_family == SAI_IP_ADDR_FAMILY_IPV6, "expected true");
     ASSERT_TRUE(res == (int)strlen("::1/128"), "expected true");
@@ -869,7 +894,8 @@ void test_serialize_ip6_mask()
         int k;
         for (k = 0; k < n; k++)
         {
-            m[k/8] |= (uint8_t)(0xff << (7 - k%8));
+            uint8_t u = (uint8_t)(0xff << (7 - k%8));
+            m[k/8] |= u;
         }
 
         sprintf(bufn, "%d", n);
@@ -901,7 +927,8 @@ void test_deserialize_ip6_mask()
         int k;
         for (k = 0; k < n; k++)
         {
-            m[k/8] |= (uint8_t)(0xff << (7 - k%8));
+            uint8_t u = (uint8_t)(0xff << (7 - k%8));
+            m[k/8] |= u;
         }
 
         sprintf(bufn, "%d", n);
@@ -955,6 +982,59 @@ void test_serialize_route_entry()
     ASSERT_TRUE(res < 0, "expected negative number");
 }
 
+void test_deserialize_route_entry()
+{
+    sai_route_entry_t re;
+
+    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf2[PRIMITIVE_BUFFER_SIZE];
+    int res;
+
+    re.switch_id = 0x123;
+    re.vr_id = 0xfab;
+    re.destination.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
+
+    re.destination.addr.ip4 = htonl(0x01020304);
+    re.destination.mask.ip4 = htonl(0xffffffff);
+
+    res = sai_serialize_route_entry(buf, &re);
+
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"destination\":\"1.2.3.4/32\"}", res);
+
+    sai_route_entry_t dere;
+
+    memset(&dere, 0, sizeof(dere));
+    res = sai_deserialize_route_entry(buf, &dere);
+    res = sai_serialize_route_entry(buf2, &dere);
+
+    ASSERT_TRUE(res == (int)strlen(buf), "result length is not expected: %d", res);
+    ASSERT_TRUE(strcmp(buf, buf2) == 0, "deserialized value is not the same as serialized");
+
+    re.destination.addr_family = SAI_IP_ADDR_FAMILY_IPV6;
+
+    uint16_t ip6[] = { 0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0xaaaa, 0xbbbb };
+
+    memcpy(re.destination.addr.ip6, ip6, 16);
+    memset(re.destination.mask.ip6, 0xff, 16);
+
+    res = sai_serialize_route_entry(buf, &re);
+
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"destination\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb/128\"}", res);
+
+    memset(&dere, 0, sizeof(dere));
+    res = sai_deserialize_route_entry(buf, &dere);
+    res = sai_serialize_route_entry(buf2, &dere);
+
+    ASSERT_TRUE(res == (int)strlen(buf), "result length is not expected: %d", res);
+    ASSERT_TRUE(strcmp(buf, buf2) == 0, "deserialized value is not the same as serialized");
+
+    re.destination.addr_family = 2;
+
+    res = sai_serialize_route_entry(buf, &re);
+
+    ASSERT_TRUE(res < 0, "expected negative number");
+}
+
 void test_serialize_neighbor_entry()
 {
     char buf[PRIMITIVE_BUFFER_SIZE];
@@ -989,6 +1069,57 @@ void test_serialize_neighbor_entry()
     ASSERT_TRUE(res < 0, "expected negative number");
 }
 
+void test_deserialize_neighbor_entry()
+{
+    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf2[PRIMITIVE_BUFFER_SIZE];
+    int res;
+
+    sai_neighbor_entry_t ne;
+
+    ne.switch_id = 0x123;
+    ne.rif_id = 0xfab;
+
+    ne.ip_address.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
+    ne.ip_address.addr.ip4 = htonl(0x01020304);
+
+    res = sai_serialize_neighbor_entry(buf, &ne);
+
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1.2.3.4\"}", res);
+
+    sai_neighbor_entry_t dene;
+
+    memset(&dene, 0, sizeof(dene));
+    res = sai_deserialize_neighbor_entry(buf, &dene);
+    res = sai_serialize_neighbor_entry(buf2, &dene);
+
+    ASSERT_TRUE(res == (int)strlen(buf), "result length is not expected: %d", res);
+    ASSERT_TRUE(strcmp(buf, buf2) == 0, "deserialized value is not the same as serialized");
+
+    uint16_t ip6[] = { 0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0xaaaa, 0xbbbb };
+
+    memcpy(ne.ip_address.addr.ip6, ip6, 16);
+
+    ne.ip_address.addr_family = SAI_IP_ADDR_FAMILY_IPV6;
+
+    res = sai_serialize_neighbor_entry(buf, &ne);
+
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb\"}", res);
+
+    memset(&dene, 0, sizeof(dene));
+    res = sai_deserialize_neighbor_entry(buf, &dene);
+    res = sai_serialize_neighbor_entry(buf2, &dene);
+
+    ASSERT_TRUE(res == (int)strlen(buf), "result length is not expected: %d", res);
+    ASSERT_TRUE(strcmp(buf, buf2) == 0, "deserialized value is not the same as serialized");
+
+    ne.ip_address.addr_family = 2;
+
+    res = sai_serialize_neighbor_entry(buf, &ne);
+
+    ASSERT_TRUE(res < 0, "expected negative number");
+}
+
 void test_serialize_fdb_entry()
 {
     char buf[PRIMITIVE_BUFFER_SIZE];
@@ -1004,6 +1135,56 @@ void test_serialize_fdb_entry()
     res = sai_serialize_fdb_entry(buf, &fe);
 
     ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}", res);
+}
+
+void test_deserialize_fdb_entry()
+{
+    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf2[PRIMITIVE_BUFFER_SIZE];
+    int res;
+
+    sai_fdb_entry_t fe;
+
+    fe.switch_id = 0x123;
+    fe.bv_id = 0xfab;
+
+    memcpy(fe.mac_address, "\x01\x23\x45\x67\x89\xab", 6);
+
+    res = sai_serialize_fdb_entry(buf, &fe);
+
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}", res);
+
+    sai_fdb_entry_t defe;
+
+    memset(&defe, 0, sizeof(defe));
+
+    res = sai_deserialize_fdb_entry(buf, &defe);
+    res = sai_serialize_fdb_entry(buf2, &defe);
+
+    ASSERT_TRUE(res == (int)strlen(buf), "result length is not expected: %d", res);
+    ASSERT_TRUE(strcmp(buf, buf2) == 0, "deserialized value is not the same as serialized");
+
+    /* negative cases */
+
+    const char* ncases[] = {
+        "dfd",
+        "[\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}",
+        "{\"switch_it\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}",
+        "{\"switch_id\":\"oid:0xg23\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}",
+        "{\"switch_id\":\"oid:0x123\",\"mac1address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}",
+        "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:h3:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"}",
+        "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv1id\":\"oid:0xfab\"}",
+        "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xtab\"}",
+        "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\"]",
+        "{\"switch_id\":\"oid:0x123\",\"mac_address\":\"01:23:45:67:89:AB\",\"bv_id\":\"oid:0xfab\'}",
+    };
+
+    size_t i = 0;
+    for (; i < sizeof(ncases)/sizeof(const char*); ++i)
+    {
+        res = sai_deserialize_fdb_entry(ncases[i], &defe);
+        ASSERT_TRUE(res < 0, "expected negative result: %d", res);
+    }
 }
 
 void test_serialize_notifications()
@@ -1031,8 +1212,8 @@ void test_serialize_notifications()
      * support we need to fix this.
      */
 
-    res = sai_serialize_packet_event_notification(buf, switch_id, buffer, 7, 0, attrs);
-    ret = "{\"switch_id\":\"oid:0x123abc\",\"buffer\":[17,34,51,68,85,102,119],\"buffer_size\":7,\"attr_count\":0,\"attr_list\":null}";
+    res = sai_serialize_packet_event_notification(buf, switch_id, 7, buffer, 0, attrs);
+    ret = "{\"switch_id\":\"oid:0x123abc\",\"buffer_size\":7,\"buffer\":[17,34,51,68,85,102,119],\"attr_count\":0,\"attr_list\":null}";
     ASSERT_STR_EQ(buf, ret, res);
 
     sai_port_oper_status_notification_t data1;
@@ -1046,7 +1227,7 @@ void test_serialize_notifications()
     memset(&data2, 0, sizeof(data2));
 
     res = sai_serialize_queue_pfc_deadlock_notification(buf, 1, &data2);
-    ret = "{\"count\":1,\"data\":[{\"queue_id\":\"oid:0x0\",\"event\":\"SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_DETECTED\"}]}";
+    ret = "{\"count\":1,\"data\":[{\"queue_id\":\"oid:0x0\",\"event\":\"SAI_QUEUE_PFC_DEADLOCK_EVENT_TYPE_DETECTED\",\"app_managed_recovery\":false}]}";
     ASSERT_STR_EQ(buf, ret, res);
 
     res = sai_serialize_switch_shutdown_request_notification(buf, switch_id);
@@ -1057,11 +1238,12 @@ void test_serialize_notifications()
     ret = "{\"switch_id\":\"oid:0x123abc\",\"switch_oper_status\":\"SAI_SWITCH_OPER_STATUS_UP\"}";
     ASSERT_STR_EQ(buf, ret, res);
 
-    sai_tam_threshold_breach_event_t data3;
-    memset(&data3, 0, sizeof(data3));
+    char buffer1[7] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 };
 
-    res = sai_serialize_tam_event_notification(buf, 1, &data3);
-    ret = "{\"count\":1,\"data\":[{\"threshold_id\":\"oid:0x0\",\"is_snapshot_valid\":false,\"tam_snapshot_id\":\"oid:0x0\",\"value\":0}]}";
+    sai_attribute_t attrs1[1];
+
+    res = sai_serialize_tam_event_notification(buf, 1, 7, buffer1, 0, attrs1);
+    ret = "{\"tam_event_id\":\"oid:0x1\",\"buffer_size\":7,\"buffer\":[17,34,51,68,85,102,119],\"attr_count\":0,\"attr_list\":null}";
     ASSERT_STR_EQ(buf, ret, res);
 }
 
@@ -1098,6 +1280,64 @@ void sai_serialize_log(
      */
 
     printf("%s:%s:%s:%d: %s\n", logbuffer, file, func, line, buffer);
+}
+
+void test_serialize_attr_value_pointer()
+{
+    char buf[0x100 * PRIMITIVE_BUFFER_SIZE];
+    int res;
+    const char* ret;
+
+    sai_attribute_t attr;
+
+    attr.id = SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY;
+    attr.value.ptr = (sai_pointer_t)0xaabb;
+
+    const sai_attr_metadata_t *meta = sai_metadata_get_attr_metadata(
+            SAI_OBJECT_TYPE_SWITCH,
+            SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY);
+
+    res = sai_serialize_attribute(buf, meta, &attr);
+
+    ret = "{\"id\":\"SAI_SWITCH_ATTR_SWITCH_STATE_CHANGE_NOTIFY\",\"value\":{\"ptr\":\"ptr:0xaabb\"}}";
+
+    ASSERT_STR_EQ(buf, ret, res);
+}
+
+void test_deserialize_pointer()
+{
+    char buf[0x100 * PRIMITIVE_BUFFER_SIZE];
+    sai_pointer_t ptr = 0;
+    int res;
+
+    res = sai_serialize_pointer(buf, ptr);
+
+    ASSERT_STR_EQ(buf, "ptr:(nil)", res);
+
+    res = sai_deserialize_pointer(buf, &ptr);
+
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == 0, "expected pointer to be null");
+
+#if INTPTR_MAX == INT32_MAX
+
+    const char *buf1 = "ptr:0x11223344";
+
+    res = sai_deserialize_pointer(buf1, &ptr);
+
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == (sai_pointer_t)0x11223344, "not equal pointer");
+
+#else
+
+    const char *buf1 = "ptr:0x1122334455667788";
+
+    res = sai_deserialize_pointer(buf1, &ptr);
+
+    ASSERT_TRUE(res > 0, "expected success");
+    ASSERT_TRUE(ptr == (sai_pointer_t)0x1122334455667788, "not equal pointer");
+
+#endif
 }
 
 int main()
@@ -1149,11 +1389,19 @@ int main()
     test_serialize_ip4_mask();
     test_serialize_ip6_mask();
 
+    test_serialize_attr_value_pointer();
+
+    test_deserialize_pointer();
+
     /* test generated methods */
 
     test_serialize_route_entry();
     test_serialize_neighbor_entry();
     test_serialize_fdb_entry();
+
+    test_deserialize_route_entry();
+    test_deserialize_neighbor_entry();
+    test_deserialize_fdb_entry();
 
     test_serialize_notifications();
 

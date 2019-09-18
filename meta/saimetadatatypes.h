@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saimetadatatypes.h
  *
@@ -48,6 +48,8 @@ typedef struct _sai_object_meta_key_t
 
     /**
      * @brief The key.
+     *
+     * @passparam objecttype
      */
     sai_object_key_t            objectkey;
 
@@ -255,6 +257,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST,
 
     /**
+     * @brief Attribute value is ACL action bool.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL,
+
+    /**
      * @brief Attribute value is ACL action 8 bit unsigned integer.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8,
@@ -300,6 +307,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IPV6,
 
     /**
+     * @brief Attribute value is ACL action IP address.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS,
+
+    /**
      * @brief Attribute value is ACL action object id.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID,
@@ -313,6 +325,11 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is ACL capability.
      */
     SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY,
+
+    /**
+     * @brief Attribute value is ACL resource.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST,
 
     /**
      * @brief Attribute value is generic map list.
@@ -338,6 +355,26 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is Segment Route Segment list.
      */
     SAI_ATTR_VALUE_TYPE_SEGMENT_LIST,
+
+    /**
+     * @brief Attribute value is IP address list.
+     */
+    SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST,
+
+    /**
+     * @brief Attribute value is port eye values list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST,
+
+    /**
+     * @brief Attribute value is timespec.
+     */
+    SAI_ATTR_VALUE_TYPE_TIMESPEC,
+
+    /**
+     * @brief Attribute value is NAT data.
+     */
+    SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA,
 
 } sai_attr_value_type_t;
 
@@ -609,6 +646,41 @@ typedef struct _sai_enum_metadata_t
     bool                            containsflags;
 
 } sai_enum_metadata_t;
+
+/**
+ * @brief Defines attribute capability metadata.
+ */
+typedef struct _sai_attr_capability_metadata_t
+{
+    /**
+     * @brief Vendor ID.
+     *
+     * Used to distinguish different capabilities of
+     * the same attribute for different ASIC instances.
+     */
+    uint64_t                    vendorid;
+
+    /**
+     * @brief Operation capability.
+     *
+     * Defines which operation is supported on specific attribute.
+     */
+    sai_attr_capability_t       operationcapability;
+
+    /**
+     * @brief Enum values count.
+     *
+     * When attribute is and enum, this list defines
+     * enum values supported by vendor on that attribute.
+     */
+    const size_t                enumvaluescount;
+
+    /**
+     * @brief Enum values count.
+     */
+    const int* const            enumvalues;
+
+} sai_attr_capability_metadata_t;
 
 /**
  * @brief Defines attribute metadata.
@@ -898,6 +970,48 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        isprimitive;
 
+    /**
+     * @brief Notification type
+     *
+     * If attribute value type is POINTER then attribute
+     * value is pointer to switch notification.
+     * Enum sai_switch_notification_type_t is auto generated
+     * so it can't be used here, int will be used instead.
+     */
+    int                                         notificationtype;
+
+    /**
+     * @brief Attribute capabilities.
+     *
+     * Represents attribute capability for each specific ASIC. Since each
+     * vendor may support different capabilities for each attribute, this field
+     * is optional. Also, since SAI API supports multiple switches (switch ids)
+     * at the same time, then switches may support different capabilities on
+     * different attributes. Vendor ID is provided inside capability struct for
+     * difference.
+     *
+     * This data is designed for vendor internal usage.
+     */
+    const sai_attr_capability_metadata_t* const* const capability;
+
+    /**
+     * @brief Length of attribute capabilities.
+     */
+    size_t                                      capabilitylength;
+
+    /**
+     * @brief Indicates whether attribute is extension attribute.
+     */
+    bool                                        isextensionattr;
+
+    /**
+     * @brief Tells if attribute is a resource type.
+     *
+     * If true, attribute is used in getting object type availability
+     * to distinguish between pools of resources.
+     */
+    bool                                        isresourcetype;
+
 } sai_attr_metadata_t;
 
 /*
@@ -991,6 +1105,19 @@ typedef struct _sai_struct_member_info_t
      * will set its value.
      */
     const sai_meta_set_struct_member_oid_fn             setoid;
+
+    /**
+     * @brief Member offset from the struct beginning in bytes.
+     *
+     * Macro offsetof is used to calculate this field, and it value can be
+     * different depending on compiler setting for struct packing.
+     */
+    size_t                                              offset;
+
+    /**
+     * @brief Member size using sizeof operator.
+     */
+    size_t                                              size;
 
 } sai_struct_member_info_t;
 
@@ -1174,6 +1301,16 @@ typedef struct _sai_object_type_info_t
      * @brief Get function pointer
      */
     const sai_meta_generic_get_fn                   get;
+
+    /**
+     * @brief Indicates whether object type is experimental.
+     */
+    bool                                            isexperimental;
+
+    /**
+     * @brief Points to enum sai_OBJECT_TYPE_stat_t if object supports stats.
+     */
+    const sai_enum_metadata_t* const                statenum;
 
 } sai_object_type_info_t;
 

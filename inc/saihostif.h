@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saihostif.h
  *
@@ -44,6 +44,11 @@
  * @brief Defines maximum host interface name
  */
 #define SAI_HOSTIF_NAME_SIZE 16
+
+/**
+ * @brief Defines maximum length of generic netlink multicast group name
+ */
+#define SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE 16
 
 /**
  * @brief Host interface trap group attributes
@@ -201,6 +206,30 @@ typedef enum _sai_hostif_trap_type_t
     /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_UDLD = 0x0000000b,
 
+    /** Default action is drop */
+    SAI_HOSTIF_TRAP_TYPE_CDP = 0x0000000c,
+
+    /** Default action is drop */
+    SAI_HOSTIF_TRAP_TYPE_VTP = 0x0000000d,
+
+    /** Default action is drop */
+    SAI_HOSTIF_TRAP_TYPE_DTP = 0x0000000e,
+
+    /** Default action is drop */
+    SAI_HOSTIF_TRAP_TYPE_PAGP = 0x0000000f,
+
+    /**
+     * @brief PTP traffic (EtherType = 0x88F7 or UDP dst port == 319 or UDP dst port == 320)
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PTP = 0x00000010,
+
+    /**
+     * @brief PTP packet sent from CPU with updated TX timestamp
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PTP_TX_EVENT = 0x00000011,
+
     /** Switch traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
 
@@ -212,7 +241,10 @@ typedef enum _sai_hostif_trap_type_t
     /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE = 0x00002001,
 
-    /** Default packet action is forward */
+    /**
+     * @brief DHCP traffic (UDP ports 67, 68), either L3 broadcast or unicast
+     * to local router IP address (default packet action is forward)
+     */
     SAI_HOSTIF_TRAP_TYPE_DHCP = 0x00002002,
 
     /** Default packet action is forward */
@@ -254,6 +286,24 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_UNKNOWN_L3_MULTICAST = 0x0000200e,
 
+    /**
+     * @brief Source NAT miss packets
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_SNAT_MISS = 0x0000200f,
+
+    /**
+     * @brief Destination NAT miss packets
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_DNAT_MISS = 0x00002010,
+
+    /**
+     * @brief NAT hairpin packets
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN = 0x00002011,
+
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
 
@@ -290,6 +340,18 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_BGPV6 = 0x00004004,
 
+    /**
+     * @brief BFD traffic (UDP dst port == 3784 or UDP dst port == 4784) to local
+     * router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFD = 0x00004005,
+
+    /**
+     * @brief BFDV6 traffic (UDP dst port == 3784 or UDP dst port == 4784) to
+     * local router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFDV6 = 0x00004006,
+
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
 
@@ -306,6 +368,12 @@ typedef enum _sai_hostif_trap_type_t
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_TTL_ERROR = 0x00006001,
+
+    /**
+     * @brief Packets trapped when station move is observed with static FDB entry
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_STATIC_FDB_MOVE = 0x00006002,
 
     /* Pipeline discards. For the following traps, packet action is either drop or trap */
 
@@ -373,7 +441,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default attrvalue SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY
-     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
 
@@ -384,7 +452,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
      * @default empty
-     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
 
@@ -395,7 +463,7 @@ typedef enum _sai_hostif_trap_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_GROUP
      * @default attrvalue SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP
-     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP,
 
@@ -408,6 +476,19 @@ typedef enum _sai_hostif_trap_attr_t
      * @default empty
      */
     SAI_HOSTIF_TRAP_ATTR_MIRROR_SESSION,
+
+    /**
+     * @brief Attach a counter
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_HOSTIF_TRAP_ATTR_COUNTER_ID,
 
     /**
      * @brief End of attributes
@@ -630,9 +711,43 @@ typedef enum _sai_hostif_type_t
     SAI_HOSTIF_TYPE_NETDEV,
 
     /** File descriptor */
-    SAI_HOSTIF_TYPE_FD
+    SAI_HOSTIF_TYPE_FD,
+
+    /** Generic netlink */
+    SAI_HOSTIF_TYPE_GENETLINK
 
 } sai_hostif_type_t;
+
+/**
+ * @brief Attribute data for SAI_HOSTIF_ATTR_VLAN_TAG
+ */
+typedef enum _sai_hostif_vlan_tag_t
+{
+    /**
+     * @brief Strip vlan tag
+     * Strip vlan tag from the incoming packet
+     * when delivering the packet to host interface.
+     */
+    SAI_HOSTIF_VLAN_TAG_STRIP,
+
+    /**
+     * @brief Keep vlan tag.
+     * When incoming packet is untagged, add PVID tag to the packet when delivering
+     * the packet to host interface.
+     */
+    SAI_HOSTIF_VLAN_TAG_KEEP,
+
+    /**
+     * @brief Keep the packet same as the incoming packet
+     *
+     * The packet delivered to host interface is the same as the original packet.
+     * When the host interface is PORT and LAG, the packet delivered to host interface is the
+     * same as the original packet seen by the PORT and LAG.
+     * When the host interface is VLAN, the packet delivered to host interface will not have tag.
+     */
+    SAI_HOSTIF_VLAN_TAG_ORIGINAL,
+
+} sai_hostif_vlan_tag_t;
 
 /**
  * @brief Host interface attribute IDs
@@ -672,9 +787,11 @@ typedef enum _sai_hostif_attr_t
      * The maximum number of characters for the name is SAI_HOSTIF_NAME_SIZE - 1 since
      * it needs the terminating null byte ('\0') at the end.
      *
+     * If Hostif is a generic netlink, this indicates the generic netlink family name.
+     *
      * @type char
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
+     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV or SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_GENETLINK
      */
     SAI_HOSTIF_ATTR_NAME,
 
@@ -695,6 +812,29 @@ typedef enum _sai_hostif_attr_t
      * @default 0
      */
     SAI_HOSTIF_ATTR_QUEUE,
+
+    /**
+     * @brief Strip/keep vlan tag for received packet
+     *
+     * @type sai_hostif_vlan_tag_t
+     * @flags CREATE_AND_SET
+     * @default SAI_HOSTIF_VLAN_TAG_STRIP
+     * @validonly SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
+     */
+    SAI_HOSTIF_ATTR_VLAN_TAG,
+
+    /**
+     * @brief Name [char[SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE]]
+     *
+     * The maximum number of characters for the name is SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE - 1
+     * Set the Generic netlink multicast group name on which the packets/buffers
+     * are received on this host interface
+     *
+     * @type char
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_GENETLINK
+     */
+    SAI_HOSTIF_ATTR_GENETLINK_MCGRP_NAME,
 
     /**
      * @brief End of attributes
@@ -801,7 +941,10 @@ typedef enum _sai_hostif_table_entry_channel_type_t
     SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_LOGICAL_PORT,
 
     /** Receive packets via Linux netdev L3 interface */
-    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_NETDEV_L3,
+
+    /** Receive packets via Linux generic netlink interface */
+    SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_GENETLINK
 
 } sai_hostif_table_entry_channel_type_t;
 
@@ -858,12 +1001,12 @@ typedef enum _sai_hostif_table_entry_attr_t
     /**
      * @brief Host interface table entry action target host interface object
      *
-     * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE = #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
+     * Valid only when #SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE = #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD or #SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_GENETLINK
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_HOSTIF
-     * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD
+     * @condition SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_FD or SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE == SAI_HOSTIF_TABLE_ENTRY_CHANNEL_TYPE_GENETLINK
      */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF,
 
@@ -1001,7 +1144,7 @@ typedef enum _sai_hostif_packet_attr_t
      *
      * For receive case, filled with the egress destination port for unicast packets.
      * Egress LAG member port id to be filled for the LAG destination case.
-     * Applicable for use-case like samplepacket traps.
+     * Applicable for use-case like samplepacket traps or PTP TX event
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -1009,6 +1152,27 @@ typedef enum _sai_hostif_packet_attr_t
      * @condition SAI_HOSTIF_PACKET_ATTR_HOSTIF_TX_TYPE == SAI_HOSTIF_TX_TYPE_PIPELINE_BYPASS
      */
     SAI_HOSTIF_PACKET_ATTR_EGRESS_PORT_OR_LAG,
+
+    /**
+     * @brief Bridge ID (for receive-only)
+     *
+     * The .1D or .1Q bridge on which the packet was received.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     */
+    SAI_HOSTIF_PACKET_ATTR_BRIDGE_ID,
+
+    /**
+     * @brief Timestamp
+     *
+     * The timestamp on which the packet was received, or sent for PTP TX event.
+     *
+     * @type sai_timespec_t
+     * @flags READ_ONLY
+     */
+    SAI_HOSTIF_PACKET_ATTR_TIMESTAMP,
 
     /**
      * @brief End of attributes
@@ -1027,8 +1191,8 @@ typedef enum _sai_hostif_packet_attr_t
  * @brief Hostif receive function
  *
  * @param[in] hostif_id Host interface id
- * @param[out] buffer Packet buffer
  * @param[inout] buffer_size Allocated buffer size [in], Actual packet size in bytes [out]
+ * @param[out] buffer Packet buffer
  * @param[inout] attr_count Allocated list size [in], Number of attributes [out]
  * @param[out] attr_list Array of attributes
  *
@@ -1039,8 +1203,8 @@ typedef enum _sai_hostif_packet_attr_t
  */
 typedef sai_status_t (*sai_recv_hostif_packet_fn)(
         _In_ sai_object_id_t hostif_id,
-        _Out_ void *buffer,
         _Inout_ sai_size_t *buffer_size,
+        _Out_ void *buffer,
         _Inout_ uint32_t *attr_count,
         _Out_ sai_attribute_t *attr_list);
 
@@ -1050,8 +1214,8 @@ typedef sai_status_t (*sai_recv_hostif_packet_fn)(
  * @param[in] hostif_id Host interface id.
  *    When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
  *    When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
- * @param[in] buffer Packet buffer
  * @param[in] buffer_size Packet size in bytes
+ * @param[in] buffer Packet buffer
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1059,10 +1223,10 @@ typedef sai_status_t (*sai_recv_hostif_packet_fn)(
  */
 typedef sai_status_t (*sai_send_hostif_packet_fn)(
         _In_ sai_object_id_t hostif_id,
-        _In_ void *buffer,
         _In_ sai_size_t buffer_size,
+        _In_ const void *buffer,
         _In_ uint32_t attr_count,
-        _In_ sai_attribute_t *attr_list);
+        _In_ const sai_attribute_t *attr_list);
 
 /**
  * @brief Hostif receive callback
@@ -1070,17 +1234,18 @@ typedef sai_status_t (*sai_send_hostif_packet_fn)(
  * @count attr_list[attr_count]
  * @count buffer[buffer_size]
  * @objects attr_list SAI_OBJECT_TYPE_HOSTIF_PACKET
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
  *
  * @param[in] switch_id Switch Object ID
- * @param[in] buffer Packet buffer
  * @param[in] buffer_size Actual packet size in bytes
+ * @param[in] buffer Packet buffer
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  */
 typedef void (*sai_packet_event_notification_fn)(
         _In_ sai_object_id_t switch_id,
-        _In_ const void *buffer,
         _In_ sai_size_t buffer_size,
+        _In_ const void *buffer,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 

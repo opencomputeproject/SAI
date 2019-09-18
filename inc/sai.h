@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    sai.h
  *
@@ -28,6 +28,7 @@
 #include "saiacl.h"
 #include "saibridge.h"
 #include "saibuffer.h"
+#include "saicounter.h"
 #include "saifdb.h"
 #include "saihash.h"
 #include "saihostif.h"
@@ -38,6 +39,7 @@
 #include "sailag.h"
 #include "saimcastfdb.h"
 #include "saimirror.h"
+#include "saimpls.h"
 #include "saineighbor.h"
 #include "sainexthopgroup.h"
 #include "sainexthop.h"
@@ -63,6 +65,11 @@
 #include "saivirtualrouter.h"
 #include "saivlan.h"
 #include "saiwred.h"
+#include "saidtel.h"
+#include "saibfd.h"
+#include "sainat.h"
+#include "saiisolationgroup.h"
+#include "saidebugcounter.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -115,7 +122,14 @@ typedef enum _sai_api_t
     SAI_API_BRIDGE           = 33, /**< sai_bridge_api_t */
     SAI_API_TAM              = 34, /**< sai_tam_api_t */
     SAI_API_SEGMENTROUTE     = 35, /**< sai_segmentroute_api_t */
-    SAI_API_MAX              = 36, /**< total number of APIs */
+    SAI_API_MPLS             = 36, /**< sai_mpls_api_t */
+    SAI_API_DTEL             = 37, /**< sai_dtel_api_t (experimental) */
+    SAI_API_BFD              = 38, /**< sai_bfd_api_t */
+    SAI_API_ISOLATION_GROUP  = 39, /**< sai_isolation_group_api_t */
+    SAI_API_NAT              = 40, /**< sai_nat_api_t */
+    SAI_API_COUNTER          = 41, /**< sai_counter_api_t */
+    SAI_API_DEBUG_COUNTER    = 42, /**< sai_debug_counter_api_t */
+    SAI_API_MAX              = 43, /**< total number of APIs */
 } sai_api_t;
 
 /**
@@ -149,8 +163,8 @@ typedef const char* (*sai_profile_get_value_fn)(
 
 typedef int (*sai_profile_get_next_value_fn)(
         _In_ sai_switch_profile_id_t profile_id,
-        _Out_ const char** variable,
-        _Out_ const char** value);
+        _Out_ const char **variable,
+        _Out_ const char **value);
 
 /**
  * @brief Method table that contains function pointers for services exposed by
@@ -191,15 +205,15 @@ sai_status_t sai_api_initialize(
  * @brief Retrieve a pointer to the C-style method table for desired SAI
  * functionality as specified by the given sai_api_id.
  *
- * @param[in] sai_api_id SAI API ID
+ * @param[in] api SAI API ID
  * @param[out] api_method_table Caller allocated method table. The table must
  * remain valid until the sai_api_uninitialize() is called.
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_api_query(
-        _In_ sai_api_t sai_api_id,
-        _Out_ void** api_method_table);
+        _In_ sai_api_t api,
+        _Out_ void **api_method_table);
 
 /**
  * @brief Uninitialize adapter module. SAI functionalities,
@@ -214,30 +228,30 @@ sai_status_t sai_api_uninitialize(void);
  *
  * The default log level is #SAI_LOG_LEVEL_WARN.
  *
- * @param[in] sai_api_id SAI API ID
+ * @param[in] api SAI API ID
  * @param[in] log_level Log level
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_log_set(
-        _In_ sai_api_t sai_api_id,
+        _In_ sai_api_t api,
         _In_ sai_log_level_t log_level);
 
 /**
  * @brief Query SAI object type.
  *
- * @param[in] sai_object_id Object id
+ * @param[in] object_id Object id
  *
  * @return #SAI_OBJECT_TYPE_NULL when sai_object_id is not valid.
  * Otherwise, return a valid SAI object type SAI_OBJECT_TYPE_XXX.
  */
 sai_object_type_t sai_object_type_query(
-        _In_ sai_object_id_t sai_object_id);
+        _In_ sai_object_id_t object_id);
 
 /**
  * @brief Query SAI switch id.
  *
- * @param[in] sai_object_id Object id
+ * @param[in] object_id Object id
  *
  * @return #SAI_NULL_OBJECT_ID when sai_object_id is not valid.
  * Otherwise, return a valid SAI_OBJECT_TYPE_SWITCH object on which
@@ -245,7 +259,7 @@ sai_object_type_t sai_object_type_query(
  * as input parameter it should return itself.
  */
 sai_object_id_t sai_switch_id_query(
-        _In_ sai_object_id_t sai_object_id);
+        _In_ sai_object_id_t object_id);
 
 /**
  * @brief Generate dump file. The dump file may include SAI state information and vendor SDK information.
@@ -256,6 +270,25 @@ sai_object_id_t sai_switch_id_query(
  */
 sai_status_t sai_dbg_generate_dump(
         _In_ const char *dump_file_name);
+
+/**
+ * @brief Get SAI object type resource availability.
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list List of attributes that to distinguish resource
+ * @param[out] count Available objects left
+ *
+ * @return #SAI_STATUS_NOT_SUPPORTED if the given object type does not support resource accounting.
+ * Otherwise, return #SAI_STATUS_SUCCESS.
+ */
+sai_status_t sai_object_type_get_availability(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list,
+        _Out_ uint64_t *count);
 
 /**
  * @}

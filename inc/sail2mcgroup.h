@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    sail2mcgroup.h
  *
@@ -97,6 +97,16 @@ typedef enum _sai_l2mc_group_member_attr_t
      * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
      */
     SAI_L2MC_GROUP_MEMBER_ATTR_L2MC_OUTPUT_ID,
+
+    /**
+     * @brief L2MC Tunnel Endpoint IP.Valid and mandatory if bridge port
+     * is of type SAI_BRIDGE_PORT_TYPE_TUNNEL.
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_ONLY
+     * @default 0.0.0.0
+     */
+    SAI_L2MC_GROUP_MEMBER_ATTR_L2MC_ENDPOINT_IP,
 
     /**
      * @brief End of attributes

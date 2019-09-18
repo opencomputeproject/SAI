@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saipolicer.h
  *
@@ -124,7 +124,7 @@ typedef enum _sai_policer_attr_t
      * #SAI_POLICER_ATTR_METER_TYPE
      *
      * @type sai_uint64_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default 0
      */
     SAI_POLICER_ATTR_CBS = 0x00000003,
@@ -134,7 +134,7 @@ typedef enum _sai_policer_attr_t
      * #SAI_POLICER_ATTR_METER_TYPE
      *
      * @type sai_uint64_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default 0
      */
     SAI_POLICER_ATTR_CIR = 0x00000004,
@@ -144,7 +144,7 @@ typedef enum _sai_policer_attr_t
      * #SAI_POLICER_ATTR_METER_TYPE
      *
      * @type sai_uint64_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default 0
      */
     SAI_POLICER_ATTR_PBS = 0x00000005,
@@ -154,8 +154,9 @@ typedef enum _sai_policer_attr_t
      * #SAI_POLICER_ATTR_METER_TYPE
      *
      * @type sai_uint64_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_POLICER_ATTR_METER_TYPE == SAI_POLICER_MODE_TR_TCM
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_POLICER_ATTR_MODE == SAI_POLICER_MODE_TR_TCM
      */
     SAI_POLICER_ATTR_PIR = 0x00000006,
 
@@ -163,7 +164,7 @@ typedef enum _sai_policer_attr_t
      * @brief Action to take for Green color packets
      *
      * @type sai_packet_action_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_POLICER_ATTR_GREEN_PACKET_ACTION = 0x00000007,
@@ -172,7 +173,7 @@ typedef enum _sai_policer_attr_t
      * @brief Action to take for Yellow color packets
      *
      * @type sai_packet_action_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_POLICER_ATTR_YELLOW_PACKET_ACTION = 0x00000008,
@@ -183,7 +184,7 @@ typedef enum _sai_policer_attr_t
      * For storm control action should be used as red packet action.
      *
      * @type sai_packet_action_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_POLICER_ATTR_RED_PACKET_ACTION = 0x00000009,
@@ -299,7 +300,7 @@ typedef sai_status_t (*sai_get_policer_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get Policer Statistics
+ * @brief Get Policer Statistics. Deprecated for backward compatibility.
  *
  * @param[in] policer_id Policer id
  * @param[in] number_of_counters Number of counters in the array
@@ -311,7 +312,25 @@ typedef sai_status_t (*sai_get_policer_attribute_fn)(
 typedef sai_status_t (*sai_get_policer_stats_fn)(
         _In_ sai_object_id_t policer_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_policer_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get Policer Statistics extended
+ *
+ * @param[in] policer_id Policer id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_policer_stats_ext_fn)(
+        _In_ sai_object_id_t policer_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -326,7 +345,7 @@ typedef sai_status_t (*sai_get_policer_stats_fn)(
 typedef sai_status_t (*sai_clear_policer_stats_fn)(
         _In_ sai_object_id_t policer_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_policer_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Policer methods table retrieved with sai_api_query()
@@ -338,6 +357,7 @@ typedef struct _sai_policer_api_t
     sai_set_policer_attribute_fn          set_policer_attribute;
     sai_get_policer_attribute_fn          get_policer_attribute;
     sai_get_policer_stats_fn              get_policer_stats;
+    sai_get_policer_stats_ext_fn          get_policer_stats_ext;
     sai_clear_policer_stats_fn            clear_policer_stats;
 
 } sai_policer_api_t;

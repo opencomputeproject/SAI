@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    sailag.h
  *
@@ -90,6 +90,22 @@ typedef enum _sai_lag_attr_t
      * @brief Port VLAN ID
      *
      * Untagged ingress frames are tagged with Port VLAN ID (PVID)
+     *
+     * When a port joins a LAG:
+     * SAI automatically sets the joining port PVID to that of the LAG.
+     * SAI also saves in its internal database the original PVID state of the port.
+     *
+     * While a port is a member of a LAG, it is not possible to change the value of
+     * the following 4 attributes for the port:
+     * SAI_PORT_ATTR_PORT_VLAN_ID
+     * SAI_PORT_ATTR_DEFAULT_VLAN_PRIORITY
+     * SAI_PORT_ATTR_DROP_UNTAGGED
+     * SAI_PORT_ATTR_DROP_TAGGED
+     *
+     * When a port leaves the LAG:
+     * PVID is set to the original PVID by SAI
+     * Since the port is not associated with a bridge port or a router port at that
+     * point, it will not transfer traffic, until such object is attached to it.
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET

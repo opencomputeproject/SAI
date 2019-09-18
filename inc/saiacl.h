@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saiacl.h
  *
@@ -32,44 +32,6 @@
  *
  * @{
  */
-
-/**
- * @brief Attribute data for SAI_ACL_TABLE_ATTR_STAGE
- */
-typedef enum _sai_acl_stage_t
-{
-    /** Ingress Stage */
-    SAI_ACL_STAGE_INGRESS,
-
-    /** Egress Stage */
-    SAI_ACL_STAGE_EGRESS,
-
-} sai_acl_stage_t;
-
-/**
- * @brief Attribute data for SAI_ACL_TABLE_ATTR_BIND_POINT
- */
-typedef enum _sai_acl_bind_point_type_t
-{
-    /** Bind Point Type Port */
-    SAI_ACL_BIND_POINT_TYPE_PORT,
-
-    /** Bind Point Type LAG */
-    SAI_ACL_BIND_POINT_TYPE_LAG,
-
-    /** Bind Point Type VLAN */
-    SAI_ACL_BIND_POINT_TYPE_VLAN,
-
-    /** Bind Point Type RIF */
-    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE,
-
-    /** @ignore - for backward compatibility */
-    SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTFERFACE,
-
-    /** Bind Point Type Switch */
-    SAI_ACL_BIND_POINT_TYPE_SWITCH
-
-} sai_acl_bind_point_type_t;
 
 /**
  * @brief ACL IP Type
@@ -131,6 +93,26 @@ typedef enum _sai_acl_ip_frag_t
 } sai_acl_ip_frag_t;
 
 /**
+ * @brief DTEL flow operation
+ * @warning experimental
+ */
+typedef enum _sai_acl_dtel_flow_op_t
+{
+    /** No operation (experimental) */
+    SAI_ACL_DTEL_FLOW_OP_NOP,
+
+    /** In-band Network Telemetry (experimental) */
+    SAI_ACL_DTEL_FLOW_OP_INT,
+
+    /** In-band OAM (experimental) */
+    SAI_ACL_DTEL_FLOW_OP_IOAM,
+
+    /** Packet Postcard (experimental) */
+    SAI_ACL_DTEL_FLOW_OP_POSTCARD,
+
+} sai_acl_dtel_flow_op_t;
+
+/**
  * @brief ACL Action Type
  */
 typedef enum _sai_acl_action_type_t
@@ -138,10 +120,13 @@ typedef enum _sai_acl_action_type_t
     /** Set Redirect */
     SAI_ACL_ACTION_TYPE_REDIRECT,
 
+    /** Set tunnel endpoint IP */
+    SAI_ACL_ACTION_TYPE_ENDPOINT_IP,
+
     /** Redirect Packet to a list of destination which can be a port list */
     SAI_ACL_ACTION_TYPE_REDIRECT_LIST,
 
-    /** Drop Packet */
+    /** Packet Action */
     SAI_ACL_ACTION_TYPE_PACKET_ACTION,
 
     /** Flood Packet on Vlan domain */
@@ -219,7 +204,7 @@ typedef enum _sai_acl_action_type_t
     /** Set metadata to carry forward to next ACL stage */
     SAI_ACL_ACTION_TYPE_SET_ACL_META_DATA,
 
-    /** Egress block port list */
+    /** Egress block port list. To be deprecated */
     SAI_ACL_ACTION_TYPE_EGRESS_BLOCK_PORT_LIST,
 
     /** Set user defined trap id */
@@ -227,6 +212,48 @@ typedef enum _sai_acl_action_type_t
 
     /** Set Do Not Learn unknown source MAC */
     SAI_ACL_ACTION_TYPE_SET_DO_NOT_LEARN,
+
+    /** Set DTEL flow operation (experimental) */
+    SAI_ACL_ACTION_TYPE_ACL_DTEL_FLOW_OP,
+
+    /** Set DTEL INT session (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_INT_SESSION,
+
+    /** Enable DTEL drop report (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_DROP_REPORT_ENABLE,
+
+    /** Enable DTEL tail drop reporting (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_TAIL_DROP_REPORT_ENABLE,
+
+    /** Set DTEL flow sampling (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_FLOW_SAMPLE_PERCENT,
+
+    /** Enable DTEL report for all packets without filtering (experimental) */
+    SAI_ACL_ACTION_TYPE_DTEL_REPORT_ALL_PACKETS,
+
+    /** Set NAT exception rule */
+    SAI_ACL_ACTION_TYPE_NO_NAT,
+
+    /** Enable insertion of INT metadata */
+    SAI_ACL_ACTION_TYPE_INT_INSERT,
+
+    /** Enable deletion of INT metadata */
+    SAI_ACL_ACTION_TYPE_INT_DELETE,
+
+    /** Enable reports of INT metadata */
+    SAI_ACL_ACTION_TYPE_INT_REPORT_FLOW,
+
+    /** Enable INT drop reports */
+    SAI_ACL_ACTION_TYPE_INT_REPORT_DROPS,
+
+    /** Enable INT tail drop reports */
+    SAI_ACL_ACTION_TYPE_INT_REPORT_TAIL_DROPS,
+
+    /** Bind a TAM INT object */
+    SAI_ACL_ACTION_TYPE_TAM_INT_OBJECT,
+
+    /** Set isolation group to prevent traffic to members of isolation group */
+    SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
 
 } sai_acl_action_type_t;
 
@@ -375,20 +402,6 @@ typedef enum _sai_acl_table_group_member_attr_t
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_PRIORITY,
 
     /**
-     * @brief Available ACL entries for this table
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_AVAILABLE_ACL_ENTRY,
-
-    /**
-     * @brief Available ACL counters for this table
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_AVAILABLE_ACL_COUNTER,
-
-    /**
      * @brief End of attributes
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_END,
@@ -433,6 +446,13 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief List of ACL bind point where this ACL can be applied
      *
+     * (Default = empty) - if the bind point is empty during create or
+     * ACL Table that is previously bound is unbound, then it is expected that
+     * there is no real hardware resource that is being utilized. In this case,
+     * application is not expected to query for SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_ENTRY
+     * or SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_COUNTER. If it is queried, the result is
+     * undefined
+     *
      * @type sai_s32_list_t sai_acl_bind_point_type_t
      * @flags CREATE_ONLY
      * @default empty
@@ -464,6 +484,7 @@ typedef enum _sai_acl_table_attr_t
      * @type sai_uint32_t
      * @flags CREATE_ONLY
      * @default 0
+     * @isresourcetype true
      */
     SAI_ACL_TABLE_ATTR_SIZE,
 
@@ -702,6 +723,24 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_L4_DST_PORT,
 
     /**
+     * @brief Inner L4 Src Port
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_L4_SRC_PORT,
+
+    /**
+     * @brief Inner L4 Dst Port
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_L4_DST_PORT,
+
+    /**
      * @brief EtherType
      *
      * @type bool
@@ -711,6 +750,15 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ETHER_TYPE,
 
     /**
+     * @brief Inner EtherType
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_ETHER_TYPE,
+
+    /**
      * @brief IP Protocol
      *
      * @type bool
@@ -718,6 +766,15 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL,
+
+    /**
+     * @brief Inner IP Protocol
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_IP_PROTOCOL,
 
     /**
      * @brief IP Identification
@@ -837,6 +894,24 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ICMP_CODE,
 
     /**
+     * @brief ICMP Type for IPv6
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_ICMPV6_TYPE,
+
+    /**
+     * @brief ICMP Code for IPv6
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_ICMPV6_CODE,
+
+    /**
      * @brief Vlan Tags
      *
      * @type bool
@@ -844,6 +919,15 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_PACKET_VLAN,
+
+    /**
+     * @brief Tunnel VNI
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_VNI,
 
     /* User Based metadata [bool] */
 
@@ -931,6 +1015,24 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /**
+     * @brief Base Transport Header opcode field
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_BTH_OPCODE,
+
+    /**
+     * @brief Ack_extented Transport Header syndrome field
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_AETH_SYNDROME,
+
+    /**
      * @brief User Defined Field Groups
      *
      * @type bool
@@ -982,6 +1084,20 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_ENTRY_LIST,
 
     /**
+     * @brief Available ACL entries for this table
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_ENTRY,
+
+    /**
+     * @brief Available ACL counters for this table
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_COUNTER,
+
+    /**
      * @brief End of ACL Table attributes
      */
     SAI_ACL_TABLE_ATTR_END,
@@ -1016,6 +1132,7 @@ typedef enum _sai_acl_entry_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ACL_TABLE
+     * @isresourcetype true
      */
     SAI_ACL_ENTRY_ATTR_TABLE_ID = SAI_ACL_ENTRY_ATTR_START,
 
@@ -1170,7 +1287,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT,
@@ -1180,7 +1297,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT,
@@ -1273,6 +1390,26 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT,
 
     /**
+     * @brief Inner L4 Src Port
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_L4_SRC_PORT,
+
+    /**
+     * @brief Inner L4 Dst Port
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_L4_DST_PORT,
+
+    /**
      * @brief EtherType
      *
      * @type sai_acl_field_data_t sai_uint16_t
@@ -1283,6 +1420,16 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ETHER_TYPE,
 
     /**
+     * @brief Inner EtherType
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_ETHER_TYPE,
+
+    /**
      * @brief IP Protocol
      *
      * @type sai_acl_field_data_t sai_uint8_t
@@ -1290,6 +1437,15 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IP_PROTOCOL,
+
+    /**
+     * @brief Inner IP Protocol
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_IP_PROTOCOL,
 
     /**
      * @brief IP Identification
@@ -1410,6 +1566,24 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ICMP_CODE,
 
     /**
+     * @brief ICMP Type for IPv6
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_ICMPV6_TYPE,
+
+    /**
+     * @brief ICMP Code for IPv6
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_ICMPV6_CODE,
+
+    /**
      * @brief Number of VLAN Tags
      *
      * @type sai_acl_field_data_t sai_packet_vlan_t
@@ -1417,6 +1591,15 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_PACKET_VLAN,
+
+    /**
+     * @brief Tunnel VNI
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_VNI,
 
     /* User Based metadata */
 
@@ -1524,6 +1707,24 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /**
+     * @brief Base Transport Header opcode field
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_BTH_OPCODE,
+
+    /**
+     * @brief Ack_extented Transport Header syndrome field
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_AETH_SYNDROME,
+
+    /**
      * @brief User Defined Field data for the UDF Groups in ACL Table
      *
      * @type sai_acl_field_data_t sai_object_id_t
@@ -1586,18 +1787,38 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Redirect Packet to a destination which can be a port,
-     * LAG, nexthop, nexthopgroup
+     * LAG, nexthop, nexthopgroup, bridge port, L2MC group,IPMC group
+     *
+     * When redirecting to a bridge port, the following behavior will happen according to the bridge port type:
+     * SAI_BRIDGE_PORT_TYPE_PORT - Forward to bridge port, egress vlan will be the pipeline vlan
+     * SAI_BRIDGE_PORT_TYPE_SUB_PORT - Forward to bridge port, egress vlan will be according to corresponding bridge port
+     * SAI_BRIDGE_PORT_TYPE_1Q_ROUTER - Forward to router. RIF will be according to the outer vlan value in the pipeline
+     * SAI_BRIDGE_PORT_TYPE_1D_ROUTER - Forward to router. RIF will be the corresponding 1d bridge RIF
+     * SAI_BRIDGE_PORT_TYPE_TUNNEL - ACL based encap. Tunnel ID will be according to the corresponding bridge port. In
+     * this case, it is mandatory to also supply action endpoint, with endpoint IP value
      *
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_L2MC_GROUP, SAI_OBJECT_TYPE_IPMC_GROUP
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
 
     /**
+     * @brief Tunnel Endpoint IP. mandatory and valid only when redirect action is to SAI_BRIDGE_PORT_TYPE_TUNNEL
+     *
+     * @type sai_acl_action_data_t sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_ENDPOINT_IP,
+
+    /**
      * @brief Redirect Packet to a list of destination which can be
      * a port list.
+     *
+     * This action is deprecated and will be removed in future release. In order to achieve the functionality,
+     * please use redirect action with next hop group or L2MC group or IPMC group.
      *
      * @type sai_acl_action_data_t sai_object_list_t
      * @flags CREATE_AND_SET
@@ -1607,7 +1828,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_LIST,
 
     /**
-     * @brief Drop Packet
+     * @brief Packet Action
      *
      * @type sai_acl_action_data_t sai_packet_action_t
      * @flags CREATE_AND_SET
@@ -1854,6 +2075,9 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Egress block port list
      *
+     * This action would be deprecated in future release. To achieve this
+     * functionality use isolation group.
+     *
      * Packets matching the ACL entry and egressing out of the ports in the
      * given port list will be dropped.
      *
@@ -1887,9 +2111,152 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
 
     /**
+     * @brief DTEL flow operation
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t sai_acl_dtel_flow_op_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_ACL_DTEL_FLOW_OP,
+
+    /**
+     * @brief DTEL INT session ID
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_DTEL_INT_SESSION
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_INT_SESSION,
+
+    /**
+     * @brief Enable DTEL drop report
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_DROP_REPORT_ENABLE,
+
+    /**
+     * @brief Enable DTEL tail drop reporting
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_TAIL_DROP_REPORT_ENABLE,
+
+    /**
+     * @brief DTEL flow sample percentage
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_FLOW_SAMPLE_PERCENT,
+
+    /**
+     * @brief Enable DTEL report for all packets without filtering
+     * @warning experimental
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DTEL_REPORT_ALL_PACKETS,
+
+    /**
+     * @brief Set NAT exception rule
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_NO_NAT,
+
+    /**
+     * @brief Enable INT metadata insertion
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_INSERT,
+
+    /**
+     * @brief Enable INT metadata deletion
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_DELETE,
+
+    /**
+     * @brief Enable INT metadata reports
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_FLOW,
+
+    /**
+     * @brief Enable INT drop reports
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_DROPS,
+
+    /**
+     * @brief Enable INT tail drop reports
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_TAIL_DROPS,
+
+    /**
+     * @brief ACL bind point for TAM INT object
+     *
+     * Bind (or unbind) a TAM INT object.
+     * Note that an ACL entry may bind a TAM INT object, or conversely a
+     * TAM INT object may bind an ACL table or ACL group. In the latter
+     * case, SAI_NULL_OBJECT_ID should be assigned as the attribute value.
+     *
+     * Note: Applicable only when SAI_ACL_ENTRY_ATTR_ACTION_INT_INSERT == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_DELETE == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_FLOW == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_DROPS == true or SAI_ACL_ENTRY_ATTR_ACTION_INT_REPORT_TAIL_DROPS == true
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_INT
+     * @allownull true
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TAM_INT_OBJECT,
+
+    /**
+     * @brief Set isolation group (isolation group object id)
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ISOLATION_GROUP
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ISOLATION_GROUP,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_DO_NOT_LEARN,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ISOLATION_GROUP,
 
     /**
      * @brief End of ACL Entry attributes
@@ -2030,7 +2397,7 @@ typedef enum _sai_acl_range_attr_t
      * Range will include the start and end values.
      * Range Limit cannot be changed after the range is created.
      *
-     * @type sai_uint32_t
+     * @type sai_u32_range_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_ACL_RANGE_ATTR_LIMIT,
@@ -2091,14 +2458,14 @@ typedef sai_status_t (*sai_set_acl_table_attribute_fn)(
  *
  * @param[in] acl_table_id ACL table id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_attribute_fn)(
         _In_ sai_object_id_t acl_table_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL entry
@@ -2143,14 +2510,14 @@ typedef sai_status_t (*sai_set_acl_entry_attribute_fn)(
  *
  * @param[in] acl_entry_id ACL entry id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_entry_attribute_fn)(
         _In_ sai_object_id_t acl_entry_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL counter
@@ -2195,14 +2562,14 @@ typedef sai_status_t (*sai_set_acl_counter_attribute_fn)(
  *
  * @param[in] acl_counter_id ACL counter id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_counter_attribute_fn)(
         _In_ sai_object_id_t acl_counter_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL Range
@@ -2246,14 +2613,14 @@ typedef sai_status_t (*sai_set_acl_range_attribute_fn)(
  *
  * @param[in] acl_range_id ACL range id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_range_attribute_fn)(
         _In_ sai_object_id_t acl_range_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL Table Group
@@ -2298,14 +2665,14 @@ typedef sai_status_t (*sai_set_acl_table_group_attribute_fn)(
  *
  * @param[in] acl_table_group_id ACL table group id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create an ACL Table Group Member
@@ -2350,14 +2717,14 @@ typedef sai_status_t (*sai_set_acl_table_group_member_attribute_fn)(
  *
  * @param[in] acl_table_group_member_id ACL table group member id
  * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
         _In_ sai_object_id_t acl_table_group_member_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Port methods table retrieved with sai_api_query()

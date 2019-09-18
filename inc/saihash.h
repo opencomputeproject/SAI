@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saihash.h
  *
@@ -83,6 +83,24 @@ typedef enum _sai_native_hash_field_t
 
     /** Native hash field source port */
     SAI_NATIVE_HASH_FIELD_IN_PORT = 11,
+
+    /** Native hash field inner IP protocol */
+    SAI_NATIVE_HASH_FIELD_INNER_IP_PROTOCOL = 12,
+
+    /** Native hash field inner Ethernet type */
+    SAI_NATIVE_HASH_FIELD_INNER_ETHERTYPE = 13,
+
+    /** Native hash field inner L4 source port */
+    SAI_NATIVE_HASH_FIELD_INNER_L4_SRC_PORT = 14,
+
+    /** Native hash field inner L4 destination port */
+    SAI_NATIVE_HASH_FIELD_INNER_L4_DST_PORT = 15,
+
+    /** Native hash field inner source MAC */
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_MAC = 16,
+
+    /** Native hash field inner destination MAC */
+    SAI_NATIVE_HASH_FIELD_INNER_DST_MAC = 17,
 
 } sai_native_hash_field_t;
 

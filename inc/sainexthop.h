@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    sainexthop.h
  *
@@ -41,7 +41,7 @@ typedef enum _sai_next_hop_type_t
     /** IP next hop */
     SAI_NEXT_HOP_TYPE_IP,
 
-    /** MPLS(NHLFE) next hop */
+    /** MPLS(outsegment) next hop */
     SAI_NEXT_HOP_TYPE_MPLS,
 
     /** Tunnel next hop */
@@ -117,6 +117,7 @@ typedef enum _sai_next_hop_attr_t
      *
      * @type sai_next_hop_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isresourcetype true
      */
     SAI_NEXT_HOP_ATTR_TYPE = SAI_NEXT_HOP_ATTR_START,
 
@@ -125,7 +126,7 @@ typedef enum _sai_next_hop_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
      */
     SAI_NEXT_HOP_ATTR_IP,
 
@@ -135,6 +136,7 @@ typedef enum _sai_next_hop_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS
      */
     SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 
@@ -147,6 +149,26 @@ typedef enum _sai_next_hop_attr_t
      * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
      */
     SAI_NEXT_HOP_ATTR_TUNNEL_ID,
+
+    /**
+     * @brief Next hop entry VNI (override tunnel mapper)
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
+     */
+    SAI_NEXT_HOP_ATTR_TUNNEL_VNI,
+
+    /**
+     * @brief Inner destination MAC address
+     *
+     * @type sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default attrvalue SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
+     */
+    SAI_NEXT_HOP_ATTR_TUNNEL_MAC,
 
     /**
      * @brief Next hop entry Segment Route SID List
@@ -175,6 +197,28 @@ typedef enum _sai_next_hop_attr_t
      * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
      */
     SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE,
+
+    /**
+     * @brief Push label
+     *
+     * @type sai_u32_list_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS
+     */
+    SAI_NEXT_HOP_ATTR_LABELSTACK,
+
+    /**
+     * @brief Attach a counter
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_NEXT_HOP_ATTR_COUNTER_ID,
 
     /**
      * @brief End of attributes

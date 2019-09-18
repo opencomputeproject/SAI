@@ -131,7 +131,7 @@ int test_profile_get_next_value(
     return 0;
 }
 
-const service_method_table_t test_services = {
+const sai_service_method_table_t test_services = {
     test_profile_get_value,
     test_profile_get_next_value
 };
@@ -318,7 +318,7 @@ main(int argc, char* argv[])
     handleProfileMap(options.profileMapFile);
     handlePortMap(options.portMapFile);
 
-    sai_api_initialize(0, (service_method_table_t *)&test_services);
+    sai_api_initialize(0, &test_services);
     sai_api_query(SAI_API_SWITCH, (void**)&sai_switch_api);
 
     constexpr std::uint32_t attrSz = 6;
@@ -359,24 +359,28 @@ main(int argc, char* argv[])
 
     start_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
 
-    sai_log_set(SAI_API_SWITCH, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_BRIDGE, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_FDB, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_PORT, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_VLAN, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_ROUTE, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_VIRTUAL_ROUTER, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_ROUTER_INTERFACE, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_NEXT_HOP, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_NEXT_HOP_GROUP, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_NEIGHBOR, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_ACL, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_MIRROR, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_LAG, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_BUFFER, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_POLICER, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_WRED, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_QOS_MAP, SAI_LOG_LEVEL_NOTICE);
+    const sai_log_level_t log_level = SAI_LOG_LEVEL_NOTICE;
+
+    sai_log_set(SAI_API_ACL, log_level);
+    sai_log_set(SAI_API_BRIDGE, log_level);
+    sai_log_set(SAI_API_BUFFER, log_level);
+    sai_log_set(SAI_API_FDB, log_level);
+    sai_log_set(SAI_API_HOSTIF, log_level);
+    sai_log_set(SAI_API_LAG, log_level);
+    sai_log_set(SAI_API_MIRROR, log_level);
+    sai_log_set(SAI_API_NEIGHBOR, log_level);
+    sai_log_set(SAI_API_NEXT_HOP, log_level);
+    sai_log_set(SAI_API_NEXT_HOP_GROUP, log_level);
+    sai_log_set(SAI_API_POLICER, log_level);
+    sai_log_set(SAI_API_PORT, log_level);
+    sai_log_set(SAI_API_QOS_MAP, log_level);
+    sai_log_set(SAI_API_ROUTE, log_level);
+    sai_log_set(SAI_API_ROUTER_INTERFACE, log_level);
+    sai_log_set(SAI_API_SWITCH, log_level);
+    sai_log_set(SAI_API_TUNNEL, log_level);
+    sai_log_set(SAI_API_VIRTUAL_ROUTER, log_level);
+    sai_log_set(SAI_API_VLAN, log_level);
+    sai_log_set(SAI_API_WRED, log_level);
 
     while (1) pause();
 

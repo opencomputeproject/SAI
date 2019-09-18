@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saiobject.h
  *
@@ -32,6 +32,8 @@
 #include <saiipmc.h>
 #include <saineighbor.h>
 #include <sairoute.h>
+#include <saimpls.h>
+#include <sainat.h>
 
 /**
  * @defgroup SAIOBJECT SAI - Object API definitions.
@@ -40,67 +42,121 @@
  */
 
 /**
+ * @extraparam sai_object_type_t object_type
+ */
+typedef union _sai_object_key_entry_t
+{
+    /**
+     * @brief Key is object ID.
+     *
+     * @validonly sai_metadata_is_object_type_oid(object_type) == true
+     */
+    sai_object_id_t           object_id;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_FDB_ENTRY */
+    sai_fdb_entry_t           fdb_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY */
+    sai_neighbor_entry_t      neighbor_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_ROUTE_ENTRY */
+    sai_route_entry_t         route_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_MCAST_FDB_ENTRY */
+    sai_mcast_fdb_entry_t     mcast_fdb_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_L2MC_ENTRY */
+    sai_l2mc_entry_t          l2mc_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_IPMC_ENTRY */
+    sai_ipmc_entry_t          ipmc_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_INSEG_ENTRY */
+    sai_inseg_entry_t         inseg_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_NAT_ENTRY */
+    sai_nat_entry_t           nat_entry;
+
+} sai_object_key_entry_t;
+
+/**
  * @brief Structure for bulk retrieval of object ids, attribute and values for
  * each object-type. Key will be used in case of object-types not having
  * object-ids.
+ *
+ * @extraparam sai_object_type_t object_type
  */
 typedef struct _sai_object_key_t
 {
-    union _object_key {
-        sai_object_id_t           object_id;
-        sai_fdb_entry_t           fdb_entry;
-        sai_neighbor_entry_t      neighbor_entry;
-        sai_route_entry_t         route_entry;
-        sai_mcast_fdb_entry_t     mcast_fdb_entry;
-        sai_l2mc_entry_t          l2mc_entry;
-        sai_ipmc_entry_t          ipmc_entry;
-
-    } key;
+    /** @passparam object_type */
+    sai_object_key_entry_t key;
 
 } sai_object_key_t;
+
+/**
+ * @brief Structure for attribute capabilities per operation
+ */
+typedef struct _sai_attr_capability_t
+{
+    /**
+     * @brief Create is implemented
+     */
+    bool create_implemented;
+
+    /**
+     * @brief Set is implemented
+     */
+    bool set_implemented;
+
+    /**
+     * @brief Get is implemented
+     */
+    bool get_implemented;
+} sai_attr_capability_t;
 
 /**
  * @brief Get maximum number of attributes for an object type
  *
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
- * @param[inout] count Maximum number of attribute for an object type
+ * @param[out] count Maximum number of attribute for an object type
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_get_maximum_attribute_count(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
-        _Inout_ uint32_t *count);
+        _Out_ uint32_t *count);
 
 /**
- * @brief Get the number of objects present in SAI
+ * @brief Get the number of objects present in SAI. Deprecated for backward compatibility.
  *
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
- * @param[inout] count Number of objects in SAI
+ * @param[out] count Number of objects in SAI
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 sai_status_t sai_get_object_count(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
-        _Inout_ uint32_t *count);
+        _Out_ uint32_t *count);
 
 /**
- * @brief Get the list of object keys present in SAI
+ * @brief Get the number of and list of object keys present in SAI if enough large
+ * list provided, otherwise get the number of object keys only.
  *
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
- * @param[in] object_count Number of objects in SAI
+ * @param[inout] object_count Number of objects in SAI
  * @param[inout] object_list List of SAI objects or keys
  *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if list size insufficient, failure status code on error
  */
 sai_status_t sai_get_object_key(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
-        _In_ uint32_t object_count,
+        _Inout_ uint32_t *object_count,
         _Inout_ sai_object_key_t *object_list);
 
 /**
@@ -138,10 +194,42 @@ sai_status_t sai_bulk_get_attribute(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _In_ uint32_t object_count,
-        _In_ sai_object_key_t *object_key,
+        _In_ const sai_object_key_t *object_key,
         _Inout_ uint32_t *attr_count,
         _Inout_ sai_attribute_t **attr_list,
         _Inout_ sai_status_t *object_statuses);
+
+/**
+ * @brief Query attribute capability
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[in] attr_id SAI attribute ID
+ * @param[out] attr_capability Capability per operation
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+sai_status_t sai_query_attribute_capability(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ sai_attr_id_t attr_id,
+        _Out_ sai_attr_capability_t *attr_capability);
+
+/**
+ * @brief Query an enum attribute (enum or enum list) list of implemented enum values
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[in] attr_id SAI attribute ID
+ * @param[inout] enum_values_capability List of implemented enum values
+ *
+ * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if list size insufficient, failure status code on error
+ */
+sai_status_t sai_query_attribute_enum_values_capability(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ sai_attr_id_t attr_id,
+        _Inout_ sai_s32_list_t *enum_values_capability);
 
 /**
  * @}

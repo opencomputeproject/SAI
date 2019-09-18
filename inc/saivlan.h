@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saivlan.h
  *
@@ -67,8 +67,41 @@ typedef enum _sai_vlan_mcast_lookup_key_type_t
 } sai_vlan_mcast_lookup_key_type_t;
 
 /**
+ * @brief Attribute data for unknown unicast, unknown multicast
+ * and broadcast flood controls
+ */
+typedef enum _sai_vlan_flood_control_type_t
+{
+    /**
+     * @brief Flood on all vlan members
+     *
+     * When setting all to broadcast or unknown multicast flood, it also includes
+     * flooding to the router. When setting all to unknown unicast flood, it does
+     * not include flooding to the router
+     */
+    SAI_VLAN_FLOOD_CONTROL_TYPE_ALL,
+
+    /** Disable flooding */
+    SAI_VLAN_FLOOD_CONTROL_TYPE_NONE,
+
+    /** Flood on the L2MC group */
+    SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP,
+
+    /**
+     * @brief Flood on all vlan members and L2MC group
+     *
+     * Flood on all vlan members, without the router
+     * In addition, flood on the supplied L2MC group
+     */
+    SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
+
+} sai_vlan_flood_control_type_t;
+
+/**
  * @brief Attribute Id in sai_set_vlan_attribute() and
  * sai_get_vlan_attribute() calls
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_vlan_attr_t
 {
@@ -264,14 +297,94 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_META_DATA,
 
     /**
-     * @brief To disable flooding traffic (Broadcast, unknown unicast,
-     * unknown multicast) on a VLAN
+     * @brief Unknown unicast flood control type
      *
-     * @type bool
+     * @type sai_vlan_flood_control_type_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @default SAI_VLAN_FLOOD_CONTROL_TYPE_ALL
      */
-    SAI_VLAN_ATTR_FLOOD_DISABLE,
+    SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE,
+
+    /**
+     * @brief Unknown unicast flood group.
+     *
+     * Provides control on the set of vlan members on which unknown unicast
+     * packets need to be flooded. This attribute would be used only when
+     * the SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE is set as
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP. When this attribute's value is
+     * SAI_NULL_OBJECT_ID, then flooding would be disabled.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or
+     * SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
+     */
+    SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Unknown unicast flood control type
+     *
+     * @type sai_vlan_flood_control_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_VLAN_FLOOD_CONTROL_TYPE_ALL
+     */
+    SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE,
+
+    /**
+     * @brief Unknown multicast flood group.
+     *
+     * Provides control on the set of vlan members on which unknown multicast
+     * packets need to be flooded. This attribute would be used only when
+     * the SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE is set as
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP.When this attribute's value is
+     * SAI_NULL_OBJECT_ID, then flooding would be disabled.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or
+     * SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
+     */
+    SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
+
+    /**
+     * @brief Broadcast flood control type
+     *
+     * @type sai_vlan_flood_control_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_VLAN_FLOOD_CONTROL_TYPE_ALL
+     */
+    SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE,
+
+    /**
+     * @brief Broadcast flood group.
+     *
+     * Provides control on the set of vlan members on which broadcast
+     * packets need to be flooded. This attribute would be used only when
+     * the SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE is set as
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP.When this attribute's value is
+     * SAI_NULL_OBJECT_ID, then flooding would be disabled.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_L2MC_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or
+     * SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
+     * SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
+     */
+    SAI_VLAN_ATTR_BROADCAST_FLOOD_GROUP,
 
     /**
      * @brief End of attributes
@@ -280,6 +393,28 @@ typedef enum _sai_vlan_attr_t
 
     /** Custom range base value */
     SAI_VLAN_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief IGMP Snooping enable or disable control for VLAN
+     *
+     * IGMP Snooping enable control for VLAN. Default is
+     * disabled
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_VLAN_ATTR_CUSTOM_IGMP_SNOOPING_ENABLE,
+
+    /**
+     * @brief Vlan bind point for TAM object
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @default empty
+     */
+    SAI_VLAN_ATTR_TAM_OBJECT,
 
     /** End of custom range base */
     SAI_VLAN_ATTR_CUSTOM_RANGE_END
@@ -465,7 +600,7 @@ typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get vlan statistics counters.
+ * @brief Get vlan statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] vlan_id VLAN id
  * @param[in] number_of_counters Number of counters in the array
@@ -477,7 +612,25 @@ typedef sai_status_t (*sai_get_vlan_member_attribute_fn)(
 typedef sai_status_t (*sai_get_vlan_stats_fn)(
         _In_ sai_object_id_t vlan_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_vlan_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get vlan statistics counters extended.
+ *
+ * @param[in] vlan_id VLAN id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_vlan_stats_ext_fn)(
+        _In_ sai_object_id_t vlan_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
 /**
@@ -492,7 +645,7 @@ typedef sai_status_t (*sai_get_vlan_stats_fn)(
 typedef sai_status_t (*sai_clear_vlan_stats_fn)(
         _In_ sai_object_id_t vlan_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_vlan_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief VLAN methods table retrieved with sai_api_query()
@@ -510,6 +663,7 @@ typedef struct _sai_vlan_api_t
     sai_bulk_object_create_fn           create_vlan_members;
     sai_bulk_object_remove_fn           remove_vlan_members;
     sai_get_vlan_stats_fn               get_vlan_stats;
+    sai_get_vlan_stats_ext_fn           get_vlan_stats_ext;
     sai_clear_vlan_stats_fn             clear_vlan_stats;
 
 } sai_vlan_api_t;

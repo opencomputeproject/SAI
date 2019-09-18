@@ -1,3 +1,27 @@
+/**
+ * Copyright (c) 2014 Microsoft Open Technologies, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License"); you may
+ *    not use this file except in compliance with the License. You may obtain
+ *    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+ *    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+ *    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+ *    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+ *
+ *    See the Apache Version 2.0 License for specific language governing
+ *    permissions and limitations under the License.
+ *
+ *    Microsoft would like to thank the following companies for their review and
+ *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+ *
+ * @file    saimetadatautils.c
+ *
+ * @brief   This module defines SAI Metadata Utils
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <sai.h>
@@ -182,10 +206,23 @@ const sai_object_type_info_t* sai_metadata_get_object_type_info(
     return NULL;
 }
 
+bool sai_metadata_is_object_type_oid(
+        _In_ sai_object_type_t object_type)
+{
+    const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(object_type);
+
+    if (oti != NULL)
+    {
+        return oti->isobjectid;
+    }
+
+    return false;
+}
+
 bool sai_metadata_is_object_type_valid(
         _In_ sai_object_type_t object_type)
 {
-    return object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_MAX;
+    return object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_EXTENSIONS_MAX;
 }
 
 bool sai_metadata_is_condition_met(

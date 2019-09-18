@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    sairoute.h
  *
@@ -103,6 +103,30 @@ typedef enum _sai_route_entry_attr_t
      * @default 0
      */
     SAI_ROUTE_ENTRY_ATTR_META_DATA,
+
+    /** READ-ONLY */
+
+    /**
+     * @brief Route entry IP address family
+     *
+     * @type sai_ip_addr_family_t
+     * @flags READ_ONLY
+     * @isresourcetype true
+     */
+    SAI_ROUTE_ENTRY_ATTR_IP_ADDR_FAMILY,
+
+    /**
+     * @brief Attach a counter
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTE_ENTRY_ATTR_COUNTER_ID,
 
     /**
      * @brief End of attributes

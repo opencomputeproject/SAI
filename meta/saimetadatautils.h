@@ -15,7 +15,7 @@
  *
  *    Microsoft would like to thank the following companies for their review and
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
- *    Dell Products, L.P., Facebook, Inc
+ *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
  * @file    saimetadatautils.h
  *
@@ -125,6 +125,16 @@ extern const sai_object_type_info_t* sai_metadata_get_object_type_info(
  * @return True if object type is valid, false otherwise
  */
 extern bool sai_metadata_is_object_type_valid(
+        _In_ sai_object_type_t object_type);
+
+/**
+ * @brief Checks whether object type is OID object type.
+ *
+ * @param[in] object_type Object type to be checked.
+ *
+ * @return True if object type is OID type, false otherwise.
+ */
+extern bool sai_metadata_is_object_type_oid(
         _In_ sai_object_type_t object_type);
 
 /**

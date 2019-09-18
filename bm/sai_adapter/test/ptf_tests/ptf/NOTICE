@@ -1,0 +1,9 @@
+Packet Test Framework
+
+Copyright (c) 2015 Barefoot Networks Inc.
+
+Copyright (c) 2010 The Board of Trustees of The Leland Stanford Junior
+University
+
+This product includes modifications done the following software:
+OpenFlow Switch Test Framework (https://github.com/floodlight/oftest)
