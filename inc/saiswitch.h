@@ -243,6 +243,54 @@ typedef enum _sai_switch_mcast_snooping_capability_t
 } sai_switch_mcast_snooping_capability_t;
 
 /**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_HARDWARE_ACCESS_BUS
+ */
+typedef enum _sai_switch_hardware_access_bus_t
+{
+    /** Hardware access bus is MDIO */
+    SAI_SWITCH_HARDWARE_ACCESS_BUS_MDIO,
+
+    /** Hardware access bus is I2C */
+    SAI_SWITCH_HARDWARE_ACCESS_BUS_I2C,
+
+    /** Hardware access bus is CPLD */
+    SAI_SWITCH_HARDWARE_ACCESS_BUS_CPLD,
+
+} sai_switch_hardware_access_bus_t;
+
+/**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_FIRMWARE_LOAD_METHOD
+ */
+typedef enum _sai_switch_firmware_load_method_t
+{
+    /** Do not download FW. Use already downloaded FW instead */
+    SAI_SWITCH_FIRMWARE_LOAD_METHOD_NONE,
+
+    /** Download FW internally via MDIO */
+    SAI_SWITCH_FIRMWARE_LOAD_METHOD_INTERNAL,
+
+    /** Load FW from EEPROM */
+    SAI_SWITCH_FIRMWARE_LOAD_METHOD_EEPROM,
+
+} sai_switch_firmware_load_method_t;
+
+/**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE
+ */
+typedef enum _sai_switch_firmware_load_type_t
+{
+    /** Skip firmware download if firmware is already present */
+    SAI_SWITCH_FIRMWARE_LOAD_TYPE_SKIP,
+
+    /** Always download the firmware specified by firmware load method */
+    SAI_SWITCH_FIRMWARE_LOAD_TYPE_FORCE,
+
+    /** Check the firmware version. If it is different from current version download firmware */
+    SAI_SWITCH_FIRMWARE_LOAD_TYPE_AUTO,
+
+} sai_switch_firmware_load_type_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
  */
@@ -1368,6 +1416,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_s8_list_t
      * @flags CREATE_ONLY
      * @default empty
+     * @validonly SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      */
     SAI_SWITCH_ATTR_SWITCH_HARDWARE_INFO,
 
@@ -1433,11 +1482,15 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Port state change notification callback function passed to the adapter.
      *
+     * In case driver does not support this attribute, The Host adaptor should pool
+     * port status by SAI_PORT_ATTR_OPER_STATUS.
+     *
      * Use sai_port_state_change_notification_fn as notification function.
      *
      * @type sai_pointer_t sai_port_state_change_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
+     * @condition SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FORM_LINE_TO_SYSTEM_PORT_SUPPORT == false
      */
     SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
 
@@ -1828,6 +1881,195 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NAT_ENABLE,
 
     /**
+     * @brief SDK/Driver can access device through file system support.
+     *
+     * TRUE - Device access by file system.
+     * FALSE - Device access not supported directly by driver.
+     * Platform adaption device read/write API should be provided by the Host Adapter.
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS,
+
+    /**
+     * @brief Switch hardware access bus MDIO/I2C/CPLD
+     *
+     * @type sai_switch_hardware_access_bus_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @default SAI_SWITCH_HARDWARE_ACCESS_BUS_MDIO
+     * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     */
+    SAI_SWITCH_ATTR_HARDWARE_ACCESS_BUS,
+
+    /**
+     * @brief Platform context information
+     *
+     * Platform context information provided by the host adaptor to driver.
+     * This information is Host adaptor specific, typically used for maintain
+     * synchronization and device information. Driver will give this context back
+     * to adaptor as part of call back sai_switch_register_read/write_fn API.
+     *
+     * Use void as pointer.
+     *
+     * @type sai_pointer_t void
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     */
+    SAI_SWITCH_ATTR_PLATFROM_CONTEXT,
+
+    /**
+     * @brief Platform adaption device read callback function passed to the adaptor.
+     * This is mandatory function for driver when device access not supported by file system.
+     *
+     * Use sai_switch_register_read_fn as read function.
+     *
+     * @type sai_pointer_t sai_switch_register_read_fn
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     */
+    SAI_SWITCH_ATTR_REGISTER_READ,
+
+    /**
+     * @brief Platform adaption device write callback function passed to the adaptor.
+     * This is mandatory function for driver when device access not supported by file system.
+     *
+     * Use sai_switch_register_write_fn as write function.
+     *
+     * @type sai_pointer_t sai_switch_register_write_fn
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     */
+    SAI_SWITCH_ATTR_REGISTER_READ,
+
+    /**
+     * @brief Enable/disable broadcast firmware download
+     *
+     * TRUE - Enable firmware download as broadcast.
+     * FALSE - Enable firmware download as unicast.
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST,
+
+    /**
+     * @brief Firmware load method
+     *
+     * @type sai_switch_firmware_load_method_t
+     *
+     * @flags CREATE_ONLY
+     * @default SAI_SWITCH_FIRMWARE_LOAD_METHOD_INTERNAL
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_LOAD_METHOD,
+
+    /**
+     * @brief Firmware load type auto/force/skip
+     *
+     * Check firmware version. If it is different from current version load firmware.
+     * Otherwise always download the firmware specified by firmware load method.
+     *
+     * @type sai_switch_firmware_load_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_SWITCH_FIRMWARE_LOAD_TYPE_AUTO
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE,
+
+    /**
+     * @brief Execute Firmware download
+     *
+     * In case of firmware download method broadcast, Set this attribute on
+     * any one of device connected to same bus. As part of execute firmware will broadcast to
+     * to all broadcast enabled devices on bus.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_EXECUTE,
+
+    /**
+     * @brief End Broadcast
+     *
+     * Broadcast is enabled for BUS, All configurations will be broadcast.
+     * End broadcast before initialize device.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_BROADCAST_END,
+
+    /**
+     * @brief Firmware status verify and complete initialize device.
+     *
+     * Host Adaptor should mandatory to set attribute to true,
+     * switch before doing any other configurations.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_VERIFY_AND_INIT_SWITCH,
+
+    /**
+     * @brief Firmware running status
+     *
+     * Indicates firmware download and running status.
+     *
+     * TRUE - Firmware running
+     * FALSE - Firmware not running.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_STATUS,
+
+    /**
+     * @brief Firmware major version number
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_MAJOR_VERSION,
+
+    /**
+     * @brief Firmware minor version number
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_MINOR_VERSION,
+
+    /**
+     * @brief Get the port connector list
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT_CONNECTOR
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_PORT_CONNECTOR_LIST,
+
+    /**
+     * @brief Propagate line side port state to system side port
+     *
+     * System side port state will reflect the ASIC port state.
+     * Host adaptor can depends on ASIC port state instead of port states from system side,
+     * line side and ASIC port to determine interface operation status to application.
+     *
+     * TRUE - Device support for propagate line side port link status to system side port.
+     * FALSE - Device does not support propagate port states.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FORM_LINE_TO_SYSTEM_PORT_SUPPORT,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -1996,6 +2238,62 @@ typedef void (*sai_switch_state_change_notification_fn)(
         _In_ sai_switch_oper_status_t switch_oper_status);
 
 /**
+ * @brief Platform specific device register read access
+ *
+ * This API provides platform adaption in 2 ways
+ *
+ * 1# Provides platform adaption functionality to access device
+ * registers from driver. This is mandatory to pass as attribute to
+ * sai_create_switch when driver implementation does not support register access
+ * by device file system directly.
+ * 2# Provides device access API from ASIC SDK.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] platform_context Platform context information.
+ * @param[in] switch_id Switch Id
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to read
+ * @param[in] number_of_registers Number of consecutive registers to read
+ * @param[out] reg_val Register read values
+ */
+typedef sai_status_t (*sai_switch_register_read_fn)(
+        _In_ const void *platform_context,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _Out_ const uint32_t *reg_val);
+
+/**
+ * @brief Platform specific device register write access
+ *
+ * This API provides platform adaption in 2 ways
+ *
+ * 1# Provides platform adaption functionality to access device
+ * registers from driver. This is mandatory to pass as attribute to
+ * sai_create_switch when driver implementation does not support register access
+ * by device file system directly.
+ * 2# Provides device access API from ASIC SDK.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] platform_context Platform context information.
+ * @param[in] switch_id Switch Id
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to write
+ * @param[in] number_of_registers Number of consecutive registers to write
+ * @param[in] reg_val Register write values
+ */
+typedef sai_status_t (*sai_switch_register_write_fn)(
+        _In_ const void *platform_context,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _In_ const uint32_t *reg_val);
+
+/**
  * @brief Create switch
  *
  * SDK initialization/connect to SDK. After the call the capability attributes should be
@@ -2111,6 +2409,8 @@ typedef struct _sai_switch_api_t
     sai_get_switch_stats_fn         get_switch_stats;
     sai_get_switch_stats_ext_fn     get_switch_stats_ext;
     sai_clear_switch_stats_fn       clear_switch_stats;
+    sai_switch_register_read_fn     switch_register_read;
+    sai_switch_register_write_fn    switch_register_write;
 
 } sai_switch_api_t;
 

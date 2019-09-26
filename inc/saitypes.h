@@ -262,7 +262,8 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_TAM_INT                  = 83,
     SAI_OBJECT_TYPE_COUNTER                  = 84,
     SAI_OBJECT_TYPE_DEBUG_COUNTER            = 85,
-    SAI_OBJECT_TYPE_MAX                      = 86,
+    SAI_OBJECT_TYPE_PORT_CONNECTOR           = 86,
+    SAI_OBJECT_TYPE_MAX                      = 87,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
