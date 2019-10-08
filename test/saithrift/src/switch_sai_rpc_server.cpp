@@ -392,6 +392,9 @@ public:
               case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
+              case SAI_ROUTER_INTERFACE_ATTR_OUTER_VLAN_ID:
+                  attr_list[i].value.u16 = attribute.value.u16;
+                  break;
               case SAI_ROUTER_INTERFACE_ATTR_TYPE:
                   attr_list[i].value.s32 = attribute.value.s32;
                   break;

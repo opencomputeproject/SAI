@@ -2088,7 +2088,7 @@ class L3BridgeAndSubPortRifTest(sai_base_test.ThriftInterfaceDataPlane):
 
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
         
-        sub_port_rif_oid = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_SUB_PORT, port1, vlan1_oid, v4_enabled, v6_enabled, '')
+        sub_port_rif_oid = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_SUB_PORT, port1, vlan1_id, v4_enabled, v6_enabled, '')
         bridge_rif_oid = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_BRIDGE, 0, 0, v4_enabled, v6_enabled, '')
         bridge_rif_bp = sai_thrift_create_bridge_rif_port(self.client, bridge_id, bridge_rif_oid)
 
@@ -2194,7 +2194,7 @@ class L3SubPortAndVLANRifTest(sai_base_test.ThriftInterfaceDataPlane):
         vr_id = sai_thrift_create_virtual_router(self.client, v4_enabled, v6_enabled)
 
         rif_id1 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_VLAN, 0, vlan1_oid, v4_enabled, v6_enabled, '')
-        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_SUB_PORT, port2, vlan2_oid, v4_enabled, v6_enabled, '')
+        rif_id2 = sai_thrift_create_router_interface(self.client, vr_id, SAI_ROUTER_INTERFACE_TYPE_SUB_PORT, port2, vlan2_id, v4_enabled, v6_enabled, '')
 
         sai_thrift_create_neighbor(self.client, addr_family, rif_id1, ip_addr1, dmac1)
         sai_thrift_create_route(self.client, vr_id, addr_family, ip_addr1_subnet, ip_mask1, rif_id1)
