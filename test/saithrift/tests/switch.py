@@ -358,8 +358,9 @@ def sai_thrift_create_router_interface(client, vr_oid, type, port_oid, vlan_oid,
                                                 value=rif_attribute3_value)
         rif_attr_list.append(rif_attribute3)
 
-        rif_attribute4_value = sai_thrift_attribute_value_t(oid=vlan_oid)
-        rif_attribute4 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
+        #type of outer vlan id is u16 instead of oid
+        rif_attribute4_value = sai_thrift_attribute_value_t(u16=vlan_oid)
+        rif_attribute4 = sai_thrift_attribute_t(id=SAI_ROUTER_INTERFACE_ATTR_OUTER_VLAN_ID,
                                                 value=rif_attribute4_value)
         rif_attr_list.append(rif_attribute4)
 
