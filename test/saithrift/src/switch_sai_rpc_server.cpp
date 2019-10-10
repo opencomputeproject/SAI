@@ -121,6 +121,12 @@ public:
       return (j == 12);
   }
 
+  const std::string mac_to_sai_thrift_string(uint8_t m[6]){
+      char macstr[32];
+      sprintf(macstr, "%02x:%02x:%02x:%02x:%02x:%02x", m[0], m[1], m[2], m[3], m[4], m[5]);
+      return(macstr);
+  }
+  
   void sai_thrift_string_to_v4_ip(const std::string s, unsigned int *m) {
       unsigned char r=0;
       unsigned int i;
@@ -754,7 +760,39 @@ public:
       free(attr_list);
       return status;
   }
-
+//listing all the fdb entries from map	
+  void sai_thrift_get_fdb_entries (sai_thrift_attribute_list_t& thrift_attr_list){
+      sai_mac_t mac_address;
+      sai_object_id_t bv_id;	
+      sai_object_id_t bport_id;
+      sai_fdb_entry_t fdb_entry;  
+             
+      extern std::map<sai_fdb_entry_t, sai_object_id_t> gFdbMap;
+ 
+      sai_thrift_attribute_list_t thrift_attr_list;
+      thrift_attr_list.attr_count = gFdbMap.size();
+      
+      sai_fdb_entry_t fdb_m;
+      sai_object_id_t b_id;
+      
+      for (auto it = gFdbMap.begin(); it != gFdbMap.end(); it++){
+          fdb_m = it->first;
+          b_id = it->second; 	
+      	
+          sai_thrift_fdb_values_t fdb_value;		 
+          fdb_value.bport_id=b_id;
+          fdb_value.thrift_fdb_entry.bv_id=fdb_m.bv_id;
+          fdb_value.thrift_fdb_entry.mac_address=mac_to_sai_thrift_string(fdb_m.mac_address);
+          
+          sai_thrift_attribute_t thrift_fdb_attributes;		
+          thrift_fdb_attributes.id = SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID;
+          thrift_fdb_attributes.value.fdb_values = fdb_value;
+	  	
+          thrift_attr_list.attr_list.push_back(thrift_fdb_attributes);
+      }			
+      return;
+  }
+  
   void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list) {
       SAI_THRIFT_LOG_DBG("Called.");
 
