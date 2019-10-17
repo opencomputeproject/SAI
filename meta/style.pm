@@ -431,7 +431,7 @@ sub CheckFunctionNaming
     my $typename = $1;
     my $name = $2;
 
-    if ($name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|remove_all_neighbor_entries|profile_get_value|profile_get_next_value)$/)
+    if ($name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|remove_all_neighbor_entries|profile_get_value|profile_get_next_value|register_read|register_write)$/)
     {
         # ok
     }

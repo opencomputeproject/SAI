@@ -1482,7 +1482,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Port state change notification callback function passed to the adapter.
      *
-     * In case driver does not support this attribute, The Host adaptor should pool
+     * In case driver does not support this attribute, The Host adaptor should poll
      * port status by SAI_PORT_ATTR_OPER_STATUS.
      *
      * Use sai_port_state_change_notification_fn as notification function.
@@ -1888,6 +1888,7 @@ typedef enum _sai_switch_attr_t
      * Platform adaption device read/write API should be provided by the Host Adapter.
      * @type bool
      * @flags READ_ONLY
+     * @switchtype PHY
      */
     SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS,
 
@@ -1898,6 +1899,7 @@ typedef enum _sai_switch_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @default SAI_SWITCH_HARDWARE_ACCESS_BUS_MDIO
      * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * @switchtype PHY
      */
     SAI_SWITCH_ATTR_HARDWARE_ACCESS_BUS,
 
@@ -1914,6 +1916,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_pointer_t void
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * @switchtype PHY
      */
     SAI_SWITCH_ATTR_PLATFROM_CONTEXT,
 
@@ -1926,6 +1929,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_pointer_t sai_switch_register_read_fn
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * @switchtype PHY
      */
     SAI_SWITCH_ATTR_REGISTER_READ,
 
@@ -1938,8 +1942,9 @@ typedef enum _sai_switch_attr_t
      * @type sai_pointer_t sai_switch_register_write_fn
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * @switchtype PHY
      */
-    SAI_SWITCH_ATTR_REGISTER_READ,
+    SAI_SWITCH_ATTR_REGISTER_WRITE,
 
     /**
      * @brief Enable/disable broadcast firmware download
@@ -2051,6 +2056,7 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_PORT_CONNECTOR
      * @default internal
+     * @switchtype PHY
      */
     SAI_SWITCH_ATTR_PORT_CONNECTOR_LIST,
 
@@ -2066,6 +2072,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type bool
      * @flags READ_ONLY
+     * @switchtype PHY
      */
     SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FORM_LINE_TO_SYSTEM_PORT_SUPPORT,
 
