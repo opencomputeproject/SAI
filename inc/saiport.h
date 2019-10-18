@@ -1262,9 +1262,9 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_INTERFACE_TYPE,
 
     /**
-     * @brief Configure port reference clock in Megahertz
+     * @brief Configure port reference clock in hertz
      *
-     * @type sai_uint32_t
+     * @type sai_uint64_t
      * @flags CREATE_ONLY
      * @default internal
      */
