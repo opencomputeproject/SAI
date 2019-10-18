@@ -120,6 +120,10 @@ sub ProcessTagType
 
     return $val if $val =~ /^sai_pointer_t sai_\w+_notification_fn$/;
 
+    return $val if $val =~ /^sai_pointer_t sai_\w+_register_read_fn$/;
+
+    return $val if $val =~ /^sai_pointer_t sai_\w+_register_write_fn$/;
+
     LogError "invalid type tag value '$val' expected sai type or enum";
 
     return undef;

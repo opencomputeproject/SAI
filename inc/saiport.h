@@ -2272,23 +2272,23 @@ typedef sai_status_t (*sai_get_port_connector_attribute_fn)(
  */
 typedef struct _sai_port_api_t
 {
-    sai_create_port_fn                create_port;
-    sai_remove_port_fn                remove_port;
-    sai_set_port_attribute_fn         set_port_attribute;
-    sai_get_port_attribute_fn         get_port_attribute;
-    sai_get_port_stats_fn             get_port_stats;
-    sai_get_port_stats_ext_fn         get_port_stats_ext;
-    sai_clear_port_stats_fn           clear_port_stats;
-    sai_clear_port_all_stats_fn       clear_port_all_stats;
-    sai_create_port_pool_fn           create_port_pool;
-    sai_remove_port_pool_fn           remove_port_pool;
-    sai_set_port_pool_attribute_fn    set_port_pool_attribute;
-    sai_get_port_pool_attribute_fn    get_port_pool_attribute;
-    sai_get_port_pool_stats_fn        get_port_pool_stats;
-    sai_get_port_pool_stats_ext_fn    get_port_pool_stats_ext;
-    sai_clear_port_pool_stats_fn      clear_port_pool_stats;
-    sai_create_port_connector_fn      create_port_connector;
-    sai_remove_port_connector_fn      remove_port_connector;
+    sai_create_port_fn                     create_port;
+    sai_remove_port_fn                     remove_port;
+    sai_set_port_attribute_fn              set_port_attribute;
+    sai_get_port_attribute_fn              get_port_attribute;
+    sai_get_port_stats_fn                  get_port_stats;
+    sai_get_port_stats_ext_fn              get_port_stats_ext;
+    sai_clear_port_stats_fn                clear_port_stats;
+    sai_clear_port_all_stats_fn            clear_port_all_stats;
+    sai_create_port_pool_fn                create_port_pool;
+    sai_remove_port_pool_fn                remove_port_pool;
+    sai_set_port_pool_attribute_fn         set_port_pool_attribute;
+    sai_get_port_pool_attribute_fn         get_port_pool_attribute;
+    sai_get_port_pool_stats_fn             get_port_pool_stats;
+    sai_get_port_pool_stats_ext_fn         get_port_pool_stats_ext;
+    sai_clear_port_pool_stats_fn           clear_port_pool_stats;
+    sai_create_port_connector_fn           create_port_connector;
+    sai_remove_port_connector_fn           remove_port_connector;
     sai_set_port_connector_attribute_fn    set_port_connector_attribute;
     sai_get_port_connector_attribute_fn    get_port_connector_attribute;
 } sai_port_api_t;
