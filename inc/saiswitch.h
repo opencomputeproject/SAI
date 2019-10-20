@@ -2281,7 +2281,7 @@ typedef void (*sai_switch_state_change_notification_fn)(
  * @param[out] reg_val Register read values
  */
 typedef sai_status_t (*sai_switch_register_read_fn)(
-        _In_ const void *platform_context,
+        _In_ uint64_t platform_context,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t device_addr,
         _In_ uint32_t start_reg_addr,
@@ -2309,7 +2309,7 @@ typedef sai_status_t (*sai_switch_register_read_fn)(
  * @param[in] reg_val Register write values
  */
 typedef sai_status_t (*sai_switch_register_write_fn)(
-        _In_ const void *platform_context,
+        _In_ uint64_t platform_context,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t device_addr,
         _In_ uint32_t start_reg_addr,
