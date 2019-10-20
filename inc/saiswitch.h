@@ -1456,15 +1456,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_INIT_SWITCH,
 
     /**
-     * @brief Switch type NPU/PHY
-     *
-     * @type sai_switch_type_t
-     * @flags CREATE_ONLY
-     * @default SAI_SWITCH_TYPE_NPU
-     */
-    SAI_SWITCH_ATTR_TYPE,
-
-    /**
      * @brief Operational status change notification callback
      * function passed to the adapter.
      *
@@ -1920,8 +1911,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_switch_hardware_access_bus_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @default SAI_SWITCH_HARDWARE_ACCESS_BUS_MDIO
-     * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      */
     SAI_SWITCH_ATTR_HARDWARE_ACCESS_BUS,
 
@@ -1935,8 +1925,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_uint64_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      */
     SAI_SWITCH_ATTR_PLATFROM_CONTEXT,
 
@@ -1948,8 +1937,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_pointer_t sai_switch_register_read_fn
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      */
     SAI_SWITCH_ATTR_REGISTER_READ,
 
@@ -1961,8 +1949,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_pointer_t sai_switch_register_write_fn
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      */
     SAI_SWITCH_ATTR_REGISTER_WRITE,
 
@@ -2095,6 +2082,15 @@ typedef enum _sai_switch_attr_t
      * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_NPU
      */
     SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FORM_LINE_TO_SYSTEM_PORT_SUPPORT,
+
+    /**
+     * @brief Switch type NPU/PHY
+     *
+     * @type sai_switch_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_SWITCH_TYPE_NPU
+     */
+    SAI_SWITCH_ATTR_TYPE,
 
     /**
      * @brief End of attributes
@@ -2290,7 +2286,7 @@ typedef sai_status_t (*sai_switch_register_read_fn)(
         _In_ uint32_t device_addr,
         _In_ uint32_t start_reg_addr,
         _In_ uint32_t number_of_registers,
-        _Out_ const uint32_t *reg_val);
+        _Out_ uint32_t *reg_val);
 
 /**
  * @brief Platform specific device register write access

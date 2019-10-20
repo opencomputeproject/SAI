@@ -2212,7 +2212,7 @@ typedef enum _sai_port_connector_attr_t
     /** End of custom range base */
     SAI_PORT_CONNECTOR_ATTR_CUSTOM_RANGE_END
 
-} sai_port_pool_attr_t;
+} sai_port_connector_attr_t;
 
 /**
  * @brief Create port connector
