@@ -126,6 +126,7 @@ sub ProcessTag
         }
 
         next if $line eq "";
+        next if $line eq "<linebreak/>";
 
         if ($line =~ m!^<(\w+)(\s+[^<>]+[^/])?>$!)
         {
