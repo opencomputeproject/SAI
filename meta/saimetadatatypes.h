@@ -981,6 +981,13 @@ typedef struct _sai_attr_metadata_t
     int                                         notificationtype;
 
     /**
+     * @brief Is callback function.
+     *
+     * Set to true if attribute is callback function but not notification.
+     */
+    bool                                        iscallback;
+
+    /**
      * @brief Attribute capabilities.
      *
      * Represents attribute capability for each specific ASIC. Since each

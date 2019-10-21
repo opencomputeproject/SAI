@@ -2301,6 +2301,17 @@ void check_attr_sai_pointer(
 {
     META_LOG_ENTER();
 
+    if (md->iscallback)
+    {
+        META_ASSERT_TRUE(md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER, "callback can be set only on pointer type");
+        META_ASSERT_TRUE(md->notificationtype == -1, "callback can't be notification");
+    }
+
+    if (md->notificationtype != -1)
+    {
+        META_ASSERT_FALSE(md->iscallback, "notification can't be callback");
+    }
+
     /*
      * Purpose of this test is to check whether sai_pointer_t
      * is only used on SAI_OBJECT_TYPE_SWITCH.
@@ -2319,11 +2330,19 @@ void check_attr_sai_pointer(
                 META_MD_ASSERT_FAIL(md, "all pointers should be CREATE_AND_SET");
             }
 
-            META_ASSERT_TRUE(md->notificationtype >= 0, "notification type should be set to value on pointer");
+            if (md->iscallback)
+            {
+                META_ASSERT_TRUE(md->notificationtype == -1, "notification type should be marked as callback");
+            }
+            else
+            {
+                META_ASSERT_TRUE(md->notificationtype >= 0, "notification type should be set to value on pointer");
+            }
         }
         else
         {
             META_ASSERT_TRUE(md->notificationtype == -1, "notification type should not be set to value on non pointer");
+            META_ASSERT_TRUE(md->iscallback == false, "callback type should not be set to value on non pointer");
         }
 
         return;
