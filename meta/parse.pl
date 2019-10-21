@@ -57,6 +57,7 @@ our %EXTENSIONS_ENUMS = ();
 our %EXTENSIONS_ATTRS = ();
 our %EXPERIMENTAL_OBJECTS = ();
 our %OBJECT_TYPE_TO_STATS_MAP = ();
+our %ATTR_TO_CALLBACK = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 
@@ -119,6 +120,12 @@ sub ProcessTagType
     return $val if $val =~ /^sai_\w+_t$/ and not $val =~ /_attr_(extensions_)?t/;
 
     return $val if $val =~ /^sai_pointer_t sai_\w+_notification_fn$/;
+
+    if ($val =~ /^sai_pointer_t (sai_switch_\w+_fn)$/)
+    {
+        $ATTR_TO_CALLBACK{$value} = $1;
+        return $val;
+    }
 
     LogError "invalid type tag value '$val' expected sai type or enum";
 
@@ -593,6 +600,8 @@ sub ProcessTypedefSection
             ProcessNotifications($memberdef, $typedefname);
             next;
         }
+
+        # TODO add callback handling
 
         next if not $typedeftype =~ /^enum/;
 
@@ -1552,6 +1561,15 @@ sub ProcessAttrName
     return "\"$attr\"";
 }
 
+sub ProcessIsCallback
+{
+    my ($attr, $type) = @_;
+
+    return "true" if defined $ATTR_TO_CALLBACK{$attr};
+
+    return "false";
+}
+
 sub ProcessNotificationType
 {
     my ($attr, $type) = @_;
@@ -1786,6 +1804,7 @@ sub ProcessSingleObjectType
         my $brief           = ProcessBrief($attr, $meta{brief});
         my $isprimitive     = ProcessIsPrimitive($attr, $meta{type});
         my $ntftype         = ProcessNotificationType($attr, $meta{type});
+        my $iscallback      = ProcessIsCallback($attr, $meta{type});
         my $cap             = ProcessCapability($attr, $meta{type}, $enummetadata);
         my $caplen          = ProcessCapabilityLen($attr, $meta{type});
         my $isextensionattr = ProcessIsExtensionAttr($attr, $meta{type});
@@ -1839,6 +1858,7 @@ sub ProcessSingleObjectType
         WriteSource ".iskey                         = $iskey,";
         WriteSource ".isprimitive                   = $isprimitive,";
         WriteSource ".notificationtype              = $ntftype,";
+        WriteSource ".iscallback                    = $iscallback,";
         WriteSource ".capability                    = $cap,";
         WriteSource ".capabilitylength              = $caplen,";
         WriteSource ".isextensionattr               = $isextensionattr,";
