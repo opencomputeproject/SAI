@@ -87,7 +87,7 @@ typedef enum _sai_in_drop_reason_t
     /* L2 reasons */
 
     /** Any L2 pipeline drop */
-    SAI_IN_DROP_REASON_L2_ANY,
+    SAI_IN_DROP_REASON_L2_ANY = SAI_IN_DROP_REASON_START,
 
     /** Source MAC is multicast */
     SAI_IN_DROP_REASON_SMAC_MULTICAST,
@@ -325,7 +325,7 @@ typedef enum _sai_out_drop_reason_t
     /* L2 reasons */
 
     /** Any L2 pipeline drop */
-    SAI_OUT_DROP_REASON_L2_ANY,
+    SAI_OUT_DROP_REASON_L2_ANY = SAI_OUT_DROP_REASON_START,
 
     /** Egress VLAN filter */
     SAI_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
