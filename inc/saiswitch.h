@@ -2010,7 +2010,7 @@ typedef enum _sai_switch_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @condition SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
      */
     SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_EXECUTE,
 
@@ -2023,7 +2023,7 @@ typedef enum _sai_switch_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @condition SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
      */
     SAI_SWITCH_ATTR_FIRMWARE_BROADCAST_STOP,
 
@@ -2036,7 +2036,7 @@ typedef enum _sai_switch_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @condition SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
      */
     SAI_SWITCH_ATTR_FIRMWARE_VERIFY_AND_INIT_SWITCH,
 
@@ -2072,11 +2072,11 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Get the port connector list
      *
+     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     *
      * @type sai_object_list_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_PORT_CONNECTOR
-     * @default internal
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      */
     SAI_SWITCH_ATTR_PORT_CONNECTOR_LIST,
 
@@ -2090,9 +2090,10 @@ typedef enum _sai_switch_attr_t
      * TRUE - Device support for propagate line side port link status to system side port.
      * FALSE - Device does not support propagate port states.
      *
+     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     *
      * @type bool
      * @flags READ_ONLY
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      */
     SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FORM_LINE_TO_SYSTEM_PORT_SUPPORT,
 

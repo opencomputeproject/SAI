@@ -1255,6 +1255,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Configure Interface type
      *
+     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     *
      * @type sai_port_interface_type_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_INTERFACE_TYPE_NONE

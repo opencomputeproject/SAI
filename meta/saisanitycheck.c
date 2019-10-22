@@ -917,7 +917,13 @@ void check_attr_default_required(
             META_MD_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
 
         case SAI_ATTR_VALUE_TYPE_POINTER:
-            break;
+
+            /*
+             * Gearbox exception for mandatory pointer attribute
+             * to support CONST on list.
+             */
+
+           break;
 
         default:
 
@@ -4022,8 +4028,8 @@ void check_switch_attributes()
     for (; meta[index] != NULL; index++)
     {
         const sai_attr_metadata_t *md = meta[index];
-
-        if (md->isconditional || md->isvalidonly)
+        /* Gearbox added validonly attributes at switch */
+        if (md->isconditional)
         {
             META_MD_ASSERT_FAIL(md, "attribute can't be conditional/validonly (this check can be relaxed)");
         }
