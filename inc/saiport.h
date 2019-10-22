@@ -1257,7 +1257,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_interface_type_t
      * @flags CREATE_AND_SET
-     * @default internal
+     * @default SAI_PORT_INTERFACE_TYPE_NONE
      */
     SAI_PORT_ATTR_INTERFACE_TYPE,
 
@@ -1268,7 +1268,7 @@ typedef enum _sai_port_attr_t
      * @flags CREATE_ONLY
      * @default internal
      */
-    SAI_PORT_ATTR_REF_CLOCK,
+    SAI_PORT_ATTR_REFERENCE_CLOCK,
 
     /**
      * @brief Port PRBS Polynomial
@@ -2193,7 +2193,7 @@ typedef enum _sai_port_connector_attr_t
     SAI_PORT_CONNECTOR_ATTR_SYSTEM_SIDE_PORT_ID = SAI_PORT_CONNECTOR_ATTR_START,
 
     /**
-     * @brief Buffer pool id
+     * @brief Port ID
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY

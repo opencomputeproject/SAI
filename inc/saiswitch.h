@@ -1429,7 +1429,6 @@ typedef enum _sai_switch_attr_t
      * @type sai_s8_list_t
      * @flags CREATE_ONLY
      * @default empty
-     * @validonly SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      */
     SAI_SWITCH_ATTR_SWITCH_HARDWARE_INFO,
 
@@ -1503,7 +1502,6 @@ typedef enum _sai_switch_attr_t
      * @type sai_pointer_t sai_port_state_change_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
-     * @condition SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FORM_LINE_TO_SYSTEM_PORT_SUPPORT == false
      */
     SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
 
@@ -1899,19 +1897,20 @@ typedef enum _sai_switch_attr_t
      * TRUE - Device access by file system.
      * FALSE - Device access not supported directly by driver.
      * Platform adaption device read/write API should be provided by the Host Adapter.
+     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     *
      * @type bool
      * @flags READ_ONLY
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      */
     SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS,
 
     /**
      * @brief Switch hardware access bus MDIO/I2C/CPLD
      *
+     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     *
      * @type sai_switch_hardware_access_bus_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @default SAI_SWITCH_HARDWARE_ACCESS_BUS_MDIO
-     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      */
     SAI_SWITCH_ATTR_HARDWARE_ACCESS_BUS,
 
@@ -1922,10 +1921,10 @@ typedef enum _sai_switch_attr_t
      * This information is Host adaptor specific, typically used for maintain
      * synchronization and device information. Driver will give this context back
      * to adaptor as part of call back sai_switch_register_read/write_fn API.
+     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      *
      * @type sai_uint64_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      */
     SAI_SWITCH_ATTR_PLATFROM_CONTEXT,
 
@@ -1935,9 +1934,12 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_switch_register_read_fn as read function.
      *
+     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * MANDATORY_ON_CREATE
+     *
      * @type sai_pointer_t sai_switch_register_read_fn
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * @flags CREATE_AND_SET
+     * @default NULL
      */
     SAI_SWITCH_ATTR_REGISTER_READ,
 
@@ -1946,10 +1948,11 @@ typedef enum _sai_switch_attr_t
      * This is mandatory function for driver when device access not supported by file system.
      *
      * Use sai_switch_register_write_fn as write function.
+     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
      *
      * @type sai_pointer_t sai_switch_register_write_fn
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * @flags CREATE_AND_SET
+     * @default NULL
      */
     SAI_SWITCH_ATTR_REGISTER_WRITE,
 
@@ -1969,7 +1972,6 @@ typedef enum _sai_switch_attr_t
      * @brief Firmware load method
      *
      * @type sai_switch_firmware_load_method_t
-     *
      * @flags CREATE_ONLY
      * @default SAI_SWITCH_FIRMWARE_LOAD_METHOD_INTERNAL
      */
@@ -1997,7 +1999,7 @@ typedef enum _sai_switch_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     * @condition SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
      */
     SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_EXECUTE,
 
@@ -2010,9 +2012,9 @@ typedef enum _sai_switch_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     * @condition SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
      */
-    SAI_SWITCH_ATTR_FIRMWARE_BROADCAST_END,
+    SAI_SWITCH_ATTR_FIRMWARE_BROADCAST_STOP,
 
     /**
      * @brief Firmware status verify and complete initialize device.
@@ -2023,7 +2025,7 @@ typedef enum _sai_switch_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     * @condition SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
      */
     SAI_SWITCH_ATTR_FIRMWARE_VERIFY_AND_INIT_SWITCH,
 
@@ -2063,7 +2065,7 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_PORT_CONNECTOR
      * @default internal
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_NPU
+     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      */
     SAI_SWITCH_ATTR_PORT_CONNECTOR_LIST,
 
@@ -2079,7 +2081,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type bool
      * @flags READ_ONLY
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_NPU
+     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      */
     SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FORM_LINE_TO_SYSTEM_PORT_SUPPORT,
 

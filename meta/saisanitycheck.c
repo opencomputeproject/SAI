@@ -1664,7 +1664,8 @@ void check_attr_key(
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
 
                 if ((md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT) ||
-                        (md->objecttype == SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP && md->attrid == SAI_INGRESS_PRIORITY_GROUP_ATTR_PORT))
+                    (md->objecttype == SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP && md->attrid == SAI_INGRESS_PRIORITY_GROUP_ATTR_PORT) ||
+                    (md->objecttype == SAI_OBJECT_TYPE_PORT_CONNECTOR && md->attrid == SAI_PORT_CONNECTOR_ATTR_SYSTEM_SIDE_PORT_ID) || (md->objecttype == SAI_OBJECT_TYPE_PORT_CONNECTOR && md->attrid == SAI_PORT_CONNECTOR_ATTR_LINE_SIDE_PORT_ID))
                 {
                     /*
                      * This is also special case, OBJECT_ID at should not be a
@@ -2289,6 +2290,9 @@ void check_attr_existing_objects(
 
             META_MD_ASSERT_FAIL(md, "object list is not supported on this object type");
 
+        case SAI_ATTR_VALUE_TYPE_POINTER:
+
+            break;
         default:
 
             META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
