@@ -1850,11 +1850,53 @@ typedef enum _sai_switch_stat_t
     /** Switch stat in drop reasons range start */
     SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
+    /** Get in switch packet drops configured by debug counter API at index 1 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_1_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 2 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_2_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 3 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_3_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 4 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_4_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 5 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_5_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 6 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_6_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 7 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_7_DROPPED_PKTS,
+
     /** Switch stat in drop reasons range end */
     SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_END = 0x00001fff,
 
     /** Switch stat out drop reasons range start */
     SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_BASE = 0x00002000,
+
+    /** Get out switch packet drops configured by debug counter API at index 1 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_1_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 2 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_2_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 3 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_3_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 4 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_4_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 5 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_5_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 6 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_6_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 7 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_7_DROPPED_PKTS,
 
     /** Switch stat out drop reasons range end */
     SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
