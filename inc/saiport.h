@@ -1223,6 +1223,7 @@ typedef enum _sai_port_attr_t
      * @type sai_object_id_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_PORT_SERDES
+     * @default internal
      */
     SAI_PORT_ATTR_PORT_SERDES_ID,
 
@@ -2147,7 +2148,7 @@ typedef enum _sai_port_serdes_attr_t
      * to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_PREEMPHASIS,
@@ -2160,7 +2161,7 @@ typedef enum _sai_port_serdes_attr_t
      * to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_IDRIVER,
@@ -2173,7 +2174,7 @@ typedef enum _sai_port_serdes_attr_t
      * to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_IPREDRIVER,
@@ -2186,7 +2187,7 @@ typedef enum _sai_port_serdes_attr_t
      * a port and the list specifies list of values to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_PRE1,
@@ -2199,7 +2200,7 @@ typedef enum _sai_port_serdes_attr_t
      * a port and the list specifies list of values to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_PRE2,
@@ -2212,7 +2213,7 @@ typedef enum _sai_port_serdes_attr_t
      * a port and the list specifies list of values to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_PRE3,
@@ -2225,7 +2226,7 @@ typedef enum _sai_port_serdes_attr_t
      * a port and the list specifies list of values to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_MAIN,
@@ -2238,7 +2239,7 @@ typedef enum _sai_port_serdes_attr_t
      * a port and the list specifies list of values to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_POST1,
@@ -2251,7 +2252,7 @@ typedef enum _sai_port_serdes_attr_t
      * a port and the list specifies list of values to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_POST2,
@@ -2264,7 +2265,7 @@ typedef enum _sai_port_serdes_attr_t
      * a port and the list specifies list of values to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_POST3,
@@ -2277,7 +2278,7 @@ typedef enum _sai_port_serdes_attr_t
      * a port and the list specifies list of values to be applied to each lane.
      *
      * @type sai_u32_list_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_ATTN,
