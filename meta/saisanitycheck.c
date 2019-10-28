@@ -4377,7 +4377,8 @@ void check_graph_connected()
             continue;
         }
 
-        if (SAI_OBJECT_TYPE_DEBUG_COUNTER == i) {
+        if (SAI_OBJECT_TYPE_DEBUG_COUNTER == i)
+        {
             /*
              * Allow debug counters to be disconnected from main graph
              * as use case is by querying base object stats and not by direct reference
@@ -4472,6 +4473,30 @@ void check_defines()
     META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT > 3, "there must be at least 3 notifications defined");
 }
 
+void check_object_type_attributes()
+{
+    SAI_META_LOG_ENTER();
+
+    size_t i = 0;
+
+    for (; i < sai_metadata_attr_by_object_type_count; ++i)
+    {
+        check_single_object_type_attributes(sai_metadata_attr_by_object_type[i]);
+    }
+}
+
+void check_all_object_infos()
+{
+    META_LOG_ENTER();
+
+    size_t i = SAI_OBJECT_TYPE_NULL + 1;
+
+    for (; i < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    {
+        check_single_object_info(sai_metadata_all_object_type_infos[i]);
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4483,14 +4508,7 @@ int main(int argc, char **argv)
     check_sai_status();
     check_object_type();
     check_attr_by_object_type();
-
-    size_t i = 0;
-
-    for (; i < sai_metadata_attr_by_object_type_count; ++i)
-    {
-        check_single_object_type_attributes(sai_metadata_attr_by_object_type[i]);
-    }
-
+    check_object_type_attributes();
     check_object_infos();
     check_stat_enums();
     check_attr_sorted_by_id_name();
@@ -4514,13 +4532,7 @@ int main(int argc, char **argv)
     check_label_size();
     check_switch_notify_list();
     check_defines();
-
-    i = SAI_OBJECT_TYPE_NULL + 1;
-
-    for (; i < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
-    {
-        check_single_object_info(sai_metadata_all_object_type_infos[i]);
-    }
+    check_all_object_infos();
 
     SAI_META_LOG_DEBUG("log test");
 

@@ -81,10 +81,13 @@ typedef enum _sai_debug_counter_bind_method_t
  */
 typedef enum _sai_in_drop_reason_t
 {
+    /** Start of in drop reasons */
+    SAI_IN_DROP_REASON_START,
+
     /* L2 reasons */
 
     /** Any L2 pipeline drop */
-    SAI_IN_DROP_REASON_L2_ANY,
+    SAI_IN_DROP_REASON_L2_ANY = SAI_IN_DROP_REASON_START,
 
     /** Source MAC is multicast */
     SAI_IN_DROP_REASON_SMAC_MULTICAST,
@@ -300,8 +303,14 @@ typedef enum _sai_in_drop_reason_t
     /** Packet is dropped due to configured ACL rules, egress stage, switch binding */
     SAI_IN_DROP_REASON_ACL_EGRESS_SWITCH,
 
+    /** End of in drop reasons */
+    SAI_IN_DROP_REASON_END,
+
     /** Custom range base value */
-    SAI_IN_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_IN_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000,
+
+    /** End of custom range */
+    SAI_IN_DROP_REASON_CUSTOM_RANGE_END
 
 } sai_in_drop_reason_t;
 
@@ -310,10 +319,13 @@ typedef enum _sai_in_drop_reason_t
  */
 typedef enum _sai_out_drop_reason_t
 {
+    /** Start of out drop reasons */
+    SAI_OUT_DROP_REASON_START,
+
     /* L2 reasons */
 
     /** Any L2 pipeline drop */
-    SAI_OUT_DROP_REASON_L2_ANY,
+    SAI_OUT_DROP_REASON_L2_ANY = SAI_OUT_DROP_REASON_START,
 
     /** Egress VLAN filter */
     SAI_OUT_DROP_REASON_EGRESS_VLAN_FILTER,
@@ -330,8 +342,14 @@ typedef enum _sai_out_drop_reason_t
      */
     SAI_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
+    /** End of out drop reasons */
+    SAI_OUT_DROP_REASON_END,
+
     /** Custom range base value */
-    SAI_OUT_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000
+    SAI_OUT_DROP_REASON_CUSTOM_RANGE_BASE = 0x10000000,
+
+    /** End of custom range */
+    SAI_OUT_DROP_REASON_CUSTOM_RANGE_END
 
 } sai_out_drop_reason_t;
 
