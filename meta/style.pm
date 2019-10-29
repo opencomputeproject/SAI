@@ -275,6 +275,10 @@ sub CheckFunctionsParams
 
         next if $fname eq "sai_switch_register_read_fn"; # exception
 
+        next if $fname eq "sai_switch_mdio_write_fn"; # exception
+
+        next if $fname eq "sai_switch_mdio_read_fn"; # exception
+
         my @paramsFlags = lc($comment) =~ /\@param\[(\w+)]/gis;
         my @fnparamsFlags = lc($fn) =~ /_(\w+)_.+?(?:\.\.\.|\w+)\s*[,\)]/gis;
 
@@ -435,7 +439,7 @@ sub CheckFunctionNaming
     my $typename = $1;
     my $name = $2;
 
-    if ($name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|remove_all_neighbor_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write)$/)
+    if ($name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|remove_all_neighbor_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write|switch_mdio_read|switch_mdio_write)$/)
     {
         # ok
     }
@@ -465,7 +469,7 @@ sub CheckFunctionNaming
     if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?$|^clear_\w+_stats$/)
     {
         # exceptions
-        return if $name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write)$/;
+        return if $name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write|switch_mdio_read|switch_mdio_write)$/;
 
         LogWarning "function not follow convention in $header:$n:$line";
     }

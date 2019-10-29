@@ -1903,22 +1903,9 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NAT_ENABLE,
 
     /**
-     * @brief SDK/Driver can access device through file system support.
-     *
-     * TRUE - Device access by file system.
-     * FALSE - Device access not supported directly by driver.
-     * Platform adaption device read/write API should be provided by the Host Adapter.
-     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS,
-
-    /**
      * @brief Switch hardware access bus MDIO/I2C/CPLD
      *
-     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      *
      * @type sai_switch_hardware_access_bus_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -1932,7 +1919,8 @@ typedef enum _sai_switch_attr_t
      * This information is Host adaptor specific, typically used for maintain
      * synchronization and device information. Driver will give this context back
      * to adaptor as part of call back sai_switch_register_read/write_fn API.
-     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     *
+     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      *
      * @type sai_uint64_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -1945,7 +1933,8 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_switch_register_read_fn as read function.
      *
-     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     *
      * MANDATORY_ON_CREATE
      *
      * @type sai_pointer_t sai_switch_register_read_fn
@@ -1959,7 +1948,7 @@ typedef enum _sai_switch_attr_t
      * This is mandatory function for driver when device access not supported by file system.
      *
      * Use sai_switch_register_write_fn as write function.
-     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY and SAI_SWITCH_ATTR_HARDWARE_ACCESS_SUPPORT_BY_SYSFS == false
+     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      *
      * @type sai_pointer_t sai_switch_register_write_fn
      * @flags CREATE_AND_SET
@@ -2319,18 +2308,14 @@ typedef void (*sai_switch_state_change_notification_fn)(
 /**
  * @brief Platform specific device register read access
  *
- * This API provides platform adaption in 2 ways
- *
- * 1# Provides platform adaption functionality to access device
+ * This API provides platform adaption functionality to access device
  * registers from driver. This is mandatory to pass as attribute to
  * sai_create_switch when driver implementation does not support register access
  * by device file system directly.
- * 2# Provides device access API from ASIC SDK.
  *
  * @objects switch_id SAI_OBJECT_TYPE_SWITCH
  *
  * @param[in] platform_context Platform context information.
- * @param[in] switch_id Switch Id
  * @param[in] device_addr Device address(PHY/lane/port MDIO address)
  * @param[in] start_reg_addr Starting register address to read
  * @param[in] number_of_registers Number of consecutive registers to read
@@ -2338,7 +2323,6 @@ typedef void (*sai_switch_state_change_notification_fn)(
  */
 typedef sai_status_t (*sai_switch_register_read_fn)(
         _In_ uint64_t platform_context,
-        _In_ sai_object_id_t switch_id,
         _In_ uint32_t device_addr,
         _In_ uint32_t start_reg_addr,
         _In_ uint32_t number_of_registers,
@@ -2347,18 +2331,14 @@ typedef sai_status_t (*sai_switch_register_read_fn)(
 /**
  * @brief Platform specific device register write access
  *
- * This API provides platform adaption in 2 ways
- *
- * 1# Provides platform adaption functionality to access device
+ * This API provides platform adaption functionality to access device
  * registers from driver. This is mandatory to pass as attribute to
  * sai_create_switch when driver implementation does not support register access
  * by device file system directly.
- * 2# Provides device access API from ASIC SDK.
  *
  * @objects switch_id SAI_OBJECT_TYPE_SWITCH
  *
  * @param[in] platform_context Platform context information.
- * @param[in] switch_id Switch Id
  * @param[in] device_addr Device address(PHY/lane/port MDIO address)
  * @param[in] start_reg_addr Starting register address to write
  * @param[in] number_of_registers Number of consecutive registers to write
@@ -2366,6 +2346,45 @@ typedef sai_status_t (*sai_switch_register_read_fn)(
  */
 typedef sai_status_t (*sai_switch_register_write_fn)(
         _In_ uint64_t platform_context,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _In_ const uint32_t *reg_val);
+
+/**
+ * @brief Switch MDIO read API
+ *
+ * Provides read access API for devices connected to MDIO from NPU SAI.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to read
+ * @param[in] number_of_registers Number of consecutive registers to read
+ * @param[out] reg_val Register read values
+ */
+typedef sai_status_t (*sai_switch_mdio_read_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _Out_ uint32_t *reg_val);
+
+/**
+ * @brief Switch MDIO write API
+ *
+ * Provides write access API for devices connected to MDIO from NPU SAI.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to write
+ * @param[in] number_of_registers Number of consecutive registers to write
+ * @param[in] reg_val Register write values
+ */
+typedef sai_status_t (*sai_switch_mdio_write_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t device_addr,
         _In_ uint32_t start_reg_addr,
@@ -2488,8 +2507,8 @@ typedef struct _sai_switch_api_t
     sai_get_switch_stats_fn         get_switch_stats;
     sai_get_switch_stats_ext_fn     get_switch_stats_ext;
     sai_clear_switch_stats_fn       clear_switch_stats;
-    sai_switch_register_read_fn     switch_register_read;
-    sai_switch_register_write_fn    switch_register_write;
+    sai_switch_mdio_read_fn         switch_mdio_read;
+    sai_switch_mdio_write_fn        switch_mdio_write;
 
 } sai_switch_api_t;
 
