@@ -2392,6 +2392,9 @@ typedef enum _sai_port_serdes_attr_t
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_ATTN,
 
+    /**
+     * @brief End of attributes
+     */
     SAI_PORT_SERDES_ATTR_END,
 
     /** Custom range base value */
