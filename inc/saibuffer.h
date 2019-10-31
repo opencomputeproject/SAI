@@ -244,6 +244,9 @@ typedef enum _sai_buffer_pool_type_t
     /** Egress buffer pool */
     SAI_BUFFER_POOL_TYPE_EGRESS,
 
+    /** Buffer pool used by both ingress and egress */
+    SAI_BUFFER_POOL_TYPE_BOTH
+
 } sai_buffer_pool_type_t;
 
 /**
