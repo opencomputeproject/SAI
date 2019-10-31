@@ -764,7 +764,7 @@ void check_attr_default_required(
                 }
             }
 
-            if (md->objecttype == SAI_OBJECT_TYPE_PORT)
+            if ((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
             {
                 /*
                  * Allow PORT non object list attributes to be set to internal switch values.
@@ -879,7 +879,8 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
 
-            if (md->objecttype == SAI_OBJECT_TYPE_PORT && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
+            if (((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
+                 && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
             {
                 /*
                  * Allow non object lists on PORT to be set to internal default value.
@@ -1100,7 +1101,7 @@ void check_attr_default_value_type(
 
         case SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL:
 
-            if (md->objecttype == SAI_OBJECT_TYPE_PORT)
+            if ((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
             {
                 /*
                  * Allow PORT attribute list's to be set to internal.
