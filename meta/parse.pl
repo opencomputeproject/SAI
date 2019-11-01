@@ -76,6 +76,7 @@ my %ATTR_TAGS = (
         "getsave"        , \&ProcessTagGetSave,
         "range"          , \&ProcessTagRange,
         "isresourcetype" , \&ProcessTagIsRecourceType,
+        "deprecated"     , \&ProcessTagDeprecated,
         );
 
 my %options = ();
@@ -259,6 +260,17 @@ sub ProcessTagIsRecourceType
     return undef;
 }
 
+sub ProcessTagDeprecated
+{
+    # just return true if defined
+
+    my ($type, $value, $val) = @_;
+
+    LogError "deprecated tag should not have value '$val'" if not $val =~ /^$/i;
+
+    return "true";
+}
+
 sub ProcessTagRange
 {
     my ($type, $attrName, $value) = @_;
@@ -328,7 +340,7 @@ sub ProcessDescription
 
     return if scalar@order == 0;
 
-    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?(:isresourcetype)?';
+    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?(:isresourcetype)?(:deprecated)?';
 
     my $order = join(":",@order);
 
@@ -1129,6 +1141,15 @@ sub ProcessIsResourceType
     return "false";
 }
 
+sub ProcessIsDeprecatedType
+{
+    my ($value, $deprecated) = @_;
+
+    return $deprecated if defined $deprecated;
+
+    return "false";
+}
+
 sub ProcessObjects
 {
     my ($attr, $objects) = @_;
@@ -1809,6 +1830,7 @@ sub ProcessSingleObjectType
         my $caplen          = ProcessCapabilityLen($attr, $meta{type});
         my $isextensionattr = ProcessIsExtensionAttr($attr, $meta{type});
         my $isresourcetype  = ProcessIsResourceType($attr, $meta{isresourcetype});
+        my $deprecated      = ProcessIsDeprecatedType($attr, $meta{deprecated});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -1863,6 +1885,7 @@ sub ProcessSingleObjectType
         WriteSource ".capabilitylength              = $caplen,";
         WriteSource ".isextensionattr               = $isextensionattr,";
         WriteSource ".isresourcetype                = $isresourcetype,";
+        WriteSource ".isdeprecated                  = $deprecated,";
 
         WriteSource "};";
 
