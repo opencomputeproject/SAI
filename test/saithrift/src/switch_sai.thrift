@@ -36,6 +36,7 @@ typedef i32 sai_thrift_queue_stat_counter_t
 typedef i32 sai_thrift_pg_stat_counter_t
 typedef i32 sai_thrift_buffer_pool_stat_counter_t
 typedef i32 sai_thrift_policer_stat_t
+typedef i32 sai_thrift_stat_id_t
 
 struct sai_thrift_fdb_entry_t {
     1: sai_thrift_mac_t mac_address;
@@ -301,6 +302,7 @@ service switch_sai_rpc {
     sai_thrift_result_t sai_thrift_get_default_vlan_id();
     sai_thrift_object_id_t sai_thrift_get_port_id_by_front_port(1: string port_name);
     sai_thrift_status_t sai_thrift_set_switch_attribute(1: sai_thrift_attribute_t attribute);
+    i64 sai_thrift_get_switch_stats_by_oid(1: sai_thrift_object_id_t thrift_counter_id);
 
     //bridge API
     sai_thrift_result_t sai_thrift_create_bridge_port(1: list<sai_thrift_attribute_t> thrift_attr_list);
@@ -411,4 +413,10 @@ service switch_sai_rpc {
     // QoS Map API
     sai_thrift_object_id_t sai_thrift_create_qos_map(1: list<sai_thrift_attribute_t> thrift_attr_list);
     sai_thrift_status_t sai_thrift_remove_qos_map(1: sai_thrift_object_id_t qos_map_id);
+
+    // Debug counters API
+    sai_thrift_object_id_t sai_thrift_create_debug_counter(1: list<sai_thrift_attribute_t> thrift_attr_list);
+    sai_thrift_status_t sai_thrift_remove_debug_counter(1: sai_thrift_object_id_t thrift_debug_counter_id);
+    sai_thrift_status_t sai_thrift_set_debug_counter_attribute(1: sai_thrift_object_id_t dc_id,
+                                                               2: sai_thrift_attribute_t thrift_attr);
 }

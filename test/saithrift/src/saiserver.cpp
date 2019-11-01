@@ -438,6 +438,7 @@ main(int argc, char* argv[])
     sai_log_set(SAI_API_ACL, log_level);
     sai_log_set(SAI_API_BRIDGE, log_level);
     sai_log_set(SAI_API_BUFFER, log_level);
+    sai_log_set(SAI_API_DEBUG_COUNTER, log_level);
     sai_log_set(SAI_API_FDB, log_level);
     sai_log_set(SAI_API_HOSTIF, log_level);
     sai_log_set(SAI_API_LAG, log_level);
