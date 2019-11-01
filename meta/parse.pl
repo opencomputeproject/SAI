@@ -1830,7 +1830,7 @@ sub ProcessSingleObjectType
         my $caplen          = ProcessCapabilityLen($attr, $meta{type});
         my $isextensionattr = ProcessIsExtensionAttr($attr, $meta{type});
         my $isresourcetype  = ProcessIsResourceType($attr, $meta{isresourcetype});
-        my $deprecated      = ProcessIsDeprecatedType($attr, $meta{deprecated});
+        my $isdeprecated    = ProcessIsDeprecatedType($attr, $meta{deprecated});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -1885,7 +1885,7 @@ sub ProcessSingleObjectType
         WriteSource ".capabilitylength              = $caplen,";
         WriteSource ".isextensionattr               = $isextensionattr,";
         WriteSource ".isresourcetype                = $isresourcetype,";
-        WriteSource ".isdeprecated                  = $deprecated,";
+        WriteSource ".isdeprecated                  = $isdeprecated,";
 
         WriteSource "};";
 
