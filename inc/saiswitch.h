@@ -1494,7 +1494,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Port state change notification callback function passed to the adapter.
      *
-     * In case driver does not support this attribute, The Host adaptor should poll
+     * In case driver does not support this attribute, The Host adapter should poll
      * port status by SAI_PORT_ATTR_OPER_STATUS.
      *
      * Use sai_port_state_change_notification_fn as notification function.
@@ -1915,10 +1915,10 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Platform context information
      *
-     * Platform context information provided by the host adaptor to driver.
-     * This information is Host adaptor specific, typically used for maintain
+     * Platform context information provided by the host adapter to driver.
+     * This information is Host adapter specific, typically used for maintain
      * synchronization and device information. Driver will give this context back
-     * to adaptor as part of call back sai_switch_register_read/write_fn API.
+     * to adapter as part of call back sai_switch_register_read/write_fn API.
      *
      * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      *
@@ -1928,7 +1928,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PLATFROM_CONTEXT,
 
     /**
-     * @brief Platform adaption device read callback function passed to the adaptor.
+     * @brief Platform adaption device read callback function passed to the adapter.
      * This is mandatory function for driver when device access not supported by file system.
      *
      * Use sai_switch_register_read_fn as read function.
@@ -1944,7 +1944,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_REGISTER_READ,
 
     /**
-     * @brief Platform adaption device write callback function passed to the adaptor.
+     * @brief Platform adaption device write callback function passed to the adapter.
      * This is mandatory function for driver when device access not supported by file system.
      *
      * Use sai_switch_register_write_fn as write function.
@@ -2073,7 +2073,7 @@ typedef enum _sai_switch_attr_t
      * @brief Propagate line side port state to system side port
      *
      * System side port state will reflect the ASIC port state.
-     * Host adaptor can depends on ASIC port state instead of port states from system side,
+     * Host adapter can depends on ASIC port state instead of port states from system side,
      * line side and ASIC port to determine interface operation status to application.
      *
      * TRUE - Device support for propagate line side port link status to system side port.
