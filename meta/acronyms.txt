@@ -1,5 +1,6 @@
 # this file defines acronyms, one acronym per line
 ACL - Access Control List
+AN - Association Number
 API - Application Program Interface
 ARP - Address Resolution Protocol
 ASIC - Application Specific Integrated Circuit
@@ -57,6 +58,7 @@ L3 - Layer 3
 LAG - Link Aggregation Group
 LPM - Longest Prefix Match
 MAC - Medium Access Control
+MACsec - Media Access Control Security
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
@@ -68,20 +70,27 @@ PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
 PFC - Priority Flow Control
 PIR - Peak Information Rate
+PN - Packet Number
 PTP - Precision time protocol
 QOS - Quality of Service
 RARP - Reverse Address Resolution Protocol
 RFC - Request For Comment
 RPF - Reverse Path Forwarding
 RSPAN - Remote Span
+SA - Secure Association
+SAK - Secure Association Key
 SAI - Switch Abstraction Interface
+SCI - Secure Channel Identifier
+SC - Secure Channel
 SDK - Software Development Kit
+SecTAG - MAC Security Tag
 SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
 SNAT - Source Network Address Translation
 SNMP - Simple Network Management Protocol
 SPAN - Switched Port Analyzer
 SQE - Signal Quality Errors
+SSCI - Short Secure Channel Identifier
 SSH - Secure Shell
 SSL - Secure Socket Layer
 STP - Spanning Tree Protocol
@@ -104,5 +113,6 @@ WCMP - Weighted Cost Multipath
 WRED - Weighted Random Early Detection
 WWW - World Wide Web
 XG - (*,G) Any-source Multicast
+XPN - Extended Packet Number
 XOFF - Transmitter Off
 XON - Transmitter On
