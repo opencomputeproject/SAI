@@ -1160,6 +1160,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port serdes control pre-emphasis
      *
+     * Deprecated. Use SAI_OBJECT_TYPE_PORT_SERDES
      * List of port serdes pre-emphasis values. The values are of type sai_u32_list_t
      * where the count is number lanes in a port and the list specifies list of values
      * to be applied to each lane.
@@ -1173,6 +1174,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port serdes control idriver
      *
+     * Deprecated. Use SAI_OBJECT_TYPE_PORT_SERDES
      * List of port serdes idriver values. The values are of type sai_u32_list_t
      * where the count is number lanes in a port and the list specifies list of values
      * to be applied to each lane.
@@ -1186,6 +1188,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port serdes control ipredriver
      *
+     * Deprecated. Use SAI_OBJECT_TYPE_PORT_SERDES
      * List of port serdes ipredriver values. The values are of type sai_u32_list_t
      * where the count is number lanes in a port and the list specifies list of values
      * to be applied to each lane.
@@ -1213,6 +1216,16 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_PTP_MODE_NONE
      */
     SAI_PORT_ATTR_PTP_MODE,
+
+    /**
+     * @brief Serdes object ID for the port
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT_SERDES
+     * @default internal
+     */
+    SAI_PORT_ATTR_PORT_SERDES_ID,
 
     /**
      * @brief End of attributes
@@ -2151,6 +2164,233 @@ typedef sai_status_t (*sai_clear_port_pool_stats_fn)(
         _In_ const sai_stat_id_t *counter_ids);
 
 /**
+ * @brief List of Port Serdes attributes
+ */
+typedef enum _sai_port_serdes_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_PORT_SERDES_ATTR_START,
+
+    /**
+     * @brief Port ID
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
+     */
+    SAI_PORT_SERDES_ATTR_PORT_ID = SAI_PORT_SERDES_ATTR_START,
+
+    /**
+     * @brief Port serdes control pre-emphasis
+     *
+     * List of port serdes pre-emphasis values. The values are of type sai_u32_list_t
+     * where the count is number lanes in a port and the list specifies list of values
+     * to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PREEMPHASIS,
+
+    /**
+     * @brief Port serdes control idriver
+     *
+     * List of port serdes idriver values. The values are of type sai_u32_list_t
+     * where the count is number lanes in a port and the list specifies list of values
+     * to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_IDRIVER,
+
+    /**
+     * @brief Port serdes control pre-emphasis
+     *
+     * List of port serdes ipredriver values. The values are of type sai_u32_list_t
+     * where the count is number lanes in a port and the list specifies list of values
+     * to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_IPREDRIVER,
+
+    /**
+     * @brief Port serdes control TX FIR PRE1 filter
+     *
+     * List of port serdes TX fir precursor1 tap-filter values.
+     * The values are of type sai_u32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_PRE1,
+
+    /**
+     * @brief Port serdes control TX FIR PRE2 filter
+     *
+     * List of port serdes TX fir precursor2 tap-filter values.
+     * The values are of type sai_u32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_PRE2,
+
+    /**
+     * @brief Port serdes control TX FIR PRE3 filter
+     *
+     * List of port serdes TX fir precursor3 tap-filter values.
+     * The values are of type sai_u32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_PRE3,
+
+    /**
+     * @brief Port serdes control TX FIR MAIN filter
+     *
+     * List of port serdes TX fir maincursor tap-filter values.
+     * The values are of type sai_u32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_MAIN,
+
+    /**
+     * @brief Port serdes control TX FIR POST1 filter
+     *
+     * List of port serdes TX fir postcursor1 tap-filter values.
+     * The values are of type sai_u32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_POST1,
+
+    /**
+     * @brief Port serdes control TX FIR POST2 filter
+     *
+     * List of port serdes TX fir postcursor2 tap-filter values.
+     * The values are of type sai_u32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_POST2,
+
+    /**
+     * @brief Port serdes control TX FIR POST3 filter
+     *
+     * List of port serdes TX fir postcursor3 tap-filter values.
+     * The values are of type sai_u32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_POST3,
+
+    /**
+     * @brief Port serdes control TX FIR attenuation
+     *
+     * List of port serdes TX fir attn values.
+     * The values are of type sai_u32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_ATTN,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_PORT_SERDES_ATTR_END,
+
+    /** Custom range base value */
+    SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_END
+
+} sai_port_serdes_attr_t;
+
+/**
+ * @brief Create port serdes
+ *
+ * @param[out] port_serdes_id Port serdes id
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_port_serdes_fn)(
+        _Out_ sai_object_id_t *port_serdes_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove port serdes
+ *
+ * @param[in] port_serdes_id Port serdes id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_port_serdes_fn)(
+        _In_ sai_object_id_t port_serdes_id);
+
+/**
+ * @brief Set Port serdes attribute value.
+ *
+ * @param[in] port_serdes_id Port serdes id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_port_serdes_attribute_fn)(
+        _In_ sai_object_id_t port_serdes_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get Port serdes attribute value.
+ *
+ * @param[in] port_serdes_id Port serdes id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_port_serdes_attribute_fn)(
+        _In_ sai_object_id_t port_serdes_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_port_api_t
@@ -2170,6 +2410,10 @@ typedef struct _sai_port_api_t
     sai_get_port_pool_stats_fn        get_port_pool_stats;
     sai_get_port_pool_stats_ext_fn    get_port_pool_stats_ext;
     sai_clear_port_pool_stats_fn      clear_port_pool_stats;
+    sai_create_port_serdes_fn         create_port_serdes;
+    sai_remove_port_serdes_fn         remove_port_serdes;
+    sai_set_port_serdes_attribute_fn  set_port_serdes_attribute;
+    sai_get_port_serdes_attribute_fn  get_port_serdes_attribute;
 
 } sai_port_api_t;
 
