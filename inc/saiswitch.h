@@ -2084,7 +2084,7 @@ typedef enum _sai_switch_attr_t
      * @type bool
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FORM_LINE_TO_SYSTEM_PORT_SUPPORT,
+    SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FROM_LINE_TO_SYSTEM_PORT_SUPPORT,
 
     /**
      * @brief Switch type NPU/PHY
