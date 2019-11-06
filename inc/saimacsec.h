@@ -44,10 +44,14 @@ typedef enum _sai_macsec_direction_t
      *
      */
 
-    /* System to line direction */
+    /* 
+     * @brief System to line direction
+     */
     SAI_MACSEC_DIRECTION_EGRESS,
 
-    /* Line to system direction */
+    /*
+     * @brief Line to system direction
+     */
     SAI_MACSEC_DIRECTION_INGRESS,
 } sai_macsec_direction_t;
 
@@ -106,14 +110,14 @@ typedef enum _sai_macsec_attr_t
 
     /**
      * @brief Indicates if ingress can use SCI only as a rule match field.
-     * True indicates SCI can only be used as rule match field.  In that case,
+     * True indicates SCI can only be used as rule match field. In that case,
      * 1 ingress flow can be associated with only 1 rule and 1 Secure Channel.
-     * False indicates one 1 flow can be associated with multiple rules and
+     * false indicates one 1 flow can be associated with multiple rules and
      * multiple Secure Channels.
      *
      * @type bool
      * @flags READ_ONLY
-     * @condition SAI_MACSEC_ATTR_DIRECTION == SAI_MACSEC_ATTR_DIRECTION_INGRESS
+     * @condition SAI_MACSEC_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
     SAI_MACSEC_ATTR_SCI_IN_INGRESS_RULES,
 
@@ -161,9 +165,8 @@ typedef enum _sai_macsec_attr_t
      * @brief List of supported SecTAG offset values for both ingress parsing
      * and for egress.
      *
-     * @type sai_object_list_t
+     * @type sai_u8_list_t
      * @flags READ_ONLY
-     * @objects sai_uint8_t
      */
     SAI_MACSEC_ATTR_SECTAG_OFFSETS_SUPPORTED,
 
@@ -225,9 +228,9 @@ typedef enum _sai_macsec_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default False
+     * @default false
      */
-    SAI_MACSEC_PHYSICAL_BYPASS_ENABLE,
+    SAI_MACSEC_ATTR_PHYSICAL_BYPASS_ENABLE,
 
     /**
      * @brief List of MACsec ports
@@ -269,10 +272,10 @@ typedef enum _sai_macsec_port_attr_t
     /**
      * @brief MACSEC direction
      *
-     * @type sai_MACsec_direction_t
+     * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_MACSEC_PORT_ATTR_DIRECTION = SAI_MACSEC_PORT_ATTR_START,
+    SAI_MACSEC_PORT_ATTR_MACSEC_DIRECTION = SAI_MACSEC_PORT_ATTR_START,
 
     /**
      * @brief Phy line-side Port Id associated with this MACsec port
@@ -310,7 +313,7 @@ typedef enum _sai_macsec_port_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_SWITCH_SWITCHING_MODE_CUT_THROUGH
      */
-    SAI_MACSEC_PORT_ATTR_SWITCHING_MODE,
+    SAI_MACSEC_PORT_ATTR_SWITCH_SWITCHING_MODE,
 
     /**
      * @brief End of MACsec Port attributes
@@ -324,37 +327,59 @@ typedef enum _sai_macsec_port_attr_t
  */
 typedef enum _sai_macsec_port_stat_t
 {
-     /** Malformed packets dropped before MACsec processing, not in 802.1ae MIB */
+     /**
+      *Malformed packets dropped before MACsec processing, not in 802.1ae MIB
+      */
      SAI_MACSEC_STAT_PRE_MACSEC_DROP_PACKETS,
 
-     /** Packets classified as control packets for MACsec processing, not in 802.1ae MIB */
+     /**
+      *Packets classified as control packets for MACsec processing, not in 802.1ae MIB
+      */
      SAI_MACSEC_STAT_CONTROL_PACKETS,
 
-     /** Packets classified as data packets for MACsec processing, not in 802.1ae MIB */
+     /**
+      *Packets classified as data packets for MACsec processing, not in 802.1ae MIB
+      */
      SAI_MACSEC_STAT_DATA_PACKETS,
 
-     /** 802.1ae defined ifOutOctets or ifInOctets for MACSEC uncontrolled port */
+     /**
+      * 802.1ae defined ifOutOctets or ifInOctets for MACSEC uncontrolled port
+      */
      SAI_MACSEC_STAT_OCTETS_UNCONTROLLED,
 
-     /** 802.1ae defined ifOutOctets or ifInOctets for MACSEC controlled port */
+     /**
+      *802.1ae defined ifOutOctets or ifInOctets for MACSEC controlled port
+      */
      SAI_MACSEC_STAT_OCTETS_CONTROLLED,
 
-     /** 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC uncontrolled port */
+     /**
+      *802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC uncontrolled port
+      */
      SAI_MACSEC_STAT_UCAST_PACKETS_UNCONTROLLED,
 
-     /** 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC controlled port */
+     /**
+      *802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC controlled port
+      */
      SAI_MACSEC_STAT_UCAST_PACKETS_CONTROLLED,
 
-     /** 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC uncontrolled port */
+     /**
+      *802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC uncontrolled port
+      */
      SAI_MACSEC_STAT_MULTICAST_PACKETS_UNCONTROLLED,
 
-   /** 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC controlled port */
+   /**
+    *802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC controlled port
+    */
    SAI_MACSEC_STAT_MULTICAST_PACKETS_CONTROLLED,
 
-   /** 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC uncontrolled port */
+   /**
+    *802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC uncontrolled port
+    */
    SAI_MACSEC_STAT_BROADCAST_PACKETS_UNCONTROLLED,
 
-   /** 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC controlled port */
+   /**
+    *802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC controlled port
+    */
    SAI_MACSEC_STAT_BROADCAST_PACKETS_CONTROLLED,
 } sai_macsec_port_stat_t;
 
@@ -372,13 +397,13 @@ typedef enum _sai_macsec_flow_action_t
     /** Drop Packet */
     SAI_MACSEC_FLOW_ACTION_DROP,
 
-    /** Permit Packet in the clear - no encryption/decryption/authetication */
+    /** Permit Packet in the clear - no encryption/decryption/authentication */
     SAI_MACSEC_FLOW_ACTION_PERMIT,
 
     /** Permit Packet in the clear and count as control packets */
     SAI_MACSEC_FLOW_ACTION_CONTROL_PACKET,
 
-    /** Secure Packet - encrypt on egress, decrypt and autheticate on ingress */
+    /** Secure Packet - encrypt on egress, decrypt and authenticate on ingress */
     SAI_MACSEC_FLOW_ACTION_SECURE,
 } sai_macsec_flow_action_t;
 
@@ -401,7 +426,7 @@ typedef enum _sai_macsec_flow_attr_t
      * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_MACSEC_FLOW_ATTR_DIRECTION = SAI_MACSEC_FLOW_ATTR_START,
+    SAI_MACSEC_FLOW_ATTR_MACSEC_DIRECTION = SAI_MACSEC_FLOW_ATTR_START,
 
     /**
      * @brief MACSEC flow action
@@ -455,7 +480,7 @@ typedef enum _sai_macsec_rule_attr_t
      * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_MACSEC_RULE_ATTR_DIRECTION = SAI_MACSEC_RULE_ATTR_START,
+    SAI_MACSEC_RULE_ATTR_MACSEC_DIRECTION = SAI_MACSEC_RULE_ATTR_START,
 
     /**
      * @brief MACsec phy port object id
@@ -491,7 +516,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Dst MAC Address
      *
-     * @type sai_macsec_rule_match_field_t sai_mac_t
+     * @type sai_macsec_rule_match_field_data_t sai_mac_t
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -500,7 +525,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Match on packet with no vlan tag
      *
-     * @type sai_macsec_rule_match_field_t bool
+     * @type sai_macsec_rule_match_field_data_t bool
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -509,7 +534,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Match on packet with only 1 vlan tag
      *
-     * @type sai_macsec_rule_match_field_t bool
+     * @type sai_macsec_rule_match_field_data_t bool
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -518,7 +543,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Match on packet with 2 or more vlan tags
      *
-     * @type sai_macsec_rule_match_field_t bool
+     * @type sai_macsec_rule_match_field_data_t bool
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -527,7 +552,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Outermost vlan_id (12-bits)
      *
-     * @type sai_macsec_rule_match_field_t sai_vlan_id_t
+     * @type sai_macsec_rule_match_field_data_t sai_vlan_id_t
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -536,7 +561,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Ethertype of packet after last parsed VLAN tag
      *
-     * @type sai_macsec_rule_match_field_t sai_uint16_t
+     * @type sai_macsec_rule_match_field_data_t sai_uint16_t
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -545,7 +570,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief SCI value in MACSEC packet SecTAG.
      *
-     * @type sai_macsec_rule_match_field_t sai_macsec_sci_t
+     * @type sai_macsec_rule_match_field_data_t sai_macsec_sci_t
      * @flags CREATE_ONLY
      * @default disabled
      * @condition SAI_MACSEC_RULE_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
@@ -586,7 +611,9 @@ typedef enum _sai_macsec_rule_attr_t
  */
 typedef enum _sai_macsec_rule_stat_t
 {
-   /** @brief Count of packets that hit this rule */
+   /**
+    *@brief Count of packets that hit this rule
+    */
     SAI_MACSEC_RULE_STAT,
 
 } sai_macsec_rule_stat_t;
@@ -609,7 +636,7 @@ typedef enum _sai_macsec_secure_channel_attr_t
      * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION = SAI_MACSEC_SECURE_CHANNEL_ATTR_START,
+    SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION = SAI_MACSEC_SECURE_CHANNEL_ATTR_START,
 
     /**
      * @brief MACSEC flow object id
@@ -648,7 +675,7 @@ typedef enum _sai_macsec_secure_channel_attr_t
      * @brief Explicit SCI enable for this Secure Channel.
      * @type bool
      * @flags CREATE_AND_SET
-     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
+     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
      */
     SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_EXPLICIT_SCI_ENABLE,
 
@@ -656,16 +683,16 @@ typedef enum _sai_macsec_secure_channel_attr_t
      * @brief SecTAG offset for this Secure Channel.
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
+     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
      */
     SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_SECTAG_OFFSET,
 
     /**
      * @brief Active MACSEC secure_association
-     * @type sai_object_t
+     * @type sai_object_id_t
      * @flags SET_ONLY
      * @objects SAI_OBJECT_TYPE_MACSEC_SECURE_ASSOCIATION
-     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
+     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
      */
     SAI_MACSEC_SECURE_CHANNEL_ATTR_ACTIVE_SECURE_ASSOCIATION,
 
@@ -673,7 +700,7 @@ typedef enum _sai_macsec_secure_channel_attr_t
      * @brief Replay protection enable for this Secure Channel.
      * @type bool
      * @flags CREATE_AND_SET
-     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
     SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_REPLAY_PROTECTION_ENABLE,
 
@@ -681,7 +708,7 @@ typedef enum _sai_macsec_secure_channel_attr_t
      * @brief Replay protection window for this Secure Channel.
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+     * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
     SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_REPLAY_PROTECTION_WINDOW,
 
@@ -704,44 +731,64 @@ typedef enum _sai_macsec_secure_channel_attr_t
  */
 typedef enum _sai_macsec_secure_channel_stat_t
 {
-     /** @brief Control packets which are not secured (using MACsec uncontrolled port) -
-      * not in 802.1ae MIB */
+     /**
+      * @brief Control packets which are not secured (using MACsec uncontrolled port) -
+      * not in 802.1ae MIB
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_CONTROL_PACKETS,
 
-     /** @brief 802.1ae defined OutPktsUntagged or InPktsUntagged */
+     /**
+      *@brief 802.1ae defined OutPktsUntagged or InPktsUntagged
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_PACKETS_UNTAGGED,
 
-     /** @brief Packets that have valid SCI, but the AN value does not have associated SA -
+     /**
+      *@brief Packets that have valid SCI, but the AN value does not have associated SA -
       * not in 802.1ae MIB.
-      * Provides the aggregate of InPktsNotUsingSA for all invalid SAs of a SC */
+      * Provides the aggregate of InPktsNotUsingSA for all invalid SAs of a SC
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_SA_NOT_IN_USE,
 
-     /** @brief Control packets with SecTAG which are not secured (using MACsec
-      * uncontrolled port) - not in 802.1ae MIB */
+     /**
+      *@brief Control packets with SecTAG which are not secured (using MACsec
+      * uncontrolled port) - not in 802.1ae MIB
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_TAGGED_CONTROL_PACKETS,
 
-     /** @brief 802.1ae defined OutPktsTooLong
-      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION = SAI_MACSEC_ATTR_DIRECTION_EGRESS */
+     /**
+      *@brief 802.1ae defined OutPktsTooLong
+      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION = SAI_MACSEC_DIRECTION_EGRESS
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_OUT_PACKETS_TOO_LONG,
 
-     /** @brief 802.1ae defined InPktsNoTag
-      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION = SAI_MACSEC_ATTR_DIRECTION_INGRESS */
+     /**
+      *@brief 802.1ae defined InPktsNoTag
+      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION = SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_IN_PACKETS_NO_TAG,
 
-     /** @brief 802.1ae defined InPktsBadTag
-      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION = SAI_MACSEC_ATTR_DIRECTION_INGRESS */
+     /**
+      *@brief 802.1ae defined InPktsBadTag
+      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION = SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_IN_PACKETS_BAD_TAG,
 
-     /** @brief 802.1ae defined InPktsNoSci
-      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION = SAI_MACSEC_ATTR_DIRECTION_INGRESS */
+     /**
+      *@brief 802.1ae defined InPktsNoSci
+      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION = SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_IN_PACKETS_NO_SCI,
 
-     /** @brief 802.1ae defined InPktsUnknownSci
-      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION = SAI_MACSEC_ATTR_DIRECTION_INGRESS */
+     /**
+      *@brief 802.1ae defined InPktsUnknownSci
+      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION = SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_IN_PACKETS_UNKNOWN_SCI,
 
-     /** @brief 802.1ae defined InPktsOverrun
-      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_DIRECTION = SAI_MACSEC_ATTR_DIRECTION_INGRESS */
+     /**
+      *@brief 802.1ae defined InPktsOverrun
+      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION = SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_CHANNEL_STAT_IN_PACKETS_OVERRUN,
 } sai_macsec_secure_channel_stat_t;
 
@@ -764,7 +811,7 @@ typedef enum _sai_macsec_secure_association_attr_t
      * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION = SAI_MACSEC_SECURE_ASSOCIATION_ATTR_START,
+    SAI_MACSEC_SECURE_ASSOCIATION_ATTR_MACSEC_DIRECTION = SAI_MACSEC_SECURE_ASSOCIATION_ATTR_START,
 
     /**
      * @brief MACSEC Secure Channel object id
@@ -803,7 +850,7 @@ typedef enum _sai_macsec_secure_association_attr_t
     /**
      * @brief MACSEC SAK (Secure Association Key) used for encryption/decryption.
      *
-     * @type sai_sak_t
+     * @type sai_macsec_sak_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_MACSEC_SECURE_ASSOCIATION_ATTR_SAK,
@@ -811,7 +858,7 @@ typedef enum _sai_macsec_secure_association_attr_t
     /**
      * @brief MACSEC Salt used for encryption/decryption.
      *
-     * @type sai_salt_t
+     * @type sai_macsec_salt_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_MACSEC_SECURE_ASSOCIATION_ATTR_SALT,
@@ -856,77 +903,101 @@ typedef enum _sai_macsec_secure_association_attr_t
  */
 typedef enum _sai_macsec_secure_association_stat_t
 {
-     /** @brief The sum of this count over all Secure Associations of a Secure
+     /**
+      *@brief The sum of this count over all Secure Associations of a Secure
       * Channel gives 802.1ae statistics outOctetsEncrypted for egress and
-      * inOctetsDecrypted for ingress */
+      * inOctetsDecrypted for ingress
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_OCTETS_ENCRYPTED,
 
-     /** @brief The sum of this count over Secure Associations gives 802.1ae
-      * statistics outOctetsProtected for egress and inOctetsValidated for ingress */
+     /**
+      *@brief The sum of this count over Secure Associations gives 802.1ae
+      * statistics outOctetsProtected for egress and inOctetsValidated for ingress
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_OCTETS_PROTECTED,
 
-     /** @brief The sum of this count over Secure Associations gives 802.1ae statistics
+     /**
+      *@brief The sum of this count over Secure Associations gives 802.1ae statistics
       * outPacketsEncrypted.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_OUT_PACKETS_ENCRYPTED,
 
-     /** @brief The sum of this count over Secure Associations gives 802.1ae statistics
+     /**
+      *@brief The sum of this count over Secure Associations gives 802.1ae statistics
       * outPacketsProtected.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_OUT_PACKETS_PROTECTED,
 
-     /** @brief The sum of this count over Secure Associations gives 802.1ae statistics
+     /**
+      *@brief The sum of this count over Secure Associations gives 802.1ae statistics
       * inPacketsUnchecked.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_IN_PACKETS_UNCHECKED,
 
-     /** @brief The sum of this count over Secure Associations gives 802.1ae statistics
+     /**
+      *@brief The sum of this count over Secure Associations gives 802.1ae statistics
       * inPacketsDelayed.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_IN_PACKETS_DELAYED,
 
-     /** @brief The sum of this count over Secure Associations gives 802.1ae statistics
+     /**
+      *@brief The sum of this count over Secure Associations gives 802.1ae statistics
       * inPacketsLate.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_IN_PACKETS_LATE,
 
-     /** @brief 802.1ae defined inPacketsInvalid.
+     /**
+      *@brief 802.1ae defined inPacketsInvalid.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_IN_PACKETS_INVALID,
 
-     /** @brief 802.1ae defined inPacketsNotValid.
+     /**
+      *@brief 802.1ae defined inPacketsNotValid.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_IN_PACKETS_NOT_VALID,
 
-     /** @brief 802.1ae defined inPacketsNotUsingSA.
+     /**
+      *@brief 802.1ae defined inPacketsNotUsingSA.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_IN_PACKETS_NOT_USING_SA,
 
-     /** @brief 802.1ae defined inPacketsUnusedSA.
+     /**
+      *@brief 802.1ae defined inPacketsUnusedSA.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_IN_PACKETS_UNUSED_SA,
 
-     /** @brief 802.1ae defined inPacketsOk.
+     /**
+      *@brief 802.1ae defined inPacketsOk.
       * @condition
-      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS */
+      * SAI_MACSEC_SECURE_ASSOCIATION_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
+      */
      SAI_MACSEC_SECURE_ASSOCIATION_STAT_IN_PACKETS_OK,
 } sai_macsec_secure_association_stat_t;
 
 
 /**
- * @brief create a MACsec object
+ * @brief Create a MACsec object
  *
  * @param[out] macsec_id The MACsec object id associated with this Phy
- * @param[in] phy_id The Phy Object id
+ * @param[in] switch_id The Phy Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -934,7 +1005,7 @@ typedef enum _sai_macsec_secure_association_stat_t
  */
 typedef sai_status_t (*sai_create_macsec_fn)(
         _Out_ sai_object_id_t *macsec_id,
-        _In_ sai_object_id_t phy_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -972,13 +1043,13 @@ typedef sai_status_t (*sai_set_macsec_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_attribute_fn)(
         _In_ sai_object_id_t macsec_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief create a MACsec phy port
+ * @brief Create a MACsec phy port
  *
  * @param[out] macsec_port_id The MACsec phy port id
- * @param[in] phy_id The Phy Object id
+ * @param[in] switch_id The Phy Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -986,12 +1057,12 @@ typedef sai_status_t (*sai_get_macsec_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_macsec_port_fn)(
         _Out_ sai_object_id_t *macsec_port_id,
-        _In_ sai_object_id_t phy_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Delete an MACsec phy port
+ * @brief Delete a MACsec phy port
  *
  * @param[in] macsec_port_id The MACsec phy port id
  *
@@ -1024,7 +1095,7 @@ typedef sai_status_t (*sai_set_macsec_port_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_port_attribute_fn)(
         _In_ sai_object_id_t macsec_port_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Get MACSEC port counters extended
@@ -1040,7 +1111,7 @@ typedef sai_status_t (*sai_get_macsec_port_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_port_stats_ext_fn)(
         _In_ sai_object_id_t macsec_port_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_macsec_port_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -1056,13 +1127,13 @@ typedef sai_status_t (*sai_get_macsec_port_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_macsec_port_stats_fn)(
         _In_ sai_object_id_t macsec_port_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_macsec_port_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
- * @brief create a MACSEC flow
+ * @brief Create a MACSEC flow
  *
  * @param[out] macsec_flow_id The MACSEC flow id
- * @param[in] phy_id The Phy Object id
+ * @param[in] switch_id The Phy Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1070,7 +1141,7 @@ typedef sai_status_t (*sai_clear_macsec_port_stats_fn)(
  */
 typedef sai_status_t (*sai_create_macsec_flow_fn)(
         _Out_ sai_object_id_t *macsec_flow_id,
-        _In_ sai_object_id_t phy_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1108,13 +1179,13 @@ typedef sai_status_t (*sai_set_macsec_flow_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_flow_attribute_fn)(
         _In_ sai_object_id_t macsec_flow_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create a MACSEC rule
  *
  * @param[out] macsec_rule_id The MACSEC rule id
- * @param[in] phy_id The Phy Object id
+ * @param[in] switch_id The Phy Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1122,7 +1193,7 @@ typedef sai_status_t (*sai_get_macsec_flow_attribute_fn)(
  */
 typedef sai_status_t (*sai_create_macsec_rule_fn)(
         _Out_ sai_object_id_t *macsec_rule_id,
-        _In_ sai_object_id_t phy_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1160,7 +1231,7 @@ typedef sai_status_t (*sai_set_macsec_rule_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_rule_attribute_fn)(
         _In_ sai_object_id_t macsec_rule_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Get MACSEC rule counters extended
@@ -1176,7 +1247,7 @@ typedef sai_status_t (*sai_get_macsec_rule_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_rule_stats_ext_fn)(
         _In_ sai_object_id_t macsec_rule_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_macsec_rule_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -1192,13 +1263,13 @@ typedef sai_status_t (*sai_get_macsec_rule_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_macsec_rule_stats_fn)(
         _In_ sai_object_id_t macsec_rule_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_macsec_rule_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
- * @brief create a MACSEC Secure Channel
+ * @brief Create a MACSEC Secure Channel
  *
  * @param[out] macsec_secure_channel_id The MACSEC secure_channel id
- * @param[in] phy_id The Phy Object id
+ * @param[in] switch_id The Phy Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1206,7 +1277,7 @@ typedef sai_status_t (*sai_clear_macsec_rule_stats_fn)(
  */
 typedef sai_status_t (*sai_create_macsec_secure_channel_fn)(
         _Out_ sai_object_id_t *macsec_secure_channel_id,
-        _In_ sai_object_id_t phy_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1244,7 +1315,7 @@ typedef sai_status_t (*sai_set_macsec_secure_channel_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_secure_channel_attribute_fn)(
         _In_ sai_object_id_t macsec_secure_channel_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Get MACSEC Secure Channel counters extended
@@ -1260,7 +1331,7 @@ typedef sai_status_t (*sai_get_macsec_secure_channel_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_secure_channel_stats_ext_fn)(
         _In_ sai_object_id_t macsec_secure_channel_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_macsec_secure_channel_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -1276,13 +1347,13 @@ typedef sai_status_t (*sai_get_macsec_secure_channel_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_macsec_secure_channel_stats_fn)(
         _In_ sai_object_id_t macsec_secure_channel_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_macsec_secure_channel_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
- * @brief create a MACSEC Secure Association
+ * @brief Create a MACSEC Secure Association
  *
  * @param[out] macsec_secure_association_id The MACSEC Secure Association id
- * @param[in] phy_id The Phy Object id
+ * @param[in] switch_id The Phy Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1290,7 +1361,7 @@ typedef sai_status_t (*sai_clear_macsec_secure_channel_stats_fn)(
  */
 typedef sai_status_t (*sai_create_macsec_secure_association_fn)(
         _Out_ sai_object_id_t *macsec_secure_association_id,
-        _In_ sai_object_id_t phy_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1328,7 +1399,7 @@ typedef sai_status_t (*sai_set_macsec_secure_association_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_secure_association_attribute_fn)(
         _In_ sai_object_id_t macsec_secure_association_id,
         _In_ uint32_t attr_count,
-        _Out_ sai_attribute_t *attr_list);
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Get MACSEC Secure Association counters extended
@@ -1344,7 +1415,7 @@ typedef sai_status_t (*sai_get_macsec_secure_association_attribute_fn)(
 typedef sai_status_t (*sai_get_macsec_secure_association_stats_ext_fn)(
         _In_ sai_object_id_t macsec_secure_association_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_macsec_secure_association_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -1360,7 +1431,7 @@ typedef sai_status_t (*sai_get_macsec_secure_association_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_macsec_secure_association_stats_fn)(
         _In_ sai_object_id_t macsec_secure_association_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_macsec_secure_association_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief MACSEC methods table retrieved with sai_api_query()

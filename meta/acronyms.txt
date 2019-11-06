@@ -1,5 +1,6 @@
 # this file defines acronyms, one acronym per line
 ACL - Access Control List
+AES - Advanced Encryption Standard
 AN - Association Number
 API - Application Program Interface
 ARP - Address Resolution Protocol
@@ -34,6 +35,7 @@ FD - File Descriptor
 FDB - Forwarding Data Base
 FEC - Forward Error Correction
 FPGA - Field Programmable Gate Array
+GCM - Galois Counter Mode
 GPB - Google Protocol Buffers
 GRE - Generic Routing Encapsulation
 GRPC - GRPC Remote Procedure Call
@@ -49,6 +51,7 @@ IGMP - Internet Group Management Protocol
 IHL - Internet Header Length
 IOAM - In-situ Operations And Management
 IP - Internet Protocol
+IPG - Inter-Packet Gap
 IPFIX - IP Flow Information Export
 IP2ME - IP packets to local router IP
 IPMC - Intelligent Platform Management Controller
