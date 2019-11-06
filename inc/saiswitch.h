@@ -2019,7 +2019,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Firmware status verify and complete initialize device.
      *
-     * Host Adaptor should mandatory to set attribute to true,
+     * Host Adapter should mandatory to set attribute to true,
      * switch before doing any other configurations.
      *
      * @type bool
