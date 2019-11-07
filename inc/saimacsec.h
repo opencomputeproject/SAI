@@ -246,9 +246,9 @@ typedef enum _sai_macsec_attr_t
      *
      * @type sai_object_list_t
      * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_FLOW
+     * @objects SAI_OBJECT_TYPE_MACSEC_FLOW
      */
-    SAI_MACSEC_ATTR_FLOW_LIST,
+    SAI_MACSEC_ATTR_MACSEC_FLOW_LIST,
 
     /**
      * @brief End of MACsec attributes
@@ -278,13 +278,14 @@ typedef enum _sai_macsec_port_attr_t
     SAI_MACSEC_PORT_ATTR_MACSEC_DIRECTION = SAI_MACSEC_PORT_ATTR_START,
 
     /**
-     * @brief Phy line-side Port Id associated with this MACsec port
+     * @brief Port Id associated with this MACsec port
+     * If the switch is a gearbox/Phy, this should be the line-side port id.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
      */
-    SAI_MACSEC_PORT_ATTR_PHY_LINE_PORT_ID,
+    SAI_MACSEC_PORT_ATTR_SWITCH_PORT_ID,
 
     /**
      * @brief Enable vlan tag parsing for C-tag TPID
@@ -389,11 +390,6 @@ typedef enum _sai_macsec_port_stat_t
  */
 typedef enum _sai_macsec_flow_action_t
 {
-    /*
-     * MACSEC flow actions.
-     *
-     */
-
     /** Drop Packet */
     SAI_MACSEC_FLOW_ACTION_DROP,
 
@@ -516,7 +512,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Dst MAC Address
      *
-     * @type sai_macsec_rule_match_field_data_t sai_mac_t
+     * @type sai_macsec_rule_match_field_t sai_mac_t
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -525,7 +521,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Match on packet with no vlan tag
      *
-     * @type sai_macsec_rule_match_field_data_t bool
+     * @type sai_macsec_rule_match_field_t bool
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -534,7 +530,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Match on packet with only 1 vlan tag
      *
-     * @type sai_macsec_rule_match_field_data_t bool
+     * @type sai_macsec_rule_match_field_t bool
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -543,7 +539,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Match on packet with 2 or more vlan tags
      *
-     * @type sai_macsec_rule_match_field_data_t bool
+     * @type sai_macsec_rule_match_field_t bool
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -552,7 +548,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Outermost vlan_id (12-bits)
      *
-     * @type sai_macsec_rule_match_field_data_t sai_vlan_id_t
+     * @type sai_macsec_rule_match_field_t sai_vlan_id_t
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -561,7 +557,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief Ethertype of packet after last parsed VLAN tag
      *
-     * @type sai_macsec_rule_match_field_data_t sai_uint16_t
+     * @type sai_macsec_rule_match_field_t sai_uint16_t
      * @flags CREATE_ONLY
      * @default disabled
      */
@@ -570,7 +566,7 @@ typedef enum _sai_macsec_rule_attr_t
     /**
      * @brief SCI value in MACSEC packet SecTAG.
      *
-     * @type sai_macsec_rule_match_field_data_t sai_macsec_sci_t
+     * @type sai_macsec_rule_match_field_t sai_macsec_sci_t
      * @flags CREATE_ONLY
      * @default disabled
      * @condition SAI_MACSEC_RULE_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
@@ -612,7 +608,7 @@ typedef enum _sai_macsec_rule_attr_t
 typedef enum _sai_macsec_rule_stat_t
 {
    /**
-    *@brief Count of packets that hit this rule
+    * @brief Count of packets that hit this rule
     */
     SAI_MACSEC_RULE_STAT,
 
@@ -690,7 +686,7 @@ typedef enum _sai_macsec_secure_channel_attr_t
     /**
      * @brief Active MACSEC secure_association
      * @type sai_object_id_t
-     * @flags SET_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_MACSEC_SECURE_ASSOCIATION
      * @condition SAI_MACSEC_SECURE_CHANNEL_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
      */

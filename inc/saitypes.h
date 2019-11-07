@@ -274,16 +274,16 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_DEBUG_COUNTER            = 85,
     SAI_OBJECT_TYPE_PORT_CONNECTOR           = 86,
     SAI_OBJECT_TYPE_PORT_SERDES              = 87,
-    SAI_OBJECT_TYPE_MAX                      = 88,
-    SAI_OBJECT_TYPE_PORT_SERDES              = 89,
-    SAI_OBJECT_TYPE_MAX                      = 90,
-    SAI_OBJECT_TYPE_MACSEC                   = 91,
-    SAI_OBJECT_TYPE_MACSEC_PORT              = 92,
-    SAI_OBJECT_TYPE_MACSEC_FLOW              = 93,
-    SAI_OBJECT_TYPE_MACSEC_RULE              = 94,
-    SAI_OBJECT_TYPE_MACSEC_SECURE_CHANNEL    = 95,
-    SAI_OBJECT_TYPE_MACSEC_SECURE_ASSOCIATION = 96,
-    SAI_OBJECT_TYPE_MAX                      = 97,
+    SAI_OBJECT_TYPE_PORT_SERDES              = 88,
+    SAI_OBJECT_TYPE_MACSEC                   = 89,
+    SAI_OBJECT_TYPE_MACSEC_PORT              = 90,
+    SAI_OBJECT_TYPE_MACSEC_FLOW              = 91,
+    SAI_OBJECT_TYPE_MACSEC_RULE              = 92,
+    SAI_OBJECT_TYPE_MACSEC_SECURE_CHANNEL    = 93,
+    SAI_OBJECT_TYPE_MACSEC_SECURE_ASSOCIATION = 94,
+
+    // Do not change SAI_OBJECT_TYPE_MAX
+    SAI_OBJECT_TYPE_MAX                      = 95,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
