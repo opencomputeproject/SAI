@@ -37,7 +37,7 @@ sai_switch_api_t* sai_switch_api;
 std::map<std::string, std::string> gProfileMap;
 std::map<std::set<int>, std::string> gPortMap;
 
-std::map<sai_fdb_entry_t, sai_object_id_t>gFdbMap;
+std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>>gFdbMap;
 
 sai_object_id_t gSwitchId; ///< SAI switch global object ID.
 
@@ -74,7 +74,7 @@ void on_fdb_event(_In_ uint32_t count,
     switch (event_type)
     {   
         case SAI_FDB_EVENT_LEARNED:
-            gFdbMap.insert(std::pair<sai_fdb_entry_t, sai_object_id_t>(fdb_entry,bport_id));
+            gFdbMap.emplace_back(std::pair<sai_fdb_entry_t, sai_object_id_t>(fdb_entry,bport_id));
             break;
         case SAI_FDB_EVENT_FLUSHED: 
             if (bv_id == 0 && bport_id == 0)
@@ -438,6 +438,7 @@ main(int argc, char* argv[])
     sai_log_set(SAI_API_ACL, log_level);
     sai_log_set(SAI_API_BRIDGE, log_level);
     sai_log_set(SAI_API_BUFFER, log_level);
+    sai_log_set(SAI_API_DEBUG_COUNTER, log_level);
     sai_log_set(SAI_API_FDB, log_level);
     sai_log_set(SAI_API_HOSTIF, log_level);
     sai_log_set(SAI_API_LAG, log_level);
