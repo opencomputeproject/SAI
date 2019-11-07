@@ -119,3 +119,9 @@ XG - (*,G) Any-source Multicast
 XPN - Extended Packet Number
 XOFF - Transmitter Off
 XON - Transmitter On
+FW  - Firmware
+MDIO - Management Data Input/Output
+I2C - I squared C
+CPLD - Complex programmable logic device
+EEPROM - Electrically erasable programmable read-only memory
+PRBS - Pseudorandom binary sequence
