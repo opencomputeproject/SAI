@@ -767,9 +767,8 @@ public:
       sai_object_id_t bport_id;
       sai_fdb_entry_t fdb_entry;  
              
-      extern std::map<sai_fdb_entry_t, sai_object_id_t> gFdbMap;
+      extern std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>> gFdbMap;
  
-      sai_thrift_attribute_list_t thrift_attr_list;
       thrift_attr_list.attr_count = gFdbMap.size();
       
       sai_fdb_entry_t fdb_m;
@@ -3796,6 +3795,230 @@ public:
 
       status = qos_map_api->remove_qos_map((sai_object_id_t) qos_map_id);
       return status;
+  }
+
+  void sai_thrift_parse_debug_counter_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list,
+                                                 sai_attribute_t *attr_list,
+                                                 int32_t **in_debug_counter_ids_list,
+                                                 int32_t **out_debug_counter_ids_list)
+  {
+      printf("sai_thrift_parse_debug_counter_attributes\n");
+
+      sai_thrift_attribute_t                              attribute;
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+
+      for(uint32_t i = 0; i < thrift_attr_list.size(); ++i, ++it) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_DEBUG_COUNTER_ATTR_IN_DROP_REASON_LIST:
+              {
+                  *in_debug_counter_ids_list = (int32_t *) malloc(sizeof(int32_t) * attribute.value.s32list.count);
+                  if (!in_debug_counter_ids_list) {
+                      return;
+                  }
+                  for (uint32_t reason_idx = 0; reason_idx < attribute.value.s32list.s32list.size(); ++reason_idx) {
+                      (*in_debug_counter_ids_list)[reason_idx] = attribute.value.s32list.s32list[reason_idx];
+                  }
+                  attr_list[i].value.s32list.count = attribute.value.s32list.count;
+                  attr_list[i].value.s32list.list = *in_debug_counter_ids_list;
+                  break;
+              }
+              case SAI_DEBUG_COUNTER_ATTR_OUT_DROP_REASON_LIST:
+              {
+                  *out_debug_counter_ids_list = (int32_t *) malloc(sizeof(int32_t) * attribute.value.s32list.count);
+                  if (!out_debug_counter_ids_list) {
+                      return;
+                  }
+                  for (uint32_t reason_idx = 0; reason_idx < attribute.value.s32list.s32list.size(); ++reason_idx) {
+                      (*out_debug_counter_ids_list)[reason_idx] = attribute.value.s32list.s32list[reason_idx];
+                  }
+                  attr_list[i].value.s32list.count = attribute.value.s32list.count;
+                  attr_list[i].value.s32list.list = *out_debug_counter_ids_list;
+                  break;
+              }
+              case SAI_DEBUG_COUNTER_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              default:
+                  break;
+          }
+      }
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_debug_counter(const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
+  {
+      printf("sai_thrift_create_debug_counter\n");
+
+      sai_debug_counter_api_t    *debug_counter_api;
+      sai_status_t                status                     = SAI_STATUS_SUCCESS;
+      sai_object_id_t             debug_counter_id           = {};
+      int32_t                    *in_debug_counter_ids_list  = NULL;
+      int32_t                    *out_debug_counter_ids_list = NULL;
+
+      status = sai_api_query(SAI_API_DEBUG_COUNTER, (void **) &debug_counter_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return debug_counter_id;
+      }
+
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_debug_counter_attributes(thrift_attr_list,
+                                                attr_list,
+                                                &in_debug_counter_ids_list,
+                                                &out_debug_counter_ids_list);
+      uint32_t list_count = thrift_attr_list.size();
+
+      status = debug_counter_api->create_debug_counter(&debug_counter_id,
+                                                        gSwitchId,
+                                                        list_count,
+                                                        attr_list);
+
+      free(attr_list);
+      free(in_debug_counter_ids_list);
+      free(out_debug_counter_ids_list);
+
+      return debug_counter_id;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_debug_counter(const sai_thrift_object_id_t thrift_debug_counter_id)
+  {
+      printf("sai_thrift_remove_debug_counter\n");
+
+      sai_debug_counter_api_t *debug_counter_api;
+      sai_status_t             status = SAI_STATUS_SUCCESS;
+
+      status = sai_api_query(SAI_API_DEBUG_COUNTER, (void **) &debug_counter_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      status = debug_counter_api->remove_debug_counter((sai_object_id_t) thrift_debug_counter_id);
+
+      return status;
+  }
+
+  sai_thrift_status_t sai_thrift_set_debug_counter_attribute(const sai_thrift_object_id_t dc_id, const sai_thrift_attribute_t &thrift_attr)
+  {
+      printf("sai_thrift_set_debug_counter_attribute\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_debug_counter_api_t *debug_counter_api;
+      int32_t                 *in_debug_counter_ids_list  = NULL;
+      int32_t                 *out_debug_counter_ids_list = NULL;
+
+      status = sai_api_query(SAI_API_DEBUG_COUNTER, (void **) &debug_counter_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      std::vector<sai_thrift_attribute_t> thrift_attr_list;
+      thrift_attr_list.push_back(thrift_attr);
+      sai_attribute_t attr;
+      sai_thrift_parse_debug_counter_attributes(thrift_attr_list, &attr, &in_debug_counter_ids_list, &out_debug_counter_ids_list);
+
+      status = debug_counter_api->set_debug_counter_attribute((sai_object_id_t)dc_id, &attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to set debug counter attribute.");
+      }
+
+      free(in_debug_counter_ids_list);
+      free(out_debug_counter_ids_list);
+
+      return status;
+  }
+
+  sai_thrift_status_t sai_thrift_get_switch_stats(std::vector<int64_t>              &thrift_counters,
+                                            const sai_thrift_object_id_t             switch_id,
+                                            const std::vector<sai_thrift_stat_id_t> &thrift_counter_ids)
+  {
+      printf("sai_thrift_get_switch_stats\n");
+
+      sai_switch_api_t *switch_api;
+      sai_status_t      status = SAI_STATUS_SUCCESS;
+
+      status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      sai_stat_id_t *counter_ids = (sai_stat_id_t *) malloc(sizeof(sai_stat_id_t) * thrift_counter_ids.size());
+      if (!counter_ids) {
+          return SAI_STATUS_NO_MEMORY;
+      }
+      std::vector<int32_t>::const_iterator it = thrift_counter_ids.begin();
+      for(uint32_t i = 0; i < thrift_counter_ids.size(); i++, it++) {
+          counter_ids[i] = (sai_stat_id_t) *it;
+      }
+
+      uint64_t *counters = (uint64_t *) malloc(sizeof(uint64_t) * thrift_counter_ids.size());
+      if(!counters) {
+          free(counter_ids);
+          return SAI_STATUS_NO_MEMORY;
+      }
+      status = switch_api->get_switch_stats((sai_object_id_t) switch_id,
+                                        thrift_counter_ids.size(),
+                                        (const sai_stat_id_t *)counter_ids,
+                                        counters);
+
+      for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
+          thrift_counters.push_back(counters[i]);
+      }
+
+      free(counter_ids);
+      free(counters);
+      return status;
+  }
+
+  int64_t sai_thrift_get_switch_stats_by_oid(const sai_thrift_object_id_t thrift_counter_id)
+  {
+      printf("sai_thrift_get_switch_stats_by_oid\n");
+
+      sai_debug_counter_api_t           *debug_counter_api;
+      std::vector<sai_thrift_stat_id_t>  thrift_counter_ids;
+      std::vector<int64_t>               thrift_counters;
+      sai_thrift_stat_id_t               dc_id;
+      sai_status_t                       status     = SAI_STATUS_SUCCESS;
+      sai_attribute_t                    attr       = {};
+      int32_t                            index_base = 0;
+
+      status = sai_api_query(SAI_API_DEBUG_COUNTER, (void **) &debug_counter_api);
+      if (SAI_STATUS_SUCCESS != status) {
+          return 0;
+      }
+
+      attr.id = SAI_DEBUG_COUNTER_ATTR_TYPE;
+      status = debug_counter_api->get_debug_counter_attribute((sai_object_id_t) thrift_counter_id, 1, &attr);
+      if (SAI_STATUS_SUCCESS != status) {
+          return 0;
+      }
+
+      switch(attr.value.s32) {
+      case SAI_DEBUG_COUNTER_TYPE_SWITCH_IN_DROP_REASONS:
+          index_base = SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE;
+          break;
+
+      case SAI_DEBUG_COUNTER_TYPE_SWITCH_OUT_DROP_REASONS:
+          index_base = SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_BASE;
+          break;
+
+      defult:
+          printf("Unsupported debug counter type '%d'\n", attr.value.s32);
+          return 0;
+      }
+
+      attr.id = SAI_DEBUG_COUNTER_ATTR_INDEX;
+      status = debug_counter_api->get_debug_counter_attribute((sai_object_id_t) thrift_counter_id, 1, &attr);
+      if (SAI_STATUS_SUCCESS != status) {
+          return 0;
+      }
+
+      thrift_counter_ids.push_back((sai_thrift_stat_id_t)(index_base + attr.value.s32));
+
+      status = sai_thrift_get_switch_stats(thrift_counters, gSwitchId, thrift_counter_ids);
+      if (SAI_STATUS_SUCCESS != status) {
+          return 0;
+      }
+
+      return thrift_counters[0];
   }
 
     //
