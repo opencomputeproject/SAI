@@ -233,22 +233,13 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_PHYSICAL_BYPASS_ENABLE,
 
     /**
-     * @brief List of MACsec ports
+     * @brief List of ports that can support MACsec
      *
      * @type sai_object_list_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_PORT
      */
-    SAI_MACSEC_ATTR_PORT_LIST,
-
-    /**
-     * @brief List of all MACsec flow objects
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_MACSEC_FLOW
-     */
-    SAI_MACSEC_ATTR_MACSEC_FLOW_LIST,
+    SAI_MACSEC_ATTR_SUPPORTED_PORT_LIST,
 
     /**
      * @brief End of MACsec attributes
@@ -285,7 +276,7 @@ typedef enum _sai_macsec_port_attr_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
      */
-    SAI_MACSEC_PORT_ATTR_SWITCH_PORT_ID,
+    SAI_MACSEC_PORT_ATTR_PORT_ID,
 
     /**
      * @brief Enable vlan tag parsing for C-tag TPID
@@ -594,7 +585,7 @@ typedef enum _sai_macsec_rule_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_MACSEC_FLOW
      */
-    SAI_MACSEC_RULE_SECURE_CHANNEL_ATTR_FLOW_ID,
+    SAI_MACSEC_RULE_ATTR_FLOW_ID,
 
     /**
      * @brief End of MACSEC Rule attributes
