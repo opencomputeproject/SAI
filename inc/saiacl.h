@@ -929,6 +929,35 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_VNI,
 
+    /**
+     * @brief Match on packet with no vlan tag
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_NO_VLAN_TAG,
+
+    /**
+     * @brief Match on packet that has vlan tag
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_HAS_VLAN_TAG,
+
+    /**
+     * @brief SCI value in MACSEC packet SecTAG
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_MACSEC_SCI,
+
+    /* User Based metadata */
+
     /* User Based metadata [bool] */
 
     /**
@@ -1600,6 +1629,33 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_VNI,
+
+    /**
+     * @brief Match on packet with no vlan tag
+     *
+     * @type sai_acl_field_data_t bool
+     * @flags CREATE_ONLY
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_NO_VLAN_TAG,
+
+    /**
+     * @brief Match on packet that has vlan tag
+     *
+     * @type sai_acl_field_data_t bool
+     * @flags CREATE_ONLY
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_HAS_VLAN_TAG,
+
+    /**
+     * @brief SCI value in MACSEC packet SecTAG
+     *
+     * @type sai_acl_field_data_t sai_macsec_sci_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_MACSEC_SCI,
 
     /* User Based metadata */
 

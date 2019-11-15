@@ -242,6 +242,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6,
 
     /**
+     * @brief Attribute value is MACSEC rule match field SCI.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_SCI,
+
+    /**
      * @brief Attribute value is ACL field object id.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID,
@@ -400,31 +405,6 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is MACSEC SALT.
      */
     SAI_ATTR_VALUE_TYPE_MACSEC_SALT,
-
-    /**
-     * @brief Attribute value is MACSEC rule match field bool.
-     */
-    SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_BOOL,
-
-    /**
-     * @brief Attribute value is MACSEC rule match field MAC.
-     */
-    SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_MAC,
-
-    /**
-     * @brief Attribute value is MACSEC rule match field SCI.
-     */
-    SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_SCI,
-
-    /**
-     * @brief Attribute value is MACSEC rule match field 8 bit unsigned integer.
-     */
-    SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_UINT16,
-
-    /**
-     * @brief Attribute value is MACSEC rule match field VLAN_ID.
-     */
-    SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_VLAN_ID,
 } sai_attr_value_type_t;
 
 /**
@@ -1067,12 +1047,6 @@ typedef struct _sai_attr_metadata_t
      * to distinguish between pools of resources.
      */
     bool                                        isresourcetype;
-
-    /**
-     * @brief Determines whether attribute is MACSEC rule match field.
-     */
-    bool                                        ismacsecrulematchfield;
-
 } sai_attr_metadata_t;
 
 /*

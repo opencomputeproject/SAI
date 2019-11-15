@@ -109,25 +109,17 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_STATS_MODE_READ_CLEAR_SUPPORTED,
 
     /**
-     * @brief Indicates if ingress can use SCI only as a rule match field.
-     * True indicates SCI can only be used as rule match field. In that case,
-     * 1 ingress flow can be associated with only 1 rule and 1 Secure Channel.
-     * false indicates one 1 flow can be associated with multiple rules and
-     * multiple Secure Channels.
+     * @brief Indicates if ingress can use SCI only as an ACL field.
+     * True indicates SCI can only be used as ACL field. In that case, 1
+     * ingress flow can be associated with only 1 ACL entry and 1 Secure
+     * Channel.  False indicates one 1 flow can be associated with multiple
+     * ACL entries and multiple Secure Channels.
      *
      * @type bool
      * @flags READ_ONLY
      * @condition SAI_MACSEC_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
-    SAI_MACSEC_ATTR_SCI_IN_INGRESS_RULES,
-
-    /**
-     * @brief Range of MACSEC rule priority values
-     *
-     * @type sai_u32_range_t
-     * @flags READ_ONLY
-     */
-    SAI_MACSEC_ATTR_RULE_PRIORITY_RANGE,
+    SAI_MACSEC_ATTR_SCI_IN_INGRESS_MACSEC_ACL,
 
     /**
      * @brief Indicates if 32-bit Packer Number (PN) is supported.
@@ -425,12 +417,12 @@ typedef enum _sai_macsec_flow_attr_t
     SAI_MACSEC_FLOW_ATTR_FLOW_ACTION,
 
     /**
-     * @brief List of MACSEC rules associated with this flow.
+     * @brief List of MACSEC ACL entries associated with this flow.
      * @type sai_object_list_t
      * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_MACSEC_RULE
+     * @objects SAI_OBJECT_TYPE_ACL_ENTRY
      */
-    SAI_MACSEC_FLOW_ATTR_RULE_LIST,
+    SAI_MACSEC_FLOW_ATTR_ACL_ENTRY_LIST,
 
     /**
      * @brief List of MACSEC Secure Channels associated with this flow.
@@ -448,162 +440,6 @@ typedef enum _sai_macsec_flow_attr_t
     SAI_MACSEC_FLOW_ATTR_END,
 } sai_macsec_flow_attr_t;
 
-
-/**
- * @brief Attribute Id for sai_macsec_rule
- *
- * @flags Contains flags
- */
-typedef enum _sai_macsec_rule_attr_t
-{
-    /**
-     * @brief Start of MACSEC Rule attributes
-     */
-    SAI_MACSEC_RULE_ATTR_START,
-
-    /**
-     * @brief MACSEC direction
-     *
-     * @type sai_macsec_direction_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_MACSEC_RULE_ATTR_MACSEC_DIRECTION = SAI_MACSEC_RULE_ATTR_START,
-
-    /**
-     * @brief MACsec phy port object id
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_MACSEC_PORT
-     */
-    SAI_MACSEC_RULE_ATTR_PORT_ID,
-
-    /**
-     * @brief Priority value used to resolve conflict in case a packet matches
-     * multiple rules. For a given SAI_MACSEC_RULE_ATTR_PORT_ID, the rules
-     * must have unique priority values. A higher priority value has higher
-     * precedence.
-     *
-     * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_MACSEC_RULE_ATTR_PRIORITY,
-
-    /*
-     * Match fields [sai_macsec_match_field_t]
-     * - For enabled field only, mask and data are needed.
-     * - When a bit field is used, only the least significant bit(s) are valid
-     * for matching.
-     */
-
-    /**
-     * @brief Start of Rule Match Fields
-     */
-    SAI_MACSEC_RULE_ATTR_FIELD_START = 0x00001000,
-
-    /**
-     * @brief Dst MAC Address
-     *
-     * @type sai_macsec_rule_match_field_t sai_mac_t
-     * @flags CREATE_ONLY
-     * @default disabled
-     */
-    SAI_MACSEC_RULE_ATTR_FIELD_DST_MAC = SAI_MACSEC_RULE_ATTR_FIELD_START,
-
-    /**
-     * @brief Match on packet with no vlan tag
-     *
-     * @type sai_macsec_rule_match_field_t bool
-     * @flags CREATE_ONLY
-     * @default disabled
-     */
-    SAI_MACSEC_RULE_ATTR_FIELD_NO_VLAN_TAG,
-
-    /**
-     * @brief Match on packet with only 1 vlan tag
-     *
-     * @type sai_macsec_rule_match_field_t bool
-     * @flags CREATE_ONLY
-     * @default disabled
-     */
-    SAI_MACSEC_RULE_ATTR_FIELD_1_VLAN_TAG,
-
-    /**
-     * @brief Match on packet with 2 or more vlan tags
-     *
-     * @type sai_macsec_rule_match_field_t bool
-     * @flags CREATE_ONLY
-     * @default disabled
-     */
-    SAI_MACSEC_RULE_ATTR_FIELD_2_OR_MORE_VLAN_TAGS,
-
-    /**
-     * @brief Outermost vlan_id (12-bits)
-     *
-     * @type sai_macsec_rule_match_field_t sai_vlan_id_t
-     * @flags CREATE_ONLY
-     * @default disabled
-     */
-    SAI_MACSEC_RULE_ATTR_FIELD_OUTERMOST_VLAN_ID,
-
-    /**
-     * @brief Ethertype of packet after last parsed VLAN tag
-     *
-     * @type sai_macsec_rule_match_field_t sai_uint16_t
-     * @flags CREATE_ONLY
-     * @default disabled
-     */
-    SAI_MACSEC_RULE_ATTR_FIELD_ETHERTYPE,
-
-    /**
-     * @brief SCI value in MACSEC packet SecTAG.
-     *
-     * @type sai_macsec_rule_match_field_t sai_macsec_sci_t
-     * @flags CREATE_ONLY
-     * @default disabled
-     * @condition SAI_MACSEC_RULE_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
-     */
-    SAI_MACSEC_RULE_ATTR_FIELD_MACSEC_SCI_ID,
-
-    /**
-     * @brief End of Rule Match Fields
-     */
-    SAI_MACSEC_RULE_ATTR_FIELD_END = SAI_MACSEC_RULE_ATTR_FIELD_MACSEC_SCI_ID,
-
-    /**
-     * @brief Enable/disable control of the MACsec rule.
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_MACSEC_RULE_ATTR_RULE_ENABLE,
-
-    /**
-     * @brief MACSEC flow object id
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_MACSEC_FLOW
-     */
-    SAI_MACSEC_RULE_ATTR_FLOW_ID,
-
-    /**
-     * @brief End of MACSEC Rule attributes
-     */
-    SAI_MACSEC_RULE_ATTR_END,
-} sai_macsec_rule_attr_t;
-
-/**
- * @brief MACSEC rule counter ID in sai_get_macsec_rule_stats_ext() call
- */
-typedef enum _sai_macsec_rule_stat_t
-{
-   /**
-    * @brief Count of packets that hit this rule
-    */
-    SAI_MACSEC_RULE_STAT,
-
-} sai_macsec_rule_stat_t;
 
 /**
  * @brief Attribute Id for sai_macsec_secure_channel
@@ -1169,90 +1005,6 @@ typedef sai_status_t (*sai_get_macsec_flow_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Create a MACSEC rule
- *
- * @param[out] macsec_rule_id The MACSEC rule id
- * @param[in] switch_id The Phy Object id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_create_macsec_rule_fn)(
-        _Out_ sai_object_id_t *macsec_rule_id,
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
-
-/**
- * @brief Delete a MACSEC rule
- *
- * @param[in] macsec_rule_id The MACSEC rule id
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_remove_macsec_rule_fn)(
-        _In_ sai_object_id_t macsec_rule_id);
-
-/**
- * @brief Set MACSEC rule attribute
- *
- * @param[in] macsec_rule_id The MACSEC rule id
- * @param[in] attr Attribute
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_set_macsec_rule_attribute_fn)(
-        _In_ sai_object_id_t macsec_rule_id,
-        _In_ const sai_attribute_t *attr);
-
-/**
- * @brief Get MACSEC rule attribute
- *
- * @param[in] macsec_rule_id MACSEC rule id
- * @param[in] attr_count Number of attributes
- * @param[out] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_macsec_rule_attribute_fn)(
-        _In_ sai_object_id_t macsec_rule_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief Get MACSEC rule counters extended
- *
- * @param[in] macsec_rule_id MACSEC rule id
- * @param[in] number_of_counters Number of counters in the array
- * @param[in] counter_ids Specifies the array of counter ids
- * @param[in] mode Should match SAI_MACSEC_ATTR_STATS_MODE
- * @param[out] counters Array of resulting counter values.
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_macsec_rule_stats_ext_fn)(
-        _In_ sai_object_id_t macsec_rule_id,
-        _In_ uint32_t number_of_counters,
-        _In_ const sai_stat_id_t *counter_ids,
-        _In_ sai_stats_mode_t mode,
-        _Out_ uint64_t *counters);
-
-/**
- * @brief Clear MACSEC rule counters
- *
- * @param[in] macsec_rule_id MACSEC rule id
- * @param[in] number_of_counters Number of counters in the array
- * @param[in] counter_ids Specifies the array of counter ids
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_clear_macsec_rule_stats_fn)(
-        _In_ sai_object_id_t macsec_rule_id,
-        _In_ uint32_t number_of_counters,
-        _In_ const sai_stat_id_t *counter_ids);
-
-/**
  * @brief Create a MACSEC Secure Channel
  *
  * @param[out] macsec_secure_channel_id The MACSEC secure_channel id
@@ -1439,12 +1191,6 @@ typedef struct _sai_macsec_api_t
     sai_remove_macsec_flow_fn                       remove_macsec_flow;
     sai_set_macsec_flow_attribute_fn                set_macsec_flow_attribute;
     sai_get_macsec_flow_attribute_fn                get_macsec_flow_attribute;
-    sai_create_macsec_rule_fn                       create_macsec_rule;
-    sai_remove_macsec_rule_fn                       remove_macsec_rule;
-    sai_set_macsec_rule_attribute_fn                set_macsec_rule_attribute;
-    sai_get_macsec_rule_attribute_fn                get_macsec_rule_attribute;
-    sai_get_macsec_rule_stats_ext_fn                get_macsec_rule_stats_ext;
-    sai_clear_macsec_rule_stats_fn                  clear_macsec_rule_stats;
     sai_create_macsec_secure_channel_fn             create_macsec_secure_channel;
     sai_remove_macsec_secure_channel_fn             remove_macsec_secure_channel;
     sai_set_macsec_secure_channel_attribute_fn      set_macsec_secure_channel_attribute;

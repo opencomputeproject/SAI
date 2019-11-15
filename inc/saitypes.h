@@ -277,12 +277,11 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_MACSEC                   = 88,
     SAI_OBJECT_TYPE_MACSEC_PORT              = 89,
     SAI_OBJECT_TYPE_MACSEC_FLOW              = 90,
-    SAI_OBJECT_TYPE_MACSEC_RULE              = 91,
-    SAI_OBJECT_TYPE_MACSEC_SECURE_CHANNEL    = 92,
-    SAI_OBJECT_TYPE_MACSEC_SECURE_ASSOCIATION = 93,
+    SAI_OBJECT_TYPE_MACSEC_SECURE_CHANNEL    = 91,
+    SAI_OBJECT_TYPE_MACSEC_SECURE_ASSOCIATION = 92,
 
     // Do not change position of SAI_OBJECT_TYPE_MAX
-    SAI_OBJECT_TYPE_MAX                      = 93,
+    SAI_OBJECT_TYPE_MAX                      = 92,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -430,6 +429,9 @@ typedef union _sai_acl_field_data_mask_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6 */
     sai_ip6_t ip6;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MACSEC_SCI */
+    sai_macsec_sci_t macsecsci;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST */
     sai_u8_list_t u8list;
 } sai_acl_field_data_mask_t;
@@ -474,6 +476,9 @@ typedef union _sai_acl_field_data_data_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6 */
     sai_ip6_t ip6;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MACSEC_SCI */
+    sai_macsec_sci_t macsecsci;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID */
     sai_object_id_t oid;
@@ -732,6 +737,12 @@ typedef enum _sai_acl_stage_t
     /** Egress Stage */
     SAI_ACL_STAGE_EGRESS,
 
+    /** Ingress Stage */
+    SAI_ACL_STAGE_INGRESS_MACSEC,
+
+    /** Egress Stage */
+    SAI_ACL_STAGE_EGRESS_MACSEC,
+
 } sai_acl_stage_t;
 
 /**
@@ -899,59 +910,6 @@ typedef struct _sai_segment_list_t
     /** Segment list */
     sai_ip6_t *list;
 } sai_segment_list_t;
-
-/**
- * @brief MACSEC rule match data union
- *
- * @extraparam const sai_attr_metadata_t *meta
- */
-typedef union _sai_macsec_rule_match_field_data_t
-{
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_BOOL */
-    bool booldata;
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_UINT16 */
-    sai_uint16_t u16;
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_MAC */
-    sai_mac_t mac;
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_VLAN_ID */
-    sai_vlan_id_t vlan;
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_RULE_MATCH_FIELD_SCI */
-    sai_macsec_sci_t macsec_sci;
-} sai_macsec_rule_match_field_data_t;
-
-/**
- * @brief Defines a single MACSEC rule match field
- *
- * @extraparam const sai_attr_metadata_t *meta
- */
-typedef struct _sai_macsec_rule_match_field_t
-{
-    /**
-     * @brief Match enable/disable
-     */
-    bool enable;
-
-    /**
-     * @brief Match bit-mask for comparison.
-     *
-     * @passparam meta
-     * @validonly enable == true
-     */
-    sai_macsec_rule_match_field_data_t macsec_mask;
-
-    /**
-     * @brief Match value to compare with
-     *
-     * @passparam meta
-     * @validonly enable == true
-     */
-    sai_macsec_rule_match_field_data_t macsec_data;
-} sai_macsec_rule_match_field_t;
 
 /**
  * @brief Defines a lane with its eye values with the up and down values
@@ -1141,12 +1099,6 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SALT */
     sai_macsec_salt_t macsecsalt;
-
-    /**
-     * @passparam meta
-     * @validonly meta->ismacsecrulematchfield == true
-     */
-    sai_macsec_rule_match_field_t macsecrulematchfield;
 } sai_attribute_value_t;
 
 /**
