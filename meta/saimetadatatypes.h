@@ -242,7 +242,7 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6,
 
     /**
-     * @brief Attribute value is MACSEC rule match field SCI.
+     * @brief Attribute value is MACsec rule match field SCI.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_SCI,
 
@@ -382,27 +382,27 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA,
 
     /**
-     * @brief Attribute value is MACSEC SCI.
+     * @brief Attribute value is MACsec SCI.
      */
     SAI_ATTR_VALUE_TYPE_MACSEC_SCI,
 
     /**
-     * @brief Attribute value is MACSEC SSCI.
+     * @brief Attribute value is MACsec SSCI.
      */
     SAI_ATTR_VALUE_TYPE_MACSEC_SSCI,
 
     /**
-     * @brief Attribute value is MACSEC SAK.
+     * @brief Attribute value is MACsec SAK.
      */
     SAI_ATTR_VALUE_TYPE_MACSEC_SAK,
 
     /**
-     * @brief Attribute value is MACSEC Authentication Key.
+     * @brief Attribute value is MACsec Authentication Key.
      */
     SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY,
 
     /**
-     * @brief Attribute value is MACSEC SALT.
+     * @brief Attribute value is MACsec SALT.
      */
     SAI_ATTR_VALUE_TYPE_MACSEC_SALT,
 } sai_attr_value_type_t;

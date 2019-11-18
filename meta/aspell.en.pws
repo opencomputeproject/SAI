@@ -1,4 +1,5 @@
 personal_ws-1.1 en 0
+AES
 APIs
 AUTONEG
 Callee
@@ -18,6 +19,7 @@ Inservice
 LAGs
 Linux
 Loopback
+MACsec
 MCAST
 MERCHANTABILITY
 Marvell
@@ -35,7 +37,9 @@ PGs
 PHY
 PVID
 Policer
+SAs
 Samplepacket
+SecTAG
 SerDes
 Src
 TLV

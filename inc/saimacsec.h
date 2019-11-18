@@ -19,7 +19,7 @@
  *
  * @file    saimacsec.h
  *
- * @brief   This module defines SAI MACSEC interface
+ * @brief   This module defines SAI MACsec interface
  *          Version 1.0
  */
 
@@ -29,14 +29,14 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIMACSEC SAI - MACSEC specific API definitions
+ * @defgroup SAIMACSEC SAI - MACsec specific API definitions
  *
  * @{
  */
 
 /**
- * @brief MACSEC direction types
- * For Phy ASIC Egress is system to line direction and ingress is the opposite.
+ * @brief MACsec direction types
+ * For PHY ASIC Egress is system to line direction and ingress is the opposite.
  */
 typedef enum _sai_macsec_direction_t
 {
@@ -52,12 +52,12 @@ typedef enum _sai_macsec_direction_t
 typedef enum _sai_macsec_attr_t
 {
     /**
-     * @brief Start of MACSEC attributes
+     * @brief Start of MACsec attributes
      */
     SAI_MACSEC_ATTR_START,
 
     /**
-     * @brief MACSEC direction
+     * @brief MACsec direction
      *
      * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -151,7 +151,7 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_SECTAG_OFFSETS_SUPPORTED,
 
     /**
-     * @brief Macsec MTU capability on system side (not including Macsec overhead).
+     * @brief MACsec MTU capability on system side (not including MACsec overhead).
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
@@ -168,7 +168,7 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_WARM_BOOT_SUPPORTED,
 
     /**
-     * @brief When false disables creation of saimacsec objects during Phy warm-boot.
+     * @brief When false disables creation of saimacsec objects during warm-boot.
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -207,7 +207,7 @@ typedef enum _sai_macsec_attr_t
     /**
      * @brief Enables physical bypass of MACsec module. Packets can physically
      * bypass MACsec module only when there is no macsec_port object
-     * associated with Phy line-side port(s).
+     * associated with and MACsec-capable port.
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -223,6 +223,30 @@ typedef enum _sai_macsec_attr_t
      * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_MACSEC_ATTR_SUPPORTED_PORT_LIST,
+
+    /**
+     * @brief Available MACsec flows.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_AVAILABLE_MACSEC_FLOW,
+
+    /**
+     * @brief Available MACsec Secure Channels.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_AVAILABLE_MACSEC_SC,
+
+    /**
+     * @brief Available MACsec Secure Associations.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_AVAILABLE_MACSEC_SA,
 
     /**
      * @brief End of MACsec attributes
@@ -243,7 +267,7 @@ typedef enum _sai_macsec_port_attr_t
     SAI_MACSEC_PORT_ATTR_START,
 
     /**
-     * @brief MACSEC direction
+     * @brief MACsec direction
      *
      * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -252,7 +276,7 @@ typedef enum _sai_macsec_port_attr_t
 
     /**
      * @brief Port Id associated with this MACsec port
-     * If the switch is a gearbox/Phy, this should be the line-side port id.
+     * If the switch is a switch/PHY, this should be the line-side port id.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -296,7 +320,7 @@ typedef enum _sai_macsec_port_attr_t
 } sai_macsec_port_attr_t;
 
 /**
- * @brief MACSEC port counter IDs in sai_get_macsec_stats_ext() call
+ * @brief MACsec port counter IDs in sai_get_macsec_stats_ext() call
  */
 typedef enum _sai_macsec_port_stat_t
 {
@@ -364,12 +388,12 @@ typedef enum _sai_macsec_port_stat_t
 typedef enum _sai_macsec_flow_attr_t
 {
     /**
-     * @brief Start of MACSEC Flow attributes
+     * @brief Start of MACsec Flow attributes
      */
     SAI_MACSEC_FLOW_ATTR_START,
 
     /**
-     * @brief MACSEC direction
+     * @brief MACsec direction
      *
      * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -377,7 +401,7 @@ typedef enum _sai_macsec_flow_attr_t
     SAI_MACSEC_FLOW_ATTR_MACSEC_DIRECTION = SAI_MACSEC_FLOW_ATTR_START,
 
     /**
-     * @brief List of MACSEC ACL entries associated with this flow.
+     * @brief List of MACsec ACL entries associated with this flow.
      * @type sai_object_list_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_ACL_ENTRY
@@ -385,7 +409,7 @@ typedef enum _sai_macsec_flow_attr_t
     SAI_MACSEC_FLOW_ATTR_ACL_ENTRY_LIST,
 
     /**
-     * @brief List of MACSEC Secure Channels associated with this flow.
+     * @brief List of MACsec Secure Channels associated with this flow.
      *
      * @type sai_object_list_t
      * @flags READ_ONLY
@@ -394,7 +418,7 @@ typedef enum _sai_macsec_flow_attr_t
     SAI_MACSEC_FLOW_ATTR_SC_LIST,
 
     /**
-     * @brief End of MACSEC Flow attributes
+     * @brief End of MACsec Flow attributes
      */
     SAI_MACSEC_FLOW_ATTR_END,
 } sai_macsec_flow_attr_t;
@@ -407,12 +431,12 @@ typedef enum _sai_macsec_flow_attr_t
 typedef enum _sai_macsec_sc_attr_t
 {
     /**
-     * @brief Start of MACSEC Secure Channel attributes
+     * @brief Start of MACsec Secure Channel attributes
      */
     SAI_MACSEC_SC_ATTR_START,
 
     /**
-     * @brief MACSEC direction
+     * @brief MACsec direction
      *
      * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -420,7 +444,7 @@ typedef enum _sai_macsec_sc_attr_t
     SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION = SAI_MACSEC_SC_ATTR_START,
 
     /**
-     * @brief MACSEC flow object id
+     * @brief MACsec flow object id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -429,7 +453,7 @@ typedef enum _sai_macsec_sc_attr_t
     SAI_MACSEC_SC_ATTR_FLOW_ID,
 
     /**
-     * @brief SCI value for this Secure Channel, carried in MACSEC packet SecTAG.
+     * @brief SCI value for this Secure Channel, carried in MACsec packet SecTAG.
      *
      * @type sai_macsec_sci_t
      * @flags CREATE_AND_SET
@@ -445,31 +469,35 @@ typedef enum _sai_macsec_sc_attr_t
     SAI_MACSEC_SC_ATTR_MACSEC_SSCI,
 
     /**
-     * @brief XPN enable for this Secure Channel
+     * @brief Enable 64-bit XPN (vs 32-bit PN) for this Secure Channel
      *
      * @type bool
      * @flags CREATE_AND_SET
+     * @default true
      */
-    SAI_MACSEC_SC_ATTR_MACSEC_XPN_ENABLE,
+    SAI_MACSEC_SC_ATTR_MACSEC_XPN64_ENABLE,
 
     /**
      * @brief Explicit SCI enable for this Secure Channel.
      * @type bool
      * @flags CREATE_AND_SET
+     * @default false
      * @condition SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
      */
     SAI_MACSEC_SC_ATTR_MACSEC_EXPLICIT_SCI_ENABLE,
 
     /**
-     * @brief SecTAG offset for this Secure Channel.
+     * @brief SecTAG offset for this Secure Channel with respect to 802.1ae
+     * standard SecTAG location
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
+     * @default 0
      * @condition SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
      */
     SAI_MACSEC_SC_ATTR_MACSEC_SECTAG_OFFSET,
 
     /**
-     * @brief Active MACSEC Secure Association
+     * @brief Active MACsec Secure Association
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_MACSEC_SA
@@ -481,6 +509,7 @@ typedef enum _sai_macsec_sc_attr_t
      * @brief Replay protection enable for this Secure Channel.
      * @type bool
      * @flags CREATE_AND_SET
+     * @default true
      * @condition SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
     SAI_MACSEC_SC_ATTR_MACSEC_REPLAY_PROTECTION_ENABLE,
@@ -489,12 +518,13 @@ typedef enum _sai_macsec_sc_attr_t
      * @brief Replay protection window for this Secure Channel.
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
+     * @default 0
      * @condition SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
     SAI_MACSEC_SC_ATTR_MACSEC_REPLAY_PROTECTION_WINDOW,
 
     /**
-     * @brief MACSEC SA list
+     * @brief MACsec SA list
      * @type sai_object_list_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_MACSEC_SA
@@ -502,13 +532,13 @@ typedef enum _sai_macsec_sc_attr_t
     SAI_MACSEC_SC_ATTR_SA_LIST,
 
     /**
-     * @brief End of MACSEC Secure Channel attributes
+     * @brief End of MACsec Secure Channel attributes
      */
     SAI_MACSEC_SC_ATTR_END,
 } sai_macsec_sc_attr_t;
 
 /**
- * @brief MACSEC Secure Channel counter IDs in sai_get_macsec_sc_stats_ext() call
+ * @brief MACsec Secure Channel counter IDs in sai_get_macsec_sc_stats_ext() call
  */
 typedef enum _sai_macsec_sc_stat_t
 {
@@ -581,12 +611,12 @@ typedef enum _sai_macsec_sc_stat_t
 typedef enum _sai_macsec_sa_attr_t
 {
     /**
-     * @brief Start of MACSEC Secure Association attributes
+     * @brief Start of MACsec Secure Association attributes
      */
     SAI_MACSEC_SA_ATTR_START,
 
     /**
-     * @brief MACSEC direction
+     * @brief MACsec direction
      *
      * @type sai_macsec_direction_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -594,7 +624,7 @@ typedef enum _sai_macsec_sa_attr_t
     SAI_MACSEC_SA_ATTR_MACSEC_DIRECTION = SAI_MACSEC_SA_ATTR_START,
 
     /**
-     * @brief MACSEC Secure Channel object id
+     * @brief MACsec Secure Channel object id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -603,7 +633,7 @@ typedef enum _sai_macsec_sa_attr_t
     SAI_MACSEC_SA_ATTR_SC_ID,
 
     /**
-     * @brief AN value (2-bit) for this Secure Channel, carried in MACSEC packet SecTAG.
+     * @brief AN value (2-bit) for this Secure Channel, carried in MACsec packet SecTAG.
      * The value must be distinct from other Secure Associations for the same Secure Channel.
      *
      * @type sai_uint8_t
@@ -616,6 +646,7 @@ typedef enum _sai_macsec_sa_attr_t
      *
      * @type bool
      * @flags MANDATORY_ON_CREATE
+     * @default true
      */
     SAI_MACSEC_SA_ATTR_ENCRYPTION_ENABLE,
 
@@ -624,11 +655,12 @@ typedef enum _sai_macsec_sa_attr_t
      *
      * @type bool
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @default true
      */
     SAI_MACSEC_SA_ATTR_SAK_256_BITS,
 
     /**
-     * @brief MACSEC SAK (Secure Association Key) used for encryption/decryption.
+     * @brief MACsec SAK (Secure Association Key) used for encryption/decryption.
      *
      * @type sai_macsec_sak_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -636,7 +668,7 @@ typedef enum _sai_macsec_sa_attr_t
     SAI_MACSEC_SA_ATTR_SAK,
 
     /**
-     * @brief MACSEC Salt used for encryption/decryption.
+     * @brief MACsec Salt used for encryption/decryption.
      *
      * @type sai_macsec_salt_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -644,7 +676,7 @@ typedef enum _sai_macsec_sa_attr_t
     SAI_MACSEC_SA_ATTR_SALT,
 
     /**
-     * @brief MACSEC Authentication Key
+     * @brief MACsec Authentication Key
      *
      * @type sai_macsec_auth_key_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -652,7 +684,7 @@ typedef enum _sai_macsec_sa_attr_t
     SAI_MACSEC_SA_ATTR_AUTH_KEY,
 
     /**
-     * @brief MACSEC egress packet number (PN/XPN).  At most 1 less than the next PN/XPN.
+     * @brief MACsec egress packet number (PN/XPN).  At most 1 less than the next PN/XPN.
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @condition SAI_MACSEC_SA_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
@@ -660,8 +692,8 @@ typedef enum _sai_macsec_sa_attr_t
     SAI_MACSEC_SA_ATTR_XPN,
 
     /**
-     * @brief Minimum value of ingress MACSEC packet number (PN/XPN).
-     * Updated by value from MACSEC peer by Key Agreement protocol.
+     * @brief Minimum value of ingress MACsec packet number (PN/XPN).
+     * Updated by value from MACsec peer by Key Agreement protocol.
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @condition SAI_MACSEC_SA_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
@@ -669,13 +701,13 @@ typedef enum _sai_macsec_sa_attr_t
     SAI_MACSEC_SA_ATTR_MINIMUM_XPN,
 
     /**
-     * @brief End of MACSEC Secure Association attributes
+     * @brief End of MACsec Secure Association attributes
      */
     SAI_MACSEC_SA_ATTR_END,
 } sai_macsec_sa_attr_t;
 
 /**
- * @brief MACSEC flow counter IDs in sai_get_macsec_sa_stats_ext() call.
+ * @brief MACsec flow counter IDs in sai_get_macsec_sa_stats_ext() call.
  * Some of these counters appear as per Secure Channel counters in 802.1ae MIB.
  * The application (NOS) has to add these per Secure Association counters to
  * get the per Secure Channel value.
@@ -774,8 +806,8 @@ typedef enum _sai_macsec_sa_stat_t
 /**
  * @brief Create a MACsec object
  *
- * @param[out] macsec_id The MACsec object id associated with this Phy
- * @param[in] switch_id The Phy Object id
+ * @param[out] macsec_id The MACsec object id associated with this switch/PHY
+ * @param[in] switch_id The switch/PHY Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -790,7 +822,7 @@ typedef sai_status_t (*sai_create_macsec_fn)(
 /**
  * @brief Delete the MACsec object
  *
- * @param[in] macsec_id The MACsec object id associated with this Phy
+ * @param[in] macsec_id The MACsec object id associated with this switch/PHY
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
@@ -800,7 +832,7 @@ typedef sai_status_t (*sai_remove_macsec_fn)(
 /**
  * @brief Set MACsec attribute
  *
- * @param[in] macsec_id The MACsec object id associated with this Phy
+ * @param[in] macsec_id The MACsec object id associated with this switch/PHY
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
@@ -812,7 +844,7 @@ typedef sai_status_t (*sai_set_macsec_attribute_fn)(
 /**
  * @brief Get MACsec attribute
  *
- * @param[in] macsec_id The MACsec object id associated with this Phy
+ * @param[in] macsec_id The MACsec object id associated with this switch/PHY
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
@@ -824,10 +856,10 @@ typedef sai_status_t (*sai_get_macsec_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Create a MACsec phy port
+ * @brief Create a MACsec port
  *
- * @param[out] macsec_port_id The MACsec phy port id
- * @param[in] switch_id The Phy Object id
+ * @param[out] macsec_port_id The MACsec port id
+ * @param[in] switch_id The switch/PHY Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -840,9 +872,9 @@ typedef sai_status_t (*sai_create_macsec_port_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Delete a MACsec phy port
+ * @brief Delete a MACsec port
  *
- * @param[in] macsec_port_id The MACsec phy port id
+ * @param[in] macsec_port_id The MACsec port id
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
@@ -850,9 +882,9 @@ typedef sai_status_t (*sai_remove_macsec_port_fn)(
         _In_ sai_object_id_t macsec_port_id);
 
 /**
- * @brief Set MACsec phy port attribute
+ * @brief Set MACsec port attribute
  *
- * @param[in] macsec_port_id The MACsec phy port id
+ * @param[in] macsec_port_id The MACsec port id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
@@ -862,9 +894,9 @@ typedef sai_status_t (*sai_set_macsec_port_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get MACsec phy port attribute
+ * @brief Get MACsec port attribute
  *
- * @param[in] macsec_port_id MACsec phy port id
+ * @param[in] macsec_port_id MACsec port id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
@@ -876,9 +908,9 @@ typedef sai_status_t (*sai_get_macsec_port_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get MACSEC port counters extended
+ * @brief Get MACsec port counters extended
  *
- * @param[in] macsec_port_id MACSEC port id
+ * @param[in] macsec_port_id MACsec port id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] mode Should match SAI_MACSEC_ATTR_STATS_MODE
@@ -894,9 +926,9 @@ typedef sai_status_t (*sai_get_macsec_port_stats_ext_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear MACSEC port counters
+ * @brief Clear MACsec port counters
  *
- * @param[in] macsec_port_id MACSEC port id
+ * @param[in] macsec_port_id MACsec port id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  *
@@ -908,10 +940,10 @@ typedef sai_status_t (*sai_clear_macsec_port_stats_fn)(
         _In_ const sai_stat_id_t *counter_ids);
 
 /**
- * @brief Create a MACSEC flow
+ * @brief Create a MACsec flow
  *
- * @param[out] macsec_flow_id The MACSEC flow id
- * @param[in] switch_id The Phy Object id
+ * @param[out] macsec_flow_id The MACsec flow id
+ * @param[in] switch_id The switch/PHY Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -924,9 +956,9 @@ typedef sai_status_t (*sai_create_macsec_flow_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Delete a MACSEC flow
+ * @brief Delete a MACsec flow
  *
- * @param[in] macsec_flow_id The MACSEC flow id
+ * @param[in] macsec_flow_id The MACsec flow id
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
@@ -934,9 +966,9 @@ typedef sai_status_t (*sai_remove_macsec_flow_fn)(
         _In_ sai_object_id_t macsec_flow_id);
 
 /**
- * @brief Set MACSEC flow attribute
+ * @brief Set MACsec flow attribute
  *
- * @param[in] macsec_flow_id The MACSEC flow id
+ * @param[in] macsec_flow_id The MACsec flow id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
@@ -946,9 +978,9 @@ typedef sai_status_t (*sai_set_macsec_flow_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get MACSEC flow attribute
+ * @brief Get MACsec flow attribute
  *
- * @param[in] macsec_flow_id MACSEC flow id
+ * @param[in] macsec_flow_id MACsec flow id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
@@ -960,10 +992,10 @@ typedef sai_status_t (*sai_get_macsec_flow_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Create a MACSEC Secure Channel
+ * @brief Create a MACsec Secure Channel
  *
- * @param[out] macsec_sc_id The MACSEC Secure Channel id
- * @param[in] switch_id The Phy Object id
+ * @param[out] macsec_sc_id The MACsec Secure Channel id
+ * @param[in] switch_id The switch/PHY Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -978,7 +1010,7 @@ typedef sai_status_t (*sai_create_macsec_sc_fn)(
 /**
  * @brief Delete a MACsec Secure Channel
  *
- * @param[in] macsec_sc_id The MACSEC Secure Channel id
+ * @param[in] macsec_sc_id The MACsec Secure Channel id
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
@@ -986,9 +1018,9 @@ typedef sai_status_t (*sai_remove_macsec_sc_fn)(
         _In_ sai_object_id_t macsec_sc_id);
 
 /**
- * @brief Set MACSEC Secure Channel attribute
+ * @brief Set MACsec Secure Channel attribute
  *
- * @param[in] macsec_sc_id The MACSEC Secure Channel id
+ * @param[in] macsec_sc_id The MACsec Secure Channel id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
@@ -998,9 +1030,9 @@ typedef sai_status_t (*sai_set_macsec_sc_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get MACSEC Secure Channel attribute
+ * @brief Get MACsec Secure Channel attribute
  *
- * @param[in] macsec_sc_id MACSEC Secure Channel id
+ * @param[in] macsec_sc_id MACsec Secure Channel id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
@@ -1012,9 +1044,9 @@ typedef sai_status_t (*sai_get_macsec_sc_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get MACSEC Secure Channel counters extended
+ * @brief Get MACsec Secure Channel counters extended
  *
- * @param[in] macsec_sc_id MACSEC Secure Channel id
+ * @param[in] macsec_sc_id MACsec Secure Channel id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] mode Should match SAI_MACSEC_ATTR_STATS_MODE
@@ -1030,9 +1062,9 @@ typedef sai_status_t (*sai_get_macsec_sc_stats_ext_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear MACSEC Secure Channel counters
+ * @brief Clear MACsec Secure Channel counters
  *
- * @param[in] macsec_sc_id MACSEC Secure Channel id
+ * @param[in] macsec_sc_id MACsec Secure Channel id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  *
@@ -1044,10 +1076,10 @@ typedef sai_status_t (*sai_clear_macsec_sc_stats_fn)(
         _In_ const sai_stat_id_t *counter_ids);
 
 /**
- * @brief Create a MACSEC Secure Association
+ * @brief Create a MACsec Secure Association
  *
- * @param[out] macsec_sa_id The MACSEC Secure Association id
- * @param[in] switch_id The Phy Object id
+ * @param[out] macsec_sa_id The MACsec Secure Association id
+ * @param[in] switch_id The switch/PHY Object id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
@@ -1060,9 +1092,9 @@ typedef sai_status_t (*sai_create_macsec_sa_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Delete a MACsecS802 Secure Association
+ * @brief Delete a MACsec Secure Association
  *
- * @param[in] macsec_sa_id The MACSEC Secure Association id
+ * @param[in] macsec_sa_id The MACsec Secure Association id
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
@@ -1070,9 +1102,9 @@ typedef sai_status_t (*sai_remove_macsec_sa_fn)(
         _In_ sai_object_id_t macsec_sa_id);
 
 /**
- * @brief Set MACSEC Secure Association attribute
+ * @brief Set MACsec Secure Association attribute
  *
- * @param[in] macsec_sa_id The MACSEC Secure Association id
+ * @param[in] macsec_sa_id The MACsec Secure Association id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
@@ -1082,9 +1114,9 @@ typedef sai_status_t (*sai_set_macsec_sa_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get MACSEC Secure Association attribute
+ * @brief Get MACsec Secure Association attribute
  *
- * @param[in] macsec_sa_id MACSEC Secure Association id
+ * @param[in] macsec_sa_id MACsec Secure Association id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
@@ -1096,9 +1128,9 @@ typedef sai_status_t (*sai_get_macsec_sa_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get MACSEC Secure Association counters extended
+ * @brief Get MACsec Secure Association counters extended
  *
- * @param[in] macsec_sa_id MACSEC Secure Association id
+ * @param[in] macsec_sa_id MACsec Secure Association id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] mode Should match SAI_MACSEC_ATTR_STATS_MODE
@@ -1114,9 +1146,9 @@ typedef sai_status_t (*sai_get_macsec_sa_stats_ext_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear MACSEC Secure Association counters
+ * @brief Clear MACsec Secure Association counters
  *
- * @param[in] macsec_sa_id MACSEC Secure Association id
+ * @param[in] macsec_sa_id MACsec Secure Association id
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  *
@@ -1128,7 +1160,7 @@ typedef sai_status_t (*sai_clear_macsec_sa_stats_fn)(
         _In_ const sai_stat_id_t *counter_ids);
 
 /**
- * @brief MACSEC methods table retrieved with sai_api_query()
+ * @brief MACsec methods table retrieved with sai_api_query()
  */
 typedef struct _sai_macsec_api_t
 {

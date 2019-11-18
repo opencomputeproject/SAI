@@ -948,7 +948,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_HAS_VLAN_TAG,
 
     /**
-     * @brief SCI value in MACSEC packet SecTAG
+     * @brief SCI value in MACsec packet SecTAG
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -1649,7 +1649,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_HAS_VLAN_TAG,
 
     /**
-     * @brief SCI value in MACSEC packet SecTAG
+     * @brief SCI value in MACsec packet SecTAG
      *
      * @type sai_acl_field_data_t sai_macsec_sci_t
      * @flags CREATE_AND_SET
