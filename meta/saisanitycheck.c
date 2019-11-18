@@ -3000,6 +3000,11 @@ void check_non_object_id_object_types()
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
                 case SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA:
+                case SAI_ATTR_VALUE_TYPE_MACSEC_SCI:
+                case SAI_ATTR_VALUE_TYPE_MACSEC_SSCI:
+                case SAI_ATTR_VALUE_TYPE_MACSEC_SAK:
+                case SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY:
+                case SAI_ATTR_VALUE_TYPE_MACSEC_SALT:
                     break;
 
                 default:

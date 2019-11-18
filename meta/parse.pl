@@ -2065,6 +2065,11 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_label_id_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"          if $type =~ /^sai_\w+_type_t$/; # enum
     return "SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA" if $type eq "sai_nat_entry_data_t";
+    return "SAI_ATTR_VALUE_TYPE_MACSEC_SCI"     if $type eq "sai_macsec_sci_t";
+    return "SAI_ATTR_VALUE_TYPE_MACSEC_SSCI"    if $type eq "sai_macsec_ssci_t";
+    return "SAI_ATTR_VALUE_TYPE_MACSEC_SAK"     if $type eq "sai_macsec_sak_t";
+    return "SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY" if $type eq "sai_macsec_auth_key_t";
+    return "SAI_ATTR_VALUE_TYPE_MACSEC_SALT"    if $type eq "sai_macsec_salt_t";
 
     LogError "invalid struct member value type $type";
 

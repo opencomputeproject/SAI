@@ -61,7 +61,6 @@ L3 - Layer 3
 LAG - Link Aggregation Group
 LPM - Longest Prefix Match
 MAC - Medium Access Control
-MACsec - Media Access Control Security
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
@@ -86,7 +85,6 @@ SAI - Switch Abstraction Interface
 SCI - Secure Channel Identifier
 SC - Secure Channel
 SDK - Software Development Kit
-SecTAG - MAC Security Tag
 SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
 SNAT - Source Network Address Translation

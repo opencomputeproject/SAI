@@ -58,7 +58,7 @@ typedef UINT32  sai_label_id_t;
 typedef UINT32  sai_stat_id_t;
 typedef UINT8   sai_macsec_sci_t[8];       // Network Byte order
 typedef UINT8   sai_macsec_ssci_t[4];      // Network Byte order
-typedef UINT8   sai_macsec_sak_t[32];      // Network Byte order, 128-bit sak uses Bytes 16..31
+typedef UINT8   sai_macsec_sak_t[32];      // 128-bit sak uses Bytes 16..31
 typedef UINT8   sai_macsec_auth_key_t[16]; // Network Byte order
 typedef UINT8   sai_macsec_salt_t[12];     // Network Byte order
 
@@ -103,7 +103,7 @@ typedef uint32_t sai_label_id_t;
 typedef uint32_t sai_stat_id_t;
 typedef uint8_t sai_macsec_sci_t[8];       // Network Byte order
 typedef uint8_t sai_macsec_ssci_t[4];      // Network Byte order
-typedef uint8_t sai_macsec_sak_t[32];      // Network Byte order, 128-bit sak uses Bytes 16..31
+typedef uint8_t sai_macsec_sak_t[32];      // 128-bit sak uses Bytes 16..31
 typedef uint8_t sai_macsec_auth_key_t[16]; // Network Byte order
 typedef uint8_t sai_macsec_salt_t[12];     // Network Byte order
 
@@ -277,8 +277,8 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_MACSEC                   = 88,
     SAI_OBJECT_TYPE_MACSEC_PORT              = 89,
     SAI_OBJECT_TYPE_MACSEC_FLOW              = 90,
-    SAI_OBJECT_TYPE_MACSEC_SECURE_CHANNEL    = 91,
-    SAI_OBJECT_TYPE_MACSEC_SECURE_ASSOCIATION = 92,
+    SAI_OBJECT_TYPE_MACSEC_SC                = 91,
+    SAI_OBJECT_TYPE_MACSEC_SA                = 92,
 
     // Do not change position of SAI_OBJECT_TYPE_MAX
     SAI_OBJECT_TYPE_MAX                      = 92,

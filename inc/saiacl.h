@@ -2310,9 +2310,19 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ISOLATION_GROUP,
 
     /**
+     * @brief MACsec flow
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MACSEC_FLOW
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_MACSEC_FLOW,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ISOLATION_GROUP,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_MACSEC_FLOW,
 
     /**
      * @brief End of ACL Entry attributes
