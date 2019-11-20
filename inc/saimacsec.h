@@ -687,6 +687,7 @@ typedef enum _sai_macsec_sa_attr_t
      * @brief MACsec egress packet number (PN/XPN).  At most 1 less than the next PN/XPN.
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
+     * @default 0
      * @condition SAI_MACSEC_SA_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
      */
     SAI_MACSEC_SA_ATTR_XPN,
@@ -696,6 +697,7 @@ typedef enum _sai_macsec_sa_attr_t
      * Updated by value from MACsec peer by Key Agreement protocol.
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
+     * @default 1
      * @condition SAI_MACSEC_SA_ATTR_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
     SAI_MACSEC_SA_ATTR_MINIMUM_XPN,
