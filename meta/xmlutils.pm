@@ -160,7 +160,9 @@ sub ReadXml
         return $xs->XMLin($filename, KeyAttr => { }, ForceArray => 1);
     }
 
-    open(FH, '<', $filename) or die "Could not open file '$filename' $!";
+    my ($package, $file, $line, $sub) = caller(3);
+
+    open(FH, '<', $filename) or die "Could not open file '$filename' $!\n called from ${file}::${sub}:$line";
 
     my @values = ();
     my %ROOT = ();
