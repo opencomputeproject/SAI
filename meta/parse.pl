@@ -58,6 +58,7 @@ our %EXTENSIONS_ATTRS = ();
 our %EXPERIMENTAL_OBJECTS = ();
 our %OBJECT_TYPE_TO_STATS_MAP = ();
 our %ATTR_TO_CALLBACK = ();
+our %PRIMITIVE_TYPES = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 
@@ -292,6 +293,29 @@ sub ProcessTagRange
     return $range;
 }
 
+sub ProcessEnumItemDescription
+{
+    my ($type, $value, $desc) = @_;
+
+    my @order = ();
+
+    $desc =~ s/@@/\n@@/g;
+
+    while ($desc =~ /@@(\w+)(.*)/g)
+    {
+        my $tag = $1;
+        my $val = $2;
+
+        push @order,$tag;
+
+        $val = Trim $val;
+
+        next if $tag eq "ignore";
+
+        LogError "tag '$tag' is not supported on enum ${type}::$value: $val";
+    }
+}
+
 sub ProcessDescription
 {
     my ($type, $value, $desc, $brief) = @_;
@@ -462,7 +486,21 @@ sub ProcessEnumSection
 
         $SAI_ENUMS{$enumtypename}{values} = \@values;
 
-        next if not $enumtypename =~ /^(sai_(\w+)_attr_(extensions_)?)t$/;
+        if (not $enumtypename =~ /^(sai_(\w+)_attr_(extensions_)?)t$/)
+        {
+            for my $ev (@{ $memberdef->{enumvalue} })
+            {
+                my $enumvaluename = $ev->{name}[0];
+
+                my $eitemd = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
+
+                ProcessEnumItemDescription($enumtypename, $enumvaluename, $eitemd);
+            }
+
+            next;
+        }
+
+        # ENUM ATTRIBUTES PROCESSED BELOW
 
         # TODO put to SAI_ATTR_ENUMS
 
@@ -563,6 +601,25 @@ sub ShallowCopyAttrEnum
     return \%attr;
 }
 
+sub ProcessPrimitiveTypedef
+{
+    my ($typedeftype, $definition) = @_;
+
+    if (not $definition =~ /^typedef (u?int\d+_t) ((sai_\w+_t)(\[\d+\])?)$/)
+    {
+        LogError("unrecognized primitive type: '$definition'");
+        return;
+    }
+
+    my $base = $1;
+    my $fulltype = $2;
+    my $name = $3;
+
+    $PRIMITIVE_TYPES{$name}{base} = $base;
+    $PRIMITIVE_TYPES{$name}{fulltype} = $fulltype;
+    $PRIMITIVE_TYPES{$name}{isarray} = ( $fulltype =~ /\[\d+\]/ ) ? 1 : 0;
+}
+
 sub ProcessTypedefSection
 {
     my $section = shift;
@@ -580,6 +637,8 @@ sub ProcessTypedefSection
         $typedeftype = $memberdef->{type}[0] if ref $memberdef->{type}[0] eq "";
 
         $typedeftype = $memberdef->{type}[0]->{content} if ref $memberdef->{type}[0] eq "HASH";
+
+        ProcessPrimitiveTypedef($typedeftype, $memberdef->{definition}[0]) if $typedeftype =~ /^u?int\d+_t$/;
 
         if ($typedeftype =~ /^struct/)
         {
@@ -1432,6 +1491,12 @@ sub ProcessConditionsGeneric
             my $attrType = lc("$1t") if $attrid =~ /^(SAI_\w+_ATTR_)/;
 
             my $enumTypeName = $METADATA{$attrType}{$attrid}{type};
+
+            if (not defined $enumTypeName)
+            {
+                LogError("failed to find attribute ${attrType}::${attrid} when processing $attrid");
+                next;
+            }
 
             if (defined $SAI_ENUMS{$enumTypeName})
             {
@@ -2938,6 +3003,18 @@ sub CheckApiStructNames
             LogError "there is no struct $structName corresponding to api name $value";
         }
     }
+
+    for my $name (sort keys %ALL_STRUCTS)
+    {
+        next if not $name =~ /^sai_(\w+)_api_t$/;
+
+        my $val = uc("SAI_API_$1");
+
+        if (not grep(/^$val$/,@values))
+        {
+            LogError "struct '$name' defined, but enum entry $val is missing on sai_api_t";
+        }
+    }
 }
 
 sub CheckApiDefines
@@ -3316,6 +3393,8 @@ sub CheckAttributeValueUnion
         next if $type eq "char[32]";
         next if $type =~ /sai_u?int\d+_t/;
         next if $type =~ /sai_[su]\d+_list_t/;
+
+        next if defined $PRIMITIVE_TYPES{$type};
 
         next if grep(/^$type$/, @primitives);
 

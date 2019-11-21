@@ -914,6 +914,7 @@ sub CheckHeadersStyle
                 my $word = $1;
 
                 next if $word =~ /^($pattern)$/;
+                next if $word =~ /^(an|An)$/; # exception, can be word and acronym
                 next if $line =~ /$word.h/;
                 next if not $line =~ /\*/; # must contain star, so will be comment
                 next if "$pre$word" =~ m!http://$word$!;
@@ -991,6 +992,8 @@ sub CheckHeadersStyle
             next if $line =~ m![^\\]\\$!;           # macro multiline
             next if $line =~ /^ {4}(\w+);$/;        # union entries
             next if $line =~ /^union _sai_\w+ \{/;  # union entries
+
+            LogWarning "C++ comment in ANSI C header: $header $n:$line" if $line =~ /\/\//;
 
             LogWarning "Header doesn't meet style requirements (most likely ident is not 4 or 8 spaces) $header $n:$line";
         }
