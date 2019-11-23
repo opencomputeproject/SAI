@@ -731,7 +731,7 @@ sub ProcessMembersForSerialize
 
     return if defined $structInfoEx{ismetadatastruct} and $structName ne "sai_object_meta_key_t";
 
-    LogDebug "Creating serialzie for $structName";
+    LogDebug "Creating serialize for $structName";
 
     my %membersHash = %{ $structInfoEx{membersHash} };
 
@@ -1158,7 +1158,7 @@ sub ProcessMembersForDeserialize
 
     return if defined $structInfoEx{ismetadatastruct} and $structName ne "sai_object_meta_key_t";
 
-    LogDebug "Creating deserialzie for $structName";
+    LogDebug "Creating deserialize for $structName";
 
     my %membersHash = %{ $structInfoEx{membersHash} };
 
