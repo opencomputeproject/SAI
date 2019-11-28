@@ -227,6 +227,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32,
 
     /**
+     * @brief Attribute value is ACL field 64 bit unsigned integer.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT64,
+
+    /**
      * @brief Attribute value is ACL field MAC address.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC,
@@ -244,7 +249,7 @@ typedef enum _sai_attr_value_type_t
     /**
      * @brief Attribute value is MACsec rule match field SCI.
      */
-    SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_SCI,
+    SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MACSEC_SCI,
 
     /**
      * @brief Attribute value is ACL field object id.

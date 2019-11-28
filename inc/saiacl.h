@@ -255,6 +255,9 @@ typedef enum _sai_acl_action_type_t
     /** Set isolation group to prevent traffic to members of isolation group */
     SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
 
+    /** Bind a MACsec flow object */
+    SAI_ACL_ACTION_TYPE_MACSEC_FLOW,
+
 } sai_acl_action_type_t;
 
 /**
@@ -928,15 +931,6 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_VNI,
-
-    /**
-     * @brief Match on packet with no vlan tag
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_ACL_TABLE_ATTR_FIELD_NO_VLAN_TAG,
 
     /**
      * @brief Match on packet that has vlan tag
@@ -1631,19 +1625,10 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_VNI,
 
     /**
-     * @brief Match on packet with no vlan tag
-     *
-     * @type sai_acl_field_data_t bool
-     * @flags CREATE_ONLY
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_FIELD_NO_VLAN_TAG,
-
-    /**
      * @brief Match on packet that has vlan tag
      *
      * @type sai_acl_field_data_t bool
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_HAS_VLAN_TAG,
@@ -1651,7 +1636,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief SCI value in MACsec packet SecTAG
      *
-     * @type sai_acl_field_data_t sai_macsec_sci_t
+     * @type sai_acl_field_data_t sai_uint64_t
      * @flags CREATE_AND_SET
      * @default disabled
      */

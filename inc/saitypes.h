@@ -56,11 +56,9 @@ typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
 typedef UINT32  sai_label_id_t;
 typedef UINT32  sai_stat_id_t;
-typedef UINT8   sai_macsec_sci_t[8];       // Network Byte order
-typedef UINT8   sai_macsec_ssci_t[4];      // Network Byte order
-typedef UINT8   sai_macsec_sak_t[32];      // 128-bit sak uses Bytes 16..31
-typedef UINT8   sai_macsec_auth_key_t[16]; // Network Byte order
-typedef UINT8   sai_macsec_salt_t[12];     // Network Byte order
+typedef UINT8   sai_macsec_sak_t[32];
+typedef UINT8   sai_macsec_auth_key_t[16];
+typedef UINT8   sai_macsec_salt_t[12];
 
 #include <ws2def.h>
 #include <ws2ipdef.h>
@@ -101,11 +99,9 @@ typedef uint8_t  sai_ip6_t[16];
 typedef uint32_t sai_switch_hash_seed_t;
 typedef uint32_t sai_label_id_t;
 typedef uint32_t sai_stat_id_t;
-typedef uint8_t sai_macsec_sci_t[8];       // Network Byte order
-typedef uint8_t sai_macsec_ssci_t[4];      // Network Byte order
-typedef uint8_t sai_macsec_sak_t[32];      // 128-bit sak uses Bytes 16..31
-typedef uint8_t sai_macsec_auth_key_t[16]; // Network Byte order
-typedef uint8_t sai_macsec_salt_t[12];     // Network Byte order
+typedef uint8_t sai_macsec_sak_t[32];
+typedef uint8_t sai_macsec_auth_key_t[16];
+typedef uint8_t sai_macsec_salt_t[12];
 
 #define _In_
 #define _Out_
@@ -280,8 +276,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_MACSEC_SC                = 91,
     SAI_OBJECT_TYPE_MACSEC_SA                = 92,
 
-    // Do not change position of SAI_OBJECT_TYPE_MAX
-    SAI_OBJECT_TYPE_MAX                      = 92,
+    SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -420,6 +415,9 @@ typedef union _sai_acl_field_data_mask_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32 */
     sai_int32_t s32;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT64 */
+    sai_uint64_t u64;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC */
     sai_mac_t mac;
 
@@ -428,9 +426,6 @@ typedef union _sai_acl_field_data_mask_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6 */
     sai_ip6_t ip6;
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MACSEC_SCI */
-    sai_macsec_sci_t macsecsci;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST */
     sai_u8_list_t u8list;
@@ -468,6 +463,9 @@ typedef union _sai_acl_field_data_data_t
      */
     sai_int32_t s32;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT64 */
+    sai_uint64_t u64;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC */
     sai_mac_t mac;
 
@@ -476,9 +474,6 @@ typedef union _sai_acl_field_data_data_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6 */
     sai_ip6_t ip6;
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MACSEC_SCI */
-    sai_macsec_sci_t macsecsci;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID */
     sai_object_id_t oid;
@@ -1084,12 +1079,6 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TIMESPEC */
     sai_timespec_t timespec;
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SCI */
-    sai_macsec_sci_t macsecsci;
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SSCI */
-    sai_macsec_ssci_t macsecssci;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SAK */
     sai_macsec_sak_t macsecsak;
