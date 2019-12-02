@@ -529,7 +529,7 @@ int sai_deserialize_macsec_sak(
                    &arr[24], &arr[25], &arr[26], &arr[27],
                    &arr[28], &arr[29], &arr[30], &arr[31], &read);
 
-    if (n == 32 && read == (32*3-1) && sai_serialize_is_char_allowed(buffer[read]))
+    if (n == 32 && read == (32*3-1))
     {
         for (n = 0; n < 32; n++)
         {
@@ -550,8 +550,7 @@ int sai_serialize_macsec_auth_key(
     return sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
 %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
                    auth[0], auth[1], auth[2], auth[3], auth[4], auth[5],auth[6], auth[7],
-                   auth[8], auth[9], auth[10], auth[11], auth[12], auth[13],auth[14], auth[15]
-                      );
+                   auth[8], auth[9], auth[10], auth[11], auth[12], auth[13],auth[14], auth[15]);
 }
 
 int sai_deserialize_macsec_auth_key(
@@ -567,9 +566,9 @@ int sai_deserialize_macsec_auth_key(
                    &arr[8], &arr[9], &arr[10], &arr[11],
                    &arr[12], &arr[13], &arr[14], &arr[15], &read);
 
-    if (n == 16 && read == 47 && sai_serialize_is_char_allowed(buffer[read]))
+    if (n == 16 && read == (16*3-1))
     {
-       for (n = 0; n < (16*3-1); n++)
+       for (n = 0; n < 16; n++)
         {
             auth[n] = (uint8_t)arr[n];
         }
@@ -608,7 +607,7 @@ int sai_deserialize_macsec_salt(
                    &arr[24], &arr[25], &arr[26], &arr[27],
                    &arr[28], &arr[29], &arr[30], &arr[31], &read);
 
-    if (n == 12 && read == (12*3-1) && sai_serialize_is_char_allowed(buffer[read]))
+    if (n == 12 && read == (12*3-1))
     {
         for (n = 0; n < 12; n++)
         {
