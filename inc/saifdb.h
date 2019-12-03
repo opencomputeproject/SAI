@@ -410,6 +410,98 @@ typedef void (*sai_fdb_event_notification_fn)(
         _In_ const sai_fdb_event_notification_data_t *data);
 
 /**
+ * @brief Bulk create FDB entry
+ *
+ * @param[in] object_count Number of objects to create
+ * @param[in] fdb_entry List of object to create
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to create.
+ * @param[in] attr_list List of attributes for every object.
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are created or
+ * #SAI_STATUS_FAILURE when any of the objects fails to create. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_create_fdb_entry_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_fdb_entry_t *fdb_entry,
+        _In_ const uint32_t *attr_count,
+        _In_ const sai_attribute_t **attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk remove FDB entry
+ *
+ * @param[in] object_count Number of objects to remove
+ * @param[in] fdb_entry List of objects to remove
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_remove_fdb_entry_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_fdb_entry_t *fdb_entry,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk set attribute on FDB entry
+ *
+ * @param[in] object_count Number of objects to set attribute
+ * @param[in] fdb_entry List of objects to set attribute
+ * @param[in] attr_list List of attributes to set on objects, one attribute per object
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_set_fdb_entry_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_fdb_entry_t *fdb_entry,
+        _In_ const sai_attribute_t *attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk get attribute on FDB entry
+ *
+ * @param[in] object_count Number of objects to set attribute
+ * @param[in] fdb_entry List of objects to set attribute
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to get
+ * @param[inout] attr_list List of attributes to set on objects, one attribute per object
+ * @param[in] mode Bulk operation error handling mode
+ * @param[out] object_statuses List of status for every object. Caller needs to
+ * allocate the buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
+ * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * failure, Caller is expected to go through the list of returned statuses to
+ * find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_get_fdb_entry_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_fdb_entry_t *fdb_entry,
+        _In_ const uint32_t *attr_count,
+        _Inout_ sai_attribute_t **attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
  * @brief FDB method table retrieved with sai_api_query()
  */
 typedef struct _sai_fdb_api_t
@@ -419,6 +511,10 @@ typedef struct _sai_fdb_api_t
     sai_set_fdb_entry_attribute_fn              set_fdb_entry_attribute;
     sai_get_fdb_entry_attribute_fn              get_fdb_entry_attribute;
     sai_flush_fdb_entries_fn                    flush_fdb_entries;
+    sai_bulk_create_fdb_entry_fn                create_fdb_entries;
+    sai_bulk_remove_fdb_entry_fn                remove_fdb_entries;
+    sai_bulk_set_fdb_entry_attribute_fn         set_fdb_entries_attribute;
+    sai_bulk_get_fdb_entry_attribute_fn         get_fdb_entries_attribute;
 
 } sai_fdb_api_t;
 
