@@ -464,8 +464,8 @@ typedef sai_status_t (*sai_bulk_remove_fdb_entry_fn)(
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
- * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
- * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * @return #SAI_STATUS_SUCCESS on success when all objects are set or
+ * #SAI_STATUS_FAILURE when any of the objects fails to set. When there is
  * failure, Caller is expected to go through the list of returned statuses to
  * find out which fails and which succeeds.
  */
@@ -479,17 +479,17 @@ typedef sai_status_t (*sai_bulk_set_fdb_entry_attribute_fn)(
 /**
  * @brief Bulk get attribute on FDB entry
  *
- * @param[in] object_count Number of objects to set attribute
- * @param[in] fdb_entry List of objects to set attribute
+ * @param[in] object_count Number of objects to get attribute
+ * @param[in] fdb_entry List of objects to get attribute
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to get
- * @param[inout] attr_list List of attributes to set on objects, one attribute per object
+ * @param[inout] attr_list List of attributes to get on objects, one attribute per object
  * @param[in] mode Bulk operation error handling mode
  * @param[out] object_statuses List of status for every object. Caller needs to
  * allocate the buffer
  *
- * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
- * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
+ * @return #SAI_STATUS_SUCCESS on success when all objects are get or
+ * #SAI_STATUS_FAILURE when any of the objects fails to get. When there is
  * failure, Caller is expected to go through the list of returned statuses to
  * find out which fails and which succeeds.
  */
