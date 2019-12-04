@@ -487,6 +487,7 @@ typedef enum _sai_macsec_sc_attr_t
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_MACSEC_SC_ATTR_MACSEC_XPN64_ENABLE == true
      */
     SAI_MACSEC_SC_ATTR_MACSEC_SSCI,
 
@@ -494,8 +495,7 @@ typedef enum _sai_macsec_sc_attr_t
      * @brief Enable 64-bit XPN (vs 32-bit PN) for this Secure Channel
      *
      * @type bool
-     * @flags CREATE_AND_SET
-     * @default true
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_MACSEC_SC_ATTR_MACSEC_XPN64_ENABLE,
 
@@ -692,7 +692,7 @@ typedef enum _sai_macsec_sa_attr_t
 
     /**
      * @brief MACsec Salt used for encryption/decryption.
-     * Network Byte order.
+     * Network Byte order. Used only if SAI_MACSEC_SC_ATTR_MACSEC_XPN64_ENABLE == true.
      *
      * @type sai_macsec_salt_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
