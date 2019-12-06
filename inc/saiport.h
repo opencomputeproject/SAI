@@ -240,23 +240,23 @@ typedef enum _sai_port_interface_type_t
 } sai_port_interface_type_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_LINK_TRAINING_FAIL_STATUS
+ * @brief Attribute data for #SAI_PORT_ATTR_LINK_TRAINING_FAILURE_STATUS
  * Used for Link Training failure status and error codes
  */
-typedef enum _sai_port_link_training_fail_status_t
+typedef enum _sai_port_link_training_failure_status_t
 {
     /** No Error detected */
-    SAI_PORT_TRAINING_FAILURE_NO_ERROR,
+    SAI_PORT_TRAINING_FAILURE_STATUS_NO_ERROR,
 
     /** Failure detected */
-    SAI_PORT_TRAINING_FAILURE_DETECTED_FRAME_LOCK_ERROR,
+    SAI_PORT_TRAINING_FAILURE_STATUS_FRAME_LOCK_ERROR,
 
     /** SNR lower than threshold */
-    SAI_PORT_TRAINING_FAILURE_SNR_LOWER_THRESHOLD,
+    SAI_PORT_TRAINING_FAILURE_STATUS_SNR_LOWER_THRESHOLD,
 
     /** Link training timeout */
-    SAI_PORT_TRAINING_FAILURE_TIME_OUT
-} sai_port_link_training_fail_status_t;
+    SAI_PORT_TRAINING_FAILURE_STATUS_TIME_OUT
+} sai_port_link_training_failure_status_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -1313,12 +1313,13 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_PORT_SERDES_ID,
     
-    /** @brief Link training failure status and error codes
-     * @type sai_port_link_training_fail_status_t
+    /** 
+     * @brief Link training failure status and error codes
+     *
+     * @type sai_port_link_training_failure_status_t
      * @flags READ_ONLY
-     * @default internal     
      */
-    SAI_PORT_ATTR_LINK_TRAINING_FAIL_STATUS,
+    SAI_PORT_ATTR_LINK_TRAINING_FAILURE_STATUS,
          
     /**
      * @brief End of attributes
