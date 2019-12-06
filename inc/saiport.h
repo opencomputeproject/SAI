@@ -259,6 +259,25 @@ typedef enum _sai_port_link_training_failure_status_t
 } sai_port_link_training_failure_status_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_PRBS_CONFIG
+ * PRBS configuration to enable transmitter, receiver or both
+ */
+typedef enum _sai_port_prbs_config_t
+{
+    /** PRBS Disable */
+    SAI_PORT_PRBS_CONFIG_DISABLE,
+    
+    /** Enable both PRBS Transmitter and Receiver */
+    SAI_PORT_PRBS_CONFIG_ENABLE_TX_RX,
+    
+    /** Enable PRBS Receiver */
+    SAI_PORT_PRBS_CONFIG_ENABLE_RX,
+    
+    /** Enable PRBS Transmitter */
+    SAI_PORT_PRBS_CONFIG_ENABLE_TX
+}sai_port_prbs_config_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -1312,15 +1331,61 @@ typedef enum _sai_port_attr_t
      * @default internal
      */
     SAI_PORT_ATTR_PORT_SERDES_ID,
-    
-    /** 
+
+    /**
      * @brief Link training failure status and error codes
      *
      * @type sai_port_link_training_failure_status_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_LINK_TRAINING_FAILURE_STATUS,
-         
+
+    /**
+     * @brief Attribute data for #SAI_PORT_ATTR_PRBS_CONFIG
+     *
+     * PRBS configuration to enable transmitter, receiver or both
+     * @type sai_port_prbs_config_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PRBS_CONFIG_DISABLE
+     */
+    SAI_PORT_ATTR_PRBS_CONFIG,
+
+     /**
+      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_LOCK_STATUS
+      *
+      * PRBS lock status: 1 for locked, 0 for unlocked
+      * @type bool
+      * @flags READ_ONLY
+      */
+     SAI_PORT_ATTR_PRBS_LOCK_STATUS,
+
+     /**
+      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_LOCK_LOSS_STATUS
+      *
+      * PRBS unlocked status since last read: 1 for lock loss, 0  for no lock loss
+      * @type bool
+      * @flags READ_ONLY
+      */
+     SAI_PORT_ATTR_PRBS_LOCK_LOSS_STATUS,
+
+     /**
+      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_ERROR_COUNT
+      *
+      * PRBS error count
+      * @type sai_uint32_t
+      * @flags READ_ONLY
+      */
+     SAI_PORT_ATTR_PRBS_ERROR_COUNT,
+ 
+     /**
+      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
+      *
+      * Autoneg done state: 0 for Autoneg in progress,  0 for Autoneg done
+      * @type bool
+      * @flags READ_ONLY
+      */
+     SAI_PORT_ATTR_AUTO_NEG_STATUS,
+
     /**
      * @brief End of attributes
      */
@@ -2257,6 +2322,43 @@ typedef sai_status_t (*sai_clear_port_pool_stats_fn)(
         _In_ uint32_t number_of_counters,
         _In_ const sai_stat_id_t *counter_ids);
 
+ /**
+  * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_TAP_MODE
+  *
+  * TX FIR Tap modes for NRZ and PAM4
+  */
+ typedef enum _sai_port_serdes_tx_fir_tap_mode_t
+ {
+      /** NRZ LP 3 Tap mode */
+     SAI_PORT_SERDES_TX_FIR_TAP_MODE_NRZ_LP_3TAP,
+
+      /** NRZ LP 6 Tap mode */
+     SAI_PORT_SERDES_TX_FIR_TAP_MODE_NRZ_6TAP,
+
+      /** PAM4 LP 3 Tap mode */
+     SAI_PORT_SERDES_TX_FIR_TAP_MODE_PAM4_LP_3TAP,
+
+      /** PAM4 6 Tap mode */
+     SAI_PORT_SERDES_TX_FIR_TAP_MODE_PAM4_6TAP
+ } sai_port_serdes_tx_fir_tap_mode_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_PRECODE
+ *
+ * TX FIR Independent mode, TX PRECODE option
+ */
+ typedef enum _sai_port_serdes_tx_fir_precode_t
+ {
+      /** HW default TX precode */
+     SAI_PORT_SERDES_TX_FIR_PRECODE_DEFAULT,
+
+      /** TX precode off*/
+     SAI_PORT_SERDES_TX_FIR_PRECODE_OFF,
+
+      /** TX precode on*/
+     SAI_PORT_SERDES_TX_FIR_PRECODE_ON,
+ } sai_port_serdes_tx_fir_tx_precode_t;
+
 /**
  * @brief List of Port Serdes attributes
  */
@@ -2418,6 +2520,39 @@ typedef enum _sai_port_serdes_attr_t
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_TX_FIR_ATTN,
+
+    /**
+     * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_AMP
+     *
+     * TX FIR current amplifier value
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_AMP,
+
+    /**
+     * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_TAP_MODE
+     *
+     * TX FIR Tap modes: NRZ_LP_3TAP, NRZ_6TAP, PAM4_LP_3TAP or PAM4_6TAP
+     *
+     * @type sai_port_serdes_tx_fir_tap_mode_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_TAP_MODE,
+
+    /**
+     * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_PRECODE
+     *
+     * TX FIR Independent mode, TX PRECODE option
+     *
+     * @type sai_port_serdes_tx_fir_tx_precode_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_PRECODE,
 
     /**
      * @brief End of attributes
