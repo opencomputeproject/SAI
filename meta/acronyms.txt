@@ -80,6 +80,7 @@ SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
 SNAT - Source Network Address Translation
 SNMP - Simple Network Management Protocol
+SNR - Signal to Noise Ratio
 SPAN - Switched Port Analyzer
 SQE - Signal Quality Errors
 SSH - Secure Shell
