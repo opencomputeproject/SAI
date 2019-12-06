@@ -246,16 +246,16 @@ typedef enum _sai_port_interface_type_t
 typedef enum _sai_port_link_training_failure_status_t
 {
     /** No Error detected */
-    SAI_PORT_TRAINING_FAILURE_STATUS_NO_ERROR,
+    SAI_PORT_LINK_TRAINING_FAILURE_STATUS_NO_ERROR,
 
     /** Failure detected */
-    SAI_PORT_TRAINING_FAILURE_STATUS_FRAME_LOCK_ERROR,
+    SAI_PORT_LINK_TRAINING_FAILURE_STATUS_FRAME_LOCK_ERROR,
 
     /** SNR lower than threshold */
-    SAI_PORT_TRAINING_FAILURE_STATUS_SNR_LOWER_THRESHOLD,
+    SAI_PORT_LINK_TRAINING_FAILURE_STATUS_SNR_LOWER_THRESHOLD,
 
     /** Link training timeout */
-    SAI_PORT_TRAINING_FAILURE_STATUS_TIME_OUT
+    SAI_PORT_LINK_TRAINING_FAILURE_STATUS_TIME_OUT
 } sai_port_link_training_failure_status_t;
 
 /**
