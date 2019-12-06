@@ -291,6 +291,15 @@ typedef enum _sai_macsec_port_attr_t
     SAI_MACSEC_PORT_ATTR_MACSEC_DIRECTION = SAI_MACSEC_PORT_ATTR_START,
 
     /**
+     * @brief Associated port id
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
+     */
+    SAI_MACSEC_PORT_ATTR_PORT_ID,
+
+    /**
      * @brief Enable vlan tag parsing for C-tag TPID
      *
      * @type bool
