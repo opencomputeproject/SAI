@@ -275,7 +275,7 @@ typedef enum _sai_port_prbs_config_t
 
     /** Enable PRBS Transmitter */
     SAI_PORT_PRBS_CONFIG_ENABLE_TX
-}sai_port_prbs_config_t;
+} sai_port_prbs_config_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -1362,7 +1362,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_LOCK_LOSS_STATUS
      *
-     * PRBS unlocked status since last read: 1 for lock loss, 0  for no lock loss
+     * PRBS unlocked status since last read: 1 for lock loss, 0 for no lock loss
      * @type bool
      * @flags READ_ONLY
      */
@@ -1380,7 +1380,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
      *
-     * Autoneg done state: 0 for Autoneg in progress,  0 for Autoneg done
+     * Autonegotiaton done state: 0 for Autonegotiaton in progress, 0 for Autonegotiaton done
      * @type bool
      * @flags READ_ONLY
      */
@@ -2345,17 +2345,17 @@ typedef enum _sai_port_serdes_tx_fir_tap_mode_t
 /**
  * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_PRECODE
  *
- * TX FIR Independent mode, TX PRECODE option
+ * TX FIR Independent mode, TX pre-code option
  */
 typedef enum _sai_port_serdes_tx_fir_precode_t
 {
     /** HW default TX precode */
     SAI_PORT_SERDES_TX_FIR_PRECODE_DEFAULT,
 
-    /** TX precode off*/
+    /** TX precode off */
     SAI_PORT_SERDES_TX_FIR_PRECODE_OFF,
 
-    /** TX precode on*/
+    /** TX precode on */
     SAI_PORT_SERDES_TX_FIR_PRECODE_ON,
 } sai_port_serdes_tx_fir_precode_t;
 
