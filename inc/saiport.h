@@ -245,7 +245,7 @@ typedef enum _sai_port_interface_type_t
  */
 typedef enum _sai_port_link_training_failure_status_t
 {
-    /** No Error detected  */
+    /** No Error detected */
     SAI_PORT_LINK_TRAINING_FAILURE_STATUS_NO_ERROR,
 
     /** Failure detected */
