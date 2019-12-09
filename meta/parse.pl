@@ -2194,6 +2194,7 @@ sub ProcessStructEnumData
 {
     my $type = shift;
 
+    return "&sai_metadata_enum_$type" if defined $SAI_ENUMS{$type};
     return "&sai_metadata_enum_$type" if $type =~ /^sai_\w+_type_t$/; # enum
 
     return "NULL";
@@ -2203,6 +2204,7 @@ sub ProcessStructIsEnum
 {
     my $type = shift;
 
+    return "true" if defined $SAI_ENUMS{$type};
     return "true" if $type =~ /^sai_\w+_type_t$/; # enum
 
     return "false";
