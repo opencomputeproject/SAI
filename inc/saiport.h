@@ -2343,7 +2343,7 @@ typedef sai_status_t (*sai_clear_port_pool_stats_fn)(
  } sai_port_serdes_tx_fir_tap_mode_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_PRECODE
+ * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_PRECODE
  *
  * TX FIR Independent mode, TX PRECODE option
  */
@@ -2544,7 +2544,7 @@ typedef enum _sai_port_serdes_attr_t
     SAI_PORT_SERDES_ATTR_TX_FIR_TAP_MODE,
 
     /**
-     * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_PRECODE
+     * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_PRECODE
      *
      * TX FIR Independent mode, TX PRECODE option
      *
@@ -2552,7 +2552,7 @@ typedef enum _sai_port_serdes_attr_t
      * @flags CREATE_ONLY
      * @default internal
      */
-    SAI_PORT_SERDES_ATTR_TX_PRECODE,
+    SAI_PORT_SERDES_ATTR_TX_FIR_PRECODE,
 
     /**
      * @brief End of attributes
