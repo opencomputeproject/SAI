@@ -2128,8 +2128,14 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"      if $type eq "sai_ip_prefix_t";
     return "SAI_ATTR_VALUE_TYPE_UINT16"         if $type eq "sai_vlan_id_t";
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_label_id_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "uint32_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"          if $type =~ /^sai_\w+_type_t$/; # enum
     return "SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA" if $type eq "sai_nat_entry_data_t";
+    return "SAI_ATTR_VALUE_TYPE_BOOL"           if $type eq "bool";
+    return "SAI_ATTR_VALUE_TYPE_INT32"          if defined $SAI_ENUMS{$type}; # enum
+
+    return "-1"                                 if $type eq "sai_fdb_entry_t";
+    return "-1"                                 if $type eq "sai_attribute_t*";
 
     LogError "invalid struct member value type $type";
 
@@ -2151,7 +2157,7 @@ sub ProcessStructObjects
 
     my $type = $struct->{type};
 
-    return "NULL" if not $type eq "sai_object_id_t";
+    return "NULL" if not $type eq "sai_object_id_t" and not $type eq "sai_attribute_t*";
 
     WriteSource "const sai_object_type_t sai_metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects[] = {";
 
@@ -2161,6 +2167,8 @@ sub ProcessStructObjects
     {
         WriteSource "$obj,";
     }
+
+    WriteSource "-1,";
 
     WriteSource "};";
 
@@ -2173,7 +2181,7 @@ sub ProcessStructObjectLen
 
     my $type = $struct->{type};
 
-    return 0 if not $type eq "sai_object_id_t";
+    return 0 if not $type eq "sai_object_id_t" and not $type eq "sai_attribute_t*";
 
     my @objects = @{ $struct->{objects} };
 
@@ -2202,11 +2210,13 @@ sub ProcessStructIsEnum
 
 sub ProcessStructGetOid
 {
-    my ($type, $key, $rawname) = @_;
+    my ($type, $key, $rawname, $any) = @_;
 
     return "NULL" if $type ne "sai_object_id_t";
 
     my $fname = "sai_metadata_struct_member_get_sai_${rawname}_t_${key}";
+
+    return "NULL" if (defined $any);
 
     WriteSource "sai_object_id_t $fname(";
     WriteSource "_In_ const sai_object_meta_key_t *object_meta_key)";
@@ -2219,11 +2229,13 @@ sub ProcessStructGetOid
 
 sub ProcessStructSetOid
 {
-    my ($type, $key, $rawname) = @_;
+    my ($type, $key, $rawname, $any) = @_;
 
     return "NULL" if $type ne "sai_object_id_t";
 
     my $fname = "sai_metadata_struct_member_set_sai_${rawname}_t_${key}";
+
+    return "NULL" if (defined $any);
 
     WriteSource "void $fname(";
     WriteSource "_Inout_ sai_object_meta_key_t *object_meta_key,";
@@ -2251,13 +2263,13 @@ sub ProcessStructSize
 
 sub ProcessStructMembers
 {
-    my ($struct, $ot, $rawname) = @_;
+    my ($struct, $ot, $rawname, $any) = @_;
 
     return "NULL" if not defined $struct;
 
     my @keys = GetStructKeysInOrder($struct);
 
-    if ($keys[0] ne "switch_id")
+    if ($keys[0] ne "switch_id" and not defined $any)
     {
         LogError "switch_id is not first item in $rawname";
     }
@@ -2270,8 +2282,8 @@ sub ProcessStructMembers
         my $objectlen   = ProcessStructObjectLen($rawname, $key, $struct->{$key});
         my $isenum      = ProcessStructIsEnum($struct->{$key}{type});
         my $enumdata    = ProcessStructEnumData($struct->{$key}{type});
-        my $getoid      = ProcessStructGetOid($struct->{$key}{type}, $key, $rawname);
-        my $setoid      = ProcessStructSetOid($struct->{$key}{type}, $key, $rawname);
+        my $getoid      = ProcessStructGetOid($struct->{$key}{type}, $key, $rawname, $any);
+        my $setoid      = ProcessStructSetOid($struct->{$key}{type}, $key, $rawname, $any);
         my $offset      = ProcessStructOffset($struct->{$key}{type}, $key, $rawname);
         my $size        = ProcessStructSize($struct->{$key}{type}, $key, $rawname);
 
@@ -2293,7 +2305,7 @@ sub ProcessStructMembers
 
         WriteSource "};";
 
-        if ($objectlen > 0 and not $key =~ /_id$/)
+        if ($objectlen > 0 and not $key =~ /_id$/ and not defined $any)
         {
             LogWarning "struct member key '$key' should end at _id in sai_${rawname}_t";
         }
@@ -3681,6 +3693,77 @@ sub MergeExtensionsEnums
     }
 }
 
+sub ProcessNotificationStruct
+{
+    my $rawname = shift;
+
+    my @types = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    my $structname = "sai_${rawname}_t";
+
+    LogDebug "ProcessProcessNotificationStruct: processing $structname";
+
+    my %struct = ExtractStructInfo($structname, "struct_");
+
+    #print Dumper(%SAI_ENUMS);
+    for my $member (GetStructKeysInOrder(\%struct))
+    {
+        my $type = $struct{$member}{type};
+        my $desc = $struct{$member}{desc};
+
+        # allowed entries on notification object structs
+
+        next if defined $SAI_ENUMS{$type};          # type is enum !
+        next if $type =~ /^sai_\w+_entry_t/;        # non object id struct
+        next if $type =~ /^(uint32_t|bool)$/;
+
+        if ($type =~ /^(sai_object_id_t|sai_attribute_t\*)$/)
+        {
+            my $objects = ExtractObjectsFromDesc($structname, $member, $desc);
+
+            if (not defined $objects)
+            {
+                LogError "no object type defined on $structname $member";
+                next;
+            }
+
+            $struct{$member}{objects} = $objects;
+            next;
+        }
+
+        LogWarning "$member $type";
+    }
+
+    return %struct;
+}
+
+sub CreateOtherStructs
+{
+    WriteSectionComment "Notifications structs members metadata";
+
+    my @ntfstructs = ();
+
+    for my $name (sort keys %ALL_STRUCTS)
+    {
+        next if $name =~ /^sai_\w+_(api|list|entry)_t$/;
+
+        next if not $name =~ /^sai_(\w+_notification(_data)?)_t$/;
+
+        my $rawname = $1;
+
+        my %struct = ProcessNotificationStruct($rawname);
+
+        my$membersname = ProcessStructMembers(\%struct, "NULL", $rawname, 1);
+
+        push@ntfstructs, $membersname;
+    }
+
+    for my $name(@ntfstructs)
+    {
+        WriteHeader "extern const sai_struct_member_info_t* const $name\[\];";
+    }
+}
+
 #
 # MAIN
 #
@@ -3720,6 +3803,8 @@ CreateMetadataForAttributes();
 CreateEnumHelperMethods();
 
 ProcessNonObjectIdObjects();
+
+CreateOtherStructs();
 
 CreateStructNonObjectId();
 
