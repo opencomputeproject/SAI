@@ -2322,42 +2322,42 @@ typedef sai_status_t (*sai_clear_port_pool_stats_fn)(
         _In_ uint32_t number_of_counters,
         _In_ const sai_stat_id_t *counter_ids);
 
-    /**
-     * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_TAP_MODE
-     *
-     * TX FIR Tap modes for NRZ and PAM4
-     */
-    typedef enum _sai_port_serdes_tx_fir_tap_mode_t
-    {
-        /** NRZ LP 3 Tap mode */
-        SAI_PORT_SERDES_TX_FIR_TAP_MODE_NRZ_LP_3TAP,
+/**
+ * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_TAP_MODE
+ *
+ * TX FIR Tap modes for NRZ and PAM4
+ */
+typedef enum _sai_port_serdes_tx_fir_tap_mode_t
+{
+    /** NRZ LP 3 Tap mode */
+    SAI_PORT_SERDES_TX_FIR_TAP_MODE_NRZ_LP_3TAP,
 
-        /** NRZ LP 6 Tap mode */
-        SAI_PORT_SERDES_TX_FIR_TAP_MODE_NRZ_6TAP,
+    /** NRZ LP 6 Tap mode */
+    SAI_PORT_SERDES_TX_FIR_TAP_MODE_NRZ_6TAP,
 
-        /** PAM4 LP 3 Tap mode */
-        SAI_PORT_SERDES_TX_FIR_TAP_MODE_PAM4_LP_3TAP,
+    /** PAM4 LP 3 Tap mode */
+    SAI_PORT_SERDES_TX_FIR_TAP_MODE_PAM4_LP_3TAP,
 
-        /** PAM4 6 Tap mode */
-        SAI_PORT_SERDES_TX_FIR_TAP_MODE_PAM4_6TAP
-    } sai_port_serdes_tx_fir_tap_mode_t;
+    /** PAM4 6 Tap mode */
+    SAI_PORT_SERDES_TX_FIR_TAP_MODE_PAM4_6TAP
+} sai_port_serdes_tx_fir_tap_mode_t;
 
-    /**
-     * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_PRECODE
-     *
-     * TX FIR Independent mode, TX PRECODE option
-     */
-    typedef enum _sai_port_serdes_tx_fir_precode_t
-    {
-        /** HW default TX precode */
-        SAI_PORT_SERDES_TX_FIR_PRECODE_DEFAULT,
+/**
+ * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_PRECODE
+ *
+ * TX FIR Independent mode, TX PRECODE option
+ */
+typedef enum _sai_port_serdes_tx_fir_precode_t
+{
+    /** HW default TX precode */
+    SAI_PORT_SERDES_TX_FIR_PRECODE_DEFAULT,
 
-        /** TX precode off*/
-        SAI_PORT_SERDES_TX_FIR_PRECODE_OFF,
+    /** TX precode off*/
+    SAI_PORT_SERDES_TX_FIR_PRECODE_OFF,
 
-        /** TX precode on*/
-        SAI_PORT_SERDES_TX_FIR_PRECODE_ON,
-    } sai_port_serdes_tx_fir_precode_t;
+    /** TX precode on*/
+    SAI_PORT_SERDES_TX_FIR_PRECODE_ON,
+} sai_port_serdes_tx_fir_precode_t;
 
 /**
  * @brief List of Port Serdes attributes
