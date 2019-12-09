@@ -1,5 +1,6 @@
 # this file defines acronyms, one acronym per line
 ACL - Access Control List
+AN - Auto Negotiation
 API - Application Program Interface
 ARP - Address Resolution Protocol
 ASIC - Application Specific Integrated Circuit
