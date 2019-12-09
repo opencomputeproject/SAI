@@ -2352,10 +2352,10 @@ typedef enum _sai_port_serdes_tx_fir_precode_t
     /** HW default TX pre-code */
     SAI_PORT_SERDES_TX_FIR_PRECODE_DEFAULT,
 
-    /** TX precode off */
+    /** TX pre-code off */
     SAI_PORT_SERDES_TX_FIR_PRECODE_OFF,
 
-    /** TX precode on */
+    /** TX pre-code on */
     SAI_PORT_SERDES_TX_FIR_PRECODE_ON,
 } sai_port_serdes_tx_fir_precode_t;
 
