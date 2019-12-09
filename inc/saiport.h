@@ -1380,7 +1380,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
      *
-     * Auto negotiaton (AN) done state: 0 for AN in progress, 0 for AN done
+     * Auto negotiation (AN) done state: 0 for AN in progress, 0 for AN done
      * @type bool
      * @flags READ_ONLY
      */
@@ -2349,7 +2349,7 @@ typedef enum _sai_port_serdes_tx_fir_tap_mode_t
  */
 typedef enum _sai_port_serdes_tx_fir_precode_t
 {
-    /** HW default TX precode */
+    /** HW default TX pre-code */
     SAI_PORT_SERDES_TX_FIR_PRECODE_DEFAULT,
 
     /** TX precode off */
@@ -2546,7 +2546,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_PRECODE
      *
-     * TX FIR Independent mode, TX PRECODE option
+     * TX FIR Independent mode, TX pre-code option
      *
      * @type sai_port_serdes_tx_fir_precode_t
      * @flags CREATE_ONLY
