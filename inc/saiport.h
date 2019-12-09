@@ -2357,7 +2357,7 @@ typedef sai_status_t (*sai_clear_port_pool_stats_fn)(
 
       /** TX precode on*/
      SAI_PORT_SERDES_TX_FIR_PRECODE_ON,
- } sai_port_serdes_tx_fir_tx_precode_t;
+ } sai_port_serdes_tx_fir_precode_t;
 
 /**
  * @brief List of Port Serdes attributes
@@ -2548,7 +2548,7 @@ typedef enum _sai_port_serdes_attr_t
      *
      * TX FIR Independent mode, TX PRECODE option
      *
-     * @type sai_port_serdes_tx_fir_tx_precode_t
+     * @type sai_port_serdes_tx_fir_precode_t
      * @flags CREATE_ONLY
      * @default internal
      */
