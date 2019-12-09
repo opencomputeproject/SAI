@@ -1380,7 +1380,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
      *
-     * Autonegotiaton done state: 0 for Autonegotiaton in progress, 0 for Autonegotiaton done
+     * Auto negotiaton (AN) done state: 0 for AN in progress, 0 for AN done
      * @type bool
      * @flags READ_ONLY
      */
