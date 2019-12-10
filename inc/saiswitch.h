@@ -308,6 +308,9 @@ typedef enum _sai_switch_type_t
  */
 typedef enum _sai_switch_chip_reset_mode_t
 {
+    /** Reset mode not set */
+    SAI_SWITCH_CHIP_RESET_MODE_NONE,
+
     /** Hard reset */
     SAI_SWITCH_CHIP_RESET_MODE_HARD,
 
@@ -2115,7 +2118,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_switch_chip_reset_mode_t
      * @flags CREATE_AND_SET
-     * @default disabled
+     * @default SAI_SWITCH_CHIP_RESET_MODE_NONE
      */
     SAI_SWITCH_ATTR_CHIP_RESET_MODE,
 
