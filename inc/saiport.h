@@ -2533,28 +2533,6 @@ typedef enum _sai_port_serdes_attr_t
     SAI_PORT_SERDES_ATTR_TX_FIR_AMP,
 
     /**
-     * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_TAP_MODE
-     *
-     * TX FIR Tap modes: NRZ_LP_3TAP, NRZ_6TAP, PAM4_LP_3TAP or PAM4_6TAP
-     *
-     * @type sai_port_serdes_tx_fir_tap_mode_t
-     * @flags CREATE_ONLY
-     * @default internal
-     */
-    SAI_PORT_SERDES_ATTR_TX_FIR_TAP_MODE,
-
-    /**
-     * @brief Attribute data for #SAI_PORT_SERDES_ATTR_TX_FIR_PRECODE
-     *
-     * TX FIR Independent mode, TX pre-code option
-     *
-     * @type sai_port_serdes_tx_fir_precode_t
-     * @flags CREATE_ONLY
-     * @default internal
-     */
-    SAI_PORT_SERDES_ATTR_TX_FIR_PRECODE,
-
-    /**
      * @brief End of attributes
      */
     SAI_PORT_SERDES_ATTR_END,
