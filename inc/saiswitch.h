@@ -304,6 +304,18 @@ typedef enum _sai_switch_type_t
 } sai_switch_type_t;
 
 /**
+ * @brief Runtime chip reset mode options
+ */
+typedef enum _sai_switch_chip_reset_mode_t
+{
+    /** Hard reset */
+    SAI_SWITCH_CHIP_RESET_MODE_HARD,
+
+    /** Soft reset */
+    SAI_SWITCH_CHIP_RESET_MODE_SOFT,
+} sai_switch_chip_reset_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
  */
@@ -2094,6 +2106,18 @@ typedef enum _sai_switch_attr_t
      * @default SAI_SWITCH_TYPE_NPU
      */
     SAI_SWITCH_ATTR_TYPE,
+
+    /**
+     * @brief Attribute data for #SAI_SWITCH_ATTR_CHIP_RESET_MODE
+     *
+     * Chip Reset modes: hard reset or soft reset
+     * Used during run time
+     *
+     * @type sai_switch_chip_reset_mode_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_SWITCH_ATTR_CHIP_RESET_MODE,
 
     /**
      * @brief End of attributes
