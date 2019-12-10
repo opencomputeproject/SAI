@@ -304,7 +304,7 @@ typedef enum _sai_switch_type_t
 } sai_switch_type_t;
 
 /**
- * @brief Runtime chip reset mode options
+ * @brief Run time chip reset mode options
  */
 typedef enum _sai_switch_chip_reset_mode_t
 {
