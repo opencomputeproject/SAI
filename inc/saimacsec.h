@@ -527,15 +527,12 @@ typedef enum _sai_macsec_sc_attr_t
     SAI_MACSEC_SC_ATTR_MACSEC_SECTAG_OFFSET,
 
     /**
-     * @brief Active MACsec Secure Association
+     * @brief Active MACsec SA identifier.
      * @type sai_object_id_t
-     * @flags CREATE_AND_SET
+     * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_MACSEC_SA
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
      */
-    SAI_MACSEC_SC_ATTR_ACTIVE_SA,
+    SAI_MACSEC_SC_ATTR_ACTIVE_EGRESS_SA_ID,
 
     /**
      * @brief Replay protection enable for this Secure Channel.
@@ -662,6 +659,15 @@ typedef enum _sai_macsec_sa_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_MACSEC_SA_ATTR_MACSEC_DIRECTION = SAI_MACSEC_SA_ATTR_START,
+
+    /**
+     * @brief MACSEC Secure Channel object id
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_MACSEC_SC
+     */
+    SAI_MACSEC_SA_ATTR_SC_ID,
 
     /**
      * @brief AN value (2-bit) for this Secure Channel, carried in MACsec packet SecTAG.
