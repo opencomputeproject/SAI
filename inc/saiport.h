@@ -1369,15 +1369,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PRBS_LOCK_LOSS_STATUS,
 
     /**
-     * @brief Attribute data for #SAI_PORT_ATTR_PRBS_ERROR_COUNT
-     *
-     * PRBS error count
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_PRBS_ERROR_COUNT,
-
-    /**
      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
      *
      * Auto negotiation (AN) done state: 0 for AN in progress, 0 for AN done
@@ -1909,6 +1900,9 @@ typedef enum _sai_port_stat_t
      * This Duration is accumulative since EEE enable on port/from last clear stats.
      */
     SAI_PORT_STAT_EEE_RX_DURATION,
+
+    /** PRBS Error Count */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
