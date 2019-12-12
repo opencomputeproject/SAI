@@ -1,0 +1,20 @@
+# metadata build artifacts
+meta/xml
+meta/html
+
+meta/*.o
+
+meta/doxygen_sqlite3.db
+meta/saidepgraph.gv
+meta/saidepgraph.svg
+meta/saidepgraphgen
+meta/saimetadata.c
+meta/saimetadata.h
+meta/saimetadatatest
+meta/saimetadatatest.c
+meta/saisanitycheck
+meta/saiserializetest
+
+# temporary files
+**/*~
+**/*.swp
