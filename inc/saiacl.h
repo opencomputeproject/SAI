@@ -1070,9 +1070,18 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
+     * @brief TAM INT type
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_TAM_INT_TYPE,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_TAM_INT_TYPE,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -1769,9 +1778,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
+     * @brief TAM INT type
+     *
+     * @type sai_acl_field_data_t sai_tam_int_type_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_TAM_INT_TYPE,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_TAM_INT_TYPE,
 
     /*
      * Actions [sai_acl_action_data_t]
