@@ -1,5 +1,6 @@
 # this file defines acronyms, one acronym per line
 ACL - Access Control List
+AN - Auto Negotiation
 API - Application Program Interface
 ARP - Address Resolution Protocol
 ASIC - Application Specific Integrated Circuit
@@ -62,8 +63,10 @@ MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
 NHLFE - Next Hop Label Forwarding Entry
 NPU - Numeric Processing Unit
+NRZ - Non Return to Zero
 OAM - Operations Administration and Maintenance
 OUI - Organizationally Unique Identifier
+PAM4 - Pulse Amplitude Modulation 4-level
 PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
 PFC - Priority Flow Control
