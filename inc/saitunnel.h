@@ -484,6 +484,15 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_SRC_IP,
 
     /**
+     * @brief Tunnel Destination IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_ONLY
+     * @default 0.0.0.0
+     */
+    SAI_TUNNEL_ATTR_ENCAP_DST_IP,
+
+    /**
      * @brief Tunnel TTL mode (pipe or uniform model)
      *
      * Default would be
