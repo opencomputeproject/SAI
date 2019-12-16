@@ -233,6 +233,7 @@ ALIASES                += "passparam      =@par Pass paramater:\n         @xmlon
 ALIASES                += "extraparam     =@par Extra paramater:\n        @xmlonly @@extraparam     @endxmlonly"
 ALIASES                += "suffix         =@par Serialize suffix:\n       @xmlonly @@suffix         @endxmlonly"
 ALIASES                += "isresourcetype =@par IsResourceType:\n         @xmlonly @@isresourcetype @endxmlonly"
+ALIASES                += "deprecated     =@par Deprecated:\n             @xmlonly @@deprecated     @endxmlonly"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"

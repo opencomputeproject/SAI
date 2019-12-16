@@ -4515,6 +4515,8 @@ void check_all_object_infos()
     {
         check_single_object_info(sai_metadata_all_object_type_infos[i]);
     }
+
+    META_ASSERT_TRUE((size_t)SAI_OBJECT_TYPE_EXTENSIONS_MAX == (size_t)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END, "must be equal");
 }
 
 int main(int argc, char **argv)

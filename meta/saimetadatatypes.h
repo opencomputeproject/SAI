@@ -1052,6 +1052,15 @@ typedef struct _sai_attr_metadata_t
      * to distinguish between pools of resources.
      */
     bool                                        isresourcetype;
+
+    /**
+     * @brief Indicates whether attribute is deprecated.
+     *
+     * If true, attribute is deprecated and should not be used. Is up to vendor
+     * to check this field and give run time warning about this attribute.
+     */
+    bool                                        isdeprecated;
+
 } sai_attr_metadata_t;
 
 /*
