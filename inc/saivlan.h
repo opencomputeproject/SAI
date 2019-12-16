@@ -397,7 +397,7 @@ typedef enum _sai_vlan_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_VLAN_ATTR_NEIGH_SUPPRESSION_ENABLE,
+    SAI_VLAN_ATTR_NEIGHBOR_SUPPRESSION_ENABLE,
 
     /**
      * @brief End of attributes
