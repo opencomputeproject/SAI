@@ -259,6 +259,19 @@ typedef enum _sai_port_link_training_failure_status_t
 } sai_port_link_training_failure_status_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_LINK_TRAINING_RX_STATUS
+ * Used for receiver status for link training
+ */
+typedef enum _sai_port_link_training_rx_status_t
+{
+    /** Receiver not trained */
+    SAI_PORT_LINK_TRAINING_RX_STATUS_NOT_TRAINED,
+
+    /** Receiver trained */
+    SAI_PORT_LINK_TRAINING_RX_STATUS_TRAINED,
+} sai_port_link_training_rx_status_t;
+
+/**
  * @brief Attribute data for #SAI_PORT_ATTR_PRBS_CONFIG
  * PRBS configuration to enable transmitter, receiver or both
  */
@@ -1339,6 +1352,14 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_LINK_TRAINING_FAILURE_STATUS,
+
+    /**
+     * @brief Status whether the receiver trained or not trained to receive data
+     *
+     * @type sai_port_link_training_rx_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_LINK_TRAINING_RX_STATUS,
 
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_CONFIG
