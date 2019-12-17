@@ -1,7 +1,7 @@
 # Introduction
 As of SAI version 1.5 the “tunnel” has a p2mp connotation. It holds the VTEP SIP whereas there is no DIP. The DIP is specified as part of the FDB entry or as part of Next Hop entry.
 
-It is proposed to add the DIP as part of the sai_tunnel_attr_t structure as an optional parameter.
+It is proposed to add the DIP as part of the `sai_tunnel_attr_t` structure as an optional parameter.
 
 The following are the motivations for introducing a DIP in the tunnel structure and to model it as a p2p entity.
 
