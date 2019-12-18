@@ -1141,7 +1141,7 @@ typedef sai_status_t (*sai_bulk_object_remove_fn)(
  * any of the objects fails to create. When there is failure, Caller is expected to go through the
  * list of returned statuses to find out which fails and which succeeds.
  */
-typedef sai_status_t (*sai_bulk_object_set_fn)(
+typedef sai_status_t (*sai_bulk_object_set_attribute_fn)(
         _In_ uint32_t object_count,
         _In_ const sai_object_id_t *object_id,
         _In_ const sai_attribute_t *attr_list,
@@ -1163,7 +1163,7 @@ typedef sai_status_t (*sai_bulk_object_set_fn)(
  * any of the objects fails to create. When there is failure, Caller is expected to go through the
  * list of returned statuses to find out which fails and which succeeds.
  */
-typedef sai_status_t (*sai_bulk_object_get_fn)(
+typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
         _In_ uint32_t object_count,
         _In_ const sai_object_id_t *object_id,
         _In_ const uint32_t *attr_count,
