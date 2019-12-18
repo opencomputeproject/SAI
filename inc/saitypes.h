@@ -1137,9 +1137,10 @@ typedef sai_status_t (*sai_bulk_object_remove_fn)(
  * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
  *
- * @return #SAI_STATUS_SUCCESS on success when all objects are created or #SAI_STATUS_FAILURE when
- * any of the objects fails to create. When there is failure, Caller is expected to go through the
- * list of returned statuses to find out which fails and which succeeds.
+ * @return #SAI_STATUS_SUCCESS when set attributes on all objects succeeded or
+ * #SAI_STATUS_FAILURE when any of the objects fails to set attribute. When
+ * there is failure, Caller is expected to go through the list of returned
+ * statuses to find out which fails and which succeeds.
  */
 typedef sai_status_t (*sai_bulk_object_set_attribute_fn)(
         _In_ uint32_t object_count,
@@ -1159,9 +1160,10 @@ typedef sai_status_t (*sai_bulk_object_set_attribute_fn)(
  * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
  *
- * @return #SAI_STATUS_SUCCESS on success when all objects are created or #SAI_STATUS_FAILURE when
- * any of the objects fails to create. When there is failure, Caller is expected to go through the
- * list of returned statuses to find out which fails and which succeeds.
+ * @return #SAI_STATUS_SUCCESS when get attributes on all objects succeeded or
+ * #SAI_STATUS_FAILURE when any of the objects fails to get attribute. When
+ * there is failure, Caller is expected to go through the list of returned
+ * statuses to find out which fails and which succeeds.
  */
 typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
         _In_ uint32_t object_count,
