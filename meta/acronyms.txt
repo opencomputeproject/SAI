@@ -1,5 +1,7 @@
 # this file defines acronyms, one acronym per line
 ACL - Access Control List
+AES - Advanced Encryption Standard
+AN - Association Number
 AN - Auto Negotiation
 API - Application Program Interface
 ARP - Address Resolution Protocol
@@ -34,6 +36,7 @@ FD - File Descriptor
 FDB - Forwarding Data Base
 FEC - Forward Error Correction
 FPGA - Field Programmable Gate Array
+GCM - Galois Counter Mode
 GPB - Google Protocol Buffers
 GRE - Generic Routing Encapsulation
 GRPC - GRPC Remote Procedure Call
@@ -49,6 +52,7 @@ IGMP - Internet Group Management Protocol
 IHL - Internet Header Length
 IOAM - In-situ Operations And Management
 IP - Internet Protocol
+IPG - Inter-Packet Gap
 IPFIX - IP Flow Information Export
 IP2ME - IP packets to local router IP
 IPMC - Intelligent Platform Management Controller
@@ -71,13 +75,18 @@ PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
 PFC - Priority Flow Control
 PIR - Peak Information Rate
+PN - Packet Number
 PTP - Precision time protocol
 QOS - Quality of Service
 RARP - Reverse Address Resolution Protocol
 RFC - Request For Comment
 RPF - Reverse Path Forwarding
 RSPAN - Remote Span
+SA - Secure Association
+SAK - Secure Association Key
 SAI - Switch Abstraction Interface
+SCI - Secure Channel Identifier
+SC - Secure Channel
 SDK - Software Development Kit
 SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
@@ -86,6 +95,7 @@ SNMP - Simple Network Management Protocol
 SNR - Signal to Noise Ratio
 SPAN - Switched Port Analyzer
 SQE - Signal Quality Errors
+SSCI - Short Secure Channel Identifier
 SSH - Secure Shell
 SSL - Secure Socket Layer
 STP - Spanning Tree Protocol
@@ -108,6 +118,7 @@ WCMP - Weighted Cost Multipath
 WRED - Weighted Random Early Detection
 WWW - World Wide Web
 XG - (*,G) Any-source Multicast
+XPN - Extended Packet Number
 XOFF - Transmitter Off
 XON - Transmitter On
 FW  - Firmware
