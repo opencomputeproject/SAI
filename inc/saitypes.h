@@ -56,6 +56,9 @@ typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
 typedef UINT32  sai_label_id_t;
 typedef UINT32  sai_stat_id_t;
+typedef UINT8   sai_macsec_sak_t[32];
+typedef UINT8   sai_macsec_auth_key_t[16];
+typedef UINT8   sai_macsec_salt_t[12];
 
 #include <ws2def.h>
 #include <ws2ipdef.h>
@@ -96,6 +99,9 @@ typedef uint8_t  sai_ip6_t[16];
 typedef uint32_t sai_switch_hash_seed_t;
 typedef uint32_t sai_label_id_t;
 typedef uint32_t sai_stat_id_t;
+typedef uint8_t sai_macsec_sak_t[32];
+typedef uint8_t sai_macsec_auth_key_t[16];
+typedef uint8_t sai_macsec_salt_t[12];
 
 #define _In_
 #define _Out_
@@ -264,7 +270,13 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_DEBUG_COUNTER            = 85,
     SAI_OBJECT_TYPE_PORT_CONNECTOR           = 86,
     SAI_OBJECT_TYPE_PORT_SERDES              = 87,
-    SAI_OBJECT_TYPE_MAX                      = 88,
+    SAI_OBJECT_TYPE_MACSEC                   = 88,
+    SAI_OBJECT_TYPE_MACSEC_PORT              = 89,
+    SAI_OBJECT_TYPE_MACSEC_FLOW              = 90,
+    SAI_OBJECT_TYPE_MACSEC_SC                = 91,
+    SAI_OBJECT_TYPE_MACSEC_SA                = 92,
+
+    SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -403,6 +415,9 @@ typedef union _sai_acl_field_data_mask_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32 */
     sai_int32_t s32;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT64 */
+    sai_uint64_t u64;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC */
     sai_mac_t mac;
 
@@ -447,6 +462,9 @@ typedef union _sai_acl_field_data_data_t
      * @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32
      */
     sai_int32_t s32;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT64 */
+    sai_uint64_t u64;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC */
     sai_mac_t mac;
@@ -713,6 +731,12 @@ typedef enum _sai_acl_stage_t
 
     /** Egress Stage */
     SAI_ACL_STAGE_EGRESS,
+
+    /** Ingress Stage */
+    SAI_ACL_STAGE_INGRESS_MACSEC,
+
+    /** Egress Stage */
+    SAI_ACL_STAGE_EGRESS_MACSEC,
 
 } sai_acl_stage_t;
 
@@ -1055,6 +1079,15 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TIMESPEC */
     sai_timespec_t timespec;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SAK */
+    sai_macsec_sak_t macsecsak;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY */
+    sai_macsec_auth_key_t macsecauthkey;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SALT */
+    sai_macsec_salt_t macsecsalt;
 } sai_attribute_value_t;
 
 /**

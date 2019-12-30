@@ -227,6 +227,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32,
 
     /**
+     * @brief Attribute value is ACL field 64 bit unsigned integer.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT64,
+
+    /**
      * @brief Attribute value is ACL field MAC address.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC,
@@ -240,6 +245,11 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is ACL field IPv6.
      */
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_IPV6,
+
+    /**
+     * @brief Attribute value is MACsec rule match field SCI.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MACSEC_SCI,
 
     /**
      * @brief Attribute value is ACL field object id.
@@ -376,6 +386,30 @@ typedef enum _sai_attr_value_type_t
      */
     SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA,
 
+    /**
+     * @brief Attribute value is MACsec SCI.
+     */
+    SAI_ATTR_VALUE_TYPE_MACSEC_SCI,
+
+    /**
+     * @brief Attribute value is MACsec SSCI.
+     */
+    SAI_ATTR_VALUE_TYPE_MACSEC_SSCI,
+
+    /**
+     * @brief Attribute value is MACsec SAK.
+     */
+    SAI_ATTR_VALUE_TYPE_MACSEC_SAK,
+
+    /**
+     * @brief Attribute value is MACsec Authentication Key.
+     */
+    SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY,
+
+    /**
+     * @brief Attribute value is MACsec SALT.
+     */
+    SAI_ATTR_VALUE_TYPE_MACSEC_SALT,
 } sai_attr_value_type_t;
 
 /**

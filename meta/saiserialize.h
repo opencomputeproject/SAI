@@ -416,6 +416,84 @@ int sai_deserialize_mac(
         _Out_ sai_mac_t mac);
 
 /**
+ * @brief Serialize macsec_sak.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] sak The macsec_sak to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_macsec_sak(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_sak_t sak);
+
+/**
+ * @brief Deserialize macsec_sak.
+ *
+ * @param[in] buffer Input buffer to be examined.
+ * @param[out] sak The macsec_sak deserialized value.
+ *
+ * @return Number of characters consumed from the buffer,
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_deserialize_macsec_sak(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_sak_t sak);
+
+/**
+ * @brief Serialize macsec_auth_key.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] auth The macsec_auth_key to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_macsec_auth_key(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_auth_key_t auth);
+
+/**
+ * @brief Deserialize macsec_auth_key.
+ *
+ * @param[in] buffer Input buffer to be examined.
+ * @param[out] auth The macsec_auth_key deserialized value.
+ *
+ * @return Number of characters consumed from the buffer,
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_deserialize_macsec_auth_key(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_auth_key_t auth);
+
+/**
+ * @brief Serialize macsec_salt.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] salt The macsec_salt to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_macsec_salt(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_salt_t salt);
+
+/**
+ * @brief Deserialize macsec_salt.
+ *
+ * @param[in] buffer Input buffer to be examined.
+ * @param[out] salt The macsec_salt Deserialized value.
+ *
+ * @return Number of characters consumed from the buffer,
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_deserialize_macsec_salt(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_salt_t salt);
+
+/**
  * @brief Serialize enum value.
  *
  * Buffer will contain actual enum name of number if enum
