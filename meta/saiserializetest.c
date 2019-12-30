@@ -305,6 +305,150 @@ void test_deserialize_mac()
     ASSERT_TRUE(res < 0, "expected negative");
 }
 
+void test_serialize_macsec_sak()
+{
+    int res;
+    char buf[PRIMITIVE_BUFFER_SIZE];
+
+    sai_macsec_sak_t macsec_sak;
+
+    memcpy(macsec_sak, "\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67\x89\xab\xcd\xef", 32);
+
+    res = sai_serialize_macsec_sak(buf, macsec_sak);
+
+    ASSERT_STR_EQ(buf, "01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF", res);
+}
+
+void test_deserialize_macsec_sak()
+{
+    int res;
+    sai_macsec_sak_t macsec_sak;
+
+    res = sai_deserialize_macsec_sak("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF", macsec_sak);
+    ASSERT_TRUE(res == 95, "expected 95 length");
+    ASSERT_TRUE(memcmp(macsec_sak, "\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67\x89\xab\xcd\xef", 32) == 0, "expected equal");
+
+    res = sai_deserialize_macsec_sak("1:2:3:4:5:f:a:b:1:2:3:4:5:f:a:b:1:2:3:4:5:f:a:b:1:2:3:4:5:f:a:b", macsec_sak);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_sak("001:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF", macsec_sak);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_sak("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:zF", macsec_sak);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_sak("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:Ej", macsec_sak);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_sak("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:", macsec_sak);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_sak("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:]F", macsec_sak);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_sak("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89::CD:EF", macsec_sak);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_sak("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:01:23:45::67:89:AB:CD:EF", macsec_sak);
+    ASSERT_TRUE(res < 0, "expected negative");
+}
+
+void test_serialize_macsec_auth_key()
+{
+    int res;
+    char buf[PRIMITIVE_BUFFER_SIZE];
+
+    sai_macsec_auth_key_t macsec_auth_key;
+
+    memcpy(macsec_auth_key, "\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67\x89\xab\xcd\xef", 16);
+
+    res = sai_serialize_macsec_auth_key(buf, macsec_auth_key);
+
+    ASSERT_STR_EQ(buf, "01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF", res);
+}
+
+void test_deserialize_macsec_auth_key()
+{
+    int res;
+    sai_macsec_auth_key_t macsec_auth_key;
+
+    res = sai_deserialize_macsec_auth_key("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF", macsec_auth_key);
+    ASSERT_TRUE(res == 47, "expected 47 length");
+    ASSERT_TRUE(memcmp(macsec_auth_key, "\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67\x89\xab\xcd\xef", 16) == 0, "expected equal");
+
+    res = sai_deserialize_macsec_auth_key("1:2:3:4:5:f:a:b:1:2:3:4:5:f:a:b", macsec_auth_key);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_auth_key("001:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF", macsec_auth_key);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_auth_key("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:zF", macsec_auth_key);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_auth_key("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:Ej", macsec_auth_key);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_auth_key("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:EF:", macsec_auth_key);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_auth_key("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB:CD:]F", macsec_auth_key);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_auth_key("01:23:45:67:89:AB:CD:EF:01:23:45:67:89::CD:EF", macsec_auth_key);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_auth_key("01:23:45:67:89:AB:CD:EF:01:23:45:67:89:AB::CD:EF", macsec_auth_key);
+    ASSERT_TRUE(res < 0, "expected negative");
+}
+
+void test_serialize_macsec_salt()
+{
+    int res;
+    char buf[PRIMITIVE_BUFFER_SIZE];
+
+    sai_macsec_salt_t macsec_salt;
+
+    memcpy(macsec_salt, "\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67", 12);
+
+    res = sai_serialize_macsec_salt(buf, macsec_salt);
+
+    ASSERT_STR_EQ(buf, "01:23:45:67:89:AB:CD:EF:01:23:45:67", res);
+}
+
+void test_deserialize_macsec_salt()
+{
+    int res;
+    sai_macsec_salt_t macsec_salt;
+
+    res = sai_deserialize_macsec_salt("01:23:45:67:89:AB:CD:EF:01:23:45:67", macsec_salt);
+    ASSERT_TRUE(res == 35, "expected 35 length");
+    ASSERT_TRUE(memcmp(macsec_salt, "\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67", 12) == 0, "expected equal");
+
+    res = sai_deserialize_macsec_salt("1:2:3:4:5:f:a:b:1:2:3:4", macsec_salt);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_salt("001:23:45:67:89:AB:CD:EF:01:23:45:67", macsec_salt);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_salt("01:23:45:67:89:AB:CD:EF:01:23:45:z7", macsec_salt);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_salt("01:23:45:67:89:AB:CD:EF:01:23:45:6j", macsec_salt);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_salt("01:23:45:67:89:AB:CD:EF:01:23:45:67:", macsec_salt);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_salt("01:23:45:67:89:AB:CD:EF:01:23:45:]7", macsec_salt);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_salt("01:23:45:67:89:AB:CD:EF:01:23::67", macsec_salt);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_macsec_salt("01:23:45:67:89:AB:CD:EF:01:23::45:67", macsec_salt);
+    ASSERT_TRUE(res < 0, "expected negative");
+}
+
 void test_serialize_enum()
 {
     int res;

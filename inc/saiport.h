@@ -801,6 +801,47 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_EGRESS_ACL,
 
     /**
+     * @brief Port bind point for ingress MACsec ACL object
+     *
+     * Bind (or unbind) an ingress MACsec ACL table on a port.
+     * Enable/Update ingress MACsec ACL table filtering by assigning the
+     * list of valid object id. Disable ingress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_INGRESS_MACSEC_ACL,
+
+    /**
+     * @brief Port bind point for egress MACsec ACL object
+     *
+     * Bind (or unbind) an egress MACsec ACL tables on a port.
+     * Enable/Update egress MACsec ACL table filtering by assigning the
+     * list of valid object id. Disable egress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_EGRESS_MACSEC_ACL,
+
+    /**
+     * @brief List of MACsec ports
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_MACSEC_PORT
+     */
+    SAI_PORT_ATTR_MACSEC_PORT_LIST,
+
+    /**
      * @brief Enable/Disable Mirror session
      *
      * Enable ingress mirroring by assigning list of mirror session object id
