@@ -255,6 +255,9 @@ typedef enum _sai_acl_action_type_t
     /** Set isolation group to prevent traffic to members of isolation group */
     SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
 
+    /** Bind a MACsec flow object */
+    SAI_ACL_ACTION_TYPE_MACSEC_FLOW,
+
 } sai_acl_action_type_t;
 
 /**
@@ -929,6 +932,26 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_VNI,
 
+    /**
+     * @brief Match on packet that has vlan tag
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_HAS_VLAN_TAG,
+
+    /**
+     * @brief SCI value in MACsec packet SecTAG
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_MACSEC_SCI,
+
+    /* User Based metadata */
+
     /* User Based metadata [bool] */
 
     /**
@@ -1070,9 +1093,18 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
+     * @brief TAM INT type
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_TAM_INT_TYPE,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_TAM_INT_TYPE,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -1601,6 +1633,24 @@ typedef enum _sai_acl_entry_attr_t
      */
     SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_VNI,
 
+    /**
+     * @brief Match on packet that has vlan tag
+     *
+     * @type sai_acl_field_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_HAS_VLAN_TAG,
+
+    /**
+     * @brief SCI value in MACsec packet SecTAG
+     *
+     * @type sai_acl_field_data_t sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_MACSEC_SCI,
+
     /* User Based metadata */
 
     /**
@@ -1769,9 +1819,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
+     * @brief TAM INT type
+     *
+     * @type sai_acl_field_data_t sai_tam_int_type_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_TAM_INT_TYPE,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_TAM_INT_TYPE,
 
     /*
      * Actions [sai_acl_action_data_t]
@@ -2254,9 +2313,19 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ISOLATION_GROUP,
 
     /**
+     * @brief MACsec flow
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MACSEC_FLOW
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_MACSEC_FLOW,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ISOLATION_GROUP,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_MACSEC_FLOW,
 
     /**
      * @brief End of ACL Entry attributes

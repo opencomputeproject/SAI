@@ -240,6 +240,57 @@ typedef enum _sai_port_interface_type_t
 } sai_port_interface_type_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_LINK_TRAINING_FAILURE_STATUS
+ * Used for Link Training failure status and error codes
+ */
+typedef enum _sai_port_link_training_failure_status_t
+{
+    /** No Error detected */
+    SAI_PORT_LINK_TRAINING_FAILURE_STATUS_NO_ERROR,
+
+    /** Failure detected */
+    SAI_PORT_LINK_TRAINING_FAILURE_STATUS_FRAME_LOCK_ERROR,
+
+    /** SNR lower than threshold */
+    SAI_PORT_LINK_TRAINING_FAILURE_STATUS_SNR_LOWER_THRESHOLD,
+
+    /** Link training timeout */
+    SAI_PORT_LINK_TRAINING_FAILURE_STATUS_TIME_OUT
+} sai_port_link_training_failure_status_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_LINK_TRAINING_RX_STATUS
+ * Used for receiver status for link training
+ */
+typedef enum _sai_port_link_training_rx_status_t
+{
+    /** Receiver not trained */
+    SAI_PORT_LINK_TRAINING_RX_STATUS_NOT_TRAINED,
+
+    /** Receiver trained */
+    SAI_PORT_LINK_TRAINING_RX_STATUS_TRAINED,
+} sai_port_link_training_rx_status_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_PRBS_CONFIG
+ * PRBS configuration to enable transmitter, receiver or both
+ */
+typedef enum _sai_port_prbs_config_t
+{
+    /** PRBS Disable */
+    SAI_PORT_PRBS_CONFIG_DISABLE,
+
+    /** Enable both PRBS Transmitter and Receiver */
+    SAI_PORT_PRBS_CONFIG_ENABLE_TX_RX,
+
+    /** Enable PRBS Receiver */
+    SAI_PORT_PRBS_CONFIG_ENABLE_RX,
+
+    /** Enable PRBS Transmitter */
+    SAI_PORT_PRBS_CONFIG_ENABLE_TX
+} sai_port_prbs_config_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -761,6 +812,47 @@ typedef enum _sai_port_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_EGRESS_ACL,
+
+    /**
+     * @brief Port bind point for ingress MACsec ACL object
+     *
+     * Bind (or unbind) an ingress MACsec ACL table on a port.
+     * Enable/Update ingress MACsec ACL table filtering by assigning the
+     * list of valid object id. Disable ingress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_INGRESS_MACSEC_ACL,
+
+    /**
+     * @brief Port bind point for egress MACsec ACL object
+     *
+     * Bind (or unbind) an egress MACsec ACL tables on a port.
+     * Enable/Update egress MACsec ACL table filtering by assigning the
+     * list of valid object id. Disable egress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_EGRESS_MACSEC_ACL,
+
+    /**
+     * @brief List of MACsec ports
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_MACSEC_PORT
+     */
+    SAI_PORT_ATTR_MACSEC_PORT_LIST,
 
     /**
      * @brief Enable/Disable Mirror session
@@ -1295,6 +1387,59 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PORT_SERDES_ID,
 
     /**
+     * @brief Link training failure status and error codes
+     *
+     * @type sai_port_link_training_failure_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_LINK_TRAINING_FAILURE_STATUS,
+
+    /**
+     * @brief Status whether the receiver trained or not trained to receive data
+     *
+     * @type sai_port_link_training_rx_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_LINK_TRAINING_RX_STATUS,
+
+    /**
+     * @brief Attribute data for #SAI_PORT_ATTR_PRBS_CONFIG
+     *
+     * PRBS configuration to enable transmitter, receiver or both
+     * @type sai_port_prbs_config_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PRBS_CONFIG_DISABLE
+     */
+    SAI_PORT_ATTR_PRBS_CONFIG,
+
+    /**
+     * @brief Attribute data for #SAI_PORT_ATTR_PRBS_LOCK_STATUS
+     *
+     * PRBS lock status: 1 for locked, 0 for unlocked
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_LOCK_STATUS,
+
+    /**
+     * @brief Attribute data for #SAI_PORT_ATTR_PRBS_LOCK_LOSS_STATUS
+     *
+     * PRBS unlocked status since last read: 1 for lock loss, 0 for no lock loss
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_LOCK_LOSS_STATUS,
+
+    /**
+     * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
+     *
+     * Auto negotiation (AN) done state: 0 for AN in progress, 0 for AN done
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_AUTO_NEG_STATUS,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -1817,6 +1962,9 @@ typedef enum _sai_port_stat_t
      * This Duration is accumulative since EEE enable on port/from last clear stats.
      */
     SAI_PORT_STAT_EEE_RX_DURATION,
+
+    /** PRBS Error Count */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
