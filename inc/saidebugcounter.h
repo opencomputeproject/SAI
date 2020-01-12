@@ -364,14 +364,14 @@ typedef enum _sai_debug_counter_attr_t
      */
     SAI_DEBUG_COUNTER_ATTR_START,
 
-    /* READ-ONLY */
+    /* CREATE-ONLY */
 
     /**
      * @brief Object stat index
      * Index is added to base start
      *
      * @type sai_uint32_t
-     * @flags READ_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
      */
     SAI_DEBUG_COUNTER_ATTR_INDEX = SAI_DEBUG_COUNTER_ATTR_START,
 
