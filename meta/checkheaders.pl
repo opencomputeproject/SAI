@@ -38,7 +38,7 @@ sub CheckArguments
 {
     if (scalar @ARGV != 2)
     {
-        print "expected 2 arguments which are SAI/inc directoies: dirA dirB\n";
+        print "expected 2 arguments which are SAI/inc directories: dirA dirB\n";
         exit 1;
     }
 }
