@@ -422,7 +422,7 @@ typedef enum _sai_macsec_flow_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_MACSEC_FLOW_ATTR_MACSEC_DIRECTION = SAI_MACSEC_FLOW_ATTR_START,
-    
+
     /**
      * @brief MACsec port object id
      * @type sai_object_id_t
@@ -463,6 +463,77 @@ typedef enum _sai_macsec_flow_attr_t
      */
     SAI_MACSEC_FLOW_ATTR_CUSTOM_RANGE_END
 } sai_macsec_flow_attr_t;
+
+/**
+ * @brief MACsec flow counter IDs in sai_get_macsec_stats() call
+ */
+typedef enum _sai_macsec_flow_stat_t
+{
+    /**
+     * @brief packets dropped IfIn/IfOut before MACsec processing for uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_RX_DROP_PKTS_UNCONTROLLED,
+
+    /**
+     * @brief packets dropped IfIn/IfOut before MACsec processing for controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_RX_DROP_PKTS_CONTROLLED,
+
+    /**
+     * @brief Packet counters - In/Out Rx Error for uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_RX_ERR_PKTS_UNCONTROLLED,
+
+    /**
+     * @brief Packet counters - In/Out Rx Error for controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_RX_ERR_PKTS_CONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_OCTETS_UNCONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_OCTETS_CONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutOctets for MACSEC common port
+     */
+    SAI_MACSEC_FLOW_STAT_OUT_OCTETS_COMMON,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_UCAST_PKTS_UNCONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_UCAST_PKTS_CONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_MULTICAST_PKTS_UNCONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_MULTICAST_PKTS_CONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_BROADCAST_PKTS_UNCONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_BROADCAST_PKTS_CONTROLLED,
+} sai_macsec_flow_stat_t;
 
 /**
  * @brief Attribute Id for sai_macsec_sc
@@ -1056,6 +1127,39 @@ typedef sai_status_t (*sai_get_macsec_flow_attribute_fn)(
         _In_ sai_object_id_t macsec_flow_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Get MACsec flow counters extended
+ *
+ * @param[in] macsec_flow_id MACsec flow id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Should match SAI_MACSEC_ATTR_STATS_MODE
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_macsec_flow_stats_ext_fn)(
+        _In_ sai_object_id_t macsec_flow_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear MACsec flow counters
+ *
+ * @param[in] macsec_flow_id MACsec flow id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_macsec_flow_stats_fn)(
+        _In_ sai_object_id_t macsec_flow_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
+
 
 /**
  * @brief Create a MACsec Secure Channel
