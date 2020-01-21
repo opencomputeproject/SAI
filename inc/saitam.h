@@ -195,6 +195,7 @@ typedef enum _sai_tam_math_func_attr_t
 
     /**
      * @brief Type of math function
+     *
      * @type sai_tam_tel_math_func_type_t
      * @flags CREATE_AND_SET
      * @default SAI_TAM_TEL_MATH_FUNC_TYPE_NONE
@@ -216,6 +217,7 @@ typedef enum _sai_tam_math_func_attr_t
 
 /**
  * @brief Create and return a math function object
+ *
  * @param[out] tam_math_func_id Object id for math function
  * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes
@@ -538,11 +540,10 @@ typedef enum _sai_tam_int_attr_t
     /**
      * @brief IOAM trace type
      *
-     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IOAM
-     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IOAM
      */
     SAI_TAM_INT_ATTR_IOAM_TRACE_TYPE,
 
@@ -605,12 +606,11 @@ typedef enum _sai_tam_int_attr_t
      * trace vector is used to specified the fields
      * of interest in metadata header
      *
-     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
-     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
      */
     SAI_TAM_INT_ATTR_TRACE_VECTOR,
 
@@ -620,24 +620,22 @@ typedef enum _sai_tam_int_attr_t
      * of interest on metadata header
      * value of 0 means no actions of interest
      *
-     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
-     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
      */
     SAI_TAM_INT_ATTR_ACTION_VECTOR,
 
     /**
      * @brief P4 INT instruction bitmap
      *
-     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_2
-     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_1 or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_P4_INT_2
      */
     SAI_TAM_INT_ATTR_P4_INT_INSTRUCTION_BITMAP,
 
@@ -756,8 +754,8 @@ typedef enum _sai_tam_int_attr_t
 
     /**
      * @brief Collector object list
-     * @type sai_object_list_t
      *
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
      * @default empty
@@ -1191,11 +1189,10 @@ typedef enum _sai_tam_report_attr_t
     /**
      * @brief Statistic for this histogram
      *
-     * Note: valid only if SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_HISTOGRAM
-     *
      * @type sai_uint32_t
      * @flags CREATE_ONLY
      * @default 0
+     * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_HISTOGRAM
      */
     SAI_TAM_REPORT_ATTR_HISTOGRAM_NUMBER_OF_BINS,
 
@@ -1207,11 +1204,10 @@ typedef enum _sai_tam_report_attr_t
      * the lower boundary of next bin. The upper boundary of the
      * last bin is infinity.
      *
-     * Note: Valid only if SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_HISTOGRAM
-     *
      * @type sai_u32_list_t
      * @flags CREATE_ONLY
      * @default empty
+     * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_HISTOGRAM
      */
     SAI_TAM_REPORT_ATTR_HISTOGRAM_BIN_BOUNDARY,
 
@@ -1228,6 +1224,7 @@ typedef enum _sai_tam_report_attr_t
 
     /**
      * @brief Report Mode
+     *
      * @type sai_tam_report_mode_t
      * @flags CREATE_ONLY
      * @default SAI_TAM_REPORT_MODE_ALL
@@ -1349,8 +1346,8 @@ typedef enum _sai_tam_telemetry_attr_t
 
     /**
      * @brief TAM tel type object list
-     * @type sai_object_list_t
      *
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_TEL_TYPE
      * @default empty
@@ -1359,8 +1356,8 @@ typedef enum _sai_tam_telemetry_attr_t
 
     /**
      * @brief Collector object list
-     * @type sai_object_list_t
      *
+     * @type sai_object_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
      */
@@ -1858,6 +1855,7 @@ typedef enum _sai_tam_event_action_attr_t
 
     /**
      * @brief QOS action Type Object
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
@@ -1950,6 +1948,7 @@ typedef enum _sai_tam_event_attr_t
 
     /**
      * @brief Event action
+     *
      * @type sai_object_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TAM_EVENT_ACTION
@@ -1958,8 +1957,8 @@ typedef enum _sai_tam_event_attr_t
 
     /**
      * @brief Collector object list
-     * @type sai_object_list_t
      *
+     * @type sai_object_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
      */
