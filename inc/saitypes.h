@@ -1152,10 +1152,10 @@ typedef sai_status_t (*sai_bulk_object_set_attribute_fn)(
 /**
  * @brief Bulk objects get attributes.
  *
- * @param[in] object_count Number of objects to set on attribute
+ * @param[in] object_count Number of objects to get on attribute
  * @param[in] object_id List of object ids
  * @param[in] attr_count List of attr_count. Caller passes the number
- *    of attribute for each object to create.
+ *    of attribute for each object to get.
  * @param[inout] attr_list List of attributes for every object.
  * @param[in] mode Bulk operation error handling mode.
  * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
