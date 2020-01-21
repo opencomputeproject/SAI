@@ -489,6 +489,7 @@ typedef enum _sai_nat_zone_counter_attr_t
 
     /**
      * @brief NAT Type defined in sai_nat_type_t
+     *
      * @type sai_nat_type_t
      * @flags CREATE_AND_SET
      * @default SAI_NAT_TYPE_NONE
