@@ -37,6 +37,7 @@
 
 /**
  * @brief DTEL attributes for the switch
+ *
  * @warning experimental
  *
  * @note Only one DTEL object per switch is allowed
@@ -50,6 +51,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief Enable DTEL INT endpoint
+     *
      * @warning experimental
      *
      * @type bool
@@ -60,6 +62,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief Enable DTEL INT transit
+     *
      * @warning experimental
      *
      * @type bool
@@ -70,6 +73,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief Enable Packet postcard
+     *
      * @warning experimental
      *
      * @type bool
@@ -80,6 +84,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief Enable Drop Report
+     *
      * @warning experimental
      *
      * @type bool
@@ -90,6 +95,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief Enable Queue Report
+     *
      * @warning experimental
      *
      * @type bool
@@ -100,6 +106,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief Globally unique switch ID
+     *
      * @warning experimental
      *
      * @type sai_uint32_t
@@ -110,6 +117,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief DTEL flow state clear cycle
+     *
      * @warning experimental
      *
      * @type sai_uint16_t
@@ -121,6 +129,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief Latency sensitivity for flow state change detection
+     *
      * @warning experimental
      *
      * @type sai_uint8_t
@@ -131,6 +140,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief DTEL sink ports
+     *
      * @warning experimental
      *
      * @type sai_object_list_t
@@ -142,6 +152,7 @@ typedef enum _sai_dtel_attr_t
 
     /**
      * @brief Reserved DSCP value for INT over L4
+     *
      * @warning experimental
      *
      * @type sai_acl_field_data_t sai_uint8_t
@@ -169,6 +180,7 @@ typedef enum _sai_dtel_attr_t
 
 /**
  * @brief Queue report trigger attributes
+ *
  * @warning experimental
  */
 typedef enum _sai_dtel_queue_report_attr_t
@@ -180,6 +192,7 @@ typedef enum _sai_dtel_queue_report_attr_t
 
     /**
      * @brief Queue object ID
+     *
      * @warning experimental
      *
      * @type sai_object_id_t
@@ -190,6 +203,7 @@ typedef enum _sai_dtel_queue_report_attr_t
 
     /**
      * @brief Queue depth threshold in byte
+     *
      * @warning experimental
      *
      * @type sai_uint32_t
@@ -200,6 +214,7 @@ typedef enum _sai_dtel_queue_report_attr_t
 
     /**
      * @brief Queue latency threshold in nanosecond
+     *
      * @warning experimental
      *
      * @type sai_uint32_t
@@ -210,6 +225,7 @@ typedef enum _sai_dtel_queue_report_attr_t
 
     /**
      * @brief Maximum number of continuous reports after threshold breach
+     *
      * @warning experimental
      *
      * @type sai_uint32_t
@@ -220,6 +236,7 @@ typedef enum _sai_dtel_queue_report_attr_t
 
     /**
      * @brief Send report for packets dropped by the queue
+     *
      * @warning experimental
      *
      * @type bool
@@ -247,6 +264,7 @@ typedef enum _sai_dtel_queue_report_attr_t
 
 /**
  * @brief INT session attributes
+ *
  * @warning experimental
  */
 typedef enum _sai_dtel_int_session_attr_t
@@ -258,6 +276,7 @@ typedef enum _sai_dtel_int_session_attr_t
 
     /**
      * @brief INT max hop count
+     *
      * @warning experimental
      *
      * The maximum number of hops that are allowed to
@@ -271,6 +290,7 @@ typedef enum _sai_dtel_int_session_attr_t
 
     /**
      * @brief Collect switch ID
+     *
      * @warning experimental
      *
      * @type bool
@@ -281,6 +301,7 @@ typedef enum _sai_dtel_int_session_attr_t
 
     /**
      * @brief Collect ingress and egress ports
+     *
      * @warning experimental
      *
      * @type bool
@@ -291,6 +312,7 @@ typedef enum _sai_dtel_int_session_attr_t
 
     /**
      * @brief Collect ingress timestamp
+     *
      * @warning experimental
      *
      * @type bool
@@ -301,6 +323,7 @@ typedef enum _sai_dtel_int_session_attr_t
 
     /**
      * @brief Collect egress timestamp
+     *
      * @warning experimental
      *
      * @type bool
@@ -311,6 +334,7 @@ typedef enum _sai_dtel_int_session_attr_t
 
     /**
      * @brief Collect queue information
+     *
      * @warning experimental
      *
      * @type bool
@@ -338,6 +362,7 @@ typedef enum _sai_dtel_int_session_attr_t
 
 /**
  * @brief DTEL report session attributes
+ *
  * @warning experimental
  */
 typedef enum _sai_dtel_report_session_attr_t
@@ -349,6 +374,7 @@ typedef enum _sai_dtel_report_session_attr_t
 
     /**
      * @brief DTEL report source IP address
+     *
      * @warning experimental
      *
      * @type sai_ip_address_t
@@ -359,6 +385,7 @@ typedef enum _sai_dtel_report_session_attr_t
 
     /**
      * @brief DTEL report destination IP addresses
+     *
      * @warning experimental
      *
      * @type sai_ip_address_list_t
@@ -369,6 +396,7 @@ typedef enum _sai_dtel_report_session_attr_t
 
     /**
      * @brief DTEL report virtual router ID
+     *
      * @warning experimental
      *
      * @type sai_object_id_t
@@ -381,6 +409,7 @@ typedef enum _sai_dtel_report_session_attr_t
 
     /**
      * @brief DTEL report truncate size
+     *
      * @warning experimental
      *
      * @type sai_uint16_t
@@ -392,6 +421,7 @@ typedef enum _sai_dtel_report_session_attr_t
 
     /**
      * @brief DTEL report UDP destination port
+     *
      * @warning experimental
      *
      * @type sai_uint16_t
@@ -420,6 +450,7 @@ typedef enum _sai_dtel_report_session_attr_t
 
 /**
  * @brief Enum defining DTEL event types
+ *
  * @warning experimental
  */
 typedef enum _sai_dtel_event_type_t
@@ -448,6 +479,7 @@ typedef enum _sai_dtel_event_type_t
 
 /**
  * @brief DTEL events attributes
+ *
  * @warning experimental
  */
 typedef enum _sai_dtel_event_attr_t
@@ -459,6 +491,7 @@ typedef enum _sai_dtel_event_attr_t
 
     /**
      * @brief DTEL event type
+     *
      * @warning experimental
      *
      * @type sai_dtel_event_type_t
@@ -468,6 +501,7 @@ typedef enum _sai_dtel_event_attr_t
 
     /**
      * @brief DTEL report session
+     *
      * @warning experimental
      *
      * @type sai_object_id_t
@@ -480,6 +514,7 @@ typedef enum _sai_dtel_event_attr_t
 
     /**
      * @brief DTEL report DSCP value
+     *
      * @warning experimental
      *
      * @type sai_uint8_t
@@ -507,6 +542,7 @@ typedef enum _sai_dtel_event_attr_t
 
 /**
  * @brief Create and return a DTEL object
+ *
  * @warning experimental
  *
  * @param[out] dtel_id DTEL object
@@ -524,6 +560,7 @@ typedef sai_status_t (*sai_create_dtel_fn)(
 
 /**
  * @brief Delete a DTEL object
+ *
  * @warning experimental
  *
  * @param[in] dtel_id DTEL object id
@@ -535,6 +572,7 @@ typedef sai_status_t (*sai_remove_dtel_fn)(
 
 /**
  * @brief Set DTEL attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_id DTEL object id
@@ -548,6 +586,7 @@ typedef sai_status_t (*sai_set_dtel_attribute_fn)(
 
 /**
  * @brief Get DTEL attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_id DTEL object id
@@ -563,6 +602,7 @@ typedef sai_status_t (*sai_get_dtel_attribute_fn)(
 
 /**
  * @brief Create and return a DTEL queue report object
+ *
  * @warning experimental
  *
  * @param[out] dtel_queue_report_id DTEL queue report object id
@@ -580,6 +620,7 @@ typedef sai_status_t (*sai_create_dtel_queue_report_fn)(
 
 /**
  * @brief Delete a DTEL queue report
+ *
  * @warning experimental
  *
  * @param[in] dtel_queue_report_id DTEL queue report id
@@ -591,6 +632,7 @@ typedef sai_status_t (*sai_remove_dtel_queue_report_fn)(
 
 /**
  * @brief Set DTEL queue report attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_queue_report_id DTEL queue report id
@@ -604,6 +646,7 @@ typedef sai_status_t (*sai_set_dtel_queue_report_attribute_fn)(
 
 /**
  * @brief Get DTEL queue report attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_queue_report_id DTEL queue report id
@@ -619,6 +662,7 @@ typedef sai_status_t (*sai_get_dtel_queue_report_attribute_fn)(
 
 /**
  * @brief Create and return a DTEL INT session object
+ *
  * @warning experimental
  *
  * @param[out] dtel_int_session_id DTEL INT session object id
@@ -636,6 +680,7 @@ typedef sai_status_t (*sai_create_dtel_int_session_fn)(
 
 /**
  * @brief Delete a DTEL INT session
+ *
  * @warning experimental
  *
  * @param[in] dtel_int_session_id DTEL INT session id
@@ -647,6 +692,7 @@ typedef sai_status_t (*sai_remove_dtel_int_session_fn)(
 
 /**
  * @brief Set DTEL INT session attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_int_session_id DTEL INT session id
@@ -660,6 +706,7 @@ typedef sai_status_t (*sai_set_dtel_int_session_attribute_fn)(
 
 /**
  * @brief Get DTEL INT session attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_int_session_id DTEL INT session id
@@ -675,6 +722,7 @@ typedef sai_status_t (*sai_get_dtel_int_session_attribute_fn)(
 
 /**
  * @brief Create and return a DTEL report session object
+ *
  * @warning experimental
  *
  * @param[out] dtel_report_session_id DTEL report session object
@@ -692,6 +740,7 @@ typedef sai_status_t (*sai_create_dtel_report_session_fn)(
 
 /**
  * @brief Delete a DTEL report session
+ *
  * @warning experimental
  *
  * @param[in] dtel_report_session_id DTEL report session id
@@ -703,6 +752,7 @@ typedef sai_status_t (*sai_remove_dtel_report_session_fn)(
 
 /**
  * @brief Set DTEL report session attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_report_session_id DTEL report session id
@@ -716,6 +766,7 @@ typedef sai_status_t (*sai_set_dtel_report_session_attribute_fn)(
 
 /**
  * @brief Get DTEL report session attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_report_session_id DTEL report session id
@@ -731,6 +782,7 @@ typedef sai_status_t (*sai_get_dtel_report_session_attribute_fn)(
 
 /**
  * @brief Create and return a DTEL event object
+ *
  * @warning experimental
  *
  * @param[out] dtel_event_id DTEL event object id
@@ -748,6 +800,7 @@ typedef sai_status_t (*sai_create_dtel_event_fn)(
 
 /**
  * @brief Delete a DTEL event
+ *
  * @warning experimental
  *
  * @param[in] dtel_event_id DTEL event id
@@ -759,6 +812,7 @@ typedef sai_status_t (*sai_remove_dtel_event_fn)(
 
 /**
  * @brief Set DTEL event attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_event_id DTEL event id
@@ -772,6 +826,7 @@ typedef sai_status_t (*sai_set_dtel_event_attribute_fn)(
 
 /**
  * @brief Get DTEL event attribute
+ *
  * @warning experimental
  *
  * @param[in] dtel_event_id DTEL event id

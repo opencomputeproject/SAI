@@ -1350,7 +1350,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Configure Interface type
      *
-     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     * Valid when SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      *
      * @type sai_port_interface_type_t
      * @flags CREATE_AND_SET
@@ -1406,6 +1406,7 @@ typedef enum _sai_port_attr_t
      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_CONFIG
      *
      * PRBS configuration to enable transmitter, receiver or both
+     *
      * @type sai_port_prbs_config_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_PRBS_CONFIG_DISABLE
@@ -1416,6 +1417,7 @@ typedef enum _sai_port_attr_t
      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_LOCK_STATUS
      *
      * PRBS lock status: 1 for locked, 0 for unlocked
+     *
      * @type bool
      * @flags READ_ONLY
      */
@@ -1425,6 +1427,7 @@ typedef enum _sai_port_attr_t
      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_LOCK_LOSS_STATUS
      *
      * PRBS unlocked status since last read: 1 for lock loss, 0 for no lock loss
+     *
      * @type bool
      * @flags READ_ONLY
      */
@@ -1434,6 +1437,7 @@ typedef enum _sai_port_attr_t
      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
      *
      * Auto negotiation (AN) done state: 0 for AN in progress, 0 for AN done
+     *
      * @type bool
      * @flags READ_ONLY
      */

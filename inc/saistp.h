@@ -182,6 +182,7 @@ typedef sai_status_t (*sai_remove_stp_fn)(
  *
  * @param[in] stp_id STP instance id
  * @param[in] attr Attribute value
+ *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
@@ -225,6 +226,7 @@ typedef sai_status_t (*sai_create_stp_port_fn)(
  * @brief Remove STP port object.
  *
  * @param[in] stp_port_id STP object id
+ *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
@@ -236,6 +238,7 @@ typedef sai_status_t (*sai_remove_stp_port_fn)(
  *
  * @param[in] stp_port_id STP port id
  * @param[in] attr Attribute value
+ *
  * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different
  *    error code is returned.
  */
