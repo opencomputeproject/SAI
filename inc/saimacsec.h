@@ -1381,6 +1381,9 @@ typedef struct _sai_macsec_api_t
     sai_remove_macsec_flow_fn           remove_macsec_flow;
     sai_set_macsec_flow_attribute_fn    set_macsec_flow_attribute;
     sai_get_macsec_flow_attribute_fn    get_macsec_flow_attribute;
+    sai_get_macsec_flow_stats_fn        get_macsec_flow_stats;
+    sai_get_macsec_flow_stats_ext_fn    get_macsec_flow_stats_ext;
+    sai_clear_macsec_flow_stats_fn      clear_macsec_flow_stats;
     sai_create_macsec_sc_fn             create_macsec_sc;
     sai_remove_macsec_sc_fn             remove_macsec_sc;
     sai_set_macsec_sc_attribute_fn      set_macsec_sc_attribute;
