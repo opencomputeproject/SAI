@@ -422,6 +422,14 @@ typedef enum _sai_macsec_flow_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_MACSEC_FLOW_ATTR_MACSEC_DIRECTION = SAI_MACSEC_FLOW_ATTR_START,
+    
+    /**
+     * @brief MACsec port object id
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_MACSEC_PORT
+     */
+    SAI_MACSEC_FLOW_ATTR_PORT_ID,
 
     /**
      * @brief List of MACsec ACL entries associated with this flow.
