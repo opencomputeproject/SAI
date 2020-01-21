@@ -2347,7 +2347,7 @@ void check_attr_sai_pointer(
              * Make sure that all pointers are CREATE_AND_SET.
              */
 
-            if (md->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
+            if (!SAI_HAS_FLAG_CREATE_AND_SET(md->flags))
             {
                 META_MD_ASSERT_FAIL(md, "all pointers should be CREATE_AND_SET");
             }
@@ -4048,10 +4048,14 @@ void check_switch_attributes()
     for (; meta[index] != NULL; index++)
     {
         const sai_attr_metadata_t *md = meta[index];
-        /* Gearbox added validonly attributes at switch */
-        if (md->isconditional)
+
+        /*
+         * Gerabox attributes can be marked as mandatory on create.
+         */
+
+        if (md->isoidattribute && md->ismandatoryoncreate)
         {
-            META_MD_ASSERT_FAIL(md, "attribute can't be conditional/validonly (this check can be relaxed)");
+            META_MD_ASSERT_FAIL(md, "Mandatroy on create can't be object id on SWITCH");
         }
     }
 }
