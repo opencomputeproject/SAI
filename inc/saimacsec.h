@@ -434,6 +434,7 @@ typedef enum _sai_macsec_flow_stat_t
     SAI_MACSEC_FLOW_STAT_OCTETS_UNCONTROLLED,
 
     /**
+
      * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC controlled port
      */
     SAI_MACSEC_FLOW_STAT_OCTETS_CONTROLLED,
@@ -731,7 +732,9 @@ typedef enum _sai_macsec_sa_attr_t
 
     /**
      * @brief MACsec Salt used for encryption/decryption.
-     * Network Byte order. Used only if SAI_MACSEC_SC_ATTR_MACSEC_XPN64_ENABLE == true.
+     * Network Byte order.
+     *
+     * Valid when SAI_MACSEC_SC_ATTR_MACSEC_XPN64_ENABLE == true.
      *
      * @type sai_macsec_salt_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
