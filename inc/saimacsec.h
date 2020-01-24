@@ -1020,6 +1020,22 @@ typedef sai_status_t (*sai_get_macsec_flow_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Get MACsec flow counters
+ *
+ * @param[in] macsec_flow_id MACsec flow id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_macsec_flow_stats_fn)(
+        _In_ sai_object_id_t macsec_flow_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
  * @brief Get MACsec flow counters extended
  *
  * @param[in] macsec_flow_id MACsec flow id
