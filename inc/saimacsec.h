@@ -345,67 +345,6 @@ typedef enum _sai_macsec_port_attr_t
 } sai_macsec_port_attr_t;
 
 /**
- * @brief MACsec port counter IDs in sai_get_macsec_stats() call
- */
-typedef enum _sai_macsec_port_stat_t
-{
-    /**
-     * @brief Malformed packets dropped before MACsec processing, not in 802.1ae MIB
-     */
-    SAI_MACSEC_PORT_STAT_PRE_MACSEC_DROP_PKTS,
-
-    /**
-     * @brief Packets classified as control packets for MACsec processing, not in 802.1ae MIB
-     */
-    SAI_MACSEC_PORT_STAT_CONTROL_PKTS,
-
-    /**
-     * @brief Packets classified as data packets for MACsec processing, not in 802.1ae MIB
-     */
-    SAI_MACSEC_PORT_STAT_DATA_PKTS,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC uncontrolled port
-     */
-    SAI_MACSEC_PORT_STAT_OCTETS_UNCONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC controlled port
-     */
-    SAI_MACSEC_PORT_STAT_OCTETS_CONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC uncontrolled port
-     */
-    SAI_MACSEC_PORT_STAT_UCAST_PKTS_UNCONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC controlled port
-     */
-    SAI_MACSEC_PORT_STAT_UCAST_PKTS_CONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC uncontrolled port
-     */
-    SAI_MACSEC_PORT_STAT_MULTICAST_PKTS_UNCONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC controlled port
-     */
-    SAI_MACSEC_PORT_STAT_MULTICAST_PKTS_CONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC uncontrolled port
-     */
-    SAI_MACSEC_PORT_STAT_BROADCAST_PKTS_UNCONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC controlled port
-     */
-    SAI_MACSEC_PORT_STAT_BROADCAST_PKTS_CONTROLLED,
-} sai_macsec_port_stat_t;
-
-/**
  * @brief Attribute Id for sai_macsec_flow
  */
 typedef enum _sai_macsec_flow_attr_t
@@ -470,22 +409,22 @@ typedef enum _sai_macsec_flow_attr_t
 typedef enum _sai_macsec_flow_stat_t
 {
     /**
-     * @brief Malformed packets dropped before MACsec processing, not in 802.1ae MIB
+     * @brief packets dropped IfIn/IfOut before MACsec processing for uncontrolled port
      */
     SAI_MACSEC_FLOW_STAT_RX_DROP_PKTS_UNCONTROLLED,
 
     /**
-     * @brief Malformed packets dropped before MACsec processing, not in 802.1ae MIB
+     * @brief packets dropped IfIn/IfOut before MACsec processing for controlled port
      */
     SAI_MACSEC_FLOW_STAT_RX_DROP_PKTS_CONTROLLED,
 
     /**
-     * @brief Packet error in MACsec processing, not in 802.1ae MIB
+     * @brief Packet counters - In/Out Rx Error for uncontrolled port
      */
     SAI_MACSEC_FLOW_STAT_RX_ERR_PKTS_UNCONTROLLED,
 
     /**
-     * @brief Packet error in MACsec processing, not in 802.1ae MIB
+     * @brief Packet counters - In/Out Rx Error for controlled port
      */
     SAI_MACSEC_FLOW_STAT_RX_ERR_PKTS_CONTROLLED,
 
@@ -1029,54 +968,6 @@ typedef sai_status_t (*sai_get_macsec_port_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get MACsec port counters
- *
- * @param[in] macsec_port_id MACsec port id
- * @param[in] number_of_counters Number of counters in the array
- * @param[in] counter_ids Specifies the array of counter ids
- * @param[out] counters Array of resulting counter values.
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_macsec_port_stats_fn)(
-        _In_ sai_object_id_t macsec_port_id,
-        _In_ uint32_t number_of_counters,
-        _In_ const sai_stat_id_t *counter_ids,
-        _Out_ uint64_t *counters);
-
-/**
- * @brief Get MACsec port counters extended
- *
- * @param[in] macsec_port_id MACsec port id
- * @param[in] number_of_counters Number of counters in the array
- * @param[in] counter_ids Specifies the array of counter ids
- * @param[in] mode Should match SAI_MACSEC_ATTR_STATS_MODE
- * @param[out] counters Array of resulting counter values.
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_macsec_port_stats_ext_fn)(
-        _In_ sai_object_id_t macsec_port_id,
-        _In_ uint32_t number_of_counters,
-        _In_ const sai_stat_id_t *counter_ids,
-        _In_ sai_stats_mode_t mode,
-        _Out_ uint64_t *counters);
-
-/**
- * @brief Clear MACsec port counters
- *
- * @param[in] macsec_port_id MACsec port id
- * @param[in] number_of_counters Number of counters in the array
- * @param[in] counter_ids Specifies the array of counter ids
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_clear_macsec_port_stats_fn)(
-        _In_ sai_object_id_t macsec_port_id,
-        _In_ uint32_t number_of_counters,
-        _In_ const sai_stat_id_t *counter_ids);
-
-/**
  * @brief Create a MACsec flow
  *
  * @param[out] macsec_flow_id The MACsec flow id
@@ -1159,7 +1050,6 @@ typedef sai_status_t (*sai_clear_macsec_flow_stats_fn)(
         _In_ sai_object_id_t macsec_flow_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_stat_id_t *counter_ids);
-
 
 /**
  * @brief Create a MACsec Secure Channel
@@ -1381,9 +1271,6 @@ typedef struct _sai_macsec_api_t
     sai_remove_macsec_flow_fn           remove_macsec_flow;
     sai_set_macsec_flow_attribute_fn    set_macsec_flow_attribute;
     sai_get_macsec_flow_attribute_fn    get_macsec_flow_attribute;
-    sai_get_macsec_flow_stats_fn        get_macsec_flow_stats;
-    sai_get_macsec_flow_stats_ext_fn    get_macsec_flow_stats_ext;
-    sai_clear_macsec_flow_stats_fn      clear_macsec_flow_stats;
     sai_create_macsec_sc_fn             create_macsec_sc;
     sai_remove_macsec_sc_fn             remove_macsec_sc;
     sai_set_macsec_sc_attribute_fn      set_macsec_sc_attribute;
