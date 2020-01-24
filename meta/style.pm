@@ -146,7 +146,7 @@ sub ExtractComments
 {
     my $input = shift;
 
-    my $comments = "";
+    my @comments = ();
 
     # good enough comments extractor C/C++ source
 
@@ -154,10 +154,10 @@ sub ExtractComments
     {
         $input = $';
 
-        $comments .= $& if not $1;
+        push @comments,$& if not $1;
     }
 
-    return $comments;
+    return @comments;
 }
 
 sub CheckHeaderLicense
@@ -677,6 +677,65 @@ sub CheckInOutParams
     LogWarning "Not supported param prefixes, FIXME: $header:$n $line";
 }
 
+sub CheckComment
+{
+    my ($data, $header) = @_;
+
+    my @lines = split/\n/,$data;
+
+    return if $data =~ /\s*\s*\@(file|defgroup|}|def |extraparam|passparam)/;
+
+    my $c = "";
+
+    for my $line (@lines)
+    {
+        next if $line =~ m!^/\*\*|\*/!;
+
+        $line =~ s/\@note|\@par //g;
+
+        if ($line =~ /^\s*\*\s+\@warning/)      { $c .= "W"; next }
+        if ($line =~ /^\s*\*\s+\@param/)        { $c .= "P"; next }
+        if ($line =~ /^\s*\*$/)                 { $c .= " "; next }
+        if ($line =~ /^\s*\*\s+\@brief/)        { $c .= "B"; next }
+        if ($line =~ /^\s*\*\s+\@return/)       { $c .= "R"; next }
+        if ($line =~ /^\s*\*\s+\@/)             { $c .= "@"; next }
+
+        $c .= "x";
+    }
+
+    return if $c eq "";
+
+    $c =~ s/x+/x/g;
+    $c =~ s/Px/P/g;
+    $c =~ s/P( P)+/P/g;
+    $c =~ s/P+/P/g;
+    $c =~ s/Bx/B/g;
+    $c =~ s/Rx/R/g;
+    $c =~ s/x( x)+/x/g;
+    $c =~ s/\@+/@/g;
+
+    return if $c =~ /^B( W)?( x)?( \@)?( P)?( R)?$/;
+
+    LogWarning "empty line required between each below elements:";
+    LogWarning "desired elemen order: \@brief \@warning? description? \@attributes? \@params? \@return?";
+    LogWarning "invalid spacing ($c) on $header:\n$data\n";
+}
+
+sub CheckDoxygenSpacing
+{
+    my ($data, $header) = @_;
+
+    my @comments = ExtractComments($data, $header);
+
+    for my $com (@comments)
+    {
+        next if $com =~ m!^//!;
+        next if not $com =~ m!^/\*\*!;
+
+        CheckComment($com, $header);
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -727,6 +786,7 @@ sub CheckHeadersStyle
         CheckStructAlignment($data, $header);
         CheckNonDoxygenComments($data, $header);
         CheckSwitchKeys($data, $header) if $header eq "saiswitch.h";
+        CheckDoxygenSpacing($data, $header);
 
         my @lines = split/\n/,$data;
 
@@ -899,6 +959,31 @@ sub CheckHeadersStyle
                 if (not $fname =~ /^sai_\w+_fn$/)
                 {
                     LogWarning "all function declarations should be in format sai_\\w+_fn $header $n: $line";
+                }
+            }
+
+            my $prev = $lines[$n-2];
+
+            if ($line =~ /\*\s*\@\w+/ and $prev =~ /\@brief/)
+            {
+                LogWarning "missing empty line before $header $n: $line";
+            }
+
+            if ($line =~ /==|SAI_\w+/ and $prev =~ /\@(validonly|condition)/)
+            {
+                LogWarning "merge with previous line: $header $n: $line";
+            }
+
+            if ($line =~ /\@type/ and $prev =~ /^\s*\*./)
+            {
+                LogWarning "missing empty line before: $header $n: $line";
+            }
+
+            if ($line =~ /\*.*SAI_.+(==|!=)/ and not $line =~ /\@(condition|validonly)/)
+            {
+                if (not $line =~ /(condition|validonly|valid when|only when)\s+SAI_/i)
+                {
+                    LogWarning "condition should be preceded byg 'valid when' or 'only when': $header $n: $line";
                 }
             }
 

@@ -528,6 +528,7 @@ typedef enum _sai_macsec_sc_attr_t
 
     /**
      * @brief Explicit SCI enable for this Secure Channel.
+     *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
@@ -538,6 +539,7 @@ typedef enum _sai_macsec_sc_attr_t
     /**
      * @brief SecTAG offset for this Secure Channel with respect to 802.1ae
      * standard SecTAG location
+     *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
@@ -546,6 +548,7 @@ typedef enum _sai_macsec_sc_attr_t
 
     /**
      * @brief Active MACsec SA identifier.
+     *
      * @type sai_object_id_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_MACSEC_SA
@@ -554,6 +557,7 @@ typedef enum _sai_macsec_sc_attr_t
 
     /**
      * @brief Replay protection enable for this Secure Channel.
+     *
      * @type bool
      * @flags CREATE_AND_SET
      * @default true
@@ -563,6 +567,7 @@ typedef enum _sai_macsec_sc_attr_t
 
     /**
      * @brief Replay protection window for this Secure Channel.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
@@ -572,6 +577,7 @@ typedef enum _sai_macsec_sc_attr_t
 
     /**
      * @brief MACsec SA list
+     *
      * @type sai_object_list_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_MACSEC_SA
@@ -725,7 +731,9 @@ typedef enum _sai_macsec_sa_attr_t
 
     /**
      * @brief MACsec Salt used for encryption/decryption.
-     * Network Byte order. Used only if SAI_MACSEC_SC_ATTR_MACSEC_XPN64_ENABLE == true.
+     * Network Byte order.
+     *
+     * Valid when SAI_MACSEC_SC_ATTR_MACSEC_XPN64_ENABLE == true.
      *
      * @type sai_macsec_salt_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -743,6 +751,7 @@ typedef enum _sai_macsec_sa_attr_t
 
     /**
      * @brief MACsec egress packet number (PN/XPN).  At most 1 less than the next PN/XPN.
+     *
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @default 0
@@ -753,6 +762,7 @@ typedef enum _sai_macsec_sa_attr_t
     /**
      * @brief Minimum value of ingress MACsec packet number (PN/XPN).
      * Updated by value from MACsec peer by Key Agreement protocol.
+     *
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @default 1

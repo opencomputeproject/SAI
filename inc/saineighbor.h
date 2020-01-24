@@ -212,6 +212,7 @@ typedef sai_status_t (*sai_get_neighbor_entry_attribute_fn)(
  * @brief Remove all neighbor entries
  *
  * @param[in] switch_id Switch id
+ *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_remove_all_neighbor_entries_fn)(

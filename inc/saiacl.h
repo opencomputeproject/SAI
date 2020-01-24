@@ -94,6 +94,7 @@ typedef enum _sai_acl_ip_frag_t
 
 /**
  * @brief DTEL flow operation
+ *
  * @warning experimental
  */
 typedef enum _sai_acl_dtel_flow_op_t
@@ -1117,6 +1118,7 @@ typedef enum _sai_acl_table_attr_t
 
     /**
      * @brief Available ACL entries for this table
+     *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
@@ -1124,6 +1126,7 @@ typedef enum _sai_acl_table_attr_t
 
     /**
      * @brief Available ACL counters for this table
+     *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
@@ -2171,6 +2174,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief DTEL flow operation
+     *
      * @warning experimental
      *
      * @type sai_acl_action_data_t sai_acl_dtel_flow_op_t
@@ -2181,6 +2185,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief DTEL INT session ID
+     *
      * @warning experimental
      *
      * @type sai_acl_action_data_t sai_object_id_t
@@ -2192,6 +2197,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Enable DTEL drop report
+     *
      * @warning experimental
      *
      * @type sai_acl_action_data_t bool
@@ -2202,6 +2208,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Enable DTEL tail drop reporting
+     *
      * @warning experimental
      *
      * @type sai_acl_action_data_t bool
@@ -2212,6 +2219,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief DTEL flow sample percentage
+     *
      * @warning experimental
      *
      * @type sai_acl_action_data_t sai_uint8_t
@@ -2222,6 +2230,7 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief Enable DTEL report for all packets without filtering
+     *
      * @warning experimental
      *
      * @type sai_acl_action_data_t bool
@@ -2671,6 +2680,7 @@ typedef sai_status_t (*sai_remove_acl_range_fn)(
  *
  * @param[in] acl_range_id The ACL range id
  * @param[in] attr Attribute
+ *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_set_acl_range_attribute_fn)(

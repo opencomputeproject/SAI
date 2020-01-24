@@ -145,8 +145,7 @@ typedef enum _sai_router_interface_attr_t
     /**
      * @brief MAC Address
      *
-     * Not valid when #SAI_ROUTER_INTERFACE_ATTR_TYPE ==
-     * #SAI_ROUTER_INTERFACE_TYPE_LOOPBACK.
+     * Not valid when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_LOOPBACK
      *
      * @type sai_mac_t
      * @flags CREATE_AND_SET

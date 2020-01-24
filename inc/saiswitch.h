@@ -1905,10 +1905,9 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Switch hardware access bus MDIO/I2C/CPLD
      *
-     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
-     *
      * @type sai_switch_hardware_access_bus_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      */
     SAI_SWITCH_ATTR_HARDWARE_ACCESS_BUS,
 
@@ -1920,10 +1919,9 @@ typedef enum _sai_switch_attr_t
      * synchronization and device information. Driver will give this context back
      * to adapter as part of call back sai_switch_register_read/write_fn API.
      *
-     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
-     *
      * @type sai_uint64_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      */
     SAI_SWITCH_ATTR_PLATFROM_CONTEXT,
 
@@ -1933,13 +1931,9 @@ typedef enum _sai_switch_attr_t
      *
      * Use sai_switch_register_read_fn as read function.
      *
-     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
-     *
-     * MANDATORY_ON_CREATE
-     *
      * @type sai_pointer_t sai_switch_register_read_fn
-     * @flags CREATE_AND_SET
-     * @default NULL
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      */
     SAI_SWITCH_ATTR_REGISTER_READ,
 
@@ -1948,11 +1942,10 @@ typedef enum _sai_switch_attr_t
      * This is mandatory function for driver when device access not supported by file system.
      *
      * Use sai_switch_register_write_fn as write function.
-     * condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      *
      * @type sai_pointer_t sai_switch_register_write_fn
-     * @flags CREATE_AND_SET
-     * @default NULL
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      */
     SAI_SWITCH_ATTR_REGISTER_WRITE,
 
