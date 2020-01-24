@@ -409,22 +409,22 @@ typedef enum _sai_macsec_flow_attr_t
 typedef enum _sai_macsec_flow_stat_t
 {
     /**
-     * @brief packets dropped IfIn/IfOut before MACsec processing for uncontrolled port
+     * @brief Packets dropped for In or Out interface before MACsec processing for uncontrolled port
      */
     SAI_MACSEC_FLOW_STAT_RX_DROP_PKTS_UNCONTROLLED,
 
     /**
-     * @brief packets dropped IfIn/IfOut before MACsec processing for controlled port
+     * @brief Packets dropped for In or Out interface before MACsec processing for controlled port
      */
     SAI_MACSEC_FLOW_STAT_RX_DROP_PKTS_CONTROLLED,
 
     /**
-     * @brief Packet counters - In/Out Rx Error for uncontrolled port
+     * @brief Packet counters - In or Out Rx Error for uncontrolled port
      */
     SAI_MACSEC_FLOW_STAT_RX_ERR_PKTS_UNCONTROLLED,
 
     /**
-     * @brief Packet counters - In/Out Rx Error for controlled port
+     * @brief Packet counters - In or Out Rx Error for controlled port
      */
     SAI_MACSEC_FLOW_STAT_RX_ERR_PKTS_CONTROLLED,
 
