@@ -434,7 +434,6 @@ typedef enum _sai_macsec_flow_stat_t
     SAI_MACSEC_FLOW_STAT_OCTETS_UNCONTROLLED,
 
     /**
-
      * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC controlled port
      */
     SAI_MACSEC_FLOW_STAT_OCTETS_CONTROLLED,
