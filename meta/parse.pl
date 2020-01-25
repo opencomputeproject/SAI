@@ -469,7 +469,7 @@ sub ProcessEnumSection
         my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
 
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
-        @values = grep(!/^SAI_\w+(CUSTOM_RANGE_BASE)$/, @values);
+        @values = grep(!/^SAI_\w+(RANGE_BASE)$/, @values);
 
         if ($enumtypename =~ /^(sai_\w+)_t$/)
         {
@@ -478,7 +478,7 @@ sub ProcessEnumSection
             # allow empty enum on extensions
             if ($valuescount == 0 and not $enumtypename =~ /_extensions_t$/)
             {
-                LogError "enum $enumtypename is empty, after removing suffixed entries _START/_END/_CUSTOM_RANGE_BASE";
+                LogError "enum $enumtypename is empty, after removing suffixed entries _START/_END/_RANGE_BASE";
                 LogError "  those suffixes are reserved for range markers and are removed by metadata parser, don't use them";
                 LogError "  as actual part of valid enum name, take a look at sai_udf_group_type_t for valid usage";
                 next;
