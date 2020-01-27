@@ -300,6 +300,15 @@ typedef enum _sai_macsec_port_attr_t
     SAI_MACSEC_PORT_ATTR_PORT_ID,
 
     /**
+     * @brief List of MACsec flow associated with this port.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_MACSEC_FLOW
+     */
+    SAI_MACSEC_PORT_ATTR_FLOW_LIST,
+
+    /**
      * @brief Enable vlan tag parsing for C-tag TPID
      *
      * @type bool
@@ -474,6 +483,59 @@ typedef enum _sai_macsec_flow_stat_t
      * @brief IEEE 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC controlled port
      */
     SAI_MACSEC_FLOW_STAT_BROADCAST_PKTS_CONTROLLED,
+
+    /**
+     * @brief Control packets which are not secured (using MACsec uncontrolled port) -
+     * not in 802.1ae MIB
+     */
+    SAI_MACSEC_FLOW_STAT_CONTROL_PKTS,
+
+    /**
+     * @brief IEEE 802.1ae defined OutPktsUntagged or InPktsUntagged
+     */
+    SAI_MACSEC_FLOW_STAT_PKTS_UNTAGGED,
+
+    /**
+     * @brief Control packets with SecTAG which are not secured (using MACsec
+     * uncontrolled port) - not in 802.1ae MIB
+     */
+    SAI_MACSEC_FLOW_STAT_IN_TAGGED_CONTROL_PKTS,
+
+    /**
+     * @brief IEEE 802.1ae defined OutPktsTooLong.
+     * Valid for egress, always returns 0 for ingress.
+     */
+    SAI_MACSEC_FLOW_STAT_OUT_PKTS_TOO_LONG,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsNoTag.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_NO_TAG,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsBadTag.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_BAD_TAG,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsNoSci.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_NO_SCI,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsUnknownSci.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_UNKNOWN_SCI,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsOverrun.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_OVERRUN,
 } sai_macsec_flow_stat_t;
 
 /**
@@ -608,64 +670,11 @@ typedef enum _sai_macsec_sc_attr_t
 typedef enum _sai_macsec_sc_stat_t
 {
     /**
-     * @brief Control packets which are not secured (using MACsec uncontrolled port) -
-     * not in 802.1ae MIB
-     */
-    SAI_MACSEC_SC_STAT_CONTROL_PKTS,
-
-    /**
-     * @brief IEEE 802.1ae defined OutPktsUntagged or InPktsUntagged
-     */
-    SAI_MACSEC_SC_STAT_PKTS_UNTAGGED,
-
-    /**
      * @brief Packets that have valid SCI, but the AN value does not have associated SA -
      * not in 802.1ae MIB.
      * Provides the sum of InPktsNotUsingSA for all invalid SAs for a SC
      */
     SAI_MACSEC_SC_STAT_SA_NOT_IN_USE,
-
-    /**
-     * @brief Control packets with SecTAG which are not secured (using MACsec
-     * uncontrolled port) - not in 802.1ae MIB
-     */
-    SAI_MACSEC_SC_STAT_TAGGED_CONTROL_PKTS,
-
-    /**
-     * @brief IEEE 802.1ae defined OutPktsTooLong.
-     * Valid for egress, always returns 0 for ingress.
-     */
-    SAI_MACSEC_SC_STAT_OUT_PKTS_TOO_LONG,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsNoTag.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_NO_TAG,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsBadTag.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_BAD_TAG,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsNoSci.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_NO_SCI,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsUnknownSci.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_UNKNOWN_SCI,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsOverrun.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_OVERRUN,
 } sai_macsec_sc_stat_t;
 
 /**
