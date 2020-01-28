@@ -204,7 +204,7 @@ typedef enum _sai_next_hop_group_attr_t
 
     /**
      * @brief Maximum number of entries that the group can handle.
-     * 
+     *
      * If each entry corresponds to a session, this is the maximal number of sessions.
      * If each entry corresponds to a hash bucket, this is the maximal number of buckets.
      *
