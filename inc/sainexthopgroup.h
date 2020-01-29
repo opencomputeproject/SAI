@@ -306,7 +306,8 @@ typedef enum _sai_next_hop_group_member_attr_t
      * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_L4_SESSION_CONSISTENT
      *
      * @type sai_next_hop_group_member_admin_state_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags CREATE_AND_SET
+     * @default SAI_NEXT_HOP_GROUP_MEMBER_ADMIN_STATE_ACTIVE
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_ADMIN_STATE,
 
