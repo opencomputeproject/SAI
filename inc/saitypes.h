@@ -1161,6 +1161,51 @@ typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
+/**
+ * @brief Bulk objects set attributes.
+ *
+ * @param[in] object_count Number of objects to set on attribute
+ * @param[in] object_id List of object ids
+ * @param[in] attr_list List of attributes for every object, one per object.
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
+ *
+ * @return #SAI_STATUS_SUCCESS when set attributes on all objects succeeded or
+ * #SAI_STATUS_FAILURE when any of the objects fails to set attribute. When
+ * there is failure, Caller is expected to go through the list of returned
+ * statuses to find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_object_set_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_object_id_t *object_id,
+        _In_ const sai_attribute_t *attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk objects get attributes.
+ *
+ * @param[in] object_count Number of objects to get on attribute
+ * @param[in] object_id List of object ids
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to get.
+ * @param[inout] attr_list List of attributes for every object.
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
+ *
+ * @return #SAI_STATUS_SUCCESS when get attributes on all objects succeeded or
+ * #SAI_STATUS_FAILURE when any of the objects fails to get attribute. When
+ * there is failure, Caller is expected to go through the list of returned
+ * statuses to find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_object_id_t *object_id,
+        _In_ const uint32_t *attr_count,
+        _Inout_ sai_attribute_t **attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
 typedef enum _sai_stats_mode_t
 {
     /**
