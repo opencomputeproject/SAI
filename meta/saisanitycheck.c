@@ -4102,6 +4102,21 @@ void check_quad_api_pointers(
     META_ASSERT_NOT_NULL(oi->get);
 }
 
+void check_stats_api_pointers(
+        _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Check if stats api pointers are not NULL, for objects that don't support
+     * stats dummy functions are generated.
+     */
+
+    META_ASSERT_NOT_NULL(oi->getstats);
+    META_ASSERT_NOT_NULL(oi->getstatsext);
+    META_ASSERT_NOT_NULL(oi->clearstats);
+}
+
 void check_object_id_non_object_id(
         _In_ const sai_object_type_info_t *oi)
 {
@@ -4274,6 +4289,7 @@ void check_single_object_info(
     META_LOG_ENTER();
 
     check_quad_api_pointers(oi);
+    check_stats_api_pointers(oi);
     check_object_id_non_object_id(oi);
     check_enum_to_attr_map(oi);
     check_object_ro_list(oi);
