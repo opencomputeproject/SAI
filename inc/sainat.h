@@ -326,7 +326,7 @@ typedef struct _sai_nat_entry_t
      * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
      */
     sai_object_id_t vr_id;
-    
+
     /**
      * @brief NAT entry type
      */
