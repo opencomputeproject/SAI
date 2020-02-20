@@ -187,7 +187,6 @@ typedef enum _sai_tam_tel_math_func_type_t
  */
 typedef enum _sai_tam_math_func_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
@@ -313,7 +312,6 @@ typedef enum _sai_tam_event_threshold_unit_t
  */
 typedef enum _sai_tam_event_threshold_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
@@ -515,7 +513,6 @@ typedef enum _sai_tam_int_presence_type_t
  */
 typedef enum _sai_tam_int_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
@@ -1158,7 +1155,6 @@ typedef enum _sai_tam_report_type_t
  */
 typedef enum _sai_tam_report_mode_t
 {
-
     /** Report all events */
     SAI_TAM_REPORT_MODE_ALL = 0,
 
@@ -1172,7 +1168,6 @@ typedef enum _sai_tam_report_mode_t
  */
 typedef enum _sai_tam_report_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
@@ -1338,7 +1333,6 @@ typedef enum _sai_tam_reporting_unit_t
  */
 typedef enum _sai_tam_telemetry_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
@@ -1503,7 +1497,6 @@ typedef enum _sai_tam_transport_auth_type_t
  */
 typedef enum _sai_tam_transport_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
@@ -1626,7 +1619,6 @@ typedef sai_status_t (*sai_set_tam_transport_attribute_fn)(
  */
 typedef enum _sai_tam_collector_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
@@ -1771,7 +1763,6 @@ typedef sai_status_t (*sai_set_tam_collector_attribute_fn)(
  */
 typedef enum _sai_tam_event_type_t
 {
-
     /**
      * @brief New flow or flow state change event
      * This event is used to monitoring the state of flow
@@ -1838,7 +1829,6 @@ typedef enum _sai_tam_event_type_t
  */
 typedef enum _sai_tam_event_action_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
@@ -1932,7 +1922,6 @@ typedef sai_status_t (*sai_set_tam_event_action_attribute_fn)(
  */
 typedef enum _sai_tam_event_attr_t
 {
-
     /**
      * @brief Start of Attributes
      */
@@ -2093,7 +2082,6 @@ sai_status_t sai_tam_telemetry_get_data(
  */
 typedef struct _sai_tam_api_t
 {
-
     /**
      * @brief SAI TAM v1 API set
      */

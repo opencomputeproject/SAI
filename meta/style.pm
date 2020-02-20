@@ -987,6 +987,11 @@ sub CheckHeadersStyle
                 }
             }
 
+            if ($line eq "" and $prev =~ /{/)
+            {
+                LogWarning "empty line after '$prev': $header:$n: $line";
+            }
+
             my $pattern = join"|", @acronyms;
 
             while ($line =~ /\b($pattern)\b/igp)
