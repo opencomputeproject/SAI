@@ -210,7 +210,6 @@ typedef enum _sai_port_ptp_mode_t
  */
 typedef enum _sai_port_interface_type_t
 {
-
     /** Interface type none */
     SAI_PORT_INTERFACE_TYPE_NONE,
 

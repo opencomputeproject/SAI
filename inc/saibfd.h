@@ -57,7 +57,6 @@ typedef enum _sai_bfd_session_type_t
  */
 typedef enum _sai_bfd_session_offload_type_t
 {
-
     /** No Offload: No offload supported */
     SAI_BFD_SESSION_OFFLOAD_TYPE_NONE = 0,
 
