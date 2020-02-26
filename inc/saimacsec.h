@@ -363,46 +363,6 @@ typedef enum _sai_macsec_port_stat_t
      * @brief Packets classified as data packets for MACsec processing, not in 802.1ae MIB
      */
     SAI_MACSEC_PORT_STAT_DATA_PKTS,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC uncontrolled port
-     */
-    SAI_MACSEC_PORT_STAT_OCTETS_UNCONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC controlled port
-     */
-    SAI_MACSEC_PORT_STAT_OCTETS_CONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC uncontrolled port
-     */
-    SAI_MACSEC_PORT_STAT_UCAST_PKTS_UNCONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC controlled port
-     */
-    SAI_MACSEC_PORT_STAT_UCAST_PKTS_CONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC uncontrolled port
-     */
-    SAI_MACSEC_PORT_STAT_MULTICAST_PKTS_UNCONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC controlled port
-     */
-    SAI_MACSEC_PORT_STAT_MULTICAST_PKTS_CONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC uncontrolled port
-     */
-    SAI_MACSEC_PORT_STAT_BROADCAST_PKTS_UNCONTROLLED,
-
-    /**
-     * @brief IEEE 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC controlled port
-     */
-    SAI_MACSEC_PORT_STAT_BROADCAST_PKTS_CONTROLLED,
 } sai_macsec_port_stat_t;
 
 /**
@@ -456,6 +416,115 @@ typedef enum _sai_macsec_flow_attr_t
      */
     SAI_MACSEC_FLOW_ATTR_CUSTOM_RANGE_END
 } sai_macsec_flow_attr_t;
+
+/**
+ * @brief MACsec flow counter IDs in sai_get_macsec_stats() call
+ */
+typedef enum _sai_macsec_flow_stat_t
+{
+    /**
+     * @brief Packets dropped/error for In or Out interface before MACsec processing for controlled and uncontrolled port, not in 802.1ae MIB
+     */
+    SAI_MACSEC_FLOW_STAT_OTHER_ERR,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_OCTETS_UNCONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutOctets or ifInOctets for MACSEC controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_OCTETS_CONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutOctets for MACSEC common port
+     */
+    SAI_MACSEC_FLOW_STAT_OUT_OCTETS_COMMON,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_UCAST_PKTS_UNCONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutUcastPkts or ifInUcastPkts for MACSEC controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_UCAST_PKTS_CONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_MULTICAST_PKTS_UNCONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutMulticastPkts or ifInMulticastPkts for MACSEC controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_MULTICAST_PKTS_CONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC uncontrolled port
+     */
+    SAI_MACSEC_FLOW_STAT_BROADCAST_PKTS_UNCONTROLLED,
+
+    /**
+     * @brief IEEE 802.1ae defined ifOutBroadcastPkts or ifInBroadcastPkts for MACSEC controlled port
+     */
+    SAI_MACSEC_FLOW_STAT_BROADCAST_PKTS_CONTROLLED,
+
+    /**
+     * @brief Control packets which are not secured (using MACsec uncontrolled port) -
+     * not in 802.1ae MIB
+     */
+    SAI_MACSEC_FLOW_STAT_CONTROL_PKTS,
+
+    /**
+     * @brief IEEE 802.1ae defined OutPktsUntagged or InPktsUntagged
+     */
+    SAI_MACSEC_FLOW_STAT_PKTS_UNTAGGED,
+
+    /**
+     * @brief Control packets with SecTAG which are not secured (using MACsec
+     * uncontrolled port) - not in 802.1ae MIB
+     */
+    SAI_MACSEC_FLOW_STAT_IN_TAGGED_CONTROL_PKTS,
+
+    /**
+     * @brief IEEE 802.1ae defined OutPktsTooLong.
+     * Valid for egress, always returns 0 for ingress.
+     */
+    SAI_MACSEC_FLOW_STAT_OUT_PKTS_TOO_LONG,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsNoTag.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_NO_TAG,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsBadTag.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_BAD_TAG,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsNoSci.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_NO_SCI,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsUnknownSci.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_UNKNOWN_SCI,
+
+    /**
+     * @brief IEEE 802.1ae defined InPktsOverrun.
+     * Valid for ingress, always returns 0 for egress.
+     */
+    SAI_MACSEC_FLOW_STAT_IN_PKTS_OVERRUN,
+} sai_macsec_flow_stat_t;
 
 /**
  * @brief Attribute Id for sai_macsec_sc
@@ -589,64 +658,11 @@ typedef enum _sai_macsec_sc_attr_t
 typedef enum _sai_macsec_sc_stat_t
 {
     /**
-     * @brief Control packets which are not secured (using MACsec uncontrolled port) -
-     * not in 802.1ae MIB
-     */
-    SAI_MACSEC_SC_STAT_CONTROL_PKTS,
-
-    /**
-     * @brief IEEE 802.1ae defined OutPktsUntagged or InPktsUntagged
-     */
-    SAI_MACSEC_SC_STAT_PKTS_UNTAGGED,
-
-    /**
      * @brief Packets that have valid SCI, but the AN value does not have associated SA -
      * not in 802.1ae MIB.
      * Provides the sum of InPktsNotUsingSA for all invalid SAs for a SC
      */
     SAI_MACSEC_SC_STAT_SA_NOT_IN_USE,
-
-    /**
-     * @brief Control packets with SecTAG which are not secured (using MACsec
-     * uncontrolled port) - not in 802.1ae MIB
-     */
-    SAI_MACSEC_SC_STAT_TAGGED_CONTROL_PKTS,
-
-    /**
-     * @brief IEEE 802.1ae defined OutPktsTooLong.
-     * Valid for egress, always returns 0 for ingress.
-     */
-    SAI_MACSEC_SC_STAT_OUT_PKTS_TOO_LONG,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsNoTag.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_NO_TAG,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsBadTag.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_BAD_TAG,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsNoSci.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_NO_SCI,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsUnknownSci.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_UNKNOWN_SCI,
-
-    /**
-     * @brief IEEE 802.1ae defined InPktsOverrun.
-     * Valid for ingress, always returns 0 for egress.
-     */
-    SAI_MACSEC_SC_STAT_IN_PKTS_OVERRUN,
 } sai_macsec_sc_stat_t;
 
 /**
@@ -1061,6 +1077,54 @@ typedef sai_status_t (*sai_get_macsec_flow_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Get MACsec flow counters
+ *
+ * @param[in] macsec_flow_id MACsec flow id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_macsec_flow_stats_fn)(
+        _In_ sai_object_id_t macsec_flow_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get MACsec flow counters extended
+ *
+ * @param[in] macsec_flow_id MACsec flow id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Should match SAI_MACSEC_ATTR_STATS_MODE
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_macsec_flow_stats_ext_fn)(
+        _In_ sai_object_id_t macsec_flow_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear MACsec flow counters
+ *
+ * @param[in] macsec_flow_id MACsec flow id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_macsec_flow_stats_fn)(
+        _In_ sai_object_id_t macsec_flow_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
+
+/**
  * @brief Create a MACsec Secure Channel
  *
  * @param[out] macsec_sc_id The MACsec Secure Channel id
@@ -1280,6 +1344,9 @@ typedef struct _sai_macsec_api_t
     sai_remove_macsec_flow_fn           remove_macsec_flow;
     sai_set_macsec_flow_attribute_fn    set_macsec_flow_attribute;
     sai_get_macsec_flow_attribute_fn    get_macsec_flow_attribute;
+    sai_get_macsec_flow_stats_fn        get_macsec_flow_stats;
+    sai_get_macsec_flow_stats_ext_fn    get_macsec_flow_stats_ext;
+    sai_clear_macsec_flow_stats_fn      clear_macsec_flow_stats;
     sai_create_macsec_sc_fn             create_macsec_sc;
     sai_remove_macsec_sc_fn             remove_macsec_sc;
     sai_set_macsec_sc_attribute_fn      set_macsec_sc_attribute;
