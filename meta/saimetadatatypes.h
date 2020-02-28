@@ -1241,6 +1241,24 @@ typedef sai_status_t (*sai_meta_generic_get_fn)(
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
+typedef sai_status_t (*sai_meta_generic_get_stats_fn)(
+        _In_ const sai_object_meta_key_t *meta_key,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+typedef sai_status_t (*sai_meta_generic_get_stats_ext_fn)(
+        _In_ const sai_object_meta_key_t *meta_key,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+typedef sai_status_t (*sai_meta_generic_clear_stats_fn)(
+        _In_ const sai_object_meta_key_t *meta_key,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
+
 typedef sai_status_t (*sai_generic_create_fn)(
         _Out_ sai_object_id_t *object_id,
         _In_ sai_object_id_t switch_id,
@@ -1350,6 +1368,21 @@ typedef struct _sai_object_type_info_t
      * @brief Get function pointer
      */
     const sai_meta_generic_get_fn                   get;
+
+    /**
+     * @brief Get stats function pointer.
+     */
+    const sai_meta_generic_get_stats_fn             getstats;
+
+    /**
+     * @brief Get stats extended function pointer.
+     */
+    const sai_meta_generic_get_stats_ext_fn         getstatsext;
+
+    /**
+     * @brief Clear stats function pointer
+     */
+    const sai_meta_generic_clear_stats_fn           clearstats;
 
     /**
      * @brief Indicates whether object type is experimental.
