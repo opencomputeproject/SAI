@@ -328,6 +328,11 @@ typedef struct _sai_nat_entry_t
     sai_object_id_t vr_id;
 
     /**
+     * @brief NAT entry type
+     */
+    sai_nat_type_t nat_type;
+
+    /**
      * @brief NAT entry data
      */
     sai_nat_entry_data_t data;
