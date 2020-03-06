@@ -166,7 +166,7 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @brief Next hop id
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_NEXT_HOP
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID,
@@ -218,6 +218,22 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT,
+
+    /**
+     * @brief Object index to enforce the order by application.
+     *
+     * Index specifying the member's order. The indeces in the group don't have
+     * to be consecutive, but must be unique. The driver will map the index to
+     * a relative internal order. The value -1 means that the driver can assign
+     * any index. It is allowed to either set index for each group member, or
+     * leave it to the driver, but not both, for the sake of simplicity.
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_ECMP.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0xffffffff
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_INDEX,
 
     /**
      * @brief End of attributes
