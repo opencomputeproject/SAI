@@ -28,7 +28,6 @@ package test;
 use strict;
 use warnings;
 use diagnostics;
-use Getopt::Std;
 use Data::Dumper;
 use utils;
 use xmlutils;
