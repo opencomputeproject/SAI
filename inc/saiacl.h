@@ -1948,9 +1948,9 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER,
 
     /**
-     * @brief Decrement TTL (enable/disable) (parameter is not needed)
+     * @brief Decrement TTL (enable/disable)
      *
-     * @type sai_acl_action_data_t sai_int32_t
+     * @type sai_acl_action_data_t bool
      * @flags CREATE_AND_SET
      * @default disabled
      */
