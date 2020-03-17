@@ -221,6 +221,15 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_COUNTER_ID,
 
     /**
+     * @brief To enable/disable Decrement TTL
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NEXT_HOP_ATTR_DECREMENT_TTL,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_ATTR_END,
