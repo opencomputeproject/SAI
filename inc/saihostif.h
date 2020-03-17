@@ -1173,6 +1173,17 @@ typedef enum _sai_hostif_packet_attr_t
     SAI_HOSTIF_PACKET_ATTR_TIMESTAMP,
 
     /**
+     * @brief Egress queue index
+     *
+     * The egress queue id for egress port or LAG.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_HOSTIF_PACKET_ATTR_EGRESS_QUEUE_INDEX,
+
+    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_PACKET_ATTR_END,
