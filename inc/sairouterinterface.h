@@ -277,6 +277,15 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_NAT_ZONE_ID,
 
     /**
+     * @brief To enable/disable Decrement TTL
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ROUTER_INTERFACE_ATTR_DECREMENT_TTL,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,

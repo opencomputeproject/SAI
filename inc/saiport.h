@@ -1443,6 +1443,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_AUTO_NEG_STATUS,
 
     /**
+     * @brief To enable/disable Decrement TTL
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_DECREMENT_TTL,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
