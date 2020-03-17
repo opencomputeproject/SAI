@@ -430,6 +430,23 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
 } sai_tunnel_decap_ecn_mode_t;
 
 /**
+ * @brief Defines tunnel peer mode
+ */
+typedef enum _sai_tunnel_peer_mode_t
+{
+    /**
+     * @brief P2P Tunnel
+     */
+    SAI_TUNNEL_PEER_MODE_P2P,
+
+    /**
+     * @brief P2MP Tunnel
+     */
+    SAI_TUNNEL_PEER_MODE_P2MP,
+
+} sai_tunnel_peer_mode_t;
+
+/**
  * @brief Defines tunnel attributes
  */
 typedef enum _sai_tunnel_attr_t
@@ -475,6 +492,15 @@ typedef enum _sai_tunnel_attr_t
     /* Tunnel encap attributes */
 
     /**
+     * @brief Tunnel Peer Mode
+     *
+     * @type sai_tunnel_peer_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TUNNEL_PEER_MODE_P2MP
+     */
+    SAI_TUNNEL_ATTR_PEER_MODE,
+
+    /**
      * @brief Tunnel src IP
      *
      * @type sai_ip_address_t
@@ -482,6 +508,16 @@ typedef enum _sai_tunnel_attr_t
      * @default 0.0.0.0
      */
     SAI_TUNNEL_ATTR_ENCAP_SRC_IP,
+
+    /**
+     * @brief Tunnel Destination IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_ONLY
+     * @default 0.0.0.0
+     * @validonly SAI_TUNNEL_ATTR_PEER_MODE == SAI_TUNNEL_PEER_MODE_P2P
+     */
+    SAI_TUNNEL_ATTR_ENCAP_DST_IP,
 
     /**
      * @brief Tunnel TTL mode (pipe or uniform model)
