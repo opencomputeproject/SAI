@@ -106,7 +106,7 @@ typedef enum _sai_router_interface_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_VLAN
-     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_VLAN
      */
     SAI_ROUTER_INTERFACE_ATTR_VLAN_ID,
 
@@ -116,7 +116,7 @@ typedef enum _sai_router_interface_attr_t
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
      */
     SAI_ROUTER_INTERFACE_ATTR_OUTER_VLAN_ID,
 
@@ -130,13 +130,22 @@ typedef enum _sai_router_interface_attr_t
      */
     SAI_ROUTER_INTERFACE_ATTR_INNER_VLAN_ID,
 
+    /**
+     * @brief Associated 1D Bridge
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BRIDGE
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_BRIDGE
+     */
+    SAI_ROUTER_INTERFACE_ATTR_BRIDGE_ID,
+
     /* READ-WRITE */
 
     /**
      * @brief MAC Address
      *
-     * Not valid when #SAI_ROUTER_INTERFACE_ATTR_TYPE ==
-     * #SAI_ROUTER_INTERFACE_TYPE_LOOPBACK.
+     * Not valid when SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_LOOPBACK
      *
      * @type sai_mac_t
      * @flags CREATE_AND_SET
@@ -259,6 +268,24 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_IS_VIRTUAL,
 
     /**
+     * @brief NAT Zone ID
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ROUTER_INTERFACE_ATTR_NAT_ZONE_ID,
+
+    /**
+     * @brief To enable/disable Decrement TTL
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ROUTER_INTERFACE_ATTR_DECREMENT_TTL,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
@@ -270,6 +297,37 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_CUSTOM_RANGE_END
 
 } sai_router_interface_attr_t;
+
+/**
+ * @brief Router interface counter IDs in sai_get_router_interface_stats() call
+ */
+typedef enum _sai_router_interface_stat_t
+{
+    /** Ingress byte stat count */
+    SAI_ROUTER_INTERFACE_STAT_IN_OCTETS,
+
+    /** Ingress packet stat count */
+    SAI_ROUTER_INTERFACE_STAT_IN_PACKETS,
+
+    /** Egress byte stat count */
+    SAI_ROUTER_INTERFACE_STAT_OUT_OCTETS,
+
+    /** Egress packet stat count */
+    SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS,
+
+    /** Byte stat count for packets having errors on router ingress */
+    SAI_ROUTER_INTERFACE_STAT_IN_ERROR_OCTETS,
+
+    /** Packet stat count for packets having errors on router ingress */
+    SAI_ROUTER_INTERFACE_STAT_IN_ERROR_PACKETS,
+
+    /** Byte stat count for packets having errors on router egress */
+    SAI_ROUTER_INTERFACE_STAT_OUT_ERROR_OCTETS,
+
+    /** Packet stat count for packets having errors on router egress */
+    SAI_ROUTER_INTERFACE_STAT_OUT_ERROR_PACKETS
+
+} sai_router_interface_stat_t;
 
 /**
  * @brief Create router interface.
@@ -324,6 +382,54 @@ typedef sai_status_t (*sai_get_router_interface_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Get router interface statistics counters. Deprecated for backward compatibility.
+ *
+ * @param[in] router_interface_id Router interface id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_router_interface_stats_fn)(
+        _In_ sai_object_id_t router_interface_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get router interface statistics counters extended.
+ *
+ * @param[in] router_interface_id Router interface id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_router_interface_stats_ext_fn)(
+        _In_ sai_object_id_t router_interface_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear router interface statistics counters.
+ *
+ * @param[in] router_interface_id Router interface id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_router_interface_stats_fn)(
+        _In_ sai_object_id_t router_interface_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
+
+/**
  * @brief Routing interface methods table retrieved with sai_api_query()
  */
 typedef struct _sai_router_interface_api_t
@@ -332,6 +438,9 @@ typedef struct _sai_router_interface_api_t
     sai_remove_router_interface_fn          remove_router_interface;
     sai_set_router_interface_attribute_fn   set_router_interface_attribute;
     sai_get_router_interface_attribute_fn   get_router_interface_attribute;
+    sai_get_router_interface_stats_fn       get_router_interface_stats;
+    sai_get_router_interface_stats_ext_fn   get_router_interface_stats_ext;
+    sai_clear_router_interface_stats_fn     clear_router_interface_stats;
 
 } sai_router_interface_api_t;
 

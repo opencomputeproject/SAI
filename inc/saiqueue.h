@@ -176,6 +176,16 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_PFC_DLR_INIT = 0x00000009,
 
     /**
+     * @brief Queue bind point for TAM object
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @default empty
+     */
+    SAI_QUEUE_ATTR_TAM_OBJECT,
+
+    /**
      * @brief End of attributes
      */
     SAI_QUEUE_ATTR_END,
@@ -412,7 +422,7 @@ typedef sai_status_t (*sai_get_queue_attribute_fn)(
 typedef sai_status_t (*sai_get_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_queue_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -429,7 +439,7 @@ typedef sai_status_t (*sai_get_queue_stats_fn)(
 typedef sai_status_t (*sai_get_queue_stats_ext_fn)(
         _In_ sai_object_id_t queue_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_queue_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -445,7 +455,7 @@ typedef sai_status_t (*sai_get_queue_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_queue_stats_fn)(
         _In_ sai_object_id_t queue_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_queue_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Queue PFC deadlock event notification

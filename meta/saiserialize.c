@@ -325,7 +325,7 @@ int sai_serialize_uint64(
         _Out_ char *buffer,
         _In_ uint64_t u64)
 {
-    return sprintf(buffer, "%lu", u64);
+    return sprintf(buffer, "%"PRIu64, u64);
 }
 
 #define SAI_BASE_10 10
@@ -372,7 +372,7 @@ int sai_serialize_int64(
         _Out_ char *buffer,
         _In_ int64_t s64)
 {
-    return sprintf(buffer, "%ld", s64);
+    return sprintf(buffer, "%"PRId64, s64);
 }
 
 int sai_deserialize_int64(
@@ -443,7 +443,7 @@ int sai_serialize_object_id(
         _Out_ char *buffer,
         _In_ sai_object_id_t oid)
 {
-    return sprintf(buffer, "oid:0x%lx", oid);
+    return sprintf(buffer, "oid:0x%"PRIx64, oid);
 }
 
 int sai_deserialize_object_id(
@@ -452,7 +452,7 @@ int sai_deserialize_object_id(
 {
     int read;
 
-    int n = sscanf(buffer, "oid:0x%16lx%n", oid, &read);
+    int n = sscanf(buffer, "oid:0x%16"PRIx64"%n", oid, &read);
 
     if (n == 1 && sai_serialize_is_char_allowed(buffer[read]))
     {
@@ -494,6 +494,130 @@ int sai_deserialize_mac(
     }
 
     SAI_META_LOG_WARN("failed to deserialize '%.*s' as mac address", MAX_CHARS_PRINT, buffer);
+    return SAI_SERIALIZE_ERROR;
+}
+
+int sai_serialize_macsec_sak(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_sak_t sak)
+{
+    return sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
+%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
+%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
+%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
+                   sak[0], sak[1], sak[2], sak[3], sak[4], sak[5],sak[6], sak[7],
+                   sak[8], sak[9], sak[10], sak[11], sak[12], sak[13],sak[14], sak[15],
+                   sak[16], sak[17], sak[18], sak[19], sak[20], sak[21],sak[22], sak[23],
+                   sak[24], sak[25], sak[26], sak[27], sak[28], sak[29],sak[30], sak[31]);
+}
+
+int sai_deserialize_macsec_sak(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_sak_t sak)
+{
+    int arr[32];
+    int read;
+
+    int n = sscanf(buffer, "%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:\
+%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X%n",
+                   &arr[0], &arr[1], &arr[2], &arr[3],
+                   &arr[4], &arr[5], &arr[6], &arr[7],
+                   &arr[8], &arr[9], &arr[10], &arr[11],
+                   &arr[12], &arr[13], &arr[14], &arr[15],
+                   &arr[16], &arr[17], &arr[18], &arr[19],
+                   &arr[20], &arr[21], &arr[22], &arr[23],
+                   &arr[24], &arr[25], &arr[26], &arr[27],
+                   &arr[28], &arr[29], &arr[30], &arr[31], &read);
+
+    if (n == 32 && read == (32*3-1))
+    {
+        for (n = 0; n < 32; n++)
+        {
+            sak[n] = (uint8_t)arr[n];
+        }
+
+        return read;
+    }
+
+    SAI_META_LOG_WARN("failed to deserialize '%.*s' as macsec_sak", MAX_CHARS_PRINT, buffer);
+    return SAI_SERIALIZE_ERROR;
+}
+
+int sai_serialize_macsec_auth_key(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_auth_key_t auth)
+{
+    return sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
+%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
+                   auth[0], auth[1], auth[2], auth[3], auth[4], auth[5],auth[6], auth[7],
+                   auth[8], auth[9], auth[10], auth[11], auth[12], auth[13],auth[14], auth[15]);
+}
+
+int sai_deserialize_macsec_auth_key(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_auth_key_t auth)
+{
+    int arr[16];
+    int read;
+
+    int n = sscanf(buffer, "%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X%n",
+                   &arr[0], &arr[1], &arr[2], &arr[3],
+                   &arr[4], &arr[5], &arr[6], &arr[7],
+                   &arr[8], &arr[9], &arr[10], &arr[11],
+                   &arr[12], &arr[13], &arr[14], &arr[15], &read);
+
+    if (n == 16 && read == (16*3-1))
+    {
+       for (n = 0; n < 16; n++)
+        {
+            auth[n] = (uint8_t)arr[n];
+        }
+
+        return read;
+    }
+
+    SAI_META_LOG_WARN("failed to deserialize '%.*s' as macsec_auth_key", MAX_CHARS_PRINT, buffer);
+    return SAI_SERIALIZE_ERROR;
+}
+
+int sai_serialize_macsec_salt(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_salt_t salt)
+{
+    return sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
+                   salt[0], salt[1], salt[2], salt[3], salt[4], salt[5],salt[6], salt[7],
+                   salt[8], salt[9], salt[10], salt[11]);
+}
+
+int sai_deserialize_macsec_salt(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_salt_t salt)
+{
+    int arr[12];
+    int read;
+
+    int n = sscanf(buffer, "%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:\
+%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X%n",
+                   &arr[0], &arr[1], &arr[2], &arr[3],
+                   &arr[4], &arr[5], &arr[6], &arr[7],
+                   &arr[8], &arr[9], &arr[10], &arr[11],
+                   &arr[12], &arr[13], &arr[14], &arr[15],
+                   &arr[16], &arr[17], &arr[18], &arr[19],
+                   &arr[20], &arr[21], &arr[22], &arr[23],
+                   &arr[24], &arr[25], &arr[26], &arr[27],
+                   &arr[28], &arr[29], &arr[30], &arr[31], &read);
+
+    if (n == 12 && read == (12*3-1))
+    {
+        for (n = 0; n < 12; n++)
+        {
+            salt[n] = (uint8_t)arr[n];
+        }
+
+        return read;
+    }
+
+    SAI_META_LOG_WARN("failed to deserialize '%.*s' as macsec_salt", MAX_CHARS_PRINT, buffer);
     return SAI_SERIALIZE_ERROR;
 }
 
@@ -850,10 +974,12 @@ int sai_serialize_ip6_mask(
         _In_ const sai_ip6_t mask)
 {
     uint32_t n = 64;
-    uint64_t tmp = 0xFFFFFFFFFFFFFFFFUL;
+    uint64_t tmp = UINT64_C(0xFFFFFFFFFFFFFFFF);
 
-    uint64_t high = *((const uint64_t*)mask);
-    uint64_t low  = *((const uint64_t*)mask + 1);
+    uint64_t high;
+    uint64_t low;
+    memcpy(&high, (const uint8_t*)mask, sizeof(uint64_t));
+    memcpy(&low, ((const uint8_t*)mask + sizeof(uint64_t)), sizeof(uint64_t));
 
     high = __builtin_bswap64(high);
     low = __builtin_bswap64(low);
@@ -899,8 +1025,9 @@ int sai_deserialize_ip6_mask(
         return SAI_SERIALIZE_ERROR;
     }
 
-    uint64_t high = 0xFFFFFFFFFFFFFFFFUL;
-    uint64_t low  = 0xFFFFFFFFFFFFFFFFUL;
+    uint64_t high = UINT64_C(0xFFFFFFFFFFFFFFFF);
+    uint64_t low  = UINT64_C(0xFFFFFFFFFFFFFFFF);
+    uint64_t tmp;
 
     if (value == 128)
     {
@@ -924,17 +1051,19 @@ int sai_deserialize_ip6_mask(
         low = 0;
     }
 
-    *((uint64_t*)mask) = __builtin_bswap64(high);
-    *((uint64_t*)mask + 1) = __builtin_bswap64(low);
+    tmp = __builtin_bswap64(high);
+    memcpy((uint8_t*)mask, &tmp, sizeof(uint64_t));
+    tmp = __builtin_bswap64(low);
+    memcpy(((uint8_t*)mask + sizeof(uint64_t)), &tmp, sizeof(uint64_t));
 
     return res;
 }
 
 int sai_serialize_pointer(
         _Out_ char *buffer,
-        _In_ sai_pointer_t pointer)
+        _In_ const sai_pointer_t pointer)
 {
-    return sprintf(buffer, "ptr:0x%p", pointer);
+    return sprintf(buffer, "ptr:%p", pointer);
 }
 
 int sai_deserialize_pointer(
@@ -943,7 +1072,7 @@ int sai_deserialize_pointer(
 {
     int read;
 
-    int n = sscanf(buffer, "ptr:0x%16p%n", pointer, &read);
+    int n = sscanf(buffer, "ptr:%p%n", pointer, &read);
 
     if (n == 1 && sai_serialize_is_char_allowed(buffer[read]))
     {
@@ -1060,7 +1189,9 @@ int sai_serialize_attribute(
         return SAI_SERIALIZE_ERROR;
     }
 
-    buf += sprintf(buf, "\"");
+    buf += ret;
+
+    buf += sprintf(buf, "\",");
 
     buf += sprintf(buf, "\"value\":");
 

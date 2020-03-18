@@ -335,7 +335,9 @@ typedef enum _sai_tunnel_ttl_mode_t
      *
      * Where the TTL field is preserved end-to-end by copying into the outer
      * header on encapsulation and copying from the outer header on
-     * decapsulation.
+     * decapsulation. This is applicable for inner IP packets. If the inner
+     * packet is a non-IP packet, then the value is undefined and implementation
+     * can chose a valid/meaningful outer TTL value, say in the case of VXLAN encap.
      */
     SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL,
 
@@ -363,7 +365,9 @@ typedef enum _sai_tunnel_dscp_mode_t
      *
      * Where the DSCP field is preserved end-to-end by copying into the
      * outer header on encapsulation and copying from the outer header on
-     * decapsulation.
+     * decapsulation. This is applicable for inner IP packets. If the inner
+     * packet is a non-IP packet, then the value is undefined and implementation
+     * can chose a valid/meaningful outer DSCP value, say in the case of VXLAN encap.
      */
     SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL,
 
@@ -426,6 +430,23 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
 } sai_tunnel_decap_ecn_mode_t;
 
 /**
+ * @brief Defines tunnel peer mode
+ */
+typedef enum _sai_tunnel_peer_mode_t
+{
+    /**
+     * @brief P2P Tunnel
+     */
+    SAI_TUNNEL_PEER_MODE_P2P,
+
+    /**
+     * @brief P2MP Tunnel
+     */
+    SAI_TUNNEL_PEER_MODE_P2MP,
+
+} sai_tunnel_peer_mode_t;
+
+/**
  * @brief Defines tunnel attributes
  */
 typedef enum _sai_tunnel_attr_t
@@ -440,6 +461,7 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_tunnel_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isresourcetype true
      */
     SAI_TUNNEL_ATTR_TYPE = SAI_TUNNEL_ATTR_START,
 
@@ -451,7 +473,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN
      */
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
 
@@ -470,6 +492,15 @@ typedef enum _sai_tunnel_attr_t
     /* Tunnel encap attributes */
 
     /**
+     * @brief Tunnel Peer Mode
+     *
+     * @type sai_tunnel_peer_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TUNNEL_PEER_MODE_P2MP
+     */
+    SAI_TUNNEL_ATTR_PEER_MODE,
+
+    /**
      * @brief Tunnel src IP
      *
      * @type sai_ip_address_t
@@ -477,6 +508,16 @@ typedef enum _sai_tunnel_attr_t
      * @default 0.0.0.0
      */
     SAI_TUNNEL_ATTR_ENCAP_SRC_IP,
+
+    /**
+     * @brief Tunnel Destination IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_ONLY
+     * @default 0.0.0.0
+     * @validonly SAI_TUNNEL_ATTR_PEER_MODE == SAI_TUNNEL_PEER_MODE_P2P
+     */
+    SAI_TUNNEL_ATTR_ENCAP_DST_IP,
 
     /**
      * @brief Tunnel TTL mode (pipe or uniform model)
@@ -703,7 +744,7 @@ typedef sai_status_t (*sai_get_tunnel_attribute_fn)(
 typedef sai_status_t (*sai_get_tunnel_stats_fn)(
         _In_ sai_object_id_t tunnel_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_tunnel_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -720,7 +761,7 @@ typedef sai_status_t (*sai_get_tunnel_stats_fn)(
 typedef sai_status_t (*sai_get_tunnel_stats_ext_fn)(
         _In_ sai_object_id_t tunnel_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_tunnel_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -736,7 +777,7 @@ typedef sai_status_t (*sai_get_tunnel_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_tunnel_stats_fn)(
         _In_ sai_object_id_t tunnel_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_tunnel_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Defines tunnel termination table entry type

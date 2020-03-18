@@ -95,7 +95,12 @@ typedef enum _sai_packet_action_t
      * Packet action on the data plane remains unchanged.
      */
 
-    /** Copy Packet to CPU. */
+    /**
+     * @brief Packet action copy
+     *
+     * Copy Packet to CPU without interfering the original packet action in the
+     * pipeline.
+     */
     SAI_PACKET_ACTION_COPY,
 
     /** Cancel copy the packet to CPU. */
@@ -103,10 +108,23 @@ typedef enum _sai_packet_action_t
 
     /** Combination of Packet Actions */
 
-    /** This is a combination of SAI packet action COPY and DROP. */
+    /**
+     * @brief Packet action trap
+     *
+     * This is a combination of SAI packet action COPY and DROP:
+     * A copy of the original packet is sent to CPU port, the original
+     * packet is forcefully dropped from the pipeline.
+     */
     SAI_PACKET_ACTION_TRAP,
 
-    /** This is a combination of SAI packet action COPY and FORWARD. */
+    /**
+     * @brief Packet action log
+     *
+     * This is a combination of SAI packet action COPY and FORWARD:
+     * A copy of the original packet is sent to CPU port, the original
+     * packet, if it was to be dropped in the original pipeline,
+     * change the pipeline action to forward (cancel drop).
+     */
     SAI_PACKET_ACTION_LOG,
 
     /** This is a combination of SAI packet action COPY_CANCEL and DROP */
@@ -223,6 +241,67 @@ typedef enum _sai_switch_mcast_snooping_capability_t
     SAI_SWITCH_MCAST_SNOOPING_CAPABILITY_XG_AND_SG = 3,
 
 } sai_switch_mcast_snooping_capability_t;
+
+/**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_HARDWARE_ACCESS_BUS
+ */
+typedef enum _sai_switch_hardware_access_bus_t
+{
+    /** Hardware access bus is MDIO */
+    SAI_SWITCH_HARDWARE_ACCESS_BUS_MDIO,
+
+    /** Hardware access bus is I2C */
+    SAI_SWITCH_HARDWARE_ACCESS_BUS_I2C,
+
+    /** Hardware access bus is CPLD */
+    SAI_SWITCH_HARDWARE_ACCESS_BUS_CPLD,
+
+} sai_switch_hardware_access_bus_t;
+
+/**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_FIRMWARE_LOAD_METHOD
+ */
+typedef enum _sai_switch_firmware_load_method_t
+{
+    /** Do not download FW. Use already downloaded FW instead */
+    SAI_SWITCH_FIRMWARE_LOAD_METHOD_NONE,
+
+    /** Download FW internally via MDIO */
+    SAI_SWITCH_FIRMWARE_LOAD_METHOD_INTERNAL,
+
+    /** Load FW from EEPROM */
+    SAI_SWITCH_FIRMWARE_LOAD_METHOD_EEPROM,
+
+} sai_switch_firmware_load_method_t;
+
+/**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE
+ */
+typedef enum _sai_switch_firmware_load_type_t
+{
+    /** Skip firmware download if firmware is already present */
+    SAI_SWITCH_FIRMWARE_LOAD_TYPE_SKIP,
+
+    /** Always download the firmware specified by firmware load method */
+    SAI_SWITCH_FIRMWARE_LOAD_TYPE_FORCE,
+
+    /** Check the firmware version. If it is different from current version download firmware */
+    SAI_SWITCH_FIRMWARE_LOAD_TYPE_AUTO,
+
+} sai_switch_firmware_load_type_t;
+
+/**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_TYPE
+ */
+typedef enum _sai_switch_type_t
+{
+    /** Switch type is Switching Network processing unit */
+    SAI_SWITCH_TYPE_NPU,
+
+    /** Switch type is PHY */
+    SAI_SWITCH_TYPE_PHY,
+
+} sai_switch_type_t;
 
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
@@ -399,6 +478,24 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_OPER_STATUS,
 
     /**
+     * @brief Maximum number of temperature sensors available.
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_NUMBER_OF_TEMP_SENSORS,
+
+    /**
+     * @brief List of temperature readings from all sensors.
+     *
+     * Values in Celsius.
+     *
+     * @type sai_s32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TEMP_LIST,
+
+    /**
      * @brief The current value of the maximum temperature
      * retrieved from the switch sensors
      *
@@ -408,6 +505,17 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_MAX_TEMP,
+
+    /**
+     * @brief The average of temperature readings over all
+     * sensors in the switch
+     *
+     * Value in Celsius.
+     *
+     * @type sai_int32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVERAGE_TEMP,
 
     /**
      * @brief Minimum priority for ACL table
@@ -534,6 +642,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID,
 
     /**
+     * @brief Max number of STP instances that NPU supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_STP_INSTANCE,
+
+    /**
      * @brief Default SAI Virtual Router ID
      *
      * Must return #SAI_STATUS_OBJECT_IN_USE when try to delete this VR ID.
@@ -624,7 +740,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Switch total buffer size in KB
      *
-     * @type sai_uint32_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE,
@@ -734,6 +850,30 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_IPMC_ENTRY,
 
     /**
+     * @brief Available SNAT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_SNAT_ENTRY,
+
+    /**
+     * @brief Available DNAT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DNAT_ENTRY,
+
+    /**
+     * @brief Available Double NAT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAT_ENTRY,
+
+    /**
      * @brief Available ACL Tables
      *
      * @type sai_acl_resource_list_t
@@ -814,6 +954,7 @@ typedef enum _sai_switch_attr_t
      * Since warm restart can be caused by crash
      * (therefore there are no guarantees for this call),
      * this hint is really a performance optimization.
+     * This hint is set as part of the shutdown sequence, before boot.
      * TRUE - Warm Reboot
      * FALSE - Cold Reboot
      *
@@ -822,6 +963,21 @@ typedef enum _sai_switch_attr_t
      * @default false
      */
     SAI_SWITCH_ATTR_RESTART_WARM,
+
+    /**
+     * @brief Warm boot recovery
+     *
+     * Start warm boot recovery when set to true
+     * This hint is set after boot.
+     * In case of host adapter restart, host adapter can pass boot type in
+     * #SAI_KEY_BOOT_TYPE. In case of host adapter recovery, host adapter can
+     * pass a hint about the boot type and recovery, in this flag.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_WARM_RECOVER,
 
     /**
      * @brief Type of restart supported
@@ -1338,6 +1494,9 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Port state change notification callback function passed to the adapter.
      *
+     * In case driver does not support this attribute, The Host adapter should poll
+     * port status by SAI_PORT_ATTR_OPER_STATUS.
+     *
      * Use sai_port_state_change_notification_fn as notification function.
      *
      * @type sai_pointer_t sai_port_state_change_notification_fn
@@ -1356,17 +1515,6 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY,
-
-    /**
-     * @brief TAM event notification callback function passed to the adapter.
-     *
-     * Use sai_tam_event_notification_fn as notification function.
-     *
-     * @type sai_pointer_t sai_tam_event_notification_fn
-     * @flags CREATE_AND_SET
-     * @default NULL
-     */
-    SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
 
     /**
      * @brief Enable SAI function call fast mode, which executes calls very quickly
@@ -1575,6 +1723,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_BFD_SESSION,
 
     /**
+     * @brief List of BFD session offloads that are supported for IPv4
+     *
+     * @type sai_s32_list_t sai_bfd_session_offload_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_IPV4_BFD_SESSION_OFFLOAD_TYPE,
+
+    /**
+     * @brief List of BFD session offloads that are supported for IPv6
+     *
+     * @type sai_s32_list_t sai_bfd_session_offload_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_IPV6_BFD_SESSION_OFFLOAD_TYPE,
+
+    /**
      * @brief Minimum Receive interval NPU supports in microseconds
      *
      * @type sai_uint32_t
@@ -1661,6 +1825,281 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_UNINIT_DATA_PLANE_ON_REMOVAL,
 
     /**
+     * @brief TAM bind point
+     *
+     * Bind (or unbind) the TAM object.
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TAM_OBJECT_ID,
+
+    /**
+     * @brief Event notification callback
+     * function passed to the adapter.
+     *
+     * Use sai_tam_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_EVENT_NOTIFY,
+
+    /**
+     * @brief List of supported object types
+     *
+     * A list of object types (sai_object_type_t) that the SAI adapter can
+     * support.
+     *
+     * @type sai_s32_list_t sai_object_type_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_OBJECT_TYPE_LIST,
+
+    /**
+     * @brief Instruct SAI to execute switch pre-shutdown
+     *
+     * Indicates controlled switch pre-shutdown as first step of warm shutdown.
+     * This hint is optional, SAI application could skip this step and
+     * go directly to warm shutdown.
+     * This hint should be ignored, if at the time SAI receives this hint,
+     * SAI_SWITCH_ATTR_RESTART_WARM is NOT already set to TRUE.
+     * The scope of pre-shutdown is to backup SAI/SDK data, but leave CPU port
+     * active for some final control plane traffic to go out.
+     * TRUE - Execute switch pre-shutdown for warm shutdown
+     * FALSE - No-op, does NOT mean cancelling already executed pre-shutdown
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_PRE_SHUTDOWN,
+
+    /**
+     * @brief NAT zone counter bind point
+     *
+     * Bind (or unbind) the NAT zone counter object.
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NAT_ZONE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_NAT_ZONE_COUNTER_OBJECT_ID,
+
+    /**
+     * @brief Enable NAT function
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_NAT_ENABLE,
+
+    /**
+     * @brief Switch hardware access bus MDIO/I2C/CPLD
+     *
+     * @type sai_switch_hardware_access_bus_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     */
+    SAI_SWITCH_ATTR_HARDWARE_ACCESS_BUS,
+
+    /**
+     * @brief Platform context information
+     *
+     * Platform context information provided by the host adapter to driver.
+     * This information is Host adapter specific, typically used for maintain
+     * synchronization and device information. Driver will give this context back
+     * to adapter as part of call back sai_switch_register_read/write_fn API.
+     *
+     * @type sai_uint64_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     */
+    SAI_SWITCH_ATTR_PLATFROM_CONTEXT,
+
+    /**
+     * @brief Platform adaption device read callback function passed to the adapter.
+     * This is mandatory function for driver when device access not supported by file system.
+     *
+     * Use sai_switch_register_read_fn as read function.
+     *
+     * @type sai_pointer_t sai_switch_register_read_fn
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     */
+    SAI_SWITCH_ATTR_REGISTER_READ,
+
+    /**
+     * @brief Platform adaption device write callback function passed to the adapter.
+     * This is mandatory function for driver when device access not supported by file system.
+     *
+     * Use sai_switch_register_write_fn as write function.
+     *
+     * @type sai_pointer_t sai_switch_register_write_fn
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     */
+    SAI_SWITCH_ATTR_REGISTER_WRITE,
+
+    /**
+     * @brief Enable/disable broadcast firmware download
+     *
+     * TRUE - Enable firmware download as broadcast.
+     * FALSE - Enable firmware download as unicast.
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST,
+
+    /**
+     * @brief Firmware load method
+     *
+     * @type sai_switch_firmware_load_method_t
+     * @flags CREATE_ONLY
+     * @default SAI_SWITCH_FIRMWARE_LOAD_METHOD_INTERNAL
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_LOAD_METHOD,
+
+    /**
+     * @brief Firmware load type auto/force/skip
+     *
+     * Check firmware version. If it is different from current version load firmware.
+     * Otherwise always download the firmware specified by firmware load method.
+     *
+     * @type sai_switch_firmware_load_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_SWITCH_FIRMWARE_LOAD_TYPE_AUTO
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE,
+
+    /**
+     * @brief Execute Firmware download
+     *
+     * In case of firmware download method broadcast, Set this attribute on
+     * any one of device connected to same bus. As part of execute firmware will broadcast to
+     * to all broadcast enabled devices on bus.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_EXECUTE,
+
+    /**
+     * @brief End Broadcast
+     *
+     * Broadcast is enabled for BUS, All configurations will be broadcast.
+     * End broadcast before initialize device.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_BROADCAST_STOP,
+
+    /**
+     * @brief Firmware status verify and complete initialize device.
+     *
+     * Host Adapter should mandatory to set attribute to true,
+     * switch before doing any other configurations.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_VERIFY_AND_INIT_SWITCH,
+
+    /**
+     * @brief Firmware running status
+     *
+     * Indicates firmware download and running status.
+     *
+     * TRUE - Firmware running
+     * FALSE - Firmware not running.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_STATUS,
+
+    /**
+     * @brief Firmware major version number
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_MAJOR_VERSION,
+
+    /**
+     * @brief Firmware minor version number
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_MINOR_VERSION,
+
+    /**
+     * @brief Get the port connector list
+     *
+     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT_CONNECTOR
+     */
+    SAI_SWITCH_ATTR_PORT_CONNECTOR_LIST,
+
+    /**
+     * @brief Propagate line side port state to system side port
+     *
+     * System side port state will reflect the ASIC port state.
+     * Host adapter can depends on ASIC port state instead of port states from system side,
+     * line side and ASIC port to determine interface operation status to application.
+     *
+     * TRUE - Device support for propagate line side port link status to system side port.
+     * FALSE - Device does not support propagate port states.
+     *
+     * validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PROPOGATE_PORT_STATE_FROM_LINE_TO_SYSTEM_PORT_SUPPORT,
+
+    /**
+     * @brief Switch type NPU/PHY
+     *
+     * @type sai_switch_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_SWITCH_TYPE_NPU
+     */
+    SAI_SWITCH_ATTR_TYPE,
+
+    /**
+     * @brief MACsec object for this switch.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MACSEC
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_MACSEC_OBJECT_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -1672,6 +2111,75 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END
 
 } sai_switch_attr_t;
+
+/**
+ * @brief Switch counter IDs in sai_get_switch_stats() call
+ *
+ * @flags Contains flags
+ */
+typedef enum _sai_switch_stat_t
+{
+    /** Switch stat in drop reasons range start */
+    SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
+
+    /** Get in switch packet drops configured by debug counter API at index 0 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_0_DROPPED_PKTS = SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE,
+
+    /** Get in switch packet drops configured by debug counter API at index 1 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_1_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 2 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_2_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 3 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_3_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 4 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_4_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 5 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_5_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 6 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_6_DROPPED_PKTS,
+
+    /** Get in switch packet drops configured by debug counter API at index 7 */
+    SAI_SWITCH_STAT_IN_CONFIGURED_DROP_REASONS_7_DROPPED_PKTS,
+
+    /** Switch stat in drop reasons range end */
+    SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_END = 0x00001fff,
+
+    /** Switch stat out drop reasons range start */
+    SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_BASE = 0x00002000,
+
+    /** Get out switch packet drops configured by debug counter API at index 0 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_0_DROPPED_PKTS = SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_BASE,
+
+    /** Get out switch packet drops configured by debug counter API at index 1 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_1_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 2 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_2_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 3 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_3_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 4 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_4_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 5 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_5_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 6 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_6_DROPPED_PKTS,
+
+    /** Get out switch packet drops configured by debug counter API at index 7 */
+    SAI_SWITCH_STAT_OUT_CONFIGURED_DROP_REASONS_7_DROPPED_PKTS,
+
+    /** Switch stat out drop reasons range end */
+    SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
+
+} sai_switch_stat_t;
 
 /**
  * @def SAI_SWITCH_ATTR_MAX_KEY_STRING_LEN
@@ -1808,6 +2316,92 @@ typedef void (*sai_switch_state_change_notification_fn)(
         _In_ sai_switch_oper_status_t switch_oper_status);
 
 /**
+ * @brief Platform specific device register read access
+ *
+ * This API provides platform adaption functionality to access device
+ * registers from driver. This is mandatory to pass as attribute to
+ * sai_create_switch when driver implementation does not support register access
+ * by device file system directly.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] platform_context Platform context information.
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to read
+ * @param[in] number_of_registers Number of consecutive registers to read
+ * @param[out] reg_val Register read values
+ */
+typedef sai_status_t (*sai_switch_register_read_fn)(
+        _In_ uint64_t platform_context,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _Out_ uint32_t *reg_val);
+
+/**
+ * @brief Platform specific device register write access
+ *
+ * This API provides platform adaption functionality to access device
+ * registers from driver. This is mandatory to pass as attribute to
+ * sai_create_switch when driver implementation does not support register access
+ * by device file system directly.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] platform_context Platform context information.
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to write
+ * @param[in] number_of_registers Number of consecutive registers to write
+ * @param[in] reg_val Register write values
+ */
+typedef sai_status_t (*sai_switch_register_write_fn)(
+        _In_ uint64_t platform_context,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _In_ const uint32_t *reg_val);
+
+/**
+ * @brief Switch MDIO read API
+ *
+ * Provides read access API for devices connected to MDIO from NPU SAI.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to read
+ * @param[in] number_of_registers Number of consecutive registers to read
+ * @param[out] reg_val Register read values
+ */
+typedef sai_status_t (*sai_switch_mdio_read_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _Out_ uint32_t *reg_val);
+
+/**
+ * @brief Switch MDIO write API
+ *
+ * Provides write access API for devices connected to MDIO from NPU SAI.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to write
+ * @param[in] number_of_registers Number of consecutive registers to write
+ * @param[in] reg_val Register write values
+ */
+typedef sai_status_t (*sai_switch_mdio_write_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _In_ const uint32_t *reg_val);
+
+/**
  * @brief Create switch
  *
  * SDK initialization/connect to SDK. After the call the capability attributes should be
@@ -1864,6 +2458,54 @@ typedef sai_status_t (*sai_get_switch_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Get switch statistics counters. Deprecated for backward compatibility.
+ *
+ * @param[in] switch_id Switch id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_switch_stats_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get switch statistics counters extended.
+ *
+ * @param[in] switch_id Switch id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_switch_stats_ext_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear switch statistics counters.
+ *
+ * @param[in] switch_id Switch id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_switch_stats_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
+
+/**
  * @brief Switch method table retrieved with sai_api_query()
  */
 typedef struct _sai_switch_api_t
@@ -1872,6 +2514,11 @@ typedef struct _sai_switch_api_t
     sai_remove_switch_fn            remove_switch;
     sai_set_switch_attribute_fn     set_switch_attribute;
     sai_get_switch_attribute_fn     get_switch_attribute;
+    sai_get_switch_stats_fn         get_switch_stats;
+    sai_get_switch_stats_ext_fn     get_switch_stats_ext;
+    sai_clear_switch_stats_fn       clear_switch_stats;
+    sai_switch_mdio_read_fn         switch_mdio_read;
+    sai_switch_mdio_write_fn        switch_mdio_write;
 
 } sai_switch_api_t;
 

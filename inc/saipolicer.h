@@ -312,7 +312,7 @@ typedef sai_status_t (*sai_get_policer_attribute_fn)(
 typedef sai_status_t (*sai_get_policer_stats_fn)(
         _In_ sai_object_id_t policer_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_policer_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -329,7 +329,7 @@ typedef sai_status_t (*sai_get_policer_stats_fn)(
 typedef sai_status_t (*sai_get_policer_stats_ext_fn)(
         _In_ sai_object_id_t policer_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_policer_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -345,7 +345,7 @@ typedef sai_status_t (*sai_get_policer_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_policer_stats_fn)(
         _In_ sai_object_id_t policer_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_policer_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Policer methods table retrieved with sai_api_query()

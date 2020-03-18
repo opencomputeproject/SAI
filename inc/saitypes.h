@@ -55,6 +55,10 @@ typedef UINT32  sai_ip4_t;
 typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
 typedef UINT32  sai_label_id_t;
+typedef UINT32  sai_stat_id_t;
+typedef UINT8   sai_macsec_sak_t[32];
+typedef UINT8   sai_macsec_auth_key_t[16];
+typedef UINT8   sai_macsec_salt_t[12];
 
 #include <ws2def.h>
 #include <ws2ipdef.h>
@@ -94,6 +98,10 @@ typedef uint32_t sai_ip4_t;
 typedef uint8_t  sai_ip6_t[16];
 typedef uint32_t sai_switch_hash_seed_t;
 typedef uint32_t sai_label_id_t;
+typedef uint32_t sai_stat_id_t;
+typedef uint8_t sai_macsec_sak_t[32];
+typedef uint8_t sai_macsec_auth_key_t[16];
+typedef uint8_t sai_macsec_salt_t[12];
 
 #define _In_
 #define _Out_
@@ -118,6 +126,12 @@ typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
+
+typedef struct _sai_timespec_t
+{
+    uint64_t tv_sec;
+    uint32_t tv_nsec;
+} sai_timespec_t;
 
 /**
  * @def SAI_NULL_OBJECT_ID
@@ -229,22 +243,40 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_BRIDGE_PORT              = 58,
     SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY         = 59,
     SAI_OBJECT_TYPE_TAM                      = 60,
-    SAI_OBJECT_TYPE_TAM_STAT                 = 61,
-    SAI_OBJECT_TYPE_TAM_SNAPSHOT             = 62,
-    SAI_OBJECT_TYPE_TAM_TRANSPORTER          = 63,
-    SAI_OBJECT_TYPE_TAM_THRESHOLD            = 64,
-    SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST     = 65,
-    SAI_OBJECT_TYPE_PORT_POOL                = 66,
-    SAI_OBJECT_TYPE_INSEG_ENTRY              = 67,
-    SAI_OBJECT_TYPE_TAM_HISTOGRAM            = 68,
-    SAI_OBJECT_TYPE_TAM_MICROBURST           = 69,
-    SAI_OBJECT_TYPE_DTEL                     = 70, /**< experimental */
-    SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT        = 71, /**< experimental */
-    SAI_OBJECT_TYPE_DTEL_INT_SESSION         = 72, /**< experimental */
-    SAI_OBJECT_TYPE_DTEL_REPORT_SESSION      = 73, /**< experimental */
-    SAI_OBJECT_TYPE_DTEL_EVENT               = 74, /**< experimental */
-    SAI_OBJECT_TYPE_BFD_SESSION              = 75,
-    SAI_OBJECT_TYPE_MAX                      = 76,
+    SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST     = 61,
+    SAI_OBJECT_TYPE_PORT_POOL                = 62,
+    SAI_OBJECT_TYPE_INSEG_ENTRY              = 63,
+    SAI_OBJECT_TYPE_DTEL                     = 64, /**< experimental */
+    SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT        = 65, /**< experimental */
+    SAI_OBJECT_TYPE_DTEL_INT_SESSION         = 66, /**< experimental */
+    SAI_OBJECT_TYPE_DTEL_REPORT_SESSION      = 67, /**< experimental */
+    SAI_OBJECT_TYPE_DTEL_EVENT               = 68, /**< experimental */
+    SAI_OBJECT_TYPE_BFD_SESSION              = 69,
+    SAI_OBJECT_TYPE_ISOLATION_GROUP          = 70,
+    SAI_OBJECT_TYPE_ISOLATION_GROUP_MEMBER   = 71,
+    SAI_OBJECT_TYPE_TAM_MATH_FUNC            = 72,
+    SAI_OBJECT_TYPE_TAM_REPORT               = 73,
+    SAI_OBJECT_TYPE_TAM_EVENT_THRESHOLD      = 74,
+    SAI_OBJECT_TYPE_TAM_TEL_TYPE             = 75,
+    SAI_OBJECT_TYPE_TAM_TRANSPORT            = 76,
+    SAI_OBJECT_TYPE_TAM_TELEMETRY            = 77,
+    SAI_OBJECT_TYPE_TAM_COLLECTOR            = 78,
+    SAI_OBJECT_TYPE_TAM_EVENT_ACTION         = 79,
+    SAI_OBJECT_TYPE_TAM_EVENT                = 80,
+    SAI_OBJECT_TYPE_NAT_ZONE_COUNTER         = 81,
+    SAI_OBJECT_TYPE_NAT_ENTRY                = 82,
+    SAI_OBJECT_TYPE_TAM_INT                  = 83,
+    SAI_OBJECT_TYPE_COUNTER                  = 84,
+    SAI_OBJECT_TYPE_DEBUG_COUNTER            = 85,
+    SAI_OBJECT_TYPE_PORT_CONNECTOR           = 86,
+    SAI_OBJECT_TYPE_PORT_SERDES              = 87,
+    SAI_OBJECT_TYPE_MACSEC                   = 88,
+    SAI_OBJECT_TYPE_MACSEC_PORT              = 89,
+    SAI_OBJECT_TYPE_MACSEC_FLOW              = 90,
+    SAI_OBJECT_TYPE_MACSEC_SC                = 91,
+    SAI_OBJECT_TYPE_MACSEC_SA                = 92,
+
+    SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -383,6 +415,9 @@ typedef union _sai_acl_field_data_mask_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32 */
     sai_int32_t s32;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT64 */
+    sai_uint64_t u64;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC */
     sai_mac_t mac;
 
@@ -427,6 +462,9 @@ typedef union _sai_acl_field_data_data_t
      * @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_INT32
      */
     sai_int32_t s32;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT64 */
+    sai_uint64_t u64;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_MAC */
     sai_mac_t mac;
@@ -487,6 +525,9 @@ typedef struct _sai_acl_field_data_t
  */
 typedef union _sai_acl_action_parameter_t
 {
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL */
+    bool booldata;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_UINT8 */
     sai_uint8_t u8;
 
@@ -691,6 +732,12 @@ typedef enum _sai_acl_stage_t
     /** Egress Stage */
     SAI_ACL_STAGE_EGRESS,
 
+    /** Ingress Stage */
+    SAI_ACL_STAGE_INGRESS_MACSEC,
+
+    /** Egress Stage */
+    SAI_ACL_STAGE_EGRESS_MACSEC,
+
 } sai_acl_stage_t;
 
 /**
@@ -717,6 +764,34 @@ typedef enum _sai_acl_bind_point_type_t
     SAI_ACL_BIND_POINT_TYPE_SWITCH
 
 } sai_acl_bind_point_type_t;
+
+/**
+ * @brief Attribute data for SAI_TAM_TABLE_ATTR_BIND_POINT
+ */
+typedef enum _sai_tam_bind_point_type_t
+{
+    /** Bind Point Type Queue */
+    SAI_TAM_BIND_POINT_TYPE_QUEUE,
+
+    /** Bind Point Type Port */
+    SAI_TAM_BIND_POINT_TYPE_PORT,
+
+    /** Bind Point Type LAG */
+    SAI_TAM_BIND_POINT_TYPE_LAG,
+
+    /** Bind Point Type VLAN */
+    SAI_TAM_BIND_POINT_TYPE_VLAN,
+
+    /** Bind Point Type Switch */
+    SAI_TAM_BIND_POINT_TYPE_SWITCH,
+
+    /** Bind Point Type Ingress Priority Group */
+    SAI_TAM_BIND_POINT_TYPE_IPG,
+
+    /** Bind Point Type Buffer Service Pool */
+    SAI_TAM_BIND_POINT_TYPE_BSP,
+
+} sai_tam_bind_point_type_t;
 
 /**
  * @brief Structure for ACL Resource Count
@@ -964,7 +1039,7 @@ typedef union _sai_attribute_value_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_VLAN_LIST */
     sai_vlan_list_t vlanlist;
 
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MAP_LIST */
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST */
     sai_qos_map_list_t qosmap;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MAP_LIST */
@@ -1001,6 +1076,18 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST */
     sai_port_eye_values_list_t porteyevalues;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TIMESPEC */
+    sai_timespec_t timespec;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SAK */
+    sai_macsec_sak_t macsecsak;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY */
+    sai_macsec_auth_key_t macsecauthkey;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SALT */
+    sai_macsec_salt_t macsecsalt;
 } sai_attribute_value_t;
 
 /**
@@ -1071,6 +1158,51 @@ typedef sai_status_t (*sai_bulk_object_create_fn)(
 typedef sai_status_t (*sai_bulk_object_remove_fn)(
         _In_ uint32_t object_count,
         _In_ const sai_object_id_t *object_id,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk objects set attributes.
+ *
+ * @param[in] object_count Number of objects to set on attribute
+ * @param[in] object_id List of object ids
+ * @param[in] attr_list List of attributes for every object, one per object.
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
+ *
+ * @return #SAI_STATUS_SUCCESS when set attributes on all objects succeeded or
+ * #SAI_STATUS_FAILURE when any of the objects fails to set attribute. When
+ * there is failure, Caller is expected to go through the list of returned
+ * statuses to find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_object_set_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_object_id_t *object_id,
+        _In_ const sai_attribute_t *attr_list,
+        _In_ sai_bulk_op_error_mode_t mode,
+        _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Bulk objects get attributes.
+ *
+ * @param[in] object_count Number of objects to get on attribute
+ * @param[in] object_id List of object ids
+ * @param[in] attr_count List of attr_count. Caller passes the number
+ *    of attribute for each object to get.
+ * @param[inout] attr_list List of attributes for every object.
+ * @param[in] mode Bulk operation error handling mode.
+ * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
+ *
+ * @return #SAI_STATUS_SUCCESS when get attributes on all objects succeeded or
+ * #SAI_STATUS_FAILURE when any of the objects fails to get attribute. When
+ * there is failure, Caller is expected to go through the list of returned
+ * statuses to find out which fails and which succeeds.
+ */
+typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_object_id_t *object_id,
+        _In_ const uint32_t *attr_count,
+        _Inout_ sai_attribute_t **attr_list,
         _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 

@@ -57,6 +57,7 @@ extern "C" {
 #include <saiswitch.h>
 #include <saimirror.h>
 #include <saistatus.h>
+#include <saitunnel.h>
 
 #include "arpa/inet.h"
 
@@ -120,6 +121,12 @@ public:
       return (j == 12);
   }
 
+  const std::string mac_to_sai_thrift_string(uint8_t m[6]){
+      char macstr[32];
+      sprintf(macstr, "%02x:%02x:%02x:%02x:%02x:%02x", m[0], m[1], m[2], m[3], m[4], m[5]);
+      return(macstr);
+  }
+  
   void sai_thrift_string_to_v4_ip(const std::string s, unsigned int *m) {
       unsigned char r=0;
       unsigned int i;
@@ -242,6 +249,7 @@ public:
           switch (attribute.id) {
               case SAI_PORT_ATTR_ADMIN_STATE:
               case SAI_PORT_ATTR_UPDATE_DSCP:
+              case SAI_PORT_ATTR_PKT_TX_ENABLE:
                   attr_list[i].value.booldata = attribute.value.booldata;
                   break;
               case SAI_PORT_ATTR_PORT_VLAN_ID:
@@ -253,7 +261,7 @@ public:
                   break;
               case SAI_PORT_ATTR_QOS_INGRESS_BUFFER_PROFILE_LIST:
               case SAI_PORT_ATTR_QOS_EGRESS_BUFFER_PROFILE_LIST:
-                  {
+              {
                   *buffer_profile_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * attribute.value.objlist.count);
                   std::vector<sai_thrift_object_id_t>::const_iterator it2 = attribute.value.objlist.object_id_list.begin();
                   for (uint32_t j = 0; j < attribute.value.objlist.object_id_list.size(); j++, *it2++) {
@@ -287,7 +295,11 @@ public:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_PRIORITY_GROUP_MAP:
               case SAI_PORT_ATTR_QOS_PFC_PRIORITY_TO_QUEUE_MAP:
               case SAI_PORT_ATTR_INGRESS_ACL:
+              case SAI_PORT_ATTR_EGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_PORT_ATTR_MTU:
+                  attr_list[i].value.u32 = attribute.value.u32;
                   break;
               default:
                   break;
@@ -386,6 +398,9 @@ public:
               case SAI_ROUTER_INTERFACE_ATTR_VLAN_ID:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
+              case SAI_ROUTER_INTERFACE_ATTR_OUTER_VLAN_ID:
+                  attr_list[i].value.u16 = attribute.value.u16;
+                  break;
               case SAI_ROUTER_INTERFACE_ATTR_TYPE:
                   attr_list[i].value.s32 = attribute.value.s32;
                   break;
@@ -398,6 +413,13 @@ public:
                   break;
               case SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL:
                   attr_list[i].value.oid = attribute.value.oid;
+                  break;
+              case SAI_ROUTER_INTERFACE_ATTR_MTU:
+                  attr_list[i].value.u32 = attribute.value.u32;
+                  break;
+              case SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
               default:
                   break;
           }
@@ -418,6 +440,7 @@ public:
                   sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
                   break;
               case SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID:
+              case SAI_NEXT_HOP_ATTR_TUNNEL_ID:
                   attr_list[i].value.oid = attribute.value.oid;
                   break;
           }
@@ -433,6 +456,9 @@ public:
           switch (attribute.id) {
               case SAI_LAG_ATTR_PORT_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
+                  break;
+              case SAI_LAG_ATTR_INGRESS_ACL:
+                  attr_list[i].value.oid = attribute.value.oid;
                   break;
               default:
                   SAI_THRIFT_LOG_ERR("Failed to parse attribute.");
@@ -519,6 +545,46 @@ public:
 
               case SAI_HOSTIF_ATTR_NAME:
                   std::memcpy(attr_list[i].value.chardata, attribute.value.chardata.c_str(), SAI_HOSTIF_NAME_SIZE);
+                  break;
+
+              default:
+                  SAI_THRIFT_LOG_ERR("Failed to parse attribute.");
+                  break;
+          }
+      }
+  }
+
+  void sai_thrift_parse_hostif_table_entry_attributes(sai_attribute_t *attr_list, const std::vector<sai_thrift_attribute_t> &thrift_attr_list) const noexcept
+  {
+      if (attr_list == nullptr || thrift_attr_list.empty())
+      { SAI_THRIFT_LOG_ERR("Invalid input arguments."); return; }
+
+      std::vector<sai_thrift_attribute_t>::const_iterator cit = thrift_attr_list.begin();
+      for (sai_size_t i = 0; i < thrift_attr_list.size(); i++, cit++)
+      {
+          sai_thrift_attribute_t attribute = *cit;
+          attr_list[i].id = attribute.id;
+
+          switch (attribute.id)
+          {
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_OBJ_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_TRAP_ID:
+                  attr_list[i].value.oid = attribute.value.oid;
+                  break;
+
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_CHANNEL_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+
+              case SAI_HOSTIF_TABLE_ENTRY_ATTR_HOST_IF:
+                  attr_list[i].value.oid = attribute.value.oid;
                   break;
 
               default:
@@ -694,7 +760,38 @@ public:
       free(attr_list);
       return status;
   }
-
+//listing all the fdb entries from map	
+  void sai_thrift_get_fdb_entries (sai_thrift_attribute_list_t& thrift_attr_list){
+      sai_mac_t mac_address;
+      sai_object_id_t bv_id;	
+      sai_object_id_t bport_id;
+      sai_fdb_entry_t fdb_entry;  
+             
+      extern std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>> gFdbMap;
+ 
+      thrift_attr_list.attr_count = gFdbMap.size();
+      
+      sai_fdb_entry_t fdb_m;
+      sai_object_id_t b_id;
+      
+      for (auto it = gFdbMap.begin(); it != gFdbMap.end(); it++){
+          fdb_m = it->first;
+          b_id = it->second; 	
+      	
+          sai_thrift_fdb_values_t fdb_value;		 
+          fdb_value.bport_id=b_id;
+          fdb_value.thrift_fdb_entry.bv_id=fdb_m.bv_id;
+          fdb_value.thrift_fdb_entry.mac_address=mac_to_sai_thrift_string(fdb_m.mac_address);
+          
+          sai_thrift_attribute_t thrift_fdb_attributes;		
+          thrift_fdb_attributes.id = SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID;
+          thrift_fdb_attributes.value.fdb_values = fdb_value;
+	  	
+          thrift_attr_list.attr_list.push_back(thrift_fdb_attributes);
+      }			
+      return;
+  }
+  
   void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list) {
       SAI_THRIFT_LOG_DBG("Called.");
 
@@ -709,6 +806,9 @@ public:
           {
               case SAI_VLAN_ATTR_VLAN_ID:
                   attr_list[i].value.u16 = attribute.value.u16;
+                  break;
+              case SAI_VLAN_ATTR_INGRESS_ACL:
+                  attr_list[i].value.oid = attribute.value.oid;
                   break;
 
               default:
@@ -837,7 +937,7 @@ public:
 
         status = vlan_api->get_vlan_stats((sai_vlan_id_t) vlan_id,
                                           number_of_counters,
-                                          counter_ids,
+                                          (const sai_stat_id_t *)counter_ids,
                                           counters);
 
         for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) { thrift_counters.push_back(counters[i]); }
@@ -877,6 +977,31 @@ public:
       attr_list.push_back(thrift_vlan_member_list_attribute);
       free(vlan_member_list_object_attribute.value.objlist.list);
   }
+
+  sai_thrift_status_t sai_thrift_set_vlan_attribute(const sai_thrift_object_id_t vlan_oid, const sai_thrift_attribute_t& thrift_attr)  {
+    sai_status_t status;
+    const std::vector<sai_thrift_attribute_t> thrift_attr_list = { thrift_attr };
+    sai_vlan_api_t *vlan_api;
+    sai_attribute_t *attr_list = nullptr;
+
+    status = sai_api_query(SAI_API_VLAN, (void **) &vlan_api);
+    if (status != SAI_STATUS_SUCCESS) {
+        return status;
+    }
+    sai_thrift_alloc_attr(attr_list, 1);
+    sai_thrift_parse_vlan_attributes(thrift_attr_list, attr_list);
+
+    status = vlan_api->set_vlan_attribute(vlan_oid, attr_list);
+    sai_thrift_free_attr(attr_list);
+    if (status != SAI_STATUS_SUCCESS)
+    {
+        SAI_THRIFT_LOG_ERR("Failed to set VLAN attribute");
+        return status;
+    }
+
+    return status;
+  }
+
 
   sai_thrift_object_id_t sai_thrift_create_vlan_member(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       printf("sai_thrift_create_vlan_member\n");
@@ -1298,6 +1423,23 @@ public:
       return status;
   }
 
+  sai_thrift_status_t sai_thrift_set_neighbor_entry_attribute(const sai_thrift_neighbor_entry_t& thrift_neighbor_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr) {
+      printf("sai_thrift_set_neighbor_entry_attribute\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_neighbor_api_t *neighbor_api;
+      status = sai_api_query(SAI_API_NEIGHBOR, (void **) &neighbor_api);
+      sai_neighbor_entry_t neighbor_entry;
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_thrift_parse_neighbor_entry(thrift_neighbor_entry, &neighbor_entry);
+      sai_attribute_t *attr= (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr.size());
+      sai_thrift_parse_neighbor_attributes(thrift_attr, attr);
+      status = neighbor_api->set_neighbor_entry_attribute(&neighbor_entry, attr);
+      free(attr);
+      return status;
+  }
+
   sai_thrift_object_id_t sai_thrift_get_cpu_port_id() {
       sai_status_t status;
       sai_attribute_t attr;
@@ -1484,6 +1626,17 @@ public:
           case SAI_SWITCH_ATTR_FDB_AGING_TIME:
               attr->value.u32 = thrift_attr.value.u32;
               break;
+  
+          case SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED:
+              attr->value.u32 = thrift_attr.value.u32;	
+	            break;
+   
+          case SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED:
+              attr->value.u32 = thrift_attr.value.u32;
+              break;
+          
+          default:
+              printf("unknown thrift_attr id: %d\n", thrift_attr.id);
       }
   }
 
@@ -1758,8 +1911,7 @@ public:
       }
 
       attr[0].id = SAI_BRIDGE_PORT_ATTR_TYPE;
-      attr[1].id = SAI_BRIDGE_PORT_ATTR_BRIDGE_ID;
-      attr_count = 2;
+      attr_count = 1;
 
       status = bridge_api->get_bridge_port_attribute(bridge_port_id, attr_count, attr);
       if (status != SAI_STATUS_SUCCESS) {
@@ -1900,6 +2052,79 @@ public:
       sai_thrift_parse_hostif_trap_group_attributes(attr_list, thrift_attr_list);
 
       status = hostif_api->set_hostif_attribute(thrift_hif_id, attr_list);
+      sai_thrift_free_attr(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to set attribute.");
+
+      return status;
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_hostif_table_entry(const std::vector<sai_thrift_attribute_t> &thrift_attr_list) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return SAI_NULL_OBJECT_ID; }
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_hostif_table_entry_attributes(attr_list, thrift_attr_list);
+
+      sai_object_id_t hif_table_entry_oid = 0;
+      status = hostif_api->create_hostif_table_entry(&hif_table_entry_oid, gSwitchId, attr_size, attr_list);
+      sai_thrift_free_attr(attr_list);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return hif_table_entry_oid; }
+
+      SAI_THRIFT_LOG_ERR("Failed to create OID.");
+
+      return SAI_NULL_OBJECT_ID;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_hostif_table_entry(const sai_thrift_object_id_t thrift_hif_table_entry_id) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      status = hostif_api->remove_hostif_table_entry(thrift_hif_table_entry_id);
+
+      if (status == SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_DBG("Exited."); return status; }
+
+      SAI_THRIFT_LOG_ERR("Failed to remove OID.");
+  }
+
+  sai_thrift_status_t sai_thrift_set_hostif_table_entry_attribute(const sai_thrift_object_id_t thrift_hif_table_entry_id, const sai_thrift_attribute_t &thrift_attr) noexcept
+  {
+      SAI_THRIFT_LOG_DBG("Called.");
+
+      sai_hostif_api_t *hostif_api = nullptr;
+      auto status = sai_api_query(SAI_API_HOSTIF, reinterpret_cast<void**>(&hostif_api));
+
+      if (status != SAI_STATUS_SUCCESS)
+      { SAI_THRIFT_LOG_ERR("Failed to get API."); return status; }
+
+      const std::vector<sai_thrift_attribute_t> thrift_attr_list = { thrift_attr };
+
+      sai_attribute_t *attr_list = nullptr;
+      sai_size_t attr_size = thrift_attr_list.size();
+      sai_thrift_alloc_attr(attr_list, attr_size);
+      sai_thrift_parse_hostif_trap_group_attributes(attr_list, thrift_attr_list);
+
+      status = hostif_api->set_hostif_table_entry_attribute(thrift_hif_table_entry_id, attr_list);
       sai_thrift_free_attr(attr_list);
 
       if (status == SAI_STATUS_SUCCESS)
@@ -2121,7 +2346,11 @@ public:
       }
   }
 
-  void sai_thrift_parse_acl_entry_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list) {
+  void sai_thrift_parse_acl_entry_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list, sai_attribute_t *attr_list,
+                                             sai_object_id_t **in_ports_list,
+                                             sai_object_id_t **out_ports_list,
+                                             sai_object_id_t **ingress_mirror_list,
+                                             sai_object_id_t **egress_mirror_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
       for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
@@ -2139,40 +2368,54 @@ public:
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6:
             case SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6:
+                attr_list[i].value.aclfield.enable = attribute.value.aclfield.enable;
                 sai_thrift_string_to_v6_ip(attribute.value.aclfield.data.ip6, attr_list[i].value.aclfield.data.ip6);
                 sai_thrift_string_to_v6_ip(attribute.value.aclfield.mask.ip6, attr_list[i].value.aclfield.mask.ip6);
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_SRC_MAC:
             case SAI_ACL_ENTRY_ATTR_FIELD_DST_MAC:
+                attr_list[i].value.aclfield.enable = attribute.value.aclfield.enable;
                 sai_thrift_string_to_mac(attribute.value.aclfield.data.mac, attr_list[i].value.aclfield.data.mac);
                 sai_thrift_string_to_mac(attribute.value.aclfield.mask.mac, attr_list[i].value.aclfield.mask.mac);
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_SRC_IP:
             case SAI_ACL_ENTRY_ATTR_FIELD_DST_IP:
+                attr_list[i].value.aclfield.enable = attribute.value.aclfield.enable;
                 sai_thrift_string_to_v4_ip(attribute.value.aclfield.data.ip4, &attr_list[i].value.aclfield.data.ip4);
                 sai_thrift_string_to_v4_ip(attribute.value.aclfield.mask.ip4, &attr_list[i].value.aclfield.mask.ip4);
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_IN_PORT:
+                attr_list[i].value.aclfield.enable   = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS:
                 {
                     int count = attribute.value.aclfield.data.objlist.object_id_list.size();
-                    sai_object_id_t *oid_list = NULL;
                     std::vector<sai_thrift_object_id_t>::const_iterator it = attribute.value.aclfield.data.objlist.object_id_list.begin();
-                    oid_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
+                    *in_ports_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
                     for(int j = 0; j < count; j++, it++)
-                        *(oid_list + j) = (sai_object_id_t) *it;
-                    attr_list[i].value.aclfield.data.objlist.list =  oid_list;
+                        (*in_ports_list)[j] = (sai_object_id_t) *it;
+                    attr_list[i].value.aclfield.enable             = attribute.value.aclfield.enable;
+                    attr_list[i].value.aclfield.data.objlist.list  =  *in_ports_list;
                     attr_list[i].value.aclfield.data.objlist.count =  count;
                 }
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORT:
+                attr_list[i].value.aclfield.enable   = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
                 break;
-            /*
             case SAI_ACL_ENTRY_ATTR_FIELD_OUT_PORTS:
-            */
+                {
+                    int count = attribute.value.aclfield.data.objlist.object_id_list.size();
+                    std::vector<sai_thrift_object_id_t>::const_iterator it = attribute.value.aclfield.data.objlist.object_id_list.begin();
+                    *out_ports_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
+                    for(int j = 0; j < count; j++, it++)
+                        (*out_ports_list)[j] = (sai_object_id_t) *it;
+                    attr_list[i].value.aclfield.enable             = attribute.value.aclfield.enable;
+                    attr_list[i].value.aclfield.data.objlist.list  =  *out_ports_list;
+                    attr_list[i].value.aclfield.data.objlist.count =  count;
+                }
+                break;
             case SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_PRI:
             case SAI_ACL_ENTRY_ATTR_FIELD_OUTER_VLAN_CFI:
             case SAI_ACL_ENTRY_ATTR_FIELD_INNER_VLAN_PRI:
@@ -2183,6 +2426,7 @@ public:
             case SAI_ACL_ENTRY_ATTR_FIELD_L4_SRC_PORT:
             case SAI_ACL_ENTRY_ATTR_FIELD_L4_DST_PORT:
             case SAI_ACL_ENTRY_ATTR_FIELD_ETHER_TYPE:
+                attr_list[i].value.aclfield.enable   = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.u16 = attribute.value.aclfield.data.u16;
                 attr_list[i].value.aclfield.mask.u16 = attribute.value.aclfield.mask.u16;
                 break;
@@ -2196,24 +2440,46 @@ public:
             case SAI_ACL_ENTRY_ATTR_FIELD_ACL_IP_TYPE:
             case SAI_ACL_ENTRY_ATTR_FIELD_ACL_IP_FRAG:
             case SAI_ACL_ENTRY_ATTR_FIELD_TC:
+                attr_list[i].value.aclfield.enable  = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.u8 = attribute.value.aclfield.data.u8;
                 attr_list[i].value.aclfield.mask.u8 = attribute.value.aclfield.mask.u8;
                 break;
             case SAI_ACL_ENTRY_ATTR_FIELD_IPV6_FLOW_LABEL:
+                attr_list[i].value.aclfield.enable   = attribute.value.aclfield.enable;
                 attr_list[i].value.aclfield.data.u16 = attribute.value.aclfield.data.u16;
                 attr_list[i].value.aclfield.mask.u16 = attribute.value.aclfield.mask.u16;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_INGRESS:
-                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
+                {
+                    int count = attribute.value.aclaction.parameter.objlist.object_id_list.size();
+                    std::vector<sai_thrift_object_id_t>::const_iterator it = attribute.value.aclaction.parameter.objlist.object_id_list.begin();
+                    *ingress_mirror_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
+                    for(int j = 0; j < count; j++, it++)
+                        (*ingress_mirror_list)[j] = (sai_object_id_t) *it;
+                    attr_list[i].value.aclaction.enable = attribute.value.aclaction.enable;
+                    attr_list[i].value.aclaction.parameter.objlist.list  =  *ingress_mirror_list;
+                    attr_list[i].value.aclaction.parameter.objlist.count =  count;
+                }
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_MIRROR_EGRESS:
-                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
+                {
+                    int count = attribute.value.aclaction.parameter.objlist.object_id_list.size();
+                    std::vector<sai_thrift_object_id_t>::const_iterator it = attribute.value.aclaction.parameter.objlist.object_id_list.begin();
+                    *egress_mirror_list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * count);
+                    for(int j = 0; j < count; j++, it++)
+                        (*egress_mirror_list)[j] = (sai_object_id_t) *it;
+                    attr_list[i].value.aclaction.enable = attribute.value.aclaction.enable;
+                    attr_list[i].value.aclaction.parameter.objlist.list  =  *egress_mirror_list;
+                    attr_list[i].value.aclaction.parameter.objlist.count =  count;
+                }
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_SET_POLICER:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
+                attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
+                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_COUNTER:
-                attr_list[i].value.aclfield.data.oid = attribute.value.aclfield.data.oid;
+                attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
+                attr_list[i].value.aclaction.parameter.oid = attribute.value.aclaction.parameter.oid;
                 break;
             case SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION:
                 attr_list[i].value.aclaction.enable        = attribute.value.aclaction.enable;
@@ -2372,11 +2638,21 @@ public:
           return status;
       }
 
+      sai_object_id_t *in_ports_list = NULL;
+      sai_object_id_t *out_ports_list = NULL;
+      sai_object_id_t *ingress_mirror_list = NULL;
+      sai_object_id_t *egress_mirror_list = NULL;
       sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
-      sai_thrift_parse_acl_entry_attributes(thrift_attr_list, attr_list);
+      sai_thrift_parse_acl_entry_attributes(thrift_attr_list, attr_list,
+                                            &in_ports_list, &out_ports_list,
+                                            &ingress_mirror_list, &egress_mirror_list);
       uint32_t attr_count = thrift_attr_list.size();
       status = acl_api->create_acl_entry(&acl_entry, gSwitchId, attr_count, attr_list);
       free(attr_list);
+      if (in_ports_list) free(in_ports_list);
+      if (out_ports_list) free(out_ports_list);
+      if (ingress_mirror_list) free(ingress_mirror_list);
+      if (egress_mirror_list) free(egress_mirror_list);
       return acl_entry;
   }
 
@@ -2592,6 +2868,25 @@ public:
       return status;
   }
 
+  sai_thrift_status_t sai_thrift_set_mirror_session_attribute(const sai_thrift_object_id_t session_id, const sai_thrift_attribute_t &thrift_attr) {
+      printf("sai_thrift_set_mirror_session\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_mirror_api_t *mirror_api;
+      status = sai_api_query(SAI_API_MIRROR, (void **) &mirror_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      std::vector<sai_thrift_attribute_t> thrift_attr_list;
+      thrift_attr_list.push_back(thrift_attr);
+      sai_attribute_t attr;
+      sai_thrift_parse_mirror_session_attributes(thrift_attr_list, &attr);
+      status = mirror_api->set_mirror_session_attribute((sai_object_id_t)session_id, &attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to set mirror session attributes.");
+      }
+      return status;
+  }
+
   void sai_thrift_parse_policer_attributes(sai_attribute_t *attr_list,
                                            const std::vector<sai_thrift_attribute_t> &thrift_attr_list) const noexcept
   {
@@ -2744,7 +3039,7 @@ public:
 
       sai_thrift_alloc_array(counters, number_of_counters);
 
-      status = policer_api->get_policer_stats(thrift_policer_id, number_of_counters, counter_ids, counters);
+      status = policer_api->get_policer_stats(thrift_policer_id, number_of_counters, (const sai_stat_id_t *)counter_ids, counters);
 
       if (status == SAI_STATUS_SUCCESS)
       {
@@ -2772,7 +3067,7 @@ public:
       auto counter_ids = reinterpret_cast<const sai_policer_stat_t*>(thrift_counter_ids.data());
       sai_size_t number_of_counters = thrift_counter_ids.size();
 
-      status = policer_api->clear_policer_stats(thrift_policer_id, number_of_counters, counter_ids);
+      status = policer_api->clear_policer_stats(thrift_policer_id, number_of_counters, (const sai_stat_id_t *)counter_ids);
 
       if (status == SAI_STATUS_SUCCESS)
       { SAI_THRIFT_LOG_DBG("Exited."); return status; }
@@ -2860,7 +3155,7 @@ public:
 
       status = port_api->get_port_stats((sai_object_id_t) port_id,
                                         number_of_counters,
-                                        counter_ids,
+                                        (const sai_stat_id_t *)counter_ids,
                                         counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -2971,6 +3266,16 @@ public:
       thrift_port_status.id = SAI_PORT_ATTR_OPER_STATUS;
       thrift_port_status.value.s32 =  port_oper_status_attribute.value.s32;
       attr_list.push_back(thrift_port_status);
+
+      sai_attribute_t port_mtu_status_attribute;
+      sai_thrift_attribute_t thrift_port_mtu;
+      port_mtu_status_attribute.id = SAI_PORT_ATTR_MTU;
+      port_api->get_port_attribute(port_id, 1, &port_mtu_status_attribute);
+
+      thrift_attr_list.attr_count = 6;
+      thrift_port_mtu.id = SAI_PORT_ATTR_MTU;
+      thrift_port_mtu.value.u32 =  port_mtu_status_attribute.value.u32;
+      attr_list.push_back(thrift_port_mtu);
   }
 
   void sai_thrift_get_queue_stats(std::vector<int64_t> & thrift_counters,
@@ -2994,7 +3299,7 @@ public:
       status = queue_api->get_queue_stats(
                              (sai_object_id_t) queue_id,
                              number_of_counters,
-                             counter_ids,
+                             (const sai_stat_id_t *)counter_ids,
                              counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -3040,7 +3345,7 @@ public:
       status = queue_api->clear_queue_stats(
                              (sai_object_id_t) queue_id,
                              number_of_counters,
-                             counter_ids);
+                             (const sai_stat_id_t *)counter_ids);
 
       free(counter_ids);
       return status;
@@ -3131,6 +3436,31 @@ public:
     }
   }
 
+  void sai_thrift_get_buffer_pool_stats(std::vector<int64_t> &thrift_counters,
+                                        const sai_thrift_object_id_t buffer_pool_id,
+                                        const std::vector<sai_thrift_buffer_pool_stat_counter_t> &thrift_counter_ids) {
+      printf("sai_thrift_get_buffer_pool_stats\n");
+
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_buffer_api_t *buffer_api;
+      status = sai_api_query(SAI_API_BUFFER, (void **) &buffer_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to query buffer_api, status: %d", status);
+          return;
+      }
+
+      thrift_counters.reserve(thrift_counter_ids.size());
+      thrift_counters.resize(thrift_counter_ids.size(), 0);
+      status = buffer_api->get_buffer_pool_stats((sai_object_id_t)buffer_pool_id,
+                                                 (uint32_t)thrift_counter_ids.size(),
+                                                 (const sai_stat_id_t *)thrift_counter_ids.data(),
+                                                 (uint64_t *)thrift_counters.data());
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to get_buffer_pool_stats, status: %d", status);
+          thrift_counters.resize(0);
+      }
+  }
+
   sai_thrift_status_t sai_thrift_set_priority_group_attribute(const sai_thrift_object_id_t pg_id, const sai_thrift_attribute_t& thrift_attr) {
       printf("sai_thrift_set_priority_group_attribute\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
@@ -3166,7 +3496,7 @@ public:
 
       status = buffer_api->get_ingress_priority_group_stats((sai_object_id_t) pg_id,
                                                             number_of_counters,
-                                                            counter_ids,
+                                                            (const sai_stat_id_t *)counter_ids,
                                                             counters);
 
       for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
@@ -3259,6 +3589,139 @@ public:
       return status;
   }
 
+  void sai_thrift_parse_tunnel_attributes(const std::vector<sai_thrift_attribute_t> & thrift_attr_list,sai_attribute_t *attr_list) {
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+                case SAI_TUNNEL_ATTR_TYPE:
+                        attr_list[i].value.s32 = attribute.value.s32;
+                        break;
+                case SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE :
+                        attr_list[i].value.oid = attribute.value.oid;
+                        break;
+                case SAI_TUNNEL_ATTR_OVERLAY_INTERFACE:
+                        attr_list[i].value.oid =attribute.value.oid;
+                        break;
+                case SAI_TUNNEL_ATTR_ENCAP_SRC_IP:
+                        sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
+                        break;
+                case SAI_TUNNEL_ATTR_ENCAP_TTL_MODE :
+                        attr_list[i].value.u32=attribute.value.u32;
+                        break;
+                case SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE :
+                        attr_list[i].value.u32=attribute.value.u32;
+                        break;
+                case SAI_TUNNEL_ATTR_ENCAP_TTL_VAL :
+                        attr_list[i].value.u8=attribute.value.u8;
+                        break;
+                case SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL :
+                        attr_list[i].value.u8 = attribute.value.u16;
+                        break;
+                case SAI_TUNNEL_ATTR_DECAP_TTL_MODE :
+                        attr_list[i].value.u32=attribute.value.u32;
+                        break;
+                case SAI_TUNNEL_ATTR_DECAP_DSCP_MODE:
+                        attr_list[i].value.u32 = attribute.value.u32;
+                        break;
+                default:
+                        break;
+          }
+      }
+  }
+
+  void sai_thrift_parse_tunnel_entry_attributes(const std::vector<sai_thrift_attribute_t> & thrift_attr_list ,sai_attribute_t *attr_list) {
+    std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+      sai_thrift_attribute_t attribute;
+      for(uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+        switch (attribute.id) {
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_VR_ID:
+                        attr_list[i].value.oid = attribute.value.oid;
+                        break;
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE:
+                        attr_list[i].value.u32 = attribute.value.u32;
+                        break;
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP:
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP:
+                        sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
+                        break;
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TUNNEL_TYPE:
+                        attr_list[i].value.s32=attribute.value.s32;
+                        break;
+               case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_ACTION_TUNNEL_ID:
+                        attr_list[i].value.oid=attribute.value.oid;
+                        break;
+               default:
+                        break;
+          }
+      }
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_tunnel(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      printf("sai_thrift_create_tunnel\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_tunnel_api_t *tunnel_api;
+
+      sai_object_id_t tunnel_id = 0;
+      status = sai_api_query(SAI_API_TUNNEL, (void **) &tunnel_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_tunnel_attributes(thrift_attr_list,attr_list);
+      uint32_t list_count = thrift_attr_list.size();
+      status = tunnel_api->create_tunnel(&tunnel_id, gSwitchId, list_count, attr_list);
+      free(attr_list);
+      return tunnel_id;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_tunnel(const sai_thrift_object_id_t thrift_tunnel_id) {
+      printf("sai_thrift_remove_tunnel\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_tunnel_api_t *tunnel_api;
+      status = sai_api_query(SAI_API_TUNNEL, (void **) &tunnel_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_object_id_t tunnel_id = (sai_object_id_t ) thrift_tunnel_id;
+      status = tunnel_api->remove_tunnel(tunnel_id);
+      return status;
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_tunnel_term_table_entry(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
+      printf("sai_thrift_create_tunnel_term_table_entry\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_tunnel_api_t *tunnel_api;
+      status = sai_api_query(SAI_API_TUNNEL, (void **) &tunnel_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_object_id_t tunnel_entry_id = 0;
+      sai_thrift_parse_tunnel_entry_attributes(thrift_attr_list,attr_list);
+      uint32_t list_count = thrift_attr_list.size();
+      status = tunnel_api->create_tunnel_term_table_entry(&tunnel_entry_id, gSwitchId, list_count, attr_list);
+      free(attr_list);
+      return tunnel_entry_id;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_tunnel_term_table_entry(const sai_thrift_object_id_t thrift_tunnel_entry_id) {
+      printf("sai_thrift_remove_tunnel_term_table_entry\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_tunnel_api_t *tunnel_api;
+      status = sai_api_query(SAI_API_TUNNEL, (void **) &tunnel_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+      sai_object_id_t tunnel_entry_id = (sai_object_id_t ) thrift_tunnel_entry_id;
+      status = tunnel_api->remove_tunnel_term_table_entry(tunnel_entry_id);
+      return status;
+  }
+
   sai_thrift_object_id_t sai_thrift_create_qos_map(const std::vector<sai_thrift_attribute_t> & thrift_attr_list) {
       std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
       sai_thrift_attribute_t attribute;
@@ -3332,6 +3795,230 @@ public:
 
       status = qos_map_api->remove_qos_map((sai_object_id_t) qos_map_id);
       return status;
+  }
+
+  void sai_thrift_parse_debug_counter_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list,
+                                                 sai_attribute_t *attr_list,
+                                                 int32_t **in_debug_counter_ids_list,
+                                                 int32_t **out_debug_counter_ids_list)
+  {
+      printf("sai_thrift_parse_debug_counter_attributes\n");
+
+      sai_thrift_attribute_t                              attribute;
+      std::vector<sai_thrift_attribute_t>::const_iterator it = thrift_attr_list.begin();
+
+      for(uint32_t i = 0; i < thrift_attr_list.size(); ++i, ++it) {
+          attribute = (sai_thrift_attribute_t)*it;
+          attr_list[i].id = attribute.id;
+          switch (attribute.id) {
+              case SAI_DEBUG_COUNTER_ATTR_IN_DROP_REASON_LIST:
+              {
+                  *in_debug_counter_ids_list = (int32_t *) malloc(sizeof(int32_t) * attribute.value.s32list.count);
+                  if (!in_debug_counter_ids_list) {
+                      return;
+                  }
+                  for (uint32_t reason_idx = 0; reason_idx < attribute.value.s32list.s32list.size(); ++reason_idx) {
+                      (*in_debug_counter_ids_list)[reason_idx] = attribute.value.s32list.s32list[reason_idx];
+                  }
+                  attr_list[i].value.s32list.count = attribute.value.s32list.count;
+                  attr_list[i].value.s32list.list = *in_debug_counter_ids_list;
+                  break;
+              }
+              case SAI_DEBUG_COUNTER_ATTR_OUT_DROP_REASON_LIST:
+              {
+                  *out_debug_counter_ids_list = (int32_t *) malloc(sizeof(int32_t) * attribute.value.s32list.count);
+                  if (!out_debug_counter_ids_list) {
+                      return;
+                  }
+                  for (uint32_t reason_idx = 0; reason_idx < attribute.value.s32list.s32list.size(); ++reason_idx) {
+                      (*out_debug_counter_ids_list)[reason_idx] = attribute.value.s32list.s32list[reason_idx];
+                  }
+                  attr_list[i].value.s32list.count = attribute.value.s32list.count;
+                  attr_list[i].value.s32list.list = *out_debug_counter_ids_list;
+                  break;
+              }
+              case SAI_DEBUG_COUNTER_ATTR_TYPE:
+                  attr_list[i].value.s32 = attribute.value.s32;
+                  break;
+              default:
+                  break;
+          }
+      }
+  }
+
+  sai_thrift_object_id_t sai_thrift_create_debug_counter(const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
+  {
+      printf("sai_thrift_create_debug_counter\n");
+
+      sai_debug_counter_api_t    *debug_counter_api;
+      sai_status_t                status                     = SAI_STATUS_SUCCESS;
+      sai_object_id_t             debug_counter_id           = {};
+      int32_t                    *in_debug_counter_ids_list  = NULL;
+      int32_t                    *out_debug_counter_ids_list = NULL;
+
+      status = sai_api_query(SAI_API_DEBUG_COUNTER, (void **) &debug_counter_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return debug_counter_id;
+      }
+
+      sai_attribute_t *attr_list = (sai_attribute_t *) malloc(sizeof(sai_attribute_t) * thrift_attr_list.size());
+      sai_thrift_parse_debug_counter_attributes(thrift_attr_list,
+                                                attr_list,
+                                                &in_debug_counter_ids_list,
+                                                &out_debug_counter_ids_list);
+      uint32_t list_count = thrift_attr_list.size();
+
+      status = debug_counter_api->create_debug_counter(&debug_counter_id,
+                                                        gSwitchId,
+                                                        list_count,
+                                                        attr_list);
+
+      free(attr_list);
+      free(in_debug_counter_ids_list);
+      free(out_debug_counter_ids_list);
+
+      return debug_counter_id;
+  }
+
+  sai_thrift_status_t sai_thrift_remove_debug_counter(const sai_thrift_object_id_t thrift_debug_counter_id)
+  {
+      printf("sai_thrift_remove_debug_counter\n");
+
+      sai_debug_counter_api_t *debug_counter_api;
+      sai_status_t             status = SAI_STATUS_SUCCESS;
+
+      status = sai_api_query(SAI_API_DEBUG_COUNTER, (void **) &debug_counter_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      status = debug_counter_api->remove_debug_counter((sai_object_id_t) thrift_debug_counter_id);
+
+      return status;
+  }
+
+  sai_thrift_status_t sai_thrift_set_debug_counter_attribute(const sai_thrift_object_id_t dc_id, const sai_thrift_attribute_t &thrift_attr)
+  {
+      printf("sai_thrift_set_debug_counter_attribute\n");
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_debug_counter_api_t *debug_counter_api;
+      int32_t                 *in_debug_counter_ids_list  = NULL;
+      int32_t                 *out_debug_counter_ids_list = NULL;
+
+      status = sai_api_query(SAI_API_DEBUG_COUNTER, (void **) &debug_counter_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      std::vector<sai_thrift_attribute_t> thrift_attr_list;
+      thrift_attr_list.push_back(thrift_attr);
+      sai_attribute_t attr;
+      sai_thrift_parse_debug_counter_attributes(thrift_attr_list, &attr, &in_debug_counter_ids_list, &out_debug_counter_ids_list);
+
+      status = debug_counter_api->set_debug_counter_attribute((sai_object_id_t)dc_id, &attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("Failed to set debug counter attribute.");
+      }
+
+      free(in_debug_counter_ids_list);
+      free(out_debug_counter_ids_list);
+
+      return status;
+  }
+
+  sai_thrift_status_t sai_thrift_get_switch_stats(std::vector<int64_t>              &thrift_counters,
+                                            const sai_thrift_object_id_t             switch_id,
+                                            const std::vector<sai_thrift_stat_id_t> &thrift_counter_ids)
+  {
+      printf("sai_thrift_get_switch_stats\n");
+
+      sai_switch_api_t *switch_api;
+      sai_status_t      status = SAI_STATUS_SUCCESS;
+
+      status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          return status;
+      }
+
+      sai_stat_id_t *counter_ids = (sai_stat_id_t *) malloc(sizeof(sai_stat_id_t) * thrift_counter_ids.size());
+      if (!counter_ids) {
+          return SAI_STATUS_NO_MEMORY;
+      }
+      std::vector<int32_t>::const_iterator it = thrift_counter_ids.begin();
+      for(uint32_t i = 0; i < thrift_counter_ids.size(); i++, it++) {
+          counter_ids[i] = (sai_stat_id_t) *it;
+      }
+
+      uint64_t *counters = (uint64_t *) malloc(sizeof(uint64_t) * thrift_counter_ids.size());
+      if(!counters) {
+          free(counter_ids);
+          return SAI_STATUS_NO_MEMORY;
+      }
+      status = switch_api->get_switch_stats((sai_object_id_t) switch_id,
+                                        thrift_counter_ids.size(),
+                                        (const sai_stat_id_t *)counter_ids,
+                                        counters);
+
+      for (uint32_t i = 0; i < thrift_counter_ids.size(); i++) {
+          thrift_counters.push_back(counters[i]);
+      }
+
+      free(counter_ids);
+      free(counters);
+      return status;
+  }
+
+  int64_t sai_thrift_get_switch_stats_by_oid(const sai_thrift_object_id_t thrift_counter_id)
+  {
+      printf("sai_thrift_get_switch_stats_by_oid\n");
+
+      sai_debug_counter_api_t           *debug_counter_api;
+      std::vector<sai_thrift_stat_id_t>  thrift_counter_ids;
+      std::vector<int64_t>               thrift_counters;
+      sai_thrift_stat_id_t               dc_id;
+      sai_status_t                       status     = SAI_STATUS_SUCCESS;
+      sai_attribute_t                    attr       = {};
+      int32_t                            index_base = 0;
+
+      status = sai_api_query(SAI_API_DEBUG_COUNTER, (void **) &debug_counter_api);
+      if (SAI_STATUS_SUCCESS != status) {
+          return 0;
+      }
+
+      attr.id = SAI_DEBUG_COUNTER_ATTR_TYPE;
+      status = debug_counter_api->get_debug_counter_attribute((sai_object_id_t) thrift_counter_id, 1, &attr);
+      if (SAI_STATUS_SUCCESS != status) {
+          return 0;
+      }
+
+      switch(attr.value.s32) {
+      case SAI_DEBUG_COUNTER_TYPE_SWITCH_IN_DROP_REASONS:
+          index_base = SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE;
+          break;
+
+      case SAI_DEBUG_COUNTER_TYPE_SWITCH_OUT_DROP_REASONS:
+          index_base = SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_BASE;
+          break;
+
+      defult:
+          printf("Unsupported debug counter type '%d'\n", attr.value.s32);
+          return 0;
+      }
+
+      attr.id = SAI_DEBUG_COUNTER_ATTR_INDEX;
+      status = debug_counter_api->get_debug_counter_attribute((sai_object_id_t) thrift_counter_id, 1, &attr);
+      if (SAI_STATUS_SUCCESS != status) {
+          return 0;
+      }
+
+      thrift_counter_ids.push_back((sai_thrift_stat_id_t)(index_base + attr.value.s32));
+
+      status = sai_thrift_get_switch_stats(thrift_counters, gSwitchId, thrift_counter_ids);
+      if (SAI_STATUS_SUCCESS != status) {
+          return 0;
+      }
+
+      return thrift_counters[0];
   }
 
     //

@@ -2,7 +2,7 @@ CXX=g++
 SAI_PREFIX = /usr
 SAI_HEADER_DIR ?= $(SAI_PREFIX)/include/sai
 SAI_HEADERS = $(SAI_HEADER_DIR)/sai*.h
-CFLAGS = -I$(SAI_HEADER_DIR) -I. -std=c++11
+CFLAGS = -I$(SAI_HEADER_DIR) -I. -std=c++11 -DFORCE_BOOST_SMART_PTR
 ifeq ($(DEBUG),1)
 CFLAGS += -O0 -ggdb
 endif
@@ -28,7 +28,7 @@ SAIDIR = ./include
 SRC = ./src
 THRIFT = /usr/bin/thrift
 CTYPESGEN = /usr/local/bin/ctypesgen.py
-LIBS = -lthrift -lpthread  -lsai
+LIBS = -lthrift -lpthread -lsai
 SAI_LIBRARY_DIR ?= $(SAI_PREFIX)/lib
 LDFLAGS = -L$(SAI_LIBRARY_DIR) -Wl,-rpath=$(SAI_LIBRARY_DIR)
 CPP_SOURCES = \
@@ -88,6 +88,7 @@ saiserver: $(ODIR)/saiserver.o $(ODIR)/librpcserver.a
 
 install-lib: $(ODIR)/librpcserver.a 
 	$(INSTALL) -D $(ODIR)/librpcserver.a $(DESTDIR)/usr/lib/librpcserver.a
+	$(INSTALL) -D saiserver $(DESTDIR)/usr/sbin/saiserver
 	$(INSTALL) -D $(SRC)/switch_sai_rpc_server.h $(DESTDIR)/usr/include/switch_sai_rpc_server.h
 
 install-pylib: $(PY_SOURCES) $(SAI_PY_HEADERS)

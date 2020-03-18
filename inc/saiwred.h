@@ -266,6 +266,7 @@ typedef enum _sai_wred_attr_t
      *        would use SAI_WRED_ATTR_GREEN_DROP_PROBABILITY value as marking probability.
      *
      * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 100
@@ -311,6 +312,7 @@ typedef enum _sai_wred_attr_t
      *        would use SAI_WRED_ATTR_YELLOW_DROP_PROBABILITY value as marking probability.
      *
      * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 100
@@ -356,6 +358,7 @@ typedef enum _sai_wred_attr_t
      *        would use SAI_WRED_ATTR_RED_DROP_PROBABILITY value as marking probability.
      *
      * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 100
@@ -370,6 +373,7 @@ typedef enum _sai_wred_attr_t
      * default to 0 i.e Maximum buffer size
      *
      * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
@@ -395,6 +399,7 @@ typedef enum _sai_wred_attr_t
      * @brief Marking percentage 0 ~ 100 for color unaware ECT traffic.
      *
      * Valid when SAI_SWITCH_ATTR_ECN_ECT_THRESHOLD_ENABLE == true.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 100

@@ -144,6 +144,7 @@ typedef enum _sai_bridge_port_attr_t
 
     /**
      * @brief Associated Vlan
+     *
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
@@ -180,9 +181,7 @@ typedef enum _sai_bridge_port_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_BRIDGE
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
-     * or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER
-     * or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
      */
     SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
 
@@ -244,6 +243,21 @@ typedef enum _sai_bridge_port_attr_t
      * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
      */
     SAI_BRIDGE_PORT_ATTR_EGRESS_FILTERING,
+
+    /**
+     * @brief Isolation group id
+     *
+     * Packets ingressing on the bridge port should not be forwarded to the
+     * members present in the isolation group.The isolation group type should
+     * SAI_ISOLATION_GROUP_TYPE_BRIDGE_PORT.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ISOLATION_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_BRIDGE_PORT_ATTR_ISOLATION_GROUP,
 
     /**
      * @brief End of attributes
@@ -342,7 +356,7 @@ typedef sai_status_t (*sai_get_bridge_port_attribute_fn)(
 typedef sai_status_t (*sai_get_bridge_port_stats_fn)(
         _In_ sai_object_id_t bridge_port_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_bridge_port_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -359,7 +373,7 @@ typedef sai_status_t (*sai_get_bridge_port_stats_fn)(
 typedef sai_status_t (*sai_get_bridge_port_stats_ext_fn)(
         _In_ sai_object_id_t bridge_port_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_bridge_port_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -375,7 +389,7 @@ typedef sai_status_t (*sai_get_bridge_port_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_bridge_port_stats_fn)(
         _In_ sai_object_id_t bridge_port_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_bridge_port_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Attribute data for #SAI_BRIDGE_ATTR_TYPE
@@ -396,7 +410,13 @@ typedef enum _sai_bridge_type_t
  */
 typedef enum _sai_bridge_flood_control_type_t
 {
-    /** Flood on all sub-ports */
+    /**
+     * @brief Flood on all sub-ports
+     *
+     * When setting sub-ports to broadcast or unknown multicast flood, it also
+     * includes flooding to the router. When setting sub-ports to unknown
+     * unicast flood, it does not include flooding to the router
+     */
     SAI_BRIDGE_FLOOD_CONTROL_TYPE_SUB_PORTS,
 
     /** Disable flooding */
@@ -404,6 +424,14 @@ typedef enum _sai_bridge_flood_control_type_t
 
     /** Flood on the L2MC group */
     SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP,
+
+    /**
+     * @brief Flood on all sub-ports and L2MC group
+     *
+     * Flood on all sub-ports, without the router
+     * In addition, flood on the supplied L2MC group
+     */
+    SAI_BRIDGE_FLOOD_CONTROL_TYPE_COMBINED
 
 } sai_bridge_flood_control_type_t;
 
@@ -478,8 +506,7 @@ typedef enum _sai_bridge_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * @validonly SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE == SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP or SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE == SAI_BRIDGE_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_BRIDGE_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
 
@@ -507,8 +534,7 @@ typedef enum _sai_bridge_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * @validonly SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE == SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP or SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE == SAI_BRIDGE_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_BRIDGE_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
 
@@ -536,8 +562,7 @@ typedef enum _sai_bridge_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
-     * SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP and SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D
+     * @validonly SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE == SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP or SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE == SAI_BRIDGE_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
 
@@ -638,7 +663,7 @@ typedef sai_status_t (*sai_get_bridge_attribute_fn)(
 typedef sai_status_t (*sai_get_bridge_stats_fn)(
         _In_ sai_object_id_t bridge_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_bridge_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters);
 
 /**
@@ -655,7 +680,7 @@ typedef sai_status_t (*sai_get_bridge_stats_fn)(
 typedef sai_status_t (*sai_get_bridge_stats_ext_fn)(
         _In_ sai_object_id_t bridge_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_bridge_stat_t *counter_ids,
+        _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters);
 
@@ -671,7 +696,7 @@ typedef sai_status_t (*sai_get_bridge_stats_ext_fn)(
 typedef sai_status_t (*sai_clear_bridge_stats_fn)(
         _In_ sai_object_id_t bridge_id,
         _In_ uint32_t number_of_counters,
-        _In_ const sai_bridge_stat_t *counter_ids);
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Bridge methods table retrieved with sai_api_query()

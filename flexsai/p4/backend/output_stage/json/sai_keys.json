@@ -1,0 +1,30 @@
+{
+    "INGRESS_PORT": {
+        "sai_type": "sai_object_id_t",
+        "sai_object_type": "SAI_OBJECT_TYPE_PORT",
+        "sai_name": "in_port"
+    },
+    "EGRESS_PORT": {
+        "sai_type": "sai_object_id_t",
+        "sai_object_type": "SAI_OBJECT_TYPE_PORT",
+        "sai_name": "out_port"
+    },
+    "INGRESS_RIF": {
+        "sai_type": "sai_object_id_t",
+        "sai_object_type": "SAI_OBJECT_TYPE_ROUTER_INTERFACE",
+        "sai_name": "in_rif"
+    },
+    "EGRESS_RIF": {
+        "sai_type": "sai_object_id_t",
+        "sai_object_type": "SAI_OBJECT_TYPE_ROUTER_INTERFACE",
+        "sai_name": "out_rif"
+    },
+    "DST_IP_ADDR": {
+        "sai_name": "dst_ip",
+        "sai_type": "sai_ip_address_t"
+    },
+    "METADATA_REG": {
+        "sai_type": "sai_uint16_t",
+        "sai_name": "metadata_reg"
+    }
+}

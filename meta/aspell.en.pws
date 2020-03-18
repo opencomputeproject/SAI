@@ -1,4 +1,5 @@
 personal_ws-1.1 en 0
+AES
 APIs
 AUTONEG
 Callee
@@ -13,11 +14,14 @@ Facebook
 HQOS
 HQoS
 Hostif
+InPktsDelayed
+InPktsLate
 InSegment
 Inservice
 LAGs
 Linux
 Loopback
+MACsec
 MCAST
 MERCHANTABILITY
 Marvell
@@ -35,7 +39,9 @@ PGs
 PHY
 PVID
 Policer
+SAs
 Samplepacket
+SecTAG
 SerDes
 Src
 TLV
@@ -50,6 +56,7 @@ Vlan
 Wakeup
 Wildcard
 allownull
+an
 apache
 attr
 attrvalue
@@ -69,6 +76,7 @@ egressing
 encap
 enum
 extraparam
+ffff
 fprintf
 functionalities
 hmac
@@ -77,6 +85,7 @@ ingressing
 inout
 isprint
 isvlan
+isresourcetype
 json
 linklocal
 lookup
@@ -93,9 +102,11 @@ multi
 multicast
 netdev
 netdevs
+netlink
 nexthop
 nexthopgroup
 objlist
+offsetof
 opcode
 optimizations
 outsegment
@@ -103,16 +114,19 @@ param
 passparam
 pkts
 policer
+routable
 rv
 rx
 sai
 samplepacket
+sizeof
 src
 stderr
 struct
 sublayer
 subnet
 subnets
+timespec
 timestamp
 tx
 uBurst
@@ -127,3 +141,10 @@ warmboot
 watchlist
 wildcard
 www
+pre
+serdes
+idriver
+ipredriver
+precursor
+postcursor
+maincursor

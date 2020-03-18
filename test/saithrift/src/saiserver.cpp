@@ -37,6 +37,8 @@ sai_switch_api_t* sai_switch_api;
 std::map<std::string, std::string> gProfileMap;
 std::map<std::set<int>, std::string> gPortMap;
 
+std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>>gFdbMap;
+
 sai_object_id_t gSwitchId; ///< SAI switch global object ID.
 
 void on_switch_state_change(_In_ sai_object_id_t switch_id,
@@ -47,7 +49,79 @@ void on_switch_state_change(_In_ sai_object_id_t switch_id,
 void on_fdb_event(_In_ uint32_t count,
                   _In_ sai_fdb_event_notification_data_t *data)
 {
-}
+    sai_fdb_event_t event_type;
+    sai_fdb_entry_t fdb_entry;
+    uint32_t attr_count;
+    sai_attribute_t *attr;
+    sai_object_id_t bv_id;
+    sai_object_id_t bport_id;
+    
+    attr = data->attr;
+    event_type = data->event_type;
+    fdb_entry = data->fdb_entry;
+    bv_id = fdb_entry.bv_id;
+    attr_count = data ->attr_count;
+    
+    for (uint32_t i = 0; i < attr_count; i++)
+    {
+        if (attr[i].id == SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID)
+            bport_id = attr[i].value.oid;
+    }
+           
+    sai_fdb_entry_t fdb_m;
+    sai_object_id_t b_id;
+      
+    switch (event_type)
+    {   
+        case SAI_FDB_EVENT_LEARNED:
+            gFdbMap.emplace_back(std::pair<sai_fdb_entry_t, sai_object_id_t>(fdb_entry,bport_id));
+            break;
+        case SAI_FDB_EVENT_FLUSHED: 
+            if (bv_id == 0 && bport_id == 0)
+                gFdbMap.clear();
+            else
+            {
+                for (auto it = gFdbMap.begin(); it != gFdbMap.end(); it++)
+                {
+                    fdb_m = it->first;
+                    b_id = it->second; 				
+	            
+                    if (bport_id == 0 && bv_id == fdb_m.bv_id)
+                        it = gFdbMap.erase(it);
+                    else if (bv_id == 0 && bport_id == b_id)
+                        it = gFdbMap.erase(it);
+                    else if (bv_id == fdb_m.bv_id && bport_id == b_id)
+                        it = gFdbMap.erase(it);
+                }
+            }
+            break;
+        case SAI_FDB_EVENT_MOVE:
+            for (auto it = gFdbMap.begin(); it != gFdbMap.end(); it++)
+            {
+                fdb_m = it->first;
+                b_id = it->second; 
+                int n = memcmp ( fdb_entry.mac_address, fdb_m.mac_address, 6);
+		    
+                if (n == 0 && bv_id == fdb_m.bv_id)
+                    it->second = bport_id;
+            }
+            break;  
+        case SAI_FDB_EVENT_AGED:
+            for (auto it = gFdbMap.begin(); it != gFdbMap.end(); it++)
+            {
+                fdb_m = it->first;
+                b_id = it->second; 
+                int n = memcmp ( fdb_entry.mac_address, fdb_m.mac_address, 6);  
+                
+                if (n == 0 && bv_id == fdb_m.bv_id)
+                    it = gFdbMap.erase(it);    	
+            }
+            break;
+        default:
+            printf("unknown event");
+            break;
+    }
+}     
 
 void on_port_state_change(_In_ uint32_t count,
                           _In_ sai_port_oper_status_notification_t *data)
@@ -359,24 +433,29 @@ main(int argc, char* argv[])
 
     start_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
 
-    sai_log_set(SAI_API_SWITCH, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_BRIDGE, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_FDB, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_PORT, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_VLAN, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_ROUTE, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_VIRTUAL_ROUTER, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_ROUTER_INTERFACE, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_NEXT_HOP, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_NEXT_HOP_GROUP, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_NEIGHBOR, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_ACL, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_MIRROR, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_LAG, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_BUFFER, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_POLICER, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_WRED, SAI_LOG_LEVEL_NOTICE);
-    sai_log_set(SAI_API_QOS_MAP, SAI_LOG_LEVEL_NOTICE);
+    const sai_log_level_t log_level = SAI_LOG_LEVEL_NOTICE;
+
+    sai_log_set(SAI_API_ACL, log_level);
+    sai_log_set(SAI_API_BRIDGE, log_level);
+    sai_log_set(SAI_API_BUFFER, log_level);
+    sai_log_set(SAI_API_DEBUG_COUNTER, log_level);
+    sai_log_set(SAI_API_FDB, log_level);
+    sai_log_set(SAI_API_HOSTIF, log_level);
+    sai_log_set(SAI_API_LAG, log_level);
+    sai_log_set(SAI_API_MIRROR, log_level);
+    sai_log_set(SAI_API_NEIGHBOR, log_level);
+    sai_log_set(SAI_API_NEXT_HOP, log_level);
+    sai_log_set(SAI_API_NEXT_HOP_GROUP, log_level);
+    sai_log_set(SAI_API_POLICER, log_level);
+    sai_log_set(SAI_API_PORT, log_level);
+    sai_log_set(SAI_API_QOS_MAP, log_level);
+    sai_log_set(SAI_API_ROUTE, log_level);
+    sai_log_set(SAI_API_ROUTER_INTERFACE, log_level);
+    sai_log_set(SAI_API_SWITCH, log_level);
+    sai_log_set(SAI_API_TUNNEL, log_level);
+    sai_log_set(SAI_API_VIRTUAL_ROUTER, log_level);
+    sai_log_set(SAI_API_VLAN, log_level);
+    sai_log_set(SAI_API_WRED, log_level);
 
     while (1) pause();
 

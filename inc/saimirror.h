@@ -93,11 +93,12 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_TYPE = SAI_MIRROR_SESSION_ATTR_START,
 
     /**
-     * @brief Destination/Analyzer/Monitor Port
+     * @brief Destination/Analyzer/Monitor Port.
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
+     * @condition SAI_MIRROR_SESSION_ATTR_MONITOR_PORTLIST_VALID == false
      */
     SAI_MIRROR_SESSION_ATTR_MONITOR_PORT,
 
@@ -162,9 +163,10 @@ typedef enum _sai_mirror_session_attr_t
      * Valid for RSPAN or ERSPAN with valid Vlan header.
      *
      * @type sai_uint16_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags CREATE_AND_SET
      * @isvlan true
-     * @condition SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
+     * @default 0
+     * @validonly SAI_MIRROR_SESSION_ATTR_VLAN_HEADER_VALID == true or SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_VLAN_ID,
 
@@ -201,7 +203,7 @@ typedef enum _sai_mirror_session_attr_t
      * @brief Vlan header valid
      *
      * @type bool
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
@@ -288,6 +290,36 @@ typedef enum _sai_mirror_session_attr_t
      * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
      */
     SAI_MIRROR_SESSION_ATTR_GRE_PROTOCOL_TYPE,
+
+    /**
+     * @brief Monitor port list is valid
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_MIRROR_SESSION_ATTR_MONITOR_PORTLIST_VALID,
+
+    /**
+     * @brief Destination/Analyzer/Monitor Port List.
+     *
+     * @type sai_object_list_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
+     * @condition SAI_MIRROR_SESSION_ATTR_MONITOR_PORTLIST_VALID == true
+     */
+    SAI_MIRROR_SESSION_ATTR_MONITOR_PORTLIST,
+
+    /**
+     * @brief Mirror session policer object ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_MIRROR_SESSION_ATTR_POLICER,
 
     /**
      * @brief End of attributes

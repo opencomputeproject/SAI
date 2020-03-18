@@ -41,7 +41,6 @@ WARNINGS = \
 	-Winit-self \
 	-Winline \
 	-Winvalid-pch \
-	-Wlong-long \
 	-Wmissing-field-initializers \
 	-Wmissing-format-attribute \
 	-Wmissing-include-dirs \
@@ -63,6 +62,10 @@ WARNINGS = \
 	-Wvariadic-macros \
 	-Wwrite-strings
 
+BINS = doxygen perl dot
+
+$(foreach bin,$(BINS),$(if $(shell which $(bin)),,$(error "Missing $(bin) in PATH")))
+
 CFLAGS += -I../inc -I../experimental $(WARNINGS)
 
 DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h)
@@ -73,6 +76,7 @@ OBJ = saimetadata.o saimetadatautils.o saiserialize.o
 SYMBOLS = $(OBJ:=.symbols)
 
 all: saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
+	./checkheaders.pl ../inc ../inc
 	./saimetadatatest >/dev/null
 	./saiserializetest >/dev/null
 	./saisanitycheck
@@ -86,7 +90,7 @@ xml: $(DEPS) Doxyfile $(CONSTHEADERS)
 EXTRA = acronyms.txt aspell.en.pws *.pm *.cap
 
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
-	perl parse.pl
+	perl -I. parse.pl
 
 HEADERS = saimetadata.h $(CONSTHEADERS)
 

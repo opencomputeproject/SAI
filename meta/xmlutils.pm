@@ -28,7 +28,6 @@ package xmlutils;
 use strict;
 use warnings;
 use diagnostics;
-use Getopt::Std;
 use Data::Dumper;
 use utils;
 
@@ -126,6 +125,7 @@ sub ProcessTag
         }
 
         next if $line eq "";
+        next if $line eq "<linebreak/>";
 
         if ($line =~ m!^<(\w+)(\s+[^<>]+[^/])?>$!)
         {
@@ -159,7 +159,9 @@ sub ReadXml
         return $xs->XMLin($filename, KeyAttr => { }, ForceArray => 1);
     }
 
-    open(FH, '<', $filename) or die "Could not open file '$filename' $!";
+    my ($package, $file, $line, $sub) = caller(3);
+
+    open(FH, '<', $filename) or die "Could not open file '$filename' $!\n called from ${file}::${sub}:$line";
 
     my @values = ();
     my %ROOT = ();
