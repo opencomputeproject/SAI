@@ -410,6 +410,11 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is MACsec SALT.
      */
     SAI_ATTR_VALUE_TYPE_MACSEC_SALT,
+
+    /**
+     * @brief Attribute value is system port config list.
+     */
+    SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST,
 } sai_attr_value_type_t;
 
 /**

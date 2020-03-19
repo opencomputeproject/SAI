@@ -941,6 +941,28 @@ typedef struct _sai_port_eye_values_list_t
     sai_port_lane_eye_values_t *list;
 } sai_port_eye_values_list_t;
 
+typedef struct _sai_system_port_config_t
+{
+    uint32_t port_id;
+    uint32_t attached_switch_id;
+    uint32_t attached_core_index;
+    uint32_t attached_core_port_index;
+    uint32_t speed;
+    uint32_t num_voq;
+    uint32_t base_voq_index;
+
+} sai_system_port_config_t;
+
+typedef struct _sai_system_port_config_list_t
+{
+    /** Number of entries in the list */
+    uint32_t count;
+
+    /** System port list */
+    sai_system_port_config_t *list;
+
+} sai_system_port_config_list_t;
+
 /**
  * @brief Data Type
  *
@@ -1088,6 +1110,10 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SALT */
     sai_macsec_salt_t macsecsalt;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST */
+    sai_system_port_config_list_t systemportconfiglist;
+
 } sai_attribute_value_t;
 
 /**

@@ -36,6 +36,15 @@ typedef enum _sai_switch_attr_extensions_t
 {
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START = SAI_SWITCH_ATTR_END,
 
+    /**
+     * @brief System port config list.
+     *
+     * @type sai_system_port_config_list_t
+     * @flags CREATE_ONLY
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_SYSTEM_PORT_CONFIG_LIST = SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START,
+
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_END
 
 } sai_switch_attr_extensions_t;
