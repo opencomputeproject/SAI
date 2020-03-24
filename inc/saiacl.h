@@ -1133,6 +1133,42 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_COUNTER,
 
     /**
+     * @brief an index into mpls label stack (0 is top-of-the-stack)
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_MPLS_LABEL_INDEX,
+
+    /**
+     * @brief label value of mpls label indexed by index
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_MPLS_LABEL_LABEL,
+
+    /**
+     * @brief TTL value of mpls label indexed by index
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_MPLS_LABEL_TTL,
+
+    /**
+     * @brief EXP value of mpls label indexed by index
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_MPLS_LABEL_EXP,
+
+    /**
      * @brief End of ACL Table attributes
      */
     SAI_ACL_TABLE_ATTR_END,
@@ -2335,6 +2371,42 @@ typedef enum _sai_acl_entry_attr_t
      * @brief End of Rule Actions
      */
     SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_MACSEC_FLOW,
+
+    /**
+     * @brief Label index into label stack
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ACL_ENTRY_ATTR_MPLS_LABEL_INDEX,
+
+    /**
+     * @brief Label value of indexed label
+     *
+     * @type sai_label_id_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ACL_ENTRY_ATTR_MPLS_LABEL_VALUE,
+
+    /**
+     * @brief TTL value of indexed label
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ACL_ENTRY_ATTR_MPLS_LABEL_TTL,
+
+    /**
+     * @brief EXP value of indexed label
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ACL_ENTRY_ATTR_MPLS_LABEL_EXP,
 
     /**
      * @brief End of ACL Entry attributes

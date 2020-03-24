@@ -230,6 +230,28 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_DECREMENT_TTL,
 
     /**
+     * @brief Encap tunnel-id for MPLS PUSH
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS
+     * @allownull
+     */
+    SAI_NEXT_HOP_ATTR_MPLS_ENCAP_TUNNEL_ID,
+
+    /**
+     * @brief Decap tunnel-id for MPLS PHP
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP
+     * @allownull
+     */
+    SAI_NEXT_HOP_ATTR_MPLS_DECAP_TUNNEL_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_ATTR_END,

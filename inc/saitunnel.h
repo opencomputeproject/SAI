@@ -386,6 +386,35 @@ typedef enum _sai_tunnel_dscp_mode_t
 } sai_tunnel_dscp_mode_t;
 
 /**
+ * @brief Defines tunnel EXP mode
+ */
+typedef enum _sai_tunnel_exp_mode_t
+{
+    /**
+     * @brief The uniform model
+     *
+     * Where the traffic class and drop precedence is preserved end-to-end by
+     * either copying into the outer header on encapsulation or applying qos map
+     * and either copying from the outer header or applying qos map on decapsulation.
+     * This is applicable for inner IP or MPLS packets.
+     */
+    SAI_TUNNEL_EXP_MODE_UNIFORM_MODEL,
+
+    /**
+     * @brief The pipe model
+     *
+     * Where the outer header is independent of that in the inner header so
+     * it hides the EXP field of the inner header from any interaction
+     * with nodes along the tunnel.
+     *
+     * EXP field is user-defined for outer header on encapsulation. EXP
+     * field of inner header remains the same on decapsulation.
+     */
+    SAI_TUNNEL_EXP_MODE_PIPE_MODEL
+
+} sai_tunnel_exp_mode_t;
+
+/**
  * @brief Defines tunnel encap ECN mode
  */
 typedef enum _sai_tunnel_encap_ecn_mode_t
@@ -646,6 +675,36 @@ typedef enum _sai_tunnel_attr_t
      * @objects SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY
      */
     SAI_TUNNEL_ATTR_TERM_TABLE_ENTRY_LIST,
+
+    /**
+     * @brief Tunnel EXP mode (pipe or uniform model)
+     *
+     * @type sai_tunnel_exp_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TUNNEL_EXP_MODE_UNIFORM_MODEL
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_MPLS
+     */
+    SAI_TUNNEL_ATTR_ENCAP_EXP_MODE,
+
+    /**
+     * @brief Tunnel EXP value (3 bits)
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_ATTR_ENCAP_EXP_MODE == SAI_TUNNEL_EXP_MODE_PIPE_MODEL
+     */
+    SAI_TUNNEL_ATTR_ENCAP_EXP_VAL,
+
+    /**
+     * @brief Tunnel EXP mode (pipe or uniform model)
+     *
+     * Default SAI_TUNNEL_EXP_MODE_UNIFORM_MODEL
+     *
+     * @type sai_tunnel_exp_mode_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_MPLS
+     */
+    SAI_TUNNEL_ATTR_DECAP_EXP_MODE,
 
     /**
      * @brief End of attributes
