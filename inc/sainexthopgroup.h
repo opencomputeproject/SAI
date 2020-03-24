@@ -134,6 +134,32 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_COUNTER_ID,
 
     /**
+     * @brief Configured group size
+     *
+     * Maximum desired number of members. The real size should
+     * be quieried from SAI_NEXT_HOP_GROUP_ATTR_ACTUAL_SIZE
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default internal
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_ECMP
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_CONFIGURED_SIZE,
+
+    /**
+     * @brief Real group size
+     *
+     * Can be different (greater or equal) from the configured
+     * size. Application must use this value to know the exact size
+     * of the group.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_ECMP
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
@@ -222,16 +248,12 @@ typedef enum _sai_next_hop_group_member_attr_t
     /**
      * @brief Object index to enforce the order by application.
      *
-     * Index specifying the member's order. The indeces in the group don't have
-     * to be consecutive, but must be unique. The driver will map the index to
-     * a relative internal order. The value -1 means that the driver can assign
-     * any index. It is allowed to either set index for each group member, or
-     * leave it to the driver, but not both, for the sake of simplicity.
+     * Index specifying the member's order. Optional.
      * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_ECMP.
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY
-     * @default 0xffffffff
+     * @default internal
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_INDEX,
 
