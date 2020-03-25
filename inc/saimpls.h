@@ -101,7 +101,7 @@ typedef enum _sai_inseg_entry_attr_t
     *
     * @type sai_cos_t
     * @flags CREATE_AND_SET
-    * #condition SAI_INSEG_ENTRY_ATTR_USE_EXP_TO_TC_MAP == false
+    * @condition SAI_INSEG_ENTRY_ATTR_USE_EXP_TO_TC_MAP == false
     * @default 0
     */
    SAI_INSEG_ENTRY_ATTR_QOS_TC,
