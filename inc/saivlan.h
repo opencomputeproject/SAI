@@ -202,6 +202,20 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_NON_IP_MCAST_OUTPUT_GROUP_ID,
 
     /**
+     * @brief List of trap objects associated with this vlan
+     *
+     * When set, these traps are associated with this vlan. These are in addition
+     * to other traps that are common to all vlan.
+     *
+     * @type sai_object_list_t
+     *
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP
+     * @default empty
+     */
+    SAI_VLAN_ATTR_TRAP_LIST,
+
+    /**
      * @brief L2MC Group ID that unknown IPv4 mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown IPv4 multicast packets.
