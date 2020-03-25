@@ -61,6 +61,7 @@ L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
 LPM - Longest Prefix Match
+LSP - Label Switched Path
 MAC - Medium Access Control
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
@@ -74,6 +75,7 @@ PAM4 - Pulse Amplitude Modulation 4-level
 PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
 PFC - Priority Flow Control
+PHP - Penultimate Hop Pop
 PIR - Peak Information Rate
 PN - Packet Number
 PTP - Precision time protocol

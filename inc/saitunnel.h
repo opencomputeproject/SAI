@@ -394,8 +394,8 @@ typedef enum _sai_tunnel_exp_mode_t
      * @brief The uniform model
      *
      * Where the traffic class and drop precedence is preserved end-to-end by
-     * either copying into the outer header on encapsulation or applying qos map
-     * and either copying from the outer header or applying qos map on decapsulation.
+     * either copying into the outer header on encapsulation or applying QOS map
+     * and either copying from the outer header or applying QOS map on decapsulation.
      * This is applicable for inner IP or MPLS packets.
      */
     SAI_TUNNEL_EXP_MODE_UNIFORM_MODEL,
@@ -681,8 +681,7 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_tunnel_exp_mode_t
      * @flags CREATE_ONLY
-     * @default SAI_TUNNEL_EXP_MODE_UNIFORM_MODEL
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_MPLS
+     * @default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
      */
     SAI_TUNNEL_ATTR_ENCAP_EXP_MODE,
 
@@ -691,7 +690,7 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_ATTR_ENCAP_EXP_MODE == SAI_TUNNEL_EXP_MODE_PIPE_MODEL
+     * @condition SAI_TUNNEL_ATTR_ENCAP_EXP_MODE == SAI_TUNNEL_EXP_MODE_PIPE_MODEL and SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_MPLS
      */
     SAI_TUNNEL_ATTR_ENCAP_EXP_VAL,
 
@@ -701,8 +700,8 @@ typedef enum _sai_tunnel_attr_t
      * Default SAI_TUNNEL_EXP_MODE_UNIFORM_MODEL
      *
      * @type sai_tunnel_exp_mode_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_MPLS
+     * @flags CREATE_ONLY
+     * @default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
      */
     SAI_TUNNEL_ATTR_DECAP_EXP_MODE,
 

@@ -1451,7 +1451,6 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_DECREMENT_TTL,
 
-
     /**
      * @brief Enable EXP -> TC MAP on port
      *
@@ -1498,7 +1497,6 @@ typedef enum _sai_port_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_EXP_MAP,
-
 
     /**
      * @brief End of attributes

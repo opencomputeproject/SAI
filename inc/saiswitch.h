@@ -2127,7 +2127,6 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_QOS_EXP_TO_COLOR_MAP,
 
-
     /**
      * @brief Enable TC + COLOR -> EXP MAP
      *

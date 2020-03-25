@@ -1133,7 +1133,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_COUNTER,
 
     /**
-     * @brief an index into mpls label stack (0 is top-of-the-stack)
+     * @brief An index into MPLS label stack (0 is top-of-the-stack)
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -1142,7 +1142,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_MPLS_LABEL_INDEX,
 
     /**
-     * @brief label value of mpls label indexed by index
+     * @brief Label value of MPLS label indexed by index
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -1151,7 +1151,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_MPLS_LABEL_LABEL,
 
     /**
-     * @brief TTL value of mpls label indexed by index
+     * @brief TTL value of MPLS label indexed by index
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -1160,7 +1160,7 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_MPLS_LABEL_TTL,
 
     /**
-     * @brief EXP value of mpls label indexed by index
+     * @brief EXP value of MPLS label indexed by index
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -2384,7 +2384,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Label value of indexed label
      *
-     * @type sai_label_id_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
