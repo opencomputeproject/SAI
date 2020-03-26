@@ -202,6 +202,19 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_UNKNOWN_NON_IP_MCAST_OUTPUT_GROUP_ID,
 
     /**
+     * @brief List of trap objects associated with this vlan
+     *
+     * When set, these traps are associated with this vlan. These are in addition
+     * to other traps that are common to all vlan.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP
+     * @default empty
+     */
+    SAI_VLAN_ATTR_TRAP_LIST,
+
+    /**
      * @brief L2MC Group ID that unknown IPv4 mcast packets forwarded to
      *
      * Indicating the output ports/LAGs for unknown IPv4 multicast packets.
@@ -319,10 +332,7 @@ typedef enum _sai_vlan_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or
-     * SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
+     * @validonly SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE == SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_CONTROL_TYPE == SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_VLAN_ATTR_UNKNOWN_UNICAST_FLOOD_GROUP,
 
@@ -349,10 +359,7 @@ typedef enum _sai_vlan_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or
-     * SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE ==
-     * SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
+     * @validonly SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE == SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_CONTROL_TYPE == SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_VLAN_ATTR_UNKNOWN_MULTICAST_FLOOD_GROUP,
 
@@ -379,10 +386,7 @@ typedef enum _sai_vlan_attr_t
      * @objects SAI_OBJECT_TYPE_L2MC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
-     * SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or
-     * SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE ==
-     * SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
+     * @validonly SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE == SAI_VLAN_FLOOD_CONTROL_TYPE_L2MC_GROUP or SAI_VLAN_ATTR_BROADCAST_FLOOD_CONTROL_TYPE == SAI_VLAN_FLOOD_CONTROL_TYPE_COMBINED
      */
     SAI_VLAN_ATTR_BROADCAST_FLOOD_GROUP,
 
