@@ -1094,6 +1094,15 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_IPV6_NEXT_HEADER,
 
     /**
+     * @brief GRE key
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_GRE_KEY,
+
+    /**
      * @brief TAM INT type
      *
      * @type bool
@@ -1820,6 +1829,15 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_IPV6_NEXT_HEADER,
+
+    /**
+     * @brief GRE Key (32 bits)
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_GRE_KEY,
 
     /**
      * @brief TAM INT type
