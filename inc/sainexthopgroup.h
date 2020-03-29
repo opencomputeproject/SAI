@@ -41,6 +41,15 @@ typedef enum _sai_next_hop_group_type_t
     /** Next hop group is ECMP */
     SAI_NEXT_HOP_GROUP_TYPE_ECMP,
 
+    /** Next hop group is ECMP, with a dynamic number of members, unordered */
+    SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP = SAI_NEXT_HOP_GROUP_TYPE_ECMP,
+
+    /** Next hop group is ECMP, with a dynamic number of members, sorted by priority */
+    SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP,
+
+    /** Next hop group is ECMP, with a fixed, usually large, number of members, sorted by index */
+    SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP,
+
     /** Next hop protection group. Contains primary and backup next hops. */
     SAI_NEXT_HOP_GROUP_TYPE_PROTECTION,
 
@@ -142,7 +151,8 @@ typedef enum _sai_next_hop_group_attr_t
      * @type sai_uint32_t
      * @flags CREATE_ONLY
      * @default internal
-     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_ECMP
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP
+     * @isresourcetype true
      */
     SAI_NEXT_HOP_GROUP_ATTR_CONFIGURED_SIZE,
 
@@ -155,7 +165,7 @@ typedef enum _sai_next_hop_group_attr_t
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
-     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_ECMP
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP
      */
     SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE,
 
@@ -246,16 +256,28 @@ typedef enum _sai_next_hop_group_member_attr_t
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT,
 
     /**
-     * @brief Object index to enforce the order by application.
+     * @brief Object index in the fine grain ECMP table.
      *
-     * Index specifying the member's order. Optional.
-     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_ECMP.
+     * Index specifying the member's order.
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP.
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY
      * @default internal
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_INDEX,
+
+    /**
+     * @brief Object priority for enforcing the members' order.
+     *
+     * Index specifying the member's order.
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PRIORITY,
 
     /**
      * @brief End of attributes
