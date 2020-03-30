@@ -82,6 +82,31 @@ typedef enum _sai_inseg_entry_attr_t
     SAI_INSEG_ENTRY_ATTR_NEXT_HOP_ID,
 
     /**
+     * @brief Use TC for a label.
+     *
+     * Associate TC using SAI_SWITCH_ATTR_QOS_EXP_TO_TC_MAP or SAI_PORT_ATTR_QOS_EXP_TO_TC_MAP.
+     * Mainly used for E-LSP kind of MPLS tunnels, where EXP infers both TC and COLOR
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_INSEG_ENTRY_ATTR_USE_EXP_TO_TC_MAP,
+
+    /**
+     * @brief TC for a label.
+     *
+     * Associate TC by a label.
+     * Mainly used for L-LSP kind of MPLS tunnels, where label infers TC and EXP infers COLOR
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_INSEG_ENTRY_ATTR_USE_EXP_TO_TC_MAP == false
+     */
+    SAI_INSEG_ENTRY_ATTR_QOS_TC,
+
+    /**
      * @brief End of attributes
      */
     SAI_INSEG_ENTRY_ATTR_END,
