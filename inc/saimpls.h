@@ -107,6 +107,17 @@ typedef enum _sai_inseg_entry_attr_t
     SAI_INSEG_ENTRY_ATTR_QOS_TC,
 
     /**
+     * @brief Decap tunnel-id for MPLS PHP.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TUNNEL
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_INSEG_ENTRY_ATTR_DECAP_TUNNEL_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_INSEG_ENTRY_ATTR_END,
