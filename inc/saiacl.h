@@ -951,6 +951,42 @@ typedef enum _sai_acl_table_attr_t
      */
     SAI_ACL_TABLE_ATTR_FIELD_MACSEC_SCI,
 
+    /**
+     * @brief A list of indexes into MPLS label stack (0 is top-of-the-stack)
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_MPLS_LABEL_INDEX_LIST,
+
+    /**
+     * @brief A list of label values of MPLS labels indexed by list of indexes into MPLS label stack
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_MPLS_LABEL_LABEL_LIST,
+
+    /**
+     * @brief A list of TTL values of MPLS labels indexed by list of indexes into MPLS label stack
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_MPLS_LABEL_TTL_LIST,
+
+    /**
+     * @brief A list of EXP values of MPLS labels indexed by list of indexes into MPLS label stack
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_MPLS_LABEL_EXP_LIST,
+
     /* User Based metadata */
 
     /* User Based metadata [bool] */
@@ -1653,6 +1689,42 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_MACSEC_SCI,
+
+    /**
+     * @brief A list of label indexes into label stack
+     *
+     * @type sai_acl_field_data_t sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_MPLS_LABEL_INDEX_LIST,
+
+    /**
+     * @brief A list of label values of MPLS labels indexed by list of indexes in to label stack
+     *
+     * @type sai_acl_field_data_t sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_MPLS_LABEL_LABEL_LIST,
+
+    /**
+     * @brief A list of TTL values of MPLS labels indexed by list of indexes in to label stack
+     *
+     * @type sai_acl_field_data_t sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_MPLS_LABEL_TTL_LIST,
+
+    /**
+     * @brief A list of EXP values of MPLS labels indexed by list of indexes in to label stack
+     *
+     * @type sai_acl_field_data_t sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_MPLS_LABEL_EXP_LIST,
 
     /* User Based metadata */
 

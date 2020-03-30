@@ -429,6 +429,9 @@ typedef union _sai_acl_field_data_mask_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST */
     sai_u8_list_t u8list;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT32_LIST */
+    sai_u32_list_t u32list;
 } sai_acl_field_data_mask_t;
 
 /**
@@ -483,6 +486,9 @@ typedef union _sai_acl_field_data_data_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST */
     sai_u8_list_t u8list;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT32_LIST */
+    sai_u32_list_t u32list;
 } sai_acl_field_data_data_t;
 
 /**
