@@ -409,6 +409,13 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_MPLS_ROUTER_ALERT_LABEL = 0x00007004,
 
+    /**
+     * @brief MPLS packet with label trapped to CPU
+     * This is the MPLS packet with incoming label map entry
+     * programmed to trap it to CPU
+     */
+    SAI_HOSTIF_TRAP_TYPE_MPLS_INSEG_ENTRY_TO_CPU = 0x00007005,
+
     /** Exception traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00008000,
 
