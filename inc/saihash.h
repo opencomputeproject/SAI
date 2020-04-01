@@ -102,8 +102,21 @@ typedef enum _sai_native_hash_field_t
     /** Native hash field inner destination MAC */
     SAI_NATIVE_HASH_FIELD_INNER_DST_MAC = 17,
 
-    /** Native hash field MPLS labels */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_STACK = 18,
+    /** Native hash field the top MPLS label */
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_0 = 18,
+
+    /** Native hash field second MPLS label from the top */
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_1 = 19,
+
+    /** Native hash field third MPLS label from the top */
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_2 = 20,
+
+    /** Native hash field fourth MPLS label from the top */
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_3 = 21,
+
+    /** Native hash field fifth MPLS label from the top */
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_4 = 22,
+
 } sai_native_hash_field_t;
 
 /**
