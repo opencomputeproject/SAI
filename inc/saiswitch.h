@@ -2100,48 +2100,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MACSEC_OBJECT_ID,
 
     /**
-     * @brief Enable EXP -> TC MAP on switch.
-     *
-     * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * Default no map.
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_SWITCH_ATTR_QOS_EXP_TO_TC_MAP,
-
-    /**
-     * @brief Enable EXP -> COLOR MAP on switch
-     *
-     * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * Default no map in which case all exp values map to green color
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_SWITCH_ATTR_QOS_EXP_TO_COLOR_MAP,
-
-    /**
-     * @brief Enable TC + COLOR -> EXP MAP
-     *
-     * Map id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * Default no map.
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_QOS_MAP
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_EXP_MAP,
-
-    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
