@@ -401,20 +401,13 @@ typedef enum _sai_hostif_trap_type_t
      * @brief MPLS packets with expiring TTL value of 1
      * (default packet action is drop)
      */
-    SAI_HOSTIF_TRAP_TYPE_MPLS_TTL_ERROR = 0x00007003,
+    SAI_HOSTIF_TRAP_TYPE_MPLS_TTL_ERROR = 0x00007500,
 
     /**
      * @brief MPLS packet with router alert label
      * (default packet action is forward)
      */
-    SAI_HOSTIF_TRAP_TYPE_MPLS_ROUTER_ALERT_LABEL = 0x00007004,
-
-    /**
-     * @brief MPLS packet with label trapped to CPU
-     * This is the MPLS packet with incoming label map entry
-     * programmed to trap it to CPU
-     */
-    SAI_HOSTIF_TRAP_TYPE_MPLS_INSEG_ENTRY_TO_CPU = 0x00007005,
+    SAI_HOSTIF_TRAP_TYPE_MPLS_ROUTER_ALERT_LABEL = 0x00007501,
 
     /** Exception traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00008000,
@@ -605,6 +598,9 @@ typedef enum _sai_hostif_user_defined_trap_type_t
 
     /** FDB traps */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB,
+
+    /** In Segment Entry traps */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_INSEG_ENTRY,
 
     /** Custom range base */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE = 0x00001000,
