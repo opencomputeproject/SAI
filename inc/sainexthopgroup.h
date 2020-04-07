@@ -38,11 +38,11 @@
  */
 typedef enum _sai_next_hop_group_type_t
 {
-    /** Next hop group is ECMP */
-    SAI_NEXT_HOP_GROUP_TYPE_ECMP,
-
     /** Next hop group is ECMP, with a dynamic number of members, unordered */
-    SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP = SAI_NEXT_HOP_GROUP_TYPE_ECMP,
+    SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP,
+
+    /** @ignore - for backward compatibility */
+    SAI_NEXT_HOP_GROUP_TYPE_ECMP = SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP,
 
     /** Next hop group is ECMP, with a dynamic number of members, sorted by priority */
     SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP,
