@@ -162,11 +162,10 @@ typedef enum _sai_next_hop_group_attr_t
      * Can be different (greater or equal) from the configured
      * size. Application must use this value to know the exact size
      * of the group.
+     * Should be used with SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP.
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
-     * @default internal
-     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP
      */
     SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE,
 
