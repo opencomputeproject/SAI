@@ -150,7 +150,7 @@ typedef enum _sai_next_hop_group_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY
-     * @default internal
+     * @default 0
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP
      * @isresourcetype true
      */
@@ -165,6 +165,7 @@ typedef enum _sai_next_hop_group_attr_t
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
+     * @default internal
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP
      */
     SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE,
