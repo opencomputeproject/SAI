@@ -146,7 +146,7 @@ typedef enum _sai_next_hop_group_attr_t
      * @brief Configured group size
      *
      * Maximum desired number of members. The real size should
-     * be queried from SAI_NEXT_HOP_GROUP_ATTR_ACTUAL_SIZE
+     * be queried from SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY
@@ -273,7 +273,7 @@ typedef enum _sai_next_hop_group_member_attr_t
      *
      * Index specifying the member's order. The index is not strict exhibiting the behavior of
      * the priority. Members don't have to have the sequential priorities and it's driver's job
-     * to translate the priorities to the real indeces in the group.
+     * to translate the priorities to the real indices in the group.
      * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP.
      *
      * @type sai_uint32_t
