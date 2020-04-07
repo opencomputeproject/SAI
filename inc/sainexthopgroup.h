@@ -146,7 +146,7 @@ typedef enum _sai_next_hop_group_attr_t
      * @brief Configured group size
      *
      * Maximum desired number of members. The real size should
-     * be quieried from SAI_NEXT_HOP_GROUP_ATTR_ACTUAL_SIZE
+     * be queried from SAI_NEXT_HOP_GROUP_ATTR_ACTUAL_SIZE
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY

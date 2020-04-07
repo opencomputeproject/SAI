@@ -81,6 +81,7 @@ fprintf
 functionalities
 hmac
 http
+indeces
 ingressing
 inout
 isprint
@@ -133,6 +134,7 @@ uBurst
 uBursts
 ucast
 unicast
+unordered
 untagged
 validonly
 versa
