@@ -954,6 +954,7 @@ int sai_deserialize_ip4_mask(
 
     if (value == 0)
     {
+        /* mask is all zeros */
     }
     else if (value == 32)
     {
@@ -1031,6 +1032,7 @@ int sai_deserialize_ip6_mask(
 
     if (value == 128)
     {
+        /* mask is all ones */
     }
     else if (value == 64)
     {
