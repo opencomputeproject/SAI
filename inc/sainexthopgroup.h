@@ -210,6 +210,9 @@ typedef enum _sai_next_hop_group_member_attr_t
     /**
      * @brief Member weights
      *
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP
+     * or SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 1
