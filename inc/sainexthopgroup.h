@@ -259,8 +259,8 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @brief Object index in the fine grain ECMP table.
      *
      * Index specifying the strict member's order.
-     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP.
      * Allowed value range for is from 0 to SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE - 1.
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP.
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY
@@ -269,18 +269,18 @@ typedef enum _sai_next_hop_group_member_attr_t
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_INDEX,
 
     /**
-     * @brief Object priority for enforcing the members' order.
+     * @brief Object's sequence ID for enforcing the members' order.
      *
-     * Index specifying the member's order. The index is not strict exhibiting the behavior of
-     * the priority. Members don't have to have the sequential priorities and it's driver's job
-     * to translate the priorities to the real indices in the group.
+     * Loose index specifying the member's order. The index is not strict allowing for
+     * the missing IDs in a sequence. It's driver's job to translate the sequence IDs
+     * to the real indices in the group.
      * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP.
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY
      * @default 0
      */
-    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_PRIORITY,
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_SEQUENCE_ID,
 
     /**
      * @brief End of attributes
