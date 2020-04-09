@@ -23,11 +23,13 @@
 # @brief   This module defines SAI Metadata Parser
 #
 
+BEGIN { push @INC,'.'; }
+
 use strict;
 use warnings;
 use diagnostics;
 
-use XML::Simple qw(:strict);
+#use XML::Simple qw(:strict);
 use Getopt::Std;
 use Data::Dumper;
 use utils;
