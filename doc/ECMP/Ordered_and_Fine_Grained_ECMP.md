@@ -50,12 +50,12 @@ There could be a more specific use case, where not only order of the ECMP member
 Consider an example of two ToR switches connected to the set of VMs load balancing the traffic to them.
 Usually, the desired behavior is to distribute traffic equeally to all of them.
 
-![](https://github.com/marian-pritsak/SAI/blob/nhgm-order/doc/ECMP/ECMP1.PNG)
+![](https://github.com/marian-pritsak/SAI/blob/nhgm-order/doc/ECMP/ECMP.jpg)
 
 But in the case one of the nodes fails, the flow redistribution needs to be handled in the following way - all the flows that belong to healthy nodes, experience no change in distribution,
 and the flows to the failed node should be equally redistributed to the healthy nodes.
 
-![](https://github.com/marian-pritsak/SAI/blob/nhgm-order/doc/ECMP/ECMP2.PNG)
+![](https://github.com/marian-pritsak/SAI/blob/nhgm-order/doc/ECMP/ECMP2.jpg)
 
 The mechanism that allows for such control is introduced with the new fine-grained ECMP type:
 
