@@ -18,3 +18,4 @@ meta/saiserializetest
 # temporary files
 **/*~
 **/*.swp
+.vscode/*

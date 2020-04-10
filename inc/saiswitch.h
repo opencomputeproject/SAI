@@ -2100,6 +2100,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MACSEC_OBJECT_ID,
 
     /**
+     * @brief Next hop group member state change notification callback
+     * function passed to the adapter.
+     *
+     * In case driver does not support this attribute, The Host adapter should poll
+     * member status by SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OPER_STATE.
+     *
+     * Use sai_next_hop_group_member_state_change_notification_fn
+     * as notification function.
+     *
+     * @type sai_pointer_t sai_next_hop_group_member_state_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_NEXT_HOP_GROUP_MEMBER_STATE_CHANGE_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
