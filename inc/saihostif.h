@@ -397,20 +397,20 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_PIPELINE_DISCARD_ROUTER = 0x00007002,
 
-    /** Exception traps custom range start */
-    SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00008000,
-
     /**
      * @brief MPLS packets with expiring TTL value of 1
      * (default packet action is drop)
      */
-    SAI_HOSTIF_TRAP_TYPE_MPLS_TTL_ERROR = 0x00009000,
+    SAI_HOSTIF_TRAP_TYPE_MPLS_TTL_ERROR = 0x00008000,
 
     /**
      * @brief MPLS packet with router alert label
      * (default packet action is forward)
      */
-    SAI_HOSTIF_TRAP_TYPE_MPLS_ROUTER_ALERT_LABEL = 0x00009001,
+    SAI_HOSTIF_TRAP_TYPE_MPLS_ROUTER_ALERT_LABEL = 0x00008001,
+
+    /** Exception traps custom range start */
+    SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00009000,
 
     /**
      * @brief End of trap types
