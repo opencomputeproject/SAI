@@ -2111,7 +2111,7 @@ typedef enum _sai_switch_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_SWITCH_ATTR_QOS_EXP_TO_TC_MAP,
+    SAI_SWITCH_ATTR_QOS_MPLS_EXP_TO_TC_MAP,
 
     /**
      * @brief Enable EXP -> COLOR MAP on switch
@@ -2125,7 +2125,7 @@ typedef enum _sai_switch_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_SWITCH_ATTR_QOS_EXP_TO_COLOR_MAP,
+    SAI_SWITCH_ATTR_QOS_MPLS_EXP_TO_COLOR_MAP,
 
     /**
      * @brief Enable TC + COLOR -> EXP MAP
@@ -2139,7 +2139,7 @@ typedef enum _sai_switch_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_EXP_MAP,
+    SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP,
 
     /**
      * @brief End of attributes
