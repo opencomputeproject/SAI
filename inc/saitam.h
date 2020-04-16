@@ -1235,7 +1235,7 @@ typedef enum _sai_tam_report_attr_t
      * @validonly SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_BULK
      */
     SAI_TAM_REPORT_ATTR_REPORT_INTERVAL,
-    
+
     /**
      * @brief Enterprise number
      *
@@ -1245,7 +1245,7 @@ typedef enum _sai_tam_report_attr_t
      * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
      */
     SAI_TAM_REPORT_ATTR_ENTERPRISE_NUMBER,
-    
+
     /**
      * @brief End of Attributes
      */
