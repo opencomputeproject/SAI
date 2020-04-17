@@ -38,8 +38,17 @@
  */
 typedef enum _sai_next_hop_group_type_t
 {
-    /** Next hop group is ECMP */
-    SAI_NEXT_HOP_GROUP_TYPE_ECMP,
+    /** Next hop group is ECMP, with a dynamic number of members, unordered */
+    SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP,
+
+    /** @ignore - for backward compatibility */
+    SAI_NEXT_HOP_GROUP_TYPE_ECMP = SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP,
+
+    /** Next hop group is ECMP, with a dynamic number of members, sorted by priority */
+    SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP,
+
+    /** Next hop group is ECMP, with a fixed, usually large, number of members, sorted by index */
+    SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP,
 
     /** Next hop protection group. Contains primary and backup next hops. */
     SAI_NEXT_HOP_GROUP_TYPE_PROTECTION,
@@ -134,6 +143,33 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_COUNTER_ID,
 
     /**
+     * @brief Configured group size
+     *
+     * Maximum desired number of members. The real size should
+     * be queried from SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP
+     * @isresourcetype true
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_CONFIGURED_SIZE,
+
+    /**
+     * @brief Real group size
+     *
+     * Can be different (greater or equal) from the configured
+     * size. Application must use this value to know the exact size
+     * of the group.
+     * Should be used with SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
@@ -166,13 +202,16 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @brief Next hop id
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_NEXT_HOP
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID,
 
     /**
      * @brief Member weights
+     *
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP
+     * or SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -218,6 +257,33 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT,
+
+    /**
+     * @brief Object index in the fine grain ECMP table.
+     *
+     * Index specifying the strict member's order.
+     * Allowed value range for is from 0 to SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE - 1.
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_INDEX,
+
+    /**
+     * @brief Object's sequence ID for enforcing the members' order.
+     *
+     * Loose index specifying the member's order. The index is not strict allowing for
+     * the missing IDs in a sequence. It's driver's job to translate the sequence IDs
+     * to the real indices in the group.
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_SEQUENCE_ID,
 
     /**
      * @brief End of attributes
