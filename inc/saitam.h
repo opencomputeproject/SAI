@@ -653,6 +653,19 @@ typedef enum _sai_tam_int_attr_t
     SAI_TAM_INT_ATTR_METADATA_FRAGMENT_ENABLE,
 
     /**
+     * @brief Enable checksum
+     *
+     * Enable checksum for metadata stack
+     *
+     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_TAM_INT_ATTR_METADATA_CHECKSUM_ENABLE,
+
+    /**
      * @brief TAM INT should report all packets without filtering
      *
      * @type bool
