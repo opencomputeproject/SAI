@@ -2360,7 +2360,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_MACSEC_FLOW,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ECMP_HASH_ID,
 
     /**
      * @brief End of ACL Entry attributes
