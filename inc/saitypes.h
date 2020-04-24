@@ -620,11 +620,11 @@ typedef enum _sai_packet_color_t
  *
  * @par Examples:
  *
- * dot1p/DSCP/EXP --> TC
- * dot1p/DSCP/EXP --> Color
- * dot1p/DSCP/EXP --> TC + Color
- * TC --> dot1p/DSCP/EXP.
- * TC + color --> dot1p/DSCP/EXP.
+ * dot1p/DSCP/MPLS_EXP --> TC
+ * dot1p/DSCP/MPLS_EXP --> Color
+ * dot1p/DSCP/MPLS_EXP --> TC + Color
+ * TC --> dot1p/DSCP/MPLS_EXP.
+ * TC + color --> dot1p/DSCP/MPLS_EXP.
  * TC --> Egress Queue.
  */
 typedef struct _sai_qos_map_params_t
