@@ -657,11 +657,10 @@ typedef enum _sai_tam_int_attr_t
      *
      * Enable checksum for metadata stack
      *
-     * Note: Applicable only when SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
-     *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_IFA2
      */
     SAI_TAM_INT_ATTR_METADATA_CHECKSUM_ENABLE,
 
@@ -1258,6 +1257,25 @@ typedef enum _sai_tam_report_attr_t
      * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
      */
     SAI_TAM_REPORT_ATTR_ENTERPRISE_NUMBER,
+
+    /**
+     * @brief Set identifier
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
+     */
+    SAI_TAM_REPORT_ATTR_SET_ID,
+
+    /**
+     * @brief Enable/Disable mirror session
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_TAM_REPORT_ATTR_MIRROR_SESSION,
 
     /**
      * @brief End of Attributes
