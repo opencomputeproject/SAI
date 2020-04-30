@@ -68,6 +68,15 @@ typedef enum _sai_qos_map_type_t
     /** QOS Map to set PFC priority to queue */
     SAI_QOS_MAP_TYPE_PFC_PRIORITY_TO_QUEUE = 0x00000009,
 
+    /** QOS Map to set EXP to Traffic class */
+    SAI_QOS_MAP_TYPE_MPLS_EXP_TO_TC = 0x0000000a,
+
+    /** QOS Map to set EXP to color */
+    SAI_QOS_MAP_TYPE_MPLS_EXP_TO_COLOR = 0x0000000b,
+
+    /** QOS Map to set traffic class and color to EXP */
+    SAI_QOS_MAP_TYPE_TC_AND_COLOR_TO_MPLS_EXP = 0x0000000c,
+
     /** Custom range base value */
     SAI_QOS_MAP_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
