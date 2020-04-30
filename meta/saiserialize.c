@@ -593,7 +593,7 @@ int sai_deserialize_macsec_salt(
         _In_ const char *buffer,
         _Out_ sai_macsec_salt_t salt)
 {
-    int arr[12];
+    int arr[32];
     int read;
 
     int n = sscanf(buffer, "%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:\
