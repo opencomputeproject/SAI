@@ -677,16 +677,16 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_TERM_TABLE_ENTRY_LIST,
 
     /**
-     * @brief Tunnel EXP mode (pipe or uniform model)
+     * @brief Encap tunnel EXP mode (pipe or uniform model)
      *
      * @type sai_tunnel_exp_mode_t
      * @flags CREATE_ONLY
-     * @default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
+     * @default SAI_TUNNEL_EXP_MODE_UNIFORM_MODEL
      */
     SAI_TUNNEL_ATTR_ENCAP_EXP_MODE,
 
     /**
-     * @brief Tunnel EXP value (3 bits)
+     * @brief Encap tunnel EXP value (3 bits)
      *
      * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -695,13 +695,11 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_ENCAP_EXP_VAL,
 
     /**
-     * @brief Tunnel EXP mode (pipe or uniform model)
-     *
-     * Default SAI_TUNNEL_EXP_MODE_UNIFORM_MODEL
+     * @brief Decap tunnel EXP mode (pipe or uniform model)
      *
      * @type sai_tunnel_exp_mode_t
      * @flags CREATE_ONLY
-     * @default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
+     * @default SAI_TUNNEL_EXP_MODE_UNIFORM_MODEL
      */
     SAI_TUNNEL_ATTR_DECAP_EXP_MODE,
 

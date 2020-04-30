@@ -109,10 +109,10 @@ Decapsulation can happen either at penultimate hop or ultimate hop. At penultima
 - Every MPLS node has NodeSID with its own ID as shown.
 - There are two PrefixSIDs for 201.201.0.0/24,
   1. 5 (same as NodeSID)
-  2. 201.
+  2. [201]
 - There are two PrefixSIDs for 101.101.0.0/24,
   1. 1 (same as NodeSID)
-  2. 101.
+  2. [101]
 - Two Segments to reach from A to B are
   1. [5, 3]
   2. [201]
@@ -750,7 +750,7 @@ nhg101 = {
 #### routes
 
 ```
-route201 = {
+route101 = {
    {switch_id, vr0, "101.101.0.0/24"},
    {SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID, nhg101}
 }
