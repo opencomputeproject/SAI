@@ -267,11 +267,6 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST,
 
     /**
-     * @brief Attribute value is ACL field list of 32 bit unsigned integers.
-     */
-    SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT32_LIST,
-
-    /**
      * @brief Attribute value is ACL action bool.
      */
     SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_BOOL,
