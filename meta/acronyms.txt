@@ -74,6 +74,7 @@ OUI - Organizationally Unique Identifier
 PAM4 - Pulse Amplitude Modulation 4-level
 PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
+PHP - Penultimate Hop Pop
 PFC - Priority Flow Control
 PIR - Peak Information Rate
 PN - Packet Number
