@@ -493,6 +493,15 @@ typedef enum _sai_attr_flags_t
      */
     SAI_ATTR_FLAGS_SPECIAL             = (1 << 6),
 
+    /**
+     * @brief Identify flag.
+     *
+     * Attribute with this flag will indicate that this attribute is for the identification
+     * purpose for the client of SAI. SAI implementation doesn't need to handle this attribute at
+     * all. This flag can only be standalone.
+     */
+    SAI_ATTR_FLAGS_IDENTIFY            = (1 << 7),
+
 } sai_attr_flags_t;
 
 /**
@@ -529,6 +538,11 @@ typedef enum _sai_attr_flags_t
  * @def Defines helper to check if special flag is set.
  */
 #define SAI_HAS_FLAG_SPECIAL(x)               (((x) & SAI_ATTR_FLAGS_SPECIAL) == SAI_ATTR_FLAGS_SPECIAL)
+
+/**
+ * @def Defines helper to check if identify flag is set.
+ */
+#define SAI_HAS_FLAG_IDENTIFY(x)
 
 /**
  * @brief Defines default value type.

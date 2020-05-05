@@ -142,6 +142,14 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_DROP_TAGGED,
 
     /**
+     * @brief LAG Name
+     *
+     * @type char
+     * @flags IDENTIFY
+     */
+    SAI_LAG_ATTR_NAME,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_ATTR_END,
