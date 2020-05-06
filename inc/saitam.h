@@ -1259,25 +1259,6 @@ typedef enum _sai_tam_report_attr_t
     SAI_TAM_REPORT_ATTR_ENTERPRISE_NUMBER,
 
     /**
-     * @brief Set identifier
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
-     */
-    SAI_TAM_REPORT_ATTR_SET_ID,
-
-    /**
-     * @brief Enable/Disable mirror session
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default true
-     */
-    SAI_TAM_REPORT_ATTR_MIRROR_SESSION,
-
-    /**
      * @brief End of Attributes
      */
     SAI_TAM_REPORT_ATTR_END,
@@ -1509,6 +1490,10 @@ typedef enum _sai_tam_transport_type_t
      */
     SAI_TAM_TRANSPORT_TYPE_GRPC,
 
+    /**
+     * @brief Transport MIRROR session
+     */
+    SAI_TAM_TRANSPORT_TYPE_MIRROR,
 } sai_tam_transport_type_t;
 
 /**
