@@ -39,88 +39,192 @@
 typedef enum _sai_native_hash_field_t
 {
     /**
-     * @brief Native hash field source IP.
+     * @brief Native hash field source IPv4.
      *
-     * Also, refers to the outer source IP
+     * Also, refers to the outer source IPv4
      * in case for encapsulated packets
      */
-    SAI_NATIVE_HASH_FIELD_SRC_IP = 0,
+    SAI_NATIVE_HASH_FIELD_SRC_IPV4 = 0,
 
     /**
-     * @brief Native hash field destination IP
+     * @brief Native hash field destination IPv4
      *
-     * Also, refers to the outer source IP
+     * Also, refers to the outer source IPv4
      * in case for encapsulated packets
      */
-    SAI_NATIVE_HASH_FIELD_DST_IP = 1,
+    SAI_NATIVE_HASH_FIELD_DST_IPV4 = 1,
 
-    /** Native hash field inner source IP */
-    SAI_NATIVE_HASH_FIELD_INNER_SRC_IP = 2,
+    /**
+     * @brief Native hash field source IPv6.
+     *
+     * Also, refers to the outer source IPv6
+     * in case for encapsulated packets
+     */
+    SAI_NATIVE_HASH_FIELD_SRC_IPV6 = 2,
 
-    /** Native hash field inner destination IP */
-    SAI_NATIVE_HASH_FIELD_INNER_DST_IP = 3,
+    /**
+     * @brief Native hash field destination IPv6
+     *
+     * Also, refers to the outer source IPv6
+     * in case for encapsulated packets
+     */
+    SAI_NATIVE_HASH_FIELD_DST_IPV6 = 3,
+
+    /** Native hash field inner source IPv4 */
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV4 = 4,
+
+    /** Native hash field inner destination IPv4 */
+    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV4 = 5,
+
+    /** Native hash field inner source IPv6 */
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV6 = 6,
+
+    /** Native hash field inner destination IPv6 */
+    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV6 = 7,
 
     /** Native hash field vlan id */
-    SAI_NATIVE_HASH_FIELD_VLAN_ID = 4,
+    SAI_NATIVE_HASH_FIELD_VLAN_ID = 8,
 
     /** Native hash field IP protocol */
-    SAI_NATIVE_HASH_FIELD_IP_PROTOCOL = 5,
+    SAI_NATIVE_HASH_FIELD_IP_PROTOCOL = 9,
 
     /** Native hash field Ethernet type */
-    SAI_NATIVE_HASH_FIELD_ETHERTYPE = 6,
+    SAI_NATIVE_HASH_FIELD_ETHERTYPE = 10,
 
     /** Native hash field L4 source port */
-    SAI_NATIVE_HASH_FIELD_L4_SRC_PORT = 7,
+    SAI_NATIVE_HASH_FIELD_L4_SRC_PORT = 11,
 
     /** Native hash field L4 destination port */
-    SAI_NATIVE_HASH_FIELD_L4_DST_PORT = 8,
+    SAI_NATIVE_HASH_FIELD_L4_DST_PORT = 12,
 
     /** Native hash field source MAC */
-    SAI_NATIVE_HASH_FIELD_SRC_MAC = 9,
+    SAI_NATIVE_HASH_FIELD_SRC_MAC = 13,
 
     /** Native hash field destination MAC */
-    SAI_NATIVE_HASH_FIELD_DST_MAC = 10,
+    SAI_NATIVE_HASH_FIELD_DST_MAC = 14,
 
     /** Native hash field source port */
-    SAI_NATIVE_HASH_FIELD_IN_PORT = 11,
+    SAI_NATIVE_HASH_FIELD_IN_PORT = 15,
 
     /** Native hash field inner IP protocol */
-    SAI_NATIVE_HASH_FIELD_INNER_IP_PROTOCOL = 12,
+    SAI_NATIVE_HASH_FIELD_INNER_IP_PROTOCOL = 16,
 
     /** Native hash field inner Ethernet type */
-    SAI_NATIVE_HASH_FIELD_INNER_ETHERTYPE = 13,
+    SAI_NATIVE_HASH_FIELD_INNER_ETHERTYPE = 17,
 
     /** Native hash field inner L4 source port */
-    SAI_NATIVE_HASH_FIELD_INNER_L4_SRC_PORT = 14,
+    SAI_NATIVE_HASH_FIELD_INNER_L4_SRC_PORT = 18,
 
     /** Native hash field inner L4 destination port */
-    SAI_NATIVE_HASH_FIELD_INNER_L4_DST_PORT = 15,
+    SAI_NATIVE_HASH_FIELD_INNER_L4_DST_PORT = 19,
 
     /** Native hash field inner source MAC */
-    SAI_NATIVE_HASH_FIELD_INNER_SRC_MAC = 16,
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_MAC = 20,
 
     /** Native hash field inner destination MAC */
-    SAI_NATIVE_HASH_FIELD_INNER_DST_MAC = 17,
+    SAI_NATIVE_HASH_FIELD_INNER_DST_MAC = 21,
 
     /** Native hash field entire MPLS label stack */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_ALL = 18,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_ALL = 22,
 
     /** Native hash field the top MPLS label */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_0 = 19,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_0 = 23,
 
     /** Native hash field second MPLS label from the top */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_1 = 20,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_1 = 24,
 
     /** Native hash field third MPLS label from the top */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_2 = 21,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_2 = 25,
 
     /** Native hash field fourth MPLS label from the top */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_3 = 22,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_3 = 26,
 
     /** Native hash field fifth MPLS label from the top */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_4 = 23,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_4 = 27,
 
 } sai_native_hash_field_t;
+
+/**
+ * @extraparam sai_native_hash_field_t hash_field
+ */
+typedef union _sai_native_hash_field_mask_t
+{
+    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_IP_PROTOCOL */
+    sai_uint8_t u8;
+
+    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_L4_SRC_PORT */
+    sai_uint16_t u16;
+
+    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_SRC_MAC */
+    sai_mac_t mac;
+
+    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_SRC_IPV4 */
+    sai_ip4_t ip4;
+
+    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_SRC_IPV6 */
+    sai_ip6_t ip6;
+
+} sai_native_hash_field_mask_t;
+
+typedef struct _sai_masked_native_hash_field_t
+{
+    sai_native_hash_field_t hash_field;
+
+    /** @passparam hash_field */
+    sai_native_hash_field_mask_t mask;
+} sai_masked_native_hash_field_t;
+
+/**
+ * @brief Fine-grained hash field attribute IDs
+ */
+typedef enum _sai_fine_grained_hash_field_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_START,
+
+    /**
+     * @brief Hash native field ID.
+     *
+     * @type sai_masked_native_hash_field_t
+     * @flags CREATE_ONLY
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_MASKED_NATIVE_HASH_FIELD = SAI_FINE_GRAINED_HASH_FIELD_ATTR_START,
+
+    /**
+     * @brief Optional field ordering.
+     *
+     * Specifies in which order the fields are hashed,
+     * and defines in which fields should be associative for CRC with the same sequence ID.
+     * If not provided, it's up to SAI driver to choose.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_SEQUENCE_ID,
+
+    /**
+     * @brief UDF group ID. Used instead of a native field.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_UDF_GROUP
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_UDF_GROUP_ID,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_END,
+
+    /** Custom range base value */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_FIELD_CUSTOM_RANGE_END
+
+} sai_fine_grained_hash_field_attr_t;
 
 /**
  * @brief Hash attribute IDs
@@ -150,6 +254,16 @@ typedef enum _sai_hash_attr_t
      * @default empty
      */
     SAI_HASH_ATTR_UDF_GROUP_LIST,
+
+    /**
+     * @brief Hash fine-grained field list
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_FINE_GRAINED_HASH_FIELD
+     * @default empty
+     */
+    SAI_HASH_ATTR_FINE_GRAINED_HASH_FIELD_LIST,
 
     /**
      * @brief End of attributes
