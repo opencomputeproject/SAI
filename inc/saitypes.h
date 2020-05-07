@@ -949,10 +949,10 @@ typedef struct _sai_port_eye_values_list_t
  */
 typedef enum _sai_outseg_type_t
 {
-    /** Out segment of ingress node */
+    /** Out segment of ingress node, label stack depth is at least one */
     SAI_OUTSEG_TYPE_PUSH,
 
-    /** Out segment of intermediate node */
+    /** Out segment of intermediate node, label stack depth is one */
     SAI_OUTSEG_TYPE_SWITCH,
 
 } sai_outseg_type_t;

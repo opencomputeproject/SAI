@@ -240,7 +240,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_OUTSEG_TYPE,
 
     /**
-     * @brief Encap MPLS TTL mode
+     * @brief MPLS Outsegment TTL mode
      *
      * @type sai_outseg_ttl_mode_t
      * @flags CREATE_AND_SET
@@ -250,7 +250,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_OUTSEG_TTL_MODE,
 
     /**
-     * @brief MPLS TTL value for pipe mode
+     * @brief MPLS Outsegment TTL value for pipe mode
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -260,7 +260,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_OUTSEG_TTL_VALUE,
 
     /**
-     * @brief Encap MPLS EXP mode
+     * @brief MPLS Outsegment MPLS EXP mode
      *
      * @type sai_outseg_exp_mode_t
      * @flags CREATE_AND_SET
@@ -270,7 +270,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_OUTSEG_EXP_MODE,
 
     /**
-     * @brief MPLS EXP value for pipe mode
+     * @brief MPLS Outsegment EXP value for pipe mode
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -280,7 +280,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_OUTSEG_EXP_VALUE,
 
     /**
-     * @brief TC AND COLOR -> EXP MAP for Uniform Mode
+     * @brief TC AND COLOR -> MPLS EXP MAP for Uniform Mode
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET

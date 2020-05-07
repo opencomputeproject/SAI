@@ -45,39 +45,39 @@ typedef enum _sai_inseg_entry_psc_type_t
     SAI_INSEG_ENTRY_PSC_TYPE_LLSP
 } sai_inseg_entry_psc_type_t;
 
-typedef enum _sai_inseg_entry_decap_ttl_mode_t
+typedef enum _sai_inseg_entry_pop_ttl_mode_t
 {
     /**
      * @brief Uniform mode
      *
-     * TTL of inner header is computed based on TTL of outer header on decapsulation.
+     * TTL of inner header is computed based on TTL of outer header on pop.
      */
-    SAI_INSEG_ENTRY_DECAP_TTL_MODE_UNIFORM,
+    SAI_INSEG_ENTRY_POP_TTL_MODE_UNIFORM,
 
     /**
      * @brief Pipe mode
      *
-     * TTL of inner header is left unchanged on decapsulation.
+     * TTL of inner header is left unchanged on pop.
      */
-    SAI_INSEG_ENTRY_DECAP_TTL_MODE_PIPE
-} sai_inseg_entry_decap_ttl_mode_t;
+    SAI_INSEG_ENTRY_POP_TTL_MODE_PIPE
+} sai_inseg_entry_pop_ttl_mode_t;
 
-typedef enum _sai_inseg_entry_decap_qos_mode_t
+typedef enum _sai_inseg_entry_pop_qos_mode_t
 {
     /**
      * @brief Uniform mode
      *
-     * DSCP or EXP of inner header is computed based on TC AND COLOR of outer header on decapsulation.
+     * DSCP or EXP of inner header is computed based on TC AND COLOR of outer header on pop.
      */
-    SAI_INSEG_ENTRY_DECAP_QOS_MODE_UNIFORM,
+    SAI_INSEG_ENTRY_POP_QOS_MODE_UNIFORM,
 
     /**
      * @brief Uniform mode
      *
-     * DSCP or EXP of inner header is left unchanged on decapsulation.
+     * DSCP or EXP of inner header is left unchanged on pop.
      */
-    SAI_INSEG_ENTRY_DECAP_QOS_MODE_PIPE
-} sai_inseg_entry_decap_qos_mode_t;
+    SAI_INSEG_ENTRY_POP_QOS_MODE_PIPE
+} sai_inseg_entry_pop_qos_mode_t;
 
 /**
  * @brief Attribute Id for SAI in segment
@@ -182,22 +182,22 @@ typedef enum _sai_inseg_entry_attr_t
     SAI_INSEG_ENTRY_ATTR_MPLS_EXP_TO_COLOR_MAP,
 
     /**
-     * @brief Define TTL setting on decapsulation during PHP or POP
+     * @brief Define TTL setting for PHP or POP
      *
-     * @type sai_inseg_entry_decap_ttl_mode_t
+     * @type sai_inseg_entry_pop_ttl_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_INSEG_ENTRY_DECAP_TTL_MODE_UNIFORM
+     * @default SAI_INSEG_ENTRY_POP_TTL_MODE_UNIFORM
      */
-    SAI_INSEG_ENTRY_ATTR_DECAP_TTL_MODE,
+    SAI_INSEG_ENTRY_ATTR_POP_TTL_MODE,
 
     /**
-     * @brief Define QOS setting on decapsulation during PHP or POP
+     * @brief Define QOS setting for PHP or POP
      *
-     * @type sai_inseg_entry_decap_qos_mode_t
+     * @type sai_inseg_entry_pop_qos_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_INSEG_ENTRY_DECAP_QOS_MODE_UNIFORM
+     * @default SAI_INSEG_ENTRY_POP_QOS_MODE_UNIFORM
      */
-    SAI_INSEG_ENTRY_ATTR_DECAP_QOS_MODE,
+    SAI_INSEG_ENTRY_ATTR_POP_QOS_MODE,
 
     /**
      * @brief End of attributes

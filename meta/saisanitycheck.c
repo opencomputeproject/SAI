@@ -1492,7 +1492,7 @@ void check_attr_validonly(
                      md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_EXP_MODE || md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_EXP_VALUE ||
                      md->attrid == SAI_NEXT_HOP_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP)) {
                 /*
-                 * MPLS out segment attributes are needed for ingress node and valid only for MPLS next hops
+                 * MPLS out segment attributes are required for ingress node and valid only for MPLS next hop.
                  */
             }
             else
