@@ -275,7 +275,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_MACSEC_FLOW              = 90,
     SAI_OBJECT_TYPE_MACSEC_SC                = 91,
     SAI_OBJECT_TYPE_MACSEC_SA                = 92,
-
+    SAI_OBJECT_TYPE_SYSTEM_PORT              = 93,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
@@ -980,6 +980,88 @@ typedef enum _sai_outseg_exp_mode_t
 } sai_outseg_exp_mode_t;
 
 /**
+ * @brief System port configuration attributes
+ */
+typedef struct _sai_system_port_config_t
+{
+    uint32_t port_id;
+    uint32_t attached_switch_id;
+    uint32_t attached_core_index;
+    uint32_t attached_core_port_index;
+    uint32_t speed;
+    uint32_t num_voq;
+} sai_system_port_config_t;
+
+/**
+ * @brief System port configuration list
+ */
+typedef struct _sai_system_port_config_list_t
+{
+    /** Number of entries in the list */
+    uint32_t count;
+
+    /** System port configuration list */
+    sai_system_port_config_t *list;
+} sai_system_port_config_list_t;
+
+/**
+ * @brief Fabric port reachability
+ */
+typedef struct _sai_fabric_port_reachability_t
+{
+    /** Remote switch ID (SAI_SWITCH_TYPE_NPU) */
+    uint32_t switch_id;
+
+    /** Remote switch ID is reachable through the fabric port */
+    bool reachable;
+} sai_fabric_port_reachability_t;
+
+/**
+ * @brief Port error status
+ */
+typedef enum _sai_port_err_status_t
+{
+    /** Data Unit CRC Error */
+    SAI_PORT_ERR_STATUS_DATA_UNIT_CRC_ERROR,
+
+    /** Data Unit Size Error */
+    SAI_PORT_ERR_STATUS_DATA_UNIT_SIZE,
+
+    /** Data Unit Misalignment Error */
+    SAI_PORT_ERR_STATUS_DATA_UNIT_MISALIGNMENT_ERROR,
+
+    /** Uncorrectable RS-FEC code word error */
+    SAI_PORT_ERR_STATUS_CODE_GROUP_ERROR,
+
+    /** SerDes Signal is out of sync */
+    SAI_PORT_ERR_STATUS_SIGNAL_LOCAL_ERROR,
+
+    /** Port is not accepting reachability data units */
+    SAI_PORT_ERR_STATUS_NO_RX_REACHABILITY,
+
+    /** Rate of data units with CRC errors passed its threshold */
+    SAI_PORT_ERR_STATUS_CRC_RATE,
+
+    /** Error remote fault indication */
+    SAI_PORT_ERR_STATUS_REMOTE_FAULT_STATUS,
+
+    /** Error status max */
+    SAI_PORT_ERR_STATUS_MAX,
+} sai_port_err_status_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_ERR_STATUS_LIST
+ */
+typedef struct _sai_port_err_status_list_t
+{
+    /** Number of entries in the list */
+    uint32_t count;
+
+    /** Port error list */
+    sai_port_err_status_t *list;
+} sai_port_err_status_list_t;
+
+/**
  * @brief Data Type
  *
  * To use enum values as attribute value is sai_int32_t s32
@@ -1126,6 +1208,18 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SALT */
     sai_macsec_salt_t macsecsalt;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG */
+    sai_system_port_config_t sysportconfig;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST */
+    sai_system_port_config_list_t sysportconfiglist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY */
+    sai_fabric_port_reachability_t reachability;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST */
+    sai_port_err_status_list_t porterror;
 } sai_attribute_value_t;
 
 /**

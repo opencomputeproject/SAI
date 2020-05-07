@@ -116,6 +116,17 @@ typedef enum _sai_neighbor_entry_attr_t
     SAI_NEIGHBOR_ENTRY_ATTR_COUNTER_ID,
 
     /**
+     * @brief Remote Out Logical Interface
+     *
+     * Defines the remote neighbor interface when the destination is on a remote line card
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NEIGHBOR_ENTRY_ATTR_REMOTE_OUTLIF,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEIGHBOR_ENTRY_ATTR_END,

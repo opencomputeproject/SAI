@@ -301,6 +301,12 @@ typedef enum _sai_switch_type_t
     /** Switch type is PHY */
     SAI_SWITCH_TYPE_PHY,
 
+    /** Switch type is VOQ based NPU */
+    SAI_SWITCH_TYPE_VOQ,
+
+    /** Switch type is Fabric switch device */
+    SAI_SWITCH_TYPE_FABRIC,
+
 } sai_switch_type_t;
 
 /**
@@ -2142,6 +2148,69 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP,
 
     /**
+     * @brief Vendor specific switch ID. Identifies switch chip
+     *
+     * Mandatory in VOQ Switch
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_SWITCH_ATTR_SWITCH_ID,
+
+    /**
+     * @brief Maximum number of cores in the VOQ Switch (chassis)
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_SYSTEM_CORES,
+
+    /**
+     * @brief System port configuration list.
+     *
+     * @type sai_system_port_config_list_t
+     * @flags CREATE_ONLY
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_SYSTEM_PORT_CONFIG_LIST,
+
+    /**
+     * @brief Number of system ports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_NUMBER_OF_SYSTEM_PORTS,
+
+    /**
+     * @brief Get the system port list
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_SYSTEM_PORT
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_SYSTEM_PORT_LIST,
+
+    /**
+     * @brief Number of fabric ports on the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_NUMBER_OF_FABRIC_PORTS,
+
+    /**
+     * @brief Get the fabric port list
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_FABRIC_PORT_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -2220,6 +2289,24 @@ typedef enum _sai_switch_stat_t
 
     /** Switch stat out drop reasons range end */
     SAI_SWITCH_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
+
+    /** Switch stat fabric drop reasons range start */
+    SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_BASE = 0x00003000,
+
+    /** Get ECC discards [fabric] */
+    SAI_SWITCH_STAT_ECC_DROP,
+
+    /** Get reach-ability discards [switch | fabric] */
+    SAI_SWITCH_STAT_REACHABILITY_DROP,
+
+    /** Congestion related high watermark [switch] */
+    SAI_SWITCH_STAT_HIGHEST_QUEUE_CONGESTION_LEVEL,
+
+    /** Discards not counted in other switch stat type [switch | fabric] */
+    SAI_SWITCH_STAT_GLOBAL_DROP,
+
+    /** Switch stat fabric drop reasons range end */
+    SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_END = 0x00003fff,
 
 } sai_switch_stat_t;
 
