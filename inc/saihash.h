@@ -142,37 +142,10 @@ typedef enum _sai_native_hash_field_t
     /** Native hash field fifth MPLS label from the top */
     SAI_NATIVE_HASH_FIELD_MPLS_LABEL_4 = 27,
 
+    /** No field - for compatibility, must be last */
+    SAI_NATIVE_HASH_FIELD_NONE = 28,
+
 } sai_native_hash_field_t;
-
-/**
- * @extraparam sai_native_hash_field_t hash_field
- */
-typedef union _sai_native_hash_field_mask_t
-{
-    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_IP_PROTOCOL */
-    sai_uint8_t u8;
-
-    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_L4_SRC_PORT */
-    sai_uint16_t u16;
-
-    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_SRC_MAC */
-    sai_mac_t mac;
-
-    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_SRC_IPV4 */
-    sai_ip4_t ip4;
-
-    /** @validonly hash_field == SAI_NATIVE_HASH_FIELD_SRC_IPV6 */
-    sai_ip6_t ip6;
-
-} sai_native_hash_field_mask_t;
-
-typedef struct _sai_masked_native_hash_field_t
-{
-    sai_native_hash_field_t hash_field;
-
-    /** @passparam hash_field */
-    sai_native_hash_field_mask_t mask;
-} sai_masked_native_hash_field_t;
 
 /**
  * @brief Fine-grained hash field attribute IDs
@@ -187,10 +160,57 @@ typedef enum _sai_fine_grained_hash_field_attr_t
     /**
      * @brief Hash native field ID.
      *
-     * @type sai_masked_native_hash_field_t
+     * @type sai_native_hash_field_t
      * @flags CREATE_ONLY
+     * @default SAI_NATIVE_HASH_FIELD_NONE
      */
-    SAI_FINE_GRAINED_HASH_FIELD_ATTR_MASKED_NATIVE_HASH_FIELD = SAI_FINE_GRAINED_HASH_FIELD_ATTR_START,
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD = SAI_FINE_GRAINED_HASH_FIELD_ATTR_START,
+
+    /**
+     * @brief Mask for a byte field.
+     *
+     * @type sai_uint8_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD == SAI_NATIVE_HASH_FIELD_INNER_IP_PROTOCOL
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_U8_MASK,
+
+    /**
+     * @brief Mask for a 2 byte field.
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
+     * @condition SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD == SAI_NATIVE_HASH_FIELD_L4_DST_PORT or SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD == SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_U16_MASK,
+
+    /**
+     * @brief Mask for a MAC address.
+     *
+     * @type sai_mac_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD == SAI_NATIVE_HASH_FIELD_SRC_MAC or SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD == SAI_NATIVE_HASH_FIELD_DST_MAC
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_MAC_MASK,
+
+    /**
+     * @brief Mask for a IPv4 address.
+     *
+     * @type sai_ip4_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD == SAI_NATIVE_HASH_FIELD_SRC_IPV4 or SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD == SAI_NATIVE_HASH_FIELD_DST_IPV4
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_IPV4_MASK,
+
+    /**
+     * @brief Mask for a IPv6 address.
+     *
+     * @type sai_ip6_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD == SAI_NATIVE_HASH_FIELD_SRC_IPV6 or SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD == SAI_NATIVE_HASH_FIELD_DST_IPV6
+     */
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_IPV6_MASK,
 
     /**
      * @brief Optional field ordering.
@@ -201,6 +221,7 @@ typedef enum _sai_fine_grained_hash_field_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY
+     * @default 0
      */
     SAI_FINE_GRAINED_HASH_FIELD_ATTR_SEQUENCE_ID,
 
@@ -210,6 +231,8 @@ typedef enum _sai_fine_grained_hash_field_attr_t
      * @type sai_object_id_t
      * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_UDF_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_FINE_GRAINED_HASH_FIELD_ATTR_UDF_GROUP_ID,
 
@@ -222,7 +245,7 @@ typedef enum _sai_fine_grained_hash_field_attr_t
     SAI_FINE_GRAINED_HASH_FIELD_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_FINE_GRAINED_HASH_FIELD_ATTR_FIELD_CUSTOM_RANGE_END
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_CUSTOM_RANGE_END
 
 } sai_fine_grained_hash_field_attr_t;
 
