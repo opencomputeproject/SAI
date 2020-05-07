@@ -286,6 +286,17 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_DECREMENT_TTL,
 
     /**
+     * @brief To flag that this interface is present locally
+     *
+     * In VOQ systems it is possible that the interface is remote
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default true
+     */
+    SAI_ROUTER_INTERFACE_ATTR_IS_LOCAL,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,

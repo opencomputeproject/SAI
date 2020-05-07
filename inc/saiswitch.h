@@ -2158,10 +2158,11 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SWITCH_ID,
 
     /**
-     * @brief Maximum number of cores in the VOQ Switch (chassis)
+     * @brief Maximum number of cores in the VOQ System (chassis)
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
      */
     SAI_SWITCH_ATTR_MAX_SYSTEM_CORES,
 
@@ -2169,8 +2170,8 @@ typedef enum _sai_switch_attr_t
      * @brief System port configuration list.
      *
      * @type sai_system_port_config_list_t
-     * @flags CREATE_ONLY
-     * @default empty
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
      */
     SAI_SWITCH_ATTR_SYSTEM_PORT_CONFIG_LIST,
 

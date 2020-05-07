@@ -84,17 +84,18 @@ typedef enum _sai_system_port_attr_t
      */
     SAI_SYSTEM_PORT_ATTR_QOS_VOQ_LIST,
 
-    /* READ-WRITE */
-
     /**
-     * @brief Speed in Mbps
+     * @brief Local port for the system port
      *
-     * On get, returns the configured port speed.
+     * Only valid for system ports which are mapped to local ports.
      *
-     * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
      */
-    SAI_SYSTEM_PORT_ATTR_SPEED,
+    SAI_SYSTEM_PORT_ATTR_PORT,
+
+    /* READ-WRITE */
 
     /**
      * @brief Admin Mode
@@ -106,42 +107,12 @@ typedef enum _sai_system_port_attr_t
     SAI_SYSTEM_PORT_ATTR_ADMIN_STATE,
 
     /**
-     * @brief System Port VLAN ID
-     *
-     * Untagged ingress frames are tagged with Port VLAN ID (PVID).
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     * @isvlan true
-     * @default 1
-     */
-    SAI_SYSTEM_PORT_ATTR_PORT_VLAN_ID,
-
-    /**
-     * @brief Default VLAN Priority
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_SYSTEM_PORT_ATTR_DEFAULT_VLAN_PRIORITY,
-
-    /**
      * @brief System Port Configuration Information
      *
      * @type sai_system_port_config_t
-     * @flags READ_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_SYSTEM_PORT_ATTR_CONFIG_INFO,
-
-    /**
-     * @brief Local port for the system port
-     *
-     * @type sai_object_id_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_PORT
-     */
-    SAI_SYSTEM_PORT_ATTR_PORT,
 
     /**
      * @brief End of attributes

@@ -240,7 +240,7 @@ typedef enum _sai_lag_member_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_SYSTEM_PORT
      */
     SAI_LAG_MEMBER_ATTR_PORT_ID,
 

@@ -50,8 +50,11 @@ typedef enum _sai_queue_type_t
     /** H/w Virtual Output Queue (VOQ). This queue is ingress unicast queue */
     SAI_QUEUE_TYPE_UNICAST_VOQ = 0x00000003,
 
+    /** H/w Virtual Output Queue (VOQ). This queue is fabric multicast queue */
+    SAI_QUEUE_TYPE_MULTICAST_VOQ = 0x00000004,
+
     /** H/w Fabric Queue. */
-    SAI_QUEUE_TYPE_FABRIC_TX = 0x00000004,
+    SAI_QUEUE_TYPE_FABRIC_TX = 0x00000005,
 
     /** Custom range base value */
     SAI_QUEUE_TYPE_CUSTOM_RANGE_BASE = 0x10000000
