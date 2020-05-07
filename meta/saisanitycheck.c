@@ -482,9 +482,6 @@ void check_attr_flags(
 
             break;
 
-        case SAI_ATTR_FLAGS_IDENTIFY:
-            break;
-
         default:
 
             META_MD_ASSERT_FAIL(md, "invalid creation flags: 0x%x", md->flags);
