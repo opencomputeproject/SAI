@@ -945,6 +945,41 @@ typedef struct _sai_port_eye_values_list_t
 } sai_port_eye_values_list_t;
 
 /**
+ * @brief Enum defining MPLS out segment type
+ */
+typedef enum _sai_outseg_type_t
+{
+    /** Out segment of ingress node */
+    SAI_OUTSEG_TYPE_PUSH,
+
+    /** Out segment of intermediate node */
+    SAI_OUTSEG_TYPE_SWITCH,
+
+} sai_outseg_type_t;
+
+/**
+ * @brief Enum defining TTL mode for MPLS out segment
+ */
+typedef enum _sai_outseg_ttl_mode_t
+{
+    SAI_OUTSEG_TTL_MODE_UNIFORM,
+
+    SAI_OUTSEG_TTL_MODE_PIPE,
+
+} sai_outseg_ttl_mode_t;
+
+/**
+ * @brief Enum defining MPLS EXP mode for MPLS out segment
+ */
+typedef enum _sai_outseg_exp_mode_t
+{
+    SAI_OUTSEG_EXP_MODE_UNIFORM,
+
+    SAI_OUTSEG_EXP_MODE_PIPE,
+
+} sai_outseg_exp_mode_t;
+
+/**
  * @brief Data Type
  *
  * To use enum values as attribute value is sai_int32_t s32

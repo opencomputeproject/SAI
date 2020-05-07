@@ -1487,6 +1487,13 @@ void check_attr_validonly(
                  * Vlan header attributes are depending on VLAN_HEADER_VALID which is
                  * also valid only for ERSPAN.
                  */
+            } else if (md->objecttype == SAI_OBJECT_TYPE_NEXT_HOP &&
+                    (md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_TTL_MODE || md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_TTL_VALUE ||
+                     md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_EXP_MODE || md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_EXP_VALUE ||
+                     md->attrid == SAI_NEXT_HOP_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP)) {
+                /*
+                 * MPLS out segment attributes are needed for ingress node and valid only for MPLS next hops
+                 */
             }
             else
             {

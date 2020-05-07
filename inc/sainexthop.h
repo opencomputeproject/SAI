@@ -53,8 +53,6 @@ typedef enum _sai_next_hop_type_t
     /** IPv6 Segment Route Endpoint Function */
     SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT,
 
-    /**  MPLS Encap next hop for ingress router */
-    SAI_NEXT_HOP_TYPE_MPLS_ENCAP
 } sai_next_hop_type_t;
 
 /**
@@ -105,28 +103,6 @@ typedef enum _sai_next_hop_endpoint_pop_type_t
 } sai_next_hop_endpoint_pop_type_t;
 
 /**
- * @brief Enum defining TTL mode for MPLS encapsulated packets
- */
-typedef enum _sai_next_hop_encap_mpls_ttl_mode_t
-{
-    SAI_NEXT_HOP_ENCAP_MPLS_TTL_MODE_UNIFORM,
-
-    SAI_NEXT_HOP_ENCAP_MPLS_TTL_MODE_PIPE,
-
-} sai_next_hop_encap_mpls_ttl_mode_t;
-
-/**
- * @brief Enum defining MPLS EXP mode for MPLS encapsulated packets
- */
-typedef enum _sai_next_hop_encap_mpls_exp_mode_t
-{
-    SAI_NEXT_HOP_ENCAP_MPLS_EXP_MODE_UNIFORM,
-
-    SAI_NEXT_HOP_ENCAP_MPLS_EXP_MODE_PIPE,
-
-} sai_next_hop_encap_mpls_exp_mode_t;
-
-/**
  * @brief Attribute id for next hop
  */
 typedef enum _sai_next_hop_attr_t
@@ -150,7 +126,7 @@ typedef enum _sai_next_hop_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS_ENCAP
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
      */
     SAI_NEXT_HOP_ATTR_IP,
 
@@ -160,7 +136,7 @@ typedef enum _sai_next_hop_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS_ENCAP
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS
      */
     SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 
@@ -227,7 +203,7 @@ typedef enum _sai_next_hop_attr_t
      *
      * @type sai_u32_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS_ENCAP
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS
      */
     SAI_NEXT_HOP_ATTR_LABELSTACK,
 
@@ -254,13 +230,24 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_DECREMENT_TTL,
 
     /**
+     * @brief MPLS Outsegment type
+     *
+     * @type sai_outseg_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_OUTSEG_TYPE_SWITCH
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS
+     */
+    SAI_NEXT_HOP_ATTR_OUTSEG_TYPE,
+
+    /**
      * @brief Encap MPLS TTL mode
      *
-     * @type sai_next_hop_encap_mpls_ttl_mode_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS_ENCAP
+     * @type sai_outseg_ttl_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_OUTSEG_TTL_MODE_UNIFORM
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH
      */
-    SAI_NEXT_HOP_ATTR_NEXT_HOP_ENCAP_MPLS_TTL_MODE,
+    SAI_NEXT_HOP_ATTR_OUTSEG_TTL_MODE,
 
     /**
      * @brief MPLS TTL value for pipe mode
@@ -268,18 +255,19 @@ typedef enum _sai_next_hop_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 255
-     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS_ENCAP
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH
      */
-    SAI_NEXT_HOP_ATTR_ENCAP_MPLS_TTL_VALUE,
+    SAI_NEXT_HOP_ATTR_OUTSEG_TTL_VALUE,
 
     /**
      * @brief Encap MPLS EXP mode
      *
-     * @type sai_next_hop_encap_mpls_exp_mode_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS_ENCAP
+     * @type sai_outseg_exp_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_OUTSEG_EXP_MODE_UNIFORM
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH
      */
-    SAI_NEXT_HOP_ATTR_ENCAP_MPLS_EXP_MODE,
+    SAI_NEXT_HOP_ATTR_OUTSEG_EXP_MODE,
 
     /**
      * @brief MPLS EXP value for pipe mode
@@ -287,9 +275,9 @@ typedef enum _sai_next_hop_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS_ENCAP
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH
      */
-    SAI_NEXT_HOP_ATTR_ENCAP_MPLS_EXP_VALUE,
+    SAI_NEXT_HOP_ATTR_OUTSEG_EXP_VALUE,
 
     /**
      * @brief TC AND COLOR -> EXP MAP for Uniform Mode
@@ -299,7 +287,7 @@ typedef enum _sai_next_hop_attr_t
      * @objects SAI_OBJECT_TYPE_QOS_MAP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS_ENCAP
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH
      */
     SAI_NEXT_HOP_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP,
 
