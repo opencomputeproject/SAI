@@ -1422,12 +1422,14 @@ def sai_thrift_create_tunnel_term_table(client, tunnel_type, addr_family, vr_id,
 
     if addr_family == SAI_IP_ADDR_FAMILY_IPV4 :
          addr = sai_thrift_ip_t(ip4=ip_addr_dst)
-         ipaddr_dst = sai_thrift_ip_address_t(addr_family = SAI_IP_ADDR_FAMILY_IPV4 ,addr=addr)
+         mask = sai_thrift_ip_t(ip4='255.255.255.255')
+         ipprefix_dst = sai_thrift_ip_prefix_t(addr_family = SAI_IP_ADDR_FAMILY_IPV4 ,addr=addr, mask=mask)
     elif addr_family == SAI_IP_ADDR_FAMILY_IPV6:
          addr = sai_thrift_ip_t(ip6=ip_addr_dst)
-         ipaddr_dst = sai_thrift_ip_address_t(addr_family = SAI_IP_ADDR_FAMILY_IPV6 ,addr=addr)
+         mask = sai_thrift_ip_t(ip6='ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff')
+         ipprefix_dst = sai_thrift_ip_prefix_t(addr_family = SAI_IP_ADDR_FAMILY_IPV6 ,addr=addr, mask=mask)
 
-    attribute3_value=sai_thrift_attribute_value_t(ipaddr=ipaddr_dst)
+    attribute3_value=sai_thrift_attribute_value_t(ipprefix=ipprefix_dst)
     attribute3=sai_thrift_attribute_t(id=SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP,value=attribute3_value)
 
     attribute4_value=sai_thrift_attribute_value_t(s32=tunnel_type)
