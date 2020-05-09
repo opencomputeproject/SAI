@@ -31,9 +31,9 @@ MPLS tunnel is also called as label switched path.  TTL and QoS attribute of Out
 
 [RFC 3270](https://tools.ietf.org/html/rfc3270#section-2.6.3) describes this QoS attribute processing for this model.
 
-At ingress node,
-    outer TTL = inner TTL - 1
-    outer traffic class = inner traffic class
+At ingress node
+- outer TTL = inner TTL - 1
+- outer traffic class = inner traffic class
 
 ```
 nexthop = {
@@ -48,9 +48,9 @@ nexthop = {
 ```
 
 At egress node (with or without PHP)
-    inner TTL = outer TTL - 1
-    inner traffic class = outer traffic class
-    PHB is applied based on outer header
+- inner TTL = outer TTL - 1
+- inner traffic class = outer traffic class
+- PHB is applied based on outer header
 
 ```
 inseg_entry = {
@@ -74,10 +74,10 @@ Described in [RFC3270](https://tools.ietf.org/html/rfc3270#section-2.6.2.1)
 
 Following configuration applies to all above models
 
-At ingress node,
-    inner TTL = inner TTL - 1
-    outer TTL = new TTL
-    outer traffic class = new traffic class
+At ingress node
+- inner TTL = inner TTL - 1
+- outer TTL = new TTL
+- outer traffic class = new traffic class
 
 ```
 nexthop = {
@@ -94,9 +94,9 @@ nexthop = {
 ```
 
 At egress node (with or without PHP)
-    inner TTL = inner TTL - 1
-    PHB is applied based on outer traffic class
-    inner traffic class is untouched
+- inner TTL = inner TTL - 1
+- PHB is applied based on outer traffic class
+- inner traffic class is untouched
 
 ```
 inseg_entry = {
@@ -109,9 +109,12 @@ inseg_entry = {
 
 # TTL and QoS Processing for intermediate label switch routers
 
-Transit nodes will uniformly decrement TTL and use either incoming label (L-LSP) or incoming label(E-LSP) to apply PHB.
+- Transit nodes will uniformly decrement TTL
+- Use either incoming label (L-LSP) or incoming label(E-LSP) to apply PHB.
 
-Outsegment notion is extended to also "SWAP" operation, where incoming label is swapped with either same or different label. For this SAI_OUTSEG_TYPE_SWITCH is used.
+Extending Outsegment notion to also "SWAP" operation, where incoming label is swapped with either same or different label.
+
+For this SAI_OUTSEG_TYPE_SWAP is used.
 
 
 ```
@@ -131,14 +134,18 @@ nexthop = {
     {SAI_NEXT_HOP_ATTR_TYPE, SAI_NEXT_HOP_TYPE_MPLS},
     {SAI_NEXT_HOP_ATTR_IP, <next hop ip>},
     {SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID, <interface object>},
-    {SAI_NEXT_HOP_ATTR_LABELSTACK, <outgoing label stack>},
+    {SAI_NEXT_HOP_ATTR_LABELSTACK, <out going label>},
     _{SAI_NEXT_HOP_ATTR_OUTSEG_TYPE, SAI_OUTSEG_TYPE_SWITCH}_,
 }
 ```
 
-# TTL and QoS Processing for intermediate label switch routers with binding SID
+Note that label stack attribute SAI_NEXT_HOP_ATTR_LABELSTACK is a list of length 1
 
-Exactly same as above except next hop attribute SAI_NEXT_HOP_ATTR_OUTSEG_TYPE value of SAI_OUTSEG_TYPE_PUSH.
+# TTL and QoS Processing for intermediate label switch routers with Binding SID
+
+Intermediate label switch routers swaps top label with label stack.
+
+Exactly same as above except next hop attribute SAI_NEXT_HOP_ATTR_OUTSEG_TYPE value of SAI_OUTSEG_TYPE_PUSH instead of SAI_OUTSEG_TYPE_SWAP.
 
 ```
 inseg_entry = {
@@ -149,7 +156,6 @@ inseg_entry = {
     },
 }
 ```
-
 Note than num pop is 1 even if label being swapped with a label stack.
 
 Pipe mode next hop for Binding SID
@@ -179,3 +185,26 @@ nexthop = {
     _{SAI_NEXT_HOP_ATTR_OUTSEG_EXP_MODE, SAI_OUTSEG_EXP_MODE_UNIFORM}_,
 }
 ```
+
+Note that label stack attribute SAI_NEXT_HOP_ATTR_LABELSTACK is a list of length 1
+
+
+### SAI_OUTSEG_TYPE_SWAP vs SAI_OUTSEG_TYPE_PUSH
+
+Two Outseg types indicate that application must have two separate next hops even if the label stack is same. This is because SAI_OUTSEG_TYPE_PUSH requires TTL and QoS treatment as per above describe models, where as SAI_OUTSEG_TYPE_SWAP uniformly decrements TTL and QoS is based on if incoming label map entry is either E-LSP or L-LSP.
+
+Consider following topology
+```
+--- A --- B --- C---
+```
+
+- Downstream node C is advertises a prefix 1.1.1.0/24 reachable with label 100 to node B.
+- Node B propogates reachability information for prefix 1.1.1.0/24 with label 100 to node A.
+- Node A if receives MPLS traffic with label 100,
+  - Node A will act as transit LSR and swap top label with 100 and forward to B
+  - For this Node A programs next hop having attribute SAI_NEXT_HOP_ATTR_OUTSEG_TYPE of value SAI_OUTSEG_TYPE_SWAP.
+- Node A if receives IP traffic with destination prefix 1.1.1.0/24,
+  - Node A will act as ingress LSR and push label 100
+  - For this Node A programs next hop having attribute SAI_NEXT_HOP_ATTR_OUTSEG_TYPE of value SAI_OUTSEG_TYPE_PUSH
+
+An important point to note that SAI Adapter Host must program two types of next hops even though both next hops have same label stack one for ingress LER operation and one for transit LSR operation. This is done to simplify implementation and enable programming of proper TTL and QoS treatment only for ingress LER operation.

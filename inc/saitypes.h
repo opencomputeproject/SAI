@@ -953,7 +953,7 @@ typedef enum _sai_outseg_type_t
     SAI_OUTSEG_TYPE_PUSH,
 
     /** Out segment of intermediate node, label stack depth is one */
-    SAI_OUTSEG_TYPE_SWITCH,
+    SAI_OUTSEG_TYPE_SWAP,
 
 } sai_outseg_type_t;
 
