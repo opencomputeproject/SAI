@@ -822,7 +822,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     /**
      * @brief Tunnel termination IP address
      *
-     * @type sai_ip_address_t
+     * @type sai_ip_prefix_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP,
