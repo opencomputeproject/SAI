@@ -3646,8 +3646,6 @@ public:
                         attr_list[i].value.u32 = attribute.value.u32;
                         break;
                case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP:
-                        sai_thrift_parse_ip_prefix(attribute.value.ipprefix, &attr_list[i].value.ipprefix);
-                        break;
                case SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP:
                         sai_thrift_parse_ip_address(attribute.value.ipaddr, &attr_list[i].value.ipaddr);
                         break;

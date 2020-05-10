@@ -185,7 +185,6 @@ union sai_thrift_attribute_value_t {
     21: sai_thrift_s32_list_t s32list;
     22: sai_thrift_qos_map_list_t qosmap;
     23: sai_thrift_fdb_values_t fdb_values;
-    24: sai_thrift_ip_prefix_t ipprefix;
 }
 
 struct sai_thrift_attribute_t {
