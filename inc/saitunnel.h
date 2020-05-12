@@ -552,7 +552,7 @@ typedef enum _sai_tunnel_attr_t
      * @brief Tunnel DSCP value (6 bits)
      *
      * @type sai_uint8_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @condition SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE == SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
      */
     SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL,
