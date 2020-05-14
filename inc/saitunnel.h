@@ -533,7 +533,7 @@ typedef enum _sai_tunnel_attr_t
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default 255
      * @validonly SAI_TUNNEL_ATTR_ENCAP_TTL_MODE == SAI_TUNNEL_TTL_MODE_PIPE_MODEL
      */
     SAI_TUNNEL_ATTR_ENCAP_TTL_VAL,
