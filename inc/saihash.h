@@ -55,7 +55,7 @@ typedef enum _sai_native_hash_field_t
      * Used for both IPv4 and IPv6
      */
     SAI_NATIVE_HASH_FIELD_DST_IP,
-    
+
     /** Native hash field inner source IP */
     SAI_NATIVE_HASH_FIELD_INNER_SRC_IP,
 
