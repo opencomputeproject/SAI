@@ -167,7 +167,7 @@ typedef enum _sai_native_hash_field_t
     SAI_NATIVE_HASH_FIELD_MPLS_LABEL_4,
 
     /** No field - for compatibility, must be last */
-    SAI_NATIVE_HASH_FIELD_LAST,
+    SAI_NATIVE_HASH_FIELD_NONE,
 
 } sai_native_hash_field_t;
 
