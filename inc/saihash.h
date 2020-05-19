@@ -44,7 +44,7 @@ typedef enum _sai_native_hash_field_t
      * Also, refers to the outer source IPv4
      * in case for encapsulated packets
      */
-    SAI_NATIVE_HASH_FIELD_SRC_IPV4 = 0,
+    SAI_NATIVE_HASH_FIELD_SRC_IPV4,
 
     /**
      * @brief Native hash field destination IPv4
@@ -52,7 +52,7 @@ typedef enum _sai_native_hash_field_t
      * Also, refers to the outer source IPv4
      * in case for encapsulated packets
      */
-    SAI_NATIVE_HASH_FIELD_DST_IPV4 = 1,
+    SAI_NATIVE_HASH_FIELD_DST_IPV4,
 
     /**
      * @brief Native hash field source IPv6.
@@ -60,7 +60,7 @@ typedef enum _sai_native_hash_field_t
      * Also, refers to the outer source IPv6
      * in case for encapsulated packets
      */
-    SAI_NATIVE_HASH_FIELD_SRC_IPV6 = 2,
+    SAI_NATIVE_HASH_FIELD_SRC_IPV6,
 
     /**
      * @brief Native hash field destination IPv6
@@ -68,82 +68,82 @@ typedef enum _sai_native_hash_field_t
      * Also, refers to the outer source IPv6
      * in case for encapsulated packets
      */
-    SAI_NATIVE_HASH_FIELD_DST_IPV6 = 3,
+    SAI_NATIVE_HASH_FIELD_DST_IPV6,
 
     /** Native hash field inner source IPv4 */
-    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV4 = 4,
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV4,
 
     /** Native hash field inner destination IPv4 */
-    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV4 = 5,
+    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV4,
 
     /** Native hash field inner source IPv6 */
-    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV6 = 6,
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV6,
 
     /** Native hash field inner destination IPv6 */
-    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV6 = 7,
+    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV6,
 
     /** Native hash field vlan id */
-    SAI_NATIVE_HASH_FIELD_VLAN_ID = 8,
+    SAI_NATIVE_HASH_FIELD_VLAN_ID,
 
     /** Native hash field IP protocol */
-    SAI_NATIVE_HASH_FIELD_IP_PROTOCOL = 9,
+    SAI_NATIVE_HASH_FIELD_IP_PROTOCOL,
 
     /** Native hash field Ethernet type */
-    SAI_NATIVE_HASH_FIELD_ETHERTYPE = 10,
+    SAI_NATIVE_HASH_FIELD_ETHERTYPE,
 
     /** Native hash field L4 source port */
-    SAI_NATIVE_HASH_FIELD_L4_SRC_PORT = 11,
+    SAI_NATIVE_HASH_FIELD_L4_SRC_PORT,
 
     /** Native hash field L4 destination port */
-    SAI_NATIVE_HASH_FIELD_L4_DST_PORT = 12,
+    SAI_NATIVE_HASH_FIELD_L4_DST_PORT,
 
     /** Native hash field source MAC */
-    SAI_NATIVE_HASH_FIELD_SRC_MAC = 13,
+    SAI_NATIVE_HASH_FIELD_SRC_MAC,
 
     /** Native hash field destination MAC */
-    SAI_NATIVE_HASH_FIELD_DST_MAC = 14,
+    SAI_NATIVE_HASH_FIELD_DST_MAC,
 
     /** Native hash field source port */
-    SAI_NATIVE_HASH_FIELD_IN_PORT = 15,
+    SAI_NATIVE_HASH_FIELD_IN_PORT,
 
     /** Native hash field inner IP protocol */
-    SAI_NATIVE_HASH_FIELD_INNER_IP_PROTOCOL = 16,
+    SAI_NATIVE_HASH_FIELD_INNER_IP_PROTOCOL,
 
     /** Native hash field inner Ethernet type */
-    SAI_NATIVE_HASH_FIELD_INNER_ETHERTYPE = 17,
+    SAI_NATIVE_HASH_FIELD_INNER_ETHERTYPE,
 
     /** Native hash field inner L4 source port */
-    SAI_NATIVE_HASH_FIELD_INNER_L4_SRC_PORT = 18,
+    SAI_NATIVE_HASH_FIELD_INNER_L4_SRC_PORT,
 
     /** Native hash field inner L4 destination port */
-    SAI_NATIVE_HASH_FIELD_INNER_L4_DST_PORT = 19,
+    SAI_NATIVE_HASH_FIELD_INNER_L4_DST_PORT,
 
     /** Native hash field inner source MAC */
-    SAI_NATIVE_HASH_FIELD_INNER_SRC_MAC = 20,
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_MAC,
 
     /** Native hash field inner destination MAC */
-    SAI_NATIVE_HASH_FIELD_INNER_DST_MAC = 21,
+    SAI_NATIVE_HASH_FIELD_INNER_DST_MAC,
 
     /** Native hash field entire MPLS label stack */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_ALL = 22,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_ALL,
 
     /** Native hash field the top MPLS label */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_0 = 23,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_0,
 
     /** Native hash field second MPLS label from the top */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_1 = 24,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_1,
 
     /** Native hash field third MPLS label from the top */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_2 = 25,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_2,
 
     /** Native hash field fourth MPLS label from the top */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_3 = 26,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_3,
 
     /** Native hash field fifth MPLS label from the top */
-    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_4 = 27,
+    SAI_NATIVE_HASH_FIELD_MPLS_LABEL_4,
 
     /** No field - for compatibility, must be last */
-    SAI_NATIVE_HASH_FIELD_NONE = 28,
+    SAI_NATIVE_HASH_FIELD_LAST,
 
 } sai_native_hash_field_t;
 
