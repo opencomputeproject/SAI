@@ -25,6 +25,8 @@ These use cases will be covered by a concept introduced here called policy-based
 } sai_acl_action_type_t;
 ```
 
+The two action types are not conflicting between one another, but the same action type used more than once for the parralel execution is.
+
 It utilizes the ACL infrastructure with the new actions to set custom hash object for a special ECMP or LAG treatment.
 
 Also, the hash object itself is extended to be able to specify the portions of the fields that we are interested in, like, for example, only some bytes from IPv6 address.
