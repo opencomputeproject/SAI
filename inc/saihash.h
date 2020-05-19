@@ -39,6 +39,30 @@
 typedef enum _sai_native_hash_field_t
 {
     /**
+     * @brief Native hash field source IP.
+     *
+     * Also, refers to the outer source IP
+     * in case for encapsulated packets.
+     * Used for both IPv4 and IPv6
+     */
+    SAI_NATIVE_HASH_FIELD_SRC_IP,
+
+    /**
+     * @brief Native hash field destination IP.
+     *
+     * Also, refers to the outer source IP
+     * in case for encapsulated packets.
+     * Used for both IPv4 and IPv6
+     */
+    SAI_NATIVE_HASH_FIELD_DST_IP,
+    
+    /** Native hash field inner source IP */
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_IP,
+
+    /** Native hash field inner destination IP */
+    SAI_NATIVE_HASH_FIELD_INNER_DST_IP,
+
+    /**
      * @brief Native hash field source IPv4.
      *
      * Also, refers to the outer source IPv4
