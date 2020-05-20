@@ -382,6 +382,19 @@ typedef enum _sai_tunnel_dscp_mode_t
      * field of inner header remains the same on decapsulation.
      */
     SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
+    
+    /**
+     * @brief The map model
+     *
+     * Where the DSCP field in outer header is based on mapping of 
+     * incoming packet's DSCP or .1q fields. This provides a way to map incoming
+     * IP or non-IP packet QoS values to tunnel QoS domain.
+     *
+     * DSCP field is user-defined as per the map profile for outer header on 
+     * encapsulation. Reverse mapping of DSCP to DSCP or .1q field of inner header
+     * is done on decapsulation.
+     */
+    SAI_TUNNEL_DSCP_MODE_MAP_MODEL
 
 } sai_tunnel_dscp_mode_t;
 
