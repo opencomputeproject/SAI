@@ -784,7 +784,7 @@ typedef sai_status_t (*sai_clear_tunnel_stats_fn)(
  */
 typedef enum _sai_tunnel_term_table_entry_type_t
 {
-    /** Tunnel termination table point to point entry match on dst & src IP address & tunnel type */
+    /** Tunnel termination table point to point entry match on dst & src IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
 
     /** Tunnel termination table point to multi point entry match on src IP+mask & dst IP & tunnel type */
@@ -841,7 +841,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * @type sai_ip_address_t
      * @flags CREATE_ONLY
      * @default 0.0.0.0
-     * @validonly SAI_TUNNEL_ATTR_PEER_MODE == SAI_TUNNEL_PEER_MODE_MP2P or SAI_TUNNEL_ATTR_PEER_MODE == SAI_TUNNEL_PEER_MODE_MP2MP
+     * @validonly SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_PEER_MODE_MP2P or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_PEER_MODE_MP2MP
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP_MASK,
 
@@ -861,7 +861,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * @type sai_ip_address_t
      * @flags CREATE_ONLY
      * @default 0.0.0.0
-     * @validonly SAI_TUNNEL_ATTR_PEER_MODE == SAI_TUNNEL_PEER_MODE_P2MP or SAI_TUNNEL_ATTR_PEER_MODE == SAI_TUNNEL_PEER_MODE_MP2MP
+     * @validonly SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_PEER_MODE_P2MP or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_PEER_MODE_MP2MP
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP_MASK,
 
