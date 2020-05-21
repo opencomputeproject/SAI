@@ -381,20 +381,20 @@ typedef enum _sai_tunnel_dscp_mode_t
      * DSCP field is user-defined for outer header on encapsulation. DSCP
      * field of inner header remains the same on decapsulation.
      */
-    SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
-    
+    SAI_TUNNEL_DSCP_MODE_PIPE_MODEL,
+
     /**
      * @brief The map model
      *
-     * Where the DSCP field in outer header is based on mapping of 
-     * incoming packet's DSCP or .1q fields. This provides a way to map incoming
-     * IP or non-IP packet QoS values to tunnel QoS domain.
+     * Where the DSCP field in outer header is based on mapping of
+     * incoming packet's DSCP or 1p fields. This provides a way to map incoming
+     * IP or non-IP packet QOS values to tunnel QOS domain.
      *
-     * DSCP field is user-defined as per the map profile for outer header on 
-     * encapsulation. Reverse mapping of DSCP to DSCP or .1q field of inner header
-     * is done on decapsulation.
+     * DSCP field is user-defined as per the map profile for outer header on
+     * encapsulation. Reverse mapping of DSCP to DSCP or 1p field of inner
+     * header is done on decapsulation.
      */
-    SAI_TUNNEL_DSCP_MODE_MAP_MODEL
+    SAI_TUNNEL_DSCP_MODE_QOS_MAP_MODEL
 
 } sai_tunnel_dscp_mode_t;
 
@@ -659,6 +659,40 @@ typedef enum _sai_tunnel_attr_t
      * @objects SAI_OBJECT_TYPE_TUNNEL_TERM_TABLE_ENTRY
      */
     SAI_TUNNEL_ATTR_TERM_TABLE_ENTRY_LIST,
+
+    /**
+     * @brief Enable DSCP -> TC MAP on Tunnel Decap
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TUNNEL_ATTR_DECAP_QOS_DSCP_TO_TC_MAP,
+
+    /**
+     * @brief Enable DSCP -> COLOR MAP on Tunnel Decap
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TUNNEL_ATTR_DECAP_QOS_DSCP_TO_COLOR_MAP,
+
+    /**
+     * @brief Enable TC AND COLOR -> DSCP MAP on Tunnel Encap
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE == SAI_TUNNEL_DSCP_MODE_QOS_MAP_MODEL
+     */
+    SAI_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
     /**
      * @brief End of attributes
