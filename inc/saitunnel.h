@@ -794,7 +794,7 @@ typedef enum _sai_tunnel_term_table_entry_type_t
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2P,
 
     /** Tunnel termination table point to multi point entry match on src IP+mask & dst IP+mask & tunnel type */
-    SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2P,
+    SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2MP,
 
 } sai_tunnel_term_table_entry_type_t;
 
