@@ -787,13 +787,13 @@ typedef enum _sai_tunnel_term_table_entry_type_t
     /** Tunnel termination table point to point entry match on dst & src IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
 
-    /** Tunnel termination table point to multi point entry match on src IP+mask & dst IP & tunnel type */
+    /** Tunnel termination table point to multi point entry match on dst IP & src IP+mask & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP,
 
     /** Tunnel termination table point to multi point entry match on dst IP+mask & src IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2P,
 
-    /** Tunnel termination table point to multi point entry match on src IP+mask & dst IP+mask & tunnel type */
+    /** Tunnel termination table point to multi point entry match on dst IP+mask & src IP+mask & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2MP,
 
 } sai_tunnel_term_table_entry_type_t;
@@ -830,7 +830,6 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @default 0.0.0.0
      * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP,
@@ -850,7 +849,6 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @default 0.0.0.0
      * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2P
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP,
