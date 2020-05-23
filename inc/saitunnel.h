@@ -829,8 +829,8 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * @brief Tunnel termination IP address
      *
      * @type sai_ip_address_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP
+     * @flags CREATE_ONLY
+     * @default 0.0.0.0
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP,
 
@@ -848,8 +848,8 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * @brief Tunnel source IP address
      *
      * @type sai_ip_address_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2P
+     * @flags CREATE_ONLY
+     * @default 0.0.0.0
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP,
 
