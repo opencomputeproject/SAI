@@ -458,7 +458,7 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
 
     /**
-     * @brief List of SAI ports to be excluded (disabled) from the trap generation
+     * @brief List of SAI ports, vlans, rifs to be excluded (disabled) from the trap generation
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
