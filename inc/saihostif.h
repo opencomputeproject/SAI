@@ -167,7 +167,7 @@ typedef enum _sai_hostif_trap_exclude_list_attr_t
     SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_START,
 
     /**
-     * @brief List of ports to be excluded (disabled) from the trap generation
+     * @brief List of ports to be excluded (disabled) from the trap flooding
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
@@ -177,7 +177,7 @@ typedef enum _sai_hostif_trap_exclude_list_attr_t
     SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_PORT = SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_START,
 
     /**
-     * @brief List of vlan to be excluded (disabled) from the trap generation
+     * @brief List of vlan to be excluded (disabled) from the trap flooding
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
@@ -187,7 +187,7 @@ typedef enum _sai_hostif_trap_exclude_list_attr_t
     SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_VLAN,
 
     /**
-     * @brief List of router interface to be excluded (disabled) from the trap generation
+     * @brief List of router interface to be excluded (disabled) from the trap flooding
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
@@ -410,6 +410,12 @@ typedef enum _sai_hostif_trap_type_t
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN = 0x00002011,
+
+    /** Default packet action is forward */
+    SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_SOLICITATION = 0x00002012,
+
+    /** Default packet action is forward */
+    SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_ADVERTISEMENT = 0x00002013,
 
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
