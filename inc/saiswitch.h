@@ -2142,14 +2142,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP,
 
     /**
-     * @brief Up to 4 TPID can be configured on this switch to any port/LAG
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_TPID_CONFIGURABLE,
-
-    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
