@@ -155,6 +155,113 @@ typedef sai_status_t (*sai_get_hostif_trap_group_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Host interface trap exclude list
+ *
+ * This object contains the exclude object list for suppressing the traps
+ */
+typedef enum _sai_hostif_trap_exclude_list_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_START,
+
+    /**
+     * @brief List of ports to be excluded (disabled) from the trap generation
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @default empty
+     */
+    SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_PORT = SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_START,
+
+    /**
+     * @brief List of vlan to be excluded (disabled) from the trap generation
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_VLAN
+     * @default empty
+     */
+    SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_VLAN,
+
+    /**
+     * @brief List of router interface to be excluded (disabled) from the trap generation
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
+     * @default empty
+     */
+    SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_RIF,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_END,
+
+    /** Custom range start */
+    SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** Custom range end */
+    SAI_HOSTIF_TRAP_EXCLUDE_LIST_ATTR_CUSTOM_RANGE_END
+
+} sai_hostif_trap_exclude_list_attr_t;
+
+/**
+ * @brief Create host interface exclude list for trap
+ *
+ * @param[out] hostif_trap_exclude_list_id Host interface trap exclude id
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_hostif_trap_exclude_list_fn)(
+        _Out_ sai_object_id_t *hostif_trap_exclude_list_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove host interface exclude list for trap
+ *
+ * @param[in] hostif_trap_exclude_list_id Host interface trap exclude list id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_hostif_trap_exclude_list_fn)(
+        _In_ sai_object_id_t hostif_trap_exclude_list_id);
+
+/**
+ * @brief Set trap exclude list attribute value.
+ *
+ * @param[in] hostif_trap_exclude_list_id Host interface trap exclude list id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_hostif_trap_exclude_list_attribute_fn)(
+        _In_ sai_object_id_t hostif_trap_exclude_list_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get trap exclude list attribute value.
+ *
+ * @param[in] hostif_trap_exclude_list_id Host interface trap exclude list id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_hostif_trap_exclude_list_attribute_fn)(
+        _In_ sai_object_id_t hostif_trap_exclude_list_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief Host interface trap type
  *
  * @flags Contains flags
@@ -458,7 +565,8 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_TRAP_PRIORITY,
 
     /**
-     * @brief List of SAI ports, vlans, rifs to be excluded (disabled) from the trap generation
+     * @brief List of SAI ports to be excluded (disabled) from the trap generation
+     * This attribute is deprecated, use the exlcude_list attribute instead.
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
@@ -467,6 +575,17 @@ typedef enum _sai_hostif_trap_attr_t
      * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
      */
     SAI_HOSTIF_TRAP_ATTR_EXCLUDE_PORT_LIST,
+
+    /**
+     * @brief List of objects to be excluded (disabled) from the trap generation
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_TRAP_EXCLUDE_LIST
+     * @default empty
+     * @validonly SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRAP or SAI_HOSTIF_TRAP_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY
+     */
+    SAI_HOSTIF_TRAP_ATTR_EXCLUDE_LIST,
 
     /**
      * @brief Trap group ID for the trap
@@ -1300,6 +1419,10 @@ typedef struct _sai_hostif_api_t
     sai_get_hostif_user_defined_trap_attribute_fn  get_hostif_user_defined_trap_attribute;
     sai_recv_hostif_packet_fn                      recv_hostif_packet;
     sai_send_hostif_packet_fn                      send_hostif_packet;
+    sai_create_hostif_trap_exclude_list_fn         create_hostif_trap_exclude_list;
+    sai_remove_hostif_trap_exclude_list_fn         remove_hostif_trap_exclude_list;
+    sai_set_hostif_trap_exclude_list_attribute_fn  set_hostif_trap_exclude_list_attribute;
+    sai_get_hostif_trap_exclude_list_attribute_fn  get_hostif_trap_exclude_list_attribute;
 } sai_hostif_api_t;
 
 /**
