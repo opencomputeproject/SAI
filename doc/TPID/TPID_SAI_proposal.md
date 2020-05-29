@@ -46,12 +46,31 @@ packet passing through it. One way to achieve this is to use the
 "one sided" 802.1Q tunneling feature. The 802.1Q Tunneling feature can be
 achieved by allowing the SONiC fanout switch ports facing the DUT to be
 configured with a TPID value that is different from the received
-packet's TPID value. The HW will treat this "non-matching TPID" packet
-as "untagged". This will achieve the "one-sided" 802.1q tunneling
-capability that in turns allow the SONiC fanout switch configuration to
-remain unchanged during both **T1** and **T0** test runs. The following test
-topology diagrams depict how the packet is traversed through the fanout
-fabric switches between PTF and DUT during different test modes.
+packet's TPID value. Please note that the TPID configuration support needs
+to be configurable at port level and NOT at system level as it will not be 
+able to solve our current issue. The port's configured TPID value is used 
+during ingress packet parsing to determine if the packet received contains
+a valid 802.1Q VLAN tag. If the TPID of the received packet matches that of
+the configured port TPID, then the packet is "Tagged". If TPID missmatches,
+then the HW shall treat the received packet as an "untagged packet".  
+There are no pipeline processing changes required with this proposal. The TPID
+is merely used on ingress packet parsing logic to determine whether the packet 
+is "tagged" or "untagged". If the port is confgiured as an ACCESS port (to 
+accept untagged packets), it shall treat the received mismatched TPID packet
+as a valid "untagged" packet and forward it accordingly. If the port is 
+configured as a TRUNK port, the configured Port TPID value will be used during
+ingress packet parsing so that the VLAN_ID of the received packet is meaningful
+only if the packet's TPID matches that of the port's confgiured TPID value.
+On egress, if the outgoing packet needs to be "tagged" such as going out of a 
+TRUNK port, the HW shall use the configured port TPID value to generate the 
+802.1Q VLAN Tag for the outgoing packet.
+![Tagged/Untagged Frame Format](FrameFormat.png)
+Figure . Tagged/Untagged Frame Format
+
+With TPID setting supported on the interface, it allows the SONiC fanout 
+switch configuration to remain unchanged during both **T1** and **T0** test 
+runs. The following test topology diagrams depict how the packet is traversed 
+through the fanout fabric switches between PTF and DUT during different test modes.
 ![T1 Testing Topology](T1_Topo_image.png)
 Figure . **T1** Testing Topology
 
@@ -159,7 +178,7 @@ typedef sai_status_t (*sai_create_port_fn)(
 
 At run time, the TPID attribute of a port/LAG is allowed to be
 configured to one of the 4 commonly used TPIDs (0x8100, 0x9100, 0x9200,
-and 0xAAB8) that the user specified. Although ideally any TPID values
+and 0x88A8) that the user specified. Although ideally any TPID values
 can be used but to simplify the management of TPID resource tracking by
 SONiC, SAI can claim TPID attribute is supported when it allows setting
 of any of the above commonly used TPID values on any given port/LAG
@@ -212,53 +231,55 @@ typedef sai_status_t (*sai_set_lag_attribute_fn)(
 **SAI TPID HW Resource Capability Query Support:**
 --------------------------------------------------
 
-For some hardware SKU there may be a HW limitation as to TPID
-configuration on the physical interface is supported. This limitation
-shall be made known to the SONiC application so that a configuration
-precheck can be performed as part of any TPID config validation. The new
-switch attribute "SAI\_SWITCH\_ATTR\_TPID\_CONFIGURABLE" allows the
-
-HW SKU to specify whether it support this feature to set TPID to any of
-the commonly used TPID values to any port/LAG specified. At boot up
-time, this attribute is queried by SONIC Application. If SAI supports
-this TPID config attribute, the response value for this new attribute
-should be set to "1". If TPID config is NOT supported, the corresponding
-api return status should fail with SAI_STATUS_ATTR_NOT_SUPPORTED_xxx or 
-SAI_STATUS_ATTR_NOT_IMPLEMENTED_xxx. 
-
+For some hardware SKU there may be a HW limitation on supporting TPID
+configuration over the physical interface. This limitation shall be made 
+known to the SONiC application so that a configuration precheck can be 
+performed as part of any user TPID config validation. The application will
+utilize the existing SAI API "sai_query_attribute_capability()"
+to query for the support of the new Port/LAG attribute "SAI_PORT_ATTR_TPID"/
+"SAI_LAG_ATTR_TPID".  If these new TPID attributes are supported, SAI shall
+respond with "create_implemented = 1, set_implemented = 1, and 
+get_implemented = 1" when responding from the "sai_query_attribute_capability()"
+API call.
 ```
 /**
- * @brief Attribute Id in sai_set_switch_attribute() and
- * sai_get_switch_attribute() calls
- */
-typedef enum _sai_switch_attr_t
-{
-    …
-    /**
-     * @brief Up to 4 TPIDs can be configured on this switch to any port/LAG
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_TPID_CONFIGURABLE,
-    …
-} sai_switch_attr_t;
-```
-Use the existing SAI API “sai_get_switch_attribute_fn()” to obtain this new switch attribute.
-```
-/**
- * @brief Get switch attribute value
+ * @brief Query attribute capability
  *
- * @param[in] switch_id Switch id
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of switch attributes
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[in] attr_id SAI attribute ID
+ * @param[out] attr_capability Capability per operation
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_get_switch_attribute_fn)(
+sai_status_t sai_query_attribute_capability(
         _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
+        _In_ sai_object_type_t object_type,
+        _In_ sai_attr_id_t attr_id,
+        _Out_ sai_attr_capability_t *attr_capability);
+```
+The definition of "sai_attr_capability_t" is posted here for reference sake.
+```
+/**
+ * @brief Structure for attribute capabilities per operation
+ */
+typedef struct _sai_attr_capability_t
+{
+    /**
+     * @brief Create is implemented
+     */
+    bool create_implemented;
+
+    /**
+     * @brief Set is implemented
+     */
+    bool set_implemented;
+
+    /**
+     * @brief Get is implemented
+     */
+    bool get_implemented;
+} sai_attr_capability_t;
 ```
 
 **LAG Member TPID Behavior:**
