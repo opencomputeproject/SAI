@@ -37,7 +37,6 @@ sai_switch_api_t* sai_switch_api;
 std::map<std::string, std::string> gProfileMap;
 std::map<std::set<int>, std::string> gPortMap;
 
-std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>>gFdbMap;
 
 sai_object_id_t gSwitchId; ///< SAI switch global object ID.
 
@@ -70,6 +69,7 @@ void on_fdb_event(_In_ uint32_t count,
            
     sai_fdb_entry_t fdb_m;
     sai_object_id_t b_id;
+    extern std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>> gFdbMap;
       
     switch (event_type)
     {   
