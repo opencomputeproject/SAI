@@ -82,6 +82,8 @@ extern sai_object_id_t gSwitchId;
 
 typedef std::vector<sai_thrift_attribute_t> std_sai_thrift_attr_vctr_t;
 
+std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>>gFdbMap;
+
 class switch_sai_rpcHandler : virtual public switch_sai_rpcIf {
 public:
     switch_sai_rpcHandler() noexcept
@@ -767,8 +769,6 @@ public:
       sai_object_id_t bport_id;
       sai_fdb_entry_t fdb_entry;  
              
-      extern std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>> gFdbMap;
- 
       thrift_attr_list.attr_count = gFdbMap.size();
       
       sai_fdb_entry_t fdb_m;
