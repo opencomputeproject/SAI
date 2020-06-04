@@ -1096,6 +1096,9 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief GRE key
      *
+     * The key is dedicated for GRE packets.
+     * The VNI key should not be used for matching on GRE packets or NVGRE packets.
+     *
      * @type bool
      * @flags CREATE_ONLY
      * @default false
