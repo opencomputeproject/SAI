@@ -406,14 +406,14 @@ typedef sai_status_t (*sai_get_hash_attribute_fn)(
  */
 typedef struct _sai_hash_api_t
 {
-    sai_create_fine_grained_hash_field_fn          create_fine_grained_hash_field;
-    sai_remove_fine_grained_hash_field_fn          remove_fine_grained_hash_field;
-    sai_set_fine_grained_hash_field_attribute_fn   set_fine_grained_hash_field_attribute;
-    sai_get_fine_grained_hash_field_attribute_fn   get_fine_grained_hash_field_attribute;
     sai_create_hash_fn                             create_hash;
     sai_remove_hash_fn                             remove_hash;
     sai_set_hash_attribute_fn                      set_hash_attribute;
     sai_get_hash_attribute_fn                      get_hash_attribute;
+    sai_create_fine_grained_hash_field_fn          create_fine_grained_hash_field;
+    sai_remove_fine_grained_hash_field_fn          remove_fine_grained_hash_field;
+    sai_set_fine_grained_hash_field_attribute_fn   set_fine_grained_hash_field_attribute;
+    sai_get_fine_grained_hash_field_attribute_fn   get_fine_grained_hash_field_attribute;
 
 } sai_hash_api_t;
 
