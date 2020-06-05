@@ -222,17 +222,6 @@ typedef enum _sai_fine_grained_hash_field_attr_t
     SAI_FINE_GRAINED_HASH_FIELD_ATTR_SEQUENCE_ID,
 
     /**
-     * @brief UDF group ID. Used instead of a native field.
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_UDF_GROUP
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_FINE_GRAINED_HASH_FIELD_ATTR_UDF_GROUP_ID,
-
-    /**
      * @brief End of attributes
      */
     SAI_FINE_GRAINED_HASH_FIELD_ATTR_END,
