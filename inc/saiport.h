@@ -369,6 +369,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_SCHEDULER_GROUP_LIST,
 
     /**
+     * @brief The maximum accumulative headroom size of a port
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_QOS_MAXIMUM_ACCUMULATIVE_HEADROOM_SIZE,
+
+    /**
      * @brief Query list of supported port speed(full-duplex) in Mbps
      *
      * @type sai_u32_list_t
