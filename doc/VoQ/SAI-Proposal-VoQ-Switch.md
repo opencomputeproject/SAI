@@ -380,10 +380,10 @@ System port configuration can be retrieved by using the SAI_SYSTEM_PORT_ATTR_CON
  */
 typedef enum _sai_system_port_type_t
 {
-    /** Local to line card */
+    /** Local to switch */
     SAI_SYSTEM_PORT_TYPE_LOCAL,
 
-    /** Remote to line card */
+    /** Remote switch */
     SAI_SYSTEM_PORT_TYPE_REMOTE,
 
 } sai_system_port_type_t;
@@ -707,6 +707,34 @@ typedef enum _sai_lag_member_attr_t
 } sai_lag_member_attr_t;
 ```
 
+A new attribute called SAI_LAG_ATTR_SYSTEM_PORT_AGGREGATE_ID is introduced to allow applications to manage allocation of system port aggregate IDs for LAGs.
+The system port aggregate ID associated with the LAG must be the same value across all other VOQ switches in the system. The system port aggregate ID range 
+is from 1 to SAI_SWITCH_ATTR_NUMBER_OF_LAGS. A default value of 0 means this field is not used and SAI will allocate system port aggregate ID internally.
+
+```c
+typedef enum _sai_lag_attr_t
+{
+    ... 
+    /**
+     * @brief LAG system port ID
+     *
+     * The application must manage the allocation of the system port aggregate IDs
+     * associated with the LAG for consistency across all switches in a VOQ based
+     * system. The system port aggregate ID range is from 1 to SAI_SWITCH_ATTR_NUMBER_OF_LAGS.
+     * The default value of 0 means this field is not used and SAI will allocate the system
+     * port aggregate ID internally.
+     * Valid only when SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_LAG_ATTR_SYSTEM_PORT_AGGREGATE_ID,
+    ...
+} sai_lag_attr_t; 
+
+```
+
 ### 2.3.8 New Ports Stats
 
 New statistics for fabric ports on switch and fabric devices. Note that FEC statistics can also apply to other physical port types.
@@ -918,7 +946,7 @@ typedef enum _sai_neighbor_entry_attr_t
     /**       
      * @brief Encapsulation Index
      *
-     * Defines the neighbor’s encapsulation index when local allocation is not desired
+     * Defines the neighbor’s encapsulation index
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET

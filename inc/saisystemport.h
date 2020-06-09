@@ -38,10 +38,10 @@
  */
 typedef enum _sai_system_port_type_t
 {
-    /** Local to line card */
+    /** Local to switch */
     SAI_SYSTEM_PORT_TYPE_LOCAL,
 
-    /** Remote to line card */
+    /** Remote switch */
     SAI_SYSTEM_PORT_TYPE_REMOTE,
 
 } sai_system_port_type_t;
@@ -113,6 +113,20 @@ typedef enum _sai_system_port_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_SYSTEM_PORT_ATTR_CONFIG_INFO,
+
+    /**
+     * @brief Enable TC -> VOQ MAP on system port
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on system port.
+     * Default no map, i.e. all packets to VOQ 0.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SYSTEM_PORT_ATTR_QOS_TC_TO_QUEUE_MAP,
 
     /**
      * @brief End of attributes

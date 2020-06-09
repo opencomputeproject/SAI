@@ -982,6 +982,9 @@ typedef enum _sai_outseg_exp_mode_t
 /**
  * @brief System port configuration attributes
  *
+ * Speed parameter should be the same value as SAI_PORT_ATTR_SPEED.
+ * This is used for VOQ scheduling.
+ *
  * All elements are mandatory
  */
 typedef struct _sai_system_port_config_t
@@ -998,7 +1001,7 @@ typedef struct _sai_system_port_config_t
     /** Port Index within the core associated with the system port */
     uint32_t attached_core_port_index;
 
-    /** Speed of the system port. Used for VOQ scheduling */
+    /** Speed of the system port */
     uint32_t speed;
 
     /** Number of Virtual Output Queues associated with the system port */

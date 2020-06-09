@@ -50,7 +50,7 @@ typedef enum _sai_neighbor_entry_attr_t
 
     /**
      * @brief Destination MAC address for the neighbor
-     * validonly SAI_NEIGHBOR_ENTRY_ATTR_IS_LOCAL == true
+     * Valid only when SAI_NEIGHBOR_ENTRY_ATTR_IS_LOCAL == true
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -119,7 +119,7 @@ typedef enum _sai_neighbor_entry_attr_t
     /**
      * @brief Encapsulation Index
      *
-     * Defines the neighbor's encapsulation index when local allocation is not desired
+     * Defines the neighbor's encapsulation index
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
