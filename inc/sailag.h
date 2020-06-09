@@ -145,7 +145,8 @@ typedef enum _sai_lag_attr_t
      * @brief LAG Name
      *
      * @type char
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
+     * @default \"\"
      */
     SAI_LAG_ATTR_NAME,
 
