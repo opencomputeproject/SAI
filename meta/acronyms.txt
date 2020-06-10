@@ -11,6 +11,7 @@ BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
 BOS - Bottom Of Stack
 CAM - Content Addressable Memory
+CAUI - 100 Gigabit Attachment Unit Interface
 CB - Callback
 CBS - Committed Burst Size
 CCITT - Comite Consultatif International de Telegraphique et Telephonique
@@ -38,6 +39,7 @@ FDB - Forwarding Data Base
 FEC - Forward Error Correction
 FPGA - Field Programmable Gate Array
 GCM - Galois Counter Mode
+GMII - Gigabit Media-Independent Interface
 GPB - Google Protocol Buffers
 GRE - Generic Routing Encapsulation
 GRPC - GRPC Remote Procedure Call
@@ -92,6 +94,7 @@ SAI - Switch Abstraction Interface
 SCI - Secure Channel Identifier
 SC - Secure Channel
 SDK - Software Development Kit
+SFI - SerDes Framer Interface
 SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
 SNAT - Source Network Address Translation
@@ -122,6 +125,7 @@ WCMP - Weighted Cost Multipath
 WRED - Weighted Random Early Detection
 WWW - World Wide Web
 XG - (*,G) Any-source Multicast
+XLAUI - 40 Gbps Attachment Unit Interface
 XPN - Extended Packet Number
 XOFF - Transmitter Off
 XON - Transmitter On
