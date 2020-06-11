@@ -1499,6 +1499,16 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP,
 
     /**
+     * @brief TPID
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0x8100
+     */
+    SAI_PORT_ATTR_TPID,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
