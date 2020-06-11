@@ -142,6 +142,16 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_DROP_TAGGED,
 
     /**
+     * @brief TPID
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0x8100
+     */
+    SAI_LAG_ATTR_TPID,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_ATTR_END,
