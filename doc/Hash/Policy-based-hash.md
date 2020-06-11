@@ -73,10 +73,6 @@ The example below provides a complete view of the capabilities of the policy-bas
  attr.value.s32 = SAI_NATIVE_HASH_FIELD_INNER_IP_PROTOCOL;
  attrs.push_back(attr);
  
- attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_U8_MASK;
- attr.value.u8 = 0xff;
- attrs.push_back(attr);
- 
  attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_SEQUENCE_ID;
  attr.value.u32 = 0;
  attrs.push_back(attr);
@@ -86,13 +82,10 @@ The example below provides a complete view of the capabilities of the policy-bas
 	gSwitchId,
 	(uint32_t)attrs.size(),
 	attrs.data());
+ attrs.clear()
   
  attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD;
  attr.value.s32 = SAI_NATIVE_HASH_FIELD_INNER_L4_SRC_PORT;
- attrs.push_back(attr);
- 
- attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_U16_MASK;
- attr.value.u16 = 0xffff;
  attrs.push_back(attr);
  
  attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_SEQUENCE_ID;
@@ -104,13 +97,10 @@ The example below provides a complete view of the capabilities of the policy-bas
 	gSwitchId,
 	(uint32_t)attrs.size(),
 	attrs.data());
+ attrs.clear()
   
  attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD;
  attr.value.s32 = SAI_NATIVE_HASH_FIELD_INNER_L4_DST_PORT;
- attrs.push_back(attr);
- 
- attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_U16_MASK;
- attr.value.u16 = 0xffff;
  attrs.push_back(attr);
  
  attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_SEQUENCE_ID;
@@ -122,6 +112,7 @@ The example below provides a complete view of the capabilities of the policy-bas
 	gSwitchId,
 	(uint32_t)attrs.size(),
 	attrs.data());
+ attrs.clear()
   
  attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD;
  attr.value.s32 = SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV6;
@@ -140,8 +131,9 @@ The example below provides a complete view of the capabilities of the policy-bas
 	gSwitchId,
 	(uint32_t)attrs.size(),
 	attrs.data());
+ attrs.clear()
   
-  attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD;
+ attr.id = SAI_FINE_GRAINED_HASH_FIELD_ATTR_NATIVE_HASH_FIELD;
  attr.value.s32 = SAI_NATIVE_HASH_FIELD_INNER_DST_IPV6;
  attrs.push_back(attr);
  
@@ -158,6 +150,7 @@ The example below provides a complete view of the capabilities of the policy-bas
 	gSwitchId,
 	(uint32_t)attrs.size(),
 	attrs.data());
+ attrs.clear()
 
 /*****************************************************
  * Create a hash object for the inner IPv6
@@ -165,7 +158,7 @@ The example below provides a complete view of the capabilities of the policy-bas
 
  attr.id = SAI_HASH_ATTR_FINE_GRAINED_FIELD_LIST;
  attr.value.objlist.count = 5;
- attr.value.objlist.list = [ ip_proto_id, src_port_id, dst_port_id, src_ip_id, dst_ip_id ];
+ attr.value.objlist.list = [ ip_proto_oid, src_port_oid, dst_port_oid, src_ip_oid, dst_ip_oid ];
  attrs.push_back(attr);
  
  status = sai_hash_api->create_hash(
@@ -173,6 +166,7 @@ The example below provides a complete view of the capabilities of the policy-bas
 	gSwitchId,
 	(uint32_t)attrs.size(),
 	attrs.data());
+ attrs.clear()
 	
 /*****************************************************
  * Define ACL table
@@ -192,11 +186,12 @@ The example below provides a complete view of the capabilities of the policy-bas
 	gSwitchId,
 	(uint32_t)attrs.size(),
 	attrs.data());
+ attrs.clear()
 	
  /*****************************************************
  * Define ACL rule
  *****************************************************/	
- sai_object_id_t st_rule_oid, inner_v4_rule_oid;
+ sai_object_id_t rule_oid;
  
  attr.id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
  attr.value.oid = table_oid;
@@ -211,9 +206,10 @@ The example below provides a complete view of the capabilities of the policy-bas
  attr.value.oid = inner_hash_oid;
  
  status = sai_acl_api->create_acl_rule(
-	&st_rule_oid,
+	&rule_oid,
 	gSwitchId,
 	(uint32_t)attrs.size(),
 	attrs.data());
+ attrs.clear()
 
 ```
