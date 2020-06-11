@@ -134,7 +134,8 @@ typedef enum _sai_vlan_attr_t
      * @brief Vlan Type
      *
      * @type sai_vlan_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
+     * @default SAI_VLAN_TYPE_DATA
      */
     SAI_VLAN_ATTR_VLAN_TYPE,
 
