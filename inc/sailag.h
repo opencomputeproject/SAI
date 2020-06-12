@@ -150,7 +150,7 @@ typedef enum _sai_lag_attr_t
      * @default 0x8100
      */
     SAI_LAG_ATTR_TPID,
-   
+
     /**
      * @brief LAG Name
      *
