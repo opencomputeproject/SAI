@@ -51,7 +51,7 @@ typedef enum _sai_next_hop_type_t
     SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST,
 
     /** IPv6 Segment Route Endpoint Function */
-    SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
+    SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT,
 
 } sai_next_hop_type_t;
 
@@ -228,6 +228,70 @@ typedef enum _sai_next_hop_attr_t
      * @default false
      */
     SAI_NEXT_HOP_ATTR_DECREMENT_TTL,
+
+    /**
+     * @brief MPLS Outsegment type
+     *
+     * @type sai_outseg_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_OUTSEG_TYPE_SWAP
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS
+     */
+    SAI_NEXT_HOP_ATTR_OUTSEG_TYPE,
+
+    /**
+     * @brief MPLS Outsegment TTL mode
+     *
+     * @type sai_outseg_ttl_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_OUTSEG_TTL_MODE_UNIFORM
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH
+     */
+    SAI_NEXT_HOP_ATTR_OUTSEG_TTL_MODE,
+
+    /**
+     * @brief MPLS Outsegment TTL value for pipe mode
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH and SAI_NEXT_HOP_ATTR_OUTSEG_TTL_MODE == SAI_OUTSEG_TTL_MODE_PIPE
+     */
+    SAI_NEXT_HOP_ATTR_OUTSEG_TTL_VALUE,
+
+    /**
+     * @brief MPLS Outsegment MPLS EXP mode
+     *
+     * @type sai_outseg_exp_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_OUTSEG_EXP_MODE_UNIFORM
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH
+     */
+    SAI_NEXT_HOP_ATTR_OUTSEG_EXP_MODE,
+
+    /**
+     * @brief MPLS Outsegment EXP value for pipe mode
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH and SAI_NEXT_HOP_ATTR_OUTSEG_TTL_MODE == SAI_OUTSEG_TTL_MODE_PIPE
+     */
+    SAI_NEXT_HOP_ATTR_OUTSEG_EXP_VALUE,
+
+    /**
+     * @brief TC AND COLOR -> MPLS EXP MAP for Uniform Mode
+     *
+     * If present overrides SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP and SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH and SAI_NEXT_HOP_ATTR_OUTSEG_TTL_MODE == SAI_OUTSEG_TTL_MODE_UNIFORM
+     */
+    SAI_NEXT_HOP_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP,
 
     /**
      * @brief End of attributes
