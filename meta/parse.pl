@@ -452,6 +452,18 @@ sub ProcessEnumSection
             if ($eitemd =~ /\@ignore/)
             {
                 LogInfo "Ignoring $enumvaluename";
+
+                # process ignore attributes
+
+                if (not defined $SAI_ENUMS{$enumtypename}{ignoreval})
+                {
+                    my @ignoreval = ();
+                    $SAI_ENUMS{$enumtypename}{ignoreval} = \@ignoreval;
+                }
+
+                my $ref = $SAI_ENUMS{$enumtypename}{ignoreval};
+                push @$ref, $enumvaluename;
+
                 next;
             }
 
@@ -962,6 +974,31 @@ sub ProcessSingleEnum
     WriteSource "NULL";
     WriteSource "};";
 
+    if (defined $enum->{ignoreval})
+    {
+        my @ignoreval = @{ $enum->{ignoreval} };
+
+        WriteSource "const $typedef sai_metadata_${typedef}_enum_ignore_values[] = {";
+
+        for my $value (@ignoreval)
+        {
+            WriteSource "$value,";
+        }
+
+        WriteSource "-1"; # guard
+        WriteSource "};";
+
+        WriteSource "const char* const sai_metadata_${typedef}_enum_ignore_values_names[] = {";
+
+        for my $value (@ignoreval)
+        {
+            WriteSource "\"$value\",";
+        }
+
+        WriteSource "NULL";
+        WriteSource "};";
+    }
+
     my $count = @values;
 
     WriteHeader "extern const sai_enum_metadata_t sai_metadata_enum_$typedef;";
@@ -973,6 +1010,18 @@ sub ProcessSingleEnum
     WriteSource ".valuesnames       = sai_metadata_${typedef}_enum_values_names,";
     WriteSource ".valuesshortnames  = sai_metadata_${typedef}_enum_values_short_names,";
     WriteSource ".containsflags     = $flags,";
+
+    if (defined $enum->{ignoreval})
+    {
+        WriteSource ".ignorevalues      = (const int*)sai_metadata_${typedef}_enum_ignore_values,";
+        WriteSource ".ignorevaluesnames = sai_metadata_${typedef}_enum_ignore_values_names,";
+    }
+    else
+    {
+        WriteSource ".ignorevalues      = NULL,";
+        WriteSource ".ignorevaluesnames = NULL,";
+    }
+
     WriteSource "};";
 
     return $count;

@@ -679,6 +679,16 @@ typedef struct _sai_enum_metadata_t
      */
     bool                            containsflags;
 
+    /**
+     * @brief Array of enum ignored values.
+     */
+    const int* const                ignorevalues;
+
+    /**
+     * @brief Array of enum ignored values string names.
+     */
+    const char* const* const        ignorevaluesnames;
+
 } sai_enum_metadata_t;
 
 /**

@@ -239,6 +239,59 @@ void check_all_enums_values()
     }
 }
 
+void check_enums_ignore_values()
+{
+    META_LOG_ENTER();
+
+    size_t i = 0;
+
+    for (; i < sai_metadata_all_enums_count; ++i)
+    {
+        const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
+
+        META_LOG_DEBUG("enum: %s", emd->name);
+
+        if (emd->ignorevalues == NULL)
+        {
+            META_ASSERT_TRUE(emd->ignorevaluesnames == NULL, "names must be NULL when values are NULL");
+            continue;
+        }
+
+        META_ASSERT_TRUE(emd->ignorevaluesnames != NULL, "names must be NOT NULL when values are defined");
+
+        size_t j = 0;
+
+        for (; emd->ignorevalues[j] != -1; ++j)
+        {
+            META_LOG_DEBUG(" value: %s", emd->ignorevaluesnames[j]);
+
+            META_ASSERT_TRUE(emd->ignorevaluesnames[j] != NULL, "names must be NOT NULL when values are defined");
+
+            int value = emd->ignorevalues[j];
+
+            META_ASSERT_FALSE(value < 0, "enum values are negative");
+
+            bool contains = false;
+
+            size_t k = 0;
+
+            for (; k < emd->valuescount; k++)
+            {
+                if (emd->values[k] == value)
+                {
+                    contains = true;
+                    break;
+                }
+            }
+
+            META_ASSERT_TRUE(contains, "ignored enum value must be defined in enum values");
+        }
+
+        META_ASSERT_TRUE(emd->ignorevalues[j] == -1, "missing guard at the end of enum");
+        META_ASSERT_TRUE(emd->ignorevaluesnames[j] == NULL, "missing guard at the end of enum");
+    }
+}
+
 void check_sai_status()
 {
     META_LOG_ENTER();
@@ -4554,6 +4607,7 @@ int main(int argc, char **argv)
 
     check_all_enums_name_pointers();
     check_all_enums_values();
+    check_enums_ignore_values();
     check_sai_status();
     check_object_type();
     check_attr_by_object_type();
