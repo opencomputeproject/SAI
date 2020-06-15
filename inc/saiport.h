@@ -44,6 +44,9 @@ typedef enum _sai_port_type_t
     /** CPU Port */
     SAI_PORT_TYPE_CPU,
 
+    /** Fabric Port */
+    SAI_PORT_TYPE_FABRIC,
+
 } sai_port_type_t;
 
 /**
@@ -1509,6 +1512,71 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_TPID,
 
     /**
+     * @brief Port Down Error Status
+     *
+     * @type sai_port_err_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ERR_STATUS_LIST,
+
+    /**
+     * @brief Fabric port Attached
+     *
+     * Signifies if the fabric port is attached
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_ATTACHED,
+
+    /**
+     * @brief Attached Switch type.
+     *
+     * Signifies the attached switch type
+     *
+     * @type sai_switch_type_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_ATTACHED_SWITCH_TYPE,
+
+    /**
+     * @brief Attached Switch ID.
+     *
+     * Signifies the attached switch ID
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_ATTACHED_SWITCH_ID,
+
+    /**
+     * @brief Attached Port Index.
+     *
+     * Signifies the attached port index
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_ATTACHED_PORT_INDEX,
+
+    /**
+     * @brief Fabric port reachability
+     *
+     * @type sai_fabric_port_reachability_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_REACHABILITY,
+
+    /**
+     * @brief System port for the port
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_SYSTEM_PORT
+     */
+    SAI_PORT_ATTR_SYSTEM_PORT,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -2034,6 +2102,21 @@ typedef enum _sai_port_stat_t
 
     /** PRBS Error Count */
     SAI_PORT_STAT_PRBS_ERROR_COUNT,
+
+    /** SAI port stat if in FEC correctable pkts */
+    SAI_PORT_STAT_IF_IN_FEC_CORRECTABLE_FRAMES,
+
+    /** SAI port stat if in FEC not correctable pkts */
+    SAI_PORT_STAT_IF_IN_FEC_NOT_CORRECTABLE_FRAMES,
+
+    /** SAI port stat if in FEC symbol errors */
+    SAI_PORT_STAT_IF_IN_FEC_SYMBOL_ERRORS,
+
+    /** Fabric port stat in data units */
+    SAI_PORT_STAT_IF_IN_FABRIC_DATA_UNITS,
+
+    /** Fabric port stat out data units */
+    SAI_PORT_STAT_IF_OUT_FABRIC_DATA_UNITS,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
