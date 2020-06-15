@@ -249,6 +249,11 @@ typedef enum _sai_port_interface_type_t
     /** Interface type XLAUI */
     SAI_PORT_INTERFACE_TYPE_XLAUI,
 
+    /** Interface type CUSTOM BEGIN */
+    SAI_PORT_INTERFACE_TYPE_CUSTOM_BEGIN,
+
+    /** Interface type CUSTOM END */
+    SAI_PORT_INTERFACE_TYPE_CUSTOM_END = SAI_PORT_INTERFACE_TYPE_CUSTOM_BEGIN,
 } sai_port_interface_type_t;
 
 /**
