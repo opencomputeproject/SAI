@@ -249,11 +249,11 @@ typedef enum _sai_port_interface_type_t
     /** Interface type XLAUI */
     SAI_PORT_INTERFACE_TYPE_XLAUI,
 
-    /** Interface type CUSTOM BEGIN */
-    SAI_PORT_INTERFACE_TYPE_CUSTOM_BEGIN,
+    /** Custom range base value */
+    SAI_PORT_INTERFACE_TYPE_CUSTOM_RANGE_START = 0x10000000,
 
-    /** Interface type CUSTOM END */
-    SAI_PORT_INTERFACE_TYPE_CUSTOM_END = SAI_PORT_INTERFACE_TYPE_CUSTOM_BEGIN,
+    /** End of custom range base */
+    SAI_PORT_INTERFACE_TYPE_CUSTOM_RANGE_END = SAI_PORT_INTERFACE_TYPE_CUSTOM_RANGE_START,
 } sai_port_interface_type_t;
 
 /**
