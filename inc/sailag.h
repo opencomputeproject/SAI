@@ -152,6 +152,22 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_TPID,
 
     /**
+     * @brief LAG system port ID
+     *
+     * The application must manage the allocation of the system port aggregate IDs
+     * associated with the LAG for consistency across all switches in a VOQ based
+     * system. The system port aggregate ID range is from 1 to SAI_SWITCH_ATTR_NUMBER_OF_LAGS.
+     * The default value of 0 means this field is not used and SAI will allocate the system
+     * port aggregate ID internally.
+     * Valid only when SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_LAG_ATTR_SYSTEM_PORT_AGGREGATE_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_ATTR_END,
@@ -240,7 +256,7 @@ typedef enum _sai_lag_member_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_SYSTEM_PORT
      */
     SAI_LAG_MEMBER_ATTR_PORT_ID,
 
