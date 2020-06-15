@@ -304,6 +304,12 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN = 0x00002011,
 
+    /** Default packet action is forward */
+    SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_SOLICITATION = 0x00002012,
+
+    /** Default packet action is forward */
+    SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_ADVERTISEMENT = 0x00002013,
+
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
 
@@ -397,13 +403,25 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_PIPELINE_DISCARD_ROUTER = 0x00007002,
 
+    /**
+     * @brief MPLS packets with expiring TTL value of 1
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_MPLS_TTL_ERROR = 0x00008000,
+
+    /**
+     * @brief MPLS packet with router alert label
+     * (default packet action is forward)
+     */
+    SAI_HOSTIF_TRAP_TYPE_MPLS_ROUTER_ALERT_LABEL = 0x00008001,
+
     /** Exception traps custom range start */
-    SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00008000,
+    SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00009000,
 
     /**
      * @brief End of trap types
      */
-    SAI_HOSTIF_TRAP_TYPE_END = 0x00009000
+    SAI_HOSTIF_TRAP_TYPE_END = 0x0000a000
 
 } sai_hostif_trap_type_t;
 
@@ -586,6 +604,9 @@ typedef enum _sai_hostif_user_defined_trap_type_t
 
     /** FDB traps */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_FDB,
+
+    /** In Segment Entry traps */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_INSEG_ENTRY,
 
     /** Custom range base */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE = 0x00001000,
@@ -773,10 +794,11 @@ typedef enum _sai_hostif_attr_t
      * Port netdev will be created when object type is SAI_OBJECT_TYPE_PORT
      * LAG netdev will be created when object type is SAI_OBJECT_TYPE_LAG
      * VLAN netdev will be created when object type is SAI_OBJECT_TYPE_VLAN
+     * System Port netdev will be created when object type is SAI_OBJECT_TYPE_SYSTEM_PORT
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_VLAN
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_VLAN, SAI_OBJECT_TYPE_SYSTEM_PORT
      * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
      */
     SAI_HOSTIF_ATTR_OBJ_ID,

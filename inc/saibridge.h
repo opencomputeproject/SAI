@@ -70,7 +70,7 @@ typedef enum _sai_bridge_port_fdb_learning_mode_t
  */
 typedef enum _sai_bridge_port_type_t
 {
-    /** Port or LAG */
+    /** Port or LAG or System Port */
     SAI_BRIDGE_PORT_TYPE_PORT,
 
     /** Port or LAG.vlan */
@@ -125,7 +125,7 @@ typedef enum _sai_bridge_port_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_SYSTEM_PORT
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT
      */
     SAI_BRIDGE_PORT_ATTR_PORT_ID,

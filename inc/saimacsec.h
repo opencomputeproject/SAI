@@ -241,6 +241,15 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_AVAILABLE_MACSEC_FLOW,
 
     /**
+     * @brief List of MACsec flow associated with this MACsec object.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_MACSEC_FLOW
+     */
+    SAI_MACSEC_ATTR_FLOW_LIST,
+
+    /**
      * @brief Available MACsec Secure Channels.
      *
      * @type sai_uint32_t

@@ -59,6 +59,9 @@ typedef enum _sai_router_interface_type_t
     /** Q-in-Q Router Interface Type */
     SAI_ROUTER_INTERFACE_TYPE_QINQ_PORT,
 
+    /** System Port Router Interface Type */
+    SAI_ROUTER_INTERFACE_TYPE_SYSTEM_PORT,
+
 } sai_router_interface_type_t;
 
 /**
@@ -91,12 +94,12 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_TYPE,
 
     /**
-     * @brief Associated Port or LAG object id
+     * @brief Associated Port, System Port or LAG object id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
-     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_SYSTEM_PORT
+     * @condition SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_PORT or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SUB_PORT or SAI_ROUTER_INTERFACE_ATTR_TYPE == SAI_ROUTER_INTERFACE_TYPE_SYSTEM_PORT
      */
     SAI_ROUTER_INTERFACE_ATTR_PORT_ID,
 

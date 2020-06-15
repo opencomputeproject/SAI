@@ -44,6 +44,9 @@ typedef enum _sai_port_type_t
     /** CPU Port */
     SAI_PORT_TYPE_CPU,
 
+    /** Fabric Port */
+    SAI_PORT_TYPE_FABRIC,
+
 } sai_port_type_t;
 
 /**
@@ -1452,6 +1455,128 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_DECREMENT_TTL,
 
     /**
+     * @brief Enable EXP -> TC MAP on port
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * To enable/disable trust EXP, map ID should be added/removed on port.
+     * Default no map.
+     * If present overrides SAI_SWITCH_ATTR_QOS_MPLS_EXP_TO_TC_MAP.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_MPLS_EXP_TO_TC_MAP,
+
+    /**
+     * @brief Enable EXP -> COLOR MAP on port
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * To enable/disable trust EXP, map ID should be added/removed on port.
+     * Default no map.
+     * If present overrides SAI_SWITCH_ATTR_QOS_MPLS_EXP_TO_COLOR_MAP.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_MPLS_EXP_TO_COLOR_MAP,
+
+    /**
+     * @brief Enable TC AND COLOR -> EXP MAP
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * Default no map.
+     * If present overrides SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP,
+
+    /**
+     * @brief TPID
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0x8100
+     */
+    SAI_PORT_ATTR_TPID,
+
+    /**
+     * @brief Port Down Error Status
+     *
+     * @type sai_port_err_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ERR_STATUS_LIST,
+
+    /**
+     * @brief Fabric port Attached
+     *
+     * Signifies if the fabric port is attached
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_ATTACHED,
+
+    /**
+     * @brief Attached Switch type.
+     *
+     * Signifies the attached switch type
+     *
+     * @type sai_switch_type_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_ATTACHED_SWITCH_TYPE,
+
+    /**
+     * @brief Attached Switch ID.
+     *
+     * Signifies the attached switch ID
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_ATTACHED_SWITCH_ID,
+
+    /**
+     * @brief Attached Port Index.
+     *
+     * Signifies the attached port index
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_ATTACHED_PORT_INDEX,
+
+    /**
+     * @brief Fabric port reachability
+     *
+     * @type sai_fabric_port_reachability_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_REACHABILITY,
+
+    /**
+     * @brief System port for the port
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_SYSTEM_PORT
+     */
+    SAI_PORT_ATTR_SYSTEM_PORT,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -1977,6 +2102,21 @@ typedef enum _sai_port_stat_t
 
     /** PRBS Error Count */
     SAI_PORT_STAT_PRBS_ERROR_COUNT,
+
+    /** SAI port stat if in FEC correctable pkts */
+    SAI_PORT_STAT_IF_IN_FEC_CORRECTABLE_FRAMES,
+
+    /** SAI port stat if in FEC not correctable pkts */
+    SAI_PORT_STAT_IF_IN_FEC_NOT_CORRECTABLE_FRAMES,
+
+    /** SAI port stat if in FEC symbol errors */
+    SAI_PORT_STAT_IF_IN_FEC_SYMBOL_ERRORS,
+
+    /** Fabric port stat in data units */
+    SAI_PORT_STAT_IF_IN_FABRIC_DATA_UNITS,
+
+    /** Fabric port stat out data units */
+    SAI_PORT_STAT_IF_OUT_FABRIC_DATA_UNITS,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,

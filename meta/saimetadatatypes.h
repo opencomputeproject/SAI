@@ -410,6 +410,26 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is MACsec SALT.
      */
     SAI_ATTR_VALUE_TYPE_MACSEC_SALT,
+
+    /**
+     * @brief Attribute value is System Port Configuration.
+     */
+    SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG,
+
+    /**
+     * @brief Attribute value is System Port Configuration list.
+     */
+    SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST,
+
+    /**
+     * @brief Attribute value is Fabric Port Reachability.
+     */
+    SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY,
+
+    /**
+     * @brief Attribute value is fabric port error status.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST,
 } sai_attr_value_type_t;
 
 /**
@@ -678,6 +698,16 @@ typedef struct _sai_enum_metadata_t
      * When set to true numbers of enumeration are not continuous.
      */
     bool                            containsflags;
+
+    /**
+     * @brief Array of enum ignored values.
+     */
+    const int* const                ignorevalues;
+
+    /**
+     * @brief Array of enum ignored values string names.
+     */
+    const char* const* const        ignorevaluesnames;
 
 } sai_enum_metadata_t;
 

@@ -9,6 +9,7 @@ ASIC - Application Specific Integrated Circuit
 BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
+BOS - Bottom Of Stack
 CAM - Content Addressable Memory
 CB - Callback
 CBS - Committed Burst Size
@@ -26,6 +27,7 @@ DLR - Dead Lock Recovery
 DNAT - Destination Network Address Translation
 DSCP - Differentiated Services Code Point
 DTEL - Data Plane Telemetry
+ECC - Error Correction Code
 ECMP - Equal Cost Multi-Path
 ECN - Explicit Congestion Notification
 ECT - ECN Capable Transport
@@ -61,6 +63,7 @@ L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
 LPM - Longest Prefix Match
+LSP - Label Switched Path
 MAC - Medium Access Control
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
@@ -68,14 +71,17 @@ MTU - Maximum Transmission Unit
 NHLFE - Next Hop Label Forwarding Entry
 NPU - Numeric Processing Unit
 NRZ - Non Return to Zero
+NVGRE - Network Virtualization using Generic Routing Encapsulation
 OAM - Operations Administration and Maintenance
 OUI - Organizationally Unique Identifier
 PAM4 - Pulse Amplitude Modulation 4-level
 PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
+PHP - Penultimate Hop Pop
 PFC - Priority Flow Control
 PIR - Peak Information Rate
 PN - Packet Number
+PSC - PHB Scheduling Class
 PTP - Precision time protocol
 QOS - Quality of Service
 RARP - Reverse Address Resolution Protocol
@@ -108,6 +114,7 @@ TPID - Tag Protocol Identifier
 TTL - Time to Leave
 UDF - User-Defined Field
 UDP - User Datagram Protocol
+VOQ - Virtual Output Queue
 VNI - Virtual Network Interface
 VNID - Virtual Network Identifier
 VR - Virtual Router
