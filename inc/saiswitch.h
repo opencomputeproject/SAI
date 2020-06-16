@@ -2426,9 +2426,9 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief AVS Board DC Margin
      *
-     * @type sai_switch_avs_board_dc_margin_t
+     * @type sai_switch_avs_dc_margin_t
      * @flags CREATE_AND_SET
-     * @default SAI_SWITCH_AVS_DC_MARGIN_0mV
+     * @default SAI_SWITCH_AVS_DC_MARGIN_0MV
      */
 
     SAI_SWITCH_ATTR_AVS_DC_MARGIN,
