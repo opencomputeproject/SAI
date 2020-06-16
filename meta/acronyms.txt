@@ -27,6 +27,7 @@ DLR - Dead Lock Recovery
 DNAT - Destination Network Address Translation
 DSCP - Differentiated Services Code Point
 DTEL - Data Plane Telemetry
+ECC - Error Correction Code
 ECMP - Equal Cost Multi-Path
 ECN - Explicit Congestion Notification
 ECT - ECN Capable Transport
@@ -113,6 +114,7 @@ TPID - Tag Protocol Identifier
 TTL - Time to Leave
 UDF - User-Defined Field
 UDP - User Datagram Protocol
+VOQ - Virtual Output Queue
 VNI - Virtual Network Interface
 VNID - Virtual Network Identifier
 VR - Virtual Router

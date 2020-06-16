@@ -239,6 +239,59 @@ void check_all_enums_values()
     }
 }
 
+void check_enums_ignore_values()
+{
+    META_LOG_ENTER();
+
+    size_t i = 0;
+
+    for (; i < sai_metadata_all_enums_count; ++i)
+    {
+        const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
+
+        META_LOG_DEBUG("enum: %s", emd->name);
+
+        if (emd->ignorevalues == NULL)
+        {
+            META_ASSERT_TRUE(emd->ignorevaluesnames == NULL, "names must be NULL when values are NULL");
+            continue;
+        }
+
+        META_ASSERT_TRUE(emd->ignorevaluesnames != NULL, "names must be NOT NULL when values are defined");
+
+        size_t j = 0;
+
+        for (; emd->ignorevalues[j] != -1; ++j)
+        {
+            META_LOG_DEBUG(" value: %s", emd->ignorevaluesnames[j]);
+
+            META_ASSERT_TRUE(emd->ignorevaluesnames[j] != NULL, "names must be NOT NULL when values are defined");
+
+            int value = emd->ignorevalues[j];
+
+            META_ASSERT_FALSE(value < 0, "enum values are negative");
+
+            bool contains = false;
+
+            size_t k = 0;
+
+            for (; k < emd->valuescount; k++)
+            {
+                if (emd->values[k] == value)
+                {
+                    contains = true;
+                    break;
+                }
+            }
+
+            META_ASSERT_TRUE(contains, "ignored enum value must be defined in enum values");
+        }
+
+        META_ASSERT_TRUE(emd->ignorevalues[j] == -1, "missing guard at the end of enum");
+        META_ASSERT_TRUE(emd->ignorevaluesnames[j] == NULL, "missing guard at the end of enum");
+    }
+}
+
 void check_sai_status()
 {
     META_LOG_ENTER();
@@ -630,6 +683,11 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY:
         case SAI_ATTR_VALUE_TYPE_MACSEC_SALT:
 
+        case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG:
+        case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
+        case SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY:
+        case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
+
             if (md->allowedobjecttypes != NULL)
             {
                 META_MD_ASSERT_FAIL(md, "allowed object types defined for non object type");
@@ -851,6 +909,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
         case SAI_ATTR_VALUE_TYPE_IPV4:
+        case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG:
             break;
 
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
@@ -884,6 +943,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
 
             if (((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
                  && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
@@ -1076,6 +1136,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_MAP_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+                case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
                     break;
 
                 default:
@@ -2429,6 +2490,8 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
 
             if (md->isprimitive)
             {
@@ -2480,6 +2543,8 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_MACSEC_SAK:
         case SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY:
         case SAI_ATTR_VALUE_TYPE_MACSEC_SALT:
+        case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG:
+        case SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY:
 
             if (!md->isprimitive)
             {
@@ -4554,6 +4619,7 @@ int main(int argc, char **argv)
 
     check_all_enums_name_pointers();
     check_all_enums_values();
+    check_enums_ignore_values();
     check_sai_status();
     check_object_type();
     check_attr_by_object_type();
