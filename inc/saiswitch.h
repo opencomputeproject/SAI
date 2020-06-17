@@ -2264,7 +2264,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVS_DISABLE_TYPE,
 
     /**
-     * @brief Adaptive voltage scaling(AVS) control type
+     * @brief Adaptive voltage scaling control type
      *
      * false:Internal AVS Control
      * true:External Chip controls the AVS
@@ -2351,7 +2351,7 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief AVS Regulator I2C slave address
-     * In case of external avs regulator as master
+     * In case of external AVS regulator as master
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
