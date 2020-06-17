@@ -323,7 +323,7 @@ typedef enum _sai_switch_avs_regulator_t
     /** 7180 regulator */
     SAI_SWITCH_AVS_REGULATOR_7180,
 
-    /** TPS544 regulator */
+    /** 544 regulator */
     SAI_SWITCH_AVS_REGULATOR_TPS544,
 
     /** MAX77812 regulator */
@@ -335,7 +335,7 @@ typedef enum _sai_switch_avs_regulator_t
     /** 4678 regulator */
     SAI_SWITCH_AVS_REGULATOR_4678,
 
-    /** TPS546 regulator */
+    /** 546 regulator */
     SAI_SWITCH_AVS_REGULATOR_TPS546
 
 } sai_switch_avs_regulator_t;
@@ -2243,7 +2243,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FABRIC_PORT_LIST,
 
     /**
-     * @brief Adaptive voltage scaling(AVS)
+     * @brief Adaptive voltage scaling
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -2252,7 +2252,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVS_ENABLE,
 
     /**
-     * @brief Adaptive voltage scaling(AVS) disable type
+     * @brief Adaptive voltage scaling disable type
      *
      * false:No firmware control
      * true:Firmware set back voltage
@@ -2320,7 +2320,7 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief I2C slave address-1
-     * In case of external avs regulator as master
+     * In case of external AVS regulator as master
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -2330,7 +2330,7 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief I2C slave address-2
-     * In case of external avs regulator as master
+     * In case of external AVS regulator as master
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -2348,7 +2348,7 @@ typedef enum _sai_switch_attr_t
      * @default false
      */
     SAI_SWITCH_ATTR_AVS_EXT_CTRL_STEP,
-    
+
     /**
      * @brief AVS Regulator I2C slave address
      * In case of external avs regulator as master
