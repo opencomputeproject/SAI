@@ -311,9 +311,9 @@ typedef enum _sai_switch_type_t
 
 /**
  * @brief Attribute data for #SAI_SWITCH_ATTR_AVS_REGULATOR
- *  AVS Regulator type
  */
-typedef enum _sai_switch_avs_regulator_t {
+typedef enum _sai_switch_avs_regulator_t
+{
     /** 4677 regulator */
     SAI_SWITCH_AVS_REGULATOR_4677,
 
@@ -340,7 +340,6 @@ typedef enum _sai_switch_avs_regulator_t {
 
 } sai_switch_avs_regulator_t;
 
-    
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
@@ -2256,7 +2255,7 @@ typedef enum _sai_switch_attr_t
      * @brief Adaptive voltage scaling(AVS) disable type
      *
      * false:No firmware control
-     * true:Firmware set back volatge
+     * true:Firmware set back voltage
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -2278,7 +2277,7 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief Number of packages share the AVS
-     * 
+     *
      * Number of packages share AVS range is from 1 to 8
      *
      * @type sai_uint32_t
@@ -2290,10 +2289,10 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief AVS Board DC Margin
      *
-     * AVS Board DC Margin type range is from 0mv to 155mV
+     * AVS Board DC Margin range is from 0mV to 155mV.
      * Supported margin range is multiple of 5mV.
-     * 0mV, 5mV, 10mV,15mV .... 150mV, 155mV
-     * 
+     * Range is 0mV, 10mV, 15mV, ..., 150mV, 155mV.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
@@ -2311,7 +2310,7 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief I2C slave address-0
-     * In case of external avs regulator as master
+     * In case of external AVS regulator as master
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -2351,7 +2350,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVS_EXT_CTRL_STEP,
     
     /**
-     * @brief AVS Regulator i2c slave address
+     * @brief AVS Regulator I2C slave address
      * In case of external avs regulator as master
      *
      * @type sai_uint32_t
