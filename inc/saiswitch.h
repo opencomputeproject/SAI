@@ -310,145 +310,8 @@ typedef enum _sai_switch_type_t
 } sai_switch_type_t;
 
 /**
- * @brief Attribute data for #SAI_SWITCH_ATTR_AVS_PKG_SHARE
- *  Number of packages share AVS
- */
-typedef enum _sai_switch_avs_pkg_share_t
-{
-    /** 1:Package share AVS */
-    SAI_SWITCH_AVS_PKG_SHARE_1,
-
-    /** 2:Package share AVS */
-    SAI_SWITCH_AVS_PKG_SHARE_2,
-
-    /** 3:Package share AVS */
-    SAI_SWITCH_AVS_PKG_SHARE_3,
-
-    /** 4:Package share AVS */
-    SAI_SWITCH_AVS_PKG_SHARE_4,
-
-    /** 5:Package share AVS */
-    SAI_SWITCH_AVS_PKG_SHARE_5,
-
-    /** 6:Package share AVS */
-    SAI_SWITCH_AVS_PKG_SHARE_6,
-
-    /** 7:Package share AVS */
-    SAI_SWITCH_AVS_PKG_SHARE_7,
-
-    /** 8:Package share AVS */
-    SAI_SWITCH_AVS_PKG_SHARE_8
-
-} sai_switch_avs_pkg_share_t;
-
-/**
- * @brief Attribute data for #SAI_SWITCH_ATTR_AVS_DC_MARGIN
- *  AVS Board DC Margin type
- */
-
-
-typedef enum _sai_switch_avs_dc_margin_t {
-    /** 0 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_0MV,
-
-    /** 5 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_5MV,
-
-    /** 10 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_10MV,
-
-    /** 15 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_15MV,
-
-    /** 20 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_20MV,
-
-    /** 25 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_25MV,
-
-    /** 30 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_30MV,
-
-    /** 35 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_35MV,
-
-    /** 40 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_40MV,
-
-    /** 45 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_45MV,
-
-    /** 50 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_50MV,
-
-    /** 55 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_55MV,
-
-    /** 60 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_60MV,
-
-    /** 65 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_65MV,
-
-    /** 70 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_70MV,
-
-    /** 75 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_75MV,
-
-    /** 80 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_80MV,
-
-    /** 85 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_85MV,
-
-    /** 90 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_90MV,
-
-    /** 95 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_95MV,
-
-    /** 100 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_100MV,
-
-    /** 105 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_105MV,
-
-    /** 110 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_110MV,
-
-    /** 115 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_115MV,
-
-    /** 120 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_120MV,
-
-    /** 125 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_125MV,
-
-    /** 130 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_130MV,
-
-    /** 135 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_135MV,
-    
-    /** 140 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_140MV,
-
-    /** 145 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_145MV,
-
-    /** 150 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_150MV,
-
-    /** 155 mV margin added on top for board IR drop */
-    SAI_SWITCH_AVS_DC_MARGIN_155MV
-
-} sai_switch_avs_dc_margin_t;
-
-/**
  * @brief Attribute data for #SAI_SWITCH_ATTR_AVS_REGULATOR
- *  AVS Board DC Margin type
+ *  AVS Regulator type
  */
 
 typedef enum _sai_switch_avs_regulator_t {
@@ -2392,8 +2255,9 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief Adaptive voltage scaling(AVS) disable type
+	 *
      * False : No firmware control
-     * TRUE  : Firmware set back volatge
+     * True  : Firmware set back volatge
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -2403,8 +2267,9 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief Adaptive voltage scaling(AVS) control type
+	 *
      * False : Internal AVS Control
-     * TRUE  : External Chip controls the AVS
+     * True  : External Chip controls the AVS
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -2414,19 +2279,24 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief Number of packages share the AVS
-     *
-     * @type sai_switch_avs_pkg_share_t
+     * 
+	 * Number of packages share AVS raneg is from 1 to 8
+	 *
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default SAI_SWITCH_AVS_PKG_SHARE_1
      */
 
     SAI_SWITCH_ATTR_AVS_PKG_SHARE,
 
-
     /**
      * @brief AVS Board DC Margin
      *
-     * @type sai_switch_avs_dc_margin_t
+	 * AVS Board DC Margin type range is from 0mv to 155mV
+	 * Supported margin range is multiple of 5mV.
+	 * 0mV, 5mV, 10mV,15mV .... 150mV, 155mV
+	 * 
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default SAI_SWITCH_AVS_DC_MARGIN_0MV
      */
