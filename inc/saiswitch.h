@@ -310,6 +310,37 @@ typedef enum _sai_switch_type_t
 } sai_switch_type_t;
 
 /**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_AVS_REGULATOR
+ */
+typedef enum _sai_switch_avs_regulator_t
+{
+    /** 4677 regulator */
+    SAI_SWITCH_AVS_REGULATOR_4677,
+
+    /** 7219 regulator */
+    SAI_SWITCH_AVS_REGULATOR_7219,
+
+    /** 7180 regulator */
+    SAI_SWITCH_AVS_REGULATOR_7180,
+
+    /** 544 regulator */
+    SAI_SWITCH_AVS_REGULATOR_TPS544,
+
+    /** MAX77812 regulator */
+    SAI_SWITCH_AVS_REGULATOR_MAX77812,
+
+    /** 20730 regulator */
+    SAI_SWITCH_AVS_REGULATOR_20730,
+
+    /** 4678 regulator */
+    SAI_SWITCH_AVS_REGULATOR_4678,
+
+    /** 546 regulator */
+    SAI_SWITCH_AVS_REGULATOR_TPS546
+
+} sai_switch_avs_regulator_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
  */
@@ -2210,6 +2241,132 @@ typedef enum _sai_switch_attr_t
      * @default internal
      */
     SAI_SWITCH_ATTR_FABRIC_PORT_LIST,
+
+    /**
+     * @brief Adaptive voltage scaling
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_AVS_ENABLE,
+
+    /**
+     * @brief Adaptive voltage scaling disable type
+     *
+     * false:No firmware control
+     * true:Firmware set back voltage
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_AVS_DISABLE_TYPE,
+
+    /**
+     * @brief Adaptive voltage scaling control type
+     *
+     * false:Internal AVS Control
+     * true:External Chip controls the AVS
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_AVS_CTRL,
+
+    /**
+     * @brief Number of packages share the AVS
+     *
+     * Number of packages share AVS range is from 1 to 8
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1
+     */
+    SAI_SWITCH_ATTR_AVS_PKG_SHARE,
+
+    /**
+     * @brief AVS Board DC Margin
+     *
+     * AVS Board DC Margin range is from 0mV to 155mV.
+     * Supported margin range is multiple of 5mV.
+     * Range is 0mV, 10mV, 15mV, ..., 150mV, 155mV.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_AVS_DC_MARGIN,
+
+    /**
+     * @brief AVS Regulator Type
+     *
+     * @type sai_switch_avs_regulator_t
+     * @flags CREATE_AND_SET
+     * @default SAI_SWITCH_AVS_REGULATOR_4677
+     */
+    SAI_SWITCH_ATTR_AVS_REGULATOR,
+
+    /**
+     * @brief I2C slave address-0
+     * In case of external AVS regulator as master
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_AVS_I2C_SLAVE_ADDR_0,
+
+    /**
+     * @brief I2C slave address-1
+     * In case of external AVS regulator as master
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_AVS_I2C_SLAVE_ADDR_1,
+
+    /**
+     * @brief I2C slave address-2
+     * In case of external AVS regulator as master
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_AVS_I2C_SLAVE_ADDR_2,
+
+    /**
+     * @brief AVS external control step
+     * false:External control step 1
+     * true:External control step N
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_AVS_EXT_CTRL_STEP,
+
+    /**
+     * @brief AVS Regulator I2C slave address
+     * In case of external AVS regulator as master
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_AVS_REGULATOR_I2C_ADDR,
+
+    /**
+     * @brief AVS Regulator legs
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_AVS_REGULATOR_LEGS,
 
     /**
      * @brief End of attributes
