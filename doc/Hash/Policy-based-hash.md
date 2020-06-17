@@ -44,6 +44,9 @@ Also, the hash object itself is extended to be able to specify the portions of t
 ```
 
 Optional ordering of the fields is available as well.
+In the case where the traffic is represented by two different packet types for inbound and outbound direction, setting the hash order
+is neccessary for non-associative hash algorithms like CRC, so that the resulting hash value will be the same.
+For example, for the bare metal machine sending outbound IP packet to the ToR, the hash field array could look like this: {SRC_IP:0, DST_IP:1, SRC_PORT:2, DST_PORT:3, IP_TYPE:4}, and for the inbound, getting VxLAN packet from the T1 to the same ToR, the hash field array will look like this: {INNER_DST_IP:0, INNER_SRC_IP:1, INNER_DST_PORT:2, INNER_SRC_PORT:3, INNER_IP_TYPE:4}. Here the hash associativity is achieved by swapping source and destination sequence IDs. The other way to achieve this would be to assign the same shared sequence ID value for IP addresses, and another for L4 ports.
 
 ```
     /**
