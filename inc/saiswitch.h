@@ -2255,8 +2255,8 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Adaptive voltage scaling(AVS) disable type
      *
-     * False : No firmware control
-     * True  : Firmware set back volatge
+     * false:No firmware control
+     * true:Firmware set back volatge
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -2267,8 +2267,8 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Adaptive voltage scaling(AVS) control type
      *
-     * False : Internal AVS Control
-     * True  : External Chip controls the AVS
+     * false:Internal AVS Control
+     * true:External Chip controls the AVS
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -2279,7 +2279,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Number of packages share the AVS
      * 
-     * Number of packages share AVS raneg is from 1 to 8
+     * Number of packages share AVS range is from 1 to 8
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -2310,7 +2310,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVS_REGULATOR,
 
     /**
-     * @brief i2c slave address-0
+     * @brief I2C slave address-0
      * In case of external avs regulator as master
      *
      * @type sai_uint32_t
@@ -2320,7 +2320,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVS_I2C_SLAVE_ADDR_0,
 
     /**
-     * @brief i2c slave address-1
+     * @brief I2C slave address-1
      * In case of external avs regulator as master
      *
      * @type sai_uint32_t
@@ -2330,7 +2330,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVS_I2C_SLAVE_ADDR_1,
 
     /**
-     * @brief i2c slave address-2
+     * @brief I2C slave address-2
      * In case of external avs regulator as master
      *
      * @type sai_uint32_t
@@ -2341,8 +2341,8 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief AVS external control step
-     * False : External control step 1
-     * True  : External control step N
+     * false:External control step 1
+     * true:External control step N
      *
      * @type bool
      * @flags CREATE_AND_SET
