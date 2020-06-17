@@ -50,6 +50,7 @@ typedef enum _sai_neighbor_entry_attr_t
 
     /**
      * @brief Destination MAC address for the neighbor
+     * Valid only when SAI_NEIGHBOR_ENTRY_ATTR_IS_LOCAL == true
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -114,6 +115,43 @@ typedef enum _sai_neighbor_entry_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_NEIGHBOR_ENTRY_ATTR_COUNTER_ID,
+
+    /**
+     * @brief Encapsulation Index
+     *
+     * Defines the neighbor's encapsulation index
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NEIGHBOR_ENTRY_ATTR_ENCAP_INDEX,
+
+    /**
+     * @brief Encapsulation index is imposed
+     *
+     * This is a flag which states that the encap index was imposed. On create and set
+     * the SAI_NEIGHBOR_ENTRY_ATTR_ENCAP_INDEX must be present.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NEIGHBOR_ENTRY_ATTR_ENCAP_IMPOSE_INDEX,
+
+    /**
+     * @brief Is Neighbor Local
+     *
+     * This is a flag which states that the neighbor being created is local. This can
+     * be used to sanity check the impose index flag. For example, in some implementations
+     * imposing an encap index when the RIF is port-based and the neighbor is local
+     * may not be allowed.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_NEIGHBOR_ENTRY_ATTR_IS_LOCAL,
 
     /**
      * @brief End of attributes

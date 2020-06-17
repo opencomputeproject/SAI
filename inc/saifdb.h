@@ -179,6 +179,18 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_COUNTER_ID,
 
     /**
+     * @brief Specifies whether a MAC move is allowed
+     * When MAC_MOVE is explicitly disabled for a static MAC entry via this
+     * attribute, the trap introduced in #696 would also not be generated.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_FDB_ENTRY_ATTR_TYPE == SAI_FDB_ENTRY_TYPE_STATIC
+     */
+    SAI_FDB_ENTRY_ATTR_ALLOW_MAC_MOVE,
+
+    /**
      * @brief End of attributes
      */
     SAI_FDB_ENTRY_ATTR_END,

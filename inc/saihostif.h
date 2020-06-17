@@ -304,6 +304,12 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN = 0x00002011,
 
+    /** Default packet action is forward */
+    SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_SOLICITATION = 0x00002012,
+
+    /** Default packet action is forward */
+    SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_ADVERTISEMENT = 0x00002013,
+
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
 
@@ -788,10 +794,11 @@ typedef enum _sai_hostif_attr_t
      * Port netdev will be created when object type is SAI_OBJECT_TYPE_PORT
      * LAG netdev will be created when object type is SAI_OBJECT_TYPE_LAG
      * VLAN netdev will be created when object type is SAI_OBJECT_TYPE_VLAN
+     * System Port netdev will be created when object type is SAI_OBJECT_TYPE_SYSTEM_PORT
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_VLAN
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_VLAN, SAI_OBJECT_TYPE_SYSTEM_PORT
      * @condition SAI_HOSTIF_ATTR_TYPE == SAI_HOSTIF_TYPE_NETDEV
      */
     SAI_HOSTIF_ATTR_OBJ_ID,

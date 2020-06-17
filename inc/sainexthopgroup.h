@@ -276,7 +276,7 @@ typedef enum _sai_next_hop_group_member_attr_t
      *
      * Loose index specifying the member's order. The index is not strict allowing for
      * the missing IDs in a sequence. It's driver's job to translate the sequence IDs
-     * to the real indices in the group.
+     * to the real indexes in the group.
      * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP.
      *
      * @type sai_uint32_t
