@@ -313,23 +313,23 @@ typedef enum _sai_port_fail_over_mode_t
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_FAIL_OVER_CONFIG_MODE
- * Used for Fail over configuration mode on port w.r.t hitless mode
+ * Used for Fail over configuration mode on port w.r.t hit less mode
  */
 typedef enum _sai_port_fail_over_config_mode_t
 {
-    /** Fail over ports are configured but do not operate in hitless mode */
+    /** Fail over ports are configured but do not operate in hit less mode */
     SAI_PORT_FAIL_OVER_CONFIG_MODE_NO_HITLESS,
 
-    /** Fail over ports are configured and operate in hitless mode */
+    /** Fail over ports are configured and operate in hit less mode */
     SAI_PORT_FAIL_OVER_CONFIG_MODE_HITLESS,
 
-    /** Fail over ports are configured and operate in hitless mode and switching of context is automatic */
+    /** Fail over ports are configured and operate in hit less mode and switching of context is automatic */
     SAI_PORT_FAIL_OVER_CONFIG_MODE_HITLESS_AUTO
 } sai_port_fail_over_config_mode_t;
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_FAIL_OVER_SWITCH_MODE
- * Used for Fail over switch config mode on port w.r.t hitless
+ * Used for Fail over switch configuration mode on port w.r.t hit less
  */
 typedef enum _sai_port_fai_lover_switch_mode_t
 {
@@ -1637,7 +1637,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_FAIL_OVER_MODE,
 
     /**
-     * @brief Fail over config mode on port w.r.t hitless
+     * @brief Fail over configuration mode on port w.r.t hit less
      *
      * @type sai_port_fail_over_config_mode_t
      * @flags CREATE_AND_SET
@@ -1646,7 +1646,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_FAIL_OVER_CONFIG_MODE,
 
     /**
-     * @brief Fail over switch config mode on port w.r.t hitless
+     * @brief Fail over switch configuration mode on port w.r.t hit less
      *
      * @type sai_port_fail_over_switch_mode_t
      * @flags CREATE_AND_SET
