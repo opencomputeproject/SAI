@@ -303,10 +303,10 @@ typedef enum _sai_port_fail_over_mode_t
 
     /** Enable Fail over mode on the port */
     SAI_PORT_FAIL_OVER_MODE_ENABLE,
-    
+
     /** Configure Fail over mode on primary Port */
     SAI_PORT_FAIL_OVER_MODE_PRIMARY,
-    
+
     /** Configure Fail over mode on secondary Port */
     SAI_PORT_FAIL_OVER_MODE_SECONDARY
 } sai_port_fail_over_mode_t;
@@ -319,8 +319,8 @@ typedef enum _sai_port_fail_over_config_mode_t
 {
     /** Fail over ports are configured but do not operate in hitless mode */
     SAI_PORT_FAIL_OVER_CONFIG_MODE_NO_HITLESS,
-    
-    /** Fail over ports are configured and operate in hitless mode  */
+
+    /** Fail over ports are configured and operate in hitless mode */
     SAI_PORT_FAIL_OVER_CONFIG_MODE_HITLESS,
 
     /** Fail over ports are configured and operate in hitless mode and switching of context is automatic */
@@ -336,7 +336,7 @@ typedef enum _sai_port_fai_lover_switch_mode_t
     /** Active contexts are switched and the scope is global context */
     SAI_PORT_FAIL_OVER_SWITCH_MODE_GLOBAL,
 
-    /** Active contexts are switched and the scope is per port*/
+    /** Active contexts are switched and the scope is per port */
     SAI_PORT_FAIL_OVER_SWITCH_MODE_PER_PORT,
 
     /** Active contexts are switched and the scope is HMUX_GLOBAL by pin */
@@ -1653,7 +1653,7 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_FAIL_OVER_SWITCH_MODE_GLOBAL
      */
     SAI_PORT_ATTR_FAIL_OVER_SWITCH_MODE,
-    
+
     /**
      * @brief End of attributes
      */
