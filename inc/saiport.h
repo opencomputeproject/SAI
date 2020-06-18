@@ -313,7 +313,7 @@ typedef enum _sai_port_fail_over_mode_t
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_FAIL_OVER_CONFIG_MODE
- * Used for Fail over config mode on port w.r.t hitless
+ * Used for Fail over configuration mode on port w.r.t hitless mode
  */
 typedef enum _sai_port_fail_over_config_mode_t
 {
