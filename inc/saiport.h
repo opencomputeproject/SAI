@@ -331,7 +331,7 @@ typedef enum _sai_port_fail_over_config_mode_t
  * @brief Attribute data for #SAI_PORT_ATTR_FAIL_OVER_SWITCH_MODE
  * Used for Fail over switch configuration mode on port w.r.t hit less
  */
-typedef enum _sai_port_fai_lover_switch_mode_t
+typedef enum _sai_port_fail_over_switch_mode_t
 {
     /** Active contexts are switched and the scope is global context */
     SAI_PORT_FAIL_OVER_SWITCH_MODE_GLOBAL,
