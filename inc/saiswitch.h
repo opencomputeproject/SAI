@@ -2154,6 +2154,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
      */
     SAI_SWITCH_ATTR_SWITCH_ID,
 
