@@ -214,7 +214,7 @@ This switch id represents the switch device's first core. The external superviso
  *
  * @type sai_uint32_t
  * @flags MANDATORY_ON_CREATE | CREATE_ONLY
- * @default empty
+ * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
  */
  SAI_SWITCH_ATTR_SWITCH_ID
 ```
