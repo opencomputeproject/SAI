@@ -846,6 +846,15 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_VLAN_TAG,
 
     /**
+     * @brief Set the offload capability of MACsec
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_HOSTIF_ATTR_MACSEC_OFFLOAD_CAPABILITY,
+
+    /**
      * @brief Name [char[SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE]]
      *
      * The maximum number of characters for the name is SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE - 1
@@ -1281,6 +1290,24 @@ typedef void (*sai_packet_event_notification_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
+ * @brief Set the next packet number of MACsec ingress/egress SA,
+ *        This function only works when the MACsec offload is enabled.
+ *
+ * @param[in] hostif_id Host interface id
+ * @param[in] sci SCI value for this Secure Channel, carried in MACsec packet SecTAG.
+ * @param[in] an AN value (2-bit) for this Secure Channel, carried in MACsec packet SecTAG.
+ *               The value must be distinct from other Secure Associations for the same Secure Channel.
+ * @param[in] next_pn The next packet number of MACsec ingress/egress SA
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_hostif_macsec_offload_sa_next_pn_fn)(
+        _In_ sai_object_id_t hostif_id,
+        _In_ sai_uint64_t sci,
+        _In_ sai_uint8_t an,
+        _In_ const sai_uint64_t next_pn);
+
+/**
  * @brief Hostif methods table retrieved with sai_api_query()
  */
 typedef struct _sai_hostif_api_t
@@ -1307,6 +1334,7 @@ typedef struct _sai_hostif_api_t
     sai_get_hostif_user_defined_trap_attribute_fn  get_hostif_user_defined_trap_attribute;
     sai_recv_hostif_packet_fn                      recv_hostif_packet;
     sai_send_hostif_packet_fn                      send_hostif_packet;
+    sai_set_hostif_macsec_offload_sa_next_pn_fn    set_hostif_macsec_offload_sa_next_pn;
 } sai_hostif_api_t;
 
 /**
