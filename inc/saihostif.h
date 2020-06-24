@@ -1305,7 +1305,7 @@ typedef sai_status_t (*sai_set_hostif_macsec_offload_sa_next_pn_fn)(
         _In_ sai_object_id_t hostif_id,
         _In_ sai_uint64_t sci,
         _In_ sai_uint8_t an,
-        _In_ const sai_uint64_t next_pn);
+        _In_ sai_uint64_t next_pn);
 
 /**
  * @brief Hostif methods table retrieved with sai_api_query()
