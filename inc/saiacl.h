@@ -259,6 +259,12 @@ typedef enum _sai_acl_action_type_t
     /** Bind a MACsec flow object */
     SAI_ACL_ACTION_TYPE_MACSEC_FLOW,
 
+    /** Set custom LAG hash object ID */
+    SAI_ACL_ACTION_TYPE_SET_LAG_HASH_ID,
+
+    /** Set custom ECMP hash object ID */
+    SAI_ACL_ACTION_TYPE_SET_ECMP_HASH_ID,
+
 } sai_acl_action_type_t;
 
 /**
@@ -2711,9 +2717,29 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_MACSEC_FLOW,
 
     /**
+     * @brief LAG Hash ID
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HASH
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_LAG_HASH_ID,
+
+    /**
+     * @brief ECMP Hash ID
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HASH
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ECMP_HASH_ID,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_MACSEC_FLOW,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ECMP_HASH_ID,
 
     /**
      * @brief End of ACL Entry attributes
