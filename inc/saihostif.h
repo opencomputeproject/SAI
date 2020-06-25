@@ -1290,22 +1290,101 @@ typedef void (*sai_packet_event_notification_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Set the next packet number of MACsec ingress/egress SA,
+ * @brief Host interface MACsec offload Secure Association attributes
+ */
+typedef enum _sai_hostif_macsec_offload_sa_attr_t
+{
+
+    /**
+     * @brief SCI value for this Secure Association, carried in MACsec packet SecTAG.
+     *
+     * @type sai_uint64_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_SCI,
+
+    /**
+     * @brief AN value (2-bit) for this Secure Association, carried in MACsec packet SecTAG.
+     * The value must be distinct from other Secure Associations for the same Secure Channel.
+     * @type sai_uint8_t
+     * @flags  MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_AN,
+
+    /**
+     * @brief Next packet number of MACsec ingress/egress Secure Association.
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_NEXT_PN,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_END,
+
+    /** Custom range base value */
+    SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_CUSTOM_RANGE_END
+
+} sai_hostif_macsec_offload_sa_attr_t;
+
+/**
+ * @brief Create a host interface MACsec offload Secure Association
  *        This function only works when the MACsec offload is enabled.
  *
- * @param[in] hostif_id Host interface id
- * @param[in] sci SCI value for this Secure Channel, carried in MACsec packet SecTAG.
- * @param[in] an AN value (2-bit) for this Secure Channel, carried in MACsec packet SecTAG.
- *               The value must be distinct from other Secure Associations for the same Secure Channel.
- * @param[in] next_pn The next packet number of MACsec ingress/egress SA
+ * @param[out] hostif_macsec_offload_sa_id Host interface MACsec offload Secure Association id.
+ * @param[in] hostif_id Host interface id.
+ * @param[in] attr_count Number of attributes.
+ * @param[in] attr_list Array of attributes.
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_set_hostif_macsec_offload_sa_next_pn_fn)(
+typedef sai_status_t (*sai_create_hostif_macsec_offload_sa_fn)(
+        _Out_ sai_object_id_t *hostif_macsec_offload_sa_id,
         _In_ sai_object_id_t hostif_id,
-        _In_ sai_uint64_t sci,
-        _In_ sai_uint8_t an,
-        _In_ sai_uint64_t next_pn);
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Delete a host interface MACsec offload Secure Association
+ *        This function only works when the MACsec offload is enabled.
+ *
+ * @param[in] hostif_macsec_offload_sa_id Host interface MACsec offload Secure Association id.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_hostif_macsec_offload_sa_fn)(
+        _In_ sai_object_id_t hostif_macsec_offload_sa_id);
+
+/**
+ * @brief Set the attributes MACsec ingress/egress Secure Association,
+ *        This function only works when the MACsec offload is enabled.
+ *
+ * @param[in] hostif_macsec_offload_sa_id Host interface MACsec offload Secure Association id.
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_hostif_macsec_offload_sa_attr_fn)(
+        _In_ sai_object_id_t hostif_macsec_offload_sa_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get the attributes MACsec ingress/egress Secure Association,
+ *        This function only works when the MACsec offload is enabled.
+ *
+ * @param[in] hostif_macsec_offload_sa_id Host interface MACsec offload Secure Association id.
+ * @param[inout] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_hostif_macsec_offload_sa_attr_fn)(
+        _In_ sai_object_id_t hostif_macsec_offload_sa_id,
+        _Inout_ sai_attribute_t *attr);
 
 /**
  * @brief Hostif methods table retrieved with sai_api_query()
@@ -1334,7 +1413,10 @@ typedef struct _sai_hostif_api_t
     sai_get_hostif_user_defined_trap_attribute_fn  get_hostif_user_defined_trap_attribute;
     sai_recv_hostif_packet_fn                      recv_hostif_packet;
     sai_send_hostif_packet_fn                      send_hostif_packet;
-    sai_set_hostif_macsec_offload_sa_next_pn_fn    set_hostif_macsec_offload_sa_next_pn;
+    sai_create_hostif_macsec_offload_sa_fn         create_hostif_macsec_offload_sa;
+    sai_remove_hostif_macsec_offload_sa_fn         remove_hostif_macsec_offload_sa;
+    sai_set_hostif_macsec_offload_sa_attr_fn       set_hostif_macsec_offload_sa_attr;
+    sai_get_hostif_macsec_offload_sa_attr_fn       get_hostif_macsec_offload_sa_attr;
 } sai_hostif_api_t;
 
 /**
