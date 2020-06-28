@@ -1294,6 +1294,10 @@ typedef void (*sai_packet_event_notification_fn)(
  */
 typedef enum _sai_hostif_macsec_offload_sa_attr_t
 {
+    /**
+     * @brief Start of attributes
+     */
+    SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_START,
 
     /**
      * @brief SCI value for this Secure Association, carried in MACsec packet SecTAG.
@@ -1306,8 +1310,9 @@ typedef enum _sai_hostif_macsec_offload_sa_attr_t
     /**
      * @brief AN value (2-bit) for this Secure Association, carried in MACsec packet SecTAG.
      * The value must be distinct from other Secure Associations for the same Secure Channel.
+     *
      * @type sai_uint8_t
-     * @flags  MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_AN,
 
