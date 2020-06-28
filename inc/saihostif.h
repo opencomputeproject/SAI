@@ -1374,7 +1374,7 @@ typedef sai_status_t (*sai_remove_hostif_macsec_offload_sa_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_set_hostif_macsec_offload_sa_attr_fn)(
+typedef sai_status_t (*sai_set_hostif_macsec_offload_sa_attribute_fn)(
         _In_ sai_object_id_t hostif_macsec_offload_sa_id,
         _In_ const sai_attribute_t *attr);
 
@@ -1387,7 +1387,7 @@ typedef sai_status_t (*sai_set_hostif_macsec_offload_sa_attr_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_get_hostif_macsec_offload_sa_attr_fn)(
+typedef sai_status_t (*sai_get_hostif_macsec_offload_sa_attribute_fn)(
         _In_ sai_object_id_t hostif_macsec_offload_sa_id,
         _Inout_ sai_attribute_t *attr);
 
@@ -1420,8 +1420,8 @@ typedef struct _sai_hostif_api_t
     sai_send_hostif_packet_fn                      send_hostif_packet;
     sai_create_hostif_macsec_offload_sa_fn         create_hostif_macsec_offload_sa;
     sai_remove_hostif_macsec_offload_sa_fn         remove_hostif_macsec_offload_sa;
-    sai_set_hostif_macsec_offload_sa_attr_fn       set_hostif_macsec_offload_sa_attr;
-    sai_get_hostif_macsec_offload_sa_attr_fn       get_hostif_macsec_offload_sa_attr;
+    sai_set_hostif_macsec_offload_sa_attribute_fn  set_hostif_macsec_offload_sa_attribute;
+    sai_get_hostif_macsec_offload_sa_attribute_fn  get_hostif_macsec_offload_sa_attribute;
 } sai_hostif_api_t;
 
 /**
