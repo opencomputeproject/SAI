@@ -855,6 +855,17 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_MACSEC_OFFLOAD_CAPABILITY,
 
     /**
+     * @brief MACsec SA
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_MACSEC_OFFLOAD_SA
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_HOSTIF_ATTR_MACSEC_OFFLOAD_SA_ID,
+
+    /**
      * @brief Name [char[SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE]]
      *
      * The maximum number of characters for the name is SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE - 1
@@ -1305,7 +1316,7 @@ typedef enum _sai_hostif_macsec_offload_sa_attr_t
      * @type sai_uint64_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_SCI,
+    SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_SCI = SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_START,
 
     /**
      * @brief AN value (2-bit) for this Secure Association, carried in MACsec packet SecTAG.
@@ -1321,6 +1332,7 @@ typedef enum _sai_hostif_macsec_offload_sa_attr_t
      *
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
+     * @default 0
      */
     SAI_HOSTIF_MACSEC_OFFLOAD_SA_ATTR_NEXT_PN,
 
@@ -1342,7 +1354,7 @@ typedef enum _sai_hostif_macsec_offload_sa_attr_t
  *        This function only works when the MACsec offload is enabled.
  *
  * @param[out] hostif_macsec_offload_sa_id Host interface MACsec offload Secure Association id.
- * @param[in] hostif_id Host interface id.
+ * @param[in] switch_id Switch object id
  * @param[in] attr_count Number of attributes.
  * @param[in] attr_list Array of attributes.
  *
@@ -1350,7 +1362,7 @@ typedef enum _sai_hostif_macsec_offload_sa_attr_t
  */
 typedef sai_status_t (*sai_create_hostif_macsec_offload_sa_fn)(
         _Out_ sai_object_id_t *hostif_macsec_offload_sa_id,
-        _In_ sai_object_id_t hostif_id,
+        _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
@@ -1383,13 +1395,15 @@ typedef sai_status_t (*sai_set_hostif_macsec_offload_sa_attribute_fn)(
  *        This function only works when the MACsec offload is enabled.
  *
  * @param[in] hostif_macsec_offload_sa_id Host interface MACsec offload Secure Association id.
- * @param[inout] attr Attribute
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_get_hostif_macsec_offload_sa_attribute_fn)(
         _In_ sai_object_id_t hostif_macsec_offload_sa_id,
-        _Inout_ sai_attribute_t *attr);
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Hostif methods table retrieved with sai_api_query()
