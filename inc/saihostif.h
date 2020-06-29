@@ -855,12 +855,13 @@ typedef enum _sai_hostif_attr_t
     SAI_HOSTIF_ATTR_MACSEC_OFFLOAD_CAPABILITY,
 
     /**
-     * @brief MACsec SA
+     * @brief List of MACsec ingress/egress Secure Association
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HOSTIF_MACSEC_OFFLOAD_SA
      * @default empty
+     * @validonly SAI_HOSTIF_ATTR_MACSEC_OFFLOAD_CAPABILITY == true
      */
     SAI_HOSTIF_ATTR_MACSEC_OFFLOAD_SA_LIST,
 
