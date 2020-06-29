@@ -857,13 +857,12 @@ typedef enum _sai_hostif_attr_t
     /**
      * @brief MACsec SA
      *
-     * @type sai_object_id_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_HOSTIF_MACSEC_OFFLOAD_SA
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
-    SAI_HOSTIF_ATTR_MACSEC_OFFLOAD_SA_ID,
+    SAI_HOSTIF_ATTR_MACSEC_OFFLOAD_SA_LIST,
 
     /**
      * @brief Name [char[SAI_HOSTIF_GENETLINK_MCGRP_NAME_SIZE]]
