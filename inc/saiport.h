@@ -239,6 +239,22 @@ typedef enum _sai_port_interface_type_t
 
     /** Interface type KR4 */
     SAI_PORT_INTERFACE_TYPE_KR4,
+
+    /** Interface type CAUI */
+    SAI_PORT_INTERFACE_TYPE_CAUI,
+
+    /** Interface type GMII */
+    SAI_PORT_INTERFACE_TYPE_GMII,
+
+    /** Interface type SFI */
+    SAI_PORT_INTERFACE_TYPE_SFI,
+
+    /** Interface type XLAUI */
+    SAI_PORT_INTERFACE_TYPE_XLAUI,
+
+    /** Interface type MAX */
+    SAI_PORT_INTERFACE_TYPE_MAX,
+
 } sai_port_interface_type_t;
 
 /**
@@ -1351,8 +1367,6 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Configure Interface type
-     *
-     * Valid when SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_PHY
      *
      * @type sai_port_interface_type_t
      * @flags CREATE_AND_SET
