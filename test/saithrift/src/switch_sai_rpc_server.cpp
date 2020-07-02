@@ -1677,8 +1677,8 @@ public:
 
       for (int i=0 ; i<max_ports ; i++){
           port_lane_list_attribute.id = SAI_PORT_ATTR_HW_LANE_LIST;
-          port_lane_list_attribute.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
-          port_lane_list_attribute.value.u32list.count = 4;
+          port_lane_list_attribute.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 8);
+          port_lane_list_attribute.value.u32list.count = 8;
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
@@ -1766,8 +1766,8 @@ public:
 
       for (int i=0 ; i<max_ports ; i++){
           port_lane_list_attribute.id = SAI_PORT_ATTR_HW_LANE_LIST;
-          port_lane_list_attribute.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
-          port_lane_list_attribute.value.u32list.count = 4;
+          port_lane_list_attribute.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 8);
+          port_lane_list_attribute.value.u32list.count = 8;
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
@@ -3242,11 +3242,11 @@ public:
       sai_u32_list_t *lane_list_num;
 
       port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
-      port_hw_lane.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
-      port_hw_lane.value.u32list.count = 4;
+      port_hw_lane.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 8);
+      port_hw_lane.value.u32list.count = 8;
       port_api->get_port_attribute(port_id, 1, &port_hw_lane);
 
-      thrift_attr_list.attr_count = 4;
+      thrift_attr_list.attr_count = 8;
       thrift_port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
       thrift_port_hw_lane.value.u32list.count = port_hw_lane.value.u32list.count;
       std::vector<int32_t>& lane_list = thrift_port_hw_lane.value.u32list.u32list;
