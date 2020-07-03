@@ -1262,7 +1262,7 @@ def simple_ipv4ip_packet(pktlen=300,
     else:
         pkt = pkt / scapy.IP()
         pkt = pkt/("D" * (pktlen - len(pkt)))
-        pkt['IP'].proto = 41
+        pkt['IP'].proto = 4
 
     return pkt
 
