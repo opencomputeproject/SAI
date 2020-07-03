@@ -1637,8 +1637,8 @@ public:
 
       for (int i=0 ; i<max_ports ; i++){
           port_lane_list_attribute.id = SAI_PORT_ATTR_HW_LANE_LIST;
-          port_lane_list_attribute.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
-          port_lane_list_attribute.value.u32list.count = 4;
+          port_lane_list_attribute.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 8);
+          port_lane_list_attribute.value.u32list.count = 8;
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
@@ -1726,8 +1726,8 @@ public:
 
       for (int i=0 ; i<max_ports ; i++){
           port_lane_list_attribute.id = SAI_PORT_ATTR_HW_LANE_LIST;
-          port_lane_list_attribute.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
-          port_lane_list_attribute.value.u32list.count = 4;
+          port_lane_list_attribute.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 8);
+          port_lane_list_attribute.value.u32list.count = 8;
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
           std::set<int> port_lanes;
@@ -3160,7 +3160,6 @@ public:
       queue_list_object_attribute.value.objlist.count = max_queues;
       port_api->get_port_attribute(port_id, 1, &queue_list_object_attribute);
 
-      thrift_attr_list.attr_count = 2;
       std::vector<sai_thrift_attribute_t>& attr_list = thrift_attr_list.attr_list;
       thrift_queue_list_attribute.id = SAI_PORT_ATTR_QOS_QUEUE_LIST;
       thrift_queue_list_attribute.value.objlist.count = max_queues;
@@ -3186,7 +3185,6 @@ public:
       pg_list_object_attribute.value.objlist.count = max_pg;
       port_api->get_port_attribute(port_id, 1, &pg_list_object_attribute);
 
-      thrift_attr_list.attr_count = 3;
       thrift_pg_list_attribute.id = SAI_PORT_ATTR_INGRESS_PRIORITY_GROUP_LIST;
       thrift_pg_list_attribute.value.objlist.count = max_pg;
       std::vector<sai_thrift_object_id_t>& pg_list = thrift_pg_list_attribute.value.objlist.object_id_list;
@@ -3202,11 +3200,10 @@ public:
       sai_u32_list_t *lane_list_num;
 
       port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
-      port_hw_lane.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 4);
-      port_hw_lane.value.u32list.count = 4;
+      port_hw_lane.value.u32list.list = (uint32_t *) malloc(sizeof(uint32_t) * 8);
+      port_hw_lane.value.u32list.count = 8;
       port_api->get_port_attribute(port_id, 1, &port_hw_lane);
 
-      thrift_attr_list.attr_count = 4;
       thrift_port_hw_lane.id = SAI_PORT_ATTR_HW_LANE_LIST;
       thrift_port_hw_lane.value.u32list.count = port_hw_lane.value.u32list.count;
       std::vector<int32_t>& lane_list = thrift_port_hw_lane.value.u32list.u32list;
@@ -3222,7 +3219,6 @@ public:
       port_oper_status_attribute.id = SAI_PORT_ATTR_OPER_STATUS;
       port_api->get_port_attribute(port_id, 1, &port_oper_status_attribute);
 
-      thrift_attr_list.attr_count = 5;
       thrift_port_status.id = SAI_PORT_ATTR_OPER_STATUS;
       thrift_port_status.value.s32 =  port_oper_status_attribute.value.s32;
       attr_list.push_back(thrift_port_status);
@@ -3232,7 +3228,6 @@ public:
       port_mtu_status_attribute.id = SAI_PORT_ATTR_MTU;
       port_api->get_port_attribute(port_id, 1, &port_mtu_status_attribute);
 
-      thrift_attr_list.attr_count = 6;
       thrift_port_mtu.id = SAI_PORT_ATTR_MTU;
       thrift_port_mtu.value.u32 =  port_mtu_status_attribute.value.u32;
       attr_list.push_back(thrift_port_mtu);
