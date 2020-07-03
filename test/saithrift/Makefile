@@ -27,7 +27,11 @@ ODIR = ./src/obj
 SAIDIR = ./include
 SRC = ./src
 THRIFT = /usr/bin/thrift
+ifneq (, $(wildcard /usr/local/bin/ctypesgen))
+CTYPESGEN = /usr/local/bin/ctypesgen
+else
 CTYPESGEN = /usr/local/bin/ctypesgen.py
+endif
 LIBS = -lthrift -lpthread -lsai
 SAI_LIBRARY_DIR ?= $(SAI_PREFIX)/lib
 LDFLAGS = -L$(SAI_LIBRARY_DIR) -Wl,-rpath=$(SAI_LIBRARY_DIR)
@@ -62,7 +66,7 @@ $(CPP_SOURCES): src/switch_sai.thrift
 	$(THRIFT) -o $(SRC) --gen cpp -r $(SRC)/switch_sai.thrift
 
 $(PY_SOURCES): src/switch_sai.thrift
-	$(THRIFT) -o $(SRC) --gen py -r $(SRC)/switch_sai.thrift 
+	$(THRIFT) -o $(SRC) --gen py -r $(SRC)/switch_sai.thrift
 
 $(SAI_PY_HEADERS): $(SAI_HEADERS)
 	$(CTYPESGEN) -I/usr/include -I$(SAI_HEADER_DIR) --include /usr/include/linux/limits.h $^ -o $@
@@ -86,7 +90,7 @@ saiserver: $(ODIR)/saiserver.o $(ODIR)/librpcserver.a
 	$(CXX) $(LDFLAGS) $(ODIR)/switch_sai_rpc_server.o $(ODIR)/saiserver.o -o $@ \
 		   $(ODIR)/librpcserver.a $(LIBS)
 
-install-lib: $(ODIR)/librpcserver.a 
+install-lib: $(ODIR)/librpcserver.a
 	$(INSTALL) -D $(ODIR)/librpcserver.a $(DESTDIR)/usr/lib/librpcserver.a
 	$(INSTALL) -D saiserver $(DESTDIR)/usr/sbin/saiserver
 	$(INSTALL) -D $(SRC)/switch_sai_rpc_server.h $(DESTDIR)/usr/include/switch_sai_rpc_server.h
