@@ -1822,7 +1822,7 @@ typedef enum _sai_tam_event_type_t
     SAI_TAM_EVENT_TYPE_QUEUE_TAIL_DROP,
 
     /**
-     * @brief Packet drop event
+     * @brief Type of packet drops
      * Simple drop of packets for any reason
      */
     SAI_TAM_EVENT_TYPE_PACKET_DROP,
