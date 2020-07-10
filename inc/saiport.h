@@ -371,10 +371,13 @@ typedef enum _sai_port_attr_t
     /**
      * @brief The maximum accumulative headroom size of a port in bytes
      *
+     * This attribute is applicable only for per-port, per-PG headroom model
+     * (which means SAI_BUFFER_POOL_ATTR_XOFF_SIZE is zero)
+     *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_QOS_MAXIMUM_ACCUMULATIVE_HEADROOM_SIZE,
+    SAI_PORT_ATTR_QOS_MAXIMUM_HEADROOM_SIZE,
 
     /**
      * @brief Query list of supported port speed(full-duplex) in Mbps
