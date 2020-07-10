@@ -253,6 +253,9 @@ typedef enum _sai_acl_action_type_t
     /** Bind a TAM INT object */
     SAI_ACL_ACTION_TYPE_TAM_INT_OBJECT,
 
+    /** Bind a TAM event object */
+    SAI_ACL_ACTION_TYPE_TAM_EVENT_OBJECT,
+
     /** Set isolation group to prevent traffic to members of isolation group */
     SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
 
@@ -2695,6 +2698,22 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_TAM_INT_OBJECT,
+
+    /**
+     * @brief ACL bind point for TAM EVENT object
+     *
+     * Bind (or unbind) a TAM EVENT object.
+     * Note that an ACL entry may bind a TAM INT object, or conversely a
+     * TAM INT object may bind an ACL table or ACL group. In the latter
+     * case, SAI_NULL_OBJECT_ID should be assigned as the attribute value.
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_EVENT
+     * @allownull true
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TAM_EVENT_OBJECT,
 
     /**
      * @brief Set isolation group (isolation group object id)

@@ -1785,6 +1785,135 @@ typedef sai_status_t (*sai_set_tam_collector_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
+ * @brief TAM Packet Drop Types
+ */
+typedef enum _sai_packet_drop_type_t
+{
+    /** None */
+    SAI_PACKET_DROP_TYPE_NONE,
+
+    /** ALL */
+    SAI_PACKET_DROP_TYPE_ALL,
+
+    /** All Ingress */
+    SAI_PACKET_DROP_TYPE_INGRESS,
+
+    /** All Egress */
+    SAI_PACKET_DROP_TYPE_EGRESS,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_MMU,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_L3_SRC_MISS,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_L3_DST_MISS,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_MCAST_MISS,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_UNKNOWN_VLAN,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_L3_HDR_MISMATCH,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_MARTIAN_ADDR,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_L3_TUNNEL_ERROR,
+
+    SAI_PACKET_DROP_TYPE_L3_PARITY_ERROR,
+
+    SAI_PACKET_DROP_TYPE_L3_MTU_FAIL,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_L3_ADDR_BIND_FAILED,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_MPLS_LABEL_MISS,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_MPLS_INVALID_ACTION,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_MPLS_INVALID_PAYLOAD,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_TUNNEL_OBJECT_VALIDATION_FAIL,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_MPLS_SEQUEUNCE_NUMBER,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_TUNNEL_ADAPT_LOOKUOP_MISS_DROP,
+
+    SAI_PACKET_DROP_TYPE_VNTAG_UNKNOWN_SUBTENDING_PORT_ERROR,
+
+    SAI_PACKET_DROP_TYPE_TUNNEL_L2_RPF_CHECK_FAIL,
+
+    /** All MMU */
+    SAI_PACKET_DROP_TYPE_DOT1P_ADMITTANCE_DISCARD,
+
+    SAI_PACKET_DROP_TYPE_TUNNEL_ADAPT_LOOKUP_MISS_DROP,
+
+    SAI_PACKET_DROP_TYPE_PKT_FLOW_SELECT_MISS,
+
+    SAI_PACKET_DROP_TYPE_TUNNEL_DECAP_ECN_ERROR,
+
+    SAI_PACKET_DROP_TYPE_PROTECTION_DATA_DROP,
+
+    SAI_PACKET_DROP_TYPE_CPU_FORWARDING_OTHER,
+
+    SAI_PACKET_DROP_TYPE_INVALID_TPID,
+
+    SAI_PACKET_DROP_TYPE_TUNNEL_ERR,
+
+    SAI_PACKET_DROP_TYPE_TUNNEL_TTL_ERR,
+
+    SAI_PACKET_DROP_TYPE_MPLS_ILLEGAL_RESERVED_LABEL,
+
+    SAI_PACKET_DROP_TYPE_L3_HDR_ERROR,
+
+    SAI_PACKET_DROP_TYPE_L2_HDR_ERROR,
+
+    SAI_PACKET_DROP_TYPE_TTL_ERR,
+
+    SAI_PACKET_DROP_TYPE_NAT_ERROR,
+
+    SAI_PACKET_DROP_TYPE_IPMC_INTERFACE_MISMATCH,
+} sai_packet_drop_type_t;
+
+/**
+ * @brief TAM Switch Event Types
+ */
+typedef enum _sai_switch_event_type_t
+{
+    /** None */
+    SAI_SWITCH_EVENT_TYPE_NONE,
+
+    /** ALL */
+    SAI_SWITCH_EVENT_TYPE_ALL,
+
+    /** Stable Full */
+    SAI_SWITCH_EVENT_TYPE_STABLE_FULL,
+
+    /** Stable Error */
+    SAI_SWITCH_EVENT_TYPE_STABLE_ERROR,
+
+    /** Uncontrolled Shutdown */
+    SAI_SWITCH_EVENT_TYPE_UNCONTROLLED_SHUTDOWN,
+
+    /** Downgrade during Warm Boot */
+    SAI_SWITCH_EVENT_TYPE_WARM_BOOT_DOWNGRADE,
+
+    /** Parity Error */
+    SAI_SWITCH_EVENT_TYPE_PARITY_ERROR,
+} sai_switch_event_type_t;
+
+/**
  * @brief Enum defining event types.
  */
 typedef enum _sai_tam_event_type_t
@@ -1823,9 +1952,15 @@ typedef enum _sai_tam_event_type_t
 
     /**
      * @brief Type of packet drops
-     * Simple drop of packets for any reason
+     * Simple drop monitoring of packets
      */
     SAI_TAM_EVENT_TYPE_PACKET_DROP,
+
+    /**
+     * @brief Packet drop event
+     * State aware drop monitoring of packets
+     */
+    SAI_TAM_EVENT_TYPE_PACKET_DROP_STATEFUL,
 
     /**
      * @brief Switch resource utilization threshold event
@@ -1848,6 +1983,16 @@ typedef enum _sai_tam_event_type_t
      * @brief Buffer service pool threshold event
      */
     SAI_TAM_EVENT_TYPE_BSP,
+
+    /**
+     * @brief Flow latency monitoring event
+     */
+    SAI_TAM_EVENT_TYPE_FLOW_LATENCY,
+
+    /**
+     * @brief Switch monitoring event
+     */
+    SAI_TAM_EVENT_TYPE_SWITCH,
 } sai_tam_event_type_t;
 
 /**
@@ -1962,6 +2107,26 @@ typedef enum _sai_tam_event_attr_t
     SAI_TAM_EVENT_ATTR_TYPE = SAI_TAM_EVENT_ATTR_START,
 
     /**
+     * @brief Type of packet drops
+     *
+     * @type sai_packet_drop_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_DROP_TYPE_NONE
+     * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP or SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP_STATEFUL
+     */
+    SAI_TAM_EVENT_ATTR_PACKET_DROP_TYPE,
+
+    /**
+     * @brief Type of switch event
+     *
+     * @type sai_switch_event_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_SWITCH_EVENT_TYPE_NONE
+     * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_SWITCH
+     */
+    SAI_TAM_EVENT_ATTR_SWITCH_EVENT_TYPE,
+
+    /**
      * @brief Event action
      *
      * @type sai_object_list_t
@@ -1974,8 +2139,9 @@ typedef enum _sai_tam_event_attr_t
      * @brief Collector object list
      *
      * @type sai_object_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
+     * @default empty
      */
     SAI_TAM_EVENT_ATTR_COLLECTOR_LIST,
 
@@ -1998,6 +2164,29 @@ typedef enum _sai_tam_event_attr_t
      * @default 0
      */
     SAI_TAM_EVENT_ATTR_DSCP_VALUE,
+
+    /**
+     * @brief Aging interval (in milliseconds) for an event
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_EVENT_ATTR_AGING_INTERVAL,
+
+    /**
+     * @brief Enable/Disable Samplepacket session
+     *
+     * Enable ingress sampling by assigning samplepacket object id Disable
+     * ingress sampling by assigning #SAI_NULL_OBJECT_ID as attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TAM_EVENT_ATTR_INGRESS_SAMPLEPACKET_ENABLE,
 
     /**
      * @brief End of Attributes
