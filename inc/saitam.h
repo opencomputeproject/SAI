@@ -1374,8 +1374,9 @@ typedef enum _sai_tam_telemetry_attr_t
      * @brief Collector object list
      *
      * @type sai_object_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
+     * @default empty
      */
     SAI_TAM_TELEMETRY_ATTR_COLLECTOR_LIST,
 
