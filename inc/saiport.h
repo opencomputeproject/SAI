@@ -369,7 +369,8 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_SCHEDULER_GROUP_LIST,
 
     /**
-     * @brief The maximum accumulative headroom size of a port in bytes
+     * @brief The sum of the headroom size of the ingress priority groups belonging to this port
+     *        should not exceed the SAI_PORT_ATTR_QOS_MAXIMUM_HEADROOM_SIZE value.
      *
      * This attribute is applicable only for per-port, per-PG headroom model
      * (which means SAI_BUFFER_POOL_ATTR_XOFF_SIZE is zero)
