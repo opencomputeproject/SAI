@@ -375,6 +375,8 @@ typedef enum _sai_port_attr_t
      * This attribute is applicable only for per-port, per-PG headroom model
      * (which means SAI_BUFFER_POOL_ATTR_XOFF_SIZE is zero)
      *
+     * For the platforms which don't have this limitation, 0 should be returned.
+     *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
