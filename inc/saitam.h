@@ -1494,9 +1494,9 @@ typedef enum _sai_tam_transport_type_t
     SAI_TAM_TRANSPORT_TYPE_GRPC,
 
     /**
-     * @brief Transport MIRROR session
+     * @brief Transport forwarding to port
      */
-    SAI_TAM_TRANSPORT_TYPE_MIRROR,
+    SAI_TAM_TRANSPORT_TYPE_PORT,
 } sai_tam_transport_type_t;
 
 /**
@@ -1583,7 +1583,7 @@ typedef enum _sai_tam_transport_attr_t
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     * @condition SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
      */
     SAI_TAM_TRANSPORT_ATTR_SRC_MAC_ADDRESS,
 
@@ -1592,7 +1592,7 @@ typedef enum _sai_tam_transport_attr_t
      *
      * @type sai_mac_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     * @condition SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
      */
     SAI_TAM_TRANSPORT_ATTR_DST_MAC_ADDRESS,
 
@@ -1603,7 +1603,7 @@ typedef enum _sai_tam_transport_attr_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0x8100
-     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
      */
     SAI_TAM_TRANSPORT_ATTR_VLAN_TPID,
 
@@ -1614,7 +1614,7 @@ typedef enum _sai_tam_transport_attr_t
      * @flags CREATE_AND_SET
      * @isvlan true
      * @default 0
-     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
      */
     SAI_TAM_TRANSPORT_ATTR_VLAN_ID,
 
@@ -1624,7 +1624,7 @@ typedef enum _sai_tam_transport_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
      */
     SAI_TAM_TRANSPORT_ATTR_VLAN_PRI,
 
@@ -1634,7 +1634,7 @@ typedef enum _sai_tam_transport_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
      */
     SAI_TAM_TRANSPORT_ATTR_VLAN_CFI,
 
