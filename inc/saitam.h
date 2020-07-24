@@ -786,8 +786,10 @@ typedef enum _sai_tam_int_attr_t
      * @brief Tam report type
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_REPORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_INT_ATTR_REPORT_ID,
 
@@ -1575,6 +1577,66 @@ typedef enum _sai_tam_transport_attr_t
      * @default 1500
      */
     SAI_TAM_TRANSPORT_ATTR_MTU,
+
+    /**
+     * @brief L2 source MAC address
+     *
+     * @type sai_mac_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     */
+    SAI_TAM_TRANSPORT_ATTR_SRC_MAC_ADDRESS,
+
+    /**
+     * @brief L2 destination MAC address
+     *
+     * @type sai_mac_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     */
+    SAI_TAM_TRANSPORT_ATTR_DST_MAC_ADDRESS,
+
+    /**
+     * @brief L2 header TPID.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0x8100
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     */
+    SAI_TAM_TRANSPORT_ATTR_VLAN_TPID,
+
+    /**
+     * @brief L2 header VLAN Id.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan true
+     * @default 0
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     */
+    SAI_TAM_TRANSPORT_ATTR_VLAN_ID,
+
+    /**
+     * @brief L2 header packet priority (3 bits).
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     */
+    SAI_TAM_TRANSPORT_ATTR_VLAN_PRI,
+
+    /**
+     * @brief L2 header Vlan CFI (1 bit).
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_MIRROR
+     */
+    SAI_TAM_TRANSPORT_ATTR_VLAN_CFI,
 
     /**
      * @brief End of Attributes
