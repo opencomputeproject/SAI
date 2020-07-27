@@ -378,6 +378,19 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_BROADCAST_FLOOD_GROUP,
 
     /**
+     * @brief Enable/Disable ARP & NDP suppression
+     *
+     * When enabled, the ARP and NDP messages are trapped to CPU instead of
+     * getting copied (and flooding the vlan). Default is set to false
+     * for backward compatibility reasons
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_VLAN_ATTR_NEIGHBOR_SUPPRESSION_ENABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_VLAN_ATTR_END,

@@ -70,6 +70,7 @@ MAC - Medium Access Control
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
+NDP - Neighbor Discovery Protocol
 NHLFE - Next Hop Label Forwarding Entry
 NPU - Numeric Processing Unit
 NRZ - Non Return to Zero
