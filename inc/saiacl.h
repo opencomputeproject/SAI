@@ -254,7 +254,7 @@ typedef enum _sai_acl_action_type_t
     SAI_ACL_ACTION_TYPE_TAM_INT_OBJECT,
 
     /** Bind a TAM event object */
-    SAI_ACL_ACTION_TYPE_TAM_EVENT_OBJECT,
+    SAI_ACL_ACTION_TYPE_TAM_OBJECT,
 
     /** Set isolation group to prevent traffic to members of isolation group */
     SAI_ACL_ACTION_TYPE_SET_ISOLATION_GROUP,
@@ -2713,7 +2713,7 @@ typedef enum _sai_acl_entry_attr_t
      * @allownull true
      * @default disabled
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_TAM_EVENT_OBJECT,
+    SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT,
 
     /**
      * @brief Set isolation group (isolation group object id)
