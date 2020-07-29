@@ -231,7 +231,7 @@ typedef enum _sai_hostif_trap_type_t
     SAI_HOSTIF_TRAP_TYPE_PTP_TX_EVENT = 0x00000011,
 
     /**
-     * @brief DHCP traffic (UDP ports 67, 68) 
+     * @brief DHCP traffic (UDP ports 67, 68)
      * (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_DHCP_L2 = 0x00000012,
