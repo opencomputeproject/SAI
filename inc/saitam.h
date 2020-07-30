@@ -2334,9 +2334,9 @@ typedef enum _sai_tam_event_attr_t
     /**
      * @brief Type of ingress packet drops
      *
-     * @type sai_packet_drop_type_ingress_t
+     * @type sai_s32_list_t sai_packet_drop_type_ingress_t
      * @flags CREATE_AND_SET
-     * @default SAI_PACKET_DROP_TYPE_INGRESS_NONE
+     * @default empty
      * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP or SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP_STATEFUL
      */
     SAI_TAM_EVENT_ATTR_PACKET_DROP_TYPE_INGRESS,
@@ -2344,9 +2344,9 @@ typedef enum _sai_tam_event_attr_t
     /**
      * @brief Type of MMU packet drops
      *
-     * @type sai_packet_drop_type_mmu_t
+     * @type sai_s32_list_t sai_packet_drop_type_mmu_t
      * @flags CREATE_AND_SET
-     * @default SAI_PACKET_DROP_TYPE_MMU_NONE
+     * @default empty
      * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP or SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP_STATEFUL
      */
     SAI_TAM_EVENT_ATTR_PACKET_DROP_TYPE_MMU,
@@ -2354,9 +2354,9 @@ typedef enum _sai_tam_event_attr_t
     /**
      * @brief Type of egress packet drops
      *
-     * @type sai_packet_drop_type_egress_t
+     * @type sai_s32_list_t sai_packet_drop_type_egress_t
      * @flags CREATE_AND_SET
-     * @default SAI_PACKET_DROP_TYPE_EGRESS_NONE
+     * @default empty
      * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP or SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP_STATEFUL
      */
     SAI_TAM_EVENT_ATTR_PACKET_DROP_TYPE_EGRESS,
@@ -2364,9 +2364,9 @@ typedef enum _sai_tam_event_attr_t
     /**
      * @brief Type of switch event
      *
-     * @type sai_switch_event_type_t
+     * @type sai_s32_list_t sai_switch_event_type_t
      * @flags CREATE_AND_SET
-     * @default SAI_SWITCH_EVENT_TYPE_NONE
+     * @default empty
      * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_SWITCH
      */
     SAI_TAM_EVENT_ATTR_SWITCH_EVENT_TYPE,
