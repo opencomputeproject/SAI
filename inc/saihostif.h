@@ -232,9 +232,15 @@ typedef enum _sai_hostif_trap_type_t
 
     /**
      * @brief DHCP traffic (UDP ports 67, 68)
-     * (default packet action is drop)
+     * (default packet action is forward)
      */
     SAI_HOSTIF_TRAP_TYPE_DHCP_L2 = 0x00000012,
+
+    /**
+     * @brief DHCPV6 traffic (UDP ports 546, 547)
+     * (default packet action is forward)
+     */
+    SAI_HOSTIF_TRAP_TYPE_DHCPV6_L2 = 0x00000013,
 
     /** Switch traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
