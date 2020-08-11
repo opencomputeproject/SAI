@@ -1260,6 +1260,25 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
     /**
+     * @brief User Defined Field Data
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     * @range SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
+     */
+    SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_DATA_MIN,
+
+    /**
+     * @brief User Defined Field Data end
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_DATA_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_DATA_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
+
+    /**
      * @brief Range type defined
      *
      * @type sai_s32_list_t sai_acl_range_type_t
@@ -2173,6 +2192,25 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
+
+    /**
+     * @brief One to one mapped User Defined Field data value for the UDF Groups in ACL Table
+     *
+     * @type sai_acl_field_data_t sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     * @range SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
+     */
+    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN,
+
+    /**
+     * @brief User Defined Field data value max
+     *
+     * @type sai_acl_field_data_t sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
     /**
      * @brief Range Type defined in sai_acl_range_type_t
