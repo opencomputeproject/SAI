@@ -2154,7 +2154,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_AETH_SYNDROME,
 
     /**
-     * @brief User Defined Field data for the UDF Groups in ACL Table
+     * @brief User Defined Field object for the UDF Groups in ACL Table
      *
      * @type sai_acl_field_data_t sai_object_id_t
      * @flags CREATE_AND_SET
