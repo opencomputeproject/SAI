@@ -268,11 +268,32 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_entry_attrs[2].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN+1;
     acl_entry_attrs[2].value.oid = udf_group_ids[1];
     acl_entry_attrs[3].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN;
-    acl_entry_attrs[3].value.aclfield.data.u32 = 0x10101000;
-    acl_entry_attrs[3].value.aclfield.mask.u32 = 0xffffff00;
+    acl_entry_attrs[3].value.aclfield.data.count = 4;
+    acl_entry_attrs[3].value.aclfield.data.list[0] = 0x10;
+    acl_entry_attrs[3].value.aclfield.data.list[1] = 0x10;
+    acl_entry_attrs[3].value.aclfield.data.list[2] = 0x10;
+    acl_entry_attrs[3].value.aclfield.data.list[3] = 0x00;
+    acl_entry_attrs[3].value.aclfield.mask.count = 4;
+    acl_entry_attrs[3].value.aclfield.mask.list[0] = 0xff;
+    acl_entry_attrs[3].value.aclfield.mask.list[1] = 0xff;
+    acl_entry_attrs[3].value.aclfield.mask.list[2] = 0xff;
+    acl_entry_attrs[3].value.aclfield.mask.list[3] = 0x00;
     acl_entry_attrs[4].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN+1;
-    acl_entry_attrs[4].value.aclfield.data.u32 = 0x20202000;
-    acl_entry_attrs[4].value.aclfield.mask.u32 = 0xffffff00;
+    acl_entry_attrs[4].value.aclfield.data.count = 4;
+    acl_entry_attrs[4].value.aclfield.data.list[0] = 0x20;
+    acl_entry_attrs[4].value.aclfield.data.list[1] = 0x20;
+    acl_entry_attrs[4].value.aclfield.data.list[2] = 0x20;
+    acl_entry_attrs[4].value.aclfield.data.list[3] = 0x00;
+    acl_entry_attrs[4].value.aclfield.mask.count = 4;
+    acl_entry_attrs[4].value.aclfield.mask.list[0] = 0xff;
+    acl_entry_attrs[4].value.aclfield.mask.list[1] = 0xff;
+    acl_entry_attrs[4].value.aclfield.mask.list[2] = 0xff;
+    acl_entry_attrs[4].value.aclfield.mask.list[3] = 0x00;
+
+    saistatus = sai_acl_api->create_acl_entry(&acl_entry, 5, acl_entry_attrs);
+    if (saistatus != SAI_STATUS_SUCCESS) {
+        return saistatus;
+    }
 ```
 
 #### Example 2
@@ -363,8 +384,17 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_entry_attrs[0].value.oid = acl_table_id;
     acl_entry_attrs[1].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN;
     acl_entry_attrs[1].value.oid = udf_group_ids;
-    acl_entry_attrs[3].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN;
-    acl_entry_attrs[3].value.aclfield.data.u16 = 17;
-    acl_entry_attrs[3].value.aclfield.mask.u16 = 0xffff;
+    acl_entry_attrs[2].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN;
+    acl_entry_attrs[2].value.aclfield.data.count = 2;
+    acl_entry_attrs[2].value.aclfield.data.list[0] = 0x00;
+    acl_entry_attrs[2].value.aclfield.data.list[1] = 0x11;
+    acl_entry_attrs[2].value.aclfield.mask.count = 2;
+    acl_entry_attrs[2].value.aclfield.mask.list[0] = 0xff;
+    acl_entry_attrs[2].value.aclfield.mask.list[1] = 0xff;
+
+    saistatus = sai_acl_api->create_acl_entry(&acl_entry, 3, acl_entry_attrs);
+    if (saistatus != SAI_STATUS_SUCCESS) {
+        return saistatus;
+    }
 ```
 
