@@ -935,6 +935,32 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE,
 
     /**
+     * @brief Enable/Disable Samplepacket session
+     *
+     * Enable sample ingress mirroring by assigning list of mirror object ids Disable
+     * sample ingress mirroring by assigning object_count as 0 in objlist
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
+     * @default empty
+     */
+    SAI_PORT_ATTR_INGRESS_SAMPLE_MIRROR_SESSION,
+
+    /**
+     * @brief Enable/Disable Samplepacket session
+     *
+     * Enable sample egress mirroring by assigning list of mirror object ids Disable
+     * sample egress mirroring by assigning object_count as 0 in objlist
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
+     * @default empty
+     */
+    SAI_PORT_ATTR_EGRESS_SAMPLE_MIRROR_SESSION,
+
+    /**
      * @brief Attach/Detach policer to port
      *
      * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.

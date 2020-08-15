@@ -47,6 +47,9 @@ typedef enum _sai_mirror_session_type_t
     /** Enhanced Remote SPAN */
     SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE,
 
+    /** SFLOW tunnel SPAN */
+    SAI_MIRROR_SESSION_TYPE_SFLOW
+
 } sai_mirror_session_type_t;
 
 /**
@@ -320,6 +323,28 @@ typedef enum _sai_mirror_session_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_MIRROR_SESSION_ATTR_POLICER,
+
+    /**
+     * @brief UDP source port. UDP source port to encapsulate
+     * SFLOW packets
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @isvlan false
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_SFLOW
+     */
+    SAI_MIRROR_SESSION_ATTR_UDP_SRC_PORT,
+
+    /**
+     * @brief UDP destination port. UDP destination port to
+     * encapsulate SFLOW packets
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @isvlan false
+     * @condition SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_SFLOW
+     */
+    SAI_MIRROR_SESSION_ATTR_UDP_DST_PORT,
 
     /**
      * @brief End of attributes
