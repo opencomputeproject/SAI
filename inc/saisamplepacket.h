@@ -41,6 +41,9 @@ typedef enum _sai_samplepacket_type_t
     /** Copy the sample packets to CPU */
     SAI_SAMPLEPACKET_TYPE_SLOW_PATH,
 
+    /** Copy the sample packets using mirror session */
+    SAI_SAMPLEPACKET_TYPE_MIRROR_SESSION,
+
 } sai_samplepacket_type_t;
 
 /**
