@@ -3375,7 +3375,9 @@ void check_objects_for_loops_recursive(
         {
             if (m->attrid == SAI_PORT_ATTR_EGRESS_MIRROR_SESSION ||
                     m->attrid == SAI_PORT_ATTR_INGRESS_MIRROR_SESSION ||
-                    m->attrid == SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST)
+                    m->attrid == SAI_PORT_ATTR_EGRESS_BLOCK_PORT_LIST ||
+                    m->attrid == SAI_PORT_ATTR_INGRESS_SAMPLE_MIRROR_SESSION ||
+                    m->attrid == SAI_PORT_ATTR_EGRESS_SAMPLE_MIRROR_SESSION)
             {
                 continue;
             }
