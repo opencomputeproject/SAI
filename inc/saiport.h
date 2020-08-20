@@ -1456,6 +1456,16 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PRBS_LOCK_LOSS_STATUS,
 
     /**
+     * @brief Attribute data for #SAI_PORT_ATTR_PRBS_RX_STATUS
+     *
+     * PRBS rx status: 1 for OK, 0 for error
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_RX_STATUS,
+
+    /**
      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
      *
      * Auto negotiation (AN) done state: 0 for AN in progress, 0 for AN done

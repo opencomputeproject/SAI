@@ -97,43 +97,31 @@ User should be able to configure a mask in the ACL entry for a given UDF extract
         ...
         } sai_acl_entry_attr_t;
 ```
+#### saiudf.h Updates
+UDF group attribute is updated with a read only index. This index is allocated by the SAI adapter and is used by NOS to set the corresponding (SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + index) in ACL table as true. 
+This will help derive the UDF group when a ACL table update is recieved by the SAI adapater. This will also help in determining the UDF group length and correct ACL table width can be set in HW.
 
+Following ranges should be in sync
+
+> #define SAI_UDF_GROUP_ATTR_ID_RANGE 0xFF
+> #define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
+
+```sh
+    /**
+     * @brief UDF group index
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     * @range SAI_UDF_GROUP_ATTR_ID_RANGE
+     */
+    SAI_UDF_GROUP_ATTR_INDEX,
+```
 
 #### saiacl.h Updates
 
-> SAI ACL spec need to be enhanced to be able to specify a data/mask value for the extracted field for a given UDF group.
-> Following new attributes are introduced in the ACL entry for UDF group related data/mask values.
-> Each UDF group OID has a corresponding data field in ACL entry
+> SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN and MAX is change to u8_list_t data type. Given that UDF qualifier in ACL is incomplete and not used currently. This change will not impact backward compatibility. 
 
-```
-    /**
-     * @brief Attribute Id for sai_acl_table
-     *
-     * @flags Contains flags
-     */
-    typedef enum _sai_acl_table_attr_t
-    {
-        ...
-        /**
-         * @brief User Defined Field Groups
-         *
-         * @type bool
-         * @flags CREATE_ONLY
-         * @default false
-         * @range SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
-         */
-        SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_DATA_MIN,
-
-        /**
-         * @brief User Defined Field Groups end
-         *
-         * @type bool
-         * @flags CREATE_ONLY
-         * @default false
-         */
-        SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_DATA_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_DATA_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
-        ...
-    } sai_acl_table_attr_t;   
+```sh
     
     /**
      * @brief Attribute Id for sai_acl_entry
@@ -144,23 +132,23 @@ User should be able to configure a mask in the ACL entry for a given UDF extract
     {
         ...
         /**
-         * @brief User Defined Field data value for the UDF Groups in ACL Table
+         * @brief User Defined Field object for the UDF Groups in ACL Table
          *
          * @type sai_acl_field_data_t sai_u8_list_t
          * @flags CREATE_AND_SET
          * @default disabled
          * @range SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
          */
-        SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN,
-       
+        SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN,
+    
         /**
-         * @brief User Defined Field data value max
+         * @brief User Defined Field data max
          *
          * @type sai_acl_field_data_t sai_u8_list_t
          * @flags CREATE_AND_SET
          * @default disabled
          */
-        SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
+        SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
         ...
         } sai_acl_entry_attr_t;
 
@@ -188,6 +176,7 @@ Following example is from UDF spec and shows how to define UDF extraction fields
     sai_udf_match_api->create_udf_match(&udf_match1_id, 3, udf_match1_attrs);
     
     // Create two UDF groups, UDF_Group1 and UDF_Group2
+    // SAI Adapter will allocate index 0 for UDF_Group1 and index 1 for UDF_Group2
     sai_object_id_t udf_group_ids[2];
     sai_attribute_t udf_group_attr;
     udf_group_attr.id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
@@ -243,17 +232,15 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_attr_list[1].value.objlist.count = 1;
     acl_attr_list[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF;
     
+    // Set group corresponding to index 0
+    // This will map to UDF_Group1
     acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN;
     acl_attr_list[2].value.booldata = True;
     
+    // Set group corresponding to index 1
+    // This will map to UDF_Group2  
     acl_attr_list[3].id = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN+1;
     acl_attr_list[3].value.booldata = True;
-
-    acl_attr_list[4].id = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_DATA_MIN;
-    acl_attr_list[4].value.booldata = True;
-    
-    acl_attr_list[5].id = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_DATA_MIN+1;
-    acl_attr_list[5].value.booldata = True;
     
     saistatus = sai_acl_api->create_acl_table(&acl_table_id2, 6, acl_attr_list);
     if (saistatus != SAI_STATUS_SUCCESS) {
@@ -264,31 +251,28 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_entry_attrs[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
     acl_entry_attrs[0].value.oid = acl_table_id;
     acl_entry_attrs[1].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN;
-    acl_entry_attrs[1].value.oid = udf_group_ids[0];
+    acl_entry_attrs[1].value.aclfield.data.count = 4;
+    acl_entry_attrs[1].value.aclfield.data.list[0] = 0x10;
+    acl_entry_attrs[1].value.aclfield.data.list[1] = 0x10;
+    acl_entry_attrs[1].value.aclfield.data.list[2] = 0x10;
+    acl_entry_attrs[1].value.aclfield.data.list[3] = 0x00;
+    acl_entry_attrs[1].value.aclfield.mask.count = 4;
+    acl_entry_attrs[1].value.aclfield.mask.list[0] = 0xff;
+    acl_entry_attrs[1].value.aclfield.mask.list[1] = 0xff;
+    acl_entry_attrs[1].value.aclfield.mask.list[2] = 0xff;
+    acl_entry_attrs[1].value.aclfield.mask.list[3] = 0x00;
+    
     acl_entry_attrs[2].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN+1;
-    acl_entry_attrs[2].value.oid = udf_group_ids[1];
-    acl_entry_attrs[3].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN;
-    acl_entry_attrs[3].value.aclfield.data.count = 4;
-    acl_entry_attrs[3].value.aclfield.data.list[0] = 0x10;
-    acl_entry_attrs[3].value.aclfield.data.list[1] = 0x10;
-    acl_entry_attrs[3].value.aclfield.data.list[2] = 0x10;
-    acl_entry_attrs[3].value.aclfield.data.list[3] = 0x00;
-    acl_entry_attrs[3].value.aclfield.mask.count = 4;
-    acl_entry_attrs[3].value.aclfield.mask.list[0] = 0xff;
-    acl_entry_attrs[3].value.aclfield.mask.list[1] = 0xff;
-    acl_entry_attrs[3].value.aclfield.mask.list[2] = 0xff;
-    acl_entry_attrs[3].value.aclfield.mask.list[3] = 0x00;
-    acl_entry_attrs[4].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN+1;
-    acl_entry_attrs[4].value.aclfield.data.count = 4;
-    acl_entry_attrs[4].value.aclfield.data.list[0] = 0x20;
-    acl_entry_attrs[4].value.aclfield.data.list[1] = 0x20;
-    acl_entry_attrs[4].value.aclfield.data.list[2] = 0x20;
-    acl_entry_attrs[4].value.aclfield.data.list[3] = 0x00;
-    acl_entry_attrs[4].value.aclfield.mask.count = 4;
-    acl_entry_attrs[4].value.aclfield.mask.list[0] = 0xff;
-    acl_entry_attrs[4].value.aclfield.mask.list[1] = 0xff;
-    acl_entry_attrs[4].value.aclfield.mask.list[2] = 0xff;
-    acl_entry_attrs[4].value.aclfield.mask.list[3] = 0x00;
+    acl_entry_attrs[2].value.aclfield.data.count = 4;
+    acl_entry_attrs[2].value.aclfield.data.list[0] = 0x20;
+    acl_entry_attrs[2].value.aclfield.data.list[1] = 0x20;
+    acl_entry_attrs[2].value.aclfield.data.list[2] = 0x20;
+    acl_entry_attrs[2].value.aclfield.data.list[3] = 0x00;
+    acl_entry_attrs[2].value.aclfield.mask.count = 4;
+    acl_entry_attrs[2].value.aclfield.mask.list[0] = 0xff;
+    acl_entry_attrs[2].value.aclfield.mask.list[1] = 0xff;
+    acl_entry_attrs[2].value.aclfield.mask.list[2] = 0xff;
+    acl_entry_attrs[2].value.aclfield.mask.list[3] = 0x00;
 
     saistatus = sai_acl_api->create_acl_entry(&acl_entry, 5, acl_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
