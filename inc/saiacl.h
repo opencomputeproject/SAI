@@ -166,6 +166,12 @@ typedef enum _sai_acl_action_type_t
     /** Set Packet Outer Vlan Priority */
     SAI_ACL_ACTION_TYPE_SET_OUTER_VLAN_PRI,
 
+    /** Add Packet Vlan Id */
+    SAI_ACL_ACTION_TYPE_ADD_VLAN_ID,
+
+    /** Add Packet Vlan Priority */
+    SAI_ACL_ACTION_TYPE_ADD_VLAN_PRI,
+
     /** Set Packet Src MAC Address */
     SAI_ACL_ACTION_TYPE_SET_SRC_MAC,
 
@@ -535,6 +541,24 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6 = SAI_ACL_TABLE_ATTR_FIELD_START,
 
     /**
+     * @brief Src IPv6 Address Higher 64 bits
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6_HIGH,
+
+    /**
+     * @brief Src IPv6 Address Lower 64 bits
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6_LOW,
+
+    /**
      * @brief Dst IPv6 Address
      *
      * @type bool
@@ -542,6 +566,24 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6,
+
+    /**
+     * @brief Dst IPv6 Address Higher 64 bits
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_HIGH,
+
+    /**
+     * @brief Dst IPv6 Address Lower 64 bits
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_LOW,
 
     /**
      * @brief Inner Src IPv6 Address
@@ -1413,6 +1455,24 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
 
     /**
+     * @brief Src IPv6 Address Higher 64 bits
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6_HIGH,
+
+    /**
+     * @brief Src IPv6 Address Lower 64 bits
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6_LOW,
+
+    /**
      * @brief Dst IPv6 Address
      *
      * @type sai_acl_field_data_t sai_ip6_t
@@ -1420,6 +1480,24 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6,
+
+    /**
+     * @brief Dst IPv6 Address Higher 64 bits
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_HIGH,
+
+    /**
+     * @brief Dst IPv6 Address Lower 64 bits
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_LOW,
 
     /**
      * @brief Inner Src IPv6 Address
@@ -2395,6 +2473,25 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_PRI,
+
+    /**
+     * @brief Add Packet Vlan Id (12 bits)
+     *
+     * @type sai_acl_action_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan true
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_ADD_VLAN_ID,
+
+    /**
+     * @brief Add Packet Vlan Priority (3 bits)
+     *
+     * @type sai_acl_action_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_ADD_VLAN_PRI,
 
     /**
      * @brief Set Packet Src MAC Address
