@@ -166,18 +166,6 @@ typedef enum _sai_acl_action_type_t
     /** Set Packet Outer Vlan Priority */
     SAI_ACL_ACTION_TYPE_SET_OUTER_VLAN_PRI,
 
-    /** Add Packet Vlan Id */
-    SAI_ACL_ACTION_TYPE_ADD_VLAN_ID,
-
-    /** Add Packet Vlan Priority */
-    SAI_ACL_ACTION_TYPE_ADD_VLAN_PRI,
-
-    /** Set Queue */
-    SAI_ACL_ACTION_TYPE_SET_QUEUE,
-
-    /** Set Destination Class ID */
-    SAI_ACL_ACTION_TYPE_SET_CLASS_ID,
-
     /** Set Packet Src MAC Address */
     SAI_ACL_ACTION_TYPE_SET_SRC_MAC,
 
@@ -547,15 +535,6 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6 = SAI_ACL_TABLE_ATTR_FIELD_START,
 
     /**
-     * @brief Src IPv6 Address Higher 64 bits
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6_HIGH,
-
-    /**
      * @brief Dst IPv6 Address
      *
      * @type bool
@@ -563,15 +542,6 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6,
-
-    /**
-     * @brief Dst IPv6 Address Higher 64 bits
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_HIGH,
 
     /**
      * @brief Inner Src IPv6 Address
@@ -1253,24 +1223,6 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /**
-     * @brief Destination Class Id based on L3 lookup
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_ACL_TABLE_ATTR_FIELD_L3_NPU_META_DST_CLASS_ID,
-
-    /**
-     * @brief Destination Class Id based on L2 lookup
-     *
-     * @type bool
-     * @flags CREATE_ONLY
-     * @default false
-     */
-    SAI_ACL_TABLE_ATTR_FIELD_L2_NPU_META_DST_CLASS_ID,
-
-    /**
      * @brief Base Transport Header opcode field
      *
      * @type bool
@@ -1461,15 +1413,6 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
 
     /**
-     * @brief Src IPv6 Address Higher 64 bits
-     *
-     * @type sai_acl_field_data_t sai_ip6_t
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6_HIGH,
-
-    /**
      * @brief Dst IPv6 Address
      *
      * @type sai_acl_field_data_t sai_ip6_t
@@ -1477,15 +1420,6 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6,
-
-    /**
-     * @brief Dst IPv6 Address Higher 64 bits
-     *
-     * @type sai_acl_field_data_t sai_ip6_t
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_HIGH,
 
     /**
      * @brief Inner Src IPv6 Address
@@ -2202,24 +2136,6 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_NPU_META_DST_HIT,
 
     /**
-     * @brief Destination Class Id for L3 packet
-     *
-     * @type sai_acl_field_data_t bool
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_FIELD_L3_NPU_META_DST_CLASS_ID,
-
-    /**
-     * @brief Destination Class Id for L2 packet
-     *
-     * @type sai_acl_field_data_t bool
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_FIELD_L2_NPU_META_DST_CLASS_ID,
-
-    /**
      * @brief Base Transport Header opcode field
      *
      * @type sai_acl_field_data_t sai_uint8_t
@@ -2477,44 +2393,6 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_OUTER_VLAN_PRI,
-
-    /**
-     * @brief Add Packet Vlan Id (12 bits)
-     *
-     * @type sai_acl_action_data_t sai_uint16_t
-     * @flags CREATE_AND_SET
-     * @isvlan true
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_ACTION_ADD_VLAN_ID,
-
-    /**
-     * @brief Add Packet Vlan Priority (3 bits)
-     *
-     * @type sai_acl_action_data_t sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_ACTION_ADD_VLAN_PRI,
-
-    /**
-     * @brief Set Queue
-     *
-     * @type sai_acl_action_data_t sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_QUEUE
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_QUEUE,
-
-    /**
-     * @brief Set Destination Class ID
-     *
-     * @type sai_acl_action_data_t sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_ACTION_SET_CLASS_ID,
 
     /**
      * @brief Set Packet Src MAC Address
