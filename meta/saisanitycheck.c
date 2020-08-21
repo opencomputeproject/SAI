@@ -3960,7 +3960,9 @@ void check_acl_table_fields_and_acl_entry_fields()
          * check acl table flags and attr value type
          */
 
-        if (mtable->attrid == SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE)
+        if ((mtable->attrid == SAI_ACL_TABLE_ATTR_FIELD_ACL_RANGE_TYPE) ||
+        ((mtable->attrid >= SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN) &&
+        (mtable->attrid <= SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX)))
         {
             /*
              * This field is exception, it's not bool, it's a list and it's

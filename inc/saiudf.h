@@ -249,15 +249,6 @@ typedef enum _sai_udf_group_attr_t
     SAI_UDF_GROUP_ATTR_LENGTH,
 
     /**
-     * @brief UDF group index
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     * @range SAI_UDF_GROUP_ATTR_ID_RANGE
-     */
-    SAI_UDF_GROUP_ATTR_INDEX,
-
-    /**
      * @brief End of attributes
      */
     SAI_UDF_GROUP_ATTR_END,
