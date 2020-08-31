@@ -541,22 +541,40 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6 = SAI_ACL_TABLE_ATTR_FIELD_START,
 
     /**
-     * @brief Src IPv6 Address Higher 64 bits
+     * @brief Src IPv6 Address 127:96 32 bits
      *
      * @type bool
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6_HIGH,
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6_WORD3,
 
     /**
-     * @brief Src IPv6 Address Lower 64 bits
+     * @brief Src IPv6 Address 95:64 32 bits
      *
      * @type bool
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6_LOW,
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6_WORD2,
+
+    /**
+     * @brief Src IPv6 Address 63:32 32 bits
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6_WORD1,
+
+    /**
+     * @brief Src IPv6 Address 31:0 32 bits
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6_WORD0,
 
     /**
      * @brief Dst IPv6 Address
@@ -568,22 +586,40 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6,
 
     /**
-     * @brief Dst IPv6 Address Higher 64 bits
+     * @brief Dst IPv6 Address 127:96 32 bits
      *
      * @type bool
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_HIGH,
+    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_WORD3,
 
     /**
-     * @brief Dst IPv6 Address Lower 64 bits
+     * @brief Dst IPv6 Address 95:64 32 bits
      *
      * @type bool
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_LOW,
+    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_WORD2,
+
+    /**
+     * @brief Dst IPv6 Address 63:32 32 bits
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_WORD1,
+
+    /**
+     * @brief Dst IPv6 Address 31:0 32 bits
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_WORD0,
 
     /**
      * @brief Inner Src IPv6 Address
@@ -1455,22 +1491,40 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6 = SAI_ACL_ENTRY_ATTR_FIELD_START,
 
     /**
-     * @brief Src IPv6 Address Higher 64 bits
+     * @brief Src IPv6 Address 127:96 32 bits
      *
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      * @default disabled
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6_HIGH,
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6_WORD3,
 
     /**
-     * @brief Src IPv6 Address Lower 64 bits
+     * @brief Src IPv6 Address 95:64 32 bits
      *
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      * @default disabled
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6_LOW,
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6_WORD2,
+
+    /**
+     * @brief Src IPv6 Address 63:32 32 bits
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6_WORD1,
+
+    /**
+     * @brief Src IPv6 Address 31:0 32 bits
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_IPV6_WORD0,
 
     /**
      * @brief Dst IPv6 Address
@@ -1482,22 +1536,40 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6,
 
     /**
-     * @brief Dst IPv6 Address Higher 64 bits
+     * @brief Dst IPv6 Address 127:96 32 bits
      *
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      * @default disabled
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_HIGH,
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_WORD3,
 
     /**
-     * @brief Dst IPv6 Address Lower 64 bits
+     * @brief Dst IPv6 Address 95:64 32 bits
      *
      * @type sai_acl_field_data_t sai_ip6_t
      * @flags CREATE_AND_SET
      * @default disabled
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_LOW,
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_WORD2,
+
+    /**
+     * @brief Dst IPv6 Address 63:32 32 bits
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_WORD1,
+
+    /**
+     * @brief Dst IPv6 Address 31:0 32 bits
+     *
+     * @type sai_acl_field_data_t sai_ip6_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_WORD0,
 
     /**
      * @brief Inner Src IPv6 Address
