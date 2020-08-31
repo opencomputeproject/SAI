@@ -6,7 +6,7 @@ SAI UDF IFP
  Status      | In review
  Type        | Standards track
  Created     | 05/04/2020: Initial Draft
- SAI-Version | 1.?
+ SAI-Version | 1.7
 -------------------------------------------------------------------------------
 
 This spec talks about using UDF extracted fields as qualifiers in ACL.
@@ -34,7 +34,7 @@ Maximum number of UDF groups supported for a given device are exposed in capabil
 #### UDF Group in ACL
 User should be able to configure a mask in the ACL entry for a given UDF extracted field by the UDF group.
 
-> Following attributes already exists in ACL headers but provide only UDF group OID information.
+> Following attributes already exists in ACL headers but provide only UDF group OID information in ACL entry. This is insufficient as SAI adapter can not determine the UDF group field length during ACL table create. Also there is no attribute to specify data/mask values in ACL entry.
 
 ```
     /**
@@ -97,32 +97,51 @@ User should be able to configure a mask in the ACL entry for a given UDF extract
         ...
         } sai_acl_entry_attr_t;
 ```
-#### saiudf.h Updates
-UDF group attribute is updated with a read only index. This index is allocated by the SAI adapter and is used by NOS to set the corresponding (SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + index) in ACL table as true. 
-This will help derive the UDF group when a ACL table update is recieved by the SAI adapater. This will also help in determining the UDF group length and correct ACL table width can be set in HW.
 
-Following ranges should be in sync
 
-> #define SAI_UDF_GROUP_ATTR_ID_RANGE 0xFF
-> #define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
+#### saiacl.h Updates
+Since the length of UDF field is derived from the UDF group object, SAI ACL Table attribute for UDF group is modified fromm bool data type to UDF group object ID. This way SAI Adapter can calculate the width of the Table entry by referring to UDF group ID.
+
+SAI ACL entry attribute is changed to sai_u8_list_t data type so as to specify data/mask values for a given UDF group ID.
+
+These changes are not backward compatible but given that there is no way current SAI ACL spec can used UDF group specified fields, thinking is that no one is using these attributes and its ok to make this change.
 
 ```sh
     /**
-     * @brief UDF group index
+     * @brief Attribute Id for sai_acl_table
      *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     * @range SAI_UDF_GROUP_ATTR_ID_RANGE
+     * @flags Contains flags
      */
-    SAI_UDF_GROUP_ATTR_INDEX,
-```
-
-#### saiacl.h Updates
-
-> SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN and MAX is change to u8_list_t data type. Given that UDF qualifier in ACL is incomplete and not used currently. This change will not impact backward compatibility. 
-
-```sh
+    typedef enum _sai_acl_table_attr_t
+    {
+        ...
+        /**
+         * @brief User Defined Field Groups
+         * Length is derived from the UDF group OID
+         *
+         * @type sai_object_id_t
+         * @flags CREATE_ONLY
+         * @objects SAI_OBJECT_TYPE_UDF_GROUP
+         * @allownull true
+         * @default SAI_NULL_OBJECT_ID
+         * @range SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
+         */
+        SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN,
     
+        /**
+         * @brief User Defined Field Groups end
+         * Length is derived from the UDF group OID
+         *
+         * @type sai_object_id_t
+         * @flags CREATE_ONLY
+         * @objects SAI_OBJECT_TYPE_UDF_GROUP
+         * @allownull true
+         * @default SAI_NULL_OBJECT_ID
+         */
+        SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
+        ...
+    } sai_acl_table_attr_t;        
+
     /**
      * @brief Attribute Id for sai_acl_entry
      *
@@ -150,8 +169,7 @@ Following ranges should be in sync
          */
         SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
         ...
-        } sai_acl_entry_attr_t;
-
+    } sai_acl_entry_attr_t;
 ```
 
 
@@ -235,12 +253,12 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     // Set group corresponding to index 0
     // This will map to UDF_Group1
     acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN;
-    acl_attr_list[2].value.booldata = True;
+    acl_attr_list[2].value.oid = udf_group_ids[0];
     
     // Set group corresponding to index 1
     // This will map to UDF_Group2  
     acl_attr_list[3].id = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN+1;
-    acl_attr_list[3].value.booldata = True;
+    acl_attr_list[3].value.oid = udf_group_ids[1];
     
     saistatus = sai_acl_api->create_acl_table(&acl_table_id2, 6, acl_attr_list);
     if (saistatus != SAI_STATUS_SUCCESS) {
@@ -274,7 +292,7 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_entry_attrs[2].value.aclfield.mask.list[2] = 0xff;
     acl_entry_attrs[2].value.aclfield.mask.list[3] = 0x00;
 
-    saistatus = sai_acl_api->create_acl_entry(&acl_entry, 5, acl_entry_attrs);
+    saistatus = sai_acl_api->create_acl_entry(&acl_entry, 3, acl_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }
@@ -356,7 +374,7 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_attr_list[1].value.objlist.list[0] = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF;
     
     acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN;
-    acl_attr_list[2].value.booldata = True;
+    acl_attr_list[2].value..oid = udf_group_ids;
     
     saistatus = sai_acl_api->create_acl_table(&acl_table_id2, 4, acl_attr_list);
     if (saistatus != SAI_STATUS_SUCCESS) {
@@ -367,16 +385,14 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_entry_attrs[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
     acl_entry_attrs[0].value.oid = acl_table_id;
     acl_entry_attrs[1].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN;
-    acl_entry_attrs[1].value.oid = udf_group_ids;
-    acl_entry_attrs[2].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_DATA_MIN;
-    acl_entry_attrs[2].value.aclfield.data.count = 2;
-    acl_entry_attrs[2].value.aclfield.data.list[0] = 0x00;
-    acl_entry_attrs[2].value.aclfield.data.list[1] = 0x11;
-    acl_entry_attrs[2].value.aclfield.mask.count = 2;
-    acl_entry_attrs[2].value.aclfield.mask.list[0] = 0xff;
-    acl_entry_attrs[2].value.aclfield.mask.list[1] = 0xff;
+    acl_entry_attrs[1].value.aclfield.data.count = 2;
+    acl_entry_attrs[1].value.aclfield.data.list[0] = 0x00;
+    acl_entry_attrs[1].value.aclfield.data.list[1] = 0x11;
+    acl_entry_attrs[1].value.aclfield.mask.count = 2;
+    acl_entry_attrs[1].value.aclfield.mask.list[0] = 0xff;
+    acl_entry_attrs[1].value.aclfield.mask.list[1] = 0xff;
 
-    saistatus = sai_acl_api->create_acl_entry(&acl_entry, 3, acl_entry_attrs);
+    saistatus = sai_acl_api->create_acl_entry(&acl_entry, 2, acl_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }
