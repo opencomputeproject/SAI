@@ -219,17 +219,11 @@ typedef enum _sai_port_interface_type_t
     /** Interface type CR */
     SAI_PORT_INTERFACE_TYPE_CR,
 
-    /** Interface type CR2 */
-    SAI_PORT_INTERFACE_TYPE_CR2,
-
     /** Interface type CR4 */
     SAI_PORT_INTERFACE_TYPE_CR4,
 
     /** Interface type SR */
     SAI_PORT_INTERFACE_TYPE_SR,
-
-    /** Interface type SR2 */
-    SAI_PORT_INTERFACE_TYPE_SR2,
 
     /** Interface type SR4 */
     SAI_PORT_INTERFACE_TYPE_SR4,
