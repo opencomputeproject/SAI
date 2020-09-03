@@ -209,8 +209,6 @@ typedef enum _sai_udf_group_type_t
 
 } sai_udf_group_type_t;
 
-#define SAI_UDF_GROUP_ATTR_ID_RANGE 0xFF
-
 /**
  * @brief Attribute id for UDF group
  */
