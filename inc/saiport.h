@@ -2822,7 +2822,7 @@ typedef enum _sai_port_connector_attr_t
      * @type sai_object_id_t
      * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_PORT
-    */
+     */
     SAI_PORT_CONNECTOR_ATTR_LINE_SIDE_FAILOVER_PORT_ID,
 
     /**
@@ -2832,8 +2832,8 @@ typedef enum _sai_port_connector_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_CONNECTOR_FAILOVER_MODE_DISABLE
      */
-    SAI_PORT_CONNECTOR_ATTR_FAILOVER_MODE,
-
+     SAI_PORT_CONNECTOR_ATTR_FAILOVER_MODE,
+    
     /**
      * @brief End of attributes
      */
