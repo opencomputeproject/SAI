@@ -2238,7 +2238,7 @@ typedef enum _sai_switch_attr_t
      * @default internal
      */
     SAI_SWITCH_ATTR_FABRIC_PORT_LIST,
-    
+ 
     /**
      * @brief Failover configuration modes
      *
