@@ -2806,7 +2806,7 @@ typedef enum _sai_port_connector_attr_t
      * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_PORT_CONNECTOR_ATTR_LINE_SIDE_PORT_ID,
-    
+
     /**
      * @brief System Side Port ID
      *
