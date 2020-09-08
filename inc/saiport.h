@@ -2813,6 +2813,7 @@ typedef enum _sai_port_connector_attr_t
      * @type sai_object_id_t
      * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default internal
      */
     SAI_PORT_CONNECTOR_ATTR_SYSTEM_SIDE_FAILOVER_PORT_ID,
 
@@ -2822,6 +2823,7 @@ typedef enum _sai_port_connector_attr_t
      * @type sai_object_id_t
      * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_PORT
+     * @default internal
      */
     SAI_PORT_CONNECTOR_ATTR_LINE_SIDE_FAILOVER_PORT_ID,
 
