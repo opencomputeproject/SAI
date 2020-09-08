@@ -310,6 +310,35 @@ typedef enum _sai_switch_type_t
 } sai_switch_type_t;
 
 /**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_FAILOVER_CONFIG_MODE
+ * Used for Failover configuration mode
+ * In case of primary port failure, hitless enables the switch over to secondary
+ * port without losing link. It allows uninterrupted data transmission
+ *
+ */
+typedef enum _sai_switch_failover_config_mode_t
+{
+    /** Ports are configured but do not operate in hitless mode with global switching context */
+    SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS_GLOBAL,
+
+    /** Ports are configured but do not operate in hitless mode with per port switching context */
+    SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS_PER_PORT,
+
+    /** Ports are configured but do not operate in hitless mode with pin based switching context */
+    SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS_PIN_BASED,
+
+    /** Ports are configured and operate in hitless mode with global switching context */
+    SAI_SWITCH_FAILOVER_CONFIG_MODE_HITLESS_GLOBAL,
+
+    /** Ports are configured and operate in hitless mode with per port switching context */
+    SAI_SWITCH_FAILOVER_CONFIG_MODE_HITLESS_PER_PORT,
+
+    /** Ports are configured and operate in hitless mode with pin based switching context */
+    SAI_SWITCH_FAILOVER_CONFIG_MODE_HITLESS_PIN_BASED
+
+} sai_switch_failover_config_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
  */
@@ -2210,6 +2239,15 @@ typedef enum _sai_switch_attr_t
      * @default internal
      */
     SAI_SWITCH_ATTR_FABRIC_PORT_LIST,
+    
+    /**
+     * @brief Failover configuration modes
+     *
+     * @type sai_switch_failover_config_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS_GLOBAL
+     */
+    SAI_SWITCH_ATTR_FAILOVER_CONFIG_MODE,
 
     /**
      * @brief End of attributes
