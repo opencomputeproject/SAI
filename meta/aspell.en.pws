@@ -151,3 +151,6 @@ ipredriver
 precursor
 postcursor
 maincursor
+Failover
+failover
+hitless
