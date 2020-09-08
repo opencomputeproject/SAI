@@ -314,7 +314,6 @@ typedef enum _sai_switch_type_t
  * Used for Failover configuration mode
  * In case of primary port failure, hitless enables the switch over to secondary
  * port without losing link. It allows uninterrupted data transmission
- *
  */
 typedef enum _sai_switch_failover_config_mode_t
 {
