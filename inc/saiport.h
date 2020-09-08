@@ -293,55 +293,20 @@ typedef enum _sai_port_prbs_config_t
 } sai_port_prbs_config_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_FAIL_OVER_MODE
- * Used for Fail over mode configuration on port
+ * @brief Attribute data for #SAI_PORT_CONNECTOR_ATTR_FAILOVER_MODE
+ * Used for Failover mode configuration on port
  */
-typedef enum _sai_port_fail_over_mode_t
+typedef enum _sai_port_connector_failover_mode_t
 {
-    /** Fail over mode disable */
-    SAI_PORT_FAIL_OVER_MODE_DISABLE,
+    /** Failover mode disable */
+    SAI_PORT_CONNECTOR_FAILOVER_MODE_DISABLE,
 
-    /** Enable Fail over mode on the port */
-    SAI_PORT_FAIL_OVER_MODE_ENABLE,
+    /** Configure Failover mode on primary port */
+    SAI_PORT_CONNECTOR_FAILOVER_MODE_PRIMARY,
 
-    /** Configure Fail over mode on primary Port */
-    SAI_PORT_FAIL_OVER_MODE_PRIMARY,
-
-    /** Configure Fail over mode on secondary Port */
-    SAI_PORT_FAIL_OVER_MODE_SECONDARY
-} sai_port_fail_over_mode_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_FAIL_OVER_CONFIG_MODE
- * Used for Fail over configuration mode on port w.r.t hit less mode
- */
-typedef enum _sai_port_fail_over_config_mode_t
-{
-    /** Fail over ports are configured but do not operate in hit less mode */
-    SAI_PORT_FAIL_OVER_CONFIG_MODE_NO_HITLESS,
-
-    /** Fail over ports are configured and operate in hit less mode */
-    SAI_PORT_FAIL_OVER_CONFIG_MODE_HITLESS,
-
-    /** Fail over ports are configured and operate in hit less mode and switching of context is automatic */
-    SAI_PORT_FAIL_OVER_CONFIG_MODE_HITLESS_AUTO
-} sai_port_fail_over_config_mode_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_FAIL_OVER_SWITCH_MODE
- * Used for Fail over switch configuration mode on port w.r.t hit less
- */
-typedef enum _sai_port_fail_over_switch_mode_t
-{
-    /** Active contexts are switched and the scope is global context */
-    SAI_PORT_FAIL_OVER_SWITCH_MODE_GLOBAL,
-
-    /** Active contexts are switched and the scope is per port */
-    SAI_PORT_FAIL_OVER_SWITCH_MODE_PER_PORT,
-
-    /** Active contexts are switched and the scope is HMUX_GLOBAL by pin */
-    SAI_PORT_FAIL_OVER_SWITCH_MODE_PIN_BASED
-} sai_port_fail_over_switch_mode_t;
+    /** Configure Failover mode on secondary port */
+    SAI_PORT_CONNECTOR_FAILOVER_MODE_SECONDARY
+} sai_port_connector_failover_mode_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -1626,34 +1591,34 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SYSTEM_PORT
      */
     SAI_PORT_ATTR_SYSTEM_PORT,
+    
+    /**
+     * @brief System Side Port ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
+     */
+    SAI_PORT_CONNECTOR_ATTR_SYSTEM_SIDE_FAILOVER_PORT_ID,
 
     /**
-     * @brief Configure the fail over mode on port
+     * @brief Line Side Port ID
      *
-     * @type sai_port_fail_over_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_FAIL_OVER_MODE_DISABLE
-     */
-    SAI_PORT_ATTR_FAIL_OVER_MODE,
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
+    */
+    SAI_PORT_CONNECTOR_ATTR_LINE_SIDE_FAILOVER_PORT_ID,
 
     /**
-     * @brief Fail over configuration mode on port w.r.t hit less
+     * @brief Configure the failover mode on port
      *
-     * @type sai_port_fail_over_config_mode_t
+     * @type sai_port_connector_failover_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_FAIL_OVER_CONFIG_MODE_NO_HITLESS
+     * @default SAI_PORT_CONNECTOR_FAILOVER_MODE_DISABLE
      */
-    SAI_PORT_ATTR_FAIL_OVER_CONFIG_MODE,
-
-    /**
-     * @brief Fail over switch configuration mode on port w.r.t hit less
-     *
-     * @type sai_port_fail_over_switch_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_FAIL_OVER_SWITCH_MODE_GLOBAL
-     */
-    SAI_PORT_ATTR_FAIL_OVER_SWITCH_MODE,
-
+    SAI_PORT_CONNECTOR_ATTR_FAILOVER_MODE,
+    
     /**
      * @brief End of attributes
      */
