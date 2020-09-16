@@ -1623,6 +1623,26 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SYSTEM_PORT,
 
     /**
+     * @brief Ingress ACL table group bond members associated with this port.
+     * Does not include the main group from SAI_PORT_ATTR_INGRESS_ACL
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP_BOND_MEMBER
+     */
+    SAI_PORT_ATTR_INGRESS_ACL_TABLE_GROUP_BOND_MEMBER_LIST,
+
+    /**
+     * @brief Egress ACL table group bond members associated with this port.
+     * Does not include the main group from SAI_PORT_ATTR_EGRESS_ACL
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP_BOND_MEMBER
+     */
+    SAI_PORT_ATTR_EGRESS_ACL_TABLE_GROUP_BOND_MEMBER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
