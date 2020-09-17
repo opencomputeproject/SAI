@@ -321,7 +321,7 @@ typedef enum _sai_switch_failover_config_mode_t
     SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS,
 
     /** Ports are configured and operate in hitless mode */
-    SAI_SWITCH_FAILOVER_CONFIG_MODE_HITLESS_PIN_BASED
+    SAI_SWITCH_FAILOVER_CONFIG_MODE_HITLESS
 
 } sai_switch_failover_config_mode_t;
 
