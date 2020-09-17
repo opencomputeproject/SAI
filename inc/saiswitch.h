@@ -2247,6 +2247,14 @@ typedef enum _sai_switch_attr_t
      * @default SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS_GLOBAL
      */
     SAI_SWITCH_ATTR_FAILOVER_CONFIG_MODE,
+    
+    /**
+     * @brief Query for Failove mode support
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_FAILOVER_MODE,
 
     /**
      * @brief End of attributes
