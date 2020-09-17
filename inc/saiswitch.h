@@ -317,22 +317,10 @@ typedef enum _sai_switch_type_t
  */
 typedef enum _sai_switch_failover_config_mode_t
 {
-    /** Ports are configured but do not operate in hitless mode with global switching context */
-    SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS_GLOBAL,
+    /** Ports are configured but do not operate in hitless mode */
+    SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS,
 
-    /** Ports are configured but do not operate in hitless mode with per port switching context */
-    SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS_PER_PORT,
-
-    /** Ports are configured but do not operate in hitless mode with pin based switching context */
-    SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS_PIN_BASED,
-
-    /** Ports are configured and operate in hitless mode with global switching context */
-    SAI_SWITCH_FAILOVER_CONFIG_MODE_HITLESS_GLOBAL,
-
-    /** Ports are configured and operate in hitless mode with per port switching context */
-    SAI_SWITCH_FAILOVER_CONFIG_MODE_HITLESS_PER_PORT,
-
-    /** Ports are configured and operate in hitless mode with pin based switching context */
+    /** Ports are configured and operate in hitless mode */
     SAI_SWITCH_FAILOVER_CONFIG_MODE_HITLESS_PIN_BASED
 
 } sai_switch_failover_config_mode_t;
@@ -2244,7 +2232,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_switch_failover_config_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS_GLOBAL
+     * @default SAI_SWITCH_FAILOVER_CONFIG_MODE_NO_HITLESS
      */
     SAI_SWITCH_ATTR_FAILOVER_CONFIG_MODE,
 
