@@ -342,6 +342,22 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_MEMBER_LIST,
 
     /**
+     * @brief Priority of bond member
+     *
+     * Value must be in the range defined in
+     * [SAI_SWITCH_ATTR_ACL_TABLE_GROUP_BOND_MINIMUM_PRIORITY,
+     * SAI_SWITCH_ATTR_ACL_TABLE_GROUP_BOND_MAXIMUM_PRIORITY]
+     *
+     * This priority attribute is only valid for SEQUENTIAL type of ACL groups
+     * This value is only used when binding table as a bond member
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_PRIORITY,
+
+    /**
      * @brief End of attributes
      */
     SAI_ACL_TABLE_GROUP_ATTR_END,
@@ -2929,18 +2945,6 @@ typedef enum _sai_acl_table_group_bond_member_attr_t
      * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
      */
     SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_GROUP_ID,
-
-    /**
-     * @brief Priority
-     *
-     * Value must be in the range defined in
-     * [SAI_SWITCH_ATTR_ACL_GROUP_BOND_MEMBER_MINIMUM_PRIORITY,
-     * SAI_SWITCH_ATTR_ACL_GROUP_BOND_MEMBER_MAXIMUM_PRIORITY]
-     *
-     * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     */
-    SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_PRIORITY,
 
     /**
      * @brief ACL stage
