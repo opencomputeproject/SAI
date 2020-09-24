@@ -6,7 +6,7 @@ Distributed ACL Management
  Status      | In review
  Type        | Standards track
  Created     | 09/23/2020
- SAI-Version | 1.6.2
+ SAI-Version | 1.6.3
 -------------------------------------------------------------------------------
 
 ## Overview
@@ -93,10 +93,29 @@ It is done by making it possible to bind not one, but many ACL table groups to t
         SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_CUSTOM_RANGE_END
 
     } sai_acl_table_group_bond_member_attr_t;
+    
+    
+The ACL table group has one attribute added as well for priority resolution:
+
+        /**
+     * @brief Priority of bond member
+     *
+     * Value must be in the range defined in
+     * [SAI_SWITCH_ATTR_ACL_TABLE_GROUP_BOND_MINIMUM_PRIORITY,
+     * SAI_SWITCH_ATTR_ACL_TABLE_GROUP_BOND_MAXIMUM_PRIORITY]
+     *
+     * This priority attribute is only valid for SEQUENTIAL type of ACL groups
+     * This value is only used when binding table as a bond member
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_PRIORITY,
 
 ## Usage example
 
-Regardless of which method is used, the flow is the same:
+Regardless of which method is used, the flow of creating ACL itself is the same:
 
 
     // CREATE AN INGRESS ACL TABLE GROUP
