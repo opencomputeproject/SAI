@@ -14,21 +14,21 @@ SAI ACL model is described in SAI-Proposal-ACL-1.md.
 It provides the API for managing multiple switch forwarding policies as a group of tables.
 This works perfectly fine with a centralized application in control of all tables.
 
-![Centralized ACL Management](figures/FIXME.png)
+![Centralized ACL Management](figures/Distributed_ACL_1.png)
 
 However, when moving to an architecture where multiple applications are responsible for their own network fuction, the current model creates an unnecessary depemdency.
 There is always a sibgle ownber of the binding between the object (port, router interface etc.) and the ACL table group.
 It results in a requirement for a contract between an external application and an owner of table group to create and share the group on demand.
 Removal of the table group needs to be also synchronized between all application and the group owner, e.g. when it is no longer used.
 
-![Centralized ACL Management with Multiple Apps](figures/FIXME.png)
+![Centralized ACL Management with Multiple Apps](figures/Distributed_ACL_2.png)
 
 ## Multi Application Model
 
 The goal of this proposal is to remove that contract between the applications using ACL and the table group owner.
 It is done by making it possible to bind not one, but many ACL table groups to the same SAI object.
 
-![Distributed ACL Management with Multiple Apps](figures/FIXME.png)
+![Distributed ACL Management with Multiple Apps](figures/Distributed_ACL_3.png)
 
 ## Key Considerations
 
