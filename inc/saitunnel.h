@@ -622,7 +622,6 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_tunnel_ttl_mode_t
      * @flags CREATE_AND_SET
      * @default SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL
-     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
 
@@ -632,7 +631,6 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_tunnel_dscp_mode_t
      * @flags CREATE_AND_SET
      * @default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
-     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
      */
     SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,
 
