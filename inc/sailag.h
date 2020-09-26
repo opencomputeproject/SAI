@@ -152,15 +152,6 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_TPID,
 
     /**
-     * @brief LAG Name
-     *
-     * @type char
-     * @flags CREATE_ONLY
-     * @default \"\"
-     */
-    SAI_LAG_ATTR_NAME,
-
-    /**
      * @brief LAG system port ID
      *
      * The application must manage the allocation of the system port aggregate IDs
