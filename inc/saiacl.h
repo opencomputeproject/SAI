@@ -1320,20 +1320,26 @@ typedef enum _sai_acl_table_attr_t
 
     /**
      * @brief User Defined Field Groups
+     * Length is derived from the UDF group OID
      *
-     * @type bool
+     * @type sai_object_id_t
      * @flags CREATE_ONLY
-     * @default false
+     * @objects SAI_OBJECT_TYPE_UDF_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      * @range SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
      */
     SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN,
 
     /**
      * @brief User Defined Field Groups end
+     * Length is derived from the UDF group OID
      *
-     * @type bool
+     * @type sai_object_id_t
      * @flags CREATE_ONLY
-     * @default false
+     * @objects SAI_OBJECT_TYPE_UDF_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
 
@@ -2304,11 +2310,10 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_AETH_SYNDROME,
 
     /**
-     * @brief User Defined Field data for the UDF Groups in ACL Table
+     * @brief User Defined Field object for the UDF Groups in ACL Table
      *
-     * @type sai_acl_field_data_t sai_object_id_t
+     * @type sai_acl_field_data_t sai_u8_list_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_UDF_GROUP
      * @default disabled
      * @range SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
      */
@@ -2317,9 +2322,8 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief User Defined Field data max
      *
-     * @type sai_acl_field_data_t sai_object_id_t
+     * @type sai_acl_field_data_t sai_u8_list_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_UDF_GROUP
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN + SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE,
