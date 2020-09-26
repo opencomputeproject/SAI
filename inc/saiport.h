@@ -1525,7 +1525,7 @@ typedef enum _sai_port_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_PORT_ATTR_DECREMENT_TTL,
+    SAI_PORT_ATTR_DISABLE_DECREMENT_TTL,
 
     /**
      * @brief Enable EXP -> TC MAP on port

@@ -227,7 +227,7 @@ typedef enum _sai_next_hop_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_NEXT_HOP_ATTR_DECREMENT_TTL,
+    SAI_NEXT_HOP_ATTR_DISABLE_DECREMENT_TTL,
 
     /**
      * @brief MPLS Outsegment type
