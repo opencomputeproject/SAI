@@ -413,6 +413,20 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_SCHEDULER_GROUP_LIST,
 
     /**
+     * @brief The sum of the headroom size of the ingress priority groups belonging to this port
+     *        should not exceed the SAI_PORT_ATTR_QOS_MAXIMUM_HEADROOM_SIZE value.
+     *
+     * This attribute is applicable only for per-port, per-PG headroom model
+     * (which means SAI_BUFFER_POOL_ATTR_XOFF_SIZE is zero)
+     *
+     * For the platforms which don't have this limitation, 0 should be returned.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_QOS_MAXIMUM_HEADROOM_SIZE,
+
+    /**
      * @brief Query list of supported port speed(full-duplex) in Mbps
      *
      * @type sai_u32_list_t
