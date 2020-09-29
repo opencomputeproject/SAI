@@ -29,7 +29,7 @@
 
 The purpose of this document is to describe PHY failover (FO) functionality and interface to manage failover functionality of the PHY. PHY is the connector between MAC (SerDes) and physical medium such as optical fiber or copper transceivers. PHY failover feature uses two physical port configurations: primary and secondary. This can be enabled on system/host or line/client side of a port. It provides the ability to switch from primary port to secondary port or vice versa without losing data/link.
 
-![](doc/macsec-gearbox/phy_failover_on_host_side.png)
+![](figures/phy_failover_on_host_side.png)
 
 In the above multi-port configuration, failover mode is configured on the system side of external PHY. Primary and secondary ports are physical connections between MAC and PHY. The FO configuration uses primary and secondary port connections on selected side (system side or line side).
 
