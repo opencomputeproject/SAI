@@ -13,21 +13,37 @@
 | **SAI-Version** | **0.1** |
 
 
+# **Contents**
+
+[List of Changes](#_Toc52272605)
+
+[1 Overview](#_Toc52272606)
+
+[1.1 Failover Configuration on PHY](#_Toc52272607)
+
+[1.2Additions to saiport.h](#_Toc52272608)
+
+[1.3Additions to saiswitch.h](#_Toc52272609)
+
+[2 Configuration Example](#_Toc52272610)
+
 # Overview
 
 The purpose of this document is to describe PHY failover (FO) functionality and interface to manage failover functionality of the PHY. PHY is the connector between MAC (SerDes) and physical medium such as optical fiber or copper transceivers. PHY failover feature uses two physical port configurations: primary and secondary. This can be enabled on system/host or line/client side of a port. It provides the ability to switch from primary port to secondary port or vice versa without losing data/link.
 
-![](RackMultipart20200925-4-s340pz_html_6fd49d19699540a6.png)
+![](RackMultipart20200929-4-1xknbkf_html_6fd49d19699540a6.png)
 
 In the above multi-port configuration, failover mode is configured on the system side of external PHY. Primary and secondary ports are physical connections between MAC and PHY. The FO configuration uses primary and secondary port connections on selected side (system side or line side).
 
 The PHY failover mode enables a port to broadcast data on both primary and secondary ports. The MAC would be configured to receive the data on either primary or secondary ports. PHY failover active ingress port can be configured as either primary or secondary port. When the link between MAC and PHY goes down on primary port, user can switch to secondary port.
 
+
 ## Failover Configuration on PHY
 
 Failover feature can be configured on all ports of the PHY. Failover ports can operate in either hitless (the ability to switch over port without losing link) or non-hitless mode.
 
-Additions to saiport.h
+
+## Additions to saiport.h
 
 /\*\*
 
@@ -162,9 +178,10 @@ SAI\_SWITCH\_ATTR\_FAILOVER\_CONFIG\_MODE,
 
 SAI\_SWITCH\_ATTR\_SUPPORTED\_FAILOVER\_MODE,
 
+
 # Configuration Example
 
-Following example shows how to setup failover configuration on a system side port. In this example a 16 lane PHY is used.
+**Following example shows how to setup failover configuration on a system side port. In this example a 16 lane PHY is used.**
 
 /\* Create System side, Line side, and System Side Failover ports \*/
 
