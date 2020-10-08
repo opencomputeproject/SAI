@@ -334,6 +334,22 @@ typedef enum _sai_port_prbs_config_t
 } sai_port_prbs_config_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_CONNECTOR_ATTR_FAILOVER_MODE
+ * Used for Failover mode configuration on port
+ */
+typedef enum _sai_port_connector_failover_mode_t
+{
+    /** Failover mode disable */
+    SAI_PORT_CONNECTOR_FAILOVER_MODE_DISABLE,
+
+    /** Configure Failover mode on primary port */
+    SAI_PORT_CONNECTOR_FAILOVER_MODE_PRIMARY,
+
+    /** Configure Failover mode on secondary port */
+    SAI_PORT_CONNECTOR_FAILOVER_MODE_SECONDARY
+} sai_port_connector_failover_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -2877,6 +2893,37 @@ typedef enum _sai_port_connector_attr_t
      * @objects SAI_OBJECT_TYPE_PORT
      */
     SAI_PORT_CONNECTOR_ATTR_LINE_SIDE_PORT_ID,
+
+    /**
+     * @brief System Side Port ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_CONNECTOR_ATTR_SYSTEM_SIDE_FAILOVER_PORT_ID,
+
+    /**
+     * @brief Line Side Port ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_CONNECTOR_ATTR_LINE_SIDE_FAILOVER_PORT_ID,
+
+    /**
+     * @brief Configure the failover mode on port
+     *
+     * @type sai_port_connector_failover_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_CONNECTOR_FAILOVER_MODE_DISABLE
+     */
+    SAI_PORT_CONNECTOR_ATTR_FAILOVER_MODE,
 
     /**
      * @brief End of attributes
