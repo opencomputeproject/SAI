@@ -1451,7 +1451,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_s32_list_t sai_port_interface_type_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_INTERFACE_TYPE_NONE
+     * @default empty
      */
     SAI_PORT_ATTR_INTERFACE_TYPE,
 
