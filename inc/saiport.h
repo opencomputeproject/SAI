@@ -1449,8 +1449,6 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Configure Interface type
      *
-     * Deprecated. Use SAI_PORT_ATTR_INTERFACE_TYPE_LIST
-     *
      * @type sai_port_interface_type_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_INTERFACE_TYPE_NONE
@@ -1458,13 +1456,13 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_INTERFACE_TYPE,
     
     /**
-     * @brief Configure Interface type
+     * @brief Configure advertised interface type list
      *
      * @type sai_s32_list_t sai_port_interface_type_t
      * @flags CREATE_AND_SET
      * @default empty
      */
-    SAI_PORT_ATTR_INTERFACE_TYPE_LIST,
+    SAI_PORT_ATTR_ADVERTISED_INTERFACE_TYPE,
 
     /**
      * @brief Configure port reference clock in hertz
