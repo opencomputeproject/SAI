@@ -2022,7 +2022,7 @@ sub CheckEnumNaming
     return if $attr =~ /_${enumTypeName}_LIST$/;
     return if $attr =~ /_$enumTypeName$/;
 
-    $attr =~ /SAI_(\w+?)_ATTR(_\w+)/;
+    $attr =~ /SAI_(\w+?)_ATTR(_\w+?)(_LIST)?$/;
 
     my $attrObjectType = $1;
     my $attrSuffix = $2;
