@@ -1454,7 +1454,7 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_INTERFACE_TYPE_NONE
      */
     SAI_PORT_ATTR_INTERFACE_TYPE,
-    
+
     /**
      * @brief Configure advertised interface type list
      *
