@@ -1206,6 +1206,17 @@ typedef enum _sai_hostif_packet_attr_t
     SAI_HOSTIF_PACKET_ATTR_EGRESS_QUEUE_INDEX,
 
     /**
+     * @brief Flag to convey that buffer passed
+     * to sai_send_hostif_packet_fn can be used
+     * directly and does not need to be copied over
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_HOSTIF_PACKET_ATTR_ZERO_COPY_TX,
+
+    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_PACKET_ATTR_END,
@@ -1265,6 +1276,8 @@ typedef sai_status_t (*sai_send_hostif_packet_fn)(
  * @param[in] hostif_id Host interface id.
  *    When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
  *    When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
+ *    On sending such packets (say via the sai_send_hostif_packet_fn) application should set
+ *    SAI_HOSTIF_PACKET_ATTR_ZERO_COPY_TX attribute to true
  * @param[in] buffer_size Packet size in bytes
  * @param[out] buffer Pointer to Packet buffer
  * @param[in] attr_count Number of attributes
