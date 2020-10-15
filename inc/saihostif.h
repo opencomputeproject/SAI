@@ -1286,16 +1286,12 @@ typedef sai_status_t (*sai_allocate_hostif_packet_fn)(
  *    When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
  *    When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
  * @param[inout] buffer Packet buffer
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_free_hostif_packet_fn)(
         _In_ sai_object_id_t hostif_id,
-        _Inout_ void *buffer,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
+        _Inout_ void *buffer);
 
 /**
  * @brief Hostif receive callback
