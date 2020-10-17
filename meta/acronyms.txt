@@ -21,6 +21,7 @@ CIR - Committed Information Rate
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
 DHCP - Dynamic Host Configuration Protocol
+DHCPV6 - Dynamic Host Configuration Protocol for IPv6
 DLD - Dead Lock Detection
 DLDR - Dead Lock Detection and Recovery
 DLL - Dynamic Link Library
