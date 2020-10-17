@@ -730,7 +730,7 @@ typedef enum _sai_macsec_sa_attr_t
 
     /**
      * @brief MACsec SAK (Secure Association Key) used for encryption/decryption.
-     * Network Byte order. 128-bit SAK uses only Bytes 8..15.
+     * Network Byte order. 128-bit SAK uses only Bytes 16..31.
      *
      * @type sai_macsec_sak_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
