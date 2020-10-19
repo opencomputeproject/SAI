@@ -68,6 +68,7 @@ LAG - Link Aggregation Group
 LPM - Longest Prefix Match
 LSP - Label Switched Path
 MAC - Medium Access Control
+MLD - Multicast Listener Discovery
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
