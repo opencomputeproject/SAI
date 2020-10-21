@@ -261,7 +261,7 @@ typedef enum _sai_port_interface_type_t
     /** Interface type KR2 */
     SAI_PORT_INTERFACE_TYPE_KR2,
 
-    /** Interface type CAUI4 */
+    /** Interface type CAUI */
     SAI_PORT_INTERFACE_TYPE_CAUI4,
 
     /** Interface type XAUI */
@@ -272,7 +272,7 @@ typedef enum _sai_port_interface_type_t
 
     /** Interface type XGMII */
     SAI_PORT_INTERFACE_TYPE_XGMII,
- 
+
     /** Interface type MAX */
     SAI_PORT_INTERFACE_TYPE_MAX,
 
