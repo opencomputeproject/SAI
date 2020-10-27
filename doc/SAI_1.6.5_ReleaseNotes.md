@@ -53,7 +53,7 @@ The switching hardware consists of network interfaces connected to a forwarding 
 
 ### saisystemport.h
 
-System port creation can be accomplished by calling switch_create() with the list of system ports to be created using SAI_SWITCH_ATTR_SYSTEM_PORT_CONFIG_LIST or creating them individually using the create_system_port() function in the system port APIs. Although it is expected that all local ports be created in switch_create().
+System port creation can be accomplished by calling switch_create() with the list of system ports to be created using SAI_SWITCH_ATTR_SYSTEM_PORT_CONFIG_LIST or creating them individually using the create_system_port() function in the system port APIs. 
 
 System port configuration can be retrieved by using the SAI_SYSTEM_PORT_ATTR_CONFIG_INFO attribute. There are also attributes to retrieve the mappings between system port objects and local port objects and retrieval of VoQs type object list associated with the system port. 
 
@@ -119,7 +119,7 @@ This section describes the SAI changes done for new features, enhancements on ex
 17. saitypes
 
 
-### sah.h		
+### sai.h		
 
 saimacsec and saisystem port API has been added
 
@@ -225,13 +225,13 @@ Definition type for default action on IPv6 neighbor solicitation, trap types for
 
 ```
 
- /** Default packet action is forward */
+	/** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_SOLICITATION = 0x00002012,
 
-    /** Default packet action is forward */
+	/** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_ADVERTISEMENT = 0x00002013,
 
- /**
+	/**
      * @brief MPLS packets with expiring TTL value of 1
      * (default packet action is drop)
      */
@@ -244,7 +244,7 @@ Definition type for default action on IPv6 neighbor solicitation, trap types for
     SAI_HOSTIF_TRAP_TYPE_MPLS_ROUTER_ALERT_LABEL = 0x00008001,
 
 
-/**
+	/**
      * @brief Egress queue index
      *
      * The egress queue id for egress port or LAG.
@@ -464,7 +464,7 @@ SAI_SWITCH_ATTR_FABRIC_PORT_LIST
 ```
 
 ###saitam.h
-Definition for metadata fragment has been enabled.  When there is insufficient space in the packet to add INT metadata for this hop (e.g. MTU would be exceeded), the device may remove the metadata from the packet, send a report to the collector, and insert its metadata before forwarding the packet. SAI_TAM_REPORT_ATTR_ENTERPRISE_NUMBER has been modified for the saitam file.
+Definition for metadata fragment has been enabled.  When there is insufficient space in the packet to add INT metadata for this hop (e.g. MTU would be exceeded), the device may remove the metadata from the packet, send a report to the collector, and insert its metadata before forwarding the packet. SAI_TAM_REPORT_ATTR_ENTERPRISE_NUMBER has been added as an attribute for the TAM Report object in the saitam.h file, for facilitating IPFIX encoded reports.
 
 ```
 
@@ -498,7 +498,7 @@ SAI_TAM_INT_ATTR_METADATA_FRAGMENT_ENABLE,
 
 
 ### saitunnel.h	
-Create and Set for Tunnel Attributes are added.
+Support for P2P tunnel types added, in addition to existing P2MP mode. Additionally, some attributes are now allowed to be set after creation of the tunnel objects.
 
 ```
 /**
@@ -519,6 +519,85 @@ typedef enum _sai_tunnel_peer_mode_t
 } sai_tunnel_peer_mode_t;
 
 /**
+
+ /**
+     * @brief Tunnel Peer Mode
+     *
+     * @type sai_tunnel_peer_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TUNNEL_PEER_MODE_P2MP
+     */
+    SAI_TUNNEL_ATTR_PEER_MODE,
+	
+	
+/**
+     * @brief Tunnel Destination IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_ONLY
+     * @default 0.0.0.0
+     * @validonly SAI_TUNNEL_ATTR_PEER_MODE == SAI_TUNNEL_PEER_MODE_P2P
+     */
+    SAI_TUNNEL_ATTR_ENCAP_DST_IP,
+	
+ /**
+     * @brief Tunnel TTL mode (pipe or uniform model)
+     *
+     * @type sai_tunnel_ttl_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL
+     */
+    SAI_TUNNEL_ATTR_ENCAP_TTL_MODE,
+
+    /**
+     * @brief Tunnel TTL value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     * @validonly SAI_TUNNEL_ATTR_ENCAP_TTL_MODE == SAI_TUNNEL_TTL_MODE_PIPE_MODEL
+     */
+    SAI_TUNNEL_ATTR_ENCAP_TTL_VAL,
+
+    /**
+     * @brief Tunnel DSCP mode (pipe or uniform model)
+     *
+     * @type sai_tunnel_dscp_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
+     */
+    SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE,
+
+    /**
+     * @brief Tunnel DSCP value (6 bits)
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE == SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
+     */
+    SAI_TUNNEL_ATTR_ENCAP_DSCP_VAL,
+
+    /**
+     * @brief Tunnel TTL mode (pipe or uniform model)
+     *
+     * @type sai_tunnel_ttl_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL
+     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
+     */
+    SAI_TUNNEL_ATTR_DECAP_TTL_MODE,
+
+    /**
+     * @brief Tunnel DSCP mode (pipe or uniform model)
+     *
+     * @type sai_tunnel_dscp_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
+     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
+     */
+    SAI_TUNNEL_ATTR_DECAP_DSCP_MODE,	
+
 ```
 
 ### saitypes.h	
