@@ -657,6 +657,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Query/Configure list of Advertised port speed (Full-Duplex) in Mbps
      *
+     * Used when auto negotiation is on. Empty list means all supported values are enabled.
+     *
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default empty
@@ -1454,6 +1456,17 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_INTERFACE_TYPE_NONE
      */
     SAI_PORT_ATTR_INTERFACE_TYPE,
+
+    /**
+     * @brief Configure advertised interface type list
+     *
+     * Used when auto negotiation is on. Empty list means all supported values are enabled.
+     *
+     * @type sai_s32_list_t sai_port_interface_type_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_PORT_ATTR_ADVERTISED_INTERFACE_TYPE,
 
     /**
      * @brief Configure port reference clock in hertz
