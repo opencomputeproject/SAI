@@ -2143,7 +2143,8 @@ typedef enum _sai_port_stat_t
      * @brief PFC pause duration for RX and TX per PFC priority in micro seconds [uint64_t]
      *
      * RX pause duration for certain priority is a the duration in micro seconds converted 
-     * from quanta in ingress pause frame for that priority (a pause frame received by the switch).
+     * from quanta in ingress pause frame for that priority (a pause frame received by the 
+     * switch).
      * While TX pause duration for certain priority is the duration in micro seconds converted 
      * from quanta in egress pause frame for that priority (a pause frame sent by the switch).
      */
