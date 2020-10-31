@@ -153,6 +153,15 @@ typedef enum _sai_neighbor_entry_attr_t
      */
     SAI_NEIGHBOR_ENTRY_ATTR_IS_LOCAL,
 
+    /*
+     * @brief Neighbor entry IP address family
+     *
+     * @type sai_ip_addr_family_t
+     * @flags READ_ONLY
+     * @isresourcetype true
+     */
+    SAI_NEIGHBOR_ENTRY_ATTR_IP_ADDR_FAMILY,
+
     /**
      * @brief End of attributes
      */
