@@ -1751,6 +1751,62 @@ typedef enum _sai_port_stat_t
      */
     SAI_PORT_STAT_EEE_RX_DURATION,
 
+    /**
+     * @brief PFC pause duration for RX and TX per PFC priority in micro seconds [uint64_t]
+     *
+     * RX pause duration for certain priority is a the duration in micro seconds converted
+     * from quanta in ingress pause frame for that priority (a pause frame received by the
+     * switch).
+     * While TX pause duration for certain priority is the duration in micro seconds converted
+     * from quanta in egress pause frame for that priority (a pause frame sent by the switch).
+     */
+    SAI_PORT_STAT_PFC_0_RX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 0 tx duration in micro seconds */
+    SAI_PORT_STAT_PFC_0_TX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 1 rx duration in micro seconds */
+    SAI_PORT_STAT_PFC_1_RX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 1 tx duration in micro seconds */
+    SAI_PORT_STAT_PFC_1_TX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 2 rx duration in micro seconds */
+    SAI_PORT_STAT_PFC_2_RX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 2 tx duration in micro seconds */
+    SAI_PORT_STAT_PFC_2_TX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 3 rx duration in micro seconds */
+    SAI_PORT_STAT_PFC_3_RX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 3 tx duration in micro seconds */
+    SAI_PORT_STAT_PFC_3_TX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 4 rx duration in micro seconds */
+    SAI_PORT_STAT_PFC_4_RX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 4 tx duration in micro seconds */
+    SAI_PORT_STAT_PFC_4_TX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 5 rx duration in micro seconds */
+    SAI_PORT_STAT_PFC_5_RX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 5 tx duration in micro seconds */
+    SAI_PORT_STAT_PFC_5_TX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 6 rx duration in micro seconds */
+    SAI_PORT_STAT_PFC_6_RX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 6 tx duration in micro seconds */
+    SAI_PORT_STAT_PFC_6_TX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 7 rx duration in micro seconds */
+    SAI_PORT_STAT_PFC_7_RX_PAUSE_DURATION_US,
+
+    /** SAI port stat PFC 7 tx duration in micro seconds */
+    SAI_PORT_STAT_PFC_7_TX_PAUSE_DURATION_US,
+
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
