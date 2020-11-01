@@ -26,6 +26,7 @@ DLD - Dead Lock Detection
 DLDR - Dead Lock Detection and Recovery
 DLL - Dynamic Link Library
 DLR - Dead Lock Recovery
+DMA - Direct Memory Access
 DNAT - Destination Network Address Translation
 DSCP - Differentiated Services Code Point
 DTEL - Data Plane Telemetry
