@@ -1218,6 +1218,17 @@ typedef enum _sai_hostif_packet_attr_t
     SAI_HOSTIF_PACKET_ATTR_EGRESS_QUEUE_INDEX,
 
     /**
+     * @brief Flag to convey that buffer passed
+     * to sai_send_hostif_packet_fn can be used
+     * directly and does not need to be copied over
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_HOSTIF_PACKET_ATTR_ZERO_COPY_TX,
+
+    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_PACKET_ATTR_END,
@@ -1272,6 +1283,42 @@ typedef sai_status_t (*sai_send_hostif_packet_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
+ * @brief Hostif allocate function
+ *
+ * @param[in] hostif_id Host interface id.
+ *    When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
+ *    When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
+ *    On sending such packets (say via the sai_send_hostif_packet_fn) application should set
+ *    SAI_HOSTIF_PACKET_ATTR_ZERO_COPY_TX attribute to true
+ * @param[in] buffer_size Packet size in bytes
+ * @param[out] buffer Pointer to Packet buffer
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_allocate_hostif_packet_fn)(
+        _In_ sai_object_id_t hostif_id,
+        _In_ sai_size_t buffer_size,
+        _Out_ void **buffer,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Hostif free function
+ *
+ * @param[in] hostif_id Host interface id.
+ *    When sending through FD channel, fill SAI_OBJECT_TYPE_HOST_INTERFACE object, of type #SAI_HOSTIF_TYPE_FD.
+ *    When sending through CB channel, fill Switch Object ID, SAI_OBJECT_TYPE_SWITCH.
+ * @param[inout] buffer Packet buffer
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_free_hostif_packet_fn)(
+        _In_ sai_object_id_t hostif_id,
+        _Inout_ void *buffer);
+
+/**
  * @brief Hostif receive callback
  *
  * @count attr_list[attr_count]
@@ -1319,6 +1366,8 @@ typedef struct _sai_hostif_api_t
     sai_get_hostif_user_defined_trap_attribute_fn  get_hostif_user_defined_trap_attribute;
     sai_recv_hostif_packet_fn                      recv_hostif_packet;
     sai_send_hostif_packet_fn                      send_hostif_packet;
+    sai_allocate_hostif_packet_fn                  allocate_hostif_packet;
+    sai_free_hostif_packet_fn                      free_hostif_packet;
 } sai_hostif_api_t;
 
 /**

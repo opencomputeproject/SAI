@@ -289,7 +289,7 @@ sub CheckFunctionsParams
         next if not $fname =~ /_fn$/; # below don't apply for global functions
 
         if (not $fnparams =~ /^(\w+)(| attr| attr_count attr_list| switch_id attr_count attr_list)$/ and
-            not $fname =~ /_(stats|stats_ext|notification)_fn$|^sai_(send|recv|bulk)_|^sai_meta/)
+            not $fname =~ /_(stats|stats_ext|notification)_fn$|^sai_(send|allocate|free|recv|bulk)_|^sai_meta/)
         {
             LogWarning "wrong param names: $fnparams: $fname";
             LogWarning " expected: $params[0](| attr| attr_count attr_list| switch_id attr_count attr_list)";
@@ -438,7 +438,7 @@ sub CheckFunctionNaming
     my $typename = $1;
     my $name = $2;
 
-    if ($name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|remove_all_neighbor_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write|switch_mdio_read|switch_mdio_write)$/)
+    if ($name =~ /^(recv_hostif_packet|send_hostif_packet|allocate_hostif_packet|free_hostif_packet|flush_fdb_entries|remove_all_neighbor_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write|switch_mdio_read|switch_mdio_write)$/)
     {
         # ok
     }
@@ -468,7 +468,7 @@ sub CheckFunctionNaming
     if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?$|^clear_\w+_stats$/)
     {
         # exceptions
-        return if $name =~ /^(recv_hostif_packet|send_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write|switch_mdio_read|switch_mdio_write)$/;
+        return if $name =~ /^(recv_hostif_packet|send_hostif_packet|allocate_hostif_packet|free_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write|switch_mdio_read|switch_mdio_write)$/;
 
         LogWarning "function not follow convention in $header:$n:$line";
     }

@@ -2229,6 +2229,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FABRIC_PORT_LIST,
 
     /**
+     * @brief The size of the packet DMA pool memory in bytes
+     * This can be used in conjunction with sai_allocate_hostif_packet_fn
+     * to allocate a pool of memory upfront and manage it in the
+     * application
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PACKET_DMA_MEMORY_POOL_SIZE,
+
+    /**
      * @brief Failover configuration modes
      *
      * @type sai_switch_failover_config_mode_t
