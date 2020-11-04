@@ -644,6 +644,15 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_TERM_TABLE_ENTRY_LIST,
 
     /**
+     * @brief Packet action when a packet ingress and gets routed back to same tunnel
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_FORWARD
+     */
+    SAI_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_ATTR_END,
