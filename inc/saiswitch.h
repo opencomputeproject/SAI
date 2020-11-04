@@ -326,6 +326,29 @@ typedef enum _sai_switch_failover_config_mode_t
 } sai_switch_failover_config_mode_t;
 
 /**
+ * @brief Defines tunnel ECN mode
+ */
+typedef enum _sai_switch_tunnel_ecn_mode_t
+{
+    /**
+     * @brief Normal mode behavior defined in RFC 6040
+     * section 4.1 copy from inner
+     */
+    SAI_SWITCH_TUNNEL_ECN_MODE_STANDARD,
+
+    /**
+     * @brief Copy from outer ECN
+     */
+    SAI_SWITCH_TUNNEL_ECN_MODE_COPY_FROM_OUTER,
+
+    /**
+     * @brief User defined behavior
+     */
+    SAI_SWITCH_TUNNEL_ECN_MODE_USER_DEFINED
+
+} sai_switch_tunnel_ecn_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
  */
