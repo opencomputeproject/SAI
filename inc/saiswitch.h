@@ -2280,6 +2280,25 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SUPPORTED_FAILOVER_MODE,
 
     /**
+     * @brief Tunnel mappers
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TUNNEL_MAPPERS,
+
+    /**
+     * @brief Tunnel ECN Mode load method
+     *
+     * @type sai_switch_tunnel_ecn_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_SWITCH_TUNNEL_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_ECN_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
