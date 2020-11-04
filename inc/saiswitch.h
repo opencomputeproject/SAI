@@ -326,27 +326,45 @@ typedef enum _sai_switch_failover_config_mode_t
 } sai_switch_failover_config_mode_t;
 
 /**
- * @brief Defines tunnel ECN mode
+ * @brief Defines tunnel encap ECN mode
  */
-typedef enum _sai_switch_tunnel_ecn_mode_t
+typedef enum _sai_switch_tunnel_encap_ecn_mode_t
 {
     /**
      * @brief Normal mode behavior defined in RFC 6040
      * section 4.1 copy from inner
      */
-    SAI_SWITCH_TUNNEL_ECN_MODE_STANDARD,
-
-    /**
-     * @brief Copy from outer ECN
-     */
-    SAI_SWITCH_TUNNEL_ECN_MODE_COPY_FROM_OUTER,
+    SAI_SWITCH_TUNNEL_ENCAP_ECN_MODE_STANDARD,
 
     /**
      * @brief User defined behavior
      */
-    SAI_SWITCH_TUNNEL_ECN_MODE_USER_DEFINED
+    SAI_SWITCH_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
 
-} sai_switch_tunnel_ecn_mode_t;
+} sai_switch_tunnel_encap_ecn_mode_t;
+
+/**
+ * @brief Defines tunnel decap ECN mode
+ */
+typedef enum _sai_switch_tunnel_decap_ecn_mode_t
+{
+    /**
+     * @brief Normal mode behavior defined in RFC 6040
+     * section 4.1 copy from inner
+     */
+    SAI_SWITCH_TUNNEL_DECAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief Copy from outer ECN
+     */
+    SAI_SWITCH_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
+
+    /**
+     * @brief User defined behavior
+     */
+    SAI_SWITCH_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
+
+} sai_switch_tunnel_decap_ecn_mode_t;
 
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
@@ -2280,23 +2298,42 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SUPPORTED_FAILOVER_MODE,
 
     /**
-     * @brief Tunnel mappers
+     * @brief Tunnel mappers for encap
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
      * @default empty
      */
-    SAI_SWITCH_ATTR_TUNNEL_MAPPERS,
+    SAI_SWITCH_ATTR_TUNNEL_ENCAP_ECN_MAPPERS,
 
     /**
-     * @brief Tunnel ECN Mode load method
+     * @brief Tunnel encap ECN Mode load method
      *
-     * @type sai_switch_tunnel_ecn_mode_t
+     * @type sai_switch_tunnel_encap_ecn_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_SWITCH_TUNNEL_ECN_MODE_STANDARD
+     * @default SAI_SWITCH_TUNNEL_ENCAP_ECN_MODE_STANDARD
      */
-    SAI_SWITCH_ATTR_TUNNEL_ECN_MODE,
+    SAI_SWITCH_ATTR_TUNNEL_ENCAP_ECN_MODE,
+
+    /**
+     * @brief Tunnel mappers for decap
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TUNNEL_DECAP_ECN_MAPPERS,
+
+    /**
+     * @brief Tunnel decap ECN Mode load method
+     *
+     * @type sai_switch_tunnel_decap_ecn_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_SWITCH_TUNNEL_DECAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_DECAP_ECN_MODE,
 
     /**
      * @brief End of attributes
