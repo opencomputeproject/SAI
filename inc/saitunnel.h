@@ -386,50 +386,6 @@ typedef enum _sai_tunnel_dscp_mode_t
 } sai_tunnel_dscp_mode_t;
 
 /**
- * @brief Defines tunnel encap ECN mode
- */
-typedef enum _sai_tunnel_encap_ecn_mode_t
-{
-    /**
-     * @brief Normal mode behavior defined in RFC 6040
-     * section 4.1 copy from inner
-     */
-    SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
-
-    /**
-     * @brief User defined behavior.
-     *
-     * Need to provide #SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN in #SAI_TUNNEL_ATTR_ENCAP_MAPPERS.
-     */
-    SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
-
-} sai_tunnel_encap_ecn_mode_t;
-
-/**
- * @brief Defines tunnel decap ECN mode
- */
-typedef enum _sai_tunnel_decap_ecn_mode_t
-{
-    /**
-     * @brief Behavior defined in RFC 6040 section 4.2
-     */
-    SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
-
-    /**
-     * @brief Copy from outer ECN
-     */
-    SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
-
-    /**
-     * @brief User defined behavior
-     *
-     * Need to provide #SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN in #SAI_TUNNEL_ATTR_DECAP_MAPPERS
-     */
-    SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
-
-} sai_tunnel_decap_ecn_mode_t;
-
-/**
  * @brief Defines tunnel peer mode
  */
 typedef enum _sai_tunnel_peer_mode_t
