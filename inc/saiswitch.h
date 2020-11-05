@@ -2257,6 +2257,16 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SUPPORTED_FAILOVER_MODE,
 
     /**
+     * @brief The size of the available packet DMA pool memory in bytes
+     * This can be used in conjunction with total packet DMA pool
+     * size to account/debug % of memory available.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PACKET_AVAILABLE_DMA_MEMORY_POOL_SIZE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
