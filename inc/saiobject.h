@@ -237,13 +237,15 @@ sai_status_t sai_query_attribute_enum_values_capability(
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
  * @param[inout] stats_values_capability List of implemented enum values
+ * @param[inout] stats_modes_capability List of implemented sai_stats_mode_t values
  *
- * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if list size insufficient, failure status code on error
+ * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if lists size insufficient, failure status code on error
  */
 sai_status_t sai_query_stats_capability(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
-        _Inout_ sai_s32_list_t *stats_values_capability);
+        _Inout_ sai_s32_list_t *stats_values_capability,
+        _Inout_ sai_s32_list_t *stats_modes_capability);
 
 /**
  * @}
