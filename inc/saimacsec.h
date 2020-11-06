@@ -646,6 +646,23 @@ typedef enum _sai_macsec_sc_attr_t
     SAI_MACSEC_SC_ATTR_SA_LIST,
 
     /**
+     * @brief Cipher suite for this Secure Channel.
+     *
+     * @type sai_uint64_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_MACSEC_SC_ATTR_MACSEC_CIPHER_SUITE,
+
+    /**
+     * @brief True means encryption is enabled.  False means encryption is disabled.
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default true
+     */
+    SAI_MACSEC_SC_ATTR_ENCRYPTION_ENABLE,
+
+    /**
      * @brief End of MACsec Secure Channel attributes
      */
     SAI_MACSEC_SC_ATTR_END,
@@ -777,6 +794,15 @@ typedef enum _sai_macsec_sa_attr_t
      * @validonly SAI_MACSEC_SA_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
     SAI_MACSEC_SA_ATTR_MINIMUM_XPN,
+
+    /**
+     * @brief SSCI value for this Secure Association
+     * Used only if SAI_MACSEC_SC_ATTR_MACSEC_XPN64_ENABLE == true.
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_MACSEC_SA_ATTR_MACSEC_SSCI,
 
     /**
      * @brief End of MACsec Secure Association attributes
