@@ -982,7 +982,7 @@ sub CheckHeadersStyle
             {
                 if (not $line =~ /(condition|validonly|valid when|only when)\s+SAI_/i)
                 {
-                    LogWarning "condition should be preceded byg 'valid when' or 'only when': $header $n: $line";
+                    LogWarning "condition should be preceded by 'valid when' or 'only when': $header $n: $line";
                 }
             }
 
