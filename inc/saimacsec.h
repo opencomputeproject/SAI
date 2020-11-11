@@ -46,13 +46,13 @@ typedef enum _sai_macsec_direction_t
 /**
  * @brief MACsec Cipher Suites.
  */
-typedef enum _sai_macsec_direction_t
+typedef enum _sai_macsec_cipher_suite_t
 {
     SAI_MACSEC_CIPHER_SUITE_GCM_AES_128,
     SAI_MACSEC_CIPHER_SUITE_GCM_AES_256,
     SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_128,
     SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_256
-} sai_macsec_direction_t;
+} sai_macsec_cipher_suite_t;
 
 /**
  * @brief Attribute Id for sai_macsec
