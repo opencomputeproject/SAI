@@ -734,7 +734,7 @@ typedef enum _sai_macsec_sa_attr_t
      * @brief MACsec Salt used for encryption/decryption.
      * Network Byte order.
      *
-     * Valid when SAI_MACSEC_SC_ATTR_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_128 or SAI_MACSEC_SC_ATTR_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_256.
+     * Valid when SAI_MACSEC_SC_ATTR_MACSEC_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_128 or SAI_MACSEC_SC_ATTR_MACSEC_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_256.
      *
      * @type sai_macsec_salt_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -773,7 +773,7 @@ typedef enum _sai_macsec_sa_attr_t
 
     /**
      * @brief SSCI value for this Secure Association
-     * Valid when SAI_MACSEC_SC_ATTR_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_128 or SAI_MACSEC_SC_ATTR_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_256.
+     * Valid when SAI_MACSEC_SC_ATTR_MACSEC_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_128 or SAI_MACSEC_SC_ATTR_MACSEC_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_256.
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
