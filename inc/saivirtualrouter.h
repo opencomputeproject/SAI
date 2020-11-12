@@ -107,6 +107,15 @@ typedef enum _sai_virtual_router_attr_t
     SAI_VIRTUAL_ROUTER_ATTR_UNKNOWN_L3_MULTICAST_PACKET_ACTION,
 
     /**
+     * @brief Anchor attribute used to unique identify empty VR.
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_VIRTUAL_ROUTER_ATTR_ANCHOR,
+
+    /**
      * @brief End of attributes
      */
     SAI_VIRTUAL_ROUTER_ATTR_END,

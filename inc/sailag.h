@@ -168,6 +168,15 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_SYSTEM_PORT_AGGREGATE_ID,
 
     /**
+     * @brief Anchor attribute used to unique identify empty LAG.
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_LAG_ATTR_ANCHOR,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_ATTR_END,
