@@ -1364,6 +1364,11 @@ typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
 typedef enum _sai_stats_mode_t
 {
     /**
+     * @brief Start of modes
+     */
+    SAI_STATS_MODE_START,
+
+    /**
      * @brief Read statistics
      */
     SAI_STATS_MODE_READ = 1 << 0,
