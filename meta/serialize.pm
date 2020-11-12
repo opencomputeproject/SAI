@@ -252,7 +252,7 @@ sub GetTypeInfoForSerialize
     {
         $TypeInfo{suffix} = "uint32";
         $TypeInfo{deamp} = "&";
-    }	
+    }
     elsif ($type =~ /^sai_(cos|queue_index)_t$/)
     {
         $TypeInfo{suffix} = "uint8";
