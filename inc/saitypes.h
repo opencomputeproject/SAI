@@ -1376,11 +1376,11 @@ typedef enum _sai_stats_mode_t
 
 typedef struct _sai_stat_capability_t
 {
-    /** stat enum value */
+    /** Stat enum value */
     int32_t stat_enum;
 
     /**
-     * @brief bit mask of supported statistics modes (sai_stats_mode_t)
+     * @brief Bit mask of supported statistics modes (sai_stats_mode_t)
      *
      * For example, if read and read_and_clear are supported, value is
      * SAI_STATS_MODE_READ | SAI_STATS_MODE_READ_AND_CLEAR
