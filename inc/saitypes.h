@@ -1360,14 +1360,11 @@ typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
  *
  * Used in get statistics extended or query statistics capabilities
  * Note enum values must be powers of 2 to be used as bit mask for query statistics capabilities
+ *
+ * @flags Contains flags
  */
 typedef enum _sai_stats_mode_t
 {
-    /**
-     * @brief Start of modes
-     */
-    SAI_STATS_MODE_START,
-
     /**
      * @brief Read statistics
      */
