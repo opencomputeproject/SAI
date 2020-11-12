@@ -1379,7 +1379,7 @@ typedef enum _sai_stats_mode_t
 typedef struct _sai_stat_capability_t
 {
     /** Stat enum value */
-    int32_t stat_enum;
+    sai_stat_id_t stat_enum;
 
     /**
      * @brief Bit mask of supported statistics modes (sai_stats_mode_t)
