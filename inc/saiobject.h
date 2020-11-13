@@ -232,7 +232,7 @@ sai_status_t sai_query_attribute_enum_values_capability(
         _Inout_ sai_s32_list_t *enum_values_capability);
 
 /**
- * @brief Query statistics capability
+ * @brief Query statistics capability for statistics bound at object level
  *
  * @param[in] switch_id SAI Switch object id
  * @param[in] object_type SAI object type
