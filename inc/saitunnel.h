@@ -876,6 +876,17 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_ACTION_TUNNEL_ID,
 
+    /** READ-ONLY */
+
+    /**
+     * @brief Tunnel term table entry IP address family
+     *
+     * @type sai_ip_addr_family_t
+     * @flags READ_ONLY
+     * @isresourcetype true
+     */
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_IP_ADDR_FAMILY,
+
     /**
      * @brief End of attributes
      */
