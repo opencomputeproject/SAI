@@ -1387,7 +1387,7 @@ typedef struct _sai_stat_capability_t
      * For example, if read and read_and_clear are supported, value is
      * SAI_STATS_MODE_READ | SAI_STATS_MODE_READ_AND_CLEAR
      */
-    uint64_t stat_modes;
+    uint32_t stat_modes;
 
 } sai_stat_capability_t;
 
