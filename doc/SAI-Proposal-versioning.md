@@ -14,7 +14,7 @@ A vendor publishes different libSAI implementations each compatible with differe
 ## Source Code 
 A vendor publishes their SDK in source form and advice their users of which version of their SDK can be used for the requested SAI version. It is assumed the most common form this takes is each vendor maintains a trunk branch with the latest code and patches are backported to specific branches created for each SAI version. 
 
-Example: 
+> ## Example 
 > Customer currently using Sonic version 201911 which is compatible with SAI 1.5.4. The vendor SDK version is 1.1. They customer wants to upgrade to a newer version of the SDK which supports SAI objects/attributes that are only supported in 1.2. The common method to support this is to backport the supported attributes to 1.1.  
 
 This proposal simply wishes to solve the following question. 
@@ -24,13 +24,14 @@ Proposal 1:
 This proposal provides a static configuration file with version numbers. 
  
 ### version.h 
-static const unsigned SAI_VERSION_MAJOR = 1; 
-static const unsigned SAI_VERSION_MINOR = 6; 
-static const unsigned SAI_VERSION_REVISION = 4; 
 
-static const unsigned SAI_VERSION = SAI_VERSION_MAJOR * 100 + 
-                                    SAI_VERSION_MINOR * 10 + 
-                                    SAI_VERSION_REVISION; 
+    static const unsigned SAI_VERSION_MAJOR = 1; 
+    static const unsigned SAI_VERSION_MINOR = 6; 
+    static const unsigned SAI_VERSION_REVISION = 4; 
+
+    static const unsigned SAI_VERSION = SAI_VERSION_MAJOR * 100 + 
+                                        SAI_VERSION_MINOR * 10 + 
+                                        SAI_VERSION_REVISION; 
 
 ### version.mk 
 SAI_VERSION_MAJOR := 1 
