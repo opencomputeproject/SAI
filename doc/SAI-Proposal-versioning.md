@@ -9,13 +9,13 @@ Provide a mechanism for vendors to find the current version of SAI headers at co
 
 Currently, if a vendor wants to support multiple versions of SAI, 
 
-## Binaries 
+### Binaries 
 A vendor publishes different libSAI implementations each compatible with different SAI versions. The users of the binaries can choose a version of the binary depending on which version of SAI they use for Sonic. The vendor usually publishes these binaries from different development branches dedicated to each SAI version. 
 
-## Source Code 
+### Source Code 
 A vendor publishes their SDK in source form and advice their users of which version of their SDK can be used for the requested SAI version. It is assumed the most common form this takes is each vendor maintains a trunk branch with the latest code and patches are backported to specific branches created for each SAI version. 
 
-> ## Example 
+> ### Example 
 > Customer currently using Sonic version 201911 which is compatible with SAI 1.5.4. The vendor SDK version is 1.1. They customer wants to upgrade to a newer version of the SDK which supports SAI objects/attributes that are only supported in 1.2. The common method to support this is to backport the supported attributes to 1.1.  
 
 This proposal simply wishes to solve the following question. 
