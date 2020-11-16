@@ -3,7 +3,8 @@ SAI Versioning
 
 This document describes various proposals to include versioning in the SAI library. 
 
-## Requirements
+Requirements
+------------
 Provide a mechanism for vendors to find the current version of SAI headers at compile time and at runtime if it is warranted. 
 
 Currently, if a vendor wants to support multiple versions of SAI, 
@@ -20,7 +21,8 @@ A vendor publishes their SDK in source form and advice their users of which vers
 This proposal simply wishes to solve the following question. 
 How does a vendor support multiple SAI versions using only the trunk branch? 
 
-Proposal 1: 
+Proposal 1
+----------
 This proposal provides a static configuration file with version numbers. 
  
 ### version.h 
