@@ -44,7 +44,7 @@ This proposal provides a static configuration file with version numbers.
 
 > version.h can be used to do runtime version comparisons while version.mk can be used to generate a static compile time macro. 
 
-## For a Vendor:
+### For a Vendor
 A vendor can publish their SDK using the above versioning system the following. 
 Assuming a SAI_OBJECT_TYPE_TEST and SAI_TEST_ATTR_TYPE. The “type” attribute is only available after SAI 1.6.4. A vendor implementation can then simply be, 
 
@@ -70,5 +70,5 @@ Assuming a SAI_OBJECT_TYPE_TEST and SAI_TEST_ATTR_TYPE. The “type” attribute
         } 
     } 
 
-## For an application/NOS: 
+### For an application/NOS
 make CPPFLAGS=-DSAI=164 
