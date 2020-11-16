@@ -34,37 +34,39 @@ This proposal provides a static configuration file with version numbers.
                                         SAI_VERSION_REVISION; 
 
 ### version.mk 
-SAI_VERSION_MAJOR := 1 
-SAI_VERSION_MINOR := 6 
-SAI_VERSION_REVISION := 4 
-SAI_VERSION := 164 # derived somehow from above values TBD 
 
-version.h can be used to do runtime version comparisons while version.mk can be used to generate a static compile time macro. 
+    SAI_VERSION_MAJOR := 1 
+    SAI_VERSION_MINOR := 6 
+    SAI_VERSION_REVISION := 4 
+    SAI_VERSION := 164 # derived somehow from above values TBD 
 
-For a Vendor: 
+> version.h can be used to do runtime version comparisons while version.mk can be used to generate a static compile time macro. 
+
+## For a Vendor:
 A vendor can publish their SDK using the above versioning system the following. 
 Assuming a SAI_OBJECT_TYPE_TEST and SAI_TEST_ATTR_TYPE. The “type” attribute is only available after SAI 1.6.4. A vendor implementation can then simply be, 
 
-### Example usage:
-sai_status_t sai_set_test_attribute(sai_object_id_t id, 
-                                    const sai_attribute_t *attr) { 
-    switch (attr->id) { 
-        case SAI_TEST_ATTR_START: 
-            break; 
-#if SAI_VERSION >= 164 
-        case SAI_TEST_ATTR_TYPE: 
-            // do your thing 
-            break; 
-#endif 
-#if SAI_VERSION >= 174 
-        case SAI_TEST_ATTR_TYPE2: 
-            // do your thing 
-            break; 
-#endif 
-        default: 
-            break; 
-    } 
-} 
+### Usage
 
-For an application/NOS: 
+    sai_status_t sai_set_test_attribute(sai_object_id_t id, 
+                                        const sai_attribute_t *attr) { 
+        switch (attr->id) { 
+            case SAI_TEST_ATTR_START: 
+                break; 
+    #if SAI_VERSION >= 164 
+            case SAI_TEST_ATTR_TYPE: 
+                // do your thing 
+                break; 
+    #endif 
+    #if SAI_VERSION >= 174 
+            case SAI_TEST_ATTR_TYPE2: 
+                // do your thing 
+                break; 
+    #endif 
+            default: 
+                break; 
+        } 
+    } 
+
+## For an application/NOS: 
 make CPPFLAGS=-DSAI=164 
