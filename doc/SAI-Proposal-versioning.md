@@ -19,7 +19,7 @@ A vendor publishes their SDK in source form and advice their users of which vers
 > Customer currently using Sonic version 201911 which is compatible with SAI 1.5.4. The vendor SDK version is 1.1. They customer wants to upgrade to a newer version of the SDK which supports SAI objects/attributes that are only supported in 1.2. The common method to support this is to backport the supported attributes to 1.1.  
 
 This proposal simply wishes to solve the following question. 
-How does a vendor support multiple SAI versions using only the trunk branch? 
+**How does a vendor support multiple SAI versions using only the trunk branch?**
 
 Proposal 1
 ----------
