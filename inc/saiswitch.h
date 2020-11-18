@@ -328,46 +328,178 @@ typedef enum _sai_switch_failover_config_mode_t
 /**
  * @brief Defines tunnel encap ECN mode
  */
-typedef enum _sai_tunnel_encap_ecn_mode_t
+typedef enum _sai_tunnel_ipinip_encap_ecn_mode_t
 {
     /**
      * @brief Normal mode behavior defined in RFC 6040
      * section 4.1 copy from inner
      */
-    SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
+    SAI_TUNNEL_IPINIP_ENCAP_ECN_MODE_STANDARD,
 
     /**
      * @brief User defined behavior.
      *
      * Need to provide #SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN in #SAI_TUNNEL_ATTR_ENCAP_MAPPERS.
      */
-    SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
+    SAI_TUNNEL_IPINIP_ENCAP_ECN_MODE_USER_DEFINED
 
-} sai_tunnel_encap_ecn_mode_t;
+} sai_tunnel_ipinip_encap_ecn_mode_t;
+
+/**
+ * @brief Defines GRE tunnel encap ECN mode
+ */
+typedef enum _sai_tunnel_ipinip_gre_encap_ecn_mode_t
+{
+    /**
+     * @brief Normal mode behavior defined in RFC 6040
+     * section 4.1 copy from inner
+     */
+    SAI_TUNNEL_IPINIP_GRE_ENCAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief User defined behavior.
+     *
+     * Need to provide #SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN in #SAI_TUNNEL_ATTR_ENCAP_MAPPERS.
+     */
+    SAI_TUNNEL_IPINIP_GRE_ENCAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_ipinip_gre_encap_ecn_mode_t;
+
+/**
+ * @brief Defines VXLAN tunnel encap ECN mode
+ */
+typedef enum _sai_tunnel_vxlan_encap_ecn_mode_t
+{
+    /**
+     * @brief Normal mode behavior defined in RFC 6040
+     * section 4.1 copy from inner
+     */
+    SAI_TUNNEL_VXLAN_ENCAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief User defined behavior.
+     *
+     * Need to provide #SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN in #SAI_TUNNEL_ATTR_ENCAP_MAPPERS.
+     */
+    SAI_TUNNEL_VXLAN_ENCAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_vxlan_encap_ecn_mode_t;
+
+/**
+ * @brief Defines MPLS tunnel encap ECN mode
+ */
+typedef enum _sai_tunnel_mpls_encap_ecn_mode_t
+{
+    /**
+     * @brief Normal mode behavior defined in RFC 6040
+     * section 4.1 copy from inner
+     */
+    SAI_TUNNEL_MPLS_ENCAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief User defined behavior.
+     *
+     * Need to provide #SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN in #SAI_TUNNEL_ATTR_ENCAP_MAPPERS.
+     */
+    SAI_TUNNEL_MPLS_ENCAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_mpls_encap_ecn_mode_t;
 
 /**
  * @brief Defines tunnel decap ECN mode
  */
-typedef enum _sai_tunnel_decap_ecn_mode_t
+typedef enum _sai_tunnel_ipinip_decap_ecn_mode_t
 {
     /**
      * @brief Behavior defined in RFC 6040 section 4.2
      */
-    SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
+    SAI_TUNNEL_IPINIP_DECAP_ECN_MODE_STANDARD,
 
     /**
      * @brief Copy from outer ECN
      */
-    SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
+    SAI_TUNNEL_IPINIP_DECAP_ECN_MODE_COPY_FROM_OUTER,
 
     /**
      * @brief User defined behavior
      *
      * Need to provide #SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN in #SAI_TUNNEL_ATTR_DECAP_MAPPERS
      */
-    SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
+    SAI_TUNNEL_IPINIP_DECAP_ECN_MODE_USER_DEFINED
 
-} sai_tunnel_decap_ecn_mode_t;
+} sai_tunnel_ipinip_decap_ecn_mode_t;
+
+/**
+ * @brief Defines GRE tunnel decap ECN mode
+ */
+typedef enum _sai_tunnel_ipinip_gre_decap_ecn_mode_t
+{
+    /**
+     * @brief Behavior defined in RFC 6040 section 4.2
+     */
+    SAI_TUNNEL_IPINIP_GRE_DECAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief Copy from outer ECN
+     */
+    SAI_TUNNEL_IPINIP_GRE_DECAP_ECN_MODE_COPY_FROM_OUTER,
+
+    /**
+     * @brief User defined behavior
+     *
+     * Need to provide #SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN in #SAI_TUNNEL_ATTR_DECAP_MAPPERS
+     */
+    SAI_TUNNEL_IPINIP_GRE_DECAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_ipinip_gre_decap_ecn_mode_t;
+
+/**
+ * @brief Defines VXLAN tunnel decap ECN mode
+ */
+typedef enum _sai_tunnel_vxlan_decap_ecn_mode_t
+{
+    /**
+     * @brief Behavior defined in RFC 6040 section 4.2
+     */
+    SAI_TUNNEL_VXLAN_DECAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief Copy from outer ECN
+     */
+    SAI_TUNNEL_VXLAN_DECAP_ECN_MODE_COPY_FROM_OUTER,
+
+    /**
+     * @brief User defined behavior
+     *
+     * Need to provide #SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN in #SAI_TUNNEL_ATTR_DECAP_MAPPERS
+     */
+    SAI_TUNNEL_VXLAN_DECAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_vxlan_decap_ecn_mode_t;
+
+/**
+ * @brief Defines MPLS tunnel decap ECN mode
+ */
+typedef enum _sai_tunnel_mpls_decap_ecn_mode_t
+{
+    /**
+     * @brief Behavior defined in RFC 6040 section 4.2
+     */
+    SAI_TUNNEL_MPLS_DECAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief Copy from outer ECN
+     */
+    SAI_TUNNEL_MPLS_DECAP_ECN_MODE_COPY_FROM_OUTER,
+
+    /**
+     * @brief User defined behavior
+     *
+     * Need to provide #SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN in #SAI_TUNNEL_ATTR_DECAP_MAPPERS
+     */
+    SAI_TUNNEL_MPLS_DECAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_mpls_decap_ecn_mode_t;
 
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
@@ -2308,16 +2440,37 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
      * @default empty
      */
-    SAI_SWITCH_ATTR_TUNNEL_ENCAP_ECN_MAPPERS,
+    SAI_SWITCH_ATTR_TUNNEL_IPINIP_ENCAP_ECN_MAPPERS,
 
     /**
-     * @brief Tunnel encap ECN Mode load method
+     * @brief VXLAN Tunnel mappers for encap
      *
-     * @type sai_tunnel_encap_ecn_mode_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
-     * @default SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
      */
-    SAI_SWITCH_ATTR_TUNNEL_ENCAP_ECN_MODE,
+    SAI_SWITCH_ATTR_TUNNEL_VXLAN_ENCAP_ECN_MAPPERS,
+
+    /**
+     * @brief GRE Tunnel mappers for encap
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TUNNEL_IPINIP_GRE_ENCAP_ECN_MAPPERS,
+
+    /**
+     * @brief MPLS Tunnel mappers for encap
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TUNNEL_MPLS_ENCAP_ECN_MAPPERS,
 
     /**
      * @brief Tunnel mappers for decap
@@ -2327,16 +2480,109 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
      * @default empty
      */
-    SAI_SWITCH_ATTR_TUNNEL_DECAP_ECN_MAPPERS,
+    SAI_SWITCH_ATTR_TUNNEL_IPINIP_DECAP_ECN_MAPPERS,
+
+    /**
+     * @brief VXLAN Tunnel mappers for decap
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TUNNEL_VXLAN_DECAP_ECN_MAPPERS,
+
+    /**
+     * @brief GRE Tunnel mappers for decap
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TUNNEL_IPINIP_GRE_DECAP_ECN_MAPPERS,
+
+    /**
+     * @brief MPLS Tunnel mappers for decap
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TUNNEL_MPLS_DECAP_ECN_MAPPERS,
+
+    /**
+     * @brief Tunnel encap ECN Mode load method
+     *
+     * @type sai_tunnel_ipinip_encap_ecn_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_IPINIP_ENCAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_IPINIP_ENCAP_ECN_MODE,
+
+    /**
+     * @brief GRE Tunnel encap ECN Mode load method
+     *
+     * @type sai_tunnel_ipinip_gre_encap_ecn_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_IPINIP_GRE_ENCAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_IPINIP_GRE_ENCAP_ECN_MODE,
+
+    /**
+     * @brief VXLAN Tunnel encap ECN Mode load method
+     *
+     * @type sai_tunnel_vxlan_encap_ecn_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_VXLAN_ENCAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_VXLAN_ENCAP_ECN_MODE,
+
+    /**
+     * @brief MPLS Tunnel encap ECN Mode load method
+     *
+     * @type sai_tunnel_mpls_encap_ecn_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_MPLS_ENCAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_MPLS_ENCAP_ECN_MODE,
 
     /**
      * @brief Tunnel decap ECN Mode load method
      *
-     * @type sai_tunnel_decap_ecn_mode_t
+     * @type sai_tunnel_ipinip_decap_ecn_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_TUNNEL_DECAP_ECN_MODE_STANDARD
+     * @default SAI_TUNNEL_IPINIP_DECAP_ECN_MODE_STANDARD
      */
-    SAI_SWITCH_ATTR_TUNNEL_DECAP_ECN_MODE,
+    SAI_SWITCH_ATTR_TUNNEL_IPINIP_DECAP_ECN_MODE,
+
+    /**
+     * @brief GRE Tunnel decap ECN Mode load method
+     *
+     * @type sai_tunnel_ipinip_gre_decap_ecn_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_IPINIP_GRE_DECAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_IPINIP_GRE_DECAP_ECN_MODE,
+
+    /**
+     * @brief VXLAN Tunnel decap ECN Mode load method
+     *
+     * @type sai_tunnel_vxlan_decap_ecn_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_VXLAN_DECAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_VXLAN_DECAP_ECN_MODE,
+
+    /**
+     * @brief MPLS Tunnel decap ECN Mode load method
+     *
+     * @type sai_tunnel_mpls_decap_ecn_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_MPLS_DECAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_MPLS_DECAP_ECN_MODE,
 
     /**
      * @brief End of attributes
