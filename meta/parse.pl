@@ -2816,6 +2816,14 @@ sub CreateApisStruct
     WriteHeader "#define SAI_API_EXTENSIONS_MAX ((sai_api_t)$count)";
 }
 
+sub CreateGlobalApis
+{
+    WriteSectionComment "Global SAI API declarations";
+
+    WriteSource "sai_apis_t sai_metadata_apis = { 0 };";
+    WriteHeader "extern sai_apis_t sai_metadata_apis;";
+}
+
 sub CreateApisQuery
 {
     WriteSectionComment "SAI API query";
@@ -2840,8 +2848,10 @@ sub CreateApisQuery
     for my $key (sort keys %APITOOBJMAP)
     {
         WriteSource "sai_metadata_sai_${key}_api = NULL;";
-        WriteSource "apis->${key}_api = NULL;";
     }
+
+    WriteSource "memset(apis, 0, sizeof(sai_apis_t));";
+    WriteSource "memset(&sai_metadata_apis, 0, sizeof(sai_apis_t));";
 
     WriteSource "return count;";
     WriteSource "}";
@@ -3999,6 +4009,8 @@ CreateStructNonObjectId();
 CreateApis();
 
 CreateApisStruct();
+
+CreateGlobalApis();
 
 CreateApisQuery();
 
