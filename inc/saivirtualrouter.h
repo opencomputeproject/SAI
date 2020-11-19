@@ -109,9 +109,9 @@ typedef enum _sai_virtual_router_attr_t
     /**
      * @brief Anchor attribute used to unique identify empty VR.
      *
-     * @type sai_uint64_t
-     * @flags CREATE_ONLY
-     * @default 0
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
      */
     SAI_VIRTUAL_ROUTER_ATTR_ANCHOR,
 

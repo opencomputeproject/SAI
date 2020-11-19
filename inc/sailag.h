@@ -170,9 +170,9 @@ typedef enum _sai_lag_attr_t
     /**
      * @brief Anchor attribute used to unique identify empty LAG.
      *
-     * @type sai_uint64_t
-     * @flags CREATE_ONLY
-     * @default 0
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
      */
     SAI_LAG_ATTR_ANCHOR,
 
