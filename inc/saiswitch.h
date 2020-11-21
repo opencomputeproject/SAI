@@ -2257,6 +2257,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SUPPORTED_FAILOVER_MODE,
 
     /**
+     * @brief Packet action when a packet ingress and gets routed back to same tunnel
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_FORWARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
