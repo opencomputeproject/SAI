@@ -347,6 +347,13 @@ typedef enum _sai_out_drop_reason_t
      */
     SAI_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
+    /* Tunnel reasons */
+
+    /**
+     * @brief Tunnel packets dropped if going back to the incoming tunnel
+     */
+    SAI_OUT_DROP_REASON_TUNNEL_LOOPBACK_PACKET_DROP,
+
     /** End of out drop reasons */
     SAI_OUT_DROP_REASON_END,
 
