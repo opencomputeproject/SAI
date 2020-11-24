@@ -1355,18 +1355,48 @@ typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
         _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
+/**
+ * @brief SAI statistics modes
+ *
+ * Used in get statistics extended or query statistics capabilities
+ * Note enum values must be powers of 2 to be used as bit mask for query statistics capabilities
+ *
+ * @flags Contains flags
+ */
 typedef enum _sai_stats_mode_t
 {
     /**
      * @brief Read statistics
      */
-    SAI_STATS_MODE_READ,
+    SAI_STATS_MODE_READ = 1 << 0,
 
     /**
      * @brief Read and clear after reading
      */
-    SAI_STATS_MODE_READ_AND_CLEAR,
+    SAI_STATS_MODE_READ_AND_CLEAR = 1 << 1,
 } sai_stats_mode_t;
+
+typedef struct _sai_stat_capability_t
+{
+    /** Stat enum value */
+    sai_stat_id_t stat_enum;
+
+    /**
+     * @brief Bit mask of supported statistics modes (sai_stats_mode_t)
+     *
+     * For example, if read and read_and_clear are supported, value is
+     * SAI_STATS_MODE_READ | SAI_STATS_MODE_READ_AND_CLEAR
+     */
+    uint32_t stat_modes;
+
+} sai_stat_capability_t;
+
+typedef struct _sai_stat_capability_list_t
+{
+    uint32_t count;
+    sai_stat_capability_t *list;
+
+} sai_stat_capability_list_t;
 
 /**
  * @}
