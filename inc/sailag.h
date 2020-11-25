@@ -168,6 +168,15 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_SYSTEM_PORT_AGGREGATE_ID,
 
     /**
+     * @brief Label attribute used to unique identify empty LAG.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_LAG_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_ATTR_END,
