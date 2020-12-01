@@ -649,6 +649,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_packet_action_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
+     * @isresourcetype true
      */
     SAI_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION,
 
