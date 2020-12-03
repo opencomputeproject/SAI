@@ -286,6 +286,26 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_DISABLE_DECREMENT_TTL,
 
     /**
+     * @brief Ingress ACL table group bond members associated with this router interface.
+     * Does not include the main group from SAI_PORT_ATTR_INGRESS_ACL
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP_BOND_MEMBER
+     */
+    SAI_ROUTER_INTERFACE_ATTR_INGRESS_ACL_TABLE_GROUP_BOND_MEMBER_LIST,
+
+    /**
+     * @brief Egress ACL table group bond members associated with this router interface.
+     * Does not include the main group from SAI_PORT_ATTR_EGRESS_ACL
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP_BOND_MEMBER
+     */
+    SAI_ROUTER_INTERFACE_ATTR_EGRESS_ACL_TABLE_GROUP_BOND_MEMBER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,

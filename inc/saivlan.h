@@ -398,6 +398,26 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_TAM_OBJECT,
 
     /**
+     * @brief Ingress ACL table group bond members associated with this VLAN.
+     * Does not include the main group from SAI_PORT_ATTR_INGRESS_ACL
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP_BOND_MEMBER
+     */
+    SAI_VLAN_ATTR_INGRESS_ACL_TABLE_GROUP_BOND_MEMBER_LIST,
+
+    /**
+     * @brief Egress ACL table group bond members associated with this VLAN.
+     * Does not include the main group from SAI_PORT_ATTR_EGRESS_ACL
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP_BOND_MEMBER
+     */
+    SAI_VLAN_ATTR_EGRESS_ACL_TABLE_GROUP_BOND_MEMBER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_VLAN_ATTR_END,

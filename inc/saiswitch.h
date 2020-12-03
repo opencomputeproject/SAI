@@ -588,6 +588,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MAXIMUM_PRIORITY,
 
     /**
+     * @brief Minimum priority for ACL table group bond
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_TABLE_GROUP_BOND_MINIMUM_PRIORITY,
+
+    /**
+     * @brief Maximum priority for ACL table group bond
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_TABLE_GROUP_BOND_MAXIMUM_PRIORITY,
+
+    /**
      * @brief FDB DST user-based meta data range
      *
      * @type sai_u32_range_t

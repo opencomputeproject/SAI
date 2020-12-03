@@ -348,6 +348,22 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_MEMBER_LIST,
 
     /**
+     * @brief Priority of bond member
+     *
+     * Value must be in the range defined in
+     * [SAI_SWITCH_ATTR_ACL_TABLE_GROUP_BOND_MINIMUM_PRIORITY,
+     * SAI_SWITCH_ATTR_ACL_TABLE_GROUP_BOND_MAXIMUM_PRIORITY]
+     *
+     * This priority attribute is only valid for SEQUENTIAL type of ACL groups
+     * This value is only used when binding table as a bond member
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_PRIORITY,
+
+    /**
      * @brief End of attributes
      */
     SAI_ACL_TABLE_GROUP_ATTR_END,
@@ -3072,6 +3088,59 @@ typedef enum _sai_acl_range_attr_t
 } sai_acl_range_attr_t;
 
 /**
+ * @brief Attribute Id for ACL Table Group Bond Member
+ */
+typedef enum _sai_acl_table_group_bond_member_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_START,
+
+    /**
+     * @brief Bind object ID
+     *
+     * Mandatory object ID to bind to.
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_VLAN
+     */
+    SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_BIND_OBJECT_ID = SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_START,
+
+    /**
+     * @brief ACL Table Group ID
+     *
+     * Mandatory object ID of the table group.
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     */
+    SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_GROUP_ID,
+
+    /**
+     * @brief ACL stage
+     *
+     * @type sai_acl_stage_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_ACL_STAGE,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_END,
+
+    /** Custom range base value */
+    SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_ACL_TABLE_GROUP_BOND_MEMBER_ATTR_CUSTOM_RANGE_END
+
+} sai_acl_table_group_bond_member_attr_t;
+
+/**
  * @brief Create an ACL table
  *
  * @param[out] acl_table_id The ACL table id
@@ -3384,34 +3453,90 @@ typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Create an ACL Table Group Bond Member
+ *
+ * @param[out] acl_table_group_bond_member_id The ACL table group bond member id
+ * @param[in] switch_id Switch ID
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_acl_table_group_bond_member_fn)(
+        _Out_ sai_object_id_t *acl_table_group_bond_member_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Delete an ACL Group Bond Member
+ *
+ * @param[in] acl_table_group_bond_member_id The ACL table group member bind id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_acl_table_group_bond_member_fn)(
+        _In_ sai_object_id_t acl_table_group_bond_member_id);
+
+/**
+ * @brief Set ACL table group bond member attribute
+ *
+ * @param[in] acl_table_group_bond_member_id The ACL table group bond member id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_acl_table_group_bond_member_attribute_fn)(
+        _In_ sai_object_id_t acl_table_group_bond_member_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get ACL table group bond member attribute
+ *
+ * @param[in] acl_table_group_bond_member_id ACL table group bond member id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_acl_table_group_bond_member_attribute_fn)(
+        _In_ sai_object_id_t acl_table_group_bond_member_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_acl_api_t
 {
-    sai_create_acl_table_fn                     create_acl_table;
-    sai_remove_acl_table_fn                     remove_acl_table;
-    sai_set_acl_table_attribute_fn              set_acl_table_attribute;
-    sai_get_acl_table_attribute_fn              get_acl_table_attribute;
-    sai_create_acl_entry_fn                     create_acl_entry;
-    sai_remove_acl_entry_fn                     remove_acl_entry;
-    sai_set_acl_entry_attribute_fn              set_acl_entry_attribute;
-    sai_get_acl_entry_attribute_fn              get_acl_entry_attribute;
-    sai_create_acl_counter_fn                   create_acl_counter;
-    sai_remove_acl_counter_fn                   remove_acl_counter;
-    sai_set_acl_counter_attribute_fn            set_acl_counter_attribute;
-    sai_get_acl_counter_attribute_fn            get_acl_counter_attribute;
-    sai_create_acl_range_fn                     create_acl_range;
-    sai_remove_acl_range_fn                     remove_acl_range;
-    sai_set_acl_range_attribute_fn              set_acl_range_attribute;
-    sai_get_acl_range_attribute_fn              get_acl_range_attribute;
-    sai_create_acl_table_group_fn               create_acl_table_group;
-    sai_remove_acl_table_group_fn               remove_acl_table_group;
-    sai_set_acl_table_group_attribute_fn        set_acl_table_group_attribute;
-    sai_get_acl_table_group_attribute_fn        get_acl_table_group_attribute;
-    sai_create_acl_table_group_member_fn        create_acl_table_group_member;
-    sai_remove_acl_table_group_member_fn        remove_acl_table_group_member;
-    sai_set_acl_table_group_member_attribute_fn set_acl_table_group_member_attribute;
-    sai_get_acl_table_group_member_attribute_fn get_acl_table_group_member_attribute;
+    sai_create_acl_table_fn                          create_acl_table;
+    sai_remove_acl_table_fn                          remove_acl_table;
+    sai_set_acl_table_attribute_fn                   set_acl_table_attribute;
+    sai_get_acl_table_attribute_fn                   get_acl_table_attribute;
+    sai_create_acl_entry_fn                          create_acl_entry;
+    sai_remove_acl_entry_fn                          remove_acl_entry;
+    sai_set_acl_entry_attribute_fn                   set_acl_entry_attribute;
+    sai_get_acl_entry_attribute_fn                   get_acl_entry_attribute;
+    sai_create_acl_counter_fn                        create_acl_counter;
+    sai_remove_acl_counter_fn                        remove_acl_counter;
+    sai_set_acl_counter_attribute_fn                 set_acl_counter_attribute;
+    sai_get_acl_counter_attribute_fn                 get_acl_counter_attribute;
+    sai_create_acl_range_fn                          create_acl_range;
+    sai_remove_acl_range_fn                          remove_acl_range;
+    sai_set_acl_range_attribute_fn                   set_acl_range_attribute;
+    sai_get_acl_range_attribute_fn                   get_acl_range_attribute;
+    sai_create_acl_table_group_fn                    create_acl_table_group;
+    sai_remove_acl_table_group_fn                    remove_acl_table_group;
+    sai_set_acl_table_group_attribute_fn             set_acl_table_group_attribute;
+    sai_get_acl_table_group_attribute_fn             get_acl_table_group_attribute;
+    sai_create_acl_table_group_member_fn             create_acl_table_group_member;
+    sai_remove_acl_table_group_member_fn             remove_acl_table_group_member;
+    sai_set_acl_table_group_member_attribute_fn      set_acl_table_group_member_attribute;
+    sai_get_acl_table_group_member_attribute_fn      get_acl_table_group_member_attribute;
+    sai_create_acl_table_group_bond_member_fn        create_acl_table_group_bond_member;
+    sai_remove_acl_table_group_bond_member_fn        remove_acl_table_group_bond_member;
+    sai_set_acl_table_group_bond_member_attribute_fn set_acl_table_group_bond_member_attribute;
+    sai_get_acl_table_group_bond_member_attribute_fn get_acl_table_group_bond_member_attribute;
 } sai_acl_api_t;
 
 /**
