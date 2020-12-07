@@ -2588,7 +2588,7 @@ void check_attr_condition_met(
 
     uint32_t count = (uint32_t)md->conditionslength;
 
-    sai_attribute_t *attrs = (sai_attribute_t*)malloc(sizeof(sai_attribute_t) * count);
+    sai_attribute_t *attrs = (sai_attribute_t*)calloc(count, sizeof(sai_attribute_t));
 
     size_t idx = 0;
 
