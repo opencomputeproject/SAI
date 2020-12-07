@@ -118,12 +118,36 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_SCI_IN_INGRESS_MACSEC_ACL,
 
     /**
-     * @brief List of supported cipher-suites
+     * @brief Indicates if 32-bit Packer Number (PN) is supported.
      *
-     * @type sai_s32_list_t sai_macsec_cipher_suite_t
+     * @type bool
      * @flags READ_ONLY
      */
-    SAI_MACSEC_ATTR_SUPPORTED_CIPHER_SUITE_LIST,
+    SAI_MACSEC_ATTR_PN_32BIT_SUPPORTED,
+
+    /**
+     * @brief Indicates if 64-bit Extended Packer Number (PN) is supported.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_XPN_64BIT_SUPPORTED,
+
+    /**
+     * @brief Indicates if GCM-AES128 cipher-suite is supported.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_GCM_AES128_SUPPORTED,
+
+    /**
+     * @brief Indicates if GCM-AES256 cipher-suite is supported.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_GCM_AES256_SUPPORTED,
 
     /**
      * @brief List of supported SecTAG offset values for both ingress parsing
@@ -737,16 +761,16 @@ typedef enum _sai_macsec_sa_attr_t
     SAI_MACSEC_SA_ATTR_INITIAL_EGRESS_XPN,
 
     /**
-     * @brief MACsec packet number (PN/XPN). For ingress, largest received
-     * packet number. For egress, 1 less than the next packet number.
+     * @brief MACsec current packet number (PN/XPN). For ingress, largest
+     * received packet number. For egress, 1 less than the next packet number.
      *
      * @type sai_uint64_t
      * @flags READ_ONLY
      */
-    SAI_MACSEC_SA_ATTR_XPN,
+    SAI_MACSEC_SA_ATTR_CURRENT_XPN,
 
     /**
-     * @brief Minimum value of ingress MACsec packet number (PN/XPN).
+     * @brief Configured minimum acceptable ingress MACsec packet number (PN/XPN).
      * Updated by value from MACsec peer by Key Agreement protocol.
      *
      * @type sai_uint64_t
@@ -754,7 +778,7 @@ typedef enum _sai_macsec_sa_attr_t
      * @default 1
      * @validonly SAI_MACSEC_SA_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
-    SAI_MACSEC_SA_ATTR_MINIMUM_XPN,
+    SAI_MACSEC_SA_ATTR_MINIMUM_INGRESS_XPN,
 
     /**
      * @brief SSCI value for this Secure Association
