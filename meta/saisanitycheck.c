@@ -4136,6 +4136,11 @@ void check_switch_attributes()
         {
             META_MD_ASSERT_FAIL(md, "Mandatroy on create can't be object id on SWITCH");
         }
+
+        if (md->isoidattribute && md->iscreateonly)
+        {
+            META_MD_ASSERT_FAIL(md, "Create only can't be object id on SWITCH");
+        }
     }
 }
 
