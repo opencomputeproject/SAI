@@ -118,36 +118,12 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_SCI_IN_INGRESS_MACSEC_ACL,
 
     /**
-     * @brief Indicates if 32-bit Packer Number (PN) is supported.
+     * @brief List of supported cipher-suites
      *
-     * @type bool
+     * @type sai_s32_list_t sai_macsec_cipher_suite_t
      * @flags READ_ONLY
      */
-    SAI_MACSEC_ATTR_PN_32BIT_SUPPORTED,
-
-    /**
-     * @brief Indicates if 64-bit Extended Packer Number (PN) is supported.
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_MACSEC_ATTR_XPN_64BIT_SUPPORTED,
-
-    /**
-     * @brief Indicates if GCM-AES128 cipher-suite is supported.
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_MACSEC_ATTR_GCM_AES128_SUPPORTED,
-
-    /**
-     * @brief Indicates if GCM-AES256 cipher-suite is supported.
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_MACSEC_ATTR_GCM_AES256_SUPPORTED,
+    SAI_MACSEC_ATTR_SUPPORTED_CIPHER_SUITE_LIST,
 
     /**
      * @brief List of supported SecTAG offset values for both ingress parsing
