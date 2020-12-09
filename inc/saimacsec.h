@@ -751,14 +751,14 @@ typedef enum _sai_macsec_sa_attr_t
     SAI_MACSEC_SA_ATTR_AUTH_KEY,
 
     /**
-     * @brief MACsec egress packet number (PN/XPN).  At most 1 less than the next PN/XPN.
+     * @brief Configured value of next MACsec egress packet number (PN/XPN).
      *
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @default 0
      * @validonly SAI_MACSEC_SA_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
      */
-    SAI_MACSEC_SA_ATTR_INITIAL_EGRESS_XPN,
+    SAI_MACSEC_SA_ATTR_CONFIGURED_EGRESS_XPN,
 
     /**
      * @brief MACsec current packet number (PN/XPN). For ingress, largest
