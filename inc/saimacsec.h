@@ -126,6 +126,42 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_SUPPORTED_CIPHER_SUITE_LIST,
 
     /**
+     * @brief Indicates if 32-bit Packer Number (PN) is supported.  This is To be deprecated
+     * in a future release, replaced by SAI_MACSEC_ATTR_SUPPORTED_CIPHER_SUITE_LIST.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_PN_32BIT_SUPPORTED,
+
+    /**
+     * @brief Indicates if 64-bit Extended Packer Number (PN) is supported. This is To be deprecated
+     * in a future release, replaced by SAI_MACSEC_ATTR_SUPPORTED_CIPHER_SUITE_LIST.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_XPN_64BIT_SUPPORTED,
+
+    /**
+     * @brief Indicates if GCM-AES128 cipher-suite is supported. This is To be deprecated
+     * in a future release, replaced by SAI_MACSEC_ATTR_SUPPORTED_CIPHER_SUITE_LIST.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_GCM_AES128_SUPPORTED,
+
+    /**
+     * @brief Indicates if GCM-AES256 cipher-suite is supported. This is to be deprecated
+     * in a future release, replaced by SAI_MACSEC_ATTR_SUPPORTED_CIPHER_SUITE_LIST.
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_GCM_AES256_SUPPORTED,
+
+    /**
      * @brief List of supported SecTAG offset values for both ingress parsing
      * and for egress.
      *
