@@ -326,6 +326,135 @@ typedef enum _sai_switch_failover_config_mode_t
 } sai_switch_failover_config_mode_t;
 
 /**
+ * @brief Defines tunnel type
+ */
+typedef enum _sai_tunnel_type_t
+{
+    SAI_TUNNEL_TYPE_IPINIP,
+
+    SAI_TUNNEL_TYPE_IPINIP_GRE,
+
+    SAI_TUNNEL_TYPE_VXLAN,
+
+    SAI_TUNNEL_TYPE_MPLS,
+
+} sai_tunnel_type_t;
+
+/**
+ * @brief Defines tunnel encap ECN mode
+ */
+typedef enum _sai_tunnel_encap_ecn_mode_t
+{
+    /**
+     * @brief Normal mode behavior defined in RFC 6040
+     * section 4.1 copy from inner
+     */
+    SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief User defined behavior.
+     */
+    SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_encap_ecn_mode_t;
+
+/**
+ * @brief Defines tunnel decap ECN mode
+ */
+typedef enum _sai_tunnel_decap_ecn_mode_t
+{
+    /**
+     * @brief Behavior defined in RFC 6040 section 4.2
+     */
+    SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief Copy from outer ECN
+     */
+    SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
+
+    /**
+     * @brief User defined behavior
+     */
+    SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_decap_ecn_mode_t;
+
+/**
+ * @brief Defines tunnel attributes at switch level
+ */
+typedef enum _sai_switch_tunnel_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_SWITCH_TUNNEL_ATTR_START,
+
+    /**
+     * @brief Tunnel type
+     *
+     * @type sai_tunnel_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isresourcetype true
+     */
+    SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE = SAI_SWITCH_TUNNEL_ATTR_START,
+
+    /* Tunnel encap attributes */
+
+    /**
+     * @brief Tunnel encap ECN mode
+     *
+     * @type sai_tunnel_encap_ecn_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_TUNNEL_ATTR_TUNNEL_ENCAP_ECN_MODE,
+
+    /**
+     * @brief Tunnel encap mappers
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_TUNNEL_ATTR_ENCAP_MAPPERS,
+
+    /* Tunnel decap attributes */
+
+    /**
+     * @brief Tunnel decap ECN mode
+     *
+     * @type sai_tunnel_decap_ecn_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TUNNEL_DECAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_TUNNEL_ATTR_TUNNEL_DECAP_ECN_MODE,
+
+    /**
+     * @brief Tunnel decap mappers
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_TUNNEL_ATTR_DECAP_MAPPERS,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_SWITCH_TUNNEL_ATTR_END,
+
+    /** Custom range base value */
+    SAI_SWITCH_TUNNEL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_SWITCH_TUNNEL_ATTR_CUSTOM_RANGE_END
+
+} sai_switch_tunnel_attr_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
  */
@@ -2266,6 +2395,16 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION,
 
     /**
+     * @brief Switch scoped Tunnel objects
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SWITCH_TUNNEL
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -2690,19 +2829,77 @@ typedef sai_status_t (*sai_clear_switch_stats_fn)(
         _In_ const sai_stat_id_t *counter_ids);
 
 /**
+ * @brief Create switch scoped tunnel
+ *
+ * @param[out] switch_tunnel_id The Switch Tunnel Object ID
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_switch_tunnel_fn)(
+        _Out_ sai_object_id_t *switch_tunnel_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove/disconnect Switch scope tunnel
+ *
+ * Release all resources associated with currently opened switch
+ *
+ * @param[in] switch_tunnel_id The Switch Tunnel id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_switch_tunnel_fn)(
+        _In_ sai_object_id_t switch_tunnel_id);
+
+/**
+ * @brief Set switch scoped tunnel attribute value
+ *
+ * @param[in] switch_tunnel_id Switch Tunnel id
+ * @param[in] attr Switch tunnel attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_switch_tunnel_attribute_fn)(
+        _In_ sai_object_id_t switch_tunnel_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get switch scoped tunnel attribute value
+ *
+ * @param[in] switch_tunnel_id Switch Tunnel id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of switch tunnel attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_switch_tunnel_attribute_fn)(
+        _In_ sai_object_id_t switch_tunnel_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief Switch method table retrieved with sai_api_query()
  */
 typedef struct _sai_switch_api_t
 {
-    sai_create_switch_fn            create_switch;
-    sai_remove_switch_fn            remove_switch;
-    sai_set_switch_attribute_fn     set_switch_attribute;
-    sai_get_switch_attribute_fn     get_switch_attribute;
-    sai_get_switch_stats_fn         get_switch_stats;
-    sai_get_switch_stats_ext_fn     get_switch_stats_ext;
-    sai_clear_switch_stats_fn       clear_switch_stats;
-    sai_switch_mdio_read_fn         switch_mdio_read;
-    sai_switch_mdio_write_fn        switch_mdio_write;
+    sai_create_switch_fn                   create_switch;
+    sai_remove_switch_fn                   remove_switch;
+    sai_set_switch_attribute_fn            set_switch_attribute;
+    sai_get_switch_attribute_fn            get_switch_attribute;
+    sai_get_switch_stats_fn                get_switch_stats;
+    sai_get_switch_stats_ext_fn            get_switch_stats_ext;
+    sai_clear_switch_stats_fn              clear_switch_stats;
+    sai_switch_mdio_read_fn                switch_mdio_read;
+    sai_switch_mdio_write_fn               switch_mdio_write;
+    sai_create_switch_tunnel_fn            create_switch_tunnel;
+    sai_remove_switch_tunnel_fn            remove_switch_tunnel;
+    sai_set_switch_tunnel_attribute_fn     set_switch_tunnel_attribute;
+    sai_get_switch_tunnel_attribute_fn     get_switch_tunnel_attribute;
 
 } sai_switch_api_t;
 
