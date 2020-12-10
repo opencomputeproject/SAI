@@ -769,6 +769,9 @@ typedef enum _sai_macsec_sa_attr_t
      */
     SAI_MACSEC_SA_ATTR_CURRENT_XPN,
 
+    /** @ignore - for backward compatibility */
+    SAI_MACSEC_SA_ATTR_XPN = SAI_MACSEC_SA_ATTR_CURRENT_XPN,
+
     /**
      * @brief Configured minimum acceptable ingress MACsec packet number (PN/XPN).
      * Updated by value from MACsec peer by Key Agreement protocol.
@@ -779,6 +782,9 @@ typedef enum _sai_macsec_sa_attr_t
      * @validonly SAI_MACSEC_SA_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_INGRESS
      */
     SAI_MACSEC_SA_ATTR_MINIMUM_INGRESS_XPN,
+
+    /** @ignore - for backward compatibility */
+    SAI_MACSEC_SA_ATTR_MINIMUM_XPN = SAI_MACSEC_SA_ATTR_MINIMUM_INGRESS_XPN,
 
     /**
      * @brief SSCI value for this Secure Association
