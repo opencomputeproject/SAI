@@ -381,7 +381,11 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
 } sai_tunnel_decap_ecn_mode_t;
 
 /**
- * @brief Defines tunnel attributes at switch level
+ * @brief Defines tunnel attributes at switch level.
+ * SAI_OBJECT_TYPE_SWITCH_TUNNEL object provides
+ * per tunnel type global configuration.
+ * SAI_OBJECT_TYPE_TUNNEL object configuration
+ * overrides the switch scoped global configuration.
  */
 typedef enum _sai_switch_tunnel_attr_t
 {
@@ -391,13 +395,22 @@ typedef enum _sai_switch_tunnel_attr_t
     SAI_SWITCH_TUNNEL_ATTR_START,
 
     /**
-     * @brief Tunnel type
+     * @brief Tunnel type key
      *
      * @type sai_tunnel_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
      * @isresourcetype true
      */
     SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE = SAI_SWITCH_TUNNEL_ATTR_START,
+
+    /**
+     * @brief Packet action when a packet ingress and gets routed back to same tunnel
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_FORWARD
+     */
+    SAI_SWITCH_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION,
 
     /* Tunnel encap attributes */
 
@@ -456,7 +469,7 @@ typedef enum _sai_switch_tunnel_attr_t
 
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
- * sai_get_switch_attribute() calls
+ * sai_get_switch_attribute() calls.
  */
 typedef enum _sai_switch_attr_t
 {
@@ -2384,15 +2397,6 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_SUPPORTED_FAILOVER_MODE,
-
-    /**
-     * @brief Packet action when a packet ingress and gets routed back to same tunnel
-     *
-     * @type sai_packet_action_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PACKET_ACTION_FORWARD
-     */
-    SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION,
 
     /**
      * @brief Switch scoped Tunnel objects
