@@ -2404,6 +2404,11 @@ void check_attr_sai_pointer(
         META_ASSERT_FALSE(md->iscallback, "notification can't be callback");
     }
 
+    if (md->pointertype != -1)
+    {
+        META_ASSERT_TRUE(md->attrvaluetype == SAI_ATTR_VALUE_TYPE_POINTER, "pointer can be set only on pointer type");
+    }
+
     /*
      * Purpose of this test is to check whether sai_pointer_t
      * is only used on SAI_OBJECT_TYPE_SWITCH.
@@ -2430,9 +2435,15 @@ void check_attr_sai_pointer(
             {
                 META_ASSERT_TRUE(md->notificationtype >= 0, "notification type should be set to value on pointer");
             }
+
+            if (md->pointertype < 0)
+            {
+                META_MD_ASSERT_FAIL(md, "pointer type should be set to value on pointer");
+            }
         }
         else
         {
+            META_ASSERT_TRUE(md->pointertype == -1, "pointer type should not be set to value on non pointer");
             META_ASSERT_TRUE(md->notificationtype == -1, "notification type should not be set to value on non pointer");
             META_ASSERT_TRUE(md->iscallback == false, "callback type should not be set to value on non pointer");
         }
@@ -4585,6 +4596,22 @@ void check_switch_notify_list()
     META_ASSERT_NULL(sai_metadata_switch_notify_attr[i]);
 }
 
+void check_switch_pointers_list()
+{
+    SAI_META_LOG_ENTER();
+
+    size_t i;
+
+    for (i = 0; i < sai_metadata_switch_pointers_attr_count; ++i)
+    {
+        META_ASSERT_NOT_NULL(sai_metadata_switch_pointers_attr[i]);
+    }
+
+    /* check for NULL guard */
+
+    META_ASSERT_NULL(sai_metadata_switch_pointers_attr[i]);
+}
+
 void check_defines()
 {
     SAI_META_LOG_ENTER();
@@ -4658,6 +4685,7 @@ int main(int argc, char **argv)
     check_acl_user_defined_field();
     check_label_size();
     check_switch_notify_list();
+    check_switch_pointers_list();
     check_defines();
     check_all_object_infos();
 

@@ -1052,6 +1052,16 @@ typedef struct _sai_attr_metadata_t
     bool                                        iscallback;
 
     /**
+     * @brief Pointer type
+     *
+     * If attribute value type is POINTER then attribute
+     * value is pointer to switch.
+     * Enum sai_switch_pointer_type_t is auto generated
+     * so it can't be used here, int will be used instead.
+     */
+    int                                         pointertype;
+
+    /**
      * @brief Attribute capabilities.
      *
      * Represents attribute capability for each specific ASIC. Since each
