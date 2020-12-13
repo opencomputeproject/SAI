@@ -61,6 +61,7 @@ our %EXPERIMENTAL_OBJECTS = ();
 our %OBJECT_TYPE_TO_STATS_MAP = ();
 our %ATTR_TO_CALLBACK = ();
 our %PRIMITIVE_TYPES = ();
+our @ALL_ENUMS = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 
@@ -481,6 +482,8 @@ sub ProcessEnumSection
 
         # remove unnecessary attributes
         my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
+
+        push @ALL_ENUMS, @values;
 
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(RANGE_BASE)$/, @values);
@@ -3353,6 +3356,61 @@ sub CheckObjectTypeStatitics
     }
 }
 
+sub CheckAllEnumsEndings
+{
+    my %all = ();
+
+    for my $key (@ALL_ENUMS)
+    {
+        $all{$key} = 1;
+    }
+
+    #
+    # Enums ending on START, END and RANGE_BASE are special and are designed to
+    # specify range span of enumerations. Here we make sure that every START
+    # enum has it's END enum, also each END enum should have ether START or
+    # BASE enum defined. BASE enum don't may not specify END enum
+    #
+
+    for my $key (sort keys %all)
+    {
+        # exceptions
+
+        next if $key eq "SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE";
+        next if $key eq "SAI_IN_DROP_REASON_CUSTOM_RANGE_END";
+        next if $key eq "SAI_OUT_DROP_REASON_CUSTOM_RANGE_END";
+
+        if ($key =~ /^(\w+)_START$/)
+        {
+            LogWarning "expected END enum for $key" if not defined $all{"$1_END"};
+        }
+        elsif ($key =~ /^(\w+_(CUSTOM|EXTENSIONS)_RANGE)_END$/)
+        {
+            LogWarning "expected START enum for $key" if not defined $all{"$1_START"};
+        }
+        elsif ($key =~ /^(\w+_RANGE)_END$/)
+        {
+            LogWarning "expected BASE enum for $1 $key" if not defined $all{"$1_BASE"};
+        }
+        elsif ($key =~ /^(\w+)_END$/)
+        {
+            LogWarning "expected START enum for $1 $key" if not defined $all{"$1_START"};
+        }
+        elsif ($key =~ /^(\w+_CUSTOM_RANGE)_BASE$/)
+        {
+            LogInfo "no need for END enum for $key" if defined $all{"$1_END"};
+        }
+        elsif ($key =~ /^(\w+_RANGE)_BASE$/)
+        {
+            LogWarning "expected END enum for $key" if not defined $all{"$1_END"};
+        }
+        elsif ($key =~ /^(\w+)_BASE$/)
+        {
+            LogInfo "non range base $key";
+        }
+    }
+}
+
 sub ExtractApiToObjectMap
 {
     #
@@ -4190,6 +4248,8 @@ CheckAttributeValueUnion();
 CheckStatEnum();
 
 CheckObjectTypeStatitics();
+
+CheckAllEnumsEndings();
 
 CreateNotificationStruct();
 
