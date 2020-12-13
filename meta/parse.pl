@@ -1716,6 +1716,23 @@ sub ProcessNotificationType
     return "-1";
 }
 
+sub ProcessPointerType
+{
+    my ($attr, $type) = @_;
+
+    return "SAI_SWITCH_POINTER_TYPE_$1" if $attr =~ /^SAI_SWITCH_ATTR_(\w+)_NOTIFY$/;
+
+    if (defined $ATTR_TO_CALLBACK{$attr})
+    {
+        if ($ATTR_TO_CALLBACK{$attr} =~ /^sai_(\w+)_fn$/)
+        {
+            return "SAI_SWITCH_POINTER_TYPE_" . uc($1);
+        }
+    }
+
+    return "-1";
+}
+
 sub ProcessIsAclField
 {
     my $attr = shift;
@@ -1942,6 +1959,7 @@ sub ProcessSingleObjectType
         my $isprimitive     = ProcessIsPrimitive($attr, $meta{type});
         my $ntftype         = ProcessNotificationType($attr, $meta{type});
         my $iscallback      = ProcessIsCallback($attr, $meta{type});
+        my $ptrtype         = ProcessPointerType($attr, $meta{type});
         my $cap             = ProcessCapability($attr, $meta{type}, $enummetadata);
         my $caplen          = ProcessCapabilityLen($attr, $meta{type});
         my $isextensionattr = ProcessIsExtensionAttr($attr, $meta{type});
@@ -1997,6 +2015,7 @@ sub ProcessSingleObjectType
         WriteSource ".isprimitive                   = $isprimitive,";
         WriteSource ".notificationtype              = $ntftype,";
         WriteSource ".iscallback                    = $iscallback,";
+        WriteSource ".pointertype                   = $ptrtype,";
         WriteSource ".capability                    = $cap,";
         WriteSource ".capabilitylength              = $caplen,";
         WriteSource ".isextensionattr               = $isextensionattr,";
@@ -3731,6 +3750,148 @@ sub CreateSwitchNotificationAttributesList
     WriteHeader "#define SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT $count";
 }
 
+sub CreateSwitchPointersStruct
+{
+    #
+    # create pointersstruct for easier notification
+    # manipulation in code
+    #
+
+    WriteSectionComment "SAI switch pointers struct";
+
+    WriteHeader "typedef struct _sai_switch_pointers_t {";
+
+    my @pointers = keys %NOTIFICATIONS;
+    push @pointers, values %ATTR_TO_CALLBACK;
+
+    for my $name (sort @pointers)
+    {
+        if (not $name =~ /^sai_(\w+)_fn/)
+        {
+            LogWarning "pointer function $name is not ending on _fn";
+            next;
+        }
+        elsif ($name =~ /^sai_(\w+)_notification_fn/)
+        {
+            WriteHeader "$name on_$1;";
+        }
+        elsif ($name =~ /^sai_(\w+)_fn/)
+        {
+            WriteHeader "$name on_$1;";
+        }
+    }
+
+    WriteHeader "} sai_switch_pointers_t;";
+}
+
+sub CreateSwitchPointersEnum
+{
+    #
+    # create switch pointer enum for easie pointerr
+    # manipulation in code
+    #
+
+    WriteSectionComment "SAI switch pointer enum";
+
+    my $typename = "sai_switch_pointer_type_t";
+
+    WriteHeader "typedef enum _$typename {";
+
+    my $prefix = uc $typename;
+
+    chop $prefix;
+
+    my @values = ();
+
+    my @pointers = keys %NOTIFICATIONS;
+    push @pointers, values %ATTR_TO_CALLBACK;
+
+    for my $name (sort @pointers)
+    {
+        if (not $name =~ /^sai_(\w+)_fn/)
+        {
+            LogWarning "function '$name' is not ending on _fn";
+            next;
+        }
+
+        elsif ($name =~ /^sai_(\w+)_notification_fn/)
+        {
+            $name = uc $1;
+
+            WriteHeader "${prefix}$name,";
+
+            push @values, "${prefix}$name";
+        }
+        elsif ($name =~ /^sai_(\w+)_fn/)
+        {
+            $name = uc $1;
+
+            WriteHeader "${prefix}$name,";
+
+            push @values, "${prefix}$name";
+        }
+    }
+
+    WriteHeader "} $typename;";
+
+    $SAI_ENUMS{$typename}{values} = \@values;
+
+    WriteSectionComment "sai_switch_pointer_type_t metadata";
+
+    ProcessSingleEnum($typename, $typename, $prefix);
+
+    WriteSectionComment "Get sai_switch_pointer_type_t helper method";
+
+    CreateEnumHelperMethod("sai_switch_pointer_type_t");
+}
+
+sub CreateSwitchPointersAttributesList
+{
+    #
+    # create switch pointers attributes list for easy use on places where only
+    # pointers must be processed instead of looping through all switch
+    # attributes
+    #
+
+    WriteSectionComment "SAI Switch Pointers Attributes List";
+
+    WriteHeader "extern const sai_attr_metadata_t* const sai_metadata_switch_pointers_attr[];";
+    WriteSource "const sai_attr_metadata_t* const sai_metadata_switch_pointers_attr[] = {";
+
+    my @pointers = keys %NOTIFICATIONS;
+    push @pointers, values %ATTR_TO_CALLBACK;
+
+    for my $name (sort @pointers)
+    {
+        next if not $name =~ /^sai_(\w+)_fn/;
+
+        if ($name =~ /^sai_(\w+)_notification_fn/)
+        {
+            WriteSource "&sai_metadata_attr_SAI_SWITCH_ATTR_" . uc($1) . "_NOTIFY,";
+        }
+        elsif ($name =~ /^sai_(?:switch_)(\w+)_fn/)
+        {
+            WriteSource "&sai_metadata_attr_SAI_SWITCH_ATTR_" . uc($1) . ",";
+        }
+        else
+        {
+            LogError("unmatched name '$name'");
+        }
+    }
+
+    WriteSource "NULL";
+    WriteSource "};";
+
+    my $count = scalar(@pointers);
+
+    WriteHeader "extern const size_t sai_metadata_switch_pointers_attr_count;";
+    WriteSource "const size_t sai_metadata_switch_pointers_attr_count = $count;";
+
+    WriteSectionComment "Define SAI_METADATA_SWITCH_POINTERS_ATTR_COUNT";
+
+    WriteHeader "#define SAI_METADATA_SWITCH_POINTERS_ATTR_COUNT $count";
+}
+
 sub WriteHeaderHeader
 {
     WriteSectionComment "AUTOGENERATED FILE! DO NOT EDIT";
@@ -4035,6 +4196,12 @@ CreateNotificationStruct();
 CreateNotificationEnum();
 
 CreateSwitchNotificationAttributesList();
+
+CreateSwitchPointersStruct();
+
+CreateSwitchPointersEnum();
+
+CreateSwitchPointersAttributesList();
 
 CreateSerializeMethods();
 
