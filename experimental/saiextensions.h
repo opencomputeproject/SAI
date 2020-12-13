@@ -47,7 +47,7 @@ typedef enum _sai_api_extensions_t
 
     /* Add new experimental APIs above this line */
 
-    SAI_API_EXTENSIONS_RANGE_START_END
+    SAI_API_EXTENSIONS_RANGE_END
 
 } sai_api_extensions_t;
 
