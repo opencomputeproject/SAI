@@ -87,6 +87,7 @@ toolsversions:
 	@aspell --version
 	@dot -V
 	@doxygen -v | perl -npe 'print "doxygen: "'
+	@nm --version | grep nm
 
 CONSTHEADERS = saimetadatatypes.h saimetadatalogger.h saimetadatautils.h saiserialize.h
 
