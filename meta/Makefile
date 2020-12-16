@@ -82,6 +82,7 @@ all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.s
 	./saisanitycheck
 
 toolsversions:
+	@make -v | grep -i make
 	@gcc --version | grep gcc
 	@perl --version | grep version
 	@aspell --version
