@@ -75,14 +75,18 @@ OBJ = saimetadata.o saimetadatautils.o saiserialize.o
 
 SYMBOLS = $(OBJ:=.symbols)
 
-all: gccversion saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
+all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
 	./checkheaders.pl ../inc ../inc
 	./saimetadatatest >/dev/null
 	./saiserializetest >/dev/null
 	./saisanitycheck
 
-gccversion:
-	gcc --version|grep gcc
+toolsversions:
+	@gcc --version | grep gcc
+	@perl --version | grep version
+	@aspell --version
+	@dot -V
+	@doxygen -v | perl -npe 'print "doxygen: "'
 
 CONSTHEADERS = saimetadatatypes.h saimetadatalogger.h saimetadatautils.h saiserialize.h
 
