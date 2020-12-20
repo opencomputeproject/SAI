@@ -435,6 +435,11 @@ bool sai_metadata_is_acl_field_or_action(
         {
             return true;
         }
+
+        if (metadata->isextensionattr == true)
+        {
+            return true;
+        }
     }
 
     return false;
@@ -1856,9 +1861,10 @@ void check_attr_acl_fields(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
 
-            if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY ||
-                    md->attrid < SAI_ACL_ENTRY_ATTR_ACTION_START ||
-                    md->attrid > SAI_ACL_ENTRY_ATTR_ACTION_END)
+            if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY  ||
+                    ((md->isextensionattr == false) &&
+                    (md->attrid < SAI_ACL_ENTRY_ATTR_ACTION_START  ||
+                    md->attrid > SAI_ACL_ENTRY_ATTR_ACTION_END)))
             {
                 META_MD_ASSERT_FAIL(md, "acl action may only be set on acl action");
             }
@@ -4078,7 +4084,7 @@ void check_acl_entry_actions()
             break;
         }
 
-        if (meta->attrid > SAI_ACL_ENTRY_ATTR_ACTION_END)
+        if ((meta->isextensionattr == false) && (meta->attrid > SAI_ACL_ENTRY_ATTR_ACTION_END))
         {
             break;
         }
