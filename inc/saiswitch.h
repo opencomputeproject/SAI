@@ -1444,9 +1444,9 @@ typedef enum _sai_switch_attr_t
      *
      * Hardware information format is based on SAI implementations by vendors.
      * String is NULL terminated. Format is vendor specific.
-     * Example: Like PCI location, I2C address, MDIO sysfs information etc.
+     * Example: Like PCI location, I2C address, MDIO bus SysFS information etc.
      * In case of NULL, First NPU attached to CPU will be initialized.
-     * For the MDIO sysfs driver support, the interface name and phy_id should be
+     * For the MDIO SysFS driver support, the interface name and phy_id should be
      * set and separated by "/", which should be formatted as {interface_name}/{phy_id}
      * Single NPU case this attribute is optional.
      *
