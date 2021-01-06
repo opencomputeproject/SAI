@@ -1506,7 +1506,6 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
-     * @default internal
      */
     SAI_PORT_ATTR_PRBS_RX_ERROR_COUNT,
 
