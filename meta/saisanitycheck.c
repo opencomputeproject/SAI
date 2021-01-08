@@ -1861,10 +1861,10 @@ void check_attr_acl_fields(
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
 
-			if (md->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY && md->isextensionattr)
-			{
-				break;
-			}
+            if (md->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY && md->isextensionattr)
+            {
+                break;
+            }
 
             if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY  ||
                     md->attrid < SAI_ACL_ENTRY_ATTR_ACTION_START  ||
