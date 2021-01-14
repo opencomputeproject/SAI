@@ -266,13 +266,12 @@ sub ProcessTagIsRecourceType
 
 sub ProcessTagDeprecated
 {
-    # just return true if defined
-
     my ($type, $value, $val) = @_;
 
-    LogError "deprecated tag should not have value '$val'" if not $val =~ /^$/i;
+    return $val if $val =~ /^(true|false)$/i;
 
-    return "true";
+    LogError "deprecated tag value '$val', expected true/false";
+    return undef;
 }
 
 sub ProcessTagRange
