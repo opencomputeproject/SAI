@@ -2266,14 +2266,6 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION,
 
     /**
-     * @brief Available MPLS in segment entries
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_AVAILABLE_MPLS_INSEG_ENTRY,
-
-    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
