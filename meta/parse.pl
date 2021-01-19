@@ -2684,10 +2684,18 @@ sub ProcessGet
     }
     elsif (not defined $struct)
     {
+        WriteSource "if (!sai_metadata_sai_${api}_api || !sai_metadata_sai_${api}_api->get_${small}_attribute)";
+        WriteSource "{";
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
+        WriteSource "}";
         WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
     }
     else
     {
+        WriteSource "if (!sai_metadata_sai_${api}_api || !sai_metadata_sai_${api}_api->get_${small}_attribute)";
+        WriteSource "{";
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
+        WriteSource "}";
         WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
     }
 
