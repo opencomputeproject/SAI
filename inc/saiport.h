@@ -1502,14 +1502,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PRBS_POLYNOMIAL,
 
     /**
-     * @brief Port PRBS receive error count
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_PRBS_RX_ERROR_COUNT,
-
-    /**
      * @brief Serdes object ID for the port
      *
      * @type sai_object_id_t
@@ -2297,6 +2289,9 @@ typedef enum _sai_port_stat_t
 
     /** PRBS Error Count */
     SAI_PORT_STAT_PRBS_ERROR_COUNT,
+
+    /** PRBS Receive Error Count */
+    SAI_PORT_STAT_PRBS_RX_ERROR_COUNT,
 
     /** SAI port stat if in FEC correctable pkts */
     SAI_PORT_STAT_IF_IN_FEC_CORRECTABLE_FRAMES,
