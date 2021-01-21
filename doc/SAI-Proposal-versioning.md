@@ -1,5 +1,15 @@
-SAI Versioning
-==============
+SAI Versioning Proposal
+=======================
+
+Title    | SAI versioning
+-------- | ---
+Authors  | Intel
+Status   | In review
+Type     | Standards track
+Created  | 01/21/2020
+SAI-Version | 1.7.1
+
+----------
 
 This document describes proposal to include versioning in the SAI library. This proposal only solves the following question. <br>
 **How does a vendor support multiple SAI versions using only the trunk/master branch?**
@@ -17,7 +27,7 @@ A vendor publishes different libSAI implementations each compatible with differe
 A vendor publishes their SDK in source form and advice their users of which version of their SDK can be used for the requested SAI version. It is assumed the most common form this takes is each vendor maintains a trunk branch with the latest code and patches are back ported to specific branches created for each SAI version.
 
 > ### Example
-> Customer using Sonic version 201911 which is compatible with SAI 1.5.4. The vendor SDK version is 1.1. They customer wants to upgrade to a newer version of the SDK which supports SAI objects/attributes that are only supported in SDK 1.2. The common method to support this is to backport the supported attributes to 1.1.
+> Customer using Sonic version 201911 which is compatible with SAI 1.5.4. The vendor SDK version is 1.1. Their customer wants to upgrade to a newer version of the SDK which supports SAI objects/attributes that are only supported in SDK 1.2. The common method to support this is to backport the supported attributes to 1.1.
 
 Proposal
 --------
@@ -68,3 +78,21 @@ sai_status_t sai_set_test_attribute(sai_object_id_t id,
 }
 ```
 
+More versioning
+---------------
+Versioning can be exported for the application build system to access without having to include the above header file.
+### saiversion.makefile
+```makefile
+SAI_MAJOR := 1
+SAI_MINOR := 7
+SAI_REVISION := 1
+
+SAI_API_VERSION := $(shell echo $$(( $(SAI_MAJOR)*10000+$(SAI_MINOR)*10+$(SAI_REVISION) )))
+```
+An application can then include this makefile to access the values
+```makefile
+include saiversion.makefile
+
+CXXFLAGS += -DSAI_API_VERSION=$(SAI_API_VERSION)
+```
+More examples for other build systems like cmake are easy to find.
