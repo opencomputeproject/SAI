@@ -2266,6 +2266,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION,
 
     /**
+     * @brief Switch/Global bind point for Pre-ingress ACL object
+     *
+     * Bind (or unbind) an Pre-ingress ACL table or ACL group globally. Enable/Update
+     * Pre-ingress ACL table or ACL group filtering by assigning the list of valid
+     * object id. Disable pre-ingress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_PRE_INGRESS_ACL,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
