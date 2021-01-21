@@ -168,3 +168,13 @@ Bind ACL table to switch
        return status;
    }
 ```
+
+### Questions raised in earlier meeting
+*   Would this apply to non-L3 traffic?
+    *   Yes if ACL contains L2 only match fields, but the VRF would be ignored as L3 lookup will not happen
+*   What VRF if any would be in the punted packet metadata
+    *   Should be the VRF used for L3 lookup
+*   Is this before or after decap?
+    *   The intent is to override the VRF used for L3 lookup. Tunnel decap yields the Tunnel Interface which is part of a VRF. After decap the inner packet’s DIP is used for the forwarding lookup. Ideally the inner packet’s headers should be used for VRF override in case the tunnel decap has happened.
+*   What about other RIF properties?
+    *   Only VRF is overridden, other RIF properties are retained.
