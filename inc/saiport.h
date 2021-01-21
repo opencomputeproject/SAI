@@ -1708,22 +1708,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SYSTEM_PORT,
 
     /**
-     * @brief Port bind point for Pre-ingress ACL object
-     *
-     * Bind (or unbind) an Pre-ingress ACL table on a port.
-     * Enable/Update Pre-ingress ACL table filtering by assigning the
-     * list of valid object id. Disable pre-ingress filtering by assigning
-     * SAI_NULL_OBJECT_ID in the attribute value.
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_PORT_ATTR_PRE_INGRESS_ACL,
-
-    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,

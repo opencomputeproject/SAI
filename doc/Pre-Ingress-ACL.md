@@ -56,31 +56,6 @@ inc/saiswitch.h
 ```
 Binding a Pre Ingress ACL to the switch bind point allows all traffic to match on the rules before the L3 lookup. (This helps with scale when the rules in the Pre Ingress ACL are not port specific)
 
-A port bind point can be defined if needed.
-```
-inc/saiport.h
-typedef enum _sai_port_attr_t
-{
-   ….
-    /**
-     * @brief Port bind point for Pre Ingress ACL object
-     *
-     * Bind (or unbind) a Pre Ingress ACL table or ACL group on a port.
-     * Enable/Update Pre Ingress ACL table or ACL group filtering by assigning the
-     * list of valid object id. Disable Pre Ingress filtering by assigning
-     * SAI_NULL_OBJECT_ID in the attribute value.
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_PORT_ATTR_PRE_INGRESS_ACL,
-    …
-} sai_port_attr_t;
-```
-
 #### Set VRF action
 This ACL will support a new ACL action to set VRF in the packet metadata.\
 This VRF will take precedence over the VRF derived from the ingress interface.
