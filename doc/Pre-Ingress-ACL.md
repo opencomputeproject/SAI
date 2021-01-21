@@ -54,7 +54,10 @@ inc/saiswitch.h
      ...
 } sai_switch_attr_t;
 ```
-Binding a Pre Ingress ACL to the switch bind point allows all traffic to match on the rules before the L3 lookup. (This helps with scale when the rules in the Pre Ingress ACL are not port specific)
+Binding a Pre-Ingress ACL to the switch bind point allows all traffic to match on the rules before the L3 lookup. (This helps with scale when the rules in the Pre-Ingress ACL are not port specific)\
+Pre-Ingress ACLs take effect before Ingress ACL. So Ingress ACLs can override any non-terminal actions taken by the Pre-Ingress ACL.\
+The currently defined ACL match fields will be used for the Pre-Ingress ACL
+stage as well.\
 
 #### Set VRF action
 This ACL will support a new ACL action to set VRF in the packet metadata.\
