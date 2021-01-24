@@ -32,7 +32,12 @@ CTYPESGEN = /usr/local/bin/ctypesgen
 else
 CTYPESGEN = /usr/local/bin/ctypesgen.py
 endif
-LIBS = -lthrift -lpthread -lsai
+LIBS = -lthrift -lpthread
+ifeq ($(platform),vs)
+LIBS += -lsaivs -lsaimeta -lsaimetadata
+else
+LIBS += -lsai
+endif
 SAI_LIBRARY_DIR ?= $(SAI_PREFIX)/lib
 LDFLAGS = -L$(SAI_LIBRARY_DIR) -Wl,-rpath=$(SAI_LIBRARY_DIR)
 CPP_SOURCES = \
