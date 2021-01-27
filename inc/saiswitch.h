@@ -341,6 +341,22 @@ typedef enum _sai_tunnel_type_t
 } sai_tunnel_type_t;
 
 /**
+ * @brief Defines VXLAN tunnel UDP source port mode
+ */
+typedef enum _sai_tunnel_vxlan_udp_sport_mode_t
+{
+    /**
+     * @brief User define value
+     */
+    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED,
+
+    /**
+     * @brief RFC6335 Computed hash value in range 49152-65535
+     */
+    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_EPHEMERAL,
+} sai_tunnel_vxlan_udp_sport_mode_t;
+
+/**
  * @brief Defines tunnel encap ECN mode
  */
 typedef enum _sai_tunnel_encap_ecn_mode_t
@@ -424,7 +440,7 @@ typedef enum _sai_switch_tunnel_attr_t
     SAI_SWITCH_TUNNEL_ATTR_TUNNEL_ENCAP_ECN_MODE,
 
     /**
-     * @brief Tunnel encap mappers
+     * @brief Tunnel encap ECN mappers only
      *
      * @type sai_object_list_t
      * @flags CREATE_ONLY
@@ -445,7 +461,7 @@ typedef enum _sai_switch_tunnel_attr_t
     SAI_SWITCH_TUNNEL_ATTR_TUNNEL_DECAP_ECN_MODE,
 
     /**
-     * @brief Tunnel decap mappers
+     * @brief Tunnel decap ECN mappers only
      *
      * @type sai_object_list_t
      * @flags CREATE_ONLY
@@ -453,6 +469,26 @@ typedef enum _sai_switch_tunnel_attr_t
      * @default empty
      */
     SAI_SWITCH_TUNNEL_ATTR_DECAP_MAPPERS,
+
+    /**
+     * @brief Tunnel VXLAN UDP source port mode
+     *
+     * @type sai_tunnel_vxlan_udp_sport_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_EPHEMERAL
+     */
+    SAI_SWITCH_TUNNEL_ATTR_TUNNEL_VXLAN_UDP_SPORT_MODE,
+
+    /**
+     * @brief Tunnel UDP source port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_SWITCH_TUNNEL_ATTR_TUNNEL_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
+     */
+    SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT,
 
     /**
      * @brief End of attributes

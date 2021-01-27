@@ -595,6 +595,26 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION,
 
     /**
+     * @brief Tunnel VXLAN UDP source port mode
+     *
+     * @type sai_tunnel_vxlan_udp_sport_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_EPHEMERAL
+     */
+    SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MODE,
+
+    /**
+     * @brief Tunnel UDP source port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
+     */
+    SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_ATTR_END,
