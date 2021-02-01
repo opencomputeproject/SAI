@@ -26,7 +26,7 @@ const char* Switch_Model::P4_PIPELINE_INGRESS_L2 = "ingressPort";
 const char* Switch_Model::P4_PIPELINE_EGRESS_L2 = "egressPort";
 const char* Switch_Model::P4_PIPELINE_INGRESS_L3 = "ingressRif";
 const char* Switch_Model::P4_PIPELINE_EGRESS_L3 = "egressRif";
-// These string constatns must match those in the python transpiler
+// These string constants must match those in the python transpiler
 const char* Switch_Model::JSON_PIPELINE_PARSER = "parse";
 const char* Switch_Model::JSON_PIPELINE_DEPARSER = "deparse";
 const char* Switch_Model::JSON_PIPELINE_INGRESS_L2 = "control_in_port";

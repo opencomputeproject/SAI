@@ -50,7 +50,7 @@ class CFG final : public IHasDbPrint {
         bool checkSame(const EdgeSet& other) const;
         /// Check if this destination appears in this edgeset.
         /// Importantly, a TableNode is a destination if it points to
-        /// the same table as an existin destination (pointer equality
+        /// the same table as an existing destination (pointer equality
         /// is not enough).
         bool isDestination(const CFG::Node* destination) const;
     };
@@ -178,7 +178,7 @@ class CFG final : public IHasDbPrint {
     void computeSuccessors()
     { for (auto n : allNodes) n->computeSuccessors(); }
     /// BMv2 is very restricted in the kinds of graphs it supports.
-    /// Thie method checks whether a CFG is implementable.
+    /// This method checks whether a CFG is implementable.
     bool checkImplementable() const;
     // Graphs that require cycles are not implementable on BMv2.
     // These can arise if a table is invoked multiple times.
