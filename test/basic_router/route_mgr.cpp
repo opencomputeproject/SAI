@@ -104,7 +104,7 @@ bool RouteMgr::Add(IpPrefix prefix, IpAddresses nexthops)
 
             if (!nbEntry)
             {
-                LOGG(TEST_ERR, ROUTE, "fail to find the NeiborEntry for nexthop %s\n", itnh->to_string().c_str());
+                LOGG(TEST_ERR, ROUTE, "fail to find the neighbor entry for nexthop %s\n", itnh->to_string().c_str());
                 continue;
             }
 
@@ -114,7 +114,7 @@ bool RouteMgr::Add(IpPrefix prefix, IpAddresses nexthops)
 
         if (nhids.size() == 0)
         {
-            LOGG(TEST_DEBUG, ROUTE, "cannot find the any of nexthops %s in the neighbor table\n", nexthops.to_string().c_str());
+            LOGG(TEST_DEBUG, ROUTE, "cannot find any of nexthops %s in the neighbor table\n", nexthops.to_string().c_str());
             return false;
         }
 
@@ -122,7 +122,7 @@ bool RouteMgr::Add(IpPrefix prefix, IpAddresses nexthops)
         {
             if (!m_nhgMgr->Add(nexthops))
             {
-                LOGG(TEST_ERR, ROUTE, "fail to add next hop group %s\n", nexthops.to_string().c_str());
+                LOGG(TEST_ERR, ROUTE, "fail to add nexthop group %s\n", nexthops.to_string().c_str());
                 return false;
             }
 
@@ -130,7 +130,7 @@ bool RouteMgr::Add(IpPrefix prefix, IpAddresses nexthops)
 
             if (!nhgEntry)
             {
-                LOGG(TEST_ERR, ROUTE, "fail to retrieve next hop group %s\n", nexthops.to_string().c_str());
+                LOGG(TEST_ERR, ROUTE, "fail to retrieve nexthop group %s\n", nexthops.to_string().c_str());
                 return false;
             }
 

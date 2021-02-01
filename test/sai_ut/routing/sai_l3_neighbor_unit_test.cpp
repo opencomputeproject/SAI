@@ -696,7 +696,7 @@ TEST_F (saiL3NeighborTest, invalid_attr_id)
     const char           *p_ip_addr_str = "11.0.0.1";
     const char           *p_mac_str = "00:a1:a2:a3:a4:a5";
 
-    /* Pass invalid attribtue id in list */
+    /* Pass invalid attribute id in list */
     status = sai_test_neighbor_create (port_rif_id, ip_af, p_ip_addr_str,
                                        (default_neighbor_attr_count + 1),
                                        SAI_NEIGHBOR_ATTR_DST_MAC_ADDRESS,

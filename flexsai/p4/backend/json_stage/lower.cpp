@@ -153,7 +153,7 @@ struct VariableWriters {
         return result;
     }
     /**
-       This function returns a non-null value only if there is exaclty one writer statement.
+       This function returns a non-null value only if there is exactly one writer statement.
        In that case it returns the RHS of the assignment
     */
     const IR::Expression* substitution() const {
