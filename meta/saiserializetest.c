@@ -556,15 +556,15 @@ void test_deserialize_ip4()
     sai_ip4_t ip;
 
     res = sai_deserialize_ip4("10.0.0.21", &ip);
-    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expectes true, res: %d", res);
-    ASSERT_TRUE(ip == htonl(0x0a000015), "expectes true");
+    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expected true, res: %d", res);
+    ASSERT_TRUE(ip == htonl(0x0a000015), "expected true");
     ASSERT_TRUE(memcmp(&ip, "\x0a\x00\x00\x15", 4) == 0, "expected true");
 
     res = sai_deserialize_ip4("10.0.0.21\"", &ip);
-    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expectes true, res: %d", res);
+    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expected true, res: %d", res);
 
     res = sai_deserialize_ip4("10.0.0.21/", &ip);
-    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expectes true, res: %d", res);
+    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expected true, res: %d", res);
 
     res = sai_deserialize_ip4("1::ff", &ip);
     ASSERT_TRUE(res < 0, "expected negative number");
@@ -729,19 +729,19 @@ void test_deserialize_ip_address()
     sai_ip_address_t ip;
 
     res = sai_deserialize_ip_address("10.0.0.21", &ip);
-    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expectes true, res: %d", res);
-    ASSERT_TRUE(ip.addr.ip4 == htonl(0x0a000015), "expectes true");
+    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expected true, res: %d", res);
+    ASSERT_TRUE(ip.addr.ip4 == htonl(0x0a000015), "expected true");
     ASSERT_TRUE(memcmp(&ip.addr.ip4, "\x0a\x00\x00\x15", 4) == 0, "expected true");
     ASSERT_TRUE(ip.addr_family == SAI_IP_ADDR_FAMILY_IPV4, "expected true");
 
     res = sai_deserialize_ip_address("10.0.0.21\"", &ip);
-    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expectes true, res: %d", res);
+    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expected true, res: %d", res);
 
     res = sai_deserialize_ip_address("10.0.0.21/", &ip);
-    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expectes true, res: %d", res);
+    ASSERT_TRUE(res > 0 && strlen("10.0.0.21") == res, "expected true, res: %d", res);
 
     res = sai_deserialize_ip_address("255.255.255.255", &ip);
-    ASSERT_TRUE(res > 0 && strlen("255.255.255.255") == res, "expectes true, res: %d", res);
+    ASSERT_TRUE(res > 0 && strlen("255.255.255.255") == res, "expected true, res: %d", res);
 
     res = sai_deserialize_ip_address("1.1.256.1", &ip);
     ASSERT_TRUE(res < 0, "expected negative number");

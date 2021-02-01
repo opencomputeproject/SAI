@@ -774,7 +774,7 @@ void check_attr_allowed_object_types(
                 ot == SAI_OBJECT_TYPE_FDB_FLUSH ||
                 ot == SAI_OBJECT_TYPE_HOSTIF_PACKET)
         {
-            /* switch object type is ment to be used only in non object id struct types */
+            /* switch object type is meant to be used only in non object id struct types */
 
             META_MD_ASSERT_FAIL(md, "switch object type can't be used as object type in any attribute");
         }
@@ -2379,7 +2379,7 @@ void check_attr_existing_objects(
 
         case SAI_ATTR_VALUE_TYPE_POINTER:
             /*
-             * Allow poniter for switch register read and write API's.
+             * Allow pointer for switch register read and write API's.
              */
             break;
         default:
@@ -2463,7 +2463,7 @@ void check_attr_brief_description(
     META_LOG_ENTER();
 
     /*
-     * Purpose of this check is to see if brief description extracte from
+     * Purpose of this check is to see if brief description extract from
      * header is present and not too long.
      */
 
@@ -2594,7 +2594,7 @@ void check_attr_condition_met(
 
     /*
      * If there are multiple conditions, we need to provide fake values for all
-     * others to force return false to test each one separetly.
+     * others to force return false to test each one separately.
      */
 
     uint32_t count = (uint32_t)md->conditionslength;
@@ -2833,11 +2833,11 @@ void check_attr_extension_flag(
 
     if (md->attrid >= oi->attridend && md->attrid < CUSTOM_ATTR_RANGE_START)
     {
-        META_ASSERT_TRUE(md->isextensionattr, "atribute %s expected to be extension", md->attridname);
+        META_ASSERT_TRUE(md->isextensionattr, "attribute %s expected to be extension", md->attridname);
     }
     else
     {
-        META_ASSERT_FALSE(md->isextensionattr, "atribute %s not expected to be extension", md->attridname);
+        META_ASSERT_FALSE(md->isextensionattr, "attribute %s not expected to be extension", md->attridname);
     }
 }
 
@@ -3003,7 +3003,7 @@ void check_object_infos()
             {
                 /*
                  * Attribute ID is in custom range, so it will not be in
-                 * regural start .. end range.
+                 * regular start .. end range.
                  */
 
                 continue;
@@ -4140,12 +4140,12 @@ void check_switch_attributes()
         const sai_attr_metadata_t *md = meta[index];
 
         /*
-         * Gerabox attributes can be marked as mandatory on create.
+         * Gearbox attributes can be marked as mandatory on create.
          */
 
         if (md->isoidattribute && md->ismandatoryoncreate)
         {
-            META_MD_ASSERT_FAIL(md, "Mandatroy on create can't be object id on SWITCH");
+            META_MD_ASSERT_FAIL(md, "Mandatory on create can't be object id on SWITCH");
         }
 
         if (md->isoidattribute && md->iscreateonly)
@@ -4232,7 +4232,7 @@ void check_enum_to_attr_map(
 
     /*
      * Check whether attribute enum declared has equal number of items as the
-     * number of declared attributes. Item siwth @ignore flag shluld be
+     * number of declared attributes. Item swith @ignore flag should be
      * removed from enum and attribute should not be created.
      */
 
@@ -4287,7 +4287,7 @@ void check_object_ro_list(
         /*
          * We skip hostif table entry since there is no 1 object which can
          * identify all table entries. We would need to add one attribute for
-         * each used obect type port, lag, vlan etc.
+         * each used object type port, lag, vlan etc.
          */
 
         return;

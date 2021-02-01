@@ -120,7 +120,7 @@ class RemoveComplexExpressions : public Transform {
     const IR::Node* preorder(IR::P4Control* control) override;
     const IR::Node* postorder(IR::P4Control* control) override {
         if (newDecls.size() != 0) {
-            // prepend declarations
+            // prepare declarations
             newDecls.append(control->controlLocals);
             control->controlLocals = newDecls;
         }
