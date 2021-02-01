@@ -40,7 +40,7 @@ This proposal provides a static version file with version numbers hard-coded per
 #define SAI_REVISION 1
 
 #define SAI_VERSION(major, minor, micro) \
-    (100 * (major) + 10 * (minor) + (micro))
+    (10000 * (major) + 100 * (minor) + (micro))
 #define SAI_API_VERSION SAI_VERSION(SAI_MAJOR, SAI_MINOR, SAI_REVISION)
 ```
 
