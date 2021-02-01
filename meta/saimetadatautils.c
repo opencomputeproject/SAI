@@ -83,7 +83,7 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
         const sai_attr_metadata_t* const* const md = sai_metadata_attr_by_object_type[objecttype];
 
         /*
-         * Most obejct attributes are not flags, so we can use direct index to
+         * Most object attributes are not flags, so we can use direct index to
          * find attribute metadata, this should speed up search.
          */
 
@@ -244,7 +244,7 @@ bool sai_metadata_is_condition_met(
         const sai_attr_condition_t *condition = metadata->conditions[idx];
 
         /*
-         * Conditons may only be on the same object type.
+         * Conditions may only be on the same object type.
          *
          * Default value may not exists if conditional object is marked as
          * MANDATORY_ON_CREATE.

@@ -730,7 +730,7 @@ TEST_F (saiL3NextHopTest, invalid_attr_id)
     const unsigned int    invalid_attr_pos = 3;
     const unsigned int    invalid_attr_id = 0xffff;
 
-    /* Pass invalid attribtue id in list */
+    /* Pass invalid attribute id in list */
     status = sai_test_nexthop_create (&nh_id,
                                       (default_nh_attr_count + 1),
                                       SAI_NEXT_HOP_ATTR_TYPE,

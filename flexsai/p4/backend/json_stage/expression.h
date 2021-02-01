@@ -86,7 +86,7 @@ class ExpressionConverter : public Inspector {
      * @param doFixup  Insert masking operations for operands to ensure that the result
      *                 matches the specification.  BMv2 does arithmetic using unbounded
      *                 precision, but the spec requires fixed precision, specified by the types.
-     * @param wrap     Wrap the result into an additiona JSON expression block.
+     * @param wrap     Wrap the result into an additional JSON expression block.
      *                 See the BMv2 JSON spec.
      * @param convertBool  Wrap the result into a cast from boolean to data (b2d JSON).
      */
