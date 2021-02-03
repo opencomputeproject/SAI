@@ -1684,7 +1684,48 @@ void check_attr_allow_flags(
         META_MD_ASSERT_FAIL(md, "not allowed object type %d on list", ot);
     }
 
-    if (md->allowrepetitiononlist || md->allowmixedobjecttypes || md->allowemptylist)
+    /* allow empty list can point to any list, not only object id list */
+
+    if (md->allowemptylist)
+    {
+        switch (md->attrvaluetype)
+        {
+            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
+            case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
+                break;
+
+            case SAI_ATTR_VALUE_TYPE_INT8_LIST:
+            case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
+            case SAI_ATTR_VALUE_TYPE_INT32_LIST:
+            case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
+            case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+            case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
+            case SAI_ATTR_VALUE_TYPE_MAP_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
+            case SAI_ATTR_VALUE_TYPE_TLV_LIST:
+            case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
+            case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
+            case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
+            case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
+            case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
+                break;
+
+            default:
+
+                META_MD_ASSERT_FAIL(md, "allow empty list is set but attr value type is not list");
+        }
+
+        if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
+        {
+            /* this could be relaxed if attribute does not have default value */
+
+            META_MD_ASSERT_FAIL(md, "allow empty list is set but default value is not empty list");
+        }
+    }
+
+    if (md->allowrepetitiononlist || md->allowmixedobjecttypes)
     {
         switch (md->attrvaluetype)
         {
