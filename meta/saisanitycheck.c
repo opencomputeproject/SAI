@@ -1716,13 +1716,6 @@ void check_attr_allow_flags(
 
                 META_MD_ASSERT_FAIL(md, "allow empty list is set but attr value type is not list");
         }
-
-        if (md->defaultvaluetype != SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
-        {
-            /* this could be relaxed if attribute does not have default value */
-
-            META_MD_ASSERT_FAIL(md, "allow empty list is set but default value is not empty list");
-        }
     }
 
     if (md->allowrepetitiononlist || md->allowmixedobjecttypes)
