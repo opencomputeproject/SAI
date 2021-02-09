@@ -199,7 +199,7 @@ public:
 
       sai_attrs = (sai_attribute_t *) calloc(thrift_attr_list.size(), sizeof(sai_attribute_t));
       if (!sai_attrs) {
-          SAI_THRIFT_LOG_ERR("failed to allocate sai attibutes list");
+          SAI_THRIFT_LOG_ERR("failed to allocate sai attributes list");
           return NULL;
       }
 

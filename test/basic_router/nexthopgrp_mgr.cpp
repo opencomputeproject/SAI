@@ -89,7 +89,7 @@ bool NextHopGrpMgr::Add(IpAddresses nextHops)
 
         if (!nbEntry)
         {
-            LOGG(TEST_ERR, NXTHG, "fail to find the NeiborEntry for nexthop %s\n", itnh->to_string().c_str());
+            LOGG(TEST_ERR, NXTHG, "fail to find the neighbor entry for nexthop %s\n", itnh->to_string().c_str());
             continue;
         }
 

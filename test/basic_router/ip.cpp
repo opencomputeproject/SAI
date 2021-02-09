@@ -29,7 +29,7 @@ IpAddress::IpAddress(const std::string &ipstr)
 {
     if (inet_pton(AF_INET, ipstr.c_str(), &m_addr) != 1)
     {
-        std::string errmsg = "connot convert " + ipstr + " to ip address";
+        std::string errmsg = "cannot convert " + ipstr + " to ip address";
         throw std::invalid_argument(errmsg);
     }
 }
@@ -118,7 +118,7 @@ IpPrefix::IpPrefix(
 
     if (m_maskLen < 0 || m_maskLen > 32)
     {
-        std::string errmsg = "connot convert " + ipStr + " to ip prefix";
+        std::string errmsg = "cannot convert " + ipStr + " to ip prefix";
         throw std::invalid_argument(errmsg);
     }
 

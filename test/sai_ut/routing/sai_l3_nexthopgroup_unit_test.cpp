@@ -688,7 +688,7 @@ TEST_F (saiL3NextHopGroupTest, invalid_attr_id)
     const unsigned int       invalid_attr_pos = 2;
     const unsigned int       invalid_attr_id = 0xffff;
 
-    /* Pass invalid attribtue id in list */
+    /* Pass invalid attribute id in list */
     status = sai_test_nh_group_create (&group_id, p_nh_id_list,
                                        (default_nh_group_attr_count + 1),
                                        SAI_NEXT_HOP_GROUP_ATTR_TYPE,

@@ -32,7 +32,7 @@ sai_status_t sai_ext_api_initialize();
 
 /**
  * @brief Retrieve a pointer to the C-style method table for desired SAI 
- * extenstions functionality as specified by the given sai_ext_api_id.
+ * extensions functionality as specified by the given sai_ext_api_id.
  *
  * @param[in] sai_ext_api_id SAI EXT API ID
  * @param[out] api_method_table Caller allocated method table The table must
@@ -45,7 +45,7 @@ sai_status_t sai_ext_api_query(
         _Out_ void** api_method_table);
 
 /**
- * @brief Uninitialize sai extenstions
+ * @brief Uninitialize sai extensions
  * retrieved via sai_ext_api_query() cannot be used after this call.
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error

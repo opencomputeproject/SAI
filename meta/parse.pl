@@ -72,6 +72,7 @@ my %ATTR_TAGS = (
         "flags"          , \&ProcessTagFlags,
         "objects"        , \&ProcessTagObjects,
         "allownull"      , \&ProcessTagAllowNull,
+        "allowempty"     , \&ProcessTagAllowEmpty,
         "condition"      , \&ProcessTagCondition,
         "validonly"      , \&ProcessTagCondition, # since validonly uses same format as condition
         "default"        , \&ProcessTagDefault,
@@ -187,6 +188,16 @@ sub ProcessTagAllowNull
     return undef;
 }
 
+sub ProcessTagAllowEmpty
+{
+    my ($type, $value, $val) = @_;
+
+    return $val if $val =~ /^(true|false)$/;
+
+    LogError "allowempty tag value '$val', expected true/false";
+    return undef;
+}
+
 sub ProcessTagCondition
 {
     my ($type, $value, $val) = @_;
@@ -266,13 +277,12 @@ sub ProcessTagIsRecourceType
 
 sub ProcessTagDeprecated
 {
-    # just return true if defined
-
     my ($type, $value, $val) = @_;
 
-    LogError "deprecated tag should not have value '$val'" if not $val =~ /^$/i;
+    return $val if $val =~ /^(true|false)$/i;
 
-    return "true";
+    LogError "deprecated tag value '$val', expected true/false";
+    return undef;
 }
 
 sub ProcessTagRange
@@ -367,7 +377,7 @@ sub ProcessDescription
 
     return if scalar@order == 0;
 
-    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?(:isresourcetype)?(:deprecated)?';
+    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:allowempty)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?(:isresourcetype)?(:deprecated)?';
 
     my $order = join(":",@order);
 
@@ -1687,7 +1697,9 @@ sub ProcessAllowMixed
 
 sub ProcessAllowEmpty
 {
-    my ($attr, $value) = @_;
+    my ($attr, $value, $default) = @_;
+
+    return "true" if defined $default and $default eq "empty";
 
     return "false" if not defined $value;
 
@@ -1939,7 +1951,7 @@ sub ProcessSingleObjectType
         my $objectslen      = ProcessObjectsLen($attr, $meta{objects});
         my $allowrepeat     = ProcessAllowRepeat($attr, $meta{allowrepeat});
         my $allowmixed      = ProcessAllowMixed($attr, $meta{allowmixed});
-        my $allowempty      = ProcessAllowEmpty($attr, $meta{allowempty});
+        my $allowempty      = ProcessAllowEmpty($attr, $meta{allowempty}, $meta{default});
         my $defvaltype      = ProcessDefaultValueType($attr, $meta{default});
         my $defval          = ProcessDefaultValue($attr, $meta{default}, $meta{type});
         my $defvalot        = ProcessDefaultValueObjectType($attr, $meta{default}, $meta{type});
@@ -2685,10 +2697,18 @@ sub ProcessGet
     }
     elsif (not defined $struct)
     {
+        WriteSource "if (!sai_metadata_sai_${api}_api || !sai_metadata_sai_${api}_api->get_${small}_attribute)";
+        WriteSource "{";
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
+        WriteSource "}";
         WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
     }
     else
     {
+        WriteSource "if (!sai_metadata_sai_${api}_api || !sai_metadata_sai_${api}_api->get_${small}_attribute)";
+        WriteSource "{";
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
+        WriteSource "}";
         WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
     }
 

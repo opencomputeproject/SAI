@@ -432,7 +432,7 @@ bool basic_router_setup()
         return false;
     }
 
-    LOGG(TEST_DEBUG, SETL3, "virtual rounter id 0x%lx\n", g_vr_id);
+    LOGG(TEST_DEBUG, SETL3, "virtual router id 0x%lx\n", g_vr_id);
 
 
     LOGG(TEST_INFO, SETL3, "for each port, sai_port_api->set_port_attribute SAI_PORT_ATTR_ADMIN_STATE true\n");
@@ -531,7 +531,7 @@ bool basic_router_setup()
         LOGG(TEST_DEBUG, SETL3, "hif_id 0x%lx \n", hif_id);
     }
 
-    LOGG(TEST_DEBUG, SETL3, "--- end of loof of interface ---\n");
+    LOGG(TEST_DEBUG, SETL3, "--- end of loop of interface ---\n");
 
     for (i = 0; i < g_testcount; i++)
     {
@@ -751,7 +751,7 @@ static void neighbor_removing()
 {
 
     neighbor_mgr->Show();
-    LOGG(TEST_INFO, TESTCASE, "--- remving all neighbor entries ---\n");
+    LOGG(TEST_INFO, TESTCASE, "--- removing all neighbor entries ---\n");
 
     IpAddress ipAddr;
 

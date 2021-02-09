@@ -523,7 +523,7 @@ TEST_F (saiL3RifTest, rif_create_with_mac_attr_on_vrf_with_mac_attr)
 }
 
 /*
- * PORT RIF, VLAN RIF created without any optional paramters on VRF with
+ * PORT RIF, VLAN RIF created without any optional parameters on VRF with
  * SRC MAC, V4 and V6 admin state set.
  *
  * SRC MAC, V4 and V6 admin state attributes inherited by these RIF's from VRF.
