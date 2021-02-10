@@ -684,6 +684,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
     /**
+     * @brief Default SAI Override Virtual Router ID
+     *
+     * Must return #SAI_STATUS_OBJECT_IN_USE when try to delete this VR ID.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_DEFAULT_OVERRIDE_VIRTUAL_ROUTER_ID,
+
+    /**
      * @brief Default .1Q Bridge ID
      *
      * @type sai_object_id_t

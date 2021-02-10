@@ -116,15 +116,6 @@ typedef enum _sai_virtual_router_attr_t
     SAI_VIRTUAL_ROUTER_ATTR_LABEL,
 
     /**
-     * @brief Override VR
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_VIRTUAL_ROUTER_ATTR_OVERRIDE_VR,
-
-    /**
      * @brief End of attributes
      */
     SAI_VIRTUAL_ROUTER_ATTR_END,
