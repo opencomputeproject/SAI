@@ -166,6 +166,9 @@ typedef enum _sai_native_hash_field_t
     /** Native hash field fifth MPLS label from the top */
     SAI_NATIVE_HASH_FIELD_MPLS_LABEL_4,
 
+    /** Native hash field IPv6 flow label */
+    SAI_NATIVE_HASH_FIELD_IPV6_FLOW_LABEL,
+
     /** No field - for compatibility, must be last */
     SAI_NATIVE_HASH_FIELD_NONE,
 
