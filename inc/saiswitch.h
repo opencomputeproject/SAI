@@ -1167,6 +1167,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED,
 
     /**
+     * @brief SAI ECMP default hash offset
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_OFFSET,
+
+    /**
      * @brief SAI ECMP default symmetric hash
      *
      * When set, the hash calculation will result in the same value as when the
@@ -1230,6 +1239,15 @@ typedef enum _sai_switch_attr_t
      * @default 0
      */
     SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED,
+
+    /**
+     * @brief SAI LAG default hash offset
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_OFFSET,
 
     /**
      * @brief SAI LAG default symmetric hash
