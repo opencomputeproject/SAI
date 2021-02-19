@@ -143,3 +143,7 @@ I2C - I squared C
 CPLD - Complex programmable logic device
 EEPROM - Electrically erasable programmable read-only memory
 PRBS - Pseudorandom binary sequence
+NAPT - Network Address Port Translation
+SNAPT - Source Network Address Port Translation
+DNAPT - Destination Network Address Port Trasnlation
+
