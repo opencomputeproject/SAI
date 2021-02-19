@@ -2266,6 +2266,30 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION,
 
     /**
+     * @brief Available SNAPT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_SNAPT_ENTRY,
+
+    /**
+     * @brief Available DNAPT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DNAPT_ENTRY,
+
+    /**
+     * @brief Available Double NAPT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAPT_ENTRY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
