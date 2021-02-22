@@ -277,6 +277,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_MACSEC_SA                = 92,
     SAI_OBJECT_TYPE_SYSTEM_PORT              = 93,
     SAI_OBJECT_TYPE_FINE_GRAINED_HASH_FIELD  = 94,
+    SAI_OBJECT_TYPE_SWITCH_TUNNEL            = 95,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
