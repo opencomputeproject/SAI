@@ -1169,7 +1169,12 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief SAI ECMP default hash offset
      *
-     * @type sai_uint32_t
+     * When set, the output of the ECMP hash calculation will be shifted or
+     * rotated by the specified number of bits. The direction and exact behavior
+     * (shift vs offset) as well as the maximum rotation supported may be
+     * ASIC-specific.
+     *
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -1243,7 +1248,12 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief SAI LAG default hash offset
      *
-     * @type sai_uint32_t
+     * When set, the output of the LAG hash calculation will be shifted or
+     * rotated by the specified number of bits. The direction and exact behavior
+     * (shift vs offset) as well as the maximum rotation supported may be
+     * ASIC-specific.
+     *
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
      */
