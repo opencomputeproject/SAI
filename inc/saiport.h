@@ -1550,7 +1550,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_RX_STATE
      *
-     * @type sai_flex_state_t
+     * @type sai_prbs_rx_state_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_PRBS_RX_STATE,

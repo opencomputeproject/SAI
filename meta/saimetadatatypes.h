@@ -144,7 +144,7 @@ typedef enum _sai_attr_value_type_t
     /**
      * @brief Attribute value is PRBS RX state
      */
-    SAI_ATTR_VALUE_TYPE_FLEX_STATE,
+    SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE,
 
     /**
      * @brief Attribute value is object id.
