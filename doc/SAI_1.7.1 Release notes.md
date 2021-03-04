@@ -88,7 +88,7 @@ The PR related to this feature is available at [PR#1143](https://github.com/open
 
 ### Query statistics capability   
 Query statistics capability adds the ability to query statistics values capability per object type - meaning which statistics enum values are implemented per object type
-Currently, these is not exposed, and in order to check capabilities, the user has to retry each value, one by one. This is achieved by adding typedef sai_query_stats_capability for saiobject.h also by adding typedef sai_stat_capability_t in saitypes.h 
+Currently, these is not exposed, and in order to check capabilities, the user has to retry each value, one by one. This is achieved by adding new function sai_query_stats_capability for saiobject.h also by adding new function sai_stat_capability_t in saitypes.h 
 
 The PR related to this feature is available at [PR#1148](https://github.com/opencomputeproject/SAI/pull/1148)
 
@@ -136,7 +136,7 @@ New interface types as been added for saiport.h under enum sai_port_interface_ty
 The PR related to this feature is available at [PR#1139](https://github.com/opencomputeproject/SAI/pull/1139)
 
 ### Add next hop group member counter	    
-This features adds the counter to attach a SAI counter to next hop group member, to count traffic routed to it by adding attribute SAI_NEXT_HOP_GROUP_MEMBER_ATTR_COUNTER_ID in enum sai_next_hop_group_member_attr_t for sainexthopgroup.h
+This features adds the ability to attach a SAI counter to next hop group member, to count traffic routed to it by adding attribute SAI_NEXT_HOP_GROUP_MEMBER_ATTR_COUNTER_ID in enum sai_next_hop_group_member_attr_t for sainexthopgroup.h
 
 The PR related to this feature is available at [PR#1150](https://github.com/opencomputeproject/SAI/pull/1150)
 
