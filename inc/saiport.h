@@ -1549,6 +1549,8 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_PRBS_RX_STATE
+     * Used for clear on read status/count register.
+     * Adapter should return return SAI_STATUS_NOT_SUPPORTED if not supported.
      *
      * @type sai_prbs_rx_state_t
      * @flags READ_ONLY
