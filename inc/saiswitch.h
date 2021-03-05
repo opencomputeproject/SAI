@@ -2447,6 +2447,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST,
 
     /**
+
      * @brief The size of the available packet DMA pool memory in bytes
      * This can be used in conjunction with total packet DMA pool
      * size to account/debug % of memory available.
