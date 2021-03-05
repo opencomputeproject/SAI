@@ -50,7 +50,7 @@ typedef enum _sai_next_hop_type_t
     /** IPv6 Segment Route SID List */
     SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST,
 
-    /** IPv6 Segment Route Endpoint Function */
+    /** IPv6 Segment Route Endpoint Function. Deprecated and replaced by SAI_LOCAL_SID_ENTRY_ATTR object */
     SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT,
 
 } sai_next_hop_type_t;
@@ -68,9 +68,6 @@ typedef enum _sai_next_hop_endpoint_type_t
 
     /** End.T Endpoint with specific IPv6 Table */
     SAI_NEXT_HOP_ENDPOINT_TYPE_T,
-
-    /** Endpoint with decapsulation and Layer 2 Cross-connect */
-    SAI_NEXT_HOP_ENDPOINT_TYPE_DX2,
 
     /** Endpoint with decapsulation and IPv6 Cross-connect */
     SAI_NEXT_HOP_ENDPOINT_TYPE_DX6,
@@ -90,7 +87,8 @@ typedef enum _sai_next_hop_endpoint_type_t
 } sai_next_hop_endpoint_type_t;
 
 /**
- * @brief Enum defining Endpoint Segment Pop types for End, End.X and End.T
+ * @brief Enum defining Endpoint Segment Pop types for End, End.X and End.T. Deprecated
+ *        and replaced by sai_local_sid_entry_endpoint_flavor_t
  */
 typedef enum _sai_next_hop_endpoint_pop_type_t
 {
@@ -146,7 +144,7 @@ typedef enum _sai_next_hop_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TUNNEL
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST
      */
     SAI_NEXT_HOP_ATTR_TUNNEL_ID,
 
@@ -181,20 +179,24 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID,
 
     /**
-     * @brief Next hop entry Segment Route Endpoint Function
+     * @brief Next hop entry Segment Route Endpoint Function. Deprecated and replaced
+     * with SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE.
      *
      * @type sai_next_hop_endpoint_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
+     * @deprecated true
      */
     SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_TYPE,
 
     /**
-     * @brief Next hop entry Segment Route Endpoint Pop Option
+     * @brief Next hop entry Segment Route Endpoint Pop Option. Deprecated and replaced
+     * with SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_FLAVOR
      *
      * @type sai_next_hop_endpoint_pop_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
+     * @deprecated true
      */
     SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE,
 

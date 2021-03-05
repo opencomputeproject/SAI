@@ -143,3 +143,8 @@ I2C - I squared C
 CPLD - Complex programmable logic device
 EEPROM - Electrically erasable programmable read-only memory
 PRBS - Pseudorandom binary sequence
+SRH - Segment Routing Header
+SRV6 - Segment Routing with IPv6
+PSP - Penultimate Segment Pop
+USP - Ultimate Segment Pop
+USD - Ultimate Segment Decapsulation

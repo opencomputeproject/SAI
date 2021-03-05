@@ -338,6 +338,8 @@ typedef enum _sai_tunnel_type_t
 
     SAI_TUNNEL_TYPE_MPLS,
 
+    SAI_TUNNEL_TYPE_SRV6,
+
 } sai_tunnel_type_t;
 
 /**
@@ -1088,6 +1090,14 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE_GROUP,
+
+    /**
+     * @brief Available Local SID entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_LOCAL_SID_ENTRY,
 
     /**
      * @brief Default trap group
