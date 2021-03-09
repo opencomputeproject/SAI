@@ -123,12 +123,12 @@ typedef enum _sai_neighbor_entry_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default internal
      */
     SAI_NEIGHBOR_ENTRY_ATTR_ENCAP_INDEX,
 
     /**
-     * @brief Encapsulation index is imposed
+     * @brief Encapsulation index is imposed. This is deprecated
      *
      * This is a flag which states that the encap index was imposed. On create and set
      * the SAI_NEIGHBOR_ENTRY_ATTR_ENCAP_INDEX must be present.
@@ -136,6 +136,7 @@ typedef enum _sai_neighbor_entry_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
+     * @deprecated true
      */
     SAI_NEIGHBOR_ENTRY_ATTR_ENCAP_IMPOSE_INDEX,
 

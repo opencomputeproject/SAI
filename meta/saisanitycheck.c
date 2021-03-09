@@ -1175,10 +1175,12 @@ void check_attr_default_value_type(
 
         case SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL:
 
-            if ((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
+            if ((md->objecttype == SAI_OBJECT_TYPE_PORT) ||
+                (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES) ||
+                (md->objecttype == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY))
             {
                 /*
-                 * Allow PORT attribute list's to be set to internal.
+                 * Allow PORT, NEIGHBOR attribute list's to be set to internal.
                  */
                 break;
             }
