@@ -64,7 +64,7 @@ attr[1].value.s32 = SAI_PACKET_ACTION_DROP;
 status = sai_object_type_get_availability(g_switch_id, SAI_OBJECT_TYPE_TUNNEL, 2, &attr, &count);
 `````
 
-This API will return number of vxlan tunnels which can further with packet action as drop.
+This API will return number of vxlan tunnels which can forward with packet action as drop.
 SONiC when invokes this API with out any tunnels configured
 SAI will return 4
 SONiC will configure 1 tunnel with packet action as drop and call the query API.
@@ -116,7 +116,7 @@ Generic resource monitoring, done by API sai_object_type_get_availability, intro
 The PR related to this feature is available at [PR#1151](https://github.com/opencomputeproject/SAI/pull/1151)
 
 ### UDF Field Qualifier in ACL 	
-This feature brings in change to be able to specify field extracted by UDF group as a qualifier in ACL Table for typedef enum _sai_acl_table_attr_t 
+This feature brings in change to be able to specify field extracted by UDF group as a qualifier in ACL Table for typedef enum _sai_acl_table_attr_t. A UDF group that will be used in ACL must be set to SAI_UDF_GROUP_GENERIC as the group type. 
 
 The PR related to this feature is available at [PR#1122](https://github.com/opencomputeproject/SAI/pull/1122)
 
