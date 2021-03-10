@@ -108,13 +108,10 @@ Without such a ability we are left to allocate heap memory, pass it to send_host
 This is achieved by
 <br>
 - Adding SAI_HOSTIF_PACKET_ATTR_ZERO_COPY_TX in sai_hostif_packet_attr_t
-<br>
 - Adding functions sai_allocate_hostif_packet_fn, sai_free_hostif_packet_fn
  in saihostif.h
 <br>
-<br>
-Furthermore total DMA pool size can be queried via SAI_SWITCH_ATTR_PACKET_
-DMA_MEMORY_POOL_SIZE in sai_switch_attr_t on saiswitch.h
+Furthermore total DMA pool size can be queried via SAI_SWITCH_ATTR_PACKET_DMA_MEMORY_POOL_SIZE in sai_switch_attr_t on saiswitch.h
 
 The PR related to this feature is available at [PR#1137](https://github.com/opencomputeproject/SAI/pull/1137)
 
