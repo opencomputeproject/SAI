@@ -99,8 +99,22 @@ Renamed ingress set-and-clear attribute MINIMUM_XPN to MINIMUM_INGRESS_XPN.
 The PR related to this feature is available at	[PR#1169](https://github.com/opencomputeproject/SAI/pull/1169)
 
 ### Add packet allocate, free function to allow for 0 copy packet TX  
-This PR is to add more attribute for querying available packet DMA pool size. This can be used for accounting for and debugging allocations from packet DMA pool.Sending a packet requires allocating it first. Typically, this requires allocating from a special pool of DMAed memory. For this a ASIC vendor SDK may support custom allocate and free functions. So mirror those in the SAI spec.Without such a ability we are left to allocate heap memory, pass it to send_hostif_packet_fn, which then allocates from the afore mentioned DMA memory, copies the contents of heap memory and sends the packet along. This causes us to have a extra allocation and copy.
-This is achieved by adding SAI_HOSTIF_PACKET_ATTR_ZERO_COPY_TX in sai_hostif_packet_attr_t and adding a type def sai_allocate_hostif_packet_fn for saihostif.h and adding SAI_SWITCH_ATTR_PACKET_DMA_MEMORY_POOL_SIZE in sai_switch_attr_t for saiswitch.h
+This PR enables efficient packet TX, by leveraging zero copy packet memory allocation when available.<br>
+<br>
+Sending a packet requires allocating it first. Typically, this requires allocating from a special pool of DMAed memory. For this a ASIC vendor SDK may support custom allocate and free functions. So mirror those in the SAI spec. 
+<br>
+Without such a ability we are left to allocate heap memory, pass it to send_hostif_packet_fn, which then allocates from the aforementioned DMA memory, copies the contents of heap memory and sends the packet along. This causes us to have an extra allocation and copy. This can induce a substantial slowdown -~30% in our measurements.
+<br>
+This is achieved by
+<br>
+- Adding SAI_HOSTIF_PACKET_ATTR_ZERO_COPY_TX in sai_hostif_packet_attr_t
+<br>
+- Adding functions sai_allocate_hostif_packet_fn, sai_free_hostif_packet_fn
+ in saihostif.h
+<br>
+<br>
+Furthermore total DMA pool size can be queried via SAI_SWITCH_ATTR_PACKET_
+DMA_MEMORY_POOL_SIZE in sai_switch_attr_t on saiswitch.h
 
 The PR related to this feature is available at [PR#1137](https://github.com/opencomputeproject/SAI/pull/1137)
 
