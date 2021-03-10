@@ -2303,15 +2303,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TYPE,
 
     /**
-     * @brief MACsec object for this switch.
+     * @brief MACsec object list for this switch.
      *
-     * @type sai_object_id_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_MACSEC
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
-    SAI_SWITCH_ATTR_MACSEC_OBJECT_ID,
+    SAI_SWITCH_ATTR_MACSEC_OBJECT_LIST,
 
     /**
      * @brief Enable EXP -> TC MAP on switch.
