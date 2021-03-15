@@ -368,6 +368,16 @@ typedef enum _sai_port_connector_failover_mode_t
 } sai_port_connector_failover_mode_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_RECYLE_PORT_HEADER_MODE
+ */
+typedef enum _sai_port_recycle_port_header_mode_t
+{
+    /** Ethernet header mode */
+    SAI_PORT_RECYCLE_PORT_HEADER_MODE_ETH,
+
+} sai_port_recycle_port_header_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -1709,6 +1719,14 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SYSTEM_PORT
      */
     SAI_PORT_ATTR_SYSTEM_PORT,
+
+    /**
+     * @brief Header mode for recycle port
+     *
+     * @type sai_port_recycle_port_header_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RECYLE_PORT_HEADER_MODE,
 
     /**
      * @brief End of attributes
