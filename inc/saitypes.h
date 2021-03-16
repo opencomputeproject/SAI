@@ -743,6 +743,9 @@ typedef enum _sai_acl_stage_t
     /** Egress Stage */
     SAI_ACL_STAGE_EGRESS_MACSEC,
 
+    /** Pre-ingress Stage */
+    SAI_ACL_STAGE_PRE_INGRESS,
+
 } sai_acl_stage_t;
 
 /**
