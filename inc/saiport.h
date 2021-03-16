@@ -368,7 +368,7 @@ typedef enum _sai_port_connector_failover_mode_t
 } sai_port_connector_failover_mode_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_RECYLE_PORT_HEADER_MODE
+ * @brief Attribute data for #SAI_PORT_ATTR_RECYCLE_PORT_HEADER_MODE
  */
 typedef enum _sai_port_recycle_port_header_mode_t
 {
@@ -1726,7 +1726,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_recycle_port_header_mode_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_RECYLE_PORT_HEADER_MODE,
+    SAI_PORT_ATTR_RECYCLE_PORT_HEADER_MODE,
 
     /**
      * @brief End of attributes
