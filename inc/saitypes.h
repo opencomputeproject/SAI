@@ -393,6 +393,32 @@ typedef struct _sai_ip_prefix_t
 } sai_ip_prefix_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_PRBS_RX_STATUS
+ */
+typedef enum _sai_port_prbs_rx_status_t
+{
+    /** PRBS is locked and error_count is 0 */
+    SAI_PORT_PRBS_RX_STATUS_OK,
+
+    /** PRBS is locked, but there are errors */
+    SAI_PORT_PRBS_RX_STATUS_LOCK_WITH_ERRORS,
+
+    /** PRBS not locked */
+    SAI_PORT_PRBS_RX_STATUS_NOT_LOCKED,
+
+    /** PRBS locked but there is loss of lock since last call */
+    SAI_PORT_PRBS_RX_STATUS_LOST_LOCK,
+
+} sai_port_prbs_rx_status_t;
+
+typedef struct _sai_prbs_rx_state_t
+{
+    sai_port_prbs_rx_status_t rx_status;
+
+    uint32_t error_count;
+} sai_prbs_rx_state_t;
+
+/**
  * @brief Field match mask
  *
  * @extraparam const sai_attr_metadata_t *meta
@@ -1142,6 +1168,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_IP_PREFIX */
     sai_ip_prefix_t ipprefix;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE */
+    sai_prbs_rx_state_t rx_state;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID */
     sai_object_id_t oid;

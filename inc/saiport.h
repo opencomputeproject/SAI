@@ -311,25 +311,6 @@ typedef enum _sai_port_link_training_rx_status_t
 } sai_port_link_training_rx_status_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_PRBS_RX_STATUS
- */
-typedef enum _sai_port_prbs_rx_status_t
-{
-    /** PRBS is locked and error_count is 0 */
-    SAI_PORT_PRBS_RX_STATUS_OK,
-
-    /** PRBS is locked, but there are errors */
-    SAI_PORT_PRBS_RX_STATUS_LOCK_WITH_ERRORS,
-
-    /** PRBS not locked */
-    SAI_PORT_PRBS_RX_STATUS_NOT_LOCKED,
-
-    /** PRBS locked but there is loss of lock since last call */
-    SAI_PORT_PRBS_RX_STATUS_LOST_LOCK,
-
-} sai_port_prbs_rx_status_t;
-
-/**
  * @brief Attribute data for #SAI_PORT_ATTR_PRBS_CONFIG
  * PRBS configuration to enable transmitter, receiver or both
  */
@@ -1565,6 +1546,16 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_PRBS_RX_STATUS,
+
+    /**
+     * @brief Attribute data for #SAI_PORT_ATTR_PRBS_RX_STATE
+     * Used for clear on read status/count register.
+     * Adapter should return SAI_STATUS_NOT_SUPPORTED if not supported.
+     *
+     * @type sai_prbs_rx_state_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_RX_STATE,
 
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
