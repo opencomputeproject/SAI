@@ -1725,6 +1725,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_recycle_port_header_mode_t
      * @flags READ_ONLY
+     * @validonly SAI_PORT_ATTR_TYPE == SAI_PORT_TYPE_RECYCLE
      */
     SAI_PORT_ATTR_RECYCLE_PORT_HEADER_MODE,
 
