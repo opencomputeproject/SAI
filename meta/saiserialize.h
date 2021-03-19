@@ -416,6 +416,58 @@ int sai_deserialize_mac(
         _Out_ sai_mac_t mac);
 
 /**
+ * @brief Serialize encrypt_key.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] key The encrypt_key to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_encrypt_key(
+        _Out_ char *buffer,
+        _In_ const sai_encrypt_key_t key);
+
+/**
+ * @brief Deserialize encrypt_key.
+ *
+ * @param[in] buffer Input buffer to be examined.
+ * @param[out] key The encrypt_key deserialized value.
+ *
+ * @return Number of characters consumed from the buffer,
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_deserialize_encrypt_key(
+        _In_ const char *buffer,
+        _Out_ sai_encrypt_key_t key);
+
+/**
+ * @brief Serialize auth_key.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] auth The auth_key to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_auth_key(
+        _Out_ char *buffer,
+        _In_ const sai_auth_key_t auth);
+
+/**
+ * @brief Deserialize auth_key.
+ *
+ * @param[in] buffer Input buffer to be examined.
+ * @param[out] auth The auth_key deserialized value.
+ *
+ * @return Number of characters consumed from the buffer,
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_deserialize_auth_key(
+        _In_ const char *buffer,
+        _Out_ sai_auth_key_t auth);
+
+/**
  * @brief Serialize macsec_sak.
  *
  * @param[out] buffer Output buffer for serialized value.
