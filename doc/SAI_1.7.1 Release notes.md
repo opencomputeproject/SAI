@@ -153,8 +153,26 @@ The PR related to this feature is available at [PR#1150](https://github.com/open
 
 ### Masked hash with optional ordering 
 This feature has been enabled for binary backward compatibility and removed the enum assigned values numerical value indicating the order in which the field is fed to the hash engine
+
 The PR related to this feature is available at [PR#1075](https://github.com/opencomputeproject/SAI/pull/1075)
 
+### Additional Port Interface Types
+This feature provides more options for port interface types to allow more granular programmability of port settings. These interface types are part of IEEE 802.3 standard. This is achieved by adding attribute SAI_PORT_INTERFACE_TYPE for enum _sai_port_interface_type_t in saiport.h
 
+GMII - Gigabit
+SFI - 10 Gigabit
+XLAUI - 40 Gigabit
+CAUI - 100 Gigabit
+
+Each of these have different electrical characteristics and different from available port interface types.
+
+The PR related to this feature is available at [PR#1098](https://github.com/opencomputeproject/SAI/pull/1098)
+
+### Policy based hash
+
+Sai defines two metadata values for ECMP and LAG hash. The fields that are used for their calculation are defined at the switch level with attributes `SAI_SWITCH_ATTR_ECMP_HASH` and `SAI_SWITCH_ATTR_LAG_HASH`. There are also hash objects that can be assigned for some basic packet types.
+This is achieved by adding the attribute SAI_ACL_ACTION_TYPE_SET_LAG_HASH_ID and SAI_ACL_ACTION_TYPE_SET_ECMP_HASH_ID in enum sai_acl_action_type_t for saiacl.h 
+
+The PR related to this feature is available at [PR#1074](https://github.com/opencomputeproject/SAI/pull/1074)
 
 
