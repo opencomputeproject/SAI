@@ -272,7 +272,10 @@ typedef enum _sai_acl_action_type_t
     SAI_ACL_ACTION_TYPE_SET_ECMP_HASH_ID,
 
     /** Associate with virtual router */
-    SAI_ACL_ACTION_TYPE_SET_VRF
+    SAI_ACL_ACTION_TYPE_SET_VRF,
+
+    /** Set Forwarding class */
+    SAI_ACL_ACTION_TYPE_SET_FORWARDING_CLASS,
 
 } sai_acl_action_type_t;
 
@@ -2923,9 +2926,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_VRF,
 
     /**
+     * @brief Set Forwarding Class
+     *
+     * @type sai_acl_action_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_VRF,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS,
 
     /**
      * @brief End of ACL Entry attributes

@@ -53,6 +53,9 @@ typedef enum _sai_next_hop_group_type_t
     /** Next hop protection group. Contains primary and backup next hops. */
     SAI_NEXT_HOP_GROUP_TYPE_PROTECTION,
 
+    /** Next hop group is class-based, with members selected by Forwarding class */
+    SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED,
+
     /* Other types of next hop group to be defined in the future, e.g., WCMP */
 
 } sai_next_hop_group_type_t;
@@ -170,6 +173,16 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE,
 
     /**
+     * @brief Forwarding-class to index map
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_FORWARDING_CLASS_TO_INDEX_MAP,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
@@ -203,7 +216,7 @@ typedef enum _sai_next_hop_group_member_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_NEXT_HOP
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID,
 
@@ -263,7 +276,8 @@ typedef enum _sai_next_hop_group_member_attr_t
      *
      * Index specifying the strict member's order.
      * Allowed value range for is from 0 to SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE - 1.
-     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP.
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP
+     * or SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED.
      *
      * @type sai_uint32_t
      * @flags CREATE_ONLY

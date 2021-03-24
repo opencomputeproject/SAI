@@ -77,6 +77,12 @@ typedef enum _sai_qos_map_type_t
     /** QOS Map to set traffic class and color to EXP */
     SAI_QOS_MAP_TYPE_TC_AND_COLOR_TO_MPLS_EXP = 0x0000000c,
 
+    /** QOS Map to set DSCP to Forwarding class */
+    SAI_QOS_MAP_TYPE_DSCP_TO_FORWARDING_CLASS = 0x0000000d,
+
+    /** QOS Map to set EXP to Forwarding class */
+    SAI_QOS_MAP_TYPE_MPLS_EXP_TO_FORWARDING_CLASS = 0x0000000e,
+
     /** Custom range base value */
     SAI_QOS_MAP_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
