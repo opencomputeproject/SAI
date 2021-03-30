@@ -19,6 +19,7 @@
  *
  * @file    saiport.h
  *
+ *
  * @brief   This module defines SAI Port interface
  */
 
