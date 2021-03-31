@@ -376,88 +376,88 @@ typedef enum _sai_port_synce_gen_squelch_config_t
  */
 typedef enum _sai_port_synce_divider_t
 {
-    /**< Divide by 20 */
+    /** Divide by 20 */
     SAI_PORT_SYNCE_DIVIDER_20,
 
-    /**< Divide by 40*/
+    /** Divide by 40 */
     SAI_PORT_SYNCE_DIVIDER_40,
 
-    /**< Divide by 80 */
+    /** Divide by 80 */
     SAI_PORT_SYNCE_DIVIDER_80,
 
-    /**< Divide by 160 */
+    /** Divide by 160 */
     SAI_PORT_SYNCE_DIVIDER_160,
 
-    /**< Divide by 400 */
+    /** Divide by 400 */
     SAI_PORT_SYNCE_DIVIDER_400,
 
-    /**< Divide by 1000 */
+    /** Divide by 1000 */
     SAI_PORT_SYNCE_DIVIDER_1000,
 
-    /**< Divide by 64 */
+    /** Divide by 64 */
     SAI_PORT_SYNCE_DIVIDER_64,
 
-    /**< Divide by 128 */
+    /** Divide by 128 */
     SAI_PORT_SYNCE_DIVIDER_128,
 
-    /**< Divide by 256 */
+    /** Divide by 256 */
     SAI_PORT_SYNCE_DIVIDER_256,
 
-    /**< Divide by 512 */
+    /** Divide by 512 */
     SAI_PORT_SYNCE_DIVIDER_512,
 
-    /**< Divide by 1024 */
+    /** Divide by 1024 */
     SAI_PORT_SYNCE_DIVIDER_1024,
 
-    /**< Divide by 2048 */
+    /** Divide by 2048 */
     SAI_PORT_SYNCE_DIVIDER_2048,
 
-    /**< Divide by 4096 */
+    /** Divide by 4096 */
     SAI_PORT_SYNCE_DIVIDER_4096,
 
-    /**< Divide by 8192 */
+    /** Divide by 8192 */
     SAI_PORT_SYNCE_DIVIDER_8192,
 
-    /**< Divide by 32 */
+    /** Divide by 32 */
     SAI_PORT_SYNCE_DIVIDER_32,
 
-    /**< Divide by 120 */
+    /** Divide by 120 */
     SAI_PORT_SYNCE_DIVIDER_120,
 
-    /**< Divide by 240 */
+    /** Divide by 240 */
     SAI_PORT_SYNCE_DIVIDER_240,
 
-    /**< Divide by 520 */
+    /** Divide by 520 */
     SAI_PORT_SYNCE_DIVIDER_520,
 
-    /**< Divide by 2040 */
+    /** Divide by 2040 */
     SAI_PORT_SYNCE_DIVIDER_2040,
 
-    /**< Divide by 4080 */
+    /** Divide by 4080 */
     SAI_PORT_SYNCE_DIVIDER_4080,
 
-    /**< Divide by 1. */
+    /** Divide by 1. */
     SAI_PORT_SYNCE_DIVIDER_1,
 
-    /**< Divide by 2. */
+    /** Divide by 2. */
     SAI_PORT_SYNCE_DIVIDER_2,
 
-    /**< Divide by 4. */
+    /** Divide by 4. */
     SAI_PORT_SYNCE_DIVIDER_4,
 
-    /**< Divide by 8. */
+    /** Divide by 8. */
     SAI_PORT_SYNCE_DIVIDER_8,
 
-    /**< Divide by 16. */
+    /** Divide by 16. */
     SAI_PORT_SYNCE_DIVIDER_16,
 
-    /**< Divide by 66. */
+    /** Divide by 66. */
     SAI_PORT_SYNCE_DIVIDER_66,
 
-    /**< Divide by 82.5. */
+    /** Divide by 82.5. */
     SAI_PORT_SYNCE_DIVIDER_82P5,
 
-    /**< Divide by 528. */
+    /** Divide by 528. */
     SAI_PORT_SYNCE_DIVIDER_528
 } sai_port_synce_divider_t;
 
