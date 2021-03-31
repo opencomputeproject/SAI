@@ -455,7 +455,7 @@ typedef enum _sai_port_synce_divider_t
     SAI_PORT_SYNCE_DIVIDER_66,
 
     /**< Divide by 82.5. */
-    SAI_PORT_SYNCE_DIVIDER_82p5,
+    SAI_PORT_SYNCE_DIVIDER_82P5,
 
     /**< Divide by 528. */
     SAI_PORT_SYNCE_DIVIDER_528
@@ -1824,12 +1824,12 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_LOW_LATENCY_VARIATION,
 
     /**
-     * @brief Query the Auto Negotiated FEC
+     * @brief Query the Auto Negotiated Resolved FEC
      *
      * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_AUTO_NEG_FEC,
+    SAI_PORT_ATTR_AUTO_NEG_FEC_MODE,
 
     /**
      * @brief Recovered Clock Generation enable/disable and Squelch Mode Configuration
