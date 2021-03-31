@@ -67,6 +67,8 @@ L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
 LPM - Longest Prefix Match
+LOL - Loss of Lock
+LOS - Loss of Signal
 LSP - Label Switched Path
 MAC - Medium Access Control
 MMU - Memory Management Unit
