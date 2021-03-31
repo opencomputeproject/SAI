@@ -347,14 +347,14 @@ typedef enum _sai_port_connector_failover_mode_t
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_SYNCE_GEN_SQUELCH_CONFIG
- * Used for Recovered Clock Generation and Squelch Mode Configruation
+ * Used for Recovered Clock Generation and Squelch Mode Configuration
  */
 typedef enum _sai_port_synce_gen_squelch_config_t
 {
-    /** Disable Clk Gen and Squelch */
+    /** Disable clock Gen and Squelch */
     SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_DISABLE,
 
-    /** Enable Clk Gen only, no squelch needed (Clock is always sent out) */
+    /** Enable clock Gen only, no squelch needed (Clock is always sent out) */
     SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_NONE,
 
     /** Squelch clock on Loss of Signal (LOS) */
@@ -369,7 +369,6 @@ typedef enum _sai_port_synce_gen_squelch_config_t
     /** Force Squelch */
     SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_FORCE
 } sai_port_synce_gen_squelch_config_t;
-
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_SYNCE_DIVIDER
@@ -1835,9 +1834,9 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Recovered Clock Generation enable/disable and Squelch Mode Configuration
      *
-     * @type sai_port_synce_gen_squelch_config_t 
+     * @type sai_port_synce_gen_squelch_config_t
      * @flags CREATE_AND_SET
-	 * @default SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_DISABLE
+     * @default SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_DISABLE
      */
     SAI_PORT_ATTR_SYNCE_GEN_SQUELCH_CONFIG,
 
@@ -1876,14 +1875,6 @@ typedef enum _sai_port_attr_t
      * @default 0
      */
     SAI_PORT_ATTR_SYNCE_RCLK_PIN,
-
-    /**
-     * @brief recovered clock lane side; line side - 0 or system side - 1
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_SYNCE_RCLK_SIDE,
 
     /**
      * @brief End of attributes
