@@ -36,4 +36,4 @@ stages:
         export ANSI_COLORS_DISABLED=1
         cd meta
         make
-      displayName: "Metadata check"
+      displayName: "Metadata check2"
