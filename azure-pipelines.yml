@@ -13,13 +13,17 @@ pr:
     include:
     - master
 
-pool: 
+pool:
   vmImage: ubuntu-20.04
 
 stages:
 - stage: Build
   jobs:
   - job:
+
+    container:
+      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-buster:latest
+
     displayName: "build"
     timeoutInMinutes: 60
     steps:
@@ -28,13 +32,8 @@ stages:
       submodules: recursive
       displayName: 'Checkout code'
     - script: |
-        echo Hello
-        # the following is copied from jenkins
-        # set -ex
-        # #!/bin/bash -x
-        # export ANSI_COLORS_DISABLED=1
-        # cd meta
-        # make
-    - publish: $(System.DefaultWorkingDirectory)/
-      artifact: opencomputeproject.SAI
-      displayName: "Archive artifacts"
+        set -ex
+        export ANSI_COLORS_DISABLED=1
+        cd meta
+        make
+      displayName: "Metadata check"
