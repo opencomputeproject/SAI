@@ -4699,6 +4699,23 @@ void check_all_object_infos()
     META_ASSERT_TRUE((size_t)SAI_OBJECT_TYPE_EXTENSIONS_MAX == (size_t)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END, "must be equal");
 }
 
+void check_ignored_attributes()
+{
+    META_LOG_ENTER();
+
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE"));
+
+    const sai_attr_metadata_t* meta = sai_metadata_get_ignored_attr_metadata_by_attr_id_name("SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE");
+
+    if (meta == NULL)
+    {
+        META_ASSERT_FAIL("Failed to find ignored attribute SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE");
+    }
+
+    META_ASSERT_TRUE(strcmp(meta->attridname, "SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE") == 0,
+            "expected attribute was SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4737,6 +4754,7 @@ int main(int argc, char **argv)
     check_switch_pointers_list();
     check_defines();
     check_all_object_infos();
+    check_ignored_attributes();
 
     SAI_META_LOG_DEBUG("log test");
 
