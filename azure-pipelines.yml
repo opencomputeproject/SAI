@@ -33,6 +33,8 @@ stages:
         # set -ex
         # #!/bin/bash -x
         # export ANSI_COLORS_DISABLED=1
+        
+        
         # cd meta
         # make
     - publish: $(System.DefaultWorkingDirectory)/
