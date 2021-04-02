@@ -776,6 +776,9 @@ typedef enum _sai_macsec_sa_attr_t
      */
     SAI_MACSEC_SA_ATTR_CONFIGURED_EGRESS_XPN,
 
+    /** @ignore - for backward compatibility */
+    SAI_MACSEC_SA_ATTR_XPN = SAI_MACSEC_SA_ATTR_CONFIGURED_EGRESS_XPN,
+
     /**
      * @brief MACsec current packet number (PN/XPN). For ingress, largest
      * received packet number. For egress, 1 less than the next packet number.
@@ -784,9 +787,6 @@ typedef enum _sai_macsec_sa_attr_t
      * @flags READ_ONLY
      */
     SAI_MACSEC_SA_ATTR_CURRENT_XPN,
-
-    /** @ignore - for backward compatibility */
-    SAI_MACSEC_SA_ATTR_XPN = SAI_MACSEC_SA_ATTR_CURRENT_XPN,
 
     /**
      * @brief Configured minimum acceptable ingress MACsec packet number (PN/XPN).
