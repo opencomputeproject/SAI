@@ -372,7 +372,9 @@ void check_attr_by_object_type()
             sai_object_type_t current = ot[index]->objecttype;
 
             META_ASSERT_TRUE(current == i, "object type must be equal on object type list");
-            META_ASSERT_TRUE(index < 200, "object defines > 200 attributes, metadata bug?");
+            /* For Switch Attribute we have crossed > 200 with Vendor extention for SAIv1.8.0
+               so increasing threshold  */
+            META_ASSERT_TRUE(index < 300, "object defines > 300 attributes, metadata bug?");
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
             META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_EXTENSIONS_MAX, "object type must be < MAX");
 
