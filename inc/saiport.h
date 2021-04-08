@@ -1699,6 +1699,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SYSTEM_PORT,
 
     /**
+     * @brief LAG if port is member of that LAG, else SAI_NULL_OBJECT_ID
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_LAG
+     */
+    SAI_PORT_ATTR_LAG,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
