@@ -80,6 +80,16 @@ extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name
         _In_ const char *attr_id_name);
 
 /**
+ * @brief Gets ignored attribute metadata based on attribute id name
+ *
+ * @param[in] attr_id_name Attribute id name
+ *
+ * @return Pointer to object metadata or NULL in case of failure
+ */
+extern const sai_attr_metadata_t* sai_metadata_get_ignored_attr_metadata_by_attr_id_name(
+        _In_ const char *attr_id_name);
+
+/**
  * @brief Gets string representation of enum value
  *
  * @param[in] metadata Enum metadata

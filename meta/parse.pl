@@ -464,6 +464,16 @@ sub ProcessEnumSection
             {
                 LogInfo "Ignoring $enumvaluename";
 
+                my $initializer = $ev->{initializer}[0];
+
+                if ($initializer =~ /^= (SAI_\w+)$/)
+                {
+                }
+                else
+                {
+                    LogWarning "Enum $enumvaluename is ignored, but initializer is '$initializer' not in form '= SAI_\\w+'";
+                }
+
                 # process ignore attributes
 
                 if (not defined $SAI_ENUMS{$enumtypename}{ignoreval})
