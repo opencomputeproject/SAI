@@ -150,6 +150,49 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
     return NULL;
 }
 
+const sai_attr_metadata_t* sai_metadata_get_ignored_attr_metadata_by_attr_id_name(
+        _In_ const char *attr_id_name)
+{
+    if (attr_id_name == NULL)
+    {
+        return NULL;
+    }
+
+    sai_object_type_t ot;
+
+    /*
+     * Since we don't have list of ignored attributes, enumerate all objects
+     * and attribute enums to find ignored values.
+     */
+
+    for (ot = SAI_OBJECT_TYPE_NULL; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ot++)
+    {
+        const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(ot);
+
+        if (oti == NULL)
+            continue;
+
+        const sai_enum_metadata_t* em = oti->enummetadata;
+
+        if (em->ignorevaluesnames)
+        {
+            size_t i;
+
+            for (i = 0; em->ignorevaluesnames[i] != NULL; i++)
+            {
+                if (strcmp(attr_id_name, em->ignorevaluesnames[i]) == 0)
+                {
+                    const char* name = sai_metadata_get_enum_value_name(em, em->ignorevalues[i]);
+
+                    return sai_metadata_get_attr_metadata_by_attr_id_name(name);
+                }
+            }
+        }
+    }
+
+    return NULL;
+}
+
 const char* sai_metadata_get_enum_value_name(
         _In_ const sai_enum_metadata_t* metadata,
         _In_ int value)
