@@ -171,11 +171,17 @@ typedef enum _sai_port_fec_mode_t
     /** No FEC */
     SAI_PORT_FEC_MODE_NONE,
 
-    /** Enable RS-FEC - 25G, 50G, 100G ports */
+    /** Enable RS-528 FEC - 25G, 50G, 100G ports */
     SAI_PORT_FEC_MODE_RS,
 
     /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
     SAI_PORT_FEC_MODE_FC,
+
+    /** Enable RS544-FEC - 100G PAM4, 200G ports */
+    SAI_PORT_FEC_MODE_RS544,
+
+    /** Enable RS544-FEC (2x interleaved) - 100G, 200G, 400G ports */
+    SAI_PORT_FEC_MODE_RS544_2X_INTERLEAVED,
 } sai_port_fec_mode_t;
 
 /**
