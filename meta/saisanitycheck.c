@@ -372,7 +372,9 @@ void check_attr_by_object_type()
             sai_object_type_t current = ot[index]->objecttype;
 
             META_ASSERT_TRUE(current == i, "object type must be equal on object type list");
-            META_ASSERT_TRUE(index < 200, "object defines > 200 attributes, metadata bug?");
+            /* For Switch Attribute we have crossed > 200 with Vendor extention for SAIv1.8.0
+               so increasing threshold  */
+            META_ASSERT_TRUE(index < 300, "object defines > 300 attributes, metadata bug?");
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
             META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_EXTENSIONS_MAX, "object type must be < MAX");
 
@@ -645,6 +647,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
+        case SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE:
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
@@ -913,6 +916,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
+        case SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
         case SAI_ATTR_VALUE_TYPE_IPV4:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG:
@@ -1175,10 +1179,12 @@ void check_attr_default_value_type(
 
         case SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL:
 
-            if ((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
+            if ((md->objecttype == SAI_OBJECT_TYPE_PORT) ||
+                (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES) ||
+                (md->objecttype == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY))
             {
                 /*
-                 * Allow PORT attribute list's to be set to internal.
+                 * Allow PORT, NEIGHBOR attribute list's to be set to internal.
                  */
                 break;
             }
@@ -2587,6 +2593,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_INT8:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
+        case SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_POINTER:
@@ -4694,6 +4701,23 @@ void check_all_object_infos()
     META_ASSERT_TRUE((size_t)SAI_OBJECT_TYPE_EXTENSIONS_MAX == (size_t)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END, "must be equal");
 }
 
+void check_ignored_attributes()
+{
+    META_LOG_ENTER();
+
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE"));
+
+    const sai_attr_metadata_t* meta = sai_metadata_get_ignored_attr_metadata_by_attr_id_name("SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE");
+
+    if (meta == NULL)
+    {
+        META_ASSERT_FAIL("Failed to find ignored attribute SAI_BUFFER_PROFILE_ATTR_BUFFER_SIZE");
+    }
+
+    META_ASSERT_TRUE(strcmp(meta->attridname, "SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE") == 0,
+            "expected attribute was SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4732,6 +4756,7 @@ int main(int argc, char **argv)
     check_switch_pointers_list();
     check_defines();
     check_all_object_infos();
+    check_ignored_attributes();
 
     SAI_META_LOG_DEBUG("log test");
 
