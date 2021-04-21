@@ -615,6 +615,20 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT,
 
     /**
+     * @brief Tunnel UDP source port mask
+     *
+     * Sport mask defining the number of least significant bits
+     * reserved for the calculated hash value. 0 means a fixed value.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
+     */
+    SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MASK,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_ATTR_END,
