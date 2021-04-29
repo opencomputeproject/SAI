@@ -66,7 +66,6 @@ typedef enum _sai_port_recycle_port_header_mode_t
      *
      * @type sai_port_recycle_port_header_mode_t
      * @flags CREATE_ONLY
-     * @default SAI_PORT_RECYCLE_PORT_HEADER_MODE_ETH
      * @validonly SAI_PORT_ATTR_TYPE == SAI_PORT_TYPE_RECYCLE
      */
     SAI_PORT_ATTR_RECYCLE_PORT_HEADER_MODE,
