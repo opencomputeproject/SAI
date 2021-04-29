@@ -24,7 +24,8 @@ mirroring …). The only exception would be that it does not need to support som
 MAC layer functions.
 
 
-A new generic port type for Recycle port is defined
+A new generic port type for Recycle port is defined. The header mode is Ethernet
+by default. Spec need to be updated for new header type for future applications.
 
 ```
 /**
@@ -47,33 +48,8 @@ typedef enum _sai_port_type_t
 } sai_port_type_t;
 ```
 
-To support future applications of Recycle port, a CREATE_ONLY attribute for
-header mode is defined. 
-
-```
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_RECYCLE_PORT_HEADER_MODE
- */
-typedef enum _sai_port_recycle_port_header_mode_t
-{
-    /** Ethernet header mode */
-    SAI_PORT_RECYCLE_PORT_HEADER_MODE_ETH,
-
-} sai_port_recycle_port_header_mode_t;
-
-/**
-     * @brief Header mode for recycle port
-     *
-     * @type sai_port_recycle_port_header_mode_t
-     * @flags CREATE_ONLY
-     * @validonly SAI_PORT_ATTR_TYPE == SAI_PORT_TYPE_RECYCLE
-     */
-    SAI_PORT_ATTR_RECYCLE_PORT_HEADER_MODE,
-```
-
 SAI Adapter is expected to 
 * Send Port oper status (UP) notification for the recycle port
-* Return SAI_STATUS_NOT_SUPPORTED if SAI_PORT_ATTR_RECYCLE_PORT_HEADER_MODE attribute is read on non-recycle port type object
 
 ### Usecase 1: Inband communication in VoQ System
 Details are available at [VoQ HLD](https://github.com/Azure/SONiC/blob/master/doc/voq/voq_hld.md#251-inband-recycle-port-option)<br>

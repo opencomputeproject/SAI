@@ -34,25 +34,6 @@
  */
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_TYPE
- */
-typedef enum _sai_port_type_t
-{
-    /** Actual port. N.B. Different from the physical port. */
-    SAI_PORT_TYPE_LOGICAL,
-
-    /** CPU Port */
-    SAI_PORT_TYPE_CPU,
-
-    /** Fabric Port */
-    SAI_PORT_TYPE_FABRIC,
-
-    /** Recycle Port */
-    SAI_PORT_TYPE_RECYCLE,
-
-} sai_port_type_t;
-
-/**
  * @brief Attribute data for #SAI_PORT_ATTR_OPER_STATUS
  */
 typedef enum _sai_port_oper_status_t
@@ -1719,15 +1700,6 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SYSTEM_PORT
      */
     SAI_PORT_ATTR_SYSTEM_PORT,
-
-    /**
-     * @brief Header mode for recycle port
-     *
-     * @type sai_port_recycle_port_header_mode_t
-     * @flags CREATE_ONLY
-     * @validonly SAI_PORT_ATTR_TYPE == SAI_PORT_TYPE_RECYCLE
-     */
-    SAI_PORT_ATTR_RECYCLE_PORT_HEADER_MODE,
 
     /**
      * @brief End of attributes
