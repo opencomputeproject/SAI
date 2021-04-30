@@ -40,6 +40,7 @@ our $warnings = 0;
 our $HEADER_CONTENT = "";
 our $SOURCE_CONTENT = "";
 our $TEST_CONTENT = "";
+our $SWIG_CONTENT = "";
 
 my $identLevel = 0;
 
@@ -49,7 +50,7 @@ sub GetIdent
 
     return ""                       if $content =~ /\\$/;
     return "    "                   if $content =~ /^\s*_(In|Out)/;
-    return "    " x --$identLevel   if $content =~ /^\s*}/;
+    return "    " x --$identLevel   if $content =~ /^\s*%?}/;
     return "    " x $identLevel++   if $content =~ /{$/;
     return "    " x $identLevel;
 }
@@ -79,6 +80,15 @@ sub WriteTest
     my $ident = ""; # TODO tests should have it's own ident, since it's different file GetIdent($content);
 
     $TEST_CONTENT .= $ident . $content . "\n";
+}
+
+sub WriteSwig
+{
+    my $content = shift;
+
+    my $ident = GetIdent($content);
+
+    $SWIG_CONTENT .= $ident . $content . "\n";
 }
 
 sub WriteSectionComment
@@ -318,6 +328,7 @@ sub WriteMetaDataFiles
     WriteFile("saimetadata.h", $HEADER_CONTENT);
     WriteFile("saimetadata.c", $SOURCE_CONTENT);
     WriteFile("saimetadatatest.c", $TEST_CONTENT);
+    WriteFile("saiswig.i", $SWIG_CONTENT);
 }
 
 sub GetStructKeysInOrder
@@ -362,7 +373,7 @@ BEGIN
     WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile
     GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
     Trim ExitOnErrors
-    WriteHeader WriteSource WriteTest WriteMetaDataFiles WriteSectionComment
+    WriteHeader WriteSource WriteTest WriteSwig WriteMetaDataFiles WriteSectionComment
     $errors $warnings $NUMBER_REGEX
     $HEADER_CONTENT $SOURCE_CONTENT $TEST_CONTENT
     /;

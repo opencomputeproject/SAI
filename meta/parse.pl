@@ -61,6 +61,7 @@ our %EXPERIMENTAL_OBJECTS = ();
 our %OBJECT_TYPE_TO_STATS_MAP = ();
 our %ATTR_TO_CALLBACK = ();
 our %PRIMITIVE_TYPES = ();
+our %FUNCTION_DEF = ();
 our @ALL_ENUMS = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
@@ -464,6 +465,16 @@ sub ProcessEnumSection
             {
                 LogInfo "Ignoring $enumvaluename";
 
+                my $initializer = $ev->{initializer}[0];
+
+                if ($initializer =~ /^= (SAI_\w+)$/)
+                {
+                }
+                else
+                {
+                    LogWarning "Enum $enumvaluename is ignored, but initializer is '$initializer' not in form '= SAI_\\w+'";
+                }
+
                 # process ignore attributes
 
                 if (not defined $SAI_ENUMS{$enumtypename}{ignoreval})
@@ -685,6 +696,11 @@ sub ProcessTypedefSection
             # this will also include structs from metadata
             $ALL_STRUCTS{$typedefname} = 1;
             next;
+        }
+
+        if ($typedefname =~ /^sai_\w+_fn$/)
+        {
+            $FUNCTION_DEF{$typedefname} = $memberdef->{definition}[0];
         }
 
         if ($typedefname =~ /^sai_\w+_notification_fn$/)
@@ -2234,6 +2250,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_MAC"            if $type eq "sai_mac_t";
     return "SAI_ATTR_VALUE_TYPE_IP_ADDRESS"     if $type eq "sai_ip_address_t";
     return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"      if $type eq "sai_ip_prefix_t";
+    return "SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE"  if $type eq "sai_prbs_rx_state_t";
     return "SAI_ATTR_VALUE_TYPE_UINT16"         if $type eq "sai_vlan_id_t";
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_label_id_t";
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "uint32_t";
@@ -4203,6 +4220,128 @@ sub CreateOtherStructs
     }
 }
 
+sub CreateSaiSwigGetApiHelperFunctions
+{
+    #
+    # write swig get api helper functions, those functions could be moved to
+    # saimetadata.c directly, but inside sai_api_query is used, and currently
+    # sai metadata can be compiled and linked without any SAI library
+    #
+
+    my @apis = @{ $SAI_ENUMS{sai_api_t}{values} };
+
+    WriteSwig "%{";
+
+    for my $Api (@apis)
+    {
+        $Api =~ /^SAI_API_(\w+)/;
+
+        my $api = lc($1);
+
+        next if $api =~ /unspecified/;
+
+        WriteSwig "sai_status_t sai_get_${api}_api(sai_${api}_api_t* out)";
+        WriteSwig "{";
+        WriteSwig "sai_${api}_api_t* api;";
+        WriteSwig "sai_status_t status = sai_api_query((sai_api_t)$Api, (void**)&api);";
+        WriteSwig "if (status == SAI_STATUS_SUCCESS)";
+        WriteSwig "{";
+        WriteSwig "*out = *api;";
+        WriteSwig "}";
+        WriteSwig "return status;";
+        WriteSwig "}";
+    }
+
+    WriteSwig "%}";
+
+    for my $Api (@apis)
+    {
+        $Api =~ /^SAI_API_(\w+)/;
+
+        my $api = lc($1);
+
+        next if $api =~ /unspecified/;
+
+        WriteSwig "sai_status_t sai_get_${api}_api(sai_${api}_api_t* out);";
+    }
+}
+
+sub CreateSaiSwigApiStructs
+{
+    #
+    # for swig api to be callable, it needs to be created as a function in
+    # structure, not as member
+    #
+
+    WriteSwig "%include \"saitypes.h\"";
+
+    my @apis = @{ $SAI_ENUMS{sai_api_t}{values} };
+
+    for my $Api (@apis)
+    {
+        $Api =~ /^SAI_API_(\w+)/;
+
+        my $api = lc($1);
+
+        next if $api =~ /unspecified/;
+
+        my $structname = "sai_${api}_api_t";
+
+        my %struct = ExtractStructInfo($structname, "struct_");
+
+        WriteSwig "typedef struct _$structname {";
+
+        for my $member (GetStructKeysInOrder(\%struct))
+        {
+            my $type = $struct{$member}{type};
+            my $name = $struct{$member}{name};
+
+            if (not defined $FUNCTION_DEF{$type})
+            {
+                LogError "function type $type is not defined for $api.$name";
+                next;
+            }
+
+            my $prototype = $FUNCTION_DEF{$type};
+
+            if (not $prototype =~ /^typedef (\S+)\(\* $type\) \((.+)\)$/)
+            {
+                LogError "failed to match function proto type $type is not defined for $api.$name";
+                next;
+            }
+
+            my $returntype = $1;
+            my $params = $2;
+
+            WriteSwig "$returntype $name($params);";
+        }
+
+        WriteSwig "} $structname;";
+        WriteSwig "";
+    }
+
+    for my $Api (@apis)
+    {
+        $Api =~ /^SAI_API_(\w+)/;
+
+        my $api = lc($1);
+
+        next if $api =~ /unspecified/;
+
+        WriteSwig "%ignore sai_${api}_api_t;";
+    }
+
+    my @headers = GetHeaderFiles();
+    my @exheaders = GetExperimentalHeaderFiles();
+
+    my @merged = (@headers, @exheaders);
+
+    for my $header (sort @merged)
+    {
+        WriteSwig "%include \"$header\"";
+    }
+}
+
 #
 # MAIN
 #
@@ -4286,6 +4425,10 @@ CreateSwitchPointersEnum();
 CreateSwitchPointersAttributesList();
 
 CreateSerializeMethods();
+
+CreateSaiSwigGetApiHelperFunctions();
+
+CreateSaiSwigApiStructs();
 
 WriteHeaderFotter();
 

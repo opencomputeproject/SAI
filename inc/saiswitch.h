@@ -493,6 +493,20 @@ typedef enum _sai_switch_tunnel_attr_t
     SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT,
 
     /**
+     * @brief Tunnel UDP source port mask
+     *
+     * Sport mask defining the number of least significant bits
+     * reserved for the calculated hash value. 0 means a fixed value.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_SWITCH_TUNNEL_ATTR_TUNNEL_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
+     */
+    SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT_MASK,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_TUNNEL_ATTR_END,
@@ -862,6 +876,18 @@ typedef enum _sai_switch_attr_t
      * @default internal
      */
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
+
+    /**
+     * @brief Default SAI Override Virtual Router ID
+     *
+     * Must return #SAI_STATUS_OBJECT_IN_USE when try to delete this VR ID.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_DEFAULT_OVERRIDE_VIRTUAL_ROUTER_ID,
 
     /**
      * @brief Default .1Q Bridge ID
@@ -1355,6 +1381,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED,
 
     /**
+     * @brief SAI ECMP default hash offset
+     *
+     * When set, the output of the ECMP hash calculation will be rotated right
+     * by the specified number of bits.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_OFFSET,
+
+    /**
      * @brief SAI ECMP default symmetric hash
      *
      * When set, the hash calculation will result in the same value as when the
@@ -1418,6 +1456,18 @@ typedef enum _sai_switch_attr_t
      * @default 0
      */
     SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED,
+
+    /**
+     * @brief SAI LAG default hash offset
+     *
+     * When set, the output of the LAG hash calculation will be rotated right
+     * by the specified number of bits.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_OFFSET,
 
     /**
      * @brief SAI LAG default symmetric hash
@@ -2301,15 +2351,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TYPE,
 
     /**
-     * @brief MACsec object for this switch.
+     * @brief MACsec object list for this switch.
      *
-     * @type sai_object_id_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_MACSEC
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @default empty
      */
-    SAI_SWITCH_ATTR_MACSEC_OBJECT_ID,
+    SAI_SWITCH_ATTR_MACSEC_OBJECT_LIST,
 
     /**
      * @brief Enable EXP -> TC MAP on switch.
@@ -2455,6 +2504,56 @@ typedef enum _sai_switch_attr_t
      * @default empty
      */
     SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST,
+
+    /**
+     * @brief The size of the available packet DMA pool memory in bytes
+     * This can be used in conjunction with total packet DMA pool
+     * size to account/debug % of memory available.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PACKET_AVAILABLE_DMA_MEMORY_POOL_SIZE,
+
+    /**
+     * @brief Switch/Global bind point for Pre-ingress ACL object
+     *
+     * Bind (or unbind) an Pre-ingress ACL table or ACL group globally. Enable/Update
+     * Pre-ingress ACL table or ACL group filtering by assigning the list of valid
+     * object id. Disable pre-ingress filtering by assigning SAI_NULL_OBJECT_ID
+     * in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_PRE_INGRESS_ACL,
+
+    /**
+     * @brief Available SNAPT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_SNAPT_ENTRY,
+
+    /**
+     * @brief Available DNAPT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DNAPT_ENTRY,
+
+    /**
+     * @brief Available Double NAPT entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAPT_ENTRY,
 
     /**
      * @brief End of attributes

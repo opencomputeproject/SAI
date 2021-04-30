@@ -1,0 +1,39 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - master
+
+pr:
+  branches:
+    include:
+    - master
+
+pool:
+  vmImage: ubuntu-20.04
+
+stages:
+- stage: Build
+  jobs:
+  - job:
+
+    container:
+      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-buster:latest
+
+    displayName: "build"
+    timeoutInMinutes: 60
+    steps:
+    - checkout: self
+      clean: true
+      submodules: recursive
+      displayName: 'Checkout code'
+    - script: |
+        set -ex
+        export ANSI_COLORS_DISABLED=1
+        cd meta
+        make
+      displayName: "Metadata check"
