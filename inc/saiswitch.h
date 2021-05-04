@@ -2546,6 +2546,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAPT_ENTRY,
 
     /**
+     * @brief Start Firmware Broadcast
+     *
+     * Configure PHY to start Firmware Broadcast.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_FIRMWARE_BROADCAST_BEGIN,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
