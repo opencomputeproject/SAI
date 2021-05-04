@@ -20,13 +20,19 @@ Following list of changes are being proposed:
 In the earlier proposal, In order to program the hardware for an Endpoint SID, first a route entry is created for the local SID and then a nexthop entry 
 is created to specify the endpoint behavior and parameters. This will require either the application or the operating system responsible for making the SAI 
 API calls to create two additional objects for every LocalSID entry - a route object and a nexthop object. This model is different from the programming model 
-used for IP tunnels and MPLS. For IP and MPLS tunnel terminations, a separate tunnel_term or Insegment object is created without a need to split the tunnel 
+used for IP tunnels and MPLS. For IP and MPLS tunnel terminations, a separate tunnel_term or Insegment object is created without a need to decompose the tunnel 
 termination entry into multiple SAI objects. 
 This proposal will follow the programming model of MPLS segment routing and IP tunnel termination by adding a LocalSID object for SRv6 similar to InSegment
 for MPLS.
   
-### Source Behavior ###
+![SRv6 Endpoint Behavioral Model](figures/SRv6_Endpoint_behavioral_model.png "Figure 1: Endpoint Behavior ")
+__Figure 1: Endpoint Behavior.__
+
+### Source/Headend Behavior ###
 - This proposal will remove "Endpoint" from the Nexthop table attributes and leave other attributes like SIDLIST in order to implement the Headend Behavior.
+
+![SRv6 Headend Behavioral Model](figures/SRv6_Headend_behavioral_model.png "Figure 1: Headend Behavior ")
+__Figure 1: Headend Behavior.__
 
 ### Transit Behavior ###
 - Same as Source Behavior. 
@@ -407,19 +413,68 @@ typedef struct _sai_local_sid_entry_t
 
 ## Examples ##
 - SR Headend
-    Example configuration:
+    Example configuration for H.Encaps.Red behavior
        
         1. Create a SID list object with 3 segments
+
+            sidlist_entry_attrs[0].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_TYPE
+            sidlist_entry_attrs01].value.s32 = SAI_SEGMENTROUTE_SIDLIST_TYPE_ENCAPS_RED
+            sidlist_entry_attrs[1].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_SEGMENT_LIST
+            sidlist_entry_attrs[1].value.objlist.count = 3;
+            CONVERT_STR_TO_IPV6(sidlist_entry_attrs[1].value.objlist.list[0], "2001:db8:85a3::8a2e:370:7334");
+            CONVERT_STR_TO_IPV6(sidlist_entry_attrs[1].value.objlist.list[1], "2001:db8:85a3::8a2e:370:2345");
+            CONVERT_STR_TO_IPV6(sidlist_entry_attrs[1].value.objlist.list[2], "2001:db8:85a3::8a2e:370:3456");
+            saistatus = sai_v6sr_api->create_segmentroute_sidlist(&sidlist_id, switch_id, 2, sidlist_entry_attrs);    
+            
         2. Create a tunnel object with source IP used for tunnel encapsulation
+
+            tunnel_entry_attrs[0].id = SAI_TUNNEL_ATTR_TYPE
+            tunnel_entry_attrs[0].value = SAI_TUNNEL_TYPE_SRV6
+            tunnel_entry_attrs[1].id = SAI_TUNNEL_ATTR_ENCAP_SRC_IP
+            CONVERT_STR_TO_IPV6(tunnel_entry_attrs[1].value, "2001:db8:85a3::8a2e:370:9876");
+            tunnel_entry_attrs[2].id = SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE
+            tunnel_entry_attrs[2].value.oid = underlay_rif // created elsewhere
+            saistatus = sai_v6sr_api->create_tunnel(&tunnel_id, switch_id, 3, tunnel_entry_attrs)
+
         3. Create a srv6 nexthop object bound to the SID list object and H.Encaps.Red behavior
+
+            nexthop_entry_attrs[0].id = SAI_NEXTHOP_ATTR_TYPE
+            nexthop_entry_attrs[0].value = SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST
+            nexthop_entry_attrs[1].id = SAI_NEXTHOP_ATTR_TUNNEL_ID
+            nexthop_entry_attrs[1].value.oid = tunnel_id
+            nexthop_entry_attrs[2].id = SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID
+            nexthop_entry_attrs[2].value.oid = sidlist_id
+            saistatus = sai_v6sr_api->create_nexthop(&nexthop_id, switch_id, 3, nexthop_entry_attrs)
+             
         4. Create a route entry which points to the srv6 nexthop
 
-        To be added: detailed SAI configuration
+            route_entry.switch_id = 0
+            route_entry.vr_id = vr_id_1 // created elsewhere
+            route_entry.destination.addr_family = SAI_IP_ADDR_FAMILY_IPV4
+            route_entry.destination.addr.ip4 = "198.51.100.0"
+            route_entry.destination.addr.mask = "255.255.255.0"            
+
+            route_entry_attrs[0].id = SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID;
+            route_entry_attrs[0].value.oid = nexthop_id; 
+            saisstatus = saiv6sr_api->create_route(&route_entry, 1, route_entry_attrs)
+    
 
 - SR Endpoint/Transit
-    Create an local_sid entry to specify the endpoing behavior
     
-        To be added: detailed SAI configuration
+        Example configuration for End.DT46 behavior
+
+        local_sid_entry.switch_id = 0
+        local_sid_entry.vr_id = vr_id_1 // underlay VRF
+        local_sid_entry.locator_len = 64
+        local_sid_entry.function_len = 8
+        CONVERT_STR_TO_IPV6(local_sid_entry.sid, "2001:db8:0:1::1000:0:0:0");
+    
+        local_sid_attr[0].id = SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE
+        local_sid_attr[0].value = SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_DT46
+        local_sid_attr[1].id = SAI_LOCAL_SID_ENTRY_ATTR_VRF
+        local_sid_attr[1].value.oid = vr_id_1001 // overlay vrf, created elsewhere
+        saistatus = saiv6sr_api->create_local_sid(&local_sid_entry, 2, local_sid_attr)
+
 
 ## References ##
 1. https://tools.ietf.org/html/rfc8754
