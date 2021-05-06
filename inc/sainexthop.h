@@ -69,6 +69,9 @@ typedef enum _sai_next_hop_endpoint_type_t
     /** End.T Endpoint with specific IPv6 Table */
     SAI_NEXT_HOP_ENDPOINT_TYPE_T,
 
+    /** Endpoint with decapsulation and Layer 2 Cross-connect */
+    SAI_NEXT_HOP_ENDPOINT_TYPE_DX2,
+
     /** Endpoint with decapsulation and IPv6 Cross-connect */
     SAI_NEXT_HOP_ENDPOINT_TYPE_DX6,
 
