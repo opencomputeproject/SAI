@@ -370,6 +370,18 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_BFDV6 = 0x00004006,
 
+    /**
+     * @brief ICMP traffic (IP protocol == 1) to local router IP address
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_ICMP = 0x00004007,
+
+    /**
+     * @brief ICMPV6 traffic (IP next header == 58) to local router IP address
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_ICMPV6 = 0x00004008,
+
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
 
