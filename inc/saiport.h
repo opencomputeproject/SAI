@@ -176,6 +176,10 @@ typedef enum _sai_port_fec_mode_t
 
     /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
     SAI_PORT_FEC_MODE_FC,
+
+    /** FEC mode is chosen by driver/firmware, e.g., via auto-negotiation */
+    SAI_PORT_FEC_MODE_INTERNAL,
+
 } sai_port_fec_mode_t;
 
 /**
@@ -1697,6 +1701,18 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SYSTEM_PORT
      */
     SAI_PORT_ATTR_SYSTEM_PORT,
+
+    /**
+     * @brief Query the current operational FEC mode for the port
+     *
+     * Returns the FEC mode currently configured for the port, whether
+     * it was set explicitly or determined internally. Thus
+     * it should never return SAI_PORT_FEC_MODE_INTERNAL.
+     *
+     * @type sai_s32_list_t sai_port_fec_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_OPER_FEC_MODE,
 
     /**
      * @brief End of attributes
