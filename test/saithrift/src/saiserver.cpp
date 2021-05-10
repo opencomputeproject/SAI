@@ -389,11 +389,24 @@ main(int argc, char* argv[])
     int rv = 0;
 
     auto options = handleCmdLine(argc, argv);
+    printf("Running handleProfileMap ...\n");
     handleProfileMap(options.profileMapFile);
+    printf("Running handlePortMap ...\n");
     handlePortMap(options.portMapFile);
 
-    sai_api_initialize(0, &test_services);
-    sai_api_query(SAI_API_SWITCH, (void**)&sai_switch_api);
+    printf("Running sai_api_initialize ...\n");
+    sai_status_t saiInitStatus = sai_api_initialize(0, &test_services);
+    if (saiInitStatus != SAI_STATUS_SUCCESS)
+    {
+        printf("saiInitStatus failed ...\n"); 
+        exit(EXIT_FAILURE);
+    }
+    sai_status_t saiApiStatus = sai_api_query(SAI_API_SWITCH, (void**)&sai_switch_api);
+    if (saiInitStatus != SAI_STATUS_SUCCESS)
+    {
+        printf("saiApiStatus failed ...\n"); 
+        exit(EXIT_FAILURE);
+    }
 
     constexpr std::uint32_t attrSz = 6;
 
@@ -418,21 +431,29 @@ main(int argc, char* argv[])
     attr[5].id = SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY;
     attr[5].value.ptr = reinterpret_cast<sai_pointer_t>(&on_packet_event);
 
+    printf("creating switch ...\n"); 
     sai_status_t status = sai_switch_api->create_switch(&gSwitchId, attrSz, attr);
     if (status != SAI_STATUS_SUCCESS)
     {
+	    printf("create_switch failed ... %d\n", status); 
         exit(EXIT_FAILURE);
     }
+    printf("created switch ...\n"); 
 
+    printf("handling init script ...\n"); 
     handleInitScript(options.initScript);
+    printf("handled init script ...\n"); 
 
 #ifdef BRCMSAI
+    printf("detaching BRCMSAI ...\n"); 
     std::thread bcm_diag_shell_thread = std::thread(sai_diag_shell);
     bcm_diag_shell_thread.detach();
+    printf("detached BRCMSAI ...\n"); 
 #endif
 
-    start_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
-
+    printf("starting RPC server ...\n"); 
+    int code = start_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
+    printf("started RPC server, code %d ...\n", code); 
     const sai_log_level_t log_level = SAI_LOG_LEVEL_NOTICE;
 
     sai_log_set(SAI_API_ACL, log_level);
