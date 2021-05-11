@@ -73,14 +73,13 @@ typedef enum _sai_my_mac_attr_t
     SAI_MY_MAC_ATTR_PORT_ID,
 
     /**
-     * @brief Associated Vlan,
-     * if not specified any vlan will match
+     * @brief Associated Vlan Id,
+     * if not specified any vlan id will match
      *
-     * @type sai_object_id_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_VLAN
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @isvlan true
+     * @default 0
      */
     SAI_MY_MAC_ATTR_VLAN_ID,
 
@@ -103,49 +102,22 @@ typedef enum _sai_my_mac_attr_t
     SAI_MY_MAC_ATTR_MAC_ADDRESS_MASK,
 
     /**
-     * @brief Admin V4 enable
+     * @brief Enable IPv4 processing
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default false
+     * @default true
      */
     SAI_MY_MAC_ATTR_V4_ENABLE,
 
     /**
-     * @brief Admin V6 enable
+     * @brief Enable IPv6 processing
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default false
+     * @default true
      */
     SAI_MY_MAC_ATTR_V6_ENABLE,
-
-    /**
-     * @brief V4 mcast enable
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_MY_MAC_ATTR_V4_MCAST_ENABLE,
-
-    /**
-     * @brief V6 mcast enable
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_MY_MAC_ATTR_V6_MCAST_ENABLE,
-
-    /**
-     * @brief Admin MPLS state
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_MY_MAC_ATTR_MPLS_ENABLE,
 
     /**
      * @brief End of attributes
