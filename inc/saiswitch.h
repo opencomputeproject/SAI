@@ -2555,6 +2555,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MY_MAC_TABLE_ID,
 
     /**
+     * @brief Number of My MAC entries installed on the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_INSTALLED_MYMAC_ENTRIES,
+
+    /**
+     * @brief Number of available My MAC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_MYMAC_ENTRIES,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

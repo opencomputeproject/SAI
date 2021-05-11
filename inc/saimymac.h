@@ -211,22 +211,6 @@ typedef enum _sai_my_mac_table_attr_t
     SAI_MY_MAC_TABLE_ATTR_MAXIMUM_PRIORITY,
 
     /**
-     * @brief Number of My MAC entries installed on the switch
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_MY_MAC_TABLE_ATTR_INSTALLED_ENTRIES,
-
-    /**
-     * @brief Number of available My MAC entries
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_MY_MAC_TABLE_ATTR_AVAILABLE_ENTRIES,
-
-    /**
      * @brief My MAC entries installed on the switch
      *
      * @type sai_object_list_t
