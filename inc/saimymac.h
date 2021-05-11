@@ -87,7 +87,7 @@ typedef enum _sai_my_mac_attr_t
      * @brief MAC Address
      *
      * @type sai_mac_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default vendor
      */
     SAI_MY_MAC_ATTR_MAC_ADDRESS,
@@ -96,7 +96,7 @@ typedef enum _sai_my_mac_attr_t
      * @brief MAC Address Mask
      *
      * @type sai_mac_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default vendor
      */
     SAI_MY_MAC_ATTR_MAC_ADDRESS_MASK,
