@@ -282,7 +282,7 @@ typedef enum _sai_local_sid_entry_attr_t
     SAI_LOCAL_SID_ENTRY_ATTR_TRAP_PRIORITY,
 
     /**
-     * @brief Next hop for cross-connect function
+     * @brief Next hop for cross-connect functions
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -292,6 +292,18 @@ typedef enum _sai_local_sid_entry_attr_t
      * @validonly SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_X or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_DX4 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_DX6 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_B6_ENCAPS or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_B6_ENCAPS_RED or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_B6_INSERT or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_B6_INSERT_RED
      */
     SAI_LOCAL_SID_ENTRY_ATTR_NEXT_HOP_ID,
+
+    /**
+     * @brief Tunnel id for decapsulation
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TUNNEL
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_DT4 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_DT6 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE == SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_DT46
+     */
+    SAI_LOCAL_SID_ENTRY_ATTR_TUNNEL_ID,
 
     /**
      * @brief VRF for decapsulation and specific table lookup functions
@@ -366,9 +378,9 @@ typedef struct _sai_local_sid_entry_t
     sai_uint8_t args_len;
 
     /**
-     * @brief Local Segment
+     * @brief IPv6 prefix for Local SID
      */
-    sai_ip6_t sid;
+    sai_ip_prefix_t sid;
 
 } sai_local_sid_entry_t;
 

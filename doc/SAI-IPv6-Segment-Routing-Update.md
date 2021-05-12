@@ -477,7 +477,7 @@ typedef struct _sai_local_sid_entry_t
 
 
 ## References ##
-1. https://tools.ietf.org/html/rfc8754
-2. https://tools.ietf.org/html/rfc8986
-3. https://tools.ietf.org/html/draft-ietf-spring-segment-routing-policy-09
-    
+1. [IPv6 Segment Routing Header (SRH)](https://tools.ietf.org/html/rfc8754)
+2. [Segment Routing over IPv6 (SRv6) Network Programming](https://tools.ietf.org/html/rfc8986)
+3. [Segment Routing Policy Architecture](https://tools.ietf.org/html/draft-ietf-spring-segment-routing-policy-11)
+4. [Segment Routing Architecture](https://datatracker.ietf.org/doc/html/rfc8402)
