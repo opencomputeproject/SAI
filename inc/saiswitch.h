@@ -2546,16 +2546,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAPT_ENTRY,
 
     /**
-     * @brief Start Firmware Broadcast
+     * @brief Slave MDIO Address list
      *
-     * Configure PHY to start Firmware Broadcast.
+     * Configure list of slave MDIO addresses for firmware download in Broadcast mode.
+     * sai_create_switch on all slave PHYs should be called with #SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE = SAI_SWITCH_FIRMWARE_LOAD_TYPE_SKIP
      *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
+     * @type sai_u8_list_t
+     * @flags CREATE_ONLY
+     * @default empty
      * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
      */
-    SAI_SWITCH_ATTR_FIRMWARE_BROADCAST_BEGIN,
+    SAI_SWITCH_ATTR_SLAVE_MDIO_ADDR_LIST,
 
     /**
      * @brief End of attributes

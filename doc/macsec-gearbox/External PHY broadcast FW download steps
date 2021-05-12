@@ -1,10 +1,10 @@
-Broadcom's External PHY broadcast FW download steps:
+External PHY broadcast FW download steps:
 
 Overview
 External PHY firmware can be downloaded using Unicast or Broadcast FW download method. Unicast FW download method downloads FW only on one PHY and Broadcast FW download method downloads FW on multiple PHYs if the underlying hardware supports Broadcast FW download method.
 
 Broadcast FW download method
-Broadcom PHY requires the following 5 steps to be executed to complete FW download using broadcast method.
+External PHY requires the following 5 steps to be executed to complete FW download using broadcast method.
 1. Core Reset. -> This step should be executed on each PHY/MDIO address.
 2. Broadcast Enable -> This step should be executed on each PHY/MDIO address.
 3. Execute -> This step should be executed only on the master PHY. This is generally the 1st PHY on the board or the MDIO bus.
