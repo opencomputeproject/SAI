@@ -1,0 +1,30 @@
+Broadcom's External PHY broadcast FW download steps:
+
+Overview
+External PHY firmware can be downloaded using Unicast or Broadcast FW download method. Unicast FW download method downloads FW only on one PHY and Broadcast FW download method downloads FW on multiple PHYs if the underlying hardware supports Broadcast FW download method.
+
+Broadcast FW download method
+Broadcom PHY requires the following 5 steps to be executed to complete FW download using broadcast method.
+1. Core Reset. -> This step should be executed on each PHY/MDIO address.
+2. Broadcast Enable -> This step should be executed on each PHY/MDIO address.
+3. Execute -> This step should be executed only on the master PHY. This is generally the 1st PHY on the board or the MDIO bus.
+4. Verify FW -> This step should be executed on each PHY/MDIO address
+5. Broadcast Disable -> This step should be executed on each MDIO address.
+
+The above 5 steps need to be executed in the following order:
+1. Core reset step on each PHY
+create_switch API needs to be called on each MDIO address with following attributes:
+SAI_SWITCH_ATTR_INIT_SWITCH (Existing attribute)
+SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST (Existing attribute)
+
+2. Broadcast enable step on each PHY
+Enable Broadcast on each PHY using the new proposed attribute SAI_SWITCH_ATTR_FIRMWARE_BROADCAST_BEGIN via set_switch_attribute call.
+
+3. Execute step only on the master PHY
+Call set_switch_attribute and set SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_EXECUTE (Existing attribute)
+
+4. Verify FW step on each PHY
+Call set_switch_attribute and set SAI_SWITCH_ATTR_FIRMWARE_VERIFY_AND_INIT_SWITCH (Existing attribute)
+
+5. Broadcast disable on each PHY
+Call set_switch_attribute and set SAI_SWITCH_ATTR_FIRMWARE_BROADCAST_STOP (Existing attribute)
