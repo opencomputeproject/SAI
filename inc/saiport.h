@@ -1709,7 +1709,7 @@ typedef enum _sai_port_attr_t
      * it was set explicitly or determined internally. Thus
      * it should never return SAI_PORT_FEC_MODE_INTERNAL.
      *
-     * @type sai_s32_list_t sai_port_fec_mode_t
+     * @type sai_port_fec_mode_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_OPER_FEC_MODE,
