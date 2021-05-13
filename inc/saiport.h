@@ -1767,7 +1767,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_MDIX_MODE_CONFIG,
 
     /**
-     * @brief Configure auto negotiation config mode for the port
+     * @brief Configure auto negotiation configuration mode for the port
      *
      * @type sai_port_auto_neg_config_mode_t
      * @flags CREATE_AND_SET
