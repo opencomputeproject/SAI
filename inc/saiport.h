@@ -363,7 +363,7 @@ typedef enum _sai_port_mdix_mode_status_t
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_MDIX_MODE_CONFIG
- * Used for MDIX mode config
+ * Used for MDIX mode configuration
  */
 typedef enum _sai_port_mdix_mode_config_t
 {
