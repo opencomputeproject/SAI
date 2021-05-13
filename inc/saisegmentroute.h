@@ -363,9 +363,14 @@ typedef struct _sai_local_sid_entry_t
     sai_object_id_t vr_id;
 
     /**
-     * @brief Length of the Locator part of the SID
+     * @brief Length of the Locator Block part of the SID
      */
-    sai_uint8_t locator_len;
+    sai_uint8_t locator_block_len;
+
+    /**
+     * @brief Length of the Locator Node part of the SID
+     */
+    sai_uint8_t locator_node_len;
 
     /**
      * @brief Length of the Function part of the SID
@@ -380,7 +385,7 @@ typedef struct _sai_local_sid_entry_t
     /**
      * @brief IPv6 prefix for Local SID
      */
-    sai_ip_prefix_t sid;
+    sai_ip6_t sid;
 
 } sai_local_sid_entry_t;
 

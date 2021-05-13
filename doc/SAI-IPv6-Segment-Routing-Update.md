@@ -481,3 +481,4 @@ typedef struct _sai_local_sid_entry_t
 2. [Segment Routing over IPv6 (SRv6) Network Programming](https://tools.ietf.org/html/rfc8986)
 3. [Segment Routing Policy Architecture](https://tools.ietf.org/html/draft-ietf-spring-segment-routing-policy-11)
 4. [Segment Routing Architecture](https://datatracker.ietf.org/doc/html/rfc8402)
+5. [SRv6 NET-PGM extension: Insertion](https://datatracker.ietf.org/doc/html/draft-filsfils-spring-srv6-net-pgm-insertion-04)
