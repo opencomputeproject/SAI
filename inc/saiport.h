@@ -346,120 +346,55 @@ typedef enum _sai_port_connector_failover_mode_t
 } sai_port_connector_failover_mode_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_SYNCE_GEN_SQUELCH_CONFIG
- * Used for Recovered Clock Generation and Squelch Mode Configuration
+ * @brief Attribute data for #SAI_PORT_ATTR_MDIX_MODE_STATUS
+ * Used for MDIX mode status
  */
-typedef enum _sai_port_synce_gen_squelch_config_t
+typedef enum _sai_port_mdix_mode_status_t
 {
-    /** Disable clock Gen and Squelch */
-    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_DISABLE,
+    /** MDIX mode status auto */
+    SAI_PORT_MDIX_MODE_STATUS_AUTO,
 
-    /** Enable clock Gen only, no squelch needed (Clock is always sent out) */
-    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_NONE,
+    /** MDIX mode status straight */
+    SAI_PORT_MDIX_MODE_STATUS_STRAIGHT,
 
-    /** Squelch clock on Loss of Signal (LOS) */
-    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_LOS,
-
-    /** Squelch clock on Loss of Lock (LOL) */
-    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_LOL,
-
-    /** Squelch clock on Loss of Signal(LOS) or Loss of Lock(LOL) */
-    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_LOS_OR_LOL,
-
-    /** Force Squelch */
-    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_FORCE
-} sai_port_synce_gen_squelch_config_t;
+    /**  MDIX mode status cross over */
+    SAI_PORT_MDIX_MODE_STATUS_CROSSOVER
+} sai_port_mdix_mode_status_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_SYNCE_DIVIDER
- * Divider selection to apply on Line/Lane rate before outputting clock
+ * @brief Attribute data for #SAI_PORT_ATTR_MDIX_MODE_CONFIG
+ * Used for MDIX mode config
  */
-typedef enum _sai_port_synce_divider_t
+typedef enum _sai_port_mdix_mode_config_t
 {
-    /** Divide by 20 */
-    SAI_PORT_SYNCE_DIVIDER_20,
+    /** MDIX mode status auto */
+    SAI_PORT_MDIX_MODE_CONFIG_AUTO,
 
-    /** Divide by 40 */
-    SAI_PORT_SYNCE_DIVIDER_40,
+    /** MDIX mode status straight */
+    SAI_PORT_MDIX_MODE_CONFIG_STRAIGHT,
 
-    /** Divide by 80 */
-    SAI_PORT_SYNCE_DIVIDER_80,
+    /**  MDIX mode status cross over */
+    SAI_PORT_MDIX_MODE_CONFIG_CROSSOVER
+} sai_port_mdix_mode_config_t;
 
-    /** Divide by 160 */
-    SAI_PORT_SYNCE_DIVIDER_160,
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE
+ * Used for auto negotiation mode to configure master or slave mode
+ */
+typedef enum _sai_port_auto_neg_config_mode_t
+{
+    /** Auto neg mode disabled */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_DISABLED,
 
-    /** Divide by 400 */
-    SAI_PORT_SYNCE_DIVIDER_400,
+    /** Auto neg mode auto */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_AUTO,
 
-    /** Divide by 1000 */
-    SAI_PORT_SYNCE_DIVIDER_1000,
+    /** Auto neg mode slave */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_SLAVE,
 
-    /** Divide by 64 */
-    SAI_PORT_SYNCE_DIVIDER_64,
-
-    /** Divide by 128 */
-    SAI_PORT_SYNCE_DIVIDER_128,
-
-    /** Divide by 256 */
-    SAI_PORT_SYNCE_DIVIDER_256,
-
-    /** Divide by 512 */
-    SAI_PORT_SYNCE_DIVIDER_512,
-
-    /** Divide by 1024 */
-    SAI_PORT_SYNCE_DIVIDER_1024,
-
-    /** Divide by 2048 */
-    SAI_PORT_SYNCE_DIVIDER_2048,
-
-    /** Divide by 4096 */
-    SAI_PORT_SYNCE_DIVIDER_4096,
-
-    /** Divide by 8192 */
-    SAI_PORT_SYNCE_DIVIDER_8192,
-
-    /** Divide by 32 */
-    SAI_PORT_SYNCE_DIVIDER_32,
-
-    /** Divide by 120 */
-    SAI_PORT_SYNCE_DIVIDER_120,
-
-    /** Divide by 240 */
-    SAI_PORT_SYNCE_DIVIDER_240,
-
-    /** Divide by 520 */
-    SAI_PORT_SYNCE_DIVIDER_520,
-
-    /** Divide by 2040 */
-    SAI_PORT_SYNCE_DIVIDER_2040,
-
-    /** Divide by 4080 */
-    SAI_PORT_SYNCE_DIVIDER_4080,
-
-    /** Divide by 1. */
-    SAI_PORT_SYNCE_DIVIDER_1,
-
-    /** Divide by 2. */
-    SAI_PORT_SYNCE_DIVIDER_2,
-
-    /** Divide by 4. */
-    SAI_PORT_SYNCE_DIVIDER_4,
-
-    /** Divide by 8. */
-    SAI_PORT_SYNCE_DIVIDER_8,
-
-    /** Divide by 16. */
-    SAI_PORT_SYNCE_DIVIDER_16,
-
-    /** Divide by 66. */
-    SAI_PORT_SYNCE_DIVIDER_66,
-
-    /** Divide by 82.5. */
-    SAI_PORT_SYNCE_DIVIDER_82P5,
-
-    /** Divide by 528. */
-    SAI_PORT_SYNCE_DIVIDER_528
-} sai_port_synce_divider_t;
+    /** Auto neg mode master */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_MASTER
+} sai_port_auto_neg_config_mode_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -1815,66 +1750,74 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SYSTEM_PORT,
 
     /**
-     * @brief To enable/disable low latency variation
+     * @brief MDIX mode status for the port
+     *
+     * @type sai_port_mdix_mode_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_MDIX_MODE_STATUS,
+
+    /**
+     * @brief MDIX mode config for the port
+     *
+     * @type sai_port_mdix_mode_config_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_MDIX_MODE_CONFIG_AUTO
+     */
+    SAI_PORT_ATTR_MDIX_MODE_CONFIG,
+
+    /**
+     * @brief Configure auto negotiation config mode for the port
+     *
+     * @type sai_port_auto_neg_config_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_AUTO_NEG_CONFIG_MODE_DISABLED
+     */
+    SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE,
+
+    /**
+     * @brief Enable auto detection between 1000X and SGMII slave mode
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_PORT_ATTR_LOW_LATENCY_VARIATION,
+    SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT,
 
     /**
-     * @brief Query the Auto Negotiated Resolved FEC
+     * @brief Enable auto medium to select both fiber and copper media types
      *
-     * @type sai_s32_list_t sai_port_fec_mode_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_AUTO_NEG_FEC_MODE,
-
-    /**
-     * @brief Recovered Clock Generation enable/disable and Squelch Mode Configuration
-     *
-     * @type sai_port_synce_gen_squelch_config_t
+     * @type bool
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_DISABLE
+     * @default false
      */
-    SAI_PORT_ATTR_SYNCE_GEN_SQUELCH_CONFIG,
+    SAI_PORT_ATTR_AUTO_MEDIUM,
 
     /**
-     * @brief Recovered Clock Lane selection from global lane of phy_id
+     * @brief Configure media precedence
      *
-     * @type sai_uint32_t
+     * The PHY supporting mutually exclusive copper and fiber ports should be
+     * configured to select the preferred/active media.
+     * True: Configure Fiber ports to be active
+     * False: Configure Copper ports to be active
+     *
+     * @type bool
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default false
      */
-    SAI_PORT_ATTR_SYNCE_CLOCK_OUTPUT_LANE,
+    SAI_PORT_ATTR_MEDIA_PREFERRED,
 
     /**
-     * @brief Package Lanes that need to be monitored for Loss of Signal or Loss of Line
+     * @brief Configure EEE latency mode
      *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_PORT_ATTR_SYNCE_SQUELCH_MONITOR_LANES,
-
-    /**
-     * @brief Divider selection to apply on Line/Lane rate before outputting clock
+     * False: Fixed latency
+     * True: Variable latency
      *
-     * @type sai_port_synce_divider_t
+     * @type bool
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_SYNCE_DIVIDER_20
+     * @default false
      */
-    SAI_PORT_ATTR_SYNCE_DIVIDER,
-
-    /**
-     * @brief Recovered clock output pins are rclk0 - 0, rclk1 - 1 and rclk2 - 2
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_PORT_ATTR_SYNCE_RCLK_PIN,
+    SAI_PORT_ATTR_EEE_LATENCY_MODE,
 
     /**
      * @brief End of attributes
