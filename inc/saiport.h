@@ -1758,7 +1758,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_MDIX_MODE_STATUS,
 
     /**
-     * @brief MDIX mode config for the port
+     * @brief MDIX mode configuration for the port
      *
      * @type sai_port_mdix_mode_config_t
      * @flags CREATE_AND_SET
