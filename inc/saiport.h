@@ -34,6 +34,25 @@
  */
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_TYPE
+ */
+typedef enum _sai_port_type_t
+{
+    /** Actual port. N.B. Different from the physical port. */
+    SAI_PORT_TYPE_LOGICAL,
+
+    /** CPU Port */
+    SAI_PORT_TYPE_CPU,
+
+    /** Fabric Port */
+    SAI_PORT_TYPE_FABRIC,
+
+    /** Recycle Port */
+    SAI_PORT_TYPE_RECYCLE,
+
+} sai_port_type_t;
+
+/**
  * @brief Attribute data for #SAI_PORT_ATTR_OPER_STATUS
  */
 typedef enum _sai_port_oper_status_t
@@ -347,16 +366,6 @@ typedef enum _sai_port_connector_failover_mode_t
     /** Configure Failover mode on secondary port */
     SAI_PORT_CONNECTOR_FAILOVER_MODE_SECONDARY
 } sai_port_connector_failover_mode_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_RECYCLE_PORT_HEADER_MODE
- */
-typedef enum _sai_port_recycle_port_header_mode_t
-{
-    /** Ethernet header mode */
-    SAI_PORT_RECYCLE_PORT_HEADER_MODE_ETH,
-
-} sai_port_recycle_port_header_mode_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
