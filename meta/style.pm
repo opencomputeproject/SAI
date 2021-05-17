@@ -606,6 +606,8 @@ sub CheckMetadataSourceFiles
         next if $file eq "saimetadata.c";
         next if $file eq "saimetadatatest.c";
 
+        next if $file =~ /swig|wrap/;
+
         my $data = ReadHeaderFile($file);
 
         CheckHeaderLicense($data, $file);
