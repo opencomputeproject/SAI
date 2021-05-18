@@ -1840,7 +1840,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_module_type_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_MODULE_TYPE_1000BASE-X
+     * @default SAI_PORT_MODULE_TYPE_1000BASE_X
      */
     SAI_PORT_ATTR_MODULE_TYPE,
 
