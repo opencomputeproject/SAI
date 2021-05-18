@@ -403,7 +403,7 @@ typedef enum _sai_port_auto_neg_config_mode_t
 typedef enum _sai_port_module_type_t
 {
     /** Module Type Fiber */
-    SAI_PORT_MODULE_TYPE_1000BASE-X,
+    SAI_PORT_MODULE_TYPE_1000BASE_X,
 
     /** Module Type SGMII-Slave */
     SAI_PORT_MODULE_TYPE_SGMII_SLAVE,
