@@ -397,6 +397,22 @@ typedef enum _sai_port_auto_neg_config_mode_t
 } sai_port_auto_neg_config_mode_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_MODULE_TYPE
+ * Used for configuring Fiber module type
+ */
+typedef enum _sai_port_module_type_t
+{
+    /** Module Type Fiber */
+    SAI_PORT_MODULE_TYPE_1000BASE-X,
+
+    /** Module Type SGMII-Slave */
+    SAI_PORT_MODULE_TYPE_SGMII_SLAVE,
+
+    /** Module Type 100FX */
+    SAI_PORT_MODULE_TYPE_100FX,
+} sai_port_module_type_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -1818,6 +1834,15 @@ typedef enum _sai_port_attr_t
      * @default false
      */
     SAI_PORT_ATTR_EEE_LATENCY_MODE,
+    
+    /**
+     * @brief Configure Fiber module type
+     *
+     * @type sai_port_module_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_MODULE_TYPE_1000BASE-X
+     */
+    SAI_PORT_ATTR_MODULE_TYPE,
 
     /**
      * @brief End of attributes
