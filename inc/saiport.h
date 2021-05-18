@@ -1834,7 +1834,7 @@ typedef enum _sai_port_attr_t
      * @default false
      */
     SAI_PORT_ATTR_EEE_LATENCY_MODE,
-    
+
     /**
      * @brief Configure Fiber module type
      *
