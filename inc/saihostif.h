@@ -370,6 +370,12 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_BFDV6 = 0x00004006,
 
+    /**
+     * @brief Intermediate System-to-Intermediate System (IS-IS) protocol
+     * default packet action is trap
+     */
+    SAI_HOSTIF_TRAP_TYPE_ISIS = 0x00004007,
+
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
 
