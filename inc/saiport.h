@@ -47,6 +47,9 @@ typedef enum _sai_port_type_t
     /** Fabric Port */
     SAI_PORT_TYPE_FABRIC,
 
+    /** Recycle Port */
+    SAI_PORT_TYPE_RECYCLE,
+
 } sai_port_type_t;
 
 /**
