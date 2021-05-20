@@ -888,9 +888,9 @@ sub CheckHeadersStyle
                 LogWarning "space before '$1' : $header:$n:$line";
             }
 
-            if ($line =~ / \* / and not $line =~ /^\s*\* /)
+            if ($line =~ / \* / and not $line =~ /^\s*\* / and not $line =~ /^#define/)
             {
-                LogWarning "floating start: $header:$n:$line";
+                LogWarning "floating star $header:$n:$line";
             }
 
             if ($line =~ /}[^ ]/)
