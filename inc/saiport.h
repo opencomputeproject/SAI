@@ -704,9 +704,6 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Query/Configure list of Advertised port FEC Mode
      *
-     * Only one of SAI_PORT_ATTR_ADVERTISED_FEC_MODE or
-     * SAI_PORT_ATTR_ADVERTISED_FEC_MODE_EXTENDED should be provided.
-     *
      * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags CREATE_AND_SET
      * @default empty
@@ -716,12 +713,10 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Query/Configure extended list of Advertised port FEC Mode
      *
-     * Only one of SAI_PORT_ATTR_ADVERTISED_FEC_MODE or
-     * SAI_PORT_ATTR_ADVERTISED_FEC_MODE_EXTENDED should be provided.
-     *
      * @type sai_s32_list_t sai_port_fec_mode_extended_t
      * @flags CREATE_AND_SET
      * @default empty
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == true
      */
     SAI_PORT_ATTR_ADVERTISED_FEC_MODE_EXTENDED,
 
@@ -832,6 +827,18 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_INTERNAL_LOOPBACK_MODE,
 
     /**
+     * @brief Forward Error Correction (FEC) extended control
+     *
+     * Enables use of extended FEC controls as opposed to their non-extended
+     * counterparts.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_USE_EXTENDED_FEC,
+
+    /**
      * @brief Forward Error Correction (FEC) control
      *
      * @type sai_port_fec_mode_t
@@ -846,7 +853,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_fec_mode_extended_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_FEC_MODE_EXTENDED_NONE
-     * @validonly SAI_PORT_ATTR_FEC_MODE == SAI_PORT_FEC_MODE_NONE
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == true
      */
     SAI_PORT_ATTR_FEC_MODE_EXTENDED,
 
