@@ -1713,7 +1713,6 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_OVERRIDE,
 
-
     /**
      * @brief End of attributes
      */
