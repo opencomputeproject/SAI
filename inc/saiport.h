@@ -1702,6 +1702,18 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SYSTEM_PORT,
 
     /**
+     * @brief FEC mode auto-negotiation override status
+     *
+     * If set to true, any auto-negotiated FEC mode will be
+     * overridden by the value configured in SAI_PORT_ATTR_FEC_MODE
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_OVERRIDE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
