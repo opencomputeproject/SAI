@@ -411,7 +411,7 @@ typedef enum _sai_port_module_type_t
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_DUAL_MEDIA
- * Used to configure media type for dual media supported PHYs
+ * Used to configure media type for dual media supported PHY
  */
 typedef enum _sai_port_dual_media_t
 {
@@ -1819,7 +1819,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_auto_neg_config_mode_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_MDIX_MODE_CONFIG_AUTO
-     * @validonly SAI_PORT_ATTR_AUTO_NEG_MODE == true
+     * @condition SAI_PORT_ATTR_AUTO_NEG_MODE == true
      */
     SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE,
 
@@ -1829,7 +1829,7 @@ typedef enum _sai_port_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_PORT_ATTR_SPEED == 1000 or SAI_PORT_ATTR_SPEED == 100 or SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_ATTR_MEDIA_TYPE_FIBER
+     * @condition SAI_PORT_ATTR_SPEED == 1000 or SAI_PORT_ATTR_SPEED == 100 or SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_ATTR_MEDIA_TYPE_FIBER
      */
     SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT,
 
@@ -1851,12 +1851,12 @@ typedef enum _sai_port_attr_t
      * @type sai_port_module_type_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_MODULE_TYPE_1000BASE_X
-     * @validonly SAI_PORT_ATTR_SPEED == 1000 or SAI_PORT_ATTR_SPEED == 100 or SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_ATTR_MEDIA_TYPE_FIBER
+     * @condition SAI_PORT_ATTR_SPEED == 1000 or SAI_PORT_ATTR_SPEED == 100 or SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_ATTR_MEDIA_TYPE_FIBER
      */
     SAI_PORT_ATTR_MODULE_TYPE,
 
     /**
-     * @brief Configure media types for dual media supported PHYs
+     * @brief Configure media types for dual media supported PHY
      *
      * @type sai_port_dual_media_t
      * @flags CREATE_AND_SET
