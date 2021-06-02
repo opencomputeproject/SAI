@@ -1819,7 +1819,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_auto_neg_config_mode_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_MDIX_MODE_CONFIG_AUTO
-     * @condition SAI_PORT_ATTR_AUTO_NEG_MODE == true
+     * @validonly SAI_PORT_ATTR_AUTO_NEG_MODE == true
      */
     SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE,
 
@@ -1829,7 +1829,7 @@ typedef enum _sai_port_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @condition SAI_PORT_ATTR_SPEED == 1000 or SAI_PORT_ATTR_SPEED == 100 or SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_ATTR_MEDIA_TYPE_FIBER
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER
      */
     SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT,
 
@@ -1851,7 +1851,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_module_type_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_MODULE_TYPE_1000BASE_X
-     * @condition SAI_PORT_ATTR_SPEED == 1000 or SAI_PORT_ATTR_SPEED == 100 or SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_ATTR_MEDIA_TYPE_FIBER
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER
      */
     SAI_PORT_ATTR_MODULE_TYPE,
 
