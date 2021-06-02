@@ -189,16 +189,16 @@ typedef enum _sai_port_fec_mode_extended_t
     /** No FEC */
     SAI_PORT_FEC_MODE_EXTENDED_NONE,
 
-    /** Enable RS-528 FEC - 25G, 50G, 100G ports */
+    /** Enable RS-528 FEC (CL91) - 25G, 50G, 100G ports */
     SAI_PORT_FEC_MODE_EXTENDED_RS528,
 
     /** Enable RS544-FEC - 100G PAM4, 200G ports */
     SAI_PORT_FEC_MODE_EXTENDED_RS544,
 
-    /** Enable RS544-FEC (2x interleaved) - 100G, 200G, 400G ports */
-    SAI_PORT_FEC_MODE_EXTENDED_RS544_2X_INTERLEAVED,
+    /** Enable RS544-FEC (interleaved) - 100G, 200G, 400G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_RS544_INTERLEAVED,
 
-    /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
+    /** Enable FC-FEC (CL74) - 10G, 25G, 40G, 50G ports */
     SAI_PORT_FEC_MODE_EXTENDED_FC,
 } sai_port_fec_mode_extended_t;
 
@@ -707,6 +707,7 @@ typedef enum _sai_port_attr_t
      * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags CREATE_AND_SET
      * @default empty
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == false
      */
     SAI_PORT_ATTR_ADVERTISED_FEC_MODE,
 
@@ -844,6 +845,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_fec_mode_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_FEC_MODE_NONE
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == false
      */
     SAI_PORT_ATTR_FEC_MODE,
 

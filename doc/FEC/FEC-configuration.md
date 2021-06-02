@@ -56,7 +56,10 @@ based on the port, number of lanes and modulation type. For example, a port
 configured as 100G using 4 lanes and NRZ modulation would select RS-528 (CL91)
 FEC. If there is ambiguity in the FEC mode allowed, the adapter will select one
 of the options. Likewise, on read any RS-FEC mode will be reported as
-`SAI_PORT_FEC_MODE_RS`.
+`SAI_PORT_FEC_MODE_RS`. `SAI_PORT_ATTR_FEC_MODE` and
+`SAI_PORT_ATTR_ADVERTISED_FEC_MODE` are only used if
+`SAI_PORT_ATTR_USE_EXTENDED_FEC` is configured to `false` or is unset
+(defaulting to false).
 
 ### Extended FEC Configuration
 
@@ -67,9 +70,7 @@ overlaps with the base `sai_port_fec_mode_t`, with the key difference being that
 the specific RS-FEC mode may be configured. In order to set the extended FEC
 mode configuration attributes, `SAI_PORT_ATTR_USE_EXTENDED_FEC` must be
 configured to `true`. If `SAI_PORT_ATTR_USE_EXTENDED_FEC` is not configured or
-is configured to `false`, the extended configuration will not be used. Reading
-the extended FEC port attributes does not require
-`SAI_PORT_ATTR_USE_EXTENDED_FEC` to be set.
+is configured to `false`, the extended configuration will not be used.
 
 ```
 typedef enum _sai_port_fec_mode_extended_t
@@ -77,16 +78,16 @@ typedef enum _sai_port_fec_mode_extended_t
     /** No FEC */
     SAI_PORT_FEC_MODE_EXTENDED_NONE,
 
-    /** Enable RS-528 FEC - 25G, 50G, 100G ports */
+    /** Enable RS-528 (CL91) FEC - 25G, 50G, 100G ports */
     SAI_PORT_FEC_MODE_EXTENDED_RS528,
 
     /** Enable RS544-FEC - 100G PAM4, 200G ports */
     SAI_PORT_FEC_MODE_EXTENDED_RS544,
 
-    /** Enable RS544-FEC (2x interleaved) - 100G, 200G, 400G ports */
-    SAI_PORT_FEC_MODE_EXTENDED_RS544_2X_INTERLEAVED,
+    /** Enable RS544-FEC (interleaved) - 100G, 200G, 400G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_RS544_INTERLEAVED,
 
-    /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
+    /** Enable FC-FEC (CL74) - 10G, 25G, 40G, 50G ports */
     SAI_PORT_FEC_MODE_EXTENDED_FC,
 } sai_port_fec_mode_extended_t;
 ```
