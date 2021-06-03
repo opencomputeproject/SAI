@@ -19,12 +19,12 @@ Following list of changes are being proposed:
 ## Behavioral Model Changes ##
 
 ### Endpoint Behavior ###
-In the earlier proposal, In order to program the hardware for an Endpoint SID, first a route entry is created for the local SID and then a nexthop entry
+In the earlier proposal, In order to program the hardware for an Endpoint SID, first a route entry is created for the my SID and then a nexthop entry
 is created to specify the endpoint behavior and parameters. This will require either the application or the operating system responsible for making the SAI
-API calls to create two additional objects for every LocalSID entry - a route object and a nexthop object. This model is different from the programming model
+API calls to create two additional objects for every MySID entry - a route object and a nexthop object. This model is different from the programming model
 used for IP tunnels and MPLS. For IP and MPLS tunnel terminations, a separate tunnel_term or Insegment object is created without a need to decompose the tunnel
 termination entry into multiple SAI objects.
-This proposal will follow the programming model of MPLS segment routing and IP tunnel termination by adding a LocalSID object for SRv6 similar to InSegment
+This proposal will follow the programming model of MPLS segment routing and IP tunnel termination by adding a MySID object for SRv6 similar to InSegment
 for MPLS.
 
 ![SRv6 Endpoint Behavioral Model](figures/SRv6_Endpoint_behavioral_model.png "Figure 1: Endpoint Behavior ")
@@ -51,7 +51,7 @@ typedef enum _sai_next_hop_type_t
     /** IPv6 Segment Route SID List */
     SAI_NEXT_HOP_TYPE_SEGMENTROUTE_SIDLIST,
 
-    /** IPv6 Segment Route Endpoint Function. **Deprecated and replaced by SAI_LOCAL_SID_ENTRY_ATTR object ***/
+    /** IPv6 Segment Route Endpoint Function. **Deprecated and replaced by SAI_MY_SID_ENTRY_ATTR object ***/
     SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT,
     ...
 
@@ -60,7 +60,7 @@ typedef enum _sai_next_hop_type_t
 
 **
  * @brief Enum defining Endpoint Segment Pop types for End, End.X and End.T. **Deprecated
- *        and replaced by sai_local_sid_entry_endpoint_flavor_t**
+ *        and replaced by sai_my_sid_entry_endpoint_flavor_t**
  */
 
 typedef enum _sai_next_hop_endpoint_pop_type_t
@@ -95,7 +95,7 @@ typedef enum _sai_next_hop_attr_t
 
     /**
      * @brief Next hop entry Segment Route Endpoint Function. **Deprecated and replaced
-     * with SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE.**
+     * with SAI_MY_SID_ENTRY_ATTR_ENDPOINT_TYPE.**
      *
      * @type sai_next_hop_endpoint_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -106,7 +106,7 @@ typedef enum _sai_next_hop_attr_t
 
     /**
      * @brief Next hop entry Segment Route Endpoint Pop Option. **Deprecated and replaced
-     * with SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_FLAVOR**
+     * with SAI_MY_SID_ENTRY_ATTR_ENDPOINT_FLAVOR**
      *
      * @type sai_next_hop_endpoint_pop_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
@@ -120,30 +120,6 @@ typedef enum _sai_next_hop_attr_t
 
 } sai_next_hop_attr_t;
 ```
-
-### sairouterinterface.h ###
-
-1. Added attribute to enable/disable SRv6 on a RIF.
-
-```
-typedef enum _sai_router_interface_attr_t
-{
-   ...
-
-    /**
-     * @brief Admin SRV6 state
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_ROUTER_INTERFACE_ATTR_ADMIN_SRV6_STATE,
-
-    ...
-
-} sai_router_interface_attr_t;
-```
-
 
 ### saisegmentroute.h ###
 
@@ -168,126 +144,126 @@ typedef enum _sai_router_interface_attr_t
 } sai_segmentroute_sidlist_type_t;
 ```
 
-2. Added enum sai_local_sid_entry_endpoint_type_t to provide the initial list of endpoint behaviors.
+2. Added enum sai_my_sid_entry_endpoint_type_t to provide the initial list of endpoint behaviors.
 
 ```
 /**
  * @brief Enum defining Endpoint Behavior
  */
-typedef enum _sai_local_sid_entry_endpoint_behavior_t
+typedef enum _sai_my_sid_entry_endpoint_behavior_t
 {
     /** Basic Endpoint */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_E,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_E,
 
     /** End.X Endpoint with Layer-3 Cross-connect */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_X,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_X,
 
     /** End.T Endpoint with specific IPv6 Table */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_T,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_T,
 
     /** Endpoint with decapsulation and IPv6 Cross-connect */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DX6,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DX6,
 
     /** Endpoint with decapsulation and IPv4 Cross-connect */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DX4,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DX4,
 
     /** Endpoint with decapsulation and specific IPv6 table lookup */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DT6,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT6,
 
     /** Endpoint with decapsulation and specific IPv6 table lookup */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DT4,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT4,
 
     /** Endpoint with decapsulation and specific IP table lookup */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DT46,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT46,
 
     /** Endpoint Bound to a policy with Encapsulation */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_ENCAPS,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_ENCAPS,
 
     /** End.B6.Encaps function with a reduced SRH */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_ENCAPS_RED,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_ENCAPS_RED,
 
     /** Endpoint Bound to a policy with Insertion */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_INSERT,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_INSERT,
 
     /** End.B6.Insert function with a reduced SRH */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_INSERT_RED,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_INSERT_RED,
 
     /** Custom range base value */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of Custom range base */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_CUSTOM_RANGE_END
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_CUSTOM_RANGE_END
 
-} sai_local_sid_entry_endpoint_behavior_t;
+} sai_my_sid_entry_endpoint_behavior_t;
 
 ```
-3. Added enum sai_local_sid_entry_endpoint_flavor_t to list all the combinations of endpoint flavors
+3. Added enum sai_my_sid_entry_endpoint_flavor_t to list all the combinations of endpoint flavors
    as defined in RFC-8986
 
 ```
 /**
  * @brief Enum defining Endpoint Behavior flavors for End, End.X and End.T functions
  */
-typedef enum _sai_local_sid_entry_endpoint_behavior_flavor_t
+typedef enum _sai_my_sid_entry_endpoint_behavior_flavor_t
 {
     /** None */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_NONE,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_NONE,
 
     /** Penultimate segment pop */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_PSP,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_PSP,
 
     /** Ultimate Segment pop */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_USP,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_USP,
 
     /** Ultimate Segment decapsulation */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_USD,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_USD,
 
     /** PSP and USP */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_PSP_AND_USP,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_PSP_AND_USP,
 
     /** USD and USP */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_USD_AND_USP,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_USD_AND_USP,
 
     /** PSP and USD */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_PSP_AND_USD,
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_PSP_AND_USD,
 
     /** PSP, USP and USD */
-    SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_PSP_AND_USP_AND_USD
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_PSP_AND_USP_AND_USD
 
-} sai_local_sid_entry_endpoint_behavior_flavor_t;
+} sai_my_sid_entry_endpoint_behavior_flavor_t;
 
 ```
 
-4. Added a new object sai_local_sid_entry_t configure Endpoint behavior.
+4. Added a new object sai_my_sid_entry_t configure Endpoint behavior.
 
 ```
 /**
- * @brief Attribute list for Local SID
+ * @brief Attribute list for My SID
  */
-typedef enum _sai_local_sid_entry_attr_t
+typedef enum _sai_my_sid_entry_attr_t
 {
     /**
      * @brief Start of attributes
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_START,
+    SAI_MY_SID_ENTRY_ATTR_START,
 
     /**
      * @brief Endpoint Function
      *
-     * @type sai_local_sid_entry_endpoint_behavior_t
+     * @type sai_my_sid_entry_endpoint_behavior_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR = SAI_LOCAL_SID_ENTRY_ATTR_START,
+    SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR = SAI_MY_SID_ENTRY_ATTR_START,
 
     /**
      * @brief Flavor for End, End.X and End.T functions
      *
-     * @type sai_local_sid_entry_endpoint_behavior_flavor_t
+     * @type sai_my_sid_entry_endpoint_behavior_flavor_t
      * @flags CREATE_AND_SET
-     * @default SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_NONE
-     * @validonly SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_E or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_X or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_T
+     * @default SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_FLAVOR_NONE
+     * @validonly SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_E or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_X or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_T
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR_FLAVOR,
+    SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR_FLAVOR,
 
     /**
      * @brief Packet action
@@ -296,7 +272,7 @@ typedef enum _sai_local_sid_entry_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_PACKET_ACTION,
+    SAI_MY_SID_ENTRY_ATTR_PACKET_ACTION,
 
     /**
      * @brief Packet priority for trap/log actions
@@ -305,7 +281,7 @@ typedef enum _sai_local_sid_entry_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_TRAP_PRIORITY,
+    SAI_MY_SID_ENTRY_ATTR_TRAP_PRIORITY,
 
     /**
      * @brief Next hop for cross-connect functions
@@ -315,9 +291,9 @@ typedef enum _sai_local_sid_entry_attr_t
      * @objects SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_ROUTER_INTERFACE
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_X or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DX4 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DX6 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_ENCAPS or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_ENCAPS_RED or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_INSERT or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_INSERT_RED
+     * @validonly SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_X or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DX4 or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DX6 or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_ENCAPS or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_ENCAPS_RED or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_INSERT or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_INSERT_RED
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_NEXT_HOP_ID,
+    SAI_MY_SID_ENTRY_ATTR_NEXT_HOP_ID,
 
     /**
      * @brief Tunnel id for decapsulation
@@ -327,9 +303,9 @@ typedef enum _sai_local_sid_entry_attr_t
      * @objects SAI_OBJECT_TYPE_TUNNEL
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DT4 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DT6 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DT46
+     * @validonly SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT4 or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT6 or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT46
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_TUNNEL_ID,
+    SAI_MY_SID_ENTRY_ATTR_TUNNEL_ID,
 
     /**
      * @brief VRF for decapsulation and specific table lookup functions
@@ -339,9 +315,9 @@ typedef enum _sai_local_sid_entry_attr_t
      * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_T or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DT4 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DT6 or SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_LOCAL_SID_ENTRY_ENDPOINT_BEHAVIOR_DT46
+     * @validonly SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_T or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT4 or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT6 or SAI_MY_SID_ENTRY_ATTR_ENDPOINT_BEHAVIOR == SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT46
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_VRF,
+    SAI_MY_SID_ENTRY_ATTR_VRF,
 
     /**
      * @brief Attach a counter
@@ -354,25 +330,25 @@ typedef enum _sai_local_sid_entry_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_COUNTER_ID,
+    SAI_MY_SID_ENTRY_ATTR_COUNTER_ID,
 
     /**
      * @brief End of attributes
      */
-    SAI_LOCAL_SID_ENTRY_ATTR_END,
+    SAI_MY_SID_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_LOCAL_SID_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_MY_SID_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_LOCAL_SID_ENTRY_ATTR_CUSTOM_RANGE_END
+    SAI_MY_SID_ENTRY_ATTR_CUSTOM_RANGE_END
 
-} sai_local_sid_entry_attr_t;
+} sai_my_sid_entry_attr_t;
 
 /**
- * @brief Local SID Entry
+ * @brief My SID Entry
  */
-typedef struct _sai_local_sid_entry_t
+typedef struct _sai_my_sid_entry_t
 {
     /**
      * @brief Switch ID
@@ -409,24 +385,24 @@ typedef struct _sai_local_sid_entry_t
     sai_uint8_t args_len;
 
     /**
-     * @brief IPv6 prefix for Local SID
+     * @brief IPv6 prefix for My SID
      */
     sai_ip6_t sid;
 
-} sai_local_sid_entry_t;
+} sai_my_sid_entry_t;
 
 ```
 
-5. Added apis to create/remove and set/get attributes for local_sid_entry
+5. Added apis to create/remove and set/get attributes for my_sid_entry
 
-    - add_local_sid_entry
-    - remove_local_sid_entry
-    - set_local_sid_entry_attribute
-    - get_local_sid_entry_attribute
-    - create_local_sid_entries
-    - remove_local_sid_entries
-    - set_local_sid_entries_attribute
-    - get_local_sid_entries_attribute
+    - add_my_sid_entry
+    - remove_my_sid_entry
+    - set_my_sid_entry_attribute
+    - get_my_sid_entry_attribute
+    - create_my_sid_entries
+    - remove_my_sid_entries
+    - set_my_sid_entries_attribute
+    - get_my_sid_entries_attribute
 
 
 ## Examples ##
@@ -442,7 +418,7 @@ typedef struct _sai_local_sid_entry_t
             CONVERT_STR_TO_IPV6(sidlist_entry_attrs[1].value.objlist.list[0], "2001:db8:85a3::8a2e:370:7334");
             CONVERT_STR_TO_IPV6(sidlist_entry_attrs[1].value.objlist.list[1], "2001:db8:85a3::8a2e:370:2345");
             CONVERT_STR_TO_IPV6(sidlist_entry_attrs[1].value.objlist.list[2], "2001:db8:85a3::8a2e:370:3456");
-            saistatus = sai_v6sr_api->create_segmentroute_sidlist(&sidlist_id, switch_id, 2, sidlist_entry_attrs);
+            saistatus = sai_srv6_api->create_segmentroute_sidlist(&sidlist_id, switch_id, 2, sidlist_entry_attrs);
 
         2. Create a tunnel object with source IP used for tunnel encapsulation
 
@@ -452,7 +428,7 @@ typedef struct _sai_local_sid_entry_t
             CONVERT_STR_TO_IPV6(tunnel_entry_attrs[1].value, "2001:db8:85a3::8a2e:370:9876");
             tunnel_entry_attrs[2].id = SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE
             tunnel_entry_attrs[2].value.oid = underlay_rif // created elsewhere
-            saistatus = sai_v6sr_api->create_tunnel(&tunnel_id, switch_id, 3, tunnel_entry_attrs)
+            saistatus = sai_tunnel_api->create_tunnel(&tunnel_id, switch_id, 3, tunnel_entry_attrs)
 
         3. Create a srv6 nexthop object bound to the SID list object and H.Encaps.Red behavior
 
@@ -462,7 +438,7 @@ typedef struct _sai_local_sid_entry_t
             nexthop_entry_attrs[1].value.oid = tunnel_id
             nexthop_entry_attrs[2].id = SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID
             nexthop_entry_attrs[2].value.oid = sidlist_id
-            saistatus = sai_v6sr_api->create_nexthop(&nexthop_id, switch_id, 3, nexthop_entry_attrs)
+            saistatus = sai_nexthop_api->create_nexthop(&nexthop_id, switch_id, 3, nexthop_entry_attrs)
 
         4. Create a route entry which points to the srv6 nexthop
 
@@ -474,24 +450,24 @@ typedef struct _sai_local_sid_entry_t
 
             route_entry_attrs[0].id = SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID;
             route_entry_attrs[0].value.oid = nexthop_id;
-            saisstatus = saiv6sr_api->create_route(&route_entry, 1, route_entry_attrs)
+            saisstatus = sai_route_api->create_route(&route_entry, 1, route_entry_attrs)
 
 
 - SR Endpoint/Transit
 
         Example configuration for End.DT46 behavior
 
-        local_sid_entry.switch_id = 0
-        local_sid_entry.vr_id = vr_id_1 // underlay VRF
-        local_sid_entry.locator_len = 64
-        local_sid_entry.function_len = 8
-        CONVERT_STR_TO_IPV6(local_sid_entry.sid, "2001:db8:0:1::1000:0:0:0");
+        my_sid_entry.switch_id = 0
+        my_sid_entry.vr_id = vr_id_1 // underlay VRF
+        my_sid_entry.locator_len = 64
+        my_sid_entry.function_len = 8
+        CONVERT_STR_TO_IPV6(my_sid_entry.sid, "2001:db8:0:1::1000:0:0:0");
 
-        local_sid_attr[0].id = SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE
-        local_sid_attr[0].value = SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_DT46
-        local_sid_attr[1].id = SAI_LOCAL_SID_ENTRY_ATTR_VRF
-        local_sid_attr[1].value.oid = vr_id_1001 // overlay vrf, created elsewhere
-        saistatus = saiv6sr_api->create_local_sid(&local_sid_entry, 2, local_sid_attr)
+        my_sid_attr[0].id = SAI_MY_SID_ENTRY_ATTR_ENDPOINT_TYPE
+        my_sid_attr[0].value = SAI_MY_SID_ENTRY_ENDPOINT_TYPE_DT46
+        my_sid_attr[1].id = SAI_MY_SID_ENTRY_ATTR_VRF
+        my_sid_attr[1].value.oid = vr_id_1001 // overlay vrf, created elsewhere
+        saistatus = sai_srv6_api->create_my_sid(&my_sid_entry, 2, my_sid_attr)
 
 
 ## References ##
