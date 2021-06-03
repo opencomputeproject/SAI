@@ -2,14 +2,14 @@ SAI IPv6 Segment Routing Update
 
 ## Overview ##
 
-Segment Routing with IPv6(SRv6) support was added in SAI 1.2 about 4 years ago. Since then SAI 
-pipeline model for tunnels and MPLS fowarding has evolved and there have been several 
-modifications to SRv6 RFCs. This proposal will bring SRv6 APIs and attributes in-line with the 
-latest RFCs and SAI MPLS/tunnel pipeline model. 
+Segment Routing with IPv6(SRv6) support was added in SAI 1.2 about 4 years ago. Since then SAI
+pipeline model for tunnels and MPLS fowarding has evolved and there have been several
+modifications to SRv6 RFCs. This proposal will bring SRv6 APIs and attributes in-line with the
+latest RFCs and SAI MPLS/tunnel pipeline model.
 
-Note that SRv6 features and use cases continue to evolve and this proposal is focused on functions 
+Note that SRv6 features and use cases continue to evolve and this proposal is focused on functions
 and behaviors described in the SRv6 Network Programming RFC [
-Segment Routing over IPv6 (SRv6) Network Programming]. We will submit additional 
+Segment Routing over IPv6 (SRv6) Network Programming]. We will submit additional
 PRs in future to add support for other functions and use cases. Also, this PR doesn't explicitly address
 the functionality related to Traffic Class, Hop-Limit, ECN marking and load-balancing hash calculation.
 It's assumed that existing attributes for other IPv6 tunnels will apply to the SRv6 as well.
@@ -19,14 +19,14 @@ Following list of changes are being proposed:
 ## Behavioral Model Changes ##
 
 ### Endpoint Behavior ###
-In the earlier proposal, In order to program the hardware for an Endpoint SID, first a route entry is created for the local SID and then a nexthop entry 
-is created to specify the endpoint behavior and parameters. This will require either the application or the operating system responsible for making the SAI 
-API calls to create two additional objects for every LocalSID entry - a route object and a nexthop object. This model is different from the programming model 
-used for IP tunnels and MPLS. For IP and MPLS tunnel terminations, a separate tunnel_term or Insegment object is created without a need to decompose the tunnel 
-termination entry into multiple SAI objects. 
+In the earlier proposal, In order to program the hardware for an Endpoint SID, first a route entry is created for the local SID and then a nexthop entry
+is created to specify the endpoint behavior and parameters. This will require either the application or the operating system responsible for making the SAI
+API calls to create two additional objects for every LocalSID entry - a route object and a nexthop object. This model is different from the programming model
+used for IP tunnels and MPLS. For IP and MPLS tunnel terminations, a separate tunnel_term or Insegment object is created without a need to decompose the tunnel
+termination entry into multiple SAI objects.
 This proposal will follow the programming model of MPLS segment routing and IP tunnel termination by adding a LocalSID object for SRv6 similar to InSegment
 for MPLS.
-  
+
 ![SRv6 Endpoint Behavioral Model](figures/SRv6_Endpoint_behavioral_model.png "Figure 1: Endpoint Behavior ")
 __Figure 1: Endpoint Behavior.__
 
@@ -125,11 +125,11 @@ typedef enum _sai_next_hop_attr_t
 
 1. Added attribute to enable/disable SRv6 on a RIF.
 
-```   
+```
 typedef enum _sai_router_interface_attr_t
 {
    ...
-   
+
     /**
      * @brief Admin SRV6 state
      *
@@ -147,8 +147,8 @@ typedef enum _sai_router_interface_attr_t
 
 ### saisegmentroute.h ###
 
-1. Added new enums for SR Headend functionality with reduced SRH. These new behaviors reduce the length of 
-   SRH by excluding the first segment in the pushed IPv6 header. First segment is placed in only the DA of 
+1. Added new enums for SR Headend functionality with reduced SRH. These new behaviors reduce the length of
+   SRH by excluding the first segment in the pushed IPv6 header. First segment is placed in only the DA of
    the outer IPv6 header.
 
 ```
@@ -166,7 +166,7 @@ typedef enum _sai_router_interface_attr_t
 
 
 } sai_segmentroute_sidlist_type_t;
-``` 
+```
 
 2. Added enum sai_local_sid_entry_endpoint_type_t to provide the initial list of endpoint behaviors.
 
@@ -221,7 +221,7 @@ typedef enum _sai_local_sid_entry_endpoint_behavior_t
 } sai_local_sid_entry_endpoint_behavior_t;
 
 ```
-3. Added enum sai_local_sid_entry_endpoint_flavor_t to list all the combinations of endpoint flavors 
+3. Added enum sai_local_sid_entry_endpoint_flavor_t to list all the combinations of endpoint flavors
    as defined in RFC-8986
 
 ```
@@ -432,7 +432,7 @@ typedef struct _sai_local_sid_entry_t
 ## Examples ##
 - SR Headend
     Example configuration for H.Encaps.Red behavior
-       
+
         1. Create a SID list object with 3 segments
 
             sidlist_entry_attrs[0].id = SAI_SEGMENTROUTE_SIDLIST_ATTR_TYPE
@@ -442,8 +442,8 @@ typedef struct _sai_local_sid_entry_t
             CONVERT_STR_TO_IPV6(sidlist_entry_attrs[1].value.objlist.list[0], "2001:db8:85a3::8a2e:370:7334");
             CONVERT_STR_TO_IPV6(sidlist_entry_attrs[1].value.objlist.list[1], "2001:db8:85a3::8a2e:370:2345");
             CONVERT_STR_TO_IPV6(sidlist_entry_attrs[1].value.objlist.list[2], "2001:db8:85a3::8a2e:370:3456");
-            saistatus = sai_v6sr_api->create_segmentroute_sidlist(&sidlist_id, switch_id, 2, sidlist_entry_attrs);    
-            
+            saistatus = sai_v6sr_api->create_segmentroute_sidlist(&sidlist_id, switch_id, 2, sidlist_entry_attrs);
+
         2. Create a tunnel object with source IP used for tunnel encapsulation
 
             tunnel_entry_attrs[0].id = SAI_TUNNEL_ATTR_TYPE
@@ -463,22 +463,22 @@ typedef struct _sai_local_sid_entry_t
             nexthop_entry_attrs[2].id = SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID
             nexthop_entry_attrs[2].value.oid = sidlist_id
             saistatus = sai_v6sr_api->create_nexthop(&nexthop_id, switch_id, 3, nexthop_entry_attrs)
-             
+
         4. Create a route entry which points to the srv6 nexthop
 
             route_entry.switch_id = 0
             route_entry.vr_id = vr_id_1 // created elsewhere
             route_entry.destination.addr_family = SAI_IP_ADDR_FAMILY_IPV4
             route_entry.destination.addr.ip4 = "198.51.100.0"
-            route_entry.destination.addr.mask = "255.255.255.0"            
+            route_entry.destination.addr.mask = "255.255.255.0"
 
             route_entry_attrs[0].id = SAI_ROUTE_ENTRY_ATTR_NEXT_HOP_ID;
-            route_entry_attrs[0].value.oid = nexthop_id; 
+            route_entry_attrs[0].value.oid = nexthop_id;
             saisstatus = saiv6sr_api->create_route(&route_entry, 1, route_entry_attrs)
-    
+
 
 - SR Endpoint/Transit
-    
+
         Example configuration for End.DT46 behavior
 
         local_sid_entry.switch_id = 0
@@ -486,7 +486,7 @@ typedef struct _sai_local_sid_entry_t
         local_sid_entry.locator_len = 64
         local_sid_entry.function_len = 8
         CONVERT_STR_TO_IPV6(local_sid_entry.sid, "2001:db8:0:1::1000:0:0:0");
-    
+
         local_sid_attr[0].id = SAI_LOCAL_SID_ENTRY_ATTR_ENDPOINT_TYPE
         local_sid_attr[0].value = SAI_LOCAL_SID_ENTRY_ENDPOINT_TYPE_DT46
         local_sid_attr[1].id = SAI_LOCAL_SID_ENTRY_ATTR_VRF
@@ -500,3 +500,4 @@ typedef struct _sai_local_sid_entry_t
 3. [Segment Routing Policy Architecture](https://tools.ietf.org/html/draft-ietf-spring-segment-routing-policy-11)
 4. [Segment Routing Architecture](https://datatracker.ietf.org/doc/html/rfc8402)
 5. [SRv6 NET-PGM extension: Insertion](https://datatracker.ietf.org/doc/html/draft-filsfils-spring-srv6-net-pgm-insertion-04)
+6. [Network Programming extension: SRv6 uSID instruction](https://datatracker.ietf.org/doc/html/draft-filsfils-spring-net-pgm-extension-srv6-usid-10)
