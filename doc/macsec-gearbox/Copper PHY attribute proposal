@@ -1,123 +1,176 @@
-Proposal for Copper PHY attributes
+# Proposal for Copper PHY attributes
 
-MDIX Mode and Status
+## MDIX Mode and Status
 
-During copper forced-speed mode, one end of the link must perform an MDI crossover so that each transceiver’s transmitter is connected to the other receiver. PHY can perform an automatic media-dependent interface crossover, eliminating the need for crossover cables or cross-wired ports. SAI_PORT_ATTR_MDIX_MODE_CONFIG attribute can be used to set auto, crossover, or straight mode and SAI_PORT_ATTR_MDIX_MODE_STATUS can be used to read the current status of the MDIX mode
+During copper forced-speed mode, one end of the link must perform an MDI crossover so that each transceiver&#39;s transmitter is connected to the other receiver. PHY can perform an automatic media-dependent interface crossover, eliminating the need for crossover cables or cross-wired ports. SAI\_PORT\_ATTR\_MDIX\_MODE\_CONFIG attribute can be used to set auto, crossover, or straight mode and SAI\_PORT\_ATTR\_MDIX\_MODE\_STATUS can be used to read the current status of the MDIX mode
 
- * @brief Attribute data for #SAI_PORT_ATTR_MDIX_MODE_STATUS
- * Used for MDIX mode status
- */
-typedef enum _sai_port_mdix_mode_status_t
-{
-    /** MDIX mode status straight */
-    SAI_PORT_MDIX_MODE_STATUS_STRAIGHT,
+| \* @brief Attribute data for #SAI\_PORT\_ATTR\_MDIX\_MODE\_STATUS |
+| --- |
+| \* Used for MDIX mode status |
+| \*/ |
+| typedef enum \_sai\_port\_mdix\_mode\_status\_t |
+| { |
+| /\*\* MDIX mode status auto \*/ |
+| SAI\_PORT\_MDIX\_MODE\_STATUS\_AUTO, |
+|
 
-    /**  MDIX mode status crossover */
-    SAI_PORT_MDIX_MODE_STATUS_CROSSOVER
-} sai_port_mdix_mode_status_t;
+ |
+| /\*\* MDIX mode status straight \*/ |
+| SAI\_PORT\_MDIX\_MODE\_STATUS\_STRAIGHT, |
+|
 
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_MDIX_MODE_CONFIG
- * Used for MDIX mode configuration
- */
-typedef enum _sai_port_mdix_mode_config_t
-{
-    /** MDIX mode auto */
-    SAI_PORT_MDIX_MODE_CONFIG_AUTO,
+ |
+| /\*\* MDIX mode status crossover \*/ |
+| SAI\_PORT\_MDIX\_MODE\_STATUS\_CROSSOVER |
+| } sai\_port\_mdix\_mode\_status\_t; |
+|
+ |
+| /\*\* |
+| \* @brief Attribute data for #SAI\_PORT\_ATTR\_MDIX\_MODE\_CONFIG |
+| \* Used for MDIX mode configuration |
+| \*/ |
+| typedef enum \_sai\_port\_mdix\_mode\_config\_t |
+| { |
+| /\*\* MDIX mode auto \*/ |
+| SAI\_PORT\_MDIX\_MODE\_CONFIG\_AUTO, |
+|
 
-    /** MDIX mode straight */
-    SAI_PORT_MDIX_MODE_CONFIG_STRAIGHT,
+ |
+| /\*\* MDIX mode straight \*/ |
+| SAI\_PORT\_MDIX\_MODE\_CONFIG\_STRAIGHT, |
+|
 
-    /**  MDIX mode cross over */
-    SAI_PORT_MDIX_MODE_CONFIG_CROSSOVER
-} sai_port_mdix_mode_config_t;
+ |
+| /\*\* MDIX mode cross over \*/ |
+| SAI\_PORT\_MDIX\_MODE\_CONFIG\_CROSSOVER |
+| } sai\_port\_mdix\_mode\_config\_t; |
+|
+## Master/Slave Auto-negotiation Configuration
+In 1000BASE-T mode, one end of the link must be configured as the timing master and the other end as the slave.Master/slave configuration is performed by the auto-negotiation function. The auto-negotiation function first looks at the manual master/slave configuration modes advertised by the local PHY and the link partner. If both ends of the link attempt to forcethe same manual configuration (both master or both slave), PHY will try to link up and restart auto-negotiation if needed. SAI\_PORT\_ATTR\_AUTO\_NEG\_CONFIG\_MODE can be used to set the PHY either in Master, Slave, Auto mode (defer to hardware), or disable auto-negotiation mode.
+ |
+| /\*\* |
+| \* @brief Attribute data for #SAI\_PORT\_ATTR\_AUTO\_NEG\_CONFIG\_MODE |
+| \* Used for auto negotiation mode to configure master or slave mode |
+| \*/ |
+| typedef enum \_sai\_port\_auto\_neg\_config\_mode\_t |
+| { |
+| /\*\* Auto neg mode disabled \*/ |
+| SAI\_PORT\_AUTO\_NEG\_CONFIG\_MODE\_DISABLED, |
+|
 
-Master/Slave Auto-negotiation Configuration
-In 1000BASE-T mode, one end of the link must be configured as the timing master and the other end as the slave.
-Master/slave configuration is performed by the auto-negotiation function. The auto-negotiation function first looks at the 
-manual master/slave configuration modes advertised by the local PHY and the link partner. If both ends of the link attempt to force
-the same manual configuration (both master or both slave), PHY will try to link up and restart auto-negotiation if needed. 
-SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE can be used to set the PHY either in Master, Slave, and Auto mode (defer to hardware)
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE
- * Used for auto negotiation mode to configure master or slave mode
- */
-typedef enum _sai_port_auto_neg_config_mode_t
-{
-    /** Auto neg mode auto */
-    SAI_PORT_AUTO_NEG_CONFIG_MODE_AUTO,
+ |
+| /\*\* Auto neg mode auto \*/ |
+| SAI\_PORT\_AUTO\_NEG\_CONFIG\_MODE\_AUTO, |
+|
 
-    /** Auto neg mode slave */
-    SAI_PORT_AUTO_NEG_CONFIG_MODE_SLAVE,
+ |
+| /\*\* Auto neg mode slave \*/ |
+| SAI\_PORT\_AUTO\_NEG\_CONFIG\_MODE\_SLAVE, |
+|
 
-    /** Auto neg mode master */
-    SAI_PORT_AUTO_NEG_CONFIG_MODE_MASTER
-} sai_port_auto_neg_config_mode_t;
+ |
+| /\*\* Auto neg mode master \*/ |
+| SAI\_PORT\_AUTO\_NEG\_CONFIG\_MODE\_MASTER |
+| } sai\_port\_auto\_neg\_config\_mode\_t; |
+|
 
+ |
+|
+## 1000BaseX and SGMII Slave Autodetect
+When set to true, PHY device can automatically switch between 1000BaseX and SGMII-Slave mode and 1000Base-X or SGMII-Slave module can get a link up without modifying PHY configurations. /\*\*
 
-1000BaseX and SGMII Slave Autodetect
-When set to true, PHY device can automatically switch between 1000BaseX and SGMII-Slave mode 
-and 1000Base-X or SGMII-Slave module can get a link up without modifying PHY configurations.  
-  /**
-* @brief Enable auto detection between 1000X and SGMII slave mode
-*
-* @type bool
-* @flags CREATE_AND_SET
-* @default false
-@validonly SAI_PORT_ATTR_SPEED == 1000 or SAI_PORT_ATTR_SPEED == 100 and SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_ATTR_MEDIA_TYPE_FIBER
-*/
-SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT,
-
-
-Dual media support
-External PHY support dual media mode where both Copper and Fiber ports are available. SAI_PORT_DUAL_MEDIA_NONE can be used to configure media types for dual media supported PHYs.
-sai_port_dual_media_t enum supports all the supported configurations.
-
-
-EEE Latency Mode
-
-EEE Latency mode allows user to configure a fixed or variable latency when EEE is enabled.
-Variable latency can be configured using SAI_PORT_ATTR_EEE_WAKE_TIME
-
-/**
-* @brief Configure EEE latency mode
-*
-* False: Fixed latency
-* True: Variable latency
-*
-* @type bool
-* @flags CREATE_AND_SET
-* @default false
-*/
-SAI_PORT_ATTR_EEE_LATENCY_MODE,
+| \* @brief Enable auto detection between 1000X and SGMII slave mode |
+| --- |
+| \* |
+| \* @type bool |
+| \* @flags CREATE\_AND\_SET |
+| \* @default false |
+| \*/ |
+| SAI\_PORT\_ATTR\_1000X\_SGMII\_SLAVE\_AUTODETECT, |
 
 
-Module Type
+ |
+|
 
-SAI_PORT_ATTR_MODULE_TYPE allows user to force various module types when fiber interface is active. 
-Supported fiber interfaces are 1000BASE-X, SGMII-SLAVE, and 100FX. 
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_MODULE_TYPE
- * Used for configuring Fiber module type
- */
-typedef enum _sai_port_module_type_t
-{
-    /** Module Type Fiber */
-    SAI_PORT_MODULE_TYPE_1000BASE-X,
+## Auto-medium
 
-    /** Module Type SGMII-Slave */
-    SAI_PORT_MODULE_TYPE_SGMII_SLAVE,
+ When set to true, it enables auto medium to select between fiber and copper media types. When a setup involves Copper and Fiber media types but only one media type can be active at any given time.The default medium is Copper medium and if auto-medium is set to true, Copper or Fiber media types can beused. SAI\_PORT\_ATTR\_AUTO\_MEDIUM attribute can be used to enable auto-medium.
 
-    /** Module Type 100FX */
-    SAI_PORT_MODULE_TYPE_100FX,
-} sai_port_module_type_t;
+| /\*\*\* @brief Enable auto medium to select both fiber and copper media types |
+| --- |
+| \* |
+| \* @type bool |
+| \* @flags CREATE\_AND\_SET |
+| \* @default false |
+| \*/ |
+|
+ |
 
-/**
-* @brief Configure Fiber module type
-*
-* @type sai_port_module_type_t
-* @flags CREATE_AND_SET
-* @default SAI_PORT_MODULE_TYPE_1000BaseX
- * @validonly SAI_PORT_ATTR_SPEED == 1000 or SAI_PORT_ATTR_SPEED == 100 and SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_ATTR_MEDIA_TYPE_FIBER    
-*/
-SAI_PORT_ATTR_MODULE_TYPE,
+## Media Preference:
+When set to true, it enables media preference to select fiber ports over copper ports.
+/\*\*
+
+| \* @brief Configure media precedence |
+| --- |
+| \* |
+| \* The PHY supporting mutually exclusive copper and fiber ports should be |
+| \* configured to select the preferred/active media. |
+| \* True: Configure Fiber ports to be active |
+| \* False: Configure Copper ports to be active |
+| \* |
+| \* @type bool |
+| \* @flags CREATE\_AND\_SET |
+| \* @default false |
+| \*/ |
+| SAI\_PORT\_ATTR\_MEDIA\_PREFERRED, |
+|
+
+## EEE Latency Mode
+
+EEE Latency mode allows user to configure a fixed or variable latency when EEE is enabled.Variable latency can be configured using SAI\_PORT\_ATTR\_EEE\_WAKE\_TIME
+ |
+| /\*\* |
+| \* @brief Configure EEE latency mode |
+| \* |
+| \* False: Fixed latency |
+| \* True: Variable latency |
+| \* |
+| \* @type bool |
+| \* @flags CREATE\_AND\_SET |
+| \* @default false |
+| \*/ |
+| SAI\_PORT\_ATTR\_EEE\_LATENCY\_MODE, |
+|
+
+ |
+
+## Module Type
+
+SAI\_PORT\_ATTR\_MODULE\_TYPE allows user to force various module types when fiber interface is active. Supported fiber interfaces are 1000BASE-X, SGMII-SLAVE, and 100FX. |
+| /\*\* |
+| \* @brief Attribute data for #SAI\_PORT\_ATTR\_MODULE\_TYPE |
+| \* Used for configuring Fiber module type |
+| \*/ |
+| typedef enum \_sai\_port\_module\_type\_t |
+| { |
+| /\*\* Module Type Fiber \*/ |
+| SAI\_PORT\_MODULE\_TYPE\_1000BASE-X, |
+|
+ |
+| /\*\* Module Type SGMII-Slave \*/ |
+| SAI\_PORT\_MODULE\_TYPE\_SGMII\_SLAVE, |
+|
+ |
+| /\*\* Module Type 100FX \*/ |
+| SAI\_PORT\_MODULE\_TYPE\_100FX, |
+| } sai\_port\_module\_type\_t; |
+
+| /\*\* |
+| --- |
+| \* @brief Configure Fiber module type |
+| \* |
+| \* @type sai\_port\_module\_type\_t |
+| \* @flags CREATE\_AND\_SET |
+| \* @default SAI\_PORT\_MODULE\_TYPE\_1000BaseX |
+| \*/ |
+| SAI\_PORT\_ATTR\_MODULE\_TYPE, |
