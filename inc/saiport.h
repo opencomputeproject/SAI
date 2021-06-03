@@ -112,6 +112,7 @@ typedef enum _sai_port_flow_control_mode_t
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_INTERNAL_LOOPBACK_MODE
+ * To be deprecated, use sai_port_loopback_mode_t instead.
  */
 typedef enum _sai_port_internal_loopback_mode_t
 {
@@ -125,6 +126,24 @@ typedef enum _sai_port_internal_loopback_mode_t
     SAI_PORT_INTERNAL_LOOPBACK_MODE_MAC
 
 } sai_port_internal_loopback_mode_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_LOOPBACK_MODE
+ */
+typedef enum _sai_port_loopback_mode_t
+{
+    /** Disable loopback */
+    SAI_PORT_LOOPBACK_MODE_NONE,
+
+    /** Port loopback at PHY module */
+    SAI_PORT_LOOPBACK_MODE_PHY,
+
+    /** Port loopback at MAC module */
+    SAI_PORT_LOOPBACK_MODE_MAC,
+
+    /** Port loopback at PHY remote end */
+    SAI_PORT_LOOPBACK_MODE_PHY_REMOTE
+} sai_port_loopback_mode_t;
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_MEDIA_TYPE
@@ -903,6 +922,7 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Internal loopback control
+     * To be deprecated, use #SAI_PORT_ATTR_LOOPBACK_MODE
      *
      * @type sai_port_internal_loopback_mode_t
      * @flags CREATE_AND_SET
@@ -1868,6 +1888,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_OVERRIDE,
 
     /**
+     * @brief Internal or External loopback control
+     *
+     * @type sai_port_loopback_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_LOOPBACK_MODE_NONE
+     */
+    SAI_PORT_ATTR_LOOPBACK_MODE,
+
+    /**
      * @brief MDIX mode status for the port
      *
      * @type sai_port_mdix_mode_status_t
@@ -1934,7 +1963,7 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_DUAL_MEDIA_NONE
      */
     SAI_PORT_ATTR_DUAL_MEDIA,
-
+    
     /**
      * @brief End of attributes
      */
