@@ -112,6 +112,7 @@ typedef enum _sai_port_flow_control_mode_t
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_INTERNAL_LOOPBACK_MODE
+ * To be deprecated, use sai_port_loopback_mode_t instead.
  */
 typedef enum _sai_port_internal_loopback_mode_t
 {
@@ -125,6 +126,24 @@ typedef enum _sai_port_internal_loopback_mode_t
     SAI_PORT_INTERNAL_LOOPBACK_MODE_MAC
 
 } sai_port_internal_loopback_mode_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_LOOPBACK_MODE
+ */
+typedef enum _sai_port_loopback_mode_t
+{
+    /** Disable loopback */
+    SAI_PORT_LOOPBACK_MODE_NONE,
+
+    /** Port loopback at PHY module */
+    SAI_PORT_LOOPBACK_MODE_PHY,
+
+    /** Port loopback at MAC module */
+    SAI_PORT_LOOPBACK_MODE_MAC,
+
+    /** Port loopback at PHY remote end */
+    SAI_PORT_LOOPBACK_MODE_PHY_REMOTE
+} sai_port_loopback_mode_t;
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_MEDIA_TYPE
@@ -174,12 +193,33 @@ typedef enum _sai_port_fec_mode_t
     /** No FEC */
     SAI_PORT_FEC_MODE_NONE,
 
-    /** Enable RS-FEC - 25G, 50G, 100G ports */
+    /** Enable RS-FEC - 25G, 50G, 100G ports. The specific RS-FEC mode will be automatically determined. */
     SAI_PORT_FEC_MODE_RS,
 
     /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
     SAI_PORT_FEC_MODE_FC,
 } sai_port_fec_mode_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_FEC_MODE_EXTENDED
+ */
+typedef enum _sai_port_fec_mode_extended_t
+{
+    /** No FEC */
+    SAI_PORT_FEC_MODE_EXTENDED_NONE,
+
+    /** Enable RS-528 FEC (CL91) - 25G, 50G, 100G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_RS528,
+
+    /** Enable RS544-FEC - 100G PAM4, 200G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_RS544,
+
+    /** Enable RS544-FEC (interleaved) - 100G, 200G, 400G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_RS544_INTERLEAVED,
+
+    /** Enable FC-FEC (CL74) - 10G, 25G, 40G, 50G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_FC,
+} sai_port_fec_mode_extended_t;
 
 /**
  * @brief Priority flow control mode
@@ -458,6 +498,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SUPPORTED_FEC_MODE,
 
     /**
+     * @brief Query extended list of supported port FEC modes
+     *
+     * @type sai_s32_list_t sai_port_fec_mode_extended_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_FEC_MODE_EXTENDED,
+
+    /**
      * @brief Query list of Supported HALF-Duplex speed in Mbps
      *
      * @type sai_u32_list_t
@@ -512,6 +560,14 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_REMOTE_ADVERTISED_FEC_MODE,
+
+    /**
+     * @brief Query extended list of Advertised remote port FEC control
+     *
+     * @type sai_s32_list_t sai_port_fec_mode_extended_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_REMOTE_ADVERTISED_FEC_MODE_EXTENDED,
 
     /**
      * @brief Query list of Remote Port's Advertised HALF-Duplex speed in Mbps
@@ -670,8 +726,19 @@ typedef enum _sai_port_attr_t
      * @type sai_s32_list_t sai_port_fec_mode_t
      * @flags CREATE_AND_SET
      * @default empty
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == false
      */
     SAI_PORT_ATTR_ADVERTISED_FEC_MODE,
+
+    /**
+     * @brief Query/Configure extended list of Advertised port FEC Mode
+     *
+     * @type sai_s32_list_t sai_port_fec_mode_extended_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == true
+     */
+    SAI_PORT_ATTR_ADVERTISED_FEC_MODE_EXTENDED,
 
     /**
      * @brief Query/Configure list of Advertised HALF-Duplex speed in Mbps
@@ -772,6 +839,7 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Internal loopback control
+     * To be deprecated, use #SAI_PORT_ATTR_LOOPBACK_MODE
      *
      * @type sai_port_internal_loopback_mode_t
      * @flags CREATE_AND_SET
@@ -780,13 +848,36 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_INTERNAL_LOOPBACK_MODE,
 
     /**
+     * @brief Forward Error Correction (FEC) extended control
+     *
+     * Enables use of extended FEC controls as opposed to their non-extended
+     * counterparts.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_USE_EXTENDED_FEC,
+
+    /**
      * @brief Forward Error Correction (FEC) control
      *
      * @type sai_port_fec_mode_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_FEC_MODE_NONE
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == false
      */
     SAI_PORT_ATTR_FEC_MODE,
+
+    /**
+     * @brief Forward Error Correction (FEC) extended control
+     *
+     * @type sai_port_fec_mode_extended_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_FEC_MODE_EXTENDED_NONE
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == true
+     */
+    SAI_PORT_ATTR_FEC_MODE_EXTENDED,
 
     /**
      * @brief Update DSCP of outgoing packets
@@ -1700,6 +1791,27 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_SYSTEM_PORT
      */
     SAI_PORT_ATTR_SYSTEM_PORT,
+
+    /**
+     * @brief FEC mode auto-negotiation override status
+     *
+     * If set to true, any auto-negotiated FEC mode will be
+     * overridden by the value configured in SAI_PORT_ATTR_FEC_MODE
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_OVERRIDE,
+
+    /**
+     * @brief Internal or External loopback control
+     *
+     * @type sai_port_loopback_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_LOOPBACK_MODE_NONE
+     */
+    SAI_PORT_ATTR_LOOPBACK_MODE,
 
     /**
      * @brief End of attributes
