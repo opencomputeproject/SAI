@@ -1929,7 +1929,7 @@ typedef enum _sai_port_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER and SAI_PORT_ATTR_SPEED == 1000
      */
     SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT,
 
@@ -1951,7 +1951,7 @@ typedef enum _sai_port_attr_t
      * @type sai_port_module_type_t
      * @flags CREATE_AND_SET
      * @default SAI_PORT_MODULE_TYPE_1000BASE_X
-     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER and SAI_PORT_ATTR_SPEED == 1000
      */
     SAI_PORT_ATTR_MODULE_TYPE,
 
