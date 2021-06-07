@@ -78,6 +78,9 @@ In 1000BASE-T mode, one end of the link must be configured as the timing master 
  */
 typedef enum _sai_port_auto_neg_config_mode_t
 {
+    /** Auto neg configuration mode disabled */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_DISABLED,
+
     /** Auto neg mode auto */
     SAI_PORT_AUTO_NEG_CONFIG_MODE_AUTO,
 
@@ -93,7 +96,7 @@ typedef enum _sai_port_auto_neg_config_mode_t
  *
  * @type sai_port_auto_neg_config_mode_t
  * @flags CREATE_AND_SET
- * @default SAI_PORT_MDIX_MODE_CONFIG_AUTO
+ * @default SAI_PORT_AUTO_NEG_CONFIG_MODE_DISABLED
  * @validonly SAI_PORT_ATTR_AUTO_NEG_MODE == true
  */
 SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE,
@@ -112,25 +115,6 @@ When set to true, PHY device can automatically switch between 1000BaseX and SGMI
  * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER and SAI_PORT_ATTR_SPEED == 1000
  */
 SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT,
-
-```
-
-## EEE Latency Mode
-
-EEE Latency mode allows user to configure a fixed or variable latency when EEE is enabled. Variable latency can be configured using SAI_PORT_ATTR_EEE_WAKE_TIME
-
-```
-/**
- * @brief Configure EEE latency mode
- *
- * False: Fixed latency
- * True: Variable latency
- *
- * @type bool
- * @flags CREATE_AND_SET
- * @default false
- */
-SAI_PORT_ATTR_EEE_LATENCY_MODE,
 
 ```
 

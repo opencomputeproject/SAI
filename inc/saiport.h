@@ -423,6 +423,9 @@ typedef enum _sai_port_mdix_mode_config_t
  */
 typedef enum _sai_port_auto_neg_config_mode_t
 {
+    /** Auto neg configuration mode disabled */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_DISABLED,
+
     /** Auto neg mode auto */
     SAI_PORT_AUTO_NEG_CONFIG_MODE_AUTO,
 
@@ -470,53 +473,6 @@ typedef enum _sai_port_dual_media_t
     /**  Both Copper and Fiber supported, but Fiber preferred */
     SAI_PORT_DUAL_MEDIA_FIBER_PREFERRED
 } sai_port_dual_media_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_CABLE_PAIR_STATE
- * Copper cable pair states
- */
-typedef enum _sai_port_cable_pair_state_t
-{
-    /**  Cable state no faults */
-    SAI_PORT_CABLE_PAIR_STATE_OK,
-
-    /**  Cable state open */
-    SAI_PORT_CABLE_PAIR_STATE_OPEN,
-
-    /**  Cable state short */
-    SAI_PORT_CABLE_PAIR_STATE_SHORT,
-
-    /**  Cable state cross talk */
-    SAI_PORT_CABLE_PAIR_STATE_CROSSTALK,
-
-    /**  Cable state unknown */
-    SAI_PORT_CABLE_PAIR_STATE_UNKNOWN
-} sai_port_cable_pair_state_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_CABLE_TYPE
- * Copper cable types
- */
-typedef enum _sai_port_cable_type_t
-{
-    /**  Cable type Unknown */
-    SAI_PORT_CABLE_TYPE_UNKNOWN,
-
-    /**  Cable type CAT5 */
-    SAI_PORT_CABLE_TYPE_CAT5,
-
-    /**  Cable type CAT5E */
-    SAI_PORT_CABLE_TYPE_CAT5E,
-
-    /**  Cable type CAT6 */
-    SAI_PORT_CABLE_TYPE_CAT6,
-
-    /**  Cable type CAT6A */
-    SAI_PORT_CABLE_TYPE_CAT6A,
-
-    /**  Cable type CAT7 */
-    SAI_PORT_CABLE_TYPE_CAT7,
-} sai_port_cable_type_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -1965,7 +1921,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_auto_neg_config_mode_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_MDIX_MODE_CONFIG_AUTO
+     * @default SAI_PORT_AUTO_NEG_CONFIG_MODE_DISABLED
      * @validonly SAI_PORT_ATTR_AUTO_NEG_MODE == true
      */
     SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE,
@@ -1979,18 +1935,6 @@ typedef enum _sai_port_attr_t
      * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER and SAI_PORT_ATTR_SPEED == 1000
      */
     SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT,
-
-    /**
-     * @brief Enable EEE variable latency mode
-     *
-     * False: Fixed latency
-     * True: Variable latency
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_PORT_ATTR_EEE_LATENCY_VARIABLE,
 
     /**
      * @brief Configure Fiber module type
@@ -2010,34 +1954,6 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_DUAL_MEDIA_NONE
      */
     SAI_PORT_ATTR_DUAL_MEDIA,
-
-    /**
-     * @brief Read cable pair state.
-     * Returns pair states sequentially from list index 0 to n (n = number of pairs - 1)
-     *
-     * @type sai_s32_list_t sai_port_cable_pair_state_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_CABLE_PAIR_STATE,
-
-    /**
-     * @brief Get cable pair length
-     * Returns cable pair length sequentially from list index 0 to n (n = number of pairs - 1)
-     *
-     * @type sai_s32_list_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_CABLE_PAIR_LENGTH,
-
-    /**
-     * @brief Configure cable type to check the cable status
-     *
-     * @type sai_port_cable_type_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_CABLE_TYPE_UNKNOWN
-     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_COPPER
-     */
-    SAI_PORT_ATTR_CABLE_TYPE,
 
     /**
      * @brief End of attributes
