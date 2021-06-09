@@ -322,6 +322,14 @@ typedef enum _sai_hostif_trap_type_t
     /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_ADVERTISEMENT = 0x00002013,
 
+    /**
+     * @brief Intermediate System-to-Intermediate System (IS-IS) protocol
+     * traffic: L1: 01:80:c2:00:00:15, L2: 01:80:c2:00:00:15
+     * All IS: 09:00:2b:00:00:05
+     * Default packet action is forward
+     */
+    SAI_HOSTIF_TRAP_TYPE_ISIS = 0x00002014,
+
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
 
@@ -369,14 +377,6 @@ typedef enum _sai_hostif_trap_type_t
      * local router IP address (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_BFDV6 = 0x00004006,
-
-    /**
-     * @brief Intermediate System-to-Intermediate System (IS-IS) protocol
-     * traffic: L1: 01:80:c2:00:00:15, L2: 01:80:c2:00:00:15
-     * All IS: 09:00:2b:00:00:05
-     * Default packet action is forward
-     */
-    SAI_HOSTIF_TRAP_TYPE_ISIS = 0x00004007,
 
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
