@@ -372,9 +372,9 @@ typedef enum _sai_hostif_trap_type_t
 
     /**
      * @brief Intermediate System-to-Intermediate System (IS-IS) protocol
-     * traffic (L1 IS Device: 01:80:c2:00:00:14, L2 IS Device: 01:80:c2:00:00:15,
-     * All IS device: 09:00:2b:00:00:05, All ES device: 09:00:2b:00:00:04).
-     * Default packet action is trap
+     * traffic: L1: 01:80:c2:00:00:15, L2: 01:80:c2:00:00:15
+     * All IS: 09:00:2b:00:00:05
+     * Default packet action is forward
      */
     SAI_HOSTIF_TRAP_TYPE_ISIS = 0x00004007,
 
