@@ -62,50 +62,6 @@ typedef enum _sai_native_hash_field_t
     /** Native hash field inner destination IP */
     SAI_NATIVE_HASH_FIELD_INNER_DST_IP,
 
-    /**
-     * @brief Native hash field source IPv4.
-     *
-     * Also, refers to the outer source IPv4
-     * in case for encapsulated packets
-     */
-    SAI_NATIVE_HASH_FIELD_SRC_IPV4,
-
-    /**
-     * @brief Native hash field destination IPv4
-     *
-     * Also, refers to the outer source IPv4
-     * in case for encapsulated packets
-     */
-    SAI_NATIVE_HASH_FIELD_DST_IPV4,
-
-    /**
-     * @brief Native hash field source IPv6.
-     *
-     * Also, refers to the outer source IPv6
-     * in case for encapsulated packets
-     */
-    SAI_NATIVE_HASH_FIELD_SRC_IPV6,
-
-    /**
-     * @brief Native hash field destination IPv6
-     *
-     * Also, refers to the outer source IPv6
-     * in case for encapsulated packets
-     */
-    SAI_NATIVE_HASH_FIELD_DST_IPV6,
-
-    /** Native hash field inner source IPv4 */
-    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV4,
-
-    /** Native hash field inner destination IPv4 */
-    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV4,
-
-    /** Native hash field inner source IPv6 */
-    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV6,
-
-    /** Native hash field inner destination IPv6 */
-    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV6,
-
     /** Native hash field vlan id */
     SAI_NATIVE_HASH_FIELD_VLAN_ID,
 
@@ -168,6 +124,50 @@ typedef enum _sai_native_hash_field_t
 
     /** Native hash field IPv6 flow label */
     SAI_NATIVE_HASH_FIELD_IPV6_FLOW_LABEL,
+
+    /**
+     * @brief Native hash field source IPv4.
+     *
+     * Also, refers to the outer source IPv4
+     * in case for encapsulated packets
+     */
+    SAI_NATIVE_HASH_FIELD_SRC_IPV4,
+
+    /**
+     * @brief Native hash field destination IPv4
+     *
+     * Also, refers to the outer source IPv4
+     * in case for encapsulated packets
+     */
+    SAI_NATIVE_HASH_FIELD_DST_IPV4,
+
+    /**
+     * @brief Native hash field source IPv6.
+     *
+     * Also, refers to the outer source IPv6
+     * in case for encapsulated packets
+     */
+    SAI_NATIVE_HASH_FIELD_SRC_IPV6,
+
+    /**
+     * @brief Native hash field destination IPv6
+     *
+     * Also, refers to the outer source IPv6
+     * in case for encapsulated packets
+     */
+    SAI_NATIVE_HASH_FIELD_DST_IPV6,
+
+    /** Native hash field inner source IPv4 */
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV4,
+
+    /** Native hash field inner destination IPv4 */
+    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV4,
+
+    /** Native hash field inner source IPv6 */
+    SAI_NATIVE_HASH_FIELD_INNER_SRC_IPV6,
+
+    /** Native hash field inner destination IPv6 */
+    SAI_NATIVE_HASH_FIELD_INNER_DST_IPV6,
 
     /** No field - for compatibility, must be last */
     SAI_NATIVE_HASH_FIELD_NONE,
