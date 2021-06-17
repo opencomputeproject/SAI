@@ -146,3 +146,5 @@ PRBS - Pseudorandom binary sequence
 NAPT - Network Address Port Translation
 SNAPT - Source Network Address Port Translation
 DNAPT - Destination Network Address Port Trasnlation
+SGMII - Serial Gigabit Media Independent Interface
+MDIX - Medium Dependent Interface Crossover
