@@ -278,6 +278,21 @@ bool sai_metadata_is_condition_met(
         return false;
     }
 
+    switch (metadata->conditiontype)
+    {
+        case SAI_ATTR_CONDITION_TYPE_AND:
+        case SAI_ATTR_CONDITION_TYPE_OR:
+            break;
+
+        default:
+
+            /* TODO check for mixed condition, and use separate path */
+
+            SAI_META_LOG_ERROR("mixed condition on %s is not supported yet, FIXME", metadata->attridname);
+
+            return false;
+    }
+
     size_t idx = 0;
 
     bool met = (metadata->conditiontype == SAI_ATTR_CONDITION_TYPE_AND);

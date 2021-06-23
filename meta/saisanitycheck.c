@@ -1233,6 +1233,7 @@ void check_attr_conditions(
         case SAI_ATTR_CONDITION_TYPE_NONE:
         case SAI_ATTR_CONDITION_TYPE_OR:
         case SAI_ATTR_CONDITION_TYPE_AND:
+        case SAI_ATTR_CONDITION_TYPE_MIXED:
             break;
 
         default:
@@ -1288,6 +1289,22 @@ void check_attr_conditions(
         if (c->attrid == md->attrid)
         {
             META_MD_ASSERT_FAIL(md, "conditional attr id %d is the same as condition attribute", c->attrid);
+        }
+
+        if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_MIXED && c->attrid == SAI_INVALID_ATTRIBUTE_ID)
+        {
+            switch (c->type)
+            {
+                case SAI_ATTR_CONDITION_TYPE_OR:
+                case SAI_ATTR_CONDITION_TYPE_AND:
+                    break;
+
+                default:
+
+                    META_MD_ASSERT_FAIL(md, "conditionwrong sub condition type: %d (expected AND/OR)", c->type);
+            }
+
+            continue;
         }
 
         const sai_attr_metadata_t* cmd = sai_metadata_get_attr_metadata(md->objecttype, c->attrid);
@@ -1372,7 +1389,7 @@ void check_attr_conditions(
 
             default:
 
-                META_MD_ASSERT_FAIL(md, "conditional attribute must be create only");
+                META_MD_ASSERT_FAIL(cmd, "attribute must be create only since used in condition for %s", md->attridname);
         }
     }
 }
@@ -1387,6 +1404,7 @@ void check_attr_validonly(
         case SAI_ATTR_CONDITION_TYPE_NONE:
         case SAI_ATTR_CONDITION_TYPE_OR:
         case SAI_ATTR_CONDITION_TYPE_AND:
+        case SAI_ATTR_CONDITION_TYPE_MIXED:
             break;
 
         default:
@@ -1478,6 +1496,22 @@ void check_attr_validonly(
         if (c->attrid == md->attrid)
         {
             META_MD_ASSERT_FAIL(md, "validonly attr id %d is the same as validonly attribute", c->attrid);
+        }
+
+        if (md->validonlytype == SAI_ATTR_CONDITION_TYPE_MIXED && c->attrid == SAI_INVALID_ATTRIBUTE_ID)
+        {
+            switch (c->type)
+            {
+                case SAI_ATTR_CONDITION_TYPE_OR:
+                case SAI_ATTR_CONDITION_TYPE_AND:
+                    break;
+
+                default:
+
+                    META_MD_ASSERT_FAIL(md, "validonly wrong sub condition type: %d (expected AND/OR)", c->type);
+            }
+
+            continue;
         }
 
         const sai_attr_metadata_t* cmd = sai_metadata_get_attr_metadata(md->objecttype, c->attrid);
@@ -2624,6 +2658,176 @@ void check_attr_is_primitive(
     }
 }
 
+typedef struct _stack_item_t
+{
+    bool value;
+    struct _stack_item_t* next;
+
+} stack_item_t;
+
+typedef struct _stack_t
+{
+    stack_item_t* top;
+
+} stack_t;
+
+void stack_init(
+        _Inout_ stack_t* stack)
+{
+    META_LOG_ENTER();
+
+    stack->top = NULL;
+}
+
+void stack_push(
+        _Inout_ stack_t* stack,
+        _In_ bool value)
+{
+    META_LOG_ENTER();
+
+    stack_item_t *item = (stack_item_t*)calloc(1, sizeof(stack_item_t));
+
+    item->value = value;
+    item->next = stack->top;
+
+    stack->top = item;
+}
+
+bool stack_pop(
+        _Inout_ stack_t* stack)
+{
+    META_LOG_ENTER();
+
+    if (stack->top == NULL)
+    {
+        META_ASSERT_FAIL("stack is empty");
+    }
+
+    bool value = stack->top->value;
+    stack_item_t* top = stack->top;
+    stack->top = top->next;
+
+    free(top);
+
+    return value;
+}
+
+bool check_mixed_condition_list(
+        _In_ const sai_attr_metadata_t* md,
+        _In_ const sai_attr_condition_t* const* list)
+{
+    META_LOG_ENTER();
+
+    if (list[0] == NULL)
+    {
+        META_MD_ASSERT_FAIL(md, "hit end of condition list, RPN condition logic is BROKEN");
+    }
+
+    stack_t stack;
+
+    stack_init(&stack);
+
+    while (list[0] != NULL)
+    {
+        const sai_attr_condition_t* c = list[0];
+
+        if (c->type == SAI_ATTR_CONDITION_TYPE_NONE)
+        {
+            stack_push(&stack, true);
+
+            list++;
+            continue;
+        }
+
+        if (c->type == SAI_ATTR_CONDITION_TYPE_AND)
+        {
+            bool value = stack_pop(&stack) & stack_pop(&stack);
+
+            stack_push(&stack, value);
+
+            list++;
+            continue;
+        }
+
+        if (c->type == SAI_ATTR_CONDITION_TYPE_OR)
+        {
+            bool value = stack_pop(&stack) | stack_pop(&stack);
+
+            stack_push(&stack, value);
+
+            list++;
+            continue;
+        }
+
+        META_MD_ASSERT_FAIL(md, "wrong condition type on list: %d", c->type);
+    }
+
+    bool value = stack_pop(&stack);
+
+    if (stack.top != NULL)
+    {
+        META_MD_ASSERT_FAIL(md, "stack not empty after condition list check, RPN condition logic is BROKEN");
+    }
+
+    return value;
+}
+
+void check_attr_mixed_condition(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_MIXED)
+    {
+        META_ASSERT_TRUE(md->isconditional, "must be conditional");
+        META_ASSERT_TRUE(md->conditions != NULL, "must be conditional");
+
+        uint32_t index = 0;
+
+        for (; index < md->conditionslength; ++index)
+        {
+            const sai_attr_condition_t* c = md->conditions[index];
+
+            if (c->type == SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_TRUE(c->attrid != SAI_INVALID_ATTRIBUTE_ID, "attribute must be defined for condition");
+            }
+        }
+
+        META_ASSERT_TRUE(md->conditions[0]->type == SAI_ATTR_CONDITION_TYPE_NONE, "first mixed condition entry must be type none")
+        META_ASSERT_TRUE(md->conditions[md->conditionslength-1]->type != SAI_ATTR_CONDITION_TYPE_NONE, "last mixed condition entry cannot be none")
+
+        bool value = check_mixed_condition_list(md, md->conditions);
+
+        META_ASSERT_TRUE(value, "should evaluate to true");
+    }
+
+    if (md->validonlytype == SAI_ATTR_CONDITION_TYPE_MIXED)
+    {
+        META_ASSERT_TRUE(md->isvalidonly, "must be validonly");
+        META_ASSERT_TRUE(md->validonly != NULL, "must be validonly");
+
+        uint32_t index = 0;
+
+        for (; index < md->validonlylength; ++index)
+        {
+            const sai_attr_condition_t* c = md->validonly[index];
+
+            if (c->type == SAI_ATTR_CONDITION_TYPE_NONE)
+            {
+                META_ASSERT_TRUE(c->attrid != SAI_INVALID_ATTRIBUTE_ID, "attribute must be defined for condition");
+            }
+        }
+
+        META_ASSERT_TRUE(md->validonly[0]->type == SAI_ATTR_CONDITION_TYPE_NONE, "first mixed condition entry must be type none")
+        META_ASSERT_TRUE(md->validonly[md->validonlylength-1]->type != SAI_ATTR_CONDITION_TYPE_NONE, "last mixed condition entry cannot be none")
+
+        bool value = check_mixed_condition_list(md, md->validonly);
+
+        META_ASSERT_TRUE(value, "should evaluate to true");
+    }
+}
+
 void check_attr_condition_met(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2639,6 +2843,17 @@ void check_attr_condition_met(
     {
         META_ASSERT_FALSE(sai_metadata_is_condition_met(md, 1, &attr), "condition check failed");
         return;
+    }
+
+    switch (md->conditiontype)
+    {
+        case SAI_ATTR_CONDITION_TYPE_AND:
+        case SAI_ATTR_CONDITION_TYPE_OR:
+            break;
+
+        default:
+            /* this funcion is not able to auto test mixed conditions */
+            return;
     }
 
     /* attr is conditional */
@@ -2934,6 +3149,7 @@ void check_single_attribute(
     check_attr_hostif_packet(md);
     check_attr_capability(md);
     check_attr_extension_flag(md);
+    check_attr_mixed_condition(md);
 
     define_attr(md);
 }
