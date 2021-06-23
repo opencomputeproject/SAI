@@ -2835,9 +2835,8 @@ void check_attr_condition_met(
 
     sai_attribute_t attr = { 0 };
 
-    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, NULL), "condition check failed");
-    META_ASSERT_FALSE(sai_metadata_is_condition_met(md, 1, NULL), "condition check failed");
-    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, &attr), "condition check failed");
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, NULL), "condition check failed, %s", md->attridname);
+    META_ASSERT_FALSE(sai_metadata_is_condition_met(NULL, 1, &attr), "condition check failed, %s", md->attridname);
 
     if (!md->isconditional)
     {
@@ -2915,11 +2914,139 @@ void check_attr_condition_met(
 
         for (idx = 0; idx < count; ++idx)
         {
+            /*
+             * NOTE: it may happen that missing attribute have default value
+             * present, and then that default value will be used for condition
+             * compare, eg: SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT and
+             * SAI_PORT_ATTR_MEDIA_TYPE.
+             */
+
             attrs[idx].id ^= (uint32_t)(-1);
 
             META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
 
             attrs[idx].id ^= (uint32_t)(-1);
+        }
+    }
+
+    free(attrs);
+}
+
+void check_attr_validonly_met(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    sai_attribute_t attr = { 0 };
+
+    META_ASSERT_FALSE(sai_metadata_is_validonly_met(NULL, 1, NULL), "validonly check failed");
+    META_ASSERT_FALSE(sai_metadata_is_validonly_met(NULL, 1, &attr), "validonly check failed");
+
+    if (!md->isvalidonly)
+    {
+        META_ASSERT_FALSE(sai_metadata_is_validonly_met(md, 1, &attr), "validonly check failed");
+        return;
+    }
+
+    switch (md->validonlytype)
+    {
+        case SAI_ATTR_CONDITION_TYPE_AND:
+        case SAI_ATTR_CONDITION_TYPE_OR:
+            break;
+
+        default:
+            /* this funcion is not able to auto test mixed validonlys */
+            return;
+    }
+
+    /* attr is validonly */
+
+    /*
+     * If there are multiple validonlys, we need to provide fake values for all
+     * others to force return false to test each one separately.
+     */
+
+    uint32_t count = (uint32_t)md->validonlylength;
+
+    sai_attribute_t *attrs = (sai_attribute_t*)calloc(count, sizeof(sai_attribute_t));
+
+    size_t idx = 0;
+
+    for (idx = 0; idx < count; ++idx)
+    {
+        attrs[idx].id = md->validonly[idx]->attrid;
+        attrs[idx].value = md->validonly[idx]->condition; /* copy */
+    }
+
+    META_ASSERT_TRUE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should be met, %s", md->attridname);
+
+    if (md->validonlytype == SAI_ATTR_CONDITION_TYPE_OR)
+    {
+        for (idx = 0; idx < count; ++idx)
+        {
+            attrs[idx].id ^= (uint32_t)(-1);
+        }
+
+        /*
+         * Condition can actually be met here, since we are supplying unknown attributes
+         * and validonly by default attribute can be met
+         * META_ASSERT_FALSE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should not be met");
+        */
+
+        /* when validonly is "or" then any of attribute should match */
+
+        for (idx = 0; idx < count; ++idx)
+        {
+            /*
+             * Since multiple attributes with the same ID are passed,
+             * sai_metadata_is_validonly_met is using sai_metadata_get_attr_by_id
+             * and only first attribute will be selected.
+             */
+
+            attrs[idx].id ^= (uint32_t)(-1);
+
+            META_ASSERT_TRUE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should be met");
+
+            attrs[idx].id ^= (uint32_t)(-1);
+        }
+    }
+    else /* AND */
+    {
+        META_ASSERT_TRUE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should not be met");
+
+        /* when validonly is "and" then any of wrong attribute should fail validonly */
+
+        for (idx = 0; idx < count; ++idx)
+        {
+            /*
+             * NOTE: it may happen that missing attribute have default value
+             * present, and then that default value will be used for condition
+             * compare, eg: SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT and
+             * SAI_PORT_ATTR_MEDIA_TYPE.
+             */
+
+            const sai_attr_metadata_t *a = sai_metadata_get_attr_metadata(md->objecttype, attrs[idx].id);
+
+            if (a && a->defaultvalue)
+            {
+                /* alter passed value */
+
+                attrs[idx].value.s32 ^= (int32_t)(-1);
+
+                META_ASSERT_FALSE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should be met, %s", md->attridname);
+
+                attrs[idx].value.s32 ^= (int32_t)(-1);
+            }
+            else
+            {
+                /* simulate missing attribute */
+
+                attrs[idx].id ^= (uint32_t)(-1);
+
+                META_ASSERT_FALSE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should be met, %s", md->attridname);
+
+                attrs[idx].id ^= (uint32_t)(-1);
+            }
         }
     }
 
@@ -3144,6 +3271,7 @@ void check_single_attribute(
     check_attr_brief_description(md);
     check_attr_is_primitive(md);
     check_attr_condition_met(md);
+    check_attr_validonly_met(md);
     check_attr_default_attrvalue(md);
     check_attr_fdb_flush(md);
     check_attr_hostif_packet(md);
