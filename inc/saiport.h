@@ -1973,7 +1973,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default 96 (bits)
+     * @default 96
      */
     SAI_PORT_ATTR_IPG,
 
