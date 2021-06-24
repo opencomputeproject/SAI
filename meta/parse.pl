@@ -2269,6 +2269,8 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY" if $type eq "sai_macsec_auth_key_t";
     return "SAI_ATTR_VALUE_TYPE_MACSEC_SALT"    if $type eq "sai_macsec_salt_t";
     return "SAI_ATTR_VALUE_TYPE_BOOL"           if $type eq "bool";
+    return "SAI_ATTR_VALUE_TYPE_IPV6"           if $type eq "sai_ip6_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT8"          if $type eq "sai_uint8_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"          if defined $SAI_ENUMS{$type}; # enum
 
     return "-1"                                 if $type eq "sai_fdb_entry_t";
@@ -3134,7 +3136,7 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|label_id|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|label_id|ip6|uint8|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;
