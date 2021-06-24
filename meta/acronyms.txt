@@ -151,3 +151,5 @@ SRV6 - Segment Routing with IPv6
 PSP - Penultimate Segment Pop
 USP - Ultimate Segment Pop
 USD - Ultimate Segment Decapsulation
+SGMII - Serial Gigabit Media Independent Interface
+MDIX - Medium Dependent Interface Crossover

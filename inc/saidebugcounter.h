@@ -308,6 +308,9 @@ typedef enum _sai_in_drop_reason_t
     /** Packet is dropped due to FDB action discards or route discards (black hole route) */
     SAI_IN_DROP_REASON_FDB_AND_BLACKHOLE_DISCARDS,
 
+    /** MPLS Routing table lookup miss */
+    SAI_IN_DROP_REASON_MPLS_MISS,
+
     /** End of in drop reasons */
     SAI_IN_DROP_REASON_END,
 

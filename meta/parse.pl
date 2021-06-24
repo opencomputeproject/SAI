@@ -1579,6 +1579,15 @@ sub ProcessConditionsGeneric
 
         WriteSource "const sai_attr_condition_t sai_metadata_${name}_${attr}_$count = {";
 
+        my $attrType = lc("$1t") if $attrid =~ /^(SAI_\w+_ATTR_)/;
+        my $enumTypeName = $METADATA{$attrType}{$attrid}{type};
+
+        if (not defined $enumTypeName)
+        {
+            LogError("failed to find attribute ${attrType}::${attrid} when processing $attrid");
+            next;
+        }
+
         if ($val eq "true" or $val eq "false")
         {
             WriteSource ".attrid = $attrid,";
@@ -1612,10 +1621,10 @@ sub ProcessConditionsGeneric
                 }
             }
         }
-        elsif ($val =~ /^$NUMBER_REGEX$/ and $enumtype =~ /^sai_u?int(\d+)_t$/)
+        elsif ($val =~ /^$NUMBER_REGEX$/ and $enumTypeName =~ /^sai_u?int(\d+)_t$/)
         {
             my $n = $1;
-            my $item = ($enumtype =~ /uint/) ? "u$n" : "s$n";
+            my $item = ($enumTypeName =~ /uint/) ? "u$n" : "s$n";
 
             WriteSource ".attrid = $attrid,";
             WriteSource ".condition = { .$item = $val }";
