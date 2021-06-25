@@ -43,6 +43,8 @@ our $XMLDIR = "xml";
 our $INCLUDE_DIR = "../inc/";
 our $EXPERIMENTAL_DIR = "../experimental/";
 
+our $MAX_CONDITIONS_LEN = 1;
+
 our %SAI_ENUMS = ();
 our %SAI_UNIONS = ();
 our %METADATA = ();
@@ -2202,6 +2204,9 @@ sub ProcessSingleObjectType
         # check enum attributes if their names are ending on enum name
 
         CheckEnumNaming($attr, $meta{type}) if $isenum eq "true" or $isenumlist eq "true";
+
+        $MAX_CONDITIONS_LEN = $conditionslen if $MAX_CONDITIONS_LEN < $conditionslen;
+        $MAX_CONDITIONS_LEN = $validonlylen if $MAX_CONDITIONS_LEN < $validonlylen;
     }
 }
 
@@ -4486,6 +4491,13 @@ sub CreateSaiSwigApiStructs
     }
 }
 
+sub CreateDefineMaxConditionsLen
+{
+    WriteSectionComment "Define SAI_METADATA_MAX_CONDITIONS_LEN";
+
+    WriteHeader "#define SAI_METADATA_MAX_CONDITIONS_LEN $MAX_CONDITIONS_LEN";
+}
+
 #
 # MAIN
 #
@@ -4521,6 +4533,8 @@ CreateMetadataHeaderAndSource();
 CreateMetadata();
 
 CreateMetadataForAttributes();
+
+CreateDefineMaxConditionsLen();
 
 CreateEnumHelperMethods();
 

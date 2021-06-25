@@ -383,6 +383,64 @@ static bool sai_metadata_is_condition_list_met(
     return met;
 }
 
+#define STACK_PUSH(val) stack[stack_size++] = (val)
+#define STACK_POP() stack[--stack_size]
+
+static bool sai_metadata_is_mixed_condition_list_met(
+        _In_ const sai_attr_metadata_t *md,
+        _In_ size_t length,
+        _In_ const sai_attr_condition_t* const* list,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    int stack_size = 0;
+
+    bool stack[SAI_METADATA_MAX_CONDITIONS_LEN];
+
+    size_t idx = 0;
+
+    for (; idx < length; idx++)
+    {
+        const sai_attr_condition_t* c = list[idx];
+
+        if (c->type == SAI_ATTR_CONDITION_TYPE_NONE)
+        {
+            bool value = sai_metadata_is_single_condition_met(md->objecttype, c, attr_count, attr_list);
+
+            STACK_PUSH(value);
+        } 
+        else if (c->type == SAI_ATTR_CONDITION_TYPE_AND)
+        {
+            bool a = STACK_POP();
+            bool b = STACK_POP();
+
+            STACK_PUSH(a & b);
+        }
+        else if (c->type == SAI_ATTR_CONDITION_TYPE_OR)
+        {
+            bool a = STACK_POP();
+            bool b = STACK_POP();
+
+            STACK_PUSH(a | b);
+        }
+        else
+        {
+            SAI_META_LOG_ERROR("%s: wrong condition type on list: %d", md->attridname, c->type);
+            return false;
+        }
+    }
+
+    bool value = STACK_POP();
+
+    if (stack_size)
+    {
+        SAI_META_LOG_ERROR("FATAL %s: stack not empty after condition list check, RPN condition logic is BROKEN", md->attridname);
+        return false;
+    }
+
+    return value;
+}
+
 bool sai_metadata_is_condition_met(
         _In_ const sai_attr_metadata_t *md,
         _In_ uint32_t attr_count,
@@ -401,12 +459,11 @@ bool sai_metadata_is_condition_met(
         case SAI_ATTR_CONDITION_TYPE_OR:
             return sai_metadata_is_condition_list_met(md, md->conditiontype, md->conditionslength, md->conditions, attr_count, attr_list);
 
+        case SAI_ATTR_CONDITION_TYPE_MIXED:
+            return sai_metadata_is_mixed_condition_list_met(md, md->conditionslength, md->conditions, attr_count, attr_list);
+
         default:
-
-            /* TODO check for mixed condition, and use separate path */
-
-            SAI_META_LOG_ERROR("mixed condition on %s is not supported yet, FIXME", md->attridname);
-
+            SAI_META_LOG_ERROR("condition type %d on %s is not supported yet, FIXME", md->conditiontype, md->attridname);
             return false;
     }
 }
@@ -429,12 +486,11 @@ bool sai_metadata_is_validonly_met(
         case SAI_ATTR_CONDITION_TYPE_OR:
             return sai_metadata_is_condition_list_met(md, md->validonlytype, md->validonlylength, md->validonly, attr_count, attr_list);
 
+        case SAI_ATTR_CONDITION_TYPE_MIXED:
+            return sai_metadata_is_mixed_condition_list_met(md, md->validonlylength, md->validonly, attr_count, attr_list);
+
         default:
-
-            /* TODO check for mixed condition, and use separate path */
-
-            SAI_META_LOG_ERROR("mixed condition on %s is not supported yet, FIXME", md->attridname);
-
+            SAI_META_LOG_ERROR("validonly type %d on %s is not supported yet, FIXME", md->validonlytype, md->attridname);
             return false;
     }
 

@@ -1001,7 +1001,7 @@ void check_attr_default_required(
              * to support CONST on list.
              */
 
-           break;
+            break;
 
         default:
 
@@ -2794,13 +2794,19 @@ void check_attr_mixed_condition(
             }
         }
 
-        META_ASSERT_TRUE(md->conditions[0]->type == SAI_ATTR_CONDITION_TYPE_NONE, "first mixed condition entry must be type none")
-        META_ASSERT_TRUE(md->conditions[md->conditionslength-1]->type != SAI_ATTR_CONDITION_TYPE_NONE, "last mixed condition entry cannot be none")
+        META_ASSERT_TRUE(md->conditions[0]->type == SAI_ATTR_CONDITION_TYPE_NONE, "first mixed condition entry must be type none");
+        META_ASSERT_TRUE(md->conditions[md->conditionslength-1]->type != SAI_ATTR_CONDITION_TYPE_NONE, "last mixed condition entry cannot be none");
 
         bool value = check_mixed_condition_list(md, md->conditions);
 
         META_ASSERT_TRUE(value, "should evaluate to true");
     }
+}
+
+void check_attr_mixed_validonly(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
 
     if (md->validonlytype == SAI_ATTR_CONDITION_TYPE_MIXED)
     {
@@ -2819,8 +2825,8 @@ void check_attr_mixed_condition(
             }
         }
 
-        META_ASSERT_TRUE(md->validonly[0]->type == SAI_ATTR_CONDITION_TYPE_NONE, "first mixed condition entry must be type none")
-        META_ASSERT_TRUE(md->validonly[md->validonlylength-1]->type != SAI_ATTR_CONDITION_TYPE_NONE, "last mixed condition entry cannot be none")
+        META_ASSERT_TRUE(md->validonly[0]->type == SAI_ATTR_CONDITION_TYPE_NONE, "first mixed condition entry must be type none");
+        META_ASSERT_TRUE(md->validonly[md->validonlylength-1]->type != SAI_ATTR_CONDITION_TYPE_NONE, "last mixed condition entry cannot be none");
 
         bool value = check_mixed_condition_list(md, md->validonly);
 
@@ -2844,16 +2850,7 @@ void check_attr_condition_met(
         return;
     }
 
-    switch (md->conditiontype)
-    {
-        case SAI_ATTR_CONDITION_TYPE_AND:
-        case SAI_ATTR_CONDITION_TYPE_OR:
-            break;
-
-        default:
-            /* this funcion is not able to auto test mixed conditions */
-            return;
-    }
+    META_ASSERT_TRUE(md->conditionslength <= SAI_METADATA_MAX_CONDITIONS_LEN, "length must not be exceeded");
 
     /* attr is conditional */
 
@@ -2863,6 +2860,8 @@ void check_attr_condition_met(
      */
 
     uint32_t count = (uint32_t)md->conditionslength;
+
+    META_ASSERT_TRUE(count < 20, "too many conditions on %s", md->attridname);
 
     sai_attribute_t *attrs = (sai_attribute_t*)calloc(count, sizeof(sai_attribute_t));
 
@@ -2874,7 +2873,7 @@ void check_attr_condition_met(
         attrs[idx].value = md->conditions[idx]->condition; /* copy */
     }
 
-    META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
+    META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met on %s", md->attridname);
 
     if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_OR)
     {
@@ -2887,7 +2886,7 @@ void check_attr_condition_met(
          * Condition can actually be met here, since we are supplying unknown attributes
          * and condition by default attribute can be met
          * META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
-        */
+         */
 
         /* when condition is "or" then any of attribute should match */
 
@@ -2906,7 +2905,7 @@ void check_attr_condition_met(
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
-    else /* AND */
+    else if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_AND)
     {
         META_ASSERT_TRUE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
 
@@ -2928,6 +2927,14 @@ void check_attr_condition_met(
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
+    else if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_MIXED)
+    {
+        /* OK */
+    }
+    else
+    {
+        META_MD_ASSERT_FAIL(md, "unsupported condition type");
+    }
 
     free(attrs);
 }
@@ -2948,16 +2955,7 @@ void check_attr_validonly_met(
         return;
     }
 
-    switch (md->validonlytype)
-    {
-        case SAI_ATTR_CONDITION_TYPE_AND:
-        case SAI_ATTR_CONDITION_TYPE_OR:
-            break;
-
-        default:
-            /* this funcion is not able to auto test mixed validonlys */
-            return;
-    }
+    META_ASSERT_TRUE(md->validonlylength <= SAI_METADATA_MAX_CONDITIONS_LEN, "length must not be exceeded");
 
     /* attr is validonly */
 
@@ -2967,6 +2965,8 @@ void check_attr_validonly_met(
      */
 
     uint32_t count = (uint32_t)md->validonlylength;
+
+    META_ASSERT_TRUE(count < 20, "too many conditions on %s", md->attridname);
 
     sai_attribute_t *attrs = (sai_attribute_t*)calloc(count, sizeof(sai_attribute_t));
 
@@ -2978,7 +2978,7 @@ void check_attr_validonly_met(
         attrs[idx].value = md->validonly[idx]->condition; /* copy */
     }
 
-    META_ASSERT_TRUE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should be met, %s", md->attridname);
+    META_ASSERT_TRUE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should be met on %s", md->attridname);
 
     if (md->validonlytype == SAI_ATTR_CONDITION_TYPE_OR)
     {
@@ -2991,7 +2991,7 @@ void check_attr_validonly_met(
          * Condition can actually be met here, since we are supplying unknown attributes
          * and validonly by default attribute can be met
          * META_ASSERT_FALSE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should not be met");
-        */
+         */
 
         /* when validonly is "or" then any of attribute should match */
 
@@ -3010,7 +3010,7 @@ void check_attr_validonly_met(
             attrs[idx].id ^= (uint32_t)(-1);
         }
     }
-    else /* AND */
+    else if (md->validonlytype == SAI_ATTR_CONDITION_TYPE_AND)
     {
         META_ASSERT_TRUE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should not be met");
 
@@ -3048,6 +3048,14 @@ void check_attr_validonly_met(
                 attrs[idx].id ^= (uint32_t)(-1);
             }
         }
+    }
+    else if (md->validonlytype == SAI_ATTR_CONDITION_TYPE_MIXED)
+    {
+        /* OK */
+    }
+    else
+    {
+        META_MD_ASSERT_FAIL(md, "unsupported condition type");
     }
 
     free(attrs);
@@ -3278,6 +3286,7 @@ void check_single_attribute(
     check_attr_capability(md);
     check_attr_extension_flag(md);
     check_attr_mixed_condition(md);
+    check_attr_mixed_validonly(md);
 
     define_attr(md);
 }
@@ -5064,6 +5073,13 @@ void check_ignored_attributes()
             "expected attribute was SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE");
 }
 
+void check_max_conditions_len()
+{
+    META_LOG_ENTER();
+
+    META_ASSERT_TRUE(SAI_METADATA_MAX_CONDITIONS_LEN > 0, "must be positive");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -5103,6 +5119,7 @@ int main(int argc, char **argv)
     check_defines();
     check_all_object_infos();
     check_ignored_attributes();
+    check_max_conditions_len();
 
     SAI_META_LOG_DEBUG("log test");
 
