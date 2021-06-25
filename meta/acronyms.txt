@@ -19,7 +19,6 @@ CFI - Canonical Format Indicator
 CIDR - Classless Inter Domain Routing
 CIR - Committed Information Rate
 CPLD - Complex programmable logic device
-CPLD - Complex programmable logic device
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
 DHCP - Dynamic Host Configuration Protocol
@@ -40,7 +39,6 @@ ECN - Explicit Congestion Notification
 ECT - ECN Capable Transport
 EEE - Electrical and Electronics Engineering
 EEPROM - Electrically erasable programmable read-only memory
-EEPROM - Electrically erasable programmable read-only memory
 ERSPAN - Encapsulated Remote SPAN
 FCS - Frame Check Sequence
 FD - File Descriptor
@@ -48,14 +46,12 @@ FDB - Forwarding Data Base
 FEC - Forward Error Correction
 FPGA - Field Programmable Gate Array
 FW  - Firmware
-FW  - Firmware
 GCM - Galois Counter Mode
 GMII - Gigabit Media-Independent Interface
 GPB - Google Protocol Buffers
 GRE - Generic Routing Encapsulation
 GRPC - GRPC Remote Procedure Call
 HW - Hardware
-I2C - I squared C
 I2C - I squared C
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
@@ -80,13 +76,10 @@ LPM - Longest Prefix Match
 LSP - Label Switched Path
 MAC - Medium Access Control
 MDIO - Management Data Input/Output
-MDIO - Management Data Input/Output
-MDIX - Medium Dependent Interface Crossover
 MDIX - Medium Dependent Interface Crossover
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
-NAPT - Network Address Port Translation
 NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
 NPU - Numeric Processing Unit
@@ -101,7 +94,6 @@ PFC - Priority Flow Control
 PHP - Penultimate Hop Pop
 PIR - Peak Information Rate
 PN - Packet Number
-PRBS - Pseudorandom binary sequence
 PRBS - Pseudorandom binary sequence
 PSC - PHB Scheduling Class
 PSP - Penultimate Segment Pop
@@ -122,8 +114,6 @@ SFI - SerDes Framer Interface
 SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
 SGMII - Serial Gigabit Media Independent Interface
-SGMII - Serial Gigabit Media Independent Interface
-SNAPT - Source Network Address Port Translation
 SNAPT - Source Network Address Port Translation
 SNAT - Source Network Address Translation
 SNMP - Simple Network Management Protocol
