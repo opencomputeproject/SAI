@@ -419,7 +419,7 @@ static bool sai_metadata_is_mixed_condition_list_met(
             bool value = sai_metadata_is_single_condition_met(md->objecttype, c, attr_count, attr_list);
 
             STACK_PUSH(value);
-        } 
+        }
         else if (c->type == SAI_ATTR_CONDITION_TYPE_AND)
         {
             bool a = STACK_POP();
