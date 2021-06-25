@@ -352,9 +352,8 @@ static bool sai_metadata_is_single_condition_met(
     }
 }
 
-static bool sai_metadata_is_condition_list_met(
+static bool sai_metadata_is_and_condition_list_met(
         _In_ const sai_attr_metadata_t *md,
-        _In_ sai_attr_condition_type_t conditiontype,
         _In_ size_t length,
         _In_ const sai_attr_condition_t* const* list,
         _In_ uint32_t attr_count,
@@ -362,22 +361,34 @@ static bool sai_metadata_is_condition_list_met(
 {
     size_t idx = 0;
 
-    bool met = (conditiontype == SAI_ATTR_CONDITION_TYPE_AND);
+    bool met = length > 0;
 
     for (; idx < length; ++idx)
     {
         const sai_attr_condition_t *condition = list[idx];
 
-        bool value = sai_metadata_is_single_condition_met(md->objecttype, condition, attr_count, attr_list);
+        met &= sai_metadata_is_single_condition_met(md->objecttype, condition, attr_count, attr_list);
+    }
 
-        if (conditiontype == SAI_ATTR_CONDITION_TYPE_AND)
-        {
-            met &= value;
-        }
-        else /* OR */
-        {
-            met |= value;
-        }
+    return met;
+}
+
+static bool sai_metadata_is_or_condition_list_met(
+        _In_ const sai_attr_metadata_t *md,
+        _In_ size_t length,
+        _In_ const sai_attr_condition_t* const* list,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    size_t idx = 0;
+
+    bool met = false;
+
+    for (; idx < length; ++idx)
+    {
+        const sai_attr_condition_t *condition = list[idx];
+
+        met |= sai_metadata_is_single_condition_met(md->objecttype, condition, attr_count, attr_list);
     }
 
     return met;
@@ -456,8 +467,10 @@ bool sai_metadata_is_condition_met(
     switch (md->conditiontype)
     {
         case SAI_ATTR_CONDITION_TYPE_AND:
+            return sai_metadata_is_and_condition_list_met(md, md->conditionslength, md->conditions, attr_count, attr_list);
+
         case SAI_ATTR_CONDITION_TYPE_OR:
-            return sai_metadata_is_condition_list_met(md, md->conditiontype, md->conditionslength, md->conditions, attr_count, attr_list);
+            return sai_metadata_is_or_condition_list_met(md, md->conditionslength, md->conditions, attr_count, attr_list);
 
         case SAI_ATTR_CONDITION_TYPE_MIXED:
             return sai_metadata_is_mixed_condition_list_met(md, md->conditionslength, md->conditions, attr_count, attr_list);
@@ -483,8 +496,10 @@ bool sai_metadata_is_validonly_met(
     switch (md->validonlytype)
     {
         case SAI_ATTR_CONDITION_TYPE_AND:
+            return sai_metadata_is_and_condition_list_met(md, md->validonlylength, md->validonly, attr_count, attr_list);
+
         case SAI_ATTR_CONDITION_TYPE_OR:
-            return sai_metadata_is_condition_list_met(md, md->validonlytype, md->validonlylength, md->validonly, attr_count, attr_list);
+            return sai_metadata_is_or_condition_list_met(md, md->validonlylength, md->validonly, attr_count, attr_list);
 
         case SAI_ATTR_CONDITION_TYPE_MIXED:
             return sai_metadata_is_mixed_condition_list_met(md, md->validonlylength, md->validonly, attr_count, attr_list);
