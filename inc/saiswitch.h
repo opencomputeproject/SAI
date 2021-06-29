@@ -340,6 +340,8 @@ typedef enum _sai_tunnel_type_t
 
     SAI_TUNNEL_TYPE_SRV6,
 
+    SAI_TUNNEL_TYPE_NVGRE,
+
 } sai_tunnel_type_t;
 
 /**
