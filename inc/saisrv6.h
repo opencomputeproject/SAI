@@ -99,7 +99,7 @@ typedef enum _sai_my_sid_entry_endpoint_behavior_t
     /** End.uN function for shift-and-lookup behavior */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UN,
 
-    /** End.uN function for shift-and-xconnect behavior */
+    /** End.uA function for shift-and-xconnect behavior */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UA,
 
     /** Custom range base value */
