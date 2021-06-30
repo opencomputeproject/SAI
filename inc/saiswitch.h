@@ -2549,7 +2549,7 @@ typedef enum _sai_switch_attr_t
      * @brief Slave MDIO Address list
      *
      * Configure list of slave MDIO addresses for firmware download in Broadcast mode.
-     * sai_create_switch on all slave PHYs should be called with #SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE = SAI_SWITCH_FIRMWARE_LOAD_TYPE_SKIP
+     * sai_create_switch on all slave devices should be called with #SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE = SAI_SWITCH_FIRMWARE_LOAD_TYPE_SKIP
      *
      * @type sai_u8_list_t
      * @flags CREATE_ONLY
