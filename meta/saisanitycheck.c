@@ -5107,6 +5107,8 @@ void check_enum_range_base(
 
     int32_t start = 0;
 
+    int32_t prev = -1;
+
     for (; i < emd->valuescount; ++i)
     {
         int val = emd->values[i];
@@ -5117,11 +5119,30 @@ void check_enum_range_base(
 
         META_ASSERT_TRUE((val < (16*RANGE_BASE)), "range value 0x%x is too high on %s", val, name);
 
+        if ((val != prev + 1) && (val & 0xFFF) && ((val & ~0xFFF) == (prev & ~0xFFF)))
+        {
+            switch (val)
+            {
+                case SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MAX:
+                /* case SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MAX */
+                    break;
+
+                default:
+                    META_ASSERT_FAIL("value %s = 0x%x not increasing by 1, previous 0x%x", name, val, prev);
+            }
+        }
+
+        prev = val;
+
         if (val < start)
+        {
             continue;
+        }
 
         while (val >= start)
+        {
             start += RANGE_BASE;
+        }
 
         start -= RANGE_BASE;
 
