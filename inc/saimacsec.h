@@ -293,6 +293,31 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_AVAILABLE_MACSEC_SA,
 
     /**
+     * @brief Terminate/Forward Pause Frames.
+     *
+     * If enabled (true) pause frames are forwarded to the user application.
+     * In normal mode (false) pause frames are terminated and discarded within the MAC.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_MACSEC_ATTR_PAUSE_FRAME_FORWARD_ENABLE,
+
+    /**
+     * @brief Ignore Pause Frame Quanta.
+     *
+     * If enabled (true) received pause frames are ignored by the MAC.
+     * When disabled (false) the transmit process is stopped for the amount of time
+     * specified in the pause quanta received within a pause frame.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_MACSEC_ATTR_PAUSE_FRAME_IGNORE_ENABLE,
+
+    /**
      * @brief End of MACsec attributes
      */
     SAI_MACSEC_ATTR_END,
