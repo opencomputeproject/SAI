@@ -642,7 +642,32 @@ typedef enum _sai_attr_condition_type_t
      */
     SAI_ATTR_CONDITION_TYPE_AND,
 
+    /**
+     * @brief Mixed condition, can contain and/or operators as well
+     * as grouping using brackets (). Conditions are stored in RPN.
+     */
+    SAI_ATTR_CONDITION_TYPE_MIXED,
+
 } sai_attr_condition_type_t;
+
+/**
+ * @brief Condition operator (==,!=,<,>,<=.>=).
+ */
+typedef enum _sai_condition_operator_t
+{
+    SAI_CONDITION_OPERATOR_EQ = 0,
+
+    SAI_CONDITION_OPERATOR_NE,
+
+    SAI_CONDITION_OPERATOR_LT,
+
+    SAI_CONDITION_OPERATOR_GT,
+
+    SAI_CONDITION_OPERATOR_LE,
+
+    SAI_CONDITION_OPERATOR_GE,
+
+} sai_condition_operator_t;
 
 /**
  * @brief Defines attribute condition.
@@ -661,9 +686,21 @@ typedef struct _sai_attr_condition_t
      */
     const sai_attribute_value_t         condition;
 
-    /*
-     * In future we can add condition operator like equal, not equal, etc.
+    /**
+     * @brief Condition operator (==,!=,<,>,<=.>=).
      */
+    sai_condition_operator_t            op;
+
+    /**
+     * @brief Condition type.
+     *
+     * If main condition type is MIXED, then condition list is written in RPN
+     * (reverse polish notation) syntax notation. If this field is NONE, then
+     * this is actual condition, otherwise it can be AND,OR type which is just
+     * a operator indication that should be performed. For AND,OR case attrid
+     * is equal to SAI_INVALID_ATTRIBUTE_ID.
+     */
+    sai_attr_condition_type_t           type;
 
 } sai_attr_condition_t;
 
