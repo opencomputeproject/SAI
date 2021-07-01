@@ -1956,6 +1956,16 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_DUAL_MEDIA,
 
     /**
+     * @brief Query the Auto Negotiated Resolved FEC
+     *
+     * Auto negotiated FEC status is applicable on Auto Negotiation good state
+     *
+     * @type sai_port_fec_mode_extended_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_EXTENDED,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
