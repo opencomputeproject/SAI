@@ -1397,7 +1397,7 @@ typedef enum _sai_acl_table_attr_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_ACL_ENTRY
      */
-    SAI_ACL_TABLE_ATTR_ENTRY_LIST,
+    SAI_ACL_TABLE_ATTR_ENTRY_LIST = 0x00002000,
 
     /**
      * @brief Available ACL entries for this table
