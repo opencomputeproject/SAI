@@ -26,6 +26,7 @@
 #include <string.h>
 #include <alloca.h>
 #include <sai.h>
+#include <saiversion.h>
 #include "saimetadatautils.h"
 #include "saimetadata.h"
 #include "saimetadatalogger.h"
@@ -4804,6 +4805,17 @@ void check_all_enums()
     }
 }
 
+void check_sai_version()
+{
+    META_LOG_ENTER();
+
+    /* SAI_VERSION uses 100 base for each component, so each define must not exceed this value */
+
+    META_ASSERT_TRUE((SAI_MAJOR) >= 0 && (SAI_MAJOR) < 100, "invalid SAI_MAJOR version: %d", (SAI_MAJOR));
+    META_ASSERT_TRUE((SAI_MINOR) >= 0 && (SAI_MINOR) < 100, "invalid SAI_MINOR version: %d", (SAI_MINOR));
+    META_ASSERT_TRUE((SAI_REVISION) >= 0 && (SAI_REVISION) < 100, "invalid SAI_REVISION version: %d", (SAI_REVISION));
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4844,6 +4856,7 @@ int main(int argc, char **argv)
     check_all_object_infos();
     check_ignored_attributes();
     check_all_enums();
+    check_sai_version();
 
     SAI_META_LOG_DEBUG("log test");
 
