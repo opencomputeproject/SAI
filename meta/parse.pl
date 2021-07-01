@@ -1579,6 +1579,15 @@ sub ProcessConditionsGeneric
 
         WriteSource "const sai_attr_condition_t sai_metadata_${name}_${attr}_$count = {";
 
+        my $attrType = lc("$1t") if $attrid =~ /^(SAI_\w+_ATTR_)/;
+        my $enumTypeName = $METADATA{$attrType}{$attrid}{type};
+
+        if (not defined $enumTypeName)
+        {
+            LogError("failed to find attribute ${attrType}::${attrid} when processing $attrid");
+            next;
+        }
+
         if ($val eq "true" or $val eq "false")
         {
             WriteSource ".attrid = $attrid,";
@@ -1612,10 +1621,10 @@ sub ProcessConditionsGeneric
                 }
             }
         }
-        elsif ($val =~ /^$NUMBER_REGEX$/ and $enumtype =~ /^sai_u?int(\d+)_t$/)
+        elsif ($val =~ /^$NUMBER_REGEX$/ and $enumTypeName =~ /^sai_u?int(\d+)_t$/)
         {
             my $n = $1;
-            my $item = ($enumtype =~ /uint/) ? "u$n" : "s$n";
+            my $item = ($enumTypeName =~ /uint/) ? "u$n" : "s$n";
 
             WriteSource ".attrid = $attrid,";
             WriteSource ".condition = { .$item = $val }";
@@ -2260,6 +2269,8 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY" if $type eq "sai_macsec_auth_key_t";
     return "SAI_ATTR_VALUE_TYPE_MACSEC_SALT"    if $type eq "sai_macsec_salt_t";
     return "SAI_ATTR_VALUE_TYPE_BOOL"           if $type eq "bool";
+    return "SAI_ATTR_VALUE_TYPE_IPV6"           if $type eq "sai_ip6_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT8"          if $type eq "sai_uint8_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"          if defined $SAI_ENUMS{$type}; # enum
 
     return "-1"                                 if $type eq "sai_fdb_entry_t";
@@ -3125,7 +3136,7 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|label_id|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|label_id|ip6|uint8|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;

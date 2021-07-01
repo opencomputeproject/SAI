@@ -338,6 +338,8 @@ typedef enum _sai_tunnel_type_t
 
     SAI_TUNNEL_TYPE_MPLS,
 
+    SAI_TUNNEL_TYPE_SRV6,
+
 } sai_tunnel_type_t;
 
 /**
@@ -1116,6 +1118,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE_GROUP,
 
     /**
+     * @brief Available My SID entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_MY_SID_ENTRY,
+
+    /**
      * @brief Default trap group
      *
      * Default value after switch initialization:
@@ -1809,12 +1819,12 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_STAGE_EGRESS,
 
     /**
-     * @brief Max number of Segments in a single SID List supported
+     * @brief Max number of Segments supported in a single SRV6 SID List
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_SEGMENTROUTE_MAX_SID_DEPTH,
+    SAI_SWITCH_ATTR_SRV6_MAX_SID_DEPTH,
 
     /**
      * @brief List of Type Length Value types supported for source
@@ -1822,7 +1832,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_s32_list_t sai_tlv_type_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_SEGMENTROUTE_TLV_TYPE,
+    SAI_SWITCH_ATTR_SRV6_TLV_TYPE,
 
     /**
      * @brief The number of lossless queues per port supported by the switch

@@ -38,6 +38,7 @@ ffff
 FPGAs
 fprintf
 functionalities
+FX
 hitless
 hmac
 Hostif
@@ -156,3 +157,8 @@ watchlist
 wildcard
 Wildcard
 www
+Encaps
+Args
+xconnect
+uA
+uN

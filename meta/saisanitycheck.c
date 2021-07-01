@@ -372,8 +372,12 @@ void check_attr_by_object_type()
             sai_object_type_t current = ot[index]->objecttype;
 
             META_ASSERT_TRUE(current == i, "object type must be equal on object type list");
-            /* For Switch Attribute we have crossed > 200 with Vendor extention for SAIv1.8.0
-               so increasing threshold  */
+
+            /*
+             * For Switch Attribute we have crossed > 200 with Vendor extension
+             * for SAIv1.8.0 so increasing threshold.
+             */
+
             META_ASSERT_TRUE(index < 300, "object defines > 300 attributes, metadata bug?");
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
             META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_EXTENSIONS_MAX, "object type must be < MAX");
@@ -2402,7 +2406,7 @@ void check_attr_existing_objects(
             /*
              * Allow qos maps list to enable editing qos map values.
              * Since on switch initialization there are no qos map objects (all switch qos
-             * maps attribs are null) this shouldn't be a problem
+             * maps attributes are null) this shouldn't be a problem.
              */
             break;
 
@@ -3146,6 +3150,7 @@ void check_non_object_id_object_types()
                 case SAI_ATTR_VALUE_TYPE_INT32:
                 case SAI_ATTR_VALUE_TYPE_UINT32:
                 case SAI_ATTR_VALUE_TYPE_UINT16:
+                case SAI_ATTR_VALUE_TYPE_UINT8:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
@@ -3153,6 +3158,7 @@ void check_non_object_id_object_types()
                 case SAI_ATTR_VALUE_TYPE_MACSEC_SAK:
                 case SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY:
                 case SAI_ATTR_VALUE_TYPE_MACSEC_SALT:
+                case SAI_ATTR_VALUE_TYPE_IPV6:
                     break;
 
                 default:
@@ -4283,7 +4289,7 @@ void check_enum_to_attr_map(
 
     /*
      * Check whether attribute enum declared has equal number of items as the
-     * number of declared attributes. Item swith @ignore flag should be
+     * number of declared attributes. Item with @ignore flag should be
      * removed from enum and attribute should not be created.
      */
 

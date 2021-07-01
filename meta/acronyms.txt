@@ -145,4 +145,11 @@ EEPROM - Electrically erasable programmable read-only memory
 PRBS - Pseudorandom binary sequence
 NAPT - Network Address Port Translation
 SNAPT - Source Network Address Port Translation
-DNAPT - Destination Network Address Port Trasnlation
+DNAPT - Destination Network Address Port Translation
+SRH - Segment Routing Header
+SRV6 - Segment Routing with IPv6
+PSP - Penultimate Segment Pop
+USP - Ultimate Segment Pop
+USD - Ultimate Segment Decapsulation
+SGMII - Serial Gigabit Media Independent Interface
+MDIX - Medium Dependent Interface Crossover
