@@ -2639,7 +2639,7 @@ typedef enum _sai_switch_stat_t
     SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_BASE = 0x00003000,
 
     /** Get ECC discards [fabric] */
-    SAI_SWITCH_STAT_ECC_DROP,
+    SAI_SWITCH_STAT_ECC_DROP = SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_BASE,
 
     /** Get reach-ability discards [switch | fabric] */
     SAI_SWITCH_STAT_REACHABILITY_DROP,
