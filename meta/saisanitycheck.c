@@ -4724,6 +4724,86 @@ void check_ignored_attributes()
             "expected attribute was SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE");
 }
 
+#define RANGE_BASE 0x1000
+
+#define SKIP_ENUM(x) if (strcmp(emd->name, #x) == 0) { return; }
+
+void check_enum_range_base(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    /* skip experimental api */
+
+    if (is_extensions_enum(emd))
+    {
+        return;
+    }
+
+    /* skip status, values are negative */
+
+    SKIP_ENUM(sai_status_t);
+
+    /* skip enums which are actual flags */
+
+    SKIP_ENUM(sai_attr_flags_t);
+    SKIP_ENUM(sai_stats_mode_t);
+
+    size_t i = 0;
+
+    int32_t start = 0;
+
+    for (; i < emd->valuescount; ++i)
+    {
+        int val = emd->values[i];
+
+        const char*name = emd->valuesnames[i];
+
+        /* this check can be relaxed, we allow now 16 types of ranges */
+
+        META_ASSERT_TRUE((val < (16*RANGE_BASE)), "range value 0x%x is too high on %s", val, name);
+
+        if (val < start)
+            continue;
+
+        while (val >= start)
+            start += RANGE_BASE;
+
+        start -= RANGE_BASE;
+
+        if ((val & ~start) != 0)
+        {
+            META_ASSERT_FAIL("enum %s value is 0x%x, but probably should be 0x%x, missing = SAI_.._RANGE_BASE?", name, val, start);
+        }
+
+        start += RANGE_BASE;
+    }
+}
+
+void check_single_enum(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    check_enum_range_base(emd);
+}
+
+void check_all_enums()
+{
+    META_LOG_ENTER();
+
+    size_t i = 0;
+
+    for (; i < sai_metadata_all_enums_count; ++i)
+    {
+        const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
+
+        META_LOG_DEBUG("enum: %s", emd->name);
+
+        check_single_enum(emd);
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -4763,6 +4843,7 @@ int main(int argc, char **argv)
     check_defines();
     check_all_object_infos();
     check_ignored_attributes();
+    check_all_enums();
 
     SAI_META_LOG_DEBUG("log test");
 
