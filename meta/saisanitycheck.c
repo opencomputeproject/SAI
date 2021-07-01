@@ -26,6 +26,7 @@
 #include <string.h>
 #include <alloca.h>
 #include <sai.h>
+#include <saiversion.h>
 #include "saimetadatautils.h"
 #include "saimetadata.h"
 #include "saimetadatalogger.h"
@@ -372,8 +373,12 @@ void check_attr_by_object_type()
             sai_object_type_t current = ot[index]->objecttype;
 
             META_ASSERT_TRUE(current == i, "object type must be equal on object type list");
-            /* For Switch Attribute we have crossed > 200 with Vendor extention for SAIv1.8.0
-               so increasing threshold  */
+
+            /*
+             * For Switch Attribute we have crossed > 200 with Vendor extension
+             * for SAIv1.8.0 so increasing threshold.
+             */
+
             META_ASSERT_TRUE(index < 300, "object defines > 300 attributes, metadata bug?");
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
             META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_EXTENSIONS_MAX, "object type must be < MAX");
@@ -2436,7 +2441,7 @@ void check_attr_existing_objects(
             /*
              * Allow qos maps list to enable editing qos map values.
              * Since on switch initialization there are no qos map objects (all switch qos
-             * maps attribs are null) this shouldn't be a problem
+             * maps attributes are null) this shouldn't be a problem.
              */
             break;
 
@@ -4638,7 +4643,7 @@ void check_enum_to_attr_map(
 
     /*
      * Check whether attribute enum declared has equal number of items as the
-     * number of declared attributes. Item swith @ignore flag should be
+     * number of declared attributes. Item with @ignore flag should be
      * removed from enum and attribute should not be created.
      */
 
@@ -5073,6 +5078,97 @@ void check_ignored_attributes()
             "expected attribute was SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE");
 }
 
+#define RANGE_BASE 0x1000
+
+#define SKIP_ENUM(x) if (strcmp(emd->name, #x) == 0) { return; }
+
+void check_enum_range_base(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    /* skip experimental api */
+
+    if (is_extensions_enum(emd))
+    {
+        return;
+    }
+
+    /* skip status, values are negative */
+
+    SKIP_ENUM(sai_status_t);
+
+    /* skip enums which are actual flags */
+
+    SKIP_ENUM(sai_attr_flags_t);
+    SKIP_ENUM(sai_stats_mode_t);
+
+    size_t i = 0;
+
+    int32_t start = 0;
+
+    for (; i < emd->valuescount; ++i)
+    {
+        int val = emd->values[i];
+
+        const char*name = emd->valuesnames[i];
+
+        /* this check can be relaxed, we allow now 16 types of ranges */
+
+        META_ASSERT_TRUE((val < (16*RANGE_BASE)), "range value 0x%x is too high on %s", val, name);
+
+        if (val < start)
+            continue;
+
+        while (val >= start)
+            start += RANGE_BASE;
+
+        start -= RANGE_BASE;
+
+        if ((val & ~start) != 0)
+        {
+            META_ASSERT_FAIL("enum %s value is 0x%x, but probably should be 0x%x, missing = SAI_.._RANGE_BASE?", name, val, start);
+        }
+
+        start += RANGE_BASE;
+    }
+}
+
+void check_single_enum(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    check_enum_range_base(emd);
+}
+
+void check_all_enums()
+{
+    META_LOG_ENTER();
+
+    size_t i = 0;
+
+    for (; i < sai_metadata_all_enums_count; ++i)
+    {
+        const sai_enum_metadata_t* emd = sai_metadata_all_enums[i];
+
+        META_LOG_DEBUG("enum: %s", emd->name);
+
+        check_single_enum(emd);
+    }
+}
+
+void check_sai_version()
+{
+    META_LOG_ENTER();
+
+    /* SAI_VERSION uses 100 base for each component, so each define must not exceed this value */
+
+    META_ASSERT_TRUE((SAI_MAJOR) >= 0 && (SAI_MAJOR) < 100, "invalid SAI_MAJOR version: %d", (SAI_MAJOR));
+    META_ASSERT_TRUE((SAI_MINOR) >= 0 && (SAI_MINOR) < 100, "invalid SAI_MINOR version: %d", (SAI_MINOR));
+    META_ASSERT_TRUE((SAI_REVISION) >= 0 && (SAI_REVISION) < 100, "invalid SAI_REVISION version: %d", (SAI_REVISION));
+}
+
 void check_max_conditions_len()
 {
     META_LOG_ENTER();
@@ -5119,6 +5215,8 @@ int main(int argc, char **argv)
     check_defines();
     check_all_object_infos();
     check_ignored_attributes();
+    check_all_enums();
+    check_sai_version();
     check_max_conditions_len();
 
     SAI_META_LOG_DEBUG("log test");
