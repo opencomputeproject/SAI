@@ -28,6 +28,33 @@
 #include <saitypes.h>
 
 /**
+ * @brief Flag type enum
+ */
+typedef enum _sai_my_mac_flag_type_t
+{
+    /**
+     * @brief Enable all flags
+     */
+    SAI_MY_MAC_FLAG_TYPE_ALL,
+
+    /**
+     * @brief Enable IPv4
+     */
+    SAI_MY_MAC_FLAG_TYPE_IPV4,
+
+    /**
+     * @brief Enable IPv6
+     */
+    SAI_MY_MAC_FLAG_TYPE_IPV6,
+
+    /**
+     * @brief Enable MPLS
+     */
+    SAI_MY_MAC_FLAG_TYPE_MPLS
+
+} sai_my_mac_flag_type_t;
+
+/**
  * @brief My MAC entry attribute IDs
  */
 typedef enum _sai_my_mac_attr_t
@@ -102,22 +129,13 @@ typedef enum _sai_my_mac_attr_t
     SAI_MY_MAC_ATTR_MAC_ADDRESS_MASK,
 
     /**
-     * @brief Enable IPv4 processing
+     * @brief MY_MAC Table Flags
      *
-     * @type bool
+     * @type sai_my_mac_flag_type_t
      * @flags CREATE_AND_SET
-     * @default true
+     * @default SAI_MY_MAC_FLAG_TYPE_ALL
      */
-    SAI_MY_MAC_ATTR_V4_ENABLE,
-
-    /**
-     * @brief Enable IPv6 processing
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default true
-     */
-    SAI_MY_MAC_ATTR_V6_ENABLE,
+    SAI_MY_MAC_ATTR_FLAG_TYPE,
 
     /**
      * @brief End of attributes
