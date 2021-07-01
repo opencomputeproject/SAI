@@ -2556,13 +2556,29 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAPT_ENTRY,
 
     /**
-     * @brief Object id of the My MAC table
+     * @brief Minimum priority for My MAC
      *
-     * @type sai_object_id_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_MY_MAC_TABLE
      */
-    SAI_SWITCH_ATTR_MY_MAC_TABLE_ID,
+    SAI_SWITCH_ATTR_MY_MAC_TABLE_MINIMUM_PRIORITY,
+
+    /**
+     * @brief Maximum priority for My MAC
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MY_MAC_TABLE_MAXIMUM_PRIORITY,
+
+    /**
+     * @brief My MAC entries installed on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_MY_MAC
+     */
+    SAI_SWITCH_ATTR_MY_MAC_LIST,
 
     /**
      * @brief Number of My MAC entries installed on the switch
@@ -2570,7 +2586,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_INSTALLED_MYMAC_ENTRIES,
+    SAI_SWITCH_ATTR_INSTALLED_MY_MAC_ENTRIES,
 
     /**
      * @brief Number of available My MAC entries
@@ -2578,7 +2594,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_SWITCH_ATTR_AVAILABLE_MYMAC_ENTRIES,
+    SAI_SWITCH_ATTR_AVAILABLE_MY_MAC_ENTRIES,
 
     /**
      * @brief End of attributes

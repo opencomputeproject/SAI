@@ -68,24 +68,15 @@ typedef enum _sai_my_mac_attr_t
      * @brief Priority
      *
      * Value must be in the range defined in
-     * \[#SAI_MY_MAC_TABLE_ATTR_MINIMUM_PRIORITY,
-     * #SAI_MY_MAC_TABLE_ATTR_MAXIMUM_PRIORITY\]
-     * (default = #SAI_MY_MAC_TABLE_ATTR_MINIMUM_PRIORITY)
+     * \[#SAI_SWITCH_ATTR_MY_MAC_TABLE_MINIMUM_PRIORITY,
+     * #SAI_SWITCH_ATTR_MY_MAC_TABLE_MAXIMUM_PRIORITY\]
+     * (default = #SAI_SWITCH_ATTR_MY_MAC_TABLE_MINIMUM_PRIORITY)
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
     SAI_MY_MAC_ATTR_PRIORITY = SAI_MY_MAC_ATTR_START,
-
-    /**
-     * @brief Object id of the My MAC table
-     *
-     * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_MY_MAC_TABLE
-     */
-    SAI_MY_MAC_ATTR_TABLE_ID,
 
     /**
      * @brief Associated Port, LAG object id,
@@ -127,15 +118,6 @@ typedef enum _sai_my_mac_attr_t
      * @default vendor
      */
     SAI_MY_MAC_ATTR_MAC_ADDRESS_MASK,
-
-    /**
-     * @brief MY_MAC Table Flags
-     *
-     * @type sai_my_mac_flag_type_t
-     * @flags CREATE_AND_SET
-     * @default SAI_MY_MAC_FLAG_TYPE_ALL
-     */
-    SAI_MY_MAC_ATTR_FLAG_TYPE,
 
     /**
      * @brief End of attributes
@@ -203,106 +185,6 @@ typedef sai_status_t (*sai_get_my_mac_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief My MAC table attribute IDs
- */
-typedef enum _sai_my_mac_table_attr_t
-{
-    /**
-     * @brief Start of attributes
-     */
-    SAI_MY_MAC_TABLE_ATTR_START,
-
-    /**
-     * @brief Minimum priority for My MAC
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_MY_MAC_TABLE_ATTR_MINIMUM_PRIORITY = SAI_MY_MAC_TABLE_ATTR_START,
-
-    /**
-     * @brief Maximum priority for My MAC
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_MY_MAC_TABLE_ATTR_MAXIMUM_PRIORITY,
-
-    /**
-     * @brief My MAC entries installed on the switch
-     *
-     * @type sai_object_list_t
-     * @flags READ_ONLY
-     * @objects SAI_OBJECT_TYPE_MY_MAC
-     */
-    SAI_MY_MAC_TABLE_ATTR_LIST,
-
-    /**
-     * @brief End of attributes
-     */
-    SAI_MY_MAC_TABLE_ATTR_END,
-
-    /** Custom range base value */
-    SAI_MY_MAC_TABLE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_MY_MAC_TABLE_ATTR_CUSTOM_RANGE_END
-
-} sai_my_mac_table_attr_t;
-
-/**
- * @brief Create My MAC table.
- *
- * @param[out] my_mac_table_id My MAC id
- * @param[in] switch_id Switch id
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_create_my_mac_table_fn)(
-        _Out_ sai_object_id_t *my_mac_table_id,
-        _In_ sai_object_id_t switch_id,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
-
-/**
- * @brief Remove My MAC table
- *
- * @param[in] my_mac_table_id My MAC Id
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_remove_my_mac_table_fn)(
-        _In_ sai_object_id_t my_mac_table_id);
-
-/**
- * @brief Set My MAC table attribute
- *
- * @param[in] my_mac_table_id My MAC id
- * @param[in] attr Attribute
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_set_my_mac_table_attribute_fn)(
-        _In_ sai_object_id_t my_mac_table_id,
-        _In_ const sai_attribute_t *attr);
-
-/**
- * @brief Get My MAC table attribute
- *
- * @param[in] my_mac_table_id My MAC id
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_get_my_mac_table_attribute_fn)(
-        _In_ sai_object_id_t my_mac_table_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
  * @brief My MAC methods table retrieved with sai_api_query()
  */
 typedef struct _sai_my_mac_api_t
@@ -311,10 +193,6 @@ typedef struct _sai_my_mac_api_t
     sai_remove_my_mac_fn                remove_my_mac;
     sai_set_my_mac_attribute_fn         set_my_mac_attribute;
     sai_get_my_mac_attribute_fn         get_my_mac_attribute;
-    sai_create_my_mac_table_fn          create_my_mac_table;
-    sai_remove_my_mac_table_fn          remove_my_mac_table;
-    sai_set_my_mac_table_attribute_fn   set_my_mac_table_attribute;
-    sai_get_my_mac_table_attribute_fn   get_my_mac_table_attribute;
 
 } sai_my_mac_api_t;
 

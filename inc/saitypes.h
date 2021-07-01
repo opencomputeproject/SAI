@@ -280,7 +280,6 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_SWITCH_TUNNEL            = 95,
     SAI_OBJECT_TYPE_MY_SID_ENTRY             = 96,
     SAI_OBJECT_TYPE_MY_MAC                   = 97,
-    SAI_OBJECT_TYPE_MY_MAC_TABLE             = 98,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
