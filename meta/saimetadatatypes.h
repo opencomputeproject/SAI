@@ -751,6 +751,14 @@ typedef struct _sai_enum_metadata_t
      */
     const char* const* const        ignorevaluesnames;
 
+    /**
+     * @brief Object type to which this enum belongs.
+     *
+     * If enum don't belong to any object type then this field will be equal to
+     * SAI_OBJECT_TYPE_NULL.
+     */
+    sai_object_type_t               objecttype;
+
 } sai_enum_metadata_t;
 
 /**
@@ -1385,8 +1393,8 @@ typedef struct _sai_object_type_info_t
     sai_attr_id_t                                   attridend;
 
     /**
-     * @brief Provides enum metadata if attribute
-     * is enum or enum list.
+     * @brief Provides enum attr metadata related
+     * to this object type.
      */
     const sai_enum_metadata_t* const                enummetadata;
 
