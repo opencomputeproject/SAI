@@ -1160,6 +1160,9 @@ sub ProcessSingleEnum
         WriteSource ".ignorevaluesnames = NULL,";
     }
 
+    my $ot = ($typedef =~ /^sai_(\w+)_attr_t/) ? uc("SAI_OBJECT_TYPE_$1") : "SAI_OBJECT_TYPE_NULL";
+
+    WriteSource ".objecttype        = $ot,";
     WriteSource "};";
 
     return $count;
