@@ -29,7 +29,6 @@ DLL - Dynamic Link Library
 DLR - Dead Lock Recovery
 DMA - Direct Memory Access
 DNAPT - Destination Network Address Port Translation
-DNAPT - Destination Network Address Port Trasnlation
 DNAT - Destination Network Address Translation
 DSCP - Differentiated Services Code Point
 DTEL - Data Plane Telemetry
@@ -52,7 +51,6 @@ GPB - Google Protocol Buffers
 GRE - Generic Routing Encapsulation
 GRPC - GRPC Remote Procedure Call
 HW - Hardware
-I2C - I squared C
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
 ICMPV6 - Internet Control Message Procotol for IPv6
