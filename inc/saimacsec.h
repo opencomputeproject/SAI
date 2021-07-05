@@ -293,31 +293,6 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_AVAILABLE_MACSEC_SA,
 
     /**
-     * @brief Terminate/Forward Pause Frames.
-     *
-     * If enabled (true) pause frames are forwarded to the user application.
-     * In normal mode (false) pause frames are terminated and discarded within the MAC.
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_MACSEC_ATTR_PAUSE_FRAME_FORWARD_ENABLE,
-
-    /**
-     * @brief Ignore Pause Frame Quanta.
-     *
-     * If enabled (true) received pause frames are ignored by the MAC.
-     * When disabled (false) the transmit process is stopped for the amount of time
-     * specified in the pause quanta received within a pause frame.
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_MACSEC_ATTR_PAUSE_FRAME_IGNORE_ENABLE,
-
-    /**
      * @brief End of MACsec attributes
      */
     SAI_MACSEC_ATTR_END,
@@ -332,6 +307,19 @@ typedef enum _sai_macsec_attr_t
      */
     SAI_MACSEC_ATTR_CUSTOM_RANGE_END
 } sai_macsec_attr_t;
+
+/**
+ * @brief The behavior of pause frame to MACsec chip
+ * Accept means the MACsec chip will realize the pause frame and be controlled by PFC, and Ignore is the opposite,
+ * Forward means the MACsec chip will forward the pause frame to system.
+ */
+typedef enum _sai_macsec_pause_frame_ctrl_t
+{
+    SAI_MACSEC_PAUSE_FRAME_CTRL_ACCEPT,
+    SAI_MACSEC_PAUSE_FRAME_CTRL_ACCEPT_FORWARD,
+    SAI_MACSEC_PAUSE_FRAME_CTRL_INGORE,
+    SAI_MACSEC_PAUSE_FRAME_CTRL_IGNORE_FORWARD,
+} sai_macsec_pause_frame_ctrl_t;
 
 /**
  * @brief Attribute Id for sai_macsec_port
@@ -388,6 +376,15 @@ typedef enum _sai_macsec_port_attr_t
      * @default SAI_SWITCH_SWITCHING_MODE_CUT_THROUGH
      */
     SAI_MACSEC_PORT_ATTR_SWITCH_SWITCHING_MODE,
+
+    /**
+     * @brief Control the pause frame
+     *
+     * @type sai_macsec_pause_frame_ctrl_t
+     * @flags CREATE_AND_SET
+     * @default SAI_MACSEC_PAUSE_FRAME_CTRL_ACCEPT
+     */
+    SAI_MACSEC_PORT_ATTR_MACSEC_PAUSE_FRAME_CTRL,
 
     /**
      * @brief End of MACsec Port attributes
