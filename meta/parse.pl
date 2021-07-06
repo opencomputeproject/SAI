@@ -570,14 +570,17 @@ sub ProcessEnumSection
 
             my $eitemd = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
 
+            my $initializer = $ev->{initializer}[0];
+
+            $initializer = "" if not defined $initializer;
+
             if ($eitemd =~ /\@ignore/)
             {
                 LogInfo "Ignoring $enumvaluename";
 
-                my $initializer = $ev->{initializer}[0];
-
                 if ($initializer =~ /^= (SAI_\w+)$/)
                 {
+                    LogError "initializer $1 not defined in $enumtypename before $enumvaluename" if not grep (/^$1$/, @arr);
                 }
                 else
                 {
@@ -602,6 +605,8 @@ sub ProcessEnumSection
 
             push@arr,$enumvaluename;
 
+            # TODO calculate each enum value using initializers
+
             LogWarning "Value $enumvaluename of $enumtypename is not prefixed as $enumprefix" if not $enumvaluename =~ /^$enumprefix/;
 
             if (not $enumvaluename =~ /^[A-Z0-9_]+$/)
@@ -610,10 +615,17 @@ sub ProcessEnumSection
             }
         }
 
+        # TODO stable sort values based on calculated values from initializer (https://perldoc.perl.org/sort)
+        # TODO add param to disable this
+
         # remove unnecessary attributes
         my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
 
         push @ALL_ENUMS, @values;
+
+        my @ranges = grep(/^SAI_\w+(RANGE_BASE)$/, @values);
+
+        $SAI_ENUMS{$enumtypename}{ranges} = \@ranges;
 
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(RANGE_BASE)$/, @values);
@@ -641,6 +653,10 @@ sub ProcessEnumSection
                     LogInfo "Removing last element $last";
                 }
             }
+        }
+        else
+        {
+            LogError "NON sai Enum $enumtypename";
         }
 
         $SAI_ENUMS{$enumtypename}{values} = \@values;
@@ -1170,7 +1186,7 @@ sub ProcessSingleEnum
 
 sub ProcessExtraRangeDefines
 {
-    WriteSectionComment "Enums metadata";
+    WriteSectionComment "Extra range defines";
 
     for my $key (sort keys %EXTRA_RANGE_DEFINES)
     {
