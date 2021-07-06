@@ -280,7 +280,7 @@ typedef enum _sai_next_hop_group_member_attr_t
      * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP.
      *
      * @type sai_uint32_t
-     * @flags CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @default 0
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_SEQUENCE_ID,
