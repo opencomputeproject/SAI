@@ -573,11 +573,11 @@ sub ProcessEnumInitializers
         }
         elsif ($ini =~ /= (SAI_\w+)$/)
         {
-            for my $j (0..$idx)
+            for my $i (0..$idx)
             {
-                if ($$arr_ref[$j] eq $1)
+                if ($$arr_ref[$i] eq $1)
                 {
-                    $ini = @$ini_ref[$j];
+                    $ini = @$ini_ref[$i];
 
                     $previousEnumValue = hex($ini);
                     last;
@@ -604,11 +604,11 @@ sub ProcessEnumInitializers
             }
             else
             {
-                for my $j (0..$idx)
+                for my $i (0..$idx)
                 {
-                    if ($$arr_ref[$j] eq $first)
+                    if ($$arr_ref[$i] eq $first)
                     {
-                        $ini = sprintf("0x%08x", hex(@$ini_ref[$j]) + hex($val));
+                        $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + hex($val));
 
                         $previousEnumValue = hex($ini);
                         last;
@@ -617,6 +617,24 @@ sub ProcessEnumInitializers
 
                 LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
             }
+        }
+        elsif ($ini =~/^= (SAI_\w+) \+ (0x[0-9a-f]{1,8})$/)
+        {
+            my $first = $1;
+            my $val = $2;
+
+            for my $i (0..$idx)
+            {
+                if ($$arr_ref[$i] eq $first)
+                {
+                    $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + hex($val));
+
+                    $previousEnumValue = hex($ini);
+                    last;
+                }
+            }
+
+            LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
         }
         else
         {
