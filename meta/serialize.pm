@@ -455,6 +455,22 @@ sub EmitSerializeHeader
     WriteSource "EMIT(\"{\");\n";
 }
 
+sub WriteSkipForMask
+{
+    # mask is special, since it's combined with field data, but there
+    # is not field corresponded to object or object list so we can skip
+    # them in serialize and deserialize
+
+    WriteSource "else if (meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID)";
+    WriteSource "{";
+    WriteSource "/* skip */";
+    WriteSource "}";
+    WriteSource "else if (meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST)";
+    WriteSource "{";
+    WriteSource "/* skip */";
+    WriteSource "}";
+}
+
 sub EmitSerializeFooter
 {
     my $refStructInfoEx = shift;
@@ -462,6 +478,8 @@ sub EmitSerializeFooter
     if (defined $refStructInfoEx->{union})
     {
         my $name = $refStructInfoEx->{name};
+
+        WriteSkipForMask() if $name eq "sai_acl_field_data_mask_t";
 
         # NOTE: if it's union, we must check if we serialized something
         # (not always true for acl mask)
@@ -1060,6 +1078,8 @@ sub EmitDeserializeFooter
     if (defined $refStructInfoEx->{union})
     {
         my $name = $refStructInfoEx->{name};
+
+        WriteSkipForMask() if $name eq "sai_acl_field_data_mask_t";
 
         # if it's union, we must check if we serialized something
         # (not always true for acl mask)
