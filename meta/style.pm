@@ -923,6 +923,26 @@ sub CheckHeadersStyle
                 LogWarning "statistics should use 'stats' to follow convention $header:$n:$line";
             }
 
+            if ($line =~ /^\s*(SAI_\w+)\s*=\s*(.*)$/)
+            {
+                my $init = $2;
+
+                if ($init =~ m!^(0x\w+|SAI_\w+|SAI_\w+ \+ 0x[0-9a-f]{1,8}|SAI_\w+ \+ SAI_\w+|\d+|\(?\d+ << \d+\)?),?\s*(/\*\*.*\*/)?$!)
+                {
+                    # supported initializers for enum:
+                    # - 0x00000000 (hexadecimal number)
+                    # - 0 (decimal number)
+                    # - SAI_... (other SAI enum)
+                    # - n << m (flags shifted)
+                    # - SAI_.. + SAI_.. (sum of SAI enums)
+                    # - SAI_.. + 0x00 (sum of SAI and hexadecimal number)
+                }
+                else
+                {
+                    LogWarning "unsupported initializer on enum: $line";
+                }
+            }
+
             if ($line =~ /^\s*SAI_\w+\s*=\s*+0x(\w+)(,|$)/ and length($1) != 8)
             {
                 LogWarning "enum number '0x$1' should have 8 digits $header:$n:$line";

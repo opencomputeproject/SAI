@@ -851,7 +851,7 @@ sub CreateSerializeEmitMacros
     WriteSource "    if (ret < 0) {                                                 \\";
     WriteSource "        SAI_META_LOG_WARN(\"failed to serialize \" #suffix \"\");      \\";
     WriteSource "        return SAI_SERIALIZE_ERROR; }                              \\";
-    WriteSource "    buf += ret; } ";
+    WriteSource "    buf += ret; }";
     WriteSource "#define EMIT_QUOTE_CHECK(expr, suffix) {\\";
     WriteSource "    EMIT_QUOTE; EMIT_CHECK(expr, suffix); EMIT_QUOTE; }";
 }
@@ -882,7 +882,7 @@ sub CreateDeserializeEmitMacros
     WriteSource "    if (ret < 0) {                                                 \\";
     WriteSource "        SAI_META_LOG_WARN(\"failed to deserialize \" #suffix \"\");      \\";
     WriteSource "        return SAI_SERIALIZE_ERROR; }                              \\";
-    WriteSource "    buf += ret; } ";
+    WriteSource "    buf += ret; }";
     WriteSource "#define EXPECT_QUOTE_CHECK(expr, suffix) {\\";
     WriteSource "    EXPECT_QUOTE; EXPECT_CHECK(expr, suffix); EXPECT_QUOTE; }";
 }

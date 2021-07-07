@@ -998,7 +998,7 @@ typedef enum _sai_hostif_table_entry_attr_t
      * @type sai_hostif_table_entry_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE = SAI_HOSTIF_ATTR_START,
+    SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE = SAI_HOSTIF_TABLE_ENTRY_ATTR_START,
 
     /**
      * @brief Host interface table entry match field object-id

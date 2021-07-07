@@ -49,7 +49,7 @@ GRPC - GRPC Remote Procedure Call
 HW - Hardware
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
-ICMPV6 - Internet Control Message Procotol for IPv6
+ICMPV6 - Internet Control Message Protocol for IPv6
 IEEE - Institute of Electrical and Electronics Engineers
 IFA - Inband Flow Analyzer
 IFA1 - Inband Flow Analyzer version 1
