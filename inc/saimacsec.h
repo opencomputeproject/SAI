@@ -309,19 +309,6 @@ typedef enum _sai_macsec_attr_t
 } sai_macsec_attr_t;
 
 /**
- * @brief The behavior of pause frame to MACsec chip
- * Accept means the MACsec chip will realize the pause frame and be controlled by PFC, and Ignore is the opposite,
- * Forward means the MACsec chip will forward the pause frame to system.
- */
-typedef enum _sai_macsec_pause_frame_ctrl_t
-{
-    SAI_MACSEC_PAUSE_FRAME_CTRL_ACCEPT,
-    SAI_MACSEC_PAUSE_FRAME_CTRL_ACCEPT_FORWARD,
-    SAI_MACSEC_PAUSE_FRAME_CTRL_INGORE,
-    SAI_MACSEC_PAUSE_FRAME_CTRL_IGNORE_FORWARD,
-} sai_macsec_pause_frame_ctrl_t;
-
-/**
  * @brief Attribute Id for sai_macsec_port
  */
 typedef enum _sai_macsec_port_attr_t
@@ -376,15 +363,6 @@ typedef enum _sai_macsec_port_attr_t
      * @default SAI_SWITCH_SWITCHING_MODE_CUT_THROUGH
      */
     SAI_MACSEC_PORT_ATTR_SWITCH_SWITCHING_MODE,
-
-    /**
-     * @brief Control the pause frame
-     *
-     * @type sai_macsec_pause_frame_ctrl_t
-     * @flags CREATE_AND_SET
-     * @default SAI_MACSEC_PAUSE_FRAME_CTRL_ACCEPT
-     */
-    SAI_MACSEC_PORT_ATTR_MACSEC_PAUSE_FRAME_CTRL,
 
     /**
      * @brief End of MACsec Port attributes

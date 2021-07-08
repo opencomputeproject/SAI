@@ -475,6 +475,39 @@ typedef enum _sai_port_dual_media_t
 } sai_port_dual_media_t;
 
 /**
+ * @brief Pause frame control mode
+ */
+typedef enum _sai_port_pause_frame_control_mode_t
+{
+    /** Same value for link and PFC pause frame */
+    SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_COMBINED,
+
+    /** Separate values for link and PFC pause frame */
+    SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_SEPARATE,
+} sai_port_pause_frame_control_mode_t;
+
+/**
+ * @brief The control of pause frame to the port
+ * Accept means the port will realize the pause frame, and Ignore is the opposite,
+ * Forward means the port will forward the pause frame.
+ */
+typedef enum _sai_port_pause_frame_ctrl_t
+{
+    /** The port will accept the pause frame but not forward it */
+    SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT,
+
+    /** The port will accept the pause frame and forward it */
+    SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT_FORWARD,
+
+    /** The port will ignore the pause frame and not forward it */
+    SAI_PORT_PAUSE_FRAME_CTRL_INGORE,
+
+    /** The port will ignore the pause frame but forward it */
+    SAI_PORT_PAUSE_FRAME_CTRL_IGNORE_FORWARD,
+
+} sai_port_pause_frame_ctrl_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -1954,6 +1987,45 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_DUAL_MEDIA_NONE
      */
     SAI_PORT_ATTR_DUAL_MEDIA,
+
+    /**
+     * @brief The control mode of pause frame
+     *
+     * @type sai_port_pause_frame_control_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_SEPARATE
+     */
+    SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE,
+
+    /**
+     * @brief The control of link pause frame
+     *
+     * @type sai_port_pause_frame_ctrl_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT
+     * @validonly SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE == SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_SEPARATE
+     */
+    SAI_PORT_ATTR_LINK_PAUSE_CONTROL,
+
+    /**
+     * @brief The control of PFC pause frame
+     *
+     * @type sai_port_pause_frame_ctrl_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT
+     * @validonly SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE == SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_SEPARATE
+     */
+    SAI_PORT_ATTR_PFC_PAUSE_CONTROL,
+
+    /**
+     * @brief The control of link and PFC pause frame
+     *
+     * @type sai_port_pause_frame_ctrl_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT
+     * @validonly SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE == SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_COMBINED
+     */
+    SAI_PORT_ATTR_LINK_AND_PFC_PAUSE_CONTROL,
 
     /**
      * @brief End of attributes
