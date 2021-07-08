@@ -96,6 +96,12 @@ typedef enum _sai_my_sid_entry_endpoint_behavior_t
     /** End.B6.Insert function with a reduced SRH */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_B6_INSERT_RED,
 
+    /** End.uN function for shift-and-lookup behavior */
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UN,
+
+    /** End.uA function for shift-and-xconnect behavior */
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UA,
+
     /** Custom range base value */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_CUSTOM_RANGE_START = 0x10000000,
 

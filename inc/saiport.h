@@ -1989,6 +1989,16 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_DUAL_MEDIA,
 
     /**
+     * @brief Query the Auto Negotiated Resolved FEC
+     *
+     * Auto negotiated FEC status is applicable on Auto Negotiation good state
+     *
+     * @type sai_port_fec_mode_extended_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_EXTENDED,
+
+    /**
      * @brief The control mode of pause frame
      *
      * @type sai_port_pause_frame_control_mode_t
@@ -2005,7 +2015,7 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT
      * @validonly SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE == SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_SEPARATE
      */
-    SAI_PORT_ATTR_LINK_PAUSE_CONTROL,
+    SAI_PORT_ATTR_LINK_PORT_PAUSE_FRAME_CTRL,
 
     /**
      * @brief The control of PFC pause frame
@@ -2015,7 +2025,7 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT
      * @validonly SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE == SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_SEPARATE
      */
-    SAI_PORT_ATTR_PFC_PAUSE_CONTROL,
+    SAI_PORT_ATTR_PFC_PORT_PAUSE_FRAME_CTRL,
 
     /**
      * @brief The control of link and PFC pause frame
@@ -2025,7 +2035,7 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT
      * @validonly SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE == SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_COMBINED
      */
-    SAI_PORT_ATTR_LINK_AND_PFC_PAUSE_CONTROL,
+    SAI_PORT_ATTR_LINK_AND_PFC_PORT_PAUSE_FRAME_CTRL,
 
     /**
      * @brief End of attributes
