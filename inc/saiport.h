@@ -772,14 +772,6 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_OPER_SPEED,
 
-    /**
-     * @brief The control mode of pause frame
-     *
-     * @type sai_port_pause_frame_control_mode_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE,
-
     /* READ-WRITE */
 
     /**
@@ -2005,6 +1997,15 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_EXTENDED,
+
+    /**
+     * @brief The control mode of pause frame
+     *
+     * @type sai_port_pause_frame_control_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_PORT_PAUSE_FRAME_CONTROL_MODE_SEPARATE
+     */
+    SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE,
 
     /**
      * @brief The control of link pause frame
