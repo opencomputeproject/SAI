@@ -226,6 +226,9 @@ typedef enum _sai_port_fec_mode_extended_t
  */
 typedef enum _sai_port_priority_flow_control_mode_t
 {
+    /** Disable PFC for both rx and tx */
+    SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_DISABLED,
+
     /** Same value for RX/TX */
     SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_COMBINED,
 
@@ -1442,17 +1445,6 @@ typedef enum _sai_port_attr_t
      * @validonly SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE == SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE
      */
     SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_TX,
-
-    /**
-     * @brief Enable/disable port PFC to all bits
-     *
-     * True means enable PFC and false is opposite
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default true
-     */
-    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_ALL_BITS,
 
     /**
      * @brief Forward or not forward the PFC frame
