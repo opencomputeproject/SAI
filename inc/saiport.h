@@ -475,39 +475,6 @@ typedef enum _sai_port_dual_media_t
 } sai_port_dual_media_t;
 
 /**
- * @brief Pause frame control mode
- */
-typedef enum _sai_port_pause_frame_control_mode_t
-{
-    /** Separate values for each type of pause frame */
-    SAI_PORT_PAUSE_FRAME_CONTROL_MODE_SEPARATE,
-
-    /** Same value for link and PFC pause frame */
-    SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_COMBINED,
-} sai_port_pause_frame_control_mode_t;
-
-/**
- * @brief The control of pause frame to the port
- * Accept means the port will realize the pause frame, and Ignore is the opposite,
- * Forward means the port will forward the pause frame.
- */
-typedef enum _sai_port_pause_frame_ctrl_t
-{
-    /** The port will accept the pause frame but not forward it */
-    SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT,
-
-    /** The port will accept the pause frame and forward it */
-    SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT_FORWARD,
-
-    /** The port will ignore the pause frame and not forward it */
-    SAI_PORT_PAUSE_FRAME_CTRL_INGORE,
-
-    /** The port will ignore the pause frame but forward it */
-    SAI_PORT_PAUSE_FRAME_CTRL_IGNORE_FORWARD,
-
-} sai_port_pause_frame_ctrl_t;
-
-/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -1066,6 +1033,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_MODE,
 
     /**
+     * @brief Forward or not forward the global flow control frame
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_FORWARD,
+
+    /**
      * @brief Port bind point for ingress ACL object
      *
      * Bind (or unbind) an ingress ACL table or ACL group on a port.
@@ -1466,6 +1442,26 @@ typedef enum _sai_port_attr_t
      * @validonly SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE == SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE
      */
     SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_TX,
+
+    /**
+     * @brief Enable/disable port PFC to all bits
+     *
+     * True means enable PFC and false is opposite
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_ALL_BITS,
+
+    /**
+     * @brief Forward or not forward the PFC frame
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_FORWARD,
 
     /**
      * @brief User based Meta Data
@@ -1997,45 +1993,6 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_EXTENDED,
-
-    /**
-     * @brief The control mode of pause frame
-     *
-     * @type sai_port_pause_frame_control_mode_t
-     * @flags CREATE_ONLY
-     * @default SAI_PORT_PAUSE_FRAME_CONTROL_MODE_SEPARATE
-     */
-    SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE,
-
-    /**
-     * @brief The control of link pause frame
-     *
-     * @type sai_port_pause_frame_ctrl_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT
-     * @validonly SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE == SAI_PORT_PAUSE_FRAME_CONTROL_MODE_SEPARATE
-     */
-    SAI_PORT_ATTR_LINK_PORT_PAUSE_FRAME_CTRL,
-
-    /**
-     * @brief The control of PFC pause frame
-     *
-     * @type sai_port_pause_frame_ctrl_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT
-     * @validonly SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE == SAI_PORT_PAUSE_FRAME_CONTROL_MODE_SEPARATE
-     */
-    SAI_PORT_ATTR_PFC_PORT_PAUSE_FRAME_CTRL,
-
-    /**
-     * @brief The control of link and PFC pause frame
-     *
-     * @type sai_port_pause_frame_ctrl_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_PAUSE_FRAME_CTRL_ACCEPT
-     * @validonly SAI_PORT_ATTR_PAUSE_FRAME_CONTROL_MODE == SAI_PORT_PAUSE_FRAME_CONTROL_MODE_LINK_PFC_COMBINED
-     */
-    SAI_PORT_ATTR_LINK_AND_PFC_PORT_PAUSE_FRAME_CTRL,
 
     /**
      * @brief End of attributes
