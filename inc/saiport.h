@@ -226,15 +226,14 @@ typedef enum _sai_port_fec_mode_extended_t
  */
 typedef enum _sai_port_priority_flow_control_mode_t
 {
-    /** Disable PFC for both rx and tx */
-    SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_DISABLED,
-
     /** Same value for RX/TX */
     SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_COMBINED,
 
     /** Separate values for RX/TX */
     SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE,
 
+    /** Disable PFC for both rx and tx */
+    SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_DISABLED,
 } sai_port_priority_flow_control_mode_t;
 
 /**
