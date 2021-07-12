@@ -1965,7 +1965,7 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_EXTENDED,
 
-    /*
+    /**
      * @brief Enable DSCP -> Forwarding Class MAP on port
      *
      * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
