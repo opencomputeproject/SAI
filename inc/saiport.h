@@ -1968,8 +1968,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Configures inter frame gap for an ethernet port
      *
-     * IPG is mandated by IEEE 802.3 to ensure reliable communication between two ethernet devices.
-     * The minimum recommended inter-packet gap(IPG) is 96 bits (9.6usec for 10GBASE-T and 0.96usec for 100GBASE-T)
+     * IPG is mandated by IEEE 802.3 to ensure reliable communication between two Ethernet devices.
+     * The minimum recommended inter-packet gap(IPG) by IEEE 802.3 is 96 bits (12 bytes)
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
