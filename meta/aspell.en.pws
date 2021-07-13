@@ -29,6 +29,8 @@ egressing
 encap
 enum
 Enum
+ethernet
+Ethernet
 EtherType
 extraparam
 Facebook
