@@ -1035,14 +1035,11 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_MODE,
 
     /**
-     * @brief Forward or not forward the global flow control frame
+     * @brief Forward or terminate the global flow control(802.3X) frame
      *
-     * If the port belongs to gearbox, the forward means the flow control traffic
-     * can be forwarded from line side to system side or vice versa.
-     * If the port belongs to switch ASIC, the forward means the flow control traffic
-     * can be forwarded from serdes block to the packet core so that the ASIC can
-     * process the flow control frame.
-     * 
+     * If true, flow control frames are switched between ports.
+     * If false, flow control frames are terminated by the switch.
+     *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
@@ -1452,14 +1449,11 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_TX,
 
     /**
-     * @brief Forward or not forward the PFC frame
+     * @brief Forward or terminate the PFC(802.1Qbb) frame
      *
-     * If the port belongs to gearbox, the forward means the PFC traffic
-     * can be forwarded from line side to system side or vice versa.
-     * If the port belongs to switch ASIC, the forward means the PFC traffic
-     * can be forwarded from serdes block to the packet core so that the ASIC can
-     * process the PFC frame.
-     * 
+     * If true, flow control frames are switched between ports.
+     * If false, flow control frames are terminated by the switch.
+     *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
