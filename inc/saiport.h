@@ -232,7 +232,7 @@ typedef enum _sai_port_priority_flow_control_mode_t
     /** Separate values for RX/TX */
     SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE,
 
-    /** Disable PFC for both rx and tx */
+    /** Disable PFC for both rx and tx in all bits */
     SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_DISABLED,
 } sai_port_priority_flow_control_mode_t;
 
@@ -1037,6 +1037,12 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Forward or not forward the global flow control frame
      *
+     * If the port belongs to gearbox, the forward means the flow control traffic
+     * can be forwarded from line side to system side or vice versa.
+     * If the port belongs to switch ASIC, the forward means the flow control traffic
+     * can be forwarded from serdes block to the packet core so that the ASIC can
+     * process the flow control frame.
+     * 
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
@@ -1448,6 +1454,12 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Forward or not forward the PFC frame
      *
+     * If the port belongs to gearbox, the forward means the PFC traffic
+     * can be forwarded from line side to system side or vice versa.
+     * If the port belongs to switch ASIC, the forward means the PFC traffic
+     * can be forwarded from serdes block to the packet core so that the ASIC can
+     * process the PFC frame.
+     * 
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
