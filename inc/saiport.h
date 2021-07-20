@@ -1966,6 +1966,18 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_EXTENDED,
 
     /**
+     * @brief Configures inter frame gap for an ethernet port
+     *
+     * IPG is mandated by IEEE 802.3 to ensure reliable communication between two Ethernet devices.
+     * The minimum recommended inter-packet gap(IPG) by IEEE 802.3 is 96 bits (12 bytes)
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 96
+     */
+    SAI_PORT_ATTR_IPG,
+
+    /**
      * @brief Enable DSCP -> Forwarding Class MAP on port
      *
      * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
@@ -1992,18 +2004,6 @@ typedef enum _sai_port_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_MPLS_EXP_TO_FORWARDING_CLASS_MAP,
-
-    /**
-     * @brief Configures inter frame gap for an ethernet port
-     *
-     * IPG is mandated by IEEE 802.3 to ensure reliable communication between two Ethernet devices.
-     * The minimum recommended inter-packet gap(IPG) by IEEE 802.3 is 96 bits (12 bytes)
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 96
-     */
-    SAI_PORT_ATTR_IPG,
 
     /**
      * @brief End of attributes
