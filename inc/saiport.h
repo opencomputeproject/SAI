@@ -745,7 +745,7 @@ typedef enum _sai_port_attr_t
      * @brief Hardware Lane list
      *
      * @type sai_u32_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_PORT_ATTR_HW_LANE_LIST,
 
