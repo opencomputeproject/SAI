@@ -195,6 +195,34 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_TAM_OBJECT,
 
     /**
+     * @brief Control for buffered and incoming packets on a queue undergoing PFC Deadlock Recovery.
+     *
+     * This control applies to all packets on the queue.
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_DROP
+     */
+    SAI_QUEUE_ATTR_PFC_DLR_PACKET_ACTION,
+
+    /**
+     * @brief Queue PFC deadlock/recovery state
+     *
+     * This attribute represents the queue internal hardware PFC
+     * deadlock state. It is an aggregation of all HW state used to
+     * determine if a queue is in PFC deadlock. This attribute should
+     * only be queried as part of the PFC deadlock and recovery detection
+     * processing.
+     * True indicates the queue is in a PFC deadlock state and
+     * on each successive query, a True indicates the queue has stayed
+     * in that state.
+     *
+     * @type boolean
+     * @flags READ_ONLY
+     */
+    SAI_QUEUE_ATTR_PFC_DLR_STATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_QUEUE_ATTR_END,
