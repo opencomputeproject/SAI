@@ -217,7 +217,7 @@ typedef enum _sai_queue_attr_t
      * on each successive query, a True indicates the queue has stayed
      * in that state.
      *
-     * @type boolean
+     * @type bool
      * @flags READ_ONLY
      */
     SAI_QUEUE_ATTR_PFC_DLR_STATE,
