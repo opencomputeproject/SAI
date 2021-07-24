@@ -79,7 +79,7 @@ typedef union _sai_object_key_entry_t
     sai_nat_entry_t           nat_entry;
 
     /** @validonly object_type == SAI_OBJECT_TYPE_MY_SID_ENTRY */
-    sai_my_sid_entry_t     my_sid_entry;
+    sai_my_sid_entry_t        my_sid_entry;
 
 } sai_object_key_entry_t;
 
