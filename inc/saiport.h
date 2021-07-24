@@ -1575,6 +1575,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_SERDES_PREEMPHASIS,
 
@@ -1589,6 +1590,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_SERDES_IDRIVER,
 
@@ -1603,6 +1605,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_SERDES_IPREDRIVER,
 
