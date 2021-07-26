@@ -7,6 +7,3 @@
 [submodule "bm/behavioral-model"]
 	path = bm/behavioral-model
 	url = https://github.com/p4lang/behavioral-model.git
-[submodule "test/sonic-mgmt"]
-	path = test/sonic-mgmt
-	url = https://github.com/Azure/sonic-mgmt.git
