@@ -322,6 +322,18 @@ typedef enum _sai_hostif_trap_type_t
     /** Default packet action is forward */
     SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_ADVERTISEMENT = 0x00002013,
 
+    /**
+     * @brief Intermediate System-to-Intermediate System (IS-IS) protocol
+     *
+     * Traffic:
+     * L1 IS: 01:80:c2:00:00:14, All Level 1 Intermediate Systems Address
+     * L2 IS: 01:80:c2:00:00:15, All Level 2 Intermediate Systems Address
+     * All IS: 09:00:2b:00:00:05, All Intermediate System Network Entities address
+     *
+     * Default packet action is forward
+     */
+    SAI_HOSTIF_TRAP_TYPE_ISIS = 0x00002014,
+
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
 
@@ -426,6 +438,12 @@ typedef enum _sai_hostif_trap_type_t
      * (default packet action is forward)
      */
     SAI_HOSTIF_TRAP_TYPE_MPLS_ROUTER_ALERT_LABEL = 0x00008001,
+
+    /**
+     * @brief MPLS packets discarded due to label lookup miss
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_MPLS_LABEL_LOOKUP_MISS = 0x00008002,
 
     /** Exception traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00009000,
@@ -998,7 +1016,7 @@ typedef enum _sai_hostif_table_entry_attr_t
      * @type sai_hostif_table_entry_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE = SAI_HOSTIF_ATTR_START,
+    SAI_HOSTIF_TABLE_ENTRY_ATTR_TYPE = SAI_HOSTIF_TABLE_ENTRY_ATTR_START,
 
     /**
      * @brief Host interface table entry match field object-id

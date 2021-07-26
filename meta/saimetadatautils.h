@@ -157,7 +157,7 @@ extern bool sai_metadata_is_object_type_oid(
  *
  * NOTE: When multiple attributes with the same ID are passed,
  * sai_metadata_get_attr_by_id will select only first one.
- * Function will not be able to handle multiple attributes
+ * Function will not be able to handle duplicated attributes.
  *
  * @param[in] metadata Metadata of attribute that we need to check.
  * @param[in] attr_count Number of attributes.
@@ -168,6 +168,32 @@ extern bool sai_metadata_is_object_type_oid(
  * returned if any of input pointers is NULL or attribute is not conditional.
  */
 extern bool sai_metadata_is_condition_met(
+        _In_ const sai_attr_metadata_t *metadata,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Check if valid only condition is met.
+ *
+ * List of attributes will be examined in terms of valid only conditions. This
+ * is convenient since user can pass list when calling create API. If valid
+ * only condition attribute is not on the list, then default value will be
+ * examined.
+ *
+ * NOTE: When multiple attributes with the same ID are passed,
+ * sai_metadata_get_attr_by_id will select only first one. Function will not
+ * be able to handle duplicated attributes.
+ *
+ * @param[in] metadata Metadata of attribute that we need to check.
+ * @param[in] attr_count Number of attributes.
+ * @param[in] attr_list Attribute list to check. All attributes must
+ * belong to the same object type as metadata parameter.
+ *
+ * @return True if valid only condition is in force, false otherwise. False
+ * will be also returned if any of input pointers is NULL or attribute is not
+ * valid only conditional.
+ */
+extern bool sai_metadata_is_validonly_met(
         _In_ const sai_attr_metadata_t *metadata,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);

@@ -455,6 +455,22 @@ sub EmitSerializeHeader
     WriteSource "EMIT(\"{\");\n";
 }
 
+sub WriteSkipForMask
+{
+    # mask is special, since it's combined with field data, but there
+    # is not field corresponded to object or object list so we can skip
+    # them in serialize and deserialize
+
+    WriteSource "else if (meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID)";
+    WriteSource "{";
+    WriteSource "/* skip */";
+    WriteSource "}";
+    WriteSource "else if (meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST)";
+    WriteSource "{";
+    WriteSource "/* skip */";
+    WriteSource "}";
+}
+
 sub EmitSerializeFooter
 {
     my $refStructInfoEx = shift;
@@ -462,6 +478,8 @@ sub EmitSerializeFooter
     if (defined $refStructInfoEx->{union})
     {
         my $name = $refStructInfoEx->{name};
+
+        WriteSkipForMask() if $name eq "sai_acl_field_data_mask_t";
 
         # NOTE: if it's union, we must check if we serialized something
         # (not always true for acl mask)
@@ -833,7 +851,7 @@ sub CreateSerializeEmitMacros
     WriteSource "    if (ret < 0) {                                                 \\";
     WriteSource "        SAI_META_LOG_WARN(\"failed to serialize \" #suffix \"\");      \\";
     WriteSource "        return SAI_SERIALIZE_ERROR; }                              \\";
-    WriteSource "    buf += ret; } ";
+    WriteSource "    buf += ret; }";
     WriteSource "#define EMIT_QUOTE_CHECK(expr, suffix) {\\";
     WriteSource "    EMIT_QUOTE; EMIT_CHECK(expr, suffix); EMIT_QUOTE; }";
 }
@@ -864,7 +882,7 @@ sub CreateDeserializeEmitMacros
     WriteSource "    if (ret < 0) {                                                 \\";
     WriteSource "        SAI_META_LOG_WARN(\"failed to deserialize \" #suffix \"\");      \\";
     WriteSource "        return SAI_SERIALIZE_ERROR; }                              \\";
-    WriteSource "    buf += ret; } ";
+    WriteSource "    buf += ret; }";
     WriteSource "#define EXPECT_QUOTE_CHECK(expr, suffix) {\\";
     WriteSource "    EXPECT_QUOTE; EXPECT_CHECK(expr, suffix); EXPECT_QUOTE; }";
 }
@@ -1060,6 +1078,8 @@ sub EmitDeserializeFooter
     if (defined $refStructInfoEx->{union})
     {
         my $name = $refStructInfoEx->{name};
+
+        WriteSkipForMask() if $name eq "sai_acl_field_data_mask_t";
 
         # if it's union, we must check if we serialized something
         # (not always true for acl mask)
