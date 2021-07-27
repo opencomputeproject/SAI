@@ -4752,6 +4752,12 @@ void check_object_ro_list(
         return;
     }
 
+    if (SAI_OBJECT_TYPE_P4EXT_ENTRY == oi->objecttype)
+    {
+        META_LOG_WARN("p4ext entry object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        return;
+    }
+
     META_ASSERT_FAIL("%s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
 }
 
@@ -4936,6 +4942,20 @@ void check_graph_connected()
              */
 
             META_LOG_WARN("debug counter object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
+        if (SAI_OBJECT_TYPE_P4EXT_ENTRY == i)
+        {
+            /*
+             * Allow P4EXT Entry to be disconnected from main graph.
+             * This may change in future iterations but for now p4ext entry objects are
+             * independent of other SAI objects.
+             */
+
+            META_LOG_WARN("p4ext entry  object %s is disconnected from graph",
                     sai_metadata_all_object_type_infos[i]->objecttypename);
 
             continue;
