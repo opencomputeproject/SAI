@@ -18,3 +18,14 @@ meta/saiserializetest
 # temporary files
 **/*~
 **/*.swp
+
+#python buildout and cache
+test/saithrift/stptest/__pycache__
+test/saithrift/MANIFEST
+test/saithrift/build/
+test/saithrift/dist/
+test/saithrift/saiserver
+test/saithrift/src/gen-cpp/
+test/saithrift/src/gen-py/
+test/saithrift/src/obj/
+**/*.pyc 
