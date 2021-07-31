@@ -2556,6 +2556,24 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAPT_ENTRY,
 
     /**
+     * @brief Slave MDIO Address list
+     *
+     * Configure list of slave MDIO addresses for firmware download in Broadcast mode.
+     * The sequence for firmware download in broadcast mode is as follows:
+     * 1. For each MDIO master, call sai_create_switch() and pass the list of slave MDIO addresses.
+     * In this step, gearbox will upgrade the firmware on all PHY devices including master and slave.
+     *
+     * 2. Call sai_create_switch() on all slave PHY devices with #SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE = SAI_SWITCH_FIRMWARE_LOAD_TYPE_SKIP,
+     * which will already have had their firmware upgraded.
+     *
+     * @type sai_u8_list_t
+     * @flags CREATE_ONLY
+     * @default empty
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_SLAVE_MDIO_ADDR_LIST,
+
+    /**
      * @brief Minimum priority for My MAC
      *
      * @type sai_uint32_t
@@ -2680,7 +2698,7 @@ typedef enum _sai_switch_stat_t
     SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_BASE = 0x00003000,
 
     /** Get ECC discards [fabric] */
-    SAI_SWITCH_STAT_ECC_DROP,
+    SAI_SWITCH_STAT_ECC_DROP = SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_BASE,
 
     /** Get reach-ability discards [switch | fabric] */
     SAI_SWITCH_STAT_REACHABILITY_DROP,

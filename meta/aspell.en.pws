@@ -6,6 +6,7 @@ an
 apache
 APIs
 attr
+attrid
 attrvalue
 AUTONEG
 bool
@@ -28,6 +29,8 @@ egressing
 encap
 enum
 Enum
+ethernet
+Ethernet
 EtherType
 extraparam
 Facebook

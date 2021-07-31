@@ -55,8 +55,8 @@ stp_EXEC   = sai_ut_stp
 EXEC_ALL = $(BDIR)/$(vr_EXEC) $(BDIR)/$(rif_EXEC) $(BDIR)/$(nh_EXEC) $(BDIR)/$(nhg_EXEC) $(BDIR)/$(nbr_EXEC) $(BDIR)/$(route_EXEC) $(BDIR)/$(fdb_EXEC) $(BDIR)/$(vlan_EXEC) $(BDIR)/$(lag_EXEC) $(BDIR)/$(stp_EXEC)
 
 # what to use for compiling
-CXX=g++
-AR=ar
+CXX = $(CROSS_COMPILE)g++
+AR = $(CROSS_COMPILE)ar
 
 # include dir for unit-tests
 INCLUDEFLAGS = ${SAI_INCLUDE_FLAGS} -I$(GTEST_DIR)/include 
