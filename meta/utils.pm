@@ -61,7 +61,11 @@ sub WriteHeader
 
     my $ident = GetIdent($content);
 
-    $HEADER_CONTENT .= $ident . $content . "\n";
+    my $line = $ident . $content . "\n";
+
+    $line = "\n" if $content eq "";
+
+    $HEADER_CONTENT .= $line;
 }
 
 sub WriteSource
@@ -70,7 +74,11 @@ sub WriteSource
 
     my $ident = GetIdent($content);
 
-    $SOURCE_CONTENT .= $ident . $content . "\n";
+    my $line = $ident . $content . "\n";
+
+    $line = "\n" if $content eq "";
+
+    $SOURCE_CONTENT .= $line;
 }
 
 sub WriteTest

@@ -15,7 +15,9 @@
 #    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 #    Dell Products, L.P., Facebook, Inc
 #
-CXX = g++
+
+CXX = $(CROSS_COMPILE)g++
+
 LIBS = -lpthread 
 LDIR = ./lib
 

@@ -1,4 +1,5 @@
-CXX=g++
+CXX = $(CROSS_COMPILE)g++
+
 SAI_PREFIX = /usr
 SAI_HEADER_DIR ?= $(SAI_PREFIX)/include/sai
 SAI_HEADERS = $(SAI_HEADER_DIR)/sai*.h

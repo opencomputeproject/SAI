@@ -21,7 +21,8 @@
 
 #Broadcom, Mellonox, Barefoot
 
-CXX = g++
+CXX = $(CROSS_COMPILE)g++
+
 LIBS = -lpthread -lsai
 SAI_IDIR = /usr/include/sai
 

@@ -1575,6 +1575,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_SERDES_PREEMPHASIS,
 
@@ -1589,6 +1590,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_SERDES_IDRIVER,
 
@@ -1603,6 +1605,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_SERDES_IPREDRIVER,
 
@@ -1954,6 +1957,28 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_DUAL_MEDIA_NONE
      */
     SAI_PORT_ATTR_DUAL_MEDIA,
+
+    /**
+     * @brief Query the Auto Negotiated Resolved FEC
+     *
+     * Auto negotiated FEC status is applicable on Auto Negotiation good state
+     *
+     * @type sai_port_fec_mode_extended_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_EXTENDED,
+
+    /**
+     * @brief Configures inter frame gap for an ethernet port
+     *
+     * IPG is mandated by IEEE 802.3 to ensure reliable communication between two Ethernet devices.
+     * The minimum recommended inter-packet gap(IPG) by IEEE 802.3 is 96 bits (12 bytes)
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 96
+     */
+    SAI_PORT_ATTR_IPG,
 
     /**
      * @brief End of attributes

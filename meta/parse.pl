@@ -28,6 +28,7 @@ BEGIN { push @INC,'.'; }
 use strict;
 use warnings;
 use diagnostics;
+use sort 'stable'; # for enum initializers sort
 
 #use XML::Simple qw(:strict);
 use Getopt::Std;
@@ -42,6 +43,8 @@ use cap;
 our $XMLDIR = "xml";
 our $INCLUDE_DIR = "../inc/";
 our $EXPERIMENTAL_DIR = "../experimental/";
+
+our $MAX_CONDITIONS_LEN = 1;
 
 our %SAI_ENUMS = ();
 our %SAI_UNIONS = ();
@@ -199,6 +202,114 @@ sub ProcessTagAllowEmpty
     return undef;
 }
 
+sub ProcessMixedConditionTag
+{
+    my ($type, $value, $val) = @_;
+
+    LogDebug "Processing mix condition: '$val'";
+
+    $val = "($val)" if not $val =~ /^\(/;
+
+    my $COND_OP = '(?:==|!=|<=|>=|<|>)';
+
+    my @parts = split/(SAI_\w+\s*$COND_OP\s*(?:true|false|SAI_\w+|$NUMBER_REGEX))/,$val;
+
+    my $short = "";
+
+    my @conds = ();
+
+    for my $part (@parts)
+    {
+        LogDebug "'$part'";
+
+        if ($part =~ /(SAI_\w+\s*$COND_OP\s*(?:true|false|SAI_\w+|$NUMBER_REGEX))/)
+        {
+            $short .= "C";
+
+            push@conds,$part;
+            next;
+        }
+
+        $part =~ s/\band\b/a/g;
+        $part =~ s/\bor\b/o/g;
+
+        $short .= $part;
+    }
+
+    $short =~ s/\s+//g;
+
+    LogDebug "$short";
+
+    my $RPN = "";
+    my @stack = ();
+
+    my @conditions = ();
+
+    if ($short =~ /CC|[ao][ao]/)
+    {
+        LogError "wrong condition, missing and/or: ($short): $val";
+        return undef;
+    }
+
+    while ($short =~ /(.)/g)
+    {
+        LogDebug "short = $1";
+
+        my $c = $1;
+
+        next if ($c eq "(");
+
+        if ($c eq "C")
+        {
+            $RPN .= "C";
+
+            my $cond = shift @conds;
+
+            push@conditions,$cond;
+        }
+        elsif ($c eq ')')
+        {
+            my $o = pop@stack;
+
+            if (not defined $o)
+            {
+                LogError "not pairded ')' in $short: $val";
+                return undef;
+            }
+
+            $RPN .= $o;
+
+            push@conditions,"SAI_ATTR_CONDITION_TYPE_AND" if $o eq "a";
+            push@conditions,"SAI_ATTR_CONDITION_TYPE_OR"  if $o eq "o";
+        }
+        elsif ($c eq "a" or $c eq "o")
+        {
+            push@stack,$c;
+        }
+        else
+        {
+            LogError "unsupported char $c in $short: $val";
+            return undef;
+        }
+    }
+
+    my $len = @stack;
+
+    if ($len != 0)
+    {
+        LogError "wrong stack length: $len (@stack) (short: '$short') unpaired/missing brackets () on condition: $val";
+        return undef;
+    }
+
+    # $RPN = reverse $RPN;
+
+    LogDebug "RPN = $RPN | @conditions";
+
+    unshift @conditions, "SAI_ATTR_CONDITION_TYPE_MIXED";
+
+    return \@conditions;
+}
+
 sub ProcessTagCondition
 {
     my ($type, $value, $val) = @_;
@@ -207,8 +318,7 @@ sub ProcessTagCondition
 
     if ($val =~ /or.+and|and.+or/)
     {
-        LogError "mixed conditions and/or is not supported: $val";
-        return undef;
+        return ProcessMixedConditionTag($type, $value, $val);
     }
 
     for my $cond (@conditions)
@@ -411,6 +521,162 @@ sub ProcessDefineSection
     }
 }
 
+sub ProcessEnumInitializers
+{
+    #
+    # This function attempts to figure out enum integers values during paring
+    # time in similar way as C compiler would do. Because SAI community agreed
+    # that enum grouping is more beneficial then ordering enums, then enum
+    # values could be not sorted any more. But if we figure out integers
+    # values, we could perform stable sort at this parser level, and generate
+    # enums metadata where enum values are sorted.
+    #
+
+    my ($arr_ref, $ini_ref, $enumTypeName) = @_;
+
+    return if $enumTypeName =~ /_extensions_t$/; # ignore initializers on extensions
+
+    if (scalar(@$arr_ref) != scalar(@$ini_ref))
+    {
+        LogError "attr array not matching initializers array on $enumTypeName";
+        return;
+    }
+
+    return if grep (/<</, @$ini_ref); # skip shifted flags enum
+
+    my $previousEnumValue = -1;
+
+    my $idx = 0;
+
+    # using reference here, will cause update $ini inside initializer table
+    # reference and that's what we want
+
+    for my $ini (@$ini_ref)
+    {
+        if ($ini eq "")
+        {
+            $previousEnumValue += 1;
+
+            $ini = sprintf("0x%08x", $previousEnumValue);
+        }
+        elsif ($ini =~ /^= (0x[0-9a-f]{8})$/)
+        {
+            $previousEnumValue = hex($1);
+
+            $ini = sprintf("0x%08x", $previousEnumValue);
+        }
+        elsif ($ini =~ /^=\s+(\d+)$/)
+        {
+            $previousEnumValue = hex($1);
+
+            $ini = sprintf("0x%08x", $previousEnumValue);
+        }
+        elsif ($ini =~ /= (SAI_\w+)$/)
+        {
+            for my $i (0..$idx)
+            {
+                if ($$arr_ref[$i] eq $1)
+                {
+                    $ini = @$ini_ref[$i];
+
+                    $previousEnumValue = hex($ini);
+                    last;
+                }
+            }
+
+            LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
+        }
+        elsif ($ini =~ /^= (SAI_\w+) \+ (SAI_\w+)$/) # special case SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
+        {
+            # this case is in form: = (sai enum value) + (sai define)
+
+            my $first = $1;
+
+            my $val = $SAI_DEFINES{$2};
+
+            if (not defined $val)
+            {
+                LogError "$val not defined using #define directive";
+            }
+            elsif (not $val =~ /^0x[0-9a-f]+$/i)
+            {
+                LogError "$val not in hex format 0xYY";
+            }
+            else
+            {
+                for my $i (0..$idx)
+                {
+                    if ($$arr_ref[$i] eq $first)
+                    {
+                        $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + hex($val));
+
+                        $previousEnumValue = hex($ini);
+                        last;
+                    }
+                }
+
+                LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
+            }
+        }
+        elsif ($ini =~/^= (SAI_\w+) \+ (0x[0-9a-f]{1,8})$/)
+        {
+            my $first = $1;
+            my $val = $2;
+
+            for my $i (0..$idx)
+            {
+                if ($$arr_ref[$i] eq $first)
+                {
+                    $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + hex($val));
+
+                    $previousEnumValue = hex($ini);
+                    last;
+                }
+            }
+
+            LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
+        }
+        else
+        {
+            LogError "not supported initializer '$ini' on $$arr_ref[$idx], FIXME";
+        }
+
+        $idx++;
+    }
+
+    # in final form all initializers must be hex numbers 8 digits long, since
+    # they will be used in stable sort
+
+    if (scalar(grep (/^0x[0-9a-f]{8}$/, @$ini_ref)) != scalar(@$ini_ref))
+    {
+        LogError "wrong initializers on $enumTypeName: @$ini_ref";
+        return;
+    }
+
+    my $before = "@$arr_ref";
+
+    my @joined = ();
+
+    for my $idx (0..$#$arr_ref)
+    {
+        push @joined, "$$ini_ref[$idx]$$arr_ref[$idx]"; # format is: 0x00000000SAI_
+    }
+
+    my @sorted = sort { substr($a, 0, 10) cmp substr($b, 0, 10) } @joined;
+
+    s/^0x[0-9a-f]{8}SAI/SAI/i for @sorted;
+
+    my $after = "@sorted";
+
+    return if $after eq $before;
+
+    LogInfo "Need sort initalizers for $enumTypeName";
+
+    @$arr_ref = ();
+
+    push @$arr_ref, @sorted;
+}
+
 sub ProcessEnumSection
 {
     my $section = shift;
@@ -452,6 +718,7 @@ sub ProcessEnumSection
         $SAI_ENUMS{$enumtypename}{flagsenum} = ($ed =~ /\@\@flags/s) ? "true" : "false";
 
         my @arr = ();
+        my @initializers = ();
 
         $SAI_ENUMS{$enumtypename}{values} = \@arr;
 
@@ -461,14 +728,17 @@ sub ProcessEnumSection
 
             my $eitemd = ExtractDescription($enumtypename, $enumvaluename, $ev->{detaileddescription}[0]);
 
+            my $initializer = $ev->{initializer}[0];
+
+            $initializer = "" if not defined $initializer;
+
             if ($eitemd =~ /\@ignore/)
             {
                 LogInfo "Ignoring $enumvaluename";
 
-                my $initializer = $ev->{initializer}[0];
-
                 if ($initializer =~ /^= (SAI_\w+)$/)
                 {
+                    LogError "initializer $1 not defined in $enumtypename before $enumvaluename" if not grep (/^$1$/, @arr);
                 }
                 else
                 {
@@ -492,6 +762,7 @@ sub ProcessEnumSection
             LogDebug "$enumtypename $enumvaluename";
 
             push@arr,$enumvaluename;
+            push@initializers,$initializer;
 
             LogWarning "Value $enumvaluename of $enumtypename is not prefixed as $enumprefix" if not $enumvaluename =~ /^$enumprefix/;
 
@@ -501,10 +772,19 @@ sub ProcessEnumSection
             }
         }
 
+        ProcessEnumInitializers(\@arr,\@initializers, $enumtypename);
+
+        # TODO stable sort values based on calculated values from initializer (https://perldoc.perl.org/sort)
+        # TODO add param to disable this
+
         # remove unnecessary attributes
         my @values = @{ $SAI_ENUMS{$enumtypename}{values} };
 
         push @ALL_ENUMS, @values;
+
+        my @ranges = grep(/^SAI_\w+(RANGE_BASE)$/, @values);
+
+        $SAI_ENUMS{$enumtypename}{ranges} = \@ranges;
 
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(RANGE_BASE)$/, @values);
@@ -532,6 +812,10 @@ sub ProcessEnumSection
                     LogInfo "Removing last element $last";
                 }
             }
+        }
+        else
+        {
+            LogError "NON sai Enum $enumtypename";
         }
 
         $SAI_ENUMS{$enumtypename}{values} = \@values;
@@ -1051,6 +1335,9 @@ sub ProcessSingleEnum
         WriteSource ".ignorevaluesnames = NULL,";
     }
 
+    my $ot = ($typedef =~ /^sai_(\w+)_attr_t/) ? uc("SAI_OBJECT_TYPE_$1") : "SAI_OBJECT_TYPE_NULL";
+
+    WriteSource ".objecttype        = $ot,";
     WriteSource "};";
 
     return $count;
@@ -1058,7 +1345,7 @@ sub ProcessSingleEnum
 
 sub ProcessExtraRangeDefines
 {
-    WriteSectionComment "Enums metadata";
+    WriteSectionComment "Extra range defines";
 
     for my $key (sort keys %EXTRA_RANGE_DEFINES)
     {
@@ -1551,7 +1838,13 @@ sub ProcessConditionsGeneric
 
     my @conditions = @{ $conditions };
 
-    shift @conditions;
+    my $ctype = shift @conditions;
+
+    if (not $ctype =~ /^SAI_ATTR_CONDITION_TYPE_(AND|OR|MIXED)$/)
+    {
+        LogError "unsupported condition type $ctype on $attr";
+        return "";
+    }
 
     my $count = 0;
 
@@ -1559,6 +1852,22 @@ sub ProcessConditionsGeneric
 
     for my $cond (@conditions)
     {
+        if ($ctype eq "SAI_ATTR_CONDITION_TYPE_MIXED")
+        {
+            if ($cond =~ /^SAI_ATTR_CONDITION_TYPE_(AND|OR)$/)
+            {
+                WriteSource "const sai_attr_condition_t sai_metadata_${name}_${attr}_$count = {";
+                WriteSource ".attrid = SAI_INVALID_ATTRIBUTE_ID,";
+                WriteSource ".condition = { 0 },";
+                WriteSource ".op = SAI_CONDITION_OPERATOR_EQ,";
+                WriteSource ".type = $cond";
+                WriteSource "};";
+
+                $count++;
+                next;
+            }
+        }
+
         if (not $cond =~ /^(SAI_\w+) == (true|false|SAI_\w+|$NUMBER_REGEX)$/)
         {
             LogError "invalid condition '$cond' on $attr";
@@ -1591,12 +1900,16 @@ sub ProcessConditionsGeneric
         if ($val eq "true" or $val eq "false")
         {
             WriteSource ".attrid = $attrid,";
-            WriteSource ".condition = { .booldata = $val }";
+            WriteSource ".condition = { .booldata = $val },";
+            WriteSource ".op = SAI_CONDITION_OPERATOR_EQ,";
+            WriteSource ".type = SAI_ATTR_CONDITION_TYPE_NONE";
         }
         elsif ($val =~ /^SAI_/)
         {
-            WriteSource "    .attrid = $attrid,";
-            WriteSource "    .condition = { .s32 = $val }";
+            WriteSource ".attrid = $attrid,";
+            WriteSource ".condition = { .s32 = $val },";
+            WriteSource ".op = SAI_CONDITION_OPERATOR_EQ,";
+            WriteSource ".type = SAI_ATTR_CONDITION_TYPE_NONE";
 
             my $attrType = lc("$1t") if $attrid =~ /^(SAI_\w+_ATTR_)/;
 
@@ -1627,7 +1940,9 @@ sub ProcessConditionsGeneric
             my $item = ($enumTypeName =~ /uint/) ? "u$n" : "s$n";
 
             WriteSource ".attrid = $attrid,";
-            WriteSource ".condition = { .$item = $val }";
+            WriteSource ".condition = { .$item = $val },";
+            WriteSource ".op = SAI_CONDITION_OPERATOR_EQ,";
+            WriteSource ".type = SAI_ATTR_CONDITION_TYPE_NONE";
         }
         else
         {
@@ -2067,6 +2382,9 @@ sub ProcessSingleObjectType
         # check enum attributes if their names are ending on enum name
 
         CheckEnumNaming($attr, $meta{type}) if $isenum eq "true" or $isenumlist eq "true";
+
+        $MAX_CONDITIONS_LEN = $conditionslen if $MAX_CONDITIONS_LEN < $conditionslen;
+        $MAX_CONDITIONS_LEN = $validonlylen if $MAX_CONDITIONS_LEN < $validonlylen;
     }
 }
 
@@ -4351,6 +4669,13 @@ sub CreateSaiSwigApiStructs
     }
 }
 
+sub CreateDefineMaxConditionsLen
+{
+    WriteSectionComment "Define SAI_METADATA_MAX_CONDITIONS_LEN";
+
+    WriteHeader "#define SAI_METADATA_MAX_CONDITIONS_LEN $MAX_CONDITIONS_LEN";
+}
+
 #
 # MAIN
 #
@@ -4386,6 +4711,8 @@ CreateMetadataHeaderAndSource();
 CreateMetadata();
 
 CreateMetadataForAttributes();
+
+CreateDefineMaxConditionsLen();
 
 CreateEnumHelperMethods();
 
