@@ -20,7 +20,7 @@
  *
  */
 Assumption on SAI Header Version
-SAI ver 0.9.3
+SAI ver 1.7
 
 Location of SAI Headers
 /usr/include/sai
