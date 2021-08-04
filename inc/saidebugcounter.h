@@ -311,6 +311,15 @@ typedef enum _sai_in_drop_reason_t
     /** MPLS Routing table lookup miss */
     SAI_IN_DROP_REASON_MPLS_MISS,
 
+    /**
+     * SRV6 local SID drop
+     *
+     * e.g. : local SID missed
+     *        NH == SRH && SL == 0 for End, End.X, End.T, End.B*
+     *        NH != SRH while local SID configured for packet DA
+     */
+    SAI_IN_DROP_REASON_SRV6_LOCAL_SID_DROP,
+
     /** End of in drop reasons */
     SAI_IN_DROP_REASON_END,
 
