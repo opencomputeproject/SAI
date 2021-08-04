@@ -141,6 +141,7 @@ VOQ - Virtual Output Queue
 VR - Virtual Router
 VRF - Virtual Route Forwarding
 VRRP - Virtual Router Redundancy Protocol
+VSID - Virtual Subnet Identifier
 VXLAN - Virtual Extensible LAN
 WCMP - Weighted Cost Multipath
 WRED - Weighted Random Early Detection
