@@ -4774,6 +4774,36 @@ void check_experimental_flag(
     }
 }
 
+void check_attr_end(
+        _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Check if all attributes are in start/end range.
+     */
+
+    const sai_attr_metadata_t* const* const meta = oi->attrmetadata;
+
+    META_ASSERT_NOT_NULL(meta);
+
+    size_t index = 0;
+
+    for (; meta[index] != NULL; ++index)
+    {
+        if (meta[index]->attrid >= oi->attridstart)
+            continue;
+
+        if (meta[index]->attrid < oi->attridend)
+            continue;
+
+        if (meta[index]->isextensionattr)
+            continue;
+
+        META_MD_ASSERT_FAIL(meta[index], "attribute not in START .. END range");
+    }
+}
+
 void check_single_object_info(
         _In_ const sai_object_type_info_t *oi)
 {
@@ -4786,6 +4816,7 @@ void check_single_object_info(
     check_object_ro_list(oi);
     check_reverse_graph_count(oi);
     check_experimental_flag(oi);
+    check_attr_end(oi);
 }
 
 void check_api_max()
