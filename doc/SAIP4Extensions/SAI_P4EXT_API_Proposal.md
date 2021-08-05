@@ -12,7 +12,7 @@ SAI-Version | ?
 
 # Scope #
 
-This document defines the technical specifications for the API used to support P4 Extensions in Open Compute Project Switch Abstraction Interface (SAI). P4 Extensions can be seen as an abstraction over niche/device specific capabilities. It facilitates programming of these new features via the familiar SAI API model using a single P4 Extension Object. The exact feature enabled via the P4 Extensions itself is outside the scope of this document and SAI P4 Extensions API.
+This document defines the technical specifications for the API used to support P4 Extensions in Open Compute Project Switch Abstraction Interface (SAI). P4 Extensions can be seen as an abstraction over niche/device specific features. It facilitates programming of these new features via the familiar SAI API model using a single P4 Extension object type. The exact feature enabled via the P4 Extensions itself is outside the scope of this document and SAI P4 Extensions API.
 
 # Overview #
 
