@@ -31,7 +31,7 @@ This section describes SAI P4 Extension API Proposal
 
 ## New header file saip4ext.h ##
 
-The new header file defines interfaces for a single object of type P4EXT_ENTRY. This new object mimics a P4 table entity. The attributes of the object define the various P4 table constructs such as table name, match key, action name and action parameters. Each of these attributes is defined as  string type. For target that are P4 compatible these strings can simply be set to corresponding P4 table construct.
+The new header file defines interfaces for a single object of type P4EXT_ENTRY. This new object mimics a P4 table entity. The attributes of the object define the various P4 table constructs such as table name, match key, action name and action parameters. Each of these attributes is defined as  string type. For targets that are P4 compatible, these strings can simply be set to corresponding P4 table construct.
 
 ### SAI P4EXT Entry Attributes ###
 *sai_p4ext_entry_attr_t* defines the SAI P4 Extension Attributes. Each of the attributes is of type string. As seen below the attributes mimic P4 table attributes such as table name, match fields (key:value pairs), action field (key:value pairs), action paramters (key:value pairs). The format for each of these string attribute values will be described later in the API usage section.
