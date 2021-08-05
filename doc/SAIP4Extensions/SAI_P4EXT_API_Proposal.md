@@ -189,6 +189,16 @@ table flow_classification {
 }
 ```
 
+The above P4 table - *flow_classification*, has two key/ match fields.
+1. *src_addr* - This is the incoming packet 32 bit Source IP Address
+2. *dst_addr* - This is the incoming packet 32 bit Destination IP Address
+The type of match for both these fields is ternary. In general the match_kind is expected to be one of the match_kinds
+as defined by the P4 core library. More information please refer to the [P4 16
+Specification](https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html#sec-match-kind-type)
+In addition the above table describes just one possible action - *set_tc*. An incoming packet that matches an entry in
+the above table can be programmed to execute this action. The action *set_tc* accepts only one parameter *tc* which is used
+to sed etrap_tc metadata in the P4 data pipeline
+
 ## Creating a P4 Extension Table Entry ##
 
 ```cpp
