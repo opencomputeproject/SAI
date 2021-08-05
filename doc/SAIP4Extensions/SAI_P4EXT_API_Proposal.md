@@ -38,7 +38,8 @@ The new header file defines interfaces for a single object of type P4EXT_ENTRY. 
 
 ```cpp
 /**
- * @brief Attribute Id for P4 ext */typedef enum _sai_p4ext_entry_attr_t
+ * @brief Attribute Id for P4 ext */
+typedef enum _sai_p4ext_entry_attr_t
 {
     /**
      * @brief Start of attributes
