@@ -1,7 +1,7 @@
 SAI P4EXT API Proposal
 =====================
 
-Title       | SAI IPsec API Proposal
+Title       | SAI P4 Extensions Proposal
 ------------|----------------------
 Authors     | Intel.
 Status      | Draft
@@ -16,7 +16,7 @@ This document defines the technical specifications for the API used to support P
 
 # Overview #
 
-SAI P4 extension introduces a single new SAI object SAI_OBJECT_TYPE_P4EXT_ENTRY of object_type_oid. This object along with its attributes provides an abstraction of target specific configurable features otherwise not described in SAI via the P4 match action paradigm in a feature agnostic manner. In contrast to other SAI objects which are mapped 1:1 to an entity in the SAI Pipeline Netwokring Object Model, for eg. VLAN, Neighbor, Mirror etc.; SAI P4 Extensions introduces 1:N mapping between the  SAI_OBJECT_TYPE_P4EXT_ENTRY object and niche features Feature1, Feature2, etc. This new paradigm enables the
+SAI P4 extension introduces a single new SAI object SAI_OBJECT_TYPE_P4EXT_ENTRY of object_type_oid. This object along with its attributes provides an abstraction of target specific configurable features otherwise not described in SAI via the P4 match action paradigm in a feature agnostic manner. In contrast to other SAI objects which are mapped 1:1 to an entity in the SAI Pipeline Networking Object Model, for eg. VLAN, Neighbor, Mirror etc.; SAI P4 Extensions introduces 1:N mapping between the  SAI_OBJECT_TYPE_P4EXT_ENTRY object and niche features Feature1, Feature2, etc. This new paradigm enables the
 1. Ability to add exclusive features
 2. Expose device specific capabilities
 3. Rapid application prototyping
@@ -31,7 +31,7 @@ This section describes SAI P4 Extension API Proposal
 
 ## New header file saip4ext.h ##
 
-The new header file defines interfaces for a single object of type P4EXT_ENTRY. This new object mimics a P4 table entity. The attributes of the object define the vairous P4 table constructs such as table name, match key, action name and action parameters. Each of these attributes is defined as  string type. For target that are P4 compatible these strings can simply be set to corresponding P4 table construct.
+The new header file defines interfaces for a single object of type P4EXT_ENTRY. This new object mimics a P4 table entity. The attributes of the object define the various P4 table constructs such as table name, match key, action name and action parameters. Each of these attributes is defined as  string type. For target that are P4 compatible these strings can simply be set to corresponding P4 table construct.
 
 ### SAI P4EXT Entry Attributes ###
 *sai_p4ext_entry_attr_t* defines the SAI P4 Extension Attributes. Each of the attributes is of type string. As seen below the attributes mimic P4 table attributes such as table name, match fields (key:value pairs), action field (key:value pairs), action paramters (key:value pairs). The format for each of these string attribute values will be described later in the API usage section.
@@ -171,13 +171,17 @@ typedef struct _sai_p4ext_api_t
 
 # API Usage #
 
-Consider a scenario where a Vendor A wishes to extend the SAI pipeline functionality with a custom feature not yet supported in SAI on a target that is P4 compliant. Let say this new feature classifies incoming packets based on packet field tuples SIP,DIP and sets the traffic class tc. As mentioned earlier the proposal does not deal with the implementation details of data pipeline by each individual vendor, thus the relative position of this table in the SAI pipeline is not part of the specification and is vendor dependent. Its upto the vendor to decide whether this table will come after the SAI QoS tables or before and resolve any conflict that would arise from the actions of the QoS tables and the new P4 Extension Table. This simple feature can be expressed in P4 as below.
+Consider a scenario where a Vendor A wishes to extend the SAI pipeline functionality with a custom feature which can be modeled with a P4 match-action table but is not yet supported in SAI. Let say this new feature classifies incoming packets based on packet field tuples SIP,DIP and sets the traffic class tc. As mentioned earlier the proposal does not deal with the implementation details of data pipeline by each individual vendor, thus the relative position of this table in the SAI pipeline is not part of the specification and is vendor dependent. Its upto the vendor to decide whether this table will come after the SAI QoS tables or before and resolve any conflict that would arise from the actions of the QoS tables and the new P4 Extension Table. This simple feature can be expressed in P4 as below.
 
 ```
 table flow_classification {
+    action set_tc(switch_tc_t tc) {
+        ig_md.qos.etrap_tc = tc;
+    }
+
     key = {
-        ig_md.lkp.ip_src_addr[95:64] : ternary @name("src_addr");
-        ig_md.lkp.ip_dst_addr[95:64] : ternary @name("dst_addr");
+        ig_md.lkp.ip_src_addr[31:0] : ternary @name("src_addr");
+        ig_md.lkp.ip_dst_addr[31:0] : ternary @name("dst_addr");
     }
     actions = {
         set_tc;
@@ -185,35 +189,42 @@ table flow_classification {
 }
 ```
 
-## Creatoing a P4 Extension Table Entry ##
+## Creating a P4 Extension Table Entry ##
 
 ```cpp
 #define P4_TABLE_NAME "flow_classification"
 #define P4_TABLE_MATCH_FIELDS "{\"priority\":100,\"src_addr\":\"10.1.1.0&255.255.255.0\"}"
-#define P4_TABLE_ACTION "set_tc" 
+#define P4_TABLE_ACTION "set_tc"
 #define P4_TABLE_ACTION_PARAMETERS "{\"tc\":\"4\"}"
 
 sai_object_id_t p4ext_entry_id = {};
 uint8_t num_attrs = 4;
 sai_attribute_id_t p4ext_entry_attrs[num_attrs] = {};
+
 p4ext_entry_attrs[0].id = (sai_attr_id_t) SAI_P4EXT_ENTRY_ATTR_TABLE_ID;
 p4ext_entry_attrs[0].value.s8list.count = strlen(P4_TABLE_NAME);
-p4ext_entry_attrs[0].value.s8list.value = (sai_s8_list_t.list)P4_TABLE_NAME;  	//P4 Table Name
+/** P4 Table Name */
+p4ext_entry_attrs[0].value.s8list.value = (sai_s8_list_t.list)P4_TABLE_NAME;
 
 p4ext_entry_attrs[1].id = (sai_attr_id_t) SAI_P4EXT_ENTRY_ATTR_MATCH_FIELD_ID;
 p4ext_entry_attrs[1].value.s8list.count = strlen(P4_TABLE_MATCH_FIELDS);
-p4ext_entry_attrs[1].value.s8list.value = P4_TABLE_MATCH_FIELDS;              	// Map of match field names and values represented as a string.
-																				// Ternary fields values are represented as value&mask
-																				// If the table has one or more ternary match fields, then the map shall contain
-																				// a key value pair for entry priority
+/**
+ * Map of match field names and values represented as a string.
+ * Ternary fields values are represented as value&mask
+ * If the table has one or more ternary match fields, then the map shall contain
+ * a key value pair for entry priority
+ */
+p4ext_entry_attrs[1].value.s8list.value = P4_TABLE_MATCH_FIELDS;
 
 p4ext_entry_attrs[2].id = (sai_attr_id_t) SAI_P4EXT_ENTRY_ATTR_ACTION_ID;
 p4ext_entry_attrs[2].value.s8list.count = strlen(P4_TABLE_ACTION);
-p4ext_entry_attrs[2].value.s8list.value = P4_TABLE_ACTION;						// P4 Action Name
+/** P4 Action Name */
+p4ext_entry_attrs[2].value.s8list.value = P4_TABLE_ACTION;
 
 p4ext_entry_attrs[3].id = (sai_attr_id_t) SAI_P4EXT_ENTRY_ATTR_PARAMETER_ID;
 p4ext_entry_attrs[3].value.s8list.count = strlen(P4_TABLE_ACTION_PARAMETERS);
-p4ext_entry_attrs[3].value.s8list.value = P4_TABLE_ACTION_PARAMETERS;			// Map of action param name and values represented as a string.
+/**  Map of action param name and values represented as a string. */
+p4ext_entry_attrs[3].value.s8list.value = P4_TABLE_ACTION_PARAMETERS;
 
 if (sai_p4ext_api->create_p4ext_entry(&p4ext_entry_id, num_attrs, p4ext_entry_attrs) == SAI_STATUS_SUCCESS)
 {
