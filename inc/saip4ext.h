@@ -41,8 +41,7 @@ typedef enum _sai_p4ext_entry_attr_t
      * @brief SAI P4 EXT table id
      *
      * @type sai_s8_list_t
-     * @flags CREATE_AND_SET
-     * @default empty
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
      */
     SAI_P4EXT_ENTRY_ATTR_TABLE_ID = SAI_P4EXT_ENTRY_ATTR_START,
 
