@@ -36,7 +36,7 @@ The new header file defines interfaces for a single object of type P4EXT_ENTRY. 
 ### SAI P4EXT Entry Attributes ###
 *sai_p4ext_entry_attr_t* defines the SAI P4 Extension Attributes. Each of the attributes is of type string. As seen below the attributes mimic P4 table attributes such as table name, match fields (key:value pairs), action field (key:value pairs), action paramters (key:value pairs). The format for each of these string attribute values will be described later in the API usage section.
 
----cpp
+```
 /**
  * @brief Attribute Id for P4 ext */typedef enum _sai_p4ext_entry_attr_t
 {
@@ -93,12 +93,12 @@ The new header file defines interfaces for a single object of type P4EXT_ENTRY. 
     SAI_P4EXT_ENTRY_ATTR_CUSTOM_RANGE_END
 
 } sai_p4ext_entry_attr_t;
----
+```
 
 
 ### SAI P4 Extension APIs ###
 
----cpp
+```
 /**
  * @brief Create an P4 table entry
  *
@@ -150,11 +150,11 @@ typedef sai_status_t (*sai_get_p4ext_entry_attribute_fn)(
         _In_ sai_object_id_t p4ext_entry_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
----
+```
 
 ### SAI P4 Extension API Table ###
 
----cpp
+```
 /**
  * @brief P4Ext  methods table retrieved with sai_api_query()
  **/
@@ -166,7 +166,7 @@ typedef struct _sai_p4ext_api_t
     sai_get_p4ext_entry_attribute_fn              get_p4ext_entry_attribute;
 } sai_p4ext_api_t;
 
----
+```
 
 # API Usage #
 
@@ -186,7 +186,7 @@ table flow_classification {
 
 ## Creatoing a P4 Extension Table Entry ##
 
----cpp
+```
 #define P4_TABLE_NAME "flow_classification"
 #define P4_TABLE_MATCH_FIELDS "{\"priority\":100,\"src_addr\":\"10.1.1.0&255.255.255.0\"}"
 #define P4_TABLE_ACTION "set_tc" 
@@ -222,10 +222,11 @@ else
 {
     // Failed...
 }
----
+```
 
 ## Removing a P4 Extension Table Entry ##
----cpp
+
+```
 if (sai_p4ext_api->remove_p4ext_entry(p4ext_entry_id) == SAI_STATUS_SUCCESS)
 {
     // Succeeded...
@@ -234,18 +235,17 @@ else
 {
     // Failed...
 }
----
+```
 
 ## Set a P4 Extension Table Entry Attribute##
 
 A user can update either the action or the action parameter associated with a P4 table entry. Both the action parameters and match fields are representead as key value pair strings. So in order to update to a single key value pair the entire map should be passed again with the updated action parameter or match field value.
 
----cpp
+```
 const char updated_action_param[] = "{\"tc\":\"5\"}"
 sai_attribute_id_t p4ext_entry_attr = {};
 p4ext_entry_attr.id = (sai_attr_id_t) SAI_P4EXT_ENTRY_ATTR_PARAMETER_ID;
-p4ext_entry_attr.value.s8list.count = strlen(updated_action_param);
-p4ext_entry_attr.value.s8list.value = (sai_s8_list_t.list)updated_action_param;
+p4ext_entry_attr.value.s8list.count = strlen(updated_action_para```ext_entry_attr.value.s8list.value = (sai_s8_list_t.list)updated_action_param;
 
 if (sai_p4ext_api->set_p4ext_entry(&p4ext_entry_id, &p4ext_entry_attr) == SAI_STATUS_SUCCESS)
 {
@@ -255,11 +255,11 @@ else
 {
     // Failed...
 }
----
+```
 
 ## Get a P4 Extension Table Entry Attribute ##
 
----cpp
+```
 sai_attribute_t sai_p4ext_entry_attrs[2] = {};
 sai_p4ext_entry_attrs[0].id = (sai_attr_id_t)SAI_P4EXT_ENTRY_ATTR_MATCH_FIELD_ID;
 sai_p4ext_entry_attrs[1].id = (sai_attr_id_t)SAI_P4EXT_ENTRY_ATTR_PARAMETER_ID;
@@ -275,4 +275,4 @@ else
 {
     // Failed...
 }
----
+```
