@@ -31,7 +31,7 @@ This section describes SAI P4 Extension API Proposal
 
 ## New header file saip4ext.h ##
 
-The new header file defines interfaces for a single object of type P4EXT_ENTRY. This new object mimics a P4 table entity. The attributes of the object define the various P4 table constructs such as table name, match key, action name and action parameters. Each of these attributes is defined as  string type. For targets that are P4 compatible, these strings can simply be set to corresponding P4 table construct.
+The new header file defines interfaces for a single object of type P4EXT_ENTRY. This new object mimics a P4 table entity. The attributes of the object define the various P4 table constructs such as table name, match key, action name and action parameters. Each of these attributes is defined as string type. For SAI implementations that are P4 compatible, these strings can simply be set to corresponding P4 table construct. For SAI implementations that do not express their pipeline in P4, a mapping library can be implemented to map the P4 Extension SAI API calls via some translation logic to corresponding driver APIs. This translation could be static, in which case the SAI recompilation would become necessary to implement a new feature or it could be dynamic.
 
 ### SAI P4EXT Entry Attributes ###
 *sai_p4ext_entry_attr_t* defines the SAI P4 Extension Attributes. Each of the attributes is of type string. As seen below the attributes mimic P4 table attributes such as table name, match fields (key:value pairs), action field (key:value pairs), action paramters (key:value pairs). The format for each of these string attribute values will be described later in the API usage section.
@@ -180,8 +180,8 @@ table flow_classification {
     }
 
     key = {
-        ig_md.lkp.ip_src_addr[31:0] : ternary @name("src_addr");
-        ig_md.lkp.ip_dst_addr[31:0] : ternary @name("dst_addr");
+        hdr.ipv4.src_addr : ternary @name("src_addr");
+        hdr.ipv4.dst_addr : ternary @name("dst_addr");
     }
     actions = {
         set_tc;
@@ -190,14 +190,14 @@ table flow_classification {
 ```
 
 The above P4 table - *flow_classification*, has two key/ match fields.
-1. *src_addr* - This is the incoming packet 32 bit Source IP Address
-2. *dst_addr* - This is the incoming packet 32 bit Destination IP Address
+1. *src_addr* - This is the incoming packet IPv4 Source Address
+2. *dst_addr* - This is the incoming packet IPv4 Destination Address
 The type of match for both these fields is ternary. In general the match_kind is expected to be one of the match_kinds
 as defined by the P4 core library. More information please refer to the [P4 16
 Specification](https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html#sec-match-kind-type)
 In addition the above table describes just one possible action - *set_tc*. An incoming packet that matches an entry in
 the above table can be programmed to execute this action. The action *set_tc* accepts only one parameter *tc* which is used
-to sed etrap_tc metadata in the P4 data pipeline
+to set etrap_tc metadata in the P4 data pipeline
 
 ## Creating a P4 Extension Table Entry ##
 
@@ -219,10 +219,10 @@ p4ext_entry_attrs[0].value.s8list.value = (sai_s8_list_t.list)P4_TABLE_NAME;
 p4ext_entry_attrs[1].id = (sai_attr_id_t) SAI_P4EXT_ENTRY_ATTR_MATCH_FIELD_ID;
 p4ext_entry_attrs[1].value.s8list.count = strlen(P4_TABLE_MATCH_FIELDS);
 /**
- * Map of match field names and values represented as a string.
- * Ternary fields values are represented as value&mask
- * If the table has one or more ternary match fields, then the map shall contain
- * a key value pair for entry priority
+ * Match field keys and values represented as a string.
+ * Ternary fields values are represented as value&mask.
+ * If the table has one or more ternary match fields, then a
+ * a key value pair with entry priority should be included
  */
 p4ext_entry_attrs[1].value.s8list.value = P4_TABLE_MATCH_FIELDS;
 
@@ -261,7 +261,7 @@ else
 
 ## Set a P4 Extension Table Entry Attribute##
 
-A user can update either the action or the action parameter associated with a P4 table entry. Both the action parameters and match fields are representead as key value pair strings. So in order to update to a single key value pair the entire map should be passed again with the updated action parameter or match field value.
+A user can update either the action or the action parameter associated with a P4 table entry. Both the action parameters and match fields are representead as key value pairs string. So in order to update to a single key value pair the entire string should be passed again with the updated action parameter or match field value.
 
 ```cpp
 const char updated_action_param[] = "{\"tc\":\"5\"}"
