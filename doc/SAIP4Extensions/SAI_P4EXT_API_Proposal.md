@@ -16,7 +16,7 @@ This document defines the technical specifications for the API used to support P
 
 # Overview #
 
-SAI P4 extension introduces a single new SAI object SAI_OBJECT_TYPE_P4EXT_ENTRY of object_type_oid. This object along with its attributes provides an abstraction of target specific configurable features otherwise not described in SAI via the P4 match action paradigm in a feature agnostic manner. In contrast to other SAI objects which are mapped 1:1 to an entity in the SAI Pipeline Networking Object Model, for eg. VLAN, Neighbor, Mirror etc.; SAI P4 Extensions introduces 1:N mapping between the  SAI_OBJECT_TYPE_P4EXT_ENTRY object and niche features Feature1, Feature2, etc. This new paradigm enables the
+SAI P4 extension introduces a single new SAI object SAI_OBJECT_TYPE_P4EXT_ENTRY of object_type_oid. This object along with its attributes provides an abstraction of target specific configurable features otherwise not described in SAI via the P4 match action paradigm in a feature agnostic manner. In contrast to other SAI objects which are mapped 1:1 to an entity in the SAI Pipeline Networking Object Model, for e.g., VLAN, Neighbor, Mirror etc.; SAI P4 Extensions introduces 1:N mapping between the  SAI_OBJECT_TYPE_P4EXT_ENTRY object and niche features Feature1, Feature2, etc. This new paradigm enables the
 1. Ability to add exclusive features
 2. Expose device specific capabilities
 3. Rapid application prototyping
@@ -24,7 +24,7 @@ SAI P4 extension introduces a single new SAI object SAI_OBJECT_TYPE_P4EXT_ENTRY 
 
 ## Object Dependencies ##
 
-In the current SAI P4 Extension Proposal the newly introduced SAI_OBJECT_TYPE_P4EXT_ENTRY shall remain disconnected from the SAI Pipeline Object Graph. In other words there shall be no dependency from/to other SAI object to/from SAI_OBJECT_TYPE_P4EXT_ENTRY. Also the proposal places no restriction on the relative placement of the new features/table in the SAI Pipeline. The implementation and interaction of the new feature with the SAI pipeline is left to each individual vendor.Vendor A and Vendor B may choose to implement different sets of features using the new SAI P4 extension object. While a Vendor C may decide to not implement any new features using SAI P4 extensions.
+In the current SAI P4 Extension Proposal the newly introduced SAI_OBJECT_TYPE_P4EXT_ENTRY shall remain disconnected from the SAI Pipeline Object Graph. In other words, there shall be no dependency from/to other SAI object to/from SAI_OBJECT_TYPE_P4EXT_ENTRY. Also, the proposal places no restriction on the relative placement of the new features/table in the SAI Pipeline. The implementation and interaction of the new feature with the SAI pipeline is left to each individual vendor.
 
 # API Specification #
 This section describes SAI P4 Extension API Proposal
@@ -34,7 +34,7 @@ This section describes SAI P4 Extension API Proposal
 The new header file defines interfaces for a single object of type P4EXT_ENTRY. This new object mimics a P4 table entity. The attributes of the object define the various P4 table constructs such as table name, match key, action name and action parameters. Each of these attributes is defined as string type. For SAI implementations that are P4 compatible, these strings can simply be set to corresponding P4 table construct. For SAI implementations that do not express their pipeline in P4, a mapping library can be implemented to map the P4 Extension SAI API calls via some translation logic to corresponding driver APIs. This translation could be static, in which case the SAI recompilation would become necessary to implement a new feature or it could be dynamic.
 
 ### SAI P4EXT Entry Attributes ###
-*sai_p4ext_entry_attr_t* defines the SAI P4 Extension Attributes. Each of the attributes is of type string. As seen below the attributes mimic P4 table attributes such as table name, match fields (key:value pairs), action field (key:value pairs), action paramters (key:value pairs). The format for each of these string attribute values will be described later in the API usage section.
+*sai_p4ext_entry_attr_t* defines the SAI P4 Extension Attributes. Each of the attributes is of type string. As seen below the attributes mimic P4 table attributes such as table name, match fields (key:value pairs), action field (key:value pairs), action parameters (key:value pairs). The format for each of these string attribute values will be described later in the API usage section.
 
 ```cpp
 /**
@@ -171,7 +171,7 @@ typedef struct _sai_p4ext_api_t
 
 # API Usage #
 
-Consider a scenario where a Vendor A wishes to extend the SAI pipeline functionality with a custom feature which can be modeled with a P4 match-action table but is not yet supported in SAI. Let say this new feature classifies incoming packets based on packet field tuples SIP,DIP and sets the traffic class tc. As mentioned earlier the proposal does not deal with the implementation details of data pipeline by each individual vendor, thus the relative position of this table in the SAI pipeline is not part of the specification and is vendor dependent. Its upto the vendor to decide whether this table will come after the SAI QoS tables or before and resolve any conflict that would arise from the actions of the QoS tables and the new P4 Extension Table. This simple feature can be expressed in P4 as below.
+Consider a scenario where a Vendor A wishes to extend the SAI pipeline functionality with a custom feature which can be modeled with a P4 match-action table but is not yet supported in SAI. Let say this new feature classifies incoming packets based on packet field tuples SIP,DIP and sets the traffic class tc. As mentioned earlier the proposal does not deal with the implementation details of data pipeline by each individual vendor, thus the relative position of this table in the SAI pipeline is not part of the specification and is vendor dependent. It's up to the vendor to decide whether this table will come after the SAI QoS tables or before and resolve any conflict that would arise from the actions of the QoS tables and the new P4 Extension Table. This simple feature can be expressed in P4 as below.
 
 ```
 table flow_classification {
@@ -192,10 +192,10 @@ table flow_classification {
 The above P4 table - *flow_classification*, has two key/ match fields.
 1. *src_addr* - This is the incoming packet IPv4 Source Address
 2. *dst_addr* - This is the incoming packet IPv4 Destination Address
-The type of match for both these fields is ternary. In general the match_kind is expected to be one of the match_kinds
+The type of match for both these fields is ternary. In general, the match_kind is expected to be one of the match_kinds
 as defined by the P4 core library. More information please refer to the [P4 16
 Specification](https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html#sec-match-kind-type)
-In addition the above table describes just one possible action - *set_tc*. An incoming packet that matches an entry in
+In addition, the above table describes just one possible action - *set_tc*. An incoming packet that matches an entry in
 the above table can be programmed to execute this action. The action *set_tc* accepts only one parameter *tc* which is used
 to set etrap_tc metadata in the P4 data pipeline
 
@@ -261,7 +261,7 @@ else
 
 ## Set a P4 Extension Table Entry Attribute##
 
-A user can update either the action or the action parameter associated with a P4 table entry. Both the action parameters and match fields are representead as key value pairs string. So in order to update to a single key value pair the entire string should be passed again with the updated action parameter or match field value.
+A user can update either the action or the action parameter associated with a P4 table entry. Both the action parameters and match fields are represented as key value pairs string. So, in order to update to a single key value pair, the entire string should be passed again with the updated action parameter or match field value.
 
 ```cpp
 const char updated_action_param[] = "{\"tc\":\"5\"}"
