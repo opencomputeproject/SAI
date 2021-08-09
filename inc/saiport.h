@@ -475,6 +475,122 @@ typedef enum _sai_port_dual_media_t
 } sai_port_dual_media_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_SYNCE_GEN_SQUELCH_CONFIG
+ * Used for Recovered Clock Generation and Squelch Mode Configuration
+ */
+typedef enum _sai_port_synce_gen_squelch_config_t
+{
+    /** Disable clock Gen and Squelch */
+    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_DISABLE,
+
+    /** Enable clock Gen only, no squelch needed (Clock is always sent out) */
+    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_NONE,
+
+    /** Squelch clock on Loss of Signal (LOS) */
+    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_LOS,
+
+    /** Squelch clock on Loss of Lock (LOL) */
+    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_LOL,
+
+    /** Squelch clock on Loss of Signal(LOS) or Loss of Lock(LOL) */
+    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_LOS_OR_LOL,
+
+    /** Force Squelch */
+    SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_FORCE
+} sai_port_synce_gen_squelch_config_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_SYNCE_DIVIDER
+ * Divider selection to apply on Line/Lane rate before outputting clock
+ */
+typedef enum _sai_port_synce_divider_t
+{
+    /** Divide by 20 */
+    SAI_PORT_SYNCE_DIVIDER_20,
+
+    /** Divide by 40 */
+    SAI_PORT_SYNCE_DIVIDER_40,
+
+    /** Divide by 80 */
+    SAI_PORT_SYNCE_DIVIDER_80,
+
+    /** Divide by 160 */
+    SAI_PORT_SYNCE_DIVIDER_160,
+
+    /** Divide by 400 */
+    SAI_PORT_SYNCE_DIVIDER_400,
+
+    /** Divide by 1000 */
+    SAI_PORT_SYNCE_DIVIDER_1000,
+
+    /** Divide by 64 */
+    SAI_PORT_SYNCE_DIVIDER_64,
+
+    /** Divide by 128 */
+    SAI_PORT_SYNCE_DIVIDER_128,
+
+    /** Divide by 256 */
+    SAI_PORT_SYNCE_DIVIDER_256,
+
+    /** Divide by 512 */
+    SAI_PORT_SYNCE_DIVIDER_512,
+
+    /** Divide by 1024 */
+    SAI_PORT_SYNCE_DIVIDER_1024,
+
+    /** Divide by 2048 */
+    SAI_PORT_SYNCE_DIVIDER_2048,
+
+    /** Divide by 4096 */
+    SAI_PORT_SYNCE_DIVIDER_4096,
+
+    /** Divide by 8192 */
+    SAI_PORT_SYNCE_DIVIDER_8192,
+
+    /** Divide by 32 */
+    SAI_PORT_SYNCE_DIVIDER_32,
+
+    /** Divide by 120 */
+    SAI_PORT_SYNCE_DIVIDER_120,
+
+    /** Divide by 240 */
+    SAI_PORT_SYNCE_DIVIDER_240,
+
+    /** Divide by 520 */
+    SAI_PORT_SYNCE_DIVIDER_520,
+
+    /** Divide by 2040 */
+    SAI_PORT_SYNCE_DIVIDER_2040,
+
+    /** Divide by 4080 */
+    SAI_PORT_SYNCE_DIVIDER_4080,
+
+    /** Divide by 1. */
+    SAI_PORT_SYNCE_DIVIDER_1,
+
+    /** Divide by 2. */
+    SAI_PORT_SYNCE_DIVIDER_2,
+
+    /** Divide by 4. */
+    SAI_PORT_SYNCE_DIVIDER_4,
+
+    /** Divide by 8. */
+    SAI_PORT_SYNCE_DIVIDER_8,
+
+    /** Divide by 16. */
+    SAI_PORT_SYNCE_DIVIDER_16,
+
+    /** Divide by 66. */
+    SAI_PORT_SYNCE_DIVIDER_66,
+
+    /** Divide by 82.5. */
+    SAI_PORT_SYNCE_DIVIDER_82P5,
+
+    /** Divide by 528. */
+    SAI_PORT_SYNCE_DIVIDER_528
+} sai_port_synce_divider_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -1979,6 +2095,51 @@ typedef enum _sai_port_attr_t
      * @default 96
      */
     SAI_PORT_ATTR_IPG,
+
+    /**
+     * @brief Recovered Clock Generation enable/disable and Squelch Mode Configuration
+     *
+     * @type sai_port_synce_gen_squelch_config_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_SYNCE_GEN_SQUELCH_CONFIG_DISABLE
+     */
+    SAI_PORT_ATTR_SYNCE_GEN_SQUELCH_CONFIG,
+
+    /**
+     * @brief Recovered Clock Lane selection from global lane of phy_id
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_SYNCE_CLOCK_OUTPUT_LANE,
+
+    /**
+     * @brief Package Lanes that need to be monitored for Loss of Signal or Loss of Line
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_SYNCE_SQUELCH_MONITOR_LANES,
+
+    /**
+     * @brief Divider selection to apply on Line/Lane rate before outputting clock
+     *
+     * @type sai_port_synce_divider_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_SYNCE_DIVIDER_20
+     */
+    SAI_PORT_ATTR_SYNCE_DIVIDER,
+
+    /**
+     * @brief Recovered clock output pins are rclk0 - 0, rclk1 - 1 and rclk2 - 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_SYNCE_RCLK_PIN,
 
     /**
      * @brief End of attributes

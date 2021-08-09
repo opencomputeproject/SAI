@@ -70,6 +70,8 @@ L2 - Layer 2
 L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
+LOL - Loss of Lock
+LOS - Loss of Signal
 LPM - Longest Prefix Match
 LSP - Label Switched Path
 MAC - Medium Access Control
