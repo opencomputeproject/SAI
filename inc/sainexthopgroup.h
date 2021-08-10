@@ -176,8 +176,10 @@ typedef enum _sai_next_hop_group_attr_t
      * @brief Next hop group selection map
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED
      */
     SAI_NEXT_HOP_GROUP_ATTR_SELECTION_MAP,
@@ -351,7 +353,8 @@ typedef enum _sai_next_hop_group_map_attr_t
      * @brief Next hop group entries associated with this map.
      *
      * @type sai_map_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags CREATE_AND_SET
+     * @default empty
      */
     SAI_NEXT_HOP_GROUP_MAP_ATTR_MAP_TO_VALUE_LIST,
 

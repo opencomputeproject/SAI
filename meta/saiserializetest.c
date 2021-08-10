@@ -464,9 +464,9 @@ void test_serialize_enum()
 
     ASSERT_STR_EQ(buf, "-1", res);
 
-    res = sai_serialize_enum(buf, &sai_metadata_enum_sai_object_type_t, 100);
+    res = sai_serialize_enum(buf, &sai_metadata_enum_sai_object_type_t, 200);
 
-    ASSERT_STR_EQ(buf, "100", res);
+    ASSERT_STR_EQ(buf, "200", res);
 
     /* test all enums */
 
@@ -510,9 +510,9 @@ void test_deserialize_enum()
     ASSERT_TRUE(res == strlen("-1"), "expected true");
     ASSERT_TRUE(value == -1, "expected true, value = %d", value);
 
-    res = sai_deserialize_enum("100", &sai_metadata_enum_sai_object_type_t, &value);
-    ASSERT_TRUE(res == strlen("100"), "expected true");
-    ASSERT_TRUE(value == 100, "expected true");
+    res = sai_deserialize_enum("200", &sai_metadata_enum_sai_object_type_t, &value);
+    ASSERT_TRUE(res == strlen("200"), "expected true");
+    ASSERT_TRUE(value == 200, "expected true");
 
     /* test all enums */
 
