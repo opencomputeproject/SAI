@@ -375,7 +375,7 @@ void check_attr_by_object_type()
             META_ASSERT_TRUE(current == i, "object type must be equal on object type list");
 
             /*
-             * For Switch Attribute we have crossed > 200 with Vendor extension
+             * For Switch Attribute we have crossed > 300 with Vendor extension
              * for SAIv1.8.0 so increasing threshold.
              */
 
@@ -1583,16 +1583,7 @@ void check_attr_validonly(
 
         if (cmd->validonlytype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            if (md->objecttype == SAI_OBJECT_TYPE_TUNNEL && md->attrid == SAI_TUNNEL_ATTR_ENCAP_GRE_KEY)
-            {
-                /*
-                 * For this case GRE_KEY is depending on GRE_KEY_VALID which is
-                 * also valid only for other cases we don't allow valid only to
-                 * be depending on valid only but maybe this is false
-                 * assumption.
-                 */
-            }
-            else if (md->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION &&
+            if (md->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION &&
                     (md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_TPID || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_ID ||
                      md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_MIRROR_SESSION_ATTR_VLAN_CFI))
             {
@@ -1600,10 +1591,12 @@ void check_attr_validonly(
                  * Vlan header attributes are depending on VLAN_HEADER_VALID which is
                  * also valid only for ERSPAN.
                  */
-            } else if (md->objecttype == SAI_OBJECT_TYPE_NEXT_HOP &&
+            }
+            else if (md->objecttype == SAI_OBJECT_TYPE_NEXT_HOP &&
                     (md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_TTL_MODE || md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_TTL_VALUE ||
                      md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_EXP_MODE || md->attrid == SAI_NEXT_HOP_ATTR_OUTSEG_EXP_VALUE ||
-                     md->attrid == SAI_NEXT_HOP_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP)) {
+                     md->attrid == SAI_NEXT_HOP_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP))
+            {
                 /*
                  * MPLS out segment attributes are required for ingress node and valid only for MPLS next hop.
                  */
@@ -2326,7 +2319,7 @@ void check_attr_existing_objects(
     /*
      * Purpose of this test it to find attributes on objects existing already
      * on the switch with attributes that are mandatory on create and create
-     * and set.  Those attributes can be changed by user fro previous value,
+     * and set.  Those attributes can be changed by user from previous value,
      * and this causes problem for comparison logic to bring those objects to
      * default value. We need to store those initial values of created objects
      * somewhere.
@@ -2434,6 +2427,7 @@ void check_attr_existing_objects(
              */
 
             META_LOG_DEBUG("Default value (oid) needs to be stored %s", md->attridname);
+
             break;
 
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
@@ -2443,6 +2437,7 @@ void check_attr_existing_objects(
              * Since on switch initialization there are no qos map objects (all switch qos
              * maps attributes are null) this shouldn't be a problem.
              */
+
             break;
 
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
@@ -2467,10 +2462,13 @@ void check_attr_existing_objects(
             META_MD_ASSERT_FAIL(md, "object list is not supported on this object type");
 
         case SAI_ATTR_VALUE_TYPE_POINTER:
+
             /*
              * Allow pointer for switch register read and write API's.
              */
+
             break;
+
         default:
 
             META_MD_ASSERT_FAIL(md, "not supported attr value type on existing object");
@@ -3675,7 +3673,7 @@ void check_attr_sorted_by_id_name()
     const char *last = "AAA";
 
     META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 800,
-            "there should be at least 500 attributes in total");
+            "there should be at least 800 attributes in total");
 
     for (; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
     {
@@ -3818,30 +3816,13 @@ void check_objects_for_loops_recursive(
 
         attributes[level] = m->attrid;
 
-        switch (m->attrvaluetype)
+        size_t j = 0;
+
+        for (; j < m->allowedobjecttypeslength; ++j)
         {
-            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
-            case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_ID:
-            case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
-            case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
-            case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
-            case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
+            const sai_object_type_info_t* next = sai_metadata_all_object_type_infos[ m->allowedobjecttypes[j] ];
 
-                {
-                    size_t j = 0;
-
-                    for (; j < m->allowedobjecttypeslength; ++j)
-                    {
-                        const sai_object_type_info_t* next = sai_metadata_all_object_type_infos[ m->allowedobjecttypes[j] ];
-
-                        check_objects_for_loops_recursive(next, visited, attributes, level + 1);
-                    }
-                }
-
-                break;
-
-            default:
-                break;
+            check_objects_for_loops_recursive(next, visited, attributes, level + 1);
         }
     }
 
@@ -3991,7 +3972,7 @@ void check_mixed_object_list_types()
      * be supported.
      */
 
-    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 500, "there should be at least 500 attributes in total");
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 800, "there should be at least 800 attributes in total");
 
     size_t idx = 0;
 
@@ -4172,7 +4153,6 @@ void check_single_non_object_id_for_rev_graph(
             {
                 break;
             }
-
         }
         else
         {
@@ -4794,6 +4774,36 @@ void check_experimental_flag(
     }
 }
 
+void check_attr_end(
+        _In_ const sai_object_type_info_t *oi)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Check if all attributes are in start/end range.
+     */
+
+    const sai_attr_metadata_t* const* const meta = oi->attrmetadata;
+
+    META_ASSERT_NOT_NULL(meta);
+
+    size_t index = 0;
+
+    for (; meta[index] != NULL; ++index)
+    {
+        if (meta[index]->attrid >= oi->attridstart)
+            continue;
+
+        if (meta[index]->attrid < oi->attridend)
+            continue;
+
+        if (meta[index]->isextensionattr)
+            continue;
+
+        META_MD_ASSERT_FAIL(meta[index], "attribute not in START .. END range");
+    }
+}
+
 void check_single_object_info(
         _In_ const sai_object_type_info_t *oi)
 {
@@ -4806,6 +4816,7 @@ void check_single_object_info(
     check_object_ro_list(oi);
     check_reverse_graph_count(oi);
     check_experimental_flag(oi);
+    check_attr_end(oi);
 }
 
 void check_api_max()
@@ -4817,7 +4828,6 @@ void check_api_max()
     META_ASSERT_TRUE(sai_metadata_enum_sai_api_t.valuescount == SAI_API_EXTENSIONS_MAX,
             "SAI_API_EXTENSIONS_MAX should be equal to number of SAI_API*");
 }
-
 
 void check_backward_comparibility_defines()
 {
