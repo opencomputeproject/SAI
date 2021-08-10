@@ -173,14 +173,13 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE,
 
     /**
-     * @brief Forwarding-class to index map
+     * @brief Next hop group selection map
      *
-     * @type sai_map_list_t
-     * @flags CREATE_AND_SET
-     * @default empty
+     * @type sai_next_hop_group_map_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED
      */
-    SAI_NEXT_HOP_GROUP_ATTR_FORWARDING_CLASS_TO_INDEX_MAP,
+    SAI_NEXT_HOP_GROUP_ATTR_SELECTION_MAP,
 
     /**
      * @brief End of attributes
@@ -325,6 +324,49 @@ typedef enum _sai_next_hop_group_member_attr_t
 
 } sai_next_hop_group_member_attr_t;
 
+typedef enum _sai_next_hop_group_map_type_t
+{
+    /** Next hop group map forwarding-class to index */
+    SAI_NEXT_HOP_GROUP_MAP_TYPE_FORWARDING_CLASS_TO_INDEX
+
+} sai_next_hop_group_map_type_t;
+
+typedef enum _sai_next_hop_group_map_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_NEXT_HOP_GROUP_MAP_ATTR_START,
+
+    /**
+     * @brief Next hop group map type
+     *
+     * @type sai_next_hop_group_map_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+     SAI_NEXT_HOP_GROUP_MAP_ATTR_TYPE = SAI_NEXT_HOP_GROUP_MAP_ATTR_START,
+
+    /**
+     * @brief Next hop group entries associated with this map.
+     *
+     * @type sai_map_list_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_NEXT_HOP_GROUP_MAP_ATTR_MAP_TO_VALUE_LIST,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_NEXT_HOP_GROUP_MAP_ATTR_END,
+
+    /** Custom range base value */
+    SAI_NEXT_HOP_GROUP_MAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_NEXT_HOP_GROUP_MAP_ATTR_CUSTOM_RANGE_END
+
+} sai_next_hop_group_map_attr_t;
+
 /**
  * @brief Create next hop group
  *
@@ -404,7 +446,7 @@ typedef sai_status_t (*sai_remove_next_hop_group_member_fn)(
         _In_ sai_object_id_t next_hop_group_member_id);
 
 /**
- * @brief Set Next Hop Group attribute
+ * @brief Set Next Hop Group member attribute
  *
  * @param[in] next_hop_group_member_id Next hop group member ID
  * @param[in] attr Attribute
@@ -416,7 +458,7 @@ typedef sai_status_t (*sai_set_next_hop_group_member_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get Next Hop Group attribute
+ * @brief Get Next Hop Group member attribute
  *
  * @param[in] next_hop_group_member_id Next hop group member ID
  * @param[in] attr_count Number of attributes
@@ -426,6 +468,58 @@ typedef sai_status_t (*sai_set_next_hop_group_member_attribute_fn)(
  */
 typedef sai_status_t (*sai_get_next_hop_group_member_attribute_fn)(
         _In_ sai_object_id_t next_hop_group_member_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Create next hop group map
+ *
+ * @param[out] next_hop_group_map_id Next hop group map id
+ * @param[in] switch_id Switch ID
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_next_hop_group_map_fn)(
+        _Out_ sai_object_id_t *next_hop_group_member_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove next hop group map
+ *
+ * @param[in] next_hop_group_map_id Next hop group map ID
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_next_hop_group_map_fn)(
+        _In_ sai_object_id_t next_hop_group_map_id);
+
+/**
+ * @brief Set Next Hop Group map attribute
+ *
+ * @param[in] next_hop_group_map_id Next hop group map ID
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_next_hop_group_map_attribute_fn)(
+        _In_ sai_object_id_t next_hop_group_map_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get next hop group map attribute
+ *
+ * @param[in] next_hop_group_map_id Next hop group map ID
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_next_hop_group_map_attribute_fn)(
+        _In_ sai_object_id_t next_hop_group_map_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
@@ -444,6 +538,10 @@ typedef struct _sai_next_hop_group_api_t
     sai_get_next_hop_group_member_attribute_fn get_next_hop_group_member_attribute;
     sai_bulk_object_create_fn                  create_next_hop_group_members;
     sai_bulk_object_remove_fn                  remove_next_hop_group_members;
+    sai_create_next_hop_group_map_fn           create_next_hop_group_map;
+    sai_remove_next_hop_group_map_fn           remove_next_hop_group_map;
+    sai_set_next_hop_group_map_attribute_fn    set_next_hop_group_map_attribute;
+    sai_get_next_hop_group_map_attribute_fn    get_next_hop_group_map_attribute;
 } sai_next_hop_group_api_t;
 
 /**
