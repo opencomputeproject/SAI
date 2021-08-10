@@ -175,8 +175,9 @@ typedef enum _sai_next_hop_group_attr_t
     /**
      * @brief Next hop group selection map
      *
-     * @type sai_next_hop_group_map_t
+     * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED
      */
     SAI_NEXT_HOP_GROUP_ATTR_SELECTION_MAP,
@@ -344,7 +345,7 @@ typedef enum _sai_next_hop_group_map_attr_t
      * @type sai_next_hop_group_map_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-     SAI_NEXT_HOP_GROUP_MAP_ATTR_TYPE = SAI_NEXT_HOP_GROUP_MAP_ATTR_START,
+    SAI_NEXT_HOP_GROUP_MAP_ATTR_TYPE = SAI_NEXT_HOP_GROUP_MAP_ATTR_START,
 
     /**
      * @brief Next hop group entries associated with this map.
@@ -482,7 +483,7 @@ typedef sai_status_t (*sai_get_next_hop_group_member_attribute_fn)(
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
 typedef sai_status_t (*sai_create_next_hop_group_map_fn)(
-        _Out_ sai_object_id_t *next_hop_group_member_id,
+        _Out_ sai_object_id_t *next_hop_group_map_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
