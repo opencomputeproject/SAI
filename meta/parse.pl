@@ -1337,7 +1337,7 @@ sub ProcessSingleEnum
 
     my $ot = ($typedef =~ /^sai_(\w+)_attr_t/) ? uc("SAI_OBJECT_TYPE_$1") : "SAI_OBJECT_TYPE_NULL";
 
-    WriteSource ".objecttype        = $ot,";
+    WriteSource ".objecttype        = (sai_object_type_t)$ot,";
     WriteSource "};";
 
     return $count;
@@ -2329,7 +2329,7 @@ sub ProcessSingleObjectType
 
         WriteSource "const sai_attr_metadata_t sai_metadata_attr_$attr = {";
 
-        WriteSource ".objecttype                    = $objecttype,";
+        WriteSource ".objecttype                    = (sai_object_type_t)$objecttype,";
         WriteSource ".attrid                        = $attr,";
         WriteSource ".attridname                    = $attrname,";
         WriteSource ".brief                         = $brief,";
@@ -2837,8 +2837,9 @@ sub ProcessRevGraph
 
         WriteSource "const sai_rev_graph_member_t $membername = {";
 
-        WriteSource ".objecttype          = $objectType,";
-        WriteSource ".depobjecttype       = $depObjectType,";
+
+        WriteSource ".objecttype          = (sai_object_type_t)$objectType,";
+        WriteSource ".depobjecttype       = (sai_object_type_t)$depObjectType,";
 
         if ($attrId =~ /^SAI_\w+_ATTR_\w+/)
         {
@@ -3350,7 +3351,7 @@ sub CreateObjectInfo
 
         WriteSource "const sai_object_type_info_t sai_metadata_object_type_info_$ot = {";
 
-        WriteSource ".objecttype           = $ot,";
+        WriteSource ".objecttype           = (sai_object_type_t)$ot,";
         WriteSource ".objecttypename       = \"$ot\",";
         WriteSource ".attridstart          = $start,";
         WriteSource ".attridend            = $end,";
