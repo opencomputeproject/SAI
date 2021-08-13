@@ -206,7 +206,7 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_PFC_DLR_PACKET_ACTION,
 
     /**
-     * @brief Queue PFC deadlock/recovery state
+     * @brief Queue PFC deadlock state
      *
      * This attribute represents the queue internal hardware PFC
      * deadlock state. It is an aggregation of all HW state used to
@@ -220,7 +220,7 @@ typedef enum _sai_queue_attr_t
      * @type bool
      * @flags READ_ONLY
      */
-    SAI_QUEUE_ATTR_PFC_DLR_STATE,
+    SAI_QUEUE_ATTR_PFC_DEADLOCK_STATE,
 
     /**
      * @brief End of attributes
