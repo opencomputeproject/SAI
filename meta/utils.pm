@@ -373,6 +373,15 @@ sub ExitOnErrors
     exit 1;
 }
 
+sub ExitOnErrorsOrWarnings
+{
+    return if $errors == 0 and $warnings == 0;
+
+    LogError "please corret all $errors error(s) and all $warnings warnings before continue";
+
+    exit 1;
+}
+
 BEGIN
 {
     our @ISA    = qw(Exporter);
@@ -380,7 +389,7 @@ BEGIN
     LogDebug LogInfo LogWarning LogError
     WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile
     GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
-    Trim ExitOnErrors
+    Trim ExitOnErrors ExitOnErrorsOrWarnings
     WriteHeader WriteSource WriteTest WriteSwig WriteMetaDataFiles WriteSectionComment
     $errors $warnings $NUMBER_REGEX
     $HEADER_CONTENT $SOURCE_CONTENT $TEST_CONTENT
