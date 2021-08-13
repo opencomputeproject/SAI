@@ -457,7 +457,7 @@ sub ProcessEnumInitializers
 
             if (not defined $val)
             {
-                LogError "$val not defined using #define directive";
+                LogError "Value $2 not defined using #define directive";
             }
             elsif (not $val =~ /^0x[0-9a-f]+$/i)
             {
