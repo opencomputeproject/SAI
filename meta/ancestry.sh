@@ -1,12 +1,36 @@
 #!/bin/bash
+#
+# Copyright (c) 2021 Microsoft Open Technologies, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+#
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+#
+# @file    ancestry.sh
+#
+# @brief   This module defines ancestry script
+#
 
 
 # to list git ancestry all comitts (even if there is a tree not single line)
 # this can bu usefull to build histroy of enums from root (enum lock) to the current
 # origin/master and current commit - and it will be possible to fix mistakes
 
-#git log --graph --oneline --ancestry-path c388490^..0b90765 | cat
-#git rev-list --ancestry-path  c388490^..0b90765
+# examples below are to show how to get correct git history tree
+# git log --graph --oneline --ancestry-path c388490^..0b90765 | cat
+# git rev-list --ancestry-path  c388490^..0b90765
 
 
 # If we will have our base commit, we will assume that each previous commit
@@ -18,7 +42,7 @@
 # different value. This will also help to track the issue if two PRs will pass
 # validation but after they will be merged they could potentially cause enum
 # value issue and this approach will catch that.
-# 
+#
 # working throug 25 commits takes about 0.4 seconds + parsing
 # so it seems like not a hudge time to make sure all commits are safe
 # and even if we get at some point that this will be "too slow", having all
@@ -31,17 +55,57 @@
 
 set -e
 
-mkdir -p temp/inc
+# 1. get all necessary data to temp directory for future processing
+# 2. pass all interesting commits to processor to build history
 
-git rev-list --ancestry-path  65f04ab^..origin/master | head -n 2 | tac | while read commit;
-do
-    rm -f temp/inc/*
+function clean_temp_dir()
+{
+    rm -rf temp
+}
 
-    echo working on commit $commit
+function create_temp_dir()
+{
+    mkdir temp
+}
 
-    git --work-tree=temp/ checkout $commit inc
+function checkout_inc_directories()
+{
+    for commit in $LIST
+    do
+        #echo working on commit $commit
 
-    time ./naive.pl
-done
+        mkdir temp/commit-$commit
+        mkdir temp/commit-$commit/inc
 
+        git --work-tree=temp/commit-$commit checkout $commit inc 2>&1 #|grep -v "working on commit"
 
+    done
+}
+
+function create_commit_list()
+{
+    local begin=$1
+    local end=$2
+
+    LIST=$(git rev-list --ancestry-path ${begin}^..${end} | head -n 30 | xargs -n 1 git rev-parse --short | tac)
+}
+
+function check_enum_history()
+{
+    perl naive.pl $LIST
+}
+
+#
+# MAIN
+#
+
+BEGIN_COMMIT=65f04ab
+END_COMMIT=1eb6df8
+END_COMMIT=origin/master
+END_COMMIT=HEAD
+
+clean_temp_dir
+create_temp_dir
+create_commit_list $BEGIN_COMMIT $END_COMMIT
+checkout_inc_directories
+check_enum_history
