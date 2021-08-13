@@ -7,14 +7,14 @@ Status      | In review
 Type        | Standards track
 Created     | 08/5/2021
 SAI-Version | 1.8
-```
+
 ## Overview
 Priority Flow Control (PFC) is used in Ethernet networks which makes the network prone to deadlocks. Detection and recovery of deadlocks can differ across switch vendors due to the ASIC implementation. SAI provides many attributes that can be queried to determine when a queue is in a deadlock state. From the Network Operating System (NOS), you need to know the ASIC vendor implementation to determine which attributes need to be queried to determine if the queue is deadlocked or has recovered from the deadlock. Adding a single new attribute that can be used to query for PFC deadlock/recovery will eliminate the need for a NOS to know which attributes to query.
 
 SAI also provides for PFC deadlock detection/recovery to be implemented in the ASIC SDK where the polling for deadlock or recovery is done in the SAI or SDK layers. To allow for the PFC polling intervals to be different across ports, port level SAI attributes are provided to set the polling interval for PFC deadlock detection and recovery along with port level attributes to query the polling interface range across queues.
-```
+
 ## Proposal
-```
+
 ### New PFC deadlock queue attributes:
 ```
     /**
@@ -176,4 +176,4 @@ QueueType::pfc_storm_recovered()
         return;
     }
 }
-
+```
