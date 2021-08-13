@@ -207,7 +207,7 @@ sub GetMetadataSourceFiles
 
     my @sources;
 
-    push @sources, GetFilesByRegex($dir, '^\w+\.(pm|pl|h|cpp|c)$');
+    push @sources, GetFilesByRegex($dir, '^\w+\.(pm|pl|h|cpp|c|sh)$');
     push @sources, GetFilesByRegex($dir, '^Makefile$');
 
     return @sources;
