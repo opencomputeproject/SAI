@@ -49,7 +49,7 @@ $SIG{__DIE__} = sub
     exit 1;
 };
 
-our $INCLUDE_DIR = "../inc/";
+our $INCLUDE_DIR = "temp";
 our %SAI_ENUMS = ();
 our %SAI_DEFINES = ();
 our %HISTORY = ();
@@ -132,8 +132,8 @@ sub ProcessHeaders
         ProcessSingleHeader "temp/commit-$commit/inc/$header";
     }
 
-    #print Dumper \%IGNORED;
-    #print Dumper \%SAI_ENUMS;
+    # print Dumper \%IGNORED;
+    # print Dumper \%SAI_ENUMS;
 }
 
 sub ProcessAllEnumInitializers
@@ -207,7 +207,7 @@ sub BuildCommitHistory
                 }
             }
             else
-            { 
+            {
                 # TODO remove, ignore stats errors for now
                 next if $enumTypeName =~ /_stat_t$/;
 
