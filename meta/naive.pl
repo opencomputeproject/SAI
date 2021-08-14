@@ -49,15 +49,11 @@ $SIG{__DIE__} = sub
     exit 1;
 };
 
-# TODO `false` or die "command failed $!";
-
-# TODO we need to also track some defines and it's values since they can be
-# used to calculate current enum field
-
 our $INCLUDE_DIR = "../inc/";
 our %SAI_ENUMS = ();
 our %SAI_DEFINES = ();
 our %HISTORY = ();
+our %IGNORED = ();
 
 sub ProcessSingleHeader
 {
@@ -89,11 +85,9 @@ sub ProcessSingleHeader
 
             my @values = ();
             my @inits = ();
-            my @ignore= ();
 
             $SAI_ENUMS{$currentEnum}->{values} = \@values;
             $SAI_ENUMS{$currentEnum}->{inits} = \@inits;
-            $SAI_ENUMS{$currentEnum}->{ignore} = \@ignore;
 
             LogDebug "enum found $currentEnum";
             next;
@@ -110,14 +104,15 @@ sub ProcessSingleHeader
             $init =~ s/^\s*=\s*/= /;      # remove assigner
             $init =~ s/\s*,\s*$//;      # remove comma
 
+            # TODO remove
             $enumName = "SAI_HOSTIF_TABLE_ENTRY_ATTR_START" if $currentEnum eq "sai_hostif_table_entry_attr_t" and $enumName eq "SAI_HOSTIF_ATTR_START";
             $init = "= SAI_HOSTIF_TABLE_ENTRY_ATTR_START" if $currentEnum eq "sai_hostif_table_entry_attr_t" and $init eq "= SAI_HOSTIF_ATTR_START";
 
             # print "$enumName, $currentEnum, $init\n";
             push @{ $SAI_ENUMS{$currentEnum}->{values} }, $enumName;
             push @{ $SAI_ENUMS{$currentEnum}->{inits} }, $init;
-            push @{ $SAI_ENUMS{$currentEnum}->{ignore} }, $ignore;
 
+            $IGNORED{$enumName} = $init if $ignore ne "";
 
             $ignore = "";
         }
@@ -137,6 +132,7 @@ sub ProcessHeaders
         ProcessSingleHeader "temp/commit-$commit/inc/$header";
     }
 
+    #print Dumper \%IGNORED;
     #print Dumper \%SAI_ENUMS;
 }
 
@@ -148,8 +144,6 @@ sub ProcessAllEnumInitializers
 
         my $arr_ref = $SAI_ENUMS{$enumTypeName}->{values};
         my $ini_ref = $SAI_ENUMS{$enumTypeName}->{inits};
-
-        # TODO IGNORE WE ALSO NEED TO SORT !!!! LOL FAIL
 
         ProcessEnumInitializers($arr_ref, $ini_ref, $enumTypeName, \%SAI_DEFINES);
     }
@@ -167,67 +161,68 @@ sub BuildCommitHistory
 
         my $arr_ref = $SAI_ENUMS{$enumTypeName}->{values};
         my $ini_ref = $SAI_ENUMS{$enumTypeName}->{inits};
-        my $ign_ref = $SAI_ENUMS{$enumTypeName}->{ignore};
-
-        next if grep (/<</, @$ini_ref); # TODO skip for now shifted flags enum
 
         my $count = scalar @$arr_ref;
 
         for (my $idx = 0; $idx < $count; $idx++)
         {
             my $enumName = $arr_ref->[$idx];
-            my $enumInit = $ini_ref->[$idx];
-            my $enumIgn  = $ign_ref->[$idx];
+            my $enumValue = $ini_ref->[$idx];
 
-            LogError "wrong initializer on $enumName $enumInit" if not $enumInit =~ /^0x[0-9a-f]{8}$/;
+            # CheckAllEnumsEndings make sure _START match _END
+            next if $enumName =~ /_START$/;
+            next if $enumName =~ /_END$/;
+            next if $enumName =~ /_RANGE_BASE$/;
 
-            # TODO check ignored,
-            # TODO write commit id
+            LogError "wrong initializer on $enumName $enumValue" if not $enumValue =~ /^0x[0-9a-f]{8}$/;
 
-            if (not defined $HISTORY{$enumTypeName} or not defined $HISTORY{$enumTypeName}{$enumName})
-            {
-                $HISTORY{$enumTypeName}{$enumName}{name} = $enumName;
-                $HISTORY{$enumTypeName}{$enumName}{value} = $enumInit;
-                $HISTORY{$enumTypeName}{$enumName}{ignore} = $enumIgn;
-                $HISTORY{$enumTypeName}{$enumName}{commit} = $commit; # TODO - ranges do not save ranges !
-
-                $HISTORY{$enumTypeName}{$enumInit} = $enumName;
-            }
-            elsif (defined $HISTORY{$enumTypeName}{$enumName} and $HISTORY{$enumTypeName}{$enumName}{value} eq $enumInit)
+            if (defined $HISTORY{$enumTypeName}{$enumName} and $HISTORY{$enumTypeName}{$enumName}{value} eq $enumValue)
             {
                 # ok, value is the same
             }
-            elsif ($enumName =~ /_ATTR_END$/)
+            elsif (not defined $HISTORY{$enumTypeName} or not defined $HISTORY{$enumTypeName}{$enumName})
             {
-                # ok, end of attributes can change
+                $HISTORY{$enumTypeName}{$enumName}{name} = $enumName;
+                $HISTORY{$enumTypeName}{$enumName}{value} = $enumValue;
+                $HISTORY{$enumTypeName}{$enumName}{commit} = $commit;
+
+                if (not defined $HISTORY{$enumTypeName}{$enumValue})
+                {
+                    $HISTORY{$enumTypeName}{$enumValue} = $enumName;
+                }
+                elsif ($HISTORY{$enumTypeName}{$enumValue} eq $enumName)
+                {
+                    # ok this is the same enum in history
+                }
+                elsif (defined $IGNORED{$enumName})
+                {
+                    # ok, values are the sam, but enum is ignored (left for backward compatibility)
+                    # but we don't check if ignored value changed, it potentially switch to different ignore
+                }
+                else # 2 enums have same integer value
+                {
+                    print "elsif (defined $enumName $IGNORED{$enumName} and $IGNORED{$enumName} eq $HISTORY{$enumTypeName}{$enumName}{name})";
+
+                    LogWarning "Both enums have the same value $enumName and $HISTORY{$enumTypeName}{$enumValue} = $enumValue";
+                }
             }
             else
-            {
-                next if $enumTypeName =~ /stat_t$/; # ignore stats errors
+            { 
+                # TODO remove, ignore stats errors for now
+                next if $enumTypeName =~ /_stat_t$/;
 
-                LogError "check ! $enumName value is $enumInit, but on was $HISTORY{$enumTypeName}{$enumName}{value} on commit $HISTORY{$enumTypeName}{$enumName}{commit}";
+                LogError "check ! $enumName value is $enumValue, but on was $HISTORY{$enumTypeName}{$enumName}{value} on commit $HISTORY{$enumTypeName}{$enumName}{commit}";
             }
-
-            #print "$enumName: $enumInit\n";
         }
-
-        # TODO skip extensions
-
-        #print Dumper $SAI_ENUMS{$enumTypeName}
-
-        # TODO save in global history with enum + check if exists
-        # TODO some values can shift SAI_ACL_ENTRY_ATTR_ACTION_END etc
-        # next if $key =~ /^SAI_\w+_ATTR_END$/;
-        # next if $key eq "SAI_ACL_TABLE_ATTR_FIELD_END";
-        # next if $key eq "SAI_ACL_ENTRY_ATTR_FIELD_END";
-        # next if $key eq "SAI_ACL_ENTRY_ATTR_ACTION_END";
     }
 }
 
-# TODO we need by enum - history by value as well - and monitor which one is
-# ignore and ignore idgnored, and put in history only the ones that are current
-# this will help us to detect potential issue if a enum was renamed but previous
-# value was not put in the ignore state
+sub CleanData
+{
+    %SAI_ENUMS = ();
+    %SAI_DEFINES = ();
+    %IGNORED = ();
+}
 
 #
 # MAIN
@@ -237,10 +232,9 @@ for my $commit (@ARGV)
 {
     # reset
 
-    %SAI_ENUMS = ();
-    %SAI_DEFINES = ();
-
     LogInfo "processing commit $commit";
+
+    CleanData();
 
     ProcessHeaders $commit;
 
@@ -250,5 +244,9 @@ for my $commit (@ARGV)
 
     BuildCommitHistory $commit;
 }
+
+# TODO mozna by stworzyc exceptiony per commit i nazwy enumow w razie jak sie zacommituje
+# 2 PR ktore przeszly ale pozniej maja zle numery enumow i nastepny PR sie nie bedzie commitowal
+# to taki enum bedzeie mozna dodac per commit jako exception
 
 ExitOnErrorsOrWarnings();

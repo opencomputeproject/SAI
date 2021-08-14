@@ -70,6 +70,8 @@ function create_temp_dir()
 
 function checkout_inc_directories()
 {
+    echo "git checkout work tree commits:" $LIST
+
     for commit in $LIST
     do
         #echo working on commit $commit
@@ -77,7 +79,7 @@ function checkout_inc_directories()
         mkdir temp/commit-$commit
         mkdir temp/commit-$commit/inc
 
-        git --work-tree=temp/commit-$commit checkout $commit inc 2>&1 #|grep -v "working on commit"
+        git --work-tree=temp/commit-$commit checkout $commit inc 2>/dev/null
 
     done
 }
@@ -87,7 +89,11 @@ function create_commit_list()
     local begin=$1
     local end=$2
 
-    LIST=$(git rev-list --ancestry-path ${begin}^..${end} | head -n 30 | xargs -n 1 git rev-parse --short | tac)
+    echo "git rev list from $begin to $end"
+
+    # TODO remove head limit
+
+    LIST=$(git rev-list --ancestry-path ${begin}^..${end} | head -n 32 | xargs -n 1 git rev-parse --short | tac)
 }
 
 function check_enum_history()
