@@ -403,7 +403,7 @@ sub ProcessEnumInitializers
         return;
     }
 
-    return if grep (/<</, @$ini_ref); # skip shifted flags enum
+    #return if grep (/<</, @$ini_ref); # skip shifted flags enum
 
     my $previousEnumValue = -1;
 
@@ -496,6 +496,12 @@ sub ProcessEnumInitializers
             }
 
             LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
+        }
+        elsif ($ini =~ /^= (\d+) << (\d+)$/)
+        {
+            $previousEnumValue = $1 << $2;
+
+            $ini = sprintf("0x%08x", $previousEnumValue);
         }
         else
         {
