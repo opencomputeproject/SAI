@@ -1,6 +1,7 @@
 # metadata build artifacts
 meta/xml
 meta/html
+meta/temp
 
 meta/*.o
 meta/*.lo
