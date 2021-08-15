@@ -18,6 +18,7 @@ Thrift SAI interface L2 tests
 import socket
 from switch import *
 import sai_base_test
+import ptf.testutils as testutils
 
 @group('l2')
 class L2AccessToAccessVlanTest(sai_base_test.ThriftInterfaceDataPlane):
@@ -633,6 +634,10 @@ class L2VlanBcastUcastTest(sai_base_test.ThriftInterfaceDataPlane):
 @group('l2')
 class L2FdbAgingTest(sai_base_test.ThriftInterfaceDataPlane):
     def runTest(self):
+        # Returns a dictionary which includes all the parameters
+        test_params = testutils.test_params_get()
+        # Returns the value of the parameter "chip_type", or None if not found
+        chip_type = testutils.test_param_get("chip_type")
         print
         print "PTF L2 FDB aging test ..."
         switch_init(self.client)
@@ -673,21 +678,24 @@ class L2FdbAgingTest(sai_base_test.ThriftInterfaceDataPlane):
 
         try:
             print "Send packet from port1 to port2 and verify on each of ports"
-            print '#### Sending 00:11:11:11:11:11| 00:22:22:22:22:22 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 1 ####'
+            print '#### Sending 00:22:22:22:22:22| 00:11:11:11:11:11 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 1 ####'
             send_packet(self, 0, str(pkt))
             verify_each_packet_on_each_port(self, [pkt, pkt], [1, 2])
             print "Send packet from port2 to port1 and verify only on port1"
-            print '#### Sending 00:22:22:22:22:22| 00:11:11:11:11:11 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 2 ####'
+            print '#### Sending 00:11:11:11:11:11| 00:22:22:22:22:22 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 2 ####'
             send_packet(self, 1, str(pkt1))
             verify_packets(self, pkt1, [0])
             print "Wait when the aging time for FDB entries in the FDB table expires, and the entries are removed ..."
-            time.sleep(fdb_aging_time + 2)
+            if (chip_type == 'bcm'):
+                time.sleep(fdb_aging_time * 2)
+            else:
+                time.sleep(fdb_aging_time + 2)
             print "Send packet from port2 to port1 and verify on each of ports"
-            print '#### Sending 00:22:22:22:22:22| 00:11:11:11:11:11 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 2 ####'
+            print '#### Sending 00:11:11:11:11:11| 00:22:22:22:22:22 | 10.10.10.1 | 192.168.0.1 | @ ptf_intf 2 ####'
             send_packet(self, 1, str(pkt1))
             verify_each_packet_on_each_port(self, [pkt1, pkt1], [0, 2])
         finally:
-            sai_thrift_flush_fdb_by_vlan(self.client, vlan_id)
+            sai_thrift_flush_fdb_by_vlan(self.client, vlan_oid)
 
             attr_value = sai_thrift_attribute_value_t(u32=0)
             attr = sai_thrift_attribute_t(id=SAI_SWITCH_ATTR_FDB_AGING_TIME, value=attr_value)
