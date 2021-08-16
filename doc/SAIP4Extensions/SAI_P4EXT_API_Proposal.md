@@ -6,7 +6,7 @@ Title       | SAI P4 Extensions Proposal
 Authors     | Intel.
 Status      | Draft
 Type        | Standards track
-Created     | 03/18/2021
+Created     | 08/15/2021
 SAI-Version | ?
 -------------------------------
 
