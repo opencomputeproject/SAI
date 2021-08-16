@@ -12,29 +12,63 @@ SAI-Version | ?
 
 # Scope #
 
-This document defines the technical specifications for the API used to support P4 Extensions in Open Compute Project Switch Abstraction Interface (SAI). P4 Extensions can be seen as an abstraction over niche/device specific features. It facilitates programming of these new features via the familiar SAI API model using a single P4 Extension object type. The exact feature enabled via the P4 Extensions itself is outside the scope of this document and SAI P4 Extensions API.
+This document defines the technical specifications for the API used to support P4 Extensions in Open Compute Project
+Switch Abstraction Interface (SAI). P4 Extensions can be seen as an abstraction over niche/device specific features. It
+facilitates programming of these new features via the familiar SAI API model using a single P4 Extension object type.
+The exact feature enabled via the P4 Extensions itself is outside the scope of this document and SAI P4 Extensions API.
+Although the proposed Object and its API are generic enough to facilitate programming of various different tables that
+can have number of different table fields and types, the new API/Object should not be seen as a replacement to the pre
+existing SAI objects. In addition, it might not always be possible to model a new data plane feature using the Match
+Action Paradigm described below. An example of such a feature already existing in SAI is SAI hash object. However, for
+all features that can be described using the Match Action Paradigm the new P4 Extension API provides a clean and simple
+SAI CRUD interface.
 
 # Overview #
 
-SAI P4 extension introduces a single new SAI object SAI_OBJECT_TYPE_P4EXT_ENTRY of object_type_oid. This object along with its attributes provides an abstraction of target specific configurable features otherwise not described in SAI via the P4 match action paradigm in a feature agnostic manner. In contrast to other SAI objects which are mapped 1:1 to an entity in the SAI Pipeline Networking Object Model, for e.g., VLAN, Neighbor, Mirror etc.; SAI P4 Extensions introduces 1:N mapping between the  SAI_OBJECT_TYPE_P4EXT_ENTRY object and niche features Feature1, Feature2, etc. This new paradigm enables the
+SAI SAI P4 extension introduces a single new SAI object SAI_OBJECT_TYPE_P4EXT_ENTRY of object_type_oid. This object
+along with its attributes provides an abstraction of target specific configurable features otherwise not described in
+SAI via match action paradigm in a feature agnostic manner.In contrast to other SAI objects which are mapped 1:1 to an
+entity in the SAI Pipeline Networking Object Model, e.g., VLAN, Neighbor, Mirror etc.; SAI P4 Extensions introduces 1:N
+mapping between the SAI_OBJECT_TYPE_P4EXT_ENTRY object and niche features Feature1, Feature2, etc. This new paradigm
+enables the
 1. Ability to add exclusive features
 2. Expose device specific capabilities
 3. Rapid application prototyping
-4. Ability to introduce new features potentially without Recompiling SAI
 
 ## Object Dependencies ##
 
-In the current SAI P4 Extension Proposal the newly introduced SAI_OBJECT_TYPE_P4EXT_ENTRY shall remain disconnected from the SAI Pipeline Object Graph. In other words, there shall be no dependency from/to other SAI object to/from SAI_OBJECT_TYPE_P4EXT_ENTRY. Also, the proposal places no restriction on the relative placement of the new features/table in the SAI Pipeline. The implementation and interaction of the new feature with the SAI pipeline is left to each individual vendor.
+In the current SAI P4 Extension Proposal the newly introduced SAI_OBJECT_TYPE_P4EXT_ENTRY will remain disconnected from
+the SAI Pipeline Object Graph. In other words, there will be no dependency from/to other SAI object to/from
+SAI_OBJECT_TYPE_P4EXT_ENTRY. Also, the proposal places no restriction on the relative placement of the new
+features/table in the SAI Pipeline. The implementation and interaction of the new feature with the SAI pipeline is left
+to each individual vendor.
+
+## Match Action Paradigm ##
+
+SAI P4 Extension Object models dataplane features like P4 table entitites. Each table can be viewed as a match action
+unit. Each match action unit desribes a finite set of match keys derived from packet header fields and metadata, as well
+as a finite set of actions. Actions operate over packet metadata and header fields and modify these fields based on
+action parameters as inputs. The match action paradigm for data plane description is described in detail at
+[P4-16 Spec | Tables](https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html#sec-tables)
 
 # API Specification #
 This section describes SAI P4 Extension API Proposal
 
 ## New header file saip4ext.h ##
 
-The new header file defines interfaces for a single object of type P4EXT_ENTRY. This new object mimics a P4 table entity. The attributes of the object define the various P4 table constructs such as table name, match key, action name and action parameters. Each of these attributes is defined as string type. For SAI implementations that are P4 compatible, these strings can simply be set to corresponding P4 table construct. For SAI implementations that do not express their pipeline in P4, a mapping library can be implemented to map the P4 Extension SAI API calls via some translation logic to corresponding driver APIs. This translation could be static, in which case the SAI recompilation would become necessary to implement a new feature or it could be dynamic.
+The new header file defines interfaces for a single object of type P4EXT_ENTRY. This new object mimics a P4 Table Entity.
+The attributes of the object define the various table constructs such as table name, match key, action name and action
+parameters. Each of these attributes is defined as string type. For SAI implementations that are P4 compatible, these
+strings can simply be set to corresponding P4 table construct. For SAI implementations that do not express their
+pipeline in P4, a mapping library can be implemented to map the P4 Extension SAI API calls via some translation logic to
+corresponding driver APIs. This translation could be static, in which case the SAI recompilation would become necessary
+to implement a new feature or it could be dynamic.
 
 ### SAI P4EXT Entry Attributes ###
-*sai_p4ext_entry_attr_t* defines the SAI P4 Extension Attributes. Each of the attributes is of type string. As seen below the attributes mimic P4 table attributes such as table name, match fields (key:value pairs), action field (key:value pairs), action parameters (key:value pairs). The format for each of these string attribute values will be described later in the API usage section.
+*sai_p4ext_entry_attr_t* defines the SAI P4 Extension Attributes. Each of the attributes is of type string. As seen
+below the attributes mimic P4 table attributes such as table name, match fields (key:value pairs), action field
+(key:value pairs), action parameters (key:value pairs). The format for each of these string attribute values will be
+described later in the API usage section.
 
 ```cpp
 /**
@@ -171,7 +205,13 @@ typedef struct _sai_p4ext_api_t
 
 # API Usage #
 
-Consider a scenario where a Vendor A wishes to extend the SAI pipeline functionality with a custom feature which can be modeled with a P4 match-action table but is not yet supported in SAI. Let say this new feature classifies incoming packets based on packet field tuples SIP,DIP and sets the traffic class tc. As mentioned earlier the proposal does not deal with the implementation details of data pipeline by each individual vendor, thus the relative position of this table in the SAI pipeline is not part of the specification and is vendor dependent. It's up to the vendor to decide whether this table will come after the SAI QoS tables or before and resolve any conflict that would arise from the actions of the QoS tables and the new P4 Extension Table. This simple feature can be expressed in P4 as below.
+Consider a scenario where a Vendor A wishes to extend the SAI pipeline functionality with a custom feature which can be
+modeled with a P4 match-action table but is not yet supported in SAI. Let say this new feature classifies incoming
+packets based on packet field tuples SIP, DIP and sets the traffic class tc. As mentioned earlier the proposal does not
+deal with the implementation details of data pipeline by each individual vendor, thus the relative position of this
+table in the SAI pipeline is not part of the specification and is vendor dependent. It's up to the vendor to decide
+whether this table will come after the SAI QoS tables or before and resolve any conflict that would arise from the
+actions of the QoS tables and the new P4 Extension Table. This simple feature can be expressed in P4 as below.
 
 ```
 table flow_classification {
@@ -261,7 +301,9 @@ else
 
 ## Set a P4 Extension Table Entry Attribute##
 
-A user can update either the action or the action parameter associated with a P4 table entry. Both the action parameters and match fields are represented as key value pairs string. So, in order to update to a single key value pair, the entire string should be passed again with the updated action parameter or match field value.
+A user can update either the action or the action parameter associated with a P4 table entry. Both the action parameters
+and match fields are represented as key value pairs string. So, in order to update to a single key value pair, the
+entire string should be passed again with the updated action parameter or match field value.
 
 ```cpp
 const char updated_action_param[] = "{\"tc\":\"5\"}"
