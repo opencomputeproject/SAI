@@ -10,7 +10,7 @@ SAI-Version | 1.8
 
 Class-based forwarding provides a method to steer traffic among multiple paths through the network by policy rather than, or in combination with, traditional ECMP/UCMP flow-hashing.
 
-A new type of next-hop group is proposed:
+A new type of next-hop group is introduced:
 
 ```
 typedef enum _sai_next_hop_group_type_t
@@ -22,20 +22,22 @@ typedef enum _sai_next_hop_group_type_t
 } sai_next_hop_group_type_t;
 ```
 
-The behavior of SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED differs from the traditional SAI_NEXT_HOP_GROUP_TYPE_ECMP, in that each packet will have a Forwarding class that directly chooses next-hop group member index.
+The behavior of SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED differs from the traditional SAI_NEXT_HOP_GROUP_TYPE_ECMP, in that each packet will have a Forwarding class that chooses next-hop group member index.
 
-This is accomplished by mapping each forwarding-class to the group member index.
+This is accomplished by directly mapping each forwarding class to the group member index, via map configured to the next-hop group object.
 
 ```
     /**
-     * @brief Forwarding-class to index map
+     * @brief Member selection map
      *
-     * @type sai_map_list_t
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED
      */
-    SAI_NEXT_HOP_GROUP_ATTR_FORWARDING_CLASS_TO_INDEX_MAP,
+    SAI_NEXT_HOP_GROUP_ATTR_SELECTION_MAP,
 ```
 
 If a packet arrives with a forwarding-class which is not present in the map, the chosen index shall be 0.
@@ -65,7 +67,8 @@ If the map selects an index for which a member does not exist, the packet shall 
 
 Members of type next-hop or next-hop groups of type ECMP shall be allowed. To allow this, next-hop group member type is extended to allow other next-hop groups:
 
-<pre><code>    /**
+```
+   /**
      * @brief Next hop id
      *
      * @type sai_object_id_t
@@ -73,7 +76,7 @@ Members of type next-hop or next-hop groups of type ECMP shall be allowed. To al
      * @objects SAI_OBJECT_TYPE_NEXT_HOP, <b>SAI_OBJECT_TYPE_NEXT_HOP_GROUP</b>
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID,
-</code></pre>
+```
 
 *Note: While this would also be a means to configure hierarchical ECMP, hierarchical ECMP is outside the scope of this proposal.*
 
@@ -96,7 +99,7 @@ typedef  enum  _sai_qos_map_type_t
 typedef enum _sai_acl_entry_attr_t
 ...
     /**
-     *  @brief  Set  Forwarding  Class
+     *  @brief  Set Forwarding Class
      *
      *  @type  sai_acl_action_data_t  sai_uint8_t
      *  @flags  CREATE_AND_SET
@@ -107,7 +110,13 @@ typedef enum _sai_acl_entry_attr_t
 }  sai_acl_entry_attr_t;
 ```
 
-In the event a packet is not assigned a forwarding-class, for example, a qos-map or ACL is not configured, then the forwarding-class of the packet shall be 0.
+If the packet is not assigned a forwarding-class, then the forwarding-class of the packet shall be 0. For example, if no qos-map or ACL is configured.
+
+*Resource monitoring considerations:*
+
+SAI_SWITCH_ATTR_MAX_NUMBER_OF_FORWARDING_CLASSES may be used to identify the maximum forwarding-class allowed.
+
+The SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP object may be a limited resource. The sai_object_type_get_availability() API may be used to query the maximum number of permitted maps.
 
 *Class-based forwarding group configuration example:*
 ```
@@ -116,6 +125,8 @@ In the event a packet is not assigned a forwarding-class, for example, a qos-map
  * In this example, a simple 1:1 mapping is configured.
  ******************************************************/
  const int num_forwarding_classes = 8;
+
+ sai_object_id_t nh_group_map;
 
  sai_map_t fc_map[num_forwarding_classes];
  for (int i = 0; i < num_forwarding_classes; ++i) {
@@ -127,21 +138,37 @@ In the event a packet is not assigned a forwarding-class, for example, a qos-map
  fc_map_list.key.count = num_forwarding_classes;
  fc_map_list.key.list = fc_map;
 
+ attr.type = SAI_NEXT_HOP_GROUP_MAP_ATTR_TYPE;
+ attr.value.u32 = SAI_NEXT_HOP_GROUP_MAP_TYPE_FORWARDING_CLASS_TO_INDEX;
+ attrs.push_back(attr);
+
+ attr.id = SAI_NEXT_HOP_GROUP_MAP_ATTR_MAP_TO_VALUE_LIST;
+ attr.value.maplist = fc_map_list;
+ attrs.push_back(attr);
+
+ sai_next_hop_group_api->create_next_hop_group_map(
+     &nh_group_map,
+     g_switch_id,
+     attrs.size(),
+     attrs.data());
+
  /*****************************************************
   * Create a class-based forwarding group
   *****************************************************/
+ attrs.clear();
+
  sai_object_id_t nh_group;
 
  attr.id = SAI_NEXT_HOP_GROUP_ATTR_TYPE;
- attr.value.oid = SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED;
+ attr.value.u32 = SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED;
  attrs.push_back(attr);
 
  attr.id = SAI_NEXT_HOP_GROUP_ATTR_CONFIGURED_SIZE;
- attr.value.oid = num_forwarding_classes;
+ attr.value.u32 = num_forwarding_classes;
  attrs.push_back(attr);
 
- attr.id = SAI_NEXT_HOP_GROUP_ATTR_FORWARDING_CLASS_TO_INDEX_MAP;
- attr.value.maplist = fc_map_list;
+ attr.id = SAI_NEXT_HOP_GROUP_ATTR_SELECTION_MAP;
+ attr.value.oid = nh_group_map;
  attrs.push_back(attr);
 
  sai_next_hop_group_api->create_next_hop_group(
@@ -161,11 +188,11 @@ In the event a packet is not assigned a forwarding-class, for example, a qos-map
      attrs.push_back(attr);
 
      attr.id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID;
-     attr.value.oid = destinations[i]; // Next-hop or ECMP object allowed
+     attr.value.oid = destinations[i]; // Next-hop or ECMP group
      attrs.push_back(attr);
 
      attr.id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_INDEX;
-     attr.value.oid = i;
+     attr.value.u32 = i;
      attrs.push_back(attr);
 
      sai_next_hop_group_api->create_next_hop_group_member(
