@@ -25,9 +25,9 @@ SAI CRUD interface.
 
 # Overview #
 
-SAI SAI P4 extension introduces a single new SAI object SAI_OBJECT_TYPE_P4EXT_ENTRY of object_type_oid. This object
+SAI P4 extension introduces a single new SAI object SAI_OBJECT_TYPE_P4EXT_ENTRY of object_type_oid. This object
 along with its attributes provides an abstraction of target specific configurable features otherwise not described in
-SAI via match action paradigm in a feature agnostic manner.In contrast to other SAI objects which are mapped 1:1 to an
+SAI via match action paradigm in a feature agnostic manner. In contrast to other SAI objects which are mapped 1:1 to an
 entity in the SAI Pipeline Networking Object Model, e.g., VLAN, Neighbor, Mirror etc.; SAI P4 Extensions introduces 1:N
 mapping between the SAI_OBJECT_TYPE_P4EXT_ENTRY object and niche features Feature1, Feature2, etc. This new paradigm
 enables the
@@ -45,8 +45,8 @@ to each individual vendor.
 
 ## Match Action Paradigm ##
 
-SAI P4 Extension Object models dataplane features like P4 table entitites. Each table can be viewed as a match action
-unit. Each match action unit desribes a finite set of match keys derived from packet header fields and metadata, as well
+SAI P4 Extension Object models dataplane features like P4 table entities. Each table can be viewed as a match action
+unit. Each match action unit describes a finite set of match keys derived from packet header fields and metadata, as well
 as a finite set of actions. Actions operate over packet metadata and header fields and modify these fields based on
 action parameters as inputs. The match action paradigm for data plane description is described in detail at
 [P4-16 Spec | Tables](https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html#sec-tables)
@@ -233,7 +233,7 @@ The above P4 table - *flow_classification*, has two key/ match fields.
 1. *src_addr* - This is the incoming packet IPv4 Source Address
 2. *dst_addr* - This is the incoming packet IPv4 Destination Address
 The type of match for both these fields is ternary. In general, the match_kind is expected to be one of the match_kinds
-as defined by the P4 core library. More information please refer to the [P4 16
+as defined by the P4 core library. For more information please refer to the [P4 16
 Specification](https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html#sec-match-kind-type)
 In addition, the above table describes just one possible action - *set_tc*. An incoming packet that matches an entry in
 the above table can be programmed to execute this action. The action *set_tc* accepts only one parameter *tc* which is used
