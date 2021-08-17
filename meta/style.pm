@@ -1032,6 +1032,11 @@ sub CheckHeadersStyle
                 }
             }
 
+            if ($line =~ /__/ and not $line =~ /^#.+__SAI\w*_H_|VA_ARGS|BOOL_DEFINED/)
+            {
+                LogWarning "double underscore detected: $header $n: $line";
+            }
+
             if ($line eq "" and $prev =~ /{/)
             {
                 LogWarning "empty line after '$prev': $header:$n: $line";
