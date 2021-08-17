@@ -93,7 +93,7 @@ function create_commit_list()
 
     # TODO remove head limit
 
-    LIST=$(git rev-list --ancestry-path ${begin}^..${end} | head -n 32 | xargs -n 1 git rev-parse --short | tac)
+    LIST=$(git rev-list --ancestry-path ${begin}^..${end} | xargs -n 1 git rev-parse --short | tac)
 }
 
 function check_enum_history()
@@ -106,9 +106,14 @@ function check_enum_history()
 #
 
 BEGIN_COMMIT=65f04ab
-END_COMMIT=1eb6df8
+#BEGIN_COMMIT=5a98bc3
+#BEGIN_COMMIT=ec7e055
+#END_COMMIT=1eb6df8
+#END_COMMIT=origin/master
+#END_COMMIT=HEAD
+#END_COMMIT=2cc5ba0
+#END_COMMIT=5254200
 END_COMMIT=origin/master
-END_COMMIT=HEAD
 
 clean_temp_dir
 create_temp_dir

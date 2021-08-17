@@ -173,6 +173,8 @@ sub BuildCommitHistory
             next if $enumName =~ /_START$/;
             next if $enumName =~ /_END$/;
             next if $enumName =~ /_RANGE_BASE$/;
+            next if $enumName eq "SAI_API_MAX";
+            next if $enumName eq "SAI_OBJECT_TYPE_MAX";
 
             LogError "wrong initializer on $enumName $enumValue" if not $enumValue =~ /^0x[0-9a-f]{8}$/;
 
@@ -201,7 +203,7 @@ sub BuildCommitHistory
                 }
                 else # 2 enums have same integer value
                 {
-                    print "elsif (defined $enumName $IGNORED{$enumName} and $IGNORED{$enumName} eq $HISTORY{$enumTypeName}{$enumName}{name})";
+                    #print "elsif (defined $enumName $IGNORED{$enumName} and $IGNORED{$enumName} eq $HISTORY{$enumTypeName}{$enumName}{name})";
 
                     LogWarning "Both enums have the same value $enumName and $HISTORY{$enumTypeName}{$enumValue} = $enumValue";
                 }
@@ -212,6 +214,9 @@ sub BuildCommitHistory
                 next if $enumTypeName =~ /_stat_t$/;
 
                 LogError "check ! $enumName value is $enumValue, but on was $HISTORY{$enumTypeName}{$enumName}{value} on commit $HISTORY{$enumTypeName}{$enumName}{commit}";
+
+                $HISTORY{$enumTypeName}{$enumName}{value} = $enumValue;
+                $HISTORY{$enumTypeName}{$enumName}{commit} = $commit;
             }
         }
     }
