@@ -1033,18 +1033,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_MODE,
 
     /**
-     * @brief Forward or terminate the global flow control(802.3X) frame
-     *
-     * If true, flow control frames are switched between ports.
-     * If false, flow control frames are terminated by the switch.
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_FORWARD,
-
-    /**
      * @brief Port bind point for ingress ACL object
      *
      * Bind (or unbind) an ingress ACL table or ACL group on a port.
@@ -1445,18 +1433,6 @@ typedef enum _sai_port_attr_t
      * @validonly SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_MODE == SAI_PORT_PRIORITY_FLOW_CONTROL_MODE_SEPARATE
      */
     SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_TX,
-
-    /**
-     * @brief Forward or terminate the PFC(802.1Qbb) frame
-     *
-     * If true, flow control frames are switched between ports.
-     * If false, flow control frames are terminated by the switch.
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_FORWARD,
 
     /**
      * @brief User based Meta Data
@@ -1988,6 +1964,30 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_EXTENDED,
+
+    /**
+     * @brief Forward or terminate the global flow control(802.3X) frame
+     *
+     * If true, flow control frames are switched between ports.
+     * If false, flow control frames are terminated by the switch.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_FORWARD,
+
+    /**
+     * @brief Forward or terminate the PFC(802.1Qbb) frame
+     *
+     * If true, flow control frames are switched between ports.
+     * If false, flow control frames are terminated by the switch.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_FORWARD,
 
     /**
      * @brief End of attributes
