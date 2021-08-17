@@ -340,6 +340,8 @@ typedef enum _sai_tunnel_type_t
 
     SAI_TUNNEL_TYPE_SRV6,
 
+    SAI_TUNNEL_TYPE_NVGRE,
+
 } sai_tunnel_type_t;
 
 /**
@@ -2554,6 +2556,24 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAPT_ENTRY,
+
+    /**
+     * @brief Slave MDIO Address list
+     *
+     * Configure list of slave MDIO addresses for firmware download in Broadcast mode.
+     * The sequence for firmware download in broadcast mode is as follows:
+     * 1. For each MDIO master, call sai_create_switch() and pass the list of slave MDIO addresses.
+     * In this step, gearbox will upgrade the firmware on all PHY devices including master and slave.
+     *
+     * 2. Call sai_create_switch() on all slave PHY devices with #SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE = SAI_SWITCH_FIRMWARE_LOAD_TYPE_SKIP,
+     * which will already have had their firmware upgraded.
+     *
+     * @type sai_u8_list_t
+     * @flags CREATE_ONLY
+     * @default empty
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_SLAVE_MDIO_ADDR_LIST,
 
     /**
      * @brief End of attributes

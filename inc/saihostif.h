@@ -382,6 +382,25 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_BFDV6 = 0x00004006,
 
+    /**
+     * @brief Micro BFD traffic (UDP dst port == 6784) to local
+     * router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFD_MICRO = 0x00004007,
+
+    /**
+     * @brief Micro BFDV6 traffic (UDP dst port == 6784) to local
+     * router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_BFDV6_MICRO = 0x00004008,
+
+    /**
+     * @brief LDP traffic (TCP src port == 646 or TCP dst port == 646) to local
+     * router IP address or, (UDP dst port == 646) to the 'all routers on this
+     * subnet' group multicast address (224.0.0.2) (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_LDP = 0x00004009,
+
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
 
@@ -438,6 +457,12 @@ typedef enum _sai_hostif_trap_type_t
      * (default packet action is forward)
      */
     SAI_HOSTIF_TRAP_TYPE_MPLS_ROUTER_ALERT_LABEL = 0x00008001,
+
+    /**
+     * @brief MPLS packets discarded due to label lookup miss
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_MPLS_LABEL_LOOKUP_MISS = 0x00008002,
 
     /** Exception traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00009000,

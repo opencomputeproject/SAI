@@ -70,6 +70,7 @@ L2 - Layer 2
 L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
+LDP - Label Distribution Protocol
 LPM - Longest Prefix Match
 LSP - Label Switched Path
 MAC - Medium Access Control
@@ -141,6 +142,7 @@ VOQ - Virtual Output Queue
 VR - Virtual Router
 VRF - Virtual Route Forwarding
 VRRP - Virtual Router Redundancy Protocol
+VSID - Virtual Subnet Identifier
 VXLAN - Virtual Extensible LAN
 WCMP - Weighted Cost Multipath
 WRED - Weighted Random Early Detection
