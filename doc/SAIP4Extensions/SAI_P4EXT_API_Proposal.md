@@ -34,6 +34,8 @@ enables the
 1. Ability to add exclusive features
 2. Expose device specific capabilities
 3. Rapid application prototyping
+4. Easy migration from SAI P4 Extension CRUD APIs to SAI Feature/Object Specific CRUD APIs on broader community
+   acceptance of a new feature, due to the resemblance of P4 Extension Object model with other SAI object models.
 
 ## Object Dependencies ##
 
