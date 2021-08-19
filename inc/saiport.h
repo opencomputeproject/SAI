@@ -1981,6 +1981,30 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_IPG,
 
     /**
+     * @brief Forward or terminate the global flow control(802.3X) frame
+     *
+     * If true, flow control frames are switched between ports.
+     * If false, flow control frames are terminated by the switch.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_FORWARD,
+
+    /**
+     * @brief Forward or terminate the PFC(802.1Qbb) frame
+     *
+     * If true, flow control frames are switched between ports.
+     * If false, flow control frames are terminated by the switch.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_FORWARD,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
