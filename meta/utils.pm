@@ -307,9 +307,9 @@ sub SanityCheckContent
         LogError "there should be at least 5 test defined, got $testCount";
     }
 
-    my $metaHeaderSize = 48832 * 0.99;
-    my $metaSourceSize = 2216983 * 0.99;
-    my $metaTestSize   = 104995 * 0.99;
+    my $metaHeaderSize =  127588 * 0.99;
+    my $metaSourceSize = 5190419 * 0.99;
+    my $metaTestSize   =  195323 * 0.99;
 
     if (length($HEADER_CONTENT) < $metaHeaderSize)
     {

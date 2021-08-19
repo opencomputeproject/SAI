@@ -5232,6 +5232,19 @@ void check_max_conditions_len()
     META_ASSERT_TRUE(SAI_METADATA_MAX_CONDITIONS_LEN > 0, "must be positive");
 }
 
+void check_object_type_extension_max_value()
+{
+    META_LOG_ENTER();
+
+    /*
+     * It can be handy for vendors to encode object type value on single byte
+     * in every object it for easy object identification. We assume that we
+     * will have no more than 255 objec types on SAI right now.
+     */
+
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_EXTENSIONS_MAX < 256, "max object type can be 255 to be encoded on single byte");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -5274,6 +5287,7 @@ int main(int argc, char **argv)
     check_all_enums();
     check_sai_version();
     check_max_conditions_len();
+    check_object_type_extension_max_value();
 
     SAI_META_LOG_DEBUG("log test");
 
