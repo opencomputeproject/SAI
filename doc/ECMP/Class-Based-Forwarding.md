@@ -78,7 +78,7 @@ Members of type next-hop or next-hop groups of type ECMP shall be allowed. To al
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID,
 ```
 
-*Note: While this would also be a means to configure hierarchical ECMP, hierarchical ECMP is outside the scope of this proposal.*
+*Note: While this would also be a means to configure a hierarchical ECMP, hierarchical ECMP is outside the scope of this proposal.*
 
 The forwarding-class for a packet may be selected via qos-map or ACL.
 
@@ -114,31 +114,38 @@ If the packet is not assigned a forwarding-class, then the forwarding-class of t
 
 *Resource monitoring considerations:*
 
-SAI_SWITCH_ATTR_MAX_NUMBER_OF_FORWARDING_CLASSES may be used to identify the maximum forwarding-class allowed.
+The attribute SAI_SWITCH_ATTR_MAX_NUMBER_OF_FORWARDING_CLASSES may be used to identify the maximum forwarding-class allowed.
 
-The SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP object may be a limited resource. The sai_object_type_get_availability() API may be used to query the maximum number of permitted maps.
+The SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP object is a resource. The sai_object_type_get_availability() API may be used to query the maximum number of permitted maps.
 
 *Class-based forwarding group configuration example:*
 ```
 /******************************************************
  * Create a forwarding-class -> index map.
- * In this example, a simple 1:1 mapping is configured.
+ * In this example, map 8 forwarding-classes to 2 members.
+ *   FC 0-5 -> index 0
+ *   FC 6-7 -> index 1
  ******************************************************/
  const int num_forwarding_classes = 8;
+ const int num_members = 2;
 
  sai_object_id_t nh_group_map;
 
  sai_map_t fc_map[num_forwarding_classes];
- for (int i = 0; i < num_forwarding_classes; ++i) {
-     fc_map[i].key = i;
-     fc_map[i].value = i;
+ for (int fc = 0; fc < num_forwarding_classes; ++fc) {
+    fc_map[fc].key = fc;
+    if (fc >= 6) {
+       fc_map[fc].value = 1;
+    } else {
+       fc_map[fc].value = 0;
+    }
  }
 
  sai_map_list_t fc_map_list;
  fc_map_list.key.count = num_forwarding_classes;
  fc_map_list.key.list = fc_map;
 
- attr.type = SAI_NEXT_HOP_GROUP_MAP_ATTR_TYPE;
+ attr.id = SAI_NEXT_HOP_GROUP_MAP_ATTR_TYPE;
  attr.value.u32 = SAI_NEXT_HOP_GROUP_MAP_TYPE_FORWARDING_CLASS_TO_INDEX;
  attrs.push_back(attr);
 
@@ -164,7 +171,7 @@ The SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP object may be a limited resource. The sai
  attrs.push_back(attr);
 
  attr.id = SAI_NEXT_HOP_GROUP_ATTR_CONFIGURED_SIZE;
- attr.value.u32 = num_forwarding_classes;
+ attr.value.u32 = num_members;
  attrs.push_back(attr);
 
  attr.id = SAI_NEXT_HOP_GROUP_ATTR_SELECTION_MAP;
@@ -182,23 +189,23 @@ The SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP object may be a limited resource. The sai
   *****************************************************/
  attrs.clear();
 
- for (i = 0; i < size; ++i) {
+ for (index = 0; index < num_members; ++index) {
      attr.id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID;
      attr.value.oid = nh_group;
      attrs.push_back(attr);
 
      attr.id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID;
-     attr.value.oid = destinations[i]; // Next-hop or ECMP group
+     attr.value.oid = destinations[index]; // Next-hop or ECMP group
      attrs.push_back(attr);
 
      attr.id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_INDEX;
-     attr.value.u32 = i;
+     attr.value.u32 = index;
      attrs.push_back(attr);
 
      sai_next_hop_group_api->create_next_hop_group_member(
-         &members[i],
+         &members[member_index],
          g_switch_id,
          attrs.size(),
          attrs.data());
  }
- ```
+```
