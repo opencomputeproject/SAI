@@ -110,7 +110,7 @@ typedef enum _sai_acl_entry_attr_t
 }  sai_acl_entry_attr_t;
 ```
 
-If the packet is not assigned a forwarding-class, then the forwarding-class of the packet shall be 0. For example, if no qos-map or ACL is configured.
+If the packet is not assigned a forwarding-class, then the forwarding-class of the packet shall be 0. For example, if no qos-map or ACL is configured. Normal QOS/ACL precedence rules apply; if supported by the implementation, the ACL would override the QOS MAP decision.
 
 *Resource monitoring considerations:*
 
