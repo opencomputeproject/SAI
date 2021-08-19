@@ -1980,7 +1980,7 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_IPG,
 
-    /*
+    /**
      * @brief Forward or terminate the global flow control(802.3X) frame
      *
      * If true, flow control frames are switched between ports.
