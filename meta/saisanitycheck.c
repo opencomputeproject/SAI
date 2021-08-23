@@ -1821,6 +1821,20 @@ void check_attr_key(
 
                 META_MD_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (list)");
 
+            case SAI_ATTR_VALUE_TYPE_INT8_LIST:
+
+                if (md->objecttype == SAI_OBJECT_TYPE_P4EXT_ENTRY)
+                {
+                    /*
+                     * This is special case when TABLE_ID and MATCH_FIELD_ID are actual KEYs for P4 Extension object.
+					 * Also these attributes are no longer simply a list of int8_t but rather a string
+                     */
+
+                    break;
+                }
+
+                META_MD_ASSERT_FAIL(md, "marked as key, but have invalid attr value type (list)");
+
             case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
 
                 if ((md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT) ||

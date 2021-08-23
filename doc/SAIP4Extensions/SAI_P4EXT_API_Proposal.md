@@ -72,6 +72,12 @@ below the attributes mimic P4 table attributes such as table name, match fields 
 (key:value pairs), action parameters (key:value pairs). The format for each of these string attribute values will be
 described later in the API usage section.
 
+Different vendors might support different types of tables with different fields and actions. The proposal does not
+outline an exact mechanism to expose this information (table, field, action names etc.) to the end user. It is assumed
+that this information is made available to SAI users via an external mechanism. E.g with a target that runs P4, P4
+compilers with custom backend can generate this kind of information. A generic backend already supported today by
+default by P4C is P4 runtime and the accompanying P4 info file.
+
 ```cpp
 /**
  * @brief Attribute Id for P4 ext */
