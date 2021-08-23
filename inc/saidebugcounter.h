@@ -312,11 +312,13 @@ typedef enum _sai_in_drop_reason_t
     SAI_IN_DROP_REASON_MPLS_MISS,
 
     /**
-     * SRV6 local SID drop
+     * @brief SRV6 local SID drop
      *
-     * e.g. : local SID missed
-     *        NH == SRH && SL == 0 for End, End.X, End.T, End.B*
-     *        NH != SRH while local SID configured for packet DA
+     * Packet is dropped due to local SID configuration or incorrect value in SRV6 packet header
+     * e.g.: Local SID packet action is set to SAI_PACKET_ACTION_DROP
+     * Next Header is SRH and Segments Left value is 0 for End, End.X, End.T, End.B* endpoint types
+     * Next Header is not SRH while local SID is configured for packet DA
+     * Segments Left value is not 0 when received packet is destined to S and S is a local SID of type End.D*
      */
     SAI_IN_DROP_REASON_SRV6_LOCAL_SID_DROP,
 
