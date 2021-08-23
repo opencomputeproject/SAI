@@ -3867,6 +3867,14 @@ sub ProcessStructItem
 
         $ProcessedItems{$item} = 1;
     }
+
+    my $count = scalar(keys %S);
+    my @k = sort keys %S;
+
+    if ($type =~ /^sai_(\w+)_list_t$/ and $count != 2)
+    {
+        LogError "lists must contain 2 elements (count, list), but $type has $count (@k), it's not a list then, fix this";
+    }
 }
 
 sub CheckAttributeValueUnion
