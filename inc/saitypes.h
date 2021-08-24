@@ -1038,6 +1038,7 @@ typedef struct _sai_system_port_config_t
 
     /** Number of Virtual Output Queues associated with the system port */
     uint32_t num_voq;
+
 } sai_system_port_config_t;
 
 /**

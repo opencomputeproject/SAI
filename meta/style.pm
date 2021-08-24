@@ -1024,6 +1024,11 @@ sub CheckHeadersStyle
                 LogWarning "missing empty line before: $header $n: $line";
             }
 
+            if ($line =~ /_(In|Out|Inout)_.+(\* | \* )/)
+            {
+                LogWarning "move * to the right of parameter: $header $n: $line";
+            }
+
             if ($line =~ /\*.*SAI_.+(==|!=)/ and not $line =~ /\@(condition|validonly)/)
             {
                 if (not $line =~ /(condition|validonly|valid when|only when)\s+SAI_/i)
