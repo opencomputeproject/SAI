@@ -1827,7 +1827,7 @@ void check_attr_key(
                 {
                     /*
                      * This is special case when TABLE_ID and MATCH_FIELD_ID are actual KEYs for P4 Extension object.
-					 * Also these attributes are no longer simply a list of int8_t but rather a string
+                     * Also these attributes are no longer simply a list of int8_t but rather a string
                      */
 
                     break;
