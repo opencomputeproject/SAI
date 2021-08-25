@@ -905,7 +905,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for ingress ACL object
      *
      * Bind (or unbind) an ingress ACL table or ACL group globally. Enable/Update
-     * ingress ACL table or ACL group filtering by assigning the list of valid
+     * ingress ACL table or ACL group filtering by assigning  a valid
      * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -921,7 +921,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for egress ACL object
      *
      * Bind (or unbind) an egress ACL tables or ACL group globally. Enable/Update
-     * egress ACL table or ACL group filtering by assigning the list of valid
+     * egress ACL table or ACL group filtering by assigning a valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -2521,7 +2521,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for Pre-ingress ACL object
      *
      * Bind (or unbind) an Pre-ingress ACL table or ACL group globally. Enable/Update
-     * Pre-ingress ACL table or ACL group filtering by assigning the list of valid
+     * Pre-ingress ACL table or ACL group filtering by assigning a valid
      * object id. Disable pre-ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
