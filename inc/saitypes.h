@@ -243,7 +243,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_BRIDGE_PORT              = 58,
     SAI_OBJECT_TYPE_TUNNEL_MAP_ENTRY         = 59,
     SAI_OBJECT_TYPE_TAM                      = 60,
-    SAI_OBJECT_TYPE_SEGMENTROUTE_SIDLIST     = 61,
+    SAI_OBJECT_TYPE_SRV6_SIDLIST             = 61,
     SAI_OBJECT_TYPE_PORT_POOL                = 62,
     SAI_OBJECT_TYPE_INSEG_ENTRY              = 63,
     SAI_OBJECT_TYPE_DTEL                     = 64, /**< experimental */
@@ -278,6 +278,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_SYSTEM_PORT              = 93,
     SAI_OBJECT_TYPE_FINE_GRAINED_HASH_FIELD  = 94,
     SAI_OBJECT_TYPE_SWITCH_TUNNEL            = 95,
+    SAI_OBJECT_TYPE_MY_SID_ENTRY          = 96,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
@@ -1037,6 +1038,7 @@ typedef struct _sai_system_port_config_t
 
     /** Number of Virtual Output Queues associated with the system port */
     uint32_t num_voq;
+
 } sai_system_port_config_t;
 
 /**

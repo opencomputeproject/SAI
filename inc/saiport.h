@@ -389,6 +389,92 @@ typedef enum _sai_port_connector_failover_mode_t
 } sai_port_connector_failover_mode_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_MDIX_MODE_STATUS
+ * Used for MDIX mode status
+ */
+typedef enum _sai_port_mdix_mode_status_t
+{
+    /** MDIX mode status straight */
+    SAI_PORT_MDIX_MODE_STATUS_STRAIGHT,
+
+    /**  MDIX mode status cross over */
+    SAI_PORT_MDIX_MODE_STATUS_CROSSOVER
+} sai_port_mdix_mode_status_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_MDIX_MODE_CONFIG
+ * Used for MDIX mode configuration
+ */
+typedef enum _sai_port_mdix_mode_config_t
+{
+    /** MDIX mode status auto */
+    SAI_PORT_MDIX_MODE_CONFIG_AUTO,
+
+    /** MDIX mode status straight */
+    SAI_PORT_MDIX_MODE_CONFIG_STRAIGHT,
+
+    /**  MDIX mode status cross over */
+    SAI_PORT_MDIX_MODE_CONFIG_CROSSOVER
+} sai_port_mdix_mode_config_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE
+ * Used for auto negotiation mode to configure master or slave mode
+ */
+typedef enum _sai_port_auto_neg_config_mode_t
+{
+    /** Auto neg configuration mode disabled */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_DISABLED,
+
+    /** Auto neg mode auto */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_AUTO,
+
+    /** Auto neg mode slave */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_SLAVE,
+
+    /** Auto neg mode master */
+    SAI_PORT_AUTO_NEG_CONFIG_MODE_MASTER
+} sai_port_auto_neg_config_mode_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_MODULE_TYPE
+ * Used for configuring Fiber module type
+ */
+typedef enum _sai_port_module_type_t
+{
+    /** Module Type Fiber */
+    SAI_PORT_MODULE_TYPE_1000BASE_X,
+
+    /** Module Type 100FX */
+    SAI_PORT_MODULE_TYPE_100FX,
+
+    /** Module Type SGMII-Slave */
+    SAI_PORT_MODULE_TYPE_SGMII_SLAVE,
+} sai_port_module_type_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_DUAL_MEDIA
+ * Used to configure media type for dual media supported PHY
+ */
+typedef enum _sai_port_dual_media_t
+{
+    /**  Dual media not supported */
+    SAI_PORT_DUAL_MEDIA_NONE,
+
+    /**  Force Copper mode, Fiber is inactive/disabled */
+    SAI_PORT_DUAL_MEDIA_COPPER_ONLY,
+
+    /**  Force Fiber mode, Copper is inactive/disabled */
+    SAI_PORT_DUAL_MEDIA_FIBER_ONLY,
+
+    /**  Both Copper and Fiber supported, but Copper preferred */
+    SAI_PORT_DUAL_MEDIA_COPPER_PREFERRED,
+
+    /**  Both Copper and Fiber supported, but Fiber preferred */
+    SAI_PORT_DUAL_MEDIA_FIBER_PREFERRED
+} sai_port_dual_media_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -1489,6 +1575,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_SERDES_PREEMPHASIS,
 
@@ -1503,6 +1590,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_SERDES_IDRIVER,
 
@@ -1517,6 +1605,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u32_list_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_SERDES_IPREDRIVER,
 
@@ -1812,6 +1901,108 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_LOOPBACK_MODE_NONE
      */
     SAI_PORT_ATTR_LOOPBACK_MODE,
+
+    /**
+     * @brief MDIX mode status for the port
+     *
+     * @type sai_port_mdix_mode_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_MDIX_MODE_STATUS,
+
+    /**
+     * @brief MDIX mode configuration for the port
+     *
+     * @type sai_port_mdix_mode_config_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_MDIX_MODE_CONFIG_AUTO
+     */
+    SAI_PORT_ATTR_MDIX_MODE_CONFIG,
+
+    /**
+     * @brief Configure auto negotiation configuration mode for the port
+     *
+     * @type sai_port_auto_neg_config_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_AUTO_NEG_CONFIG_MODE_DISABLED
+     * @validonly SAI_PORT_ATTR_AUTO_NEG_MODE == true
+     */
+    SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE,
+
+    /**
+     * @brief Enable auto detection between 1000X and SGMII slave mode
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER and SAI_PORT_ATTR_SPEED == 1000
+     */
+    SAI_PORT_ATTR_1000X_SGMII_SLAVE_AUTODETECT,
+
+    /**
+     * @brief Configure Fiber module type
+     *
+     * @type sai_port_module_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_MODULE_TYPE_1000BASE_X
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_FIBER and SAI_PORT_ATTR_SPEED == 1000
+     */
+    SAI_PORT_ATTR_MODULE_TYPE,
+
+    /**
+     * @brief Configure media types for dual media supported PHY
+     *
+     * @type sai_port_dual_media_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_DUAL_MEDIA_NONE
+     */
+    SAI_PORT_ATTR_DUAL_MEDIA,
+
+    /**
+     * @brief Query the Auto Negotiated Resolved FEC
+     *
+     * Auto negotiated FEC status is applicable on Auto Negotiation good state
+     *
+     * @type sai_port_fec_mode_extended_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_AUTO_NEG_FEC_MODE_EXTENDED,
+
+    /**
+     * @brief Configures inter frame gap for an ethernet port
+     *
+     * IPG is mandated by IEEE 802.3 to ensure reliable communication between two Ethernet devices.
+     * The minimum recommended inter-packet gap(IPG) by IEEE 802.3 is 96 bits (12 bytes)
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 96
+     */
+    SAI_PORT_ATTR_IPG,
+
+    /**
+     * @brief Forward or terminate the global flow control(802.3X) frame
+     *
+     * If true, flow control frames are switched between ports.
+     * If false, flow control frames are terminated by the switch.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_FORWARD,
+
+    /**
+     * @brief Forward or terminate the PFC(802.1Qbb) frame
+     *
+     * If true, flow control frames are switched between ports.
+     * If false, flow control frames are terminated by the switch.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_FORWARD,
 
     /**
      * @brief End of attributes

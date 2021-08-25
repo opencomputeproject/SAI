@@ -6,6 +6,7 @@ an
 apache
 APIs
 attr
+attrid
 attrvalue
 AUTONEG
 bool
@@ -28,6 +29,8 @@ egressing
 encap
 enum
 Enum
+ethernet
+Ethernet
 EtherType
 extraparam
 Facebook
@@ -38,6 +41,7 @@ ffff
 FPGAs
 fprintf
 functionalities
+FX
 hitless
 hmac
 Hostif
@@ -156,3 +160,8 @@ watchlist
 wildcard
 Wildcard
 www
+Encaps
+Args
+xconnect
+uA
+uN

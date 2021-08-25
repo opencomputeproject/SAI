@@ -268,118 +268,246 @@ bool sai_metadata_is_object_type_valid(
     return object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_EXTENSIONS_MAX;
 }
 
-bool sai_metadata_is_condition_met(
-        _In_ const sai_attr_metadata_t *metadata,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list)
+static bool sai_metadata_is_condition_value_eq(
+        _In_ sai_attr_value_type_t attrvaluetype,
+        _In_ const sai_attribute_value_t* cvalue,
+        _In_ const sai_attribute_value_t* value)
 {
-    if (metadata == NULL || !metadata->isconditional || attr_list == NULL)
+    if (cvalue == NULL || value == NULL)
     {
         return false;
     }
 
-    size_t idx = 0;
-
-    bool met = (metadata->conditiontype == SAI_ATTR_CONDITION_TYPE_AND);
-
-    for (; idx < metadata->conditionslength; ++idx)
+    switch (attrvaluetype)
     {
-        const sai_attr_condition_t *condition = metadata->conditions[idx];
+        case SAI_ATTR_VALUE_TYPE_BOOL:
+            return cvalue->booldata == value->booldata;
 
+        case SAI_ATTR_VALUE_TYPE_INT8:
+            return cvalue->s8 == value->s8;
+
+        case SAI_ATTR_VALUE_TYPE_INT16:
+            return cvalue->s16 == value->s16;
+
+        case SAI_ATTR_VALUE_TYPE_INT32:
+            return cvalue->s32 == value->s32;
+
+        case SAI_ATTR_VALUE_TYPE_INT64:
+            return cvalue->s64 == value->s64;
+
+        case SAI_ATTR_VALUE_TYPE_UINT8:
+            return cvalue->u8 == value->u8;
+
+        case SAI_ATTR_VALUE_TYPE_UINT16:
+            return cvalue->u16 == value->u16;
+
+        case SAI_ATTR_VALUE_TYPE_UINT32:
+            return cvalue->u32 == value->u32;
+
+        case SAI_ATTR_VALUE_TYPE_UINT64:
+            return cvalue->u64 == value->u64;
+
+        default:
+
+            /*
+             * We should never get here since sanity check tests all
+             * attributes and all conditions.
+             */
+
+            SAI_META_LOG_ERROR("condition value type %d is not supported, FIXME", attrvaluetype);
+
+            return false;
+    }
+}
+
+static bool sai_metadata_is_single_condition_met(
+        _In_ sai_object_type_t objecttype,
+        _In_ const sai_attr_condition_t *condition,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    /*
+     * Conditions may only be on the same object type.
+     *
+     * Default value may not exists if conditional object is marked as
+     * MANDATORY_ON_CREATE.
+     */
+
+    const sai_attr_metadata_t *cmd = sai_metadata_get_attr_metadata(objecttype, condition->attrid);
+
+    const sai_attribute_t *cattr = sai_metadata_get_attr_by_id(condition->attrid, attr_count, attr_list);
+
+    if (cattr == NULL)
+    {
         /*
-         * Conditions may only be on the same object type.
-         *
-         * Default value may not exists if conditional object is marked as
-         * MANDATORY_ON_CREATE.
+         * User didn't passed conditional attribute, so check if there is
+         * default value.
          */
 
-        const sai_attr_metadata_t *cmd = sai_metadata_get_attr_metadata(metadata->objecttype, condition->attrid);
+        return sai_metadata_is_condition_value_eq(cmd->attrvaluetype, &condition->condition, cmd->defaultvalue);
+    }
+    else
+    {
+        return sai_metadata_is_condition_value_eq(cmd->attrvaluetype, &condition->condition, &cattr->value);
+    }
+}
 
-        const sai_attribute_t *cattr = sai_metadata_get_attr_by_id(condition->attrid, attr_count, attr_list);
+static bool sai_metadata_is_and_condition_list_met(
+        _In_ const sai_attr_metadata_t *md,
+        _In_ size_t length,
+        _In_ const sai_attr_condition_t* const* list,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    size_t idx = 0;
 
-        const sai_attribute_value_t* cvalue = NULL;
+    bool met = length > 0;
 
-        if (cattr == NULL)
-        {
-            /*
-             * User didn't passed conditional attribute, so check if there is
-             * default value.
-             */
+    for (; idx < length; ++idx)
+    {
+        const sai_attr_condition_t *condition = list[idx];
 
-            cvalue = cmd->defaultvalue;
-        }
-        else
-        {
-            cvalue = &cattr->value;
-        }
-
-        if (cvalue == NULL)
-        {
-            /*
-             * There is no default value and user didn't passed attribute.
-             */
-
-            if (metadata->conditiontype == SAI_ATTR_CONDITION_TYPE_AND)
-            {
-                return false;
-            }
-
-            continue;
-        }
-
-        bool current = false;
-
-        switch (cmd->attrvaluetype)
-        {
-            case SAI_ATTR_VALUE_TYPE_BOOL:
-                current = (condition->condition.booldata == cvalue->booldata);
-                break;
-            case SAI_ATTR_VALUE_TYPE_INT8:
-                current = (condition->condition.s8 == cvalue->s8);
-                break;
-            case SAI_ATTR_VALUE_TYPE_INT16:
-                current = (condition->condition.s16 == cvalue->s16);
-                break;
-            case SAI_ATTR_VALUE_TYPE_INT32:
-                current = (condition->condition.s32 == cvalue->s32);
-                break;
-            case SAI_ATTR_VALUE_TYPE_INT64:
-                current = (condition->condition.s64 == cvalue->s64);
-                break;
-            case SAI_ATTR_VALUE_TYPE_UINT8:
-                current = (condition->condition.u8 == cvalue->u8);
-                break;
-            case SAI_ATTR_VALUE_TYPE_UINT16:
-                current = (condition->condition.u16 == cvalue->u16);
-                break;
-            case SAI_ATTR_VALUE_TYPE_UINT32:
-                current = (condition->condition.u32 == cvalue->u32);
-                break;
-            case SAI_ATTR_VALUE_TYPE_UINT64:
-                current = (condition->condition.u64 == cvalue->u64);
-                break;
-
-            default:
-
-                /*
-                 * We should never get here since sanity check tests all
-                 * attributes and all conditions.
-                 */
-
-                SAI_META_LOG_ERROR("condition value type %d is not supported, FIXME", cmd->attrvaluetype);
-
-                return false;
-        }
-
-        if (metadata->conditiontype == SAI_ATTR_CONDITION_TYPE_AND)
-        {
-            met &= current;
-        }
-        else /* OR */
-        {
-            met |= current;
-        }
+        met &= sai_metadata_is_single_condition_met(md->objecttype, condition, attr_count, attr_list);
     }
 
     return met;
+}
+
+static bool sai_metadata_is_or_condition_list_met(
+        _In_ const sai_attr_metadata_t *md,
+        _In_ size_t length,
+        _In_ const sai_attr_condition_t* const* list,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    size_t idx = 0;
+
+    bool met = false;
+
+    for (; idx < length; ++idx)
+    {
+        const sai_attr_condition_t *condition = list[idx];
+
+        met |= sai_metadata_is_single_condition_met(md->objecttype, condition, attr_count, attr_list);
+    }
+
+    return met;
+}
+
+#define STACK_PUSH(val) stack[stack_size++] = (val)
+#define STACK_POP() stack[--stack_size]
+
+static bool sai_metadata_is_mixed_condition_list_met(
+        _In_ const sai_attr_metadata_t *md,
+        _In_ size_t length,
+        _In_ const sai_attr_condition_t* const* list,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    int stack_size = 0;
+
+    bool stack[SAI_METADATA_MAX_CONDITIONS_LEN];
+
+    size_t idx = 0;
+
+    for (; idx < length; idx++)
+    {
+        const sai_attr_condition_t* c = list[idx];
+
+        if (c->type == SAI_ATTR_CONDITION_TYPE_NONE)
+        {
+            bool value = sai_metadata_is_single_condition_met(md->objecttype, c, attr_count, attr_list);
+
+            STACK_PUSH(value);
+        }
+        else if (c->type == SAI_ATTR_CONDITION_TYPE_AND)
+        {
+            bool a = STACK_POP();
+            bool b = STACK_POP();
+
+            STACK_PUSH(a & b);
+        }
+        else if (c->type == SAI_ATTR_CONDITION_TYPE_OR)
+        {
+            bool a = STACK_POP();
+            bool b = STACK_POP();
+
+            STACK_PUSH(a | b);
+        }
+        else
+        {
+            SAI_META_LOG_ERROR("%s: wrong condition type on list: %d", md->attridname, c->type);
+            return false;
+        }
+    }
+
+    bool value = STACK_POP();
+
+    if (stack_size)
+    {
+        SAI_META_LOG_ERROR("FATAL %s: stack not empty after condition list check, RPN condition logic is BROKEN", md->attridname);
+        return false;
+    }
+
+    return value;
+}
+
+bool sai_metadata_is_condition_met(
+        _In_ const sai_attr_metadata_t *md,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    /* attr list can be NULL, condtion could be based on default value */
+
+    if (md == NULL || !md->isconditional)
+    {
+        return false;
+    }
+
+    switch (md->conditiontype)
+    {
+        case SAI_ATTR_CONDITION_TYPE_AND:
+            return sai_metadata_is_and_condition_list_met(md, md->conditionslength, md->conditions, attr_count, attr_list);
+
+        case SAI_ATTR_CONDITION_TYPE_OR:
+            return sai_metadata_is_or_condition_list_met(md, md->conditionslength, md->conditions, attr_count, attr_list);
+
+        case SAI_ATTR_CONDITION_TYPE_MIXED:
+            return sai_metadata_is_mixed_condition_list_met(md, md->conditionslength, md->conditions, attr_count, attr_list);
+
+        default:
+            SAI_META_LOG_ERROR("condition type %d on %s is not supported yet, FIXME", md->conditiontype, md->attridname);
+            return false;
+    }
+}
+
+bool sai_metadata_is_validonly_met(
+        _In_ const sai_attr_metadata_t *md,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list)
+{
+    /* attr list can be NULL, condtion could be based on default value */
+
+    if (md == NULL || !md->isvalidonly)
+    {
+        return false;
+    }
+
+    switch (md->validonlytype)
+    {
+        case SAI_ATTR_CONDITION_TYPE_AND:
+            return sai_metadata_is_and_condition_list_met(md, md->validonlylength, md->validonly, attr_count, attr_list);
+
+        case SAI_ATTR_CONDITION_TYPE_OR:
+            return sai_metadata_is_or_condition_list_met(md, md->validonlylength, md->validonly, attr_count, attr_list);
+
+        case SAI_ATTR_CONDITION_TYPE_MIXED:
+            return sai_metadata_is_mixed_condition_list_met(md, md->validonlylength, md->validonly, attr_count, attr_list);
+
+        default:
+            SAI_META_LOG_ERROR("validonly type %d on %s is not supported yet, FIXME", md->validonlytype, md->attridname);
+            return false;
+    }
+
+    return false;
 }
