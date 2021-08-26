@@ -190,6 +190,7 @@ sub CheckHash
             next if $key eq "SAI_ACL_TABLE_ATTR_FIELD_END";
             next if $key eq "SAI_ACL_ENTRY_ATTR_FIELD_END";
             next if $key eq "SAI_ACL_ENTRY_ATTR_ACTION_END";
+            next if $key eq "SAI_OBJECT_TYPE_MAX";
 
             # NOTE: some other attributes/enum with END range could be added
         }
