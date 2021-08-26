@@ -31,6 +31,12 @@ use diagnostics;
 
 use File::Temp qw/ tempfile /;
 use Data::Dumper;
+use Getopt::Std;
+
+my %options = ();
+getopts("s", \%options);
+
+my $optionSkipSingleDefined = 1 if defined $options{s};
 
 use utils;
 
@@ -176,9 +182,28 @@ sub CheckHash
 
     for my $key (sort keys %A)
     {
+        if (defined $optionSkipSingleDefined)
+        {
+            # ignore attributes end, since those will shift
+            next if $key =~ /^SAI_\w+_ATTR_END$/;
+
+            next if $key eq "SAI_ACL_TABLE_ATTR_FIELD_END";
+            next if $key eq "SAI_ACL_ENTRY_ATTR_FIELD_END";
+            next if $key eq "SAI_ACL_ENTRY_ATTR_ACTION_END";
+
+            # NOTE: some other attributes/enum with END range could be added
+        }
+
         if (not defined $B{$key})
         {
-            LogError "enum $key only defined in $A{$key}{path}:$A{$key}{nr}";
+            if (not defined $optionSkipSingleDefined)
+            {
+                LogError "enum $key only defined in $A{$key}{path}:$A{$key}{nr}"
+            }
+            else
+            {
+                LogInfo "enum $key only defined in $A{$key}{path}:$A{$key}{nr}"
+            }
             next;
         }
 

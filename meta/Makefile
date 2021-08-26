@@ -80,6 +80,7 @@ SYMBOLS = $(OBJ:=.symbols)
 
 all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
 	./checkheaders.pl ../inc ../inc
+	./checkenumlock.sh
 	./saimetadatatest >/dev/null
 	./saiserializetest >/dev/null
 	./saisanitycheck

@@ -4988,7 +4988,7 @@ void check_get_attr_metadata()
 
 void check_acl_user_defined_field()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     META_ASSERT_TRUE(SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE > 0, "should be positive");
 
@@ -5001,14 +5001,14 @@ void check_acl_user_defined_field()
 
 void check_label_size()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     META_ASSERT_TRUE(sizeof(sai_label_id_t) == sizeof(uint32_t), "label is expected to be 32 bit");
 }
 
 void check_switch_notify_list()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     size_t i;
 
@@ -5024,7 +5024,7 @@ void check_switch_notify_list()
 
 void check_switch_pointers_list()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     size_t i;
 
@@ -5040,7 +5040,7 @@ void check_switch_pointers_list()
 
 void check_defines()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     /*
      * Check if defines are equal to their static values.
@@ -5052,7 +5052,7 @@ void check_defines()
 
 void check_object_type_attributes()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     size_t i = 0;
 
