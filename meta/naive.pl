@@ -104,11 +104,6 @@ sub ProcessSingleHeader
             $init =~ s/^\s*=\s*/= /;      # remove assigner
             $init =~ s/\s*,\s*$//;      # remove comma
 
-            # TODO remove
-            $enumName = "SAI_HOSTIF_TABLE_ENTRY_ATTR_START" if $currentEnum eq "sai_hostif_table_entry_attr_t" and $enumName eq "SAI_HOSTIF_ATTR_START";
-            $init = "= SAI_HOSTIF_TABLE_ENTRY_ATTR_START" if $currentEnum eq "sai_hostif_table_entry_attr_t" and $init eq "= SAI_HOSTIF_ATTR_START";
-
-            # print "$enumName, $currentEnum, $init\n";
             push @{ $SAI_ENUMS{$currentEnum}->{values} }, $enumName;
             push @{ $SAI_ENUMS{$currentEnum}->{inits} }, $init;
 
@@ -131,9 +126,6 @@ sub ProcessHeaders
 
         ProcessSingleHeader "temp/commit-$commit/inc/$header";
     }
-
-    # print Dumper \%IGNORED;
-    # print Dumper \%SAI_ENUMS;
 }
 
 sub ProcessAllEnumInitializers
@@ -153,8 +145,6 @@ sub BuildCommitHistory
 {
     my $commit = shift;
 
-    #print Dumper \%SAI_ENUMS;
-
     for my $enumTypeName (sort keys %SAI_ENUMS)
     {
         LogDebug $enumTypeName;
@@ -170,9 +160,11 @@ sub BuildCommitHistory
             my $enumValue = $ini_ref->[$idx];
 
             # CheckAllEnumsEndings make sure _START match _END
+
             next if $enumName =~ /_START$/;
             next if $enumName =~ /_END$/;
             next if $enumName =~ /_RANGE_BASE$/;
+
             next if $enumName eq "SAI_API_MAX";
             next if $enumName eq "SAI_OBJECT_TYPE_MAX";
 
@@ -210,9 +202,6 @@ sub BuildCommitHistory
             }
             else
             {
-                # TODO remove, ignore stats errors for now
-                next if $enumTypeName =~ /_stat_t$/;
-
                 LogError "check ! $enumName value is $enumValue, but on was $HISTORY{$enumTypeName}{$enumName}{value} on commit $HISTORY{$enumTypeName}{$enumName}{commit}";
 
                 $HISTORY{$enumTypeName}{$enumName}{value} = $enumValue;
@@ -245,13 +234,9 @@ for my $commit (@ARGV)
 
     ProcessAllEnumInitializers();
 
-    #print Dumper \%SAI_ENUMS;
+    # print Dumper \%SAI_ENUMS;
 
     BuildCommitHistory $commit;
 }
-
-# TODO mozna by stworzyc exceptiony per commit i nazwy enumow w razie jak sie zacommituje
-# 2 PR ktore przeszly ale pozniej maja zle numery enumow i nastepny PR sie nie bedzie commitowal
-# to taki enum bedzeie mozna dodac per commit jako exception
 
 ExitOnErrorsOrWarnings();
