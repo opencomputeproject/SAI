@@ -537,7 +537,7 @@ sub ProcessEnumInitializers
 
     return if $after eq $before;
 
-    LogInfo "Need sort initalizers for $enumTypeName";
+    LogDebug "Need sort initalizers for $enumTypeName";
 
     @$arr_ref = ();
 

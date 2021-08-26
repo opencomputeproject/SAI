@@ -18,20 +18,20 @@
 #    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 #    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
 #
-# @file    ancestry.sh
+# @file    checkancestry.sh
 #
 # @brief   This module defines ancestry script
 #
 
 
-# to list git ancestry all comitts (even if there is a tree not single line)
-# this can bu usefull to build histroy of enums from root (enum lock) to the current
-# origin/master and current commit - and it will be possible to fix mistakes
+# To list git ancestry all comitts (even if there is a tree not single line)
+# this can be usefull to build histroy of enums from root (enum lock) to the
+# current origin/master and current commit - and it will be possible to fix
+# mistakes.
 
 # examples below are to show how to get correct git history tree
 # git log --graph --oneline --ancestry-path c388490^..0b90765 | cat
 # git rev-list --ancestry-path  c388490^..0b90765
-
 
 # If we will have our base commit, we will assume that each previous commit
 # followed metadata check, and then we can use naive approach for parsing enum
@@ -43,15 +43,15 @@
 # validation but after they will be merged they could potentially cause enum
 # value issue and this approach will catch that.
 #
-# working throug 25 commits takes about 0.4 seconds + parsing
-# so it seems like not a hudge time to make sure all commits are safe
-# and even if we get at some point that this will be "too slow", having all
-# history, we can sometimes produce "known" history with enum values and keep
-# that file as a reference and load it at begin, and start checking commits from
-# one of the future commits, basicially reducing processing time to zero
+# Working throug 25 commits takes about 0.4 seconds + parsing so it seems like
+# not a hudge time to make sure all commits are safe and even if we get at some
+# point that this will be "too slow", having all history, we can sometimes
+# produce "known" history with enum values and keep that file as a reference
+# and load it at begin, and start checking commits from one of the future
+# commits, basicially reducing processing time to zero.
 
-# just for sanity we can also keep headers check to 1 commit back and
-# alse maybe we can add one gcc check current to history
+# Just for sanity we can also keep headers check to 1 commit back and alse
+# maybe we can add one gcc check current to history,
 
 set -e
 
@@ -91,29 +91,22 @@ function create_commit_list()
 
     echo "git rev list from $begin to $end"
 
-    # TODO remove head limit
-
     LIST=$(git rev-list --ancestry-path ${begin}^..${end} | xargs -n 1 git rev-parse --short | tac)
 }
 
 function check_enum_history()
 {
-    perl naive.pl $LIST
+    perl ancestry.pl $LIST
 }
 
 #
 # MAIN
 #
 
-BEGIN_COMMIT=65f04ab
-#BEGIN_COMMIT=5a98bc3
-#BEGIN_COMMIT=ec7e055
-#END_COMMIT=1eb6df8
-#END_COMMIT=origin/master
-#END_COMMIT=HEAD
-#END_COMMIT=2cc5ba0
-#END_COMMIT=5254200
-END_COMMIT=origin/master
+# BEGIN_COMMIT is the commit from we want enums to be backward compatible
+
+BEGIN_COMMIT=3132018
+END_COMMIT=HEAD
 
 clean_temp_dir
 create_temp_dir

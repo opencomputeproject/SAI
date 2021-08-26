@@ -18,9 +18,9 @@
 #    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 #    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
 #
-# @file    naive.pl
+# @file    ancestry.pl
 #
-# @brief   This module defines SAI Metadata Parser
+# @brief   This module defines enum ancestry check for SAI headers
 #
 
 BEGIN { push @INC,'.'; }
@@ -35,6 +35,7 @@ use Data::Dumper;
 use utils;
 
 my %options = ();
+
 getopts("dsASl", \%options);
 
 our $optionPrintDebug        = 1 if defined $options{d};
