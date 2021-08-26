@@ -1036,8 +1036,8 @@ typedef enum _sai_port_attr_t
      * @brief Port bind point for ingress ACL object
      *
      * Bind (or unbind) an ingress ACL table or ACL group on a port.
-     * Enable/Update ingress ACL table or ACL group filtering by assigning the
-     * list of valid object id. Disable ingress filtering by assigning
+     * Enable/Update ingress ACL table or ACL group filtering by assigning
+     * a valid object id. Disable ingress filtering by assigning
      * SAI_NULL_OBJECT_ID in the attribute value.
      *
      * @type sai_object_id_t
@@ -1052,8 +1052,8 @@ typedef enum _sai_port_attr_t
      * @brief Port bind point for egress ACL object
      *
      * Bind (or unbind) an egress ACL tables or ACL group on a port.
-     * Enable/Update egress ACL table or ACL group filtering by assigning the
-     * list of valid object id. Disable egress filtering by assigning
+     * Enable/Update egress ACL table or ACL group filtering by assigning
+     * a valid object id. Disable egress filtering by assigning
      * SAI_NULL_OBJECT_ID in the attribute value.
      *
      * @type sai_object_id_t
@@ -1068,8 +1068,8 @@ typedef enum _sai_port_attr_t
      * @brief Port bind point for ingress MACsec ACL object
      *
      * Bind (or unbind) an ingress MACsec ACL table on a port.
-     * Enable/Update ingress MACsec ACL table filtering by assigning the
-     * list of valid object id. Disable ingress filtering by assigning
+     * Enable/Update ingress MACsec ACL table filtering by assigning
+     * a valid object id. Disable ingress filtering by assigning
      * SAI_NULL_OBJECT_ID in the attribute value.
      *
      * @type sai_object_id_t
@@ -1084,8 +1084,8 @@ typedef enum _sai_port_attr_t
      * @brief Port bind point for egress MACsec ACL object
      *
      * Bind (or unbind) an egress MACsec ACL tables on a port.
-     * Enable/Update egress MACsec ACL table filtering by assigning the
-     * list of valid object id. Disable egress filtering by assigning
+     * Enable/Update egress MACsec ACL table filtering by assigning
+     * a valid object id. Disable egress filtering by assigning
      * SAI_NULL_OBJECT_ID in the attribute value.
      *
      * @type sai_object_id_t

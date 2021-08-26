@@ -80,6 +80,8 @@ SYMBOLS = $(OBJ:=.symbols)
 
 all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
 	./checkheaders.pl ../inc ../inc
+	./checkenumlock.sh
+	./checkancestry.sh
 	./saimetadatatest >/dev/null
 	./saiserializetest >/dev/null
 	./saisanitycheck
@@ -139,4 +141,4 @@ clean:
 	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols
 	rm -f saimetadata.h saimetadata.c saimetadatatest.c
 	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen
-	rm -rf xml html dist
+	rm -rf xml html dist temp
