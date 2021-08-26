@@ -2576,6 +2576,47 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SLAVE_MDIO_ADDR_LIST,
 
     /**
+     * @brief Minimum priority for My MAC
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MY_MAC_TABLE_MINIMUM_PRIORITY,
+
+    /**
+     * @brief Maximum priority for My MAC
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MY_MAC_TABLE_MAXIMUM_PRIORITY,
+
+    /**
+     * @brief My MAC entries installed on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_MY_MAC
+     */
+    SAI_SWITCH_ATTR_MY_MAC_LIST,
+
+    /**
+     * @brief Number of My MAC entries installed on the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_INSTALLED_MY_MAC_ENTRIES,
+
+    /**
+     * @brief Number of available My MAC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_MY_MAC_ENTRIES,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
