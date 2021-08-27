@@ -34,7 +34,7 @@ CTYPESGEN = /usr/local/bin/ctypesgen.py
 endif
 LIBS = -lthrift -lpthread
 ifeq ($(platform),vs)
-LIBS += -lsaivs -lsaimeta -lsaimetadata
+LIBS += -lsaivs -lsaimeta -lsaimetadata -lzmq
 else
 LIBS += -lsai
 endif
