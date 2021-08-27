@@ -2005,6 +2005,34 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_FORWARD,
 
     /**
+     * @brief Enable DSCP -> Forwarding Class MAP on port
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_DSCP_TO_FORWARDING_CLASS_MAP,
+
+    /**
+     * @brief Enable EXP -> Forwarding Class MAP on port
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_MPLS_EXP_TO_FORWARDING_CLASS_MAP,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
