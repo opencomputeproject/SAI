@@ -5220,9 +5220,15 @@ void check_sai_version()
 
     /* SAI_VERSION uses 100 base for each component, so each define must not exceed this value */
 
-    META_ASSERT_TRUE((SAI_MAJOR) >= 0 && (SAI_MAJOR) < 100, "invalid SAI_MAJOR version: %d", (SAI_MAJOR));
-    META_ASSERT_TRUE((SAI_MINOR) >= 0 && (SAI_MINOR) < 100, "invalid SAI_MINOR version: %d", (SAI_MINOR));
-    META_ASSERT_TRUE((SAI_REVISION) >= 0 && (SAI_REVISION) < 100, "invalid SAI_REVISION version: %d", (SAI_REVISION));
+    /* Make sure sai version components are assignable to uint32_t */
+
+    uint32_t major = SAI_MAJOR;
+    uint32_t minor = SAI_MINOR;
+    uint32_t revision = SAI_REVISION;
+
+    META_ASSERT_TRUE((major) < 100, "invalid SAI_MAJOR version: %d", (SAI_MAJOR));
+    META_ASSERT_TRUE((minor) < 100, "invalid SAI_MINOR version: %d", (SAI_MINOR));
+    META_ASSERT_TRUE((revision) < 100, "invalid SAI_REVISION version: %d", (SAI_REVISION));
 }
 
 void check_max_conditions_len()
