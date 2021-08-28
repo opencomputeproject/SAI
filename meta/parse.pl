@@ -3994,6 +3994,28 @@ sub CreateNotificationEnum
     CreateEnumHelperMethod("sai_switch_notification_type_t");
 }
 
+sub CreateNotificationNames
+{
+    #
+    # create notification names to have string representation
+    #
+
+    WriteSectionComment "SAI notifications names";
+
+    for my $name (sort keys %NOTIFICATIONS)
+    {
+        if (not $name =~ /^sai_(\w+)_notification_fn/)
+        {
+            LogWarning "notification function '$name' is not ending on _notification_fn";
+            next;
+        }
+
+        $name = uc $1;
+
+        WriteHeader "#define SAI_SWITCH_NOTIFICATION_NAME_$name \"$1\"";
+    }
+}
+
 sub CreateSwitchNotificationAttributesList
 {
     #
@@ -4604,6 +4626,8 @@ CheckAllEnumsEndings();
 CreateNotificationStruct();
 
 CreateNotificationEnum();
+
+CreateNotificationNames();
 
 CreateSwitchNotificationAttributesList();
 
