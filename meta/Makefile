@@ -138,7 +138,7 @@ saidepgraph.svg: saidepgraph.gv
 .PHONY: clean
 
 clean:
-	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols
+	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db
 	rm -f saimetadata.h saimetadata.c saimetadatatest.c
 	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen
 	rm -rf xml html dist temp
