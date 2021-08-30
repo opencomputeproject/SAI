@@ -70,6 +70,7 @@ L2 - Layer 2
 L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
+LDP - Label Distribution Protocol
 LPM - Longest Prefix Match
 LSP - Label Switched Path
 MAC - Medium Access Control

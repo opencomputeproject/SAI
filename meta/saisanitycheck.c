@@ -5022,7 +5022,7 @@ void check_get_attr_metadata()
 
 void check_acl_user_defined_field()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     META_ASSERT_TRUE(SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE > 0, "should be positive");
 
@@ -5035,14 +5035,14 @@ void check_acl_user_defined_field()
 
 void check_label_size()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     META_ASSERT_TRUE(sizeof(sai_label_id_t) == sizeof(uint32_t), "label is expected to be 32 bit");
 }
 
 void check_switch_notify_list()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     size_t i;
 
@@ -5058,7 +5058,7 @@ void check_switch_notify_list()
 
 void check_switch_pointers_list()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     size_t i;
 
@@ -5074,7 +5074,7 @@ void check_switch_pointers_list()
 
 void check_defines()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     /*
      * Check if defines are equal to their static values.
@@ -5086,7 +5086,7 @@ void check_defines()
 
 void check_object_type_attributes()
 {
-    SAI_META_LOG_ENTER();
+    META_LOG_ENTER();
 
     size_t i = 0;
 
@@ -5254,9 +5254,15 @@ void check_sai_version()
 
     /* SAI_VERSION uses 100 base for each component, so each define must not exceed this value */
 
-    META_ASSERT_TRUE((SAI_MAJOR) >= 0 && (SAI_MAJOR) < 100, "invalid SAI_MAJOR version: %d", (SAI_MAJOR));
-    META_ASSERT_TRUE((SAI_MINOR) >= 0 && (SAI_MINOR) < 100, "invalid SAI_MINOR version: %d", (SAI_MINOR));
-    META_ASSERT_TRUE((SAI_REVISION) >= 0 && (SAI_REVISION) < 100, "invalid SAI_REVISION version: %d", (SAI_REVISION));
+    /* Make sure sai version components are assignable to uint32_t */
+
+    uint32_t major = SAI_MAJOR;
+    uint32_t minor = SAI_MINOR;
+    uint32_t revision = SAI_REVISION;
+
+    META_ASSERT_TRUE((major) < 100, "invalid SAI_MAJOR version: %d", (SAI_MAJOR));
+    META_ASSERT_TRUE((minor) < 100, "invalid SAI_MINOR version: %d", (SAI_MINOR));
+    META_ASSERT_TRUE((revision) < 100, "invalid SAI_REVISION version: %d", (SAI_REVISION));
 }
 
 void check_max_conditions_len()
@@ -5264,6 +5270,19 @@ void check_max_conditions_len()
     META_LOG_ENTER();
 
     META_ASSERT_TRUE(SAI_METADATA_MAX_CONDITIONS_LEN > 0, "must be positive");
+}
+
+void check_object_type_extension_max_value()
+{
+    META_LOG_ENTER();
+
+    /*
+     * It can be handy for vendors to encode object type value on single byte
+     * in every object it for easy object identification. We assume that we
+     * will have no more than 255 objec types on SAI right now.
+     */
+
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_EXTENSIONS_MAX < 256, "max object type can be 255 to be encoded on single byte");
 }
 
 int main(int argc, char **argv)
@@ -5308,6 +5327,7 @@ int main(int argc, char **argv)
     check_all_enums();
     check_sai_version();
     check_max_conditions_len();
+    check_object_type_extension_max_value();
 
     SAI_META_LOG_DEBUG("log test");
 

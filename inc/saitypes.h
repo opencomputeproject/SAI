@@ -279,7 +279,8 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_FINE_GRAINED_HASH_FIELD  = 94,
     SAI_OBJECT_TYPE_SWITCH_TUNNEL            = 95,
     SAI_OBJECT_TYPE_MY_SID_ENTRY             = 96,
-    SAI_OBJECT_TYPE_P4EXT_ENTRY              = 97,
+    SAI_OBJECT_TYPE_MY_MAC                   = 97,
+    SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP       = 98,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
@@ -653,6 +654,7 @@ typedef enum _sai_packet_color_t
  * dot1p/DSCP/MPLS_EXP --> TC
  * dot1p/DSCP/MPLS_EXP --> Color
  * dot1p/DSCP/MPLS_EXP --> TC + Color
+ * DSCP/MPLS_EXP --> FC
  * TC --> dot1p/DSCP/MPLS_EXP.
  * TC + color --> dot1p/DSCP/MPLS_EXP.
  * TC --> Egress Queue.
@@ -685,6 +687,9 @@ typedef struct _sai_qos_map_params_t
 
     /** MPLS exp value */
     sai_uint8_t mpls_exp;
+
+    /** Forwarding class */
+    sai_uint8_t fc;
 
 } sai_qos_map_params_t;
 
@@ -1039,6 +1044,7 @@ typedef struct _sai_system_port_config_t
 
     /** Number of Virtual Output Queues associated with the system port */
     uint32_t num_voq;
+
 } sai_system_port_config_t;
 
 /**

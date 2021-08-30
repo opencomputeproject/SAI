@@ -1024,12 +1024,22 @@ sub CheckHeadersStyle
                 LogWarning "missing empty line before: $header $n: $line";
             }
 
+            if ($line =~ /_(In|Out|Inout)_.+(\* | \* )/)
+            {
+                LogWarning "move * to the right of parameter: $header $n: $line";
+            }
+
             if ($line =~ /\*.*SAI_.+(==|!=)/ and not $line =~ /\@(condition|validonly)/)
             {
                 if (not $line =~ /(condition|validonly|valid when|only when)\s+SAI_/i)
                 {
                     LogWarning "condition should be preceded by 'valid when' or 'only when': $header $n: $line";
                 }
+            }
+
+            if ($line =~ /__/ and not $line =~ /^#.+__SAI\w*_H_|VA_ARGS|BOOL_DEFINED/)
+            {
+                LogWarning "double underscore detected: $header $n: $line";
             }
 
             if ($line eq "" and $prev =~ /{/)
