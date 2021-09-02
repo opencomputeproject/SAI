@@ -104,7 +104,7 @@ typedef enum _sai_ipmc_group_member_attr_t
     SAI_IPMC_GROUP_MEMBER_ATTR_END,
 
     /** Custom range base value */
-    SAI_IPMC_GROUP_MEMBER_ATTR_CUSTOM_RANGE_START  = 0x10000000,
+    SAI_IPMC_GROUP_MEMBER_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
     SAI_IPMC_GROUP_MEMBER_ATTR_CUSTOM_RANGE_END
