@@ -274,7 +274,7 @@ typedef enum _sai_tam_event_threshold_unit_t
     /**
      * @brief Event threshold unit nanosecond
      */
-    SAI_TAM_EVENT_THRESHOLD_UNIT_NANOSEC = 0,
+    SAI_TAM_EVENT_THRESHOLD_UNIT_NANOSEC,
 
     /**
      * @brief Event threshold unit micro second
@@ -1168,7 +1168,7 @@ typedef enum _sai_tam_report_type_t
 typedef enum _sai_tam_report_mode_t
 {
     /** Report all events */
-    SAI_TAM_REPORT_MODE_ALL = 0,
+    SAI_TAM_REPORT_MODE_ALL,
 
     /** Report in a bulk mode */
     SAI_TAM_REPORT_MODE_BULK,
@@ -1331,7 +1331,7 @@ typedef enum _sai_tam_reporting_unit_t
     /**
      * @brief Report Unit second
      */
-    SAI_TAM_REPORTING_UNIT_SEC = 0,
+    SAI_TAM_REPORTING_UNIT_SEC,
 
     /**
      * @brief Report unit minute
