@@ -53,6 +53,12 @@ as a finite set of actions. Actions operate over packet metadata and header fiel
 action parameters as inputs. The match action paradigm for data plane description is described in detail at
 [P4-16 Spec | Tables](https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html#sec-tables)
 
+# SAI Pipeline #
+As mentioned in the Object Dependencies Section, this proposal does not specify the location of the new P4 Extension
+Tables in the SAI Pipeline. A high-level view of the SAI pipeline with the SAI P4 Extension Tables is show
+below.
+![SAI Pipeline](images/sai_p4_ext_pipeline.png "SAI pipeline")
+
 # API Specification #
 This section describes SAI P4 Extension API Proposal
 
