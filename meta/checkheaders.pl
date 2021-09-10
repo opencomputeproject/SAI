@@ -187,6 +187,7 @@ sub CheckHash
             # ignore attributes end, since those will shift
             next if $key =~ /^SAI_\w+_ATTR_END$/;
 
+            next if $key eq "SAI_IN_DROP_REASON_END";
             next if $key eq "SAI_ACL_TABLE_ATTR_FIELD_END";
             next if $key eq "SAI_ACL_ENTRY_ATTR_FIELD_END";
             next if $key eq "SAI_ACL_ENTRY_ATTR_ACTION_END";
