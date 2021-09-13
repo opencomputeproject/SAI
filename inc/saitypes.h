@@ -281,6 +281,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_MY_SID_ENTRY             = 96,
     SAI_OBJECT_TYPE_MY_MAC                   = 97,
     SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP       = 98,
+    SAI_OBJECT_TYPE_P4EXT_ENTRY              = 99,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
