@@ -1823,7 +1823,8 @@ void check_attr_key(
 
             case SAI_ATTR_VALUE_TYPE_INT8_LIST:
 
-                if (md->objecttype == SAI_OBJECT_TYPE_P4EXT_ENTRY)
+                if ((md->objecttype == SAI_OBJECT_TYPE_P4EXT_ENTRY)
+                        && ((md->attrid == SAI_P4EXT_ENTRY_ATTR_TABLE_ID) || (md->attrid == SAI_P4EXT_ENTRY_ATTR_MATCH_FIELD_ID)))
                 {
                     /*
                      * This is special case when TABLE_ID and MATCH_FIELD_ID are actual KEYs for P4 Extension object.
@@ -4979,7 +4980,7 @@ void check_graph_connected()
              * independent of other SAI objects.
              */
 
-            META_LOG_WARN("p4ext entry  object %s is disconnected from graph",
+            META_LOG_WARN("p4ext entry object %s is disconnected from graph",
                     sai_metadata_all_object_type_infos[i]->objecttypename);
 
             continue;
