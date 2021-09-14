@@ -1367,6 +1367,13 @@ void test_serialize_notifications()
     ret = "{\"count\":1,\"data\":[{\"port_id\":\"oid:0x0\",\"port_state\":\"SAI_PORT_OPER_STATUS_UNKNOWN\"}]}";
     ASSERT_STR_EQ(buf, ret , res);
 
+    sai_switch_ser_info_t data3;
+    memset(&data3, 0, sizeof(data3));
+
+    res = sai_serialize_switch_ser_event_notification(buf, 1, &data3);
+    ret = "{\"count\":1,\"data\":[{\"time\":0,\"flags\":0,\"soft_error_type\":\"SAI_SWITCH_SOFT_ERROR_TYPE_UNKNOWN\",\"correction_type\":\"SAI_SWITCH_CORRECTION_TYPE_NO_ACTION\"}]}";
+    ASSERT_STR_EQ(buf, ret, res);
+
     sai_queue_deadlock_notification_data_t data2;
     memset(&data2, 0, sizeof(data2));
 
