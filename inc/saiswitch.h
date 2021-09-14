@@ -401,6 +401,37 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
 } sai_tunnel_decap_ecn_mode_t;
 
 /**
+ * @brief SAI switch soft error recovery error type.
+ */
+typedef enum _sai_switch_soft_error_type_t
+{
+    /**
+     * @brief Unknown error type
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_UNKNOWN = 0,
+
+    /**
+     * @brief Parity error
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_PARITY = 1,
+
+    /**
+     * @brief ECC single bit error
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_ECC_SINGLE_BIT = 2,
+
+    /**
+     * @brief ECC double bit error
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_ECC_DOUBLE_BIT = 3,
+
+    /**
+     * @brief All soft error types
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_ALL = 4
+} sai_switch_soft_error_type_t;
+
+/**
  * @brief Defines tunnel attributes at switch level.
  * SAI_OBJECT_TYPE_SWITCH_TUNNEL object provides
  * per tunnel type global configuration.
