@@ -1037,6 +1037,11 @@ sub CheckHeadersStyle
                 }
             }
 
+            if ($line =~ /SAI_\w+ \s+=\s+(0x|S)/)
+            {
+                LogWarning "too many spaces before '=' $header:$n: $line"
+            }
+
             if ($line =~ /__/ and not $line =~ /^#.+__SAI\w*_H_|VA_ARGS|BOOL_DEFINED/)
             {
                 LogWarning "double underscore detected: $header $n: $line";

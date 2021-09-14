@@ -39,7 +39,7 @@
 typedef enum _sai_bfd_session_type_t
 {
     /** Demand Active Mode */
-    SAI_BFD_SESSION_TYPE_DEMAND_ACTIVE = 0,
+    SAI_BFD_SESSION_TYPE_DEMAND_ACTIVE,
 
     /** Demand Passive Mode */
     SAI_BFD_SESSION_TYPE_DEMAND_PASSIVE,
@@ -58,7 +58,7 @@ typedef enum _sai_bfd_session_type_t
 typedef enum _sai_bfd_session_offload_type_t
 {
     /** No Offload: No offload supported */
-    SAI_BFD_SESSION_OFFLOAD_TYPE_NONE = 0,
+    SAI_BFD_SESSION_OFFLOAD_TYPE_NONE,
 
     /** Full Offload: both session establishment and sustenance */
     SAI_BFD_SESSION_OFFLOAD_TYPE_FULL,

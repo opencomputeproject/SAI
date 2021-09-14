@@ -464,9 +464,9 @@ void test_serialize_enum()
 
     ASSERT_STR_EQ(buf, "-1", res);
 
-    res = sai_serialize_enum(buf, &sai_metadata_enum_sai_object_type_t, 100);
+    res = sai_serialize_enum(buf, &sai_metadata_enum_sai_object_type_t, 128);
 
-    ASSERT_STR_EQ(buf, "100", res);
+    ASSERT_STR_EQ(buf, "128", res);
 
     /* test all enums */
 

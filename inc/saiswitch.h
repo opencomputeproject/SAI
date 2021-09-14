@@ -905,7 +905,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for ingress ACL object
      *
      * Bind (or unbind) an ingress ACL table or ACL group globally. Enable/Update
-     * ingress ACL table or ACL group filtering by assigning the list of valid
+     * ingress ACL table or ACL group filtering by assigning a valid
      * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -921,7 +921,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for egress ACL object
      *
      * Bind (or unbind) an egress ACL tables or ACL group globally. Enable/Update
-     * egress ACL table or ACL group filtering by assigning the list of valid
+     * egress ACL table or ACL group filtering by assigning a valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -1590,7 +1590,7 @@ typedef enum _sai_switch_attr_t
      * @brief Enable DSCP -> TC MAP on switch.
      *
      * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disable trust DSCP, Map ID should be added/removed on port.
+     * To enable/disable trust DSCP, Map ID should be added/removed on switch.
      * Default no map.
      *
      * @type sai_object_id_t
@@ -2521,7 +2521,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for Pre-ingress ACL object
      *
      * Bind (or unbind) an Pre-ingress ACL table or ACL group globally. Enable/Update
-     * Pre-ingress ACL table or ACL group filtering by assigning the list of valid
+     * Pre-ingress ACL table or ACL group filtering by assigning a valid
      * object id. Disable pre-ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -2574,6 +2574,83 @@ typedef enum _sai_switch_attr_t
      * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
      */
     SAI_SWITCH_ATTR_SLAVE_MDIO_ADDR_LIST,
+
+    /**
+     * @brief Minimum priority for My MAC
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MY_MAC_TABLE_MINIMUM_PRIORITY,
+
+    /**
+     * @brief Maximum priority for My MAC
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MY_MAC_TABLE_MAXIMUM_PRIORITY,
+
+    /**
+     * @brief My MAC entries installed on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_MY_MAC
+     */
+    SAI_SWITCH_ATTR_MY_MAC_LIST,
+
+    /**
+     * @brief Number of My MAC entries installed on the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_INSTALLED_MY_MAC_ENTRIES,
+
+    /**
+     * @brief Number of available My MAC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_MY_MAC_ENTRIES,
+
+    /**
+     * @brief Maximum forwarding classes limit
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_NUMBER_OF_FORWARDING_CLASSES,
+
+    /**
+     * @brief Enable DSCP -> Forwarding Class MAP on switch
+     *
+     * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_DSCP_TO_FORWARDING_CLASS_MAP,
+
+    /**
+     * @brief Enable EXP -> Forwarding Class MAP on switch
+     *
+     * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_MPLS_EXP_TO_FORWARDING_CLASS_MAP,
 
     /**
      * @brief End of attributes
