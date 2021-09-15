@@ -1997,6 +1997,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_MPLS_EXP_TO_FORWARDING_CLASS_MAP,
 
     /**
+     * @brief Associated IPsec port
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_IPSEC_PORT
+     */
+    SAI_PORT_ATTR_IPSEC_PORT,
+
+    /**
      * @brief Configure FEC and port speed at the same time.
      *
      * @type sai_port_speed_fec_t

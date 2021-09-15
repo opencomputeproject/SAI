@@ -694,6 +694,9 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_IPV4:
         case SAI_ATTR_VALUE_TYPE_IPV6:
 
+        case SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY:
+        case SAI_ATTR_VALUE_TYPE_AUTH_KEY:
+
         case SAI_ATTR_VALUE_TYPE_MACSEC_SAK:
         case SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY:
         case SAI_ATTR_VALUE_TYPE_MACSEC_SALT:
@@ -2645,6 +2648,8 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
         case SAI_ATTR_VALUE_TYPE_IPV4:
         case SAI_ATTR_VALUE_TYPE_IPV6:
+        case SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY:
+        case SAI_ATTR_VALUE_TYPE_AUTH_KEY:
         case SAI_ATTR_VALUE_TYPE_MACSEC_SAK:
         case SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY:
         case SAI_ATTR_VALUE_TYPE_MACSEC_SALT:
@@ -3515,6 +3520,8 @@ void check_non_object_id_object_types()
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
                 case SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA:
+                case SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY:
+                case SAI_ATTR_VALUE_TYPE_AUTH_KEY:
                 case SAI_ATTR_VALUE_TYPE_MACSEC_SAK:
                 case SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY:
                 case SAI_ATTR_VALUE_TYPE_MACSEC_SALT:

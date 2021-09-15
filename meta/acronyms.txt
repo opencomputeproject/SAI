@@ -39,6 +39,7 @@ ECT - ECN Capable Transport
 EEE - Electrical and Electronics Engineering
 EEPROM - Electrically erasable programmable read-only memory
 ERSPAN - Encapsulated Remote SPAN
+ESN - Extended Sequence Number
 FCS - Frame Check Sequence
 FD - File Descriptor
 FDB - Forwarding Data Base
@@ -118,6 +119,7 @@ SNAT - Source Network Address Translation
 SNMP - Simple Network Management Protocol
 SNR - Signal to Noise Ratio
 SPAN - Switched Port Analyzer
+SPI - Security Parameter Index
 SQE - Signal Quality Errors
 SRH - Segment Routing Header
 SRV6 - Segment Routing with IPv6
@@ -128,6 +130,7 @@ STP - Spanning Tree Protocol
 TC - Traffic Control
 TCAM - Ternary Content Addressable Memory
 TCP - Transmission Control Protocol
+TEK - Traffic Encryption Key
 TLS - Transport Layer Security
 TOS - Type Of Service
 TPID - Tag Protocol Identifier
