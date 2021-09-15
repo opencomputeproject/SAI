@@ -1369,9 +1369,10 @@ void test_serialize_notifications()
 
     sai_switch_ser_info_t data3;
     memset(&data3, 0, sizeof(data3));
+    data3.flags = SAI_SWITCH_SER_LOG_MEM;
 
     res = sai_serialize_switch_ser_event_notification(buf, 1, &data3);
-    ret = "{\"count\":1,\"data\":[{\"time\":0,\"flags\":0,\"soft_error_type\":\"SAI_SWITCH_SOFT_ERROR_TYPE_UNKNOWN\",\"correction_type\":\"SAI_SWITCH_CORRECTION_TYPE_NO_ACTION\"}]}";
+    ret = "{\"count\":1,\"data\":[{\"time\":0,\"flags\":\"SAI_SWITCH_SER_LOG_MEM\",\"soft_error_type\":\"SAI_SWITCH_SOFT_ERROR_TYPE_UNKNOWN\",\"correction_type\":\"SAI_SWITCH_CORRECTION_TYPE_NO_ACTION\"}]}";
     ASSERT_STR_EQ(buf, ret, res);
 
     sai_queue_deadlock_notification_data_t data2;

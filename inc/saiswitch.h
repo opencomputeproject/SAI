@@ -468,13 +468,45 @@ typedef enum _sai_switch_correction_type_t
     SAI_SWITCH_CORRECTION_TYPE_SPECIAL = 5,
 } sai_switch_correction_type_t;
 
-/* soft error recovery log info flags */
-#define SAI_SWITCH_SER_LOG_MEM          0x00000001 /* Error happens on memory */
-#define SAI_SWITCH_SER_LOG_REG          0x00000002 /* Error happens on register */
-#define SAI_SWITCH_SER_LOG_MULTI        0x00000004 /* Parity errors detected more than once */
-#define SAI_SWITCH_SER_LOG_CORRECTED    0x00000008 /* Error be corrected by S/W */
-#define SAI_SWITCH_SER_LOG_ENTRY        0x00000010 /* Corrupt memory entry data is read in logfile */
-#define SAI_SWITCH_SER_LOG_CACHE        0x00000020 /* Cache data is valid */
+/**
+ * @brief Soft error recovery flag information
+ *
+ * Note enum values must be powers of 2 to be used as bit mask
+ *
+ * @flags Contains flags
+ */
+typedef enum _sai_switch_ser_log_t
+{
+    /**
+     * @brief Error happens on memory
+     */
+    SAI_SWITCH_SER_LOG_MEM = 1 << 0,
+
+    /**
+     * @brief Error happens on register
+     */
+    SAI_SWITCH_SER_LOG_REG = 1 << 1,
+
+    /**
+     * @brief Parity errors detected more than once
+     */
+    SAI_SWITCH_SER_LOG_MULTI = 1 << 2,
+
+    /**
+     * @brief Error be corrected by S/W
+     */
+    SAI_SWITCH_SER_LOG_CORRECTED = 1 << 3,
+
+    /**
+     * @brief Corrupt memory entry data is provided in log
+     */
+    SAI_SWITCH_SER_LOG_ENTRY = 1 << 4,
+
+    /**
+     * @brief Cache data is valid
+     */
+    SAI_SWITCH_SER_LOG_CACHE = 1 << 5,
+} sai_switch_ser_log_t;
 
 /**
  * @brief SAI switch soft error recovery info.
@@ -489,7 +521,7 @@ typedef struct _sai_switch_ser_info_t
     /**
      * @brief Soft error recovery log info flags
      */
-    uint32_t flags;
+    sai_switch_ser_log_t flags;
 
     /**
      * @brief Soft error type
