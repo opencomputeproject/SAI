@@ -422,6 +422,57 @@ typedef struct _sai_prbs_rx_state_t
 } sai_prbs_rx_state_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_FEC_MODE
+ */
+typedef enum _sai_port_fec_mode_t
+{
+    /** No FEC */
+    SAI_PORT_FEC_MODE_NONE,
+
+    /** Enable RS-FEC - 25G, 50G, 100G ports. The specific RS-FEC mode will be automatically determined. */
+    SAI_PORT_FEC_MODE_RS,
+
+    /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
+    SAI_PORT_FEC_MODE_FC,
+} sai_port_fec_mode_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_FEC_MODE_EXTENDED
+ */
+typedef enum _sai_port_fec_mode_extended_t
+{
+    /** No FEC */
+    SAI_PORT_FEC_MODE_EXTENDED_NONE,
+
+    /** Enable RS-528 FEC (CL91) - 25G, 50G, 100G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_RS528,
+
+    /** Enable RS544-FEC - 100G PAM4, 200G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_RS544,
+
+    /** Enable RS544-FEC (interleaved) - 100G, 200G, 400G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_RS544_INTERLEAVED,
+
+    /** Enable FC-FEC (CL74) - 10G, 25G, 40G, 50G ports */
+    SAI_PORT_FEC_MODE_EXTENDED_FC,
+} sai_port_fec_mode_extended_t;
+
+typedef struct _sai_port_speed_fec_t
+{
+    /** Speed in Mbps */
+    sai_uint32_t speed;
+
+    /** If false set FEC based on fec_mode. If true set FEC based on
+     * extended_fec_mode.
+     */
+    bool use_extended_fec;
+
+    sai_port_fec_mode_t fec_mode;
+
+    sai_port_fec_mode_extended_t extended_fec_mode;
+} sai_port_speed_fec_t;
+
+/**
  * @brief Field match mask
  *
  * @extraparam const sai_attr_metadata_t *meta
@@ -1179,6 +1230,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE */
     sai_prbs_rx_state_t rx_state;
+
+    /** @validonly meta->attrvaluetype == SAI_PORT_ATTR_SPEED_AND_FEC */
+    sai_port_speed_fec_t speed_fec;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID */
     sai_object_id_t oid;

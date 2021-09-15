@@ -186,42 +186,6 @@ typedef enum _sai_port_breakout_mode_type_t
 } sai_port_breakout_mode_type_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_FEC_MODE
- */
-typedef enum _sai_port_fec_mode_t
-{
-    /** No FEC */
-    SAI_PORT_FEC_MODE_NONE,
-
-    /** Enable RS-FEC - 25G, 50G, 100G ports. The specific RS-FEC mode will be automatically determined. */
-    SAI_PORT_FEC_MODE_RS,
-
-    /** Enable FC-FEC - 10G, 25G, 40G, 50G ports */
-    SAI_PORT_FEC_MODE_FC,
-} sai_port_fec_mode_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_FEC_MODE_EXTENDED
- */
-typedef enum _sai_port_fec_mode_extended_t
-{
-    /** No FEC */
-    SAI_PORT_FEC_MODE_EXTENDED_NONE,
-
-    /** Enable RS-528 FEC (CL91) - 25G, 50G, 100G ports */
-    SAI_PORT_FEC_MODE_EXTENDED_RS528,
-
-    /** Enable RS544-FEC - 100G PAM4, 200G ports */
-    SAI_PORT_FEC_MODE_EXTENDED_RS544,
-
-    /** Enable RS544-FEC (interleaved) - 100G, 200G, 400G ports */
-    SAI_PORT_FEC_MODE_EXTENDED_RS544_INTERLEAVED,
-
-    /** Enable FC-FEC (CL74) - 10G, 25G, 40G, 50G ports */
-    SAI_PORT_FEC_MODE_EXTENDED_FC,
-} sai_port_fec_mode_extended_t;
-
-/**
  * @brief Priority flow control mode
  */
 typedef enum _sai_port_priority_flow_control_mode_t
@@ -2031,6 +1995,14 @@ typedef enum _sai_port_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_QOS_MPLS_EXP_TO_FORWARDING_CLASS_MAP,
+
+    /**
+     * @brief Configure FEC and port speed at the same time.
+     *
+     * @type sai_port_speed_fec_t
+     * @flags CREATE_AND_SET
+     */
+    SAI_PORT_ATTR_SPEED_AND_FEC,
 
     /**
      * @brief End of attributes
