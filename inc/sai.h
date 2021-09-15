@@ -34,6 +34,7 @@
 #include "saihostif.h"
 #include "saiipmcgroup.h"
 #include "saiipmc.h"
+#include "saiipsec.h"
 #include "sail2mcgroup.h"
 #include "sail2mc.h"
 #include "sailag.h"
@@ -135,7 +136,8 @@ typedef enum _sai_api_t
     SAI_API_MACSEC           = 43, /**< sai_macsec_api_t */
     SAI_API_SYSTEM_PORT      = 44, /**< sai_system_port_api_t */
     SAI_API_MY_MAC           = 45, /**< sai_my_mac_api_t */
-    SAI_API_MAX              = 46, /**< total number of APIs */
+    SAI_API_IPSEC            = 46, /**< sai_ipsec_api_t */
+    SAI_API_MAX,                   /**< total number of APIs */
 } sai_api_t;
 
 /**
