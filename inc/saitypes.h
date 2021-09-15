@@ -464,20 +464,21 @@ typedef enum _sai_port_fec_mode_extended_t
     SAI_PORT_FEC_MODE_EXTENDED_FC,
 } sai_port_fec_mode_extended_t;
 
-typedef struct _sai_port_speed_fec_t
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_SPEED_AND_FEC
+ */
+typedef struct _sai_speed_fec_t
 {
     /** Speed in Mbps */
     sai_uint32_t speed;
 
-    /** If false set FEC based on fec_mode. If true set FEC based on
-     * extended_fec_mode.
-     */
+    /** If false set FEC based on fec_mode. If true set FEC based on extended_fec_mode. */
     bool use_extended_fec;
 
     sai_port_fec_mode_t fec_mode;
 
     sai_port_fec_mode_extended_t extended_fec_mode;
-} sai_port_speed_fec_t;
+} sai_speed_fec_t;
 
 /**
  * @brief Field match mask
@@ -1238,8 +1239,8 @@ typedef union _sai_attribute_value_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE */
     sai_prbs_rx_state_t rx_state;
 
-    /** @validonly meta->attrvaluetype == SAI_PORT_ATTR_SPEED_AND_FEC */
-    sai_port_speed_fec_t speed_fec;
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_SPEED_FEC */
+    sai_speed_fec_t speed_fec;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID */
     sai_object_id_t oid;

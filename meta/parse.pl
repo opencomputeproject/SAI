@@ -2422,7 +2422,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_IP_ADDRESS"     if $type eq "sai_ip_address_t";
     return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"      if $type eq "sai_ip_prefix_t";
     return "SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE"  if $type eq "sai_prbs_rx_state_t";
-    return "SAI_ATTR_VALUE_TYPE_SPEED_FEC"      if $type eq "sai_port_speed_fec_t";
+    return "SAI_ATTR_VALUE_TYPE_SPEED_FEC"      if $type eq "sai_speed_fec_t";
     return "SAI_ATTR_VALUE_TYPE_UINT16"         if $type eq "sai_vlan_id_t";
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_label_id_t";
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "uint32_t";

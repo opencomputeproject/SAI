@@ -147,7 +147,7 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE,
 
     /**
-     * @brief Attribute value is speed and fec.
+     * @brief Attribute value is speed and FEC.
      */
     SAI_ATTR_VALUE_TYPE_SPEED_FEC,
 

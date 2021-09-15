@@ -2008,7 +2008,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Configure FEC and port speed at the same time.
      *
-     * @type sai_port_speed_fec_t
+     * @type sai_speed_fec_t
      * @flags CREATE_AND_SET
      */
     SAI_PORT_ATTR_SPEED_AND_FEC,
