@@ -497,9 +497,9 @@ int sai_deserialize_mac(
     return SAI_SERIALIZE_ERROR;
 }
 
-int sai_serialize_macsec_sak(
+int sai_serialize_encrypt_key(
         _Out_ char *buffer,
-        _In_ const sai_macsec_sak_t sak)
+        _In_ const sai_encrypt_key_t sak)
 {
     return sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
 %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
@@ -511,9 +511,9 @@ int sai_serialize_macsec_sak(
                    sak[24], sak[25], sak[26], sak[27], sak[28], sak[29],sak[30], sak[31]);
 }
 
-int sai_deserialize_macsec_sak(
+int sai_deserialize_encrypt_key(
         _In_ const char *buffer,
-        _Out_ sai_macsec_sak_t sak)
+        _Out_ sai_encrypt_key_t sak)
 {
     int arr[32];
     int read;
@@ -539,13 +539,13 @@ int sai_deserialize_macsec_sak(
         return read;
     }
 
-    SAI_META_LOG_WARN("failed to deserialize '%.*s' as macsec_sak", MAX_CHARS_PRINT, buffer);
+    SAI_META_LOG_WARN("failed to deserialize '%.*s' as encrypt_key", MAX_CHARS_PRINT, buffer);
     return SAI_SERIALIZE_ERROR;
 }
 
-int sai_serialize_macsec_auth_key(
+int sai_serialize_auth_key(
         _Out_ char *buffer,
-        _In_ const sai_macsec_auth_key_t auth)
+        _In_ const sai_auth_key_t auth)
 {
     return sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
 %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
@@ -553,9 +553,9 @@ int sai_serialize_macsec_auth_key(
                    auth[8], auth[9], auth[10], auth[11], auth[12], auth[13],auth[14], auth[15]);
 }
 
-int sai_deserialize_macsec_auth_key(
+int sai_deserialize_auth_key(
         _In_ const char *buffer,
-        _Out_ sai_macsec_auth_key_t auth)
+        _Out_ sai_auth_key_t auth)
 {
     int arr[16];
     int read;
@@ -576,8 +576,36 @@ int sai_deserialize_macsec_auth_key(
         return read;
     }
 
-    SAI_META_LOG_WARN("failed to deserialize '%.*s' as macsec_auth_key", MAX_CHARS_PRINT, buffer);
+    SAI_META_LOG_WARN("failed to deserialize '%.*s' as auth_key", MAX_CHARS_PRINT, buffer);
     return SAI_SERIALIZE_ERROR;
+}
+
+int sai_serialize_macsec_sak(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_sak_t sak)
+{
+   return sai_serialize_encrypt_key(buffer, sak);
+}
+
+int sai_deserialize_macsec_sak(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_sak_t sak)
+{
+   return sai_deserialize_encrypt_key(buffer, sak);
+}
+
+int sai_serialize_macsec_auth_key(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_auth_key_t auth)
+{
+   return sai_serialize_auth_key(buffer, auth);
+}
+
+int sai_deserialize_macsec_auth_key(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_auth_key_t auth)
+{
+   return sai_deserialize_auth_key(buffer, auth);
 }
 
 int sai_serialize_macsec_salt(

@@ -342,6 +342,12 @@ typedef enum _sai_tunnel_type_t
 
     SAI_TUNNEL_TYPE_NVGRE,
 
+    SAI_TUNNEL_TYPE_IPINIP_ESP,
+
+    SAI_TUNNEL_TYPE_IPINIP_UDP_ESP,
+
+    SAI_TUNNEL_TYPE_VXLAN_UDP_ESP,
+
 } sai_tunnel_type_t;
 
 /**
@@ -2651,6 +2657,43 @@ typedef enum _sai_switch_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_QOS_MPLS_EXP_TO_FORWARDING_CLASS_MAP,
+
+    /**
+     * @brief IPsec object for this switch.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_IPSEC
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_IPSEC_OBJECT_ID,
+
+    /**
+     * @brief TPID in IPsec SA-Tag.  This is used only between a Switch ASIC
+     * and IPsec-enabled PHY chips and not packets on external network.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0xFFFE
+     */
+    SAI_SWITCH_ATTR_IPSEC_SA_TAG_TPID,
+
+    /**
+     * @brief IPsec SA status change notification callback function.
+     *
+     * In case driver does not support this attribute, The Host adapter should poll
+     * IPsec SA status by SAI_IPSEC_SA_ATTR_OCTET_COUNT_STATUS and
+     * SAI_IPSEC_SA_ATTR_EGRESS_ESN.
+     *
+     * Use sai_ipsec_sa_status_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_ipsec_sa_status_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_IPSEC_SA_STATUS_CHANGE_NOTIFY,
 
     /**
      * @brief End of attributes
