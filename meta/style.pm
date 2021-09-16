@@ -1094,7 +1094,7 @@ sub CheckHeadersStyle
 
                     next if defined $exceptions{$word};
                     next if $word =~ /^sai\w+/i;
-                    next if $word =~ /0x\S+L/;
+                    next if $word =~ /0x\S+/;
                     next if "$pre$word" =~ /802.\d+\w+/;
 
                     next if defined $wordsChecked{$word};

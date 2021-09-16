@@ -56,6 +56,8 @@ typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
 typedef UINT32  sai_label_id_t;
 typedef UINT32  sai_stat_id_t;
+typedef UINT8   sai_encrypt_key_t[32];
+typedef UINT8   sai_auth_key_t[16];
 typedef UINT8   sai_macsec_sak_t[32];
 typedef UINT8   sai_macsec_auth_key_t[16];
 typedef UINT8   sai_macsec_salt_t[12];
@@ -99,6 +101,8 @@ typedef uint8_t  sai_ip6_t[16];
 typedef uint32_t sai_switch_hash_seed_t;
 typedef uint32_t sai_label_id_t;
 typedef uint32_t sai_stat_id_t;
+typedef uint8_t sai_encrypt_key_t[32];
+typedef uint8_t sai_auth_key_t[16];
 typedef uint8_t sai_macsec_sak_t[32];
 typedef uint8_t sai_macsec_auth_key_t[16];
 typedef uint8_t sai_macsec_salt_t[12];
@@ -281,6 +285,9 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_MY_SID_ENTRY             = 96,
     SAI_OBJECT_TYPE_MY_MAC                   = 97,
     SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP       = 98,
+    SAI_OBJECT_TYPE_IPSEC                    = 99,
+    SAI_OBJECT_TYPE_IPSEC_PORT               = 100,
+    SAI_OBJECT_TYPE_IPSEC_SA                 = 101,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
@@ -1257,6 +1264,12 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TIMESPEC */
     sai_timespec_t timespec;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY */
+    sai_encrypt_key_t encrypt_key;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_AUTH_KEY */
+    sai_auth_key_t authkey;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SAK */
     sai_macsec_sak_t macsecsak;

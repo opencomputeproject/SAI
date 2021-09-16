@@ -2033,6 +2033,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_MPLS_EXP_TO_FORWARDING_CLASS_MAP,
 
     /**
+     * @brief Associated IPsec port
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_IPSEC_PORT
+     */
+    SAI_PORT_ATTR_IPSEC_PORT,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,

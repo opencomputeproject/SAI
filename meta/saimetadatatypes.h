@@ -435,6 +435,17 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is fabric port error status.
      */
     SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST,
+
+    /**
+     * @brief Attribute value is encryption key.
+     */
+    SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY,
+
+    /**
+     * @brief Attribute value is authentication Key.
+     */
+    SAI_ATTR_VALUE_TYPE_AUTH_KEY,
+
 } sai_attr_value_type_t;
 
 /**
