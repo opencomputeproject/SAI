@@ -42,8 +42,7 @@ enables the
 In the current SAI P4 Extension Proposal the newly introduced SAI_OBJECT_TYPE_P4EXT_ENTRY will remain disconnected from
 the SAI Pipeline Object Graph. In other words, there will be no dependency from/to other SAI object to/from
 SAI_OBJECT_TYPE_P4EXT_ENTRY. Also, the proposal places no restriction on the relative placement of the new
-features/table in the SAI Pipeline. The implementation and interaction of the new feature with the SAI pipeline is left
-to each individual vendor.
+features/table in the SAI Pipeline.
 
 ## Match Action Paradigm ##
 
@@ -78,11 +77,10 @@ below the attributes mimic P4 table attributes such as table name, match fields 
 (key:value pairs), action parameters (key:value pairs). The format for each of these string attribute values will be
 described later in the API usage section.
 
-Different vendors might support different types of tables with different fields and actions. The proposal does not
-outline an exact mechanism to expose this information (table, field, action names etc.) to the end user. It is assumed
-that this information is made available to SAI users via an external mechanism. E.g with a target that runs P4, P4
-compilers with custom backend can generate this kind of information. A generic backend already supported today by
-default by P4C is P4 runtime and the accompanying P4 info file.
+The exact mechanism of exposing the information regarding tables, match fields, actions etc. to the end user is not part
+of this proposal. It is assumed that this information is made available to SAI users via an external mechanism. E.g. with
+a target that runs P4, P4 compilers with custom backend can generate this kind of information. A generic backend already
+supported today by default by P4C is P4 runtime and the accompanying P4 info file.
 
 ```cpp
 /**
@@ -219,13 +217,12 @@ typedef struct _sai_p4ext_api_t
 
 # API Usage #
 
-Consider a scenario where a Vendor A wishes to extend the SAI pipeline functionality with a custom feature which can be
-modeled with a P4 match-action table but is not yet supported in SAI. Let say this new feature classifies incoming
-packets based on packet field tuples SIP, DIP and sets the traffic class tc. As mentioned earlier the proposal does not
-deal with the implementation details of data pipeline by each individual vendor, thus the relative position of this
-table in the SAI pipeline is not part of the specification and is vendor dependent. It's up to the vendor to decide
-whether this table will come after the SAI QoS tables or before and resolve any conflict that would arise from the
-actions of the QoS tables and the new P4 Extension Table. This simple feature can be expressed in P4 as below.
+Let say that we have a new feature that classifies incoming packets based on packet field tuples SIP, DIP and sets the
+traffic class tc, and that such a feature does not already exist in SAI. Such a feature can be implemented via the new
+Extension API proposed. The proposal in itself does not specify the relative position of this new feature table in SAI
+pipeline. It's up to the vendor to decide whether this table will come after the SAI QoS tables or before and resolve
+any conflict that would arise from the actions of the QoS tables and the new P4 Extension Table. This simple feature can
+be expressed in P4 as below.
 
 ```
 table flow_classification {
