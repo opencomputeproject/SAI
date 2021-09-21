@@ -529,7 +529,7 @@ int sai_deserialize_encrypt_key(
                    &arr[24], &arr[25], &arr[26], &arr[27],
                    &arr[28], &arr[29], &arr[30], &arr[31], &read);
 
-    if (n == 32 && read == (32*3-1))
+    if (n == 32 && read == (32*3-1) && sai_serialize_is_char_allowed(buffer[read]))
     {
         for (n = 0; n < 32; n++)
         {
@@ -566,7 +566,7 @@ int sai_deserialize_auth_key(
                    &arr[8], &arr[9], &arr[10], &arr[11],
                    &arr[12], &arr[13], &arr[14], &arr[15], &read);
 
-    if (n == 16 && read == (16*3-1))
+    if (n == 16 && read == (16*3-1) && sai_serialize_is_char_allowed(buffer[read]))
     {
        for (n = 0; n < 16; n++)
         {
@@ -624,20 +624,15 @@ int sai_deserialize_macsec_salt(
     int arr[32];
     int read;
 
-    int n = sscanf(buffer, "%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:\
-%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X%n",
+    int n = sscanf(buffer, "%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X%n",
                    &arr[0], &arr[1], &arr[2], &arr[3],
                    &arr[4], &arr[5], &arr[6], &arr[7],
                    &arr[8], &arr[9], &arr[10], &arr[11],
-                   &arr[12], &arr[13], &arr[14], &arr[15],
-                   &arr[16], &arr[17], &arr[18], &arr[19],
-                   &arr[20], &arr[21], &arr[22], &arr[23],
-                   &arr[24], &arr[25], &arr[26], &arr[27],
-                   &arr[28], &arr[29], &arr[30], &arr[31], &read);
+                   &read);
 
-    if (n == 32 && read == (32*3-1))
+    if (n == 12 && read == (12*3-1) && sai_serialize_is_char_allowed(buffer[read]))
     {
-        for (n = 0; n < 32; n++)
+        for (n = 0; n < 12; n++)
         {
             salt[n] = (uint8_t)arr[n];
         }
