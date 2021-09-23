@@ -172,7 +172,7 @@ void process_colors()
             {
                 continue;
             }
-            std::cout << NN(ot) << " [color=plum, shape = rect];\n";
+            std::cout << NN(ot) << " [color=coral, shape = note];\n";
         }
     }
 
