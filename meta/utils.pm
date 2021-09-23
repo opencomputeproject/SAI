@@ -479,6 +479,24 @@ sub ProcessEnumInitializers
                 LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
             }
         }
+        elsif ($ini =~/^= (SAI_\w+) \+ (\d+)$/)
+        {
+            my $first = $1;
+            my $val = $2;
+
+            for my $i (0..$idx)
+            {
+                if ($$arr_ref[$i] eq $first)
+                {
+                    $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + $val);
+
+                    $previousEnumValue = hex($ini);
+                    last;
+                }
+            }
+
+            LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
+        }
         elsif ($ini =~/^= (SAI_\w+) \+ (0x[0-9a-f]{1,8})$/)
         {
             my $first = $1;
