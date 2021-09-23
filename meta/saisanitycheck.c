@@ -5124,6 +5124,7 @@ void check_enum_range_base(
 
     SKIP_ENUM(sai_attr_flags_t);
     SKIP_ENUM(sai_stats_mode_t);
+    SKIP_ENUM(sai_switch_ser_log_t);
 
     size_t i = 0;
 

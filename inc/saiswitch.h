@@ -407,6 +407,140 @@ typedef enum _sai_tunnel_decap_ecn_mode_t
 } sai_tunnel_decap_ecn_mode_t;
 
 /**
+ * @brief SAI switch soft error recovery error type.
+ */
+typedef enum _sai_switch_soft_error_type_t
+{
+    /**
+     * @brief Unknown error type
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_UNKNOWN = 0,
+
+    /**
+     * @brief Parity error
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_PARITY = 1,
+
+    /**
+     * @brief ECC single bit error
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_ECC_SINGLE_BIT = 2,
+
+    /**
+     * @brief ECC double bit error
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_ECC_DOUBLE_BIT = 3,
+
+    /**
+     * @brief All soft error types
+     */
+    SAI_SWITCH_SOFT_ERROR_TYPE_ALL = 4
+} sai_switch_soft_error_type_t;
+
+/**
+ * @brief SAI switch soft error recovery error correction type.
+ */
+typedef enum _sai_switch_correction_type_t
+{
+    /**
+     * @brief S/W takes no action when error
+     * happens (Like some working memories)
+     */
+    SAI_SWITCH_CORRECTION_TYPE_NO_ACTION = 0,
+
+    /**
+     * @brief S/W tries to correct error but fails
+     */
+    SAI_SWITCH_CORRECTION_TYPE_FAIL_TO_CORRECT = 1,
+
+    /**
+     * @brief S/W writes NULL entry to clear the error
+     */
+    SAI_SWITCH_CORRECTION_TYPE_ENTRY_CLEAR = 2,
+
+    /**
+     * @brief Restore entry from a valid S/W cache
+     */
+    SAI_SWITCH_CORRECTION_TYPE_CACHE_RESTORE = 3,
+
+    /**
+     * @brief Restore entry from another pipe
+     */
+    SAI_SWITCH_CORRECTION_TYPE_HW_CACHE_RESTORE = 4,
+
+    /**
+     * @brief Memory needs special correction handling
+     */
+    SAI_SWITCH_CORRECTION_TYPE_SPECIAL = 5,
+} sai_switch_correction_type_t;
+
+/**
+ * @brief Soft error recovery flag information
+ *
+ * Note enum values must be powers of 2 to be used as bit mask
+ *
+ * @flags Contains flags
+ */
+typedef enum _sai_switch_ser_log_t
+{
+    /**
+     * @brief Error happens on memory
+     */
+    SAI_SWITCH_SER_LOG_MEM = 1 << 0,
+
+    /**
+     * @brief Error happens on register
+     */
+    SAI_SWITCH_SER_LOG_REG = 1 << 1,
+
+    /**
+     * @brief Parity errors detected more than once
+     */
+    SAI_SWITCH_SER_LOG_MULTI = 1 << 2,
+
+    /**
+     * @brief Error be corrected by S/W
+     */
+    SAI_SWITCH_SER_LOG_CORRECTED = 1 << 3,
+
+    /**
+     * @brief Corrupt memory entry data is provided in log
+     */
+    SAI_SWITCH_SER_LOG_ENTRY = 1 << 4,
+
+    /**
+     * @brief Cache data is valid
+     */
+    SAI_SWITCH_SER_LOG_CACHE = 1 << 5,
+} sai_switch_ser_log_t;
+
+/**
+ * @brief SAI switch soft error recovery info.
+ */
+typedef struct _sai_switch_ser_info_t
+{
+    /**
+     * @brief Error detected time
+     */
+    uint32_t time;
+
+    /**
+     * @brief Soft error recovery log info flags
+     */
+    sai_switch_ser_log_t flags;
+
+    /**
+     * @brief Soft error type
+     */
+    sai_switch_soft_error_type_t soft_error_type;
+
+    /**
+     * @brief Correction type
+     */
+    sai_switch_correction_type_t correction_type;
+} sai_switch_ser_info_t;
+
+/**
  * @brief Defines tunnel attributes at switch level.
  * SAI_OBJECT_TYPE_SWITCH_TUNNEL object provides
  * per tunnel type global configuration.
@@ -2695,6 +2829,17 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_IPSEC_SA_STATUS_CHANGE_NOTIFY,
 
+    /*
+     * @brief Parity Errors
+     *
+     * Use sai_switch_ser_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_switch_ser_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_SWITCH_SER_EVENT_NOTIFY,
+
     /**
      * @brief End of attributes
      */
@@ -2928,6 +3073,18 @@ typedef void (*sai_switch_shutdown_request_notification_fn)(
 typedef void (*sai_switch_state_change_notification_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ sai_switch_oper_status_t switch_oper_status);
+
+/**
+ * @brief Switch soft error recovery event callback
+ *
+ * @count data[count]
+ *
+ * @param[in] count Number of notifications
+ * @param[in] data Array of soft error recovery event types
+ */
+typedef void (*sai_switch_ser_event_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_switch_ser_info_t *data);
 
 /**
  * @brief Platform specific device register read access
