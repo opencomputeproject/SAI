@@ -951,7 +951,7 @@ sub CheckHeadersStyle
             {
                 my $init = $2;
 
-                if ($init =~ m!^(0x\w+|SAI_\w+|SAI_\w+ \+ 0x[0-9a-f]{1,8}|SAI_\w+ \+ SAI_\w+|\d+|\(?\d+ << \d+\)?),?\s*(/\*\*.*\*/)?$!)
+                if ($init =~ m!^(0x\w+|SAI_\w+|SAI_\w+ \+ \d+|SAI_\w+ \+ 0x[0-9a-f]{1,8}|SAI_\w+ \+ SAI_\w+|\d+|\(?\d+ << \d+\)?),?\s*(/\*\*.*\*/)?$!)
                 {
                     # supported initializers for enum:
                     # - 0x00000000 (hexadecimal number)
@@ -960,6 +960,7 @@ sub CheckHeadersStyle
                     # - n << m (flags shifted)
                     # - SAI_.. + SAI_.. (sum of SAI enums)
                     # - SAI_.. + 0x00 (sum of SAI and hexadecimal number)
+                    # - SAI_.. + 0 (sum of SAI and decimal number)
                 }
                 else
                 {
