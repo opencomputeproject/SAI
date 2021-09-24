@@ -68,6 +68,7 @@ our %FUNCTION_DEF = ();
 our @ALL_ENUMS = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
+my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
 
 # TAGS HANDLERS
 
@@ -559,7 +560,13 @@ sub ProcessEnumSection
 
         my $ed = ExtractDescription($enumtypename, $enumtypename, $memberdef->{detaileddescription}[0]);
 
+        if ($ed =~ /\@\@flags/s and not $ed =~ /\@\@flags\s+(\w+)/s)
+        {
+            LogWarning "expected flags type $ENUM_FLAGS_TYPES not specified on $enumtypename";
+        }
+
         $SAI_ENUMS{$enumtypename}{flagsenum} = ($ed =~ /\@\@flags/s) ? "true" : "false";
+        $SAI_ENUMS{$enumtypename}{flagstype} = ($ed =~ /\@\@flags\s+(\w+)/s) ? $1 : "none";
 
         my @arr = ();
         my @initializers = ();
@@ -1083,6 +1090,22 @@ sub ProcessXmlFile
     }
 }
 
+sub ProcessFlagsType
+{
+    my ($typedef, $flagstype) = @_;
+
+    return "SAI_ENUM_FLAGS_TYPE_NONE"    if not defined $flagstype;
+    return "SAI_ENUM_FLAGS_TYPE_NONE"    if $flagstype eq "none";
+    return "SAI_ENUM_FLAGS_TYPE_STRICT"  if $flagstype eq "strict";
+    return "SAI_ENUM_FLAGS_TYPE_MIXED"   if $flagstype eq "mixed";
+    return "SAI_ENUM_FLAGS_TYPE_RANGES"  if $flagstype eq "ranges";
+    return "SAI_ENUM_FLAGS_TYPE_FREE"    if $flagstype eq "free";
+
+    LogError "wrong flags type '$flagstype' on $typedef, expected $ENUM_FLAGS_TYPES";
+
+    return "WRONG";
+}
+
 sub ProcessSingleEnum
 {
     my ($key, $typedef, $prefix) = @_;
@@ -1094,6 +1117,8 @@ sub ProcessSingleEnum
     my @values = @{$enum->{values}};
 
     my $flags = (defined $enum->{flagsenum}) ? $enum->{flagsenum} : "false";
+
+    my $flagstype = ProcessFlagsType($typedef, $enum->{flagstype});
 
     WriteSource "const $typedef sai_metadata_${typedef}_enum_values[] = {";
 
@@ -1167,6 +1192,7 @@ sub ProcessSingleEnum
     WriteSource ".valuesnames       = sai_metadata_${typedef}_enum_values_names,";
     WriteSource ".valuesshortnames  = sai_metadata_${typedef}_enum_values_short_names,";
     WriteSource ".containsflags     = $flags,";
+    WriteSource ".flagstype         = $flagstype,";
 
     if (defined $enum->{ignoreval})
     {
@@ -2308,6 +2334,7 @@ sub ProcessSaiStatus
 
     $SAI_ENUMS{"sai_status_t"}{values} = \@values;
     $SAI_ENUMS{"sai_status_t"}{flagsenum} = "true";
+    $SAI_ENUMS{"sai_status_t"}{flagstype} = "free";
 }
 
 sub CreateMetadataForAttributes
