@@ -378,6 +378,23 @@ sub ProcessStructSuffix
     return $1;
 }
 
+sub ProcessStructFlags
+{
+    my ($structName, $tagValue) = @_;
+
+    if (not $tagValue =~ /^(sai_\w+_t)$/)
+    {
+        # TODO field type must be enum type or uintX_t
+
+        LogError "unable to parse suffix '$tagValue' on $structName";
+        return undef;
+    }
+
+    LogDebug "adding flags '$1' on $structName";
+
+    return $1;
+}
+
 my %STRUCT_TAGS = (
         "count"       , \&ProcessStructCount,
         "objects"     , \&ProcessStructObjects,
@@ -385,6 +402,7 @@ my %STRUCT_TAGS = (
         "passparam"   , \&ProcessStructPassParam,
         "extraparam"  , \&ProcessStructExtraParam,
         "suffix"      , \&ProcessStructSuffix,
+        "flags"       , \&ProcessStructFlags,
         );
 
 sub ProcessStructDescription
