@@ -91,7 +91,7 @@ function create_commit_list()
 
     echo "ancestry graph"
 
-    git --no-pager log --graph --oneline --ancestry-path  origin/master^..HEAD | cat
+    git --no-pager log --graph --oneline --ancestry-path  origin/master^..HEAD
 
     echo "git rev list from $begin to $end"
 
