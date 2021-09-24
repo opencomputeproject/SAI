@@ -30,7 +30,7 @@
 /**
  * @brief SAI object type extensions
  *
- * @flags
+ * @flags free
  */
 typedef enum _sai_object_type_extensions_t
 {
