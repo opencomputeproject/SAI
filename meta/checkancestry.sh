@@ -89,6 +89,11 @@ function create_commit_list()
     local begin=$1
     local end=$2
 
+    echo "ancestry graph"
+
+
+    git log --graph --oneline --ancestry-path  origin/master^..${END} | cat
+
     echo "git rev list from $begin to $end"
 
     LIST=$(git rev-list --ancestry-path ${begin}^..${end} | xargs -n 1 git rev-parse --short | tac)
