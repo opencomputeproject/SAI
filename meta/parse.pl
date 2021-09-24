@@ -1225,7 +1225,7 @@ sub ProcessExtraRangeDefines
 
 sub CreateSourceIncludes
 {
-    WriteSourceSectionComment "includes";
+    WriteSourceSectionComment "Includes";
 
     WriteSource "#include <stdio.h>";
     WriteSource "#include <string.h>";
@@ -1236,7 +1236,7 @@ sub CreateSourceIncludes
 
 sub CreateSourcePragmaPush
 {
-    WriteSourceSectionComment "ignore pragmas push";
+    WriteSourceSectionComment "Pragma diagnostic push";
 
     #
     # because we are merging extension attributes into existing
@@ -4263,7 +4263,7 @@ sub WriteHeaderFotter
 
 sub CreateSourcePragmaPop
 {
-    WriteSourceSectionComment "ignore pragmas pop";
+    WriteSourceSectionComment "Pragma diagnostic pop";
 
     WriteSource "#pragma GCC diagnostic pop";
 }
