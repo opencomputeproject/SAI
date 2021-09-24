@@ -5120,10 +5120,35 @@ void check_enum_range_base(
 
     SKIP_ENUM(sai_status_t);
 
-    /* skip enums which are actual flags */
+    /*
+     * Marker @flags actually means that enums values are not continuous, there
+     * should be 2 markers, one for actual flags, and one for ranges.
+     */
 
-    SKIP_ENUM(sai_attr_flags_t);
-    SKIP_ENUM(sai_stats_mode_t);
+    if (emd->containsflags && emd->values[0] == 1)
+    {
+        /* treat this enum as actual flags */
+
+        int current = 1 << 0;
+
+        size_t i = 0;
+
+        for (; i < emd->valuescount; ++i)
+        {
+            int val = emd->values[i];
+
+            if (val != current)
+            {
+                const char*name = emd->valuesnames[i];
+
+                META_ASSERT_FAIL("enum %s value is 0x%x, but probably should be 0x%x to be a flag", name, val, current);
+            }
+
+            current = current << 1;
+        }
+
+        return;
+    }
 
     size_t i = 0;
 
