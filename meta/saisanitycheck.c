@@ -5371,6 +5371,21 @@ void check_object_type_extension_max_value()
     META_ASSERT_TRUE(SAI_OBJECT_TYPE_EXTENSIONS_MAX < 256, "max object type can be 255 to be encoded on single byte");
 }
 
+void check_global_apis()
+{
+    META_LOG_ENTER();
+
+    sai_global_apis_t apis;
+
+    apis.api_initialize = NULL;
+
+    META_ASSERT_TRUE(sizeof(apis)/sizeof(void*) > 15, "there should be at least 15 global apis");
+
+    sai_global_api_type_t type = SAI_GLOBAL_API_TYPE_API_INITIALIZE;
+
+    META_ASSERT_TRUE(sizeof(type) >= sizeof(int32_t), "apis type should be at least int32");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -5414,6 +5429,7 @@ int main(int argc, char **argv)
     check_sai_version();
     check_max_conditions_len();
     check_object_type_extension_max_value();
+    check_global_apis();
 
     SAI_META_LOG_DEBUG("log test");
 
