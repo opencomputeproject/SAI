@@ -1258,14 +1258,34 @@ sub ProcessExtraRangeDefines
     }
 }
 
-sub CreateMetadataHeaderAndSource
+sub CreateSourceIncludes
 {
+    WriteSourceSectionComment "Includes";
+
     WriteSource "#include <stdio.h>";
     WriteSource "#include <string.h>";
     WriteSource "#include <stdlib.h>";
     WriteSource "#include <stddef.h>";
     WriteSource "#include \"saimetadata.h\"";
+}
 
+sub CreateSourcePragmaPush
+{
+    WriteSourceSectionComment "Pragma diagnostic push";
+
+    #
+    # because we are merging extension attributes into existing
+    # enums, new versions of gcc can warn when 2 different enums
+    # are mixed, so lets ignore this warning using pragmas
+    #
+
+    WriteSource "#pragma GCC diagnostic push";
+    WriteSource "#pragma GCC diagnostic ignored \"-Wpragmas\"";
+    WriteSource "#pragma GCC diagnostic ignored \"-Wenum-conversion\"";
+}
+
+sub CreateMetadataHeaderAndSource
+{
     WriteSectionComment "Enums metadata";
 
     for my $key (sort keys %SAI_ENUMS)
@@ -4312,6 +4332,13 @@ sub WriteHeaderFotter
     WriteHeader "#endif /* __SAI_METADATA_H__ */";
 }
 
+sub CreateSourcePragmaPop
+{
+    WriteSourceSectionComment "Pragma diagnostic pop";
+
+    WriteSource "#pragma GCC diagnostic pop";
+}
+
 sub ProcessXmlFiles
 {
     for my $file (GetSaiXmlFiles($XMLDIR))
@@ -4681,6 +4708,10 @@ ProcessSaiStatus();
 
 ProcessExtraRangeDefines();
 
+CreateSourceIncludes();
+
+CreateSourcePragmaPush();
+
 CreateMetadataHeaderAndSource();
 
 CreateMetadata();
@@ -4746,6 +4777,8 @@ CreateSaiSwigGetApiHelperFunctions();
 CreateSaiSwigApiStructs();
 
 WriteHeaderFotter();
+
+CreateSourcePragmaPop();
 
 # Test Section
 
