@@ -66,6 +66,7 @@ our %ATTR_TO_CALLBACK = ();
 our %PRIMITIVE_TYPES = ();
 our %FUNCTION_DEF = ();
 our @ALL_ENUMS = ();
+our %GLOBAL_APIS = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
@@ -1072,6 +1073,37 @@ sub ProcessNotifications
     $NOTIFICATIONS{$typedefname} = \%N;
 }
 
+sub ProcessFunctionSection
+{
+    my $section = shift;
+
+    for my $memberdef (@{ $section->{memberdef} })
+    {
+        next if not $memberdef->{kind} eq "function";
+
+        #print Dumper($memberdef);
+
+        my $name = $memberdef->{name}[0];
+        my $file = $memberdef->{location}[0]->{file};
+
+        next if not $file =~ m!inc/sai\w*.h!;
+
+        LogError "api $name not starting with sai_! " if not $name =~ /^sai_\w+$/;
+
+        #print Dumper($memberdef);
+
+        my $def = $memberdef->{definition}[0];
+
+        my $type = $memberdef->{type}[0];
+
+        $type = $1 if $def =~ /^(\w+) sai_\w+$/;
+
+        $GLOBAL_APIS{$name}{name} = $name;
+        $GLOBAL_APIS{$name}{args} = $memberdef->{argsstring}[0];
+        $GLOBAL_APIS{$name}{type} = $type;
+    }
+}
+
 sub ProcessXmlFile
 {
     my $file = shift;
@@ -1087,6 +1119,8 @@ sub ProcessXmlFile
         ProcessEnumSection($section) if ($section->{kind} eq "enum");
 
         ProcessTypedefSection($section) if $section->{kind} eq "typedef";
+
+        ProcessFunctionSection($section) if $section->{kind} eq "func";
     }
 }
 
@@ -1206,6 +1240,7 @@ sub ProcessSingleEnum
     }
 
     my $ot = ($typedef =~ /^sai_(\w+)_attr_t/) ? uc("SAI_OBJECT_TYPE_$1") : "SAI_OBJECT_TYPE_NULL";
+    #my $ot = ($typedef =~ /^sai_(\w+)_attr_(extensions_)?t/) ? uc("SAI_OBJECT_TYPE_$1") : "SAI_OBJECT_TYPE_NULL";
 
     WriteSource ".objecttype        = (sai_object_type_t)$ot,";
     WriteSource "};";
@@ -1223,14 +1258,34 @@ sub ProcessExtraRangeDefines
     }
 }
 
-sub CreateMetadataHeaderAndSource
+sub CreateSourceIncludes
 {
+    WriteSourceSectionComment "Includes";
+
     WriteSource "#include <stdio.h>";
     WriteSource "#include <string.h>";
     WriteSource "#include <stdlib.h>";
     WriteSource "#include <stddef.h>";
     WriteSource "#include \"saimetadata.h\"";
+}
 
+sub CreateSourcePragmaPush
+{
+    WriteSourceSectionComment "Pragma diagnostic push";
+
+    #
+    # because we are merging extension attributes into existing
+    # enums, new versions of gcc can warn when 2 different enums
+    # are mixed, so lets ignore this warning using pragmas
+    #
+
+    WriteSource "#pragma GCC diagnostic push";
+    WriteSource "#pragma GCC diagnostic ignored \"-Wpragmas\"";
+    WriteSource "#pragma GCC diagnostic ignored \"-Wenum-conversion\"";
+}
+
+sub CreateMetadataHeaderAndSource
+{
     WriteSectionComment "Enums metadata";
 
     for my $key (sort keys %SAI_ENUMS)
@@ -3086,13 +3141,49 @@ sub CreateGlobalApis
     WriteHeader "extern sai_apis_t sai_metadata_apis;";
 }
 
+sub CreateGlobalFunctions
+{
+    WriteSectionComment "Global functions";
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $type = $GLOBAL_APIS{$name}{type};
+        my $args = $GLOBAL_APIS{$name}{args};
+
+        $args =~ s/(_(In|Out|Inout)_)/\n    $1/g;
+
+        WriteHeader "typedef $type (*${name}_fn) $args;";
+        WriteHeader "";
+    }
+
+    WriteHeader "typedef struct _sai_global_apis_t {";
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $short = $1 if $name =~ /^sai_(\w+)/;
+
+        WriteHeader "${name}_fn $short;";
+    }
+
+    WriteHeader "} sai_global_apis_t;";
+
+    WriteHeader "";
+
+    WriteHeader "typedef enum _sai_global_api_type_t {";
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $short = uc($1) if $name =~ /^sai_(\w+)/;
+
+        WriteHeader "SAI_GLOBAL_API_TYPE_$short,";
+    }
+
+    WriteHeader "} sai_global_api_type_t;";
+}
+
 sub CreateApisQuery
 {
     WriteSectionComment "SAI API query";
-
-    WriteHeader "typedef sai_status_t (*sai_api_query_fn)(";
-    WriteHeader "_In_ sai_api_t sai_api_id,";
-    WriteHeader "_Out_ void** api_method_table);";
 
     # for switch we need to generate wrapper, for others we can use pointers
     # so we don't need to use meta key then
@@ -4241,6 +4332,13 @@ sub WriteHeaderFotter
     WriteHeader "#endif /* __SAI_METADATA_H__ */";
 }
 
+sub CreateSourcePragmaPop
+{
+    WriteSourceSectionComment "Pragma diagnostic pop";
+
+    WriteSource "#pragma GCC diagnostic pop";
+}
+
 sub ProcessXmlFiles
 {
     for my $file (GetSaiXmlFiles($XMLDIR))
@@ -4610,6 +4708,10 @@ ProcessSaiStatus();
 
 ProcessExtraRangeDefines();
 
+CreateSourceIncludes();
+
+CreateSourcePragmaPush();
+
 CreateMetadataHeaderAndSource();
 
 CreateMetadata();
@@ -4631,6 +4733,8 @@ CreateApis();
 CreateApisStruct();
 
 CreateGlobalApis();
+
+CreateGlobalFunctions();
 
 CreateApisQuery();
 
@@ -4673,6 +4777,8 @@ CreateSaiSwigGetApiHelperFunctions();
 CreateSaiSwigApiStructs();
 
 WriteHeaderFotter();
+
+CreateSourcePragmaPop();
 
 # Test Section
 

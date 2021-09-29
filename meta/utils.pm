@@ -99,6 +99,13 @@ sub WriteSwig
     $SWIG_CONTENT .= $ident . $content . "\n";
 }
 
+sub WriteSourceSectionComment
+{
+    my $content = shift;
+
+    WriteSource "\n/* $content */\n";
+}
+
 sub WriteSectionComment
 {
     my $content = shift;
@@ -571,7 +578,7 @@ BEGIN
     WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile
     GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
     Trim ExitOnErrors ExitOnErrorsOrWarnings ProcessEnumInitializers
-    WriteHeader WriteSource WriteTest WriteSwig WriteMetaDataFiles WriteSectionComment
+    WriteHeader WriteSource WriteTest WriteSwig WriteMetaDataFiles WriteSectionComment WriteSourceSectionComment
     $errors $warnings $NUMBER_REGEX
     $HEADER_CONTENT $SOURCE_CONTENT $TEST_CONTENT
     /;
