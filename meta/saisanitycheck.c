@@ -376,7 +376,7 @@ void check_attr_by_object_type()
 
             /*
              * For Switch Attribute we have crossed > 300 with Vendor extension
-             * for SAIv1.8.0 so increasing threshold.
+             * for SAI v1.8.0 so increasing threshold.
              */
 
             META_ASSERT_TRUE(index < 300, "object defines > 300 attributes, metadata bug?");
@@ -1205,7 +1205,7 @@ void check_attr_default_value_type(
             if (md->objecttype != SAI_OBJECT_TYPE_SWITCH)
             {
                 /*
-                 * This can be later relaxed to be set on PORTs since they have
+                 * This can be later relaxed to be set on ports since they have
                  * by default queues created.
                  */
 
@@ -5365,7 +5365,7 @@ void check_object_type_extension_max_value()
     /*
      * It can be handy for vendors to encode object type value on single byte
      * in every object it for easy object identification. We assume that we
-     * will have no more than 255 objec types on SAI right now.
+     * will have no more than 255 objects types on SAI right now.
      */
 
     META_ASSERT_TRUE(SAI_OBJECT_TYPE_EXTENSIONS_MAX < 256, "max object type can be 255 to be encoded on single byte");
