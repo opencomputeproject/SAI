@@ -457,7 +457,7 @@ bool sai_metadata_is_condition_met(
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list)
 {
-    /* attr list can be NULL, condtion could be based on default value */
+    /* attr list can be NULL, condition could be based on default value */
 
     if (md == NULL || !md->isconditional)
     {
@@ -486,7 +486,7 @@ bool sai_metadata_is_validonly_met(
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list)
 {
-    /* attr list can be NULL, condtion could be based on default value */
+    /* attr list can be NULL, condition could be based on default value */
 
     if (md == NULL || !md->isvalidonly)
     {
