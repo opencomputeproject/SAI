@@ -183,6 +183,21 @@ sub GetHeaderFiles
     return sort @headers;
 }
 
+sub GetMetaSourceFiles
+{
+    my $dir = shift;
+
+    $dir = "." if not defined $dir;
+
+    opendir(my $dh, $dir) or die "Can't opendir $dir: $!";
+
+    my @sources = grep { /^sai\w*\.(c|cpp)$/ and -f "$dir/$_" } readdir($dh);
+
+    closedir $dh;
+
+    return sort @sources;
+}
+
 sub GetMetaHeaderFiles
 {
     return GetHeaderFiles(".");
@@ -575,7 +590,7 @@ BEGIN
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
     LogDebug LogInfo LogWarning LogError
-    WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile
+    WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile GetMetaSourceFiles
     GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
     Trim ExitOnErrors ExitOnErrorsOrWarnings ProcessEnumInitializers
     WriteHeader WriteSource WriteTest WriteSwig WriteMetaDataFiles WriteSectionComment WriteSourceSectionComment
