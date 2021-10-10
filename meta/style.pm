@@ -761,6 +761,51 @@ sub CheckDoxygenSpacing
     }
 }
 
+sub GetWordsFromSources
+{
+    my $wordsToCheck = shift;
+
+    my @sources = GetMetaSourceFiles();
+
+    my @acronyms = GetAcronyms();
+
+    my %ac = ();
+
+    $ac{$_} = 1 for @acronyms;
+
+    for my $src (sort @sources)
+    {
+        next if $src =~ /saimetadata.c/;
+        next if $src =~ /saimetadatatest.c/;
+        next if $src =~ /saiswig/;
+
+        my $data = ReadHeaderFile($src);
+
+        my @comments = ExtractComments($data);
+
+        for my $comment(@comments)
+        {
+            my @lines = split/\n/,$comment;
+
+            for my $line (@lines)
+            {
+                while ($line =~ /\b([a-z0-9]+)\b/ig)
+                {
+                    my $pre = $`;
+                    my $post = $';
+                    my $word = $1;
+
+                    next if $word =~ /xFF/;
+                    next if defined $ac{$word};
+                    next if defined $wordsToCheck->{$word};
+
+                    $wordsToCheck->{$word} = $src;
+                }
+            }
+        }
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
@@ -951,7 +996,7 @@ sub CheckHeadersStyle
             {
                 my $init = $2;
 
-                if ($init =~ m!^(0x\w+|SAI_\w+|SAI_\w+ \+ 0x[0-9a-f]{1,8}|SAI_\w+ \+ SAI_\w+|\d+|\(?\d+ << \d+\)?),?\s*(/\*\*.*\*/)?$!)
+                if ($init =~ m!^(0x\w+|SAI_\w+|SAI_\w+ \+ \d+|SAI_\w+ \+ 0x[0-9a-f]{1,8}|SAI_\w+ \+ SAI_\w+|\d+|\(?\d+ << \d+\)?),?\s*(/\*\*.*\*/)?$!)
                 {
                     # supported initializers for enum:
                     # - 0x00000000 (hexadecimal number)
@@ -960,6 +1005,7 @@ sub CheckHeadersStyle
                     # - n << m (flags shifted)
                     # - SAI_.. + SAI_.. (sum of SAI enums)
                     # - SAI_.. + 0x00 (sum of SAI and hexadecimal number)
+                    # - SAI_.. + 0 (sum of SAI and decimal number)
                 }
                 else
                 {
@@ -1024,12 +1070,27 @@ sub CheckHeadersStyle
                 LogWarning "missing empty line before: $header $n: $line";
             }
 
+            if ($line =~ /_(In|Out|Inout)_.+(\* | \* )/)
+            {
+                LogWarning "move * to the right of parameter: $header $n: $line";
+            }
+
             if ($line =~ /\*.*SAI_.+(==|!=)/ and not $line =~ /\@(condition|validonly)/)
             {
                 if (not $line =~ /(condition|validonly|valid when|only when)\s+SAI_/i)
                 {
                     LogWarning "condition should be preceded by 'valid when' or 'only when': $header $n: $line";
                 }
+            }
+
+            if ($line =~ /SAI_\w+ \s+=\s+(0x|S)/)
+            {
+                LogWarning "too many spaces before '=' $header:$n: $line"
+            }
+
+            if ($line =~ /__/ and not $line =~ /^#.+__SAI\w*_H_|VA_ARGS|BOOL_DEFINED/)
+            {
+                LogWarning "double underscore detected: $header $n: $line";
             }
 
             if ($line eq "" and $prev =~ /{/)
@@ -1079,7 +1140,7 @@ sub CheckHeadersStyle
 
                     next if defined $exceptions{$word};
                     next if $word =~ /^sai\w+/i;
-                    next if $word =~ /0x\S+L/;
+                    next if $word =~ /0x\S+/;
                     next if "$pre$word" =~ /802.\d+\w+/;
 
                     next if defined $wordsChecked{$word};
@@ -1138,6 +1199,8 @@ sub CheckHeadersStyle
             LogWarning "$oncedef should be used 3 times in header, but used $oncedefCount";
         }
     }
+
+    GetWordsFromSources(\%wordsToCheck);
 
     RunAspell(\%wordsToCheck) if not defined $main::optionDisableAspell;
 }

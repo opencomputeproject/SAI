@@ -66,8 +66,10 @@ our %ATTR_TO_CALLBACK = ();
 our %PRIMITIVE_TYPES = ();
 our %FUNCTION_DEF = ();
 our @ALL_ENUMS = ();
+our %GLOBAL_APIS = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
+my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
 
 # TAGS HANDLERS
 
@@ -521,162 +523,6 @@ sub ProcessDefineSection
     }
 }
 
-sub ProcessEnumInitializers
-{
-    #
-    # This function attempts to figure out enum integers values during paring
-    # time in similar way as C compiler would do. Because SAI community agreed
-    # that enum grouping is more beneficial then ordering enums, then enum
-    # values could be not sorted any more. But if we figure out integers
-    # values, we could perform stable sort at this parser level, and generate
-    # enums metadata where enum values are sorted.
-    #
-
-    my ($arr_ref, $ini_ref, $enumTypeName) = @_;
-
-    return if $enumTypeName =~ /_extensions_t$/; # ignore initializers on extensions
-
-    if (scalar(@$arr_ref) != scalar(@$ini_ref))
-    {
-        LogError "attr array not matching initializers array on $enumTypeName";
-        return;
-    }
-
-    return if grep (/<</, @$ini_ref); # skip shifted flags enum
-
-    my $previousEnumValue = -1;
-
-    my $idx = 0;
-
-    # using reference here, will cause update $ini inside initializer table
-    # reference and that's what we want
-
-    for my $ini (@$ini_ref)
-    {
-        if ($ini eq "")
-        {
-            $previousEnumValue += 1;
-
-            $ini = sprintf("0x%08x", $previousEnumValue);
-        }
-        elsif ($ini =~ /^= (0x[0-9a-f]{8})$/)
-        {
-            $previousEnumValue = hex($1);
-
-            $ini = sprintf("0x%08x", $previousEnumValue);
-        }
-        elsif ($ini =~ /^=\s+(\d+)$/)
-        {
-            $previousEnumValue = hex($1);
-
-            $ini = sprintf("0x%08x", $previousEnumValue);
-        }
-        elsif ($ini =~ /= (SAI_\w+)$/)
-        {
-            for my $i (0..$idx)
-            {
-                if ($$arr_ref[$i] eq $1)
-                {
-                    $ini = @$ini_ref[$i];
-
-                    $previousEnumValue = hex($ini);
-                    last;
-                }
-            }
-
-            LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
-        }
-        elsif ($ini =~ /^= (SAI_\w+) \+ (SAI_\w+)$/) # special case SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
-        {
-            # this case is in form: = (sai enum value) + (sai define)
-
-            my $first = $1;
-
-            my $val = $SAI_DEFINES{$2};
-
-            if (not defined $val)
-            {
-                LogError "$val not defined using #define directive";
-            }
-            elsif (not $val =~ /^0x[0-9a-f]+$/i)
-            {
-                LogError "$val not in hex format 0xYY";
-            }
-            else
-            {
-                for my $i (0..$idx)
-                {
-                    if ($$arr_ref[$i] eq $first)
-                    {
-                        $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + hex($val));
-
-                        $previousEnumValue = hex($ini);
-                        last;
-                    }
-                }
-
-                LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
-            }
-        }
-        elsif ($ini =~/^= (SAI_\w+) \+ (0x[0-9a-f]{1,8})$/)
-        {
-            my $first = $1;
-            my $val = $2;
-
-            for my $i (0..$idx)
-            {
-                if ($$arr_ref[$i] eq $first)
-                {
-                    $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + hex($val));
-
-                    $previousEnumValue = hex($ini);
-                    last;
-                }
-            }
-
-            LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
-        }
-        else
-        {
-            LogError "not supported initializer '$ini' on $$arr_ref[$idx], FIXME";
-        }
-
-        $idx++;
-    }
-
-    # in final form all initializers must be hex numbers 8 digits long, since
-    # they will be used in stable sort
-
-    if (scalar(grep (/^0x[0-9a-f]{8}$/, @$ini_ref)) != scalar(@$ini_ref))
-    {
-        LogError "wrong initializers on $enumTypeName: @$ini_ref";
-        return;
-    }
-
-    my $before = "@$arr_ref";
-
-    my @joined = ();
-
-    for my $idx (0..$#$arr_ref)
-    {
-        push @joined, "$$ini_ref[$idx]$$arr_ref[$idx]"; # format is: 0x00000000SAI_
-    }
-
-    my @sorted = sort { substr($a, 0, 10) cmp substr($b, 0, 10) } @joined;
-
-    s/^0x[0-9a-f]{8}SAI/SAI/i for @sorted;
-
-    my $after = "@sorted";
-
-    return if $after eq $before;
-
-    LogInfo "Need sort initalizers for $enumTypeName";
-
-    @$arr_ref = ();
-
-    push @$arr_ref, @sorted;
-}
-
 sub ProcessEnumSection
 {
     my $section = shift;
@@ -715,7 +561,13 @@ sub ProcessEnumSection
 
         my $ed = ExtractDescription($enumtypename, $enumtypename, $memberdef->{detaileddescription}[0]);
 
+        if ($ed =~ /\@\@flags/s and not $ed =~ /\@\@flags\s+(\w+)/s)
+        {
+            LogWarning "expected flags type $ENUM_FLAGS_TYPES not specified on $enumtypename";
+        }
+
         $SAI_ENUMS{$enumtypename}{flagsenum} = ($ed =~ /\@\@flags/s) ? "true" : "false";
+        $SAI_ENUMS{$enumtypename}{flagstype} = ($ed =~ /\@\@flags\s+(\w+)/s) ? $1 : "none";
 
         my @arr = ();
         my @initializers = ();
@@ -772,7 +624,7 @@ sub ProcessEnumSection
             }
         }
 
-        ProcessEnumInitializers(\@arr,\@initializers, $enumtypename);
+        ProcessEnumInitializers(\@arr,\@initializers, $enumtypename, \%SAI_DEFINES);
 
         # TODO stable sort values based on calculated values from initializer (https://perldoc.perl.org/sort)
         # TODO add param to disable this
@@ -1221,6 +1073,37 @@ sub ProcessNotifications
     $NOTIFICATIONS{$typedefname} = \%N;
 }
 
+sub ProcessFunctionSection
+{
+    my $section = shift;
+
+    for my $memberdef (@{ $section->{memberdef} })
+    {
+        next if not $memberdef->{kind} eq "function";
+
+        #print Dumper($memberdef);
+
+        my $name = $memberdef->{name}[0];
+        my $file = $memberdef->{location}[0]->{file};
+
+        next if not $file =~ m!inc/sai\w*.h!;
+
+        LogError "api $name not starting with sai_! " if not $name =~ /^sai_\w+$/;
+
+        #print Dumper($memberdef);
+
+        my $def = $memberdef->{definition}[0];
+
+        my $type = $memberdef->{type}[0];
+
+        $type = $1 if $def =~ /^(\w+) sai_\w+$/;
+
+        $GLOBAL_APIS{$name}{name} = $name;
+        $GLOBAL_APIS{$name}{args} = $memberdef->{argsstring}[0];
+        $GLOBAL_APIS{$name}{type} = $type;
+    }
+}
+
 sub ProcessXmlFile
 {
     my $file = shift;
@@ -1236,7 +1119,25 @@ sub ProcessXmlFile
         ProcessEnumSection($section) if ($section->{kind} eq "enum");
 
         ProcessTypedefSection($section) if $section->{kind} eq "typedef";
+
+        ProcessFunctionSection($section) if $section->{kind} eq "func";
     }
+}
+
+sub ProcessFlagsType
+{
+    my ($typedef, $flagstype) = @_;
+
+    return "SAI_ENUM_FLAGS_TYPE_NONE"    if not defined $flagstype;
+    return "SAI_ENUM_FLAGS_TYPE_NONE"    if $flagstype eq "none";
+    return "SAI_ENUM_FLAGS_TYPE_STRICT"  if $flagstype eq "strict";
+    return "SAI_ENUM_FLAGS_TYPE_MIXED"   if $flagstype eq "mixed";
+    return "SAI_ENUM_FLAGS_TYPE_RANGES"  if $flagstype eq "ranges";
+    return "SAI_ENUM_FLAGS_TYPE_FREE"    if $flagstype eq "free";
+
+    LogError "wrong flags type '$flagstype' on $typedef, expected $ENUM_FLAGS_TYPES";
+
+    return "WRONG";
 }
 
 sub ProcessSingleEnum
@@ -1250,6 +1151,8 @@ sub ProcessSingleEnum
     my @values = @{$enum->{values}};
 
     my $flags = (defined $enum->{flagsenum}) ? $enum->{flagsenum} : "false";
+
+    my $flagstype = ProcessFlagsType($typedef, $enum->{flagstype});
 
     WriteSource "const $typedef sai_metadata_${typedef}_enum_values[] = {";
 
@@ -1323,6 +1226,7 @@ sub ProcessSingleEnum
     WriteSource ".valuesnames       = sai_metadata_${typedef}_enum_values_names,";
     WriteSource ".valuesshortnames  = sai_metadata_${typedef}_enum_values_short_names,";
     WriteSource ".containsflags     = $flags,";
+    WriteSource ".flagstype         = $flagstype,";
 
     if (defined $enum->{ignoreval})
     {
@@ -1336,8 +1240,9 @@ sub ProcessSingleEnum
     }
 
     my $ot = ($typedef =~ /^sai_(\w+)_attr_t/) ? uc("SAI_OBJECT_TYPE_$1") : "SAI_OBJECT_TYPE_NULL";
+    #my $ot = ($typedef =~ /^sai_(\w+)_attr_(extensions_)?t/) ? uc("SAI_OBJECT_TYPE_$1") : "SAI_OBJECT_TYPE_NULL";
 
-    WriteSource ".objecttype        = $ot,";
+    WriteSource ".objecttype        = (sai_object_type_t)$ot,";
     WriteSource "};";
 
     return $count;
@@ -1353,14 +1258,34 @@ sub ProcessExtraRangeDefines
     }
 }
 
-sub CreateMetadataHeaderAndSource
+sub CreateSourceIncludes
 {
+    WriteSourceSectionComment "Includes";
+
     WriteSource "#include <stdio.h>";
     WriteSource "#include <string.h>";
     WriteSource "#include <stdlib.h>";
     WriteSource "#include <stddef.h>";
     WriteSource "#include \"saimetadata.h\"";
+}
 
+sub CreateSourcePragmaPush
+{
+    WriteSourceSectionComment "Pragma diagnostic push";
+
+    #
+    # because we are merging extension attributes into existing
+    # enums, new versions of gcc can warn when 2 different enums
+    # are mixed, so lets ignore this warning using pragmas
+    #
+
+    WriteSource "#pragma GCC diagnostic push";
+    WriteSource "#pragma GCC diagnostic ignored \"-Wpragmas\"";
+    WriteSource "#pragma GCC diagnostic ignored \"-Wenum-conversion\"";
+}
+
+sub CreateMetadataHeaderAndSource
+{
     WriteSectionComment "Enums metadata";
 
     for my $key (sort keys %SAI_ENUMS)
@@ -2329,7 +2254,7 @@ sub ProcessSingleObjectType
 
         WriteSource "const sai_attr_metadata_t sai_metadata_attr_$attr = {";
 
-        WriteSource ".objecttype                    = $objecttype,";
+        WriteSource ".objecttype                    = (sai_object_type_t)$objecttype,";
         WriteSource ".attrid                        = $attr,";
         WriteSource ".attridname                    = $attrname,";
         WriteSource ".brief                         = $brief,";
@@ -2464,6 +2389,7 @@ sub ProcessSaiStatus
 
     $SAI_ENUMS{"sai_status_t"}{values} = \@values;
     $SAI_ENUMS{"sai_status_t"}{flagsenum} = "true";
+    $SAI_ENUMS{"sai_status_t"}{flagstype} = "free";
 }
 
 sub CreateMetadataForAttributes
@@ -2583,6 +2509,8 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "uint32_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"          if $type =~ /^sai_\w+_type_t$/; # enum
     return "SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA" if $type eq "sai_nat_entry_data_t";
+    return "SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY"    if $type eq "sai_encrypt_key_t";
+    return "SAI_ATTR_VALUE_TYPE_AUTH_KEY"       if $type eq "sai_auth_key_t";
     return "SAI_ATTR_VALUE_TYPE_MACSEC_SAK"     if $type eq "sai_macsec_sak_t";
     return "SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY" if $type eq "sai_macsec_auth_key_t";
     return "SAI_ATTR_VALUE_TYPE_MACSEC_SALT"    if $type eq "sai_macsec_salt_t";
@@ -2837,8 +2765,9 @@ sub ProcessRevGraph
 
         WriteSource "const sai_rev_graph_member_t $membername = {";
 
-        WriteSource ".objecttype          = $objectType,";
-        WriteSource ".depobjecttype       = $depObjectType,";
+
+        WriteSource ".objecttype          = (sai_object_type_t)$objectType,";
+        WriteSource ".depobjecttype       = (sai_object_type_t)$depObjectType,";
 
         if ($attrId =~ /^SAI_\w+_ATTR_\w+/)
         {
@@ -3212,13 +3141,49 @@ sub CreateGlobalApis
     WriteHeader "extern sai_apis_t sai_metadata_apis;";
 }
 
+sub CreateGlobalFunctions
+{
+    WriteSectionComment "Global functions";
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $type = $GLOBAL_APIS{$name}{type};
+        my $args = $GLOBAL_APIS{$name}{args};
+
+        $args =~ s/(_(In|Out|Inout)_)/\n    $1/g;
+
+        WriteHeader "typedef $type (*${name}_fn) $args;";
+        WriteHeader "";
+    }
+
+    WriteHeader "typedef struct _sai_global_apis_t {";
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $short = $1 if $name =~ /^sai_(\w+)/;
+
+        WriteHeader "${name}_fn $short;";
+    }
+
+    WriteHeader "} sai_global_apis_t;";
+
+    WriteHeader "";
+
+    WriteHeader "typedef enum _sai_global_api_type_t {";
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $short = uc($1) if $name =~ /^sai_(\w+)/;
+
+        WriteHeader "SAI_GLOBAL_API_TYPE_$short,";
+    }
+
+    WriteHeader "} sai_global_api_type_t;";
+}
+
 sub CreateApisQuery
 {
     WriteSectionComment "SAI API query";
-
-    WriteHeader "typedef sai_status_t (*sai_api_query_fn)(";
-    WriteHeader "_In_ sai_api_t sai_api_id,";
-    WriteHeader "_Out_ void** api_method_table);";
 
     # for switch we need to generate wrapper, for others we can use pointers
     # so we don't need to use meta key then
@@ -3350,7 +3315,7 @@ sub CreateObjectInfo
 
         WriteSource "const sai_object_type_info_t sai_metadata_object_type_info_$ot = {";
 
-        WriteSource ".objecttype           = $ot,";
+        WriteSource ".objecttype           = (sai_object_type_t)$ot,";
         WriteSource ".objecttypename       = \"$ot\",";
         WriteSource ".attridstart          = $start,";
         WriteSource ".attridend            = $end,";
@@ -4022,6 +3987,14 @@ sub ProcessStructItem
 
         $ProcessedItems{$item} = 1;
     }
+
+    my $count = scalar(keys %S);
+    my @k = sort keys %S;
+
+    if ($type =~ /^sai_(\w+)_list_t$/ and $count != 2)
+    {
+        LogError "lists must contain 2 elements (count, list), but $type has $count (@k), it's not a list then, fix this";
+    }
 }
 
 sub CheckAttributeValueUnion
@@ -4139,6 +4112,28 @@ sub CreateNotificationEnum
     WriteSectionComment "Get sai_switch_notification_type_t helper method";
 
     CreateEnumHelperMethod("sai_switch_notification_type_t");
+}
+
+sub CreateNotificationNames
+{
+    #
+    # create notification names to have string representation
+    #
+
+    WriteSectionComment "SAI notifications names";
+
+    for my $name (sort keys %NOTIFICATIONS)
+    {
+        if (not $name =~ /^sai_(\w+)_notification_fn/)
+        {
+            LogWarning "notification function '$name' is not ending on _notification_fn";
+            next;
+        }
+
+        $name = uc $1;
+
+        WriteHeader "#define SAI_SWITCH_NOTIFICATION_NAME_$name \"$1\"";
+    }
 }
 
 sub CreateSwitchNotificationAttributesList
@@ -4335,6 +4330,13 @@ sub WriteHeaderHeader
 sub WriteHeaderFotter
 {
     WriteHeader "#endif /* __SAI_METADATA_H__ */";
+}
+
+sub CreateSourcePragmaPop
+{
+    WriteSourceSectionComment "Pragma diagnostic pop";
+
+    WriteSource "#pragma GCC diagnostic pop";
 }
 
 sub ProcessXmlFiles
@@ -4706,6 +4708,10 @@ ProcessSaiStatus();
 
 ProcessExtraRangeDefines();
 
+CreateSourceIncludes();
+
+CreateSourcePragmaPush();
+
 CreateMetadataHeaderAndSource();
 
 CreateMetadata();
@@ -4727,6 +4733,8 @@ CreateApis();
 CreateApisStruct();
 
 CreateGlobalApis();
+
+CreateGlobalFunctions();
 
 CreateApisQuery();
 
@@ -4752,6 +4760,8 @@ CreateNotificationStruct();
 
 CreateNotificationEnum();
 
+CreateNotificationNames();
+
 CreateSwitchNotificationAttributesList();
 
 CreateSwitchPointersStruct();
@@ -4767,6 +4777,8 @@ CreateSaiSwigGetApiHelperFunctions();
 CreateSaiSwigApiStructs();
 
 WriteHeaderFotter();
+
+CreateSourcePragmaPop();
 
 # Test Section
 

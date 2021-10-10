@@ -497,9 +497,9 @@ int sai_deserialize_mac(
     return SAI_SERIALIZE_ERROR;
 }
 
-int sai_serialize_macsec_sak(
+int sai_serialize_encrypt_key(
         _Out_ char *buffer,
-        _In_ const sai_macsec_sak_t sak)
+        _In_ const sai_encrypt_key_t sak)
 {
     return sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
 %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
@@ -511,9 +511,9 @@ int sai_serialize_macsec_sak(
                    sak[24], sak[25], sak[26], sak[27], sak[28], sak[29],sak[30], sak[31]);
 }
 
-int sai_deserialize_macsec_sak(
+int sai_deserialize_encrypt_key(
         _In_ const char *buffer,
-        _Out_ sai_macsec_sak_t sak)
+        _Out_ sai_encrypt_key_t sak)
 {
     int arr[32];
     int read;
@@ -529,7 +529,7 @@ int sai_deserialize_macsec_sak(
                    &arr[24], &arr[25], &arr[26], &arr[27],
                    &arr[28], &arr[29], &arr[30], &arr[31], &read);
 
-    if (n == 32 && read == (32*3-1))
+    if (n == 32 && read == (32*3-1) && sai_serialize_is_char_allowed(buffer[read]))
     {
         for (n = 0; n < 32; n++)
         {
@@ -539,13 +539,13 @@ int sai_deserialize_macsec_sak(
         return read;
     }
 
-    SAI_META_LOG_WARN("failed to deserialize '%.*s' as macsec_sak", MAX_CHARS_PRINT, buffer);
+    SAI_META_LOG_WARN("failed to deserialize '%.*s' as encrypt_key", MAX_CHARS_PRINT, buffer);
     return SAI_SERIALIZE_ERROR;
 }
 
-int sai_serialize_macsec_auth_key(
+int sai_serialize_auth_key(
         _Out_ char *buffer,
-        _In_ const sai_macsec_auth_key_t auth)
+        _In_ const sai_auth_key_t auth)
 {
     return sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:\
 %02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
@@ -553,9 +553,9 @@ int sai_serialize_macsec_auth_key(
                    auth[8], auth[9], auth[10], auth[11], auth[12], auth[13],auth[14], auth[15]);
 }
 
-int sai_deserialize_macsec_auth_key(
+int sai_deserialize_auth_key(
         _In_ const char *buffer,
-        _Out_ sai_macsec_auth_key_t auth)
+        _Out_ sai_auth_key_t auth)
 {
     int arr[16];
     int read;
@@ -566,7 +566,7 @@ int sai_deserialize_macsec_auth_key(
                    &arr[8], &arr[9], &arr[10], &arr[11],
                    &arr[12], &arr[13], &arr[14], &arr[15], &read);
 
-    if (n == 16 && read == (16*3-1))
+    if (n == 16 && read == (16*3-1) && sai_serialize_is_char_allowed(buffer[read]))
     {
        for (n = 0; n < 16; n++)
         {
@@ -576,8 +576,36 @@ int sai_deserialize_macsec_auth_key(
         return read;
     }
 
-    SAI_META_LOG_WARN("failed to deserialize '%.*s' as macsec_auth_key", MAX_CHARS_PRINT, buffer);
+    SAI_META_LOG_WARN("failed to deserialize '%.*s' as auth_key", MAX_CHARS_PRINT, buffer);
     return SAI_SERIALIZE_ERROR;
+}
+
+int sai_serialize_macsec_sak(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_sak_t sak)
+{
+   return sai_serialize_encrypt_key(buffer, sak);
+}
+
+int sai_deserialize_macsec_sak(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_sak_t sak)
+{
+   return sai_deserialize_encrypt_key(buffer, sak);
+}
+
+int sai_serialize_macsec_auth_key(
+        _Out_ char *buffer,
+        _In_ const sai_macsec_auth_key_t auth)
+{
+   return sai_serialize_auth_key(buffer, auth);
+}
+
+int sai_deserialize_macsec_auth_key(
+        _In_ const char *buffer,
+        _Out_ sai_macsec_auth_key_t auth)
+{
+   return sai_deserialize_auth_key(buffer, auth);
 }
 
 int sai_serialize_macsec_salt(
@@ -596,20 +624,15 @@ int sai_deserialize_macsec_salt(
     int arr[32];
     int read;
 
-    int n = sscanf(buffer, "%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:\
-%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X%n",
+    int n = sscanf(buffer, "%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X:%2X%n",
                    &arr[0], &arr[1], &arr[2], &arr[3],
                    &arr[4], &arr[5], &arr[6], &arr[7],
                    &arr[8], &arr[9], &arr[10], &arr[11],
-                   &arr[12], &arr[13], &arr[14], &arr[15],
-                   &arr[16], &arr[17], &arr[18], &arr[19],
-                   &arr[20], &arr[21], &arr[22], &arr[23],
-                   &arr[24], &arr[25], &arr[26], &arr[27],
-                   &arr[28], &arr[29], &arr[30], &arr[31], &read);
+                   &read);
 
-    if (n == 32 && read == (32*3-1))
+    if (n == 12 && read == (12*3-1) && sai_serialize_is_char_allowed(buffer[read]))
     {
-        for (n = 0; n < 32; n++)
+        for (n = 0; n < 12; n++)
         {
             salt[n] = (uint8_t)arr[n];
         }

@@ -56,6 +56,8 @@ typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
 typedef UINT32  sai_label_id_t;
 typedef UINT32  sai_stat_id_t;
+typedef UINT8   sai_encrypt_key_t[32];
+typedef UINT8   sai_auth_key_t[16];
 typedef UINT8   sai_macsec_sak_t[32];
 typedef UINT8   sai_macsec_auth_key_t[16];
 typedef UINT8   sai_macsec_salt_t[12];
@@ -99,6 +101,8 @@ typedef uint8_t  sai_ip6_t[16];
 typedef uint32_t sai_switch_hash_seed_t;
 typedef uint32_t sai_label_id_t;
 typedef uint32_t sai_stat_id_t;
+typedef uint8_t sai_encrypt_key_t[32];
+typedef uint8_t sai_auth_key_t[16];
 typedef uint8_t sai_macsec_sak_t[32];
 typedef uint8_t sai_macsec_auth_key_t[16];
 typedef uint8_t sai_macsec_salt_t[12];
@@ -278,7 +282,12 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_SYSTEM_PORT              = 93,
     SAI_OBJECT_TYPE_FINE_GRAINED_HASH_FIELD  = 94,
     SAI_OBJECT_TYPE_SWITCH_TUNNEL            = 95,
-    SAI_OBJECT_TYPE_MY_SID_ENTRY          = 96,
+    SAI_OBJECT_TYPE_MY_SID_ENTRY             = 96,
+    SAI_OBJECT_TYPE_MY_MAC                   = 97,
+    SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MAP       = 98,
+    SAI_OBJECT_TYPE_IPSEC                    = 99,
+    SAI_OBJECT_TYPE_IPSEC_PORT               = 100,
+    SAI_OBJECT_TYPE_IPSEC_SA                 = 101,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
@@ -652,6 +661,7 @@ typedef enum _sai_packet_color_t
  * dot1p/DSCP/MPLS_EXP --> TC
  * dot1p/DSCP/MPLS_EXP --> Color
  * dot1p/DSCP/MPLS_EXP --> TC + Color
+ * DSCP/MPLS_EXP --> FC
  * TC --> dot1p/DSCP/MPLS_EXP.
  * TC + color --> dot1p/DSCP/MPLS_EXP.
  * TC --> Egress Queue.
@@ -684,6 +694,9 @@ typedef struct _sai_qos_map_params_t
 
     /** MPLS exp value */
     sai_uint8_t mpls_exp;
+
+    /** Forwarding class */
+    sai_uint8_t fc;
 
 } sai_qos_map_params_t;
 
@@ -1038,6 +1051,7 @@ typedef struct _sai_system_port_config_t
 
     /** Number of Virtual Output Queues associated with the system port */
     uint32_t num_voq;
+
 } sai_system_port_config_t;
 
 /**
@@ -1251,6 +1265,12 @@ typedef union _sai_attribute_value_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TIMESPEC */
     sai_timespec_t timespec;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY */
+    sai_encrypt_key_t encrypt_key;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_AUTH_KEY */
+    sai_auth_key_t authkey;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SAK */
     sai_macsec_sak_t macsecsak;
 
@@ -1395,7 +1415,7 @@ typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
  * Used in get statistics extended or query statistics capabilities
  * Note enum values must be powers of 2 to be used as bit mask for query statistics capabilities
  *
- * @flags Contains flags
+ * @flags strict
  */
 typedef enum _sai_stats_mode_t
 {
@@ -1420,6 +1440,8 @@ typedef struct _sai_stat_capability_t
      *
      * For example, if read and read_and_clear are supported, value is
      * SAI_STATS_MODE_READ | SAI_STATS_MODE_READ_AND_CLEAR
+     *
+     * @flags sai_stats_mode_t
      */
     uint32_t stat_modes;
 

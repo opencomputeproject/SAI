@@ -340,6 +340,14 @@ typedef enum _sai_tunnel_type_t
 
     SAI_TUNNEL_TYPE_SRV6,
 
+    SAI_TUNNEL_TYPE_NVGRE,
+
+    SAI_TUNNEL_TYPE_IPINIP_ESP,
+
+    SAI_TUNNEL_TYPE_IPINIP_UDP_ESP,
+
+    SAI_TUNNEL_TYPE_VXLAN_UDP_ESP,
+
 } sai_tunnel_type_t;
 
 /**
@@ -903,7 +911,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for ingress ACL object
      *
      * Bind (or unbind) an ingress ACL table or ACL group globally. Enable/Update
-     * ingress ACL table or ACL group filtering by assigning the list of valid
+     * ingress ACL table or ACL group filtering by assigning a valid
      * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -919,7 +927,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for egress ACL object
      *
      * Bind (or unbind) an egress ACL tables or ACL group globally. Enable/Update
-     * egress ACL table or ACL group filtering by assigning the list of valid
+     * egress ACL table or ACL group filtering by assigning a valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -1588,7 +1596,7 @@ typedef enum _sai_switch_attr_t
      * @brief Enable DSCP -> TC MAP on switch.
      *
      * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disable trust DSCP, Map ID should be added/removed on port.
+     * To enable/disable trust DSCP, Map ID should be added/removed on switch.
      * Default no map.
      *
      * @type sai_object_id_t
@@ -2519,7 +2527,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for Pre-ingress ACL object
      *
      * Bind (or unbind) an Pre-ingress ACL table or ACL group globally. Enable/Update
-     * Pre-ingress ACL table or ACL group filtering by assigning the list of valid
+     * Pre-ingress ACL table or ACL group filtering by assigning a valid
      * object id. Disable pre-ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -2556,6 +2564,138 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_DOUBLE_NAPT_ENTRY,
 
     /**
+     * @brief Slave MDIO Address list
+     *
+     * Configure list of slave MDIO addresses for firmware download in Broadcast mode.
+     * The sequence for firmware download in broadcast mode is as follows:
+     * 1. For each MDIO master, call sai_create_switch() and pass the list of slave MDIO addresses.
+     * In this step, gearbox will upgrade the firmware on all PHY devices including master and slave.
+     *
+     * 2. Call sai_create_switch() on all slave PHY devices with #SAI_SWITCH_ATTR_FIRMWARE_LOAD_TYPE = SAI_SWITCH_FIRMWARE_LOAD_TYPE_SKIP,
+     * which will already have had their firmware upgraded.
+     *
+     * @type sai_u8_list_t
+     * @flags CREATE_ONLY
+     * @default empty
+     * @validonly SAI_SWITCH_ATTR_FIRMWARE_DOWNLOAD_BROADCAST == true
+     */
+    SAI_SWITCH_ATTR_SLAVE_MDIO_ADDR_LIST,
+
+    /**
+     * @brief Minimum priority for My MAC
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MY_MAC_TABLE_MINIMUM_PRIORITY,
+
+    /**
+     * @brief Maximum priority for My MAC
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MY_MAC_TABLE_MAXIMUM_PRIORITY,
+
+    /**
+     * @brief My MAC entries installed on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_MY_MAC
+     */
+    SAI_SWITCH_ATTR_MY_MAC_LIST,
+
+    /**
+     * @brief Number of My MAC entries installed on the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_INSTALLED_MY_MAC_ENTRIES,
+
+    /**
+     * @brief Number of available My MAC entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_MY_MAC_ENTRIES,
+
+    /**
+     * @brief Maximum forwarding classes limit
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_NUMBER_OF_FORWARDING_CLASSES,
+
+    /**
+     * @brief Enable DSCP -> Forwarding Class MAP on switch
+     *
+     * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_DSCP_TO_FORWARDING_CLASS_MAP,
+
+    /**
+     * @brief Enable EXP -> Forwarding Class MAP on switch
+     *
+     * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_MPLS_EXP_TO_FORWARDING_CLASS_MAP,
+
+    /**
+     * @brief IPsec object for this switch.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_IPSEC
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_IPSEC_OBJECT_ID,
+
+    /**
+     * @brief TPID in IPsec SA-Tag.  This is used only between a Switch ASIC
+     * and IPsec-enabled PHY chips and not packets on external network.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0xFFFE
+     */
+    SAI_SWITCH_ATTR_IPSEC_SA_TAG_TPID,
+
+    /**
+     * @brief IPsec SA status change notification callback function.
+     *
+     * In case driver does not support this attribute, The Host adapter should poll
+     * IPsec SA status by SAI_IPSEC_SA_ATTR_OCTET_COUNT_STATUS and
+     * SAI_IPSEC_SA_ATTR_EGRESS_ESN.
+     *
+     * Use sai_ipsec_sa_status_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_ipsec_sa_status_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_IPSEC_SA_STATUS_CHANGE_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -2571,7 +2711,7 @@ typedef enum _sai_switch_attr_t
 /**
  * @brief Switch counter IDs in sai_get_switch_stats() call
  *
- * @flags Contains flags
+ * @flags ranges
  */
 typedef enum _sai_switch_stat_t
 {
