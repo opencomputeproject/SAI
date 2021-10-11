@@ -61,6 +61,31 @@ typedef enum _sai_queue_type_t
 
 } sai_queue_type_t;
 
+typedef enum _sai_queue_pfc_state_t {
+    /** 
+     * H/w queue PFC state is not paused.
+     * Queue can forward packets.
+     */
+    SAI_QUEUE_PFC_STATE_NOT_PAUSED = 0x00000000,
+
+    /**
+     * H/w queue is paused off and has not been unpaused or
+     * forwarded packets since the last time the
+     * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
+     * attribute for this queue was polled. 
+     */
+    SAI_QUEUE_PFC_STATE_PAUSED = 0x00000001,
+
+    /**
+     * H/w queue is paused off, but was not paused
+     * off for the full interval that the
+     * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
+     * attribute for this queue was last polled.
+     */
+    SAI_QUEUE_PFC_STATE_PAUSED_NOT_CONTINUOUS = 0x00000002,
+
+} sai_queue_pfc_state_t;
+
 /**
  * @brief Enum defining queue attributes.
  */
@@ -206,21 +231,22 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_PFC_DLR_PACKET_ACTION,
 
     /**
-     * @brief Queue PFC deadlock state
+     * @brief Queue PFC continuous deadlock state
      *
-     * This attribute represents the queue internal hardware PFC
-     * deadlock state. It is an aggregation of all HW state used to
-     * determine if a queue is in PFC deadlock. This attribute should
-     * only be queried as part of the PFC deadlock and recovery detection
-     * processing.
-     * True indicates the queue is in a PFC deadlock state and
-     * on each successive query, a True indicates the queue has stayed
-     * in that state.
+     * This attribute represents the queue's internal hardware PFC
+     * continuous deadlock state. It is an aggregation of all HW state used
+     * to determine if a queue is in PFC deadlock based on state
+     * cached/maintained by the SDK. Consecutive queries of this
+     * attribute provide the PFC state for the queue for the interval
+     * period between the queries.
      *
-     * @type bool
+     * This attribute should only be queried as part of the PFC deadlock 
+     * and recovery detection processing.
+     *
+     * @type sai_queue_pfc_deadlock_state_t
      * @flags READ_ONLY
      */
-    SAI_QUEUE_ATTR_PFC_DEADLOCK_STATE,
+    SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE,
 
     /**
      * @brief End of attributes

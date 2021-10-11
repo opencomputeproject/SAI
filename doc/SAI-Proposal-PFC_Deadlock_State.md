@@ -9,7 +9,7 @@ Created     | 08/5/2021
 SAI-Version | 1.8
 
 ## Overview
-Priority Flow Control (PFC) is used in Ethernet networks which makes the network prone to deadlocks. Detection and recovery of deadlocks can differ across switch vendors due to the ASIC implementation. SAI provides many attributes that can be queried to determine when a queue is in a deadlock state. From the Network Operating System (NOS), you need to know the ASIC vendor implementation to determine which attributes need to be queried to determine if the queue is deadlocked or has recovered from the deadlock. Adding a single new attribute that can be used to query for PFC deadlock/recovery will eliminate the need for a NOS to know which attributes to query.
+Priority Flow Control (PFC) is used in Ethernet networks which makes the network prone to deadlocks. Detection and recovery of deadlocks can differ across switch vendors due to the ASIC implementation. SAI provides many attributes that can be queried to determine when a queue is in a deadlock state. From the Network Operating System (NOS), you need to know the ASIC vendor specific implementation to determine which attributes need to be queried to determine if the queue is deadlocked or has recovered from the deadlock. Adding a single new attribute that can be used to query for PFC deadlock/recovery will eliminate the need for a NOS to know which attributes to query.
 
 SAI also provides for PFC deadlock detection/recovery to be implemented in the ASIC SDK where the polling for deadlock or recovery is done in the SAI or SDK layers. To allow for the PFC polling intervals to be different across ports, port level SAI attributes are provided to set the polling interval for PFC deadlock detection and recovery along with port level attributes to query the polling interface range across queues.
 
@@ -17,6 +17,31 @@ SAI also provides for PFC deadlock detection/recovery to be implemented in the A
 
 ### New PFC deadlock queue attributes:
 ```
+typedef enum _sai_queue_pfc_state_t {
+    /** 
+     * H/w queue PFC state is not paused.
+     * Queue can forward packets.
+     */
+    SAI_QUEUE_PFC_STATE_NOT_PAUSED = 0x00000000,
+
+    /**
+     * H/w queue is paused off and has not been unpaused or
+     * forwarded packets since the last time the
+     * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
+     * attribute for this queue was polled. 
+     */
+    SAI_QUEUE_PFC_STATE_PAUSED = 0x00000001,
+
+    /**
+     * H/w queue is paused off, but was not paused
+     * off for the full interval that the
+     * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
+     * attribute for this queue was last polled.
+     */
+    SAI_QUEUE_PFC_STATE_PAUSED_NOT_CONTINUOUS = 0x00000002,
+
+} sai_queue_pfc_state_t;
+
     /**
      * @brief Control for buffered and incoming packets on a queue undergoing PFC Deadlock Recovery.
      *
@@ -29,21 +54,22 @@ SAI also provides for PFC deadlock detection/recovery to be implemented in the A
     SAI_QUEUE_ATTR_PFC_DLR_PACKET_ACTION,
 
     /**
-     * @brief Queue PFC deadlock/recovery state
+     * @brief Queue PFC continuous deadlock state
      *
-     * This attribute represents the queue internal hardware PFC
-     * deadlock state. It is an aggregation of all HW state used to
-     * determine if a queue is in PFC deadlock. This attribute should
-     * only be queried as part of the PFC deadlock and recovery detection
-     * processing.
-     * True indicates the queue is in a PFC deadlock state and
-     * on each successive query, a True indicates the queue has stayed
-     * in that state.
+     * This attribute represents the queue's internal hardware PFC
+     * continuous deadlock state. It is an aggregation of all HW state used
+     * to determine if a queue is in PFC deadlock based on state
+     * cached/maintained by the SDK. Consecutive queries of this
+     * attribute provide the PFC state for the queue for the interval
+     * period between the queries.
      *
-     * @type bool
+     * This attribute should only be queried as part of the PFC deadlock 
+     * and recovery detection processing.
+     *
+     * @type sai_queue_pfc_deadlock_state_t
      * @flags READ_ONLY
      */
-    SAI_QUEUE_ATTR_PFC_DEADLOCK_STATE,
+    SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE,
 ```
 ### New PFC deadlock port attributes:
 ```
@@ -103,19 +129,19 @@ for (auto port = ports.begin(); port != ports.end(); port++) {
 
         // Get PFC deadlock state from SDK
         sai_attribute_t attr;
-        attr.id = SAI_QUEUE_ATTR_PFC_DEADLOCK_STATE;
+        attr.id = SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE;
         status = sai_queue_api->get_queue_attribute(queue_p->oid, 1, attr);
         if (status != SAI_STATUS_SUCCESS) {
             LOG_ERROR("Failed to get PFC DEADLOCK State for queue 0x%" PRIx64 ": %d", queue_p->oid, status);
             return;
         }
-        bool pfc_deadlocked = attr.value.bool;
+        sai_queue_pfc_state_t pfc_deadlock_state = attr.value.s32;
 
         if (queue_p->pfc_deadlock_state == DETECTION) {
             // If queue is in the PFC deadlock DETECTION state, check if
             // deadlocked and if time interval for detection has 
             // expired, instruct SDK to initiate recovery.
-            if (pfc_deadlocked == true) {
+            if (pfc_deadlock_state == SAI_QUEUE_PFC_STATE_PAUSED) {
                 if (queue_p->pfc_deadlock_time_left <= poll_period) {
                     queue_p->pfc_storm_detected();
                     queue_p->pfc_deadlock_time_left = queue_p->pfc_deadlock_recovery_intv_time;
@@ -124,7 +150,8 @@ for (auto port = ports.begin(); port != ports.end(); port++) {
                     queue_p->pfc_deadlock_time_left -= poll_period;
                 }
             } else {
-                // Queue is in PFC deadlock DETECTION state, but queue is not stuck.
+                // Queue is in PFC deadlock DETECTION state, but queue is not stuck
+                // or was not stuck the the whole time during the polling interval.
                 // Reset detection interval time.
                 queue_p->pfc_deadlock_time_left = queue_p->pfc_deadlock_detect_intv_time;
             }
@@ -132,7 +159,7 @@ for (auto port = ports.begin(); port != ports.end(); port++) {
             // If queue is in the PFC deadlock RECOVERY state, check if
             // not deadlocked and if time interval for recovery has 
             // expired, instruct SDK to restore queue to forwarding again.
-            if (pfc_deadlocked == false) {
+            if (pfc_deadlocked == SAI_QUEUE_PFC_STATE_NOT_PAUSED) {
                 if (queue_p->pfc_deadlock_time_left <= poll_period) {
                     queue_p->pfc_storm_recovered();
                     queue_p->pfc_deadlock_time_left = queue_p->pfc_deadlock_detect_intv_time;
