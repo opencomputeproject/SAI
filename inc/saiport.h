@@ -2218,6 +2218,28 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ARS_ALTERNATE_PATH,
 
     /**
+     * @brief Gather port debug information.
+     *
+     * Standard attribute to retrieve vendor-specific debug information about
+     * the port's current status. The returned data should be in the form of a
+     * JSON-encoded string.
+     *
+     * Example possible response:
+     * {
+     * "port_index": "123",
+     * "lane_1": {
+     * "serdes_fw_rev": "B345",
+     * "dc_offset": "1"
+     * },
+     * "additional_debug_data": "Some\n additional\n information"
+     * }
+     *
+     * @type sai_s8_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
