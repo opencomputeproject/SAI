@@ -37,7 +37,7 @@
 /**
  * @brief Extensions to SAI APIs
  *
- * @flags
+ * @flags free
  */
 typedef enum _sai_api_extensions_t
 {

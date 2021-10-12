@@ -469,7 +469,7 @@ void test_deserialize_macsec_salt()
     sai_macsec_salt_t macsec_salt;
 
     res = sai_deserialize_macsec_salt("01:23:45:67:89:AB:CD:EF:01:23:45:67", macsec_salt);
-    ASSERT_TRUE(res == 35, "expected 35 length");
+    ASSERT_TRUE(res == 35, "expected 35 length but got %d", res);
     ASSERT_TRUE(memcmp(macsec_salt, "\x01\x23\x45\x67\x89\xab\xcd\xef\x01\x23\x45\x67", 12) == 0, "expected equal");
 
     res = sai_deserialize_macsec_salt("1:2:3:4:5:f:a:b:1:2:3:4", macsec_salt);
@@ -1596,6 +1596,15 @@ int main()
     test_deserialize_fdb_entry();
 
     test_serialize_notifications();
+
+    test_serialize_encrypt_key();
+    test_deserialize_encrypt_key();
+    test_serialize_auth_key();
+    test_deserialize_auth_key();
+    test_serialize_macsec_auth_key();
+    test_deserialize_macsec_auth_key();
+    test_serialize_macsec_salt();
+    test_deserialize_macsec_salt();
 
     return 0;
 }

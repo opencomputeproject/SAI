@@ -2711,7 +2711,7 @@ typedef enum _sai_switch_attr_t
 /**
  * @brief Switch counter IDs in sai_get_switch_stats() call
  *
- * @flags Contains flags
+ * @flags ranges
  */
 typedef enum _sai_switch_stat_t
 {
