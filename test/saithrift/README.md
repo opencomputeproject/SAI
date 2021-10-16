@@ -17,7 +17,7 @@
    *Note. Use: ./configure --prefix=/usr . The default is to install in /usr/local*
    Please refer to ./configure --help for more details.
   
-   *make sure install libboost with version 1.71 (1.71 got verified) when run './configure'*
+   **make sure install libboost with version 1.71 (1.71 got verified) when run './configure'**
    ```
    #For example, if don't want to build with java and php
    ./configure  --with-java=no  --with-php=no --prefix=/usr
