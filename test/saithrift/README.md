@@ -9,16 +9,23 @@
 3. Vendor specific SAI library (ld -lsai)
 
 4. Apache thrift 0.11.0
-  You can download thrift source packages from: http://archive.apache.org/dist/thrift/
-  Installation instructions at: https://thrift.apache.org/docs/install/
-  Note. Use: ./configure --prefix=/usr . The default is to install in /usr/local
-  Please refer to ./configure --help for more details.
+
+   You can download thrift source packages from: http://archive.apache.org/dist/thrift/
   
-  *make sure install libboost with version 1.71 (1.71 got verified) with configure thrift*
+   Installation instructions at: https://thrift.apache.org/docs/install/
+  
+   *Note. Use: ./configure --prefix=/usr . The default is to install in /usr/local*
+   Please refer to ./configure --help for more details.
+  
+   *make sure install libboost with version 1.71 (1.71 got verified) when run './configure'*
+   ```
+   #For example, if don't want to build with java and php
+   ./configure  --with-java=no  --with-php=no --prefix=/usr
+   ```
 
 5. ctypesgen: sudo -H pip install ctypesgen
 
-Note. It is also desired to install the doxygen package: sudo apt install doxygen
+   Note. It is also desired to install the doxygen package: sudo apt install doxygen
 
 # Build the saiserver and SAI thrift client python library
 
@@ -33,23 +40,23 @@ Otherwise, please setup an appropriate cross-compile environment to generate 'sa
 
 1. Install thrift library on the switch
 
-For instance, you can copy libthrift-0.11.0.so obtained at step 3 above to: /usr/lib/x86_64-linux-gnu or /usr/lib (on the switch)
+   For instance, you can copy libthrift-0.11.0.so obtained at step 3 above to: /usr/lib/x86_64-linux-gnu or /usr/lib (on the switch)
 
 2. Copy saiserver binary to the switch
 
 3. Run sai server
-Please make sure that you have all needed libraries (.so) on the switch:
+    Please make sure that you have all needed libraries (.so) on the switch:
+    ```
+    ldd saiserver
+    ```
+    If all libraries are present, execute:
+    ```
+    ./saiserver -p profile.ini -f portmap.ini
+    ```
 
-ldd saiserver
+    *You can find a sample configuration for mellanox sn2700 under src/msn_2700 directory*
 
-If all libraries are present, execute:
-```
-./saiserver -p profile.ini -f portmap.ini
-```
-
-*You can find a sample configuration for mellanox sn2700 under src/msn_2700 directory*
-
-##Client side (test machine):
+## Client side (test machine):
 
 1. Install ptf on the client
     Use the link to PTF - e.g. ptf @ fe3c89 provided at:
