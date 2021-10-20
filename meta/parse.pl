@@ -3151,6 +3151,7 @@ sub CreateGlobalFunctions
         my $args = $GLOBAL_APIS{$name}{args};
 
         $args =~ s/(_(In|Out|Inout)_)/\n    $1/g;
+        $args =~ s/\s+$//mg;
 
         WriteHeader "typedef $type (*${name}_fn) $args;";
         WriteHeader "";
