@@ -17,30 +17,37 @@ SAI also provides for PFC deadlock detection/recovery to be implemented in the A
 
 ### New PFC deadlock queue attributes:
 ```
-typedef enum _sai_queue_pfc_state_t {
+typedef enum _sai_queue_pfc_continuous_deadlock_state_t
+{
     /** 
+     * @brief PFC continuous deadlock state not paused.
+     *
      * H/w queue PFC state is not paused.
      * Queue can forward packets.
      */
-    SAI_QUEUE_PFC_STATE_NOT_PAUSED = 0x00000000,
+    SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_NOT_PAUSED = 0x00000000,
 
     /**
-     * H/w queue is paused off and has not been unpaused or
-     * forwarded packets since the last time the
+     * @brief PFC continuous deadlock state paused.
+     *
+     * H/w queue is paused off and has not resumed
+     * forwarding packets since the last time the
      * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
      * attribute for this queue was polled. 
      */
-    SAI_QUEUE_PFC_STATE_PAUSED = 0x00000001,
+    SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_PAUSED = 0x00000001,
 
     /**
+     * @brief PFC continuous deadlock state paused, but not continuously.
+     *
      * H/w queue is paused off, but was not paused
      * off for the full interval that the
      * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
      * attribute for this queue was last polled.
      */
-    SAI_QUEUE_PFC_STATE_PAUSED_NOT_CONTINUOUS = 0x00000002,
+    SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_PAUSED_NOT_CONTINUOUS = 0x00000002,
 
-} sai_queue_pfc_state_t;
+} sai_queue_pfc_continuous_deadlock_state_t;
 
     /**
      * @brief Control for buffered and incoming packets on a queue undergoing PFC Deadlock Recovery.
@@ -66,7 +73,7 @@ typedef enum _sai_queue_pfc_state_t {
      * This attribute should only be queried as part of the PFC deadlock 
      * and recovery detection processing.
      *
-     * @type sai_queue_pfc_deadlock_state_t
+     * @type sai_queue_pfc_continuous_deadlock_state_t
      * @flags READ_ONLY
      */
     SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE,
@@ -141,7 +148,7 @@ for (auto port = ports.begin(); port != ports.end(); port++) {
             // If queue is in the PFC deadlock DETECTION state, check if
             // deadlocked and if time interval for detection has 
             // expired, instruct SDK to initiate recovery.
-            if (pfc_deadlock_state == SAI_QUEUE_PFC_STATE_PAUSED) {
+            if (pfc_deadlock_state == SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_PAUSED) {
                 if (queue_p->pfc_deadlock_time_left <= poll_period) {
                     queue_p->pfc_storm_detected();
                     queue_p->pfc_deadlock_time_left = queue_p->pfc_deadlock_recovery_intv_time;
@@ -159,7 +166,7 @@ for (auto port = ports.begin(); port != ports.end(); port++) {
             // If queue is in the PFC deadlock RECOVERY state, check if
             // not deadlocked and if time interval for recovery has 
             // expired, instruct SDK to restore queue to forwarding again.
-            if (pfc_deadlocked == SAI_QUEUE_PFC_STATE_NOT_PAUSED) {
+            if (pfc_deadlocked == SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_NOT_PAUSED) {
                 if (queue_p->pfc_deadlock_time_left <= poll_period) {
                     queue_p->pfc_storm_recovered();
                     queue_p->pfc_deadlock_time_left = queue_p->pfc_deadlock_detect_intv_time;
