@@ -2041,6 +2041,7 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_IPSEC_PORT,
 
+    /**
      * @brief  PFC Deadlock Detection timer interval range
      *
      * @type sai_u32_range_t
@@ -2082,7 +2083,7 @@ typedef enum _sai_port_attr_t
      * @default empty
      */
     SAI_PORT_ATTR_PFC_TC_DLR_INTERVAL,
-    
+
     /**
      * @brief End of attributes
      */
