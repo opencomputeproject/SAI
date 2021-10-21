@@ -64,7 +64,7 @@ typedef enum _sai_queue_type_t
 /**
  * @brief Enum defining queue PFC continous deadlock state.
  */
-typedef enum _sai_queue_pfc_state_t
+typedef enum _sai_queue_pfc_continuous_deadlock_state_t
 {
     /**
      * @brief PFC continuous deadlock state not paused.
@@ -94,7 +94,7 @@ typedef enum _sai_queue_pfc_state_t
      */
     SAI_QUEUE_PFC_STATE_PAUSED_NOT_CONTINUOUS = 0x00000002
 
-} sai_queue_pfc_state_t;
+} sai_queue_pfc_continuous_deadlock_state_t;
 
 /**
  * @brief Enum defining queue attributes.
@@ -253,7 +253,7 @@ typedef enum _sai_queue_attr_t
      * This attribute should only be queried as part of the PFC deadlock
      * and recovery detection processing.
      *
-     * @type sai_queue_pfc_deadlock_state_t
+     * @type sai_queue_pfc_continuous_deadlock_state_t
      * @flags READ_ONLY
      */
     SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE,
