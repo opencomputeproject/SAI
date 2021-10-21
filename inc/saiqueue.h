@@ -62,7 +62,7 @@ typedef enum _sai_queue_type_t
 } sai_queue_type_t;
 
 /**
- * @brief Enum defining queue PFC continous deadlock state.
+ * @brief Enum defining queue PFC continuous deadlock state.
  */
 typedef enum _sai_queue_pfc_continuous_deadlock_state_t
 {
