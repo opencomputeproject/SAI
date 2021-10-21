@@ -72,7 +72,7 @@ typedef enum _sai_queue_pfc_continuous_deadlock_state_t
      * H/w queue PFC state is not paused.
      * Queue can forward packets.
      */
-    SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE_NOT_PAUSED = 0x00000000,
+    SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_NOT_PAUSED = 0x00000000,
 
     /**
      * @brief PFC continuous deadlock state paused.
@@ -82,7 +82,7 @@ typedef enum _sai_queue_pfc_continuous_deadlock_state_t
      * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
      * attribute for this queue was polled.
      */
-    SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE_PAUSED = 0x00000001,
+    SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_PAUSED = 0x00000001,
 
     /**
      * @brief PFC continuous deadlock state paused, but not continuously.
@@ -92,7 +92,7 @@ typedef enum _sai_queue_pfc_continuous_deadlock_state_t
      * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
      * attribute for this queue was last polled.
      */
-    SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE_PAUSED_NOT_CONTINUOUS = 0x00000002
+    SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_PAUSED_NOT_CONTINUOUS = 0x00000002
 
 } sai_queue_pfc_continuous_deadlock_state_t;
 
