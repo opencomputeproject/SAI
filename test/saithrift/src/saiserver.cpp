@@ -81,7 +81,7 @@ void on_fdb_event(_In_ uint32_t count,
                 gFdbMap.clear();
             else
             {
-                for (auto it = gFdbMap.begin(); it != gFdbMap.end(); it++)
+                for (auto it = gFdbMap.begin(); it != gFdbMap.end(); )
                 {
                     fdb_m = it->first;
                     b_id = it->second; 				
@@ -92,6 +92,8 @@ void on_fdb_event(_In_ uint32_t count,
                         it = gFdbMap.erase(it);
                     else if (bv_id == fdb_m.bv_id && bport_id == b_id)
                         it = gFdbMap.erase(it);
+                    else
+                        it++;
                 }
             }
             break;
@@ -107,14 +109,16 @@ void on_fdb_event(_In_ uint32_t count,
             }
             break;  
         case SAI_FDB_EVENT_AGED:
-            for (auto it = gFdbMap.begin(); it != gFdbMap.end(); it++)
+            for (auto it = gFdbMap.begin(); it != gFdbMap.end(); )
             {
                 fdb_m = it->first;
                 b_id = it->second; 
                 int n = memcmp ( fdb_entry.mac_address, fdb_m.mac_address, 6);  
                 
                 if (n == 0 && bv_id == fdb_m.bv_id)
-                    it = gFdbMap.erase(it);    	
+                    it = gFdbMap.erase(it);   
+                else
+                    it++; 	
             }
             break;
         default:
@@ -392,12 +396,27 @@ main(int argc, char* argv[])
     handleProfileMap(options.profileMapFile);
     handlePortMap(options.portMapFile);
 
-    sai_api_initialize(0, &test_services);
-    sai_api_query(SAI_API_SWITCH, (void**)&sai_switch_api);
+    auto status = sai_api_initialize(0, (sai_service_method_table_t *)&test_services);
+    if (status == SAI_STATUS_SUCCESS)
+    {
+        int failed = sai_api_query(SAI_API_SWITCH, (void**)&sai_switch_api);
 
-    constexpr std::uint32_t attrSz = 6;
+        if (failed > 0)
+        {
+            printf("SAI_API_SWITCH failed for %d apis", failed);
+            exit(EXIT_FAILURE);
+        }
+    }
+    else
+    {
+         printf("FATAL: failed to sai_api_initialize: %d", status);
+         exit(EXIT_FAILURE);
+    }
+
+    constexpr std::uint32_t attrSz = 5;
 
     sai_attribute_t attr[attrSz];
+
     std::memset(attr, '\0', sizeof(attr));
 
     attr[0].id = SAI_SWITCH_ATTR_INIT_SWITCH;
@@ -415,13 +434,21 @@ main(int argc, char* argv[])
     attr[4].id = SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY;
     attr[4].value.ptr = reinterpret_cast<sai_pointer_t>(&on_port_state_change);
 
-    attr[5].id = SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY;
-    attr[5].value.ptr = reinterpret_cast<sai_pointer_t>(&on_packet_event);
-
-    sai_status_t status = sai_switch_api->create_switch(&gSwitchId, attrSz, attr);
+    status = sai_switch_api->create_switch(&gSwitchId, attrSz, attr);
     if (status != SAI_STATUS_SUCCESS)
     {
+        printf("Error: Failed to create switch: %d \n", status);
         exit(EXIT_FAILURE);
+    }
+
+    //in case of the brcm switch not (!defined(INCLUDE_KNET) && !defined(BCMSIM))
+    sai_attribute_t attr_pkt;
+    attr_pkt.id = SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY;
+    attr_pkt.value.ptr = reinterpret_cast<sai_pointer_t>(&on_packet_event);
+    status = sai_switch_api->set_switch_attribute(gSwitchId, &attr_pkt);
+    if (status != SAI_STATUS_SUCCESS)
+    {
+        printf("Warn: Failed to set_switch_attribute SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY : %d \n", status);
     }
 
     handleInitScript(options.initScript);
