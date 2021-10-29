@@ -1,14 +1,16 @@
-/*
-Copyright 2013-present Barefoot Networks, Inc.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+/* Copyright 2021-present Intel Corporation.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 */
 
 #include <arpa/inet.h>
@@ -461,6 +463,7 @@ void convert_attr_thrift_to_sai(const sai_object_type_t sai_ot,
     case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
     case SAI_ATTR_VALUE_TYPE_TIMESPEC:
     case SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA:
+      // not supported
       break;
     default:
       break;
@@ -741,6 +744,7 @@ void convert_attr_sai_to_thrift(const sai_object_type_t sai_ot,
     case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
     case SAI_ATTR_VALUE_TYPE_TIMESPEC:
     case SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA:
+      // not supported
       break;
     default:
       break;
@@ -748,7 +752,7 @@ void convert_attr_sai_to_thrift(const sai_object_type_t sai_ot,
 }
 
 // very hacky but this means we never have to modify the generated file
-#include "generated/sai_rpc_server.cpp"
+#include "sai_rpc_server.cpp"
 
 class sai_rpcHandlerFrontend : virtual public sai_rpcHandler {
   int64_t sai_thrift_object_type_get_availability(
