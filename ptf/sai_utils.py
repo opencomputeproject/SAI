@@ -1,4 +1,4 @@
-# Copyright 2020-present Barefoot Networks, Inc.
+# Copyright 2021-present Intel Corporation.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,22 +16,23 @@
 Thrift SAI interface basic utils.
 """
 
-# pylint: disable=too-many-arguments,too-many-branches,line-too-long
-# pylint: disable=invalid-name
 from sai_adapter import *
 
 
 def sai_thrift_query_attribute_enum_values_capability(client,
                                                       obj_type,
-                                                      attr_id):
+                                                      attr_id=None):
     """
-    function calls the sai_thrift_query_attribute_enum_values_capability()
-    and returns the list of supported aattr_is enum capabilities
+    Call the sai_thrift_query_attribute_enum_values_capability() function
+    and return the list of supported aattr_is enum capabilities
+
     Args:
         client (Client): SAI RPC client
-        For the other parameters, see documentation.
+        obj_type (enum): SAI object type
+        attr_id (attr): SAI attribute name
+
     Returns:
-        list: list of switch object type enum capabilities.
+        list: list of switch object type enum capabilities
     """
 
     enum_cap_list = client.sai_thrift_query_attribute_enum_values_capability(
@@ -46,14 +47,16 @@ def sai_thrift_object_type_get_availability(client,
                                             attr_type=None):
     """
     sai_thrift_object_type_get_availability() RPC client function
-    implementation.
+    implementation
 
     Args:
         client (Client): SAI RPC client
-        For the other parameters, see documentation.
+        obj_type (enum): SAI object type
+        attr_id (attr): SAI attribute name
+        attr_type (type): SAI attribute type
 
     Returns:
-        uint: availability_cnt, object type switch availability counter.
+        uint: number of available resources with given parameters
     """
     availability_cnt = client.sai_thrift_object_type_get_availability(
         obj_type, attr_id, attr_type)
@@ -61,12 +64,14 @@ def sai_thrift_object_type_get_availability(client,
     return availability_cnt
 
 
-def sai_thrift_get_port_stats_ext_overwrite(client, port_oid, counter_ids,
+def sai_thrift_get_port_stats_ext_overwrite(client,
+                                            port_oid,
+                                            counter_ids,
                                             mode):
     """
     sai_get_port_stats_ext() - RPC client function implementation.
     WARNING: This function overwrites sai_adapter.py function and will be
-             removed when th sai_adapter.py function has been fixed.
+             removed when the sai_adapter.py function has been fixed.
 
     Args:
         client (Client): SAI RPC client
