@@ -1,4 +1,4 @@
-# Copyright 2020-present Barefoot Networks, Inc.
+# Copyright 2021-present Intel Corporation.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 Thrift SAI interface tester
 """
 
-from __future__ import print_function
-
 from sai_thrift.sai_headers import *
 
 from ptf.testutils import *
@@ -29,13 +27,12 @@ from sai_base_test import *
 
 class FrameworkTester(SaiHelper):
     """
-    Test auto-generated framework itself.
-    The intention of this test is to check
-    if basic features works as expected.
+    Test auto-generated framework itself
+    The intention of this test is to check if basic features works as expected
     """
 
     def setUp(self):
-        SaiHelper.setUp(self)
+        super(FrameworkTester, self).setUp()
 
         # test fdb creation
         self.fdb_entry = sai_thrift_fdb_entry_t(
@@ -119,32 +116,29 @@ class FrameworkTester(SaiHelper):
             map_to_value_list=self.qos_map_list)
 
     def runTest(self):
-        try:
-            attr = sai_thrift_get_next_hop_attribute(
-                self.client, self.nhop, ip='0.0.0.0')
-            self.assertEqual(attr['ip'].addr.ip4, '10.10.10.1')
-            attr = sai_thrift_get_next_hop_attribute(
-                self.client, self.nhop1, ip='0.0.0.0')
-            self.assertEqual(attr['ip'].addr.ip6, '4444::1')
+        attr = sai_thrift_get_next_hop_attribute(
+            self.client, self.nhop, ip='0.0.0.0')
+        self.assertEqual(attr['ip'].addr.ip4, '10.10.10.1')
+        attr = sai_thrift_get_next_hop_attribute(
+            self.client, self.nhop1, ip='0.0.0.0')
+        self.assertEqual(attr['ip'].addr.ip6, '4444::1')
 
-            attr = sai_thrift_get_neighbor_entry_attribute(
-                self.client, self.neigh_entry, dst_mac_address=True)
-            self.assertEqual(attr['dst_mac_address'], '00:11:22:33:44:66')
+        attr = sai_thrift_get_neighbor_entry_attribute(
+            self.client, self.neigh_entry, dst_mac_address=True)
+        self.assertEqual(attr['dst_mac_address'], '00:11:22:33:44:66')
 
-            attr = sai_thrift_get_qos_map_attribute(
-                self.client,
-                self.qos_map,
-                map_to_value_list=sai_thrift_qos_map_list_t(
-                    count=2, maplist=[]))
-            self.assertEqual(attr['map_to_value_list'].count,
-                             self.qos_map_list.count)
-            for i in range(0, self.qos_map_list.count):
-                self.assertEqual(attr['map_to_value_list'].maplist[i].key.dscp,
-                                 self.qos_map_list.maplist[i].key.dscp)
-                self.assertEqual(attr['map_to_value_list'].maplist[i].value.tc,
-                                 self.qos_map_list.maplist[i].value.tc)
-        finally:
-            pass
+        attr = sai_thrift_get_qos_map_attribute(
+            self.client,
+            self.qos_map,
+            map_to_value_list=sai_thrift_qos_map_list_t(
+                count=2, maplist=[]))
+        self.assertEqual(attr['map_to_value_list'].count,
+                            self.qos_map_list.count)
+        for i in range(0, self.qos_map_list.count):
+            self.assertEqual(attr['map_to_value_list'].maplist[i].key.dscp,
+                                self.qos_map_list.maplist[i].key.dscp)
+            self.assertEqual(attr['map_to_value_list'].maplist[i].value.tc,
+                                self.qos_map_list.maplist[i].value.tc)
 
     def tearDown(self):
         sai_thrift_remove_qos_map(self.client, self.qos_map)
@@ -157,4 +151,5 @@ class FrameworkTester(SaiHelper):
         sai_thrift_remove_next_hop(self.client, self.nhop1)
         sai_thrift_remove_next_hop(self.client, self.nhop)
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry)
-        SaiHelper.tearDown(self)
+
+        super(FrameworkTester, self).tearDown()
