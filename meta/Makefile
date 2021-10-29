@@ -78,7 +78,7 @@ OBJ = saimetadata.o saimetadatautils.o saiserialize.o
 
 SYMBOLS = $(OBJ:=.symbols)
 
-all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS) sai.thrift sai_rpc_server.cpp sai_adapter.py
+all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
 	./checkheaders.pl ../inc ../inc
 	./checkenumlock.sh
 	./checkancestry.sh
@@ -106,8 +106,8 @@ EXTRA = acronyms.txt aspell.en.pws *.pm *.cap
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl -I. parse.pl
 
-sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl
-	perl gensairpc.pl
+rpc sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl
+	perl -Irpc gensairpc.pl
 
 HEADERS = saimetadata.h $(CONSTHEADERS)
 

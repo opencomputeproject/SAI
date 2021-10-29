@@ -230,12 +230,6 @@ $template->process( catfile( $templates_dir, 'sai_adapter.py.tt' ),
 # say 'Formatting sai_adapter.py...' if $verbose;
 # Utils::Format->python( catfile( $gen_dir, 'sai_adapter.py' ) );
 
-# Generate documentation
-unless ( $ENV{PAR_TEMP} ) {
-    say 'Generating README...' if $dump;
-    Utils->generate_readme( $script_path, ( $dump ? $gen_dir : undef ) );
-}
-
 # Thrift tools can generate the skeleton of RPC server file.
 # Replace it with the Template Toolkit template, so that we can
 # easily generate the functions content.

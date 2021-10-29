@@ -72,29 +72,5 @@ sub dist {
     return;
 }
 
-# Generate readme basing on POD in the source file
-# second argument is optional - if provided, additional
-# data will be generated in the given directory
-sub generate_readme {
-    my $class   = shift;
-    my $script  = shift;
-    my $gen_dir = shift;
-
-    my $pod2text   = 'pod2text';
-    my $app_name   = basename( $script, '.pl' );
-    my $script_dir = dirname($script);
-
-    system("$pod2text $script > $script_dir/$app_name.README") == 0
-      or say "$app_name.README not generated";
-
-    if ($gen_dir) {
-        my $pod2html = 'pod2html';
-
-        system("$pod2html $script > $gen_dir/$app_name.html") == 0
-          or say "$app_name.html not generated";
-    }
-    return;
-}
-
 __PACKAGE__->meta->make_immutable;
 1;

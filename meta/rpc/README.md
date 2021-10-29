@@ -67,11 +67,6 @@ Documentation
 2. Usage: *gensairpc.README*
 3. Development: this document and sub-documents
 
-*gensairpc.README* content can be found at the bottom of *gensairpc.pl* script.
-It is automatically generated if *pod2text* is present in the system.
-Its HTML version can be optionally generated as well with ```./gensairpc.pl -d``` if *pod2html* is installed.
-*POD* is a standard documentation format used in Perl scripts.
-
 
 Dependencies
 ============
