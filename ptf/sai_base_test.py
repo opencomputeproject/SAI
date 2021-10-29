@@ -1,25 +1,39 @@
-"""
-Base classes for test cases
+# Copyright 2021-present Intel Corporation.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-Tests will usually inherit from one of these classes to have the controller
+"""
+This file contains base classes for PTF test cases as well as a set of
+additional useful functions.
+
+Tests will usually inherit from one of the base classes to have the controller
 and/or dataplane automatically set up.
 """
-
-from __future__ import print_function
 
 import os
 import time
 import socket
 import struct
 
-from collections import OrderedDict
 from functools import wraps
+from collections import OrderedDict
 
 import ptf
-from ptf import config
-from ptf.base_tests import BaseTest
 import ptf.testutils as testutils
+
+from ptf import config
 from ptf.packet import *
+from ptf.base_tests import BaseTest
 
 from thrift.transport import TSocket
 from thrift.transport import TTransport
@@ -31,34 +45,42 @@ import sai_thrift.sai_rpc as sai_rpc
 import sai_adapter as adapter
 from sai_utils import *
 
-################################################################
-#
-# Thrift interface base tests
-#
-################################################################
-
 ROUTER_MAC = '00:77:66:55:44:00'
 
 
 class ThriftInterface(BaseTest):
     """
-    The class gets and formats a port map and creates an RPC client.
-
-    Sets the following class attributes:
-        self.transport
-        self.protocol
-        self.client
-        self.test_params
-
-    Removes objects created in setup
+    Get and format a port map, retrieve test params, and create an RPC client
     """
+    def setUp(self):
+        super(ThriftInterface, self).setUp()
+
+        self.interface_to_front_mapping = {}
+        self.port_map_loaded = False
+        self.transport = None
+
+        self.test_params = testutils.test_params_get()
+        self.loadPortMap()
+        self.createRpcClient()
+
+    def tearDown(self):
+        self.transport.close()
+
+        super(ThriftInterface, self).tearDown()
 
     def loadPortMap(self):
         """
-        Method to get and format portmap
+        Get and format port_map
+
+        port_map_file is a port map with following lines format:
+        [test_port_no]@[device_port_name]
+        e.g.:
+             0@Veth1
+             1@Veth2
+             2@Veth3  ...
         """
         if self.port_map_loaded:
-            print('port_map already loaded')
+            print("port_map already loaded")
             return
 
         if "port_map" in self.test_params:
@@ -85,10 +107,10 @@ class ThriftInterface(BaseTest):
 
     def createRpcClient(self):
         """
-        Set up thrift client and contact server
+        Set up thrift client and contact RPC server
         """
 
-        if "thrift_server" in self.test_params:
+        if 'thrift_server' in self.test_params:
             server = self.test_params['thrift_server']
         else:
             server = 'localhost'
@@ -99,65 +121,34 @@ class ThriftInterface(BaseTest):
 
         self.client = sai_rpc.Client(self.protocol)
         self.transport.open()
-        return
 
-    def setUp(self):
-        self.interface_to_front_mapping = {}
-        self.port_map_loaded = False
-        BaseTest.setUp(self)
-        self.test_params = testutils.test_params_get()
-        self.loadPortMap()
-        self.createRpcClient()
         return
-
-    def tearDown(self):
-        BaseTest.tearDown(self)
-        self.transport.close()
 
 
 class ThriftInterfaceDataPlane(ThriftInterface):
     """
-    Root class that sets up the thrift interface and dataplane
+    Sets up the thrift interface and dataplane
     """
-
-    def removeCpuPort(self):
-        """
-        Remove CPU port from port map
-        """
-        test_params = testutils.test_params_get()
-        for _, port, _ in config["interfaces"]:
-            if test_params['arch'] == "tofino2":
-                if port == 320:
-                    continue
-                if port == 2:
-                    self.dataplane.port_remove(0, port)
-                    ptf.config["port_map"].pop((0, port), None)
-                    continue
-            else:
-                if port == 64 or port == 320:
-                    self.dataplane.port_remove(0, port)
-                    ptf.config["port_map"].pop((0, port), None)
-                    continue
-
     def setUp(self):
-        ThriftInterface.setUp(self)
+        super(ThriftInterfaceDataPlane, self).setUp()
+
         self.dataplane = ptf.dataplane_instance
         self.removeCpuPort()
         if self.dataplane is not None:
             self.dataplane.flush()
-            if config["log_dir"] is not None:
-                filename = os.path.join(config["log_dir"], str(self)) + ".pcap"
+            if config['log_dir'] is not None:
+                filename = os.path.join(config['log_dir'], str(self)) + ".pcap"
                 self.dataplane.start_pcap(filename)
 
     def tearDown(self):
-        if config["log_dir"] is not None:
+        if config['log_dir'] is not None:
             self.dataplane.stop_pcap()
-        ThriftInterface.tearDown(self)
+        super(ThriftInterfaceDataPlane, self).tearDown()
 
 
 def parse_port_config(port_config_file):
-    '''
-    Parses port_config.ini file.
+    """
+    Parse port_config.ini file
 
     Example of supported format for port_config.ini:
     # name          lanes         alias       index    speed    autoneg   fec
@@ -183,7 +174,7 @@ def parse_port_config(port_config_file):
 
     Raises:
         e: exit if file not found
-    '''
+    """
     ports = OrderedDict()
     try:
         with open(port_config_file) as conf:
@@ -212,26 +203,26 @@ def parse_port_config(port_config_file):
 
 
 class SaiHelperBase(ThriftInterfaceDataPlane):
-    '''
-    SAI test helper base class without initial common switch setup.
+    """
+    SAI test helper base class without initial switch ports setup
 
-    Sets the following class attributes:
+    Set the following class attributes:
         self.default_vlan_id
         self.default_vrf
         self.default_1q_bridge
         self.cpu_port_hdl
         self.acl_stage_ingress
-        self.self.acl_stage_egress
-        self.active_ports - number of active ports
+        self.acl_stage_egress
+        self.active_ports_no - number of active ports
         self.port_list - list of all active port objects
-        self.portX objects for all active ports
-    '''
-
+        self.portX objects for all active ports (where X is a port number)
+    """
     def setUp(self):
-        ThriftInterfaceDataPlane.setUp(self)
+        super(SaiHelperBase, self).setUp()
+
         self.getSwitchPorts()
 
-        # Initialize switch
+        # initialize switch
         self.switch_id = sai_thrift_create_switch(
             self.client, init_switch=True, src_mac_address=ROUTER_MAC)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
@@ -245,21 +236,22 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         if 'port_config_ini' in self.test_params:
             if 'createPorts_has_been_called' not in config:
                 self.createPorts()
-                # check if ports became UP
-                # self.checkPortsUp()
                 config['createPorts_has_been_called'] = 1
+                # check if ports became UP
+                self.checkPortsUp()
 
         # get number of active ports
         attr = sai_thrift_get_switch_attribute(
             self.client, number_of_active_ports=True)
-        self.active_ports = attr['number_of_active_ports']
+        self.active_ports_no = attr['number_of_active_ports']
 
-        # get port list
+        # get port_list and portX objects
         attr = sai_thrift_get_switch_attribute(
             self.client, port_list=sai_thrift_object_list_t(
-                idlist=[], count=self.active_ports))
-        self.assertEqual(self.active_ports, attr['port_list'].count)
+                idlist=[], count=self.active_ports_no))
+        self.assertEqual(self.active_ports_no, attr['port_list'].count)
         self.port_list = attr['port_list'].idlist
+
         for index in range(0, len(self.port_list)):
             setattr(self, 'port%s' % index, self.port_list[index])
 
@@ -284,13 +276,13 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         attr = sai_thrift_get_port_attribute(self.client,
                                              self.cpu_port_hdl,
                                              qos_number_of_queues=True)
-        num_queues = attr["qos_number_of_queues"]
+        num_queues = attr['qos_number_of_queues']
         q_list = sai_thrift_object_list_t(count=num_queues)
         attr = sai_thrift_get_port_attribute(self.client,
                                              self.cpu_port_hdl,
                                              qos_queue_list=q_list)
         for queue in range(0, num_queues):
-            queue_id = attr["qos_queue_list"].idlist[queue]
+            queue_id = attr['qos_queue_list'].idlist[queue]
             setattr(self, 'cpu_queue%s' % queue, queue_id)
             q_attr = sai_thrift_get_queue_attribute(
                 self.client,
@@ -298,8 +290,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 port=True,
                 index=True,
                 parent_scheduler_node=True)
-            self.assertTrue(queue == q_attr["index"])
-            self.assertTrue(self.cpu_port_hdl == q_attr["port"])
+            self.assertTrue(queue == q_attr['index'])
+            self.assertTrue(self.cpu_port_hdl == q_attr['port'])
 
         # get ACL capability
         attr = sai_thrift_get_switch_attribute(
@@ -317,11 +309,23 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.acl_stage_egress = attr['acl_stage_egress'].action_list.int32list
         self.assertTrue(len(self.acl_stage_egress) != 0)
 
+    def tearDown(self):
+        try:
+            for port in self.port_list:
+                sai_thrift_clear_port_stats(self.client, port)
+                sai_thrift_set_port_attribute(
+                    self.client, port, port_vlan_id=0)
+
+            self.assertEqual(True, self.verifyNumberOfAvaiableResources(
+                debug=False))
+
+        finally:
+            super(SaiHelperBase, self).tearDown()
+
     def createPorts(self):
         """
         Create ports after reading from port config file
         """
-
         def fec_str_to_int(fec):
             """
             Convert fec string to SAI enum
@@ -341,11 +345,11 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         # delete the existing ports
         attr = sai_thrift_get_switch_attribute(
             self.client, number_of_active_ports=True)
-        self.active_ports = attr['number_of_active_ports']
+        self.active_ports_no = attr['number_of_active_ports']
         attr = sai_thrift_get_switch_attribute(
             self.client, port_list=sai_thrift_object_list_t(
-                idlist=[], count=self.active_ports))
-        if self.active_ports:
+                idlist=[], count=self.active_ports_no))
+        if self.active_ports_no:
             self.port_list = attr['port_list'].idlist
             for port in self.port_list:
                 sai_thrift_remove_port(self.client, port)
@@ -360,20 +364,23 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 'autoneg', "").lower() == "on" else False
             sai_list = sai_thrift_u32_list_t(
                 count=len(port['lanes']), uint32list=port['lanes'])
-            sai_thrift_create_port(
-                self.client,
-                hw_lane_list=sai_list,
-                fec_mode=fec_mode,
-                auto_neg_mode=auto_neg_mode,
-                speed=port['speed'],
-                admin_state=True)
+            sai_thrift_create_port(self.client,
+                                   hw_lane_list=sai_list,
+                                   fec_mode=fec_mode,
+                                   auto_neg_mode=auto_neg_mode,
+                                   speed=port['speed'],
+                                   admin_state=True)
 
-    def checkPortsUp(self):
-        '''
+    def checkPortsUp(self, timeout = 30):
+        """
         Wait for all ports to be UP
-        '''
+        This may be required while testing on hardware
+        The test fails if all ports are not UP after timeout
+        """
+        allup = False
+        timer_start = time.time()
 
-        for _ in range(1, 5):
+        while allup == False and time.time() - timer_start < timeout:
             allup = True
             for port in self.port_list:
                 attr = sai_thrift_get_port_attribute(
@@ -383,43 +390,16 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                     break
             if allup:
                 break
-            time.sleep(10)
+            time.sleep(5)
+
         self.assertTrue(allup)
-
-    def tearDown(self):
-        try:
-            for port in self.port_list:
-                sai_thrift_clear_port_stats(self.client, port)
-                sai_thrift_set_port_attribute(
-                    self.client, port, port_vlan_id=0)
-
-            self.assertEqual(True, self.verifyNumberOfAvaiableResources(
-                debug=False))
-
-        finally:
-            ThriftInterfaceDataPlane.tearDown(self)
 
     def getSwitchPorts(self):
         """
-        Gets device port numbers
+        Get device port numbers
         """
-        test_params = testutils.test_params_get()
         dev_no = 0
-        cpu_no = 0
-        for _, port, _ in config["interfaces"]:
-            if test_params['arch'] == "tofino2":
-                if port == 320:
-                    continue
-                if port == 2:
-                    setattr(self, 'cpu_port%d' % cpu_no, port)
-                    cpu_no += 1
-                    continue
-            else:
-                if port == 64 or port == 320:
-                    setattr(self, 'cpu_port%d' % cpu_no, port)
-                    cpu_no += 1
-                    continue
-
+        for _, port, _ in config['interfaces']:
             setattr(self, 'dev_port%d' % dev_no, port)
             dev_no += 1
 
@@ -427,143 +407,131 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         Prints numbers of available resources
         """
-        try:
-            print("***** Number of available resources")
-            print("self.available_next_hop_group_entry=",
-                  self.available_next_hop_group_entry)
-            print("self.available_next_hop_group_member_entry=",
-                  self.available_next_hop_group_member_entry)
-            print("self.available_ipv4_nexthop_entry=",
-                  self.available_ipv4_nexthop_entry)
-            print("self.available_ipv6_nexthop_entry=",
-                  self.available_ipv6_nexthop_entry)
-            print("self.available_fdb_entry=", self.available_fdb_entry)
-            print("self.available_ipv6_route_entry=",
-                  self.available_ipv6_route_entry)
-            print("self.available_ipv4_route_entry=",
-                  self.available_ipv4_route_entry)
-        finally:
-            pass
+        print("***** Number of available resources *****")
+        print("self.available_next_hop_group_entry=",
+                self.available_next_hop_group_entry)
+        print("self.available_next_hop_group_member_entry=",
+                self.available_next_hop_group_member_entry)
+        print("self.available_ipv4_nexthop_entry=",
+                self.available_ipv4_nexthop_entry)
+        print("self.available_ipv6_nexthop_entry=",
+                self.available_ipv6_nexthop_entry)
+        print("self.available_fdb_entry=", self.available_fdb_entry)
+        print("self.available_ipv6_route_entry=",
+                self.available_ipv6_route_entry)
+        print("self.available_ipv4_route_entry=",
+                self.available_ipv4_route_entry)
 
     def saveNumberOfAvaiableResources(self, debug=False):
         """
-        Saves numbers of available resources
+        Save number of available resources
+        This allows to verify all test objects were removed
 
         Args:
-            debug (boolean): enables debug option
+            debug (bool): enables debug option
         """
+        attr_list = sai_thrift_get_switch_attribute(
+            self.client,
+            number_of_ecmp_groups=True,
+            ecmp_members=True,
+            available_next_hop_group_entry=True,
+            available_next_hop_group_member_entry=True,
+            available_ipv6_nexthop_entry=True,
+            available_ipv4_nexthop_entry=True,
+            available_fdb_entry=True,
+            available_ipv6_route_entry=True,
+            available_ipv4_route_entry=True)
+        self.available_next_hop_group_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_ENTRY']
+        self.available_next_hop_group_member_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY']
+        self.available_ipv4_nexthop_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEXTHOP_ENTRY']
+        self.available_ipv6_nexthop_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEXTHOP_ENTRY']
+        self.available_fdb_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY']
+        self.available_ipv6_route_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_IPV6_ROUTE_ENTRY']
+        self.available_ipv4_route_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_IPV4_ROUTE_ENTRY']
+
         if debug:
-            print("saveNumberOfAvaiableResources")
-        try:
-            attr_list = sai_thrift_get_switch_attribute(
-                self.client,
-                number_of_ecmp_groups=True,
-                ecmp_members=True,
-                available_next_hop_group_entry=True,
-                available_next_hop_group_member_entry=True,
-                available_ipv6_nexthop_entry=True,
-                available_ipv4_nexthop_entry=True,
-                available_fdb_entry=True,
-                available_ipv6_route_entry=True,
-                available_ipv4_route_entry=True)
-            self.available_next_hop_group_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_ENTRY"]
-            self.available_next_hop_group_member_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY"]
-            self.available_ipv4_nexthop_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEXTHOP_ENTRY"]
-            self.available_ipv6_nexthop_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEXTHOP_ENTRY"]
-            self.available_fdb_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY"]
-            self.available_ipv6_route_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_IPV6_ROUTE_ENTRY"]
-            self.available_ipv4_route_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_IPV4_ROUTE_ENTRY"]
-            if debug:
-                self.printNumberOfAvaiableResources()
-        finally:
-            pass
+            self.printNumberOfAvaiableResources()
 
     def verifyNumberOfAvaiableResources(self, debug=False):
         """
         Verifies numbers of available resources
 
         Args:
-            debug (boolean): enables debug option
+            debug (bool): enables debug option
 
         Returns:
-            boolean: verification result
+            bool: result - True if the number is same as before tests
         """
         result = True
-        try:
-            attr_list = sai_thrift_get_switch_attribute(
-                self.client,
-                number_of_ecmp_groups=True,
-                ecmp_members=True,
-                available_next_hop_group_entry=True,
-                available_next_hop_group_member_entry=True,
-                available_ipv6_nexthop_entry=True,
-                available_ipv4_nexthop_entry=True,
-                available_fdb_entry=True,
-                available_ipv6_route_entry=True,
-                available_ipv4_route_entry=True)
-            available_next_hop_group_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_ENTRY"]
-            available_next_hop_group_member_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY"]
-            available_ipv4_nexthop_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEXTHOP_ENTRY"]
-            available_ipv6_nexthop_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEXTHOP_ENTRY"]
-            available_fdb_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY"]
-            available_ipv6_route_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_IPV6_ROUTE_ENTRY"]
-            available_ipv4_route_entry = attr_list[
-                "SAI_SWITCH_ATTR_AVAILABLE_IPV4_ROUTE_ENTRY"]
 
-            resources_dict = {
-                "available_next_hop_group_entry": [
-                    available_next_hop_group_entry,
-                    self.available_next_hop_group_entry],
-                "available_next_hop_group_member_entry": [
-                    available_next_hop_group_member_entry,
-                    self.available_next_hop_group_member_entry],
-                "available_ipv4_nexthop_entry": [
-                    available_ipv4_nexthop_entry,
-                    self.available_ipv4_nexthop_entry],
-                "available_ipv6_nexthop_entry": [
-                    available_ipv6_nexthop_entry,
-                    self.available_ipv6_nexthop_entry],
-                "available_fdb_entry": [
-                    available_fdb_entry,
-                    self.available_fdb_entry],
-                "available_ipv6_route_entry": [
-                    available_ipv6_route_entry,
-                    self.available_ipv6_route_entry],
-                "available_ipv4_route_entry": [
-                    available_ipv4_route_entry,
-                    self.available_ipv4_route_entry]}
+        attr_list = sai_thrift_get_switch_attribute(
+            self.client,
+            number_of_ecmp_groups=True,
+            ecmp_members=True,
+            available_next_hop_group_entry=True,
+            available_next_hop_group_member_entry=True,
+            available_ipv6_nexthop_entry=True,
+            available_ipv4_nexthop_entry=True,
+            available_fdb_entry=True,
+            available_ipv6_route_entry=True,
+            available_ipv4_route_entry=True)
+        available_next_hop_group_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_ENTRY']
+        available_next_hop_group_member_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY']
+        available_ipv4_nexthop_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEXTHOP_ENTRY']
+        available_ipv6_nexthop_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEXTHOP_ENTRY']
+        available_fdb_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY']
+        available_ipv6_route_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_IPV6_ROUTE_ENTRY']
+        available_ipv4_route_entry = attr_list[
+            'SAI_SWITCH_ATTR_AVAILABLE_IPV4_ROUTE_ENTRY']
 
-            for key in resources_dict:
-                if (resources_dict[key][0] !=
-                        resources_dict[key][1]):
-                    if debug:
-                        print(key,
-                              " != ",
-                              available_next_hop_group_entry[key][0])
-                    result = False
-                    break
+        resources_dict = {
+            'available_next_hop_group_entry': [
+                available_next_hop_group_entry,
+                self.available_next_hop_group_entry],
+            'available_next_hop_group_member_entry': [
+                available_next_hop_group_member_entry,
+                self.available_next_hop_group_member_entry],
+            'available_ipv4_nexthop_entry': [
+                available_ipv4_nexthop_entry,
+                self.available_ipv4_nexthop_entry],
+            'available_ipv6_nexthop_entry': [
+                available_ipv6_nexthop_entry,
+                self.available_ipv6_nexthop_entry],
+            'available_fdb_entry': [
+                available_fdb_entry,
+                self.available_fdb_entry],
+            'available_ipv6_route_entry': [
+                available_ipv6_route_entry,
+                self.available_ipv6_route_entry],
+            'available_ipv4_route_entry': [
+                available_ipv4_route_entry,
+                self.available_ipv4_route_entry]}
 
-            if debug:
-                if result:
-                    print("Number of resources OK")
-                else:
-                    print("Number of resources NOT OK")
+        for key in resources_dict:
+            if (resources_dict[key][0] != resources_dict[key][1]):
+                if debug:
+                    print(key, " != ", available_next_hop_group_entry[key][0])
+                result = False
+                break
 
-        finally:
-            pass
+        if debug:
+            if result:
+                print("Number of resources correct")
+            else:
+                print("Incorrect number of resources!")
 
         return result
 
@@ -577,12 +545,24 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         return adapter.status
 
+    @staticmethod
+    def saiWaitFdbAge(timeout):
+        """
+        Wait for fdb entry to ageout
+
+        Args:
+            timeout (int): Timeout value in seconds
+        """
+        print("Waiting for fdb entry to Age")
+        aging_interval_buffer = 10
+        time.sleep(timeout + aging_interval_buffer)
+
 
 class SaiHelper(SaiHelperBase):
     """
-    Sets common base configuration for tests
+    Set common base ports configuration for tests
 
-    Common configuration:
+    Common ports configuration:
     +------------+------------+-----------+-----------+
     |    Name    |   Vlan ID  |  Ports    |  Tagging  |
     +============+============+===========+===========+
@@ -637,7 +617,7 @@ class SaiHelper(SaiHelperBase):
     """
 
     def setUp(self):
-        SaiHelperBase.setUp(self)
+        super(SaiHelper, self).setUp()
 
         # create bridge ports
         self.port0_bp = sai_thrift_create_bridge_port(
@@ -875,17 +855,6 @@ class SaiHelper(SaiHelperBase):
             port_id=self.port13)
         self.assertTrue(self.port13_rif != 0)
 
-    @staticmethod
-    def saiWaitFdbAge(timeout):
-        """ sai_wait_fdb_age() - Wait for fdb entry to ageout
-
-        Args:
-            timeout (int): Timeout value in seconds
-        """
-        print("Waiting for fdb entry to Age")
-        aging_interval_buffer = 10
-        time.sleep(timeout + aging_interval_buffer)
-
     def tearDown(self):
         sai_thrift_remove_router_interface(self.client, self.vlan30_rif)
         sai_thrift_remove_router_interface(self.client, self.port10_rif)
@@ -947,21 +916,21 @@ class SaiHelper(SaiHelperBase):
         sai_thrift_remove_bridge_port(self.client, self.port1_bp)
         sai_thrift_remove_bridge_port(self.client, self.port0_bp)
 
-        SaiHelperBase.tearDown(self)
+        super(SaiHelper, self).tearDown()
 
 
 class MinimalPortVlanConfig(SaiHelperBase):
-    '''
-    Minimal port and vlan configuration. Creates port_num bridge ports and adds
-    them to VLAN with vlan_id. Configures ports as untagged.
-    '''
+    """
+    Minimal port and vlan configuration. Create port_num bridge ports and add
+    them to VLAN with vlan_id. Configure ports as untagged
+    """
 
     def __init__(self, port_num, vlan_id=100):
-        '''
+        """
         Args:
             port_num (int): Number of ports to configure
             vlan_id (int): ID of VLAN that will be created
-        '''
+        """
         super(MinimalPortVlanConfig, self).__init__()
 
         self.port_num = port_num
@@ -970,10 +939,10 @@ class MinimalPortVlanConfig(SaiHelperBase):
     def setUp(self):
         super(MinimalPortVlanConfig, self).setUp()
 
-        if self.port_num > self.active_ports:
-            raise ValueError('Number of ports to configure ({}) is higher '
-                             'than number of active ports ({})'.format(
-                                 self.port_num, self.active_ports))
+        if self.port_num > self.active_ports_no:
+            raise ValueError('Number of ports to configure %d is higher '
+                             'than number of active ports %d'
+                             %(self.port_num, self.active_ports_no))
 
         self.bridge_port = []
         self.vlan_member = []
@@ -1031,16 +1000,14 @@ class MinimalPortVlanConfig(SaiHelperBase):
 
 def sai_ipaddress(addr_str):
     """
-    Sets SAI ip address parameters, assigns the appropriate type
-    to these parameters and returns a sai_thrift_ip_address_t struct
-    containing them
+    Set SAI IP address, assign appropriate type and return
+    sai_thrift_ip_address_t object
 
     Args:
-        addr_str (str): SAI IP address
+        addr_str (str): IP address string
 
     Returns:
-        sai_thrift_ip_address_t: object containing
-        family and addr parameters
+        sai_thrift_ip_address_t: object containing IP address family and number
     """
 
     if '.' in addr_str:
@@ -1050,49 +1017,23 @@ def sai_ipaddress(addr_str):
         family = SAI_IP_ADDR_FAMILY_IPV6
         addr = sai_thrift_ip_addr_t(ip6=addr_str)
     ip_addr = sai_thrift_ip_address_t(addr_family=family, addr=addr)
+
     return ip_addr
-
-
-def num_to_dotted_quad(number, ipv4=True):
-    """
-    Converts the ip address to the appropriate format
-
-    Args:
-        number (str): IP address in the form of a number
-        ipv4 (boolean): determines whether IPv4 address standard is handled
-
-    Returns:
-        str: formatted IP address
-    """
-    if ipv4 is True:
-        mask = (1 << 32) - (1 << 32 >> int(number))
-        return socket.inet_ntop(socket.AF_INET, struct.pack('>L', mask))
-
-    mask = (1 << 128) - (1 << 128 >> int(number))
-    i = 0
-    result = ''
-    for sign in str(hex(mask)[2:]):
-        if (i + 1) % 4 == 0:
-            result = result + sign + ':'
-        else:
-            result = result + sign
-        i += 1
-    return result[:-1]
 
 
 def sai_ipprefix(prefix_str):
     """
-    Sets IP address prefix and mask and returns ip_prefix object
+    Set IP address prefix and mask and return ip_prefix object
 
     Args:
-        prefix_str (str): contains an IP address with mask
+        prefix_str (str): IP address and mask string (with slash notation)
 
     Return:
         sai_thrift_ip_prefix_t: IP prefix object
     """
     addr_mask = prefix_str.split('/')
     if len(addr_mask) != 2:
-        print('Invalid IP prefix format')
+        print("Invalid IP prefix format")
         return None
 
     if '.' in prefix_str:
@@ -1111,9 +1052,36 @@ def sai_ipprefix(prefix_str):
     return ip_prefix
 
 
+def num_to_dotted_quad(address, ipv4=True):
+    """
+    Helper function to convert the ip address
+
+    Args:
+        address (str): IP address
+        ipv4 (bool): determines what IP version is handled
+
+    Returns:
+        str: formatted IP address
+    """
+    if ipv4 is True:
+        mask = (1 << 32) - (1 << 32 >> int(address))
+        return socket.inet_ntop(socket.AF_INET, struct.pack('>L', mask))
+
+    mask = (1 << 128) - (1 << 128 >> int(address))
+    i = 0
+    result = ''
+    for sign in str(hex(mask)[2:]):
+        if (i + 1) % 4 == 0:
+            result = result + sign + ':'
+        else:
+            result = result + sign
+        i += 1
+    return result[:-1]
+
+
 def delay_wrapper(func, delay=2):
     """
-    A wrapper extending given function by a delay.
+    A wrapper extending given function by a delay
 
     Args:
         func (function): function to be wrapped
@@ -1125,7 +1093,7 @@ def delay_wrapper(func, delay=2):
     @wraps(func)
     def wrapped_function(*args, **kwargs):
         """
-        A wrapper function adding a delay.
+        A wrapper function adding a delay
 
         Args:
             args (tuple): function arguments
@@ -1144,7 +1112,7 @@ def delay_wrapper(func, delay=2):
     return wrapped_function
 
 
-sai_thrift_flush_fdb_entries = delay_wrapper(sai_thrift_flush_fdb_entries)  # noqa pylint: disable=invalid-name
+sai_thrift_flush_fdb_entries = delay_wrapper(sai_thrift_flush_fdb_entries)
 
 
 def open_packet_socket(hostif_name):
@@ -1162,12 +1130,13 @@ def open_packet_socket(hostif_name):
                          socket.htons(eth_p_all))
     sock.bind((hostif_name, eth_p_all))
     sock.setblocking(0)
+
     return sock
 
 
 def socket_verify_packet(pkt, sock, timeout=2):
     """
-    Verify packet on a socket
+    Verify packet was received on a socket
 
     Args:
         pkt (packet): packet to match with
@@ -1175,7 +1144,7 @@ def socket_verify_packet(pkt, sock, timeout=2):
         timeout (int): timeout
 
     Return:
-        match: match or no
+        match (bool): True if packet matched
     """
     max_pkt_size = 9100
     timeout = time.time() + timeout
