@@ -29,9 +29,8 @@ from functools import wraps
 from collections import OrderedDict
 
 import ptf
-import ptf.testutils as testutils
-
 from ptf import config
+from ptf import testutils
 from ptf.packet import *
 from ptf.base_tests import BaseTest
 
@@ -39,13 +38,14 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
-import sai_thrift.sai_rpc as sai_rpc
+from sai_thrift import sai_rpc
 
 # Import both adapter module and all its functions
 import sai_adapter as adapter
 from sai_utils import *
 
 ROUTER_MAC = '00:77:66:55:44:00'
+THRIFT_PORT = 9092
 
 
 class ThriftInterface(BaseTest):
@@ -87,23 +87,21 @@ class ThriftInterface(BaseTest):
             user_input = self.test_params['port_map']
             splitted_map = user_input.split(",")
             for item in splitted_map:
-                interface_front_pair = item.split("@")
-                self.interface_to_front_mapping[interface_front_pair[0]] =  \
-                    interface_front_pair[1]
+                iface_front_pair = item.split("@")
+                self.interface_to_front_mapping[iface_front_pair[0]] =  \
+                    iface_front_pair[1]
         elif "port_map_file" in self.test_params:
             user_input = self.test_params['port_map_file']
-            map_file = open(user_input, 'r')
-            for line in map_file:
-                if (line and (
-                        line[0] == '#' or line[0] == ';' or line[0] == '/')):
-                    continue
-                interface_front_pair = line.split("@")
-                self.interface_to_front_mapping[interface_front_pair[0]] =  \
-                    interface_front_pair[1].strip()
+            with open(user_input, 'r') as map_file:
+                for line in map_file:
+                    if (line and
+                        (line[0] == '#' or line[0] == ';' or line[0] == '/')):
+                        continue
+                    iface_front_pair = line.split("@")
+                    self.interface_to_front_mapping[iface_front_pair[0]] =  \
+                        iface_front_pair[1].strip()
 
         self.port_map_loaded = True
-
-        return
 
     def createRpcClient(self):
         """
@@ -115,14 +113,12 @@ class ThriftInterface(BaseTest):
         else:
             server = 'localhost'
 
-        self.transport = TSocket.TSocket(server, 9092)
+        self.transport = TSocket.TSocket(server, THRIFT_PORT)
         self.transport = TTransport.TBufferedTransport(self.transport)
         self.protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
 
         self.client = sai_rpc.Client(self.protocol)
         self.transport.open()
-
-        return
 
 
 class ThriftInterfaceDataPlane(ThriftInterface):
@@ -144,62 +140,6 @@ class ThriftInterfaceDataPlane(ThriftInterface):
         if config['log_dir'] is not None:
             self.dataplane.stop_pcap()
         super(ThriftInterfaceDataPlane, self).tearDown()
-
-
-def parse_port_config(port_config_file):
-    """
-    Parse port_config.ini file
-
-    Example of supported format for port_config.ini:
-    # name          lanes         alias       index    speed    autoneg   fec
-    Ethernet0         0           Ethernet0       1    25000      off     none
-    Ethernet1         1           Ethernet1       1    25000      off     none
-    Ethernet2         2           Ethernet2       1    25000      off     none
-    Ethernet3         3           Ethernet3       1    25000      off     none
-    Ethernet4         4           Ethernet4       2    25000      off     none
-    Ethernet5         5           Ethernet5       2    25000      off     none
-    Ethernet6         6           Ethernet6       2    25000      off     none
-    Ethernet7         7           Ethernet7       2    25000      off     none
-    Ethernet8         8           Ethernet8       3    25000      off     none
-    Ethernet9         9           Ethernet9       3    25000      off     none
-    Ethernet10        10          Ethernet10      3    25000      off     none
-    Ethernet11        11          Ethernet11      3    25000      off     none
-    etc
-
-    Args:
-        port_config_file (string): path to port config file
-
-    Returns:
-        dict: port configuation from file
-
-    Raises:
-        e: exit if file not found
-    """
-    ports = OrderedDict()
-    try:
-        with open(port_config_file) as conf:
-            for line in conf:
-                if line.startswith('#'):
-                    if "name" in line:
-                        titles = line.strip('#').split()
-                    continue
-                tokens = line.split()
-                if len(tokens) < 2:
-                    continue
-                name_index = titles.index('name')
-                name = tokens[name_index]
-                data = {}
-                for i, item in enumerate(tokens):
-                    if i == name_index:
-                        continue
-                    data[titles[i]] = item
-                data['lanes'] = [int(lane)
-                                 for lane in data['lanes'].split(',')]
-                data['speed'] = int(data['speed'])
-                ports[name] = data
-        return ports
-    except Exception as e:
-        raise e
 
 
 class SaiHelperBase(ThriftInterfaceDataPlane):
@@ -226,12 +166,14 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.switch_id = sai_thrift_create_switch(
             self.client, init_switch=True, src_mac_address=ROUTER_MAC)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.saveNumberOfAvaiableResources()
+
+        self.switch_resources = self.saveNumberOfAvaiableResources()
 
         # get default vlan
         attr = sai_thrift_get_switch_attribute(
             self.client, default_vlan_id=True)
         self.default_vlan_id = attr['default_vlan_id']
+        self.assertTrue(self.default_vlan_id != 0)
 
         if 'port_config_ini' in self.test_params:
             if 'createPorts_has_been_called' not in config:
@@ -252,8 +194,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.assertEqual(self.active_ports_no, attr['port_list'].count)
         self.port_list = attr['port_list'].idlist
 
-        for index in range(0, len(self.port_list)):
-            setattr(self, 'port%s' % index, self.port_list[index])
+        for i, _ in enumerate(self.port_list):
+            setattr(self, 'port%s' % i, self.port_list[i])
 
         # get default vrf
         attr = sai_thrift_get_switch_attribute(
@@ -293,22 +235,6 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
             self.assertTrue(queue == q_attr['index'])
             self.assertTrue(self.cpu_port_hdl == q_attr['port'])
 
-        # get ACL capability
-        attr = sai_thrift_get_switch_attribute(
-            self.client, max_acl_action_count=True)
-        max_acl_action_count = attr['max_acl_action_count']
-        s32 = sai_thrift_s32_list_t(int32list=[], count=max_acl_action_count)
-        cap = sai_thrift_acl_capability_t(action_list=s32)
-        attr = sai_thrift_get_switch_attribute(
-            self.client, acl_stage_ingress=cap)
-        self.acl_stage_ingress = \
-            attr['acl_stage_ingress'].action_list.int32list
-        self.assertTrue(len(self.acl_stage_ingress) != 0)
-        attr = sai_thrift_get_switch_attribute(
-            self.client, acl_stage_egress=cap)
-        self.acl_stage_egress = attr['acl_stage_egress'].action_list.int32list
-        self.assertTrue(len(self.acl_stage_egress) != 0)
-
     def tearDown(self):
         try:
             for port in self.port_list:
@@ -316,8 +242,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 sai_thrift_set_port_attribute(
                     self.client, port, port_vlan_id=0)
 
-            self.assertEqual(True, self.verifyNumberOfAvaiableResources(
-                debug=False))
+            self.assertTrue(self.verifyNumberOfAvaiableResources(
+                self.switch_resources, debug=False))
 
         finally:
             super(SaiHelperBase, self).tearDown()
@@ -355,7 +281,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 sai_thrift_remove_port(self.client, port)
 
         # add new ports from port config file
-        self.ports_config = parse_port_config(
+        self.ports_config = self.parsePortConfig(
             self.test_params['port_config_ini'])
         for name, port in self.ports_config.items():
             print("Creating port: %s" % name)
@@ -371,16 +297,74 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                                    speed=port['speed'],
                                    admin_state=True)
 
-    def checkPortsUp(self, timeout = 30):
+    def parsePortConfig(self, port_config_file):
+        """
+        Parse port_config.ini file
+
+        Example of supported format for port_config.ini:
+        # name          lanes         alias       index    speed    autoneg   fec
+        Ethernet0         0           Ethernet0       1    25000      off     none
+        Ethernet1         1           Ethernet1       1    25000      off     none
+        Ethernet2         2           Ethernet2       1    25000      off     none
+        Ethernet3         3           Ethernet3       1    25000      off     none
+        Ethernet4         4           Ethernet4       2    25000      off     none
+        Ethernet5         5           Ethernet5       2    25000      off     none
+        Ethernet6         6           Ethernet6       2    25000      off     none
+        Ethernet7         7           Ethernet7       2    25000      off     none
+        Ethernet8         8           Ethernet8       3    25000      off     none
+        Ethernet9         9           Ethernet9       3    25000      off     none
+        Ethernet10        10          Ethernet10      3    25000      off     none
+        Ethernet11        11          Ethernet11      3    25000      off     none
+        etc
+
+        Args:
+            port_config_file (string): path to port config file
+
+        Returns:
+            dict: port configuation from file
+
+        Raises:
+            e: exit if file not found
+        """
+        ports = OrderedDict()
+        try:
+            with open(port_config_file) as conf:
+                for line in conf:
+                    if line.startswith('#'):
+                        if "name" in line:
+                            titles = line.strip('#').split()
+                        continue
+                    tokens = line.split()
+                    if len(tokens) < 2:
+                        continue
+                    name_index = titles.index('name')
+                    name = tokens[name_index]
+                    data = {}
+                    for i, item in enumerate(tokens):
+                        if i == name_index:
+                            continue
+                        data[titles[i]] = item
+                    data['lanes'] = [int(lane)
+                                    for lane in data['lanes'].split(',')]
+                    data['speed'] = int(data['speed'])
+                    ports[name] = data
+            return ports
+        except Exception as e:
+            raise e
+
+    def checkPortsUp(self, timeout=30):
         """
         Wait for all ports to be UP
         This may be required while testing on hardware
         The test fails if all ports are not UP after timeout
+
+        Args:
+            timeout (int): port verification timeout in sec
         """
         allup = False
         timer_start = time.time()
 
-        while allup == False and time.time() - timer_start < timeout:
+        while allup is False and time.time() - timer_start < timeout:
             allup = True
             for port in self.port_list:
                 attr = sai_thrift_get_port_attribute(
@@ -408,132 +392,141 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Prints numbers of available resources
         """
         print("***** Number of available resources *****")
-        print("self.available_next_hop_group_entry=",
-                self.available_next_hop_group_entry)
-        print("self.available_next_hop_group_member_entry=",
-                self.available_next_hop_group_member_entry)
-        print("self.available_ipv4_nexthop_entry=",
-                self.available_ipv4_nexthop_entry)
-        print("self.available_ipv6_nexthop_entry=",
-                self.available_ipv6_nexthop_entry)
-        print("self.available_fdb_entry=", self.available_fdb_entry)
-        print("self.available_ipv6_route_entry=",
-                self.available_ipv6_route_entry)
-        print("self.available_ipv4_route_entry=",
-                self.available_ipv4_route_entry)
+
+        print("available_ipv4_route_entry %d"
+              % self.available_ipv4_route_entry)
+        print("available_ipv6_route_entry %d"
+              % self.available_ipv6_route_entry)
+        print("available_ipv4_nexthop_entry %d"
+              % self.available_ipv4_nexthop_entry)
+        print("available_ipv6_nexthop_entry %d"
+              % self.available_ipv6_nexthop_entry)
+        print("available_ipv4_neighbor_entry %d"
+              % self.available_ipv4_neighbor_entry)
+        print("available_ipv6_neighbor_entry %d"
+              % self.available_ipv6_neighbor_entry)
+        print("available_next_hop_group_entry %d"
+              % self.available_next_hop_group_entry)
+        print("available_next_hop_group_member_entry %d"
+              % self.available_next_hop_group_member_entry)
+        print("available_fdb_entry %d"
+              % self.available_fdb_entry)
+        print("available_l2mc_entry %d"
+              % self.available_l2mc_entry)
+        print("available_ipmc_entry %d"
+              % self.available_ipmc_entry)
+        print("available_snat_entry %d"
+              % self.available_snat_entry)
+        print("available_dnat_entry %d"
+              % self.available_dnat_entry)
+        print("available_double_nat_entry %d"
+              % self.available_double_nat_entry)
+        print("available_acl_table %d"
+              % self.available_acl_table)
+        print("available_acl_table_group %d"
+              % self.available_acl_table_group)
+        print("available_my_sid_entry %d"
+              % self.available_my_sid_entry)
+        print("available_snapt_entry %d"
+              % self.available_snapt_entry)
+        print("available_dnapt_entry %d"
+              % self.available_dnapt_entry)
+        print("available_double_napt_entry %d"
+              % self.available_double_napt_entry)
+        print("available_my_mac_entries %d"
+              % self.available_my_mac_entries)
+        print("number_of_ecmp_groups %d"
+              % self.number_of_ecmp_groups)
+        print("ecmp_members %d"
+              % self.ecmp_members)
 
     def saveNumberOfAvaiableResources(self, debug=False):
         """
         Save number of available resources
-        This allows to verify all test objects were removed
+        This allows to verify if all the test objects were removed
 
         Args:
             debug (bool): enables debug option
+        Return:
+            dict: switch_resources dictionary with available resources
         """
-        attr_list = sai_thrift_get_switch_attribute(
+
+        switch_resources = sai_thrift_get_switch_attribute(
             self.client,
-            number_of_ecmp_groups=True,
-            ecmp_members=True,
+            available_ipv4_route_entry=True,
+            available_ipv6_route_entry=True,
+            available_ipv4_nexthop_entry=True,
+            available_ipv6_nexthop_entry=True,
+            available_ipv4_neighbor_entry=True,
+            available_ipv6_neighbor_entry=True,
             available_next_hop_group_entry=True,
             available_next_hop_group_member_entry=True,
-            available_ipv6_nexthop_entry=True,
-            available_ipv4_nexthop_entry=True,
             available_fdb_entry=True,
-            available_ipv6_route_entry=True,
-            available_ipv4_route_entry=True)
-        self.available_next_hop_group_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_ENTRY']
-        self.available_next_hop_group_member_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY']
-        self.available_ipv4_nexthop_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEXTHOP_ENTRY']
-        self.available_ipv6_nexthop_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEXTHOP_ENTRY']
-        self.available_fdb_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY']
-        self.available_ipv6_route_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_IPV6_ROUTE_ENTRY']
-        self.available_ipv4_route_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_IPV4_ROUTE_ENTRY']
+            available_l2mc_entry=True,
+            available_ipmc_entry=True,
+            available_snat_entry=True,
+            available_dnat_entry=True,
+            available_double_nat_entry=True,
+            available_acl_table=True,
+            available_acl_table_group=True,
+            available_my_sid_entry=True,
+            available_snapt_entry=True,
+            available_dnapt_entry=True,
+            available_double_napt_entry=True,
+            available_my_mac_entries=True,
+            number_of_ecmp_groups=True,
+            ecmp_members=True)
 
         if debug:
             self.printNumberOfAvaiableResources()
 
-    def verifyNumberOfAvaiableResources(self, debug=False):
+        return switch_resources
+
+    def verifyNumberOfAvaiableResources(self, init_resources, debug=False):
         """
-        Verifies numbers of available resources
+        Verify number of available resources
 
         Args:
-            debug (bool): enables debug option
+            init_resources (dict): a dictionary with initial resources numbers
+            debug (bool): enable debug option
 
         Returns:
-            bool: result - True if the number is same as before tests
+            bool: True if the numbers of resources are the same as before tests
         """
-        result = True
 
-        attr_list = sai_thrift_get_switch_attribute(
+        available_resources = sai_thrift_get_switch_attribute(
             self.client,
-            number_of_ecmp_groups=True,
-            ecmp_members=True,
+            available_ipv4_route_entry=True,
+            available_ipv6_route_entry=True,
+            available_ipv4_nexthop_entry=True,
+            available_ipv6_nexthop_entry=True,
+            available_ipv4_neighbor_entry=True,
+            available_ipv6_neighbor_entry=True,
             available_next_hop_group_entry=True,
             available_next_hop_group_member_entry=True,
-            available_ipv6_nexthop_entry=True,
-            available_ipv4_nexthop_entry=True,
             available_fdb_entry=True,
-            available_ipv6_route_entry=True,
-            available_ipv4_route_entry=True)
-        available_next_hop_group_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_ENTRY']
-        available_next_hop_group_member_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_NEXT_HOP_GROUP_MEMBER_ENTRY']
-        available_ipv4_nexthop_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_IPV4_NEXTHOP_ENTRY']
-        available_ipv6_nexthop_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_IPV6_NEXTHOP_ENTRY']
-        available_fdb_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_FDB_ENTRY']
-        available_ipv6_route_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_IPV6_ROUTE_ENTRY']
-        available_ipv4_route_entry = attr_list[
-            'SAI_SWITCH_ATTR_AVAILABLE_IPV4_ROUTE_ENTRY']
+            available_l2mc_entry=True,
+            available_ipmc_entry=True,
+            available_snat_entry=True,
+            available_dnat_entry=True,
+            available_double_nat_entry=True,
+            available_acl_table=True,
+            available_acl_table_group=True,
+            available_my_sid_entry=True,
+            available_snapt_entry=True,
+            available_dnapt_entry=True,
+            available_double_napt_entry=True,
+            available_my_mac_entries=True,
+            number_of_ecmp_groups=True,
+            ecmp_members=True)
 
-        resources_dict = {
-            'available_next_hop_group_entry': [
-                available_next_hop_group_entry,
-                self.available_next_hop_group_entry],
-            'available_next_hop_group_member_entry': [
-                available_next_hop_group_member_entry,
-                self.available_next_hop_group_member_entry],
-            'available_ipv4_nexthop_entry': [
-                available_ipv4_nexthop_entry,
-                self.available_ipv4_nexthop_entry],
-            'available_ipv6_nexthop_entry': [
-                available_ipv6_nexthop_entry,
-                self.available_ipv6_nexthop_entry],
-            'available_fdb_entry': [
-                available_fdb_entry,
-                self.available_fdb_entry],
-            'available_ipv6_route_entry': [
-                available_ipv6_route_entry,
-                self.available_ipv6_route_entry],
-            'available_ipv4_route_entry': [
-                available_ipv4_route_entry,
-                self.available_ipv4_route_entry]}
-
-        for key in resources_dict:
-            if (resources_dict[key][0] != resources_dict[key][1]):
+        for key, value in available_resources.items():
+            if value != init_resources[key]:
                 if debug:
-                    print(key, " != ", available_next_hop_group_entry[key][0])
-                result = False
-                break
+                    print("Number of %s incorrect!" % key)
+                return False
 
-        if debug:
-            if result:
-                print("Number of resources correct")
-            else:
-                print("Incorrect number of resources!")
-
-        return result
+        return True
 
     @staticmethod
     def status():
@@ -562,62 +555,68 @@ class SaiHelper(SaiHelperBase):
     """
     Set common base ports configuration for tests
 
-    Common ports configuration:
-    +------------+------------+-----------+-----------+
-    |    Name    |   Vlan ID  |  Ports    |  Tagging  |
-    +============+============+===========+===========+
-    |   vlan10   |     10     |   port0   |  untagged |
-    |            |            |   port1   |    tagged |
-    |            |            |    lag1   |  untagged |
-    +------------+------------+-----------+-----------+
-    |   vlan20   |     20     |   port2   |  untagged |
-    |            |            |   port3   |    tagged |
-    |            |            |    lag2   |    tagged |
-    +------------+------------+-----------+-----------+
-    |    lag1    |     --     |   port4   |     --    |
-    |            |            |   port5   |           |
-    |            |            |   port6   |           |
-    +------------+------------+-----------+-----------+
-    |    lag2    |     --     |   port7   |     --    |
-    |            |            |   port8   |           |
-    |            |            |   port9   |           |
-    +------------+------------+-----------+-----------+
-    | port10_rif |     --     |  port10   |     --    |
-    +------------+------------+-----------+-----------+
-    | port11_rif |     --     |  port11   |     --    |
-    +------------+------------+-----------+-----------+
-    | port12_rif |     --     |  port12   |     --    |
-    +------------+------------+-----------+-----------+
-    | port13_rif |     --     |  port13   |     --    |
-    +------------+------------+-----------+-----------+
-    |    lag3    |     --     |  port14   |     --    |
-    |  lag3_rif  |            |  port15   |           |
-    |            |            |  port16   |           |
-    +------------+------------+-----------+-----------+
-    |    lag4    |     --     |  port17   |     --    |
-    |  lag4_rif  |            |  port18   |           |
-    |            |            |  port19   |           |
-    +------------+------------+-----------+-----------+
-    |   vlan30   |     30     |  port20   |  untagged |
-    | vlan30_rif |            |  port21   |    tagged |
-    |            |            |    lag5   |    tagged |
-    +------------+------------+-----------+-----------+
-    |    lag5    |     --     |  port22   |     --    |
-    |            |            |  port23   |           |
-    +------------+------------+-----------+-----------+
-    | Additional |     --     |  port24   |     --    |
-    |    ports   |            |  port25   |           |
-    |            |            |  port26   |           |
-    |            |            |  port27   |           |
-    |            |            |  port28   |           |
-    |            |            |  port29   |           |
-    |            |            |  port30   |           |
-    |            |            |  port31   |           |
-    +------------+------------+-----------+-----------+
+Common ports configuration:
+* U/T = untagged/tagged VLAN member
++--------+------+-----------+-------------+--------+------------+------------+
+| Port   | LAG  | _member   | Bridge port | VLAN   | _member    | RIF        |
++========+======|===========+=============+========+============+============+
+| port0  |      |           | port0_bp    | vlan10 | _member0 U |            |
+| port1  |      |           | port1_bp    |        | _member1 T |            |
++--------+------+-----------+-------------+--------+------------+------------+
+| port2  |      |           | port2_bp    | vlan20 | _member0 U |            |
+| port3  |      |           | port3_bp    |        | _member1 T |            |
++--------+------+-----------+-------------+--------+------------+------------+
+| port4  | lag1 | _member4  | lag1_bp     | vlan10 | _member2 U |            |
+| port5  |      | _member5  |             |        |            |            |
+| port6  |      | _member6  |             |        |            |            |
++--------+------+-----------+-------------+--------+------------+------------+
+| port7  | lag2 | _member7  | lag2_bp     | vlan20 | _member2 T |            |
+| port8  |      | _member8  |             |        |            |            |
+| port9  |      | _member9  |             |        |            |            |
++--------+------+-----------+-------------+--------+------------+------------+
+| port10 |      |           |             |        |            | port10_rif |
++--------+------+-----------+-------------+--------+------------+------------+
+| port11 |      |           |             |        |            | port11_rif |
++--------+------+-----------+-------------+--------+------------+------------+
+| port12 |      |           |             |        |            | port12_rif |
++--------+------+-----------+-------------+--------+------------+------------+
+| port13 |      |           |             |        |            | port13_rif |
++--------+------+-----------+-------------+--------+------------+------------+
+| port14 | lag3 | _member14 |             |        |            | lag3_rif   |
+| port15 |      | _member15 |             |        |            |            |
+| port16 |      | _member16 |             |        |            |            |
++--------+------+-----------+-------------+--------+------------+------------+
+| port17 | lag4 | _member17 |             |        |            | lag4_rif   |
+| port18 |      | _member18 |             |        |            |            |
+| port19 |      | _member19 |             |        |            |            |
++--------+------+-----------+-------------+--------+------------+------------+
+| port20 |      |           | port20_bp   | vlan30 | _member0 U | vlan30_rif |
+| port21 |      |           | port21_bp   |        | _member1 T |            |
++--------+------+-----------+-------------+--------+------------+------------+
+| port22 | lag5 | _member22 | lag5_bp     | vlan30 | _member2 T |            |
+| port23 |      | _member23 |             |        |            |            |
++--------+------+-----------+-------------+--------+------------+------------+
+| port24 |                                                                   |
+| port25 |                                                                   |
+| port26 |                                                                   |
+| port27 |                            UNASSIGNED                             |
+| port28 |                                                                   |
+| port29 |                                                                   |
+| port30 |                                                                   |
+| port31 |                                                                   |
++--------+-------------------------------------------------------------------+
     """
 
     def setUp(self):
         super(SaiHelper, self).setUp()
+
+        # lists of default objects
+        self.bridge_port_list = []
+        self.lag_list = []
+        self.lag_member_list = []
+        self.vlan_list = []
+        self.vlan_member_list = []
+        self.rif_list = []
 
         # create bridge ports
         self.port0_bp = sai_thrift_create_bridge_port(
@@ -627,6 +626,8 @@ class SaiHelper(SaiHelperBase):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertTrue(self.port0_bp != 0)
+        self.bridge_port_list.append(self.port0_bp)
+
         self.port1_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
@@ -634,6 +635,8 @@ class SaiHelper(SaiHelperBase):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertTrue(self.port1_bp != 0)
+        self.bridge_port_list.append(self.port1_bp)
+
         self.port2_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
@@ -641,6 +644,8 @@ class SaiHelper(SaiHelperBase):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertTrue(self.port2_bp != 0)
+        self.bridge_port_list.append(self.port2_bp)
+
         self.port3_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
@@ -648,6 +653,8 @@ class SaiHelper(SaiHelperBase):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertTrue(self.port3_bp != 0)
+        self.bridge_port_list.append(self.port3_bp)
+
         self.port20_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
@@ -655,6 +662,8 @@ class SaiHelper(SaiHelperBase):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertTrue(self.port20_bp != 0)
+        self.bridge_port_list.append(self.port20_bp)
+
         self.port21_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
@@ -662,10 +671,13 @@ class SaiHelper(SaiHelperBase):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertTrue(self.port21_bp != 0)
+        self.bridge_port_list.append(self.port21_bp)
 
         # create LAGs
         self.lag1 = sai_thrift_create_lag(self.client)
         self.assertTrue(self.lag1 != 0)
+        self.lag_list.append(self.lag1)
+
         self.lag1_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
@@ -673,15 +685,22 @@ class SaiHelper(SaiHelperBase):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertTrue(self.lag1_bp != 0)
+        self.bridge_port_list.append(self.lag1_bp)
+
         self.lag1_member4 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag1, port_id=self.port4)
+        self.lag_member_list.append(self.lag1_member4)
         self.lag1_member5 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag1, port_id=self.port5)
+        self.lag_member_list.append(self.lag1_member5)
         self.lag1_member6 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag1, port_id=self.port6)
+        self.lag_member_list.append(self.lag1_member6)
 
         self.lag2 = sai_thrift_create_lag(self.client)
         self.assertTrue(self.lag2 != 0)
+        self.lag_list.append(self.lag2)
+
         self.lag2_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
@@ -689,48 +708,51 @@ class SaiHelper(SaiHelperBase):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertTrue(self.lag2_bp != 0)
+        self.bridge_port_list.append(self.lag2_bp)
+
         self.lag2_member7 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag2, port_id=self.port7)
+        self.lag_member_list.append(self.lag2_member7)
         self.lag2_member8 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag2, port_id=self.port8)
+        self.lag_member_list.append(self.lag2_member8)
         self.lag2_member9 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag2, port_id=self.port9)
+        self.lag_member_list.append(self.lag2_member9)
 
         # L3 lags
         self.lag3 = sai_thrift_create_lag(self.client)
         self.assertTrue(self.lag3 != 0)
-        self.lag3_bp = sai_thrift_create_bridge_port(
-            self.client,
-            bridge_id=self.default_1q_bridge,
-            port_id=self.lag3,
-            type=SAI_BRIDGE_PORT_TYPE_PORT,
-            admin_state=True)
-        self.assertTrue(self.lag3_bp != 0)
+        self.lag_list.append(self.lag3)
+
         self.lag3_member14 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag3, port_id=self.port14)
+        self.lag_member_list.append(self.lag3_member14)
         self.lag3_member15 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag3, port_id=self.port15)
+        self.lag_member_list.append(self.lag3_member15)
         self.lag3_member16 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag3, port_id=self.port16)
+        self.lag_member_list.append(self.lag3_member16)
 
         self.lag4 = sai_thrift_create_lag(self.client)
         self.assertTrue(self.lag4 != 0)
-        self.lag4_bp = sai_thrift_create_bridge_port(
-            self.client,
-            bridge_id=self.default_1q_bridge,
-            port_id=self.lag4,
-            type=SAI_BRIDGE_PORT_TYPE_PORT,
-            admin_state=True)
-        self.assertTrue(self.lag4_bp != 0)
+        self.lag_list.append(self.lag4)
+
         self.lag4_member17 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag4, port_id=self.port17)
+        self.lag_member_list.append(self.lag4_member17)
         self.lag4_member18 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag4, port_id=self.port18)
+        self.lag_member_list.append(self.lag4_member18)
         self.lag4_member19 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag4, port_id=self.port19)
+        self.lag_member_list.append(self.lag4_member19)
 
         self.lag5 = sai_thrift_create_lag(self.client)
         self.assertTrue(self.lag5 != 0)
+        self.lag_list.append(self.lag5)
+
         self.lag5_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
@@ -738,67 +760,86 @@ class SaiHelper(SaiHelperBase):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertTrue(self.lag5_bp != 0)
+        self.bridge_port_list.append(self.lag5_bp)
+
         self.lag5_member22 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag5, port_id=self.port22)
+        self.lag_member_list.append(self.lag5_member22)
         self.lag5_member23 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag5, port_id=self.port23)
+        self.lag_member_list.append(self.lag5_member23)
 
         # create vlan 10 with port0, port1 and lag1
         self.vlan10 = sai_thrift_create_vlan(self.client, vlan_id=10)
         self.assertTrue(self.vlan10 != 0)
+        self.vlan_list.append(self.vlan10)
+
         self.vlan10_member0 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan10,
             bridge_port_id=self.port0_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member_list.append(self.vlan10_member0)
         self.vlan10_member1 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan10,
             bridge_port_id=self.port1_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+        self.vlan_member_list.append(self.vlan10_member1)
         self.vlan10_member2 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan10,
             bridge_port_id=self.lag1_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member_list.append(self.vlan10_member2)
 
         # create vlan 20 with port2, port3 and lag2
         self.vlan20 = sai_thrift_create_vlan(self.client, vlan_id=20)
         self.assertTrue(self.vlan20 != 0)
+        self.vlan_list.append(self.vlan20)
+
         self.vlan20_member0 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan20,
             bridge_port_id=self.port2_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member_list.append(self.vlan20_member0)
         self.vlan20_member1 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan20,
             bridge_port_id=self.port3_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+        self.vlan_member_list.append(self.vlan20_member1)
         self.vlan20_member2 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan20,
             bridge_port_id=self.lag2_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+        self.vlan_member_list.append(self.vlan20_member2)
 
         # create vlan 30 with port20, port21 and lag5
         self.vlan30 = sai_thrift_create_vlan(self.client, vlan_id=30)
         self.assertTrue(self.vlan30 != 0)
+        self.vlan_list.append(self.vlan30)
+
         self.vlan30_member0 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan30,
             bridge_port_id=self.port20_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member_list.append(self.vlan30_member0)
         self.vlan30_member1 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan30,
             bridge_port_id=self.port21_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+        self.vlan_member_list.append(self.vlan30_member1)
         self.vlan30_member2 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan30,
             bridge_port_id=self.lag5_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+        self.vlan_member_list.append(self.vlan30_member1)
 
         # setup untagged ports
         sai_thrift_set_port_attribute(self.client, self.port0, port_vlan_id=10)
@@ -812,6 +853,7 @@ class SaiHelper(SaiHelperBase):
             virtual_router_id=self.default_vrf,
             vlan_id=self.vlan30)
         self.assertTrue(self.vlan30_rif != 0)
+        self.rif_list.append(self.vlan30_rif)
 
         self.lag3_rif = sai_thrift_create_router_interface(
             self.client,
@@ -819,6 +861,7 @@ class SaiHelper(SaiHelperBase):
             virtual_router_id=self.default_vrf,
             port_id=self.lag3)
         self.assertTrue(self.lag3_rif != 0)
+        self.rif_list.append(self.lag3_rif)
 
         self.lag4_rif = sai_thrift_create_router_interface(
             self.client,
@@ -826,6 +869,7 @@ class SaiHelper(SaiHelperBase):
             virtual_router_id=self.default_vrf,
             port_id=self.lag4)
         self.assertTrue(self.lag4_rif != 0)
+        self.rif_list.append(self.lag4_rif)
 
         self.port10_rif = sai_thrift_create_router_interface(
             self.client,
@@ -833,6 +877,7 @@ class SaiHelper(SaiHelperBase):
             virtual_router_id=self.default_vrf,
             port_id=self.port10)
         self.assertTrue(self.port10_rif != 0)
+        self.rif_list.append(self.port10_rif)
 
         self.port11_rif = sai_thrift_create_router_interface(
             self.client,
@@ -840,6 +885,7 @@ class SaiHelper(SaiHelperBase):
             virtual_router_id=self.default_vrf,
             port_id=self.port11)
         self.assertTrue(self.port11_rif != 0)
+        self.rif_list.append(self.port11_rif)
 
         self.port12_rif = sai_thrift_create_router_interface(
             self.client,
@@ -847,6 +893,7 @@ class SaiHelper(SaiHelperBase):
             virtual_router_id=self.default_vrf,
             port_id=self.port12)
         self.assertTrue(self.port12_rif != 0)
+        self.rif_list.append(self.port12_rif)
 
         self.port13_rif = sai_thrift_create_router_interface(
             self.client,
@@ -854,67 +901,26 @@ class SaiHelper(SaiHelperBase):
             virtual_router_id=self.default_vrf,
             port_id=self.port13)
         self.assertTrue(self.port13_rif != 0)
+        self.rif_list.append(self.port13_rif)
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.vlan30_rif)
-        sai_thrift_remove_router_interface(self.client, self.port10_rif)
-        sai_thrift_remove_router_interface(self.client, self.port11_rif)
-        sai_thrift_remove_router_interface(self.client, self.port12_rif)
-        sai_thrift_remove_router_interface(self.client, self.port13_rif)
-        sai_thrift_remove_router_interface(self.client, self.lag3_rif)
-        sai_thrift_remove_router_interface(self.client, self.lag4_rif)
+        for rif in self.rif_list:
+            sai_thrift_remove_router_interface(self.client, rif)
 
-        sai_thrift_set_port_attribute(self.client, self.port2, port_vlan_id=0)
-        sai_thrift_set_lag_attribute(self.client, self.lag1, port_vlan_id=0)
-        sai_thrift_set_port_attribute(self.client, self.port0, port_vlan_id=0)
+        for vlan_member in self.vlan_member_list:
+            sai_thrift_remove_vlan_member(self.client, vlan_member)
 
-        # remove vlan config
-        sai_thrift_remove_vlan_member(self.client, self.vlan30_member2)
-        sai_thrift_remove_vlan_member(self.client, self.vlan30_member1)
-        sai_thrift_remove_vlan_member(self.client, self.vlan30_member0)
-        sai_thrift_remove_vlan(self.client, self.vlan30)
-        sai_thrift_remove_vlan_member(self.client, self.vlan20_member2)
-        sai_thrift_remove_vlan_member(self.client, self.vlan20_member1)
-        sai_thrift_remove_vlan_member(self.client, self.vlan20_member0)
-        sai_thrift_remove_vlan(self.client, self.vlan20)
-        sai_thrift_remove_vlan_member(self.client, self.vlan10_member2)
-        sai_thrift_remove_vlan_member(self.client, self.vlan10_member1)
-        sai_thrift_remove_vlan_member(self.client, self.vlan10_member0)
-        sai_thrift_remove_vlan(self.client, self.vlan10)
+        for vlan in self.vlan_list:
+            sai_thrift_remove_vlan(self.client, vlan)
 
-        # remove lag config
-        sai_thrift_remove_lag_member(self.client, self.lag5_member22)
-        sai_thrift_remove_lag_member(self.client, self.lag5_member23)
-        sai_thrift_remove_bridge_port(self.client, self.lag5_bp)
-        sai_thrift_remove_lag(self.client, self.lag5)
-        sai_thrift_remove_lag_member(self.client, self.lag4_member19)
-        sai_thrift_remove_lag_member(self.client, self.lag4_member18)
-        sai_thrift_remove_lag_member(self.client, self.lag4_member17)
-        sai_thrift_remove_bridge_port(self.client, self.lag4_bp)
-        sai_thrift_remove_lag(self.client, self.lag4)
-        sai_thrift_remove_lag_member(self.client, self.lag3_member16)
-        sai_thrift_remove_lag_member(self.client, self.lag3_member15)
-        sai_thrift_remove_lag_member(self.client, self.lag3_member14)
-        sai_thrift_remove_bridge_port(self.client, self.lag3_bp)
-        sai_thrift_remove_lag(self.client, self.lag3)
-        sai_thrift_remove_lag_member(self.client, self.lag2_member9)
-        sai_thrift_remove_lag_member(self.client, self.lag2_member8)
-        sai_thrift_remove_lag_member(self.client, self.lag2_member7)
-        sai_thrift_remove_bridge_port(self.client, self.lag2_bp)
-        sai_thrift_remove_lag(self.client, self.lag2)
-        sai_thrift_remove_lag_member(self.client, self.lag1_member6)
-        sai_thrift_remove_lag_member(self.client, self.lag1_member5)
-        sai_thrift_remove_lag_member(self.client, self.lag1_member4)
-        sai_thrift_remove_bridge_port(self.client, self.lag1_bp)
-        sai_thrift_remove_lag(self.client, self.lag1)
+        for lag_member in self.lag_member_list:
+            sai_thrift_remove_lag_member(self.client, lag_member)
 
-        # remove bridge ports
-        sai_thrift_remove_bridge_port(self.client, self.port21_bp)
-        sai_thrift_remove_bridge_port(self.client, self.port20_bp)
-        sai_thrift_remove_bridge_port(self.client, self.port3_bp)
-        sai_thrift_remove_bridge_port(self.client, self.port2_bp)
-        sai_thrift_remove_bridge_port(self.client, self.port1_bp)
-        sai_thrift_remove_bridge_port(self.client, self.port0_bp)
+        for lag in self.lag_list:
+            sai_thrift_remove_lag(self.client, lag)
+
+        for bridge_port in self.bridge_port_list:
+            sai_thrift_remove_bridge_port(self.client, bridge_port)
 
         super(SaiHelper, self).tearDown()
 
@@ -944,56 +950,56 @@ class MinimalPortVlanConfig(SaiHelperBase):
                              'than number of active ports %d'
                              %(self.port_num, self.active_ports_no))
 
-        self.bridge_port = []
-        self.vlan_member = []
+        self.bridge_port_list = []
+        self.vlan_member_list = []
 
         # create bridge ports
-        for i in range(0, self.port_num):
+        for port in self.port_list:
             bp = sai_thrift_create_bridge_port(
                 self.client, bridge_id=self.default_1q_bridge,
-                port_id=self.port_list[i], type=SAI_BRIDGE_PORT_TYPE_PORT,
+                port_id=port, type=SAI_BRIDGE_PORT_TYPE_PORT,
                 admin_state=True)
 
-            self.assertGreater(bp, 0)
-            self.bridge_port.append(bp)
+            self.assertTrue(bp != 0)
+            self.bridge_port_list.append(bp)
 
         # create vlan
         self.vlan = sai_thrift_create_vlan(self.client, vlan_id=self.vlan_id)
         self.assertGreater(self.vlan, 0)
 
         # add ports to vlan
-        for i in range(0, self.port_num):
+        for bridge_port in self.bridge_port_list:
             vm = sai_thrift_create_vlan_member(
                 self.client, vlan_id=self.vlan,
-                bridge_port_id=self.bridge_port[i],
+                bridge_port_id=bridge_port,
                 vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
-            self.assertGreater(vm, 0)
-            self.vlan_member.append(vm)
+            self.assertTrue(vm != 0)
+            self.vlan_member_list.append(vm)
 
         # setup untagged ports
-        for i in range(0, self.port_num):
+        for port in self.port_list:
             status = sai_thrift_set_port_attribute(
-                self.client, self.port_list[i], port_vlan_id=self.vlan_id)
+                self.client, port, port_vlan_id=self.vlan_id)
 
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
     def tearDown(self):
         # revert untagged ports configuration
-        for i in range(0, self.port_num):
+        for port in self.port_list:
             sai_thrift_set_port_attribute(
-                self.client, self.port_list[i], port_vlan_id=0)
+                self.client, port, port_vlan_id=0)
 
         # remove ports from vlan
-        for i in range(0, self.port_num):
-            sai_thrift_remove_vlan_member(self.client, self.vlan_member[i])
+        for vlan_member in self.vlan_member_list:
+            sai_thrift_remove_vlan_member(self.client, vlan_member)
 
         # remove vlan
         sai_thrift_remove_vlan(self.client, self.vlan)
 
         # remove bridge ports
-        for i in range(0, self.port_num):
-            sai_thrift_remove_bridge_port(self.client, self.bridge_port[i])
+        for bridge_port in self.bridge_port_list:
+            sai_thrift_remove_bridge_port(self.client, bridge_port)
 
         super(MinimalPortVlanConfig, self).tearDown()
 
@@ -1085,7 +1091,7 @@ def delay_wrapper(func, delay=2):
 
     Args:
         func (function): function to be wrapped
-        delay (int): delay period
+        delay (int): delay period in sec
 
     Return:
         wrapped_function: wrapped function
@@ -1144,7 +1150,7 @@ def socket_verify_packet(pkt, sock, timeout=2):
         timeout (int): timeout
 
     Return:
-        match (bool): True if packet matched
+        bool: True if packet matched
     """
     max_pkt_size = 9100
     timeout = time.time() + timeout
