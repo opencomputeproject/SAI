@@ -34,6 +34,9 @@ class FrameworkTester(SaiHelper):
     def setUp(self):
         super(FrameworkTester, self).setUp()
 
+        self.route_entry_list = []
+        self.nhop_list = []
+
         # test fdb creation
         self.fdb_entry = sai_thrift_fdb_entry_t(
             switch_id=self.switch_id,
@@ -52,11 +55,14 @@ class FrameworkTester(SaiHelper):
             type=SAI_NEXT_HOP_TYPE_IP,
             router_interface_id=self.port10_rif,
             ip=sai_ipaddress('10.10.10.1'))
+        self.nhop_list.append(self.nhop)
+
         self.nhop1 = sai_thrift_create_next_hop(
             self.client,
             type=SAI_NEXT_HOP_TYPE_IP,
             router_interface_id=self.port10_rif,
             ip=sai_ipaddress('4444::1'))
+        self.nhop_list.append(self.nhop1)
 
         # test neighbor creation
         self.neigh_entry = sai_thrift_neighbor_entry_t(
@@ -72,6 +78,8 @@ class FrameworkTester(SaiHelper):
         status = sai_thrift_create_route_entry(
             self.client, self.route0, next_hop_id=self.nhop)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.route_entry_list.append(self.route0)
+
         self.route1 = sai_thrift_route_entry_t(
             switch_id=self.switch_id,
             destination=sai_ipprefix('4441::1/64'),
@@ -79,6 +87,8 @@ class FrameworkTester(SaiHelper):
         status = sai_thrift_create_route_entry(
             self.client, self.route1, next_hop_id=self.nhop)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.route_entry_list.append(self.route1)
+
         self.route2 = sai_thrift_route_entry_t(
             switch_id=self.switch_id,
             destination=sai_ipprefix('4411::1/63'),
@@ -86,6 +96,8 @@ class FrameworkTester(SaiHelper):
         status = sai_thrift_create_route_entry(
             self.client, self.route2, next_hop_id=self.nhop)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.route_entry_list.append(self.route2)
+
         self.route3 = sai_thrift_route_entry_t(
             switch_id=self.switch_id,
             destination=sai_ipprefix('4423::1/65'),
@@ -93,6 +105,8 @@ class FrameworkTester(SaiHelper):
         status = sai_thrift_create_route_entry(
             self.client, self.route3, next_hop_id=self.nhop)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.route_entry_list.append(self.route3)
+
         self.route4 = sai_thrift_route_entry_t(
             switch_id=self.switch_id,
             destination=sai_ipprefix('4444::1/127'),
@@ -100,6 +114,7 @@ class FrameworkTester(SaiHelper):
         status = sai_thrift_create_route_entry(
             self.client, self.route4, next_hop_id=self.nhop)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.route_entry_list.append(self.route4)
 
         # test qos map creation
         dscp_to_tc_1 = sai_thrift_qos_map_t(
@@ -152,14 +167,15 @@ class FrameworkTester(SaiHelper):
 
     def tearDown(self):
         sai_thrift_remove_qos_map(self.client, self.qos_map)
-        sai_thrift_remove_route_entry(self.client, self.route4)
-        sai_thrift_remove_route_entry(self.client, self.route3)
-        sai_thrift_remove_route_entry(self.client, self.route2)
-        sai_thrift_remove_route_entry(self.client, self.route1)
-        sai_thrift_remove_route_entry(self.client, self.route0)
+
+        for route_entry in self.route_entry_list:
+            sai_thrift_remove_route_entry(self.client, route_entry)
+
         sai_thrift_remove_neighbor_entry(self.client, self.neigh_entry)
-        sai_thrift_remove_next_hop(self.client, self.nhop1)
-        sai_thrift_remove_next_hop(self.client, self.nhop)
+
+        for nhop in self.nhop_list:
+            sai_thrift_remove_next_hop(self.client, nhop)
+
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry)
 
         super(FrameworkTester, self).tearDown()
