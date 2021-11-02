@@ -670,7 +670,7 @@ void convert_attr_sai_to_thrift(const sai_object_type_t sai_ot,
     case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_IP_ADDRESS:
     case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_ID:
     case SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA_OBJECT_LIST:
-      // TODO(bfn)
+      //TODO
       break;
 
     case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY: {
