@@ -127,7 +127,6 @@ class ThriftInterfaceDataPlane(ThriftInterface):
         super(ThriftInterfaceDataPlane, self).setUp()
 
         self.dataplane = ptf.dataplane_instance
-        self.removeCpuPort()
         if self.dataplane is not None:
             self.dataplane.flush()
             if config['log_dir'] is not None:
