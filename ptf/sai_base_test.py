@@ -384,58 +384,17 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
             setattr(self, 'dev_port%d' % dev_no, port)
             dev_no += 1
 
-    def printNumberOfAvaiableResources(self):
+    def printNumberOfAvaiableResources(self, resources_dict):
         """
         Prints numbers of available resources
+
+        Args:
+            resources_dict (dict): a dictionary with resources numbers
         """
         print("***** Number of available resources *****")
 
-        print("available_ipv4_route_entry %d"
-              % self.available_ipv4_route_entry)
-        print("available_ipv6_route_entry %d"
-              % self.available_ipv6_route_entry)
-        print("available_ipv4_nexthop_entry %d"
-              % self.available_ipv4_nexthop_entry)
-        print("available_ipv6_nexthop_entry %d"
-              % self.available_ipv6_nexthop_entry)
-        print("available_ipv4_neighbor_entry %d"
-              % self.available_ipv4_neighbor_entry)
-        print("available_ipv6_neighbor_entry %d"
-              % self.available_ipv6_neighbor_entry)
-        print("available_next_hop_group_entry %d"
-              % self.available_next_hop_group_entry)
-        print("available_next_hop_group_member_entry %d"
-              % self.available_next_hop_group_member_entry)
-        print("available_fdb_entry %d"
-              % self.available_fdb_entry)
-        print("available_l2mc_entry %d"
-              % self.available_l2mc_entry)
-        print("available_ipmc_entry %d"
-              % self.available_ipmc_entry)
-        print("available_snat_entry %d"
-              % self.available_snat_entry)
-        print("available_dnat_entry %d"
-              % self.available_dnat_entry)
-        print("available_double_nat_entry %d"
-              % self.available_double_nat_entry)
-        print("available_acl_table %d"
-              % self.available_acl_table)
-        print("available_acl_table_group %d"
-              % self.available_acl_table_group)
-        print("available_my_sid_entry %d"
-              % self.available_my_sid_entry)
-        print("available_snapt_entry %d"
-              % self.available_snapt_entry)
-        print("available_dnapt_entry %d"
-              % self.available_dnapt_entry)
-        print("available_double_napt_entry %d"
-              % self.available_double_napt_entry)
-        print("available_my_mac_entries %d"
-              % self.available_my_mac_entries)
-        print("number_of_ecmp_groups %d"
-              % self.number_of_ecmp_groups)
-        print("ecmp_members %d"
-              % self.ecmp_members)
+        for key, value in resources_dict:
+            print(key, ": ", value)
 
     def saveNumberOfAvaiableResources(self, debug=False):
         """
