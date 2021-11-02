@@ -116,6 +116,16 @@ class FrameworkTester(SaiHelper):
             map_to_value_list=self.qos_map_list)
 
     def runTest(self):
+        attr = sai_thrift_get_fdb_entry_attribute(
+            self.client, self.fdb_entry, bridge_port_id=True)
+        self.assertEqual(attr['bridge_port_id'], self.port0_bp)
+
+        for route in [self.route0, self.route1, self.route2,
+                      self.route3, self.route4]:
+            attr = sai_thrift_get_route_entry_attribute(
+                self.client, route, next_hop_id=True)
+            self.assertEqual(attr['next_hop_id'], self.nhop)
+
         attr = sai_thrift_get_next_hop_attribute(
             self.client, self.nhop, ip='0.0.0.0')
         self.assertEqual(attr['ip'].addr.ip4, '10.10.10.1')
