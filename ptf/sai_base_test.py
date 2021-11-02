@@ -92,8 +92,8 @@ class ThriftInterface(BaseTest):
             user_input = self.test_params['port_map_file']
             with open(user_input, 'r') as map_file:
                 for line in map_file:
-                    if (line and
-                        (line[0] == '#' or line[0] == ';' or line[0] == '/')):
+                    if (line and (line[0] == '#' or
+                                  line[0] == ';' or line[0] == '/')):
                         continue
                     iface_front_pair = line.split("@")
                     self.interface_to_front_mapping[iface_front_pair[0]] =  \
@@ -299,19 +299,19 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Parse port_config.ini file
 
         Example of supported format for port_config.ini:
-        # name          lanes         alias       index    speed    autoneg   fec
-        Ethernet0         0           Ethernet0       1    25000      off     none
-        Ethernet1         1           Ethernet1       1    25000      off     none
-        Ethernet2         2           Ethernet2       1    25000      off     none
-        Ethernet3         3           Ethernet3       1    25000      off     none
-        Ethernet4         4           Ethernet4       2    25000      off     none
-        Ethernet5         5           Ethernet5       2    25000      off     none
-        Ethernet6         6           Ethernet6       2    25000      off     none
-        Ethernet7         7           Ethernet7       2    25000      off     none
-        Ethernet8         8           Ethernet8       3    25000      off     none
-        Ethernet9         9           Ethernet9       3    25000      off     none
-        Ethernet10        10          Ethernet10      3    25000      off     none
-        Ethernet11        11          Ethernet11      3    25000      off     none
+        # name        lanes       alias       index    speed    autoneg   fec
+        Ethernet0       0         Ethernet0     1      25000      off     none
+        Ethernet1       1         Ethernet1     1      25000      off     none
+        Ethernet2       2         Ethernet2     1      25000      off     none
+        Ethernet3       3         Ethernet3     1      25000      off     none
+        Ethernet4       4         Ethernet4     2      25000      off     none
+        Ethernet5       5         Ethernet5     2      25000      off     none
+        Ethernet6       6         Ethernet6     2      25000      off     none
+        Ethernet7       7         Ethernet7     2      25000      off     none
+        Ethernet8       8         Ethernet8     3      25000      off     none
+        Ethernet9       9         Ethernet9     3      25000      off     none
+        Ethernet10      10        Ethernet10    3      25000      off     none
+        Ethernet11      11        Ethernet11    3      25000      off     none
         etc
 
         Args:
@@ -342,7 +342,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                             continue
                         data[titles[i]] = item
                     data['lanes'] = [int(lane)
-                                    for lane in data['lanes'].split(',')]
+                                     for lane in data['lanes'].split(',')]
                     data['speed'] = int(data['speed'])
                     ports[name] = data
             return ports
@@ -391,8 +391,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Args:
             resources_dict (dict): a dictionary with resources numbers
         """
-        print("***** Number of available resources *****")
 
+        print("***** Number of available resources *****")
         for key, value in resources_dict:
             print(key, ": ", value)
 
@@ -418,23 +418,15 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
             available_next_hop_group_entry=True,
             available_next_hop_group_member_entry=True,
             available_fdb_entry=True,
-            available_l2mc_entry=True,
             available_ipmc_entry=True,
             available_snat_entry=True,
             available_dnat_entry=True,
             available_double_nat_entry=True,
-            available_acl_table=True,
-            available_acl_table_group=True,
-            available_my_sid_entry=True,
-            available_snapt_entry=True,
-            available_dnapt_entry=True,
-            available_double_napt_entry=True,
-            available_my_mac_entries=True,
             number_of_ecmp_groups=True,
             ecmp_members=True)
 
         if debug:
-            self.printNumberOfAvaiableResources()
+            self.printNumberOfAvaiableResources(switch_resources)
 
         return switch_resources
 
@@ -461,18 +453,10 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
             available_next_hop_group_entry=True,
             available_next_hop_group_member_entry=True,
             available_fdb_entry=True,
-            available_l2mc_entry=True,
             available_ipmc_entry=True,
             available_snat_entry=True,
             available_dnat_entry=True,
             available_double_nat_entry=True,
-            available_acl_table=True,
-            available_acl_table_group=True,
-            available_my_sid_entry=True,
-            available_snapt_entry=True,
-            available_dnapt_entry=True,
-            available_double_napt_entry=True,
-            available_my_mac_entries=True,
             number_of_ecmp_groups=True,
             ecmp_members=True)
 
@@ -795,7 +779,7 @@ Common ports configuration:
             vlan_id=self.vlan30,
             bridge_port_id=self.lag5_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
-        self.vlan_member_list.append(self.vlan30_member1)
+        self.vlan_member_list.append(self.vlan30_member2)
 
         # setup untagged ports
         sai_thrift_set_port_attribute(self.client, self.port0, port_vlan_id=10)
@@ -860,14 +844,18 @@ Common ports configuration:
         self.rif_list.append(self.port13_rif)
 
     def tearDown(self):
+        sai_thrift_set_port_attribute(self.client, self.port2, port_vlan_id=0)
+        sai_thrift_set_lag_attribute(self.client, self.lag1, port_vlan_id=0)
+        sai_thrift_set_port_attribute(self.client, self.port0, port_vlan_id=0)
+
         for rif in self.rif_list:
             sai_thrift_remove_router_interface(self.client, rif)
 
         for vlan_member in self.vlan_member_list:
             sai_thrift_remove_vlan_member(self.client, vlan_member)
 
-        for vlan in self.vlan_list:
-            sai_thrift_remove_vlan(self.client, vlan)
+        for bridge_port in self.bridge_port_list:
+            sai_thrift_remove_bridge_port(self.client, bridge_port)
 
         for lag_member in self.lag_member_list:
             sai_thrift_remove_lag_member(self.client, lag_member)
@@ -875,8 +863,8 @@ Common ports configuration:
         for lag in self.lag_list:
             sai_thrift_remove_lag(self.client, lag)
 
-        for bridge_port in self.bridge_port_list:
-            sai_thrift_remove_bridge_port(self.client, bridge_port)
+        for vlan in self.vlan_list:
+            sai_thrift_remove_vlan(self.client, vlan)
 
         super(SaiHelper, self).tearDown()
 
@@ -904,7 +892,7 @@ class MinimalPortVlanConfig(SaiHelperBase):
         if self.port_num > self.active_ports_no:
             raise ValueError('Number of ports to configure %d is higher '
                              'than number of active ports %d'
-                             %(self.port_num, self.active_ports_no))
+                             % (self.port_num, self.active_ports_no))
 
         self.bridge_port_list = []
         self.vlan_member_list = []
