@@ -21,17 +21,10 @@ and/or dataplane automatically set up.
 """
 
 import os
-import time
-import socket
-import struct
 
-from functools import wraps
 from collections import OrderedDict
 
-import ptf
 from ptf import config
-from ptf import testutils
-from ptf.packet import *
 from ptf.base_tests import BaseTest
 
 from thrift.transport import TSocket
@@ -40,7 +33,7 @@ from thrift.protocol import TBinaryProtocol
 
 from sai_thrift import sai_rpc
 
-from sai_adapter import *
+from sai_utils import *
 
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
@@ -946,177 +939,3 @@ class MinimalPortVlanConfig(SaiHelperBase):
             sai_thrift_remove_bridge_port(self.client, bridge_port)
 
         super(MinimalPortVlanConfig, self).tearDown()
-
-
-def sai_ipaddress(addr_str):
-    """
-    Set SAI IP address, assign appropriate type and return
-    sai_thrift_ip_address_t object
-
-    Args:
-        addr_str (str): IP address string
-
-    Returns:
-        sai_thrift_ip_address_t: object containing IP address family and number
-    """
-
-    if '.' in addr_str:
-        family = SAI_IP_ADDR_FAMILY_IPV4
-        addr = sai_thrift_ip_addr_t(ip4=addr_str)
-    if ':' in addr_str:
-        family = SAI_IP_ADDR_FAMILY_IPV6
-        addr = sai_thrift_ip_addr_t(ip6=addr_str)
-    ip_addr = sai_thrift_ip_address_t(addr_family=family, addr=addr)
-
-    return ip_addr
-
-
-def sai_ipprefix(prefix_str):
-    """
-    Set IP address prefix and mask and return ip_prefix object
-
-    Args:
-        prefix_str (str): IP address and mask string (with slash notation)
-
-    Return:
-        sai_thrift_ip_prefix_t: IP prefix object
-    """
-    addr_mask = prefix_str.split('/')
-    if len(addr_mask) != 2:
-        print("Invalid IP prefix format")
-        return None
-
-    if '.' in prefix_str:
-        family = SAI_IP_ADDR_FAMILY_IPV4
-        addr = sai_thrift_ip_addr_t(ip4=addr_mask[0])
-        mask = num_to_dotted_quad(addr_mask[1])
-        mask = sai_thrift_ip_addr_t(ip4=mask)
-    if ':' in prefix_str:
-        family = SAI_IP_ADDR_FAMILY_IPV6
-        addr = sai_thrift_ip_addr_t(ip6=addr_mask[0])
-        mask = num_to_dotted_quad(int(addr_mask[1]), ipv4=False)
-        mask = sai_thrift_ip_addr_t(ip6=mask)
-
-    ip_prefix = sai_thrift_ip_prefix_t(
-        addr_family=family, addr=addr, mask=mask)
-    return ip_prefix
-
-
-def num_to_dotted_quad(address, ipv4=True):
-    """
-    Helper function to convert the ip address
-
-    Args:
-        address (str): IP address
-        ipv4 (bool): determines what IP version is handled
-
-    Returns:
-        str: formatted IP address
-    """
-    if ipv4 is True:
-        mask = (1 << 32) - (1 << 32 >> int(address))
-        return socket.inet_ntop(socket.AF_INET, struct.pack('>L', mask))
-
-    mask = (1 << 128) - (1 << 128 >> int(address))
-    i = 0
-    result = ''
-    for sign in str(hex(mask)[2:]):
-        if (i + 1) % 4 == 0:
-            result = result + sign + ':'
-        else:
-            result = result + sign
-        i += 1
-    return result[:-1]
-
-
-def delay_wrapper(func, delay=2):
-    """
-    A wrapper extending given function by a delay
-
-    Args:
-        func (function): function to be wrapped
-        delay (int): delay period in sec
-
-    Return:
-        wrapped_function: wrapped function
-    """
-    @wraps(func)
-    def wrapped_function(*args, **kwargs):
-        """
-        A wrapper function adding a delay
-
-        Args:
-            args (tuple): function arguments
-            kwargs (dict): keyword function arguments
-
-        Return:
-            status: original function return value
-        """
-        test_params = testutils.test_params_get()
-        if test_params['target'] != "hw":
-            time.sleep(delay)
-
-        status = func(*args, **kwargs)
-        return status
-
-    return wrapped_function
-
-
-sai_thrift_flush_fdb_entries = delay_wrapper(sai_thrift_flush_fdb_entries)
-
-
-def open_packet_socket(hostif_name):
-    """
-    Open a linux socket
-
-    Args:
-        hostif_name (str): socket interface name
-
-    Return:
-        sock: socket ID
-    """
-    eth_p_all = 3
-    sock = socket.socket(socket.AF_PACKET, socket.SOCK_RAW,
-                         socket.htons(eth_p_all))
-    sock.bind((hostif_name, eth_p_all))
-    sock.setblocking(0)
-
-    return sock
-
-
-def socket_verify_packet(pkt, sock, timeout=2):
-    """
-    Verify packet was received on a socket
-
-    Args:
-        pkt (packet): packet to match with
-        sock (int): socket ID
-        timeout (int): timeout
-
-    Return:
-        bool: True if packet matched
-    """
-    max_pkt_size = 9100
-    timeout = time.time() + timeout
-    match = False
-
-    if isinstance(pkt, ptf.mask.Mask):
-        if not pkt.is_valid():
-            return False
-
-    while time.time() < timeout:
-        try:
-            packet_from_tap_device = Ether(sock.recv(max_pkt_size))
-
-            if isinstance(pkt, ptf.mask.Mask):
-                match = pkt.pkt_match(packet_from_tap_device)
-            else:
-                match = (str(packet_from_tap_device) == str(pkt))
-
-            if match:
-                break
-
-        except BaseException:
-            pass
-
-    return match
