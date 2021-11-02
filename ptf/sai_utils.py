@@ -16,8 +16,6 @@
 Thrift SAI interface basic utils.
 """
 
-from sai_adapter import *
-
 
 def sai_thrift_query_attribute_enum_values_capability(client,
                                                       obj_type,
@@ -65,58 +63,44 @@ def sai_thrift_object_type_get_availability(client,
     return availability_cnt
 
 
-def sai_thrift_get_port_stats_ext_overwrite(client,
-                                            port_oid,
-                                            counter_ids,
-                                            mode):
+def sai_thrift_get_debug_counter_port_stats(client, port_oid, counter_ids):
     """
-    sai_get_port_stats_ext() - RPC client function implementation.
-    WARNING: This function overwrites sai_adapter.py function and will be
-             removed when the sai_adapter.py function has been fixed.
+    Get port statistics for given debug counters
 
     Args:
         client (Client): SAI RPC client
-        port_oid(sai_thrift_object_id_t): object_id IN argument
-        counter_ids(sai_stat_id_t): list of requested counter ids
-        mode(sai_thrift_stats_mode_t): stats_mode IN argument
+        port_oid (sai_thrift_object_id_t): object_id IN argument
+        counter_ids (sai_stat_id_t): list of requested counters
 
     Returns:
         Dict[str, sai_thrift_uint64_t]: stats
     """
 
     stats = dict()
-    counters = client.sai_thrift_get_port_stats_ext(port_oid, counter_ids,
-                                                    mode)
+    counters = client.sai_thrift_get_port_stats(port_oid, counter_ids)
+
     for i, counter_id in enumerate(counter_ids):
         stats[counter_id] = counters[i]
 
     return stats
 
 
-sai_thrift_get_port_stats_ext = sai_thrift_get_port_stats_ext_overwrite
-
-
-def sai_thrift_get_switch_stats_ext_overwrite(client, counter_ids, mode):
+def sai_thrift_get_debug_counter_switch_stats(client, counter_ids):
     """
-    sai_get_switch_stats_ext() - RPC client function implementation.
-    WARNING: This function overwrites sai_adapter.py function and will be
-             removed when the sai_adapter.py function has been fixed.
+    Get switch statistics for given debug counters
 
     Args:
         client (Client): SAI RPC client
-        counter_ids(sai_stat_id_t): list of requested counter ids
-        mode(sai_thrift_stats_mode_t): stats_mode IN argument
+        counter_ids (sai_stat_id_t): list of requested counters
 
     Returns:
         Dict[str, sai_thrift_uint64_t]: stats
     """
 
     stats = dict()
-    counters = client.sai_thrift_get_switch_stats_ext(counter_ids, mode)
+    counters = client.sai_thrift_get_switch_stats(counter_ids)
+
     for i, counter_id in enumerate(counter_ids):
         stats[counter_id] = counters[i]
 
     return stats
-
-
-sai_thrift_get_switch_stats_ext = sai_thrift_get_switch_stats_ext_overwrite

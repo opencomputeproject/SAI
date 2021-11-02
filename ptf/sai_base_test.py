@@ -40,9 +40,7 @@ from thrift.protocol import TBinaryProtocol
 
 from sai_thrift import sai_rpc
 
-# Import both adapter module and all its functions
-import sai_adapter as adapter
-from sai_utils import *
+from sai_adapter import *
 
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
@@ -536,7 +534,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Returns:
             int: sai call result
         """
-        return adapter.status
+        return status
 
     @staticmethod
     def saiWaitFdbAge(timeout):
