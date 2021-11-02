@@ -435,12 +435,23 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is fabric port error status.
      */
     SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST,
+
+    /**
+     * @brief Attribute value is encryption key.
+     */
+    SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY,
+
+    /**
+     * @brief Attribute value is authentication Key.
+     */
+    SAI_ATTR_VALUE_TYPE_AUTH_KEY,
+
 } sai_attr_value_type_t;
 
 /**
  * @brief Attribute flags.
  *
- * @flags Contains flags
+ * @flags strict
  */
 typedef enum _sai_attr_flags_t
 {
@@ -705,6 +716,55 @@ typedef struct _sai_attr_condition_t
 } sai_attr_condition_t;
 
 /**
+ * @brief Defines enum flags type, if enum contains flags.
+ *
+ * Enum values repetitions are not allowed on all types, unless marked with
+ * deprecated for backward compatibility or defined outside enum using
+ * define directive.
+ */
+typedef enum _sai_enum_flags_type_t
+{
+    /**
+     * @brief Enum has no flags, must start with 0 and have sequential values.
+     *
+     * This is default value for all enum, no need for explicit declaration.
+     */
+    SAI_ENUM_FLAGS_TYPE_NONE,
+
+    /**
+     * @brief Enum is strict flags starting from 1 and uses power of 2.
+     *
+     * Flags combinations enum definitions NOT allowed, like: C = A | B.
+     *
+     * User combined value can contain all flags set at once.
+     */
+    SAI_ENUM_FLAGS_TYPE_STRICT,
+
+    /**
+     * @brief Enum is mixed flags starting from 1 and uses power of 2.
+     *
+     * Flags combinations enum definitions ARE allowed, like: C = A | B.
+     */
+    SAI_ENUM_FLAGS_TYPE_MIXED,
+
+    /**
+     * @brief Enum contains ranges in base steps of 0x1000. Can start with
+     * specific range. Inside ranges enum must have sequential values.
+     */
+    SAI_ENUM_FLAGS_TYPE_RANGES,
+
+    /**
+     * @brief Complete freedom of defining enum, everything is allowed here.
+     */
+    SAI_ENUM_FLAGS_TYPE_FREE,
+
+    /* future types can be defined */
+
+    /* TODO extension type? */
+
+} sai_enum_flags_type_t;
+
+/**
  * @brief Defines enum metadata information.
  */
 typedef struct _sai_enum_metadata_t
@@ -737,9 +797,17 @@ typedef struct _sai_enum_metadata_t
     /**
      * @brief Indicates whether enumeration contains flags.
      *
-     * When set to true numbers of enumeration are not continuous.
+     * When set to true numbers of enumeration are not sequential.
      */
     bool                            containsflags;
+
+    /**
+     * @brief Defines enum flags type, if enum contains flags.
+     *
+     * If contains flags is false, then flag type must be
+     * SAI_ENUM_FLAGS_TYPE_NONE.
+     */
+    sai_enum_flags_type_t           flagstype;
 
     /**
      * @brief Array of enum ignored values.

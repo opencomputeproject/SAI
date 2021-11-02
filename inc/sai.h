@@ -34,6 +34,7 @@
 #include "saihostif.h"
 #include "saiipmcgroup.h"
 #include "saiipmc.h"
+#include "saiipsec.h"
 #include "sail2mcgroup.h"
 #include "sail2mc.h"
 #include "sailag.h"
@@ -72,6 +73,7 @@
 #include "sainat.h"
 #include "saiisolationgroup.h"
 #include "saidebugcounter.h"
+#include "saimymac.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -133,7 +135,9 @@ typedef enum _sai_api_t
     SAI_API_DEBUG_COUNTER    = 42, /**< sai_debug_counter_api_t */
     SAI_API_MACSEC           = 43, /**< sai_macsec_api_t */
     SAI_API_SYSTEM_PORT      = 44, /**< sai_system_port_api_t */
-    SAI_API_MAX              = 45, /**< total number of APIs */
+    SAI_API_MY_MAC           = 45, /**< sai_my_mac_api_t */
+    SAI_API_IPSEC            = 46, /**< sai_ipsec_api_t */
+    SAI_API_MAX,                   /**< total number of APIs */
 } sai_api_t;
 
 /**

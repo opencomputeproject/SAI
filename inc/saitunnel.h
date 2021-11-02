@@ -62,6 +62,18 @@ typedef enum _sai_tunnel_map_type_t
     /** TUNNEL Map Virtual Router ID to VNI */
     SAI_TUNNEL_MAP_TYPE_VIRTUAL_ROUTER_ID_TO_VNI = 0x00000007,
 
+    /** TUNNEL Map VSID to VLAN ID */
+    SAI_TUNNEL_MAP_TYPE_VSID_TO_VLAN_ID = 0x00000008,
+
+    /** TUNNEL Map VLAN ID to VSID */
+    SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VSID = 0x00000009,
+
+    /** TUNNEL Map VSID to Bridge IF */
+    SAI_TUNNEL_MAP_TYPE_VSID_TO_BRIDGE_IF = 0x0000000a,
+
+    /** TUNNEL Map Bridge IF to VSID */
+    SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VSID = 0x0000000b,
+
     /** Custom range base value */
     SAI_TUNNEL_MAP_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -133,7 +145,7 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VSID
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_VLAN_ID_KEY = 0x00000006,
 
@@ -143,7 +155,7 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VLAN_ID
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VLAN_ID or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VSID_TO_VLAN_ID
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_VLAN_ID_VALUE = 0x00000007,
 
@@ -171,7 +183,7 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_BRIDGE
-     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VSID
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_BRIDGE_ID_KEY = 0x0000000a,
 
@@ -181,7 +193,7 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_BRIDGE
-     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VSID_TO_BRIDGE_IF
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_BRIDGE_ID_VALUE = 0x0000000b,
 
@@ -204,6 +216,24 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VIRTUAL_ROUTER_ID
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_VIRTUAL_ROUTER_ID_VALUE = 0x0000000d,
+
+    /**
+     * @brief VSID ID key
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VSID_TO_VLAN_ID or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VSID_TO_BRIDGE_IF
+     */
+    SAI_TUNNEL_MAP_ENTRY_ATTR_VSID_ID_KEY = 0x0000000e,
+
+    /**
+     * @brief VSID ID value
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VSID or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VSID
+     */
+    SAI_TUNNEL_MAP_ENTRY_ATTR_VSID_ID_VALUE = 0x0000000f,
 
     /**
      * @brief End of attributes
@@ -414,7 +444,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_SRV6
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_SRV6 or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_NVGRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_UDP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN_UDP_ESP
      */
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
 
@@ -426,7 +456,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_UDP_ESP
      */
     SAI_TUNNEL_ATTR_OVERLAY_INTERFACE,
 
@@ -627,6 +657,34 @@ typedef enum _sai_tunnel_attr_t
      * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
      */
     SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MASK,
+
+    /**
+     * @brief IPsec encryption SA index
+     *
+     * Index to bind an egress IPsec SA to a tunnel.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_UDP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN_UDP_ESP
+     */
+    SAI_TUNNEL_ATTR_SA_INDEX,
+
+    /**
+     * @brief List of ports that are programmed with SAs for this IPsec tunnel.
+     * Useful only when IPsec is implemented in a PHY Chip (different sai_switch
+     * object).
+     *
+     * For IPsec hardware in the Switch ASIC, the per-tunnel port list can be
+     * derived from the union of SAI_IPSEC_SA_ATTR_IPSEC_PORT_LIST for all
+     * sai_ipsec_sa objects for that tunnel.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT
+     * @default empty
+     */
+    SAI_TUNNEL_ATTR_IPSEC_SA_PORT_LIST,
 
     /**
      * @brief End of attributes
@@ -871,6 +929,17 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * @isresourcetype true
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_IP_ADDR_FAMILY,
+
+    /**
+     * @brief IPsec packet verified by hardware Security Engine.  Valid only for
+     * tunnel type SAI_TUNNEL_TYPE_IPINIP_ESP, SAI_TUNNEL_TYPE_IPINIP_UDP_ESP
+     * or SAI_TUNNEL_TYPE_VXLAN_UDP_ESP
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_IPSEC_VERIFIED,
 
     /**
      * @brief End of attributes
