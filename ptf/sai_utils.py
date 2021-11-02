@@ -34,9 +34,10 @@ def sai_thrift_query_attribute_enum_values_capability(client,
     Returns:
         list: list of switch object type enum capabilities
     """
+    max_cap_no = 20
 
     enum_cap_list = client.sai_thrift_query_attribute_enum_values_capability(
-        obj_type, attr_id, 20)
+        obj_type, attr_id, max_cap_no)
 
     return enum_cap_list
 
@@ -99,7 +100,7 @@ def sai_thrift_get_switch_stats_ext_overwrite(client, counter_ids, mode):
     """
     sai_get_switch_stats_ext() - RPC client function implementation.
     WARNING: This function overwrites sai_adapter.py function and will be
-             removed when th sai_adapter.py function has been fixed.
+             removed when the sai_adapter.py function has been fixed.
 
     Args:
         client (Client): SAI RPC client
