@@ -570,9 +570,29 @@ sub WriteTestMain
     WriteTest "}";
 }
 
+sub CreatePragmaPush
+{
+    #
+    # because we are merging extension attributes into existing
+    # enums, new versions of gcc can warn when 2 different enums
+    # are mixed, so lets ignore this warning using pragmas
+    #
+
+    WriteTest "#pragma GCC diagnostic push";
+    WriteTest "#pragma GCC diagnostic ignored \"-Wpragmas\"";
+    WriteTest "#pragma GCC diagnostic ignored \"-Wenum-conversion\"";
+}
+
+sub CreatePragmaPop
+{
+    WriteTest "#pragma GCC diagnostic pop";
+}
+
 sub CreateTests
 {
     WriteTestHeader();
+
+    CreatePragmaPush();
 
     CreateNonObjectIdTest();
 
@@ -597,6 +617,8 @@ sub CreateTests
     CreateSerializeUnionsTest();
 
     CreateStatEnumTest();
+
+    CreatePragmaPop();
 
     WriteTestMain();
 }
