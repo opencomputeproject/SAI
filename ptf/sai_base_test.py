@@ -152,10 +152,15 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
         self.getSwitchPorts()
 
-        # initialize switch
-        self.switch_id = sai_thrift_create_switch(
-            self.client, init_switch=True, src_mac_address=ROUTER_MAC)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        if 'switch_id' in self.test_params:
+            # get switch id initialized before
+            self.switch_id = self.test_params['switch_id']
+        else:
+            # initialize switch
+            self.switch_id = sai_thrift_create_switch(
+                self.client, init_switch=True, src_mac_address=ROUTER_MAC)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+            self.test_params['switch_id'] = self.switch_id
 
         self.switch_resources = self.saveNumberOfAvaiableResources()
 
