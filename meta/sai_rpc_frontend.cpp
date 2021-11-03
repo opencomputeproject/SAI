@@ -1,17 +1,22 @@
-/* Copyright 2021-present Intel Corporation.
+/**
+ * Copyright 2021-present Intel Corporation.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+ *    http://www.apache.org/licenses/LICENSE-2.0
 
-      http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ * @file    sai_rpc_frontend.cpp
+ *
+ * @brief   This module contains RPC server handler and helper functions
+ */
 
 #include <arpa/inet.h>
 
@@ -114,7 +119,7 @@ void convert_attr_thrift_to_sai(const sai_object_type_t sai_ot,
       sai_attr->value.booldata = thrift_attr.value.booldata;
       break;
     case SAI_ATTR_VALUE_TYPE_CHARDATA:
-      // 32 is chardata size in saitypes.h
+      // 32 is chardata size in sai types
       std::memcpy(
           sai_attr->value.chardata, thrift_attr.value.chardata.c_str(), 32);
       break;
@@ -751,7 +756,7 @@ void convert_attr_sai_to_thrift(const sai_object_type_t sai_ot,
   }
 }
 
-// very hacky but this means we never have to modify the generated file
+// including it here, we never have to modify the generated file
 #include "sai_rpc_server.cpp"
 
 class sai_rpcHandlerFrontend : virtual public sai_rpcHandler {
