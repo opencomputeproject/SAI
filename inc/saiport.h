@@ -2083,7 +2083,7 @@ typedef enum _sai_port_attr_t
      * @default empty
      */
     SAI_PORT_ATTR_PFC_TC_DLR_INTERVAL,
-    
+
     /**
      * @brief End of attributes
      */
