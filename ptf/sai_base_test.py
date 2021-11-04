@@ -141,8 +141,6 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.default_vrf
         self.default_1q_bridge
         self.cpu_port_hdl
-        self.acl_stage_ingress
-        self.acl_stage_egress
         self.active_ports_no - number of active ports
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
