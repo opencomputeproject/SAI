@@ -67,11 +67,11 @@ Autogeneration when upgrading SAI:
 ```
 cd <root>/meta
 make
-./gensairpc.pl --clean --no-meta-build
+./gensairpc.pl --clean
 make clean - C <root>/meta
 ```
 
-Use --no-meta-build because SAI meta are already built with make. Additionally gensairpc script provides --help option.
+Script gensairpc provides --help option.
 
 ## Test execution
 
@@ -101,21 +101,22 @@ SaiHelperBase initializes switch, gets several switch attributes and stores them
 SaiHelper inherits from SaiHelperBase but provides additional configuration.
 The base configuration created by SaiHelper looks like this:
 
-| Name       | Vlan ID | Ports | Tagging |
-| ----------- | ------------ | ------------ | ------------ |
-| vlan10    | 10  | port0 <br />port1 <br />lag1| untagged <br />tagged <br />untagged |
-| vlan20    | 20  | port2 <br />port3 <br />lag2| untagged <br />tagged <br />tagged |
-| lag1   | --  | port4 <br />port5 <br />port6| -- |
-| lag2   | --  | port7 <br />port8 <br />port9| -- |
-| port10_rif   | --  | port10 | -- |
-| port11_rif   | --  | port11 | -- |
-| port12_rif   | --  | port12 | -- |
-| port13_rif   | --  | port13 | -- |
-| lag3 <br />lag3_rif   | --  | port14 <br />port15 <br />port16| -- |
-| lag4 <br />lag4_rif   | --  | port17 <br />port18 <br />port19| -- |
-| vlan30 <br />vlan30_rif    | 30  | port20 <br />port21 <br />lag5| untagged <br />tagged <br />tagged |
-| lag5   | --  | port22 <br />port23 | -- |
-| Additional ports   | --  | port24 <br />port25 <br />port26<br />port27<br />port28<br />port29<br />port30<br />port31| -- |
+| Port         | LAG          | member      | Bridge port  | VLAN         | member      | RIF          |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
+| port0 <br />port1 |         |              | port0_bp <br/>port1_bp | vlan10 | member0 U <br />member1 T | |
+| port2 <br />port3 |         |              | port2_bp <br/>port3_bp | vlan20 | member0 U <br />member1 T | |
+| port4 <br />port5 <br />port6 | lag1 | member4 <br />member5 <br />member6 | lag1_bp | vlan10 | member2 U | |
+| port7 <br />port8 <br />port9 | lag2 | member7 <br />member8 <br />member9 | lag2_bp | vlan20 | member2 T | |
+| port10       |              |              |               |             |              | port10_rif |
+| port11       |              |              |               |             |              | port11_rif |
+| port12       |              |              |               |             |              | port12_rif |
+| port13       |              |              |               |             |              | port13_rif |
+| port14 <br />port15 <br />port16 | lag3 | member14 <br />member15 <br />member16 | | | | lag3_rif |
+| port17 <br />port18 <br />port19 | lag4 | member17 <br />member18 <br />member19 | | | | lag4_rif |
+| port20 <br />port21 | | | port20_bp <br/>port21_bp | vlan30 | member0 U <br />member1 T | vlan30_rif |
+| port22 <br />port23 | lag1 | member22 <br />member23 | lag5_bp | vlan30 | member2 T | |
+| port24 <br />port25 <br />port26 <br />port27 <br />port28 <br />port29 <br />port30 <br />port31 |  |  |  | |  | |
+
 
 Ports 24-31 can be used by every test to create additional objects.
 
