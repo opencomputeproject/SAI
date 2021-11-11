@@ -21,11 +21,17 @@ and/or dataplane automatically set up.
 """
 
 import os
+import time
+import socket
+import struct
+from threading import Thread
 
 from collections import OrderedDict
 
+import ptf
 from ptf import config
 from ptf.base_tests import BaseTest
+import ptf.testutils as testutils
 
 from thrift.transport import TSocket
 from thrift.transport import TTransport
@@ -34,10 +40,13 @@ from thrift.protocol import TBinaryProtocol
 from sai_thrift import sai_rpc
 
 from sai_utils import *
+import platform_helper
 
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
 
+PLATFORM = os.environ.get('PLATFORM')
+platform_map = {'broadcom':'brcm', 'barefoot':'bfn', 'mellanox':'mlnx'}
 
 class ThriftInterface(BaseTest):
     """
@@ -118,7 +127,6 @@ class ThriftInterfaceDataPlane(ThriftInterface):
     """
     def setUp(self):
         super(ThriftInterfaceDataPlane, self).setUp()
-
         self.dataplane = ptf.dataplane_instance
         if self.dataplane is not None:
             self.dataplane.flush()
@@ -133,6 +141,8 @@ class ThriftInterfaceDataPlane(ThriftInterface):
 
 
 class SaiHelperBase(ThriftInterfaceDataPlane):
+    platform = 'common'
+   
     """
     SAI test helper base class without initial switch ports setup
 
@@ -147,15 +157,104 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
     """
+
+    def get_active_port_list(self):
+        '''
+        Method to get the active port list base on number_of_active_ports
+
+        Sets the following class attributes:
+
+            self.active_ports - number of active ports 
+
+            self.port_list - list of all active port objects
+
+            self.portX objects for all active ports
+        '''
+
+        #Gets self.number_of_ports
+        attr = sai_thrift_get_switch_attribute(
+            self.client, number_of_active_ports=True)
+        self.active_ports = attr['number_of_active_ports']
+
+        #Gets self.port_list based on number_of_active_ports
+        attr = sai_thrift_get_switch_attribute(
+            self.client, port_list=sai_thrift_object_list_t(
+                idlist=[], count=self.active_ports))
+        self.assertEqual(self.active_ports, attr['port_list'].count)
+        self.port_list = attr['port_list'].idlist
+
+        #Gets self.portX objects for all active ports
+        for index in range(0, len(self.port_list)):
+            setattr(self, 'port%s' % index, self.port_list[index])
+
+    
+    def turn_up_ports(self):
+        '''
+        Method to turn up the ports.
+        '''
+        retries = 10
+        for port_id in self.port_list:
+            try:
+                sai_thrift_set_port_attribute(
+                    self.client, port_oid=port_id, admin_state=True)
+            except BaseException as e:
+                print("Cannot setup port admin state, error {}".format(e))
+        
+        for num_of_tries in range(retries):
+            all_ports_are_up = True
+            time.sleep(2)
+            for port_id in self.port_list:
+                port_attr = sai_thrift_get_port_attribute(
+                    self.client, port_id, oper_status=True)
+                if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
+                    all_ports_are_up = False
+                    time.sleep(1)
+                    print("port is down: {}".format(port_attr['oper_status']))
+            if all_ports_are_up:
+                break
+        if not all_ports_are_up:
+            print("Not all the ports are up after {} rounds of retries.".format(retries))
+
+
+
+    def shell(self):
+        def start_shell():
+            sai_thrift_set_switch_attribute(self.client, switch_shell_enable=True)
+        thread = Thread(target = start_shell)
+        thread.start()
+
+    
+    def recreate_ports(self):
+        if 'port_config_ini' in self.test_params:
+            if 'createPorts_has_been_called' not in config:
+                self.createPorts()
+                # check if ports became UP
+                #self.checkPortsUp()
+                config['createPorts_has_been_called'] = 1
+
+    
+    def check_cpu_port_hdl(self, num_queues):
+        for queue in range(0, num_queues):
+            queue_id = attr['qos_queue_list'].idlist[queue]
+            setattr(self, 'cpu_queue%s' % queue, queue_id)
+            q_attr = sai_thrift_get_queue_attribute(
+                self.client,
+                queue_id,
+                port=True,
+                index=True,
+                parent_scheduler_node=True)
+            self.assertTrue(queue == q_attr['index'])
+            self.assertTrue(self.cpu_port_hdl == q_attr["port"])
+
+
     def setUp(self):
         super(SaiHelperBase, self).setUp()
 
         self.getSwitchPorts()
-
         # initialize switch
         self.switch_id = sai_thrift_create_switch(
             self.client, init_switch=True, src_mac_address=ROUTER_MAC)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        #self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.switch_resources = self.saveNumberOfAvaiableResources()
 
@@ -165,12 +264,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.default_vlan_id = attr['default_vlan_id']
         self.assertTrue(self.default_vlan_id != 0)
 
-        if 'port_config_ini' in self.test_params:
-            if 'createPorts_has_been_called' not in config:
-                self.createPorts()
-                config['createPorts_has_been_called'] = 1
-                # check if ports became UP
-                self.checkPortsUp()
+        self.recreate_ports()
 
         # get number of active ports
         attr = sai_thrift_get_switch_attribute(
@@ -193,6 +287,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.default_vrf = attr['default_virtual_router_id']
         self.assertTrue(self.default_vrf != 0)
 
+        self.turn_up_ports()
+
         # get default 1Q bridge OID
         attr = sai_thrift_get_switch_attribute(
             self.client, default_1q_bridge_id=True)
@@ -213,17 +309,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         attr = sai_thrift_get_port_attribute(self.client,
                                              self.cpu_port_hdl,
                                              qos_queue_list=q_list)
-        for queue in range(0, num_queues):
-            queue_id = attr['qos_queue_list'].idlist[queue]
-            setattr(self, 'cpu_queue%s' % queue, queue_id)
-            q_attr = sai_thrift_get_queue_attribute(
-                self.client,
-                queue_id,
-                port=True,
-                index=True,
-                parent_scheduler_node=True)
-            self.assertTrue(queue == q_attr['index'])
-            self.assertTrue(self.cpu_port_hdl == q_attr['port'])
+
+        self.check_cpu_port_hdl(num_queues)
 
     def tearDown(self):
         try:
@@ -939,3 +1026,25 @@ class MinimalPortVlanConfig(SaiHelperBase):
             sai_thrift_remove_bridge_port(self.client, bridge_port)
 
         super(MinimalPortVlanConfig, self).tearDown()
+
+
+def get_platform():
+    pl_low = PLATFORM.lower()
+    pl = 'common'
+    if pl_low in platform_map.keys():
+        pl = platform_map[pl_low]
+    elif pl_low in platform_map.values():
+        pl = pl_low
+    return pl
+
+
+class PlatformSaiHelper(SaiHelper):
+    def __new__(cls, *args, **kwargs):
+        sai_helper_subclass_map = {subclass.platform: subclass for subclass in SaiHelper.__subclasses__()}       
+        pl = get_platform()
+
+        target_base_class = sai_helper_subclass_map[pl]
+        cls.__bases__ = (target_base_class,)
+            
+        instance = target_base_class.__new__(cls, *args, **kwargs)
+        return instance 
