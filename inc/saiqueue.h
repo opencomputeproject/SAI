@@ -62,6 +62,41 @@ typedef enum _sai_queue_type_t
 } sai_queue_type_t;
 
 /**
+ * @brief Enum defining queue PFC continuous deadlock state.
+ */
+typedef enum _sai_queue_pfc_continuous_deadlock_state_t
+{
+    /**
+     * @brief PFC continuous deadlock state not paused.
+     *
+     * H/w queue PFC state is not paused.
+     * Queue can forward packets.
+     */
+    SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_NOT_PAUSED = 0x00000000,
+
+    /**
+     * @brief PFC continuous deadlock state paused.
+     *
+     * H/w queue is paused off and has not resumed or
+     * forwarded packets since the last time the
+     * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
+     * attribute for this queue was polled.
+     */
+    SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_PAUSED = 0x00000001,
+
+    /**
+     * @brief PFC continuous deadlock state paused, but not continuously.
+     *
+     * H/w queue is paused off, but was not paused
+     * off for the full interval that the
+     * SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE
+     * attribute for this queue was last polled.
+     */
+    SAI_QUEUE_PFC_CONTINUOUS_DEADLOCK_STATE_PAUSED_NOT_CONTINUOUS = 0x00000002
+
+} sai_queue_pfc_continuous_deadlock_state_t;
+
+/**
  * @brief Enum defining queue attributes.
  */
 typedef enum _sai_queue_attr_t
@@ -193,6 +228,35 @@ typedef enum _sai_queue_attr_t
      * @default empty
      */
     SAI_QUEUE_ATTR_TAM_OBJECT,
+
+    /**
+     * @brief Control for buffered and incoming packets on a queue undergoing PFC Deadlock Recovery.
+     *
+     * This control applies to all packets on the queue.
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_DROP
+     */
+    SAI_QUEUE_ATTR_PFC_DLR_PACKET_ACTION,
+
+    /**
+     * @brief Queue PFC continuous deadlock state
+     *
+     * This attribute represents the queue's internal hardware PFC
+     * continuous deadlock state. It is an aggregation of all HW state used
+     * to determine if a queue is in PFC deadlock based on state
+     * cached/maintained by the SDK. Consecutive queries of this
+     * attribute provide the PFC state for the queue for the interval
+     * period between the queries.
+     *
+     * This attribute should only be queried as part of the PFC deadlock
+     * and recovery detection processing.
+     *
+     * @type sai_queue_pfc_continuous_deadlock_state_t
+     * @flags READ_ONLY
+     */
+    SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE,
 
     /**
      * @brief End of attributes
