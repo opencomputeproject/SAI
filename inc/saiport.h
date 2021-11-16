@@ -2042,6 +2042,49 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_IPSEC_PORT,
 
     /**
+     * @brief  PFC Deadlock Detection timer interval range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PFC_TC_DLD_INTERVAL_RANGE,
+
+    /**
+     * @brief PFC Deadlock Detection timer interval in milliseconds.
+     *
+     * If the monitored queue is in XOFF state for more than this duration then
+     * its considered to be in a PFC deadlock state and recovery process is kicked off.
+     * Note: Use TC (Traffic Class) value as key and timer interval as value.
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_PORT_ATTR_PFC_TC_DLD_INTERVAL,
+
+    /**
+     * @brief  PFC Deadlock Recovery timer interval range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PFC_TC_DLR_INTERVAL_RANGE,
+
+    /**
+     * @brief PFC Deadlock Recovery timer interval in milliseconds.
+     *
+     * The PFC deadlock recovery process will run for this amount of time and then normal
+     * state will resume. If the system remains in a deadlock state then the detection and
+     * recovery will resume again after the configured detection timer interval.
+     * Note: Use TC (Traffic Class) value as key and timer interval as value.
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_PORT_ATTR_PFC_TC_DLR_INTERVAL,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
