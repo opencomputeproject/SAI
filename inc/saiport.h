@@ -128,7 +128,7 @@ typedef enum _sai_port_internal_loopback_mode_t
 } sai_port_internal_loopback_mode_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_LOOPBACK_MODE
+ * @brief Attribute data for SAI_PORT_ATTR_LOOPBACK_MODE
  */
 typedef enum _sai_port_loopback_mode_t
 {
@@ -387,92 +387,6 @@ typedef enum _sai_port_connector_failover_mode_t
     /** Configure Failover mode on secondary port */
     SAI_PORT_CONNECTOR_FAILOVER_MODE_SECONDARY
 } sai_port_connector_failover_mode_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_MDIX_MODE_STATUS
- * Used for MDIX mode status
- */
-typedef enum _sai_port_mdix_mode_status_t
-{
-    /** MDIX mode status straight */
-    SAI_PORT_MDIX_MODE_STATUS_STRAIGHT,
-
-    /**  MDIX mode status cross over */
-    SAI_PORT_MDIX_MODE_STATUS_CROSSOVER
-} sai_port_mdix_mode_status_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_MDIX_MODE_CONFIG
- * Used for MDIX mode configuration
- */
-typedef enum _sai_port_mdix_mode_config_t
-{
-    /** MDIX mode status auto */
-    SAI_PORT_MDIX_MODE_CONFIG_AUTO,
-
-    /** MDIX mode status straight */
-    SAI_PORT_MDIX_MODE_CONFIG_STRAIGHT,
-
-    /**  MDIX mode status cross over */
-    SAI_PORT_MDIX_MODE_CONFIG_CROSSOVER
-} sai_port_mdix_mode_config_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_CONFIG_MODE
- * Used for auto negotiation mode to configure master or slave mode
- */
-typedef enum _sai_port_auto_neg_config_mode_t
-{
-    /** Auto neg configuration mode disabled */
-    SAI_PORT_AUTO_NEG_CONFIG_MODE_DISABLED,
-
-    /** Auto neg mode auto */
-    SAI_PORT_AUTO_NEG_CONFIG_MODE_AUTO,
-
-    /** Auto neg mode slave */
-    SAI_PORT_AUTO_NEG_CONFIG_MODE_SLAVE,
-
-    /** Auto neg mode master */
-    SAI_PORT_AUTO_NEG_CONFIG_MODE_MASTER
-} sai_port_auto_neg_config_mode_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_MODULE_TYPE
- * Used for configuring Fiber module type
- */
-typedef enum _sai_port_module_type_t
-{
-    /** Module Type Fiber */
-    SAI_PORT_MODULE_TYPE_1000BASE_X,
-
-    /** Module Type 100FX */
-    SAI_PORT_MODULE_TYPE_100FX,
-
-    /** Module Type SGMII-Slave */
-    SAI_PORT_MODULE_TYPE_SGMII_SLAVE,
-} sai_port_module_type_t;
-
-/**
- * @brief Attribute data for #SAI_PORT_ATTR_DUAL_MEDIA
- * Used to configure media type for dual media supported PHY
- */
-typedef enum _sai_port_dual_media_t
-{
-    /**  Dual media not supported */
-    SAI_PORT_DUAL_MEDIA_NONE,
-
-    /**  Force Copper mode, Fiber is inactive/disabled */
-    SAI_PORT_DUAL_MEDIA_COPPER_ONLY,
-
-    /**  Force Fiber mode, Copper is inactive/disabled */
-    SAI_PORT_DUAL_MEDIA_FIBER_ONLY,
-
-    /**  Both Copper and Fiber supported, but Copper preferred */
-    SAI_PORT_DUAL_MEDIA_COPPER_PREFERRED,
-
-    /**  Both Copper and Fiber supported, but Fiber preferred */
-    SAI_PORT_DUAL_MEDIA_FIBER_PREFERRED
-} sai_port_dual_media_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -925,7 +839,7 @@ typedef enum _sai_port_attr_t
 
     /**
      * @brief Internal loopback control
-     * To be deprecated, use #SAI_PORT_ATTR_LOOPBACK_MODE
+     * To be deprecated, use SAI_PORT_ATTR_LOOPBACK_MODE
      *
      * @type sai_port_internal_loopback_mode_t
      * @flags CREATE_AND_SET
