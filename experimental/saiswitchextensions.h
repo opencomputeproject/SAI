@@ -30,7 +30,7 @@
 /**
  * @brief SAI switch attribute extensions.
  *
- * @flags
+ * @flags free
  */
 typedef enum _sai_switch_attr_extensions_t
 {

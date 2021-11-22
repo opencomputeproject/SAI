@@ -72,7 +72,7 @@ typedef enum _sai_nat_entry_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_NAT_TYPE_NONE
      */
-    SAI_NAT_ENTRY_ATTR_NAT_TYPE  = SAI_NAT_ENTRY_ATTR_START,
+    SAI_NAT_ENTRY_ATTR_NAT_TYPE = SAI_NAT_ENTRY_ATTR_START,
 
     /**
      * @brief Replace source IPv4 address in packet.
@@ -493,7 +493,7 @@ typedef enum _sai_nat_zone_counter_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_NAT_TYPE_NONE
      */
-    SAI_NAT_ZONE_COUNTER_ATTR_NAT_TYPE  = SAI_NAT_ZONE_COUNTER_ATTR_START,
+    SAI_NAT_ZONE_COUNTER_ATTR_NAT_TYPE = SAI_NAT_ZONE_COUNTER_ATTR_START,
 
     /**
      * @brief NAT Zone ID
