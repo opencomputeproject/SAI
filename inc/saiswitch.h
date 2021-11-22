@@ -326,8 +326,89 @@ typedef enum _sai_switch_failover_config_mode_t
 } sai_switch_failover_config_mode_t;
 
 /**
+ * @brief Defines tunnel type
+ */
+typedef enum _sai_tunnel_type_t
+{
+    SAI_TUNNEL_TYPE_IPINIP,
+
+    SAI_TUNNEL_TYPE_IPINIP_GRE,
+
+    SAI_TUNNEL_TYPE_VXLAN,
+
+    SAI_TUNNEL_TYPE_MPLS,
+
+    SAI_TUNNEL_TYPE_SRV6,
+
+    SAI_TUNNEL_TYPE_NVGRE,
+
+    SAI_TUNNEL_TYPE_IPINIP_ESP,
+
+    SAI_TUNNEL_TYPE_IPINIP_UDP_ESP,
+
+    SAI_TUNNEL_TYPE_VXLAN_UDP_ESP,
+
+} sai_tunnel_type_t;
+
+/**
+ * @brief Defines VXLAN tunnel UDP source port mode
+ */
+typedef enum _sai_tunnel_vxlan_udp_sport_mode_t
+{
+    /**
+     * @brief User define value
+     */
+    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED,
+
+    /**
+     * @brief RFC6335 Computed hash value in range 49152-65535
+     */
+    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_EPHEMERAL,
+} sai_tunnel_vxlan_udp_sport_mode_t;
+
+/**
+ * @brief Defines tunnel encap ECN mode
+ */
+typedef enum _sai_tunnel_encap_ecn_mode_t
+{
+    /**
+     * @brief Normal mode behavior defined in RFC 6040
+     * section 4.1 copy from inner
+     */
+    SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief User defined behavior.
+     */
+    SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_encap_ecn_mode_t;
+
+/**
+ * @brief Defines tunnel decap ECN mode
+ */
+typedef enum _sai_tunnel_decap_ecn_mode_t
+{
+    /**
+     * @brief Behavior defined in RFC 6040 section 4.2
+     */
+    SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
+
+    /**
+     * @brief Copy from outer ECN
+     */
+    SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
+
+    /**
+     * @brief User defined behavior
+     */
+    SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
+
+} sai_tunnel_decap_ecn_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
- * sai_get_switch_attribute() calls
+ * sai_get_switch_attribute() calls.
  */
 typedef enum _sai_switch_attr_t
 {
@@ -684,6 +765,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID,
 
     /**
+     * @brief Default SAI Override Virtual Router ID
+     *
+     * Must return #SAI_STATUS_OBJECT_IN_USE when try to delete this VR ID.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_DEFAULT_OVERRIDE_VIRTUAL_ROUTER_ID,
+
+    /**
      * @brief Default .1Q Bridge ID
      *
      * @type sai_object_id_t
@@ -697,7 +790,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for ingress ACL object
      *
      * Bind (or unbind) an ingress ACL table or ACL group globally. Enable/Update
-     * ingress ACL table or ACL group filtering by assigning the list of valid
+     * ingress ACL table or ACL group filtering by assigning a valid
      * object id. Disable ingress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -713,7 +806,7 @@ typedef enum _sai_switch_attr_t
      * @brief Switch/Global bind point for egress ACL object
      *
      * Bind (or unbind) an egress ACL tables or ACL group globally. Enable/Update
-     * egress ACL table or ACL group filtering by assigning the list of valid
+     * egress ACL table or ACL group filtering by assigning a valid
      * object id. Disable egress filtering by assigning SAI_NULL_OBJECT_ID
      * in the attribute value.
      *
@@ -910,6 +1003,14 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_AVAILABLE_ACL_TABLE_GROUP,
+
+    /**
+     * @brief Available My SID entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_MY_SID_ENTRY,
 
     /**
      * @brief Default trap group
@@ -1167,6 +1268,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED,
 
     /**
+     * @brief SAI ECMP default hash offset
+     *
+     * When set, the output of the ECMP hash calculation will be rotated right
+     * by the specified number of bits.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_OFFSET,
+
+    /**
      * @brief SAI ECMP default symmetric hash
      *
      * When set, the hash calculation will result in the same value as when the
@@ -1230,6 +1343,18 @@ typedef enum _sai_switch_attr_t
      * @default 0
      */
     SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED,
+
+    /**
+     * @brief SAI LAG default hash offset
+     *
+     * When set, the output of the LAG hash calculation will be rotated right
+     * by the specified number of bits.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_OFFSET,
 
     /**
      * @brief SAI LAG default symmetric hash
@@ -1350,7 +1475,7 @@ typedef enum _sai_switch_attr_t
      * @brief Enable DSCP -> TC MAP on switch.
      *
      * MAP id = #SAI_NULL_OBJECT_ID to disable map on switch.
-     * To enable/disable trust DSCP, Map ID should be added/removed on port.
+     * To enable/disable trust DSCP, Map ID should be added/removed on switch.
      * Default no map.
      *
      * @type sai_object_id_t
@@ -1444,8 +1569,10 @@ typedef enum _sai_switch_attr_t
      *
      * Hardware information format is based on SAI implementations by vendors.
      * String is NULL terminated. Format is vendor specific.
-     * Example: Like PCI location, I2C address etc.
+     * Example: Like PCI location, I2C address, MDIO address, MDIO bus SysFS information etc.
      * In case of NULL, First NPU attached to CPU will be initialized.
+     * For the MDIO SysFS driver support, the interface name and phy_id should be
+     * set and separated by "/", which should be formatted as {interface_name}/{phy_id}
      * Single NPU case this attribute is optional.
      *
      * @type sai_s8_list_t
@@ -2281,7 +2408,7 @@ typedef enum _sai_switch_attr_t
 /**
  * @brief Switch counter IDs in sai_get_switch_stats() call
  *
- * @flags Contains flags
+ * @flags ranges
  */
 typedef enum _sai_switch_stat_t
 {
@@ -2349,7 +2476,7 @@ typedef enum _sai_switch_stat_t
     SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_BASE = 0x00003000,
 
     /** Get ECC discards [fabric] */
-    SAI_SWITCH_STAT_ECC_DROP,
+    SAI_SWITCH_STAT_ECC_DROP = SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_BASE,
 
     /** Get reach-ability discards [switch | fabric] */
     SAI_SWITCH_STAT_REACHABILITY_DROP,

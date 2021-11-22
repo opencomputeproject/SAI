@@ -56,6 +56,8 @@ typedef UINT8   sai_ip6_t[16];
 typedef UINT32  sai_switch_hash_seed_t;
 typedef UINT32  sai_label_id_t;
 typedef UINT32  sai_stat_id_t;
+typedef UINT8   sai_encrypt_key_t[32];
+typedef UINT8   sai_auth_key_t[16];
 typedef UINT8   sai_macsec_sak_t[32];
 typedef UINT8   sai_macsec_auth_key_t[16];
 typedef UINT8   sai_macsec_salt_t[12];
@@ -99,6 +101,8 @@ typedef uint8_t  sai_ip6_t[16];
 typedef uint32_t sai_switch_hash_seed_t;
 typedef uint32_t sai_label_id_t;
 typedef uint32_t sai_stat_id_t;
+typedef uint8_t sai_encrypt_key_t[32];
+typedef uint8_t sai_auth_key_t[16];
 typedef uint8_t sai_macsec_sak_t[32];
 typedef uint8_t sai_macsec_auth_key_t[16];
 typedef uint8_t sai_macsec_salt_t[12];
@@ -392,6 +396,32 @@ typedef struct _sai_ip_prefix_t
 } sai_ip_prefix_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_PRBS_RX_STATUS
+ */
+typedef enum _sai_port_prbs_rx_status_t
+{
+    /** PRBS is locked and error_count is 0 */
+    SAI_PORT_PRBS_RX_STATUS_OK,
+
+    /** PRBS is locked, but there are errors */
+    SAI_PORT_PRBS_RX_STATUS_LOCK_WITH_ERRORS,
+
+    /** PRBS not locked */
+    SAI_PORT_PRBS_RX_STATUS_NOT_LOCKED,
+
+    /** PRBS locked but there is loss of lock since last call */
+    SAI_PORT_PRBS_RX_STATUS_LOST_LOCK,
+
+} sai_port_prbs_rx_status_t;
+
+typedef struct _sai_prbs_rx_state_t
+{
+    sai_port_prbs_rx_status_t rx_status;
+
+    uint32_t error_count;
+} sai_prbs_rx_state_t;
+
+/**
  * @brief Field match mask
  *
  * @extraparam const sai_attr_metadata_t *meta
@@ -624,6 +654,7 @@ typedef enum _sai_packet_color_t
  * dot1p/DSCP/MPLS_EXP --> TC
  * dot1p/DSCP/MPLS_EXP --> Color
  * dot1p/DSCP/MPLS_EXP --> TC + Color
+ * DSCP/MPLS_EXP --> FC
  * TC --> dot1p/DSCP/MPLS_EXP.
  * TC + color --> dot1p/DSCP/MPLS_EXP.
  * TC --> Egress Queue.
@@ -656,6 +687,9 @@ typedef struct _sai_qos_map_params_t
 
     /** MPLS exp value */
     sai_uint8_t mpls_exp;
+
+    /** Forwarding class */
+    sai_uint8_t fc;
 
 } sai_qos_map_params_t;
 
@@ -741,6 +775,9 @@ typedef enum _sai_acl_stage_t
 
     /** Egress Stage */
     SAI_ACL_STAGE_EGRESS_MACSEC,
+
+    /** Pre-ingress Stage */
+    SAI_ACL_STAGE_PRE_INGRESS,
 
 } sai_acl_stage_t;
 
@@ -1007,6 +1044,7 @@ typedef struct _sai_system_port_config_t
 
     /** Number of Virtual Output Queues associated with the system port */
     uint32_t num_voq;
+
 } sai_system_port_config_t;
 
 /**
@@ -1139,6 +1177,9 @@ typedef union _sai_attribute_value_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_IP_PREFIX */
     sai_ip_prefix_t ipprefix;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE */
+    sai_prbs_rx_state_t rx_state;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_OBJECT_ID */
     sai_object_id_t oid;
 
@@ -1216,6 +1257,12 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TIMESPEC */
     sai_timespec_t timespec;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY */
+    sai_encrypt_key_t encrypt_key;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_AUTH_KEY */
+    sai_auth_key_t authkey;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_MACSEC_SAK */
     sai_macsec_sak_t macsecsak;
@@ -1361,7 +1408,7 @@ typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
  * Used in get statistics extended or query statistics capabilities
  * Note enum values must be powers of 2 to be used as bit mask for query statistics capabilities
  *
- * @flags Contains flags
+ * @flags strict
  */
 typedef enum _sai_stats_mode_t
 {
@@ -1386,6 +1433,8 @@ typedef struct _sai_stat_capability_t
      *
      * For example, if read and read_and_clear are supported, value is
      * SAI_STATS_MODE_READ | SAI_STATS_MODE_READ_AND_CLEAR
+     *
+     * @flags sai_stats_mode_t
      */
     uint32_t stat_modes;
 

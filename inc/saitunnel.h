@@ -62,6 +62,18 @@ typedef enum _sai_tunnel_map_type_t
     /** TUNNEL Map Virtual Router ID to VNI */
     SAI_TUNNEL_MAP_TYPE_VIRTUAL_ROUTER_ID_TO_VNI = 0x00000007,
 
+    /** TUNNEL Map VSID to VLAN ID */
+    SAI_TUNNEL_MAP_TYPE_VSID_TO_VLAN_ID = 0x00000008,
+
+    /** TUNNEL Map VLAN ID to VSID */
+    SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VSID = 0x00000009,
+
+    /** TUNNEL Map VSID to Bridge IF */
+    SAI_TUNNEL_MAP_TYPE_VSID_TO_BRIDGE_IF = 0x0000000a,
+
+    /** TUNNEL Map Bridge IF to VSID */
+    SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VSID = 0x0000000b,
+
     /** Custom range base value */
     SAI_TUNNEL_MAP_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -133,7 +145,7 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VNI or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VSID
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_VLAN_ID_KEY = 0x00000006,
 
@@ -143,7 +155,7 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @isvlan true
-     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VLAN_ID
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VLAN_ID or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VSID_TO_VLAN_ID
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_VLAN_ID_VALUE = 0x00000007,
 
@@ -171,7 +183,7 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_BRIDGE
-     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VNI or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VSID
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_BRIDGE_ID_KEY = 0x0000000a,
 
@@ -181,7 +193,7 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_BRIDGE
-     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_BRIDGE_IF or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VSID_TO_BRIDGE_IF
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_BRIDGE_ID_VALUE = 0x0000000b,
 
@@ -204,6 +216,24 @@ typedef enum _sai_tunnel_map_entry_attr_t
      * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VNI_TO_VIRTUAL_ROUTER_ID
      */
     SAI_TUNNEL_MAP_ENTRY_ATTR_VIRTUAL_ROUTER_ID_VALUE = 0x0000000d,
+
+    /**
+     * @brief VSID ID key
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VSID_TO_VLAN_ID or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VSID_TO_BRIDGE_IF
+     */
+    SAI_TUNNEL_MAP_ENTRY_ATTR_VSID_ID_KEY = 0x0000000e,
+
+    /**
+     * @brief VSID ID value
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_VLAN_ID_TO_VSID or SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_BRIDGE_IF_TO_VSID
+     */
+    SAI_TUNNEL_MAP_ENTRY_ATTR_VSID_ID_VALUE = 0x0000000f,
 
     /**
      * @brief End of attributes
@@ -311,21 +341,6 @@ typedef sai_status_t (*sai_get_tunnel_map_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Defines tunnel type
- */
-typedef enum _sai_tunnel_type_t
-{
-    SAI_TUNNEL_TYPE_IPINIP,
-
-    SAI_TUNNEL_TYPE_IPINIP_GRE,
-
-    SAI_TUNNEL_TYPE_VXLAN,
-
-    SAI_TUNNEL_TYPE_MPLS,
-
-} sai_tunnel_type_t;
-
-/**
  * @brief Defines tunnel TTL mode
  */
 typedef enum _sai_tunnel_ttl_mode_t
@@ -386,50 +401,6 @@ typedef enum _sai_tunnel_dscp_mode_t
 } sai_tunnel_dscp_mode_t;
 
 /**
- * @brief Defines tunnel encap ECN mode
- */
-typedef enum _sai_tunnel_encap_ecn_mode_t
-{
-    /**
-     * @brief Normal mode behavior defined in RFC 6040
-     * section 4.1 copy from inner
-     */
-    SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
-
-    /**
-     * @brief User defined behavior.
-     *
-     * Need to provide #SAI_TUNNEL_MAP_TYPE_OECN_TO_UECN in #SAI_TUNNEL_ATTR_ENCAP_MAPPERS.
-     */
-    SAI_TUNNEL_ENCAP_ECN_MODE_USER_DEFINED
-
-} sai_tunnel_encap_ecn_mode_t;
-
-/**
- * @brief Defines tunnel decap ECN mode
- */
-typedef enum _sai_tunnel_decap_ecn_mode_t
-{
-    /**
-     * @brief Behavior defined in RFC 6040 section 4.2
-     */
-    SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
-
-    /**
-     * @brief Copy from outer ECN
-     */
-    SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER,
-
-    /**
-     * @brief User defined behavior
-     *
-     * Need to provide #SAI_TUNNEL_MAP_TYPE_UECN_OECN_TO_OECN in #SAI_TUNNEL_ATTR_DECAP_MAPPERS
-     */
-    SAI_TUNNEL_DECAP_ECN_MODE_USER_DEFINED
-
-} sai_tunnel_decap_ecn_mode_t;
-
-/**
  * @brief Defines tunnel peer mode
  */
 typedef enum _sai_tunnel_peer_mode_t
@@ -473,7 +444,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_SRV6 or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_NVGRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_UDP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN_UDP_ESP
      */
     SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE,
 
@@ -485,7 +456,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
-     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE
+     * @condition SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_GRE or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_UDP_ESP
      */
     SAI_TUNNEL_ATTR_OVERLAY_INTERFACE,
 
@@ -649,6 +620,7 @@ typedef enum _sai_tunnel_attr_t
      * @type sai_packet_action_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
+     * @isresourcetype true
      */
     SAI_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION,
 

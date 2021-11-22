@@ -181,24 +181,6 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_SEGMENTROUTE_SIDLIST_ID,
 
     /**
-     * @brief Next hop entry Segment Route Endpoint Function
-     *
-     * @type sai_next_hop_endpoint_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
-     */
-    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_TYPE,
-
-    /**
-     * @brief Next hop entry Segment Route Endpoint Pop Option
-     *
-     * @type sai_next_hop_endpoint_pop_type_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
-     */
-    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE,
-
-    /**
      * @brief Push label
      *
      * @type sai_u32_list_t
@@ -292,6 +274,24 @@ typedef enum _sai_next_hop_attr_t
      * @validonly SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS and SAI_NEXT_HOP_ATTR_OUTSEG_TYPE == SAI_OUTSEG_TYPE_PUSH and SAI_NEXT_HOP_ATTR_OUTSEG_TTL_MODE == SAI_OUTSEG_TTL_MODE_UNIFORM
      */
     SAI_NEXT_HOP_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP,
+
+    /**
+     * @brief Next hop entry Segment Route Endpoint Function
+     *
+     * @type sai_next_hop_endpoint_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
+     */
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_TYPE,
+
+    /**
+     * @brief Next hop entry Segment Route Endpoint Pop Option
+     *
+     * @type sai_next_hop_endpoint_pop_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_SEGMENTROUTE_ENDPOINT
+     */
+    SAI_NEXT_HOP_ATTR_SEGMENTROUTE_ENDPOINT_POP_TYPE,
 
     /**
      * @brief End of attributes
