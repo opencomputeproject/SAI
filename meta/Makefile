@@ -68,6 +68,9 @@ $(foreach bin,$(BINS),$(if $(shell which $(bin)),,$(error "Missing $(bin) in PAT
 
 CFLAGS += -I../inc -I../experimental $(WARNINGS)
 
+CC = $(CROSS_COMPILE)gcc
+CXX = $(CROSS_COMPILE)g++
+
 DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
 
@@ -75,11 +78,21 @@ OBJ = saimetadata.o saimetadatautils.o saiserialize.o
 
 SYMBOLS = $(OBJ:=.symbols)
 
-all: saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
+all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
 	./checkheaders.pl ../inc ../inc
+#	./checkenumlock.sh
 	./saimetadatatest >/dev/null
 	./saiserializetest >/dev/null
 	./saisanitycheck
+
+toolsversions:
+	@make -v | grep -i make
+	@$(CC) --version | grep gcc
+	@perl --version | grep version
+	@aspell --version
+	@dot -V
+	@doxygen -v | perl -npe 'print "doxygen: "'
+	@nm --version | grep nm
 
 CONSTHEADERS = saimetadatatypes.h saimetadatalogger.h saimetadatautils.h saiserialize.h
 
@@ -95,22 +108,22 @@ saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHE
 HEADERS = saimetadata.h $(CONSTHEADERS)
 
 %.o: %.c $(HEADERS)
-	gcc -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 %.o: %.cpp $(HEADERS)
-	gcc -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 saisanitycheck: saisanitycheck.o $(OBJ)
-	gcc -o $@ $^
+	$(CC) -o $@ $^
 
 saimetadatatest: saimetadatatest.o $(OBJ)
-	gcc -o $@ $^
+	$(CC) -o $@ $^
 
 saiserializetest: saiserializetest.o $(OBJ)
-	gcc -o $@ $^
+	$(CC) -o $@ $^
 
 saidepgraphgen: saidepgraphgen.o $(OBJ)
-	g++ -o $@ $^
+	$(CXX) -o $@ $^
 
 %.o.symbols: %.o
 	nm $^ | ./checksymbols.pl
@@ -124,7 +137,7 @@ saidepgraph.svg: saidepgraph.gv
 .PHONY: clean
 
 clean:
-	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols
+	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db
 	rm -f saimetadata.h saimetadata.c saimetadatatest.c
 	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen
-	rm -rf xml html dist
+	rm -rf xml html dist temp

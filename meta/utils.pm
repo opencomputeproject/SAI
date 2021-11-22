@@ -40,6 +40,7 @@ our $warnings = 0;
 our $HEADER_CONTENT = "";
 our $SOURCE_CONTENT = "";
 our $TEST_CONTENT = "";
+our $SWIG_CONTENT = "";
 
 my $identLevel = 0;
 
@@ -49,7 +50,7 @@ sub GetIdent
 
     return ""                       if $content =~ /\\$/;
     return "    "                   if $content =~ /^\s*_(In|Out)/;
-    return "    " x --$identLevel   if $content =~ /^\s*}/;
+    return "    " x --$identLevel   if $content =~ /^\s*%?}/;
     return "    " x $identLevel++   if $content =~ /{$/;
     return "    " x $identLevel;
 }
@@ -60,7 +61,11 @@ sub WriteHeader
 
     my $ident = GetIdent($content);
 
-    $HEADER_CONTENT .= $ident . $content . "\n";
+    my $line = $ident . $content . "\n";
+
+    $line = "\n" if $content eq "";
+
+    $HEADER_CONTENT .= $line;
 }
 
 sub WriteSource
@@ -69,7 +74,11 @@ sub WriteSource
 
     my $ident = GetIdent($content);
 
-    $SOURCE_CONTENT .= $ident . $content . "\n";
+    my $line = $ident . $content . "\n";
+
+    $line = "\n" if $content eq "";
+
+    $SOURCE_CONTENT .= $line;
 }
 
 sub WriteTest
@@ -79,6 +88,22 @@ sub WriteTest
     my $ident = ""; # TODO tests should have it's own ident, since it's different file GetIdent($content);
 
     $TEST_CONTENT .= $ident . $content . "\n";
+}
+
+sub WriteSwig
+{
+    my $content = shift;
+
+    my $ident = GetIdent($content);
+
+    $SWIG_CONTENT .= $ident . $content . "\n";
+}
+
+sub WriteSourceSectionComment
+{
+    my $content = shift;
+
+    WriteSource "\n/* $content */\n";
 }
 
 sub WriteSectionComment
@@ -189,7 +214,7 @@ sub GetMetadataSourceFiles
 
     my @sources;
 
-    push @sources, GetFilesByRegex($dir, '^\w+\.(pm|pl|h|cpp|c)$');
+    push @sources, GetFilesByRegex($dir, '^\w+\.(pm|pl|h|cpp|c|sh)$');
     push @sources, GetFilesByRegex($dir, '^Makefile$');
 
     return @sources;
@@ -318,6 +343,7 @@ sub WriteMetaDataFiles
     WriteFile("saimetadata.h", $HEADER_CONTENT);
     WriteFile("saimetadata.c", $SOURCE_CONTENT);
     WriteFile("saimetadatatest.c", $TEST_CONTENT);
+    WriteFile("saiswig.i", $SWIG_CONTENT);
 }
 
 sub GetStructKeysInOrder
@@ -354,6 +380,196 @@ sub ExitOnErrors
     exit 1;
 }
 
+sub ExitOnErrorsOrWarnings
+{
+    return if $errors == 0 and $warnings == 0;
+
+    LogError "please corret all $errors error(s) and all $warnings warnings before continue";
+
+    exit 1;
+}
+
+sub ProcessEnumInitializers
+{
+    #
+    # This function attempts to figure out enum integers values during paring
+    # time in similar way as C compiler would do. Because SAI community agreed
+    # that enum grouping is more beneficial then ordering enums, then enum
+    # values could be not sorted any more. But if we figure out integers
+    # values, we could perform stable sort at this parser level, and generate
+    # enums metadata where enum values are sorted.
+    #
+
+    my ($arr_ref, $ini_ref, $enumTypeName, $SAI_DEFINES_REF) = @_;
+
+    return if $enumTypeName =~ /_extensions_t$/; # ignore initializers on extensions
+
+    if (scalar(@$arr_ref) != scalar(@$ini_ref))
+    {
+        LogError "attr array not matching initializers array on $enumTypeName";
+        return;
+    }
+
+    #return if grep (/<</, @$ini_ref); # skip shifted flags enum
+
+    my $previousEnumValue = -1;
+
+    my $idx = 0;
+
+    # using reference here, will cause update $ini inside initializer table
+    # reference and that's what we want
+
+    for my $ini (@$ini_ref)
+    {
+        if ($ini eq "")
+        {
+            $previousEnumValue += 1;
+
+            $ini = sprintf("0x%08x", $previousEnumValue);
+        }
+        elsif ($ini =~ /^= (0x[0-9a-f]{8})$/)
+        {
+            $previousEnumValue = hex($1);
+
+            $ini = sprintf("0x%08x", $previousEnumValue);
+        }
+        elsif ($ini =~ /^=\s+(\d+)$/)
+        {
+            $previousEnumValue = hex($1);
+
+            $ini = sprintf("0x%08x", $previousEnumValue);
+        }
+        elsif ($ini =~ /= (SAI_\w+)$/)
+        {
+            for my $i (0..$idx)
+            {
+                if ($$arr_ref[$i] eq $1)
+                {
+                    $ini = @$ini_ref[$i];
+
+                    $previousEnumValue = hex($ini);
+                    last;
+                }
+            }
+
+            LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
+        }
+        elsif ($ini =~ /^= (SAI_\w+) \+ (SAI_\w+)$/) # special case SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE
+        {
+            # this case is in form: = (sai enum value) + (sai define)
+
+            my $first = $1;
+
+            my $val = $SAI_DEFINES_REF->{$2};
+
+            if (not defined $val)
+            {
+                LogError "Value $2 not defined using #define directive";
+            }
+            elsif (not $val =~ /^0x[0-9a-f]+$/i)
+            {
+                LogError "$val not in hex format 0xYY";
+            }
+            else
+            {
+                for my $i (0..$idx)
+                {
+                    if ($$arr_ref[$i] eq $first)
+                    {
+                        $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + hex($val));
+
+                        $previousEnumValue = hex($ini);
+                        last;
+                    }
+                }
+
+                LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
+            }
+        }
+        elsif ($ini =~/^= (SAI_\w+) \+ (\d+)$/)
+        {
+            my $first = $1;
+            my $val = $2;
+
+            for my $i (0..$idx)
+            {
+                if ($$arr_ref[$i] eq $first)
+                {
+                    $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + $val);
+
+                    $previousEnumValue = hex($ini);
+                    last;
+                }
+            }
+
+            LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
+        }
+        elsif ($ini =~/^= (SAI_\w+) \+ (0x[0-9a-f]{1,8})$/)
+        {
+            my $first = $1;
+            my $val = $2;
+
+            for my $i (0..$idx)
+            {
+                if ($$arr_ref[$i] eq $first)
+                {
+                    $ini = sprintf("0x%08x", hex(@$ini_ref[$i]) + hex($val));
+
+                    $previousEnumValue = hex($ini);
+                    last;
+                }
+            }
+
+            LogError "initializer $ini not found on $enumTypeName before $$arr_ref[$idx]" if not $ini =~ /^0x/;
+        }
+        elsif ($ini =~ /^= \(?(\d+) << (\d+)\)?$/)
+        {
+            $previousEnumValue = $1 << $2;
+
+            $ini = sprintf("0x%08x", $previousEnumValue);
+        }
+        else
+        {
+            LogError "not supported initializer '$ini' on $$arr_ref[$idx], FIXME";
+        }
+
+        $idx++;
+    }
+
+    # in final form all initializers must be hex numbers 8 digits long, since
+    # they will be used in stable sort
+
+    if (scalar(grep (/^0x[0-9a-f]{8}$/, @$ini_ref)) != scalar(@$ini_ref))
+    {
+        LogError "wrong initializers on $enumTypeName: @$ini_ref";
+        return;
+    }
+
+    my $before = "@$arr_ref";
+
+    my @joined = ();
+
+    for my $idx (0..$#$arr_ref)
+    {
+        push @joined, "$$ini_ref[$idx]$$arr_ref[$idx]"; # format is: 0x00000000SAI_
+    }
+
+    my @sorted = sort { substr($a, 0, 10) cmp substr($b, 0, 10) } @joined;
+
+    s/^0x[0-9a-f]{8}SAI/SAI/i for @sorted;
+
+    my $after = "@sorted";
+
+    return if $after eq $before;
+
+    LogDebug "Need sort initalizers for $enumTypeName";
+
+    @$arr_ref = ();
+
+    push @$arr_ref, @sorted;
+}
+
+
 BEGIN
 {
     our @ISA    = qw(Exporter);
@@ -361,8 +577,8 @@ BEGIN
     LogDebug LogInfo LogWarning LogError
     WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile
     GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
-    Trim ExitOnErrors
-    WriteHeader WriteSource WriteTest WriteMetaDataFiles WriteSectionComment
+    Trim ExitOnErrors ExitOnErrorsOrWarnings ProcessEnumInitializers
+    WriteHeader WriteSource WriteTest WriteSwig WriteMetaDataFiles WriteSectionComment WriteSourceSectionComment
     $errors $warnings $NUMBER_REGEX
     $HEADER_CONTENT $SOURCE_CONTENT $TEST_CONTENT
     /;

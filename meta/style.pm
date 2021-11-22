@@ -268,15 +268,12 @@ sub CheckFunctionsParams
             LogWarning "params should use small letters only '@params' in $fname: $file";
         }
 
-        next if $fname eq "sai_remove_all_neighbor_entries_fn"; # exception
-
-        next if $fname eq "sai_switch_register_write_fn"; # exception
-
-        next if $fname eq "sai_switch_register_read_fn"; # exception
-
-        next if $fname eq "sai_switch_mdio_write_fn"; # exception
-
-        next if $fname eq "sai_switch_mdio_read_fn"; # exception
+        # exceptions
+        next if $fname eq "sai_remove_all_neighbor_entries_fn";
+        next if $fname eq "sai_switch_register_write_fn";
+        next if $fname eq "sai_switch_register_read_fn";
+        next if $fname eq "sai_switch_mdio_write_fn";
+        next if $fname eq "sai_switch_mdio_read_fn";
 
         my @paramsFlags = lc($comment) =~ /\@param\[(\w+)]/gis;
         my @fnparamsFlags = lc($fn) =~ /_(\w+)_.+?(?:\.\.\.|\w+)\s*[,\)]/gis;
@@ -438,7 +435,23 @@ sub CheckFunctionNaming
     my $typename = $1;
     my $name = $2;
 
-    if ($name =~ /^(recv_hostif_packet|send_hostif_packet|allocate_hostif_packet|free_hostif_packet|flush_fdb_entries|remove_all_neighbor_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write|switch_mdio_read|switch_mdio_write)$/)
+    my @listex = qw(
+    allocate_hostif_packet
+    flush_fdb_entries
+    free_hostif_packet
+    profile_get_next_value
+    profile_get_value
+    recv_hostif_packet
+    remove_all_neighbor_entries
+    send_hostif_packet
+    switch_mdio_read
+    switch_mdio_write
+    switch_register_read
+    switch_register_write);
+
+    my $REG = "(" . (join"|",@listex) . ")";
+
+    if ($name =~ /^$REG$/)
     {
         # ok
     }
@@ -468,7 +481,7 @@ sub CheckFunctionNaming
     if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?$|^clear_\w+_stats$/)
     {
         # exceptions
-        return if $name =~ /^(recv_hostif_packet|send_hostif_packet|allocate_hostif_packet|free_hostif_packet|flush_fdb_entries|profile_get_value|profile_get_next_value|switch_register_read|switch_register_write|switch_mdio_read|switch_mdio_write)$/;
+        return if $name =~ /^$REG$/;
 
         LogWarning "function not follow convention in $header:$n:$line";
     }
@@ -591,6 +604,15 @@ sub GetAcronyms
 
     close FILE;
 
+    my $prev = "";
+
+    for my $acr (@acronyms)
+    {
+        LogWarning "Acronyms are not sorted: $prev, $acr" if ($prev cmp $acr) > 0;
+
+        $prev = $acr;
+    }
+
     return @acronyms;
 }
 
@@ -605,6 +627,8 @@ sub CheckMetadataSourceFiles
         next if $file eq "saimetadata.h";
         next if $file eq "saimetadata.c";
         next if $file eq "saimetadatatest.c";
+
+        next if $file =~ /swig|wrap/;
 
         my $data = ReadHeaderFile($file);
 
@@ -622,7 +646,9 @@ sub CheckMetadataSourceFiles
 
             LogWarning "found trailing spaces in $file:$n: $line" if $line =~ /\s+$/;
 
-            if ($line =~ /[^\t\x20-\x7e]/)
+            $line =~ s/\t+/    /g if $file =~ /Makefile/;
+
+            if ($line =~ /[^\x20-\x7e]/)
             {
                 LogWarning "line contains non ascii characters $file:$n: $line";
             }
@@ -886,9 +912,9 @@ sub CheckHeadersStyle
                 LogWarning "space before '$1' : $header:$n:$line";
             }
 
-            if ($line =~ / \* / and not $line =~ /^\s*\* /)
+            if ($line =~ / \* / and not $line =~ /^\s*\* / and not $line =~ /^#define/)
             {
-                LogWarning "floating start: $header:$n:$line";
+                LogWarning "floating star $header:$n:$line";
             }
 
             if ($line =~ /}[^ ]/)
@@ -919,6 +945,27 @@ sub CheckHeadersStyle
             if ($line =~ /sai_\w+_statistics_fn/)
             {
                 LogWarning "statistics should use 'stats' to follow convention $header:$n:$line";
+            }
+
+            if ($line =~ /^\s*(SAI_\w+)\s*=\s*(.*)$/)
+            {
+                my $init = $2;
+
+                if ($init =~ m!^(0x\w+|SAI_\w+|SAI_\w+ \+ \d+|SAI_\w+ \+ 0x[0-9a-f]{1,8}|SAI_\w+ \+ SAI_\w+|\d+|\(?\d+ << \d+\)?),?\s*(/\*\*.*\*/)?$!)
+                {
+                    # supported initializers for enum:
+                    # - 0x00000000 (hexadecimal number)
+                    # - 0 (decimal number)
+                    # - SAI_... (other SAI enum)
+                    # - n << m (flags shifted)
+                    # - SAI_.. + SAI_.. (sum of SAI enums)
+                    # - SAI_.. + 0x00 (sum of SAI and hexadecimal number)
+                    # - SAI_.. + 0 (sum of SAI and decimal number)
+                }
+                else
+                {
+                    LogWarning "unsupported initializer on enum: $line";
+                }
             }
 
             if ($line =~ /^\s*SAI_\w+\s*=\s*+0x(\w+)(,|$)/ and length($1) != 8)
@@ -978,12 +1025,27 @@ sub CheckHeadersStyle
                 LogWarning "missing empty line before: $header $n: $line";
             }
 
+            if ($line =~ /_(In|Out|Inout)_.+(\* | \* )/)
+            {
+                LogWarning "move * to the right of parameter: $header $n: $line";
+            }
+
             if ($line =~ /\*.*SAI_.+(==|!=)/ and not $line =~ /\@(condition|validonly)/)
             {
                 if (not $line =~ /(condition|validonly|valid when|only when)\s+SAI_/i)
                 {
                     LogWarning "condition should be preceded by 'valid when' or 'only when': $header $n: $line";
                 }
+            }
+
+            if ($line =~ /SAI_\w+ \s+=\s+(0x|S)/)
+            {
+                LogWarning "too many spaces before '=' $header:$n: $line"
+            }
+
+            if ($line =~ /__/ and not $line =~ /^#.+__SAI\w*_H_|VA_ARGS|BOOL_DEFINED/)
+            {
+                LogWarning "double underscore detected: $header $n: $line";
             }
 
             if ($line eq "" and $prev =~ /{/)
@@ -1033,7 +1095,7 @@ sub CheckHeadersStyle
 
                     next if defined $exceptions{$word};
                     next if $word =~ /^sai\w+/i;
-                    next if $word =~ /0x\S+L/;
+                    next if $word =~ /0x\S+/;
                     next if "$pre$word" =~ /802.\d+\w+/;
 
                     next if defined $wordsChecked{$word};
