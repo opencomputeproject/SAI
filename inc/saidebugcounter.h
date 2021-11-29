@@ -308,20 +308,6 @@ typedef enum _sai_in_drop_reason_t
     /** Packet is dropped due to FDB action discards or route discards (black hole route) */
     SAI_IN_DROP_REASON_FDB_AND_BLACKHOLE_DISCARDS,
 
-    /** MPLS Routing table lookup miss */
-    SAI_IN_DROP_REASON_MPLS_MISS,
-
-    /**
-     * @brief SRV6 local SID drop
-     *
-     * Packet is dropped due to local SID configuration or incorrect value in SRV6 packet header
-     * e.g.: Local SID packet action is set to SAI_PACKET_ACTION_DROP
-     * Next Header is SRH and Segments Left value is 0 for End, End.X, End.T, End.B* endpoint types
-     * Next Header is not SRH while local SID is configured for packet DA
-     * Segments Left value is not 0 when received packet is destined to S and S is a local SID of type End.D*
-     */
-    SAI_IN_DROP_REASON_SRV6_LOCAL_SID_DROP,
-
     /** End of in drop reasons */
     SAI_IN_DROP_REASON_END,
 
