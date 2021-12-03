@@ -1455,6 +1455,26 @@ typedef struct _sai_stat_capability_list_t
 } sai_stat_capability_list_t;
 
 /**
+ * @brief Bulk objects get statistics.
+ *
+ * @param[in] object_count Number of objects to get on attribute
+ * @param[in] object_id List of object ids
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_bulk_object_get_stats_fn)(
+        _In_ uint32_t object_count,
+        _In_ const sai_object_id_t *object_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
  * @}
  */
 #endif /** __SAITYPES_H_ */
