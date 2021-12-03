@@ -205,6 +205,7 @@ sub CheckStatsFunction
 
     return if $fname eq "sai_clear_port_all_stats_fn"; # exception
     return if $fname eq "sai_get_tam_snapshot_stats_fn"; # exception
+    return if $fname eq "sai_bulk_object_get_stats_fn"; # exception
 
     if (not $fname =~ /^sai_((get|clear)_(\w+)_stats|get_\w+_stats_ext)_fn$/)
     {
