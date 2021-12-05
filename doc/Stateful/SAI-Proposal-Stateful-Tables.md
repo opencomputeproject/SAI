@@ -85,3 +85,185 @@ For the timer instantiation we have two options:
 ### Flow context and global storage read/update/insert/delete from control plane
 The control plane must be able to read and modify the value stored in the flow context storage.
 The control plane should be also able to insert and delete entries.
+
+## API
+
+```c
+#if !defined (__SAIEBPF_H_)
+#define __SAIEBPF_H_
+
+/**
+ * @brief State callback signature
+ */
+typedef void (* state_handler)(void *flow_ctx, void *global_ctx);
+/**
+ * @brief Set the next state
+ *
+ * Set the state callback to be executed when the stateful
+ * table is applied to the next packet classified to
+ * this flow.
+ *
+ * @param[in] state_handler state handler callback
+ */
+void sai_set_state(state_handler);
+
+/**
+ * @brief Defines a packet field ID
+ */
+typedef enum _sai_packet_field_t
+{
+    SAI_PACKET_FIELD_SRC_IPV6,
+
+    SAI_PACKET_FIELD_DST_IPV6,
+
+    SAI_PACKET_FIELD_INNER_SRC_IPV6,
+
+    SAI_PACKET_FIELD_INNER_DST_IPV6,
+
+    SAI_PACKET_FIELD_SRC_MAC,
+
+    SAI_PACKET_FIELD_DST_MAC,
+
+    SAI_PACKET_FIELD_SRC_IP,
+
+    SAI_PACKET_FIELD_DST_IP,
+
+    SAI_PACKET_FIELD_INNER_SRC_IP,
+
+    SAI_PACKET_FIELD_INNER_DST_IP,
+
+    SAI_PACKET_FIELD_L4_SRC_PORT,
+
+    SAI_PACKET_FIELD_L4_DST_PORT,
+
+    SAI_PACKET_FIELD_INNER_L4_SRC_PORT,
+
+    SAI_PACKET_FIELD_INNER_L4_DST_PORT,
+
+    SAI_PACKET_FIELD_IP_PROTOCOL,
+
+    SAI_PACKET_FIELD_INNER_IP_PROTOCOL,
+
+    SAI_PACKET_FIELD_TCP_FLAGS,
+
+    SAI_PACKET_FIELD_INNER_TCP_FLAGS,
+
+} sai_packet_field_t;
+
+/**
+ * @brief Get byte packet field
+ *
+ * @param[in] field_id field ID
+ *
+ * @return value of that field in the packet
+ */
+unsigned char sai_load_packet_field_u8(sai_packet_field_t field_id);
+
+/**
+ * @brief Get 2 byte packet field
+ *
+ * @param[in] field_id field ID
+ *
+ * @return value of that field in the packet
+ */
+unsigned short sai_load_packet_field_u16(sai_packet_field_t field_id);
+
+/**
+ * @brief Get 4 byte packet field
+ *
+ * @param[in] field_id field ID
+ *
+ * @return value of that field in the packet
+ */
+unsigned int sai_load_packet_field_u32(sai_packet_field_t field_id);
+
+#endif /** __SAIEBPF_H_ */
+```
+
+## Example
+
+```c
+#include "inc/saiebpf.h"
+
+typedef enum _connection_state_t {
+    CONNECTION_STATE_CLOSED = 0,
+    CONNECTION_STATE_SYN_SENT = 1,
+    CONNECTION_STATE_OPEN = 2,
+} connection_state_t;
+
+typedef struct _flow_ctx_t {
+    unsigned char connection_state;
+} flow_ctx_t;
+
+void wait_synack(void *flow_ctx, void *global_ctx);
+void allow(void *flow_ctx, void *global_ctx);
+void wait_finack(void *flow_ctx, void *global_ctx);
+void wait_ack(void *flow_ctx, void *global_ctx);
+
+void start(void *flow_ctx, void *global_ctx)
+{
+    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
+    unsigned short tcp_flags = sai_load_packet_field_u16(14);
+
+    if (tcp_flags != 0x02 /* TCP SYN */)
+    {
+        return;
+    }
+
+    fc->connection_state = CONNECTION_STATE_SYN_SENT;
+
+    sai_set_state(allow);
+}
+
+void wait_synack(void *flow_ctx, void *global_ctx)
+{
+    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
+    unsigned short tcp_flags = sai_load_packet_field_u16(14);
+
+    if (tcp_flags & 0x12 /* SYNACK */)
+    {
+        fc->connection_state = CONNECTION_STATE_OPEN;
+        sai_set_state(allow);
+    }
+}
+
+void allow(void *flow_ctx, void *global_ctx)
+{
+    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
+    unsigned short tcp_flags = sai_load_packet_field_u16(14);
+
+    if (tcp_flags & 0x4 /* RST */)
+    {
+        fc->connection_state = CONNECTION_STATE_CLOSED;
+        sai_set_state(start);
+    }
+
+    if (tcp_flags & 0x1 /* FIN */)
+    {
+        sai_set_state(wait_finack);
+    }
+}
+
+void wait_finack(void *flow_ctx, void *global_ctx)
+{
+    unsigned short tcp_flags = sai_load_packet_field_u16(14);
+
+    if (tcp_flags & 0x11 /* FINACK */)
+    {
+        sai_set_state(wait_ack);
+    }
+}
+
+void wait_ack(void *flow_ctx, void *global_ctx)
+{
+    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
+    unsigned short tcp_flags = sai_load_packet_field_u16(14);
+
+    if (tcp_flags & 0x10 /* ACK */)
+    {
+        fc->connection_state = CONNECTION_STATE_CLOSED;
+        sai_set_state(start);
+    }
+}
+
+```
