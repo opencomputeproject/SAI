@@ -277,6 +277,12 @@ typedef enum _sai_acl_action_type_t
     /** Set Forwarding class */
     SAI_ACL_ACTION_TYPE_SET_FORWARDING_CLASS = 0x00000034,
 
+    /** Go to a stateful table with key #0 */
+    SAI_ACL_ACTION_TYPE_APPLY_STATEFUL_TABLE_WITH_KEY_0 = 0x00000035,
+
+    /** Go to a stateful table with key #1 */
+    SAI_ACL_ACTION_TYPE_APPLY_STATEFUL_TABLE_WITH_KEY_1 = 0x00000036,
+
 } sai_acl_action_type_t;
 
 /**
@@ -444,6 +450,7 @@ typedef enum _sai_acl_table_group_member_attr_t
  * @brief ACL User Defined Field Attribute ID Range
  */
 #define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
+#define SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE 0xF
 
 /**
  * @brief Attribute Id for sai_acl_table
@@ -1387,6 +1394,29 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_TAM_INT_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x152,
+
+    /**
+     * @brief Stateful Metadata
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @range SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE
+     */
+    SAI_ACL_TABLE_ATTR_STATEFUL_METADATA_MIN = SAI_ACL_TABLE_ATTR_FIELD_START + 0x160,
+
+    /**
+     * @brief Stateful Metadata end
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_TABLE_ATTR_STATEFUL_METADATA_MAX = SAI_ACL_TABLE_ATTR_STATEFUL_METADATA_MIN + SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE,
 
     /**
      * @brief End of ACL Table Match Field
@@ -2376,6 +2406,25 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_TAM_INT_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x152,
 
     /**
+     * @brief Stateful Metadata object value
+     *
+     * @type sai_acl_field_data_t sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     * @range SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE
+     */
+    SAI_ACL_ENTRY_ATTR_STATEFUL_METADATA_MIN = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x160,
+
+    /**
+     * @brief User Defined Field data max
+     *
+     * @type sai_acl_field_data_t sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_STATEFUL_METADATA_MAX = SAI_ACL_ENTRY_ATTR_STATEFUL_METADATA_MIN + SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE,
+
+    /**
      * @brief End of Rule Match Fields
      */
     SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_WORD0,
@@ -2935,9 +2984,29 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x34,
 
     /**
+     * @brief Apply stateful table with key #0
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_STATEFUL_TABLE
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_APPLY_STATEFUL_TABLE_WITH_KEY_0 = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x35,
+
+    /**
+     * @brief Apply stateful table with key #1
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_STATEFUL_TABLE
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_APPLY_STATEFUL_TABLE_WITH_KEY_1 = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x36,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_APPLY_STATEFUL_TABLE_WITH_KEY_1,
 
     /**
      * @brief End of ACL Entry attributes
