@@ -182,6 +182,135 @@ unsigned int sai_load_packet_field_u32(sai_packet_field_t field_id);
 
 ## Example
 
+```
+               ┌────────────────────────────────────────┐
+               │  ┌─────────────┐         ┌───────────┐ │
+               │  │             │         │           │ │
+   ┌──────┐    │  │             │         │           │ │
+   │ NP   ├────┼──►             │         │           │ │
+   │      │    │  │             │         │           │ │
+   └──────┘    │  │ Conntrack   │         │  FW       │ │
+               │  │   ACL       ├─┐    ┌──►  ACL      │ │
+   ┌──────┐    │  │             │ │    │  │           │ │
+   │ CP   │    │  │             │ │    │  │           │ │
+   │      ├────┼──►             │ │    │  │           │ │
+   └──────┘    │  │             │ │    │  │           │ │
+               │  └─────────────┘ │    │  └───────────┘ │
+               └──────────────────┼────┼────────────────┘
+                                  │    │
+                    ┌─────────────▼────┴────────────┐
+                    │         Conntrack             │
+                    │      State Table              │
+                    └───────────────────────────────┘
+```
+
+```c
+/**
+ * Create a flow context for a conntrack table, will be referenced by ACL
+ */
+
+sai_object_id_t conntrack_flow_ctx_oid;
+ 
+attr.id = SAI_STATEFUL_METADATA_ATTR_SIZE;
+attr.value.u32 = 2;
+
+/**
+ * Create a conntrack stateful table
+ */
+
+sai_object_id_t conntrack_table_oid;
+sai_attribute_t attr;
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_SIZE;
+attr.value.u32 = 1000000;
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_KEY_0;
+attr.value.s32list.count = 1;
+attr.value.s32list.list = [
+    SAI_FLOW_KEY_FIELD_SRC_IP,
+	SAI_FLOW_KEY_FIELD_DST_IP,
+	SAI_FLOW_KEY_FIELD_L4_SRC_PORT,
+	SAI_FLOW_KEY_FIELD_L4_DST_PORT,
+	SAI_FLOW_KEY_FIELD_IP_PROTOCOL];
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_KEY_1;
+attr.value.s32list.count = 1;
+attr.value.s32list.list = [
+	SAI_FLOW_KEY_FIELD_DST_IP,
+	SAI_FLOW_KEY_FIELD_SRC_IP,
+	SAI_FLOW_KEY_FIELD_L4_DST_PORT,
+	SAI_FLOW_KEY_FIELD_L4_SRC_PORT,
+	SAI_FLOW_KEY_FIELD_IP_PROTOCOL];
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY;
+attr.value.s32 = SAI_STATEFUL_TABLE_EVICTION_POLICY_LRU;
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT;
+attr.value.s32 = conntrack_flow_ctx_oid;
+
+/**
+ * Create table to drop TCP traffic from network ports by default
+ */
+
+sai_object_id_t port_table_oid;
+
+attr.id = SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST;
+attr.value.s32list.count = 1;
+attr.value.s32list.list = SAI_ACL_BIND_POINT_TYPE_PORT;
+
+attr.id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
+attr.value.s32 = SAI_ACL_STAGE_INGRESS;
+
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL;
+attr.value.bool = true;
+
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_IN_PORTS;
+attr.value.bool = true;
+
+/**
+ * Create rule to drop TCP traffic from network ports by default
+ */
+
+sai_object_id_t port_rule_id;
+
+attr.id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
+attr.value.oid = port_table_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_PRIORITY;
+attr.value.u32 = 0;
+
+attr.id = SAI_ACL_ENTRY_ATTR_ADMIN_STATE;
+attr.value.booldata = true;
+
+attr.id = SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS;
+attr.value.objlist = network_ports;
+
+attr.id = SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION;
+attr.value.packet_action = SAI_PACKET_ACTION_DISCARD;
+
+/**
+ * Create table to apply connection tracking to TCP packets
+ */
+
+sai_object_id_t conntrack_table_oid;
+
+attr.id = SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST;
+attr.value.s32list.count = 1;
+attr.value.s32list.list = SAI_ACL_BIND_POINT_TYPE_PORT;
+
+attr.id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
+attr.value.s32 = SAI_ACL_STAGE_INGRESS;
+
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL;
+attr.value.bool = true;
+
+/**
+ * ...
+ * These two tables are members of a sequential table group, port table being applied first
+ * ...
+ */
+```
+
 ```c
 #include "inc/saiebpf.h"
 
@@ -265,5 +394,21 @@ void wait_ack(void *flow_ctx, void *global_ctx)
         sai_set_state(start);
     }
 }
+```
 
+```
+start:
+       0:       bf 16 00 00 00 00 00 00         r6 = r1
+       1:       b7 01 00 00 10 00 00 00         r1 = 16                            // set param 1 to TCP_FLAGS
+       2:       85 10 00 00 ff ff ff ff         call -1                            // call sai_load_packet_field_u16, result saved in r0
+                0000000000000010:  R_BPF_64_32  sai_load_packet_field_u16
+       3:       55 00 05 00 02 00 00 00         if r0 != 2 goto +5 <LBB0_2>        // if tcp_flags is not SYN, return
+       4:       b7 01 00 00 01 00 00 00         r1 = 1
+       5:       73 16 00 00 00 00 00 00         *(u8 *)(r6 + 0) = r1               // fc->connection_state = CONNECTION_STATE_SYN_SENT;
+       6:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00         r1 = 0 ll
+                0000000000000030:  R_BPF_64_64  allow
+       8:       85 10 00 00 ff ff ff ff         call -1                            // set state to allow
+                0000000000000040:  R_BPF_64_32  sai_set_state
+LBB0_2:
+       9:       95 00 00 00 00 00 00 00         exit
 ```
