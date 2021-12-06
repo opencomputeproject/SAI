@@ -182,6 +182,15 @@ unsigned int sai_load_packet_field_u32(sai_packet_field_t field_id);
 
 ## Example
 
+As an example, let's build a stateful firewall that is capable of tracking TCP connections.
+The network device has two kinds of ports - network facing (NP) and customer facing ports (CP).
+A high level architecture is shown below - there are two ACL tables in a sequential table group.
+The first ACL table sends the TCP packets to a stateful table for connection tracking.
+The second ACL table matches on the connection state of the flow that packet belongs to and a port (is it netork or customer facing) and makes the appropriate decision - allow the connection to be opened only by a customer facing port.
+It means that packets will be allowed to ingress the network facing port only if they belong to a connection opened from a customer port.
+
+The separation between connection tracking and deny policy is so that stateful table does not know how exactly the direction is determined, and thus it can be updated without touching the stateful table, which has a single responsibility of tracking flows. ACL uses that state, or flow context, to make a permit/deny decision.
+
 ```
                ┌────────────────────────────────────────┐
                │  ┌─────────────┐         ┌───────────┐ │
@@ -204,6 +213,8 @@ unsigned int sai_load_packet_field_u32(sai_packet_field_t field_id);
                     └───────────────────────────────┘
 ```
 
+The pseudo code for SAI calls is provided below:
+
 ```c
 /**
  * Create a flow context for a conntrack table, will be referenced by ACL
@@ -218,7 +229,7 @@ attr.value.u32 = 2;
  * Create a conntrack stateful table
  */
 
-sai_object_id_t conntrack_table_oid;
+sai_object_id_t conntrack_state_table_oid;
 sai_attribute_t attr;
 
 attr.id = SAI_STATEFUL_TABLE_ATTR_SIZE;
@@ -248,8 +259,11 @@ attr.value.s32 = SAI_STATEFUL_TABLE_EVICTION_POLICY_LRU;
 attr.id = SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT;
 attr.value.s32 = conntrack_flow_ctx_oid;
 
+attr.id = SAI_STATEFUL_TABLE_ATTR_STATE_GRAPH;
+attr.value.u8list = ebpf_file;
+
 /**
- * Create table to drop TCP traffic from network ports by default
+ * Create table to drop TCP traffic from network ports
  */
 
 sai_object_id_t port_table_oid;
@@ -267,11 +281,14 @@ attr.value.bool = true;
 attr.id = SAI_ACL_TABLE_ATTR_FIELD_IN_PORTS;
 attr.value.bool = true;
 
+attr.id = SAI_ACL_TABLE_ATTR_STATEFUL_METADATA_MIN;
+attr.value.oid = conntrack_flow_ctx_oid;
+
 /**
- * Create rule to drop TCP traffic from network ports by default
+ * Create rule to drop TCP traffic from network ports if connection is not open
  */
 
-sai_object_id_t port_rule_id;
+sai_object_id_t port_rule_oid;
 
 attr.id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
 attr.value.oid = port_table_oid;
@@ -284,6 +301,13 @@ attr.value.booldata = true;
 
 attr.id = SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS;
 attr.value.objlist = network_ports;
+
+attr.id = SAI_ACL_ENTRY_ATTR_IP_PROTOCOL;
+attr.value.u8 = 0x6;
+
+attr.id = SAI_ACL_ENTRY_ATTR_STATEFUL_METADATA_MIN;
+attr.value.acl_data_value.u8list = [0x0]; // connnection state != CONNECTION_STATE_OPEN
+attr.value.acl_data_mask.u8list  = [0x2]; // mask out CONNECTION_STATE_CLOSED and CONNECTION_STATE_SYN_SENT
 
 attr.id = SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION;
 attr.value.packet_action = SAI_PACKET_ACTION_DISCARD;
@@ -304,12 +328,68 @@ attr.value.s32 = SAI_ACL_STAGE_INGRESS;
 attr.id = SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL;
 attr.value.bool = true;
 
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_IN_PORTS;
+attr.value.bool = true;
+
+/**
+ * Create rule to send TCP packets to connection tracking table from customer ports
+ */
+
+sai_object_id_t conntrack_customer_rule_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
+attr.value.oid = conntrack_table_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_PRIORITY;
+attr.value.u32 = 0;
+
+attr.id = SAI_ACL_ENTRY_ATTR_ADMIN_STATE;
+attr.value.booldata = true;
+
+attr.id = SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS;
+attr.value.objlist = customer_ports;
+
+attr.id = SAI_ACL_ENTRY_ATTR_IP_PROTOCOL;
+attr.value.u8 = 0x6;
+
+attr.id = SAI_ACL_ACTION_TYPE_APPLY_STATEFUL_TABLE_WITH_KEY_0;
+attr.value.oid = conntrack_state_table_oid;
+
+/**
+ * Create rule to send TCP packets to connection tracking table from customer ports
+ */
+
+sai_object_id_t conntrack_network_rule_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
+attr.value.oid = conntrack_table_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_PRIORITY;
+attr.value.u32 = 1;
+
+attr.id = SAI_ACL_ENTRY_ATTR_ADMIN_STATE;
+attr.value.booldata = true;
+
+attr.id = SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS;
+attr.value.objlist = network_ports;
+
+attr.id = SAI_ACL_ENTRY_ATTR_IP_PROTOCOL;
+attr.value.u8 = 0x6;
+
+attr.id = SAI_ACL_ACTION_TYPE_APPLY_STATEFUL_TABLE_WITH_KEY_1;
+attr.value.oid = conntrack_state_table_oid;
+
 /**
  * ...
- * These two tables are members of a sequential table group, port table being applied first
+ * These two ACL tables are members of a sequential table group,
+ * Conntrack ACL table being first in the group to send packets to
+ * Conntrack stateful table before port table with deny rule is applied
+ * No new API are used to create ACL group and ACL group members
  * ...
  */
-```
+ ```
+
+The code for connection tracking callbacks is below:
 
 ```c
 #include "inc/saiebpf.h"
@@ -395,6 +475,9 @@ void wait_ack(void *flow_ctx, void *global_ctx)
     }
 }
 ```
+
+It results in 57 eBPF instructions, that SAI will need to offload to the NPU.
+For example, here's the initial state callback in eBPF format:
 
 ```
 start:
