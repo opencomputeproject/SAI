@@ -88,6 +88,217 @@ The control plane should be also able to insert and delete entries.
 
 ## API
 
+New SAI API:
+
+```c
+    SAI_API_MY_MAC           = 45, /**< sai_my_mac_api_t */
+    SAI_API_IPSEC            = 46, /**< sai_ipsec_api_t */
++    SAI_API_STATEFUL         = 47, /**< sai_stateful_api_t */
+    SAI_API_MAX,                   /**< total number of APIs */
+} sai_api_t;
+```
+
+New object types:
+
+```c
+    SAI_OBJECT_TYPE_IPSEC_PORT               = 100,
+    SAI_OBJECT_TYPE_IPSEC_SA                 = 101,
++    SAI_OBJECT_TYPE_STATEFUL_TABLE           = 102,
++    SAI_OBJECT_TYPE_STATEFUL_METADATA        = 103,
+    SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
+} sai_object_type_t;
+```
+
+Stateful table attributes:
+
+```c
+/**
+ * @brief Attribute Id for sai_stateful_table
+ */
+typedef enum _sai_stateful_table_attr_t
+{
+    /**
+     * @brief Table attributes start
+     */
+    SAI_STATEFUL_TABLE_ATTR_START,
+
+    /**
+     * @brief Maximum number of entries in the table
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_STATEFUL_TABLE_ATTR_SIZE = SAI_STATEFUL_TABLE_ATTR_START,
+
+    /**
+     * @brief Flow key #0
+     *
+     * @type sai_s32_list_t sai_flow_key_field_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_STATEFUL_TABLE_ATTR_KEY_0,
+
+    /**
+     * @brief Flow key #1
+     *
+     * @type sai_s32_list_t sai_flow_key_field_t
+     * @flags CREATE_ONLY
+     * @default empty
+     */
+    SAI_STATEFUL_TABLE_ATTR_KEY_1,
+
+    /**
+     * @brief Eviction policy
+     *
+     * Defines the eviction policy for the entries in a stateful table
+     * in case when a table is full and a new flow learn event happens
+     *
+     * @type sai_stateful_table_eviction_policy_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @default SAI_STATEFUL_TABLE_EVICTION_POLICY_IGNORE
+     */
+    SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY,
+
+    /**
+     * @brief Flow context
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
+     */
+    SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT,
+
+    /**
+     * @brief Global context
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
+     */
+    SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT,
+
+    /**
+     * @brief Start state function
+     *
+     * @type sai_u8_list_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_STATEFUL_TABLE_ATTR_STATE_GRAPH,
+
+    /**
+     * @brief End of stateful table attributes
+     */
+    SAI_STATEFUL_TABLE_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_STATEFUL_TABLE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_STATEFUL_TABLE_ATTR_CUSTOM_RANGE_END
+
+} sai_stateful_table_attr_t;
+```
+
+Sincethe nature of a flow is usually bidirectional, a statful table can have more than one key.
+For now, we define two - `SAI_STATEFUL_TABLE_ATTR_KEY_0` and `SAI_STATEFUL_TABLE_ATTR_KEY_1`.
+
+Stateful table can allocate memory gor a per flow metadata and a global metadata for aggregate values.
+The two attributes are `SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT` and `SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT`.
+Stateful metadata attributes:
+
+```c
+typedef enum _sai_stateful_metadata_attr_t
+{
+    /**
+     * @brief Table attributes start
+     */
+    SAI_STATEFUL_METADATA_ATTR_START,
+
+    /**
+     * @brief Maximum number of entries in the table
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_STATEFUL_METADATA_ATTR_SIZE = SAI_STATEFUL_TABLE_ATTR_START,
+
+    /**
+     * @brief End of stateful table attributes
+     */
+    SAI_STATEFUL_METADATA_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_STATEFUL_METADATA_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_STATEFUL_METADATA_ATTR_CUSTOM_RANGE_END
+
+} sai_stateful_metadata_attr_t;
+```
+
+Eviction policy is defined using `SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY`.
+The possible policies are defined as follows:
+
+```c
+typedef enum _sai_flow_key_field_t
+{
+    SAI_FLOW_KEY_FIELD_SRC_IPV6,
+
+    SAI_FLOW_KEY_FIELD_DST_IPV6,
+
+    SAI_FLOW_KEY_FIELD_INNER_SRC_IPV6,
+
+    SAI_FLOW_KEY_FIELD_INNER_DST_IPV6,
+
+    SAI_FLOW_KEY_FIELD_SRC_MAC,
+
+    SAI_FLOW_KEY_FIELD_DST_MAC,
+
+    SAI_FLOW_KEY_FIELD_SRC_IP,
+
+    SAI_FLOW_KEY_FIELD_DST_IP,
+
+    SAI_FLOW_KEY_FIELD_INNER_SRC_IP,
+
+    SAI_FLOW_KEY_FIELD_INNER_DST_IP,
+
+    SAI_FLOW_KEY_FIELD_L4_SRC_PORT,
+
+    SAI_FLOW_KEY_FIELD_L4_DST_PORT,
+
+    SAI_FLOW_KEY_FIELD_INNER_L4_SRC_PORT,
+
+    SAI_FLOW_KEY_FIELD_INNER_L4_DST_PORT,
+
+    SAI_FLOW_KEY_FIELD_IP_PROTOCOL,
+
+    SAI_FLOW_KEY_FIELD_INNER_IP_PROTOCOL,
+
+} sai_flow_key_field_t;
+```
+
+State graph is itself is a complex entity - it is a set of callbacks, one for each state.
+Callbacks can be also complex.
+They may require to be able to express the following:
+* ALU operations
+* Local memory operations (accessing flow context or scratchpad memory)
+* Branching operations (if, then, else etc.)
+* Calling external functions (load packet field into local memory, drop packet etc.)
+
+To implement the expressions above, adopting eBPF instruction set is proposed for the callbacks.
+They can be expressed in a high level C language, compiled with existing toolchains like gcc or clang, and the result can be fed to SAI to offload in the NPU.
+A supplementary initial version of the APIs is provided below to be accessible from the state graph functions.
+The signature of every state callback is `void hadler(void *flow_ctx, void *global_ctx)`.
+The state callback to be executed by default should be called `start`.
+
 ```c
 #if !defined (__SAIEBPF_H_)
 #define __SAIEBPF_H_
