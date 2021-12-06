@@ -150,11 +150,10 @@ typedef enum _sai_stateful_table_attr_t
     /**
      * @brief Start state function
      *
-     * @type sai_object_id_t
+     * @type sai_u8_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_STATE_FUNCTION
      */
-    SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT,
+    SAI_STATEFUL_TABLE_ATTR_STATE_GRAPH,
 
     /**
      * @brief End of stateful table attributes
