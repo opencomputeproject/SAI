@@ -206,6 +206,46 @@ typedef enum _sai_stateful_table_attr_t
 Sincethe nature of a flow is usually bidirectional, a statful table can have more than one key.
 For now, we define two - `SAI_STATEFUL_TABLE_ATTR_KEY_0` and `SAI_STATEFUL_TABLE_ATTR_KEY_1`.
 
+The set of fields for a flow key is defined in the enum below:
+
+```c
+typedef enum _sai_flow_key_field_t
+{
+    SAI_FLOW_KEY_FIELD_SRC_IPV6,
+
+    SAI_FLOW_KEY_FIELD_DST_IPV6,
+
+    SAI_FLOW_KEY_FIELD_INNER_SRC_IPV6,
+
+    SAI_FLOW_KEY_FIELD_INNER_DST_IPV6,
+
+    SAI_FLOW_KEY_FIELD_SRC_MAC,
+
+    SAI_FLOW_KEY_FIELD_DST_MAC,
+
+    SAI_FLOW_KEY_FIELD_SRC_IP,
+
+    SAI_FLOW_KEY_FIELD_DST_IP,
+
+    SAI_FLOW_KEY_FIELD_INNER_SRC_IP,
+
+    SAI_FLOW_KEY_FIELD_INNER_DST_IP,
+
+    SAI_FLOW_KEY_FIELD_L4_SRC_PORT,
+
+    SAI_FLOW_KEY_FIELD_L4_DST_PORT,
+
+    SAI_FLOW_KEY_FIELD_INNER_L4_SRC_PORT,
+
+    SAI_FLOW_KEY_FIELD_INNER_L4_DST_PORT,
+
+    SAI_FLOW_KEY_FIELD_IP_PROTOCOL,
+
+    SAI_FLOW_KEY_FIELD_INNER_IP_PROTOCOL,
+
+} sai_flow_key_field_t;
+```
+
 Stateful table can allocate memory gor a per flow metadata and a global metadata for aggregate values.
 The two attributes are `SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT` and `SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT`.
 Stateful metadata attributes:
@@ -248,41 +288,15 @@ Eviction policy is defined using `SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY`.
 The possible policies are defined as follows:
 
 ```c
-typedef enum _sai_flow_key_field_t
+typedef enum _sai_stateful_table_eviction_policy_t
 {
-    SAI_FLOW_KEY_FIELD_SRC_IPV6,
+    /** Ignore a new flow */
+    SAI_STATEFUL_TABLE_EVICTION_POLICY_IGNORE,
 
-    SAI_FLOW_KEY_FIELD_DST_IPV6,
+    /** Least recently used flow is evicted */
+    SAI_STATEFUL_TABLE_EVICTION_POLICY_LRU,
 
-    SAI_FLOW_KEY_FIELD_INNER_SRC_IPV6,
-
-    SAI_FLOW_KEY_FIELD_INNER_DST_IPV6,
-
-    SAI_FLOW_KEY_FIELD_SRC_MAC,
-
-    SAI_FLOW_KEY_FIELD_DST_MAC,
-
-    SAI_FLOW_KEY_FIELD_SRC_IP,
-
-    SAI_FLOW_KEY_FIELD_DST_IP,
-
-    SAI_FLOW_KEY_FIELD_INNER_SRC_IP,
-
-    SAI_FLOW_KEY_FIELD_INNER_DST_IP,
-
-    SAI_FLOW_KEY_FIELD_L4_SRC_PORT,
-
-    SAI_FLOW_KEY_FIELD_L4_DST_PORT,
-
-    SAI_FLOW_KEY_FIELD_INNER_L4_SRC_PORT,
-
-    SAI_FLOW_KEY_FIELD_INNER_L4_DST_PORT,
-
-    SAI_FLOW_KEY_FIELD_IP_PROTOCOL,
-
-    SAI_FLOW_KEY_FIELD_INNER_IP_PROTOCOL,
-
-} sai_flow_key_field_t;
+} sai_stateful_table_eviction_policy_t;
 ```
 
 State graph is itself is a complex entity - it is a set of callbacks, one for each state.
