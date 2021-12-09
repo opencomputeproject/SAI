@@ -18,9 +18,8 @@ Thrift SAI interface tester
 
 from sai_thrift.sai_headers import *
 
-from ptf.testutils import *
 from ptf.packet import *
-from ptf.thriftutils import *
+from ptf.testutils import *
 
 from sai_base_test import *
 

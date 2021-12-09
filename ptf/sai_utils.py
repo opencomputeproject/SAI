@@ -22,9 +22,8 @@ import socket
 
 from functools import wraps
 
-import ptf
 from ptf.packet import *
-from ptf import testutils
+from ptf.testutils import *
 
 from sai_adapter import *
 
@@ -279,7 +278,7 @@ def delay_wrapper(func, delay=2):
         Return:
             status: original function return value
         """
-        test_params = testutils.test_params_get()
+        test_params = test_params_get()
         if test_params['target'] != "hw":
             time.sleep(delay)
 

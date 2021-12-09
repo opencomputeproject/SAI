@@ -50,7 +50,7 @@ class ThriftInterface(BaseTest):
         self.port_map_loaded = False
         self.transport = None
 
-        self.test_params = testutils.test_params_get()
+        self.test_params = test_params_get()
         self.loadPortMap()
         self.createRpcClient()
 
@@ -166,7 +166,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         attr = sai_thrift_get_switch_attribute(
             self.client, default_vlan_id=True)
         self.default_vlan_id = attr['default_vlan_id']
-        self.assertTrue(self.default_vlan_id != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         if 'port_config_ini' in self.test_params:
             if 'createPorts_has_been_called' not in config:
@@ -194,18 +194,18 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         attr = sai_thrift_get_switch_attribute(
             self.client, default_virtual_router_id=True)
         self.default_vrf = attr['default_virtual_router_id']
-        self.assertTrue(self.default_vrf != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         # get default 1Q bridge OID
         attr = sai_thrift_get_switch_attribute(
             self.client, default_1q_bridge_id=True)
         self.default_1q_bridge = attr['default_1q_bridge_id']
-        self.assertTrue(self.default_1q_bridge != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         # get cpu port
         attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
         self.cpu_port_hdl = attr['cpu_port']
-        self.assertTrue(self.cpu_port_hdl != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         # get cpu port queue handles
         attr = sai_thrift_get_port_attribute(self.client,
@@ -225,8 +225,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 port=True,
                 index=True,
                 parent_scheduler_node=True)
-            self.assertTrue(queue == q_attr['index'])
-            self.assertTrue(self.cpu_port_hdl == q_attr['port'])
+            self.assertEqual(queue, q_attr['index'])
+            self.assertEqual(self.cpu_port_hdl, q_attr['port'])
 
     def tearDown(self):
         try:
@@ -561,7 +561,7 @@ Common ports configuration:
             port_id=self.port0,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.port0_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.bridge_port_list.append(self.port0_bp)
 
         self.port1_bp = sai_thrift_create_bridge_port(
@@ -570,7 +570,7 @@ Common ports configuration:
             port_id=self.port1,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.port1_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.bridge_port_list.append(self.port1_bp)
 
         self.port2_bp = sai_thrift_create_bridge_port(
@@ -579,7 +579,7 @@ Common ports configuration:
             port_id=self.port2,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.port2_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.bridge_port_list.append(self.port2_bp)
 
         self.port3_bp = sai_thrift_create_bridge_port(
@@ -588,7 +588,7 @@ Common ports configuration:
             port_id=self.port3,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.port3_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.bridge_port_list.append(self.port3_bp)
 
         self.port20_bp = sai_thrift_create_bridge_port(
@@ -597,7 +597,7 @@ Common ports configuration:
             port_id=self.port20,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.port20_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.bridge_port_list.append(self.port20_bp)
 
         self.port21_bp = sai_thrift_create_bridge_port(
@@ -606,12 +606,12 @@ Common ports configuration:
             port_id=self.port21,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.port21_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.bridge_port_list.append(self.port21_bp)
 
         # create LAGs
         self.lag1 = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.lag_list.append(self.lag1)
 
         self.lag1_bp = sai_thrift_create_bridge_port(
@@ -620,7 +620,7 @@ Common ports configuration:
             port_id=self.lag1,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.lag1_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.bridge_port_list.append(self.lag1_bp)
 
         self.lag1_member4 = sai_thrift_create_lag_member(
@@ -634,7 +634,7 @@ Common ports configuration:
         self.lag_member_list.append(self.lag1_member6)
 
         self.lag2 = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.lag_list.append(self.lag2)
 
         self.lag2_bp = sai_thrift_create_bridge_port(
@@ -643,7 +643,7 @@ Common ports configuration:
             port_id=self.lag2,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.lag2_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.bridge_port_list.append(self.lag2_bp)
 
         self.lag2_member7 = sai_thrift_create_lag_member(
@@ -658,7 +658,7 @@ Common ports configuration:
 
         # L3 lags
         self.lag3 = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.lag_list.append(self.lag3)
 
         self.lag3_member14 = sai_thrift_create_lag_member(
@@ -672,7 +672,7 @@ Common ports configuration:
         self.lag_member_list.append(self.lag3_member16)
 
         self.lag4 = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag4 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.lag_list.append(self.lag4)
 
         self.lag4_member17 = sai_thrift_create_lag_member(
@@ -686,7 +686,7 @@ Common ports configuration:
         self.lag_member_list.append(self.lag4_member19)
 
         self.lag5 = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag5 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.lag_list.append(self.lag5)
 
         self.lag5_bp = sai_thrift_create_bridge_port(
@@ -695,7 +695,7 @@ Common ports configuration:
             port_id=self.lag5,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.lag5_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.bridge_port_list.append(self.lag5_bp)
 
         self.lag5_member22 = sai_thrift_create_lag_member(
@@ -707,7 +707,7 @@ Common ports configuration:
 
         # create vlan 10 with port0, port1 and lag1
         self.vlan10 = sai_thrift_create_vlan(self.client, vlan_id=10)
-        self.assertTrue(self.vlan10 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.vlan_list.append(self.vlan10)
 
         self.vlan10_member0 = sai_thrift_create_vlan_member(
@@ -731,7 +731,7 @@ Common ports configuration:
 
         # create vlan 20 with port2, port3 and lag2
         self.vlan20 = sai_thrift_create_vlan(self.client, vlan_id=20)
-        self.assertTrue(self.vlan20 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.vlan_list.append(self.vlan20)
 
         self.vlan20_member0 = sai_thrift_create_vlan_member(
@@ -755,7 +755,7 @@ Common ports configuration:
 
         # create vlan 30 with port20, port21 and lag5
         self.vlan30 = sai_thrift_create_vlan(self.client, vlan_id=30)
-        self.assertTrue(self.vlan30 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.vlan_list.append(self.vlan30)
 
         self.vlan30_member0 = sai_thrift_create_vlan_member(
@@ -788,7 +788,7 @@ Common ports configuration:
             type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
             virtual_router_id=self.default_vrf,
             vlan_id=self.vlan30)
-        self.assertTrue(self.vlan30_rif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.vlan30_rif)
 
         self.lag3_rif = sai_thrift_create_router_interface(
@@ -796,7 +796,7 @@ Common ports configuration:
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.default_vrf,
             port_id=self.lag3)
-        self.assertTrue(self.lag3_rif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.lag3_rif)
 
         self.lag4_rif = sai_thrift_create_router_interface(
@@ -804,7 +804,7 @@ Common ports configuration:
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.default_vrf,
             port_id=self.lag4)
-        self.assertTrue(self.lag4_rif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.lag4_rif)
 
         self.port10_rif = sai_thrift_create_router_interface(
@@ -812,7 +812,7 @@ Common ports configuration:
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.default_vrf,
             port_id=self.port10)
-        self.assertTrue(self.port10_rif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.port10_rif)
 
         self.port11_rif = sai_thrift_create_router_interface(
@@ -820,7 +820,7 @@ Common ports configuration:
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.default_vrf,
             port_id=self.port11)
-        self.assertTrue(self.port11_rif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.port11_rif)
 
         self.port12_rif = sai_thrift_create_router_interface(
@@ -828,7 +828,7 @@ Common ports configuration:
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.default_vrf,
             port_id=self.port12)
-        self.assertTrue(self.port12_rif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.port12_rif)
 
         self.port13_rif = sai_thrift_create_router_interface(
@@ -836,7 +836,7 @@ Common ports configuration:
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.default_vrf,
             port_id=self.port13)
-        self.assertTrue(self.port13_rif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.port13_rif)
 
     def tearDown(self):
@@ -900,12 +900,12 @@ class MinimalPortVlanConfig(SaiHelperBase):
                 port_id=port, type=SAI_BRIDGE_PORT_TYPE_PORT,
                 admin_state=True)
 
-            self.assertTrue(bp != 0)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
             self.bridge_port_list.append(bp)
 
         # create vlan
         self.vlan = sai_thrift_create_vlan(self.client, vlan_id=self.vlan_id)
-        self.assertGreater(self.vlan, 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         # add ports to vlan
         for bridge_port in self.bridge_port_list:
@@ -914,7 +914,7 @@ class MinimalPortVlanConfig(SaiHelperBase):
                 bridge_port_id=bridge_port,
                 vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
-            self.assertTrue(vm != 0)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
             self.vlan_member_list.append(vm)
 
         # setup untagged ports
