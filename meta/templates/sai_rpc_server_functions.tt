@@ -1,0 +1,342 @@
+[%- unsupported_attrs = '(list)' # Should be supported now '(list|data|range|addr|string|time|capability|prefix)' #TODO: all of them should be supported -%]
+
+[%- unsupported_functions = '(bulk|send_hostif|recv_hostif|hostif_packet|mdio|register)' #TODO: all of them should be supported -%]
+
+[%- sai_utils_functions = '(query_attribute_enum_values_capability|sai_object_type_get_availability)' -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK call_sai_function -%]
+[% name = function.name; UNLESS methods.$name %]
+#ifdef SAI_METHOD_NOT_DEFINED
+[% END -%]
+[% api %]_api->[% name = function.name; GET methods.$name %](
+[%- FOREACH arg IN function.args %]
+    [%- IF arg.requires_address %]&[% END -%]
+    [%- IF arg.requires_casting %]([% arg.type.name %])[% END -%]
+    [%- IF arg.requires_parsing %]sai_[% arg.name -%]
+    [%- ELSIF arg.is_rpc_return %][% arg.name %]_out
+    [%- ELSE %][% arg.name %][% END -%]
+    [%- UNLESS loop.last %], [% END %][% END %]);
+[% UNLESS methods.$name %]
+#endif
+[% END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK print_arg_dbg_info -%]
+
+    // [% IF arg.id %][% arg.id %]: [% ELSE %]   [% END %][% arg.type.thrift_name %] [% arg.name %]:[% IF arg.is_list %] list,[% END %][% IF arg.is_attr %] attribute[% END %][% IF arg.is_attr_list %] (attr list)[% END %][% IF arg.is_attr %],[% END %][% IF arg.is_rpc_arg %] RPC arg,[% END %][% IF arg.is_count %] is count,[% END %][% IF arg.count %] has count ([% arg.count.name %]),[% END %][% IF arg.type.ptr %] pointer arg,[% END %][% IF arg.in %] 'in' arg,[% END %][% IF arg.out %] 'out' arg,[% END %]
+    //    cpp type: [% arg.type.cpp_name %], sai type: [% arg.type.name %][% UNLESS arg.is_adapter_arg %]; not exposed by python[% END %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK function_unsupported -%]
+
+    // This function is UNSUPPORTED
+   [%- PROCESS return_error indentation = 2 status_variable = '' %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK sai_utils_functions -%]
+
+    // This function should be manually implemented elsewhere
+    [%- indentation = 2 || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
+    [%- IF ret_type == 'int64_t' %]
+[% indent %]return 0ULL;
+    [%- ELSE %]
+[% indent %]return;
+    [%- END %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK declare_variables -%]
+    sai_status_t status = SAI_STATUS_SUCCESS;
+    [%- FOREACH arg IN function.declared_args -%]
+        [%- # If arg requires parsing then create a 'C' equivalent of Thrift variable -%]
+        [%- IF arg.requires_parsing %]
+    [% arg.type.name %] [% IF arg.type.name.match('void') %]*[% END %]sai_[% arg.name %];
+        [%- ELSIF arg.is_rpc_return AND arg.type.name == 'sai_object_id_t' %]
+    [% arg.type.name %] [% arg.name %]_out = SAI_NULL_OBJECT_ID;
+        [%- ELSIF arg.is_rpc_return %]
+    [% arg.type.name %] [% arg.name %]_out = 0ULL;
+        [%- END -%]
+    [%- END %]
+    sai_[% api %]_api_t *[% api %]_api;
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK sai_api_query -%]
+    status = sai_api_query(SAI_API_[% api.upper %], (void **)&[% api %]_api);
+    if (status != SAI_STATUS_SUCCESS) {
+      [%- PROCESS return_error indentation = 3 status_variable = 'status' %]
+    }
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK throw_exception -%]
+    [%- indentation = indentation || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
+[% indent %]sai_thrift_exception e;
+[% indent %]e.status = [% status_variable %];
+[% indent %]throw e;
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK return_error -%]
+    [%- indentation = indentation || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
+    [%- IF status_variable %]
+        [%- PROCESS throw_exception %]
+    [%- ELSIF NOT function.rpc_return.is_cpp_return OR function.rpc_return.type == 'void' %]
+[% indent %]return;
+    [%- ELSIF function.rpc_return.type.name == 'sai_object_id_t'%]
+[% indent %]return SAI_NULL_OBJECT_ID;
+    [%- ELSIF function.rpc_return.type.ptr %]
+[% indent %]return 0ULL;
+    [%- ELSE %]
+[% indent %]return SAI_STATUS_INVALID_PARAMETER;
+    [%- END %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK malloc %]
+    [% arg.type.subtype.name %] *sai_[% arg.name %] = NULL;
+    [%- # First declare count argument if not declared yet -%]
+    [%- fun = function.name; countarg = arg.count.name -%]
+    [%- UNLESS count.$fun.$countarg.declared; count.$fun.$countarg.declared = 1 %]
+    [% arg.count.type.name %] [% arg.count.name %] = [% arg.name %][% IF arg.is_attr_list %].attr_list[% END %].size();
+
+    [%- END %]
+    if ([% arg.count.name %] != 0) {
+      sai_[% arg.name %] = ([% arg.type.subtype.name %] *)malloc(sizeof([% arg.type.subtype.name %]) * [% arg.count.name %]);
+    }
+    [%- IF function.operation != 'create' AND arg.in %]
+    else {
+      [%- PROCESS return_error indentation = 3 status_variable='' %]
+    }
+
+    [%- END %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK parse_arg %]
+    [%- IF arg.requires_counter_parsing %]
+
+    std::vector<[% arg.type.subtype.thrift_name %]>::const_iterator it = [% arg.name %].begin();
+    for (uint32_t i = 0; i < [% arg.name %].size(); i++, it++) {
+      sai_[% arg.name %][i] = ([% arg.type.subtype.name %])*it;
+    }
+    [%- ELSIF arg.is_attr %]
+    sai_thrift_parse_[% function.object %]_attributes([% arg.name %][% IF arg.requires_vector %]_vec[% END %], [% IF arg.type.ptr AND NOT arg.is_list %]&[% END %]sai_[% arg.name %]);
+    [%- ELSE %]
+
+    sai_thrift_parse_[% arg.type.short_name %]([% arg.name %], &sai_[% arg.name %]);
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK deparse_arg %]
+    [%- IF arg.requires_counter_parsing %]
+    for ([% arg.count.type.name %] i = 0; i < ([% arg.count.type.name %])[% arg.count.name %]; i++) {
+      [% arg.name %]_out.push_back(([% arg.type.subtype.thrift_name %])sai_[% arg.name %][i]);
+    }
+    [%- ELSIF arg.is_attr %]
+    sai_thrift_deparse_[% function.object %]_attributes(sai_[% arg.name %], attr_count, [% arg.name %]_out.attr_list);
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK declare_vector %]
+    [%- # sai_attr_list already has a vector, just assign it -%]
+    [%- IF arg.is_attr_list %]
+
+    const std::vector<[% arg.type.subtype.thrift_name %]> &[% arg.name %]_vec = [% arg.name %].attr_list;
+
+    [%- # For 'set attr' we need a single element vector -%]
+    [%- ELSIF NOT arg.is_list %]
+
+    std::vector<[% arg.type.cpp_name %]> [% arg.name %]_vec;
+    [% arg.name %]_vec.push_back([% arg.thrift_name %]);
+
+    [%- END %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK preprocess_argument -%]
+    [%- IF dbg %]
+    //    Action for this arg:
+    [%- END -%]
+    [%- IF arg.requires_malloc %]
+
+        [%- PROCESS malloc -%]
+    [%- END -%]
+    [%- # For attributes we need a vector -%]
+    [%- IF arg.requires_vector %]
+        [%- PROCESS declare_vector -%]
+    [%- END -%]
+
+    [%- IF arg.requires_parsing AND arg.in %]
+        [%- PROCESS parse_arg -%]
+    [%- ELSIF dbg %]
+    //    [% arg.name %] (no action needed for this arg) type: [% arg.type.thrift_name %]
+
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK postprocess_argument -%]
+    [%- IF arg.requires_parsing AND arg.out -%]
+        [%- PROCESS deparse_arg -%]
+    [%- END -%]
+    [%- IF arg.requires_malloc %]
+    free(sai_[% arg.name %]);
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK return -%]
+    [%- IF NOT function.rpc_return.is_cpp_return -%]
+        [%- # Some types are being changed by Thrift to void, and moved into first parameter %]
+    return;
+    [%- ELSIF function.return.is_rpc_return -%]
+        [%- # If the value returned by RPC is the same that was returned by SAI method, -%]
+        [%- # then we already have it in 'status' variable %]
+    return status;
+    [%- ELSE -%]
+        [%- # Special case: switch_id is stored in the global variable -%]
+        [%- IF function.rpc_return.name == 'switch_id' %]
+    // switch_id is stored in the global variable
+    switch_id = [% function.rpc_return.name %]_out;
+        [%- END -%] 
+    return [% function.rpc_return.name %]_out;
+    [%- END %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK preprocess_arguments -%]
+    [%- IF dbg %]
+    // Return type (SAI):[% arg=function.return; PROCESS print_arg_dbg_info %]
+    // Return type (RPC):[% arg=function.rpc_return; PROCESS print_arg_dbg_info %]
+
+    [%- END -%]
+    [%- FOREACH arg IN function.preprocessed_args -%]
+        [%- PROCESS preprocess_argument -%]
+    [%- END %]
+
+    [%- IF dbg %]
+
+    //    no more args, call the function:
+
+    [%- END %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK postprocess_arguments -%]
+    [%- FOREACH arg IN function.preprocessed_args -%]
+        [%- IF dbg %]
+    // arg: [% arg.name %]
+        [%- END -%]
+        [%- PROCESS postprocess_argument -%]
+    [%- END %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- # This BLOCK is being processed by autogenerated template, based on Thrift skeleton -%]
+[%- BLOCK sai_rpc_function_body -%]
+    [%- IF function_name.match(unsupported_functions) %]
+        [%- PROCESS function_unsupported %]
+
+    [%- ELSIF function_name.match(sai_utils_functions) %]
+        [%- PROCESS sai_utils_functions %]
+
+    [%- ELSE -%]
+        [%- api = function.api -%]
+        [%- IF dbg -%]
+    // Function operation: [% function.operation %]
+
+        [%- END -%]
+
+        [%- # Declare variables and preprocess SAI arguments -%]
+        [%- PROCESS declare_variables %]
+
+        [%- PROCESS sai_api_query -%]
+
+        [%- PROCESS preprocess_arguments %]
+
+        [%- # Now just call the function -%]
+    [% name = function.name; UNLESS methods.$name %]//[% END %]status = [% PROCESS call_sai_function -%]
+
+        [%- IF function.operation != 'stats' -%]
+    if (status != SAI_STATUS_SUCCESS) {
+      [%- PROCESS throw_exception indentation = 3 status_variable = 'status' %]
+    }
+        [%- ELSE %]
+    // sai_adapter always takes all [% api %] stats. Since some of them may be
+    // not supported, SAI_STATUS_INVALID_PARAMETER should not be raised.
+    if (status != SAI_STATUS_SUCCESS && status != SAI_STATUS_INVALID_PARAMETER) {
+      [%- PROCESS throw_exception indentation = 3 status_variable = 'status' %]
+    }
+        [%- END %]
+
+        [%- # Postprocess SAI arguments and return -%]
+
+        [%- PROCESS postprocess_arguments -%]
+
+        [%- PROCESS return %]
+
+    [%- END -%]
+[% END -%]
+
+[%- ######################################################################## -%]
