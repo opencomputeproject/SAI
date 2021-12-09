@@ -15,12 +15,7 @@
 Thrift SAI interface Mirror tests
 """
 from sai_thrift.sai_headers import *
-
 from ptf.mask import Mask
-from ptf.packet import *
-from ptf.testutils import *
-from ptf.thriftutils import *
-
 from sai_base_test import *
 
 
@@ -70,63 +65,63 @@ class MirrorConfigData(SaiHelper):
             bridge_id=self.default_1q_bridge,
             port_id=self.port24,
             type=port_type)
-        self.assertTrue(self.port24_bp != 0)
+        self.assertNotEqual(self.port24_bp, 0)
         self.bridge_ports.append(self.port24_bp)
         self.port25_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.port25,
             type=port_type)
-        self.assertTrue(self.port25_bp != 0)
+        self.assertNotEqual(self.port25_bp, 0)
         self.bridge_ports.append(self.port25_bp)
         self.port26_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.port26,
             type=port_type)
-        self.assertTrue(self.port26_bp != 0)
+        self.assertNotEqual(self.port26_bp, 0)
         self.bridge_ports.append(self.port26_bp)
         self.port27_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.port27,
             type=port_type)
-        self.assertTrue(self.port27_bp != 0)
+        self.assertNotEqual(self.port27_bp, 0)
         self.bridge_ports.append(self.port27_bp)
         self.port28_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.port28,
             type=port_type)
-        self.assertTrue(self.port28_bp != 0)
+        self.assertNotEqual(self.port28_bp, 0)
         self.bridge_ports.append(self.port28_bp)
         self.port29_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.port29,
             type=port_type)
-        self.assertTrue(self.port29_bp != 0)
+        self.assertNotEqual(self.port29_bp, 0)
         self.bridge_ports.append(self.port29_bp)
         self.port30_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.port30,
             type=port_type)
-        self.assertTrue(self.port30_bp != 0)
+        self.assertNotEqual(self.port30_bp, 0)
         self.bridge_ports.append(self.port30_bp)
         self.port31_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.port31,
             type=port_type)
-        self.assertTrue(self.port31_bp != 0)
+        self.assertNotEqual(self.port31_bp, 0)
         self.bridge_ports.append(self.port31_bp)
 
         # VLAN configuration
         self.vlan40 = sai_thrift_create_vlan(self.client, vlan_id=40)
-        self.assertTrue(self.vlan40 != 0)
+        self.assertNotEqual(self.vlan40, 0)
         self.vlan50 = sai_thrift_create_vlan(self.client, vlan_id=50)
-        self.assertTrue(self.vlan50 != 0)
+        self.assertNotEqual(self.vlan50, 0)
         # VLAN members
         self.vlan_members = []
         self.vlan_member41 = sai_thrift_create_vlan_member(
@@ -134,56 +129,56 @@ class MirrorConfigData(SaiHelper):
             vlan_id=self.vlan40,
             bridge_port_id=self.port24_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member41 != 0)
+        self.assertNotEqual(self.vlan_member41, 0)
         self.vlan_members.append(self.vlan_member41)
         self.vlan_member42 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan40,
             bridge_port_id=self.port25_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member42 != 0)
+        self.assertNotEqual(self.vlan_member42, 0)
         self.vlan_members.append(self.vlan_member42)
         self.vlan_member43 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan40,
             bridge_port_id=self.port26_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member43 != 0)
+        self.assertNotEqual(self.vlan_member43, 0)
         self.vlan_members.append(self.vlan_member43)
         self.vlan_member44 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan40,
             bridge_port_id=self.port27_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member44 != 0)
+        self.assertNotEqual(self.vlan_member44, 0)
         self.vlan_members.append(self.vlan_member44)
         self.vlan_member51 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan50,
             bridge_port_id=self.port28_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member51 != 0)
+        self.assertNotEqual(self.vlan_member51, 0)
         self.vlan_members.append(self.vlan_member51)
         self.vlan_member52 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan50,
             bridge_port_id=self.port29_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member52 != 0)
+        self.assertNotEqual(self.vlan_member52, 0)
         self.vlan_members.append(self.vlan_member52)
         self.vlan_member53 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan50,
             bridge_port_id=self.port30_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member53 != 0)
+        self.assertNotEqual(self.vlan_member53, 0)
         self.vlan_members.append(self.vlan_member53)
         self.vlan_member54 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan50,
             bridge_port_id=self.port31_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member54 != 0)
+        self.assertNotEqual(self.vlan_member54, 0)
         self.vlan_members.append(self.vlan_member54)
 
         # FDB configuration
@@ -348,74 +343,74 @@ class MirrorConfigData(SaiHelper):
         # LAG configuration
         self.lags = []
         self.lag10 = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag10 != 0)
+        self.assertNotEqual(self.lag10, 0)
         self.lags.append(self.lag10)
         self.lag10_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.lag10,
             type=SAI_BRIDGE_PORT_TYPE_PORT)
-        self.assertTrue(self.lag10_bp != 0)
+        self.assertNotEqual(self.lag10_bp, 0)
         self.bridge_ports.append(self.lag10_bp)
         self.vlan_member041 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan40,
             bridge_port_id=self.lag10_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member041 != 0)
+        self.assertNotEqual(self.vlan_member041, 0)
         self.vlan_members.append(self.vlan_member041)
         self.lag10_upd = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag10_upd != 0)
+        self.assertNotEqual(self.lag10_upd, 0)
         self.lags.append(self.lag10_upd)
         self.lag10_bp_upd = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.lag10_upd,
             type=SAI_BRIDGE_PORT_TYPE_PORT)
-        self.assertTrue(self.lag10_bp_upd != 0)
+        self.assertNotEqual(self.lag10_bp_upd, 0)
         self.bridge_ports.append(self.lag10_bp_upd)
         self.vlan_member042 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan40,
             bridge_port_id=self.lag10_bp_upd,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member042 != 0)
+        self.assertNotEqual(self.vlan_member042, 0)
         self.vlan_members.append(self.vlan_member042)
 
         self.lag11 = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag11 != 0)
+        self.assertNotEqual(self.lag11, 0)
         self.lags.append(self.lag11)
         self.lag11_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.lag11,
             type=SAI_BRIDGE_PORT_TYPE_PORT)
-        self.assertTrue(self.lag11_bp != 0)
+        self.assertNotEqual(self.lag11_bp, 0)
         self.bridge_ports.append(self.lag11_bp)
         self.vlan_member051 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan50,
             bridge_port_id=self.lag11_bp,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member051 != 0)
+        self.assertNotEqual(self.vlan_member051, 0)
         self.vlan_members.append(self.vlan_member051)
 
         self.lag11_upd = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag11_upd != 0)
+        self.assertNotEqual(self.lag11_upd, 0)
         self.lags.append(self.lag11_upd)
         self.lag11_bp_upd = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.lag11_upd,
             type=SAI_BRIDGE_PORT_TYPE_PORT)
-        self.assertTrue(self.lag11_bp_upd != 0)
+        self.assertNotEqual(self.lag11_bp_upd, 0)
         self.bridge_ports.append(self.lag11_bp_upd)
         self.vlan_member052 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan50,
             bridge_port_id=self.lag11_bp_upd,
             vlan_tagging_mode=vlan_tag)
-        self.assertTrue(self.vlan_member052 != 0)
+        self.assertNotEqual(self.vlan_member052, 0)
         self.vlan_members.append(self.vlan_member052)
 
         # Policer configuration
@@ -619,11 +614,11 @@ class MirrorConfigData(SaiHelper):
             lag_member24 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10,
                                                         port_id=self.port24)
-            self.assertTrue(lag_member24 != 0)
+            self.assertNotEqual(lag_member24, 0)
             lag_member27 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10,
                                                         port_id=self.port27)
-            self.assertTrue(lag_member27 != 0)
+            self.assertNotEqual(lag_member27, 0)
 
             print("\t\tSending packet PORT25 -> PORT26")
             send_packet(self, self.dev_port25, pkt)
@@ -674,11 +669,11 @@ class MirrorConfigData(SaiHelper):
             lag_member24 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10_upd,
                                                         port_id=self.port24)
-            self.assertTrue(lag_member24 != 0)
+            self.assertNotEqual(lag_member24, 0)
             lag_member27 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10_upd,
                                                         port_id=self.port27)
-            self.assertTrue(lag_member27 != 0)
+            self.assertNotEqual(lag_member27, 0)
             print("\t\t\tSending packet PORT25 -> PORT26")
             send_packet(self, self.dev_port25, pkt)
             verify_each_packet_on_multiple_port_lists(
@@ -689,7 +684,8 @@ class MirrorConfigData(SaiHelper):
             print("\t\tTest variant 5c - monitor non-empty LAG:"
                   " one lag member")
             status = sai_thrift_remove_lag_member(self.client, lag_member24)
-            self.assertTrue(lag_member27 != 0)
+            self.assertEqual(status, self.status_success)
+            self.assertNotEqual(lag_member27, 0)
 
             print("\t\t\tSending packet PORT25 -> PORT26")
             send_packet(self, self.dev_port25, pkt)
@@ -737,11 +733,11 @@ class MirrorConfigData(SaiHelper):
             lag_member24 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10,
                                                         port_id=self.port24)
-            self.assertTrue(lag_member24 != 0)
+            self.assertNotEqual(lag_member24, 0)
             lag_member27 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10,
                                                         port_id=self.port27)
-            self.assertTrue(lag_member27 != 0)
+            self.assertNotEqual(lag_member27, 0)
             print("\t\t\tSending packet PORT25 -> PORT26")
             send_packet(self, self.dev_port25, pkt)
             verify_each_packet_on_multiple_port_lists(
@@ -825,11 +821,11 @@ class MirrorConfigData(SaiHelper):
             lag_member24 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10,
                                                         port_id=self.port24)
-            self.assertTrue(lag_member24 != 0)
+            self.assertNotEqual(lag_member24, 0)
             lag_member27 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10,
                                                         port_id=self.port27)
-            self.assertTrue(lag_member27 != 0)
+            self.assertNotEqual(lag_member27, 0)
             print("\t\tSending packet PORT26 -> PORT25")
 
             send_packet(self, self.dev_port26, pkt)
@@ -878,11 +874,11 @@ class MirrorConfigData(SaiHelper):
             lag_member24 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10_upd,
                                                         port_id=self.port24)
-            self.assertTrue(lag_member24 != 0)
+            self.assertNotEqual(lag_member24, 0)
             lag_member27 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10_upd,
                                                         port_id=self.port27)
-            self.assertTrue(lag_member27 != 0)
+            self.assertNotEqual(lag_member27, 0)
             print("\t\t\tSending packet PORT26 -> PORT25")
             send_packet(self, self.dev_port26, pkt)
             verify_each_packet_on_multiple_port_lists(
@@ -942,11 +938,11 @@ class MirrorConfigData(SaiHelper):
             lag_member24 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10,
                                                         port_id=self.port24)
-            self.assertTrue(lag_member24 != 0)
+            self.assertNotEqual(lag_member24, 0)
             lag_member27 = sai_thrift_create_lag_member(self.client,
                                                         lag_id=self.lag10,
                                                         port_id=self.port27)
-            self.assertTrue(lag_member27 != 0)
+            self.assertNotEqual(lag_member27, 0)
             print("\t\t\tSending packet PORT26 -> PORT25")
             send_packet(self, self.dev_port26, pkt)
             verify_each_packet_on_multiple_port_lists(
@@ -1252,11 +1248,11 @@ class MirrorConfigData(SaiHelper):
         lag_member24 = sai_thrift_create_lag_member(self.client,
                                                     lag_id=self.lag10,
                                                     port_id=self.port24)
-        self.assertTrue(lag_member24 != 0)
+        self.assertNotEqual(lag_member24, 0)
         lag_member27 = sai_thrift_create_lag_member(self.client,
                                                     lag_id=self.lag10,
                                                     port_id=self.port27)
-        self.assertTrue(lag_member27 != 0)
+        self.assertNotEqual(lag_member27, 0)
 
         # ACL configuration
         action_type = [SAI_ACL_ACTION_TYPE_MIRROR_INGRESS]
@@ -1315,7 +1311,7 @@ class MirrorConfigData(SaiHelper):
 
         finally:
             sai_thrift_remove_acl_entry(self.client, acl_entry_id)
-            obj_list = sai_thrift_object_list_t(count=0, idlist=[span_id])
+            sai_thrift_object_list_t(count=0, idlist=[span_id])
             sai_thrift_set_port_attribute(self.client,
                                           self.port25,
                                           ingress_acl=0)
@@ -1339,11 +1335,11 @@ class MirrorConfigData(SaiHelper):
         lag_member24 = sai_thrift_create_lag_member(self.client,
                                                     lag_id=self.lag10,
                                                     port_id=self.port24)
-        self.assertTrue(lag_member24 != 0)
+        self.assertNotEqual(lag_member24, 0)
         lag_member27 = sai_thrift_create_lag_member(self.client,
                                                     lag_id=self.lag10,
                                                     port_id=self.port27)
-        self.assertTrue(lag_member27 != 0)
+        self.assertNotEqual(lag_member27, 0)
 
         # ACL configuration
         action_type = [SAI_ACL_ACTION_TYPE_MIRROR_EGRESS]
@@ -1401,7 +1397,7 @@ class MirrorConfigData(SaiHelper):
             print("\tTest completed successfully - packet received")
         finally:
             sai_thrift_remove_acl_entry(self.client, acl_entry_id)
-            obj_list = sai_thrift_object_list_t(count=0, idlist=[span_id])
+            sai_thrift_object_list_t(count=0, idlist=[span_id])
             sai_thrift_set_port_attribute(self.client,
                                           self.port25,
                                           egress_acl=0)
@@ -1516,7 +1512,7 @@ class MirrorConfigData(SaiHelper):
         finally:
             sai_thrift_remove_acl_entry(self.client, acl_entry_id_ingress)
             sai_thrift_remove_acl_entry(self.client, acl_entry_id_egress)
-            obj_list = sai_thrift_object_list_t(count=0, idlist=[span_id])
+            sai_thrift_object_list_t(count=0, idlist=[span_id])
             sai_thrift_set_port_attribute(self.client,
                                           self.port25,
                                           ingress_acl=0,
@@ -1596,8 +1592,7 @@ class MirrorConfigData(SaiHelper):
 
         finally:
             sai_thrift_remove_acl_entry(self.client, acl_entry_id_ingress)
-            obj_list = sai_thrift_object_list_t(count=0,
-                                                idlist=[span_id_ingress])
+            sai_thrift_object_list_t(count=0, idlist=[span_id_ingress])
             sai_thrift_set_port_attribute(self.client,
                                           self.port25,
                                           ingress_acl=0)
@@ -1666,8 +1661,7 @@ class MirrorConfigData(SaiHelper):
 
         finally:
             sai_thrift_remove_acl_entry(self.client, acl_entry_id_egress)
-            obj_list = sai_thrift_object_list_t(count=0,
-                                                idlist=[span_id_egress])
+            sai_thrift_object_list_t(count=0, idlist=[span_id_egress])
             sai_thrift_set_port_attribute(self.client,
                                           self.port25,
                                           egress_acl=0)
@@ -1796,8 +1790,7 @@ class MirrorConfigData(SaiHelper):
 
         finally:
             sai_thrift_remove_acl_entry(self.client, acl_entry_id_egress)
-            obj_list = sai_thrift_object_list_t(count=0,
-                                                idlist=[erspan_id])
+            sai_thrift_object_list_t(count=0, idlist=[erspan_id])
             sai_thrift_set_port_attribute(self.client,
                                           self.port12,
                                           egress_acl=0)
@@ -2160,7 +2153,6 @@ class MirrorConfigData(SaiHelper):
             sai_thrift_set_port_attribute(self.client,
                                           self.port12,
                                           egress_mirror_session=obj_list)
-            queue_list = sai_thrift_object_list_t(count=0)
             sai_thrift_remove_mirror_session(self.client, erspan_id)
 
     def erspanVlanPortMirroringTest(self):
@@ -2338,8 +2330,8 @@ class MirrorConfigData(SaiHelper):
             print("\tTOTAL_RECEIVE_PACKET_COUNTER ={}".format(rcv_pkts))
 
             print("\tChecking if received packet number equals sent one")
-            self.assertTrue(rec_pkt == pkt_cnt)
-            self.assertTrue(rcv_pkts == pkt_cnt)
+            self.assertEqual(rec_pkt, pkt_cnt)
+            self.assertEqual(rcv_pkts, pkt_cnt)
             print("\tReceived packet number is correct")
 
             print("\tChecking policer statistics...")
@@ -2349,10 +2341,12 @@ class MirrorConfigData(SaiHelper):
             # Only green packets are mirrored that is why total mirrored
             # packets number should be equal to green packets number
             print("\tGREEN_PACKETS = {}".format(g_pkts1))
-            self.assertTrue(g_pkts1 == g_pkts0 + mirrored_pkts)
+            g_pkts1_exp = g_pkts0 + mirrored_pkts
+            self.assertEqual(g_pkts1, g_pkts1_exp)
             # The number of red packets equals received without mirrored ones.
             print("\tRED_PACKETS = {}".format(r_pkts1))
-            self.assertTrue(r_pkts1 == r_pkts0 + rcv_pkts - mirrored_pkts)
+            r_pkts1_exp = r_pkts0 + rcv_pkts - mirrored_pkts
+            self.assertEqual(r_pkts1, r_pkt1_exp)
             assert(g_pkts1 + r_pkts1 == pkt_cnt), ("The policer packet stats"
                                                    " counter does not match")
 
@@ -2420,8 +2414,8 @@ class MirrorConfigData(SaiHelper):
             print("\tTOTAL_RECEIVE_PACKET_COUNTER ={}".format(rcv_pkts))
 
             print("\tChecking if received packet number equals sent one")
-            self.assertTrue(rec_pkt == pkt_cnt)
-            self.assertTrue(rcv_pkts == pkt_cnt)
+            self.assertEqual(rec_pkt == pkt_cnt)
+            self.assertEqual(rcv_pkts == pkt_cnt)
             print("\tReceived packet number is correct")
 
             print("\tChecking policer statistics...")
@@ -2431,10 +2425,12 @@ class MirrorConfigData(SaiHelper):
             # Only green packets are mirrored that is why total mirrored
             # packets number should be equal to green packets number
             print("\tGREEN_PACKETS = {}".format(g_pkts1))
-            self.assertTrue(g_pkts1 == g_pkts0 + mirrored_pkts)
+            g_pkts1_exp = g_pkts0 + mirrored_pkts
+            self.assertEqual(g_pkts1, g_pkts1_exp)
             # The number of red packets equals received without mirrored ones.
             print("\tRED_PACKETS = {}".format(r_pkts1))
-            self.assertTrue(r_pkts1 == r_pkts0 + rcv_pkts - mirrored_pkts)
+            r_pkts1_exp = r_pkts0 + rcv_pkts - mirrored_pkts
+            self.assertEqual(r_pkts1, r_pkts1_exp)
             assert(g_pkts1 + r_pkts1 == pkt_cnt), ("The policer packet stats"
                                                    " counter does not match")
 
@@ -2558,8 +2554,8 @@ class MirrorConfigData(SaiHelper):
             print("\tTOTAL_RECEIVE_PACKET_COUNTER ={}".format(rcv_pkts))
 
             print("\tChecking if received packet number equals sent one")
-            self.assertTrue(rec_pkt == pkt_cnt)
-            self.assertTrue(rcv_pkts == pkt_cnt)
+            self.assertEqual(rec_pkt, pkt_cnt)
+            self.assertEqual(rcv_pkts, pkt_cnt)
             print("\tReceived packet number is correct")
 
             print("\tChecking policer statistics...")
@@ -2569,10 +2565,12 @@ class MirrorConfigData(SaiHelper):
             # Only green packets are mirrored that is why total mirrored
             # packets number should be equal to green packets number
             print("\tGREEN_PACKETS = {}".format(g_pkts1))
-            self.assertTrue(g_pkts1 == g_pkts0 + mirrored_pkts)
+            g_pkts1_exp = g_pkts0 + mirrored_pkts
+            self.assertEqual(g_pkts1, g_pkts1_exp)
             # The number of red packets equals received without mirrored ones.
             print("\tRED_PACKETS = {}".format(r_pkts1))
-            self.assertTrue(r_pkts1 == r_pkts0 + rcv_pkts - mirrored_pkts)
+            r_pkts1_exp = r_pkts0 + rcv_pkts - mirrored_pkts
+            self.assertEqual(r_pkts1, r_pkts1_exp)
             assert(g_pkts1 + r_pkts1 == pkt_cnt), ("The policer packet stats"
                                                    " counter does not match")
 
@@ -2690,8 +2688,8 @@ class MirrorConfigData(SaiHelper):
             print("\tTOTAL_RECEIVE_PACKET_COUNTER ={}".format(rcv_pkts))
 
             print("\tChecking if received packet number equals sent one")
-            self.assertTrue(rec_pkt == pkt_cnt)
-            self.assertTrue(rcv_pkts == pkt_cnt)
+            self.assertEqual(rec_pkt, pkt_cnt)
+            self.assertEqual(rcv_pkts, pkt_cnt)
             print("\tReceived packet number is correct")
 
             print("\tChecking policer statistics...")
@@ -2701,10 +2699,12 @@ class MirrorConfigData(SaiHelper):
             # Only green packets are mirrored that is why total mirrored
             # packets number should be equal to green packets number
             print("\tGREEN_PACKETS = {}".format(g_pkts1))
-            self.assertTrue(g_pkts1 == g_pkts0 + mirrored_pkts)
+            g_pkts1_exp = g_pkts0 + mirrored_pkts
+            self.assertEqual(g_pkts1, g_pkts1_exp)
             # The number of red packets equals received without mirrored ones.
             print("\tRED_PACKETS = {}".format(r_pkts1))
-            self.assertTrue(r_pkts1 == r_pkts0 + rcv_pkts - mirrored_pkts)
+            r_pkts1_exp = r_pkts0 + rcv_pkts - mirrored_pkts
+            self.assertEqual(r_pkts1, r_pkts1_exp)
             assert(g_pkts1 + r_pkts1 == pkt_cnt), ("The policer packet stats"
                                                    " counter does not match")
 
