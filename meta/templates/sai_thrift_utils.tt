@@ -1,0 +1,23 @@
+[%- ######################################################################## -%]
+
+[%- BLOCK define_objects_api -%]
+    // sai objects API
+    list<i32> sai_thrift_query_attribute_enum_values_capability(1: sai_thrift_object_type_t object_type, 2: sai_thrift_attr_id_t attr_id, 3: i32 caps_count);
+    i64 sai_thrift_object_type_get_availability(1 : sai_thrift_object_type_t object_type, 2: sai_thrift_attr_id_t attr_id, 3: i32 attr_type);
+
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_utils_functions -%]
+
+    // SAI utils
+
+
+    [%- PROCESS define_objects_api -%]
+
+[%- END -%]
+
+[%- ######################################################################## -%]
