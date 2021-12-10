@@ -347,17 +347,17 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_UDP_DST_PORT,
 
     /**
-      * @brief Attach a counter
-      *
-      * When it is empty, then packet hits won't be counted
-      *
-      * @type sai_object_id_t
-      * @flags CREATE_AND_SET
-      * @objects SAI_OBJECT_TYPE_COUNTER
-      * @allownull true
-      * @default SAI_NULL_OBJECT_ID
-      */
-     SAI_MIRROR_SESSION_ATTR_COUNTER_ID,
+     * @brief Attach a counter
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_MIRROR_SESSION_ATTR_COUNTER_ID,
 
     /**
      * @brief End of attributes
