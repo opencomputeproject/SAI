@@ -17,9 +17,6 @@ Thrift SAI interface Bridge Port tests
 
 from sai_thrift.sai_headers import *
 
-from ptf.testutils import *
-from ptf.packet import *
-from ptf.thriftutils import *
 from sai_base_test import *
 
 
@@ -38,7 +35,7 @@ class BridgePortAttributeTest(SaiHelper):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True,
             fdb_learning_mode=SAI_BRIDGE_PORT_FDB_LEARNING_MODE_HW)
-        self.assertTrue(self.port24_bp != 0)
+        self.assertNotEqual(self.port24_bp, 0)
 
     def runTest(self):
         # bridge_id
@@ -138,24 +135,24 @@ class BridgePortCreationTest(SaiHelper):
                 port_id=self.port24,
                 type=SAI_BRIDGE_PORT_TYPE_PORT,
                 admin_state=True)
-            self.assertTrue(port24_bp != 0)
+            self.assertNotEqual(port24_bp, 0)
             print("\tOK")
 
             print("Verifying bp type Port creation for LAG logical port")
             test_lag = sai_thrift_create_lag(self.client)
-            self.assertTrue(test_lag != 0)
+            self.assertNotEqual(test_lag, 0)
             test_lag_member1 = sai_thrift_create_lag_member(
                 self.client, lag_id=test_lag, port_id=self.port25)
-            self.assertTrue(test_lag_member1 != 0)
+            self.assertNotEqual(test_lag_member1, 0)
             test_lag_member2 = sai_thrift_create_lag_member(
                 self.client, lag_id=test_lag, port_id=self.port26)
-            self.assertTrue(test_lag_member2 != 0)
+            self.assertNotEqual(test_lag_member2, 0)
 
             lag_bp = sai_thrift_create_bridge_port(
                 port_id=test_lag,
                 type=SAI_BRIDGE_PORT_TYPE_PORT,
                 admin_state=True)
-            self.assertTrue(lag_bp != 0)
+            self.assertNotEqual(lag_bp, 0)
             print("\tOK")
 
         finally:
@@ -333,13 +330,13 @@ class BridgePortStateTest(SaiHelper):
                 port_id=new_bp_port,
                 type=SAI_BRIDGE_PORT_TYPE_PORT,
                 admin_state=False)
-            self.assertTrue(new_bp != 0)
+            self.assertNotEqual(new_bp, 0)
             new_vlan_member = sai_thrift_create_vlan_member(
                 self.client,
                 vlan_id=self.vlan10,
                 bridge_port_id=new_bp,
                 vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
-            self.assertTrue(new_vlan_member != 0)
+            self.assertNotEqual(new_vlan_member, 0)
             sai_thrift_set_port_attribute(
                 self.client, new_bp_port, port_vlan_id=self.vlan_id)
 
