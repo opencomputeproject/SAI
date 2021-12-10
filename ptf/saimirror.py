@@ -1183,7 +1183,7 @@ class MirrorConfigData(SaiHelper):
                                              self.port24,
                                              qos_queue_list=queue_list)
 
-        for idx, value in enumerate(attr["qos_queue_list"].idlist):
+        for _, value in enumerate(attr["qos_queue_list"].idlist):
             q_attr = sai_thrift_get_queue_attribute(self.client, value,
                                                     index=True)
             if q_attr["index"] == traffic_class:
@@ -2062,7 +2062,7 @@ class MirrorConfigData(SaiHelper):
                                              self.port28,
                                              qos_queue_list=queue_list)
 
-        for idx, value in enumerate(attr["qos_queue_list"].idlist):
+        for _, value in enumerate(attr["qos_queue_list"].idlist):
             q_attr = sai_thrift_get_queue_attribute(self.client, value,
                                                     index=True)
             if q_attr["index"] == traffic_class:
@@ -2346,7 +2346,7 @@ class MirrorConfigData(SaiHelper):
             # The number of red packets equals received without mirrored ones.
             print("\tRED_PACKETS = {}".format(r_pkts1))
             r_pkts1_exp = r_pkts0 + rcv_pkts - mirrored_pkts
-            self.assertEqual(r_pkts1, r_pkt1_exp)
+            self.assertEqual(r_pkts1, r_pkts1_exp)
             assert(g_pkts1 + r_pkts1 == pkt_cnt), ("The policer packet stats"
                                                    " counter does not match")
 
@@ -2414,8 +2414,8 @@ class MirrorConfigData(SaiHelper):
             print("\tTOTAL_RECEIVE_PACKET_COUNTER ={}".format(rcv_pkts))
 
             print("\tChecking if received packet number equals sent one")
-            self.assertEqual(rec_pkt == pkt_cnt)
-            self.assertEqual(rcv_pkts == pkt_cnt)
+            self.assertEqual(rec_pkt, pkt_cnt)
+            self.assertEqual(rcv_pkts, pkt_cnt)
             print("\tReceived packet number is correct")
 
             print("\tChecking policer statistics...")
