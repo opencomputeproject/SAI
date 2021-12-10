@@ -36,7 +36,7 @@ class VrfForwardingTest(SaiHelper):
         self.nhop_list = []
 
         self.test_vrf = sai_thrift_create_virtual_router(self.client)
-        self.assertTrue(self.test_vrf != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         # create and configure ingress RIF
         self.iport = self.port24
@@ -46,7 +46,7 @@ class VrfForwardingTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.test_vrf,
             port_id=self.iport)
-        self.assertTrue(self.test_irif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.iport_nbor_mac = "00:11:11:11:11:11"
         iport_ipv4 = "10.10.10.1"
@@ -99,7 +99,7 @@ class VrfForwardingTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.test_vrf,
             port_id=self.eport)
-        self.assertTrue(self.test_erif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.eport_nbor_mac = "00:22:22:22:22:22"
         eport_ipv4 = "20.20.20.2"
@@ -202,12 +202,12 @@ class VrfForwardingTest(SaiHelper):
 
         try:
             # IPv4 disabled, IPv6 disabled
-            status = sai_thrift_set_virtual_router_attribute(
+            sai_thrift_set_virtual_router_attribute(
                 self.client, self.test_vrf, admin_v4_state=False)
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
-            status = sai_thrift_set_virtual_router_attribute(
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+            sai_thrift_set_virtual_router_attribute(
                 self.client, self.test_vrf, admin_v6_state=False)
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
             print("IPv4 disabled, IPv6 disabled")
             send_packet(self, self.iport_dev, pkt)
@@ -218,9 +218,9 @@ class VrfForwardingTest(SaiHelper):
             print("\tIPv6 dropped")
 
             # IPv4 enabled, IPv6 disabled
-            status = sai_thrift_set_virtual_router_attribute(
+            sai_thrift_set_virtual_router_attribute(
                 self.client, self.test_vrf, admin_v4_state=True)
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
             print("IPv4 enabled, IPv6 disabled")
             send_packet(self, self.iport_dev, pkt)
@@ -231,12 +231,12 @@ class VrfForwardingTest(SaiHelper):
             print("\tIPv6 dropped")
 
             # IPv4 disabled, IPv6 enabled
-            status = sai_thrift_set_virtual_router_attribute(
+            sai_thrift_set_virtual_router_attribute(
                 self.client, self.test_vrf, admin_v4_state=False)
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
-            status = sai_thrift_set_virtual_router_attribute(
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+            sai_thrift_set_virtual_router_attribute(
                 self.client, self.test_vrf, admin_v6_state=True)
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
             print("IPv4 disabled, IPv6 enabled")
             send_packet(self, self.iport_dev, pkt)
@@ -247,9 +247,9 @@ class VrfForwardingTest(SaiHelper):
             print("\tIPv6 forwarded")
 
             # IPv4 enabled, IPv6 enabled
-            status = sai_thrift_set_virtual_router_attribute(
+            sai_thrift_set_virtual_router_attribute(
                 self.client, self.test_vrf, admin_v4_state=True)
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
             print("IPv4 enabled, IPv6 enabled")
             send_packet(self, self.iport_dev, pkt)
@@ -789,7 +789,7 @@ class VrfIsolationTest(SaiHelper):
         self.rif_list = []
 
         self.test_vrf = sai_thrift_create_virtual_router(self.client)
-        self.assertTrue(self.test_vrf != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.iport_ipv4 = "10.10.10.1"
         self.iport_ipv6 = "2001:0db8::1:1"
@@ -809,7 +809,7 @@ class VrfIsolationTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.default_vrf,
             port_id=self.def_iport)
-        self.assertTrue(self.def_irif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.def_irif)
 
         self.def_eport = self.port25
@@ -819,7 +819,7 @@ class VrfIsolationTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.default_vrf,
             port_id=self.def_eport)
-        self.assertTrue(self.def_erif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.def_erif)
 
         # ports in test VRF (26 and 27)
@@ -830,7 +830,7 @@ class VrfIsolationTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.test_vrf,
             port_id=self.test_iport)
-        self.assertTrue(self.test_irif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.test_irif)
 
         self.test_eport = self.port27
@@ -840,7 +840,7 @@ class VrfIsolationTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.test_vrf,
             port_id=self.test_eport)
-        self.assertTrue(self.test_erif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.test_erif)
 
     def runTest(self):
@@ -1185,14 +1185,14 @@ class VrfMultipleRifCreationTest(SaiHelper):
 
         # VRF 1 configuration
         self.vrf1 = sai_thrift_create_virtual_router(self.client)
-        self.assertTrue(self.vrf1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.port_rif1 = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.vrf1,
             port_id=self.port24)
-        self.assertTrue(self.port_rif1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.port_rif1)
 
         self.lag_rif1 = sai_thrift_create_router_interface(
@@ -1200,7 +1200,7 @@ class VrfMultipleRifCreationTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.vrf1,
             port_id=self.lag1)
-        self.assertTrue(self.lag_rif1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.lag_rif1)
 
         self.sub_port_rif1 = sai_thrift_create_router_interface(
@@ -1210,14 +1210,14 @@ class VrfMultipleRifCreationTest(SaiHelper):
             port_id=self.port10,
             outer_vlan_id=100,
             admin_v4_state=True)
-        self.assertTrue(self.sub_port_rif1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.sub_port_rif1)
 
         self.lpb_rif1 = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
             virtual_router_id=self.vrf1)
-        self.assertTrue(self.lpb_rif1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.lpb_rif1)
 
         self.svi_rif1 = sai_thrift_create_router_interface(
@@ -1225,7 +1225,7 @@ class VrfMultipleRifCreationTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
             virtual_router_id=self.vrf1,
             vlan_id=self.vlan10)
-        self.assertTrue(self.svi_rif1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.svi_rif1)
 
         self.ip_addr11 = "10.10.1.1"
@@ -1242,15 +1242,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(self.ip_addr11),
             router_interface_id=self.port_rif1,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.port_nhop1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.port_nhop1)
 
         self.port_route1 = sai_thrift_route_entry_t(
             vr_id=self.vrf1, destination=sai_ipprefix(self.ip_addr11 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
+        sai_thrift_create_route_entry(self.client,
                                                self.port_route1,
                                                next_hop_id=self.port_nhop1)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.port_route1)
 
         self.ip_addr12 = "10.10.2.1"
@@ -1267,15 +1267,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(self.ip_addr12),
             router_interface_id=self.lag_rif1,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.lag_nhop1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.lag_nhop1)
 
         self.lag_route1 = sai_thrift_route_entry_t(
             vr_id=self.vrf1, destination=sai_ipprefix(self.ip_addr12 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
+        sai_thrift_create_route_entry(self.client,
                                                self.lag_route1,
                                                next_hop_id=self.lag_nhop1)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.lag_route1)
 
         self.ip_addr13 = "10.10.3.1"
@@ -1293,15 +1293,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(self.ip_addr13),
             router_interface_id=self.sub_port_rif1,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.sub_port_nhop1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.sub_port_nhop1)
 
         self.sub_port_route1 = sai_thrift_route_entry_t(
             vr_id=self.vrf1, destination=sai_ipprefix(self.ip_addr13 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
+        sai_thrift_create_route_entry(self.client,
                                                self.sub_port_route1,
                                                next_hop_id=self.sub_port_nhop1)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.sub_port_route1)
 
         self.ip_addr14 = "10.10.4.1"
@@ -1310,15 +1310,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(self.ip_addr14),
             router_interface_id=self.lpb_rif1,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.lpb_nhop1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.lpb_nhop1)
 
         self.lpb_route1 = sai_thrift_route_entry_t(
             vr_id=self.vrf1, destination=sai_ipprefix(self.ip_addr14 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
+        sai_thrift_create_route_entry(self.client,
                                                self.lpb_route1,
                                                next_hop_id=self.lpb_nhop1)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.lpb_route1)
 
         self.ip_addr15 = "10.10.5.1"
@@ -1335,27 +1335,27 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(self.ip_addr15),
             router_interface_id=self.svi_rif1,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.svi_nhop1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.svi_nhop1)
 
         self.svi_route1 = sai_thrift_route_entry_t(
             vr_id=self.vrf1, destination=sai_ipprefix(self.ip_addr15 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
+        sai_thrift_create_route_entry(self.client,
                                                self.svi_route1,
                                                next_hop_id=self.svi_nhop1)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.svi_route1)
 
         # VRF 2 configuration
         self.vrf2 = sai_thrift_create_virtual_router(self.client)
-        self.assertTrue(self.vrf2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.port_rif2 = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.vrf2,
             port_id=self.port25)
-        self.assertTrue(self.port_rif2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.port_rif2)
 
         self.lag_rif2 = sai_thrift_create_router_interface(
@@ -1363,7 +1363,7 @@ class VrfMultipleRifCreationTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.vrf2,
             port_id=self.lag2)
-        self.assertTrue(self.lag_rif2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.lag_rif2)
 
         self.sub_port_rif2 = sai_thrift_create_router_interface(
@@ -1373,14 +1373,14 @@ class VrfMultipleRifCreationTest(SaiHelper):
             port_id=self.port10,
             outer_vlan_id=200,
             admin_v4_state=True)
-        self.assertTrue(self.sub_port_rif2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.sub_port_rif2)
 
         self.lpb_rif2 = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
             virtual_router_id=self.vrf2)
-        self.assertTrue(self.lpb_rif2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.lpb_rif2)
 
         self.svi_rif2 = sai_thrift_create_router_interface(
@@ -1388,7 +1388,7 @@ class VrfMultipleRifCreationTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
             virtual_router_id=self.vrf2,
             vlan_id=self.vlan20)
-        self.assertTrue(self.svi_rif2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.svi_rif2)
 
         ip_addr21 = "10.20.1.1"
@@ -1397,15 +1397,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr21),
             router_interface_id=self.port_rif2,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.port_nhop2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.port_nhop2)
 
         self.port_route2 = sai_thrift_route_entry_t(
             vr_id=self.vrf2, destination=sai_ipprefix(ip_addr21 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.port_route2,
-                                               next_hop_id=self.port_nhop2)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.port_route2,
+                                      next_hop_id=self.port_nhop2)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.port_route2)
 
         ip_addr22 = "10.20.2.1"
@@ -1414,15 +1414,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr22),
             router_interface_id=self.lag_rif2,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.lag_nhop2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.lag_nhop2)
 
         self.lag_route2 = sai_thrift_route_entry_t(
             vr_id=self.vrf2, destination=sai_ipprefix(ip_addr22 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.lag_route2,
-                                               next_hop_id=self.lag_nhop2)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.lag_route2,
+                                      next_hop_id=self.lag_nhop2)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.lag_route2)
 
         ip_addr23 = "10.20.3.1"
@@ -1431,15 +1431,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr23),
             router_interface_id=self.sub_port_rif2,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.sub_port_nhop2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.sub_port_nhop2)
 
         self.sub_port_route2 = sai_thrift_route_entry_t(
             vr_id=self.vrf2, destination=sai_ipprefix(ip_addr23 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.sub_port_route2,
-                                               next_hop_id=self.sub_port_nhop2)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.sub_port_route2,
+                                      next_hop_id=self.sub_port_nhop2)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.sub_port_route2)
 
         ip_addr24 = "10.20.4.1"
@@ -1448,15 +1448,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr24),
             router_interface_id=self.lpb_rif2,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.lpb_nhop2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.lpb_nhop2)
 
         self.lpb_route2 = sai_thrift_route_entry_t(
             vr_id=self.vrf2, destination=sai_ipprefix(ip_addr24 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.lpb_route2,
-                                               next_hop_id=self.lpb_nhop2)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.lpb_route2,
+                                      next_hop_id=self.lpb_nhop2)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.lpb_route2)
 
         ip_addr25 = "10.20.5.1"
@@ -1465,53 +1465,53 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr25),
             router_interface_id=self.svi_rif2,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.svi_nhop2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.svi_nhop2)
 
         self.svi_route2 = sai_thrift_route_entry_t(
             vr_id=self.vrf2, destination=sai_ipprefix(ip_addr25 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.svi_route2,
-                                               next_hop_id=self.svi_nhop2)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.svi_route2,
+                                      next_hop_id=self.svi_nhop2)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.svi_route2)
 
         # VRF 3 configuration
         self.vrf3 = sai_thrift_create_virtual_router(self.client)
-        self.assertTrue(self.vrf3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.port_rif3 = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.vrf3,
             port_id=self.port26)
-        self.assertTrue(self.port_rif3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.port_rif3)
 
         # additional LAG
         self.lag10 = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag10 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.lag10_member1 = sai_thrift_create_lag_member(self.client,
                                                           lag_id=self.lag10,
                                                           port_id=self.port27)
-        self.assertTrue(self.lag10_member1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.lag10_member2 = sai_thrift_create_lag_member(self.client,
                                                           lag_id=self.lag10,
                                                           port_id=self.port28)
-        self.assertTrue(self.lag10_member2 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.lag10_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.lag10,
             type=SAI_BRIDGE_PORT_TYPE_PORT)
-        self.assertTrue(self.lag10_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.lag_rif3 = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.vrf3,
             port_id=self.lag10)
-        self.assertTrue(self.lag_rif3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.lag_rif3)
 
         self.sub_port_rif3 = sai_thrift_create_router_interface(
@@ -1521,31 +1521,31 @@ class VrfMultipleRifCreationTest(SaiHelper):
             port_id=self.port10,
             outer_vlan_id=300,
             admin_v4_state=True)
-        self.assertTrue(self.sub_port_rif3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.sub_port_rif3)
 
         self.lpb_rif3 = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
             virtual_router_id=self.vrf3)
-        self.assertTrue(self.lpb_rif3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.lpb_rif3)
 
         # additional VLAN
         self.vlan100 = sai_thrift_create_vlan(self.client, vlan_id=100)
-        self.assertTrue(self.vlan100 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.port29_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.port29,
             type=SAI_BRIDGE_PORT_TYPE_PORT)
-        self.assertTrue(self.port29_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.vlan100_member0 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan100,
             bridge_port_id=self.port29_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
-        self.assertTrue(self.vlan100_member0 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         sai_thrift_set_port_attribute(self.client,
                                       self.port29,
                                       port_vlan_id=100)
@@ -1554,20 +1554,20 @@ class VrfMultipleRifCreationTest(SaiHelper):
             bridge_id=self.default_1q_bridge,
             port_id=self.port30,
             type=SAI_BRIDGE_PORT_TYPE_PORT)
-        self.assertTrue(self.port30_bp != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.vlan100_member1 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan100,
             bridge_port_id=self.port30_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
-        self.assertTrue(self.vlan100_member1 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.svi_rif3 = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
             virtual_router_id=self.vrf3,
             vlan_id=self.vlan100)
-        self.assertTrue(self.svi_rif3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.rif_list.append(self.svi_rif3)
 
         ip_addr31 = "10.30.1.1"
@@ -1576,15 +1576,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr31),
             router_interface_id=self.port_rif3,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.port_nhop3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.port_nhop3)
 
         self.port_route3 = sai_thrift_route_entry_t(
             vr_id=self.vrf3, destination=sai_ipprefix(ip_addr31 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.port_route3,
-                                               next_hop_id=self.port_nhop3)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.port_route3,
+                                      next_hop_id=self.port_nhop3)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.port_route3)
 
         ip_addr32 = "10.30.2.1"
@@ -1593,15 +1593,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr32),
             router_interface_id=self.lag_rif3,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.lag_nhop3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.lag_nhop3)
 
         self.lag_route3 = sai_thrift_route_entry_t(
             vr_id=self.vrf3, destination=sai_ipprefix(ip_addr32 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.lag_route3,
-                                               next_hop_id=self.lag_nhop3)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.lag_route3,
+                                      next_hop_id=self.lag_nhop3)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.lag_route3)
 
         ip_addr33 = "10.30.3.1"
@@ -1610,15 +1610,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr33),
             router_interface_id=self.sub_port_rif3,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.sub_port_nhop3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.sub_port_nhop3)
 
         self.sub_port_route3 = sai_thrift_route_entry_t(
             vr_id=self.vrf3, destination=sai_ipprefix(ip_addr33 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.sub_port_route3,
-                                               next_hop_id=self.sub_port_nhop3)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.sub_port_route3,
+                                      next_hop_id=self.sub_port_nhop3)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.sub_port_route3)
 
         ip_addr34 = "10.30.4.1"
@@ -1627,15 +1627,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr34),
             router_interface_id=self.lpb_rif3,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.lpb_nhop3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.lpb_nhop3)
 
         self.lpb_route3 = sai_thrift_route_entry_t(
             vr_id=self.vrf3, destination=sai_ipprefix(ip_addr34 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.lpb_route3,
-                                               next_hop_id=self.lpb_nhop3)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.lpb_route3,
+                                      next_hop_id=self.lpb_nhop3)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.lpb_route3)
 
         ip_addr35 = "10.30.5.1"
@@ -1644,15 +1644,15 @@ class VrfMultipleRifCreationTest(SaiHelper):
             ip=sai_ipaddress(ip_addr35),
             router_interface_id=self.svi_rif3,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertTrue(self.svi_nhop3 != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.nhop_list.append(self.svi_nhop3)
 
         self.svi_route3 = sai_thrift_route_entry_t(
             vr_id=self.vrf3, destination=sai_ipprefix(ip_addr35 + '/24'))
-        status = sai_thrift_create_route_entry(self.client,
-                                               self.svi_route3,
-                                               next_hop_id=self.svi_nhop3)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sai_thrift_create_route_entry(self.client,
+                                      self.svi_route3,
+                                      next_hop_id=self.svi_nhop3)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.route_list.append(self.svi_route3)
 
     def runTest(self):
@@ -1666,6 +1666,9 @@ class VrfMultipleRifCreationTest(SaiHelper):
         for nbor in self.nbor_list:
             sai_thrift_remove_neighbor_entry(self.client, nbor)
 
+        for rif in self.rif_list:
+            sai_thrift_remove_router_interface(self.client, rif)
+
         sai_thrift_remove_vlan_member(self.client, self.vlan100_member1)
         sai_thrift_remove_bridge_port(self.client, self.port30_bp)
         sai_thrift_set_port_attribute(self.client, self.port29, port_vlan_id=0)
@@ -1676,9 +1679,6 @@ class VrfMultipleRifCreationTest(SaiHelper):
         sai_thrift_remove_lag_member(self.client, self.lag10_member1)
         sai_thrift_remove_lag_member(self.client, self.lag10_member2)
         sai_thrift_remove_lag(self.client, self.lag10)
-
-        for rif in self.rif_list:
-            sai_thrift_remove_router_interface(self.client, rif)
 
         sai_thrift_remove_virtual_router(self.client, self.vrf3)
         sai_thrift_remove_virtual_router(self.client, self.vrf2)
@@ -1773,7 +1773,7 @@ class VrfAclRedirectTest(SaiHelper):
         super(VrfAclRedirectTest, self).setUp()
 
         self.test_vrf = sai_thrift_create_virtual_router(self.client)
-        self.assertTrue(self.test_vrf != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         # create and configure ingress RIF
         self.iport = self.port24
@@ -1783,7 +1783,7 @@ class VrfAclRedirectTest(SaiHelper):
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
             virtual_router_id=self.test_vrf,
             port_id=self.iport)
-        self.assertTrue(self.test_irif != 0)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.iport_mac = "00:11:11:11:11:11"
         iport_ipv4 = "10.10.10.1"
@@ -2052,9 +2052,12 @@ class VrfAclRedirectTest(SaiHelper):
                                     ip_src=src_ip,
                                     ip_ttl=64)
 
+            exp_pkt_list = [pkt, pkt, pkt]
+
             print("Sending packet with ACL action: redirect to SVI nexthop")
             send_packet(self, self.iport_dev, pkt)
-            verify_packets(self, pkt, test_vlan_dev_ports)
+            verify_each_packet_on_multiple_port_lists(self, exp_pkt_list,
+                                                      test_vlan_dev_ports)
             print("\tOK")
 
         finally:
@@ -2411,46 +2414,46 @@ class VrfScaleTest(SaiHelper):
             print("Creating %d virtual routers with routes added" % max_vr_no)
             for _ in range(max_vr_no - 2):
                 vrf = sai_thrift_create_virtual_router(self.client)
-                self.assertTrue(vrf != 0)
+                self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
                 vrf_list.append(vrf)
 
                 lpm_route_v4 = sai_thrift_route_entry_t(
                     vr_id=vrf, destination=sai_ipprefix(ip_addr + '/24'))
-                status = sai_thrift_create_route_entry(self.client,
-                                                       lpm_route_v4,
-                                                       next_hop_id=nexthop_v4)
-                self.assertEqual(status, SAI_STATUS_SUCCESS)
+                sai_thrift_create_route_entry(self.client,
+                                              lpm_route_v4,
+                                              next_hop_id=nexthop_v4)
+                self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
                 lpm_route_v4_list.append(lpm_route_v4)
 
                 host_route_v4 = sai_thrift_route_entry_t(
                     vr_id=vrf, destination=sai_ipprefix(ip_addr + '/32'))
-                status = sai_thrift_create_route_entry(self.client,
-                                                       host_route_v4,
-                                                       next_hop_id=nexthop_v4)
-                self.assertEqual(status, SAI_STATUS_SUCCESS)
+                sai_thrift_create_route_entry(self.client,
+                                              host_route_v4,
+                                              next_hop_id=nexthop_v4)
+                self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
                 host_route_v4_list.append(host_route_v4)
 
                 lpm_route_v6 = sai_thrift_route_entry_t(
                     vr_id=vrf, destination=sai_ipprefix(ipv6_addr + '/48'))
-                status = sai_thrift_create_route_entry(self.client,
-                                                       lpm_route_v6,
-                                                       next_hop_id=nexthop_v6)
-                self.assertEqual(status, SAI_STATUS_SUCCESS)
+                sai_thrift_create_route_entry(self.client,
+                                              lpm_route_v6,
+                                              next_hop_id=nexthop_v6)
+                self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
                 lpm_route_v6_list.append(lpm_route_v6)
 
                 host_route_v6 = sai_thrift_route_entry_t(
                     vr_id=vrf, destination=sai_ipprefix(ipv6_addr + '/128'))
-                status = sai_thrift_create_route_entry(self.client,
-                                                       host_route_v6,
-                                                       next_hop_id=nexthop_v6)
-                self.assertEqual(status, SAI_STATUS_SUCCESS)
+                sai_thrift_create_route_entry(self.client,
+                                              host_route_v6,
+                                              next_hop_id=nexthop_v6)
+                self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
                 host_route_v6_list.append(host_route_v6)
 
             print("\tOK")
 
             print("Checking if no more virtual routers can be created")
             vrf = sai_thrift_create_virtual_router(self.client)
-            self.assertFalse(vrf != 0)
+            self.assertEgual(vrf, 0)
 
         finally:
             for i, _ in enumerate(vrf_list):
@@ -2613,9 +2616,9 @@ class VrfSMACTest(SaiHelper):
         print("Create VRF test")
         self._runTraffic(self.vrf_mac_create)
 
-        status = sai_thrift_set_virtual_router_attribute(
+        sai_thrift_set_virtual_router_attribute(
             self.client, self.test_vrf, src_mac_address=self.vrf_mac_set)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         attrs = sai_thrift_get_virtual_router_attribute(
             self.client, self.test_vrf, src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], self.vrf_mac_set)
@@ -2648,9 +2651,9 @@ class VrfSMACTest(SaiHelper):
         print("Creaete VRF test")
         self._runTraffic(ROUTER_MAC)
 
-        status = sai_thrift_set_virtual_router_attribute(
+        sai_thrift_set_virtual_router_attribute(
             self.client, self.test_vrf, src_mac_address=self.vrf_mac_set)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         attrs = sai_thrift_get_virtual_router_attribute(
             self.client, self.test_vrf, src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], self.vrf_mac_set)
