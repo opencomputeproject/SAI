@@ -483,7 +483,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Args:
             timeout (int): Timeout value in seconds
         """
-        print("Waiting for fdb entry to Age")
+        print("Waiting for fdb entry to age")
         aging_interval_buffer = 10
         time.sleep(timeout + aging_interval_buffer)
 
@@ -548,12 +548,12 @@ Common ports configuration:
         super(SaiHelper, self).setUp()
 
         # lists of default objects
-        self.bridge_port_list = []
-        self.lag_list = []
-        self.lag_member_list = []
-        self.vlan_list = []
-        self.vlan_member_list = []
-        self.rif_list = []
+        self.def_bridge_port_list = []
+        self.def_lag_list = []
+        self.def_lag_member_list = []
+        self.def_vlan_list = []
+        self.def_vlan_member_list = []
+        self.def_rif_list = []
 
         # create bridge ports
         self.port0_bp = sai_thrift_create_bridge_port(
@@ -563,7 +563,7 @@ Common ports configuration:
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.bridge_port_list.append(self.port0_bp)
+        self.def_bridge_port_list.append(self.port0_bp)
 
         self.port1_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -572,7 +572,7 @@ Common ports configuration:
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.bridge_port_list.append(self.port1_bp)
+        self.def_bridge_port_list.append(self.port1_bp)
 
         self.port2_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -581,7 +581,7 @@ Common ports configuration:
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.bridge_port_list.append(self.port2_bp)
+        self.def_bridge_port_list.append(self.port2_bp)
 
         self.port3_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -590,7 +590,7 @@ Common ports configuration:
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.bridge_port_list.append(self.port3_bp)
+        self.def_bridge_port_list.append(self.port3_bp)
 
         self.port20_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -599,7 +599,7 @@ Common ports configuration:
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.bridge_port_list.append(self.port20_bp)
+        self.def_bridge_port_list.append(self.port20_bp)
 
         self.port21_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -608,12 +608,12 @@ Common ports configuration:
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.bridge_port_list.append(self.port21_bp)
+        self.def_bridge_port_list.append(self.port21_bp)
 
         # create LAGs
         self.lag1 = sai_thrift_create_lag(self.client)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.lag_list.append(self.lag1)
+        self.def_lag_list.append(self.lag1)
 
         self.lag1_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -622,21 +622,21 @@ Common ports configuration:
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.bridge_port_list.append(self.lag1_bp)
+        self.def_bridge_port_list.append(self.lag1_bp)
 
         self.lag1_member4 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag1, port_id=self.port4)
-        self.lag_member_list.append(self.lag1_member4)
+        self.def_lag_member_list.append(self.lag1_member4)
         self.lag1_member5 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag1, port_id=self.port5)
-        self.lag_member_list.append(self.lag1_member5)
+        self.def_lag_member_list.append(self.lag1_member5)
         self.lag1_member6 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag1, port_id=self.port6)
-        self.lag_member_list.append(self.lag1_member6)
+        self.def_lag_member_list.append(self.lag1_member6)
 
         self.lag2 = sai_thrift_create_lag(self.client)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.lag_list.append(self.lag2)
+        self.def_lag_list.append(self.lag2)
 
         self.lag2_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -645,50 +645,50 @@ Common ports configuration:
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.bridge_port_list.append(self.lag2_bp)
+        self.def_bridge_port_list.append(self.lag2_bp)
 
         self.lag2_member7 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag2, port_id=self.port7)
-        self.lag_member_list.append(self.lag2_member7)
+        self.def_lag_member_list.append(self.lag2_member7)
         self.lag2_member8 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag2, port_id=self.port8)
-        self.lag_member_list.append(self.lag2_member8)
+        self.def_lag_member_list.append(self.lag2_member8)
         self.lag2_member9 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag2, port_id=self.port9)
-        self.lag_member_list.append(self.lag2_member9)
+        self.def_lag_member_list.append(self.lag2_member9)
 
         # L3 lags
         self.lag3 = sai_thrift_create_lag(self.client)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.lag_list.append(self.lag3)
+        self.def_lag_list.append(self.lag3)
 
         self.lag3_member14 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag3, port_id=self.port14)
-        self.lag_member_list.append(self.lag3_member14)
+        self.def_lag_member_list.append(self.lag3_member14)
         self.lag3_member15 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag3, port_id=self.port15)
-        self.lag_member_list.append(self.lag3_member15)
+        self.def_lag_member_list.append(self.lag3_member15)
         self.lag3_member16 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag3, port_id=self.port16)
-        self.lag_member_list.append(self.lag3_member16)
+        self.def_lag_member_list.append(self.lag3_member16)
 
         self.lag4 = sai_thrift_create_lag(self.client)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.lag_list.append(self.lag4)
+        self.def_lag_list.append(self.lag4)
 
         self.lag4_member17 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag4, port_id=self.port17)
-        self.lag_member_list.append(self.lag4_member17)
+        self.def_lag_member_list.append(self.lag4_member17)
         self.lag4_member18 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag4, port_id=self.port18)
-        self.lag_member_list.append(self.lag4_member18)
+        self.def_lag_member_list.append(self.lag4_member18)
         self.lag4_member19 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag4, port_id=self.port19)
-        self.lag_member_list.append(self.lag4_member19)
+        self.def_lag_member_list.append(self.lag4_member19)
 
         self.lag5 = sai_thrift_create_lag(self.client)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.lag_list.append(self.lag5)
+        self.def_lag_list.append(self.lag5)
 
         self.lag5_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -697,86 +697,86 @@ Common ports configuration:
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.bridge_port_list.append(self.lag5_bp)
+        self.def_bridge_port_list.append(self.lag5_bp)
 
         self.lag5_member22 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag5, port_id=self.port22)
-        self.lag_member_list.append(self.lag5_member22)
+        self.def_lag_member_list.append(self.lag5_member22)
         self.lag5_member23 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag5, port_id=self.port23)
-        self.lag_member_list.append(self.lag5_member23)
+        self.def_lag_member_list.append(self.lag5_member23)
 
         # create vlan 10 with port0, port1 and lag1
         self.vlan10 = sai_thrift_create_vlan(self.client, vlan_id=10)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.vlan_list.append(self.vlan10)
+        self.def_vlan_list.append(self.vlan10)
 
         self.vlan10_member0 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan10,
             bridge_port_id=self.port0_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
-        self.vlan_member_list.append(self.vlan10_member0)
+        self.def_vlan_member_list.append(self.vlan10_member0)
         self.vlan10_member1 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan10,
             bridge_port_id=self.port1_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
-        self.vlan_member_list.append(self.vlan10_member1)
+        self.def_vlan_member_list.append(self.vlan10_member1)
         self.vlan10_member2 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan10,
             bridge_port_id=self.lag1_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
-        self.vlan_member_list.append(self.vlan10_member2)
+        self.def_vlan_member_list.append(self.vlan10_member2)
 
         # create vlan 20 with port2, port3 and lag2
         self.vlan20 = sai_thrift_create_vlan(self.client, vlan_id=20)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.vlan_list.append(self.vlan20)
+        self.def_vlan_list.append(self.vlan20)
 
         self.vlan20_member0 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan20,
             bridge_port_id=self.port2_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
-        self.vlan_member_list.append(self.vlan20_member0)
+        self.def_vlan_member_list.append(self.vlan20_member0)
         self.vlan20_member1 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan20,
             bridge_port_id=self.port3_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
-        self.vlan_member_list.append(self.vlan20_member1)
+        self.def_vlan_member_list.append(self.vlan20_member1)
         self.vlan20_member2 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan20,
             bridge_port_id=self.lag2_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
-        self.vlan_member_list.append(self.vlan20_member2)
+        self.def_vlan_member_list.append(self.vlan20_member2)
 
         # create vlan 30 with port20, port21 and lag5
         self.vlan30 = sai_thrift_create_vlan(self.client, vlan_id=30)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.vlan_list.append(self.vlan30)
+        self.def_vlan_list.append(self.vlan30)
 
         self.vlan30_member0 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan30,
             bridge_port_id=self.port20_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
-        self.vlan_member_list.append(self.vlan30_member0)
+        self.def_vlan_member_list.append(self.vlan30_member0)
         self.vlan30_member1 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan30,
             bridge_port_id=self.port21_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
-        self.vlan_member_list.append(self.vlan30_member1)
+        self.def_vlan_member_list.append(self.vlan30_member1)
         self.vlan30_member2 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan30,
             bridge_port_id=self.lag5_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
-        self.vlan_member_list.append(self.vlan30_member2)
+        self.def_vlan_member_list.append(self.vlan30_member2)
 
         # setup untagged ports
         sai_thrift_set_port_attribute(self.client, self.port0, port_vlan_id=10)
@@ -790,7 +790,7 @@ Common ports configuration:
             virtual_router_id=self.default_vrf,
             vlan_id=self.vlan30)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.rif_list.append(self.vlan30_rif)
+        self.def_rif_list.append(self.vlan30_rif)
 
         self.lag3_rif = sai_thrift_create_router_interface(
             self.client,
@@ -798,7 +798,7 @@ Common ports configuration:
             virtual_router_id=self.default_vrf,
             port_id=self.lag3)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.rif_list.append(self.lag3_rif)
+        self.def_rif_list.append(self.lag3_rif)
 
         self.lag4_rif = sai_thrift_create_router_interface(
             self.client,
@@ -806,7 +806,7 @@ Common ports configuration:
             virtual_router_id=self.default_vrf,
             port_id=self.lag4)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.rif_list.append(self.lag4_rif)
+        self.def_rif_list.append(self.lag4_rif)
 
         self.port10_rif = sai_thrift_create_router_interface(
             self.client,
@@ -814,7 +814,7 @@ Common ports configuration:
             virtual_router_id=self.default_vrf,
             port_id=self.port10)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.rif_list.append(self.port10_rif)
+        self.def_rif_list.append(self.port10_rif)
 
         self.port11_rif = sai_thrift_create_router_interface(
             self.client,
@@ -822,7 +822,7 @@ Common ports configuration:
             virtual_router_id=self.default_vrf,
             port_id=self.port11)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.rif_list.append(self.port11_rif)
+        self.def_rif_list.append(self.port11_rif)
 
         self.port12_rif = sai_thrift_create_router_interface(
             self.client,
@@ -830,7 +830,7 @@ Common ports configuration:
             virtual_router_id=self.default_vrf,
             port_id=self.port12)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.rif_list.append(self.port12_rif)
+        self.def_rif_list.append(self.port12_rif)
 
         self.port13_rif = sai_thrift_create_router_interface(
             self.client,
@@ -838,29 +838,29 @@ Common ports configuration:
             virtual_router_id=self.default_vrf,
             port_id=self.port13)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.rif_list.append(self.port13_rif)
+        self.def_rif_list.append(self.port13_rif)
 
     def tearDown(self):
         sai_thrift_set_port_attribute(self.client, self.port2, port_vlan_id=0)
         sai_thrift_set_lag_attribute(self.client, self.lag1, port_vlan_id=0)
         sai_thrift_set_port_attribute(self.client, self.port0, port_vlan_id=0)
 
-        for rif in self.rif_list:
+        for rif in self.def_rif_list:
             sai_thrift_remove_router_interface(self.client, rif)
 
-        for vlan_member in self.vlan_member_list:
+        for vlan_member in self.def_vlan_member_list:
             sai_thrift_remove_vlan_member(self.client, vlan_member)
 
-        for bridge_port in self.bridge_port_list:
+        for bridge_port in self.def_bridge_port_list:
             sai_thrift_remove_bridge_port(self.client, bridge_port)
 
-        for lag_member in self.lag_member_list:
+        for lag_member in self.def_lag_member_list:
             sai_thrift_remove_lag_member(self.client, lag_member)
 
-        for lag in self.lag_list:
+        for lag in self.def_lag_list:
             sai_thrift_remove_lag(self.client, lag)
 
-        for vlan in self.vlan_list:
+        for vlan in self.def_vlan_list:
             sai_thrift_remove_vlan(self.client, vlan)
 
         super(SaiHelper, self).tearDown()
@@ -891,8 +891,8 @@ class MinimalPortVlanConfig(SaiHelperBase):
                              'than number of active ports %d'
                              % (self.port_num, self.active_ports_no))
 
-        self.bridge_port_list = []
-        self.vlan_member_list = []
+        self.def_bridge_port_list = []
+        self.def_vlan_member_list = []
 
         # create bridge ports
         for port in self.port_list:
@@ -902,21 +902,21 @@ class MinimalPortVlanConfig(SaiHelperBase):
                 admin_state=True)
 
             self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-            self.bridge_port_list.append(bp)
+            self.def_bridge_port_list.append(bp)
 
         # create vlan
         self.vlan = sai_thrift_create_vlan(self.client, vlan_id=self.vlan_id)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         # add ports to vlan
-        for bridge_port in self.bridge_port_list:
+        for bridge_port in self.def_bridge_port_list:
             vm = sai_thrift_create_vlan_member(
                 self.client, vlan_id=self.vlan,
                 bridge_port_id=bridge_port,
                 vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
             self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-            self.vlan_member_list.append(vm)
+            self.def_vlan_member_list.append(vm)
 
         # setup untagged ports
         for port in self.port_list:
@@ -932,14 +932,14 @@ class MinimalPortVlanConfig(SaiHelperBase):
                 self.client, port, port_vlan_id=0)
 
         # remove ports from vlan
-        for vlan_member in self.vlan_member_list:
+        for vlan_member in self.def_vlan_member_list:
             sai_thrift_remove_vlan_member(self.client, vlan_member)
 
         # remove vlan
         sai_thrift_remove_vlan(self.client, self.vlan)
 
         # remove bridge ports
-        for bridge_port in self.bridge_port_list:
+        for bridge_port in self.def_bridge_port_list:
             sai_thrift_remove_bridge_port(self.client, bridge_port)
 
         super(MinimalPortVlanConfig, self).tearDown()
