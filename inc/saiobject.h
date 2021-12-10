@@ -259,7 +259,7 @@ sai_status_t sai_query_stats_capability(
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] mode Statistics mode
- * @param[out] status Array of status for each object. Length of the array should be object_count. Should be looked only if API return is not SAI_STATUS_SUCCESS.
+ * @param[inout] object_statuses Array of status for each object. Length of the array should be object_count. Should be looked only if API return is not SAI_STATUS_SUCCESS.
  * @param[out] counters Array of resulting counter values.
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
@@ -272,7 +272,7 @@ typedef sai_status_t (*sai_bulk_object_get_stats_fn)(
         _In_ uint32_t number_of_counters,
         _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
-        _Out_ sai_status_t *status,
+        _Inout_ sai_status_t *object_statuses,
         _Out_ uint64_t *counters);
 
 /**
@@ -285,7 +285,7 @@ typedef sai_status_t (*sai_bulk_object_get_stats_fn)(
  * @param[in] number_of_counters Number of counters in the array
  * @param[in] counter_ids Specifies the array of counter ids
  * @param[in] mode Statistics mode
- * @param[out] status Array of status for each object. Length of the array should be object_count. Should be looked only if API return is not SAI_STATUS_SUCCESS.
+ * @param[inout] object_statuses Array of status for each object. Length of the array should be object_count. Should be looked only if API return is not SAI_STATUS_SUCCESS.
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
@@ -297,7 +297,7 @@ typedef sai_status_t (*sai_bulk_object_clear_stats_fn)(
         _In_ uint32_t number_of_counters,
         _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
-        _Out_ sai_status_t *status);
+        _Inout_ sai_status_t *object_statuses);
 
 /**
  * @}
