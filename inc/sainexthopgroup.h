@@ -546,7 +546,7 @@ typedef struct _sai_next_hop_group_api_t
     sai_remove_next_hop_group_map_fn           remove_next_hop_group_map;
     sai_set_next_hop_group_map_attribute_fn    set_next_hop_group_map_attribute;
     sai_get_next_hop_group_map_attribute_fn    get_next_hop_group_map_attribute;
-    sai_bulk_object_set_attribute_fn.          set_next_hop_group_members_attributes;
+    sai_bulk_object_set_attribute_fn           set_next_hop_group_members_attribute;
 } sai_next_hop_group_api_t;
 
 /**
