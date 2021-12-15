@@ -38,6 +38,9 @@ extern "C" {
 
 using namespace ::sai;
 
+/**
+ *  @brief Convert Thrift MAC format to SAI MAC format
+ */
 unsigned int sai_thrift_mac_t_parse(const std::string s, void *data) {
   unsigned int i, j = 0;
   unsigned char *m = static_cast<unsigned char *>(data);
@@ -58,6 +61,9 @@ unsigned int sai_thrift_mac_t_parse(const std::string s, void *data) {
   return (j == 12);
 }
 
+/**
+ *  @brief Convert Thrift IPv4 format to SAI IPv4 format
+ */
 void sai_thrift_ip4_t_parse(const std::string s, unsigned int *m) {
   unsigned char r = 0;
   unsigned int i;
@@ -76,12 +82,18 @@ void sai_thrift_ip4_t_parse(const std::string s, unsigned int *m) {
   return;
 }
 
+/**
+ *  @brief Convert Thrift IPv6 format to SAI IPv4 format
+ */
 void sai_thrift_ip6_t_parse(const std::string s, unsigned char *v6_ip) {
   const char *v6_str = s.c_str();
   inet_pton(AF_INET6, v6_str, v6_ip);
   return;
 }
 
+/**
+ *  @brief Convert Thrift IP address format to SAI IP address format
+ */
 void sai_thrift_ip_address_t_parse(
     const sai_thrift_ip_address_t &thrift_ip_address,
     sai_ip_address_t *ip_address) {
@@ -94,6 +106,9 @@ void sai_thrift_ip_address_t_parse(
   }
 }
 
+/**
+ *  @brief Convert IP address and mask from Thrift to SAI format
+ */
 void sai_thrift_ip_prefix_t_parse(
     const sai_thrift_ip_prefix_t &thrift_ip_prefix,
     sai_ip_prefix_t *ip_prefix) {
@@ -108,6 +123,9 @@ void sai_thrift_ip_prefix_t_parse(
   }
 }
 
+/**
+ *  @brief Convert attribute from Thrift to SAI format according to the type
+ */
 void convert_attr_thrift_to_sai(const sai_object_type_t sai_ot,
                                 const sai_thrift_attribute_t &thrift_attr,
                                 sai_attribute_t *sai_attr) {
@@ -479,18 +497,27 @@ void convert_attr_thrift_to_sai(const sai_object_type_t sai_ot,
   }
 }
 
+/**
+ *  @brief Convert SAI IPv4 format to Thrift IPv4 format
+ */
 std::string sai_ip4_t_to_thrift(const sai_ip4_t ip4) {
   char str[INET_ADDRSTRLEN];
   inet_ntop(AF_INET, &(ip4), str, INET_ADDRSTRLEN);
   return str;
 }
 
+/**
+ *  @brief Convert SAI IPv6 format to Thrift IPv6 format
+ */
 std::string sai_ip6_t_to_thrift(const sai_ip6_t ip6) {
   char str[INET6_ADDRSTRLEN];
   inet_ntop(AF_INET6, ip6, str, INET6_ADDRSTRLEN);
   return str;
 }
 
+/**
+ *  @brief Convert SAI IP address format to Thrift IP address format
+ */
 void sai_ip_address_t_to_thrift(sai_thrift_ip_address_t &thrift_ip,
                                 const sai_ip_address_t ip) {
   if (ip.addr_family == SAI_IP_ADDR_FAMILY_IPV4) {
@@ -502,6 +529,9 @@ void sai_ip_address_t_to_thrift(sai_thrift_ip_address_t &thrift_ip,
   }
 }
 
+/**
+ *  @brief Convert IP address and mask from SAI to Thrift format
+ */
 void sai_ip_prefix_t_to_thrift(sai_thrift_ip_prefix_t &thrift_ip,
                                const sai_ip_prefix_t ip) {
   if (ip.addr_family == SAI_IP_ADDR_FAMILY_IPV4) {
@@ -515,11 +545,9 @@ void sai_ip_prefix_t_to_thrift(sai_thrift_ip_prefix_t &thrift_ip,
   }
 }
 
-void sai_thrift_nat_type_t_parse(const sai_thrift_nat_type_t &thrift_nat_type,
-                                 sai_nat_type_t *nat_type) {
-  *nat_type = (sai_nat_type_t)thrift_nat_type;
-}
-
+/**
+ *  @brief Convert attribute from SAI to Thrift format according to the type
+ */
 void convert_attr_sai_to_thrift(const sai_object_type_t sai_ot,
                                 const sai_attribute_t &sai_attr,
                                 sai_thrift_attribute_t &thrift_attr) {
@@ -760,10 +788,22 @@ void convert_attr_sai_to_thrift(const sai_object_type_t sai_ot,
   }
 }
 
+/**
+ *  @brief Convert Thrift NAT type to SAI NAT type
+ */
+void sai_thrift_nat_type_t_parse(const sai_thrift_nat_type_t &thrift_nat_type,
+                                 sai_nat_type_t *nat_type) {
+  *nat_type = (sai_nat_type_t)thrift_nat_type;
+}
+
 // including it here we never have to modify the generated file
 #include "sai_rpc_server.cpp"
 
 class sai_rpcHandlerFrontend : virtual public sai_rpcHandler {
+
+  /**
+   * @brief Thfift wrapper for sai_object_type_get_availability() SAI function
+   */
   int64_t sai_thrift_object_type_get_availability(
       const sai_thrift_object_type_t object_type,
       const sai_thrift_attr_id_t attr_id,
@@ -771,13 +811,18 @@ class sai_rpcHandlerFrontend : virtual public sai_rpcHandler {
     sai_attribute_t attr = {};
     attr.id = attr_id;
     attr.value.s32 = attr_type;
+    uint32_t attr_count = 1;
     uint64_t count = 0;
 
     sai_object_type_get_availability(
-        switch_id, (sai_object_type_t)object_type, 1, &attr, &count);
+        switch_id, (sai_object_type_t)object_type, attr_count, &attr, &count);
     return count;
   }
 
+  /**
+   * @brief Thrift wrapper for sai_query_attribute_enum_values_capability()
+   *        function
+   */
   void sai_thrift_query_attribute_enum_values_capability(
       std::vector<int32_t> &thrift_enum_caps,
       const sai_thrift_object_type_t object_type,
@@ -817,6 +862,9 @@ static pthread_mutex_t cookie_mutex;
 static pthread_cond_t cookie_cv;
 static void *cookie;
 
+/**
+ * @brief Create a Thrift RPC server thread
+ */
 static void *sai_thrift_rpc_server_thread(void *arg) {
   int port = *(int *)arg;
   std::shared_ptr<sai_rpcHandlerFrontend> handler(new sai_rpcHandlerFrontend());
@@ -840,6 +888,10 @@ static void *sai_thrift_rpc_server_thread(void *arg) {
 static pthread_t sai_thrift_rpc_thread;
 
 extern "C" {
+
+/**
+ * @brief Start Thrift RPC server
+ */
 int start_p4_sai_thrift_rpc_server(char *port) {
   static int *param = (int *)malloc(sizeof(int));
   *param = atoi(port);
@@ -859,6 +911,9 @@ int start_p4_sai_thrift_rpc_server(char *port) {
   return status;
 }
 
+/**
+ * @brief Stop Thrift RPC server
+ */
 int stop_p4_sai_thrift_rpc_server(void) {
   int status = pthread_cancel(sai_thrift_rpc_thread);
   if (status == 0) {
