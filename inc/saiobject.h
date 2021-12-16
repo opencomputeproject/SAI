@@ -264,7 +264,7 @@ sai_status_t sai_query_stats_capability(
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_bulk_object_get_stats_fn)(
+sai_status_t sai_bulk_object_get_stats(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _In_ uint32_t object_count,
@@ -289,7 +289,7 @@ typedef sai_status_t (*sai_bulk_object_get_stats_fn)(
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_bulk_object_clear_stats_fn)(
+sai_status_t sai_bulk_object_clear_stats(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _In_ uint32_t object_count,
