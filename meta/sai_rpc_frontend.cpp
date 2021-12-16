@@ -83,7 +83,7 @@ void sai_thrift_ip4_t_parse(const std::string s, unsigned int *m) {
 }
 
 /**
- *  @brief Convert Thrift IPv6 format to SAI IPv4 format
+ *  @brief Convert Thrift IPv6 format to SAI IPv6 format
  */
 void sai_thrift_ip6_t_parse(const std::string s, unsigned char *v6_ip) {
   const char *v6_str = s.c_str();
@@ -802,7 +802,7 @@ void sai_thrift_nat_type_t_parse(const sai_thrift_nat_type_t &thrift_nat_type,
 class sai_rpcHandlerFrontend : virtual public sai_rpcHandler {
 
   /**
-   * @brief Thfift wrapper for sai_object_type_get_availability() SAI function
+   * @brief Thrift wrapper for sai_object_type_get_availability() SAI function
    */
   int64_t sai_thrift_object_type_get_availability(
       const sai_thrift_object_type_t object_type,
