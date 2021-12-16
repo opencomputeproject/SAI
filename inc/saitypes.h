@@ -1430,12 +1430,12 @@ typedef enum _sai_stats_mode_t
     SAI_STATS_MODE_READ_AND_CLEAR = 1 << 1,
 
     /**
-     * @brief Build read statistics
+     * @brief Bulk read statistics
      */
     SAI_STATS_MODE_BULK_READ = 1 << 2,
 
     /**
-     * @brief Build clear statistics
+     * @brief Bulk clear statistics
      */
     SAI_STATS_MODE_BULK_CLEAR = 1 << 3,
 
