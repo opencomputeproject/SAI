@@ -261,6 +261,8 @@ sai_status_t sai_query_stats_capability(
  * @param[in] mode Statistics mode
  * @param[inout] object_statuses Array of status for each object. Length of the array should be object_count. Should be looked only if API return is not SAI_STATUS_SUCCESS.
  * @param[out] counters Array of resulting counter values.
+ *    Length of counters array should be object_count*number_of_counters.
+ *    Counter value of I object and J counter_id = counter[I*number_of_counters + J]
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
