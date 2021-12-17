@@ -19,6 +19,7 @@ from ptf.mask import Mask
 from sai_base_test import *
 
 
+@group("draft")
 class MirrorConfigData(SaiHelper):
     """
     Mirror Configuration Class
