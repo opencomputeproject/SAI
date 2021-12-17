@@ -19,6 +19,7 @@ from sai_thrift.sai_headers import *
 from sai_base_test import *
 
 
+@group("draft")
 class QueueConfigData(SaiHelper):
     """
     Queue Configuration Class
