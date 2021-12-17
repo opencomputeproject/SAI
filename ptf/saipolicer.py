@@ -33,6 +33,7 @@ def banner(string):
     print("{}\n".format(string))
 
 
+@group("draft")
 class PolicerApiTests(SaiHelperBase):
     """
     Policer tests without traffic
@@ -300,6 +301,7 @@ class PolicerApiTests(SaiHelperBase):
         self.policerOverwriteTrapGroup()
 
 
+@group("draft")
 class BindPolicerToPort(SaiHelperBase):
     """
     Verify policer binds to port.
@@ -338,6 +340,7 @@ class BindPolicerToPort(SaiHelperBase):
         super(BindPolicerToPort, self).tearDown()
 
 
+@group("draft")
 class BindPolicerToAclEntry(MinimalPortVlanConfig):
     """
     Verify policer binds to ACL entry by sending traffic which should be
@@ -432,6 +435,7 @@ class BindPolicerToAclEntry(MinimalPortVlanConfig):
         super(BindPolicerToAclEntry, self).tearDown()
 
 
+@group("draft")
 class PolicerTrafficTests(MinimalPortVlanConfig):
     """
     Policer tests with traffic
@@ -486,6 +490,7 @@ class PolicerTrafficTests(MinimalPortVlanConfig):
         super(PolicerTrafficTests, self).tearDown()
 
 
+@group("draft")
 class NoIncrementAfterUnbind(PolicerTrafficTests):
     """
     Verify policer counter not incrementing after unbinding from
@@ -549,6 +554,7 @@ class NoIncrementAfterUnbind(PolicerTrafficTests):
             pre_stats["SAI_QUEUE_STAT_PACKETS"] + tx_cnt)
 
 
+@group("draft")
 class Overflow1Policer2TrapGroups(PolicerTrafficTests):
     """
     Verify policer can be bound to >1 hostif_trap_group.
@@ -626,6 +632,7 @@ class Overflow1Policer2TrapGroups(PolicerTrafficTests):
         self.assertEqual(q_stats, tx_cnt + rx_cnt_cpu)
 
 
+@group("draft")
 class Underflow1Policer2TrapGroups(PolicerTrafficTests):
     """
     Verify policer can be bound to >1 hostif_trap_group.
@@ -708,6 +715,7 @@ class Underflow1Policer2TrapGroups(PolicerTrafficTests):
         self.assertEqual(q_stats, tx_cnt + rx_cnt_cpu)
 
 
+@group("draft")
 class StormControlTests(MinimalPortVlanConfig):
     """
     Verify policer works for SAI_PORT_ATTR_BROADCAST_STORM_CONTROL_POLICER_ID
@@ -835,6 +843,7 @@ class StormControlTests(MinimalPortVlanConfig):
         super(StormControlTests, self).tearDown()
 
 
+@group("draft")
 class VerifyColors(MinimalPortVlanConfig):
     """
     Verify counters per color - it is recommended
