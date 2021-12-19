@@ -2520,6 +2520,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_INT32"          if defined $SAI_ENUMS{$type}; # enum
 
     return "-1"                                 if $type eq "sai_fdb_entry_t";
+    return "-1"                                 if $type eq "sai_nat_entry_t";
     return "-1"                                 if $type eq "sai_attribute_t*";
 
     LogError "invalid struct member value type $type";

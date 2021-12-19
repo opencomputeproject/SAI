@@ -2696,6 +2696,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_IPSEC_SA_STATUS_CHANGE_NOTIFY,
 
     /**
+     * @brief NAT event notification callback function passed to the adapter.
+     *
+     * Use sai_nat_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_nat_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_NAT_EVENT_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
