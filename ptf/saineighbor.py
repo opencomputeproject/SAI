@@ -22,6 +22,7 @@ from ptf.thriftutils import *
 from sai_base_test import *
 
 
+@group("draft")
 class NeighborAttrTest(SaiHelper):
     '''
     Neighbor entry attributes tests class
