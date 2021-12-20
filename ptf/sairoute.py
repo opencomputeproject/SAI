@@ -24,6 +24,7 @@ from ptf.thriftutils import *
 from sai_base_test import *
 
 
+@group("draft")
 class L3RouteTest(SaiHelper):
     '''
     Route test class
@@ -702,6 +703,7 @@ class L3RouteTest(SaiHelper):
             sai_thrift_remove_next_hop(self.client, nhop)
 
 
+@group("draft")
 class L3DirBcastRouteTest(SaiHelper):
     '''
     Verifies direct broadcast routing
