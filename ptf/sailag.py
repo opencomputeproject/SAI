@@ -95,7 +95,7 @@ class LAGCreateLagMember(SaiHelper):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         status = sai_thrift_remove_lag(self.client, lag3)
-        self.assertTrue(status != SAI_STATUS_SUCCESS)
+        self.assertNotEqual(status, SAI_STATUS_SUCCESS)
 
 
 def print_ports_stats(client, ports):
