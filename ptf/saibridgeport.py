@@ -20,6 +20,7 @@ from sai_thrift.sai_headers import *
 from sai_base_test import *
 
 
+@group("draft")
 class BridgePortAttributeTest(SaiHelper):
     '''
     Verifies bridge port attributes getting and setting
@@ -92,6 +93,7 @@ class BridgePortAttributeTest(SaiHelper):
         super(BridgePortAttributeTest, self).tearDown()
 
 
+@group("draft")
 class BridgePortCreationTest(SaiHelper):
     '''
     Verifies bridge port creation
@@ -163,6 +165,7 @@ class BridgePortCreationTest(SaiHelper):
             sai_thrift_remove_bridge_port(self.client, port24_bp)
 
 
+@group("draft")
 class BridgePortStateTest(SaiHelper):
     '''
     Verifies switch behavior in particular bridge port state cases
