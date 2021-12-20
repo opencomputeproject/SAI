@@ -21,6 +21,7 @@ from sai_thrift.sai_headers import *
 from sai_base_test import *
 
 
+@group("draft")
 class NatTranslationTest(SaiHelper):
     '''
     NAT translation tests including ACL rules coexistence.
@@ -1068,6 +1069,7 @@ class NatTranslationTest(SaiHelper):
             sai_thrift_remove_nat_entry(self.client, port_dnat)
 
 
+@group("draft")
 class NatTest(SaiHelper):
     '''
     Basic NAT configuration test
