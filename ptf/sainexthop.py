@@ -25,6 +25,7 @@ from ptf.thriftutils import *
 from sai_base_test import *
 
 
+@group("draft")
 class L3NexthopTest(SaiHelper):
     '''
         Basic L3 nexthop tests.
@@ -202,7 +203,8 @@ class L3NexthopTest(SaiHelper):
             sai_thrift_remove_hostif_trap_group(self.client, trap_group)
 
 
-@group('tunnel')
+@group("draft")
+@group("tunnel")
 class NhopTunnelEncapDecapTest(SaiHelper):
     '''
         Nexthop tunnel encapsulation and decapsulation tests.
@@ -594,7 +596,8 @@ class NhopTunnelEncapDecapTest(SaiHelper):
             sai_thrift_remove_bridge_port(self.client, port26_bp)
 
 
-@group('tunnel')
+@group("draft")
+@group("tunnel")
 class NhopTunnelVNITest(SaiHelper):
     '''
         Nexthop tunnel VNI tests.
