@@ -23,6 +23,7 @@ from sai_thrift.sai_headers import *
 from sai_base_test import *
 
 
+@group("draft")
 class VrfForwardingTest(SaiHelper):
     '''
     Base inter-VRF forwarding tests
@@ -777,6 +778,7 @@ class VrfForwardingTest(SaiHelper):
             sai_thrift_remove_neighbor_entry(self.client, test_nbor3)
 
 
+@group("draft")
 class VrfIsolationTest(SaiHelper):
     '''
     Verify forwarding with overlapping IP addresses - when the same
@@ -1168,6 +1170,7 @@ class VrfIsolationTest(SaiHelper):
             sai_thrift_remove_neighbor_entry(self.client, def_eport_nbor)
 
 
+@group("draft")
 class VrfMultipleRifCreationTest(SaiHelper):
     '''
     Verify multiple RIF creation of type PORT, LAG, VLAN (with tagged
@@ -1764,6 +1767,7 @@ class VrfMultipleRifCreationTest(SaiHelper):
                 self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
 
+@group("draft")
 class VrfAclRedirectTest(SaiHelper):
     '''
     Verify inter-VRF ACL redirection
@@ -2373,6 +2377,7 @@ class VrfAclRedirectTest(SaiHelper):
             sai_thrift_remove_neighbor_entry(self.client, test_nbor3)
 
 
+@group("draft")
 class VrfScaleTest(SaiHelper):
     '''
     Verify if it is possible to create the number of VRFs declared as
@@ -2471,6 +2476,7 @@ class VrfScaleTest(SaiHelper):
             sai_thrift_remove_next_hop(self.client, nexthop_v6)
 
 
+@group("draft")
 class VrfSMACTest(SaiHelper):
     '''
     VRF SMAC test
