@@ -28,6 +28,7 @@ from ptf.thriftutils import *
 from sai_base_test import *
 
 
+@group("draft")
 class L3InterfaceTest(SaiHelper):
     """
     This class contains base router interface tests for regular L3 port RIFs
@@ -2176,6 +2177,7 @@ class L3InterfaceTest(SaiHelper):
                     sai_thrift_remove_router_interface(self.client, rif)
 
 
+@group("draft")
 class L3SubPortTest(SaiHelper):
     """
     This class contains base router interface tests for L3 subport RIFs
@@ -4251,7 +4253,8 @@ class L3SubPortTest(SaiHelper):
             sai_thrift_remove_qos_map(self.client, ingr_qos_map)
 
 
-@group('tunnel')
+@group("draft")
+@group("tunnel")
 class TunnelL3SubPortTest(L3SubPortTest):
     """
     This class contains base router interface tests for L3 subport RIFs with
@@ -4499,6 +4502,7 @@ class TunnelL3SubPortTest(L3SubPortTest):
             sai_thrift_remove_virtual_router(self.client, uvrf)
 
 
+@group("draft")
 class L3SviTest(SaiHelper):
     """
     This class contains base router interface tests for SVI RIFs
@@ -7090,7 +7094,8 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_bridge_port(self.client, port27_bp)
 
 
-@group('mtu-trap')
+@group("draft")
+@group("mtu-trap")
 class L3MtuTrapTest(SaiHelper):
     """
     This class contains router interface tests where packets are forwarded
