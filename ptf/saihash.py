@@ -303,7 +303,7 @@ class SAIHashTestBase(SaiHelper):
         attr_list = sai_thrift_get_switch_attribute(
             self.client, ecmp_hash=True, lag_hash=True)
         lag_hash_id = attr_list['SAI_SWITCH_ATTR_LAG_HASH']
-        self.assertTrue(lag_hash_id != 0)
+        self.assertNotEqual(lag_hash_id, 0)
         if hash_fields_list is None:
             hash_fields_list = [SAI_NATIVE_HASH_FIELD_SRC_MAC,
                                 SAI_NATIVE_HASH_FIELD_DST_MAC,
@@ -385,7 +385,7 @@ class SAIHashTestBase(SaiHelper):
             self.ipv4_hash_id = sai_thrift_create_hash(
                 self.client, fine_grained_hash_field_list=fg_hash_obj_list)
 
-            attr_list = sai_thrift_set_switch_attribute(
+            sai_thrift_set_switch_attribute(
                 self.client,
                 ecmp_hash_ipv4=self.ipv4_hash_id)
         else:
@@ -425,7 +425,7 @@ class SAIHashTestBase(SaiHelper):
             self.assertTrue(
                 self.ipv4_hash_id != 0,
                 "Failed to create IPv4 hash")
-            attr_list = sai_thrift_set_switch_attribute(
+            sai_thrift_set_switch_attribute(
                 self.client,
                 ecmp_hash_ipv4=self.ipv4_hash_id)
             # verify if the hash_fields_list saved correctly
@@ -534,7 +534,7 @@ class SAIHashTestBase(SaiHelper):
             self.assertTrue(
                 self.lag_hash_ipv6 != 0,
                 "Failed to create IPv6 lag hash")
-            attr_list = sai_thrift_set_switch_attribute(
+            sai_thrift_set_switch_attribute(
                 self.client,
                 lag_hash_ipv6=self.lag_hash_ipv6)
             # verify if the hash_fields_list saved correctly
@@ -587,7 +587,7 @@ class SAIHashTestBase(SaiHelper):
             self.assertTrue(
                 self.lag_hash_ipv4 != 0,
                 "Failed to create IPv4 lag hash")
-            attr_list = sai_thrift_set_switch_attribute(
+            sai_thrift_set_switch_attribute(
                 self.client,
                 lag_hash_ipv4=self.lag_hash_ipv4)
             # verify if the hash_fields_list saved correctly
@@ -731,7 +731,7 @@ class SAIHashTest(SAIHashTestBase):
 
         # create vlan 200 with port0 and lag1
         self.vlan200 = sai_thrift_create_vlan(self.client, vlan_id=200)
-        self.assertTrue(self.vlan200 != 0)
+        self.assertNotEqual(self.vlan200, 0)
         self.vlan200_member1 = sai_thrift_create_vlan_member(
             self.client, vlan_id=self.vlan200, bridge_port_id=self.port0_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
@@ -1365,7 +1365,7 @@ class SAIHashTest(SAIHashTestBase):
                 status = sai_thrift_set_switch_attribute(
                     self.client, lag_hash_ipv6=lag_hash_ipv6)
                 self.assertEqual(status, SAI_STATUS_SUCCESS)
-                attr_list = sai_thrift_get_switch_attribute(
+                sai_thrift_get_switch_attribute(
                     self.client, lag_hash_ipv6=True)
                 self.assertTrue(
                     lag_hash_ipv6 != 0,
@@ -1576,7 +1576,7 @@ class SAIHashTest(SAIHashTestBase):
         ecmp_count = self.l3IPv4EcmpPacketTest(hash_dict)
         print("ECMP count:", ecmp_count)
         nbr_active_ports = verify_lb_active_ports(ecmp_count)
-        self.assertTrue(nbr_active_ports == 1)
+        self.assertEqual(nbr_active_ports, 1)
 
     def fgEcmpIPv4HashTest(self,
                            hash_src_ip=None,
@@ -1611,7 +1611,7 @@ class SAIHashTest(SAIHashTestBase):
         ecmp_count = self.l3IPv4EcmpPacketTest(hash_dict)
         print("ECMP LB count:", ecmp_count)
         nbr_active_ports = verify_lb_active_ports(ecmp_count)
-        self.assertTrue(nbr_active_ports == 4)
+        self.assertEqual(nbr_active_ports, 4)
 
         equaly_balanced = verify_equaly_balanced(ecmp_count)
         self.assertTrue(equaly_balanced,
@@ -1628,7 +1628,7 @@ class SAIHashTest(SAIHashTestBase):
         ecmp_count = self.l3IPv4EcmpPacketTest(hash_dict)
         print("ECMP LB count:", ecmp_count)
         nbr_active_ports = verify_lb_active_ports(ecmp_count)
-        self.assertTrue(nbr_active_ports == 4)
+        self.assertEqual(nbr_active_ports, 4)
 
         equaly_balanced = verify_equaly_balanced(ecmp_count)
         self.assertTrue(equaly_balanced,
@@ -1667,7 +1667,7 @@ class SAIHashTest(SAIHashTestBase):
         ecmp_count = self.l3IPv4EcmpPacketTest(hash_dict)
         print("ECMP LB count:", ecmp_count)
         nbr_active_ports = verify_lb_active_ports(ecmp_count)
-        self.assertTrue(nbr_active_ports == 4)
+        self.assertEqual(nbr_active_ports, 4)
 
         equaly_balanced = verify_equaly_balanced(ecmp_count)
         self.assertTrue(equaly_balanced,
@@ -1697,7 +1697,7 @@ class SAIHashTest(SAIHashTestBase):
         ecmp_count = self.l3IPv4EcmpPacketTest(hash_dict_src)
         print("ECMP count:", ecmp_count)
         nbr_active_ports = verify_lb_active_ports(ecmp_count)
-        self.assertTrue(nbr_active_ports == 4)
+        self.assertEqual(nbr_active_ports, 4)
 
         equaly_balanced = verify_equaly_balanced(ecmp_count)
         self.assertTrue(equaly_balanced,
@@ -1730,7 +1730,7 @@ class SAIHashTest(SAIHashTestBase):
         self.assertTrue(equaly_balanced,
                         "Ecmp paths are not equally balanced with seed=17")
         nbr_active_ports = verify_lb_active_ports(ecmp_count)
-        self.assertTrue(nbr_active_ports == 4)
+        self.assertEqual(nbr_active_ports, 4)
 
         # set the ecmp hash seed
         self.setupECMPSeed(seed=TEST_ECMP_SEED1)
@@ -1742,7 +1742,7 @@ class SAIHashTest(SAIHashTestBase):
                         "Ecmp paths are not equally balanced with seed=%d"
                         % (TEST_ECMP_SEED))
         nbr_active_ports = verify_lb_active_ports(ecmp_count_seed1)
-        self.assertTrue(nbr_active_ports == 4)
+        self.assertEqual(nbr_active_ports, 4)
 
         # vefiry if LB factor changed
         similary_balanced = verify_similary_balanced(
@@ -1768,9 +1768,9 @@ class SAIHashTest(SAIHashTestBase):
             self.setupECMPAlgorithm()
             hash_attr_get = sai_thrift_get_switch_attribute(
                 self.client, ecmp_default_hash_algorithm=True)
-            self.assertTrue(hash_attr_get[
-                'SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM']
-                            == SAI_HASH_ALGORITHM_CRC)
+            self.assertEqual(hash_attr_get[
+                'SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM'],
+                             SAI_HASH_ALGORITHM_CRC)
             print('Read value of algorithm: ', hash_attr_get)
 
             # should ballance equally
@@ -1778,7 +1778,7 @@ class SAIHashTest(SAIHashTestBase):
                                                    max_itrs=L3_MAX_ITRS)
             print("\nECMP count: %s \n" % (ecmp_count))
             nbr_active_ports = verify_lb_active_ports(ecmp_count)
-            self.assertTrue(nbr_active_ports == 4)
+            self.assertEqual(nbr_active_ports, 4)
 
             equaly_balanced = verify_equaly_balanced(
                 ecmp_count, pkt_count=L3_MAX_ITRS,
@@ -1792,16 +1792,16 @@ class SAIHashTest(SAIHashTestBase):
             hash_attr_get = sai_thrift_get_switch_attribute(
                 self.client, ecmp_default_hash_algorithm=True)
             print('Read value of algorithm: ', hash_attr_get)
-            self.assertTrue(hash_attr_get[
-                'SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM']
-                            == SAI_HASH_ALGORITHM_RANDOM)
+            self.assertEqual(hash_attr_get[
+                'SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM'],
+                             SAI_HASH_ALGORITHM_RANDOM)
 
             ecmp_random_count = self.l3IPv4EcmpPacketTest(hash_dict,
                                                           max_itrs=L3_MAX_ITRS)
             print("\nECMP count: %s \n" % (ecmp_random_count))
             nbr_active_ports_rd = verify_lb_active_ports(
                 ecmp_random_count)
-            self.assertTrue(nbr_active_ports_rd == 4)
+            self.assertEqual(nbr_active_ports_rd, 4)
 
             equaly_balanced_rd = verify_equaly_balanced(
                 ecmp_random_count, pkt_count=L3_MAX_ITRS,
@@ -1851,7 +1851,7 @@ class SAIHashTest(SAIHashTestBase):
                 hash_ether_type=hash_ether_type)
             print('NonIP-pkt-count:', lb_count)
             nbr_active_ports = verify_lb_active_ports(lb_count)
-            self.assertTrue(nbr_active_ports == 3)
+            self.assertEqual(nbr_active_ports, 3)
 
             equaly_balanced = verify_equaly_balanced(lb_count)
             self.assertTrue(equaly_balanced,
@@ -1901,7 +1901,7 @@ class SAIHashTest(SAIHashTestBase):
         lag_hashing_counts = self.l3IPv4LagPacketTest(hash_dict)
         print("LAG hash LB count (LB expected):", lag_hashing_counts)
         nbr_active_ports = verify_lb_active_ports(lag_hashing_counts)
-        self.assertTrue(nbr_active_ports == 3)
+        self.assertEqual(nbr_active_ports, 3)
         equaly_balanced = verify_equaly_balanced(lag_hashing_counts)
         self.assertTrue(equaly_balanced,
                         "LAG members are not equally balanced")
@@ -1926,9 +1926,9 @@ class SAIHashTest(SAIHashTestBase):
             self.setupLagAlgorithm()
             hash_attr_get = sai_thrift_get_switch_attribute(
                 self.client, lag_default_hash_algorithm=True)
-            self.assertTrue(hash_attr_get[
-                'SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM']
-                            == SAI_HASH_ALGORITHM_CRC)
+            self.assertEqual(hash_attr_get[
+                'SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM'],
+                             SAI_HASH_ALGORITHM_CRC)
             print('Read value of algorithm: ', hash_attr_get)
             hash_dict = {'hash_src_ip': True, 'hash_udp_dport': True,
                          'hash_udp_sport': True}
@@ -1936,7 +1936,7 @@ class SAIHashTest(SAIHashTestBase):
                                                      max_itrs=LAG_MAX_ITRS)
             print("\nPacket count: %s \n" % (lag_pkt_count))
             nbr_active_ports = verify_lb_active_ports(lag_pkt_count)
-            self.assertTrue(nbr_active_ports == 3)
+            self.assertEqual(nbr_active_ports, 3)
 
             equaly_balanced = verify_equaly_balanced(
                 lag_pkt_count, pkt_count=LAG_MAX_ITRS, expected_base=0.6)
@@ -1948,16 +1948,16 @@ class SAIHashTest(SAIHashTestBase):
             self.setupLagAlgorithm(SAI_HASH_ALGORITHM_RANDOM)
             hash_attr_get = sai_thrift_get_switch_attribute(
                 self.client, lag_default_hash_algorithm=True)
-            self.assertTrue(hash_attr_get[
-                'SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM']
-                            == SAI_HASH_ALGORITHM_RANDOM)
+            self.assertEqual(hash_attr_get[
+                'SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM'],
+                             SAI_HASH_ALGORITHM_RANDOM)
             print('Read value of algorithm: ', hash_attr_get)
 
             pkt_count_random = self.l3IPv4LagPacketTest(hash_dict,
                                                         max_itrs=LAG_MAX_ITRS)
             print("\nPacket count: %s \n" % (pkt_count_random))
             nbr_active_ports_rd = verify_lb_active_ports(pkt_count_random)
-            self.assertTrue(nbr_active_ports_rd == 3)
+            self.assertEqual(nbr_active_ports_rd, 3)
 
             equaly_balanced_rd = verify_equaly_balanced(
                 pkt_count_random, pkt_count=LAG_MAX_ITRS, expected_base=0.6)
@@ -1995,7 +1995,7 @@ class SAIHashTest(SAIHashTestBase):
             hash_ether_type=True)
         print("LAG count seed=%d:" % (TEST_LAG_SEED1), lb_count)
         nbr_active_ports = verify_lb_active_ports(lb_count)
-        self.assertTrue(nbr_active_ports == 3)
+        self.assertEqual(nbr_active_ports, 3)
 
         new_seed = TEST_LAG_SEED1 * 2
         self.setupLagSeed(seed=new_seed)
@@ -2006,7 +2006,7 @@ class SAIHashTest(SAIHashTestBase):
 
         print("LAG count seed=%d:" % (new_seed), lb_count_seed1)
         nbr_active_ports = verify_lb_active_ports(lb_count_seed1)
-        self.assertTrue(nbr_active_ports == 3)
+        self.assertEqual(nbr_active_ports, 3)
 
         # verify that changing seed changes modifies the LB
         # vefiry if LB factor changed
@@ -2034,7 +2034,7 @@ class SAIHashTest(SAIHashTestBase):
 
         print("ECMP count seed=%d:" % (TEST_LAG_SEED), ecmp_count)
         nbr_active_ports = verify_lb_active_ports(ecmp_count)
-        self.assertTrue(nbr_active_ports == 3)
+        self.assertEqual(nbr_active_ports, 3)
         equaly_balanced = verify_equaly_balanced(
             ecmp_count, expected_base=SEED_TEST_CHECK_BASE)
         self.assertTrue(equaly_balanced,
@@ -2046,7 +2046,7 @@ class SAIHashTest(SAIHashTestBase):
         ecmp_count_seed1 = self.l3IPv4LagPacketTest(hash_dict)
         print("ECMP count seed=%d:" % (TEST_LAG_SEED1), ecmp_count_seed1)
         nbr_active_ports = verify_lb_active_ports(ecmp_count_seed1)
-        self.assertTrue(nbr_active_ports == 3)
+        self.assertEqual(nbr_active_ports, 3)
         equaly_balanced = verify_equaly_balanced(
             ecmp_count_seed1, expected_base=SEED_TEST_CHECK_BASE)
         self.assertTrue(equaly_balanced,
@@ -2503,7 +2503,7 @@ class SAIIPv6HashTest(SAIHashTestBase):
         ecmp_count_seed1 = self.lagIPv6PacketTest(hash_dict)
         print("ECMP count seed=%d:" % (TEST_LAG_SEED1), ecmp_count_seed1)
         nbr_active_ports = verify_lb_active_ports(ecmp_count_seed1)
-        self.assertTrue(nbr_active_ports == 3)
+        self.assertEqual(nbr_active_ports, 3)
         equaly_balanced = verify_equaly_balanced(
             ecmp_count_seed1, expected_base=SEED_TEST_CHECK_BASE)
         self.assertTrue(equaly_balanced,
@@ -2588,7 +2588,7 @@ class SAIIPv6HashTest(SAIHashTestBase):
                         "Ecmp paths are not equally balanced with seed=%d"
                         % (TEST_ECMP_SEED1))
         nbr_active_ports = verify_lb_active_ports(ecmp_count)
-        self.assertTrue(nbr_active_ports == 3)
+        self.assertEqual(nbr_active_ports, 3)
 
         # set the ecmp hash seed
         self.setupECMPSeed(seed=TEST_ECMP_SEED1)
@@ -2599,7 +2599,7 @@ class SAIIPv6HashTest(SAIHashTestBase):
         self.assertTrue(equaly_balanced,
                         "Ecmp paths are not equally balanced with seed=1")
         nbr_active_ports = verify_lb_active_ports(ecmp_count_seed1)
-        self.assertTrue(nbr_active_ports == 3)
+        self.assertEqual(nbr_active_ports, 3)
 
         # vefiry if LB factor changed
         similary_balanced = verify_similary_balanced(
