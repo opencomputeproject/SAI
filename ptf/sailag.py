@@ -430,7 +430,7 @@ class LAGDisableEgressLagMember(SaiHelper):
             self.assertEqual(len([i for i in count if i != 0]), 1)
             print('Test with 2 mbrs enabled:', count)
             index = [i for i in range(len(count)) if count[i] != 0]
-            self.assertTrue(index[0] not in disabled_mbrs)
+            self.assertNotIn(index[0], disabled_mbrs)
             status = sai_thrift_set_lag_member_attribute(
                 self.client,
                 mbrs[index[0]],
@@ -443,7 +443,7 @@ class LAGDisableEgressLagMember(SaiHelper):
             self.assertEqual(len([i for i in count if i != 0]), 1)
             print('Test with 1 mbrs enabled:', count)
             index = [i for i in range(len(count)) if count[i] != 0]
-            self.assertTrue(index[0] not in disabled_mbrs)
+            self.assertNotIn(index[0], disabled_mbrs)
             status = sai_thrift_set_lag_member_attribute(
                 self.client,
                 mbrs[index[0]],
@@ -452,7 +452,7 @@ class LAGDisableEgressLagMember(SaiHelper):
 
         finally:
             for mbr in mbrs.values():
-                status = sai_thrift_set_lag_member_attribute(
+                sai_thrift_set_lag_member_attribute(
                     self.client,
                     mbr,
                     egress_disable=False)
