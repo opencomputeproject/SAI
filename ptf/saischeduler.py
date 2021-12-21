@@ -55,7 +55,7 @@ class SchedulerParamsTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 scheduling_type=SAI_SCHEDULING_TYPE_DWRR,
                 scheduling_weight=2)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -101,7 +101,7 @@ class SchedulerParamsTest(SaiHelper):
                 self.client,
                 meter_type=SAI_METER_TYPE_PACKETS,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client, sched, meter_type=True, scheduling_type=True)
@@ -135,7 +135,7 @@ class SchedulerParamsTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 min_bandwidth_rate=100,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -182,7 +182,7 @@ class SchedulerParamsTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 max_bandwidth_rate=1000,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -229,7 +229,7 @@ class SchedulerParamsTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 min_bandwidth_burst_rate=100,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -276,7 +276,7 @@ class SchedulerParamsTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 max_bandwidth_burst_rate=1000,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -326,7 +326,7 @@ class SchedulerGroupAttachTest(SaiHelper):
         try:
             self.schgroup = sai_thrift_create_scheduler_group(
                 self.client, level=0, port_id=self.port1)
-            self.assertTrue(self.schgroup != 0)
+            self.assertNotEqual(self.schgroup, 0)
 
         except BaseException:
             print("Failed to create scheduler group")
@@ -357,7 +357,7 @@ class SchedulerGroupAttachTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 scheduling_type=SAI_SCHEDULING_TYPE_DWRR,
                 scheduling_weight=2)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -404,7 +404,7 @@ class SchedulerGroupAttachTest(SaiHelper):
                 self.client,
                 meter_type=SAI_METER_TYPE_PACKETS,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client, sched, meter_type=True, scheduling_type=True)
@@ -447,7 +447,7 @@ class SchedulerGroupAttachTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 min_bandwidth_rate=100,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -495,7 +495,7 @@ class SchedulerGroupAttachTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 max_bandwidth_rate=1000,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -543,7 +543,7 @@ class SchedulerGroupAttachTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 min_bandwidth_burst_rate=100,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -591,7 +591,7 @@ class SchedulerGroupAttachTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 max_bandwidth_burst_rate=1000,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -651,7 +651,7 @@ class SchedulerPortAttachTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 max_bandwidth_rate=1000,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
@@ -691,7 +691,7 @@ class SchedulerPortAttachTest(SaiHelper):
                 meter_type=SAI_METER_TYPE_PACKETS,
                 max_bandwidth_burst_rate=1000,
                 scheduling_type=SAI_SCHEDULING_TYPE_STRICT)
-            self.assertTrue(sched != 0)
+            self.assertNotEqual(sched, 0)
 
             sched_attr = sai_thrift_get_scheduler_attribute(
                 self.client,
