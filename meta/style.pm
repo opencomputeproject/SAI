@@ -735,6 +735,56 @@ sub CheckDoxygenSpacing
     }
 }
 
+sub GetWordsFromSources
+{
+    my $wordsToCheck = shift;
+
+    my @sources = GetMetaSourceFiles();
+
+    my @acronyms = GetAcronyms();
+
+    my @spellExceptions = qw/ IPv4 IPv6 /;
+
+    my %exceptions = map { $_ => $_ } @spellExceptions;
+
+    my %ac = ();
+
+    $ac{$_} = 1 for @acronyms;
+
+    for my $src (sort @sources)
+    {
+        next if $src =~ /saimetadata.c/;
+        next if $src =~ /saimetadatatest.c/;
+        next if $src =~ /saiswig/;
+
+        my $data = ReadHeaderFile($src);
+
+        my @comments = ExtractComments($data);
+
+        for my $comment(@comments)
+        {
+            my @lines = split/\n/,$comment;
+
+            for my $line (@lines)
+            {
+                while ($line =~ /\b([a-z0-9]+)\b/ig)
+                {
+                    my $pre = $`;
+                    my $post = $';
+                    my $word = $1;
+
+                    next if $word =~ /xFF/;
+                    next if defined $ac{$word};
+                    next if defined $wordsToCheck->{$word};
+                    next if defined $exceptions{$word};
+
+                    $wordsToCheck->{$word} = $src;
+                }
+            }
+        }
+    }
+}
+
 sub CheckHeadersStyle
 {
     #
