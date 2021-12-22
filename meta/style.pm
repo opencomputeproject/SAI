@@ -769,6 +769,10 @@ sub GetWordsFromSources
 
     my @acronyms = GetAcronyms();
 
+    my @spellExceptions = qw/ IPv4 IPv6 /;
+
+    my %exceptions = map { $_ => $_ } @spellExceptions;
+
     my %ac = ();
 
     $ac{$_} = 1 for @acronyms;
@@ -798,6 +802,7 @@ sub GetWordsFromSources
                     next if $word =~ /xFF/;
                     next if defined $ac{$word};
                     next if defined $wordsToCheck->{$word};
+                    next if defined $exceptions{$word};
 
                     $wordsToCheck->{$word} = $src;
                 }
