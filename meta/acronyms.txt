@@ -101,6 +101,7 @@ PTP - Precision time protocol
 QOS - Quality of Service
 RARP - Reverse Address Resolution Protocol
 RFC - Request For Comment
+RPC - Remote Procedure Call
 RPF - Reverse Path Forwarding
 RPN - Reverse Polish Notation
 RSPAN - Remote Span
