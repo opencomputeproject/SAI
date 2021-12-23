@@ -105,10 +105,8 @@ def release_hash(self, ipv4_hash_id, ipv6_hash_id):
         self.lag_ipv4_hash_id = 0
     if ipv6_hash_id != 0:
         sai_thrift_remove_hash(self.client, ipv6_hash_id)
-        ipv6_hash_id = 0
     if ipv4_hash_id != 0:
         sai_thrift_remove_hash(self.client, ipv4_hash_id)
-        ipv4_hash_id = 0
 
 
 def print_number_of_available_nhg_resources(self):
@@ -183,9 +181,9 @@ class L3IPv4EcmpHost(SaiHelper):
         # set switch src mac address
         sai_thrift_set_switch_attribute(
             self.client, src_mac_address=ROUTER_MAC)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, lag_default_hash_seed=TEST_LAG_SEED)
         # test neighbor creation
         self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
@@ -474,9 +472,9 @@ class L3ipv6EcmpHost(SaiHelper):
         # set switch src mac address
         sai_thrift_set_switch_attribute(
             self.client, src_mac_address=ROUTER_MAC)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, lag_default_hash_seed=TEST_LAG_SEED)
         # test neighbor creation
         self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
@@ -611,9 +609,9 @@ class L3IPv4EcmpLpmTest(SaiHelper):
         # set switch src mac address
         sai_thrift_set_switch_attribute(
             self.client, src_mac_address=ROUTER_MAC)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, lag_default_hash_seed=TEST_LAG_SEED)
         self.port14_rif = sai_thrift_create_router_interface(
             self.client,
@@ -678,7 +676,7 @@ class L3IPv4EcmpLpmTest(SaiHelper):
             switch_id=self.switch_id,
             destination=sai_ipprefix('10.10.10.1/16'),
             vr_id=self.default_vrf)
-        self.assertTrue(self.route0 != 0)
+        self.assertNotEqual(self.route0, 0)
         status = sai_thrift_create_route_entry(
             self.client, self.route0, next_hop_id=self.nhop_group1)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -686,7 +684,7 @@ class L3IPv4EcmpLpmTest(SaiHelper):
             switch_id=self.switch_id,
             destination=sai_ipprefix(nhop_ip1_subnet),
             vr_id=self.default_vrf)
-        self.assertTrue(self.route1 != 0)
+        self.assertNotEqual(self.route1, 0)
         status = sai_thrift_create_route_entry(
             self.client, self.route1, next_hop_id=self.nhop1)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -694,7 +692,7 @@ class L3IPv4EcmpLpmTest(SaiHelper):
             switch_id=self.switch_id,
             destination=sai_ipprefix(nhop_ip2_subnet),
             vr_id=self.default_vrf)
-        self.assertTrue(self.route2 != 0)
+        self.assertNotEqual(self.route2, 0)
         status = sai_thrift_create_route_entry(
             self.client, self.route2, next_hop_id=self.nhop2)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -702,7 +700,7 @@ class L3IPv4EcmpLpmTest(SaiHelper):
             switch_id=self.switch_id,
             destination=sai_ipprefix(nhop_ip3_subnet),
             vr_id=self.default_vrf)
-        self.assertTrue(self.route3 != 0)
+        self.assertNotEqual(self.route3, 0)
         status = sai_thrift_create_route_entry(
             self.client, self.route3, next_hop_id=self.nhop3)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -855,7 +853,7 @@ class L3IPv4EcmpLpmTest(SaiHelper):
             attr_list = sai_thrift_get_next_hop_group_attribute(
                 self.client, self.nhop_group1, next_hop_count=True)
             nhg_size = attr_list["SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_COUNT"]
-            self.assertTrue(nhg_size == 4)
+            self.assertEqual(nhg_size, 4)
             for i in range(0, 4):
                 self.assertTrue(
                     (count[i] >= ((MAX_ITRS / 4) * 0.5)),
@@ -900,7 +898,7 @@ class L3IPv4EcmpLpmTest(SaiHelper):
             attr_list = sai_thrift_get_next_hop_group_attribute(
                 self.client, self.nhop_group1, next_hop_count=True)
             nhg_size = attr_list["SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_COUNT"]
-            self.assertTrue(nhg_size == 3)
+            self.assertEqual(nhg_size, 3)
             for i in range(0, nhg_size):
                 self.assertTrue(
                     (count[i] >= ((MAX_ITRS / nhg_size) * 0.8)),
@@ -933,9 +931,9 @@ class L3IPv4EcmpLagTest(SaiHelper):
         # set switch src mac address
         sai_thrift_set_switch_attribute(
             self.client, src_mac_address=ROUTER_MAC)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, lag_default_hash_seed=TEST_LAG_SEED)
         self.lag1_rif = sai_thrift_create_router_interface(
             self.client,
@@ -1158,8 +1156,8 @@ class L3IPv4EcmpLagTest(SaiHelper):
             ecmp_count = [(count[0] + count[1] + count[2]),
                           (count[3] + count[4] + count[5])]
             # check LAG1 traffic
-            self.assertTrue(count[0] == 0)  # LAG1 member 1 port4 disabled
-            self.assertTrue(count[1] == 0)  # LAG1 member 2 port5 disabled
+            self.assertEqual(count[0], 0)  # LAG1 member 1 port4 disabled
+            self.assertEqual(count[1], 0)  # LAG1 member 2 port5 disabled
             self.assertTrue((count[2] >= ((MAX_ITRS / 2) * 0.6)),
                             "Lag path1 is not equally balanced")
             print("ECMP count:", ecmp_count)
@@ -1314,10 +1312,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
         status = sai_thrift_set_hash_attribute(
             self.client, hash_id, native_hash_field_list=hash_field_list)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
-        hash_field_list = sai_thrift_s32_list_t(
-            count=len(hash_attr_list), int32list=hash_attr_list)
-        hash_data = sai_thrift_get_hash_attribute(
-            self.client, hash_id, native_hash_field_list=hash_field_list)
 
     def l3IPv4EcmpHostTwoLagsTest(self):
         """
@@ -1390,9 +1384,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntoa(
                 binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-            src_mac = src_mac_start.format(
-                str(i).zfill(4)[:2],
-                str(i).zfill(4)[2:])
             src_mac = '00:22:22:22:00:00'
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src=src_mac,
@@ -1474,9 +1465,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntoa(
                 binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-            src_mac = src_mac_start.format(
-                str(i).zfill(4)[:2],
-                str(i).zfill(4)[2:])
             src_mac = '00:22:22:22:22:22'
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src=src_mac,
@@ -1578,9 +1566,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntoa(
                 binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-            src_mac = src_mac_start.format(
-                str(i).zfill(4)[:2],
-                str(i).zfill(4)[2:])
             src_mac = '00:22:22:22:22:22'
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src=src_mac,
@@ -1665,9 +1650,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
             for i in range(0, MAX_ITRS):
                 dst_ip_addr = socket.inet_ntoa(
                     binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-                src_mac = src_mac_start.format(
-                    str(i).zfill(4)[:2],
-                    str(i).zfill(4)[2:])
                 src_mac = '00:22:22:22:22:22'
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=src_mac,
@@ -1737,9 +1719,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
             for i in range(0, MAX_ITRS):
                 dst_ip_addr = socket.inet_ntoa(
                     binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-                src_mac = src_mac_start.format(
-                    str(i).zfill(4)[:2],
-                    str(i).zfill(4)[2:])
                 src_mac = '00:22:22:22:22:22'
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=src_mac,
@@ -1829,9 +1808,9 @@ class L3IPv6EcmpLagTest(SaiHelper):
         # set switch src mac address
         sai_thrift_set_switch_attribute(
             self.client, src_mac_address=ROUTER_MAC)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, lag_default_hash_seed=TEST_LAG_SEED)
         self.lag1_rif = sai_thrift_create_router_interface(
             self.client,
@@ -2232,9 +2211,6 @@ class L3IPv6EcmpLagTest(SaiHelper):
         src_mac_start = '00:22:22:22:{0}:{1}'
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
-            src_mac = src_mac_start.format(
-                str(i).zfill(4)[:2],
-                str(i).zfill(4)[2:])
             src_mac = '00:22:22:22:22:22'
             pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
                                       eth_src=src_mac,
@@ -2332,9 +2308,6 @@ class L3IPv6EcmpLagTest(SaiHelper):
         src_mac_start = '00:22:22:22:{0}:{1}'
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
-            src_mac = src_mac_start.format(
-                str(i).zfill(4)[:2],
-                str(i).zfill(4)[2:])
             src_mac = '00:22:22:22:22:22'
             pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
                                       eth_src=src_mac,
@@ -2452,12 +2425,12 @@ class L3IPv6EcmpLagTest(SaiHelper):
                           (count[3] + count[4] + count[5])]
             print("ECMP count:", ecmp_count)
             # check LAG1 traffic
-            self.assertTrue(count[0] == 0)
-            self.assertTrue(count[1] == 0)
+            self.assertEqual(count[0], 0)
+            self.assertEqual(count[1], 0)
             self.assertTrue((count[2] >= ((MAX_ITRS / 2) * 0.7)),
                             "Lag path1 is not equally balanced")
             # check LAG2 traffic
-            self.assertTrue(count[3] == 0)
+            self.assertEqual(count[3], 0)
             self.assertTrue((count[4] >= ((MAX_ITRS / 4) * 0.5)),
                             "Lag path2 is not equally balanced")
             self.assertTrue((count[5] >= ((MAX_ITRS / 4) * 0.5)),
@@ -2785,9 +2758,9 @@ class L3IPv4SVIEcmpTest(SaiHelper):
         # set switch src mac address
         sai_thrift_set_switch_attribute(
             self.client, src_mac_address=ROUTER_MAC)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, lag_default_hash_seed=TEST_LAG_SEED)
         self.port24_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -3272,9 +3245,9 @@ class L3IPv6SVIEcmpTest(SaiHelper):
         # set switch src mac address
         sai_thrift_set_switch_attribute(
             self.client, src_mac_address=ROUTER_MAC)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
-        status = sai_thrift_set_switch_attribute(
+        sai_thrift_set_switch_attribute(
             self.client, lag_default_hash_seed=TEST_LAG_SEED)
         self.port24_bp = sai_thrift_create_bridge_port(
             self.client,
