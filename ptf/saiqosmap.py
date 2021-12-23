@@ -2490,7 +2490,7 @@ class L3QosDscpToTcTest(L3QosMapBaseClass):
                     ipv6_tc=ipv6_tc,
                     pktlen=100)
                 # setup port default_tc
-                status = sai_thrift_set_port_attribute(
+                sai_thrift_set_port_attribute(
                     self.client,
                     self.port0,
                     qos_default_tc=test['port_default_tc'])
@@ -2598,7 +2598,7 @@ class L3QosDscpToTcTest(L3QosMapBaseClass):
                                             ip_id=105,
                                             ip_ttl=63)
                 # setup port default_tc
-                status = sai_thrift_set_port_attribute(
+                sai_thrift_set_port_attribute(
                     self.client,
                     self.port0,
                     qos_default_tc=test['port_default_tc'])
@@ -3071,9 +3071,9 @@ class QosDscpToColorTest(L3QosMapBaseClass):
                     verify_packet(self, exp_pkt, egress_port)
         finally:
             for port in [self.port0, self.port2, self.port3]:
-                status = sai_thrift_set_port_attribute(self.client,
-                                                       port,
-                                                       qos_dscp_to_color_map=0)
+                sai_thrift_set_port_attribute(self.client,
+                                              port,
+                                              qos_dscp_to_color_map=0)
 
     def l3IPv6QosMapVariousDscpToColorManyIngressPortsTest(self):
         '''
@@ -3130,9 +3130,9 @@ class QosDscpToColorTest(L3QosMapBaseClass):
                     verify_packet(self, exp_pkt, egress_port)
         finally:
             for port in [self.port0, self.port1, self.port3]:
-                status = sai_thrift_set_port_attribute(self.client,
-                                                       port,
-                                                       qos_dscp_to_color_map=0)
+                sai_thrift_set_port_attribute(self.client,
+                                              port,
+                                              qos_dscp_to_color_map=0)
 
 
 @group("draft")
@@ -6014,8 +6014,6 @@ class QosTcToPriorityGroupTestTC(L3QosMapBaseClass):
         Args:
             qos_map_type (uint): qos map type test variant
         '''
-        pfc_list = [0, 1, 2, 3, 4, 5, 6, 7]
-        pfc_pg_list = [0, 1, 2, 3, 4, 5, 6, 7]
         self.test_dev_ports = [self.dev_port0]
         self.test_pfc_to_pg_map_id = [0] * 4
         self.test_tc_to_pg_map_id = [0] * 4
@@ -6128,8 +6126,6 @@ class QosTcToPriorityGroupTestTC(L3QosMapBaseClass):
         Args:
             qos_map_type (uint): qos map type test variant
         '''
-        pfc_list = [0, 1, 2, 3, 4, 5, 6, 7]
-        pfc_pg_list = [0, 1, 2, 3, 4, 5, 6, 7]
         self.test_dev_ports = [self.dev_port0]
         self.test_pfc_to_pg_map_id = [0] * 4
         self.test_tc_to_pg_map_id = [0] * 4
@@ -6500,7 +6496,7 @@ class QosTcAndColorToDscpTest(L3QosMapBaseClass):
         finally:
             for port in [self.port1, self.port2]:
                 # set Port 1 TC AND COLOR -> DSCP mapping
-                status = sai_thrift_set_port_attribute(
+                sai_thrift_set_port_attribute(
                     self.client, port, qos_tc_and_color_to_dscp_map=0)
 
     def l3IPv4QosMapTcColorToDscpManyIngressPortsTest(self):
@@ -6640,7 +6636,7 @@ class QosTcAndColorToDscpTest(L3QosMapBaseClass):
         finally:
             for port in [self.port1, self.port2]:
                 # set Port 1 TC AND COLOR -> DSCP mapping
-                status = sai_thrift_set_port_attribute(
+                sai_thrift_set_port_attribute(
                     self.client, port, qos_tc_and_color_to_dscp_map=0)
 
     def l3IPv4QosMapVariousTcColorToDscpManyIngressPortsTest(self):
@@ -6790,7 +6786,7 @@ class QosTcAndColorToDscpTest(L3QosMapBaseClass):
                 sai_thrift_set_port_attribute(self.client,
                                               port,
                                               qos_dscp_to_tc_map=0)
-                status = sai_thrift_set_port_attribute(
+                sai_thrift_set_port_attribute(
                     self.client, port, qos_tc_and_color_to_dscp_map=0)
 
 
@@ -7357,7 +7353,7 @@ class L2QosMapPcpToColorTest(L2QosMapBaseClass):
                     port_config = [[self.port0, 5], [self.port1, 1],
                                    [self.port2, 2], [self.port3, 3]]
                 for port, port_default_tc in port_config:
-                    status = sai_thrift_set_port_attribute(
+                    sai_thrift_set_port_attribute(
                         self.client, port, qos_default_tc=port_default_tc)
                     attr = sai_thrift_get_port_attribute(self.client,
                                                          port,
@@ -8303,7 +8299,7 @@ class L2QosMapPcpToTcTest(L2QosMapBaseClass):
                     port_config = [[self.port0, 5], [self.port1, 1],
                                    [self.port2, 2], [self.port3, 3]]
                 for port, port_default_tc in port_config:
-                    status = sai_thrift_set_port_attribute(
+                    sai_thrift_set_port_attribute(
                         self.client, port, qos_default_tc=port_default_tc)
                     attr = sai_thrift_get_port_attribute(self.client,
                                                          port,
@@ -8360,7 +8356,6 @@ class L2QosMapPcpToTcTest(L2QosMapBaseClass):
                 test_port = self.dev_port0
                 flood_port_list = [[self.dev_port1], [self.dev_port2],
                                    [self.dev_port3]]
-                flood_pkt_list = [p1_exp_pkt, p2_exp_pkt, p3_exp_pkt]
                 flood_pkt_list = [pkt, pkt, pkt]
                 send_packet(self, test_port, pkt)
                 verify_each_packet_on_multiple_port_lists(self, flood_pkt_list,
@@ -8516,7 +8511,7 @@ class L2QosMapPcpToTcTest(L2QosMapBaseClass):
                 if test['port_default_tc'] is not None:
                     port_default_tc = test['port_default_tc']
                 for port in [self.port0]:
-                    status = sai_thrift_set_port_attribute(
+                    sai_thrift_set_port_attribute(
                         self.client, port, qos_default_tc=port_default_tc)
                     attr = sai_thrift_get_port_attribute(self.client,
                                                          port,
