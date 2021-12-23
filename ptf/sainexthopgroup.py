@@ -1380,7 +1380,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
         print("l3IPv4EcmpHostPortLagTest")
         count = [0, 0, 0, 0, 0, 0, 0, 0]
         dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
-        src_mac_start = '00:22:22:22:{0}:{1}'
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntoa(
                 binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
@@ -1461,7 +1460,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
         self.setupECMPIPv4Hash([SAI_NATIVE_HASH_FIELD_SRC_IP])
         count = [0, 0, 0, 0, 0, 0, 0, 0]
         dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
-        src_mac_start = '00:22:22:22:{0}:{1}'
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntoa(
                 binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
@@ -1562,7 +1560,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
         self.setupECMPIPv4Hash()
         count = [0, 0, 0, 0, 0, 0, 0, 0]
         dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
-        src_mac_start = '00:22:22:22:{0}:{1}'
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntoa(
                 binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
@@ -1646,7 +1643,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
         try:
             count = [0, 0, 0, 0, 0, 0, 0, 0]
             dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
-            src_mac_start = '00:22:22:22:{0}:{1}'
             for i in range(0, MAX_ITRS):
                 dst_ip_addr = socket.inet_ntoa(
                     binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
@@ -1715,7 +1711,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
             self.assertEqual(attr['ecmp_default_hash_seed'], 400)
             count = [0, 0, 0, 0, 0, 0, 0, 0]
             dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
-            src_mac_start = '00:22:22:22:{0}:{1}'
             for i in range(0, MAX_ITRS):
                 dst_ip_addr = socket.inet_ntoa(
                     binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
@@ -2208,7 +2203,6 @@ class L3IPv6EcmpLagTest(SaiHelper):
         count = [0, 0, 0, 0, 0, 0, 0, 0]
         dst_ip = socket.inet_pton(socket.AF_INET6, '1000:1:1:0:0:0:0:1')
         dst_ip_arr = list(dst_ip)
-        src_mac_start = '00:22:22:22:{0}:{1}'
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
             src_mac = '00:22:22:22:22:22'
@@ -2305,7 +2299,6 @@ class L3IPv6EcmpLagTest(SaiHelper):
         count = [0, 0, 0, 0, 0, 0, 0, 0]
         dst_ip = socket.inet_pton(socket.AF_INET6, '1000:1:1:0:0:0:0:1')
         dst_ip_arr = list(dst_ip)
-        src_mac_start = '00:22:22:22:{0}:{1}'
         for i in range(0, MAX_ITRS):
             dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
             src_mac = '00:22:22:22:22:22'
