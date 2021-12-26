@@ -196,7 +196,7 @@ class PortAttributeTest(SaiHelper):
             self.assertEqual(status, SAI_STATUS_SUCCESS)
         finally:
             if sample_packet != 0:
-                status = sai_thrift_set_port_attribute(
+                sai_thrift_set_port_attribute(
                     self.client,
                     self.port,
                     ingress_samplepacket_enable=0)
@@ -223,7 +223,7 @@ class PortAttributeTest(SaiHelper):
             self.assertTrue(ig_profile != 0, "Failed to create buffer profile")
 
             sai_list = sai_thrift_object_list_t(count=10, idlist=[])
-            attr = sai_thrift_get_port_attribute(
+            sai_thrift_get_port_attribute(
                 self.client,
                 self.port,
                 qos_ingress_buffer_profile_list=sai_list)
@@ -437,7 +437,7 @@ class ListPortAttributesTest(SaiHelperBase):
                 # Verify Set/Get port attribute
                 if scenario['test_set'] is not None:
                     setattr(self, scenario['attribute'], scenario['test_set'])
-                    status = attr = sai_thrift_set_port_attribute(
+                    status = sai_thrift_set_port_attribute(
                         self.client,
                         self.portx,
                         qos_default_tc=self.qos_default_tc,
@@ -688,11 +688,11 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(self.client,
-                                                   self.portx,
-                                                   qos_dscp_to_tc_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_set_port_attribute(self.client,
+                                          self.portx,
+                                          qos_dscp_to_tc_map=0)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def portQosDot1pToColorMapAttributeTest(self):
         ''' Test port qos dot1p to color map attribute '''
@@ -748,10 +748,10 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(self.client, self.portx,
-                                                   qos_dot1p_to_color_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_set_port_attribute(self.client, self.portx,
+                                          qos_dot1p_to_color_map=0)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def portQosDot1pToTcMapAttributeTest(self):
         ''' Test port qos dot1p to tc map attribute '''
@@ -805,10 +805,10 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(self.client, self.portx,
-                                                   qos_dot1p_to_tc_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_set_port_attribute(self.client, self.portx,
+                                          qos_dot1p_to_tc_map=0)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def portQosDscpToColorMapAttributeTest(self):
         ''' Test port qos dscp to color map attribute '''
@@ -862,10 +862,10 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(self.client, self.portx,
-                                                   qos_dscp_to_color_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_set_port_attribute(self.client, self.portx,
+                                          qos_dscp_to_color_map=0)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def portQosTcToQueueMapAttributeTest(self):
         ''' Test port qos tc to queue map attribute '''
@@ -919,10 +919,10 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(self.client, self.portx,
-                                                   qos_tc_to_queue_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_set_port_attribute(self.client, self.portx,
+                                          qos_tc_to_queue_map=0)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def portQosTcToPriorityGroupMapAttributeTest(self):
         ''' Test port qos tc to priority group map attribute '''
@@ -986,11 +986,11 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(
+            sai_thrift_set_port_attribute(
                 self.client, self.portx,
                 qos_tc_to_priority_group_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def portQosTcAndColorToDscpMapAttributeTest(self):
         ''' Test port qos tc and color to dscp map attribute '''
@@ -1046,11 +1046,11 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(
+            sai_thrift_set_port_attribute(
                 self.client, self.portx,
                 qos_tc_and_color_to_dscp_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def portQosTcAndColorToDot1pMapAttributeTest(self):
         ''' Test port qos tc and color to dot1p map attribute '''
@@ -1106,11 +1106,11 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(
+            sai_thrift_set_port_attribute(
                 self.client, self.portx,
                 qos_tc_and_color_to_dot1p_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def portQosPfcPriorityToQueueMapAttributeTest(self):
         ''' Test port qos pfc priority to queue map attribute '''
@@ -1166,11 +1166,11 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(
+            sai_thrift_set_port_attribute(
                 self.client, self.portx,
                 qos_pfc_priority_to_queue_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def portQosPfcPriorityToPriorityGroupMapAttributeTest(self):
         ''' Test port qos pfc priority to priority group map attribute '''
@@ -1232,16 +1232,15 @@ class PortQosMapAttributeTest(SaiHelperBase):
 
         finally:
             # Remove the qos_map
-            status = sai_thrift_set_port_attribute(
-                self.client, self.portx,
-                qos_pfc_priority_to_priority_group_map=0)
-            status = sai_thrift_remove_qos_map(self.client, qos_map_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_set_port_attribute(
+                self.client, self.portx, qos_pfc_priority_to_priority_group_map=0)
+            sai_thrift_remove_qos_map(self.client, qos_map_id)
+            sai_thrift_remove_port(self.client, self.portx)
 
 
 @group("draft")
 class PortFloodClass(SaiHelperBase):
-    ''' Verifies SAI bridge port flood test case '''
+    ''' Verify SAI bridge port flood test case '''
 
     def setUp(self):
         super(PortFloodClass, self).setUp()
@@ -1379,7 +1378,7 @@ class PortFecModeAttributeTest(SaiHelper):
                     auto_neg_mode=test['auto_neg_mode'],
                     admin_state=True,
                     fec_mode=test['fec_mode'])
-                self.assertTrue(self.portx != 0)
+                self.assertNotEqual(self.portx, 0)
 
                 lane_list = sai_thrift_u32_list_t(count=10, uint32list=[])
                 supported_fec_modes = sai_thrift_u32_list_t(count=10,
@@ -1393,11 +1392,11 @@ class PortFecModeAttributeTest(SaiHelper):
                                                      admin_state=True,
                                                      auto_neg_mode=True)
 
-                self.assertTrue(attr['speed'] == test['speed'])
-                self.assertTrue(attr['fec_mode'] == test['fec_mode'])
-                self.assertTrue(attr['auto_neg_mode'] == test['auto_neg_mode'])
+                self.assertEqual(attr['speed'], test['speed'])
+                self.assertEqual(attr['fec_mode'], test['fec_mode'])
+                self.assertEqual(attr['auto_neg_mode'], test['auto_neg_mode'])
                 if test['transit_fec'] is not None:
-                    attr = sai_thrift_set_port_attribute(
+                    sai_thrift_set_port_attribute(
                         self.client,
                         self.portx,
                         fec_mode=test['transit_fec'])
@@ -1409,9 +1408,9 @@ class PortFecModeAttributeTest(SaiHelper):
                         fec_mode=True,
                         admin_state=True,
                         auto_neg_mode=True)
-                    self.assertTrue(attr['fec_mode'] == test['transit_fec'])
-                attr = sai_thrift_set_port_attribute(self.client, self.portx,
-                                                     admin_state=False)
+                    self.assertEqual(attr['fec_mode'], test['transit_fec'])
+                sai_thrift_set_port_attribute(self.client, self.portx,
+                                              admin_state=False)
                 attr = sai_thrift_get_port_attribute(
                     self.client,
                     self.portx,
@@ -1419,16 +1418,16 @@ class PortFecModeAttributeTest(SaiHelper):
                     oper_status=True,
                     speed=True,
                     auto_neg_mode=True)
-                self.assertTrue(attr['admin_state'] is False)
+                self.assertIs(attr['admin_state'], False)
 
-                attr = sai_thrift_set_port_attribute(self.client, self.portx,
-                                                     admin_state=True)
+                sai_thrift_set_port_attribute(self.client, self.portx,
+                                              admin_state=True)
                 attr = sai_thrift_get_port_attribute(self.client, self.portx,
                                                      admin_state=True,
                                                      oper_status=True,
                                                      speed=True,
                                                      auto_neg_mode=True)
-                self.assertTrue(attr['admin_state'] is True)
+                self.assertIs(attr['admin_state'], True)
 
                 sai_thrift_remove_port(self.client, self.portx)
                 self.portx = 0
@@ -1484,7 +1483,7 @@ class PortSpeedAttributeTest(SaiHelperBase):
                     internal_loopback_mode=SAI_PORT_INTERNAL_LOOPBACK_MODE_MAC,
                     media_type=SAI_PORT_MEDIA_TYPE_COPPER,
                     admin_state=True)
-                self.assertTrue(self.portx != 0)
+                self.assertNotEqual(self.portx, 0)
                 lane_list = sai_thrift_u32_list_t(count=10, uint32list=[])
                 attr = sai_thrift_get_port_attribute(self.client,
                                                      self.portx,
@@ -1493,12 +1492,12 @@ class PortSpeedAttributeTest(SaiHelperBase):
                                                      hw_lane_list=lane_list)
                 self.assertEqual(attr['hw_lane_list'].count,
                                  test['speed_lanes'])
-                self.assertTrue(attr['speed'] == test['speed'])
+                self.assertEqual(attr['speed'], test['speed'])
 
                 if test['transit_speed'] is not None:
                     num_lanes = speed_to_num_lanes(test['transit_speed'])
                     lane_list = num_lanes_to_lane_list(num_lanes)
-                    attr = sai_thrift_set_port_attribute(
+                    sai_thrift_set_port_attribute(
                         self.client, self.portx,
                         speed=test['transit_speed'])
                     attr = sai_thrift_get_port_attribute(
@@ -1506,7 +1505,7 @@ class PortSpeedAttributeTest(SaiHelperBase):
                         self.portx,
                         speed=True,
                         hw_lane_list=lane_list)
-                    self.assertTrue(attr['speed'] == test['transit_speed'])
+                    self.assertEqual(attr['speed'], test['transit_speed'])
                     self.assertEqual(attr['hw_lane_list'].count, num_lanes)
                 sai_thrift_remove_port(self.client, self.portx)
                 self.portx = 0
@@ -1533,8 +1532,6 @@ class PortAutoNegAttributeTest(SaiHelperBase):
 
         test_config = []
         supported_speed = [1000, 10000, 25000]
-        supported_speed_list = sai_thrift_s32_list_t(count=10,
-                                                     int32list=supported_speed)
         advertised_fec_mode = [SAI_PORT_FEC_MODE_NONE,
                                SAI_PORT_FEC_MODE_FC,
                                SAI_PORT_FEC_MODE_RS]
@@ -1592,7 +1589,7 @@ class PortAutoNegAttributeTest(SaiHelperBase):
                     advertised_speed=advertised_speed_list)
 
                 self.assertEqual(attr['speed'], test['speed'])
-                self.assertTrue(attr['auto_neg_mode'] is True)
+                self.assertIs(attr['auto_neg_mode'], True)
 
                 supported_speed_list = attr['supported_speed']
                 supported_speeds = ""
@@ -1642,8 +1639,8 @@ def set_port_speed(client, port, requested_speed, verify=None):
     Returns:
         bool: True if verify is True
     '''
-    attr = sai_thrift_set_port_attribute(client, port,
-                                         speed=requested_speed)
+    sai_thrift_set_port_attribute(client, port,
+                                  speed=requested_speed)
     if verify is True:
         attr = sai_thrift_get_port_attribute(client, port, speed=True)
         if attr['speed'] != requested_speed:
@@ -1797,7 +1794,6 @@ class PortAclBindingClass(PortFloodClass):
         stage = SAI_ACL_STAGE_INGRESS
         bind_points = [SAI_ACL_BIND_POINT_TYPE_PORT]
         action_types = [SAI_ACL_ACTION_TYPE_PACKET_ACTION]
-        action_drop = SAI_PACKET_ACTION_DROP
         dip_mask = '255.255.255.0'
 
         acl_bind_point_type_list = sai_thrift_s32_list_t(
@@ -1829,7 +1825,7 @@ class PortAclBindingClass(PortFloodClass):
             acl_action_type_list=acl_action_type_list,
             field_dst_ip=dip_ind,
             field_dst_mac=dmac_ind)
-        self.assertTrue(acl_table_id != 0)
+        self.assertNotEqual(acl_table_id, 0)
 
         action_drop = action
         packet_action = sai_thrift_acl_action_data_t(
@@ -1840,7 +1836,7 @@ class PortAclBindingClass(PortFloodClass):
             action_packet_action=packet_action,
             field_dst_ip=ip,
             field_dst_mac=mac)
-        self.assertTrue(acl_entry != 0)
+        self.assertNotEqual(acl_entry, 0)
 
         acl_table_group = sai_thrift_create_acl_table_group(
             self.client,
@@ -1882,7 +1878,6 @@ class PortAclBindingClass(PortFloodClass):
         stage = SAI_ACL_STAGE_EGRESS
         bind_points = [SAI_ACL_BIND_POINT_TYPE_PORT]
         action_types = [SAI_ACL_ACTION_TYPE_PACKET_ACTION]
-        action_drop = SAI_PACKET_ACTION_DROP
         dip_mask = '255.255.255.0'
 
         acl_bind_point_type_list = sai_thrift_s32_list_t(
@@ -1914,7 +1909,7 @@ class PortAclBindingClass(PortFloodClass):
             acl_action_type_list=acl_action_type_list,
             field_dst_ip=dip_ind,
             field_dst_mac=dmac_ind)
-        self.assertTrue(acl_table != 0)
+        self.assertNotEqual(acl_table, 0)
 
         action_drop = action
         packet_action = sai_thrift_acl_action_data_t(
@@ -1925,7 +1920,7 @@ class PortAclBindingClass(PortFloodClass):
             action_packet_action=packet_action,
             field_dst_ip=ip,
             field_dst_mac=mac)
-        self.assertTrue(acl_entry != 0)
+        self.assertNotEqual(acl_entry, 0)
 
         acl_table_group = sai_thrift_create_acl_table_group(
             self.client,
@@ -2073,7 +2068,6 @@ class PortAclBindingClass(PortFloodClass):
         try:
             # Configure ACL and assign to port egress_acl
             ports_with_acl = [self.dev_port0, self.dev_port3]
-            ports_without_acl = [self.dev_port1, self.dev_port2]
             acl_list = self.setupPortIngresDropAcl(dip=dst_ip)
 
             if use_acl_group is True:
@@ -2122,8 +2116,8 @@ class PortAclBindingClass(PortFloodClass):
             # Verify add and remove binding to/from single port
             if add_remove_bind is True:
                 print("Checking add/remove-bind. Bind ingress_acl to port 2")
-                status = self.assignPortIngressAcl([self.dev_port2],
-                                                   acl=ingress_acl)
+                self.assignPortIngressAcl([self.dev_port2],
+                                          acl=ingress_acl)
 
                 ports_with_acl = [self.dev_port0, self.dev_port2,
                                   self.dev_port3]
@@ -2264,8 +2258,8 @@ class PortAclBindingClass(PortFloodClass):
             if add_remove_bind:
                 # Bind egress_acl to port 2
                 print("\nChecking add/remove-bind. Bind egress_acl to port 2")
-                status = self.assignPortEgressAcl([self.dev_port2],
-                                                  acl=egress_acl)
+                self.assignPortEgressAcl([self.dev_port2],
+                                         acl=egress_acl)
 
                 ports_with_acl = [
                     self.dev_port0,
@@ -2273,7 +2267,6 @@ class PortAclBindingClass(PortFloodClass):
                     self.dev_port3]
                 print(ports_with_acl)
 
-                ports_without_acl = [self.dev_port1]
                 print("Sending packet on bridged port%d, egress_acl enabled"
                       % (self.dev_port1))
                 send_packet(self, self.dev_port1, pkt)
@@ -2282,7 +2275,6 @@ class PortAclBindingClass(PortFloodClass):
 
                 # Remove egress_acl from port 2
                 self.assignPortEgressAcl([self.dev_port2], acl=0)
-                ports_with_acl = [self.dev_port0, self.dev_port3]
                 ports_without_acl = [self.dev_port1, self.dev_port2]
                 self.floodTest(pkt, dev_port_list, ports_without_acl)
 
@@ -2291,7 +2283,6 @@ class PortAclBindingClass(PortFloodClass):
 
             # Verify that all packets are forwarded to all ports after
             # egress_acl was removed from all ports
-            ports_with_acl = []
             ports_without_acl = [self.dev_port0,
                                  self.dev_port1,
                                  self.dev_port2,
@@ -2534,7 +2525,7 @@ class PortEgressMirrorSessionTest(PortFloodClass):
                 self.client, self.port3,
                 egress_mirror_session=empty_obj_list)
             sai_thrift_remove_mirror_session(self.client, mirror_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def tearDown(self):
         print("PortEgressMirrorSessionTest tearDown")
@@ -2654,7 +2645,7 @@ class PortIngressMirrorSessionTest(PortFloodClass):
                 self.client, self.port1,
                 ingress_mirror_session=empty_obj_list)
             sai_thrift_remove_mirror_session(self.client, mirror_id)
-            status = sai_thrift_remove_port(self.client, self.portx)
+            sai_thrift_remove_port(self.client, self.portx)
 
     def tearDown(self):
         print("PortIngressMirrorSessionTest tearDown")
