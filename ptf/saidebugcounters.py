@@ -2110,7 +2110,6 @@ class PortDropAclAnyTest(BaseDebugCounterClass):
             stage = SAI_ACL_STAGE_INGRESS
             bind_points = [SAI_ACL_BIND_POINT_TYPE_PORT]
             action_types = [SAI_ACL_ACTION_TYPE_PACKET_ACTION]
-            action_drop = SAI_PACKET_ACTION_DROP
             dip_mask = '255.255.255.0'
 
             acl_bind_point_type_list = sai_thrift_s32_list_t(
