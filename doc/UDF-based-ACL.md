@@ -36,7 +36,7 @@ User should be able to configure a mask in the ACL entry for a given UDF extract
 
 > Following attributes already exists in ACL headers but provide only UDF group OID information in ACL entry. This is insufficient as SAI adapter can not determine the UDF group field length during ACL table create. Also there is no attribute to specify data/mask values in ACL entry.
 
-```
+```cpp
     /**
      * @brief Attribute Id for sai_acl_table
      *
@@ -100,13 +100,13 @@ User should be able to configure a mask in the ACL entry for a given UDF extract
 
 
 #### saiacl.h Updates
-Since the length of UDF field is derived from the UDF group object, SAI ACL Table attribute for UDF group is modified fromm bool data type to UDF group object ID. This way SAI Adapter can calculate the width of the Table entry by referring to UDF group ID.
+Since the length of UDF field is derived from the UDF group object, SAI ACL Table attribute for UDF group is modified from bool data type to UDF group object ID. This way SAI Adapter can calculate the width of the Table entry by referring to UDF group ID.
 
 SAI ACL entry attribute is changed to sai_u8_list_t data type so as to specify data/mask values for a given UDF group ID.
 
 These changes are not backward compatible but given that there is no way current SAI ACL spec can used UDF group specified fields, thinking is that no one is using these attributes and its ok to make this change.
 
-```sh
+```cpp
     /**
      * @brief Attribute Id for sai_acl_table
      *
@@ -181,13 +181,13 @@ Following example is from UDF spec and shows how to define UDF extraction fields
 >UDF_Group1-->UDF1-->UDF_Match1: Extracted field: GRE Packet Inner Source IP
 >UDF_Group2-->UDF2-->UDF_Match1: Extracted field: GRE Packet Inner Dest IP
 
-```
+```cpp
     // Create UDF_Match 1 to match the GRE packet
     sai_object_id_t udf_match1_id;
     sai_attribute_t udf_match1_attrs[3];
-    udf_match1_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_L2_TYPE;
+    udf_match1_attrs[0].id = (sai_attr_id_t)SAI_UDF_MATCH_ATTR_L2_TYPE;
     udf_match1_attrs[0].value.u16 = 0x0800;
-    udf_match1_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_L3_TYPE;
+    udf_match1_attrs[1].id = (sai_attr_id_t)SAI_UDF_MATCH_ATTR_L3_TYPE;
     udf_match1_attrs[1].value.u8 = 0x2f;
     udf_match1_attrs[2].id = (sai_attr_id_t)SAI_UDF_MATCH_ATTR_GRE_TYPE;
     udf_match1_attrs[2].value.u16 = 0x88be;
@@ -196,20 +196,18 @@ Following example is from UDF spec and shows how to define UDF extraction fields
     // Create two UDF groups, UDF_Group1 and UDF_Group2
     // SAI Adapter will allocate index 0 for UDF_Group1 and index 1 for UDF_Group2
     sai_object_id_t udf_group_ids[2];
-    sai_attribute_t udf_group_attr;
-    udf_group_attr.id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
-    udf_group_attr.value.s32 = SAI_UDF_GROUP_TYPE_GENERIC;
-    udf_group_attr.id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_LENGTH;
-    udf2_attrs[4].value.u16 = 2;
-    sai_udf_group_api->create_udf_group(&udf_group_ids[0], 1, udf_group_attr);
+    sai_attribute_t udf_group_attrs[2];
+    udf_group_attrs[0].id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
+    udf_group_attrs[0].value.s32 = SAI_UDF_GROUP_TYPE_GENERIC;
+    udf_group_attrs[1].id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_LENGTH;
+    udf_group_attrs[1].value.u16 = 4;
+    sai_udf_group_api->create_udf_group(&udf_group_ids[0], 2, udf_group_attrs);
     
-    udf_group_attr.id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
-    udf_group_attr.value.s32 = SAI_UDF_GROUP_TYPE_GENERIC;
-    sai_udf_group_api->create_udf_group(&udf_group_ids[1], 1, udf_group_attr);
+    sai_udf_group_api->create_udf_group(&udf_group_ids[1], 2, udf_group_attrs);
     
     // Create UDF1 to match the inner src IP
     sai_object_id_t udf1_id;
-    sai_attribute_t udf1_attrs[5];
+    sai_attribute_t udf1_attrs[4];
     udf1_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_ID;
     udf1_attrs[0].value.oid = udf_match1_id;
     udf1_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_GROUP_ID;
@@ -222,7 +220,7 @@ Following example is from UDF spec and shows how to define UDF extraction fields
     
     // Create UDF2 to match the inner dest IP
     sai_object_id_t udf2_id;
-    sai_attribute_t udf2_attrs[5];
+    sai_attribute_t udf2_attrs[4];
     udf2_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_ID;
     udf2_attrs[0].value.oid = udf_match1_id;
     udf2_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_GROUP_ID;
@@ -241,8 +239,10 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
 > ACL_Entry1--->UDF_Group1_OID--->Field_data1_mask1
 > ACL_Entry2--->UDF_Group2_OID--->Field_data2_mask2
 
-```sh
+```cpp
+    sai_attribute_t acl_attr_list[4];
     sai_object_id_t acl_table_id = 0ULL;
+
     acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
     acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;
     
@@ -260,7 +260,7 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_attr_list[3].id = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN+1;
     acl_attr_list[3].value.oid = udf_group_ids[1];
     
-    saistatus = sai_acl_api->create_acl_table(&acl_table_id2, 6, acl_attr_list);
+    saistatus = sai_acl_api->create_acl_table(&acl_table_id, 4, acl_attr_list);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }
@@ -268,6 +268,7 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     // Create an ACL table entry mask for UDF group 1 and 2
     acl_entry_attrs[0].id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
     acl_entry_attrs[0].value.oid = acl_table_id;
+
     acl_entry_attrs[1].id = SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN;
     acl_entry_attrs[1].value.aclfield.data.count = 4;
     acl_entry_attrs[1].value.aclfield.data.list[0] = 0x10;
@@ -292,6 +293,7 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_entry_attrs[2].value.aclfield.mask.list[2] = 0xff;
     acl_entry_attrs[2].value.aclfield.mask.list[3] = 0x00;
 
+    sai_object_id_t acl_entry = 0ULL;
     saistatus = sai_acl_api->create_acl_entry(&acl_entry, 3, acl_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
@@ -304,37 +306,37 @@ Following example creates single UDF group. Two match objects are created for IP
 > UDF_Group1-->UDF1-->UDF_Match1: Extracted field: IPv4 UDP destination port
 > UDF_Group1-->UDF2-->UDF_Match2: Extracted field: IPv6 UDP destination port
 
-```
+```cpp
     // Create UDF_Match 1 to match the IPv4 UDP packet
     sai_object_id_t udf_match1_id;
     sai_attribute_t udf_match1_attrs[2];
-    udf_match1_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_L2_TYPE;
+    udf_match1_attrs[0].id = (sai_attr_id_t)SAI_UDF_MATCH_ATTR_L2_TYPE;
     udf_match1_attrs[0].value.u16 = 0x0800;
-    udf_match1_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_L3_TYPE;
+    udf_match1_attrs[1].id = (sai_attr_id_t)SAI_UDF_MATCH_ATTR_L3_TYPE;
     udf_match1_attrs[1].value.u8 = 0x11;
     sai_udf_match_api->create_udf_match(&udf_match1_id, 2, udf_match1_attrs);
     
     // Create UDF_Match 2 to match the IPv6 UDP packet
     sai_object_id_t udf_match2_id;
     sai_attribute_t udf_match2_attrs[2];
-    udf_match2_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_L2_TYPE;
+    udf_match2_attrs[0].id = (sai_attr_id_t)SAI_UDF_MATCH_ATTR_L2_TYPE;
     udf_match2_attrs[0].value.u16 = 0x86dd;
-    udf_match2_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_L3_TYPE;
+    udf_match2_attrs[1].id = (sai_attr_id_t)SAI_UDF_MATCH_ATTR_L3_TYPE;
     udf_match2_attrs[1].value.u8 = 0x11;
     sai_udf_match_api->create_udf_match(&udf_match2_id, 2, udf_match2_attrs);
     
     // Create UDF_Group1
-    sai_object_id_t udf_group_ids;
-    sai_attribute_t udf_group_attr;
-    udf_group_attr.id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
-    udf_group_attr.value.s32 = SAI_UDF_GROUP_TYPE_GENERIC;
-    udf_group_attr.id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_LENGTH;
-    udf2_attrs[4].value.u16 = 2;
-    sai_udf_group_api->create_udf_group(&udf_group_ids, 1, udf_group_attr);
+    sai_object_id_t udf_group_id;
+    sai_attribute_t udf_group_attrs[2];
+    udf_group_attrs[0].id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_TYPE;
+    udf_group_attrs[0].value.s32 = SAI_UDF_GROUP_TYPE_GENERIC;
+    udf_group_attrs[1].id = (sai_attr_id_t)SAI_UDF_GROUP_ATTR_LENGTH;
+    udf_group_attrs[1].value.u16 = 2;
+    sai_udf_group_api->create_udf_group(&udf_group_id, 1, udf_group_attr);
     
     // Create UDF1 to match the IPv4 UDP dest port
     sai_object_id_t udf1_id;
-    sai_attribute_t udf1_attrs[5];
+    sai_attribute_t udf1_attrs[4];
     udf1_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_ID;
     udf1_attrs[0].value.oid = udf_match1_id;
     udf1_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_GROUP_ID;
@@ -347,7 +349,7 @@ Following example creates single UDF group. Two match objects are created for IP
     
     // Create UDF2 to match the IPv6 UDP dest port
     sai_object_id_t udf2_id;
-    sai_attribute_t udf2_attrs[5];
+    sai_attribute_t udf2_attrs[4];
     udf2_attrs[0].id = (sai_attr_id_t)SAI_UDF_ATTR_MATCH_ID;
     udf2_attrs[0].value.oid = udf_match2_id;
     udf2_attrs[1].id = (sai_attr_id_t)SAI_UDF_ATTR_GROUP_ID;
@@ -364,8 +366,10 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
 > ACL_Entry1--->UDF_Group1_OID--->Field_data1_mask1
 
 
-```sh
+```cpp
+    sai_attribute_t acl_attr_list[3];
     sai_object_id_t acl_table_id = 0ULL;
+
     acl_attr_list[0].id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
     acl_attr_list[0].value.s32 = SAI_ACL_STAGE_INGRESS;
     
@@ -376,7 +380,7 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_attr_list[2].id = SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN;
     acl_attr_list[2].value..oid = udf_group_ids;
     
-    saistatus = sai_acl_api->create_acl_table(&acl_table_id2, 4, acl_attr_list);
+    saistatus = sai_acl_api->create_acl_table(&acl_table_id, 3, acl_attr_list);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
     }
@@ -392,6 +396,7 @@ Following workflow shows how to stitch UDF group and its associated extracted fi
     acl_entry_attrs[1].value.aclfield.mask.list[0] = 0xff;
     acl_entry_attrs[1].value.aclfield.mask.list[1] = 0xff;
 
+    sai_object_id_t acl_entry = 0ULL;
     saistatus = sai_acl_api->create_acl_entry(&acl_entry, 2, acl_entry_attrs);
     if (saistatus != SAI_STATUS_SUCCESS) {
         return saistatus;
