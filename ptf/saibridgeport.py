@@ -379,3 +379,51 @@ class BridgePortStateTest(SaiHelper):
             # restore initial port0 admin state
             sai_thrift_set_bridge_port_attribute(
                 self.client, test_bp, admin_state=True)
+
+
+@group("draft")
+class SAIBridgePortNoFloodTest(SaiHelperBase):
+    '''
+    Verify  bridge port no flood test case
+    '''
+
+    def setUp(self):
+        super(SAIBridgePortNoFloodTest, self).setUp()
+
+        self.test_port_list = [self.port0, self.port1, self.port2, self.port3]
+        self.dev_test_port_list = [
+            self.dev_port0,
+            self.dev_port1,
+            self.dev_port2,
+            self.dev_port3]
+        vlan_id = 1
+        for port in self.test_port_list:
+            attr = sai_thrift_set_port_attribute(
+                self.client, port, port_vlan_id=vlan_id)
+            attr = sai_thrift_get_port_attribute(
+                self.client, port, port_vlan_id=True)
+            self.assertTrue(attr['SAI_PORT_ATTR_PORT_VLAN_ID'] == vlan_id)
+
+    def runTest(self):
+        print("SAIBridgePortNoFloodTest")
+
+            src_mac = "00:11:11:11:11:11"
+            dst_mac = "00:22:22:22:22:22"
+
+            pkt = simple_udp_packet(eth_dst=dst_mac,
+                                    eth_src=src_mac,
+                                    pktlen=100)
+            print("Sending packet on port with no bridge port created")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self)
+            print("\tPacket dropped. OK")
+
+    def tearDown(self):
+        # revert original port's VLAN id
+        vlan_id = 10
+        for port in self.test_port_list:
+            attr = sai_thrift_set_port_attribute(
+                self.client, port, port_vlan_id=vlan_id)
+            attr = sai_thrift_get_port_attribute(
+                self.client, port, port_vlan_id=True)
+            self.assertTrue(attr['SAI_PORT_ATTR_PORT_VLAN_ID'] == vlan_id)
