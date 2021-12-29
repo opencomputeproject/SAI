@@ -249,7 +249,7 @@ class PortAttributeTest(SaiHelper):
                 sai_thrift_remove_buffer_pool(self.client, ig_buffer_pool_id)
 
     def portAttributeTest(self):
-        '''Test port attribites'''
+        ''' Test port attributes '''
         print("portAttributeTest")
         attr = sai_thrift_get_port_attribute(
             self.client, self.port, speed=True)
@@ -1443,7 +1443,7 @@ class PortFecModeAttributeTest(SaiHelper):
 
 @group("draft")
 class PortSpeedAttributeTest(SaiHelperBase):
-    '''Test port speed attribute'''
+    ''' Test port speed attribute '''
 
     def setUp(self):
         self.portx = 0
