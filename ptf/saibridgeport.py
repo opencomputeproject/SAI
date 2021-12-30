@@ -23,7 +23,7 @@ from sai_base_test import *
 @group("draft")
 class BridgePortAttributeTest(SaiHelper):
     '''
-    Verifies bridge port attributes getting and setting
+    Verify bridge port attributes getting and setting
     '''
 
     def setUp(self):
@@ -96,7 +96,7 @@ class BridgePortAttributeTest(SaiHelper):
 @group("draft")
 class BridgePortCreationTest(SaiHelper):
     '''
-    Verifies bridge port creation
+    Verify bridge port creation
     '''
 
     def runTest(self):
@@ -168,7 +168,7 @@ class BridgePortCreationTest(SaiHelper):
 @group("draft")
 class BridgePortStateTest(SaiHelper):
     '''
-    Verifies switch behavior in particular bridge port state cases
+    Verify switch behavior in particular bridge port state cases
     '''
 
     def setUp(self):
@@ -382,13 +382,13 @@ class BridgePortStateTest(SaiHelper):
 
 
 @group("draft")
-class SAIBridgePortNoFloodTest(SaiHelperBase):
+class BridgePortNoFloodTest(SaiHelperBase):
     '''
-    Verify  bridge port no flood test case
+    Verify bridge port no flood test case
     '''
 
     def setUp(self):
-        super(SAIBridgePortNoFloodTest, self).setUp()
+        super(BridgePortNoFloodTest, self).setUp()
 
         self.test_port_list = [self.port0, self.port1, self.port2, self.port3]
         self.dev_test_port_list = [
@@ -407,16 +407,16 @@ class SAIBridgePortNoFloodTest(SaiHelperBase):
     def runTest(self):
         print("SAIBridgePortNoFloodTest")
 
-            src_mac = "00:11:11:11:11:11"
-            dst_mac = "00:22:22:22:22:22"
+        src_mac = "00:11:11:11:11:11"
+        dst_mac = "00:22:22:22:22:22"
 
-            pkt = simple_udp_packet(eth_dst=dst_mac,
-                                    eth_src=src_mac,
-                                    pktlen=100)
-            print("Sending packet on port with no bridge port created")
-            send_packet(self, self.dev_port1, pkt)
-            verify_no_other_packets(self)
-            print("\tPacket dropped. OK")
+        pkt = simple_udp_packet(eth_dst=dst_mac,
+                                eth_src=src_mac,
+                                pktlen=100)
+        print("Sending packet on port with no bridge port created")
+        send_packet(self, self.dev_port1, pkt)
+        verify_no_other_packets(self)
+        print("\tPacket dropped. OK")
 
     def tearDown(self):
         # revert original port's VLAN id
@@ -427,3 +427,5 @@ class SAIBridgePortNoFloodTest(SaiHelperBase):
             attr = sai_thrift_get_port_attribute(
                 self.client, port, port_vlan_id=True)
             self.assertTrue(attr['SAI_PORT_ATTR_PORT_VLAN_ID'] == vlan_id)
+
+        super(BridgePortNoFloodTest, self).tearDown()
