@@ -398,11 +398,11 @@ class BridgePortNoFloodTest(SaiHelperBase):
             self.dev_port3]
         vlan_id = 1
         for port in self.test_port_list:
-            attr = sai_thrift_set_port_attribute(
+            sai_thrift_set_port_attribute(
                 self.client, port, port_vlan_id=vlan_id)
             attr = sai_thrift_get_port_attribute(
                 self.client, port, port_vlan_id=True)
-            self.assertTrue(attr['SAI_PORT_ATTR_PORT_VLAN_ID'] == vlan_id)
+            self.assertEqual(attr['SAI_PORT_ATTR_PORT_VLAN_ID'], vlan_id)
 
     def runTest(self):
         print("SAIBridgePortNoFloodTest")
@@ -422,10 +422,10 @@ class BridgePortNoFloodTest(SaiHelperBase):
         # revert original port's VLAN id
         vlan_id = 10
         for port in self.test_port_list:
-            attr = sai_thrift_set_port_attribute(
+            sai_thrift_set_port_attribute(
                 self.client, port, port_vlan_id=vlan_id)
             attr = sai_thrift_get_port_attribute(
                 self.client, port, port_vlan_id=True)
-            self.assertTrue(attr['SAI_PORT_ATTR_PORT_VLAN_ID'] == vlan_id)
+            self.assertTrue(attr['SAI_PORT_ATTR_PORT_VLAN_ID'], vlan_id)
 
         super(BridgePortNoFloodTest, self).tearDown()
