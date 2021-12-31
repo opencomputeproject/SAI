@@ -1254,7 +1254,7 @@ class TunnelMalformedDecapPacketsBase(VxLanBaseSetup):
         mcast_ip = "225.1.1.1"
         lpb_ip = "127.0.0.1"
         mcast_ipv6 = "ff02::2"
-        lpb_ip = "::1"
+        lpb_ipv6 = "::1"
 
         inner_pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
                                       eth_src=self.inner_dmac,
@@ -1359,7 +1359,7 @@ class TunnelMalformedDecapPacketsBase(VxLanBaseSetup):
         verify_no_other_packets(self)
         print("\tDropped")
 
-        inner_pkt[IPv6].src = lpb_ip
+        inner_pkt[IPv6].src = lpb_ipv6
 
         if self.ipv6 is False:
             vxlan_pkt = simple_vxlan_packet(eth_dst=ROUTER_MAC,
@@ -16079,7 +16079,6 @@ class MultipleMapperEntriesIpv4UnderlayTest(MultipleMapperEntriesBase):
         self.addDelMapperEntriesTest()
 
 
-
 @group("draft")
 class MultipleMapperEntriesIpv6UnderlayTest(MultipleMapperEntriesBase):
     '''
@@ -16096,7 +16095,6 @@ class MultipleMapperEntriesIpv6UnderlayTest(MultipleMapperEntriesBase):
         self.encapV6Test()
         self.decapV6Test()
         self.addDelMapperEntriesTest()
-
 
 
 # # # # # # # # # # # # # VxLAN MP to MP tests follow # # # # # # # # # # # #
