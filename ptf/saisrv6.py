@@ -1483,7 +1483,7 @@ class Srv6MySidTest(SaiHelper):
             print("ECMP count: ", count)
 
             for i in range(0, 2):
-                self.assertTrue(count[i] > 0.3*max_iter)
+                self.assertGreater(count[i], 0.3*max_iter)
 
             print("Set XConnect NHOP back to port and packet action to drop")
             sai_thrift_set_my_sid_entry_attribute(self.client,
