@@ -2536,10 +2536,10 @@ class FdbAgeTest(SaiHelper):
         self.fdb_entry = sai_thrift_fdb_entry_t(switch_id=self.switch_id,
                                                 mac_address=self.vrf_mac,
                                                 bv_id=self.vlan10)
-        status = sai_thrift_create_fdb_entry(self.client,
-                                             self.fdb_entry,
-                                             type=SAI_FDB_ENTRY_TYPE_STATIC,
-                                             bridge_port_id=vrf_port_bp)
+        sai_thrift_create_fdb_entry(self.client,
+                                    self.fdb_entry,
+                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
+                                    bridge_port_id=vrf_port_bp)
 
     def runTest(self):
         self.macAgingOnPortTest()
