@@ -104,7 +104,6 @@ New object types:
     SAI_OBJECT_TYPE_IPSEC_PORT               = 100,
     SAI_OBJECT_TYPE_IPSEC_SA                 = 101,
 +    SAI_OBJECT_TYPE_STATEFUL_TABLE           = 102,
-+    SAI_OBJECT_TYPE_STATEFUL_METADATA        = 103,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 ```
@@ -160,25 +159,28 @@ typedef enum _sai_stateful_table_attr_t
     SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY,
 
     /**
-     * @brief Flow context
+     * @brief Flow context size in bits
      *
-     * @type sai_object_id_t
+     * @type sai_uint_32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
+     * @default 0
      */
-    SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT,
+    SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT_SIZE,
 
     /**
-     * @brief Global context
+     * @brief Global context size in bits
      *
-     * @type sai_object_id_t
+     * @type sai_uint_32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
+     * @default 0
      */
-    SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT,
+    SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT_SIZE,
 
     /**
-     * @brief Start state function
+     * @brief State functions implementation
+     *
+     * The implementation is provided in the format of 
+     * restircted C code, as described by the accompanying documentation
      *
      * @type sai_u8_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -203,7 +205,7 @@ typedef enum _sai_stateful_table_attr_t
 } sai_stateful_table_attr_t;
 ```
 
-Sincethe nature of a flow is usually bidirectional, a statful table can have more than one key.
+Since the nature of a flow is usually bidirectional, a statful table can have more than one key.
 For now, we define two - `SAI_STATEFUL_TABLE_ATTR_KEY_0` and `SAI_STATEFUL_TABLE_ATTR_KEY_1`.
 
 The set of fields for a flow key is defined in the enum below:
@@ -246,44 +248,6 @@ typedef enum _sai_flow_key_field_t
 } sai_flow_key_field_t;
 ```
 
-Stateful table can allocate memory gor a per flow metadata and a global metadata for aggregate values.
-The two attributes are `SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT` and `SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT`.
-Stateful metadata attributes:
-
-```c
-typedef enum _sai_stateful_metadata_attr_t
-{
-    /**
-     * @brief Table attributes start
-     */
-    SAI_STATEFUL_METADATA_ATTR_START,
-
-    /**
-     * @brief Maximum number of entries in the table
-     *
-     * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     */
-    SAI_STATEFUL_METADATA_ATTR_SIZE = SAI_STATEFUL_TABLE_ATTR_START,
-
-    /**
-     * @brief End of stateful table attributes
-     */
-    SAI_STATEFUL_METADATA_ATTR_END,
-
-    /**
-     * @brief Custom range base value start
-     */
-    SAI_STATEFUL_METADATA_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_STATEFUL_METADATA_ATTR_CUSTOM_RANGE_END
-
-} sai_stateful_metadata_attr_t;
-```
-
 Eviction policy is defined using `SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY`.
 The possible policies are defined as follows:
 
@@ -305,22 +269,72 @@ They may require to be able to express the following:
 * ALU operations
 * Local memory operations (accessing flow context or scratchpad memory)
 * Branching operations (if, then, else etc.)
-* Calling external functions (load packet field into local memory, drop packet etc.)
+* Calling external functions (set another state, drop packet etc.)
 
-To implement the expressions above, adopting eBPF instruction set is proposed for the callbacks.
-They can be expressed in a high level C language, compiled with existing toolchains like gcc or clang, and the result can be fed to SAI to offload in the NPU.
+To implement the expressions above, adopting a restricted subset of C language is proposed for the callbacks.
+The SAI host adapter is responsibe for **compiling** and **loading** the C application.
+The restrictions put on the code are as follows:
+* There are no function calls or shared library calls available, except for those provided in a helper below or inlined functions.
+* Multiple state handlers (programs) can reside inside a single C file in different sections.
+* There are no global variables allowed.
+* There are no const strings or const arrays allowed.
+* There are no loops available.
+* Limited stack space of maximum 64 bytes.
+
 A supplementary initial version of the APIs is provided below to be accessible from the state graph functions.
-The signature of every state callback is `void hadler(void *flow_ctx, void *global_ctx)`.
-The state callback to be executed by default should be called `start`.
+The signature of every state callback is `void hadler(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)`.
+The state callback to be executed by default should be called in the section called `start`.
 
 ```c
-#if !defined (__SAIEBPF_H_)
-#define __SAIEBPF_H_
+#if !defined (__SAICALLBACK_H_)
+#define __SAICALLBACK_H_
+
+#ifndef __section
+# define __section(NAME)                  \
+   __attribute__((section(NAME), used))
+#endif
+
+typedef struct _sai_ethernet_t {
+    sai_u8_t[6] src_mac;
+    sai_u8_t[6] src_mac;
+} _sai_ethernet_t;
+
+typedef struct _sai_ipv4_t {
+    sai_u32_t src_addr;
+    sai_u32_t dst_addr;
+    sai_u8_t ipproto;
+} _sai_ipv4_t;
+
+typedef struct _sai_tcp_t {
+    sai_u16_t sport;
+    sai_u16_t dport;
+    sai_u16_t flags;
+} _sai_tcp_t;
+
+/**
+ * @brief Defines parsed headers
+ */
+typedef struct _sai_parsed_headers_t
+{
+    sai_ethernet_t ethernet;
+    
+    sai_ipv4_t ipv4;
+    
+    sai_tcp_t tcp;
+    
+    sai_ethernet_t inner_ethernet;
+    
+    sai_ipv4_t inner_ipv4;
+    
+    sai_tcp_t inner_tcp;
+
+} sai_parsed_headers_t;
 
 /**
  * @brief State callback signature
  */
-typedef void (* state_handler)(void *flow_ctx, void *global_ctx);
+void hadler(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata);
+
 /**
  * @brief Set the next state
  *
@@ -330,79 +344,10 @@ typedef void (* state_handler)(void *flow_ctx, void *global_ctx);
  *
  * @param[in] state_handler state handler callback
  */
-void sai_set_state(state_handler);
+void sai_set_state(char *state);
 
-/**
- * @brief Defines a packet field ID
- */
-typedef enum _sai_packet_field_t
-{
-    SAI_PACKET_FIELD_SRC_IPV6,
 
-    SAI_PACKET_FIELD_DST_IPV6,
-
-    SAI_PACKET_FIELD_INNER_SRC_IPV6,
-
-    SAI_PACKET_FIELD_INNER_DST_IPV6,
-
-    SAI_PACKET_FIELD_SRC_MAC,
-
-    SAI_PACKET_FIELD_DST_MAC,
-
-    SAI_PACKET_FIELD_SRC_IP,
-
-    SAI_PACKET_FIELD_DST_IP,
-
-    SAI_PACKET_FIELD_INNER_SRC_IP,
-
-    SAI_PACKET_FIELD_INNER_DST_IP,
-
-    SAI_PACKET_FIELD_L4_SRC_PORT,
-
-    SAI_PACKET_FIELD_L4_DST_PORT,
-
-    SAI_PACKET_FIELD_INNER_L4_SRC_PORT,
-
-    SAI_PACKET_FIELD_INNER_L4_DST_PORT,
-
-    SAI_PACKET_FIELD_IP_PROTOCOL,
-
-    SAI_PACKET_FIELD_INNER_IP_PROTOCOL,
-
-    SAI_PACKET_FIELD_TCP_FLAGS,
-
-    SAI_PACKET_FIELD_INNER_TCP_FLAGS,
-
-} sai_packet_field_t;
-
-/**
- * @brief Get byte packet field
- *
- * @param[in] field_id field ID
- *
- * @return value of that field in the packet
- */
-unsigned char sai_load_packet_field_u8(sai_packet_field_t field_id);
-
-/**
- * @brief Get 2 byte packet field
- *
- * @param[in] field_id field ID
- *
- * @return value of that field in the packet
- */
-unsigned short sai_load_packet_field_u16(sai_packet_field_t field_id);
-
-/**
- * @brief Get 4 byte packet field
- *
- * @param[in] field_id field ID
- *
- * @return value of that field in the packet
- */
-unsigned int sai_load_packet_field_u32(sai_packet_field_t field_id);
-
-#endif /** __SAIEBPF_H_ */
+#endif /** __SAICALLBACK_H_ */
 ```
 
 ## Example
@@ -442,15 +387,6 @@ The pseudo code for SAI calls is provided below:
 
 ```c
 /**
- * Create a flow context for a conntrack table, will be referenced by ACL
- */
-
-sai_object_id_t conntrack_flow_ctx_oid;
- 
-attr.id = SAI_STATEFUL_METADATA_ATTR_SIZE;
-attr.value.u32 = 2;
-
-/**
  * Create a conntrack stateful table
  */
 
@@ -481,8 +417,8 @@ attr.value.s32list.list = [
 attr.id = SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY;
 attr.value.s32 = SAI_STATEFUL_TABLE_EVICTION_POLICY_LRU;
 
-attr.id = SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT;
-attr.value.s32 = conntrack_flow_ctx_oid;
+attr.id = SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT_SIZE;
+attr.value.u32 = 2;
 
 attr.id = SAI_STATEFUL_TABLE_ATTR_STATE_GRAPH;
 attr.value.u8list = ebpf_file;
@@ -506,8 +442,8 @@ attr.value.bool = true;
 attr.id = SAI_ACL_TABLE_ATTR_FIELD_IN_PORTS;
 attr.value.bool = true;
 
-attr.id = SAI_ACL_TABLE_ATTR_STATEFUL_METADATA_MIN;
-attr.value.oid = conntrack_flow_ctx_oid;
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_ACL_USER_META;
+attr.value.bool = true;
 
 /**
  * Create rule to drop TCP traffic from network ports if connection is not open
@@ -530,7 +466,7 @@ attr.value.objlist = network_ports;
 attr.id = SAI_ACL_ENTRY_ATTR_IP_PROTOCOL;
 attr.value.u8 = 0x6;
 
-attr.id = SAI_ACL_ENTRY_ATTR_STATEFUL_METADATA_MIN;
+attr.id = SAI_ACL_ENTRY_ATTR_FIELD_ACL_USER_META;
 attr.value.acl_data_value.u8list = [0x0]; // connnection state != CONNECTION_STATE_OPEN
 attr.value.acl_data_mask.u8list  = [0x2]; // mask out CONNECTION_STATE_CLOSED and CONNECTION_STATE_SYN_SENT
 
@@ -617,7 +553,7 @@ attr.value.oid = conntrack_state_table_oid;
 The code for connection tracking callbacks is below:
 
 ```c
-#include "inc/saiebpf.h"
+#include "inc/saicallback.h"
 
 typedef enum _connection_state_t {
     CONNECTION_STATE_CLOSED = 0,
@@ -629,94 +565,73 @@ typedef struct _flow_ctx_t {
     unsigned char connection_state;
 } flow_ctx_t;
 
-void wait_synack(void *flow_ctx, void *global_ctx);
-void allow(void *flow_ctx, void *global_ctx);
-void wait_finack(void *flow_ctx, void *global_ctx);
-void wait_ack(void *flow_ctx, void *global_ctx);
-
-void start(void *flow_ctx, void *global_ctx)
+__section("start")
+void start(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
 {
     flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
-    unsigned short tcp_flags = sai_load_packet_field_u16(14);
 
-    if (tcp_flags != 0x02 /* TCP SYN */)
+    if (parsed_headers->tcp.flags != 0x02 /* TCP SYN */)
     {
         return;
     }
 
     fc->connection_state = CONNECTION_STATE_SYN_SENT;
 
-    sai_set_state(allow);
+    sai_set_state("wait_synack");
 }
 
-void wait_synack(void *flow_ctx, void *global_ctx)
+__section("wait_synack")
+void wait_synack(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
 {
     flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
-    unsigned short tcp_flags = sai_load_packet_field_u16(14);
 
-    if (tcp_flags & 0x12 /* SYNACK */)
+    if (parsed_headers->tcp.flags & 0x12 /* SYNACK */)
     {
         fc->connection_state = CONNECTION_STATE_OPEN;
-        sai_set_state(allow);
+	*packet_metadata = 1;
+        sai_set_state("allow");
     }
 }
 
-void allow(void *flow_ctx, void *global_ctx)
+__section("allow")
+void allow(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
 {
     flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
-    unsigned short tcp_flags = sai_load_packet_field_u16(14);
 
-    if (tcp_flags & 0x4 /* RST */)
+    if (parsed_headers->tcp.flags & 0x4 /* RST */)
+    {
+        fc->connection_state = CONNECTION_STATE_CLOSED;
+        sai_set_state("start");
+    }
+    
+    *packet_metadata = 1;
+
+    if (parsed_headers->tcp.flags & 0x1 /* FIN */)
+    {
+        sai_set_state("wait_finack");
+    }
+}
+
+__section("wait_finack")
+void wait_finack(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
+{
+    if (parsed_headers->tcp.flags & 0x11 /* FINACK */)
+    {
+        sai_set_state("wait_ack");
+    }
+    
+    *packet_metadata = 1;
+}
+
+__section("wait_ack")
+void wait_ack(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
+{
+    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
+
+    if (parsed_headers->tcp.flags & 0x10 /* ACK */)
     {
         fc->connection_state = CONNECTION_STATE_CLOSED;
         sai_set_state(start);
     }
-
-    if (tcp_flags & 0x1 /* FIN */)
-    {
-        sai_set_state(wait_finack);
-    }
 }
-
-void wait_finack(void *flow_ctx, void *global_ctx)
-{
-    unsigned short tcp_flags = sai_load_packet_field_u16(14);
-
-    if (tcp_flags & 0x11 /* FINACK */)
-    {
-        sai_set_state(wait_ack);
-    }
-}
-
-void wait_ack(void *flow_ctx, void *global_ctx)
-{
-    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
-    unsigned short tcp_flags = sai_load_packet_field_u16(14);
-
-    if (tcp_flags & 0x10 /* ACK */)
-    {
-        fc->connection_state = CONNECTION_STATE_CLOSED;
-        sai_set_state(start);
-    }
-}
-```
-
-It results in 57 eBPF instructions, that SAI will need to offload to the NPU.
-For example, here's the initial state callback in eBPF format:
-
-```
-start:
-       0:       bf 16 00 00 00 00 00 00         r6 = r1
-       1:       b7 01 00 00 10 00 00 00         r1 = 16                            // set param 1 to TCP_FLAGS
-       2:       85 10 00 00 ff ff ff ff         call -1                            // call sai_load_packet_field_u16, result saved in r0
-                0000000000000010:  R_BPF_64_32  sai_load_packet_field_u16
-       3:       55 00 05 00 02 00 00 00         if r0 != 2 goto +5 <LBB0_2>        // if tcp_flags is not SYN, return
-       4:       b7 01 00 00 01 00 00 00         r1 = 1
-       5:       73 16 00 00 00 00 00 00         *(u8 *)(r6 + 0) = r1               // fc->connection_state = CONNECTION_STATE_SYN_SENT;
-       6:       18 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00         r1 = 0 ll
-                0000000000000030:  R_BPF_64_64  allow
-       8:       85 10 00 00 ff ff ff ff         call -1                            // set state to allow
-                0000000000000040:  R_BPF_64_32  sai_set_state
-LBB0_2:
-       9:       95 00 00 00 00 00 00 00         exit
 ```
