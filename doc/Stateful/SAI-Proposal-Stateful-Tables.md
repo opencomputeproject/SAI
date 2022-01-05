@@ -467,8 +467,8 @@ attr.id = SAI_ACL_ENTRY_ATTR_IP_PROTOCOL;
 attr.value.u8 = 0x6;
 
 attr.id = SAI_ACL_ENTRY_ATTR_FIELD_ACL_USER_META;
-attr.value.acl_data_value.u8list = [0x0]; // connnection state != CONNECTION_STATE_OPEN
-attr.value.acl_data_mask.u8list  = [0x2]; // mask out CONNECTION_STATE_CLOSED and CONNECTION_STATE_SYN_SENT
+attr.value.acl_data_value.u32 = 0x0;
+attr.value.acl_data_mask.u32  = 0x1;
 
 attr.id = SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION;
 attr.value.packet_action = SAI_PACKET_ACTION_DISCARD;
