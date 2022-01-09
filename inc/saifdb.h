@@ -146,7 +146,7 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID = SAI_FDB_ENTRY_ATTR_START + 0x3,
 
     /**
-     * @brief User based Meta Data
+     * @brief Src User based Meta Data
      *
      * Value Range #SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE
      *
@@ -154,7 +154,21 @@ typedef enum _sai_fdb_entry_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_FDB_ENTRY_ATTR_META_DATA = SAI_FDB_ENTRY_ATTR_START + 0x4,
+    SAI_FDB_ENTRY_ATTR_SRC_META_DATA = SAI_FDB_ENTRY_ATTR_START + 0x8,
+
+    /**
+     * @brief Dst User based Meta Data
+     *
+     * Value Range #SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_FDB_ENTRY_ATTR_DST_META_DATA = SAI_FDB_ENTRY_ATTR_START + 0x4,
+
+    /** @ignore - for backward compatibility */
+    SAI_FDB_ENTRY_ATTR_META_DATA = SAI_FDB_ENTRY_ATTR_DST_META_DATA,
 
     /**
      * @brief Tunnel Endpoint IP. valid for SAI_BRIDGE_PORT_TYPE_TUNNEL
