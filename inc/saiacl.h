@@ -2204,6 +2204,18 @@ typedef enum _sai_acl_entry_attr_t
     /* User Based metadata */
 
     /**
+     * @brief SRC MAC address match user meta data in FDB
+     *
+     * Value must be in the range defined in
+     * #SAI_SWITCH_ATTR_FDB_SRC_USER_META_DATA_RANGE
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_FDB_SRC_USER_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15b,
+
+    /**
      * @brief DST MAC address match user meta data in FDB
      *
      * Value must be in the range defined in
@@ -2387,7 +2399,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_WORD0,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_FDB_SRC_USER_META,
 
     /*
      * Actions [sai_acl_action_data_t]
