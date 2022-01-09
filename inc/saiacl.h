@@ -1224,6 +1224,15 @@ typedef enum _sai_acl_table_attr_t
     /* User Based metadata [bool] */
 
     /**
+     * @brief FDB SRC user meta data
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_FDB_SRC_USER_META = SAI_ACL_TABLE_ATTR_FIELD_START + 0x15b,
+
+    /**
      * @brief FDB DST user meta data
      *
      * @type bool
@@ -1391,7 +1400,7 @@ typedef enum _sai_acl_table_attr_t
     /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_WORD0,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_FDB_SRC_USER_META,
 
     /**
      * @brief ACL table entries associated with this table.
