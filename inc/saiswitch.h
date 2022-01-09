@@ -790,6 +790,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_TABLE_GROUP_MAXIMUM_PRIORITY = SAI_SWITCH_ATTR_START + 0x1c,
 
     /**
+     * @brief FDB SRC user-based meta data range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FDB_SRC_USER_META_DATA_RANGE = SAI_SWITCH_ATTR_START + 0xd0,
+
+    /**
      * @brief FDB DST user-based meta data range
      *
      * @type sai_u32_range_t
@@ -2698,7 +2706,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief End of attributes
      */
-    SAI_SWITCH_ATTR_END = SAI_SWITCH_ATTR_IPSEC_SA_STATUS_CHANGE_NOTIFY,
+    SAI_SWITCH_ATTR_END = SAI_SWITCH_ATTR_FDB_SRC_USER_META_DATA_RANGE,
 
     /** Custom range base value */
     SAI_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
