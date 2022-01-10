@@ -132,23 +132,26 @@ typedef enum _sai_stateful_table_attr_t
     /**
      * @brief Flow context
      *
-     * @type sai_object_id_t
+     * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
+     * @default 0
      */
-    SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT,
+    SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT_SIZE,
 
     /**
      * @brief Global context
      *
-     * @type sai_object_id_t
+     * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
+     * @default 0
      */
-    SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT,
+    SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT_SIZE,
 
     /**
-     * @brief Start state function
+     * @brief State functions implementation
+     *
+     * The implementation is provided in the format of
+     * restircted C code, as described by the accompanying documentation
      *
      * @type sai_u8_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -171,41 +174,6 @@ typedef enum _sai_stateful_table_attr_t
     SAI_STATEFUL_TABLE_ATTR_CUSTOM_RANGE_END
 
 } sai_stateful_table_attr_t;
-
-/**
- * @brief Attribute Id for sai_stateful_metadata
- */
-typedef enum _sai_stateful_metadata_attr_t
-{
-    /**
-     * @brief Table attributes start
-     */
-    SAI_STATEFUL_METADATA_ATTR_START,
-
-    /**
-     * @brief Maximum number of entries in the table
-     *
-     * @type sai_uint32_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
-     */
-    SAI_STATEFUL_METADATA_ATTR_SIZE = SAI_STATEFUL_TABLE_ATTR_START,
-
-    /**
-     * @brief End of stateful table attributes
-     */
-    SAI_STATEFUL_METADATA_ATTR_END,
-
-    /**
-     * @brief Custom range base value start
-     */
-    SAI_STATEFUL_METADATA_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_STATEFUL_METADATA_ATTR_CUSTOM_RANGE_END
-
-} sai_stateful_metadata_attr_t;
 
 /**
  * @brief Create stateful table
