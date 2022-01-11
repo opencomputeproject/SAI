@@ -85,3 +85,553 @@ For the timer instantiation we have two options:
 ### Flow context and global storage read/update/insert/delete from control plane
 The control plane must be able to read and modify the value stored in the flow context storage.
 The control plane should be also able to insert and delete entries.
+
+## API
+
+New SAI API:
+
+```c
+    SAI_API_MY_MAC           = 45, /**< sai_my_mac_api_t */
+    SAI_API_IPSEC            = 46, /**< sai_ipsec_api_t */
++    SAI_API_STATEFUL         = 47, /**< sai_stateful_api_t */
+    SAI_API_MAX,                   /**< total number of APIs */
+} sai_api_t;
+```
+
+New object types:
+
+```c
+    SAI_OBJECT_TYPE_IPSEC_PORT               = 100,
+    SAI_OBJECT_TYPE_IPSEC_SA                 = 101,
++    SAI_OBJECT_TYPE_STATEFUL_TABLE           = 102,
+    SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
+} sai_object_type_t;
+```
+
+Stateful table attributes:
+
+```c
+/**
+ * @brief Attribute Id for sai_stateful_table
+ */
+typedef enum _sai_stateful_table_attr_t
+{
+    /**
+     * @brief Table attributes start
+     */
+    SAI_STATEFUL_TABLE_ATTR_START,
+
+    /**
+     * @brief Maximum number of entries in the table
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_STATEFUL_TABLE_ATTR_SIZE = SAI_STATEFUL_TABLE_ATTR_START,
+
+    /**
+     * @brief Flow key #0
+     *
+     * @type sai_s32_list_t sai_flow_key_field_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_STATEFUL_TABLE_ATTR_KEY_0,
+
+    /**
+     * @brief Flow key #1
+     *
+     * @type sai_s32_list_t sai_flow_key_field_t
+     * @flags CREATE_ONLY
+     * @default empty
+     */
+    SAI_STATEFUL_TABLE_ATTR_KEY_1,
+
+    /**
+     * @brief Eviction policy
+     *
+     * Defines the eviction policy for the entries in a stateful table
+     * in case when a table is full and a new flow learn event happens
+     *
+     * @type sai_stateful_table_eviction_policy_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @default SAI_STATEFUL_TABLE_EVICTION_POLICY_IGNORE
+     */
+    SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY,
+
+    /**
+     * @brief Flow context size in bits
+     *
+     * @type sai_uint_32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @default 0
+     */
+    SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT_SIZE,
+
+    /**
+     * @brief Global context size in bits
+     *
+     * @type sai_uint_32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @default 0
+     */
+    SAI_STATEFUL_TABLE_ATTR_GLOBAL_CONTEXT_SIZE,
+
+    /**
+     * @brief State functions implementation
+     *
+     * The implementation is provided in the format of 
+     * restircted C code, as described by the accompanying documentation
+     *
+     * @type sai_u8_list_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_STATEFUL_TABLE_ATTR_STATE_GRAPH,
+
+    /**
+     * @brief End of stateful table attributes
+     */
+    SAI_STATEFUL_TABLE_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_STATEFUL_TABLE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_STATEFUL_TABLE_ATTR_CUSTOM_RANGE_END
+
+} sai_stateful_table_attr_t;
+```
+
+Since the nature of a flow is usually bidirectional, a statful table can have more than one key.
+For now, we define two - `SAI_STATEFUL_TABLE_ATTR_KEY_0` and `SAI_STATEFUL_TABLE_ATTR_KEY_1`.
+
+The set of fields for a flow key is defined in the enum below:
+
+```c
+typedef enum _sai_flow_key_field_t
+{
+    SAI_FLOW_KEY_FIELD_SRC_IPV6,
+
+    SAI_FLOW_KEY_FIELD_DST_IPV6,
+
+    SAI_FLOW_KEY_FIELD_INNER_SRC_IPV6,
+
+    SAI_FLOW_KEY_FIELD_INNER_DST_IPV6,
+
+    SAI_FLOW_KEY_FIELD_SRC_MAC,
+
+    SAI_FLOW_KEY_FIELD_DST_MAC,
+
+    SAI_FLOW_KEY_FIELD_SRC_IP,
+
+    SAI_FLOW_KEY_FIELD_DST_IP,
+
+    SAI_FLOW_KEY_FIELD_INNER_SRC_IP,
+
+    SAI_FLOW_KEY_FIELD_INNER_DST_IP,
+
+    SAI_FLOW_KEY_FIELD_L4_SRC_PORT,
+
+    SAI_FLOW_KEY_FIELD_L4_DST_PORT,
+
+    SAI_FLOW_KEY_FIELD_INNER_L4_SRC_PORT,
+
+    SAI_FLOW_KEY_FIELD_INNER_L4_DST_PORT,
+
+    SAI_FLOW_KEY_FIELD_IP_PROTOCOL,
+
+    SAI_FLOW_KEY_FIELD_INNER_IP_PROTOCOL,
+
+} sai_flow_key_field_t;
+```
+
+Eviction policy is defined using `SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY`.
+The possible policies are defined as follows:
+
+```c
+typedef enum _sai_stateful_table_eviction_policy_t
+{
+    /** Ignore a new flow */
+    SAI_STATEFUL_TABLE_EVICTION_POLICY_IGNORE,
+
+    /** Least recently used flow is evicted */
+    SAI_STATEFUL_TABLE_EVICTION_POLICY_LRU,
+
+} sai_stateful_table_eviction_policy_t;
+```
+
+State graph is itself is a complex entity - it is a set of callbacks, one for each state.
+Callbacks can be also complex.
+They may require to be able to express the following:
+* ALU operations
+* Local memory operations (accessing flow context or scratchpad memory)
+* Branching operations (if, then, else etc.)
+* Calling external functions (set another state, drop packet etc.)
+
+To implement the expressions above, adopting a restricted subset of C language is proposed for the callbacks.
+The SAI host adapter is responsibe for **compiling** and **loading** the C application.
+The restrictions put on the code are as follows:
+* There are no function calls or shared library calls available, except for those provided in a helper below or inlined functions.
+* Multiple state handlers (programs) can reside inside a single C file in different sections.
+* There are no global variables allowed.
+* There are no const strings or const arrays allowed.
+* There are no loops available.
+* Limited stack space of maximum 64 bytes.
+
+A supplementary initial version of the APIs is provided below to be accessible from the state graph functions.
+The signature of every state callback is `void hadler(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)`.
+The state callback to be executed by default should be called in the section called `start`.
+
+```c
+#if !defined (__SAICALLBACK_H_)
+#define __SAICALLBACK_H_
+
+#ifndef __section
+# define __section(NAME)                  \
+   __attribute__((section(NAME), used))
+#endif
+
+typedef struct _sai_ethernet_t {
+    sai_u8_t[6] src_mac;
+    sai_u8_t[6] src_mac;
+} _sai_ethernet_t;
+
+typedef struct _sai_ipv4_t {
+    sai_u32_t src_addr;
+    sai_u32_t dst_addr;
+    sai_u8_t ipproto;
+} _sai_ipv4_t;
+
+typedef struct _sai_tcp_t {
+    sai_u16_t sport;
+    sai_u16_t dport;
+    sai_u16_t flags;
+} _sai_tcp_t;
+
+/**
+ * @brief Defines parsed headers
+ */
+typedef struct _sai_parsed_headers_t
+{
+    sai_ethernet_t ethernet;
+    
+    sai_ipv4_t ipv4;
+    
+    sai_tcp_t tcp;
+    
+    sai_ethernet_t inner_ethernet;
+    
+    sai_ipv4_t inner_ipv4;
+    
+    sai_tcp_t inner_tcp;
+
+} sai_parsed_headers_t;
+
+/**
+ * @brief State callback signature
+ */
+void hadler(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata);
+
+/**
+ * @brief Set the next state
+ *
+ * Set the state callback to be executed when the stateful
+ * table is applied to the next packet classified to
+ * this flow.
+ *
+ * @param[in] state_handler state handler callback
+ */
+void sai_set_state(char *state);
+
+
+#endif /** __SAICALLBACK_H_ */
+```
+
+## Example
+
+As an example, let's build a stateful firewall that is capable of tracking TCP connections.
+The network device has two kinds of ports - network facing (NP) and customer facing ports (CP).
+A high level architecture is shown below - there are two ACL tables in a sequential table group.
+The first ACL table sends the TCP packets to a stateful table for connection tracking.
+The second ACL table matches on the connection state of the flow that packet belongs to and a port (is it netork or customer facing) and makes the appropriate decision - allow the connection to be opened only by a customer facing port.
+It means that packets will be allowed to ingress the network facing port only if they belong to a connection opened from a customer port.
+
+The separation between connection tracking and deny policy is so that stateful table does not know how exactly the direction is determined, and thus it can be updated without touching the stateful table, which has a single responsibility of tracking flows. ACL uses that state, or flow context, to make a permit/deny decision.
+
+```
+               ┌────────────────────────────────────────┐
+               │  ┌─────────────┐         ┌───────────┐ │
+               │  │             │         │           │ │
+   ┌──────┐    │  │             │         │           │ │
+   │ NP   ├────┼──►             │         │           │ │
+   │      │    │  │             │         │           │ │
+   └──────┘    │  │ Conntrack   │         │  FW       │ │
+               │  │   ACL       ├─┐    ┌──►  ACL      │ │
+   ┌──────┐    │  │             │ │    │  │           │ │
+   │ CP   │    │  │             │ │    │  │           │ │
+   │      ├────┼──►             │ │    │  │           │ │
+   └──────┘    │  │             │ │    │  │           │ │
+               │  └─────────────┘ │    │  └───────────┘ │
+               └──────────────────┼────┼────────────────┘
+                                  │    │
+                    ┌─────────────▼────┴────────────┐
+                    │         Conntrack             │
+                    │      State Table              │
+                    └───────────────────────────────┘
+```
+
+The pseudo code for SAI calls is provided below:
+
+```c
+/**
+ * Create a conntrack stateful table
+ */
+
+sai_object_id_t conntrack_state_table_oid;
+sai_attribute_t attr;
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_SIZE;
+attr.value.u32 = 1000000;
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_KEY_0;
+attr.value.s32list.count = 1;
+attr.value.s32list.list = [
+    SAI_FLOW_KEY_FIELD_SRC_IP,
+	SAI_FLOW_KEY_FIELD_DST_IP,
+	SAI_FLOW_KEY_FIELD_L4_SRC_PORT,
+	SAI_FLOW_KEY_FIELD_L4_DST_PORT,
+	SAI_FLOW_KEY_FIELD_IP_PROTOCOL];
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_KEY_1;
+attr.value.s32list.count = 1;
+attr.value.s32list.list = [
+	SAI_FLOW_KEY_FIELD_DST_IP,
+	SAI_FLOW_KEY_FIELD_SRC_IP,
+	SAI_FLOW_KEY_FIELD_L4_DST_PORT,
+	SAI_FLOW_KEY_FIELD_L4_SRC_PORT,
+	SAI_FLOW_KEY_FIELD_IP_PROTOCOL];
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_EVICTION_POLICY;
+attr.value.s32 = SAI_STATEFUL_TABLE_EVICTION_POLICY_LRU;
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_FLOW_CONTEXT_SIZE;
+attr.value.u32 = 2;
+
+attr.id = SAI_STATEFUL_TABLE_ATTR_STATE_GRAPH;
+attr.value.u8list = ebpf_file;
+
+/**
+ * Create table to drop TCP traffic from network ports
+ */
+
+sai_object_id_t port_table_oid;
+
+attr.id = SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST;
+attr.value.s32list.count = 1;
+attr.value.s32list.list = SAI_ACL_BIND_POINT_TYPE_PORT;
+
+attr.id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
+attr.value.s32 = SAI_ACL_STAGE_INGRESS;
+
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL;
+attr.value.bool = true;
+
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_IN_PORTS;
+attr.value.bool = true;
+
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_ACL_USER_META;
+attr.value.bool = true;
+
+/**
+ * Create rule to drop TCP traffic from network ports if connection is not open
+ */
+
+sai_object_id_t port_rule_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
+attr.value.oid = port_table_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_PRIORITY;
+attr.value.u32 = 0;
+
+attr.id = SAI_ACL_ENTRY_ATTR_ADMIN_STATE;
+attr.value.booldata = true;
+
+attr.id = SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS;
+attr.value.objlist = network_ports;
+
+attr.id = SAI_ACL_ENTRY_ATTR_IP_PROTOCOL;
+attr.value.u8 = 0x6;
+
+attr.id = SAI_ACL_ENTRY_ATTR_FIELD_ACL_USER_META;
+attr.value.acl_data_value.u32 = 0x0;
+attr.value.acl_data_mask.u32  = 0x1;
+
+attr.id = SAI_ACL_ENTRY_ATTR_ACTION_PACKET_ACTION;
+attr.value.packet_action = SAI_PACKET_ACTION_DISCARD;
+
+/**
+ * Create table to apply connection tracking to TCP packets
+ */
+
+sai_object_id_t conntrack_table_oid;
+
+attr.id = SAI_ACL_TABLE_ATTR_ACL_BIND_POINT_TYPE_LIST;
+attr.value.s32list.count = 1;
+attr.value.s32list.list = SAI_ACL_BIND_POINT_TYPE_PORT;
+
+attr.id = SAI_ACL_TABLE_ATTR_ACL_STAGE;
+attr.value.s32 = SAI_ACL_STAGE_INGRESS;
+
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_IP_PROTOCOL;
+attr.value.bool = true;
+
+attr.id = SAI_ACL_TABLE_ATTR_FIELD_IN_PORTS;
+attr.value.bool = true;
+
+/**
+ * Create rule to send TCP packets to connection tracking table from customer ports
+ */
+
+sai_object_id_t conntrack_customer_rule_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
+attr.value.oid = conntrack_table_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_PRIORITY;
+attr.value.u32 = 0;
+
+attr.id = SAI_ACL_ENTRY_ATTR_ADMIN_STATE;
+attr.value.booldata = true;
+
+attr.id = SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS;
+attr.value.objlist = customer_ports;
+
+attr.id = SAI_ACL_ENTRY_ATTR_IP_PROTOCOL;
+attr.value.u8 = 0x6;
+
+attr.id = SAI_ACL_ACTION_TYPE_APPLY_STATEFUL_TABLE_WITH_KEY_0;
+attr.value.oid = conntrack_state_table_oid;
+
+/**
+ * Create rule to send TCP packets to connection tracking table from customer ports
+ */
+
+sai_object_id_t conntrack_network_rule_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_TABLE_ID;
+attr.value.oid = conntrack_table_oid;
+
+attr.id = SAI_ACL_ENTRY_ATTR_PRIORITY;
+attr.value.u32 = 1;
+
+attr.id = SAI_ACL_ENTRY_ATTR_ADMIN_STATE;
+attr.value.booldata = true;
+
+attr.id = SAI_ACL_ENTRY_ATTR_FIELD_IN_PORTS;
+attr.value.objlist = network_ports;
+
+attr.id = SAI_ACL_ENTRY_ATTR_IP_PROTOCOL;
+attr.value.u8 = 0x6;
+
+attr.id = SAI_ACL_ACTION_TYPE_APPLY_STATEFUL_TABLE_WITH_KEY_1;
+attr.value.oid = conntrack_state_table_oid;
+
+/**
+ * ...
+ * These two ACL tables are members of a sequential table group,
+ * Conntrack ACL table being first in the group to send packets to
+ * Conntrack stateful table before port table with deny rule is applied
+ * No new API are used to create ACL group and ACL group members
+ * ...
+ */
+ ```
+
+The code for connection tracking callbacks is below:
+
+```c
+#include "inc/saicallback.h"
+
+typedef enum _connection_state_t {
+    CONNECTION_STATE_CLOSED = 0,
+    CONNECTION_STATE_SYN_SENT = 1,
+    CONNECTION_STATE_OPEN = 2,
+} connection_state_t;
+
+typedef struct _flow_ctx_t {
+    unsigned char connection_state;
+} flow_ctx_t;
+
+__section("start")
+void start(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
+{
+    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
+
+    if (parsed_headers->tcp.flags != 0x02 /* TCP SYN */)
+    {
+        return;
+    }
+
+    fc->connection_state = CONNECTION_STATE_SYN_SENT;
+
+    sai_set_state("wait_synack");
+}
+
+__section("wait_synack")
+void wait_synack(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
+{
+    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
+
+    if (parsed_headers->tcp.flags & 0x12 /* SYNACK */)
+    {
+        fc->connection_state = CONNECTION_STATE_OPEN;
+	*packet_metadata = 1;
+        sai_set_state("allow");
+    }
+}
+
+__section("allow")
+void allow(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
+{
+    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
+
+    if (parsed_headers->tcp.flags & 0x4 /* RST */)
+    {
+        fc->connection_state = CONNECTION_STATE_CLOSED;
+        sai_set_state("start");
+    }
+    
+    *packet_metadata = 1;
+
+    if (parsed_headers->tcp.flags & 0x1 /* FIN */)
+    {
+        sai_set_state("wait_finack");
+    }
+}
+
+__section("wait_finack")
+void wait_finack(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
+{
+    if (parsed_headers->tcp.flags & 0x11 /* FINACK */)
+    {
+        sai_set_state("wait_ack");
+    }
+    
+    *packet_metadata = 1;
+}
+
+__section("wait_ack")
+void wait_ack(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)
+{
+    flow_ctx_t *fc = (flow_ctx_t *)flow_ctx;
+
+    if (parsed_headers->tcp.flags & 0x10 /* ACK */)
+    {
+        fc->connection_state = CONNECTION_STATE_CLOSED;
+        sai_set_state(start);
+    }
+}
+```
