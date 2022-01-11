@@ -69,7 +69,7 @@ typedef struct _sai_parsed_headers_t
 /**
  * @brief State callback signature
  */
-void hadler(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata);
+void handler(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata);
 
 /**
  * @brief Set the next state
