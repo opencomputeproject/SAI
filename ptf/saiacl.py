@@ -61,7 +61,7 @@ class AclGroupTest(SaiHelper):
             port_id=self.port24,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.port24_bp != 0)
+        self.assertNotEqual(self.port24_bp, 0)
 
         self.port25_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -69,18 +69,18 @@ class AclGroupTest(SaiHelper):
             port_id=self.port25,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.port25_bp != 0)
+        self.assertNotEqual(self.port25_bp, 0)
 
         # create LAGs
         self.lag6 = sai_thrift_create_lag(self.client)
-        self.assertTrue(self.lag6 != 0)
+        self.assertNotEqual(self.lag6, 0)
         self.lag6_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
             port_id=self.lag6,
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
-        self.assertTrue(self.lag6_bp != 0)
+        self.assertNotEqual(self.lag6_bp, 0)
         self.lag6_member26 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag6, port_id=self.port26)
         self.lag6_member27 = sai_thrift_create_lag_member(
@@ -90,7 +90,7 @@ class AclGroupTest(SaiHelper):
 
         # create vlan 40 with port24, port25 and lag6
         self.vlan40 = sai_thrift_create_vlan(self.client, vlan_id=40)
-        self.assertTrue(self.vlan40 != 0)
+        self.assertNotEqual(self.vlan40, 0)
         self.vlan40_member24 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan40,
@@ -2588,7 +2588,6 @@ class MultAclTableGroupBindTest(SaiHelper):
         group_bind_point_type_list = sai_thrift_s32_list_t(
             count=len(group_bind_point_list), int32list=group_bind_point_list)
 
-        table_bind_point_list = [SAI_ACL_BIND_POINT_TYPE_PORT]
         table_bind_point_type_list = sai_thrift_s32_list_t(
             count=len(table_bind_point_list), int32list=table_bind_point_list)
 
@@ -2682,11 +2681,6 @@ class MultAclTableGroupBindTest(SaiHelper):
             sai_thrift_set_port_attribute(
                 self.client, ports,
                 ingress_acl=acl_group_ingress_list[i])
-
-        action = SAI_PACKET_ACTION_DROP
-        packet_action = sai_thrift_acl_action_data_t(
-            parameter=sai_thrift_acl_action_parameter_t(
-                s32=action))
 
         # create ACL entries
         print("Create ACL entries")
