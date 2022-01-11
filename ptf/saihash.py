@@ -18,7 +18,6 @@ Thrift SAI interface HASH tests
 
 import binascii
 
-from ptf.testutils import *
 from sai_base_test import *
 
 ROUTER_MAC = '00:77:66:55:44:00'
