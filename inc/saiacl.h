@@ -450,7 +450,6 @@ typedef enum _sai_acl_table_group_member_attr_t
  * @brief ACL User Defined Field Attribute ID Range
  */
 #define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
-#define SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE 0xF
 
 /**
  * @brief Attribute Id for sai_acl_table
@@ -1394,29 +1393,6 @@ typedef enum _sai_acl_table_attr_t
      * @default false
      */
     SAI_ACL_TABLE_ATTR_FIELD_TAM_INT_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x152,
-
-    /**
-     * @brief Stateful Metadata
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     * @range SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE
-     */
-    SAI_ACL_TABLE_ATTR_STATEFUL_METADATA_MIN = SAI_ACL_TABLE_ATTR_FIELD_START + 0x160,
-
-    /**
-     * @brief Stateful Metadata end
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_STATEFUL_METADATA
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_ACL_TABLE_ATTR_STATEFUL_METADATA_MAX = SAI_ACL_TABLE_ATTR_STATEFUL_METADATA_MIN + SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE,
 
     /**
      * @brief End of ACL Table Match Field
@@ -2404,25 +2380,6 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_TAM_INT_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x152,
-
-    /**
-     * @brief Stateful Metadata object value
-     *
-     * @type sai_acl_field_data_t sai_u8_list_t
-     * @flags CREATE_AND_SET
-     * @default disabled
-     * @range SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE
-     */
-    SAI_ACL_ENTRY_ATTR_STATEFUL_METADATA_MIN = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x160,
-
-    /**
-     * @brief User Defined Field data max
-     *
-     * @type sai_acl_field_data_t sai_u8_list_t
-     * @flags CREATE_AND_SET
-     * @default disabled
-     */
-    SAI_ACL_ENTRY_ATTR_STATEFUL_METADATA_MAX = SAI_ACL_ENTRY_ATTR_STATEFUL_METADATA_MIN + SAI_ACL_STATEFUL_METADATA_ATTR_ID_RANGE,
 
     /**
      * @brief End of Rule Match Fields
