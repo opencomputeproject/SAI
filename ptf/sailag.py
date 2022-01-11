@@ -19,7 +19,6 @@ Thrift SAI interface LAG tests
 import binascii
 
 from sai_thrift.sai_headers import *
-from ptf.testutils import *
 from sai_base_test import *
 
 
