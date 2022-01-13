@@ -263,7 +263,7 @@ typedef enum _sai_stateful_table_eviction_policy_t
 } sai_stateful_table_eviction_policy_t;
 ```
 
-State graph is itself is a complex entity - it is a set of callbacks, one for each state.
+State graph is itself a complex entity - it is a set of callbacks, one for each state.
 Callbacks can be also complex.
 They may require to be able to express the following:
 * ALU operations
@@ -279,7 +279,6 @@ The restrictions put on the code are as follows:
 * There are no global variables allowed.
 * There are no const strings or const arrays allowed.
 * There are no loops available.
-* Limited stack space of maximum 64 bytes.
 
 A supplementary initial version of the APIs is provided below to be accessible from the state graph functions.
 The signature of every state callback is `void hadler(void *flow_ctx, void *global_ctx, const struct sai_parsed_headers_t *parsed_headers, sai_u32_t *packet_metatata)`.
