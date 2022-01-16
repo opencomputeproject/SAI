@@ -21,7 +21,7 @@ Class contains common functions.
 
 This file contains base class for other platform classes.
 """
-from  sai_base_test import *
+from  sai_base_test import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 class CommonSaiHelper(SaiHelper):
     """

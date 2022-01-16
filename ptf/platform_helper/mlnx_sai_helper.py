@@ -19,7 +19,7 @@
 """
 This file contains class for mlnx specified functions.
 """
-from platform_helper.common_sai_helper import *
+from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 class MlnxSaiHelper(CommonSaiHelper):
     """

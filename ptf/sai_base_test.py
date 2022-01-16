@@ -578,7 +578,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Returns:
             int: sai call result
         """
-        return status
+        return adapter.status
 
     @staticmethod
     def saiWaitFdbAge(timeout):
@@ -588,7 +588,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Args:
             timeout (int): Timeout value in seconds
         """
-        print("Waiting for fdb entry to Age")
+        print("Waiting for fdb entry to age")
         aging_interval_buffer = 10
         time.sleep(timeout + aging_interval_buffer)
 
@@ -1066,11 +1066,11 @@ def get_platform():
         pl = pl_low
     return pl
 
-# pylint: disable=unused-import
-from platform_helper.common_sai_helper import *
-from platform_helper.bfn_sai_helper import *
-from platform_helper.brcm_sai_helper import *
-from platform_helper.mlnx_sai_helper import *
+
+from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from platform_helper.bfn_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from platform_helper.brcm_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from platform_helper.mlnx_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 class PlatformSaiHelper(SaiHelper):
     """

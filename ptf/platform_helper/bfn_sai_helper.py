@@ -20,7 +20,7 @@
 """
 This file contains class for bfn specified functions.
 """
-from platform_helper.common_sai_helper import *
+from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 class BfnSaiHelper(CommonSaiHelper):
     """

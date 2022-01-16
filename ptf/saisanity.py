@@ -21,9 +21,6 @@ This file contains some Test classes which are used to the basic functionality o
 """
 
 from sai_thrift.sai_headers import *
-
-from ptf.dataplane import DataPlane
-
 from sai_base_test import *
 
 mac1 = '00:11:11:11:11:11'
