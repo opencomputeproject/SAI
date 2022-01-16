@@ -122,7 +122,7 @@ class ThriftInterfaceDataPlane(ThriftInterface):
     """
     def setUp(self):
         super(ThriftInterfaceDataPlane, self).setUp()
-        
+
         self.dataplane = ptf.dataplane_instance
         if self.dataplane is not None:
             self.dataplane.flush()
@@ -136,7 +136,7 @@ class ThriftInterfaceDataPlane(ThriftInterface):
         super(ThriftInterfaceDataPlane, self).tearDown()
 
 
-class SaiHelperBase(ThriftInterfaceDataPlane):   
+class SaiHelperBase(ThriftInterfaceDataPlane):
     """
     SAI test helper base class without initial switch ports setup
 
@@ -148,7 +148,6 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.active_ports_no - number of active ports
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
-        self.bridge_port_list - bridge port list (depends on the platform)
     """
 
     platform = 'common'
@@ -182,11 +181,12 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         for i, _ in enumerate(self.port_list):
             setattr(self, 'port%s' % i, self.port_list[i])
 
-    
+
     def turn_up_and_check_ports(self):
         '''
         Method to turn up the ports.
         '''
+        #TODO check if this is common behivor or specified after check on more platform
         print("For Common platform, Port already setup in recreate_ports.")
 
 
@@ -199,12 +199,12 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         thread = Thread(target = start_shell)
         thread.start()
 
-    
+
     def recreate_ports(self):
         '''
         Recreate the port base on file specified in 'port_config_ini' param.
         '''
-
+        #TODO check if this is common behivor or specified after check on more platform
         if 'port_config_ini' in self.test_params:
             if 'createPorts_has_been_called' not in config:
                 self.createPorts()
@@ -212,7 +212,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 #self.checkPortsUp()
                 config['createPorts_has_been_called'] = 1
 
-    
+
     def get_default_1q_bridge_id(self):
         '''
         Gets default 1q bridge 1d, set it to class attribute 'default_1q_bridge'.
@@ -228,86 +228,6 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.default_1q_bridge = attr['default_1q_bridge_id']
 
 
-    def get_bridge_port_all_attribute(self, bridge_port_id):
-        '''
-        Gets all the attrbute from bridge port.
-        '''
-        sai_thrift_get_bridge_port_attribute(self.client,  bridge_port_oid=bridge_port_id, ingress_filtering=True,  egress_filtering=True)
-        attr = sai_thrift_get_bridge_port_attribute(
-            self.client, 
-            bridge_port_oid=bridge_port_id,
-            type=True,
-            port_id=True,
-            tagging_mode=True,
-            vlan_id=True,
-            rif_id=True,
-            tunnel_id=True,
-            bridge_id=True,
-            fdb_learning_mode=True,
-            max_learned_addresses=True,
-            fdb_learning_limit_violation_packet_action=True,
-            admin_state=True
-            #Cannot get those three
-            #ingress_filtering=True,
-            #egress_filtering=True,
-            #isolation_group=True
-            )
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        return attr
-
-
-    def load_default_1q_bridge_ports(self):
-        """
-        Loads default 1q bridge ports and set as class attribute.
-
-        Needs the following class attributes:
-            self.default_1q_bridge - default_1q_bridge oid
-
-            self.active_ports_no - number of active ports
-
-            self.portX objects for all active ports
-
-        Sets the following class attributes:
-
-            self.default_1q_bridge_port_list - list of all 1q bridge port objects
-
-            self.bridge_port_list - list of all bridge port objects
-
-            self.portX_bp - objects for all 1q bridge ports
-        """
-
-        #ret = client.sai_thrift_get_bridge_port_list(switch.default_1q_bridge)
-        attr = sai_thrift_get_bridge_attribute(
-                    self.client, 
-                    bridge_oid=self.default_1q_bridge,
-                    port_list=sai_thrift_object_list_t(
-                        idlist=[], count=self.active_ports_no))
-        self.default_1q_bridge_port_list = attr['port_list'].idlist
-        self.bridge_port_list = self.default_1q_bridge_port_list
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)       
-
-
-        for bp in self.default_1q_bridge_port_list:
-            attr = self.get_bridge_port_all_attribute(bp)
-            for index in range(0, len(self.port_list)):
-                port_id = getattr(self, 'port%s' % index)
-                if port_id == attr['port_id']:
-                    setattr(self, 'port%s_bp' % index, bp)
-                    #setattr(self, 'port%s_bp_attr' % index, attr)
-                    break
-
-
-    def remove_1q_bridge_port(self):
-        '''
-        Removes all the bridge ports.
-        '''
-
-        for index in range(0, len(self.default_1q_bridge_port_list)):
-            port_bp = getattr(self, 'port%s_bp' % index)
-            sai_thrift_remove_bridge_port(self.client, port_bp)
-            delattr(self, 'port%s_bp' % index)
-
-
     def reset_1q_bridge_ports(self):
         '''
         Reset all the 1Q bridge ports.
@@ -318,10 +238,11 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
             self.portX objects for all active ports
         '''
-        self.load_default_1q_bridge_ports()
-        self.remove_1q_bridge_port()
+        #TODO check if this is common behivor or specified after check on more platform
+        #TODO move this function to CommonSaiHelper
+        print("For Common platform, expecting bridge ports not been created by default.")
 
-    
+
     def check_cpu_port_hdl(self):
         """
         Checks cpu port handler.
@@ -336,6 +257,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
             self.cpu_queueX - cpu queue id
 
         """
+        #TODO move this function to CommonSaiHelper
         attr = sai_thrift_get_port_attribute(self.client,
                                              self.cpu_port_hdl,
                                              qos_number_of_queues=True)
@@ -368,12 +290,11 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
     def setUp(self):
         super(SaiHelperBase, self).setUp()
-        self.bridge_port_list = []
 
         self.getSwitchPorts()
         # initialize switch
         self.start_switch()
-        
+
         self.switch_resources = self.saveNumberOfAvaiableResources(debug=True)
 
         # get default vlan
@@ -399,7 +320,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.get_default_1q_bridge_id()
 
         #remove all default 1Q bridge port
-        self.reset_1q_bridge_ports()        
+        self.reset_1q_bridge_ports()
 
         # get cpu port
         attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
@@ -409,8 +330,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         # get cpu port queue handles
         self.check_cpu_port_hdl()
 
-
         print("Finish SaiHelperBase setup")
+
 
     def tearDown(self):
         try:
@@ -424,6 +345,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
         finally:
             super(SaiHelperBase, self).tearDown()
+
 
     def createPorts(self):
         """
@@ -1129,6 +1051,13 @@ class MinimalPortVlanConfig(SaiHelperBase):
 
 
 def get_platform():
+    """
+    Get the platform token.
+    
+    If not any platform specified from the environment variable [PLATFORM], then the default platform will be 'common'.
+    If specified any one, it will try to concert it from standard name to a shorten name (case insentitive). \r
+    \ti.e. Broadcom -> brcm
+    """
     pl_low = PLATFORM.lower()
     pl = 'common'
     if pl_low in platform_map.keys():
@@ -1138,22 +1067,27 @@ def get_platform():
     return pl
 
 # pylint: disable=unused-import
-from platform_helper import common_sai_helper
-from platform_helper import bfn_sai_helper
-from platform_helper import brcm_sai_helper
-from platform_helper import mlnx_sai_helper
+from platform_helper.common_sai_helper import *
+from platform_helper.bfn_sai_helper import *
+from platform_helper.brcm_sai_helper import *
+from platform_helper.mlnx_sai_helper import *
+
 class PlatformSaiHelper(SaiHelper):
+    """
+    Class uses to extend from SaiHelper, base on the [platform] class attribute,
+    dynamic select a subclass from the platform_helper.
+    """
     def __new__(cls, *args, **kwargs):
-        sai_helper_subclass_map = {subclass.platform: subclass for subclass in SaiHelper.__subclasses__()} 
-        common_sai_helper_subclass_map = {subclass.platform: subclass for subclass in common_sai_helper.CommonSaiHelper.__subclasses__()}   
+        sai_helper_subclass_map = {subclass.platform: subclass for subclass in SaiHelper.__subclasses__()}
+        common_sai_helper_subclass_map = {subclass.platform: subclass for subclass in CommonSaiHelper.__subclasses__()}
         pl = get_platform()
-        
+
         if pl in common_sai_helper_subclass_map:
             target_base_class = common_sai_helper_subclass_map[pl]
         else:
             target_base_class = sai_helper_subclass_map[pl]
-        
+
         cls.__bases__ = (target_base_class,)
-            
+
         instance = target_base_class.__new__(cls, *args, **kwargs)
-        return instance 
+        return instance

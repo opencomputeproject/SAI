@@ -1,9 +1,27 @@
+# Copyright (c) 2021 Microsoft Open Technologies, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
+#
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
 
-from __future__ import print_function
+"""
+This file contains some Test classes which are used to the basic functionality of the switch.
+"""
 
 from sai_thrift.sai_headers import *
 
-from ptf.testutils import *
 from ptf.dataplane import DataPlane
 
 from sai_base_test import *
@@ -14,27 +32,10 @@ mac3 = '00:33:33:33:33:33'
 mac4 = '00:12:12:12:12:13'
 
 
-class L2TrunkToTrunkVlan(PlatformSaiHelper):
-
-    def remove_bridge_port(self):
-        for index in range(0, len(self.port_list)):
-            port_bp = getattr(self, 'port%s_bp' % index)
-            sai_thrift_remove_bridge_port(self.client, port_bp)
-
-
-    def create_bridge_ports(self):
-        for index in range(0, len(self.port_list)):
-            port_id = getattr(self, 'port%s' % index)
-            port_bp = sai_thrift_create_bridge_port(
-                self.client,
-                bridge_id=self.default_1q_bridge,
-                port_id=port_id,
-                type=SAI_BRIDGE_PORT_TYPE_PORT,
-                admin_state=True)
-            setattr(self, 'port%s_bp' % index, port_bp)
-            self.assertNotEqual(getattr(self, 'port%s_bp' % index), 0)
-            #attr = self.get_bridge_port_all_attribute(port_bp)
-            #setattr(self, 'port%s_bp_attr' % index, attr)
+class L2TrunkToTrunkVlanTest(PlatformSaiHelper):
+    """
+    Test for L2 Vlan Trunk to Trunk transport.
+    """
 
     def setUp(self):
         #this process contains the switch_init process
@@ -43,8 +44,8 @@ class L2TrunkToTrunkVlan(PlatformSaiHelper):
         self.create_bridge_ports()
 
         print("Sending L2 packet port 1 -> port 2 [access vlan=10])")
-        self.vlan_id = 10        
-        
+        self.vlan_id = 10
+
         mac_action = SAI_PACKET_ACTION_FORWARD
 
         self.vlan_oid = sai_thrift_create_vlan(self.client, vlan_id=self.vlan_id)
@@ -73,12 +74,12 @@ class L2TrunkToTrunkVlan(PlatformSaiHelper):
                                 ip_ttl=64)
         try:
             time.sleep(5)
-            send_packet(self, 0, pkt)
-            verify_packet(self, pkt, 1)
+            send_packet(self, self.dev_port0, pkt)
+            verify_packet(self, pkt, self.dev_port1)
         finally:
             pass
 
-    
+
     def tearDown(self):
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry1)
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry2)
@@ -94,27 +95,10 @@ class L2TrunkToTrunkVlan(PlatformSaiHelper):
         SaiHelperBase.tearDown(self)
 
 
-class L2TrunkToAccessVlan(PlatformSaiHelper):
-
-    def remove_bridge_port(self):
-        for index in range(0, len(self.port_list)):
-            port_bp = getattr(self, 'port%s_bp' % index)
-            sai_thrift_remove_bridge_port(self.client, port_bp)
-
-
-    def create_bridge_ports(self):
-        for index in range(0, len(self.port_list)):
-            port_id = getattr(self, 'port%s' % index)
-            port_bp = sai_thrift_create_bridge_port(
-                self.client,
-                bridge_id=self.default_1q_bridge,
-                port_id=port_id,
-                type=SAI_BRIDGE_PORT_TYPE_PORT,
-                admin_state=True)
-            setattr(self, 'port%s_bp' % index, port_bp)
-            self.assertNotEqual(getattr(self, 'port%s_bp' % index), 0)
-            #attr = self.get_bridge_port_all_attribute(port_bp)
-            #setattr(self, 'port%s_bp_attr' % index, attr)
+class L2TrunkToAccessVlanTest(PlatformSaiHelper):
+    """
+    Test for L2 Vlan Trunk to Access transport.
+    """
 
     def setUp(self):
         #this process contains the switch_init process
@@ -123,8 +107,8 @@ class L2TrunkToAccessVlan(PlatformSaiHelper):
         self.create_bridge_ports()
 
         print("Sending L2 packet port 1 -> port 2 [trunk vlan=10])")
-        self.vlan_id = 10        
-        
+        self.vlan_id = 10
+
         mac_action = SAI_PACKET_ACTION_FORWARD
 
         self.vlan_oid = sai_thrift_create_vlan(self.client, vlan_id=self.vlan_id)
@@ -143,7 +127,7 @@ class L2TrunkToAccessVlan(PlatformSaiHelper):
         #need the bridge port inactually
         sai_thrift_create_fdb_entry(self.client, fdb_entry=self.fdb_entry1, bridge_port_id=self.port0_bp, packet_action=mac_action)
         sai_thrift_create_fdb_entry(self.client, fdb_entry=self.fdb_entry2, bridge_port_id=self.port1_bp, packet_action=mac_action)
-        
+
 
     def runTest(self):
         pkt = simple_udp_packet(eth_dst=mac2,
@@ -161,12 +145,12 @@ class L2TrunkToAccessVlan(PlatformSaiHelper):
                                     pktlen=96)
         try:
             time.sleep(5)
-            send_packet(self, 0, pkt)
-            verify_packet(self, exp_pkt, 1)
+            send_packet(self, self.dev_port0, pkt)
+            verify_packet(self, exp_pkt, self.dev_port1)
         finally:
             pass
 
-    
+
     def tearDown(self):
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry1)
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry2)
@@ -183,6 +167,10 @@ class L2TrunkToAccessVlan(PlatformSaiHelper):
 
 
 class L2SanityTest(PlatformSaiHelper):
+    """
+    Test for L2 trunk and access port access, all ports scanning.
+    """
+
     def gen_mac(self):
          #Gets self.portX objects for all active ports
         for index in range(0, len(self.port_list)):
@@ -193,21 +181,6 @@ class L2SanityTest(PlatformSaiHelper):
                 section= ":" + str(index+1)
             mac += (section*5)
             setattr(self, 'mac%s' % index, mac)
-
-    
-    def create_bridge_ports(self):
-        for index in range(0, len(self.port_list)):
-            port_id = getattr(self, 'port%s' % index)
-            port_bp = sai_thrift_create_bridge_port(
-                self.client,
-                bridge_id=self.default_1q_bridge,
-                port_id=port_id,
-                type=SAI_BRIDGE_PORT_TYPE_PORT,
-                admin_state=True)
-            setattr(self, 'port%s_bp' % index, port_bp)
-            self.assertNotEqual(getattr(self, 'port%s_bp' % index), 0)
-            attr = self.get_bridge_port_all_attribute(port_bp)
-            setattr(self, 'port%s_bp_attr' % index, attr)
 
 
     def create_vlan_ports(self, vlanid, vlan_oid):
@@ -253,12 +226,12 @@ class L2SanityTest(PlatformSaiHelper):
     def create_pkt(self, vlan_id):
         for index in range(0, len(self.port_list)):
             target_mac = getattr(self, 'mac%s' % index)
-            if index%2 == 0:                
+            if index%2 == 0:
                 pkt = simple_tcp_packet(eth_src=self.src_mac,
                                         eth_dst=target_mac,
                                         ip_dst='172.16.0.1',
                                         ip_id=101,
-                                        ip_ttl=64)                
+                                        ip_ttl=64)
             else:
                 pkt = simple_tcp_packet(eth_dst=target_mac,
                                         eth_src=self.src_mac,
@@ -272,8 +245,8 @@ class L2SanityTest(PlatformSaiHelper):
     def create_exp_pkt(self, vlan_id):
         for index in range(0, len(self.port_list)):
             target_mac = getattr(self, 'mac%s' % index)
-            if index%2 == 0:                
-                exp_pkt = getattr(self, 'pkt%s' % index)                
+            if index%2 == 0:
+                exp_pkt = getattr(self, 'pkt%s' % index)
             else:
                 exp_pkt = simple_tcp_packet(eth_dst=target_mac,
                                         eth_src=self.src_mac,
@@ -318,19 +291,18 @@ class L2SanityTest(PlatformSaiHelper):
 
 
     def runTest(self):
-        try:            
+        try:
             for index in range(1, len(self.port_list)):
                 self.dataplane.flush()
                 print("Check port{} forwarding...".format(index))
                 target_pkt = getattr(self, 'pkt%s' % index)
-                exp_pkt = getattr(self, 'exp_pkt%s' % index)                
-                send_packet(self, self.dev_port0, target_pkt)                
-                verify_packet(self, exp_pkt, index) 
-                #res = verify_any_packet_on_ports_list(self, [exp_pkt], [[i for i in range(0,32)]])
+                exp_pkt = getattr(self, 'exp_pkt%s' % index)
+                send_packet(self, self.dev_port0, target_pkt)
+                verify_packet(self, exp_pkt, index)
         finally:
             pass
 
-    
+
     def tearDown(self):
         #reset port vlan id
         #?reset to 0 or 1?
@@ -340,7 +312,7 @@ class L2SanityTest(PlatformSaiHelper):
         self.remove_fdb()
 
         #remove vlan member
-        self.remove_vlan_member(self.vlan_id)        
+        self.remove_vlan_member(self.vlan_id)
 
         #remove bridge port
         self.remove_bridge_port()
@@ -364,132 +336,6 @@ class L2SanityTest(PlatformSaiHelper):
             vlan_member=getattr(self, 'vlan%s_member%s' % (vlan_id, index))
             sai_thrift_remove_vlan_member(self.client, vlan_member)
 
-    def remove_bridge_port(self):
-        for index in range(0, len(self.port_list)):
-            port_bp = getattr(self, 'port%s_bp' % index)
-            sai_thrift_remove_bridge_port(self.client, port_bp)
-
-
-
-
-###############################################################################
-# Helper functions                                                            #
-# Hack for now, need to be removed or upstreamed                              #
-###############################################################################
-# pylint: disable=dangerous-default-value,too-many-arguments
-def verify_any_packet_on_ports_list(
-        test,
-        pkts=[],
-        ports=[],
-        device_number=0,
-        timeout=2,
-        no_flood=False):
-    """
-    Ports is list of port lists
-    Check that _any_ packet is received atleast once in every sublist in
-    ports belonging to the given device (default device_number is 0).
-
-    Also verifies that the packet is ot received on any other ports for this
-    device, and that no other packets are received on the device
-    (unless --relax is in effect).
-    Args:
-        test (testcase): Test case
-        pkts (packets): list of packets
-        ports (ports): list of ports
-        device_number (int): device under test
-        timeout (int): timeout
-        no_flood (int): do not flood
-    Returns:
-        rcv_idx: list of port indices
-    """
-    rcv_idx = []
-    failures = {}
-    pkt_cnt = 0
-    for port_list in ports:
-        rcv_ports = set()
-        remaining_timeout = timeout
-        port_sub_list_failures = []
-        port_sub_list_poll_success = False
-        if remaining_timeout > 0:
-            port_idx = 0
-            port_list_len = len(port_list)
-            while remaining_timeout > 0 or port_idx > 0:
-                port = port_list[port_idx]
-                port_idx = (port_idx + 1) % port_list_len
-                remaining_timeout = remaining_timeout - 0.1
-                (rcv_device, rcv_port, rcv_pkt, _) = test.dataplane.poll(
-                    port_number=port, timeout=0.1, filters=get_filters())
-                print("port {} received, received port id: {}".format(port, rcv_port))
-                if rcv_device != device_number:
-                    continue
-                for pkt in pkts:
-                    logging.debug("Checking for pkt on device %d, port %d",
-                                  device_number, port)
-                    if ptf.dataplane.match_exp_pkt(pkt, rcv_pkt):
-                        pkt_cnt += 1
-                        rcv_ports.add(port_list.index(rcv_port))
-                        port_sub_list_failures = []
-                        port_sub_list_poll_success = True
-                        break
-                    else:
-                        port_sub_list_failures.append(
-                            (port, DataPlane.PollFailure(pkt, [rcv_pkt], 1)))
-                if port_sub_list_poll_success and no_flood:
-                    break
-        # Either no expected packets received or unexpected packets recieved
-        if not port_sub_list_poll_success or port_sub_list_failures:
-            port_tuple = tuple(port_list)
-            failures.setdefault(port_tuple, [])
-            failures[port_tuple] = failures[port_tuple] + \
-                port_sub_list_failures
-        rcv_idx.append(rcv_ports)
-
-    verify_no_other_packets(test)
-    if failures:
-        def format_per_port_failure(port, failure):
-            # pylint: disable=missing-return-doc,missing-return-type-doc
-            """
-            Format one port
-            Args:
-              port (int): port
-              failure (str): message
-            """
-            return "On port {}\n{}".format(port, failure.format())
-
-        def format_per_port_failures(fail_list):
-            # pylint: disable=missing-return-doc,missing-return-type-doc
-            """
-            Format one port all failures
-            Args:
-              fail_list (array): port and failures
-            """
-            return "\n".join([format_per_port_failure(port, failure)
-                              for (port, failure) in fail_list])
-
-        def format_port_list_failures(port_list, fail_list):
-            # pylint: disable=missing-return-doc,missing-return-type-doc
-            """
-            Format all port all failures
-            Args:
-              port_list (array): ports
-              fail_list (array): port and failures
-            """
-            return "None of the exp pkts rx'd for port list {}: \n{}".format(
-                port_list, format_per_port_failures(fail_list))
-        failure_report = "\n".join([
-            format_port_list_failures(port_list, fail_list)
-            for port_list, fail_list in list(failures.items())
-        ])
-        test.fail(
-            "Did not receive expected packets on any of {} for device {}. \n{}"
-            .format(ports, device_number, failure_report))
-
-    test.assertTrue(
-        pkt_cnt >= len(ports),
-        "Did not receive pkt on one of ports %r for device %d" %
-        (ports, device_number))
-    return rcv_idx
-
 
 def set_vlan_data(vlan_id=0, ports=None, untagged=None, large_port=0):
     """
@@ -511,4 +357,3 @@ def set_vlan_data(vlan_id=0, ports=None, untagged=None, large_port=0):
         "large_port": large_port
     }
     return vlan_data_dict
-
