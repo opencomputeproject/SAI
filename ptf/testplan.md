@@ -237,8 +237,8 @@ SAI PTF TESTPLAN contains all test cases covered in ptf/ directory divided by fu
 | hostif.2 | Verify host interface creation and packet Rx for hostif type = netdev, host interface object type LAG | saihostif.HostifCreationTest.lagNetdevHostifCreationTest |
 | hostif.3 | Verify host interface creation and packet Rx for hostif type = netdev, host interface object type VLAN (L3 SVI) | saihostif.HostifCreationTest.vlanSviNetdevHostifCreationTest |
 | hostif.4 | Verify hostif received packet VLAN tag is stripped when hostif VLAN tag type is STRIP for hostif type = netdev | saihostif.HosifTaggingTest/hostifStripTagTest |
-| hostif.5 | Verify hostif received packet VLAN tag is stripped when hostif VLAN tag type is KEEP for hostif type = netdev | saihostif.HosifTaggingTest/hostifKeepTagTest |
-| hostif.6 | Verify hostif received packet VLAN tag is stripped when hostif VLAN tag type is ORIGINAL for hostif type = netdev | saihostif.HosifTaggingTest/hostifOriginalTagTest |
+| hostif.5 | Verify hostif received packet VLAN tag is not stripped when hostif VLAN tag type is KEEP for hostif type = netdev | saihostif.HosifTaggingTest/hostifKeepTagTest |
+| hostif.6 | Verify hostif received packet VLAN tag is same as in original received packet when hostif VLAN tag type is ORIGINAL for hostif type = netdev | saihostif.HosifTaggingTest/hostifOriginalTagTest |
 | hostif.7 | Verify hostif interface table match for entry type Wildcard and channel type = Callback with LLDP packet | saihostif.HostifTableMatchTest.wildcardEntryCbChannelLldp |
 | hostif.8 | Verify hostif interface table match for entry type Wildcard and channel type = Callback with LACP packet | saihostif.HostifTableMatchTest.wildcardEntryCbChannelLacp |
 | hostif.9 | Verify hostif interface table match for entry type Wildcard and channel type = Callback with STP packet | saihostif.HostifTableMatchTest.wildcardEntryCbChannelStp |
@@ -251,7 +251,7 @@ SAI PTF TESTPLAN contains all test cases covered in ptf/ directory divided by fu
 | hostif.16 | Verify hostif trap packet action TRANSIT | saihostif.HostifTrapActionTest.transitTrapActionTest |
 | hostif.17 | Verify host interface Rx/Tx path wich ARP packet | saihostif.HostifTxTest.arpRxTxTest |
 | hostif.18 | Verify hostif Tx via host interface type netdev, objec type port | saihostif.HostifTxTest.portHostifTxTest |
-| hostif.19 | Verify hostif tx via host interface type netdev, objec type LAG | saihostif.HostifTxTest.lagHostifTxTest |
+| hostif.19 | Verify hostif Tx via host interface type netdev, objec type LAG | saihostif.HostifTxTest.lagHostifTxTest |
 | hostif.20 | Verify hostif trap type TTL error | saihostif.HostifTrapTypesTest.ttlErrorTrapTest |
 | hostif.21 | Verify hostif trap type ARP request | saihostif.HostifTrapTypesTest.arpTrapTest |
 | hostif.22 | Verify hostif trap type ARP response | saihostif.HostifTrapTypesTest.arpTrapTest |
@@ -758,7 +758,7 @@ SAI PTF TESTPLAN contains all test cases covered in ptf/ directory divided by fu
 | rif.110 | Verify IP2ME on untagged RIF port | sairif.L3SviTest.sviMyIPTest |
 | rif.111 | Verify IP2ME on tagged RIF port | sairif.L3SviTest.sviMyIPTest |
 | rif.112 | Verify ARP reply from Linux interface on untagged RIF | sairif.L3SviTest.sviArpReplyTest |
-| rif.113 | Verify ARP reply from Linux interface on tagged RIF | sairif.L3SviTest.?????????????? |
+| rif.113 | Verify ARP reply from Linux interface on tagged RIF | sairif.L3SviTest.sviArpReplyTest |
 | rif.114 | Verify MYIP works for subnet routes | sairif.L3SviTest.sviMyIPTest |
 | rif.115 | Verify create fails when TYPE is VLAN and VLAN_id is 0 | sairif.L3SviTest.incorrectVlanIdTest |
 | rif.116 | Verify duplicate VLAN interface creation fails | sairif.L3SviTest.duplicateVlanRifCreationTest |
