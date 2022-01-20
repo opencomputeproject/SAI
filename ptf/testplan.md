@@ -239,8 +239,7 @@ SAI PTF TESTPLAN contains all test cases covered in ptf/ directory divided by fu
 | hostif.4 | Verify hostif received packet VLAN tag is stripped when hostif VLAN tag type is STRIP for hostif type = netdev | saihostif.HosifTaggingTest/hostifStripTagTest |
 | hostif.5 | Verify hostif received packet VLAN tag is stripped when hostif VLAN tag type is KEEP for hostif type = netdev | saihostif.HosifTaggingTest/hostifKeepTagTest |
 | hostif.6 | Verify hostif received packet VLAN tag is stripped when hostif VLAN tag type is ORIGINAL for hostif type = netdev | saihostif.HosifTaggingTest/hostifOriginalTagTest |
-| hostif.7 | Verify hostif interface table match for entry type Wildcard and channel type = Callback with LLDP packet | saihostif.HostifTableMatchTest.
-wildcardEntryCbChannelLldp |
+| hostif.7 | Verify hostif interface table match for entry type Wildcard and channel type = Callback with LLDP packet | saihostif.HostifTableMatchTest.wildcardEntryCbChannelLldp |
 | hostif.8 | Verify hostif interface table match for entry type Wildcard and channel type = Callback with LACP packet | saihostif.HostifTableMatchTest.wildcardEntryCbChannelLacp |
 | hostif.9 | Verify hostif interface table match for entry type Wildcard and channel type = Callback with STP packet | saihostif.HostifTableMatchTest.wildcardEntryCbChannelStp |
 | hostif.10 | Verify hostif trap packet action DROP | saihostif.HostifTrapActionTest.dropTrapActionTest  |
