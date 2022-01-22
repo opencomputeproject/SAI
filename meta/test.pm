@@ -86,7 +86,7 @@ sub CreateNonObjectIdTest
     WriteTest "    sai_object_key_t ok;";
     WriteTest "    volatile void *p;";
 
-    my @rawnames = GetNonObjectIdStructNames();
+    my @rawnames = GetNonObjectIdStructNames("false");
 
     # add object id since it should be in the struct also
 
@@ -113,7 +113,7 @@ sub CreateSwitchIdTest
 
     WriteTest "{";
 
-    my @rawnames = GetNonObjectIdStructNames();
+    my @rawnames = GetNonObjectIdStructNames("false");
 
     for my $rawname (@rawnames)
     {

@@ -584,6 +584,7 @@ sub GetConditionForSerialize
     my $structName = $refStructInfoEx->{name};
     my $structBase = $refStructInfoEx->{baseName};
 
+
     my $refMembersHash = $refStructInfoEx->{membersHash};
 
     my @conditions = @{ $refMembersHash->{ $refTypeInfo->{name} }->{validonly} };
@@ -599,12 +600,18 @@ sub GetConditionForSerialize
     # after current member, and then deserialize will fail
 
     my $condition = shift @conditions;
-
     if (not $condition =~ /^(\w+|\w+->\w+|sai_metadata_\w+\(\w+\)) == (\w+)$/)
     {
         LogWarning "invalid condition '$condition' on '$name' in '$structName'";
         return "";
     }
+
+    if (defined $refStructInfoEx->{baseName})
+    {
+        $condition = "(sai_object_type_extensions_t)$condition" if $refStructInfoEx->{baseName} eq "object_key_entry_extension";
+    }
+
+    # $condition = "$structBase->$1 == (sai_object_type_t)$2" if $structBase->$1 eq "object_type";
 
     if (defined $refMembersHash->{$1})
     {

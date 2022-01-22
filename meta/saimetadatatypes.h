@@ -53,6 +53,13 @@ typedef struct _sai_object_meta_key_t
      */
     sai_object_key_t            objectkey;
 
+    /**
+     * @brief The key extensions.
+     *
+     * @passparam objecttype
+     */
+    sai_object_key_extension_t  objectkeyext;
+
 } sai_object_meta_key_t;
 
 /**

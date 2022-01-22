@@ -27,12 +27,11 @@
 
 #include <saitypes.h>
 
-/* existing enum extensions */
-#include "saitypesextensions.h"
-#include "saiswitchextensions.h"
-
 /* new experimental object type includes */
 #include "saiexperimentalbmtor.h"
+
+/* existing enum extensions */
+#include "saitypesextensions.h"
 
 /**
  * @brief Extensions to SAI APIs

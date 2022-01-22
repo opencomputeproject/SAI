@@ -261,9 +261,15 @@ sub ReadHeaderFile
 
 sub GetNonObjectIdStructNames
 {
+    my $experimental = shift;
+
     my %structs;
 
     my @headers = GetHeaderFiles();
+    if ($experimental eq "true")
+    {
+        @headers = (GetHeaderFiles(), GetExperimentalHeaderFiles());
+    }
 
     # TODO must support experimental extensions
 

@@ -2507,6 +2507,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_UINT16"         if $type eq "sai_vlan_id_t";
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_label_id_t";
     return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "uint32_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_uint32_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"          if $type =~ /^sai_\w+_type_t$/; # enum
     return "SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA" if $type eq "sai_nat_entry_data_t";
     return "SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY"    if $type eq "sai_encrypt_key_t";
@@ -2597,7 +2598,7 @@ sub ProcessStructIsEnum
 
 sub ProcessStructGetOid
 {
-    my ($type, $key, $rawname, $any) = @_;
+    my ($type, $key, $rawname, $any, $isexperimental) = @_;
 
     return "NULL" if $type ne "sai_object_id_t";
 
@@ -2608,7 +2609,8 @@ sub ProcessStructGetOid
     WriteSource "sai_object_id_t $fname(";
     WriteSource "_In_ const sai_object_meta_key_t *object_meta_key)";
     WriteSource "{";
-    WriteSource "return object_meta_key->objectkey.key.${rawname}.${key};";
+    WriteSource "return object_meta_key->objectkeyext.key.${rawname}.${key};" if $isexperimental eq "true";
+    WriteSource "return object_meta_key->objectkey.key.${rawname}.${key};" if $isexperimental eq "false";
     WriteSource "}";
 
     return $fname;
@@ -2616,7 +2618,7 @@ sub ProcessStructGetOid
 
 sub ProcessStructSetOid
 {
-    my ($type, $key, $rawname, $any) = @_;
+    my ($type, $key, $rawname, $any, $isexperimental) = @_;
 
     return "NULL" if $type ne "sai_object_id_t";
 
@@ -2628,7 +2630,8 @@ sub ProcessStructSetOid
     WriteSource "_Inout_ sai_object_meta_key_t *object_meta_key,";
     WriteSource "_In_ sai_object_id_t oid)";
     WriteSource "{";
-    WriteSource "object_meta_key->objectkey.key.${rawname}.${key} = oid;";
+    WriteSource "object_meta_key->objectkeyext.key.${rawname}.${key} = oid;" if $isexperimental eq "true";
+    WriteSource "object_meta_key->objectkey.key.${rawname}.${key} = oid;" if $isexperimental eq "false";
     WriteSource "}";
 
     return $fname;
@@ -2655,6 +2658,7 @@ sub ProcessStructMembers
     return "NULL" if not defined $struct;
 
     my @keys = GetStructKeysInOrder($struct);
+    my $isexperimental = ProcessIsExperimental($ot);
 
     if ($keys[0] ne "switch_id" and not defined $any)
     {
@@ -2669,8 +2673,8 @@ sub ProcessStructMembers
         my $objectlen   = ProcessStructObjectLen($rawname, $key, $struct->{$key});
         my $isenum      = ProcessStructIsEnum($struct->{$key}{type});
         my $enumdata    = ProcessStructEnumData($struct->{$key}{type});
-        my $getoid      = ProcessStructGetOid($struct->{$key}{type}, $key, $rawname, $any);
-        my $setoid      = ProcessStructSetOid($struct->{$key}{type}, $key, $rawname, $any);
+        my $getoid      = ProcessStructGetOid($struct->{$key}{type}, $key, $rawname, $any, $isexperimental);
+        my $setoid      = ProcessStructSetOid($struct->{$key}{type}, $key, $rawname, $any, $isexperimental);
         my $offset      = ProcessStructOffset($struct->{$key}{type}, $key, $rawname);
         my $size        = ProcessStructSize($struct->{$key}{type}, $key, $rawname);
 
@@ -2855,6 +2859,7 @@ sub ProcessCreate
     my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
 
     my $api = $OBJTOAPIMAP{$ot};
+    my $isexperimental = ProcessIsExperimental($ot);
 
     WriteSource "sai_status_t sai_metadata_generic_create_$ot(";
     WriteSource "_Inout_ sai_object_meta_key_t *meta_key,";
@@ -2880,7 +2885,8 @@ sub ProcessCreate
     }
     else
     {
-        WriteSource "return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+        WriteSource "return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkeyext.key.$small, attr_count, attr_list);" if $isexperimental eq "true";
+        WriteSource "return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.$small, attr_count, attr_list);" if $isexperimental eq "false";
     }
 
     WriteSource "}";
@@ -2896,6 +2902,7 @@ sub ProcessRemove
     my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
 
     my $api = $OBJTOAPIMAP{$ot};
+    my $isexperimental = ProcessIsExperimental($ot);
 
     WriteSource "sai_status_t sai_metadata_generic_remove_$ot(";
     WriteSource "_In_ const sai_object_meta_key_t *meta_key)";
@@ -2911,7 +2918,8 @@ sub ProcessRemove
     }
     else
     {
-        WriteSource "return sai_metadata_sai_${api}_api->remove_$small(&meta_key->objectkey.key.$small);";
+        WriteSource "return sai_metadata_sai_${api}_api->remove_$small(&meta_key->objectkeyext.key.$small);" if $isexperimental eq "true";
+        WriteSource "return sai_metadata_sai_${api}_api->remove_$small(&meta_key->objectkey.key.$small);" if $isexperimental eq "false";
     }
 
     WriteSource "}";
@@ -2927,6 +2935,7 @@ sub ProcessSet
     my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
 
     my $api = $OBJTOAPIMAP{$ot};
+    my $isexperimental = ProcessIsExperimental($ot);
 
     WriteSource "sai_status_t sai_metadata_generic_set_$ot(";
     WriteSource "_In_ const sai_object_meta_key_t *meta_key,";
@@ -2943,7 +2952,8 @@ sub ProcessSet
     }
     else
     {
-        WriteSource "return sai_metadata_sai_${api}_api->set_${small}_attribute(&meta_key->objectkey.key.$small, attr);";
+        WriteSource "return sai_metadata_sai_${api}_api->set_${small}_attribute(&meta_key->objectkeyext.key.$small, attr);" if $isexperimental eq "true";
+        WriteSource "return sai_metadata_sai_${api}_api->set_${small}_attribute(&meta_key->objectkey.key.$small, attr);" if $isexperimental eq "false";
     }
 
     WriteSource "}";
@@ -2959,6 +2969,7 @@ sub ProcessGet
     my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
 
     my $api = $OBJTOAPIMAP{$ot};
+    my $isexperimental = ProcessIsExperimental($ot);
 
     WriteSource "sai_status_t sai_metadata_generic_get_$ot(";
     WriteSource "_In_ const sai_object_meta_key_t *meta_key,";
@@ -2984,7 +2995,8 @@ sub ProcessGet
         WriteSource "{";
         WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
         WriteSource "}";
-        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(&meta_key->objectkeyext.key.$small, attr_count, attr_list);" if $isexperimental eq "true";
+        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);" if $isexperimental eq "false";
     }
 
     WriteSource "}";
@@ -3420,7 +3432,7 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|label_id|ip6|uint8|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|label_id|ip6|uint8|uint32|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;
@@ -3444,7 +3456,7 @@ sub ProcessSingleNonObjectId
 
 sub ProcessNonObjectIdObjects
 {
-    my @rawnames = GetNonObjectIdStructNames();
+    my @rawnames = GetNonObjectIdStructNames("true");
 
     for my $rawname (@rawnames)
     {

@@ -27,8 +27,8 @@
 #include <alloca.h>
 #include <sai.h>
 #include <saiversion.h>
-#include "saimetadatautils.h"
 #include "saimetadata.h"
+#include "saimetadatautils.h"
 #include "saimetadatalogger.h"
 
 typedef struct _defined_attr_t {

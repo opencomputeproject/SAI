@@ -48,5 +48,35 @@ typedef enum _sai_object_type_extensions_t
 
 } sai_object_type_extensions_t;
 
+/**
+ * @extraparam sai_object_type_t object_type
+ */
+typedef union _sai_object_key_entry_extension_t
+{
+    /**
+     * @brief Key is object ID.
+     *
+     * @validonly sai_metadata_is_object_type_oid(object_type) == true
+     */
+    sai_object_id_t           object_id;
+
+    /* Add new experimental entries above this line */
+
+} sai_object_key_entry_extension_t;
+
+/**
+ * @brief Structure for bulk retrieval of object ids, attribute and values for
+ * each object-type. Key will be used in case of object-types not having
+ * object-ids.
+ *
+ * @extraparam sai_object_type_t object_type
+ */
+typedef struct _sai_object_key_extension_t
+{
+    /** @passparam object_type */
+    sai_object_key_entry_extension_t key;
+
+} sai_object_key_extension_t;
+
 #endif /* __SAITYPESEXTENSIONS_H_ */
 

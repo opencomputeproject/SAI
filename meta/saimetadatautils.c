@@ -25,8 +25,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <sai.h>
-#include "saimetadatautils.h"
 #include "saimetadata.h"
+#include "saimetadatautils.h"
 
 bool sai_metadata_is_allowed_object_type(
         _In_ const sai_attr_metadata_t* metadata,

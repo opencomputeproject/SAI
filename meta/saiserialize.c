@@ -31,8 +31,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <sai.h>
-#include "saimetadatautils.h"
 #include "saimetadata.h"
+#include "saimetadatautils.h"
 #include "saiserialize.h"
 
 #define PRIMITIVE_BUFFER_SIZE 128
