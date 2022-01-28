@@ -1234,7 +1234,7 @@ typedef union _sai_attribute_value_t
     sai_s32_range_t s32range;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST */
-    sai_u16_range_list_t u16range_list;
+    sai_u16_range_list_t u16rangelist;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_VLAN_LIST */
     sai_vlan_list_t vlanlist;
