@@ -130,6 +130,7 @@ typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
+typedef uint64_t sai_api_version_t;
 
 typedef struct _sai_timespec_t
 {
