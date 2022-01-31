@@ -734,7 +734,7 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_DECAP_QOS_DSCP_TO_TC_MAP,
 
     /**
-     * @brief Enable DSCP -> PFC TC MAP on tunnel at termination (Network-to-access) node. Used to flexibly map DSCP to TC
+     * @brief Enable DSCP -> PFC TC MAP on tunnel at termination (Network-to-access) node. Used to flexibly map DSCP to TC for PFC
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -742,7 +742,7 @@ typedef enum _sai_tunnel_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_TUNNEL_ATTR_DECAP_QOS_PFC_DSCP_TO_TC_MAP,
+    SAI_TUNNEL_ATTR_DECAP_QOS_DSCP_TO_PFC_TC_MAP,
 
     /**
      * @brief Enable TC -> Priority Group MAP

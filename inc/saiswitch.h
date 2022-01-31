@@ -570,7 +570,7 @@ typedef enum _sai_switch_tunnel_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_SWITCH_TUNNEL_ATTR_DECAP_QOS_PFC_DSCP_TO_TC_MAP,
+    SAI_SWITCH_TUNNEL_ATTR_DECAP_QOS_DSCP_TO_PFC_TC_MAP,
 
     /**
      * @brief Enable TC -> Priority Group MAP
