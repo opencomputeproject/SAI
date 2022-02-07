@@ -14,15 +14,15 @@ SAI_HEADERS = $(SAI_HEADER_DIR)/sai*.h
 LIBS = -lthrift -lpthread
 LDFLAGS = -L$(SAI_LIBRARY_DIR) -Wl,-rpath=$(SAI_LIBRARY_DIR)
 CPPFLAGS = -I$(SAI_HEADER_DIR) -I. -std=c++11
-ifeq ($(DEBUG),1)
+
 CPPFLAGS += -O0 -ggdb
-endif
+
 
 ifeq ($(platform),MLNX)
 CDEFS = -DMLNXSAI
 else
-ifeq ($(platform),BFT)
-CDEFS = -DBFTSAI
+ifeq ($(platform),BFN)
+CDEFS = -DBFNSAI
 else
 ifeq ($(platform),CAVIUM)
 CDEFS = -DCAVIUMSAI
@@ -55,8 +55,9 @@ CPP_SOURCES = 	gen-cpp/sai_constants.cpp \
 PY_SOURCES = 	gen-py/__init__.py \
 				gen-py/sai/constants.py \
 				gen-py/sai/__init__.py \
-				gen-py/sai/switch_sai_rpc.py \
-				gen-py/sai/switch_sai_rpc-remote \
+				gen-py/sai/sai_headers.py \
+				gen-py/sai/sai_rpc-remote \
+				gen-py/sai/sai_rpc.py \
 				gen-py/sai/ttypes.py
 
 SAI_PY_HEADERS = gen-py/sai/sai_headers.py
