@@ -15,6 +15,13 @@
 #    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 #    Dell Products, L.P., Facebook, Inc
 #
+
+# There are two versions of saithrift, in order not to break the origin tests, use ENVIRONMENT to build them respectively.
+# By default, it will make the saiserver and the related artifacts under folder test/saithrift.
+# For example, build saithrift v2
+# - export  SAITHRIFTV2=y
+# - make saithrift-build
+
 ifdef SAITHRIFTV2
 SAITHRIFT_PATH=test/saithriftv2
 else
