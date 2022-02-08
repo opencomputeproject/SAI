@@ -337,6 +337,7 @@ typedef enum _sai_acl_table_group_attr_t
      * Parallel - All the ACL tables within the ACL table groups are looked up
      * in parallel and non-conflicting actions are resolved and applied from
      * multiple matched ACL entries (each from different ACL tables of this group).
+     * Conflicting actions are resolved based on the ACL table priorities.
      *
      * @type sai_acl_table_group_type_t
      * @flags CREATE_ONLY
@@ -416,7 +417,7 @@ typedef enum _sai_acl_table_group_member_attr_t
      * [SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY,
      * SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY]
      *
-     * This priority attribute is only valid for SEQUENTIAL type of ACL groups
+     * This priority attribute is valid for both SEQUENTIAL and PARALLEL type of ACL groups
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
