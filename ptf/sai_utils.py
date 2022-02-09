@@ -25,7 +25,7 @@ from functools import wraps
 from ptf.packet import *
 from ptf.testutils import *
 
-from sai_adapter import *
+from sai_thrift.sai_adapter import *
 
 
 def sai_thrift_query_attribute_enum_values_capability(client,
