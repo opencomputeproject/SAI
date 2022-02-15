@@ -349,7 +349,10 @@ typedef enum _sai_mirror_session_attr_t
     /**
      * @brief Attach a counter
      *
-     * When it is empty, then packet hits won't be counted
+     * SAI_COUNTER_STAT_PACKETS reflects the total number of packets mirrored.
+     *
+     * SAI_COUNTER_STAT_BYTES reflects the total number of bytes mirrored, after
+     * truncation, including headers.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
