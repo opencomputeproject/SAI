@@ -765,12 +765,6 @@ typedef struct _sai_acl_capability_t
      */
     sai_s32_list_t action_list;
 
-    /**
-     * @brief Output from get function
-     * Flag indicating whether overlay of match field is supported or not
-     * For example, IPv6 DIP and IPv4 DIP can be overlayed on a 128 bit wide field
-     */
-     bool is_field_overlay_supported;
 } sai_acl_capability_t;
 
 /**
