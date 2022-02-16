@@ -741,6 +741,26 @@ typedef struct _sai_map_list_t
 } sai_map_list_t;
 
 /**
+ * @brief List of ACL fields that can be optimized in HW
+ */
+typedef struct _sai_acl_field_opt_list_t
+{
+    uint32_t count;
+
+    /**
+     * @brief Output from get function.
+     *
+     * List of fields supported
+     * Field should be in range #SAI_ACL_ENTRY_ATTR_FIELD_START and #SAI_ACL_ENTRY_ATTR_FIELD_END
+     *
+     * @suffix enum_list
+     * @passparam &sai_metadata_enum_sai_acl_entry_attr_t
+     */
+    sai_s32_list_t *list;
+
+} sai_acl_field_opt_list_t;
+
+/**
  * @brief Structure for ACL attributes supported at each stage.
  * action_list alone is added now. Qualifier list can also be added
  * when needed.
@@ -766,13 +786,18 @@ typedef struct _sai_acl_capability_t
     sai_s32_list_t action_list;
 
     /**
-     * @brief Output from get function
+     * @brief Output from get function.
      *
-     * Flag indicating whether overlay of match field is supported or not
-     * For example, IPv6 DIP and IPv4 DIP can be overlay on a 128 bit wide
-     * field
+     * Flag indicating whether field optimization is supported or not
      */
-    bool is_field_overlay_supported;
+    bool is_field_opt_supported;
+
+    /**
+     * @brief Output from get function.
+     *
+     * List of ACL fields that can be optimized
+     */
+    sai_acl_field_opt_list_t field_opt_list;
 
 } sai_acl_capability_t;
 
