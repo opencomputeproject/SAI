@@ -513,6 +513,7 @@ typedef enum _sai_switch_tunnel_attr_t
      * @validonly SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_SWITCH_TUNNEL_ATTR_TUNNEL_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
      */
     SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT_MASK,
+
     /**
      * @brief Enable TC AND COLOR -> DSCP MAP on tunnel at encapsulation (access-to-network) node to remark the DSCP in tunnel header
      *
