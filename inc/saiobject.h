@@ -36,6 +36,9 @@
 #include <sainat.h>
 #include <saisrv6.h>
 
+/* new experimental object type includes */
+#include "../experimental/saiexperimentalbmtor.h"
+
 /**
  * @defgroup SAIOBJECT SAI - Object API definitions.
  *
@@ -80,6 +83,8 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_MY_SID_ENTRY */
     sai_my_sid_entry_t        my_sid_entry;
+
+    /* Add new experimental entries above this line */
 
 } sai_object_key_entry_t;
 
