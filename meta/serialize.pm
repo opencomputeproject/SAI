@@ -606,6 +606,11 @@ sub GetConditionForSerialize
         return "";
     }
 
+    if (defined $refStructInfoEx->{baseName})
+    {
+        $condition = "(sai_int32_t)$condition" if $refStructInfoEx->{baseName} eq "object_key_entry";
+    }
+
     if (defined $refMembersHash->{$1})
     {
         $condition = "$structBase->$1 == $2";
