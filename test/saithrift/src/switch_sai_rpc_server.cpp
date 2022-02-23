@@ -74,7 +74,11 @@ using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
+#ifdef FORCE_BOOST_SMART_PTR
 using boost::shared_ptr;
+#else
+using std::shared_ptr;
+#endif
 
 using namespace ::switch_sai;
 
@@ -128,7 +132,7 @@ public:
       sprintf(macstr, "%02x:%02x:%02x:%02x:%02x:%02x", m[0], m[1], m[2], m[3], m[4], m[5]);
       return(macstr);
   }
-  
+
   void sai_thrift_string_to_v4_ip(const std::string s, unsigned int *m) {
       unsigned char r=0;
       unsigned int i;
@@ -762,36 +766,36 @@ public:
       free(attr_list);
       return status;
   }
-//listing all the fdb entries from map	
+//listing all the fdb entries from map
   void sai_thrift_get_fdb_entries (sai_thrift_attribute_list_t& thrift_attr_list){
       sai_mac_t mac_address;
-      sai_object_id_t bv_id;	
+      sai_object_id_t bv_id;
       sai_object_id_t bport_id;
-      sai_fdb_entry_t fdb_entry;  
-             
+      sai_fdb_entry_t fdb_entry;
+
       thrift_attr_list.attr_count = gFdbMap.size();
-      
+
       sai_fdb_entry_t fdb_m;
       sai_object_id_t b_id;
-      
+
       for (auto it = gFdbMap.begin(); it != gFdbMap.end(); it++){
           fdb_m = it->first;
-          b_id = it->second; 	
-      	
-          sai_thrift_fdb_values_t fdb_value;		 
+          b_id = it->second;
+
+          sai_thrift_fdb_values_t fdb_value;
           fdb_value.bport_id=b_id;
           fdb_value.thrift_fdb_entry.bv_id=fdb_m.bv_id;
           fdb_value.thrift_fdb_entry.mac_address=mac_to_sai_thrift_string(fdb_m.mac_address);
-          
-          sai_thrift_attribute_t thrift_fdb_attributes;		
+
+          sai_thrift_attribute_t thrift_fdb_attributes;
           thrift_fdb_attributes.id = SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID;
           thrift_fdb_attributes.value.fdb_values = fdb_value;
-	  	
+
           thrift_attr_list.attr_list.push_back(thrift_fdb_attributes);
-      }			
+      }
       return;
   }
-  
+
   void sai_thrift_parse_vlan_attributes(const std_sai_thrift_attr_vctr_t &thrift_attr_list, sai_attribute_t *attr_list) {
       SAI_THRIFT_LOG_DBG("Called.");
 
@@ -1131,7 +1135,7 @@ public:
       return status;
   }
 
-  sai_thrift_status_t sai_thrift_create_route(const sai_thrift_route_entry_t &thrift_route_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list) 
+  sai_thrift_status_t sai_thrift_create_route(const sai_thrift_route_entry_t &thrift_route_entry, const std::vector<sai_thrift_attribute_t> & thrift_attr_list)
   {
       printf("sai_thrift_create_route\n");
       sai_status_t status = SAI_STATUS_SUCCESS;
@@ -1626,15 +1630,15 @@ public:
           case SAI_SWITCH_ATTR_FDB_AGING_TIME:
               attr->value.u32 = thrift_attr.value.u32;
               break;
-  
+
           case SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED:
-              attr->value.u32 = thrift_attr.value.u32;	
+              attr->value.u32 = thrift_attr.value.u32;
 	            break;
-   
+
           case SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED:
               attr->value.u32 = thrift_attr.value.u32;
               break;
-          
+
           default:
               printf("unknown thrift_attr id: %d\n", thrift_attr.id);
       }
@@ -3252,7 +3256,7 @@ public:
           lane_list.push_back((uint32_t) lane_list_num->list[index]);
       }
       attr_list.push_back(thrift_port_hw_lane);
-      free(port_hw_lane.value.u32list.list); 
+      free(port_hw_lane.value.u32list.list);
 
       sai_attribute_t port_oper_status_attribute;
       sai_thrift_attribute_t thrift_port_status;
