@@ -192,6 +192,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_UINT32_RANGE,
 
     /**
+     * @brief Attribute value is 16 bit unsigned integer range list.
+     */
+    SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST,
+
+    /**
      * @brief Attribute value is 32 bit signed integer range.
      */
     SAI_ATTR_VALUE_TYPE_INT32_RANGE,
