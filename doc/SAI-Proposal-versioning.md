@@ -16,7 +16,7 @@ This document describes proposal to include versioning in the SAI library. This 
 
 Requirements
 ------------
-Provide a mechanism for vendors to find the current version of SAI headers at compile time.
+Provide a mechanism for vendors to find the current version of SAI headers at compile time and run time.
 
 Today, if a vendor wants to support multiple versions of SAI,
 
@@ -28,6 +28,14 @@ A vendor publishes their SDK in source form and advice their users of which vers
 
 > ### Example
 > Customer using Sonic version 201911 which is compatible with SAI 1.5.4. The vendor SDK version is 1.1. Their customer wants to upgrade to a newer version of the SDK which supports SAI objects/attributes that are only supported in SDK 1.2. The common method to support this is to backport the supported attributes to 1.1.
+
+Another, use case for versioning is the following scenario:
+
+When SAI client's program is compiled using SAI headers version X and linked against SAI library compiled against version Y, except for the cases when ABI changes, there are going to be problems at runtime caused by attributes ID mismatch, enum values mismatch, etc.
+The result is that client program will behave incorrect or terminate due to invalid usage of attribute values.
+
+The solution is to provide client's program an ability to determine SAI library version number in run time and let the client's code decide wether it can work with that version or not.
+
 
 Proposal
 --------
@@ -78,6 +86,37 @@ sai_status_t sai_set_test_attribute(sai_object_id_t id,
 }
 ```
 
+A new API is added to query the SAI API version that this library is compiled against.
+
+```c
+/**
+ * @brief Retrieve a SAI API version this implementation is aligned to
+ *
+ * @param[out] version Version number
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+sai_status_t sai_query_api_version(
+        _Out_ sai_api_version_t *version);
+```
+
+The implementation by SAI vendor:
+
+```c
+sai_status_t sai_query_api_version(
+        _Out_ sai_api_version_t *version)
+{
+    *version = SAI_API_VERSION;
+    return SAI_STATUS_SUCCESS;
+}
+```
+
+This SAI_API_VERSION is the one derived from headers that were used by vendor SAI.
+
+Using the above API it is possible for client's code to query SAI for an API version it is aligned to
+and check if client's code can support the returned version or fail on early stage of client's program.
+
+
 More versioning
 ---------------
 Versioning can be exported for the application build system to access without having to include the above header file.
@@ -95,4 +134,25 @@ include saiversion.makefile
 
 CXXFLAGS += -DSAI_API_VERSION=$(SAI_API_VERSION)
 ```
+
+Runtime versioning can be used in client's build system to check if the SAI library version is the same as SAI headers version used to compile client's program, e.g:
+```
+AC_MSG_CHECKING([SAI headers API version and library version check])
+AC_TRY_RUN([
+#include <sai.h>
+int main() {
+    sai_api_version_t version;
+    if (SAI_STATUS_SUCCESS != sai_query_api_version(&version))
+    {
+        return 1;
+    }
+    return (version != SAI_API_VERSION);
+}],
+[AC_MSG_RESULT(ok)],
+[AC_MSG_RESULT(failed)
+AC_MSG_ERROR("SAI headers API version and library version mismatch")])
+```
+
+Which will result in an error during "./configure" step of the build process.
+
 More examples for other build systems like cmake are easy to find.
