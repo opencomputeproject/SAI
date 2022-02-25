@@ -344,18 +344,6 @@ typedef struct _sai_s32_range_t
     int32_t max;
 } sai_s32_range_t;
 
-typedef struct _sai_u16_range_t
-{
-    uint16_t min;
-    uint16_t max;
-} sai_u16_range_t;
-
-typedef struct _sai_u16_range_list_t
-{
-    uint32_t count;
-    sai_u16_range_t *list;
-} sai_u16_range_list_t;
-
 /**
  * @brief Defines a vlan list data structure
  */
@@ -1232,9 +1220,6 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_INT32_RANGE */
     sai_s32_range_t s32range;
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST */
-    sai_u16_range_list_t u16rangelist;
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_VLAN_LIST */
     sai_vlan_list_t vlanlist;
