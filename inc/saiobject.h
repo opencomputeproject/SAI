@@ -37,6 +37,7 @@
 #include <saisrv6.h>
 
 /* new experimental object type includes */
+#include "../experimental/saiexperimentaldash.h"
 #include "../experimental/saiexperimentalbmtor.h"
 
 /**
@@ -83,6 +84,33 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_MY_SID_ENTRY */
     sai_my_sid_entry_t        my_sid_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_DIRECTION_LOOKUP_ENTRY */
+    sai_direction_lookup_entry_t direction_lookup_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_ENI_LOOKUP_TO_VM_ENTRY */
+    sai_eni_lookup_to_vm_entry_t eni_lookup_to_vm_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_INBOUND_ROUTING_ENTRY */
+    sai_inbound_routing_entry_t inbound_routing_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_PA_VALIDATION_ENTRY */
+    sai_pa_validation_entry_t pa_validation_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_OUTBOUND_ENI_LOOKUP_FROM_VM_ENTRY */
+    sai_outbound_eni_lookup_from_vm_entry_t outbound_eni_lookup_from_vm_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_OUTBOUND_ENI_TO_VNI_ENTRY */
+    sai_outbound_eni_to_vni_entry_t outbound_eni_to_vni_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_OUTBOUND_ROUTING_ENTRY */
+    sai_outbound_routing_entry_t outbound_routing_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_OUTBOUND_CA_TO_PA_ENTRY */
+    sai_outbound_ca_to_pa_entry_t outbound_ca_to_pa_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_INBOUND_ENI_TO_VM_ENTRY */
+    sai_inbound_eni_to_vm_entry_t inbound_eni_to_vm_entry;
 
     /* Add new experimental entries above this line */
 
