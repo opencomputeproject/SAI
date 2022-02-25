@@ -1428,21 +1428,6 @@ typedef enum _sai_stats_mode_t
      * @brief Read and clear after reading
      */
     SAI_STATS_MODE_READ_AND_CLEAR = 1 << 1,
-
-    /**
-     * @brief Bulk read statistics
-     */
-    SAI_STATS_MODE_BULK_READ = 1 << 2,
-
-    /**
-     * @brief Bulk clear statistics
-     */
-    SAI_STATS_MODE_BULK_CLEAR = 1 << 3,
-
-    /**
-     * @brief Bulk read and clear after reading
-     */
-    SAI_STATS_MODE_BULK_READ_AND_CLEAR = 1 << 4,
 } sai_stats_mode_t;
 
 typedef struct _sai_stat_capability_t
