@@ -16,17 +16,6 @@
 #    Dell Products, L.P., Facebook, Inc
 #
 
-# There are two versions of saithrift, in order not to break the origin tests, use ENVIRONMENT to build them respectively.
-# By default, it will make the saiserver and the related artifacts under folder test/saithrift.
-# For example, build saithrift v2
-# - export  SAITHRIFTV2=y
-# - make saithrift-build
-
-ifdef SAITHRIFTV2
-SAITHRIFT_PATH=test/saithriftv2
-else
-SAITHRIFT_PATH=test/saithrift
-endif
 
 .PHONY: test doc clean
 
@@ -37,10 +26,10 @@ test:
 	make -C test
 
 saithrift-build:
-	make -C $(SAITHRIFT_PATH)
+	make -C test/saithrift
 
 saithrift-install: saithrift-build
-	make -C $(SAITHRIFT_PATH) install
+	make -C test/saithrift install
 
 clean:
 	make -C test clean    
