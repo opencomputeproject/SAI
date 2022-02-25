@@ -263,7 +263,7 @@ sub GetNonObjectIdStructNames
 {
     my %structs;
 
-    my @headers = (GetHeaderFiles(), GetExperimentalHeaderFiles());
+    my @headers = GetHeaderFiles();
 
     # TODO must support experimental extensions
 
