@@ -194,6 +194,9 @@ sub CheckHash
             next if $key eq "SAI_OBJECT_TYPE_MAX";
             next if $key eq "SAI_API_MAX";
 
+            # ignore the enum lock for the diff between 1.9 and master
+            next if $key eq "SAI_PORT_INTERFACE_TYPE_MAX";
+
             # NOTE: some other attributes/enum with END range could be added
         }
 
