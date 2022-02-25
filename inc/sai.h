@@ -74,7 +74,6 @@
 #include "saiisolationgroup.h"
 #include "saidebugcounter.h"
 #include "saimymac.h"
-#include "saiversion.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
