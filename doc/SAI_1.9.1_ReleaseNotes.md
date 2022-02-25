@@ -163,7 +163,7 @@ The PR related to this feature is available at PR#[1193](https://github.com/open
 
 ### Adding IPsec support
 
-A new API saiipsec.h has been added part of this current release to add an attribute for supporting both per SA and GLOBAL counters. Globals are aggregates for ingress and egress direction across all SAs. Per SA stats are directional per SA.
+A new API saiipsec.h has been added part of this current release. For more detail, please refer to [SAI IPsec API](https://github.com/opencomputeproject/SAI/doc/IPsec/SAI_IPsec_API_proposal.md) doc 
 
 The PR related to this feature is available at PR#[1206](https://github.com/opencomputeproject/SAI/pull/1206)
 
