@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include <sys/queue.h>
 #include <sys/types.h>
-#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <set>
