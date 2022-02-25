@@ -29,9 +29,9 @@ rm -rf temp
 
 mkdir temp
 
-git --work-tree=temp/ checkout origin/v1.9 inc
+git --work-tree=temp/ checkout origin/master inc
 
-echo "Checking for possible enum values shift (current branch vs origin/v1.9) ..."
+echo "Checking for possible enum values shift (current branch vs origin/master) ..."
 
 ./checkheaders.pl -s ../inc/ temp/inc/
 
