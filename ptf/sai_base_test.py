@@ -339,7 +339,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 sai_thrift_clear_port_stats(self.client, port)
                 sai_thrift_set_port_attribute(
                     self.client, port, port_vlan_id=0)
-
+            if get_platform() == 'brcm':
+                return
             self.assertTrue(self.verifyNumberOfAvaiableResources(
                 self.switch_resources, debug=False))
 
