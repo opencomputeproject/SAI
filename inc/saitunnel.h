@@ -687,6 +687,56 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_IPSEC_SA_PORT_LIST,
 
     /**
+     * @brief Enable TC AND COLOR -> DSCP MAP on tunnel at encapsulation (access-to-network) node to remark the DSCP in tunnel header
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP,
+
+    /**
+     * @brief Enable TC -> Queue MAP on tunnel encap
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on tunnel.
+     * Default no map, i.e. packets are queued with static mapping.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TUNNEL_ATTR_ENCAP_QOS_TC_TO_QUEUE_MAP,
+
+    /**
+     * @brief Enable DSCP -> TC MAP on tunnel at termination (Network-to-access) node. This map if configured overrides the port MAP
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TUNNEL_ATTR_DECAP_QOS_DSCP_TO_TC_MAP,
+
+    /**
+     * @brief Enable TC -> Priority Group MAP. TC is derived from the tunnel MAP
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * Default no map
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TUNNEL_ATTR_DECAP_QOS_TC_TO_PRIORITY_GROUP_MAP,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_ATTR_END,
@@ -1082,6 +1132,8 @@ typedef struct _sai_tunnel_api_t
     sai_remove_tunnel_map_entry_fn               remove_tunnel_map_entry;
     sai_set_tunnel_map_entry_attribute_fn        set_tunnel_map_entry_attribute;
     sai_get_tunnel_map_entry_attribute_fn        get_tunnel_map_entry_attribute;
+    sai_bulk_object_get_attribute_fn             get_tunnels_attribute;
+    sai_bulk_object_set_attribute_fn             set_tunnels_attribute;
 
 } sai_tunnel_api_t;
 
