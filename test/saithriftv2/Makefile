@@ -55,7 +55,6 @@ CPP_SOURCES = 	gen-cpp/sai_constants.cpp \
 PY_SOURCES = 	gen-py/__init__.py \
 				gen-py/sai/constants.py \
 				gen-py/sai/__init__.py \
-				gen-py/sai/sai_headers.py \
 				gen-py/sai/sai_rpc-remote \
 				gen-py/sai/sai_rpc.py \
 				gen-py/sai/ttypes.py
@@ -65,7 +64,7 @@ SAI_PY_HEADERS = gen-py/sai/sai_headers.py
 MKDIR_P = mkdir -p
 INSTALL := /usr/bin/install
 
-all: clean directories meta $(ODIR)/librpcserver.a clientlib saiserver
+all: clean directories meta $(ODIR)/librpcserver.a saiserver clientlib 
 
 directories:
 	$(MKDIR_P) $(ODIR) 
@@ -81,7 +80,7 @@ $(CPP_SOURCES): $(METADIR)sai.thrift
 $(PY_SOURCES):  $(METADIR)sai.thrift
 	$(THRIFT) -o ./ --gen py -r $^
 
-$(SAI_PY_HEADERS): $(SAI_HEADERS) $(PY_SOURCES)
+$(SAI_PY_HEADERS): $(SAI_HEADERS)
 	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR) --include /usr/include/linux/limits.h $^ -o $@
 
 $(ODIR)/%.o: gen-cpp/%.cpp meta
