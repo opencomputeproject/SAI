@@ -819,6 +819,24 @@ class sai_rpcHandlerFrontend : virtual public sai_rpcHandler {
     return count;
   }
 
+    /**
+   * @brief Thrift wrapper for sai_object_type_query() SAI function
+   */
+  sai_thrift_object_type_t sai_thrift_object_type_query(
+      const sai_thrift_object_id_t object_id) {
+
+    return sai_object_type_query(object_id);
+  }
+
+    /**
+   * @brief Thrift wrapper for sai_switch_id_query() SAI function
+   */
+  sai_thrift_object_id_t sai_thrift_switch_id_query(
+      const sai_thrift_object_id_t object_id) {
+
+    return sai_switch_id_query(object_id);
+  }
+
   /**
    * @brief Thrift wrapper for sai_query_attribute_enum_values_capability()
    *        function
