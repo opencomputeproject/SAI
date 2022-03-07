@@ -649,7 +649,7 @@ class SwitchAttrTest(SaiHelper):
                                              avail_num - table_number)
                             break
 
-                try to create one more table - should not be possible
+                # try to create one more table - should not be possible
                 try:
                     acl_table = sai_thrift_create_acl_table(
                         self.client,
