@@ -45,9 +45,7 @@ LIBS += -lsai
 endif
 
 
-CPP_SOURCES = 	gen-cpp/sai_constants.cpp \
-				gen-cpp/sai_constants.h \
-				gen-cpp/sai_rpc.cpp \
+CPP_SOURCES = 	gen-cpp/sai_rpc.cpp \
 				gen-cpp/sai_rpc.h \
 				gen-cpp/sai_types.cpp \
 				gen-cpp/sai_types.h
@@ -67,7 +65,7 @@ INSTALL := /usr/bin/install
 all: clean directories meta $(ODIR)/librpcserver.a saiserver clientlib 
 
 directories:
-	$(MKDIR_P) $(ODIR) 
+	$(MKDIR_P) $(ODIR)
 
 meta:
 	make -C  ../../meta clean
@@ -92,7 +90,7 @@ $(ODIR)/sai_rpc_server.o: ../../meta/sai_rpc_frontend.cpp
 $(ODIR)/saiserver.o: src/saiserver.cpp $(CPP_SOURCES) directories
 	$(CXX) $(CPPFLAGS) -c src/saiserver.cpp  -o $@ $(CPPFLAGS) $(CDEFS) -I./gen-cpp -I../../inc
 
-$(ODIR)/librpcserver.a: $(ODIR)/sai_rpc.o $(ODIR)/sai_types.o $(ODIR)/sai_constants.o $(ODIR)/sai_rpc_server.o
+$(ODIR)/librpcserver.a: $(ODIR)/sai_rpc.o $(ODIR)/sai_types.o $(ODIR)/sai_rpc_server.o
 	ar rcs $(ODIR)/librpcserver.a $^
 
 clientlib: $(PY_SOURCES) $(SAI_PY_HEADERS)
