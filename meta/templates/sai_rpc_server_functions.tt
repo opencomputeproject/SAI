@@ -5,7 +5,7 @@
 [%- create_switch_function = 'create_switch' %]
 [%- remove_switch_function = 'remove_switch' %]
 
-[%- sai_utils_functions = '(query_attribute_enum_values_capability|sai_object_type_get_availability|sai_object_type_query|sai_switch_id_query)' -%]
+[%- sai_utils_functions = '(query_attribute_enum_values_capability|sai_object_type_get_availability|sai_object_type_query|sai_switch_id_query|sai_api_uninitialize)' -%]
 
 [%- ######################################################################## -%]
 
@@ -72,7 +72,7 @@
 
     // This function should be manually implemented elsewhere
     [%- indentation = 2 || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
-    [%- IF ret_type == 'int64_t' %]
+    [%- IF ret_type == 'int64_t' OR ret_type == 'sai_thrift_status_t' %]
 [% indent %]return 0ULL;
     [%- ELSIF ret_type == 'sai_thrift_object_id_t' OR ret_type == 'sai_thrift_object_type_t' %]
 [% indent %]return SAI_NULL_OBJECT_ID;

@@ -36,6 +36,7 @@ from sai_thrift import sai_rpc
 
 from sai_utils import *
 import sai_thrift.sai_adapter as adapter
+import pdb
 
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
@@ -53,8 +54,10 @@ class ThriftInterface(BaseTest):
         self.interface_to_front_mapping = {}
         self.port_map_loaded = False
         self.transport = None
+        self.test_reboot_loaded = False
 
         self.test_params = test_params_get()
+        self.loadTestRebootMode()
         self.loadPortMap()
         self.createRpcClient()
 
@@ -62,6 +65,36 @@ class ThriftInterface(BaseTest):
         self.transport.close()
 
         super(ThriftInterface, self).tearDown()
+        
+    
+    def loadTestRebootMode(self):
+        """
+        Get if test the reboot mode and what's the reboot mode need to be tested
+        
+        In reboot mode, test will run many times in different reboot stage.
+        Tests in different stage might be different.
+        
+        Set the following class attributes:
+        self.test_reboot_loaded - if the reboot mode already loaded
+        self.test_reboot_mode - reboot mode
+        self.test_reboot_stage - reboot mode
+        """
+        if self.test_reboot_loaded:
+            print("test reboot mode already loaded")
+            return
+        
+        if "test_reboot_mode" in self.test_params:
+            self.test_reboot_mode = self.test_params['test_reboot_mode']
+            if "test_reboot_stage" in self.test_params:
+                self.test_reboot_stage = self.test_params['test_reboot_stage']
+            else:
+                raise ValueError('test_reboot_stage is Null!')
+        else:
+            self.test_reboot_mode = 'cold'
+
+        print("Reboot mode is: {}".format(self.test_reboot_mode))
+        self.test_reboot_loaded = True
+
 
     def loadPortMap(self):
         """
@@ -95,7 +128,6 @@ class ThriftInterface(BaseTest):
                     iface_front_pair = line.split("@")
                     self.interface_to_front_mapping[iface_front_pair[0]] =  \
                         iface_front_pair[1].strip()
-
         self.port_map_loaded = True
 
     def createRpcClient(self):
@@ -283,15 +315,49 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         Start switch.
         """
-        self.switch_id = sai_thrift_create_switch(
-        self.client, init_switch=True, src_mac_address=ROUTER_MAC)
+        self.switch_id = sai_thrift_create_switch(self.client, init_switch=True, src_mac_address=ROUTER_MAC, restart_warm=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
 
-    def setUp(self):
-        super(SaiHelperBase, self).setUp()
+    def warm_boot_setup(self):
+        print("warm boot setup")
+        
+        if self.test_reboot_stage == 'starting':
+            #before the switch init get called
+            #Simulate the rebooting stage and before switch get started
+            self.warm_rebooting()
+        elif self.test_reboot_stage == 'post':
+            #Sim starting, warming start script will be called
+            #other necessary configration will be called
+            self.warm_post()
 
-        self.getSwitchPorts()
+
+    def warm_shutdown(self):
+        print("shutdown the swich in warm mode")
+        sai_thrift_set_switch_attribute(self.client, restart_warm=True)
+        sai_thrift_set_switch_attribute(self.client, pre_shutdown=True)
+        sai_thrift_remove_switch(self.client)
+        sai_thrift_api_uninitialize(self.client)
+
+
+    def warm_rebooting(self):
+        """
+        This function will perform all the necessary opertion before switch get started in warm reboot.
+        """
+        print("Testing without switch started")      
+
+        
+    def warm_post(self):
+        """
+        This function will perform all the configuration/setup for testing switch in post warm start stage.
+        """ 
+        print("Testing switch start in WARM mode")
+        sai_thrift_set_switch_attribute(self.client, restart_warm=True)
+        self.start_switch()
+    
+    
+    def normal_setup(setup):
+        print("normal setup")
         # initialize switch
         self.start_switch()
 
@@ -331,6 +397,17 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.check_cpu_port_hdl()
 
         print("Finish SaiHelperBase setup")
+             
+
+    def setUp(self):
+        super(SaiHelperBase, self).setUp()
+
+        self.getSwitchPorts()
+        pdb.set_trace()
+        if self.test_reboot_stage:
+            self.warm_boot_setup()
+        else:
+            self.normal_setup()
 
 
     def tearDown(self):
