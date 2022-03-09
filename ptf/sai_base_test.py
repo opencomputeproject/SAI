@@ -1206,7 +1206,7 @@ from platform_helper.common_sai_helper import * # pylint: disable=wildcard-impor
 from platform_helper.bfn_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from platform_helper.brcm_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from platform_helper.mlnx_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
-import pdb
+
 class PlatformSaiHelper(SaiHelper):
     """
     Class uses to extend from SaiHelper, base on the [platform] class attribute,

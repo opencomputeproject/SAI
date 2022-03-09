@@ -21,7 +21,7 @@
 # @brief   init
 #
 
-from  warm_test_utils import *
+from warm_test_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 class WarmL2SanityTest(L2SanityTest):
     """
@@ -30,8 +30,7 @@ class WarmL2SanityTest(L2SanityTest):
     @warm_setup
     def setUp(self):
         print("setUp WarmL2SanityTest")
-        SaiHelperBase.setUp(self)
-        super().param_init()
+        L2SanityTest.setUp(self)
 
 
     def setUp_starting(self):
