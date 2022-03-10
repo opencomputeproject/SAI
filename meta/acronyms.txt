@@ -38,6 +38,7 @@ ECN - Explicit Congestion Notification
 ECT - ECN Capable Transport
 EEE - Electrical and Electronics Engineering
 EEPROM - Electrically erasable programmable read-only memory
+ENI - Elastic Network Identifier
 ERSPAN - Encapsulated Remote SPAN
 ESN - Extended Sequence Number
 FCS - Frame Check Sequence
