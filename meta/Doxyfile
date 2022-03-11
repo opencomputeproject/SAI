@@ -218,23 +218,23 @@ TAB_SIZE               = 4
 # "Side Effects:". You can put \n's in the value part of an alias to insert
 # newlines.
 
-ALIASES                += "type           =@par Value Type:\n             @xmlonly @@type           @endxmlonly"
-ALIASES                += "flags          =@par Flags:\n                  @xmlonly @@flags          @endxmlonly"
-ALIASES                += "objects        =@par Allowed object types\n    @xmlonly @@objects        @endxmlonly"
-ALIASES                += "allownull      =@par Allows NULL object ID\n   @xmlonly @@allownull      @endxmlonly"
-ALIASES                += "allowempty     =@par Allows empty list\n       @xmlonly @@allowempty     @endxmlonly"
-ALIASES                += "condition      =@par Condition:\n              @xmlonly @@condition      @endxmlonly"
-ALIASES                += "validonly      =@par Valid only when:\n        @xmlonly @@validonly      @endxmlonly"
-ALIASES                += "default        =@par Default value:\n          @xmlonly @@default        @endxmlonly"
-ALIASES                += "ignore         =@par Ignored:\n                @xmlonly @@ignore         @endxmlonly"
-ALIASES                += "isvlan         =@par IsVlan:\n                 @xmlonly @@isvlan         @endxmlonly"
-ALIASES                += "count          =@par Count:\n                  @xmlonly @@count          @endxmlonly"
-ALIASES                += "range          =@par Range:\n                  @xmlonly @@range          @endxmlonly"
-ALIASES                += "passparam      =@par Pass paramater:\n         @xmlonly @@passparam      @endxmlonly"
-ALIASES                += "extraparam     =@par Extra paramater:\n        @xmlonly @@extraparam     @endxmlonly"
-ALIASES                += "suffix         =@par Serialize suffix:\n       @xmlonly @@suffix         @endxmlonly"
-ALIASES                += "isresourcetype =@par IsResourceType:\n         @xmlonly @@isresourcetype @endxmlonly"
-ALIASES                += "deprecated     =@par Deprecated:\n             @xmlonly @@deprecated     @endxmlonly"
+ALIASES                += "type           =@par Value Type:^^             @xmlonly @@type           @endxmlonly"
+ALIASES                += "flags          =@par Flags:^^                  @xmlonly @@flags          @endxmlonly"
+ALIASES                += "objects        =@par Allowed object types^^    @xmlonly @@objects        @endxmlonly"
+ALIASES                += "allownull      =@par Allows NULL object ID^^   @xmlonly @@allownull      @endxmlonly"
+ALIASES                += "allowempty     =@par Allows empty list^^       @xmlonly @@allowempty     @endxmlonly"
+ALIASES                += "condition      =@par Condition:^^              @xmlonly @@condition      @endxmlonly"
+ALIASES                += "validonly      =@par Valid only when:^^        @xmlonly @@validonly      @endxmlonly"
+ALIASES                += "default        =@par Default value:^^          @xmlonly @@default        @endxmlonly"
+ALIASES                += "ignore         =@par Ignored:^^                @xmlonly @@ignore         @endxmlonly"
+ALIASES                += "isvlan         =@par IsVlan:^^                 @xmlonly @@isvlan         @endxmlonly"
+ALIASES                += "count          =@par Count:^^                  @xmlonly @@count          @endxmlonly"
+ALIASES                += "range          =@par Range:^^                  @xmlonly @@range          @endxmlonly"
+ALIASES                += "passparam      =@par Pass paramater:^^         @xmlonly @@passparam      @endxmlonly"
+ALIASES                += "extraparam     =@par Extra paramater:^^        @xmlonly @@extraparam     @endxmlonly"
+ALIASES                += "suffix         =@par Serialize suffix:^^       @xmlonly @@suffix         @endxmlonly"
+ALIASES                += "isresourcetype =@par IsResourceType:^^         @xmlonly @@isresourcetype @endxmlonly"
+ALIASES                += "deprecated     =@par Deprecated:^^             @xmlonly @@deprecated     @endxmlonly"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
@@ -2017,7 +2017,7 @@ EXTERNAL_PAGES         = YES
 # interpreter (i.e. the result of 'which perl').
 # The default file (with absolute path) is: /usr/bin/perl.
 
-PERL_PATH              = /usr/bin/perl
+#PERL_PATH              = /usr/bin/perl
 
 #---------------------------------------------------------------------------
 # Configuration options related to the dot tool
@@ -2039,7 +2039,7 @@ CLASS_DIAGRAMS         = YES
 # the mscgen tool resides. If left empty the tool is assumed to be found in the
 # default search path.
 
-MSCGEN_PATH            =
+#MSCGEN_PATH            =
 
 # If set to YES, the inheritance and collaboration graphs will hide inheritance
 # and usage relations if the target is undocumented or is not a class.

@@ -25,12 +25,24 @@
 #if !defined (__SAIVERSION_H_)
 #define __SAIVERSION_H_
 
+#include <saitypes.h>
+
 #define SAI_MAJOR 1
-#define SAI_MINOR 9
+#define SAI_MINOR 10
 #define SAI_REVISION 0
 
 #define SAI_VERSION(major, minor, revision) (10000 * (major) + 100 * (minor) + (revision))
 
 #define SAI_API_VERSION SAI_VERSION(SAI_MAJOR, SAI_MINOR, SAI_REVISION)
+
+/**
+ * @brief Retrieve a SAI API version this implementation is aligned to
+ *
+ * @param[out] version Version number
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+sai_status_t sai_query_api_version(
+        _Out_ sai_api_version_t *version);
 
 #endif /** __SAIVERSION_H_ */

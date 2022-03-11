@@ -205,6 +205,8 @@ sub CheckStatsFunction
 
     return if $fname eq "sai_clear_port_all_stats_fn"; # exception
     return if $fname eq "sai_get_tam_snapshot_stats_fn"; # exception
+    return if $fname eq "sai_bulk_object_get_stats_fn"; # exception
+    return if $fname eq "sai_bulk_object_clear_stats_fn"; # exception
 
     if (not $fname =~ /^sai_((get|clear)_(\w+)_stats|get_\w+_stats_ext)_fn$/)
     {
@@ -769,6 +771,10 @@ sub GetWordsFromSources
 
     my @acronyms = GetAcronyms();
 
+    my @spellExceptions = qw/ IPv4 IPv6 /;
+
+    my %exceptions = map { $_ => $_ } @spellExceptions;
+
     my %ac = ();
 
     $ac{$_} = 1 for @acronyms;
@@ -798,6 +804,7 @@ sub GetWordsFromSources
                     next if $word =~ /xFF/;
                     next if defined $ac{$word};
                     next if defined $wordsToCheck->{$word};
+                    next if defined $exceptions{$word};
 
                     $wordsToCheck->{$word} = $src;
                 }

@@ -70,6 +70,15 @@ typedef enum _sai_counter_attr_t
     SAI_COUNTER_ATTR_TYPE = SAI_COUNTER_ATTR_START,
 
     /**
+     * @brief Label attribute used to unique identify counter.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_COUNTER_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_COUNTER_ATTR_END,

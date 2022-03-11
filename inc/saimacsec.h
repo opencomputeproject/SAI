@@ -55,6 +55,19 @@ typedef enum _sai_macsec_cipher_suite_t
 } sai_macsec_cipher_suite_t;
 
 /**
+ * @brief Max number of secure associations for each secure channel
+ *
+ * An implementation may support either two or four associations
+ * depending on whether it stores the secure association
+ * number in one or two bits.
+ */
+typedef enum _sai_macsec_max_secure_associations_per_sc_t
+{
+    SAI_MACSEC_MAX_SECURE_ASSOCIATIONS_PER_SC_TWO,
+    SAI_MACSEC_MAX_SECURE_ASSOCIATIONS_PER_SC_FOUR,
+} sai_macsec_max_secure_associations_per_sc_t;
+
+/**
  * @brief Attribute Id for sai_macsec
  */
 typedef enum _sai_macsec_attr_t
@@ -291,6 +304,14 @@ typedef enum _sai_macsec_attr_t
      * @flags READ_ONLY
      */
     SAI_MACSEC_ATTR_AVAILABLE_MACSEC_SA,
+
+    /**
+     * @brief MACsec Secure Associations Limit
+     *
+     * @type sai_macsec_max_secure_associations_per_sc_t
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_MAX_SECURE_ASSOCIATIONS_PER_SC,
 
     /**
      * @brief End of MACsec attributes

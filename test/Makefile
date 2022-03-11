@@ -56,6 +56,7 @@ clean :
 	rm -f $(TESTS) $(USER_ODIR)/gtest.a $(USER_ODIR)/gtest_main.a $(USER_ODIR)/*.o
 	make -C sai_ut clean
 	make -C saithrift clean
+	make -C saithriftv2 clean
 
 
 ###########################################################

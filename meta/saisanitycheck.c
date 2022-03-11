@@ -642,6 +642,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_INT32:
         case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
+        case SAI_ATTR_VALUE_TYPE_UINT16_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8:
         case SAI_ATTR_VALUE_TYPE_UINT16:
@@ -655,6 +656,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE:
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
+        case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
@@ -1002,6 +1004,15 @@ void check_attr_default_required(
 
             META_MD_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
 
+        case SAI_ATTR_VALUE_TYPE_UINT16_LIST:
+
+            if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
+            {
+                break;
+            }
+
+            META_MD_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
+
         case SAI_ATTR_VALUE_TYPE_POINTER:
 
             /*
@@ -1146,6 +1157,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_INT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
+                case SAI_ATTR_VALUE_TYPE_UINT16_LIST:
                 case SAI_ATTR_VALUE_TYPE_INT8_LIST:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_LIST:
                 case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_OBJECT_LIST:
@@ -1743,6 +1755,7 @@ void check_attr_allow_flags(
 
             case SAI_ATTR_VALUE_TYPE_INT8_LIST:
             case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
+            case SAI_ATTR_VALUE_TYPE_UINT16_LIST:
             case SAI_ATTR_VALUE_TYPE_INT32_LIST:
             case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
             case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
@@ -2586,6 +2599,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
+        case SAI_ATTR_VALUE_TYPE_UINT16_LIST:
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
         case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
@@ -2595,6 +2609,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
+        case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
 
             if (md->isprimitive)
             {
