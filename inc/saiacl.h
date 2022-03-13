@@ -3017,6 +3017,15 @@ typedef enum _sai_acl_counter_attr_t
     SAI_ACL_COUNTER_ATTR_BYTES,
 
     /**
+     * @brief Attribute used to uniquely identify ACL counter.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_ACL_COUNTER_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_ACL_COUNTER_ATTR_END,
