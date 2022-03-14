@@ -47,7 +47,7 @@ def generate_ip_addr(no_of_addr, ipv6=False):
         ip_range = [addr for addr in
                     ["2001::0", "2001:0db8::ffff:ffff:ffff"]]
 
-    ip_interval = IpInterval(
+    ip_interval = LpmDict.IpInterval(
         ip_address(ip_range[0]), ip_address(ip_range[1]))
 
     for _ in range(no_of_addr):
