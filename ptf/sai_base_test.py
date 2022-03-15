@@ -36,7 +36,6 @@ from sai_thrift import sai_rpc
 
 from sai_utils import *
 import sai_thrift.sai_adapter as adapter
-import pdb
 
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
@@ -55,6 +54,8 @@ class ThriftInterface(BaseTest):
         self.port_map_loaded = False
         self.transport = None
         self.test_reboot_loaded = False
+        self.test_reboot_mode = None
+        self.test_reboot_stage = None
 
         self.test_params = test_params_get()
         self.loadTestRebootMode()
@@ -77,7 +78,7 @@ class ThriftInterface(BaseTest):
         Set the following class attributes:
         self.test_reboot_loaded - if the reboot mode already loaded
         self.test_reboot_mode - reboot mode
-        self.test_reboot_stage - reboot mode
+        self.test_reboot_stage - reboot stage, can be [setup|starting|post]
         """
         if self.test_reboot_loaded:
             print("test reboot mode already loaded")
@@ -143,7 +144,8 @@ class ThriftInterface(BaseTest):
         self.transport = TSocket.TSocket(server, THRIFT_PORT)
         self.transport = TTransport.TBufferedTransport(self.transport)
         self.protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
-
+        if self.test_reboot_stage == 'starting':
+            return
         self.client = sai_rpc.Client(self.protocol)
         self.transport.open()
 
@@ -315,7 +317,21 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         Start switch.
         """
-        self.switch_id = sai_thrift_create_switch(self.client, init_switch=True, src_mac_address=ROUTER_MAC, restart_warm=True)
+        self.switch_id = sai_thrift_create_switch(
+            self.client, 
+            init_switch=True, 
+            src_mac_address=ROUTER_MAC)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+
+    def warm_start_switch(self):
+        """
+        Start switch in warm mode.
+        """
+        self.switch_id = sai_thrift_create_switch(
+            self.client, 
+            init_switch=True,
+            warm_recover=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
 
@@ -323,16 +339,27 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         print("warm boot setup")
         
         if self.test_reboot_stage == 'starting':
-            #before the switch init get called
-            #Simulate the rebooting stage and before switch get started
+            """
+            before the switch init get called
+            Simulate the rebooting stage and before switch get started
+            """
             self.warm_rebooting()
         elif self.test_reboot_stage == 'post':
-            #Sim starting, warming start script will be called
-            #other necessary configration will be called
+            """
+            Sim starting, warming start script will be called
+            other necessary configration will be called
+            """
             self.warm_post()
-
+        elif self.test_reboot_stage == 'setup':
+            """
+            Setup the warmboot mode 
+            """
+            self.normal_setup()
 
     def warm_shutdown(self):
+        """
+        Shut down swithc in warm boot mode
+        """
         print("shutdown the swich in warm mode")
         sai_thrift_set_switch_attribute(self.client, restart_warm=True)
         sai_thrift_set_switch_attribute(self.client, pre_shutdown=True)
@@ -342,7 +369,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
     def warm_rebooting(self):
         """
-        This function will perform all the necessary opertion before switch get started in warm reboot.
+        This function will perform all the necessary opertion during rebooting(not started).
         """
         print("Testing without switch started")      
 
@@ -352,11 +379,46 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         This function will perform all the configuration/setup for testing switch in post warm start stage.
         """ 
         print("Testing switch start in WARM mode")
-        sai_thrift_set_switch_attribute(self.client, restart_warm=True)
-        self.start_switch()
+        self.warm_start_switch()
+        self.switch_resources = self.saveNumberOfAvaiableResources(debug=True)
+
+        # get default vlan
+        attr = sai_thrift_get_switch_attribute(
+            self.client, default_vlan_id=True)
+        self.default_vlan_id = attr['default_vlan_id']
+        self.assertNotEqual(self.default_vlan_id, 0)
+
+        self.recreate_ports()
+
+        # get number of active ports
+        self.get_active_port_list()
+
+        # get default vrf
+        attr = sai_thrift_get_switch_attribute(
+            self.client, default_virtual_router_id=True)
+        self.default_vrf = attr['default_virtual_router_id']
+        self.assertNotEqual(self.default_vrf, 0)
+
+        self.turn_up_and_check_ports()
+
+        # get default 1Q bridge OID
+        self.get_default_1q_bridge_id()
+
+        #remove all default 1Q bridge port
+        #self.reset_1q_bridge_ports()
+
+        # get cpu port
+        attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
+        self.cpu_port_hdl = attr['cpu_port']
+        self.assertNotEqual(self.cpu_port_hdl, 0)
+
+        # get cpu port queue handles
+        self.check_cpu_port_hdl()
+
+        print("Finish SaiHelperBase setup")
     
     
-    def normal_setup(setup):
+    def normal_setup(self):
         print("normal setup")
         # initialize switch
         self.start_switch()
@@ -403,8 +465,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         super(SaiHelperBase, self).setUp()
 
         self.getSwitchPorts()
-        pdb.set_trace()
-        if self.test_reboot_stage:
+        if self.test_reboot_mode == 'warm':
             self.warm_boot_setup()
         else:
             self.normal_setup()
