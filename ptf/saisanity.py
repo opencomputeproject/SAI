@@ -37,7 +37,7 @@ class L2TrunkToTrunkVlanTest(PlatformSaiHelper):
     def setUp(self):
         #this process contains the switch_init process
         SaiHelperBase.setUp(self)
-        
+
         self.create_bridge_ports()
 
         print("Sending L2 packet port 1 -> port 2 [access vlan=10])")
@@ -171,7 +171,7 @@ class L2SanityTest(PlatformSaiHelper):
 
     def gen_mac(self):
          #Gets self.portX objects for all active ports
-        for index in range(0, 32):
+        for index in range(0, len(config['interfaces'])):
             mac = "00"
             if index < 9 :
                 section = ":" + "0" + str(index+1)
@@ -271,11 +271,6 @@ class L2SanityTest(PlatformSaiHelper):
         #create send pkt and rcv pkt
         self.create_pkt(self.vlan_id)
         self.create_exp_pkt(self.vlan_id)
-        
-        if self.test_reboot_stage == 'starting':
-            return
-        if self.test_reboot_stage == 'post':
-            return
 
         self.src_port = self.port0
         self.dst_port = self.port1
