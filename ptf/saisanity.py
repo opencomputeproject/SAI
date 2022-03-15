@@ -37,7 +37,7 @@ class L2TrunkToTrunkVlanTest(PlatformSaiHelper):
     def setUp(self):
         #this process contains the switch_init process
         SaiHelperBase.setUp(self)
-
+        
         self.create_bridge_ports()
 
         print("Sending L2 packet port 1 -> port 2 [access vlan=10])")
