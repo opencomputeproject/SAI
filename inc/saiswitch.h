@@ -2696,6 +2696,23 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_IPSEC_SA_STATUS_CHANGE_NOTIFY,
 
     /**
+     * @brief Number of ECMP members supported by My MAC entries installed on the switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_ECMP_MEMBER_COUNT,
+
+    /**
+     * @brief Number of  ECMP Members configured on the switch
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 64
+     */
+    SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
