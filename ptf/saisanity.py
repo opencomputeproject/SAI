@@ -255,22 +255,22 @@ class L2SanityTest(PlatformSaiHelper):
                                         ip_ttl=64)
             setattr(self, 'exp_pkt%s' % index, exp_pkt)
 
-
-    def setUp(self):
-        #Init switch
-        SaiHelperBase.setUp(self)
-
-
+    def param_init(self):        
         mac4=  '00:12:12:12:12:13'
 
         self.vlan_id = 10
         self.gen_mac()
         self.src_mac=mac4
-        mac_action = SAI_PACKET_ACTION_FORWARD
 
         #create send pkt and rcv pkt
         self.create_pkt(self.vlan_id)
         self.create_exp_pkt(self.vlan_id)
+
+
+    def setUp(self):
+        #Init switch
+        SaiHelperBase.setUp(self)
+        self.param_init()
 
         self.src_port = self.port0
         self.dst_port = self.port1
@@ -285,7 +285,8 @@ class L2SanityTest(PlatformSaiHelper):
         #set port vlan attribute
         self.set_port_vlan(self.vlan_id)
 
-        #set fdb
+        #set fdb        
+        mac_action = SAI_PACKET_ACTION_FORWARD
         self.create_port_fdb(self.vlan_id, self.vlan_oid, mac_action)
 
 
@@ -303,18 +304,6 @@ class L2SanityTest(PlatformSaiHelper):
 
 
     def tearDown(self):
-        if self.test_reboot_stage == 'starting':
-            print("Skip the teardown for warm boot testing")
-            return
-
-        if self.test_reboot_stage == 'setup':
-            print("Skip the teardown and make a warm shut down for warm boot testing")
-            self.warm_shutdown()
-            return
-        
-        if self.test_reboot_stage == 'post':
-            print("Skip the teardown after warm boot testing")
-            return
 
         #reset port vlan id
         #?reset to 0 or 1?

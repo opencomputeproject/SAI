@@ -52,8 +52,8 @@ class ThriftInterface(BaseTest):
 
         self.interface_to_front_mapping = {}
         self.port_map_loaded = False
-        self.transport = None
-        self.test_reboot_loaded = False
+
+        self.transport = None        
         self.test_reboot_mode = None
         self.test_reboot_stage = None
 
@@ -80,9 +80,6 @@ class ThriftInterface(BaseTest):
         self.test_reboot_mode - reboot mode
         self.test_reboot_stage - reboot stage, can be [setup|starting|post]
         """
-        if self.test_reboot_loaded:
-            print("test reboot mode already loaded")
-            return
         
         if "test_reboot_mode" in self.test_params:
             self.test_reboot_mode = self.test_params['test_reboot_mode']
@@ -94,7 +91,6 @@ class ThriftInterface(BaseTest):
             self.test_reboot_mode = 'cold'
 
         print("Reboot mode is: {}".format(self.test_reboot_mode))
-        self.test_reboot_loaded = True
 
 
     def loadPortMap(self):
@@ -1210,7 +1206,7 @@ from platform_helper.common_sai_helper import * # pylint: disable=wildcard-impor
 from platform_helper.bfn_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from platform_helper.brcm_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from platform_helper.mlnx_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
-
+import pdb
 class PlatformSaiHelper(SaiHelper):
     """
     Class uses to extend from SaiHelper, base on the [platform] class attribute,
@@ -1226,7 +1222,11 @@ class PlatformSaiHelper(SaiHelper):
         else:
             target_base_class = sai_helper_subclass_map[pl]
 
-        cls.__bases__ = (target_base_class,)
+        cur_cls = cls
+        while cur_cls.__base__ != PlatformSaiHelper:
+            cur_cls = cur_cls.__base__
+
+        cur_cls.__bases__ = (target_base_class,)
 
         instance = target_base_class.__new__(cls, *args, **kwargs)
         return instance
