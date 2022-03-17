@@ -37,8 +37,8 @@
 #include <saisrv6.h>
 
 /* new experimental object type includes */
-#include "../experimental/saiexperimentaldash.h"
-#include "../experimental/saiexperimentalbmtor.h"
+#include <saiexperimentaldash.h>
+#include <saiexperimentalbmtor.h>
 
 /**
  * @defgroup SAIOBJECT SAI - Object API definitions.
