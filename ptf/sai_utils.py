@@ -22,10 +22,10 @@ import socket
 
 from functools import wraps
 
-from ptf.packet import *
-from ptf.testutils import *
+from ptf.packet import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from ptf.testutils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
-from sai_thrift.sai_adapter import *
+from sai_thrift.sai_adapter import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 
 def sai_thrift_query_attribute_enum_values_capability(client,

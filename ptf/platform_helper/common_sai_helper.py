@@ -21,11 +21,14 @@ Class contains common functions.
 
 This file contains base class for other platform classes.
 """
-from  sai_base_test import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
-from common_helper.saiswitch_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from platform_helper.common_helper.saiswitch_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+
+from sai_base_test import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+
 
 class CommonSaiHelper(SaiHelper):
-    def __init__():
+    def __init__(self):
+        super().__init__()
         self.switch_helper = SaiSwitchHelper()
 
 

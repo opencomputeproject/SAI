@@ -16,18 +16,16 @@
 #    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 #    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
 #
-# @file    __init__.py
-#
-# @brief   init
-#
+
 
 import os
 import sys
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(THIS_DIR, '..'))
-from sai_base_test import *
-from saisanity import *
+from sai_base_test import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from saisanity import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from saiswitch import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 def warm_test(f):
     """

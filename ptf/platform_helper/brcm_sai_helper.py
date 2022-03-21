@@ -21,10 +21,11 @@ This file contains class for brcm specified functions.
 """
 
 from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
-from brcm_helper.brcm_saiswitch_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from platform_helper.brcm_helper.brcm_saiswitch_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 class BrcmSaiHelper(CommonSaiHelper):
     def __init__(self):
+        super().__init__()
         self.switch_helper = BrcmSaiSwitchHelper()
 
 
