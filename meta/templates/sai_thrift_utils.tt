@@ -6,7 +6,7 @@
     i64 sai_thrift_object_type_get_availability(1 : sai_thrift_object_type_t object_type, 2: sai_thrift_attr_id_t attr_id, 3: i32 attr_type);
     sai_thrift_object_id_t sai_thrift_switch_id_query(1 : sai_thrift_object_id_t object_id);
     sai_thrift_object_type_t sai_thrift_object_type_query(1 : sai_thrift_object_id_t object_id);
-
+    sai_thrift_status_t sai_thrift_api_uninitialize();
 [%- END -%]
 
 [%- ######################################################################## -%]

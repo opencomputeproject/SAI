@@ -78,6 +78,7 @@ class L2TrunkToTrunkVlanTest(PlatformSaiHelper):
 
 
     def tearDown(self):
+        
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry1)
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry2)
 
@@ -170,7 +171,7 @@ class L2SanityTest(PlatformSaiHelper):
 
     def gen_mac(self):
          #Gets self.portX objects for all active ports
-        for index in range(0, len(self.port_list)):
+        for index in range(0, len(config['interfaces'])):
             mac = "00"
             if index < 9 :
                 section = ":" + "0" + str(index+1)
@@ -221,7 +222,7 @@ class L2SanityTest(PlatformSaiHelper):
 
 
     def create_pkt(self, vlan_id):
-        for index in range(0, len(self.port_list)):
+        for index in range(0, len(config['interfaces'])):
             target_mac = getattr(self, 'mac%s' % index)
             if index%2 == 0:
                 pkt = simple_tcp_packet(eth_src=self.src_mac,
@@ -240,7 +241,7 @@ class L2SanityTest(PlatformSaiHelper):
             setattr(self, 'pkt%s' % index, pkt)
 
     def create_exp_pkt(self, vlan_id):
-        for index in range(0, len(self.port_list)):
+        for index in range(0, len(config['interfaces'])):
             target_mac = getattr(self, 'mac%s' % index)
             if index%2 == 0:
                 exp_pkt = getattr(self, 'pkt%s' % index)
@@ -254,17 +255,26 @@ class L2SanityTest(PlatformSaiHelper):
                                         ip_ttl=64)
             setattr(self, 'exp_pkt%s' % index, exp_pkt)
 
-
-    def setUp(self):
-        #Init switch
-        SaiHelperBase.setUp(self)
-
+    def param_init(self):        
         mac4=  '00:12:12:12:12:13'
 
         self.vlan_id = 10
         self.gen_mac()
         self.src_mac=mac4
-        mac_action = SAI_PACKET_ACTION_FORWARD
+
+        #create send pkt and rcv pkt
+        self.create_pkt(self.vlan_id)
+        self.create_exp_pkt(self.vlan_id)
+
+
+    def setUp(self):
+        #Init switch
+        SaiHelperBase.setUp(self)
+        self.param_init()
+
+        #create send pkt and rcv pkt
+        self.create_pkt(self.vlan_id)
+        self.create_exp_pkt(self.vlan_id)
 
         self.src_port = self.port0
         self.dst_port = self.port1
@@ -279,17 +289,14 @@ class L2SanityTest(PlatformSaiHelper):
         #set port vlan attribute
         self.set_port_vlan(self.vlan_id)
 
-        #set fdb
+        #set fdb        
+        mac_action = SAI_PACKET_ACTION_FORWARD
         self.create_port_fdb(self.vlan_id, self.vlan_oid, mac_action)
-
-        #create send pkt and rcv pkt
-        self.create_pkt(self.vlan_id)
-        self.create_exp_pkt(self.vlan_id)
 
 
     def runTest(self):
         try:
-            for index in range(1, len(self.port_list)):
+            for index in range(1, len(config['interfaces'])):
                 self.dataplane.flush()
                 print("Check port{} forwarding...".format(index))
                 target_pkt = getattr(self, 'pkt%s' % index)
@@ -301,6 +308,7 @@ class L2SanityTest(PlatformSaiHelper):
 
 
     def tearDown(self):
+
         #reset port vlan id
         #?reset to 0 or 1?
         self.reset_port_vlan(1)
