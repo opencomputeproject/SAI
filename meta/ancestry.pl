@@ -168,6 +168,7 @@ sub BuildCommitHistory
 
             next if $enumName eq "SAI_API_MAX";
             next if $enumName eq "SAI_OBJECT_TYPE_MAX";
+            next if $enumName eq "SAI_PORT_INTERFACE_TYPE_MAX";
 
             LogError "wrong initializer on $enumName $enumValue" if not $enumValue =~ /^0x[0-9a-f]{8}$/;
 

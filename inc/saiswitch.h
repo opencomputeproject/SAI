@@ -515,6 +515,56 @@ typedef enum _sai_switch_tunnel_attr_t
     SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT_MASK,
 
     /**
+     * @brief Enable TC AND COLOR -> DSCP MAP on tunnel at encapsulation (access-to-network) node to remark the DSCP in tunnel header
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP,
+
+    /**
+     * @brief Enable TC -> Queue MAP on tunnel encap
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on tunnel.
+     * Default no map, i.e. packets are queued with static mapping.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_TUNNEL_ATTR_ENCAP_QOS_TC_TO_QUEUE_MAP,
+
+    /**
+     * @brief Enable DSCP -> TC MAP on tunnel at termination (Network-to-access) node.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_TUNNEL_ATTR_DECAP_QOS_DSCP_TO_TC_MAP,
+
+    /**
+     * @brief Enable TC -> Priority Group MAP
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * Default no map
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_TUNNEL_ATTR_DECAP_QOS_TC_TO_PRIORITY_GROUP_MAP,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_TUNNEL_ATTR_END,
@@ -2694,6 +2744,17 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_IPSEC_SA_STATUS_CHANGE_NOTIFY,
+
+    /**
+     * @brief NAT event notification callback function passed to the adapter.
+     *
+     * Use sai_nat_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_nat_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_NAT_EVENT_NOTIFY,
 
     /**
      * @brief End of attributes

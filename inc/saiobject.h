@@ -36,6 +36,9 @@
 #include <sainat.h>
 #include <saisrv6.h>
 
+/* new experimental object type includes */
+#include "../experimental/saiexperimentalbmtor.h"
+
 /**
  * @defgroup SAIOBJECT SAI - Object API definitions.
  *
@@ -80,6 +83,8 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_MY_SID_ENTRY */
     sai_my_sid_entry_t        my_sid_entry;
+
+    /* Add new experimental entries above this line */
 
 } sai_object_key_entry_t;
 
@@ -248,6 +253,58 @@ sai_status_t sai_query_stats_capability(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _Inout_ sai_stat_capability_list_t *stats_capability);
+
+/**
+ * @brief Bulk objects get statistics.
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type Object type
+ * @param[in] object_count Number of objects to get the stats
+ * @param[in] object_key List of object keys
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[inout] object_statuses Array of status for each object. Length of the array should be object_count. Should be looked only if API return is not SAI_STATUS_SUCCESS.
+ * @param[out] counters Array of resulting counter values.
+ *    Length of counters array should be object_count*number_of_counters.
+ *    Counter value of I object and J counter_id = counter[I*number_of_counters + J]
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+sai_status_t sai_bulk_object_get_stats(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ uint32_t object_count,
+        _In_ const sai_object_key_t *object_key,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Inout_ sai_status_t *object_statuses,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Bulk objects clear statistics.
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type Object type
+ * @param[in] object_count Number of objects to get the stats
+ * @param[in] object_key List of object keys
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[inout] object_statuses Array of status for each object. Length of the array should be object_count. Should be looked only if API return is not SAI_STATUS_SUCCESS.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+sai_status_t sai_bulk_object_clear_stats(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ uint32_t object_count,
+        _In_ const sai_object_key_t *object_key,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Inout_ sai_status_t *object_statuses);
 
 /**
  * @}

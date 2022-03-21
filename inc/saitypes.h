@@ -130,6 +130,7 @@ typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
+typedef uint64_t sai_api_version_t;
 
 typedef struct _sai_timespec_t
 {
@@ -343,6 +344,18 @@ typedef struct _sai_s32_range_t
     int32_t min;
     int32_t max;
 } sai_s32_range_t;
+
+typedef struct _sai_u16_range_t
+{
+    uint16_t min;
+    uint16_t max;
+} sai_u16_range_t;
+
+typedef struct _sai_u16_range_list_t
+{
+    uint32_t count;
+    sai_u16_range_t *list;
+} sai_u16_range_list_t;
 
 /**
  * @brief Defines a vlan list data structure
@@ -764,6 +777,7 @@ typedef struct _sai_acl_capability_t
      * @passparam &sai_metadata_enum_sai_acl_action_type_t
      */
     sai_s32_list_t action_list;
+
 } sai_acl_capability_t;
 
 /**
@@ -1221,6 +1235,9 @@ typedef union _sai_attribute_value_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_INT32_RANGE */
     sai_s32_range_t s32range;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST */
+    sai_u16_range_list_t u16rangelist;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_VLAN_LIST */
     sai_vlan_list_t vlanlist;
 
@@ -1428,6 +1445,21 @@ typedef enum _sai_stats_mode_t
      * @brief Read and clear after reading
      */
     SAI_STATS_MODE_READ_AND_CLEAR = 1 << 1,
+
+    /**
+     * @brief Bulk read statistics
+     */
+    SAI_STATS_MODE_BULK_READ = 1 << 2,
+
+    /**
+     * @brief Bulk clear statistics
+     */
+    SAI_STATS_MODE_BULK_CLEAR = 1 << 3,
+
+    /**
+     * @brief Bulk read and clear after reading
+     */
+    SAI_STATS_MODE_BULK_READ_AND_CLEAR = 1 << 4,
 } sai_stats_mode_t;
 
 typedef struct _sai_stat_capability_t
