@@ -21,8 +21,13 @@ This file contains class for brcm specified functions.
 """
 
 from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from brcm_helper.brcm_saiswitch_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 class BrcmSaiHelper(CommonSaiHelper):
+    def __init__(self):
+        self.switch_helper = BrcmSaiSwitchHelper()
+
+
     """
     This class contains broadcom(brcm) specified functions for the platform setup and test context configuration.
     """
