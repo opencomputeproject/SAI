@@ -83,6 +83,665 @@ def generate_mac_list(no_of_addr):
                         return mac_list
     return mac_list
 
+class AvailableIPv4RouteEntryTest(PlatformSaiHelper):
+    def setUp(self):
+        super(AvailableIPv4RouteEntryTest, self).setUp()
+
+        # values required by neighbor entries tests set by route entries test
+        # Note: routes entries tests should be run as first
+        self.available_v4_host_routes = None
+        self.available_v6_host_routes = None
+
+
+    def check_data_creation(self):
+        '''
+        Verifies creation of maximum number of IPv4 route entries.
+        '''
+        print("\navailableIPv4RouteEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv4_route_entry=True)
+        max_route_entry = attr["available_ipv4_route_entry"]
+        print("Available IPv4 route entries: %d" % max_route_entry)
+
+        self.routes = dict()
+        mask = '/32'
+        ip_add = generate_ip_addr(max_route_entry + 100)
+
+        self.neigh_entry = sai_thrift_neighbor_entry_t(
+                self.switch_id, self.port10_rif, sai_ipaddress('10.10.10.1'))
+        self.neigh = sai_thrift_create_neighbor_entry(
+                self.client, self.neigh_entry, dst_mac_address='00:11:22:33:44:55')
+        self.nhop = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.1'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.assertNotEqual(self.nhop, SAI_NULL_OBJECT_ID)
+
+        self.route_number = 0
+        max_host_route = 0
+        self.switch_helper.create_route_entry_from_default_vrf(self)
+        while self.route_number < max_route_entry:
+            ip_p_m = sai_ipprefix(next(ip_add) + mask)
+
+            # check if ip repeat, then get next ip
+            if str(ip_p_m) in self.routes:
+                continue
+
+            route_entry = sai_thrift_route_entry_t(
+                vr_id=self.default_vrf,
+                destination=ip_p_m)
+            status = sai_thrift_create_route_entry(
+                self.client, route_entry, next_hop_id=self.nhop)
+
+            if status == SAI_STATUS_SUCCESS:
+                self.routes.update({str(ip_p_m): route_entry})
+                self.route_number += 1
+            elif status == SAI_STATUS_ITEM_ALREADY_EXISTS:
+                continue
+            elif mask == '/32':  # when host table is full change to LPM
+                print("%s host routes have been created" % self.route_number)
+                max_host_route = self.route_number
+                self.available_v4_host_routes = max_host_route
+                mask = '/30'
+                continue
+            else:
+                self.fail("Route creation failed after creating %d "
+                            "entries, status %u" % (self.route_number, status))
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, available_ipv4_route_entry=True)
+            self.assertEqual(attr["available_ipv4_route_entry"],
+                                max_route_entry - self.route_number)
+        ip_add.close()
+
+
+    def tearDown(self):
+        for ip_p_m in self.routes:
+            sai_thrift_remove_route_entry(self.client, self.routes.get(ip_p_m))
+        sai_thrift_remove_next_hop(self.client, self.nhop)
+
+
+    def check_amount(self):
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv4_route_entry=True)
+        self.assertEqual(attr["available_ipv4_route_entry"], 0)
+
+
+    def runTest(self):
+        self.check_data_creation()
+        self.check_amount()
+
+
+class AvailableIPv6RouteEntryTest(PlatformSaiHelper):
+    def setUp(self):
+        super(AvailableIPv6RouteEntryTest, self).setUp()
+
+        # values required by neighbor entries tests set by route entries test
+        # Note: routes entries tests should be run as first
+        self.available_v4_host_routes = None
+        self.available_v6_host_routes = None
+
+
+    def check_data_creation(self):
+        '''
+        Verifies creation of maximum number of IPv6 route entries.
+        '''
+        print("\navailableIPv6RouteEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv6_route_entry=True)
+        max_route_entry = attr["available_ipv6_route_entry"]
+        print("Available IPv6 route entries: %d" % max_route_entry)
+
+        self.available_v6_host_routes = max_route_entry
+        routes = dict()
+        mask = '/128'
+        ip_add = generate_ip_addr(max_route_entry + 100, ipv6=True)
+
+        self.neigh_entry = sai_thrift_neighbor_entry_t(
+            self.switch_id, self.port10_rif, sai_ipaddress('2001:0db8:1::1'))
+        self.neigh = sai_thrift_create_neighbor_entry(
+            self.client, self.neigh_entry, dst_mac_address='00:11:22:33:44:55')
+        nhop = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('2001:0db8:1::1'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.assertNotEqual(nhop, SAI_NULL_OBJECT_ID)
+
+        route_number = 0
+        max_host_route = 0
+        self.switch_helper.create_route_entry_from_default_vrf(self)
+        while route_number < max_route_entry:
+            ip_p_m = sai_ipprefix(next(ip_add) + mask)
+
+            #  check if ip repeat, then get next ip
+            if str(ip_p_m) in routes:
+                continue
+
+            route_entry = sai_thrift_route_entry_t(
+                switch_id=self.switch_id,
+                vr_id=self.default_vrf,
+                destination=ip_p_m)
+            status = sai_thrift_create_route_entry(
+                self.client, route_entry, next_hop_id=nhop)
+
+            if status == SAI_STATUS_SUCCESS:
+                routes.update({str(ip_p_m): route_entry})
+                route_number += 1
+            elif status == SAI_STATUS_ITEM_ALREADY_EXISTS:
+                continue
+            elif mask == '/128':  # when host table is full change to LPM
+                print("%s host routes have been created" % route_number)
+                max_host_route = route_number
+                self.available_v6_host_routes = max_host_route
+                mask = '/120'
+                continue
+            elif mask == '/120':  # when LPM table is full change to LPM64
+                print("%s host + LPM routes have been created so far"
+                        % route_number)
+                mask = '/64'
+                continue
+            else:
+                self.fail("Route creation failed after creating %d "
+                            "entries, status %u" % (route_number, status))
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, available_ipv6_route_entry=True)
+            self.assertEqual(attr["available_ipv6_route_entry"],
+                                max_route_entry - route_number)
+        ip_add.close()
+
+
+    def tearDown(self):
+        for ip_p_m in self.routes:
+            sai_thrift_remove_route_entry(self.client, self.routes.get(ip_p_m))
+        sai_thrift_remove_next_hop(self.client, self.nhop)
+
+
+    def check_amount(self):
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv4_route_entry=True)
+        self.assertEqual(attr["available_ipv4_route_entry"], 0)
+
+
+    def runTest(self):
+        self.check_data_creation()
+        self.check_amount()
+
+class AvailableNexthopGroupEntryTest(PlatformSaiHelper):
+    def setUp(self):
+        super(AvailableNexthopGroupEntryTest, self).setUp()
+
+    def check_data_creation(self):
+        '''
+        Verifies creation of maximum number of nexthop group entries.
+        '''
+        print("\navailableNexthopGroupEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_next_hop_group_entry=True)
+        max_nhg_entry = attr["available_next_hop_group_entry"]
+        print("Available nexthop group entries: %d" % max_nhg_entry)
+
+        self.nhg = []
+        for nhg_number in range(1, max_nhg_entry + 1):
+            nexthop_group = sai_thrift_create_next_hop_group(
+                self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+            self.assertNotEqual(nexthop_group, SAI_NULL_OBJECT_ID)
+            self.nhg.append(nexthop_group)
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, available_next_hop_group_entry=True)
+            self.assertEqual(attr["available_next_hop_group_entry"],
+                                max_nhg_entry - nhg_number)
+
+
+    def tearDown(self):
+        # if nexthop_group != SAI_NULL_OBJECT_ID:
+            # sai_thrift_remove_next_hop(self.client, nexthop_group)
+            # self.fail("Number of available nexthop groups may be exceeded")
+        for nhg_id in self.nhg:
+            sai_thrift_remove_next_hop_group(self.client, nhg_id)
+
+
+    def check_amount(self):
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_next_hop_group_entry=True)
+        self.assertEqual(attr["available_next_hop_group_entry"], 0)
+
+        nexthop_group = sai_thrift_create_next_hop_group(
+            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.assertEqual(nexthop_group, SAI_NULL_OBJECT_ID)
+        print("No more nexthop group may be created")
+  
+
+    def runTest(self):
+        self.check_data_creation()
+        self.check_amount()
+
+class AvailableNexthopGroupEntryTest(PlatformSaiHelper):
+    def setUp(self):
+        super(AvailableNexthopGroupEntryTest, self).setUp()
+
+    def check_data_creation(self):
+        '''
+        Verifies creation of maximum number of nexthop group entries.
+        '''
+        print("\navailableNexthopGroupEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_next_hop_group_entry=True)
+        max_nhg_entry = attr["available_next_hop_group_entry"]
+        print("Available nexthop group entries: %d" % max_nhg_entry)
+
+        self.nhg = []
+        for nhg_number in range(1, max_nhg_entry + 1):
+            nexthop_group = sai_thrift_create_next_hop_group(
+                self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+            self.assertNotEqual(nexthop_group, SAI_NULL_OBJECT_ID)
+            self.nhg.append(nexthop_group)
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, available_next_hop_group_entry=True)
+            self.assertEqual(attr["available_next_hop_group_entry"],
+                                max_nhg_entry - nhg_number)
+
+
+    def tearDown(self):
+        # if nexthop_group != SAI_NULL_OBJECT_ID:
+            # sai_thrift_remove_next_hop(self.client, nexthop_group)
+            # self.fail("Number of available nexthop groups may be exceeded")
+        for nhg_id in self.nhg:
+            sai_thrift_remove_next_hop_group(self.client, nhg_id)
+
+
+    def check_amount(self):
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_next_hop_group_entry=True)
+        self.assertEqual(attr["available_next_hop_group_entry"], 0)
+
+        nexthop_group = sai_thrift_create_next_hop_group(
+            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.assertEqual(nexthop_group, SAI_NULL_OBJECT_ID)
+        print("No more nexthop group may be created")
+ 
+
+    def runTest(self):
+        self.check_data_creation()
+        self.check_amount()
+
+
+class AvailableSnatEntryTest(PlatformSaiHelper):
+    def setUp(self):
+        super(AvailableSnatEntryTest, self).setUp()
+
+    def check_data_creation(self):
+        '''
+        Verifies creation of maximum number of snat entries.
+        '''
+        print("\navailableSnatEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_snat_entry=True)
+        max_snat_entry = attr["available_snat_entry"]
+        print("Available SNAT entries: %d" % max_snat_entry)
+
+        self.snat_list = []
+        self.addr = generate_ip_addr(max_snat_entry + 1)
+        for snat_number in range(1, max_snat_entry + 1):
+            nat_data = sai_thrift_nat_entry_data_t(
+                key=sai_thrift_nat_entry_key_t(
+                    src_ip=next(self.addr), proto=6),
+                mask=sai_thrift_nat_entry_mask_t(
+                    src_ip='255.255.255.255', proto=63))
+
+            snat = sai_thrift_nat_entry_t(
+                vr_id=self.default_vrf,
+                data=nat_data,
+                nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+            sai_thrift_set_switch_attribute(self.client, nat_enable=True)
+
+            status = sai_thrift_create_nat_entry(
+                self.client, snat, nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+            self.snat_list.append(snat)
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, available_snat_entry=True)
+            self.assertEqual(attr["available_snat_entry"],
+                                max_snat_entry - snat_number)
+
+
+    def tearDown(self):
+        for snat in self.snat_list:
+            sai_thrift_remove_nat_entry(self.client, snat)
+
+
+    def check_amount(self):
+        nat_data = sai_thrift_nat_entry_data_t(
+            key=sai_thrift_nat_entry_key_t(
+                src_ip=next(self.addr),
+                proto=6),
+            mask=sai_thrift_nat_entry_mask_t(
+                src_ip='255.255.255.255',
+                proto=63))
+                
+        snat = sai_thrift_nat_entry_t(
+            vr_id=self.default_vrf,
+            data=nat_data,
+            nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+
+        stat = sai_thrift_create_nat_entry(
+            self.client, snat,
+            nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+        self.assertNotEqual(stat, SAI_STATUS_SUCCESS)
+
+
+    def runTest(self):
+        self.check_data_creation()
+        self.check_amount()
+
+
+class ReadOnlyAttributesTest(PlatformSaiHelper):
+    def setUp(self):
+        super(ReadOnlyAttributesTest, self).setUp()
+
+
+    def check_data_creation(self):
+        '''
+        Verifies get on read only attributes.
+        '''
+        print("\nreadOnlyAttributesTest()")
+
+    def tearDown(self):
+        pass
+
+
+    def check_amount(self):
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_active_ports=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_active_ports"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS"], 0)
+        active_ports = attr["number_of_active_ports"]
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client,
+            port_list=sai_thrift_object_list_t(idlist=[], count=active_ports))
+        print(attr)
+        self.assertNotEqual(attr["port_list"].count, 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_PORT_LIST"].count, 0)
+
+
+        attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
+        print(attr)
+        self.assertNotEqual(attr["cpu_port"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_CPU_PORT"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               max_virtual_routers=True)
+        print(attr)
+        self.assertNotEqual(attr["max_virtual_routers"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_VIRTUAL_ROUTERS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client, lag_members=True)
+        print(attr)
+        self.assertNotEqual(attr["lag_members"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_LAG_MEMBERS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_lags=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_lags"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_LAGS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client, ecmp_members=True)
+        print(attr)
+        self.assertNotEqual(attr["ecmp_members"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ECMP_MEMBERS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_ecmp_groups=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_ecmp_groups"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_ECMP_GROUPS"], 0)
+           
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               acl_entry_minimum_priority=True)
+        print(attr)
+        self.assertEqual(attr["acl_entry_minimum_priority"], 0)
+        self.assertEqual(attr["SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               acl_entry_maximum_priority=True)
+        print(attr)
+        self.assertNotEqual(attr["acl_entry_maximum_priority"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               default_vlan_id=True)
+        print(attr)
+        self.assertNotEqual(attr["default_vlan_id"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_VLAN_ID"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               max_stp_instance=True)
+        print(attr)
+        self.assertNotEqual(attr["max_stp_instance"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_STP_INSTANCE"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               default_virtual_router_id=True)
+        print(attr)
+        self.assertNotEqual(attr["default_virtual_router_id"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               default_1q_bridge_id=True)
+        print(attr)
+        self.assertNotEqual(attr["default_1q_bridge_id"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID"], 0)
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, qos_max_number_of_traffic_classes=True)
+        print(attr)
+        self.assertNotEqual(attr["qos_max_number_of_traffic_classes"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_TRAFFIC_CLASSES"], 0)
+
+        attr_name = "SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUP_" + \
+            "HIERARCHY_LEVELS"
+        attr = sai_thrift_get_switch_attribute(
+            self.client,
+            qos_max_number_of_scheduler_group_hierarchy_levels=True)
+        print(attr)
+        self.assertNotEqual(
+            attr["qos_max_number_of_scheduler_group_hierarchy_levels"], 0)
+        self.assertNotEqual(attr[attr_name], 0)
+
+        scheduler_group_levels = attr[
+            "qos_max_number_of_scheduler_group_hierarchy_levels"]
+        value = sai_thrift_u32_list_t(count=scheduler_group_levels,
+                                      uint32list=[])
+        attr_name = "SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUPS_" + \
+            "PER_HIERARCHY_LEVEL"
+        attr = sai_thrift_get_switch_attribute(
+            self.client,
+            qos_max_number_of_scheduler_groups_per_hierarchy_level=value)
+        print(attr)
+        self.assertNotEqual(
+            attr["qos_max_number_of_scheduler_groups_per_hierarchy_level"], 0)
+        self.assertNotEqual(attr[attr_name], 0)
+
+        attr_name = "SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_CHILDS_" + \
+            "PER_SCHEDULER_GROUP"
+        attr = sai_thrift_get_switch_attribute(
+            self.client, qos_max_number_of_childs_per_scheduler_group=True)
+        print(attr)
+        self.assertNotEqual(
+            attr["qos_max_number_of_childs_per_scheduler_group"], 0)
+        self.assertNotEqual(attr[attr_name], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               total_buffer_size=True)
+        print(attr)
+        self.assertNotEqual(attr["total_buffer_size"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               ingress_buffer_pool_num=True)
+        print(attr)
+        self.assertNotEqual(attr["ingress_buffer_pool_num"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               egress_buffer_pool_num=True)
+        print(attr)
+        self.assertNotEqual(attr["egress_buffer_pool_num"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                            max_acl_action_count=True)
+        print(attr)
+        self.assertNotEqual(attr["max_acl_action_count"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT"], 0)
+        max_acl_action_count = attr["max_acl_action_count"]
+
+
+        s32 = sai_thrift_s32_list_t(int32list=[], count=max_acl_action_count)
+        cap = sai_thrift_acl_capability_t(action_list=s32)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               acl_capability=cap)
+        print(attr)
+        self.assertNotEqual(attr["acl_capability"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_CAPABILITY"], 0)
+
+        if not self.platform == 'brcm':
+            attr = sai_thrift_get_switch_attribute(
+                self.client, max_number_of_supported_ports=True)
+            print(attr)
+            self.assertNotEqual(attr["max_number_of_supported_ports"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_MAX_NUMBER_OF_SUPPORTED_PORTS"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client, port_max_mtu=True)
+            print(attr)
+            self.assertNotEqual(attr["port_max_mtu"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_PORT_MAX_MTU"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                fdb_table_size=True)
+            print(attr)
+            self.assertNotEqual(attr["fdb_table_size"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_FDB_TABLE_SIZE"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                    l3_neighbor_table_size=True)
+            print(attr)
+            self.assertNotEqual(attr["l3_neighbor_table_size"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_L3_NEIGHBOR_TABLE_SIZE"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                l3_route_table_size=True)
+            print(attr)
+            self.assertNotEqual(attr["l3_route_table_size"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_L3_ROUTE_TABLE_SIZE"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                number_of_unicast_queues=True)
+            print(attr)
+            self.assertNotEqual(attr["number_of_unicast_queues"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_NUMBER_OF_UNICAST_QUEUES"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                number_of_multicast_queues=True)
+            print(attr)
+            self.assertNotEqual(attr["number_of_multicast_queues"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_NUMBER_OF_MULTICAST_QUEUES"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                number_of_queues=True)
+            print(attr)
+            self.assertNotEqual(attr["number_of_queues"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_QUEUES"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                number_of_cpu_queues=True)
+            print(attr)
+            self.assertNotEqual(attr["number_of_cpu_queues"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_CPU_QUEUES"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                acl_table_minimum_priority=True)
+            print(attr)
+            self.assertEqual(attr["acl_table_minimum_priority"], 0)
+            self.assertEqual(
+                attr["SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY"], 0)
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, acl_table_maximum_priority=True)
+            print(attr)
+            self.assertNotEqual(attr["acl_table_maximum_priority"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                default_stp_inst_id=True)
+            print(attr)
+            self.assertEqual(attr["default_stp_inst_id"], SAI_NULL_OBJECT_ID)
+            self.assertEqual(
+                attr["SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID"], SAI_NULL_OBJECT_ID)
+
+            attr = sai_thrift_get_switch_attribute(self.client, lag_hash=True)
+            print(attr)
+            self.assertNotEqual(attr["lag_hash"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_LAG_HASH"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                max_acl_range_count=True)
+            print(attr)
+            self.assertNotEqual(attr["max_acl_range_count"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_ACL_RANGE_COUNT"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                max_mirror_session=True)
+            print(attr)
+            self.assertNotEqual(attr["max_mirror_session"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_MIRROR_SESSION"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                default_trap_group=True)
+            print(attr)
+            self.assertNotEqual(attr["default_trap_group"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP"], 0)
+
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                acl_stage_ingress=cap)
+            print(attr)
+            self.assertNotEqual(attr["acl_stage_ingress"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_STAGE_INGRESS"], 0)
+        
+            attr = sai_thrift_get_switch_attribute(self.client,
+                                                acl_stage_egress=cap)
+            print(attr)
+            self.assertNotEqual(attr["acl_stage_egress"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_STAGE_EGRESS"], 0)
+
+
+    def runTest(self):
+        self.check_data_creation()
+        self.check_amount()
 
 @group("draft")
 class SwitchAttrTest(SaiHelper):
@@ -1164,6 +1823,7 @@ class SwitchAttrTest(SaiHelper):
                     vr_id=self.default_vrf,
                     data=nat_data,
                     nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+                sai_thrift_set_switch_attribute(self.client, nat_enable=True)
 
                 status = sai_thrift_create_nat_entry(
                     self.client, snat, nat_type=SAI_NAT_TYPE_SOURCE_NAT)
