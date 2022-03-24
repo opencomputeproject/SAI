@@ -1,5 +1,9 @@
 #!/usr/bin/make -f
 
+.ONESHELL:
+SHELL = /bin/bash
+.SHELLFLAGS += -x
+
 # See debhelper(7) (uncomment to enable)
 # output every command that modifies files on the build system.
 export DH_VERBOSE = 1
@@ -24,6 +28,7 @@ include /usr/share/dpkg/default.mk
 
 override_dh_auto_build:
 	$(MAKE) DESTDIR=$(CURDIR)/debian saithrift-build 
+	./debian/copy_installer.sh $(SAITHRIFT_VER)
 
 override_dh_auto_install:
 	$(MAKE) DESTDIR=$(CURDIR)/debian saithrift-install
@@ -36,3 +41,11 @@ override_dh_auto_clean:
 
 override_dh_strip:
 	dh_strip -psaiserver --dbg-package=saiserver-dbg
+
+override_dh_builddeb:
+	dh_builddeb
+	$(info "SAITHRIFTV2" : "$(SAITHRIFTV2)")
+	$(info "SAITHRIFT_VER" : "$(SAITHRIFT_VER)")
+ifeq ("$(SAITHRIFT_VER)", "v2")
+	./debian/copy_saithriftv2.sh
+endif 

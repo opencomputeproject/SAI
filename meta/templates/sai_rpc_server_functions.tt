@@ -2,7 +2,10 @@
 
 [%- unsupported_functions = '(bulk|send_hostif|recv_hostif|hostif_packet|mdio|register)' #TODO: all of them should be supported -%]
 
-[%- sai_utils_functions = '(query_attribute_enum_values_capability|sai_object_type_get_availability)' -%]
+[%- create_switch_function = 'create_switch' %]
+[%- remove_switch_function = 'remove_switch' %]
+
+[%- sai_utils_functions = '(query_attribute_enum_values_capability|sai_object_type_get_availability|sai_object_type_query|sai_switch_id_query)' -%]
 
 [%- ######################################################################## -%]
 
@@ -45,6 +48,22 @@
    [%- PROCESS return_error indentation = 2 status_variable = '' %]
 [%- END -%]
 
+[%- BLOCK check_switch_id -%]
+
+    // need to check if the switch exist
+    if (switch_id != NULL) {
+        return switch_id;
+    }
+   
+[%- END -%]
+
+[%- BLOCK empty_switch_id -%]
+
+    // reset the switch id
+    switch_id = NULL;
+   
+[%- END -%]
+
 [%- ######################################################################## -%]
 
 [%- ######################################################################## -%]
@@ -55,6 +74,8 @@
     [%- indentation = 2 || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
     [%- IF ret_type == 'int64_t' %]
 [% indent %]return 0ULL;
+    [%- ELSIF ret_type == 'sai_thrift_object_id_t' OR ret_type == 'sai_thrift_object_type_t' %]
+[% indent %]return SAI_NULL_OBJECT_ID;
     [%- ELSE %]
 [% indent %]return;
     [%- END %]
@@ -75,6 +96,11 @@
         [%- ELSIF arg.is_rpc_return %]
     [% arg.type.name %] [% arg.name %]_out = 0ULL;
         [%- END -%]
+    [%- END %]
+
+    [%- # If the swich already created, then return it directly -%]
+    [%- IF function_name.match(create_switch_function) %]
+        [%- PROCESS check_switch_id %]
     [%- END %]
     sai_[% api %]_api_t *[% api %]_api;
 [% END -%]
@@ -240,6 +266,10 @@
 [%- BLOCK return -%]
     [%- IF NOT function.rpc_return.is_cpp_return -%]
         [%- # Some types are being changed by Thrift to void, and moved into first parameter %]
+        [%- # Empty global switch_id -%]
+        [%- IF function_name.match(remove_switch_function) %]
+            [%- PROCESS empty_switch_id %]
+        [%- END %]
     return;
     [%- ELSIF function.return.is_rpc_return -%]
         [%- # If the value returned by RPC is the same that was returned by SAI method, -%]

@@ -48,6 +48,7 @@ FPGA - Field Programmable Gate Array
 FW  - Firmware
 GCM - Galois Counter Mode
 GMII - Gigabit Media-Independent Interface
+GNMI - gRPC Network Management Interface
 GPB - Google Protocol Buffers
 GRE - Generic Routing Encapsulation
 GRPC - GRPC Remote Procedure Call
@@ -87,6 +88,7 @@ NRZ - Non Return to Zero
 NVGRE - Network Virtualization using Generic Routing Encapsulation
 OAM - Operations Administration and Maintenance
 OUI - Organizationally Unique Identifier
+P4RT - Programming Protocol-independent Packet Processors Runtime
 PAM4 - Pulse Amplitude Modulation 4-level
 PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect

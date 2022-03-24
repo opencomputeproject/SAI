@@ -25,7 +25,7 @@ from functools import wraps
 from ptf.packet import *
 from ptf.testutils import *
 
-from sai_adapter import *
+from sai_thrift.sai_adapter import *
 
 
 def sai_thrift_query_attribute_enum_values_capability(client,
@@ -72,6 +72,44 @@ def sai_thrift_object_type_get_availability(client,
         obj_type, attr_id, attr_type)
 
     return availability_cnt
+
+
+def sai_thrift_object_type_query(client,
+                                 obj_id=None):
+    """
+    sai_thrift_object_type_query() RPC client function
+    implementation
+
+    Args:
+        client (Client): SAI RPC client
+        obj_id (obj): SAI object id
+
+    Returns:
+        uint: object type
+    """
+    obj_type = client.sai_object_type_query(
+        obj_id)
+
+    return obj_type
+
+
+def sai_thrift_switch_id_query(client,
+                               obj_id=None):
+    """
+    sai_thrift_switch_id_query() RPC client function
+    implementation
+
+    Args:
+        client (Client): SAI RPC client
+        obj_id (obj): SAI object id
+
+    Returns:
+        uint: object type
+    """
+    switch_obj_id = client.sai_switch_id_query(
+        obj_id)
+
+    return switch_obj_id
 
 
 def sai_thrift_get_debug_counter_port_stats(client, port_oid, counter_ids):
