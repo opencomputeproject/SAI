@@ -2696,7 +2696,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_IPSEC_SA_STATUS_CHANGE_NOTIFY,
 
     /**
-     * @brief Number of ECMP members supported by My MAC entries installed on the switch
+     * @brief Number of ECMP members supported by switch
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -2704,7 +2704,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_ECMP_MEMBER_COUNT,
 
     /**
-     * @brief Number of  ECMP Members configured on the switch
+     * @brief Number of ECMP Members configured. SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT takes precedence over SAI_KEY_NUM_ECMP_GROUPS string. Default value is same as SAI_SWITCH_ATTR_ECMP_MEMBERS.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
