@@ -3180,16 +3180,36 @@ sub CreateGlobalFunctions
 
     WriteHeader "";
 
-    WriteHeader "typedef enum _sai_global_api_type_t {";
+    my $typename = "sai_global_api_type_t";
+
+    my $prefix = uc $typename;
+
+    chop $prefix;
+
+    WriteHeader "typedef enum _$typename {";
+
+    my @values = ();
 
     for my $name (sort keys %GLOBAL_APIS)
     {
         my $short = uc($1) if $name =~ /^sai_(\w+)/;
 
         WriteHeader "SAI_GLOBAL_API_TYPE_$short,";
+
+        push @values, "SAI_GLOBAL_API_TYPE_$short";
     }
 
-    WriteHeader "} sai_global_api_type_t;";
+    WriteHeader "} $typename;";
+
+    $SAI_ENUMS{$typename}{values} = \@values;
+
+    WriteSectionComment "$typename metadata";
+
+    ProcessSingleEnum($typename, $typename, $prefix);
+
+    WriteSectionComment "Get $typename helper method";
+
+    CreateEnumHelperMethod($typename);
 }
 
 sub CreateApisQuery
