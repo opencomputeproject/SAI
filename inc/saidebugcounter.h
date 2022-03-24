@@ -264,7 +264,7 @@ typedef enum _sai_in_drop_reason_t
     /**
      * @brief Packet decapsulation failed
      *
-     * e.g.: need to decap too many bytes, remaining packet is too short
+     * e.g.: need to decap too many bytes, remaining packet is too short, UDP port out of defined range
      */
     SAI_IN_DROP_REASON_DECAP_ERROR,
 
