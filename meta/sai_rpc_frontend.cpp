@@ -892,7 +892,7 @@ static void *cookie;
 /**
  * @brief Create a Thrift RPC server thread
  */
-static void *sai_thrift_rpc_server_thread(void *arg) {
+static void *switch_sai_thrift_rpc_server_thread(void *arg) {
   int port = *(int *)arg;
   std::shared_ptr<sai_rpcHandlerFrontend> handler(new sai_rpcHandlerFrontend());
   std::shared_ptr<TProcessor> processor(new sai_rpcProcessor(handler));
@@ -926,7 +926,7 @@ int start_p4_sai_thrift_rpc_server(char *port) {
 
   cookie = NULL;
   int status = pthread_create(
-      &sai_thrift_rpc_thread, NULL, sai_thrift_rpc_server_thread, param);
+      &sai_thrift_rpc_thread, NULL, switch_sai_thrift_rpc_server_thread, param);
   if (status) return status;
   pthread_mutex_lock(&cookie_mutex);
   while (!cookie) {
@@ -936,6 +936,13 @@ int start_p4_sai_thrift_rpc_server(char *port) {
   pthread_mutex_destroy(&cookie_mutex);
   pthread_cond_destroy(&cookie_cv);
   return status;
+}
+
+int start_sai_thrift_rpc_server(int port)
+{
+    static char port_str[10];
+    snprintf(port_str, sizeof(port_str), "%d", port);
+    return start_p4_sai_thrift_rpc_server(port_str);
 }
 
 /**
