@@ -1134,8 +1134,8 @@ typedef struct _sai_tunnel_api_t
     sai_get_tunnel_map_entry_attribute_fn        get_tunnel_map_entry_attribute;
     sai_bulk_object_create_fn                    create_tunnels;
     sai_bulk_object_remove_fn                    remove_tunnels;
-    sai_bulk_object_get_attribute_fn             get_tunnels_attribute;
     sai_bulk_object_set_attribute_fn             set_tunnels_attribute;
+    sai_bulk_object_get_attribute_fn             get_tunnels_attribute;
 
 } sai_tunnel_api_t;
 
