@@ -40,7 +40,8 @@ std::map<std::set<int>, std::string> gPortMap;
 
 std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>> gFdbMap;
 
-sai_object_id_t gSwitchId; ///< SAI switch global object ID.
+extern sai_object_id_t switch_id;
+sai_object_id_t &gSwitchId = switch_id; ///< SAI switch global object ID.
 
 
 // Profile services

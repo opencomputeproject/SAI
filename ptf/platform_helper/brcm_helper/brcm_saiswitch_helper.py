@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Microsoft Open Technologies, Inc.
+# Copyright (c) 2022 Microsoft Open Technologies, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -35,4 +35,6 @@ class BrcmSaiSwitchHelper(SaiSwitchHelper):
         status = sai_thrift_create_route_entry(
             client.client, route_entry, next_hop_id=client.nhop)
         client.assertEqual(status, SAI_STATUS_SUCCESS)
-        client.route_number += 1
+        # Cause we add a route here, we need to increase the route_number
+        if hasattr(client, 'route_number'):
+            client.route_number += 1

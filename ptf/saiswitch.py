@@ -55,7 +55,6 @@ def generate_ip_addr(no_of_addr, ipv6=False):
 
         yield ip_addr
 
-
 def generate_mac_list(no_of_addr):
     '''
     Generate list of different mac addresses
@@ -92,8 +91,11 @@ class AvailableIPv4RouteEntryTest(PlatformSaiHelper):
         self.available_v4_host_routes = None
         self.available_v6_host_routes = None
 
+    def runTest(self):
+        self.checkDataCreation()
+        self.checkAmount()
 
-    def check_data_creation(self):
+    def checkDataCreation(self):
         '''
         Verifies creation of maximum number of IPv4 route entries.
         '''
@@ -107,71 +109,63 @@ class AvailableIPv4RouteEntryTest(PlatformSaiHelper):
         self.routes = dict()
         mask = '/32'
         ip_add = generate_ip_addr(max_route_entry + 100)
+        try:
+            self.neigh_entry = sai_thrift_neighbor_entry_t(
+                    self.switch_id, self.port10_rif, sai_ipaddress('10.10.10.1'))
+            self.neigh = sai_thrift_create_neighbor_entry(
+                    self.client, self.neigh_entry, dst_mac_address='00:11:22:33:44:55')
+            self.nhop = sai_thrift_create_next_hop(
+                self.client,
+                ip=sai_ipaddress('10.10.10.1'),
+                router_interface_id=self.port10_rif,
+                type=SAI_NEXT_HOP_TYPE_IP)
+            self.assertNotEqual(self.nhop, SAI_NULL_OBJECT_ID)
 
-        self.neigh_entry = sai_thrift_neighbor_entry_t(
-                self.switch_id, self.port10_rif, sai_ipaddress('10.10.10.1'))
-        self.neigh = sai_thrift_create_neighbor_entry(
-                self.client, self.neigh_entry, dst_mac_address='00:11:22:33:44:55')
-        self.nhop = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('10.10.10.1'),
-            router_interface_id=self.port10_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertNotEqual(self.nhop, SAI_NULL_OBJECT_ID)
+            self.route_number = 0
+            max_host_route = 0
+            self.switch_helper.create_route_entry_from_default_vrf(self)
+            while self.route_number < max_route_entry:
+                ip_p_m = sai_ipprefix(next(ip_add) + mask)
 
-        self.route_number = 0
-        max_host_route = 0
-        self.switch_helper.create_route_entry_from_default_vrf(self)
-        while self.route_number < max_route_entry:
-            ip_p_m = sai_ipprefix(next(ip_add) + mask)
+                # check if ip repeat, then get next ip
+                if str(ip_p_m) in self.routes:
+                    continue
 
-            # check if ip repeat, then get next ip
-            if str(ip_p_m) in self.routes:
-                continue
+                route_entry = sai_thrift_route_entry_t(
+                    vr_id=self.default_vrf,
+                    destination=ip_p_m)
+                status = sai_thrift_create_route_entry(
+                    self.client, route_entry, next_hop_id=self.nhop)
 
-            route_entry = sai_thrift_route_entry_t(
-                vr_id=self.default_vrf,
-                destination=ip_p_m)
-            status = sai_thrift_create_route_entry(
-                self.client, route_entry, next_hop_id=self.nhop)
+                if status == SAI_STATUS_SUCCESS:
+                    self.routes.update({str(ip_p_m): route_entry})
+                    self.route_number += 1
+                elif status == SAI_STATUS_ITEM_ALREADY_EXISTS:
+                    continue
+                elif mask == '/32':  # when host table is full change to LPM
+                    print("%s host routes have been created" % self.route_number)
+                    max_host_route = self.route_number
+                    self.available_v4_host_routes = max_host_route
+                    mask = '/30'
+                    continue
+                else:
+                    self.fail("Route creation failed after creating %d "
+                                "entries, status %u" % (self.route_number, status))
 
-            if status == SAI_STATUS_SUCCESS:
-                self.routes.update({str(ip_p_m): route_entry})
-                self.route_number += 1
-            elif status == SAI_STATUS_ITEM_ALREADY_EXISTS:
-                continue
-            elif mask == '/32':  # when host table is full change to LPM
-                print("%s host routes have been created" % self.route_number)
-                max_host_route = self.route_number
-                self.available_v4_host_routes = max_host_route
-                mask = '/30'
-                continue
-            else:
-                self.fail("Route creation failed after creating %d "
-                            "entries, status %u" % (self.route_number, status))
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_ipv4_route_entry=True)
+                self.assertEqual(attr["available_ipv4_route_entry"],
+                                    max_route_entry - self.route_number)
+            ip_add.close()
+        finally:
+            for ip_p_m in self.routes:
+                sai_thrift_remove_route_entry(self.client, self.routes.get(ip_p_m))
+            sai_thrift_remove_next_hop(self.client, self.nhop)  
 
-            attr = sai_thrift_get_switch_attribute(
-                self.client, available_ipv4_route_entry=True)
-            self.assertEqual(attr["available_ipv4_route_entry"],
-                                max_route_entry - self.route_number)
-        ip_add.close()
-
-
-    def tearDown(self):
-        for ip_p_m in self.routes:
-            sai_thrift_remove_route_entry(self.client, self.routes.get(ip_p_m))
-        sai_thrift_remove_next_hop(self.client, self.nhop)
-
-
-    def check_amount(self):
+    def checkAmount(self):
         attr = sai_thrift_get_switch_attribute(
             self.client, available_ipv4_route_entry=True)
         self.assertEqual(attr["available_ipv4_route_entry"], 0)
-
-
-    def runTest(self):
-        self.check_data_creation()
-        self.check_amount()
 
 
 class AvailableIPv6RouteEntryTest(PlatformSaiHelper):
@@ -183,8 +177,11 @@ class AvailableIPv6RouteEntryTest(PlatformSaiHelper):
         self.available_v4_host_routes = None
         self.available_v6_host_routes = None
 
+    def runTest(self):
+        self.checkDataCreation()
+        self.checkAmount()
 
-    def check_data_creation(self):
+    def checkDataCreation(self):
         '''
         Verifies creation of maximum number of IPv6 route entries.
         '''
@@ -196,80 +193,72 @@ class AvailableIPv6RouteEntryTest(PlatformSaiHelper):
         print("Available IPv6 route entries: %d" % max_route_entry)
 
         self.available_v6_host_routes = max_route_entry
-        routes = dict()
+        self.routes = dict()
         mask = '/128'
         ip_add = generate_ip_addr(max_route_entry + 100, ipv6=True)
+        try:
+            self.neigh_entry = sai_thrift_neighbor_entry_t(
+                self.switch_id, self.port10_rif, sai_ipaddress('2001:0db8:1::1'))
+            self.neigh = sai_thrift_create_neighbor_entry(
+                self.client, self.neigh_entry, dst_mac_address='00:11:22:33:44:55')
+            self.nhop = sai_thrift_create_next_hop(
+                self.client,
+                ip=sai_ipaddress('2001:0db8:1::1'),
+                router_interface_id=self.port10_rif,
+                type=SAI_NEXT_HOP_TYPE_IP)
+            self.assertNotEqual(self.nhop, SAI_NULL_OBJECT_ID)
 
-        self.neigh_entry = sai_thrift_neighbor_entry_t(
-            self.switch_id, self.port10_rif, sai_ipaddress('2001:0db8:1::1'))
-        self.neigh = sai_thrift_create_neighbor_entry(
-            self.client, self.neigh_entry, dst_mac_address='00:11:22:33:44:55')
-        nhop = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('2001:0db8:1::1'),
-            router_interface_id=self.port10_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertNotEqual(nhop, SAI_NULL_OBJECT_ID)
+            route_number = 0
+            max_host_route = 0
+            self.switch_helper.create_route_entry_from_default_vrf(self)
+            while route_number < max_route_entry:
+                ip_p_m = sai_ipprefix(next(ip_add) + mask)
 
-        route_number = 0
-        max_host_route = 0
-        self.switch_helper.create_route_entry_from_default_vrf(self)
-        while route_number < max_route_entry:
-            ip_p_m = sai_ipprefix(next(ip_add) + mask)
+                #  check if ip repeat, then get next ip
+                if str(ip_p_m) in self.routes:
+                    continue
 
-            #  check if ip repeat, then get next ip
-            if str(ip_p_m) in routes:
-                continue
+                route_entry = sai_thrift_route_entry_t(
+                    switch_id=self.switch_id,
+                    vr_id=self.default_vrf,
+                    destination=ip_p_m)
+                status = sai_thrift_create_route_entry(
+                    self.client, route_entry, next_hop_id=self.nhop)
 
-            route_entry = sai_thrift_route_entry_t(
-                switch_id=self.switch_id,
-                vr_id=self.default_vrf,
-                destination=ip_p_m)
-            status = sai_thrift_create_route_entry(
-                self.client, route_entry, next_hop_id=nhop)
+                if status == SAI_STATUS_SUCCESS:
+                    self.routes.update({str(ip_p_m): route_entry})
+                    route_number += 1
+                elif status == SAI_STATUS_ITEM_ALREADY_EXISTS:
+                    continue
+                elif mask == '/128':  # when host table is full change to LPM
+                    print("%s host routes have been created" % route_number)
+                    max_host_route = route_number
+                    self.available_v6_host_routes = max_host_route
+                    mask = '/120'
+                    continue
+                elif mask == '/120':  # when LPM table is full change to LPM64
+                    print("%s host + LPM routes have been created so far"
+                            % route_number)
+                    mask = '/64'
+                    continue
+                else:
+                    self.fail("Route creation failed after creating %d "
+                                "entries, status %u" % (route_number, status))
 
-            if status == SAI_STATUS_SUCCESS:
-                routes.update({str(ip_p_m): route_entry})
-                route_number += 1
-            elif status == SAI_STATUS_ITEM_ALREADY_EXISTS:
-                continue
-            elif mask == '/128':  # when host table is full change to LPM
-                print("%s host routes have been created" % route_number)
-                max_host_route = route_number
-                self.available_v6_host_routes = max_host_route
-                mask = '/120'
-                continue
-            elif mask == '/120':  # when LPM table is full change to LPM64
-                print("%s host + LPM routes have been created so far"
-                        % route_number)
-                mask = '/64'
-                continue
-            else:
-                self.fail("Route creation failed after creating %d "
-                            "entries, status %u" % (route_number, status))
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_ipv6_route_entry=True)
+                self.assertEqual(attr["available_ipv6_route_entry"],
+                                    max_route_entry - route_number)
+            ip_add.close()
+        finally:
+            for ip_p_m in self.routes:
+                sai_thrift_remove_route_entry(self.client, self.routes.get(ip_p_m))
+            sai_thrift_remove_next_hop(self.client, self.nhop)
 
-            attr = sai_thrift_get_switch_attribute(
-                self.client, available_ipv6_route_entry=True)
-            self.assertEqual(attr["available_ipv6_route_entry"],
-                                max_route_entry - route_number)
-        ip_add.close()
-
-
-    def tearDown(self):
-        for ip_p_m in self.routes:
-            sai_thrift_remove_route_entry(self.client, self.routes.get(ip_p_m))
-        sai_thrift_remove_next_hop(self.client, self.nhop)
-
-
-    def check_amount(self):
+    def checkAmount(self):
         attr = sai_thrift_get_switch_attribute(
             self.client, available_ipv4_route_entry=True)
         self.assertEqual(attr["available_ipv4_route_entry"], 0)
-
-
-    def runTest(self):
-        self.check_data_creation()
-        self.check_amount()
 
 
 class SwitchAttrTest(SaiHelper):
