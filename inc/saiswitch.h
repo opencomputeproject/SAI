@@ -326,6 +326,177 @@ typedef enum _sai_switch_failover_config_mode_t
 } sai_switch_failover_config_mode_t;
 
 /**
+ * @brief Defines tunnel attributes at switch level.
+ * SAI_OBJECT_TYPE_SWITCH_TUNNEL object provides
+ * per tunnel type global configuration.
+ * SAI_OBJECT_TYPE_TUNNEL object configuration
+ * overrides the switch scoped global configuration.
+ */
+typedef enum _sai_switch_tunnel_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_SWITCH_TUNNEL_ATTR_START,
+
+    /**
+     * @brief Tunnel type key
+     *
+     * @type sai_tunnel_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY | KEY
+     * @isresourcetype true
+     */
+    SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE = SAI_SWITCH_TUNNEL_ATTR_START,
+
+    /**
+     * @brief Packet action when a packet ingress and gets routed back to same tunnel
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_FORWARD
+     */
+    SAI_SWITCH_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION,
+
+    /* Tunnel encap attributes */
+
+    /**
+     * @brief Tunnel encap ECN mode
+     *
+     * @type sai_tunnel_encap_ecn_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_TUNNEL_ATTR_TUNNEL_ENCAP_ECN_MODE,
+
+    /**
+     * @brief Tunnel encap ECN mappers only
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_TUNNEL_ATTR_ENCAP_MAPPERS,
+
+    /* Tunnel decap attributes */
+
+    /**
+     * @brief Tunnel decap ECN mode
+     *
+     * @type sai_tunnel_decap_ecn_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TUNNEL_DECAP_ECN_MODE_STANDARD
+     */
+    SAI_SWITCH_TUNNEL_ATTR_TUNNEL_DECAP_ECN_MODE,
+
+    /**
+     * @brief Tunnel decap ECN mappers only
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @default empty
+     */
+    SAI_SWITCH_TUNNEL_ATTR_DECAP_MAPPERS,
+
+    /**
+     * @brief Tunnel VXLAN UDP source port mode
+     *
+     * @type sai_tunnel_vxlan_udp_sport_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_EPHEMERAL
+     */
+    SAI_SWITCH_TUNNEL_ATTR_TUNNEL_VXLAN_UDP_SPORT_MODE,
+
+    /**
+     * @brief Tunnel UDP source port
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_SWITCH_TUNNEL_ATTR_TUNNEL_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
+     */
+    SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT,
+
+    /**
+     * @brief Tunnel UDP source port mask
+     *
+     * Sport mask defining the number of least significant bits
+     * reserved for the calculated hash value. 0 means a fixed value.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_SWITCH_TUNNEL_ATTR_TUNNEL_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
+     */
+    SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT_MASK,
+
+    /**
+     * @brief Enable TC AND COLOR -> DSCP MAP on tunnel at encapsulation (access-to-network) node to remark the DSCP in tunnel header
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP,
+
+    /**
+     * @brief Enable TC -> Queue MAP on tunnel encap
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on tunnel.
+     * Default no map, i.e. packets are queued with static mapping.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_TUNNEL_ATTR_ENCAP_QOS_TC_TO_QUEUE_MAP,
+
+    /**
+     * @brief Enable DSCP -> TC MAP on tunnel at termination (Network-to-access) node.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_TUNNEL_ATTR_DECAP_QOS_DSCP_TO_TC_MAP,
+
+    /**
+     * @brief Enable TC -> Priority Group MAP
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * Default no map
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_TUNNEL_ATTR_DECAP_QOS_TC_TO_PRIORITY_GROUP_MAP,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_SWITCH_TUNNEL_ATTR_END,
+
+    /** Custom range base value */
+    SAI_SWITCH_TUNNEL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_SWITCH_TUNNEL_ATTR_CUSTOM_RANGE_END
+
+} sai_switch_tunnel_attr_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
  */
