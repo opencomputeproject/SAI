@@ -2757,7 +2757,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NAT_EVENT_NOTIFY,
 
     /**
-     * @brief Number of ECMP members supported by switch
+     * @brief Number of ECMP members supported across the all nexthop groups by switch
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
