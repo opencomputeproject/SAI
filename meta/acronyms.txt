@@ -85,6 +85,8 @@ NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
 NPU - Numeric Processing Unit
 NRZ - Non Return to Zero
+NTPCLIENT - Network Time Protocol Client
+NTPSERVER - Network Time Protocol Server
 NVGRE - Network Virtualization using Generic Routing Encapsulation
 OAM - Operations Administration and Maintenance
 OUI - Organizationally Unique Identifier
