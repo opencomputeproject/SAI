@@ -2006,6 +2006,8 @@ typedef enum _sai_acl_entry_attr_t
 
     /**
      * @brief SCI value in MACsec packet SecTAG
+     * The MAC address of SCI is stored in the lowest memory address,
+     * The port id of SCI is stored in the highest memory address.
      *
      * @type sai_acl_field_data_t sai_uint64_t
      * @flags CREATE_AND_SET

@@ -612,6 +612,8 @@ typedef enum _sai_macsec_sc_attr_t
 
     /**
      * @brief SCI value for this Secure Channel, carried in MACsec packet SecTAG.
+     * The MAC address of SCI is stored in the lowest memory address,
+     * The port id of SCI is stored in the highest memory address.
      *
      * @type sai_uint64_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -825,6 +827,7 @@ typedef enum _sai_macsec_sa_attr_t
 
     /**
      * @brief SSCI value for this Secure Association
+     * Host Byte Order.
      *
      * Valid when SAI_MACSEC_SC_ATTR_MACSEC_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_128 or SAI_MACSEC_SC_ATTR_MACSEC_CIPHER_SUITE == SAI_MACSEC_CIPHER_SUITE_GCM_AES_XPN_256.
      *
