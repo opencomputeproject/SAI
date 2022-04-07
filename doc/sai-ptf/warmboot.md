@@ -2,36 +2,41 @@
 
 | **Title** | **SAI-PTF for Warm reboot** |
 | --- | --- |
-| **Authors** | **Microsoft** |
+| **Authors** | **Richard Yu** |
 | **Status** | **In review** |
-| **Type** | **Richard Yu** |
 | **Created** | **22/03/2022** |
 | **Modified** | **22/03/2022** |
 | **SAI-Version** | **V1.7** |
 
-## Overriew
+## Overview
 
 ### SAI-PTF for Warm reboot
-In order to use the SAI-PTF structure to verify the functionality in warm reboot scraniro, we need to add the following feature into the SAI-PTF structure
-1. Light weight docker which can expose the sai interface to invoke the sai interface remotely
-1. PTF test case can support differernt DUT running status with its different process - setup, runTest and teardown
-1. one test case can run in different DUT running status - before restart, starting and started
-1. Reuse already existing functional test cases and re-organize them into warm reboot structure
+In order to use the SAI-PTF structure to verify the functionality in a warm reboot scenario, we need to add the following feature to the SAI-PTF structure
+1. Lightweight docker which can expose theSAinterface to invoke theSAinterface remotely
+1. PTF test case can support different DUT running statuses with its different processes - setUp, runTest, and tearDown
+1. one test case can run in different DUT running status - before the restart, starting, and started
+1. Reuse already existing functional test cases and re-organize them into a warm reboot structure
 
 ## Saiserver container and test structure
-In order to test SAI interfaces, we need a light weight docker container which can help expose the SAI interfaces for a remote invocation.
-Test bed structure as below.
-### Test bed
-Those test will be run on the test bed structure as below, the components are:
-* PTF - running in a server which can connect to the target DUT
+In order to test SAI interfaces, we need a lightweight docker container that can help expose the SAI interfaces for a remote invocation.
+Testbed structure as below.
+
+### Test Topology
+For SAI-PTF, it will use a non-topology network structure for the sai testing. 
+
+![Device_topology](img/SAI_PTF_Topology.jpg)
+### Testbed
+Those tests will be run on the testbed structure as below, the components are:
+* PTF - running in a server that can connect to the target DUT
 * SAI server - running on a dut
    ![Device_topology](img/Device_topology.jpg)
-*p.s. cause the sai testing will not depends on any sonic components, then there will be no specifical topology(T0 T1 T2) for testing.*
+*p.s. cause theSAtesting will not depend on any sonic components, then there will be no specific topology(T0 T1 T2) for testing.*
 ### Test Structure
 ---
 ![Components](img/Component_topology.jpg)
-Test structure the chart above, components are:
-* PTF container - run test cases, and use a RPC client to invoke the SAI interfaces on DUT
+
+Test structure in the chart above, components are:
+* PTF container - run test cases, and use an RPC client to invoke the SAI interfaces on DUT
 * SAI Server container - run inside DUT/switch, which exposes the SAI SDK APIs from the libsai
 * SAI-Qualify - Test controller, which is used to deploy and control the test running, meanwhile, manipulate the DUT on warm reboot.
 
@@ -40,21 +45,21 @@ Test structure the chart above, components are:
 [Example: Start SaiServer Docker In DUT](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/sai_quality/ExampleStartSaiServerDockerInDUT.md)*
 
 
-## PTF-SAI test supports DUT differernt running stage during warm reboot
-For PTF-SAI structure, it use three different method for three different steps in test
+## PTF-SAI test supports DUT different running stage during warm reboot
+For PTF-SAI structure, it uses three different methods for three different steps in a test
 - setUp, make settings
 - runTest, run test
 - tearDown, remove the setting and clear the test environment
 
 During a warm reboot, we need to split those three method in PTF-Test into three different stage
 - Before start, three methods
-  - setup, runTest, tearDown 
+  - setUp, runTest, tearDown 
 - Starting, three methods
   - setUp_starting, test_starting, tearDown_starting
-- After Starting, three methods.
+- After Starting, three methods
   - setUp_post_start, test_post_start, tearDown_post_start
 
-All those method extended by tag
+All those methods extended by tag
 ```
 @warm_setup
 @warm_test
@@ -114,14 +119,14 @@ there is the sample code
     def tearDown_post_start(self):
         print("tearDown_post_start WarmL2SanityTest")
         print("Skip the teardown after warm boot testing")
-   ```
+ ```
 
 ### Code for extending the method in SAI-PTF
 There is the code logic for splitting the runTest method
 ```python
 def warm_test(f):
     """
-    Method decorator for the method on warm testing.
+    Method decorator for the method of warm testing.
     
     Depends on parameters [test_reboot_mode] and [test_reboot_stage].
     Runs different method, test_starting, setUp_post_start and runTest
@@ -135,15 +140,15 @@ def warm_test(f):
     return test_director
 ```
 
-## Support DUT differernt running stage during warm reboot
+## Support DUT different running stages during warm reboot
 During a warm reboot, we can split the DUT into three different stage
-- Before start, in this stage, we will make some configuration or brenchmark on the DUT, and use those setting to check the DUT functionality during warm reboot. All the preparation for the warmboot will be finished.
-- Starting, in this stage, DUT will run a warm-reboot command and not start any other docker services and sai-sdk will not start. We expect all the traffic will behivor as normal.
-- After Starting, in this stage, sai-sdk will start, data will be restore from the backup file.
+- Before starting, in this stage, we will make some configurations or benchmark on the DUT, and use those setting to check the DUT functionality during a warm reboot. All the preparation for the warm reboot will be finished.
+- Starting, in this stage, DUT will run a warm-reboot command and not start any other docker services and sai-sdk will not start. We expect all the traffic will behave as normal.
+- After Starting, in this stage, sai-sdk will start, and data will be restored from the backup file.
 
 In order to do that, we need the followings.
 
-### Setup the warmboot - Before warm reboot
+### Setup the warm reboot - Before the warm reboot
 Before starting the test for the warm reboot, we need the following steps
 1. remove all the services which can start from the reboot
 For remove all the sevices we can use the scipt in [all_service.sh](../../ptf/scripts/all_service.sh)
@@ -169,12 +174,12 @@ In order to start the PTF tests, we need to copy the test cases into PTF (refer 
    ```
    *p.s. Need to add the parameters test_reboot_mode='warm';test_reboot_stage='setup'*
 
-4. trigger the warm shutdown automatically after runTest method with @warm_test
+4. trigger the warm shut down automatically after the runTest method with @warm_test
 The code for making the warm shutdown is
    ```python
     def warm_shutdown(self):
         """
-        Shut down swithc in warm boot mode
+        Shut down switch in warm boot mode
         """
         print("shutdown the swich in warm mode")
         sai_thrift_set_switch_attribute(self.client, restart_warm=True)
@@ -186,7 +191,7 @@ The code for making the warm shutdown is
 
 ### Starting DUT - During warm reboot
 1. warm-reboot the DUT
-   we can use the shell [sai_warmboot.sh]()../../ptf/scripts/sai_warmboot.sh)
+   we can use the shell [sai_warmboot.sh](../../ptf/scripts/sai_warmboot.sh)
    ```shell
    sai_warmboot.sh
    ```
@@ -215,7 +220,7 @@ The code for making the warm shutdown is
    *p.s. Need to add the parameters test_reboot_mode='warm';test_reboot_stage='post'*
 
 
-## Example of re-organize the case into warm reboot
-In order to reuse the existing test cases in warm reboot, we need to re-organize the existing test cases into the warm reboot structure.
+## Example of re-organizing the case into a warm reboot
+In order to reuse the existing test cases in a warm reboot, we need to re-organize the existing test cases into the warm reboot structure.
 
-There is a sample for re-organize the test https://github.com/opencomputeproject/SAI/pull/1440
+There is a sample for re-organizing the test https://github.com/opencomputeproject/SAI/pull/1440
