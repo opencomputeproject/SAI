@@ -1,0 +1,145 @@
+[%- unsupported_fields = '(list|data|range|string|time|capability|entry|status|session|event)' #TODO: all of them should be supported -%]
+
+[%- helper_supported_fields = '(mac|address|ip4_t|prefix|nat_type)' -%]
+
+[%- helper_supported_vector_fields = '(ip6_t)' -%]
+
+[%- implemented_supported_fields = '(nat_entry)' -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK helper_functions -%]
+
+
+    [%- PROCESS special_helper_functions -%]
+    [%- FOREACH api IN apis.keys.sort -%]
+        [%- IF apis.$api.functions.size AND api != 'common' %]
+
+  // [% api %] API helper functions
+            [%- FOREACH object IN apis.$api.objects.keys.sort %]
+
+
+                [%- PROCESS parse_attr_helper_function_header %] {
+
+                [%- PROCESS parse_attr_helper_function_body -%]
+}
+
+
+                [%- PROCESS deparse_attr_helper_function_header %] {
+
+                [%- PROCESS deparse_attr_helper_function_body -%]
+}
+            [%- END -%]
+            [%- FOREACH struct IN apis.$api.structs %]
+
+
+                [%- PROCESS struct_helper_function_header %] {
+
+                [%- PROCESS struct_helper_function_body -%]
+}
+            [%- END -%]
+        [%- END -%]
+    [%- END -%]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK parse_attr_helper_function_header -%]
+[% indent = ' '; indent = indent.repeat(object.length) -%]
+void sai_thrift_parse_[% object %]_attributes(const std::vector<sai_thrift_attribute_t> &thrift_attr_list,
+                                  [% indent %]sai_attribute_t *attr_list)
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK parse_attr_helper_function_body -%]
+  std::vector<sai_thrift_attribute_t>::const_iterator it =
+      thrift_attr_list.begin();
+  sai_thrift_attribute_t attribute;
+
+  if (attr_list == 0) {
+      return;
+  }
+
+  for (uint32_t i = 0; i < thrift_attr_list.size(); i++, it++) {
+    attribute = (sai_thrift_attribute_t)*it;
+    attr_list[i].id = attribute.id;
+    convert_attr_thrift_to_sai(SAI_OBJECT_TYPE_[% object.upper %], attribute, &attr_list[i]);
+  }
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK deparse_attr_helper_function_header -%]
+[% indent = ' '; indent = indent.repeat(object.length) -%]
+void sai_thrift_deparse_[% object %]_attributes(sai_attribute_t *attr_list,
+                                   [% indent %] uint32_t attr_count,
+                                   [% indent %] std::vector<sai_thrift_attribute_t> &thrift_attr_list)
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK deparse_attr_helper_function_body -%]
+  std::vector<sai_thrift_attribute_t>::const_iterator it =
+      thrift_attr_list.begin();
+
+  for (uint32_t i = 0; i < attr_count; i++, it++) {
+    sai_thrift_attribute_t attribute;
+    convert_attr_sai_to_thrift(SAI_OBJECT_TYPE_[% object.upper %], attr_list[i], attribute);
+    thrift_attr_list.push_back(attribute);
+  }
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK struct_helper_function_header -%]
+[% indent = ' '; indent = indent.repeat(struct.short_name.length) -%]
+void sai_thrift_parse_[% struct.short_name %](const [% struct.thrift_name %] &thrift_[% struct.short_name %],
+                       [% indent %][% struct.name %] *[% struct.short_name %])
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK struct_helper_function_body -%]
+
+    [%- FOREACH member IN struct.members %]
+        [%- IF dbg %]
+  // type: [% member.type.name %]
+
+        [%- END -%]
+
+        [%- IF member.type.thrift_name.match(helper_supported_fields) -%]
+  // using manual converter
+  [% member.type.thrift_name %]_parse(thrift_[% struct.short_name %].[% member.name %], &[% struct.short_name %]->[% member.name %]);
+
+        [%- ELSIF member.type.thrift_name.match(helper_supported_vector_fields) -%]
+  // using manual converter
+  [% member.type.thrift_name %]_parse(thrift_[% struct.short_name %].[% member.name %], [% struct.short_name %]->[% member.name %]);
+
+        [%- ELSIF member.type.thrift_name.match(implemented_supported_fields) -%]
+  // using existing converter
+  sai_thrift_parse_[%- member.type.short_name -%](thrift_[% struct.short_name %].[% member.name %], &[% struct.short_name %]->[% member.name %]);
+
+        [%- ELSE -%]
+        [%- IF member.type.thrift_name.match(unsupported_fields) -%]
+#ifdef UNSUPPORTED /* complex struct members are not supported yet */
+
+        [%- END -%]
+  [% struct.short_name %]->[% member.name %] = thrift_[% struct.short_name %].[% member.name %];
+
+        [%- IF member.type.thrift_name.match(unsupported_fields) -%]
+#endif
+
+        [%- END -%]
+        [%- END -%]
+    [%- END -%]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK special_helper_functions -%]
+void sai_thrift_parse_buffer(const std::string &thrift_buffer,
+                             void *buffer) {
+  /* not supported yet */
+}
+[% END -%]

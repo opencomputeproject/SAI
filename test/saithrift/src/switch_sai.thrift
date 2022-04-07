@@ -48,7 +48,7 @@ struct sai_thrift_vlan_port_t {
     2: sai_thrift_vlan_tagging_mode_t tagging_mode;
 }
 
-union sai_thrift_ip_t {
+struct sai_thrift_ip_t {
     1: sai_thrift_ip4_t ip4;
     2: sai_thrift_ip6_t ip6;
 }
@@ -79,7 +79,7 @@ struct sai_thrift_s32_list_t {
     2: list<i32> s32list;
 }
 
-union sai_thrift_acl_mask_t {
+struct sai_thrift_acl_mask_t {
     1: byte u8;
     2: byte s8;
     3: i16 u16;
@@ -91,7 +91,7 @@ union sai_thrift_acl_mask_t {
     9: sai_thrift_ip6_t ip6;
 }
 
-union sai_thrift_acl_data_t {
+struct sai_thrift_acl_data_t {
     1: byte u8;
     2: byte s8;
     3: i16 u16;
@@ -112,7 +112,7 @@ struct sai_thrift_acl_field_data_t
     3: sai_thrift_acl_data_t data;
 }
 
-union sai_thrift_acl_parameter_t {
+struct sai_thrift_acl_parameter_t {
     1: byte u8;
     2: byte s8;
     3: i16 u16;
@@ -161,7 +161,7 @@ struct sai_thrift_fdb_values_t {
     2: sai_thrift_fdb_entry_t thrift_fdb_entry;
 }
 
-union sai_thrift_attribute_value_t {
+struct sai_thrift_attribute_value_t {
     1:  bool booldata;
     2:  string chardata;
     3:  byte u8;
@@ -207,7 +207,7 @@ struct sai_thrift_attribute_list_t {
     2: i32 attr_count; // redundant
 }
 
-union sai_thrift_result_data_t {
+struct sai_thrift_result_data_t {
     1: sai_thrift_object_list_t objlist;
     2: sai_thrift_object_id_t oid;
     3: i16 u16;

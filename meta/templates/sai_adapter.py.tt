@@ -1,0 +1,487 @@
+[% PROCESS "$templates_dir/sai_adapter_utils.tt" -%]
+[%- unsupported_functions = '(bulk|send_hostif|recv_hostif|hostif_packet|mdio|register)' #TODO: all of them should be supported -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK arguments_docstring %]
+    Args:
+        client (Client): SAI RPC client
+    [%- FOREACH arg IN function.adapter_args %]
+        [% arg.name %]([% arg.type.python_name %]): [% arg.type.short_name %] [% IF arg.in %]IN[% END; IF arg.in AND arg.out %]/[% END; IF arg.out %]OUT[% END %] argument
+    [%- END -%]
+    [%- IF has_attrs %]
+
+        For the other parameters, see documentation of [% function.object %] [% function.operation.upper %] attributes.
+    [%- END -%]
+
+    [%- IF has_body %]
+
+    Returns:
+        [%- IF function.operation == 'get' %]
+        Dict[str, [% function.rpc_return.type.subtype.python_name %]]: attrs
+        [%- ELSIF function.operation == 'stats' %]
+        Dict[str, [% function.rpc_return.type.subtype.python_name %]]: stats
+        [%- ELSIF function.rpc_return.type.name == 'void' AND NOT function.rpc_return.is_list %]
+        status: the error code
+	[%- ELSE %]
+        [% function.rpc_return.type.python_name %]: [% function.rpc_return.name %]
+	[%- END -%]
+    [%- ELSE -%]
+        [%- IF function.operation == 'create' AND NOT function.rpc_return.is_list %]
+
+    Returns:
+        [% function.rpc_return.type.python_name %]: [% function.rpc_return.name %]
+        [%- ELSIF function.rpc_return.type.name == 'void' AND NOT function.rpc_return.is_list %]
+
+    Returns:
+        status: the error code
+	[%- END -%]
+    [%- END %]
+
+    Raises:
+        sai_thrift_exception: If an error occured
+                              and sai_adapter.CATCH_EXCEPTIONS is False.
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK function_docstring -%]
+    """
+    [% function.name %]() -
+    [%- IF function.name.match(unsupported_functions) -%]
+ UNSUPPORTED
+    [%- ELSIF function.operation == 'get' -%]
+ 'get attribute' RPC client function implementation.
+    [%- ELSE -%]
+ RPC client function implementation.
+    [%- END -%]
+    [%- IF function.operation == 'get' %]
+
+    To get a specified attribute, set the argument to 'True'.
+    If getting attribute requires specified input (like
+    number of list elements), then set the correct value (e.g.
+    empty list of specified number of elements) instead.
+    [%- ELSIF function.operation == 'set' %]
+
+    Note, that only one attribute can be set at once.
+    [%- END %]
+
+    [%- PROCESS arguments_docstring %]
+    """
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK function_header -%]
+    [%- indent = ' '; br = "\n     " _ indent.repeat(function.thrift_name.length) %]
+def [% function.thrift_name %](client
+    [%- # First, function arguments -%]
+    [%- FOREACH arg IN function.adapter_args -%]
+,[% br %][% arg.name %]
+    [%- END -%]
+    [%- # Then mandatory attributes -%]
+    [%- IF function.operation == 'create' %]
+        [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.mandatory -%]
+,[% br %][% attr.simple_name %][% UNLESS mandatory_attrs %]=None[% END %]
+        [%- END -%]
+    [%- END -%]
+    [%- # Finally all attributes assigned to the specific operation (like 'get' or 'create') -%]
+    [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.${function.operation} -%]
+,[% br %][% attr.simple_name %]=None
+    [%- END -%]
+):
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK declare_variables -%]
+    [%- # Declare variables that are not part of python interface -%]
+    [%- # but are required by thritft functions -%]
+    [%- FOREACH arg IN function.adapter_preprocessed_args -%]
+
+        [%- IF arg.is_list %]
+    [% arg.name %] = []
+        [%- ELSIF arg.is_attr %]
+    [% arg.name %] = None
+        [%- END -%]
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK initialize_attribute_from_value -%]
+    [%-  indentation = indentation || 1; tab = 4; indent = ' '; br = "\n     " _ indent.repeat(tab*indentation + variable.length + 21); indent = indent.repeat(tab*indentation) %]
+[% indent %][% variable %]_value = sai_thrift_attribute_value_t([% attr.typename %]=[% attr.simple_name %])
+[% indent %][% variable %] = sai_thrift_attribute_t(id=[% attr.name %],[% br %]value=[% variable %]_value)
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK append_listarg_with_attr %]
+    if [% attr.simple_name %] is not None:
+    [%- PROCESS initialize_attribute_from_value variable = arg.type.subtype.short_name indentation = 2 -%]
+        [% arg.name %].append([% variable %])
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK call_function -%]
+    [%- IF function.operation == 'get' or function.operation == 'stats' -%]
+[% function.rpc_return.name %] = 
+    [%- ELSIF function.rpc_return.type.name != 'void' -%]
+return 
+    [%- END -%]
+client.[% function.thrift_name %](
+[%- comma = 0; FOREACH rpcarg IN function.rpc_args %][% IF comma %], [% ELSE; comma = 1; END %][% rpcarg.name %][% END %])
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK try -%]
+    try:
+        [%- content -%]
+
+        [%- PROCESS catch_exception %]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK catch_exception -%]
+    except sai_thrift_exception as e:
+        status = e.status
+        if CATCH_EXCEPTIONS:
+    [%- IF function.operation == 'stats' %]
+            pass
+    [%- ELSIF function.operation == 'get' %]
+            return None
+    [%- ELSIF function.operation == 'create' AND function.rpc_return.type.name != 'void' %]
+            return SAI_NULL_OBJECT_ID
+    [%- ELSIF function.operation == 'create' %]
+            pass
+    [%- ELSE %]
+            return status
+    [%- END %]
+        else:
+            raise e
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK call_function_with_attr %]
+        if [% attr.simple_name %] is not None:
+    [%- IF arg.type.is_list; variable = arg.type.subtype.short_name; ELSE; variable = arg.name; END %]
+    [%- PROCESS initialize_attribute_from_value indentation = 3 -%]
+            [% PROCESS call_function %]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK append_listarg_with_empty_attr -%]
+    [%- variable = arg.type.subtype.short_name %]
+    if [% attr.simple_name %] is not None:
+        [% variable %] = sai_thrift_attribute_t(id=[% attr.name %])
+        [% arg.name %].append([% variable %])
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK initialize_sai_thrift_attribute_list -%]
+    [%- IF arg.is_attr_list %]
+    [% arg.name %] = sai_thrift_attribute_list_t(attr_list=[% arg.name %])
+    [%- END -%]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK append_listarg_with_attributes %]
+    [%- # First, process mandatory args -%]
+    [%- IF function.operation == 'create' %]
+        [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.mandatory %]
+            [%- PROCESS append_listarg_with_attr -%]
+        [%- END -%]
+    [%- END -%]
+    [%- # Now, process optional args -%]
+    [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.${function.operation} %]
+        [%- # For 'get' the value is usually 'True' which is invalid, we need the input information only for list attributes -%]
+        [%- IF function.operation == 'get' AND NOT attr.type.name.match('list|capability') -%]
+            [%- PROCESS append_listarg_with_empty_attr -%]
+        [%- ELSE -%]
+            [%- PROCESS append_listarg_with_attr -%]
+        [%- END -%]
+    [%- END -%]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK preprocess_attributes %]
+    [%- # For 'set attr' function we just do call the funtion for first argument -%]
+    [%- IF function.operation == 'set' -%]
+    global status
+    status = SAI_STATUS_SUCCESS
+
+
+        [%- WRAPPER try -%]
+            [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.${function.operation} -%]
+                [%- PROCESS call_function_with_attr -%]
+            [%- END %]
+
+        [%- END %]
+    [%- ELSE -%]
+        [%- PROCESS append_listarg_with_attributes -%]
+        [%- PROCESS initialize_sai_thrift_attribute_list -%]
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK postprocess_attributes %]
+    attrs = dict()
+
+    for attr in [% function.rpc_return.name %][% IF arg.is_attr_list %].attr_list[% END %]:
+    [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.${function.operation} %]
+        if attr.id == [% attr.name %]:
+            attrs["[% attr.name %]"] = attr.value.[% attr.typename %]
+            attrs["[% attr.simple_name %]"] = attr.value.[% attr.typename %]
+
+    [%- END -%]
+
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK preprocess_stats -%]
+
+    [%- FOREACH stat IN apis.$api.objects.${function.object}.stats.all %]
+    [% arg.name %].append([% stat.name %])
+    [%- END -%]
+
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK postprocess_stats %]
+    stats = dict()
+
+    [%- i = 0 %]
+    [%- FOREACH stat IN apis.$api.objects.${function.object}.stats.all %]
+    stats["[% stat.name %]"] = [% function.rpc_return.name %][[% i %]]
+        [%- i = i + 1 -%]
+    [%- END %]
+
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK preprocess_args %]
+    [%- # Basically we do it for each list variable, we assume we have one -%]
+    [%- FOREACH arg IN function.adapter_preprocessed_args -%]
+        [%- IF function.operation == 'stats' OR function.operation == 'clear' %]
+            [%- # For 'get stats' function create stats list -%]
+            [%- PROCESS preprocess_stats %]
+
+        [%- ELSIF function.operation != 'remove' %]
+            [%- # For 'create' and 'get' functions create list of arguments -%]
+            [%- PROCESS preprocess_attributes %]
+
+        [%- END -%]
+    [%- END -%]
+
+    [%- IF function.operation == 'stats' %]
+    [% function.rpc_return.name %] = [0] * [% apis.$api.objects.${function.object}.stats.all.size %]
+
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK postprocess_args %]
+    [%- # No loop like for preprocessing - just process return value -%]
+    [%- # For 'get attr' we create a dict -%]
+    [%- IF function.operation == 'get' -%]
+        [%- PROCESS postprocess_attributes %]
+    return attrs
+
+    [%- END -%]
+    [%- # For 'get stats' we create a dict -%]
+    [%- IF function.operation == 'stats' -%]
+        [%- PROCESS postprocess_stats %]
+    return stats
+
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK del_unused_args -%]
+    # No function call - delete all arguments
+    del client
+
+        [%- FOREACH arg IN function.adapter_args -%]
+    del [% arg.name %]
+
+        [%- END -%]
+
+    [%- IF apis.$api.objects.${function.object}.attrs.${function.operation}.size %]
+    # No function call - delete all attributes
+
+        [%- # First mandatory attributes -%]
+        [%- IF function.operation == 'create' -%]
+            [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.mandatory -%]
+    del [% attr.simple_name %]
+
+            [%- END -%]
+        [%- END -%]
+
+        [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.${function.operation} -%]
+    del [% attr.simple_name %]
+
+        [%- END -%]
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK return_from_empty_function -%]
+    global status
+    status = SAI_STATUS_NOT_SUPPORTED
+
+    if CATCH_EXCEPTIONS:
+    [%- IF function.operation == 'create' AND NOT function.rpc_return.is_list %]
+        return SAI_NULL_OBJECT_ID
+    [%- ELSIF function.operation != 'get' AND function.operation != 'stats' AND function.rpc_return.type.name == 'void' %]
+        return status
+    [%- ELSE %]
+        return None
+    [%- END %]
+    else:
+        raise sai_thrift_exception(status)
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK function_body -%]
+    [%- PROCESS decorate_method IF dev_utils -%]
+    [%- PROCESS function_header %]
+    [%- PROCESS function_docstring %]
+
+    [%- IF has_body -%]
+        [%- PROCESS declare_variables %]
+
+        [%- PROCESS preprocess_args -%]
+
+        [%- # Now, call the thrift function -%]
+        [%- IF function.operation != 'set' -%]
+    global status
+    status = SAI_STATUS_SUCCESS
+
+
+            [%- WRAPPER try -%] 
+
+        [% PROCESS call_function %]
+
+            [%- END %]
+
+        [%- END -%]
+
+        [%- # Return a status only if a function does not, and does not return something else -%]
+        [%- IF function.operation != 'get' AND function.operation != 'stats' AND function.rpc_return.type.name == 'void' %]
+    return status
+
+        [%- END -%]
+
+        [%- PROCESS postprocess_args -%]
+    [%- ELSE %]
+        [%- IF function.name.match(unsupported_functions) %]
+    # This function is UNSUPPORTED
+
+        [%- END %]
+
+        [%- PROCESS del_unused_args %]
+
+        [%- PROCESS return_from_empty_function %]
+
+    [%- END -%]
+
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- # The body of the file: -%]
+# AUTOGENERATED FILE! DO NOT EDIT
+
+"""
+Thrift SAI interface basic tests
+"""
+
+# pylint: disable=too-many-arguments,too-many-branches,global-statement
+# pylint: disable=too-many-return-statements,line-too-long,invalid-name
+
+[%- PROCESS dev_utils_imports IF dev_utils -%]
+
+from sai_thrift.ttypes import *
+from sai_thrift.sai_headers import *
+
+[%- # In the final version, the backward compatibility mode should be removed -%]
+[%- # and all exceptions should be catched by an application. %]
+# Since RPC server started to throw exception,
+# sai_adapter.CATCH_EXCEPTIONS can be set to True
+# to enable backward compatibility.
+# In order to catch exceptions and get error codes
+# in the application, it should be disabled.
+CATCH_EXCEPTIONS = True
+status = 0
+
+[%- PROCESS dev_utils IF dev_utils -%]
+
+[%- FOREACH api IN apis.keys.sort -%]
+    [%- IF apis.$api.functions.size %]
+
+# [% api %] API
+        [%- FOREACH function IN apis.$api.functions -%]
+        [%- has_attrs = apis.$api.objects.${function.object}.attrs.${function.operation}.size OR (function.operation == 'create' AND apis.$api.objects.${function.object}.attrs.mandatory) -%]
+        [%- has_body = (function.operation != 'set' OR has_attrs) AND NOT function.name.match(unsupported_functions) %]
+
+            [%- PROCESS function_body %]
+        [%- END -%]
+    [%- END -%]
+[% END -%]

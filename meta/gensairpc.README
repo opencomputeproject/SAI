@@ -1,0 +1,34 @@
+NAME
+    gensairpc.pl - generate RPC interface of SAI for PTF
+
+DESCRIPTION
+    This script generates RPC interface of SAI function for PTF tests. It
+    should be used after SAI interface update.
+
+    For more details see the development documentation (rpc/README.md).
+
+USAGE
+    In order to run, just call:
+
+      ./gensairpc.pl
+
+    Before committing it is a good idea to clean before generation:
+
+      ./gensairpc.pl --clean-meta
+
+    In order to generate debug files and avoid cleanup, use --dbg or --dump
+    flags. Use --experimental to generate extensions and experimental code.
+
+    For more information, use --help:
+
+      ./gensairpc.pl --help
+
+DEPENDENCIES
+    Ubuntu packages:
+
+      libtemplate-perl
+      libconst-fast-perl
+      libmoosex-aliases-perl
+      libnamespace-autoclean-perl
+      libgetopt-long-descriptive-perl
+

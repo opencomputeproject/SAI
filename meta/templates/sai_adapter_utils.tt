@@ -1,0 +1,172 @@
+[%- ######################################################################## -%]
+
+[%- BLOCK dev_utils_imports %]
+from __future__ import print_function
+from collections import defaultdict
+from collections import Counter
+from functools import wraps
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK dev_utils %]
+
+# dev utils
+
+[% PROCESS instance_counter %]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK instance_counter -%]
+def instance_counter(name=None, operation="other", log=False, zero=False):
+    """
+    Decorator that helps to count SAI object of 'name' instances,
+    basing on defined operations.
+    For "create", the correct ID should be returned by the called function.
+    For "remove", the ID is passed as the second argumentof the called
+    function.
+
+    Usage:
+        @instance_counter("vlan", "create")
+        def sai_thrift_create_vlan(client,
+                                   ...)
+            ...
+
+        @instance_counter("vlan", "remove")
+        def sai_thrift_remove_vlan(client,
+                                   vlan_oid):
+            ...
+
+        @instance_counter("vlan", "stats")
+        def sai_thrift_get_vlan_stats(client,
+                                      vlan_oid):
+            ...
+
+        print("All function calls:", instance_counter.calls)
+
+        print("All operations attempts:", instance_counter.operations)
+
+        print("All objects instances:", instance_counter.instances)
+
+        print("All objects created:", instance_counter.created)
+
+        print("All objects removed:", instance_counter.removed)
+
+        print("All objects failed to be removed:",
+              instance_counter.not_removed)
+
+        print("sai_thrift_create_vlan() calls:",
+              instance_counter.calls['sai_thrift_create_vlan'])
+
+        print("All operations on VLAN:",
+              instance_counter.operations['vlan'])
+
+        print("All attempts to get VLAN stats:",
+              instance_counter.operations['vlan']['stats'])
+
+        print("All attempts to create VLAN:",
+              instance_counter.operations['vlan']['create'])
+
+        print("All existing VLAN instances:",
+              instance_counter.instances['vlan'])
+
+        print("All SUCCESSFULLY created VLAN objects:",
+              instance_counter.created['vlan'])
+
+        print("All SUCCESSFULLY removed VLAN objects:",
+              instance_counter.removed['vlan'])
+
+        print("All VLAN objects removal failures:",
+              instance_counter.not_removed['vlan'])
+
+        print("VLAN create-delete delta:", instance_counter.created['vlan'] -
+              instance_counter.removed['vlan'])
+
+    Args:
+        name(Optional[str]): name of object
+        operation(str): the operation performed on the object (e.g. remove)
+        log(bool): decides whether the function should inform about calling it
+        zero(bool): decides whether the '0' counters should be kept
+    Returns:
+        Callable[[Callable[..., Any]], Callable[..., Any]]: decorator
+    """
+
+    def instance_counter_decorator(func):
+        """
+        count SAI object instances basing on function calls
+
+        Args:
+            func(Callable[..., Any]): the function to be decorated
+        Returns:
+            Callable[..., Any]: decorated function
+        """
+        @wraps(func)
+        def decorated(*args, **kwargs):
+            """
+            increment counts and call the original function
+
+            Args:
+                args(List): original args
+                kwargs(Dict): original kwargs
+            Returns:
+                retval(Any): the original return value
+            """
+            if log:
+                print("Calling " + func.__name__ + "()")
+
+            instance_counter.calls[func.__name__] += 1
+            instance_counter.operations[operation][name] += 1
+
+            retval = func(*args, **kwargs)
+
+            if name:
+                if retval and operation == "create":
+                    instance_counter.instances[name][retval] += 1
+                    instance_counter.created[name][retval] += 1
+
+                if operation == "remove" and isinstance(args[1], (int, long)):
+                    if retval == SAI_STATUS_SUCCESS:
+                        if instance_counter.instances[name][args[1]]:
+                            instance_counter.instances[name][args[1]] -= 1
+                        instance_counter.removed[name][args[1]] += 1
+                    else:
+                        instance_counter.not_removed[name][args[1]] += 1
+
+                # remove empty counters
+                if not zero:
+                    instance_counter.instances[name] += Counter()
+                    if not sum(instance_counter.instances[name].itervalues()):
+                        instance_counter.instances.pop(name)
+
+            return retval
+        return decorated
+    return instance_counter_decorator
+
+
+# All function calls
+instance_counter.calls = Counter()
+
+# All operations attempts
+instance_counter.operations = defaultdict(Counter)
+
+# Special create/remove counters
+instance_counter.instances = defaultdict(Counter)
+instance_counter.created = defaultdict(Counter)
+instance_counter.removed = defaultdict(Counter)
+instance_counter.not_removed = defaultdict(Counter)
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK decorate_method %]
+@instance_counter("[% function.object %]", "[% function.operation %]"[% IF dev_utils.match('log') %], log=True[% END %][% IF dev_utils.match('zero') %], zero=True[% END %])
+[%- END -%]
+
+[%- ######################################################################## -%]

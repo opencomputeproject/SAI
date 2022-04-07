@@ -1,0 +1,102 @@
+[%- ######################################################################## -%]
+
+[%- BLOCK define_const -%]
+
+  printf("#define %-54s \t0x%08X\n", "[% name %]", [% name %]);
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- # The body of the file: -%]
+/*******************************************************************************
+ * BAREFOOT NETWORKS CONFIDENTIAL & PROPRIETARY
+ *
+ * Copyright (c) 2021-present Intel Corporation.
+ *
+ * All Rights Reserved.
+ *
+ * NOTICE: All information contained herein is, and remains the property of
+ * Intel Corporation and its suppliers, if any. The intellectual and
+ * technical concepts contained herein are proprietary to Intel Corporation
+ * and its suppliers and may be covered by U.S. and Foreign Patents, patents in
+ * process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is
+ * strictly forbidden unless prior written permission is obtained from
+ * Intel Corporation.
+ *
+ * No warranty, explicit or implicit is provided, unless granted under a
+ * written agreement with Intel Corporation.
+ *
+ * $Id: $
+ *
+ ******************************************************************************/
+
+#include <stdio.h>
+#include "sai.h"
+
+// clang-format off
+
+int main() {
+  printf("/*******************************************************************************\n");
+  printf(" * BAREFOOT NETWORKS CONFIDENTIAL & PROPRIETARY\n");
+  printf(" *\n");
+  printf(" * Copyright (c) 2021-present Intel Corporation.\n");
+  printf(" *\n");
+  printf(" * All Rights Reserved.\n");
+  printf(" *\n");
+  printf(" * NOTICE: All information contained herein is, and remains the property of\n");
+  printf(" * Intel Corporation and its suppliers, if any. The intellectual and\n");
+  printf(" * technical concepts contained herein are proprietary to Intel Corporation\n");
+  printf(" * and its suppliers and may be covered by U.S. and Foreign Patents, patents in\n");
+  printf(" * process, and are protected by trade secret or copyright law.\n");
+  printf(" * Dissemination of this information or reproduction of this material is\n");
+  printf(" * strictly forbidden unless prior written permission is obtained from\n");
+  printf(" * Intel Corporation.\n");
+  printf(" *\n");
+  printf(" * No warranty, explicit or implicit is provided, unless granted under a\n");
+  printf(" * written agreement with Intel Corporation.\n");
+  printf(" *\n");
+  printf(" * $Id: $\n");
+  printf(" *");
+  printf(" ******************************************************************************/");
+
+  printf("\n\n");
+
+  printf("#ifndef __SAI_GEN_ATTRIBUTES_H__\n");
+  printf("#define __SAI_GEN_ATTRIBUTES_H__\n");
+
+  printf("\n// clang-format off\n");
+
+  // object types
+  printf("\n// object types\n");
+[%- FOREACH object_type IN  apis.common.object_types.elements -%]
+
+[%- PROCESS define_const name=object_type.name %]
+[%- END -%]
+
+[%- FOREACH api IN apis.keys.sort -%]
+    [%- IF apis.$api.functions.size %]
+
+  // [% api %] API
+  printf("\n// [% api %] API\n");
+        [%- FOREACH object IN apis.$api.objects.keys.sort -%]
+
+            [%- IF apis.$api.objects.$object.attrs.all.size %]
+
+  // [% object %] attributes
+  printf("\n// [% object %] attributes\n");
+                [%- FOREACH attr IN  apis.$api.objects.$object.attrs.all -%]
+
+[%- PROCESS define_const name=attr.name %]
+                [%- END -%]
+            [%- ELSE -%]
+
+  // (no [% object %] attributes)
+  printf ("(no [% object %] attributes)\n");
+            [%- END -%]
+        [%- END -%]
+    [%- END -%]
+[% END %]
+
+  printf("\n#endif /* __SAI_GEN_ATTRIBUTES_H__ */\n");
+}
