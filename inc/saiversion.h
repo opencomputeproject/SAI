@@ -29,7 +29,7 @@
 
 #define SAI_MAJOR 1
 #define SAI_MINOR 10
-#define SAI_REVISION 0
+#define SAI_REVISION 1
 
 #define SAI_VERSION(major, minor, revision) (10000 * (major) + 100 * (minor) + (revision))
 
