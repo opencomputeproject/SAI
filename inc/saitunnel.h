@@ -323,7 +323,29 @@ typedef enum _sai_tunnel_type_t
 
     SAI_TUNNEL_TYPE_MPLS,
 
+    SAI_TUNNEL_TYPE_IPINIP_ESP,
+
+    SAI_TUNNEL_TYPE_IPINIP_UDP_ESP,
+
+    SAI_TUNNEL_TYPE_VXLAN_UDP_ESP,
+
 } sai_tunnel_type_t;
+
+/**
+ * @brief Defines VXLAN tunnel UDP source port mode
+ */
+typedef enum _sai_tunnel_vxlan_udp_sport_mode_t
+{
+    /**
+     * @brief User define value
+     */
+    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED,
+
+    /**
+     * @brief RFC6335 Computed hash value in range 49152-65535
+     */
+    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_EPHEMERAL,
+} sai_tunnel_vxlan_udp_sport_mode_t;
 
 /**
  * @brief Defines tunnel TTL mode
@@ -1149,8 +1171,6 @@ typedef struct _sai_tunnel_api_t
     sai_remove_tunnel_map_entry_fn               remove_tunnel_map_entry;
     sai_set_tunnel_map_entry_attribute_fn        set_tunnel_map_entry_attribute;
     sai_get_tunnel_map_entry_attribute_fn        get_tunnel_map_entry_attribute;
-    sai_bulk_object_get_attribute_fn             get_tunnels_attribute;
-    sai_bulk_object_set_attribute_fn             set_tunnels_attribute;
 
 } sai_tunnel_api_t;
 
