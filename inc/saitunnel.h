@@ -323,27 +323,7 @@ typedef enum _sai_tunnel_type_t
 
     SAI_TUNNEL_TYPE_MPLS,
 
-    SAI_TUNNEL_TYPE_IPINIP_UDP_ESP,
-
-    SAI_TUNNEL_TYPE_VXLAN_UDP_ESP,
-
 } sai_tunnel_type_t;
-
-/**
- * @brief Defines VXLAN tunnel UDP source port mode
- */
-typedef enum _sai_tunnel_vxlan_udp_sport_mode_t
-{
-    /**
-     * @brief User define value
-     */
-    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED,
-
-    /**
-     * @brief RFC6335 Computed hash value in range 49152-65535
-     */
-    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_EPHEMERAL,
-} sai_tunnel_vxlan_udp_sport_mode_t;
 
 /**
  * @brief Defines tunnel TTL mode
@@ -671,40 +651,6 @@ typedef enum _sai_tunnel_attr_t
      * @default SAI_PACKET_ACTION_FORWARD
      */
     SAI_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION,
-
-    /**
-     * @brief Tunnel VXLAN UDP source port mode
-     *
-     * @type sai_tunnel_vxlan_udp_sport_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_EPHEMERAL
-     */
-    SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MODE,
-
-    /**
-     * @brief Tunnel UDP source port
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
-     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
-     */
-    SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT,
-
-    /**
-     * @brief Tunnel UDP source port mask
-     *
-     * Sport mask defining the number of least significant bits
-     * reserved for the calculated hash value. 0 means a fixed value.
-     *
-     * @type sai_uint8_t
-     * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
-     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
-     */
-    SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MASK,
 
     /**
      * @brief Enable TC AND COLOR -> DSCP MAP on tunnel at encapsulation (access-to-network) node to remark the DSCP in tunnel header
