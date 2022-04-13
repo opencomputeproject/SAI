@@ -499,6 +499,8 @@ typedef enum _sai_switch_tunnel_attr_t
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
+ *
+ * @flags skip enum value check
  */
 typedef enum _sai_switch_attr_t
 {
@@ -2428,23 +2430,25 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SUPPORTED_FAILOVER_MODE,
 
     /**
+     * @brief Packet action when a packet ingress and gets routed back to same tunnel
+     * This enum is only available in v1.7.
+     *
+     * @type sai_packet_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_ACTION_FORWARD
+     */
+    SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION = 186,
+
+    /**
      * @brief Switch scoped Tunnel objects
+     * Set to the same value as master branch.
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_SWITCH_TUNNEL
      * @default empty
      */
-    SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST,
-
-    /**
-     * @brief Packet action when a packet ingress and gets routed back to same tunnel
-     *
-     * @type sai_packet_action_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PACKET_ACTION_FORWARD
-     */
-    SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION,
+    SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST = 190,
 
     /**
      * @brief End of attributes
