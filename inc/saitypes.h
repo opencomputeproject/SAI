@@ -757,6 +757,7 @@ typedef struct _sai_acl_capability_t
      * @passparam &sai_metadata_enum_sai_acl_action_type_t
      */
     sai_s32_list_t action_list;
+
 } sai_acl_capability_t;
 
 /**
