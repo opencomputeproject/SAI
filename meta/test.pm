@@ -530,30 +530,6 @@ sub CreateStatEnumTest
     WriteTest "}";
 }
 
-sub EnumValueTest
-{
-    #
-    # Purpose is to check if enums with the same value on master when backport to other version
-    #
-
-    DefineTestName "enum_value_test";
-
-    WriteTest "{";
-    WriteTest "    int val = 0;";
-    # This is a enum which is only available in v1.7 branch.
-    WriteTest "    val = SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION;";
-    WriteTest "    TEST_ASSERT_TRUE(val == 186, \"enum SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION is not with value 186.\");";
-
-    WriteTest "    val = SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST;";
-    WriteTest "    TEST_ASSERT_TRUE(val == 190, \"enum SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST is not with value 190.\");";
-    WriteTest "    val = SAI_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP;";
-    WriteTest "    TEST_ASSERT_TRUE(val == 25, \"enum SAI_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP is not with value 25.\");";
-    WriteTest "    val = SAI_OBJECT_TYPE_SWITCH_TUNNEL;";
-    WriteTest "    TEST_ASSERT_TRUE(val == 95, \"enum SAI_OBJECT_TYPE_SWITCH_TUNNEL is not with value 95.\");";
-
-    WriteTest "}";
-}
-
 sub WriteTestHeader
 {
     #
@@ -621,8 +597,6 @@ sub CreateTests
     CreateSerializeUnionsTest();
 
     CreateStatEnumTest();
-
-    EnumValueTest();
 
     WriteTestMain();
 }
