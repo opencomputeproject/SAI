@@ -464,8 +464,6 @@ typedef enum _sai_tunnel_peer_mode_t
 
 /**
  * @brief Defines tunnel attributes
- *
- * @flags skip enum value check
  */
 typedef enum _sai_tunnel_attr_t
 {
@@ -714,7 +712,7 @@ typedef enum _sai_tunnel_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP = 25,
+    SAI_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP,
 
     /**
      * @brief Enable TC -> Queue MAP on tunnel encap

@@ -499,8 +499,6 @@ typedef enum _sai_switch_tunnel_attr_t
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls
- *
- * @flags skip enum value check
  */
 typedef enum _sai_switch_attr_t
 {
@@ -2438,7 +2436,7 @@ typedef enum _sai_switch_attr_t
      * @objects SAI_OBJECT_TYPE_SWITCH_TUNNEL
      * @default empty
      */
-    SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST = 190,
+    SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST,
 
     /**
      * @brief End of attributes
