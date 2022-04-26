@@ -326,6 +326,22 @@ typedef enum _sai_tunnel_type_t
 } sai_tunnel_type_t;
 
 /**
+ * @brief Defines VXLAN tunnel UDP source port mode
+ */
+typedef enum _sai_tunnel_vxlan_udp_sport_mode_t
+{
+    /**
+     * @brief User define value
+     */
+    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED,
+
+    /**
+     * @brief RFC6335 Computed hash value in range 49152-65535
+     */
+    SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_EPHEMERAL,
+} sai_tunnel_vxlan_udp_sport_mode_t;
+
+/**
  * @brief Defines tunnel TTL mode
  */
 typedef enum _sai_tunnel_ttl_mode_t
@@ -687,35 +703,8 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MASK,
 
     /**
-     * @brief IPsec encryption SA index
-     *
-     * Index to bind an egress IPsec SA to a tunnel.
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_IPINIP_UDP_ESP or SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN_UDP_ESP
-     */
-    SAI_TUNNEL_ATTR_SA_INDEX,
-
-    /**
-     * @brief List of ports that are programmed with SAs for this IPsec tunnel.
-     * Useful only when IPsec is implemented in a PHY Chip (different sai_switch
-     * object).
-     *
-     * For IPsec hardware in the Switch ASIC, the per-tunnel port list can be
-     * derived from the union of SAI_IPSEC_SA_ATTR_IPSEC_PORT_LIST for all
-     * sai_ipsec_sa objects for that tunnel.
-     *
-     * @type sai_object_list_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT
-     * @default empty
-     */
-    SAI_TUNNEL_ATTR_IPSEC_SA_PORT_LIST,
-
-    /**
      * @brief Enable TC AND COLOR -> DSCP MAP on tunnel at encapsulation (access-to-network) node to remark the DSCP in tunnel header
+     * Set to the same value as master branch
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET

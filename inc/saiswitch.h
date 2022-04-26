@@ -2428,13 +2428,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SUPPORTED_FAILOVER_MODE,
 
     /**
-     * @brief Packet action when a packet ingress and gets routed back to same tunnel
+     * @brief Switch scoped Tunnel objects
+     * Set to the same value as master branch.
      *
-     * @type sai_packet_action_t
+     * @type sai_object_list_t
      * @flags CREATE_AND_SET
-     * @default SAI_PACKET_ACTION_FORWARD
+     * @objects SAI_OBJECT_TYPE_SWITCH_TUNNEL
+     * @default empty
      */
-    SAI_SWITCH_ATTR_TUNNEL_LOOPBACK_PACKET_ACTION,
+    SAI_SWITCH_ATTR_TUNNEL_OBJECTS_LIST,
 
     /**
      * @brief End of attributes
@@ -2861,19 +2863,77 @@ typedef sai_status_t (*sai_clear_switch_stats_fn)(
         _In_ const sai_stat_id_t *counter_ids);
 
 /**
+ * @brief Create switch scoped tunnel
+ *
+ * @param[out] switch_tunnel_id The Switch Tunnel Object ID
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_switch_tunnel_fn)(
+        _Out_ sai_object_id_t *switch_tunnel_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove/disconnect Switch scope tunnel
+ *
+ * Release all resources associated with currently opened switch
+ *
+ * @param[in] switch_tunnel_id The Switch Tunnel id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_switch_tunnel_fn)(
+        _In_ sai_object_id_t switch_tunnel_id);
+
+/**
+ * @brief Set switch scoped tunnel attribute value
+ *
+ * @param[in] switch_tunnel_id Switch Tunnel id
+ * @param[in] attr Switch tunnel attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_switch_tunnel_attribute_fn)(
+        _In_ sai_object_id_t switch_tunnel_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get switch scoped tunnel attribute value
+ *
+ * @param[in] switch_tunnel_id Switch Tunnel id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of switch tunnel attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_switch_tunnel_attribute_fn)(
+        _In_ sai_object_id_t switch_tunnel_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief Switch method table retrieved with sai_api_query()
  */
 typedef struct _sai_switch_api_t
 {
-    sai_create_switch_fn            create_switch;
-    sai_remove_switch_fn            remove_switch;
-    sai_set_switch_attribute_fn     set_switch_attribute;
-    sai_get_switch_attribute_fn     get_switch_attribute;
-    sai_get_switch_stats_fn         get_switch_stats;
-    sai_get_switch_stats_ext_fn     get_switch_stats_ext;
-    sai_clear_switch_stats_fn       clear_switch_stats;
-    sai_switch_mdio_read_fn         switch_mdio_read;
-    sai_switch_mdio_write_fn        switch_mdio_write;
+    sai_create_switch_fn                   create_switch;
+    sai_remove_switch_fn                   remove_switch;
+    sai_set_switch_attribute_fn            set_switch_attribute;
+    sai_get_switch_attribute_fn            get_switch_attribute;
+    sai_get_switch_stats_fn                get_switch_stats;
+    sai_get_switch_stats_ext_fn            get_switch_stats_ext;
+    sai_clear_switch_stats_fn              clear_switch_stats;
+    sai_switch_mdio_read_fn                switch_mdio_read;
+    sai_switch_mdio_write_fn               switch_mdio_write;
+    sai_create_switch_tunnel_fn            create_switch_tunnel;
+    sai_remove_switch_tunnel_fn            remove_switch_tunnel;
+    sai_set_switch_tunnel_attribute_fn     set_switch_tunnel_attribute;
+    sai_get_switch_tunnel_attribute_fn     get_switch_tunnel_attribute;
 
 } sai_switch_api_t;
 
