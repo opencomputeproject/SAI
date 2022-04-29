@@ -2097,6 +2097,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PFC_TC_DLR_INTERVAL,
 
     /**
+     * @brief Query link-training support
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_LINK_TRAINING_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
