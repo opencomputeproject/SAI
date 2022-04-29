@@ -2042,6 +2042,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_IPSEC_PORT,
 
     /**
+     * @brief Query link-training support
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_LINK_TRAINING_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
