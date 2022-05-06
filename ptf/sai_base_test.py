@@ -34,7 +34,7 @@ from thrift.protocol import TBinaryProtocol
 
 from sai_thrift import sai_rpc
 
-from sai_utils import *
+from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 import sai_thrift.sai_adapter as adapter
 
 ROUTER_MAC = '00:77:66:55:44:00'

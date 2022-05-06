@@ -16,12 +16,12 @@
 Thrift SAI interface tester
 """
 
-from sai_thrift.sai_headers import *
+from sai_thrift.sai_headers import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
-from ptf.packet import *
-from ptf.testutils import *
+from ptf.packet import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from ptf.testutils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
-from sai_base_test import *
+from sai_base_test import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 
 class FrameworkTester(SaiHelper):

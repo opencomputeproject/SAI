@@ -15,64 +15,59 @@
 #    Microsoft would like to thank the following companies for their review and
 #    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 #    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
-#
-# @file    __init__.py
-#
-# @brief   init
-#
 
 from warm_test_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
-class WarmL2SanityTest(L2SanityTest):
+"""
+Thrift SAI interface Switch tests
+"""
+
+class WarmAvailableIPv4RouteEntryTest(AvailableIPv4RouteEntryTest):
     """
-    Warm boot Test for L2 trunk and access port access, all ports scanning.
+    Warm boot Test for available IPv4 Route Entry.
     """
     @warm_setup
     def setUp(self):
-        print("setUp WarmL2SanityTest")
-        L2SanityTest.setUp(self)
+        print("setUp WarmAvailableIPv4RouteEntryTest")
+        AvailableIPv4RouteEntryTest.setUp(self)
 
 
     def setUp_starting(self):
-        print("setUp_starting WarmL2SanityTest")
-        SaiHelperBase.setUp(self)
-        super().param_init()
+        print("Skip setUp_starting WarmAvailableIPv4RouteEntryTest")
 
 
     def setUp_post_start(self):
-        print("setUp_post_start WarmL2SanityTest")
+        print("setUp_post_start WarmAvailableIPv4RouteEntryTest")
         SaiHelperBase.setUp(self)
-        super().param_init()
 
 
     @warm_test
     def runTest(self):
-        print("Run test WarmL2SanityTest")
+        print("Run test WarmAvailableIPv4RouteEntryTest")
         super().runTest()
 
 
     def test_starting(self):
-        print("test_starting WarmL2SanityTest")
-        super().runTest()
+        print("Skip test_starting WarmAvailableIPv4RouteEntryTest")
 
 
     def test_post_start(self):
-        print("test_post_start WarmL2SanityTest")
-        super().runTest()
+        print("test_post_start WarmAvailableIPv4RouteEntryTest")
+        super().check_amount()
 
 
     @warm_teardown
     def tearDown(self):
-        print("tearDown WarmL2SanityTest")
+        print("tearDown WarmAvailableIPv4RouteEntryTest")
         print("Skip the teardown and make a warm shut down for warm boot testing")
         self.warm_shutdown()
 
 
     def tearDown_starting(self):
-        print("tearDown_starting WarmL2SanityTest")
+        print("tearDown_starting WarmAvailableIPv4RouteEntryTest")
         print("Skip the teardown for warm boot testing")
 
 
     def tearDown_post_start(self):
-        print("tearDown_post_start WarmL2SanityTest")
+        print("tearDown_post_start WarmAvailableIPv4RouteEntryTest")
         print("Skip the teardown after warm boot testing")

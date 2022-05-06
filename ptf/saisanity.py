@@ -20,8 +20,8 @@
 This file contains some Test classes which are used to the basic functionality of the switch.
 """
 
-from sai_thrift.sai_headers import *
-from sai_base_test import *
+from sai_thrift.sai_headers import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from sai_base_test import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 mac1 = '00:11:11:11:11:11'
 mac2 = '00:22:22:22:22:22'
