@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Microsoft Open Technologies, Inc.
+# Copyright (c) 2022 Microsoft Open Technologies, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -52,12 +52,12 @@ class WarmL2SanityTest(L2SanityTest):
 
 
     def test_starting(self):
-        print("test WarmL2SanityTest")
+        print("test_starting WarmL2SanityTest")
         super().runTest()
 
 
     def test_post_start(self):
-        print("test WarmL2SanityTest")
+        print("test_post_start WarmL2SanityTest")
         super().runTest()
 
 

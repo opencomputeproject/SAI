@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Microsoft Open Technologies, Inc.
+# Copyright (c) 2022 Microsoft Open Technologies, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -71,7 +71,6 @@ class WarmAvailableIPv4RouteEntryTest(AvailableIPv4RouteEntryTest):
     def tearDown_post_start(self):
         print("tearDown_post_start WarmAvailableIPv4RouteEntryTest")
         print("Skip the teardown after warm boot testing")
-
 
 
 class WarmAvailableNexthopGroupEntryTest(AvailableNexthopGroupEntryTest):
