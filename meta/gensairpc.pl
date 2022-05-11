@@ -275,6 +275,7 @@ sub generate_server_template_from_skeleton {
                 say {$server_template} '#include <sai.h>';
                 say {$server_template} '#include <saiextensions.h>'
                   if $experimental;
+                say {$server_template} '#include <sai_rpc_server_notify.cpp>';
                 say {$server_template} '#ifdef __cplusplus';
                 say {$server_template} '}';
                 say {$server_template} '#endif';

@@ -57,6 +57,20 @@
    
 [%- END -%]
 
+[%- BLOCK add_notification -%]
+    
+    // add notification callback
+    sai_attr_list[attr_list.size()].id = SAI_SWITCH_ATTR_FDB_EVENT_NOTIFY;
+    sai_attr_list[attr_list.size()].value.ptr = reinterpret_cast<sai_pointer_t>(&on_fdb_event);
+
+    sai_attr_list[attr_list.size() + 1].id = SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY;
+    sai_attr_list[attr_list.size() + 1].value.ptr = reinterpret_cast<sai_pointer_t>(&on_port_state_change);
+
+    sai_attr_list[attr_list.size() + 2].id = SAI_SWITCH_ATTR_SHUTDOWN_REQUEST_NOTIFY;
+    sai_attr_list[attr_list.size() + 2].value.ptr = reinterpret_cast<sai_pointer_t>(&on_shutdown_request);
+
+[%- END -%]
+
 [%- BLOCK empty_switch_id -%]
 
     // reset the switch id
@@ -151,12 +165,16 @@
 [%- ######################################################################## -%]
 
 [%- BLOCK malloc %]
+
     [% arg.type.subtype.name %] *sai_[% arg.name %] = NULL;
     [%- # First declare count argument if not declared yet -%]
     [%- fun = function.name; countarg = arg.count.name -%]
     [%- UNLESS count.$fun.$countarg.declared; count.$fun.$countarg.declared = 1 %]
+    [%- IF function_name.match(create_switch_function) %]
+    [% arg.count.type.name %] [% arg.count.name %] = [% arg.name %][% IF arg.is_attr_list %].attr_list[% END %].size() + 3;
+    [%- ELSE %]
     [% arg.count.type.name %] [% arg.count.name %] = [% arg.name %][% IF arg.is_attr_list %].attr_list[% END %].size();
-
+    [%- END %]
     [%- END %]
     if ([% arg.count.name %] != 0) {
       sai_[% arg.name %] = ([% arg.type.subtype.name %] *)malloc(sizeof([% arg.type.subtype.name %]) * [% arg.count.name %]);
@@ -185,6 +203,10 @@
     [%- ELSE %]
 
     sai_thrift_parse_[% arg.type.short_name %]([% arg.name %], &sai_[% arg.name %]);
+    [%- END -%]
+
+    [%- IF function_name.match(create_switch_function) %]
+    [%- PROCESS add_notification -%]
     [%- END -%]
 [%- END -%]
 
