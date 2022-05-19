@@ -1,7 +1,19 @@
-#SAI Vlan Test plan
-##Overriew
+# SAI Vlan Test plan
+- [SAI Vlan Test plan](#sai-vlan-test-plan)
+  - [Overriew](#overriew)
+  - [Scope](#scope)
+  - [Functionalities of VLAN](#functionalities-of-vlan)
+    - [Forwarding](#forwarding)
+    - [Sample API for forwarding attributes](#sample-api-for-forwarding-attributes)
+    - [Lag](#lag)
+      - [Flooding](#flooding)
+      - [Ingress/Egress Unicast/Multicast/Broadcast](#ingressegress-unicastmulticastbroadcast)
+  - [SAI APIs operations](#sai-apis-operations)
+    - [Vlan Counters](#vlan-counters)
+    - [Vlan and member list operations](#vlan-and-member-list-operations)
+## Overriew
 The purpose of this test plan is to test the VLAN function from SAI.
-##Scope
+## Scope
 The test will include two parts
 1. Basic Vlan functionalities on tagged and untagged ports and LAGS
    - forwarding

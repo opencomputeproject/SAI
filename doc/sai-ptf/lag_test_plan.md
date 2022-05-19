@@ -1,4 +1,11 @@
-# SAI Vlan Test plan
+# SAI Lag Test plan
+- [SAI Lag Test plan](#sai-lag-test-plan)
+  - [Overriew](#overriew)
+  - [Scope](#scope)
+  - [Lag SAI APIs](#lag-sai-apis)
+    - [Create and Remove](#create-and-remove)
+  - [Funcationalities](#funcationalities)
+    - [Loadbalanceing](#loadbalanceing)
 ## Overriew
 The purpose of this test plan is to test VLAN function from SAI.
 ## Scope
