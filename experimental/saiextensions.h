@@ -32,6 +32,8 @@
 #include "saiswitchextensions.h"
 
 /* new experimental object type includes */
+#include "saiexperimentaldashvnet.h"
+#include "saiexperimentaldashacl.h"
 #include "saiexperimentaldash.h"
 #include "saiexperimentalbmtor.h"
 
@@ -47,6 +49,10 @@ typedef enum _sai_api_extensions_t
     SAI_API_BMTOR = SAI_API_EXTENSIONS_RANGE_START,
 
     SAI_API_DASH,
+
+    SAI_API_DASH_ACL,
+
+    SAI_API_DASH_VNET,
 
     /* Add new experimental APIs above this line */
 
