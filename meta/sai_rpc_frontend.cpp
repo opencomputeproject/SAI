@@ -930,6 +930,16 @@ int start_p4_sai_thrift_rpc_server(char *port) {
 }
 
 /**
+ * @brief Start Thrift RPC server Wrapper
+ */
+int start_sai_thrift_rpc_server(int port)
+{
+    static char port_str[10];
+    snprintf(port_str, sizeof(port_str), "%d", port);
+    return start_p4_sai_thrift_rpc_server(port_str);
+}
+
+/**
  * @brief Stop Thrift RPC server
  */
 int stop_p4_sai_thrift_rpc_server(void) {
