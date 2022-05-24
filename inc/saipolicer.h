@@ -85,6 +85,22 @@ typedef enum _sai_policer_color_source_t
 } sai_policer_color_source_t;
 
 /**
+ * @brief Enum defining Policer pool
+ */
+typedef enum _sai_policer_pool_t
+{
+    /** Common Pool */
+    SAI_POLICER_POOL_COMMON,
+
+    /** Ingress Pool */
+    SAI_POLICER_POOL_INGRESS,
+
+    /** Egress Pool */
+    SAI_POLICER_POOL_EGRESS
+
+} sai_policer_pool_t;
+
+/**
  * @brief Enum defining Policer Attributes
  */
 typedef enum _sai_policer_attr_t
