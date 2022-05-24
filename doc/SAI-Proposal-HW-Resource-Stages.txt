@@ -1,0 +1,88 @@
+Rational
+--------
+Modern chips has distributed architecture where HW resources are split between 
+ingress and egress stages of the pipleine for scaling and performance reasons.
+
+PR#1482 introduces a method to specify the stage of a resource in a backward 
+compatible way.
+
+Common Data Type
+-----------------
+New data type sai_object_stage_t is introduced. This data type specifies if a 
+resource is of type
+
+- SAI_OBJECT_STAGE_BOTH: 
+  Resource is a common shared resource between ingress and egress SAI pipeline
+
+- SAI_OBJECT_STAGE_INGRESS: 
+  Resource belongs to ingress stage of SAI pipeline
+
+- SAI_OBJECT_STAGE_EGRESS: 
+  Resource belongs to egress stage of SAI pipeline
+
+
+HOSTIF Trap
+-----------
+A new read only hostif trap attribute is introduced. NOS can query this 
+attribute to find out if a given HW supports this trap as an 
+ingress/egress/both trap.
+- SAI_HOSTIF_TRAP_ATTR_OBJECT_STAGE:
+  Read only attribute that specifies the HW implementation of the trap stage.
+
+- SAI_HOTIF_TRAP_GROUP_ATTR_OBJECT_STAGE:
+  CREATE_ONLY attribute to configure a trap group of type stage
+  ingress/egress/both
+
+
+Policer Pool
+------------
+A new CREATE_ONLY policer attribute is introduced. NOS can set this attribute
+to specify the stage of the pool.
+- SAI_POLICER_ATTR_STAGE:
+  CREATE_ONLY attribute that specifies the stage of the policer pool.
+  Default is kept as SAI_STAGE_BOTH common pool for backward compatibility.
+
+Sample Existing Workflow:
+------------------
+1. create_hostif_trap_group()
+
+2. create_hostif_trap(): By default this trap is created in 
+   SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP trap group. 
+or
+
+2. create_hostif_trap() for trap group created in step 1. 
+
+3. create_policer()
+
+4. Attach policer to the trap using set of SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER 
+   attribute.
+
+Sample New Workflow for stage specific hostif trap and policer pool:
+--------------------------------------------------------------------
+1a. create_hostif_trap_group() for ingress stage
+1b. create_hostif_trap_group() for egress stage
+1c. create_hostif_trap_group() for both stage
+
+2a. create_hostif_trap(): By default this trap is created in 
+    SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP trap group. 
+2b. Read SAI_HOSTIF_TRAP_ATTR_STAGE to find out HW implementation
+
+3. Set the trap group for the trap based on the trap stage. Trap may get 
+   1a/1b/ac as the trap group binding based on the trap stage.
+
+3. create_policer() for ingress/egress/both stage.
+
+4. Attach matching stage policer to the trap using set 
+   SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER 
+
+NOS Validataion:
+----------------
+NOS MUST ensure that trap group consist traps of type ingress, egress, or 
+both only base on the trap group object stage.
+
+If NOS creates a trap group with mix of trap stages then SAI adapter MUST 
+return the error as SAI_STATUS_STAGE_MISMATCH
+
+SAI_STATUS_STAGE_MISMTACH: New error code is is introduced to handle incorrect
+                           configuration.
+

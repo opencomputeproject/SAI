@@ -85,22 +85,6 @@ typedef enum _sai_policer_color_source_t
 } sai_policer_color_source_t;
 
 /**
- * @brief Enum defining Policer pool
- */
-typedef enum _sai_policer_pool_t
-{
-    /** Common Pool */
-    SAI_POLICER_POOL_COMMON,
-
-    /** Ingress Pool */
-    SAI_POLICER_POOL_INGRESS,
-
-    /** Egress Pool */
-    SAI_POLICER_POOL_EGRESS
-
-} sai_policer_pool_t;
-
-/**
  * @brief Enum defining Policer Attributes
  */
 typedef enum _sai_policer_attr_t
@@ -215,6 +199,15 @@ typedef enum _sai_policer_attr_t
      * @default empty
      */
     SAI_POLICER_ATTR_ENABLE_COUNTER_PACKET_ACTION_LIST = 0x0000000a,
+
+    /**
+     * @brief Policer pool stage
+     *
+     * @type sai_object_stage_t
+     * @flags CREATE_ONLY
+     * @default SAI_OBJECT_STAGE_BOTH
+     */
+    SAI_POLICER_ATTR_OBJECT_STAGE = 0x0000000b,
 
     /**
      * @brief End of attributes
