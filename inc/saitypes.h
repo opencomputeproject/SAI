@@ -130,6 +130,7 @@ typedef int8_t sai_int8_t;
 typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
+typedef uint64_t sai_api_version_t;
 
 typedef struct _sai_timespec_t
 {
@@ -776,6 +777,7 @@ typedef struct _sai_acl_capability_t
      * @passparam &sai_metadata_enum_sai_acl_action_type_t
      */
     sai_s32_list_t action_list;
+
 } sai_acl_capability_t;
 
 /**
@@ -1443,6 +1445,21 @@ typedef enum _sai_stats_mode_t
      * @brief Read and clear after reading
      */
     SAI_STATS_MODE_READ_AND_CLEAR = 1 << 1,
+
+    /**
+     * @brief Bulk read statistics
+     */
+    SAI_STATS_MODE_BULK_READ = 1 << 2,
+
+    /**
+     * @brief Bulk clear statistics
+     */
+    SAI_STATS_MODE_BULK_CLEAR = 1 << 3,
+
+    /**
+     * @brief Bulk read and clear after reading
+     */
+    SAI_STATS_MODE_BULK_READ_AND_CLEAR = 1 << 4,
 } sai_stats_mode_t;
 
 typedef struct _sai_stat_capability_t

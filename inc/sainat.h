@@ -210,6 +210,17 @@ typedef enum _sai_nat_entry_attr_t
     SAI_NAT_ENTRY_ATTR_HIT_BIT,
 
     /**
+     * @brief NAT entry aging time in seconds
+     *
+     * Zero means aging is disabled.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NAT_ENTRY_ATTR_AGING_TIME,
+
+    /**
      * @brief End of NAT Entry attributes
      */
     SAI_NAT_ENTRY_ATTR_END,
@@ -335,6 +346,34 @@ typedef struct _sai_nat_entry_t
 } sai_nat_entry_t;
 
 /**
+ * @brief NAT event type
+ */
+typedef enum _sai_nat_event_t
+{
+    /** NAT entry event none */
+    SAI_NAT_EVENT_NONE,
+
+    /** NAT entry event aged */
+    SAI_NAT_EVENT_AGED,
+
+} sai_nat_event_t;
+
+/**
+ * @brief Notification data format received from SAI NAT callback
+ *
+ * @count attr[attr_count]
+ */
+typedef struct _sai_nat_event_notification_data_t
+{
+    /** Event type */
+    sai_nat_event_t event_type;
+
+    /** NAT entry */
+    sai_nat_entry_t nat_entry;
+
+} sai_nat_event_notification_data_t;
+
+/**
  * @brief Create and return a NAT object
  *
  * @param[in] nat_entry NAT entry
@@ -383,6 +422,18 @@ typedef sai_status_t (*sai_get_nat_entry_attribute_fn)(
         _In_ const sai_nat_entry_t *nat_entry,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief NAT notifications
+ *
+ * @count data[count]
+ *
+ * @param[in] count Number of notifications
+ * @param[in] data Pointer to NAT event notification data array
+ */
+typedef void (*sai_nat_event_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_nat_event_notification_data_t *data);
 
 /**
  * @brief Bulk create NAT entry
