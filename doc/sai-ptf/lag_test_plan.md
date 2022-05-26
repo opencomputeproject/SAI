@@ -13,8 +13,8 @@
   - [Packets](#packets)
 - [Test suites](#test-suites)
   - [Test suite #1: PortChannel Loadbalanceing](#test-suite-1-portchannel-loadbalanceing)
-  - [Test suite #2: Ingress/Egreee disable](#test-suite-2-ingressegreee-disable)
-  - [Test suite #3: Remove Lag member](#test-suite-3-remove-lag-member)
+  - [Test suite #2: Remove Lag member](#test-suite-2-remove-lag-member)
+  - [Test suite #3: Ingress/Egreee disable](#test-suite-3-ingressegreee-disable)
 ## Overriew
 The purpose of this test plan is to test the LAG/PortChannel function from SAI.
 
@@ -109,14 +109,17 @@ For load balancing, expecting the ports in a lag should receive the packet equal
 
 Even after removing and disabling the port in a lag.
 
-Sample APIS
-Disbale egress
-```Python
-sai_thrift_set_lag_member_attribute(
-                self.client,
-                self.lag3_member14,
-                ingress_disable=True,
-                egress_disable=True)
+Sample SAI API
+```python
+
+ #How to check if each port of Lag receive an equal number of packets (if we have n members in a Lag)
+ self.packet_numbers =100
+ for i in range(0, n):
+                self.assertTrue((count[i] >= ((self.packet_numbers / n) * 0.7)),
+ 
+ #Send packet from dev_port11
+ send_packet(self, self.dev_port11, pkt)
+
 ```
 
 |  Goal| Steps/Cases  | Expect  |
@@ -127,7 +130,22 @@ sai_thrift_set_lag_member_attribute(
 | Packet forwards on available ports equally.| Every time, enable egress/ingress on one lag member, then send packet | Loadbalance on lag members.|
 | Packet forwards on available ports equally.| Every time, remove one lag member, then send packet | Loadbalance on lag members.|
 
-## Test suite #2: Ingress/Egreee disable
+## Test suite #2: Remove Lag member 
+Test verifies the LAG load balancing for scenario when LAG members are removed.
+
+Sample APIs
+
+Remove Lag member
+```python
+     print("Remove LAG member 16")
+     status = sai_thrift_remove_lag_member(self.client, self.lag3_member16)
+```
+| Goal | Steps/Cases | Expect  |
+|-|-|-|
+|Remove port16 and forwarding packet from port1 to port14,15|Remove port16 form Lag3 and Send packet on dev_port11 to lag3 100 times| Port14 and port15 will receive an equal number of packets.|
+
+
+## Test suite #3: Ingress/Egreee disable
 For lag, we can disable it from ingress or egress direction, after we disable the member of a lag, we expect traffic can be loadbalanced to other lag members.
 
 Sample APIs
@@ -141,36 +159,6 @@ Ingress/Egreee disable
         egress_disable=True)
 
 ```
-
-lag port list
-```Python
-sai_thrift_get_lag_attribute(
-                self.client, self.lag3, port_list=portlist)
-```
-
 | Goal | Steps/Cases | Expect  |
 |-|-|-|
 |Packet dropped on port14| Disable egress and ingress on lag member14. send packet | Packet drop.|
-
-## Test suite #3: Remove Lag member 
-Test verifies the LAG load balancing for scenario when LAG members are removed.
-
-Sample APIs
-
-Remove Lag member
-```python
-     print("Remove LAG member 16")
-     status = sai_thrift_remove_lag_member(self.client, self.lag3_member16)
-
-```
-How to check if each port of Lag receive an equal number of packets (if we have n members in a Lag), 
-```python
- self.max_itrs =100
- for i in range(0, n):
-                self.assertTrue((count[i] >= ((self.max_itrs / n) * 0.7)),
-
-```
-| Goal | Steps/Cases | Expect  |
-|-|-|-|
-|Remove port16 and forwarding packet from port1 to port14,15|Remove port16 form Lag3 and Send packet on dev_port11 to lag3 100 times| Port14 and port15 will receive an equal number of packets.|
-
