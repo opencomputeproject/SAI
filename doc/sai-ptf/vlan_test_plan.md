@@ -113,13 +113,13 @@ Tagged:
 #### Test Cases
 | Goal| Cases | Expect  |
 |-|-|-|
-|``Untag``:Acess -> Acess port.| Send VLAN100 ``Untagged`` packet on Port1 with mac2 as dest mac. |  ``Untag`` packet received on port2.|
+|``Untag``:Acess -> Acess port.| Send VLAN1000 ``Untagged`` packet on Port1 with mac2 as dest mac. |  ``Untag`` packet received on port2.|
 |``Tag``:Acess -> Acess port.| Send VLAN2000 ``Untagged`` packet on Port9 with mac10 mac as dest mac. |  ``Untag`` packet received on port10.|
 
 ### Frame Filtering
 #### Testing Objective
 
-Drop packet when packet's dest mac is port SRC MAC in MAC table.
+Drop packet when the destination port from MAC table search is the port which packet come into the switch.
 
 ```
 Test example:                                
@@ -208,7 +208,7 @@ For VLAN-related counters, SAI should be able to get the counter and clear them.
 #### Test Cases
 | Goal |Cases |  Expect  |
 |-|-|-|
-| Packet Forwarding.|Send VLAN100 ``Untagged`` packet on Port1 with port2 mac as dest mac. |  ``Untagged`` packet received on port3.|
+| Packet Forwarding.|Send VLAN1000 ``Untagged`` packet on Port1 with port2 mac as dest mac. |  ``Untagged`` packet received on port3.|
 | Counter Changed accordingly.|Use the SAI API to check the counters | Counter increased, bytes counter: OCTETS increased, other counters + 1|
 |  Counter reset.|Use the SAI API to clear the counters.| Related counter is reset to zero. |
 
