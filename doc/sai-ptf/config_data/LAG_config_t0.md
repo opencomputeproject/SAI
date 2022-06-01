@@ -121,7 +121,7 @@ Below is the sample config data in config_db.json
         "admin_status": "up",
         "members": [
              "Ethernet84",
-            "Ethernet188"
+             "Ethernet88"
         ],
         "min_links": "1",
         "mtu": "9100"
@@ -130,7 +130,7 @@ Below is the sample config data in config_db.json
         "admin_status": "up",
         "members": [
              "Ethernet92",
-            "Ethernet96"
+             "Ethernet96"
         ],
         "min_links": "1",
         "mtu": "9100"
@@ -144,7 +144,7 @@ Below is the sample config data in config_db.json
     "PortChannel2|10.10.193.19/31": {},
     "PortChannel2|2603:10b0:31f:279::2a/126": {},
     "PortChannel3": {},
-    "PortChannel3|10.10.194.19/31": {}
+    "PortChannel3|10.10.194.19/31": {},
     "PortChannel3|2603:10b0:31f:27a::2a/126": {},
 },
 "PORTCHANNEL_MEMBER": {
