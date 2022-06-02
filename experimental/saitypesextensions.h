@@ -48,6 +48,8 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_ENI,
 
+    SAI_OBJECT_TYPE_VIP_ENTRY,
+
     SAI_OBJECT_TYPE_DASH_ACL,
 
     SAI_OBJECT_TYPE_INBOUND_ENI_TO_VM_ENTRY,
