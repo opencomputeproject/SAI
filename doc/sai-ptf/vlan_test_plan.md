@@ -1,90 +1,71 @@
 # SAI VLAN Test plan <!-- omit in toc --> 
 
-- [Overriew](#overriew)
-- [Test Environment](#test-environment)
-  - [Testbed](#testbed)
-  - [Test Configuration](#test-configuration)
-  - [Variations](#variations)
+- [Test Configuration](#test-configuration)
 - [Test Execution](#test-execution)
-  - [Basic function test](#basic-function-test)
-    - [Untagging and access](#untagging-and-access)
-      - [Testing Objective](#testing-objective)
-      - [Test Data/Packet](#test-datapacket)
-      - [Test Cases](#test-cases)
-    - [Frame Filtering](#frame-filtering)
-      - [Testing Objective](#testing-objective-1)
-      - [Test Data/Packet](#test-datapacket-1)
-      - [Additional config:](#additional-config)
-      - [Test Cases](#test-cases-1)
-    - [MAC learning](#mac-learning)
-      - [Testing Objective](#testing-objective-2)
-      - [Test Data/Packet](#test-datapacket-2)
-      - [Additional config:](#additional-config-1)
-      - [Test Cases](#test-cases-2)
-  - [SAI API test](#sai-api-test)
-    - [Vlan member list](#vlan-member-list)
-      - [Testing Objective](#testing-objective-3)
-      - [Test Cases](#test-cases-3)
-    - [VLAN related counters.](#vlan-related-counters)
-      - [Testing Objective](#testing-objective-4)
-      - [Test Data/Packet](#test-datapacket-3)
-      - [Test Cases](#test-cases-4)
-    - [Disable mac learning](#disable-mac-learning)
-      - [Testing Objective](#testing-objective-5)
-      - [Test Data/Packet](#test-datapacket-4)
-      - [Additional config:](#additional-config-2)
-      - [Test Cases](#test-cases-5)
-  - [Composit scenario](#composit-scenario)
-    - [L3 switching(Inter-VLAN)](#l3-switchinginter-vlan)
-      - [Testing Objective](#testing-objective-6)
-      - [Test Data/Packet](#test-datapacket-5)
-      - [Test Cases](#test-cases-6)
-    - [ARP Flooding and mac learning](#arp-flooding-and-mac-learning)
-      - [Testing Objective](#testing-objective-7)
-      - [Test Data/Packet](#test-datapacket-6)
-      - [Additional config:](#additional-config-3)
-      - [Test Cases](#test-cases-7)
-# Overriew
-The purpose of this test plan is to test the VLAN function from SAI.
-
-The test will include three parts
-- Vlan functionalities
-- SAI APIs operations
-- Composit scenario
-
-# Test Environment
-## Testbed
-Those tests will be run on the testbed structure, the components are:
-* PTF - running in a server that can connect to the target DUT
-* SAI server - running on a dut
-## Test Configuration
+  - [Common Test Data/Packet](#common-test-datapacket)
+  - [Test Group: Tagging and access](#test-group-tagging-and-access)
+    - [Case1: test_untag_access_to_access](#case1-test_untag_access_to_access)
+    - [Case2: test_tag_access_to_access](#case2-test_tag_access_to_access)
+  - [Test Group: Frame Filtering](#test-group-frame-filtering)
+    - [Case3: test_untagged_frame_filtering](#case3-test_untagged_frame_filtering)
+    - [Case4: test_tagged_frame_filtering](#case4-test_tagged_frame_filtering)
+  - [Test Group: VLAN flooding](#test-group-vlan-flooding)
+    - [Case5: test_tagged_vlan_flooding](#case5-test_tagged_vlan_flooding)
+    - [Case6: test_untagged_vlan_flooding](#case6-test_untagged_vlan_flooding)
+  - [Test Group: MAC learning](#test-group-mac-learning)
+    - [Case7: test_untagged_mac_learning](#case7-test_untagged_mac_learning)
+    - [Case8: test_tagged_mac_learning](#case8-test_tagged_mac_learning)
+  - [Test Case9: Vlan member API](#test-case9-vlan-member-api)
+  - [Test Case10: Add to illegal VLAN failure](#test-case10-add-to-illegal-vlan-failure)
+  - [Test Group: VLAN Counters/Status](#test-group-vlan-countersstatus)
+    - [Case11: test_tagged_vlan_status](#case11-test_tagged_vlan_status)
+    - [Case12: test_untagged_vlan_status](#case12-test_untagged_vlan_status)
+  - [Test Group7: Disable mac learning](#test-group7-disable-mac-learning)
+    - [Case13: test_disable_mac_learning_tagged](#case13-test_disable_mac_learning_tagged)
+    - [Case14: test_disable_mac_learning_untagged](#case14-test_disable_mac_learning_untagged)
+  - [Test Case15: L3 switching(Inter-VLAN)](#test-case15-l3-switchinginter-vlan)
+  - [Test Group: ARP Flooding and mac learning](#test-group-arp-flooding-and-mac-learning)
+    - [Case16: test_arp_request_flooding](#case16-test_arp_request_flooding)
+    - [Case17: test_arp_response_learning](#case17-test_arp_response_learning)
+# Test Configuration
 
 For the test configuration, please refer to the file 
-  - [VLAN_config](./config_data/vlan_config_t0.md)
-  - [FDB_config](./config_data/fdb_config_t0.md)
-  - [Route_config](./config_data/route_config_t0.md)
+  - [Config_t0](./config_data/config_t0.md)
   
 **Note. All the tests will be based on the configuration above, if any additional configuration is required, it will be specified in the Test case.**
 
-*p.s. Please refer the sample packet in [VLAN_config#Sample_Packet](./config_data/vlan_config_t0.md#sample-datapacket)*
-
-## Variations
-Cause the testbed might also encounter some issues like the host interface being down. 
-Before running the actual test there will need some sanity test to check the DUT status and select the active ports for testing.
-
-**All the ports in this test plan just to illustrate the test purpose, they are not exactly the same for the actual environment.**
-
 # Test Execution
-## Basic function test
 
-### Untagging and access
+## Common Test Data/Packet
+In this VLAN test, most of test case will be tested with Tagged or Untagged packet, the example packet structure as below.
+- Tagged packet with VLAN id 
 
-#### Testing Objective
+   ```python
+    tagged_packet(eth_dst='00:11:11:11:11:11',
+                eth_src='00:22:22:22:22:22',
+                vlan_vid=1000,
+                ip_dst='172.16.0.1',
+                ip_ttl=64)
+   ```
+- Untagged packet
+  ```Python
+    simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                      eth_src='00:22:22:22:22:22',
+                      ip_dst='172.16.0.1',
+                      ip_ttl=64)
+  ```
+**Note. If need other kinds of packet, it will be added in the test case/group respectively.**
+
+## Test Group: Tagging and access 
+### Case1: test_untag_access_to_access
+### Case2: test_tag_access_to_access
+
+### Testing Objective <!-- omit in toc --> 
 This test verifies the VLAN function around untag and access ports.
 
-*p.s. This test will not check function with the native VLAN scenario (it will be in other tests). Please make sure the native VLAN will not impact the result.*
+**This test will cover tagged and untagged mode respectivily.**
 
-
+*p.s. This test will not check function with the native VLAN scenario. Please make sure the native VLAN will not impact the result.*
 
 With an untagged packet, on the access port, when ingress and egress happen, the behavior as below
 | Port mode | packet tag mode | Direction | Action                                   |
@@ -103,142 +84,133 @@ Tagged:
   pkt(Tag:VLAN2000:DMAC=MAC10)  -> Port9:Access:VLAN2000-> Port10:Access:VLAN2000 -> pkt(Untag:DMAC=MAC10)
 ```
 
-#### Test Data/Packet
-[Sample_Packet](./config_data/vlan_config_t0.md#sample-datapacket)
-- Input: Packet(Untag) and Packet(Tag)
-- Expected: Packet(Tag)
+### Test steps: <!-- omit in toc --> 
+Test Steps:
+  - Create ``Untagged``/``Tagged VLAN 1000`` packet with ``mac2`` as dest mac.
+  - Send packet on Port1.
+  - Verify ``Untagged`` packet received port2.
 
-  *p.s. please refer the sample packet in [VLAN_config#Sample_Packet](./config_data/vlan_config_t0.md#sample-datapacket)*
-
-#### Test Cases
-| Goal| Cases | Expect  |
-|-|-|-|
-|``Untag``:Acess -> Acess port.| Send VLAN1000 ``Untagged`` packet on Port1 with mac2 as dest mac. |  ``Untag`` packet received on port2.|
-|``Tag``:Acess -> Acess port.| Send VLAN2000 ``Untagged`` packet on Port9 with mac10 mac as dest mac. |  ``Untag`` packet received on port10.|
-
-### Frame Filtering
-#### Testing Objective
+## Test Group: Frame Filtering
+### Case3: test_untagged_frame_filtering
+### Case4: test_tagged_frame_filtering
+### Testing Objective <!-- omit in toc --> 
 
 Drop packet when the destination port from MAC table search is the port which packet come into the switch.
 
+**This test will cover tagged and untagged mode respectivily.**
+
 ```
-Test example:                                
+Test example(Untag):                                
                                                                                   | MAC1 |
   pkt(Untag:DMAC=MAC1 or MACX) -> Port1:Access:VLAN1000 -> FDB(contains:MAC1,MACX)|      | -> X 
                                                                                   | MACX |
 ```
 
-#### Test Data/Packet
+### Test steps <!-- omit in toc --> 
+  - Add another ``MacX`` as Port1 mac address into MAC table
+  - Create ``Untagged``/``Tagged VLAN1000`` packet, ``mac1`` as src mac, ``MacX`` as dest mac
+  - Send packet on VLAN Port.
+  - Verify no packet received on any port.
 
-[Sample_Packet](./config_data/vlan_config_t0.md#sample-datapacket)
-- Input: Packet(Untag)
-- Expected: Drop
-
-#### Additional config:
-- Add a non-existing ``MacX`` to port1
-
-#### Test Cases
-| Goal | Case |  Expect  |
-|-|-|-|
-| Filter frame. | Send VLAN1000 ``Untagged`` packet with dest ``MacX`` on ``port1``. |Packet dropped|
-| Filter frame. | Send VLAN1000 ``Untagged`` packet with dest ``MAC1`` on ``port1``. |Packet dropped|
-
-
-
-### MAC learning
-#### Testing Objective
-For mac learning in VLAN scenario, in contain those two cases
-1. the packet sent to the VLAN port will flood to other ports in the same VLAN before learning the mac address from the packet
-2. The packet is only sent to the target port when the MAC table contains the MAC address on the target port(Dest MAC).
-
-
+## Test Group: VLAN flooding
+### Case5: test_tagged_vlan_flooding
+### Case6: test_untagged_vlan_flooding
+### Testing Objective <!-- omit in toc --> 
+For mac flooding in VLAN scenario, before learning the mac address from the packet, the packet sends to the VLAN port will flood to other ports, the egress ports will be in the same VLAN as ingress port.
 ```
-1. Flooding                                 
+Flooding                                 
                                                              | Port2|
  pkt(Untag:DMAC=MAC2) -> Port1:Access:VLAN1000 -> Flooding ->|  To  |-> pkt(Untag)
                                                              | Port8|
+```
 
-2. unicast 
+**This test will cover tagged and untagged mode respectivily.**
+
+### Test Steps: <!-- omit in toc --> 
+  - Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as source MAC and a un-existing ``MacX`` as dest MAC
+  - Send packet on Port1.
+  - Verify received packet on all port expect Port1.
+
+## Test Group: MAC learning
+### Case7: test_untagged_mac_learning
+### Case8: test_tagged_mac_learning
+### Testing Objective <!-- omit in toc --> 
+For mac learning in VLAN scenario, after learning the mac address from the packet, the packet sends to the VLAN port will only sends to the port whose MAC address matching the MAC table entry.
+
+```
+ unicast 
   pkt(Untag:DMAC=MAC1)  -> Port2:Access:VLAN1000-> Port1:Access:VLAN1000 -> pkt(Untag:DMAC=MAC1)
 
 ```
-
-#### Test Data/Packet
-
-[Sample_Packet](./config_data/vlan_config_t0.md#sample-datapacket)
-- Input: Packet(Untag)
-- Expected: Packet(Untag)
-
-#### Additional config:
-- Do not config the MAC table
-
-#### Test Cases
-| Goal | Case | Expect  |
-|-|-|-|
-| Flooding in VLAN. | Send ``Untagged`` packet with dest ``mac2`` on ``port1``. |Receive ``Untagged`` packet from Port2 to Port8|
-|MAC learning|check the FDB entries.|New mac entries in FDB.|
-| Forwarding based on MAC table.| Send a ``Untagged`` packet with src:mac2, dest:mac1 on port2.| Receive ``Untagged`` packet on Port1|
-|MAC learning|check the FDB entries.|New mac entries in FDB.|
+**This test will cover tagged and untagged mode respectivily.**
+### Test Steps: <!-- omit in toc --> 
+  - Create ``Untagged``/``Tagged VLAN1000`` packet, with a un-existing ``MacX`` as src MAC and ``mac2`` as dest MAC
+  - Send packet on a VLAN source port1.
+  - Verify packet received on port2.
+  - Verify MAC table get a new entry for ``MacX`` on port1, 
 
 
-## SAI API test
+## Test Case9: Vlan member API
+  - test_vlan_member_api
 
-### Vlan member list
-#### Testing Objective
+### Testing Objective <!-- omit in toc --> 
 
-Test VLAN and member list.
+Test VLAN and member APIs.
 
-#### Test Cases
-| Goal | Cases | Expect  |
-|-|-|-|
-| VLAN APIs get VLAN and its member. |Use the SAI API to check the VLAN and its member.|  VLAN and VLAN member list.|
-| Remove VLAN and its member.|Remove the VLAN member from VLAN 1000 and remove VLAN. |  VLAN and its member removed.|
-| Error when creating member to un-exist VLAN. |Use the SAI API to create a VLAN member on VLAN 1000 |  Error happened.|
+### Test steps: <!-- omit in toc --> 
+Test steps:
+  - Use VLAN API to list all of the VLAN member in VLAN
+  - Verify the VLAN member and the account of the VLAN member are same as config in [config](./config_data/config_t0.md)
+  - Use VLAN API add a new Member, into VLAN
+  - Verify the VLAN member and the account of the VLAN member are increased by 1.
 
-### VLAN related counters.
-#### Testing Objective
+## Test Case10: Add to illegal VLAN failure
+  - test_add_vlan_member_failed
+### Testing Objective <!-- omit in toc --> 
+
+When add a VLAN member to a non-exist VLAN, it will fail.
+
+### Test Steps: <!-- omit in toc --> 
+  - Use VLAN API add a new Member to a non-exist VLAN, ``VLAN1010``
+  - Verify the VLAN member added failed.
+
+## Test Group: VLAN Counters/Status
+### Case11: test_tagged_vlan_status
+### Case12: test_untagged_vlan_status
+### Testing Objective <!-- omit in toc --> 
 
 For VLAN-related counters, SAI should be able to get the counter and clear them.
+**This test will cover tagged and untagged mode respectivily.**
 
-#### Test Data/Packet
-[Sample_Packet](./config_data/vlan_config_t0.md#sample-datapacket)
-- Input: Packet(Untag)
-- Expected: Packet(Untag)
+### Test Steps: <!-- omit in toc --> 
+Steps:
+  - Use SAI API to get the VLAN Status ``_sai_vlan_stat_t`` from [VLAN_HEADER](https://github.com/opencomputeproject/SAI/blob/master/inc/saivlan.h) 
+  - Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as src MAC and ``mac2`` as dest MAC
+  - Send packet from the source port1
+  - Verify packet received on the target port2
+  - Verify counters increased, bytes counter: OCTETS increased, other counters + 1
+  - Use VLAN clear status API
+  - Verify counters have been reset
 
-#### Test Cases
-| Goal |Cases |  Expect  |
-|-|-|-|
-| Packet Forwarding.|Send VLAN1000 ``Untagged`` packet on Port1 with port2 mac as dest mac. |  ``Untagged`` packet received on port3.|
-| Counter Changed accordingly.|Use the SAI API to check the counters | Counter increased, bytes counter: OCTETS increased, other counters + 1|
-|  Counter reset.|Use the SAI API to clear the counters.| Related counter is reset to zero. |
-
-
-### Disable mac learning
-#### Testing Objective
+## Test Group7: Disable mac learning
+### Case13: test_disable_mac_learning_tagged
+### Case14: test_disable_mac_learning_untagged
+### Testing Objective <!-- omit in toc --> 
 Test the function when disabling VLAN MAC learning.
 When disabled, no new MAC will be learned in the MAC table.
+**This test will cover tagged and untagged mode respectivily.**
 
-#### Test Data/Packet
-
-[Sample_Packet](./config_data/vlan_config_t0.md#sample-datapacket)
-- Input: Packet(Untag)
-- Expected: Packet(Untag)
-
-#### Additional config:
+### Additional config: <!-- omit in toc --> 
 - Do not config the MAC table
 
-#### Test Cases
-| Goal | Case | Expect  |
-|-|-|-|
-| Disable Vlan MAC learning. | Set the VLAN attribute to disable the VLAN MAC learning. |VLAN attribute set.|
-| Flooding in VLAN. | Send ``Untagged`` packet with dest ``mac2`` on ``port1``. |Receive ``Untagged`` packet from Port2 to Port8|
-| Flooding in VLAN. | Send ``Untagged`` packet with dest ``mac1`` on ``port2``. |Receive ``Untagged`` packet on ports except for port2.|
-|MAC learning|check the FDB entries.|No new mac entries in FDB.|
+### Test steps: <!-- omit in toc --> 
+  - Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as src MAC and ``mac2`` as dest MAC
+  - Send packet from the source port1.
+  - Verify packets received on all ports except the source port1.
+  - Verify MAC table, no new entry added in MAC table
 
-## Composit scenario
-
-### L3 switching(Inter-VLAN) 
-#### Testing Objective
+## Test Case15: L3 switching(Inter-VLAN) 
+### Testing Objective <!-- omit in toc --> 
 
 Testing L3 switching(Inter-VLAN).
 
@@ -256,7 +228,7 @@ The process is as below:
 2. Based on packet dest IP, derive the route to the dest IP, Dest MAC and Port derived from L3 table. Then SRC MAC change to Switch MAC, Dest MAC change to PORT MAC, forwarding to PORT9
 3. Packet goes through VLAN2000 port9
 
-#### Test Data/Packet
+### Test Data/Packet <!-- omit in toc --> 
 - Input Packet
   ```Python
   simple_tcp_packet(
@@ -274,16 +246,15 @@ The process is as below:
             ip_dst=DEST_IP,
             ip_src=SRC_IP)
   ```
-#### Test Cases
-|  Goal | Case | Expect  |
-|-|-|-|
-| Inter-VLAN switching .| Send ``Untagged`` packet on port1 with dest ``SVI_MAC``. |  ``Untagged`` packet received on ``PORT9``.|
+### Test Steps: <!-- omit in toc --> 
+  - Create Packet, with with dest ``SVI_MAC`` as dest mac, and dest IP ``192.168.20.21``(config as [Config_t0](./config_data/config_t0.md))
+  - Send ``Untagged`` packet on ``port1``
+  - Verify ``Untagged`` packet received on ``PORT9``
 
-
-
-
-### ARP Flooding and mac learning
-#### Testing Objective
+## Test Group: ARP Flooding and mac learning
+### Case16: test_arp_request_flooding
+### Case17: test_arp_response_learning
+### Testing Objective <!-- omit in toc --> 
 In the ARP scenario, the mac learning process is:
 1. Send an ARP request, with the source MAC, dest IP, and src IP, for broadcast, the DST MAC is ff:ff:ff:ff:ff:ff
 2. After the target port gets the ARP packet MAC table fills with port SRC MAC.
@@ -303,7 +274,7 @@ Test example:
   ARP Resp pkt(Untag:DMAC=MAC1)  -> Port2:Access:VLAN1000-> Port1:Access:VLAN1000 -> pkt(Untag:DMAC=MAC1)
 
 ```
-#### Test Data/Packet
+### Test Data/Packet <!-- omit in toc --> 
 **Both those two packets will be used in input and output.**
 - ARP request
   ```Python
@@ -340,13 +311,15 @@ Test example:
             hw_tgt=MAC2)
   ```
 
-#### Additional config:
+### Additional config: <!-- omit in toc --> 
 - Do not config the MAC table
 
-#### Test Cases
-| Goal | Case | Expect  |
-|-|-|-|
-| ARP Request flooding. | Send ``Untagged`` ARP packet with dest ``mac2`` on ``port1``. |``Untagged`` Arp request from Port2 to Port8|
-|MAC learning|check the FDB entries.|New mac entries in FDB.|
-| ARP response Forwarding.| Send a ``Untagged`` ARP response packet with src:mac2, dest:mac1 on port2.|``Untagged`` ARP response from Port1|
-|MAC learning|check the FDB entries.|New mac entries in FDB.|
+### Test Steps: <!-- omit in toc --> 
+- test_arp_request_flooding
+  - Create ARP packet with dest ``mac2``
+  - Send ``Untagged`` ARP packet on ``port1``
+  - Verify ``Untagged`` Arp request received from Port2 to Port8
+- test_arp_response_learning
+  - Create ARP response packet with src:mac2, dest:mac1
+  - Send ARP response packet on port2
+  - Verify ``Untagged`` ARP response from Port1
