@@ -1,103 +1,88 @@
 # SAI Lag Test plan
 - [SAI Lag Test plan](#sai-lag-test-plan)
 - [Overriew](#overriew)
-- [Test Environment](#test-environment)
-  - [Testbed](#testbed)
-  - [Test Configuration](#test-configuration)
-  - [Variations](#variations)
+- [Test Configuration](#test-configuration)
 - [Test Execution](#test-execution)
-  - [Basic function test](#basic-function-test)
-    - [PortChannel Loadbalanceing](#portchannel-loadbalanceing)
-      - [Testing Objective](#testing-objective)
-      - [Test Data/Packet](#test-datapacket)
-      - [Test Cases](#test-cases)
-  - [SAI API test](#sai-api-test)
-    - [Renove lag member](#remove-lag-member)
-      - [Testing Objective](#testing-objective)
-      - [Test Cases](#test-cases)
-    - [Disable Lag memeber](#disable-lag-memeber.)
-      - [Testing Objective](#testing-objective)
-      - [Test Data/Packet](#test-datapacket)
-      - [Test Cases](#test-case)
+  - [Test Data/Packet](#test-datapacket)
+  - [Test Group: L3 PortChannel Loadbalanceing](#test-group-l3-portchannel-loadbalanceing)
+    - [Testing Objective](#testing-objective)
+    - [Case2: Change destinstion_port](#case2-change-destinstion_port)
+    - [Case3: Change source_ip](#case3-change-source_ip)
+    - [Case4: Change destinstion_ip](#case4-change-destinstion_ip)
+    - [Case5: Case5: Change protocol](#case4-change-protocol)
       
-## Overriew
+# Overriew
 The purpose of this test plan is to test the LAG/PortChannel function from SAI.
 
-# Test Environment
-## Testbed
-Those tests will be run on the testbed structure, the components are:
-* PTF - running in a server that can connect to the target DUT
-* SAI server - running on a dut
-## Test Configuration
 
-For the test configuration, please refer to the file 
-  - [VLAN_config](./config_data/vlan_config_t0.md)
-  - [FDB_config](./config_data/fdb_config_t0.md)
-  - [Route_config](./config_data/route_config_t0.md)
-  - [LAG_config](./config_data/LAG_config_t0.md)
+# Test Configuration
 
+For the test configuration, please refer to LAG configuration section ofthe file 
+  - [Config_t0](./config_data/config_t0.md)
   
 **Note. All the tests will be based on the configuration above, if any additional configuration is required, it will be specified in the Test case.**
 
-## Variations
-Cause the testbed might also encounter some issues like the host interface being down. 
-Before running the actual test there will need some sanity test to check the DUT status and select the active ports for testing.
-
-**All the ports in this test plan just to illustrate the test purpose, they are not exactly the same for the actual environment.**
-
 # Test Execution
-## Basic function test
+## Test Data/Packet
+```Python
+pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
+                        eth_src=src_mac,
+                        ip_dst=dst_ip_addr,
+                        ip_src=src_ip_addr,
+                        udp_sport=udp_sport,
+                        udp_dport=udp_dport,
+                        ip_id=106,
+                        ip_ttl=64)
 
-### PortChannel Loadbalanceing
-#### Testing Objective
-For load balancing, expecting the ports in a lag should receive the packet equally. Traffic direction: from server side to T1 side
-Even after removing and disabling the port in a lag.
+ exp_pkt = simple_udp_packet(eth_dst=dstmac,
+                             ip_dst=dst_ip_addr,
+                             ip_src=src_ip_addr,
+                             udp_sport=udp_sport,
+                             udp_dport=udp_dport,
+                             ip_id=106,
+                             ip_ttl=63)
+```
+TCP Packet
+```Python
+pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                        eth_src=src_mac,
+                        ip_dst=dst_ip_addr,
+                        ip_src=src_ip_addr,
+                        tcp_sport=tcp_sport,
+                        tcpp_dport=tcp_dport,
+                        ip_id=106,
+                        ip_ttl=64)
 
-#### Test Data/Packet
+ exp_pkt = simple_udp_packet(eth_dst=dstmac,
+                             ip_dst=dst_ip_addr,
+                             ip_src=src_ip_addr,
+                             tcp_sport=tcp_sport,
+                             tcp_dport=tcp_dport,
+                             ip_id=106,
+                             ip_ttl=63)
+```
 
-[Sample_Packet](./config_data/LAG_config_t0.md#sample-datapacket)
-- Input Packet
-- Output Packet
+## Test Group: L3 PortChannel Loadbalanceing
+These cases will cover five scenarios: src/dst ip, src/dst port , protocol
 
-#### Test Cases
-|  Goal| Steps/Cases  | Expect  |
-|-|-|-|
-| Prepare to send from port0 to Lag1.| Send packet with.| Lag1 and members have been created.|
-| Packet forwards on port equally.| Send packet on port0 to the lag1  100 times .| Loadbalance on lag members.|
-| Packet forwards on available ports equally.| Every time, disable egress/ingress on one lag member, then send packet | Loadbalance on lag members.|
-| Packet forwards on available ports equally.| Every time, enable egress/ingress on one lag member, then send packet | Loadbalance on lag members.|
-| Packet forwards on available ports equally.| Every time, remove one lag member, then send packet | Loadbalance on lag members.|
-
-
-
-## SAI API test
-### Remove Lag member 
-#### Testing Objective
-Test verifies the LAG load balancing for scenario when LAG members are removed.
-
-
-#### Test Data/Packet
-
-[Sample_Packet](./config_data/LAG_config_t0.md#sample-datapacket)
-- Input Packet
-- Output Packet
-
-#### Test Cases
-| Goal | Steps/Cases | Expect  |
-|-|-|-|
-|Remove lag2_member2 and forwarding packet from port0 to lag2|Remove lag2_member2 form Lag2 and Send packet on port0 to lag2 100 times| Port0 will receive an equal number of packets.|
+### Case1: Change source_port
+### Case2: Change destinstion_port
+### Case3: Change source_ip
+### Case4: Change destinstion_ip
+### Case5: Change protocol
 
 
-### Disable Lag memeber
-For lag, we can disable it from ingress or egress direction, after we disable the member of a lag, we expect traffic can be loadbalanced to other lag members.
+### Testing Objective
+For load balancing, expecting the ports in a lag should receive the packet equally. Traffic direction: from server side to T1 side. 
 
-#### Test Data/Packet
+### Test steps: <!-- omit in toc --> 
+Test steps:
+  - 1.Set switch hash attribute as (SAI_NATIVE_HASH_FIELD_SRC_IP,
+                                SAI_NATIVE_HASH_FIELD_DST_IP,
+                                SAI_NATIVE_HASH_FIELD_IP_PROTOCOL,
+                                SAI_NATIVE_HASH_FIELD_L4_DST_PORT,
+                                SAI_NATIVE_HASH_FIELD_L4_SRC_PORT), which mean switch computes hash value  using the five fields of packet. 
+  - 2.Gerate different packets by  updating source port/destination port/source ip/destination ip of packet.                                
+  - 3.Send these packetes on port0 to the lag1. Check if packet forwards on ports of lag1 equally.
 
-[Sample_Packet](./config_data/LAG_config_t0.md#sample-datapacket)
-- Input Packet
-- Output Packet
 
-#### Test Cases
-| Goal | Steps/Cases | Expect  |
-|-|-|-|
-|Packet dropped on port22| Disable egress and ingress on lag3 member2. send packet | Packet drop.|

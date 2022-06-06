@@ -9,6 +9,7 @@
     - [rotue entries](#rotue-entries)
   - [LAG configuration](#lag-configuration)
     - [LAG and LAG members](#lag-and-lag-members)
+    - [LAG route and neighbor config](#lag-route-and-neighbor-config)
   - [FDB Configuration](#fdb-configuration)
     - [MAC Table](#mac-table)
 ## Overriew
@@ -102,12 +103,22 @@ VLAN interfaces route entries
 
 ### LAG and LAG members
 
-|HostIf|VLAN ID|Ports|
+|HostIf|LAG ID|Ports|
 |-|-|-|
 |Ethernet76-80|lag1|Port17-18|
-|Ethernet84-88|lag2|Port19-20|
-|Ethernet92-96|lag3|Port21-22|
 
+### LAG route and neighbor config
+Neighbors
+
+|Name|IP|dest_mac|
+|-|-|-|
+|lag1_nb1-nb8| 192.168.0.11-192.168.0.18| 00:00:11:11:11:11-00:00:88:88:88:88|
+
+Route entry
+
+|DestIp|Next Hop |Next Hop ip|
+|-|-|-|
+|192.168.0.11-192.168.0.18|lag1:port17-18|192.168.0.11-192.168.0.18|
 
 ## FDB Configuration
 ### MAC Table
