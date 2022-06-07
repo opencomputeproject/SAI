@@ -82,6 +82,7 @@ These cases will cover five scenarios: src/dst ip, src/dst port , protocol. cons
 For load balancing, expecting the ports in a lag should receive the packet equally. Traffic direction: from server side to T1 side. 
 
 ### Additional config: <!-- omit in toc --> 
+- Set hash alogrithm as SAI_HASH_ALGORITHM_CRC
 - Set switch hash attribute as below, which mean switch computes hash value  using the five fields of packet. 
 ```
 SAI_NATIVE_HASH_FIELD_SRC_IP
