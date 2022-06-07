@@ -16,7 +16,7 @@
     - [Case7: test_untagged_mac_learning](#case7-test_untagged_mac_learning)
     - [Case8: test_tagged_mac_learning](#case8-test_tagged_mac_learning)
   - [Test Case9: Vlan member API](#test-case9-vlan-member-api)
-  - [Test Case10: Add to illegal VLAN failure](#test-case10-add-to-illegal-vlan-failure)
+  - [Test Case10: Failed to add member to invalidate VLAN](#test-case10-failed-to-add-member-to-invalidate-vlan)
   - [Test Group: VLAN Counters/Status](#test-group-vlan-countersstatus)
     - [Case11: test_tagged_vlan_status](#case11-test_tagged_vlan_status)
     - [Case12: test_untagged_vlan_status](#case12-test_untagged_vlan_status)
@@ -164,7 +164,7 @@ Test steps:
   - Use VLAN API add a new Member, into VLAN
   - Verify the VLAN member and the account of the VLAN member are increased by 1.
 
-## Test Case10: Add to illegal VLAN failure
+## Test Case10: Failed to add member to invalidate VLAN
   - test_add_vlan_member_failed
 ### Testing Objective <!-- omit in toc --> 
 
