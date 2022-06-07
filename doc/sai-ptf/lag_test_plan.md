@@ -10,13 +10,10 @@
     - [Case3: Change source_ip](#case3-change-source_ip)
     - [Case4: Change destinstion_ip](#case4-change-destinstion_ip)
     - [Case5: Change protocol](#case5-change-protocol)
-    - [Testing Objective](#testing-objective)
   - [Test Group: Disable Egress/Ingress](#test-group-disable-egressingress)
     - [Case6: Disable_egress](#case6-disable_egress)
     - [Case7: Disable_ingress](#case7-disable_ingress)
-    - [Testing Objective](#testing-objective-1)
   - [Test Case: Remove lag member](#test-case-remove-lag-member)
-    - [Testing Objective](#testing-objective-2)
 # Overriew
 The purpose of this test plan is to test the LAG/PortChannel function from SAI.
 
@@ -81,7 +78,7 @@ These cases will cover five scenarios: src/dst ip, src/dst port , protocol. cons
 ### Case5: Change protocol
 
 
-### Testing Objective
+### Testing Objective <!-- omit in toc --> 
 For load balancing, expecting the ports in a lag should receive the packet equally. Traffic direction: from server side to T1 side. 
 ### Test steps: <!-- omit in toc --> 
 Test steps:
@@ -102,7 +99,7 @@ Test steps:
 ### Case6: Disable_egress
 ### Case7: Disable_ingress
 
-### Testing Objective
+### Testing Objective <!-- omit in toc --> 
 These cases will cover two scenarios: disable egress and ingress.  We can disable ingress or egress on a lag member, then we expect traffic drop on the disabled lag member.
 
 ### Test steps: <!-- omit in toc --> 
@@ -113,7 +110,7 @@ Test steps:
 - Check if Packet drop on port20
 
 ## Test Case: Remove lag member
-### Testing Objective
+### Testing Objective <!-- omit in toc --> 
 These cases will cover lag memeber removement.  We can remove a lag member, then expect traffic drop on the lag member.
 
 ### Test steps: <!-- omit in toc --> 

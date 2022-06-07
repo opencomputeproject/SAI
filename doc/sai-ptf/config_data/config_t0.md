@@ -6,7 +6,10 @@
     - [VLAN Interfaces](#vlan-interfaces)
     - [Json config data](#json-config-data)
   - [Route Configuration](#route-configuration)
-    - [rotue entries](#rotue-entries)
+    - [VLAN interfaces route entries](#vlan-interfaces-route-entries)
+    - [VLAN Neighbors](#vlan-neighbors)
+    - [LAG Route entry](#lag-route-entry)
+    - [LAG Neighbors](#lag-neighbors)
   - [LAG configuration](#lag-configuration)
     - [LAG and LAG members](#lag-and-lag-members)
   - [FDB Configuration](#fdb-configuration)
@@ -89,22 +92,21 @@ Below is the sample config data in config_db.json
 
 ## Route Configuration
 
-### rotue entries
 
-VLAN interfaces route entries
-|VLAN ID | VLAN Member | NH IP | NH MAC|
-|-|-|-|-|
-|1000| Ethernet4-32 | 192.168.10.11 ~ 192.168.10.18 | 10:00:11:11:11:11 - 10:00:88:88:88:88 |
-|2000| Ethernet36-72 | 192.168.20.21 ~ 192.168.20.28 | 20:00:11:11:11:11 - 20:00:88:88:88:88 |
+### VLAN interfaces route entries
+|VLAN ID | VLAN Member | NH IP | 
+|-|-|-|
+|1000| Ethernet4-32 | 192.168.10.11 ~ 192.168.10.18 | 
+|2000| Ethernet36-72 | 192.168.20.21 ~ 192.168.20.28 | 
 
-VLAN Neighbors
+### VLAN Neighbors
 |Name|IP|dest_mac|
 |-|-|-|
 |vlan1000_nb1-nb8| 192.168.10.11 ~ 192.168.10.18 | 10:00:11:11:11:11 - 10:00:88:88:88:88|
 |vlan2000_nb1-nb8|192.168.20.21 ~ 192.168.20.28 |20:00:11:11:11:11 - 20:00:88:88:88:88 |
 
 
-LAG Route entry
+### LAG Route entry
 
 |DestIp|Next Hop |Next Hop ip|
 |-|-|-|
@@ -112,7 +114,7 @@ LAG Route entry
 |192.168.0.19|lag2:port19-20|192.168.0.19|
 |192.168.0.20|lag3:port21-22|192.168.0.20|
 
-LAG Neighbors
+### LAG Neighbors
 
 |Name|IP|dest_mac|
 |-|-|-|
@@ -139,4 +141,4 @@ The MAC Table for VLAN L2 forwarding as below
 |mac0|mac0-00:00:00:00:00:11|Port0||Ethernet0|
 |mac1-8  |00:11:11:11:11:11 - 00:88:88:88:88:88|Port1-8|1000|Ethernet4-Ethernet32|
 |mac9-16 |00:99:99:99:99:99 - 01:00:00:00:00:00|Port9-16|2000|Ethernet36-Ethernet64|
-|mac17-mac31 |01:11:11:11:11:11 - 03:11:11:11:11:11|Port17-31||Ethernet68-Ethernet124|
+|mac17-mac31 |01:11:11:11:11:11 - 01:ff:ff:ff:ff:ff|Port17-31||Ethernet68-Ethernet124|

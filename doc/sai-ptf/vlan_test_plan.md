@@ -63,8 +63,6 @@ In this VLAN test, most of test case will be tested with Tagged or Untagged pack
 ### Testing Objective <!-- omit in toc --> 
 This test verifies the VLAN function around untag and access ports.
 
-**This test will cover tagged and untagged mode respectivily.**
-
 *p.s. This test will not check function with the native VLAN scenario. Please make sure the native VLAN will not impact the result.*
 
 With an untagged packet, on the access port, when ingress and egress happen, the behavior as below
@@ -97,7 +95,6 @@ Test Steps:
 
 Drop packet when the destination port from MAC table search is the port which packet come into the switch.
 
-**This test will cover tagged and untagged mode respectivily.**
 
 ```
 Test example(Untag):                                
@@ -124,7 +121,6 @@ Flooding
                                                              | Port8|
 ```
 
-**This test will cover tagged and untagged mode respectivily.**
 
 ### Test Steps: <!-- omit in toc --> 
   - Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as source MAC and a un-existing ``MacX`` as dest MAC
@@ -142,7 +138,6 @@ For mac learning in VLAN scenario, after learning the mac address from the packe
   pkt(Untag:DMAC=MAC1)  -> Port2:Access:VLAN1000-> Port1:Access:VLAN1000 -> pkt(Untag:DMAC=MAC1)
 
 ```
-**This test will cover tagged and untagged mode respectivily.**
 ### Test Steps: <!-- omit in toc --> 
   - Create ``Untagged``/``Tagged VLAN1000`` packet, with a un-existing ``MacX`` as src MAC and ``mac2`` as dest MAC
   - Send packet on a VLAN source port1.
@@ -180,7 +175,6 @@ When add a VLAN member to a non-exist VLAN, it will fail.
 ### Testing Objective <!-- omit in toc --> 
 
 For VLAN-related counters, SAI should be able to get the counter and clear them.
-**This test will cover tagged and untagged mode respectivily.**
 
 ### Test Steps: <!-- omit in toc --> 
 Steps:
@@ -198,7 +192,6 @@ Steps:
 ### Testing Objective <!-- omit in toc --> 
 Test the function when disabling VLAN MAC learning.
 When disabled, no new MAC will be learned in the MAC table.
-**This test will cover tagged and untagged mode respectivily.**
 
 ### Additional config: <!-- omit in toc --> 
 - Do not config the MAC table
@@ -222,7 +215,7 @@ Server To Server
                                               |L3| <-> |Virtual Switch| 
   PC2 <- pkt(Untag) <- |DUT|Port9:Access:VLAN2000
 ```
-*All the layer 3 router tables are created as the basic config, not MAC and ARP learning in this test process.*
+
 The process is as below:
 1. PC1 sends a untag packet to port1, which is a VLAN1000 access port
 2. Based on packet dest IP, derive the route to the dest IP, Dest MAC and Port derived from L3 table. Then SRC MAC change to Switch MAC, Dest MAC change to PORT MAC, forwarding to PORT9
