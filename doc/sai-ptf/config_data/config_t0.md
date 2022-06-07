@@ -4,7 +4,6 @@
   - [VLAN configuration](#vlan-configuration)
     - [VLAN and VLAN members](#vlan-and-vlan-members)
     - [VLAN Interfaces](#vlan-interfaces)
-    - [Json config data](#json-config-data)
   - [Route Configuration](#route-configuration)
     - [VLAN interfaces route entries](#vlan-interfaces-route-entries)
     - [VLAN Neighbors](#vlan-neighbors)
@@ -25,6 +24,7 @@ This document describes the sample configuration data.
 
 |HostIf|VLAN ID|Ports|Tag mode|
 |-|-|-|-|
+|Ethernet0||Port0||
 |Ethernet4-32|1000|Port1-8|Untag|
 |Ethernet36-72|2000|Port9-16|Untag|
 
@@ -33,62 +33,6 @@ This document describes the sample configuration data.
 |-|-|-|
 |1000|192.168.10.1|10:00:01:11:11:11|
 |2000|192.168.20.1|20:00:01:22:22:22|
-
-### Json config data
-
-Below is the sample config data in config_db.json
-
-```JSON
-   {
-    "VLAN": {
-        "Vlan1000": {            
-            "members": [
-                "Ethernet4",
-                "Ethernet8",
-                "Ethernet12",
-                "Ethernet16",
-                "Ethernet20",
-                "Ethernet24",
-                "Ethernet28",
-                "Ethernet32"
-            ],
-            "vlanid": "1000"
-        }
-    },
-    "VLAN_INTERFACE": {
-        "Vlan1000": {},
-        "Vlan1000|192.168.0.1/21": {},
-        "Vlan1000|fc02:1000::1/64": {}
-    },
-    "VLAN_MEMBER": {
-        "Vlan1000|Ethernet4": {
-            "tagging_mode": "untagged"
-        },
-        "Vlan1000|Ethernet8": {
-            "tagging_mode": "untagged"
-        },
-        "Vlan1000|Ethernet12": {
-            "tagging_mode": "untagged"
-        },
-        "Vlan1000|Ethernet16": {
-            "tagging_mode": "untagged"
-        },
-        "Vlan1000|Ethernet20": {
-            "tagging_mode": "untagged"
-        },
-        "Vlan1000|Ethernet24": {
-            "tagging_mode": "untagged"
-        },
-        "Vlan1000|Ethernet28": {
-            "tagging_mode": "untagged"
-        },
-        "Vlan1000|Ethernet32": {
-            "tagging_mode": "untagged"
-        }
-    }
-   }
-```
-
 
 ## Route Configuration
 

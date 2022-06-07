@@ -5,22 +5,22 @@
 - [Test Execution](#test-execution)
   - [Test Data/Packet](#test-datapacket)
   - [Test Group: L3 PortChannel Loadbalanceing](#test-group-l3-portchannel-loadbalanceing)
-    - [Case1: Change source_port](#case1-change-source_port)
-    - [Case2: Change destinstion_port](#case2-change-destinstion_port)
-    - [Case3: Change source_ip](#case3-change-source_ip)
-    - [Case4: Change destinstion_ip](#case4-change-destinstion_ip)
-    - [Case5: Change protocol](#case5-change-protocol)
+    - [Case1: test_loadbalance_on_source_port](#case1-test_loadbalance_on_source_port)
+    - [Case2: test_loadbalance_on_destinstion_port](#case2-test_loadbalance_on_destinstion_port)
+    - [Case3: test_loadbalance_on_source_ip](#case3-test_loadbalance_on_source_ip)
+    - [Case4: test_loadbalance_on_destinstion_ip](#case4-test_loadbalance_on_destinstion_ip)
+    - [Case5: test_loadbalance_on_protocol](#case5-test_loadbalance_on_protocol)
   - [Test Group: Disable Egress/Ingress](#test-group-disable-egressingress)
-    - [Case6: Disable_egress](#case6-disable_egress)
-    - [Case7: Disable_ingress](#case7-disable_ingress)
-  - [Test Case: Remove lag member](#test-case-remove-lag-member)
+    - [Case6: test_disable_egress](#case6-test_disable_egress)
+    - [Case7: test_disable_ingress](#case7-test_disable_ingress)
+  - [Test Case8: Remove lag member](#test-case8-remove-lag-member)
 # Overriew
 The purpose of this test plan is to test the LAG/PortChannel function from SAI.
 
 
 # Test Configuration
 
-For the test configuration, please refer to LAG configuration section ofthe file 
+For the test configuration, please refer to LAG configuration section of the file 
   - [Config_t0](./config_data/config_t0.md)
   
 **Note. All the tests will be based on the configuration above, if any additional configuration is required, it will be specified in the Test case.**
@@ -71,53 +71,60 @@ pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
 These cases will cover five scenarios: src/dst ip, src/dst port , protocol. considering the mighty hash collision, please make sure the volume of the test data, and we can check the final result is in a range.
 
 
-### Case1: Change source_port
-### Case2: Change destinstion_port
-### Case3: Change source_ip
-### Case4: Change destinstion_ip
-### Case5: Change protocol
+### Case1: test_loadbalance_on_source_port
+### Case2: test_loadbalance_on_destinstion_port
+### Case3: test_loadbalance_on_source_ip
+### Case4: test_loadbalance_on_destinstion_ip
+### Case5: test_loadbalance_on_protocol
 
 
 ### Testing Objective <!-- omit in toc --> 
 For load balancing, expecting the ports in a lag should receive the packet equally. Traffic direction: from server side to T1 side. 
+
+### Additional config: <!-- omit in toc --> 
+- Set switch hash attribute as below, which mean switch computes hash value  using the five fields of packet. 
+```
+SAI_NATIVE_HASH_FIELD_SRC_IP
+SAI_NATIVE_HASH_FIELD_DST_IP
+SAI_NATIVE_HASH_FIELD_IP_PROTOCOL
+SAI_NATIVE_HASH_FIELD_L4_DST_PORT
+SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
+```
 ### Test steps: <!-- omit in toc --> 
-Test steps:
-  - Set switch hash attribute as (SAI_NATIVE_HASH_FIELD_SRC_IP,
-                                SAI_NATIVE_HASH_FIELD_DST_IP,
-                                SAI_NATIVE_HASH_FIELD_IP_PROTOCOL,
-                                SAI_NATIVE_HASH_FIELD_L4_DST_PORT,
-                                SAI_NATIVE_HASH_FIELD_L4_SRC_PORT), which mean switch computes hash value  using the five fields of packet. 
-
-  - Generate different packets by updating source port, destination port, source ip, destination ip of packet. Packets use lag1 neighbor IPs asdestination ip, lag1 neighbor MAC as destination MAC.
-
-  - Send these packetes on port1. 
-  - Check if packets are recieved on ports of lag1 equally.
+- Generate different packets by updating source port, destination port, source ip, and destination ip of the packet. Packets use lag1 neighbor IPs as destination ip, lag1 neighbor MAC as destination MAC.
+- Send these packetes with different protocols on port1. 
+- Check if packets are recieved on ports of lag1 equally.
 
 ## Test Group: Disable Egress/Ingress
 
 
-### Case6: Disable_egress
-### Case7: Disable_ingress
+### Case6: test_disable_egress
+### Case7: test_disable_ingress
 
 ### Testing Objective <!-- omit in toc --> 
 These cases will cover two scenarios: disable egress and ingress.  We can disable ingress or egress on a lag member, then we expect traffic drop on the disabled lag member.
 
-### Test steps: <!-- omit in toc --> 
-Test steps:
-- Disable egress/ingress on lag2 member port20; For case7, Remove port22 from lag3
-- Create packet with lag2 neighbor IP as destination ip, lag2 neighbor MAC as destination MAC
+### Test steps: <!-- omit in toc -->
+- Create packets with variations of the src_ip, dest_ip is lag2 neighbor IP and MAC is lag2 neighbor MAC.
 - Send packet from port1 
+- Verify packets appear on differnt lag2 members.
+- Disable egress/ingress on lag2 member port20
+- Create packets with variations of the src_ip, dest ip is lag2 neighbor IP and MAC is lag2 neighbor MAC.
+- Send packet from port1
 - Check if Packet drop on port20
 
-## Test Case: Remove lag member
+## Test Case8: Remove lag member
+- test_remove_lag_member
 ### Testing Objective <!-- omit in toc --> 
 These cases will cover lag memeber removement.  We can remove a lag member, then expect traffic drop on the lag member.
 
-### Test steps: <!-- omit in toc --> 
-Test steps:
+### Test steps: <!-- omit in toc -->
+- Create packets with variations of the src_ip, dest_ip is lag3 neighbor IP and MAC is lag3 neighbor MAC.
+- Send packet from port0 
+- Verify packets appear on differnt lag3 members.
 - Remove port22 from lag3
-- Create packet with lag3 neighbor IP as destination ip, lag3 neighbor MAC as destination MAC
-- Send packet from port1 
+- Create packets with variations of the src_ip, dest ip is lag3 neighbor IP and MAC is lag3 neighbor MAC.
+- Send packet from port0 
 - Check if Packet drop on port22
 
 
