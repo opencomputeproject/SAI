@@ -451,6 +451,21 @@ typedef enum _sai_attr_value_type_t
      */
     SAI_ATTR_VALUE_TYPE_AUTH_KEY,
 
+    /**
+     * @brief Attribute value is port CTLE values list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_CTLE_VALUES_LIST,
+
+    /**
+     * @brief Attribute value is port FFE values list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_FFE_VALUES_LIST,
+
+    /**
+     * @brief Attribute value is port DFE values list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_DFE_VALUES_LIST,
+
 } sai_attr_value_type_t;
 
 /**
