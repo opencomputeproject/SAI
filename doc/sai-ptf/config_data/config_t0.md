@@ -11,6 +11,7 @@
     - [LAG Neighbors](#lag-neighbors)
   - [LAG configuration](#lag-configuration)
     - [LAG and LAG members](#lag-and-lag-members)
+    - [LAG Hash Rule](#lag-hash-rule)
   - [FDB Configuration](#fdb-configuration)
     - [MAC Table](#mac-table)
 ## Overriew
@@ -56,7 +57,7 @@ This document describes the sample configuration data.
 |-|-|-|
 |192.168.0.11-192.168.0.18|lag1:port17-18|192.168.0.11-192.168.0.18|
 |192.168.0.19|lag2:port19-20|192.168.0.19|
-|192.168.0.20|lag3:port21-22|192.168.0.20|
+
 
 ### LAG Neighbors
 
@@ -64,7 +65,7 @@ This document describes the sample configuration data.
 |-|-|-|
 |lag1_nb1-nb8| 192.168.0.11-192.168.0.18| 00:00:11:11:11:11-00:00:88:88:88:88|
 |lag2_nb1|192.168.0.19|00:00:99:99:99:99|
-|lag3_nb1|192.168.0.20|00:00:aa:aa:aa:aa|
+
 
 
 ## LAG configuration
@@ -75,7 +76,17 @@ This document describes the sample configuration data.
 |-|-|-|
 |Ethernet76-80|lag1|Port17-18|
 |Ethernet84-88|lag2|Port19-20|
-|Ethernet92-96|lag3|Port21-22|
+
+### LAG Hash Rule
+- Set hash alogrithm as SAI_HASH_ALGORITHM_CRC
+- Set switch hash attribute as below, which mean switch computes hash value  using the five fields of packet. 
+```
+SAI_NATIVE_HASH_FIELD_SRC_IP
+SAI_NATIVE_HASH_FIELD_DST_IP
+SAI_NATIVE_HASH_FIELD_IP_PROTOCOL
+SAI_NATIVE_HASH_FIELD_L4_DST_PORT
+SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
+```
 
 ## FDB Configuration
 ### MAC Table
