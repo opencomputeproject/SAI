@@ -218,7 +218,7 @@ Server To Server
 
 The process is as below:
 1. PC1 sends a untag packet to port1, which is a VLAN1000 access port
-2. Based on packet dest IP, derive the route to the dest IP, Dest MAC and Port derived from L3 table. Then SRC MAC change to Switch MAC, Dest MAC change to PORT MAC, forwarding to PORT9
+2. Based on packet dest IP, derive the route to the dest IP, Dest MAC and Port derived from L3 table. Then SRC MAC change to Switch MAC, Dest MAC change to PORT neighbor MAC, forwarding to PORT9
 3. Packet goes through VLAN2000 port9
 
 ### Test Data/Packet <!-- omit in toc --> 
@@ -234,7 +234,7 @@ The process is as below:
 - Expected Packet
   ```Python
   simple_tcp_packet(
-            eth_dst=PORT_MAC, 
+            eth_dst=PORT_NB_MAC, 
             eth_src=SVI_MAC,
             ip_dst=DEST_IP,
             ip_src=SRC_IP)

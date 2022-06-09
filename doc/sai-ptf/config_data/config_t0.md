@@ -30,10 +30,10 @@ This document describes the sample configuration data.
 |Ethernet36-72|2000|Port9-16|Untag|
 
 ### VLAN Interfaces
-|VLAN ID | VLAN Interface IP | VLAN Interface MAC | 
-|-|-|-|
-|1000|192.168.10.1|10:00:01:11:11:11|
-|2000|192.168.20.1|20:00:01:22:22:22|
+|VLAN ID | VLAN Interface IP| 
+|-|-|
+|1000|192.168.10.1|
+|2000|192.168.20.1|
 
 ## Route Configuration
 
