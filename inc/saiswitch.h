@@ -2777,6 +2777,20 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT,
 
     /**
+     * @brief Enable/disable Clause 22 MDIO access
+     *
+     * set mdio access type (clause 45 or clause 22) before calling sai_switch_mdio_read_fn and sai_switch_mdio_write_fn
+     *
+     * FALSE - sai_switch_mdio_read_fn and sai_switch_mdio_write_fn use clasue 45 mdio access.
+     * TRUE - sai_switch_mdio_read_fn and sai_switch_mdio_write_fn use clasue 22 mdio access.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_MDIO_CLAUSE_22,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
