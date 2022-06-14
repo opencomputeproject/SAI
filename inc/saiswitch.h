@@ -262,6 +262,19 @@ typedef enum _sai_switch_hardware_access_bus_t
 } sai_switch_hardware_access_bus_t;
 
 /**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_MDIO_ACCESS_TYPE
+ */
+typedef enum _sai_switch_mdio_clause_t
+{
+    /** MDIO Clause 22 */
+    SAI_SWITCH_MDIO_CLAUSE_22,
+
+    /** MDIO Clause 45 */
+    SAI_SWITCH_MDIO_CLAUSE_45,
+
+} sai_switch_mdio_clause_t;
+
+/**
  * @brief Attribute data for #SAI_SWITCH_ATTR_FIRMWARE_LOAD_METHOD
  */
 typedef enum _sai_switch_firmware_load_method_t
@@ -2777,18 +2790,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT,
 
     /**
-     * @brief Enable/disable Clause 22 MDIO access
+     * @brief Switch MDIO access type
      *
-     * set mdio access type (clause 45 or clause 22) before calling sai_switch_mdio_read_fn and sai_switch_mdio_write_fn
+     * set mdio access type (clause 22 or clause 45) before calling sai_switch_mdio_read_fn and sai_switch_mdio_write_fn
      *
-     * FALSE - sai_switch_mdio_read_fn and sai_switch_mdio_write_fn use clasue 45 mdio access.
-     * TRUE - sai_switch_mdio_read_fn and sai_switch_mdio_write_fn use clasue 22 mdio access.
-     *
-     * @type bool
+     * @type sai_switch_mdio_clause_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @default SAI_SWITCH_MDIO_CLAUSE_45
      */
-    SAI_SWITCH_ATTR_MDIO_CLAUSE_22,
+    SAI_SWITCH_ATTR_MDIO_ACCESS_TYPE,
 
     /**
      * @brief End of attributes
