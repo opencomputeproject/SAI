@@ -96,6 +96,7 @@ Verify newly added VLAN members can learn.
 6. Create a packet with DMAC ``MacX``
 7. send the packet on port2
 8. Verify the packet flood to other VLAN10 ports, including port1
+9. check FDB entries, no new entry
 
 - test_new_vlan_member_learn
 
@@ -106,6 +107,7 @@ Verify newly added VLAN members can learn.
 5. Create a packet with DMAC=``MacX``
 6. Send packet on port1
 7. Verify only receive a packet on port24
+8. check FDB entries, new entry ``MacX`` on Port24 learned
 
 - test_remove_vlan_member_learn
 
@@ -116,6 +118,7 @@ Verify newly added VLAN members can learn.
 5. Create a packet with DMAC=``MacX`` and VLAN10 tag
 6. Send packet on port1
 7. Verify flooding to VLAN10 ports, no packet on port2
+8. check FDB entries, no new entry
 
 - test_no_learn_invalidate_vlan
 - test_no_learn_broadcast_src
@@ -126,7 +129,8 @@ Verify newly added VLAN members can learn.
 3. Verify no packet was received on any port
 4. Create a packet with vlan_id=``VLAN11`` DMAC=``MacX``/DMAC=``broadcast address``/DMAC=``multicast address``
 5. Send packet on port1
-6. Flooding on all vlan10 ports, except port1
+6. Dropped for ``VLAN11``, For broadcast and multicast address, flooding on all vlan10 ports, except port1
+7. check FDB entries, no new entry
 
 
 ## Test Group2: MAC move
@@ -148,16 +152,29 @@ Verify when enabling MAC move, if after receiving a packet with known SMAC, but 
 6. Verify the packet gets dropped
 
 - test_dynamic_mac_move
+  
+1. Flush All MAC
+2. Install static FDB entry for port2 with ``Port2 MAC``
+3. Send Packet on Port1 with SMAC=``Port1 MAC`` DMAC=``Port2 MAC``
+4. Create packet with SMAC=``Port1 MAC`` DMAC=``Port2 MAC``
+5. Send packet on port1
+6. Install static mac move for ``Port1 MAC`` on Port1 and enable mac move
+7. Verify packet received on port2
+8. Send packet in step2 on port3
+9. Verify packet received on port2
+
 - test_static_mac_move
   
 1. Flush All MAC
-2. Install dynamic/static ``Port1 MAC`` address for port1
-3. Enable mac move for ``Port1 MAC`` on Port1
-4. Create packet with SMAC=``Port1 MAC`` DMAC=``Port2 MAC``
-5. Send packet on port1
-6. Verify packet received on port2
-7. Send packet in step2 on port3
-8. Verify packet received on port2
+2. Install static FDB entry for port2 with ``Port2 MAC``
+3. Install static FDB entry for port1 with ``Port1 MAC``  
+4. Enable mac move for ``Port1 MAC`` on Port1
+5. Create packet with SMAC=``Port1 MAC`` DMAC=``Port2 MAC``
+6. Send packet on port1
+7. Verify packet received on port2
+8. Install static FDB entry for port3 with ``Port1 MAC``  
+9. Send packet in step2 on port3
+10. Verify packet received on port2
 
 ## Test Group3: FDB age
 ### Case12: test_port_age
