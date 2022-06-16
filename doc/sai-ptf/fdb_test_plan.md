@@ -206,14 +206,31 @@ Verifying the aging time refreshed if dynamic FDB entry associated with one port
 ### Testing Objective <!-- omit in toc -->
 Verify flushing of static/dynamic entries on VLAN/Port/All.
 ### Test steps: <!-- omit in toc --> 
+- test_flush_vlan_static
+- test_flush_port_static
+- test_flush_all_static
 
-1. Flush with conditions for each case in sequence: ``Static`` on ``VLAN10``; ``Dynamic`` on ``VLAN20``; ``Static`` on ``Port1``;  ``Dynamic`` on ``Port9``; ``Static``; ``Dynamic``; ``All``
-2. Send packets for each case in sequence: ``port1`` DMAC=``Port2 MAC``; ``Port9`` DMAC=``Port10 MAC``; ``Port2`` DMAC=``Port1 MAC``; ``Port10`` DMAC=``Port9 MAC``; ``port1`` DMAC=``Port2 MAC``; ``Port9`` DMAC=``Port10 MAC``
+1. Flush with conditions for each case: ``Static`` flush on ``VLAN10``; ``Static`` flush on ``Port1``; flush for all ``Static`` 
+2. Send packets for each case in sequence: ``port1`` DMAC=``Port2 MAC``; ``Port2`` DMAC=``Port1 MAC``; ``port1`` DMAC=``Port2 MAC``
 3. Verify flooding happened, packets received in related VLAN, except the ingress port.
-4. Send packets for each case in sequence:  ``Port9`` DMAC=``Port10 MAC``; ``port1`` DMAC=``Port2 MAC``;``Port10`` DMAC=``Port9 MAC``; ``Port2`` DMAC=``Port1 MAC``;  ``Port9`` DMAC=``Port10 MAC``;``port1`` DMAC=``Port2 MAC``;
-5. Verify unicast to the corresponding port.
+4. Send packets for each case in sequence:  ``Port9`` DMAC=``Port10 MAC``; ``Port10`` DMAC=``Port9 MAC``; `  ``Port9`` DMAC=``Port10 MAC``
+5. Verify flush happens in a certain domain, unicast to the corresponding port.
 
+- test_flush_vlan_dynamic
+- test_flush_port_dynamic
+- test_flush_all_dynamic
+  
+1. Flush with conditions for each case in sequence: ``Dynamic`` flush on ``VLAN20``;  ``Dynamic`` flush on ``Port9``; flush for all ``Dynamic`` 
+2. Send packets for each case in sequence: ``Port9`` DMAC=``Port10 MAC``;  ``Port10`` DMAC=``Port9 MAC``; ``Port9`` DMAC=``Port10 MAC``
+3. Verify flooding happened, packets received in related VLAN, except the ingress port.
+4. Send packets for each case in sequence:  ``port1`` DMAC=``Port2 MAC``;``Port2`` DMAC=``Port1 MAC``; ``port1`` DMAC=``Port2 MAC``;
+5.  Verify flush happens in a certain domain, unicast to the corresponding port.
 
+- test_flush_all
+
+1. Flush with conditions: flush for ``All``
+2. Send packets : ``port1`` DMAC=``Port2 MAC``; ``Port9`` DMAC=``Port10 MAC``; 
+3. Verify flooding happened, packets received in related VLAN, except the ingress port.
 
 ## Test Group5: FDB miss
 ### Case21: test_unicast_action_copy
