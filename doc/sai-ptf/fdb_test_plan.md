@@ -279,7 +279,7 @@ Verify if unicast/multicast/broadcast packets are dropped or redirected/copy to 
 
 1. Set the FDB unicast/multicast/broadcast missing action to SAI_PACKET_ACTION_TRAP 
 2. Create a packet with DMAC as unknown ``MacX``, ``Multicase MAC`` or ``Broadcast MAC`` for each case
-3. Get the queue status SAI_QUEUE_STAT_PACKETS
+3. Get the queue0 status SAI_QUEUE_STAT_PACKETS
 4. Send the packet on port1
 5. Verify the packet gets dropped
 6. Check the SAI_QUEUE_STAT_PACKETS increased by 1
@@ -290,7 +290,7 @@ Verify if unicast/multicast/broadcast packets are dropped or redirected/copy to 
 
 1. Set the FDB unicast/multicast/broadcast missing action to SAI_PACKET_ACTION_TRAP 
 2. Create a packet with DMAC as unknown ``MacX``, ``Multicase MAC`` or ``Broadcast MAC`` for each case
-3. Get the queue status SAI_QUEUE_STAT_PACKETS
+3. Get the queue0 status SAI_QUEUE_STAT_PACKETS
 4. Send the packet on port1
 5. Verify the packet flooding to vlan10 ports, except port1
 6. Check the SAI_QUEUE_STAT_PACKETS increased by 1
