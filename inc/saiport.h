@@ -2137,6 +2137,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_FEC_ALIGNMENT_LOCK,
 
     /**
+     * @brief Fabric port isolation setting
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_FABRIC_ISOLATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
