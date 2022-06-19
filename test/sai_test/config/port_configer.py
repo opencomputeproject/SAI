@@ -52,6 +52,7 @@ def t0_port_config_helper(test_obj, is_recreate_bridge=True, is_create_hostIf=Tr
     default_trap_group = attr['default_trap_group']
 
     port_list = configer.get_port_list()
+    configer.turn_on_port_admin_state(port_list)
     configer.turn_up_and_check_ports(port_list)
     default_1q_bridge_id = configer.get_default_1q_bridge()
     bridge_port_list = configer.get_bridge_port_list(default_1q_bridge_id)
@@ -69,8 +70,6 @@ def t0_port_config_helper(test_obj, is_recreate_bridge=True, is_create_hostIf=Tr
             port_list, hostif_list)
         test_obj.host_intf_table_id = host_intf_table_id
         test_obj.hostif_list = hostif_list
-
-    configer.turn_on_port_admin_state(port_list)
 
     test_obj.dev_port_list = dev_port_list
     test_obj.portConfigs = portConfigs
@@ -357,7 +356,7 @@ class PortConfiger(object):
         print("Set port...")
         for i, port in enumerate(port_list):
             sai_thrift_set_port_attribute(
-                self.client, port_oid=port, mtu=PORT_MTU, admin_state=True)
+                self.client, port_oid=port, mtu=PORT_MTU, admin_state=True, fec_mode=SAI_PORT_FEC_MODE_RS)
 
     def turn_up_and_check_ports(self, port_list):
         '''
@@ -370,23 +369,21 @@ class PortConfiger(object):
 
         # For brcm devices, need to init and setup the ports at once after start the switch.
         retries = 10
-        for port_id in port_list:
-            try:
-                sai_thrift_set_port_attribute(
-                    self.client, port_oid=port_id, admin_state=True)
-            except BaseException as e:
-                print("Cannot setup port admin state, error {}".format(e))
-
         for num_of_tries in range(retries):
             all_ports_are_up = True
             time.sleep(1)
             for port_id in port_list:
-                port_attr = sai_thrift_get_port_attribute(
-                    self.client, port_id, oper_status=True)
+                port_attr = sai_thrift_get_port_attribute(self.client, port_id, oper_status=True)
                 if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
                     all_ports_are_up = False
                     time.sleep(1)
-                    print("port is down: {}".format(port_attr['oper_status']))
+                    print("port {} is down, status: {}. Reset Admin State.".format(port_id, port_attr['oper_status']))
+                    sai_thrift_set_port_attribute(
+                        self.client, 
+                        port_oid=port_id, 
+                        mtu=PORT_MTU, 
+                        admin_state=True, 
+                        fec_mode=SAI_PORT_FEC_MODE_RS)
             if all_ports_are_up:
                 print("Retry {} times turn up port.".format(num_of_tries))
                 break
