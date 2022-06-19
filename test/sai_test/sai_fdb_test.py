@@ -25,17 +25,18 @@ from ptf.testutils import *
 from ptf.thriftutils import *
 from sai_utils import *
 
-class Common_Forwarding_Test(T0TestBase):
+
+class L2_Port_Forwarding_Test(T0TestBase):
     """
     Verify the basic fdb forwarding.
+    Segment should be forwarding to the correlated port bases on the FDB table.
     """
 
     def setUp(self):
         """
         Test the basic setup process
         """
-        # this process contains the switch_init process
-        T0TestBase.setUp(self, is_remove_vlan=False)
+        T0TestBase.setUp(self, is_reset_default_vlan=False)
 
     def runTest(self):
         """
@@ -43,15 +44,16 @@ class Common_Forwarding_Test(T0TestBase):
         """
         try:
             print("FDB basic forwarding test.")
-            for index in range(2, len(self.local_server_mac_list)):
+            for index in range(2, 9):
                 print("L2 Forwarding from {} to port: {}".format(
-                    self.dev_port_list[1], 
+                    self.dev_port_list[1],
                     self.dev_port_list[index]))
                 pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[index],
                                         eth_src=self.local_server_mac_list[1],
+                                        vlan_vid=10,
                                         ip_id=101,
                                         ip_ttl=64)
-                    
+
                 send_packet(self, self.dev_port_list[1], pkt)
                 verify_packet(self, pkt, self.dev_port_list[index])
         finally:

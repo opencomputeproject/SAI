@@ -175,20 +175,32 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.portX objects for all active ports (where X is a port number)
     """
 
-    def setUp(self, force_config=False, is_remove_vlan=True, is_remove_bridge=True):
+    def setUp(self,
+              force_config=False,
+              is_create_hostIf=True,
+              is_recreate_bridge=True,
+              is_reset_default_vlan=True,
+              is_create_vlan=True,
+              is_create_fdb=True):
         super(T0TestBase, self).setUp()
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
         self.fdb_configer = FdbConfiger(self)
-        self.vlan_configer = VlanConfiger(self)        
+        self.vlan_configer = VlanConfiger(self)
 
         if force_config or not is_configured:
             t0_switch_config_helper(self)
             t0_port_config_helper(
                 test_obj=self,
-                is_remove_vlan=is_remove_vlan,
-                is_remove_bridge=is_remove_bridge)
-            t0_fdb_config_helper(self)
+                is_create_hostIf=is_create_hostIf,
+                is_recreate_bridge=is_recreate_bridge)
+            t0_vlan_config_helper(
+                test_obj=self,
+                is_reset_default_vlan=is_reset_default_vlan,
+                is_create_vlan=is_create_vlan)
+            t0_fdb_config_helper(
+                test_obj=self,
+                is_create_fdb=is_create_fdb)
 
     def shell(self):
         '''

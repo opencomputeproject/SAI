@@ -22,7 +22,7 @@ from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-im
 from sai_thrift.sai_adapter import *
 
 
-def t0_fdb_config_helper(test_obj):
+def t0_fdb_config_helper(test_obj, is_create_fdb=True):
     """
     Make t0 FDB configurations base on the configuration in the test plan.
     Set the configuration in test directly.
@@ -35,18 +35,34 @@ def t0_fdb_config_helper(test_obj):
     local_server_mac_list = []
     mac_list_temp = []
 
-    mac_list_temp = configer.generate_mac_address_list(FDB_SERVER_NUM, 0, range(0, 1))
+    mac_list_temp = configer.generate_mac_address_list(
+        FDB_SERVER_NUM, 0, range(0, 1))
     local_server_mac_list.extend(mac_list_temp)
-    mac_list_temp = configer.generate_mac_address_list(FDB_SERVER_NUM, 1, range(1,9))
+    mac_list_temp = configer.generate_mac_address_list(
+        FDB_SERVER_NUM, 1, range(1, 9))
     local_server_mac_list.extend(mac_list_temp)
-    mac_list_temp = configer.generate_mac_address_list(FDB_SERVER_NUM, 2, range(9,17))
+    mac_list_temp = configer.generate_mac_address_list(
+        FDB_SERVER_NUM, 2, range(9, 17))
     local_server_mac_list.extend(mac_list_temp)
-    configer.create_fdb_entries(
-        switch_id=test_obj.switch_id, 
-        mac_list=local_server_mac_list,
-        port_oids=test_obj.bridge_port_list[0:len(local_server_mac_list)], 
-        vlan_oid=test_obj.default_vlan_id)
+    if is_create_fdb:
+        configer.create_fdb_entries(
+            switch_id=test_obj.switch_id,
+            mac_list=local_server_mac_list[0:1],
+            port_oids=test_obj.bridge_port_list[0:1],
+            vlan_oid=test_obj.default_vlan_id)
+        configer.create_fdb_entries(
+            switch_id=test_obj.switch_id,
+            mac_list=local_server_mac_list[1:9],
+            port_oids=test_obj.bridge_port_list[1:9],
+            vlan_oid=test_obj.vlans[10].vlan_oid)
+        configer.create_fdb_entries(
+            switch_id=test_obj.switch_id,
+            mac_list=local_server_mac_list[9:17],
+            port_oids=test_obj.bridge_port_list[9:17],
+            vlan_oid=test_obj.vlans[20].vlan_oid)
+    # Todo dynamic use the vlan_member_port_map to add data to fdb
     test_obj.local_server_mac_list = local_server_mac_list
+
 
 class FdbConfiger(object):
     """
@@ -63,12 +79,12 @@ class FdbConfiger(object):
         self.test_obj = test_obj
         self.client = test_obj.client
 
-    def create_fdb_entries(self, 
-                           switch_id, 
-                           mac_list, 
-                           port_oids, 
-                           type=SAI_FDB_ENTRY_TYPE_STATIC, 
-                           vlan_oid=None, 
+    def create_fdb_entries(self,
+                           switch_id,
+                           mac_list,
+                           port_oids,
+                           type=SAI_FDB_ENTRY_TYPE_STATIC,
+                           vlan_oid=None,
                            packet_action=SAI_PACKET_ACTION_FORWARD):
         """
         Create FDB entries.

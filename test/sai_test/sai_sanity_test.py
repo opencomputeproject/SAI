@@ -23,18 +23,19 @@ from ptf import config
 from ptf.testutils import *
 from ptf.thriftutils import *
 
+
 class SaiSanityTest(T0TestBase):
     """
     This is a test class use to trigger some basic verification when set up the basic t0 data configuration.
     """
-    # Todo remove this class when T0 data is ready, this class should not be checked into repo
 
     def setUp(self):
         """
         Test the basic setup proecss
         """
-        # this process contains the switch_init process
-        T0TestBase.setUp(self, is_remove_vlan=False, is_remove_bridge=False)
+        T0TestBase.setUp(self,
+                         is_reset_default_vlan=False,
+                         is_recreate_bridge=False)
 
     def runTest(self):
         """
@@ -54,11 +55,15 @@ class SaiSanityTest(T0TestBase):
         """
         unknown_mac1 = "00:01:01:99:99:99"
         unknown_mac2 = "00:01:02:99:99:99"
-        pkt = simple_udp_packet(eth_dst=unknown_mac1, eth_src=unknown_mac2,ip_id=101,ip_ttl=64)
+        pkt = simple_udp_packet(eth_dst=unknown_mac1,
+                                eth_src=unknown_mac2,
+                                ip_id=101,
+                                ip_ttl=64)
         try:
             # Unknown mac, flooding to all the other ports.
             print("Sanity test, check all the ports be flooded.")
             send_packet(self, 1, pkt)
-            verify_each_packet_on_multiple_port_lists(self, [pkt], [self.dev_port_list[2:]])
+            verify_each_packet_on_multiple_port_lists(
+                self, [pkt], [self.dev_port_list[2:]])
         finally:
             pass

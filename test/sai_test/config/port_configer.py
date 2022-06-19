@@ -22,10 +22,9 @@ from collections import OrderedDict
 from ptf import config
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from sai_thrift.sai_adapter import *
-from config.vlan_configer import VlanConfiger
 
 
-def t0_port_config_helper(test_obj, is_remove_vlan=True, is_remove_bridge=True):
+def t0_port_config_helper(test_obj, is_recreate_bridge=True, is_create_hostIf=True):
     """
     Make t0 Port configurations base on the configuration in the test plan.
     Set the configuration in test directly.
@@ -37,37 +36,40 @@ def t0_port_config_helper(test_obj, is_remove_vlan=True, is_remove_bridge=True):
         list: bridge_port_list
         list: port_list
         dict: port_to_hostif_map - port_oid:hostIf_oid
-        int: default_1q_bridge_id
-        int: default_vlan_id
+        int: default_1q_bridge_id        
         int: host_intf_table_id
         list: hostif_list
 
     """
     configer = PortConfiger(test_obj)
-    vlan_configer = VlanConfiger(test_obj)
 
     dev_port_list = configer.get_local_mapped_ports()
-    portConfigs = configer.parse_port_config(test_obj.test_params['port_config_ini'])
-    
+    portConfigs = configer.parse_port_config(
+        test_obj.test_params['port_config_ini'])
 
-    attr = sai_thrift_get_switch_attribute(configer.client, default_trap_group=True)
+    attr = sai_thrift_get_switch_attribute(
+        configer.client, default_trap_group=True)
     default_trap_group = attr['default_trap_group']
 
     port_list = configer.get_port_list()
     configer.turn_up_and_check_ports(port_list)
     default_1q_bridge_id = configer.get_default_1q_bridge()
     bridge_port_list = configer.get_bridge_port_list(default_1q_bridge_id)
-    default_vlan_id = configer.get_default_vlan()
-    if is_remove_vlan:
-        members = vlan_configer.get_vlan_member(default_vlan_id)
-        vlan_configer.remove_vlan_members(members)
-    if is_remove_bridge:
+
+    if is_recreate_bridge:
         configer.remove_bridge_port(default_1q_bridge_id)
-        bridge_port_list = configer.create_bridge_ports(default_1q_bridge_id, port_list)
-    host_intf_table_id, hostif_list = configer.create_host_intf(
-        ports_config=portConfigs, trap_group=default_trap_group, port_list=port_list)
-    port_to_hostif_map = configer.generate_port_to_hostif_map(
-        port_list, hostif_list)
+        bridge_port_list = configer.create_bridge_ports(
+            default_1q_bridge_id, port_list)
+
+    if is_create_hostIf:
+        host_intf_table_id, hostif_list = configer.create_host_intf(
+            ports_config=portConfigs, trap_group=default_trap_group, port_list=port_list)
+        # Todo try to get the host interface if not create the hostif (need to check if already created or not)
+        port_to_hostif_map = configer.generate_port_to_hostif_map(
+            port_list, hostif_list)
+        test_obj.host_intf_table_id = host_intf_table_id
+        test_obj.hostif_list = hostif_list
+
     configer.turn_on_port_admin_state(port_list)
 
     test_obj.dev_port_list = dev_port_list
@@ -77,9 +79,6 @@ def t0_port_config_helper(test_obj, is_remove_vlan=True, is_remove_bridge=True):
     test_obj.port_to_hostif_map = port_to_hostif_map
     test_obj.default_1q_bridge_id = default_1q_bridge_id
     test_obj.bridge_port_list = bridge_port_list
-    test_obj.default_vlan_id = default_vlan_id
-    test_obj.host_intf_table_id = host_intf_table_id
-    test_obj.hostif_list = hostif_list
 
 
 class PortConfiger(object):
@@ -104,12 +103,12 @@ class PortConfiger(object):
         Args:
             bridge_id: bridge object id
             port_list: port list oid
-        
+
         Returns:
             list: bridge port list
         """
         print("Create bridge ports...")
-        bp_list=[]
+        bp_list = []
         for index in range(0, len(port_list)):
             port_bp = sai_thrift_create_bridge_port(
                 self.client,
@@ -183,19 +182,20 @@ class PortConfiger(object):
 
         Args:
             bridge_port_id: bridge port object id
-        
+
         Returns:
             dict: bridge attributes
 
         '''
 
-        #Cannot get those three attributes from sai_thrift_get_bridge_port_attribute
-        #ingress_filtering=True,
-        #egress_filtering=True,
-        #isolation_group=True
-        sai_thrift_get_bridge_port_attribute(self.client,  bridge_port_oid=bridge_port_id, ingress_filtering=True,  egress_filtering=True)
+        # Cannot get those three attributes from sai_thrift_get_bridge_port_attribute
+        # ingress_filtering=True,
+        # egress_filtering=True,
+        # isolation_group=True
+        sai_thrift_get_bridge_port_attribute(
+            self.client,  bridge_port_oid=bridge_port_id, ingress_filtering=True,  egress_filtering=True)
         attr = sai_thrift_get_bridge_port_attribute(
-            self.client, 
+            self.client,
             bridge_port_oid=bridge_port_id,
             type=True,
             port_id=True,
@@ -208,21 +208,21 @@ class PortConfiger(object):
             max_learned_addresses=True,
             fdb_learning_limit_violation_packet_action=True,
             admin_state=True
-            #Cannot get those three
-            #ingress_filtering=True,
-            #egress_filtering=True,
-            #isolation_group=True
-            )
+            # Cannot get those three
+            # ingress_filtering=True,
+            # egress_filtering=True,
+            # isolation_group=True
+        )
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
         return attr
 
     def get_bridge_port_list(self, bridge_id):
         """
         Get bridge ports.
-        
+
         Args:
             bridge_id: bridge id.
-        
+
         Returns:
             list: bridge_port_list
 
@@ -244,18 +244,6 @@ class PortConfiger(object):
         def_attr = sai_thrift_get_switch_attribute(
             self.client, default_1q_bridge_id=True)
         return def_attr['default_1q_bridge_id']
-
-    def get_default_vlan(self):
-        """
-        Get defaule vlan.
-
-        Returns:
-            default_vlan_id
-        """
-        print("Get default vlan...")
-        def_attr = sai_thrift_get_switch_attribute(
-            self.client, default_vlan_id=True)
-        return def_attr['default_vlan_id']
 
     def get_local_mapped_ports(self):
         """
@@ -345,7 +333,7 @@ class PortConfiger(object):
     def remove_bridge_port(self, bridge_id):
         """
         Remove bridge ports (bridge will not be removed).
-        
+
         Args:
             bridge_id: bridge id.
 
@@ -411,9 +399,9 @@ class PortConfig(object):
     Represent the PortConfig Object
 
     Attrs:
-        vlan_id: vlan id
-        vlan_oid: vlan ojbect id
-        vlan_moids: vlan member object ids
+        name: interface name
+        lanes: lanes
+        speed: port speed
     """
 
     def __init__(self, name=None, lanes=None, speed=None):
