@@ -28,15 +28,16 @@ In this configuration, we mapped the IP and MAC address into different parts of 
 For MAC addresses, we can use different sections in the MAC addresses to map different title numbers.
 The pattern is
 ```
-L1_NUM:L2_NUM:L3_NUM:ROLE:EXTRA:SEQ
+00:TITLE_L1_NUM:TITLE_L2_NUM:ROLE:EXTRA:SEQ
 ROLE: T1=1, Server=99
 ```
 
 For example:
-For the MAC address in ``1.1 FDB Configuration``.
+For the MAC address in ``1.1 FDB Configuration``. 
+`1.1` is the title number.
 ```
 #Server MAC
-01:01:00:99:02:01~01:01:00:99:02:32
+00:01:01:99:02:01~00:01:01:99:02:32
 # 99: Server
 # 02: EXTRA (Group ID)
 ```
@@ -49,7 +50,7 @@ Format: ROLE.NUM.GROUP_ID.SEQ
 
 - ROLE_NUM
 T0: 10.0.0.0
-T1: 10.0.0.0
+T1: 10.1.0.0
 Server: 192.168.0.0
 
 For example
@@ -73,8 +74,8 @@ The MAC Table for VLAN L2 forwarding as below
 |Name|MAC|PORT|VLAN|HostIf|
 |-|-|-|-|-|
 |mac0|01:01:00:99:00:00|Port0||Ethernet0|
-|mac1-8  |01:01:00:99:01:01 - 01:01:00:99:01:08|Port1-8|10|Ethernet4-Ethernet32|
-|mac9-16 |01:01:00:99:02:09 - 01:01:00:99:02:16|Port9-16|20|Ethernet36-Ethernet64|
+|mac1-8  |00:01:01:99:01:01 - 00:01:01:99:01:08|Port1-8|10|Ethernet4-Ethernet32|
+|mac9-16 |00:01:01:99:02:09 - 00:01:01:99:02:16|Port9-16|20|Ethernet36-Ethernet64|
 
 ## 1.2 VLAN configuration
 
@@ -135,13 +136,13 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 ### 2.4.1 VLAN Neighbors
 |Name|Port|IP|dest_mac|
 |-|-|-|-|
-|vlan10_nb1-nb8|Port1-8 |192.168.1.1 ~ 192.168.1.8  |01:01:00:99:01:01 - 01:01:00:99:01:08|
-|vlan20_nb1-nb8|Port9-16|192.168.2.9 ~ 192.168.2.16 |01:01:00:99:02:09 - 01:01:00:99:02:16 |
+|vlan10_nb1-nb8|Port1-8 |192.168.1.1 ~ 192.168.1.8  |00:01:01:99:01:01 - 00:01:01:99:01:08|
+|vlan20_nb1-nb8|Port9-16|192.168.2.9 ~ 192.168.2.16 |00:01:01:99:02:09 - 00:01:01:99:02:16|
 
 
 ### 2.4.2 LAG Neighbors
 
 |Name|Port|IP|dest_mac|
 |-|-|-|-|
-|lag1_nb|lag1| 10.0.1.101 | 02:04:02:01:01:01|
-|lag2_nb|lag2| 10.0.2.101 | 02:04:02:01:02:01|
+|lag1_nb|lag1| 10.1.1.101 | 02:04:02:01:01:01|
+|lag2_nb|lag2| 10.1.2.101 | 02:04:02:01:02:01|

@@ -11,14 +11,13 @@
     - [Case4: test_loadbalance_on_destinstion_ip](#case4-test_loadbalance_on_destinstion_ip)
     - [Case5: test_loadbalance_on_protocol](#case5-test_loadbalance_on_protocol)
   - [Test Group2: Disable Egress/Ingress](#test-group2-disable-egressingress)
-    - [Case6: test_disable_egress](#case6-test_disable_egress)
-    - [Case7: test_disable_ingress](#case7-test_disable_ingress)
+    - [Case1: test_disable_egress](#case1-test_disable_egress)
+    - [Case2: test_disable_ingress](#case2-test_disable_ingress)
   - [Test Group3: Remove/Add LAG member](#test-group3-removeadd-lag-member)
-    - [Case8: test_remove_lag_member](#case8-test_remove_lag_member)
-    - [Case9: test_add_lag_member](#case9-test_add_lag_member)
+    - [Case1: test_remove_lag_member](#case1-test_remove_lag_member)
+    - [Case2: test_add_lag_member](#case2-test_add_lag_member)
   - [Test Group4: Indifference Ingress Port in Hash](#test-group4-indifference-ingress-port-in-hash)
-    - [Case10: test_ingress_port_hash_indiff](#case10-test_ingress_port_hash_indiff)
-    - [Test Objective](#test-objective)
+    - [Case1: test_ingress_port_hash_indiff](#case1-test_ingress_port_hash_indiff)
 # Overriew
 The purpose of this test plan is to test the LAG/PortChannel function from SAI.
 
@@ -93,8 +92,8 @@ For load balancing, expecting the ports in a lag should receive the packet equal
 ## Test Group2: Disable Egress/Ingress
 
 
-### Case6: test_disable_egress
-### Case7: test_disable_ingress
+### Case1: test_disable_egress
+### Case2: test_disable_ingress
 
 ### Testing Objective <!-- omit in toc --> 
 These cases will cover two scenarios: disable egress and ingress.  We can disable ingress or egress on a lag member, then we expect traffic drop on the disabled lag member.
@@ -119,8 +118,8 @@ These cases will cover two scenarios: disable egress and ingress.  We can disabl
 6. Check if Packet drop on port1
 
 ## Test Group3: Remove/Add LAG member
-### Case8: test_remove_lag_member
-### Case9: test_add_lag_member
+### Case1: test_remove_lag_member
+### Case2: test_add_lag_member
 ### Testing Objective <!-- omit in toc --> 
 These cases will cover adding and removing the lag members.  We can remove or add a lag member, then expect traffic to drop/appear on the lag member.
 
@@ -143,9 +142,9 @@ These cases will cover adding and removing the lag members.  We can remove or ad
 
 
 ## Test Group4: Indifference Ingress Port in Hash
-### Case10: test_ingress_port_hash_indiff
+### Case1: test_ingress_port_hash_indiff
 
-### Test Objective
+### Test Objective <!-- omit in toc -->
 This case will verify the ingress ports should not be as a Hash Factor in Lag loadbalance. 
 When forwarding the packet from different ingress ports, if only the ingress port changed, then the loadbalance should not happen among lag members.
 
