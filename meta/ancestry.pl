@@ -79,6 +79,12 @@ sub ProcessSingleHeader
             next;
         }
 
+        if ($line =~ /#define\s+(SAI_STATUS_\w+)\s*SAI_STATUS_CODE\(($NUMBER_REGEX)L\)/)
+        {
+            push @{ $SAI_ENUMS{sai_status_t}->{values} }, $1;
+            push @{ $SAI_ENUMS{sai_status_t}->{inits} }, lc("= $2");
+        }
+
         if ($line =~ /^\s*typedef\s+enum\s+_((sai_\w+_)t)/)
         {
             $currentEnum = $1;
