@@ -376,7 +376,7 @@ class PortConfiger(object):
                 port_attr = sai_thrift_get_port_attribute(self.client, port_id, oper_status=True)
                 if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
                     all_ports_are_up = False
-                    time.sleep(1)
+                    time.sleep(3)
                     print("port {} is down, status: {}. Reset Admin State.".format(port_id, port_attr['oper_status']))
                     sai_thrift_set_port_attribute(
                         self.client, 
