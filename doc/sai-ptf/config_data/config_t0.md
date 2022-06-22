@@ -55,7 +55,15 @@ For IP addresses, we will use different prefix for different role
 
 Format: ROLE.NUM.GROUP_ID.SEQ
 
-- ROLE_NUM
+Server: ROLE=192
+T1: ROLE=10, NUM=1
+T0: ROLE=10, NUM=0
+
+Local Server: ROLE=192, NUM=168, GROUP_ID (0 - 9)
+Remote Server: ROLE=192, NUM=168, Group_ID(10-19) 
+
+
+- Example
    ```
    T0: 10.0.0.0
    T0 ECMP: 10.0.50.0
@@ -80,6 +88,13 @@ For example
 For IP addresses, we will use different prefix for different role
 
 Format: ROLE.NUM.GROUP_ID.SEQ
+
+Server: ROLE=fc02
+T1: ROLE=fc00, NUM=1
+T0: ROLE=fc00, NUM=0
+
+Local Server: GROUP_ID (0 - 9)
+Remote Server: Group_ID(10-19) 
 
 - ROLE_NUM
    ```
@@ -127,6 +142,13 @@ Host interface IP
 |-|-|-|
 |10|192.168.1.100|fc02::1:100|
 |20|192.168.2.100|fc02::2:100|
+|30|192.168.3.100|fc02::3:100|
+|40|192.168.4.100|fc02::4:100|
+|50|192.168.5.100|fc02::5:100|
+|60|192.168.6.100|fc02::6:100|
+|70|192.168.7.100|fc02::7:100|
+|80|192.168.8.100|fc02::8:100|
+|90|192.168.9.100|fc02::9:100|
 
 ## 2.2 Route Interfaces
 |Port|Type|
