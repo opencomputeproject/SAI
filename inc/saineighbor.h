@@ -360,6 +360,7 @@ typedef sai_status_t (*sai_bulk_get_neighbor_entry_attribute_fn)(
         _Inout_ sai_attribute_t **attr_list,
         _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
+
 /**
  * @brief Neighbor table methods, retrieved via sai_api_query()
  */
