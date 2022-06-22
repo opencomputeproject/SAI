@@ -340,7 +340,7 @@ typedef sai_status_t (*sai_bulk_set_neighbor_entry_attribute_fn)(
  * @brief Bulk get attribute on Neighbor entry
  *
  * @param[in] object_count Number of objects to get attribute
- * @param[in] Neighbor_entry List of objects to get attribute
+ * @param[in] neighbor_entry List of objects to get attribute
  * @param[in] attr_count List of attr_count. Caller passes the number
  *    of attribute for each object to get
  * @param[inout] attr_list List of attributes to get on objects, one attribute per object
@@ -360,8 +360,6 @@ typedef sai_status_t (*sai_bulk_get_neighbor_entry_attribute_fn)(
         _Inout_ sai_attribute_t **attr_list,
         _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
-
-
 /**
  * @brief Neighbor table methods, retrieved via sai_api_query()
  */
