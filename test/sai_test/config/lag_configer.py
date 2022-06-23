@@ -39,8 +39,23 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
     if is_create_lag:
         lag1 = lag_configer.create_lag([17, 18])
         lags.update({lag1.lag_id: lag1})
+        ip_addr1 = '10.1.1.100'
+        mac_addr1 = '02:04:02:01:01:01'
+        lag_configer.create_route_and_neighbor_entry_for_lag(
+            lag_id=lag1.lag_id, 
+            ip_addr=ip_addr1, 
+            mac_addr=mac_addr1, 
+            port_id=21)
+        
         lag2 = lag_configer.create_lag([19, 20])
         lags.update({lag2.lag_id: lag2})
+        ip_addr2 = '10.1.2.100'
+        mac_addr2 = '02:04:02:01:02:01'
+        lag_configer.create_route_and_neighbor_entry_for_lag(
+            lag_id=lag2.lag_id, 
+            ip_addr=ip_addr2, 
+            mac_addr=mac_addr2, 
+            port_id=21)
 
     if not hasattr(test_obj, 'lags'):
         test_obj.lags = {}
@@ -145,8 +160,10 @@ class LagConfiger(object):
 
     def create_route_and_neighbor_entry_for_lag(self, lag_id, ip_addr, mac_addr, port_id):
         vr_id = sai_thrift_create_virtual_router(self.client)
+        port2 = self.test_obj.port_list[port_id]
+
         rif_id1 = sai_thrift_create_router_interface(self.client, virtual_router_id=vr_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=lag_id)
-        rif_id2 = sai_thrift_create_router_interface(self.client, virtual_router_id=vr_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=port_id)
+        rif_id2 = sai_thrift_create_router_interface(self.client, virtual_router_id=vr_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=port2)
         
         nbr_entry_v4 = sai_thrift_neighbor_entry_t(rif_id=rif_id1, ip_address=sai_ipaddress(ip_addr))
         sai_thrift_create_neighbor_entry(self.client, nbr_entry_v4, dst_mac_address=mac_addr)
