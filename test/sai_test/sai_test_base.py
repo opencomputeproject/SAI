@@ -190,12 +190,14 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_reset_default_vlan=True,
               is_create_vlan=True,
               is_create_fdb=True,
+              is_create_lag=True,
               wait_sec=5):
         super(T0TestBase, self).setUp()
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
         self.fdb_configer = FdbConfiger(self)
         self.vlan_configer = VlanConfiger(self)
+        self.lag_configer = LagConfiger(self)
 
         if force_config or not is_configured:
             t0_switch_config_helper(self)
@@ -210,6 +212,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
             t0_fdb_config_helper(
                 test_obj=self,
                 is_create_fdb=is_create_fdb)
+            t0_lag_config_helper(
+                test_obj=self,
+                is_create_lag=is_create_lag)
         print("Waiting for switch to get ready before test, {} seconds ...".format(
             wait_sec))
         time.sleep(wait_sec)
