@@ -266,13 +266,6 @@ void handleInitScript(const std::string& initScript)
     system(initScript.c_str());
 }
 
-int start_sai_thrift_rpc_server(int port)
-{
-    static char port_str[10];
-    snprintf(port_str, sizeof(port_str), "%d", port);
-    return start_p4_sai_thrift_rpc_server(port_str);
-}
-
 int
 main(int argc, char* argv[])
 {
