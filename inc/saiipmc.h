@@ -120,6 +120,19 @@ typedef enum _sai_ipmc_entry_attr_t
     SAI_IPMC_ENTRY_ATTR_RPF_GROUP_ID,
 
     /**
+     * @brief Attach a counter
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_IPMC_ENTRY_ATTR_COUNTER_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_IPMC_ENTRY_ATTR_END,
