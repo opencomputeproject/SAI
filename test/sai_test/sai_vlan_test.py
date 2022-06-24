@@ -188,16 +188,19 @@ class TaggedFrameFilteringTest(T0TestBase):
     def setUp(self):
         super().setUp()
         sai_thrift_flush_fdb_entries(self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
-        self.port1_mac_list = {1,5}
+        self.port1_mac_list = [self.local_server_mac_list[i] for i in [1,5]]
         self.mac_action = SAI_PACKET_ACTION_FORWARD
-        for mac_id in self.port1_mac_list:
-            self.create_fdb_entry(self.local_server_mac_list[mac_id])
+        self.fdb_configer.create_fdb_entries(
+            switch_id=self.switch_id,
+            mac_list=self.port1_mac_list,
+            port_oids=[1,1],
+            vlan_oid=self.vlans[10].vlan_oid)
 
     def runTest(self):
         print("\nTaggedFrameFilteringTest")
         try:
             for mac_id in self.port1_mac_list:
-                pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[mac_id],
+                pkt = simple_udp_packet(eth_dst=mac_id,
                                         eth_src=self.local_server_mac_list[1],
                                         vlan_vid=10,
                                         ip_id=101,
@@ -215,21 +218,6 @@ class TaggedFrameFilteringTest(T0TestBase):
 
         super().tearDown()
 
-    def create_fdb_entry(self,mac_address_):
-        """
-        create fdb entry
-        Args:
-            mac_address_: mac_address
-        """
-        fdb_entry = sai_thrift_fdb_entry_t(
-            switch_id=self.switch_id, mac_address=mac_address_, bv_id=10)
-        sai_thrift_create_fdb_entry(
-            self.client,
-            fdb_entry,
-            type=SAI_FDB_ENTRY_TYPE_STATIC,
-            bridge_port_id=self.dev_port_list[1],
-            packet_action=self.mac_action)
-
 
 class UnTaggedFrameFilteringTest(T0TestBase):
     """
@@ -239,16 +227,19 @@ class UnTaggedFrameFilteringTest(T0TestBase):
     def setUp(self):
         super().setUp()
         sai_thrift_flush_fdb_entries(self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
-        self.port1_mac_list = {1,5}
+        self.port1_mac_list = [self.local_server_mac_list[i] for i in [1,5]]
         self.mac_action = SAI_PACKET_ACTION_FORWARD
-        for mac_id in self.port1_mac_list:
-            self.create_fdb_entry(self.local_server_mac_list[mac_id])
+        self.fdb_configer.create_fdb_entries(
+            switch_id=self.switch_id,
+            mac_list=self.port1_mac_list,
+            port_oids=[1,1],
+            vlan_oid=self.vlans[10].vlan_oid)
 
     def runTest(self):
         print("\nUnTaggedFrameFilteringTest")
         try:
             for mac_id in self.port1_mac_list:
-                pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[mac_id],
+                pkt = simple_udp_packet(eth_dst=mac_id,
                                         eth_src=self.local_server_mac_list[1],
                                         ip_id=101,
                                         ip_ttl=64)
@@ -264,16 +255,6 @@ class UnTaggedFrameFilteringTest(T0TestBase):
         sai_thrift_flush_fdb_entries(self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
         super().tearDown()
-
-    def create_fdb_entry(self,mac_address_):
-        fdb_entry = sai_thrift_fdb_entry_t(
-            switch_id=self.switch_id, mac_address=mac_address_, bv_id=10)
-        sai_thrift_create_fdb_entry(
-            self.client,
-            fdb_entry,
-            type=SAI_FDB_ENTRY_TYPE_STATIC,
-            bridge_port_id=self.dev_port_list[1],
-            packet_action=self.mac_action)
 
 
 class TaggedVlanFloodingTest(T0TestBase):
