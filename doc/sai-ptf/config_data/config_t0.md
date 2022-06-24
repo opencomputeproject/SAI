@@ -210,7 +210,7 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 
   3. Create tunnel term table entry with attribute 
      |term type|dst_ip|src_ip|
-     |-|-|-|-|
+     |-|-|-|
      |SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP|10.10.10.1| 10.1.2.100|
 
 
