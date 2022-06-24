@@ -22,6 +22,7 @@ from sai_thrift.sai_headers import *
 from ptf import config
 from ptf.testutils import *
 from ptf.thriftutils import *
+import time
 
 
 class SaiSanityTest(T0TestBase):
@@ -59,6 +60,7 @@ class SaiSanityTest(T0TestBase):
                                 eth_src=unknown_mac2,
                                 ip_id=101,
                                 ip_ttl=64)
+        time.sleep(5)
         try:
             # Unknown mac, flooding to all the other ports.
             print("Sanity test, check all the ports be flooded.")
