@@ -86,7 +86,7 @@ class FdbConfiger(object):
                            type=SAI_FDB_ENTRY_TYPE_STATIC,
                            vlan_oid=None,
                            packet_action=SAI_PACKET_ACTION_FORWARD,
-                           wait_sec=1):
+                           wait_sec=2):
         """
         Create FDB entries.
 
