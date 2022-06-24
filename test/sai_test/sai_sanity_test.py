@@ -22,6 +22,7 @@ from sai_thrift.sai_headers import *
 from ptf import config
 from ptf.testutils import *
 from ptf.thriftutils import *
+import time
 
 
 class SaiSanityTest(T0TestBase):
