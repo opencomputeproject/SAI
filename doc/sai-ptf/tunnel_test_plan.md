@@ -158,9 +158,9 @@ For the test configuration, please refer to Tunnel configuration section of the 
 
 ### Test steps: <!-- omit in toc --> 
 1. Generate ingress decap packet as decribed by Testing Data Packet
-2. Send encap packet from lag2.
+2. Send decap packet from port1.
 3. Generate expected encap packet as decribed by Testing Data Packet.
-4. Recieve encap packet from port1, compare it with expected encap packet.
+4. Recieve encap packet from lag2, compare it with expected encap packet.
 
 
 ## Test Group3: IP IN IP P2MP Tunnel Decap 
