@@ -154,9 +154,11 @@ Verifying the aging time refreshed if dynamic FDB entry associated with one port
 5. Create a packet with DMAC=``MacX``
 6. Send packet on port1
 7. Verify only receive a packet on port2
-8. Wait for the ``aging`` time
-9. Send packet on port1
-10. Verify flooding packet to VLAN10 ports, except port1
+8. Send packet on port3
+7. Verify only receive a packet on port2
+9. Wait for the ``aging`` time
+10. Send packet on port3
+11. Verify flooding packet to VLAN10 ports, except port1
 
 ## Test Group3: FDB flush
 ### Case1: test_flush_vlan_static
