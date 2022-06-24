@@ -85,7 +85,8 @@ class FdbConfiger(object):
                            port_oids,
                            type=SAI_FDB_ENTRY_TYPE_STATIC,
                            vlan_oid=None,
-                           packet_action=SAI_PACKET_ACTION_FORWARD):
+                           packet_action=SAI_PACKET_ACTION_FORWARD,
+                           wait_sec=2):
         """
         Create FDB entries.
 
@@ -110,6 +111,9 @@ class FdbConfiger(object):
                 type=type,
                 bridge_port_id=port_oids[index],
                 packet_action=packet_action)
+        print("Waiting for FDB to get refreshed, {} seconds ...".format(
+            wait_sec))
+        time.sleep(wait_sec)
 
     def generate_mac_address_list(self, role, group, indexes):
         """
