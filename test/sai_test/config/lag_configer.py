@@ -172,7 +172,10 @@ class LagConfiger(object):
         route1 = sai_thrift_route_entry(vr_id=vr_id, destination=sai_ipprefix(ip_addr+'/24'))
         sai_thrift_create_route_entry(self.client, route1, next_hop_id=nhop)
 
-    def remove_lag_members(self, lag_members):
+    def remove_lag_member(self, lag_member):
+        sai_thrift_remove_lag_member(self, lag_member)
+
+    def remove_all_lag_members(self, lag_members):
         for lag_member in lag_members:
             sai_thrift_remove_lag_member(self.client, lag_member)
     
