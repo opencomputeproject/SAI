@@ -93,6 +93,9 @@ typedef union _sai_object_key_entry_t
     /** @validonly object_type == SAI_OBJECT_TYPE_ENI_ETHER_ADDRESS_MAP_ENTRY */
     sai_eni_ether_address_map_entry_t eni_ether_address_map_entry;
 
+    /** @validonly object_type == SAI_OBJECT_TYPE_VIP_ENTRY */
+    sai_vip_entry_t vip_entry;
+
     /** @validonly object_type == SAI_OBJECT_TYPE_INBOUND_ENI_TO_VM_ENTRY */
     sai_inbound_eni_to_vm_entry_t inbound_eni_to_vm_entry;
 
