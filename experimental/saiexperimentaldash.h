@@ -186,6 +186,15 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_FLOWS,
 
     /**
+     * @brief Action set_eni_attrs parameter ADMIN_STATE
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ENI_ATTR_ADMIN_STATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,
