@@ -195,32 +195,41 @@ For the test configuration, please refer to Tunnel configuration section of the 
     ------------------------------------------------------------------
     ipv6's falls in fc02::   |   ipv6's falls in fc00:1::
     -------------------------------------------------------------
-    
+    tunnel term table:
+    --------------------------------------------------------------
+     src ip  |   dst ip |  term type | tunnel dscp mode
+    ------------------------------------------------------------------
+        10.1.2.100   |     dst=10.10.10.1    | p2p        | pipe
+    ------------------------------------------------------------------
+       10.1.2.100    |     dst=10.10.10.1    | p2mp       | uniform
+    -------------------------------------------------------------
 ### Testing Data Packet
 #### IPV4 IN IPV4 Packet <!-- omit in toc --> 
-- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
-- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1,dscp=18)/IP(src=192.168.20.1,dst=192.168.1.1, dscp=10)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1,dscp=10)/TCP()
 
-- ingress encap packet with different term src ip =Ether(dst=ROUTER_MAC)/IP(src=10.1.4.100,dst=10.10.10.1)/IP(src=192.168.40.1,dst=192.168.1.1)/TCP()
-- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+- ingress encap packet with different term src ip =Ether(dst=ROUTER_MAC)/IP(src=10.1.4.100,dst=10.10.10.1,dscp=18)/IP(src=192.168.40.1,dst=192.168.1.1,dscp=10)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1,dscp=18)/TCP()
 
 - ingress encap packet with different term src ip =Ether(dst=ROUTER_MAC)/IP(src=10.1.4.100,dst=10.10.10.100)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
 
 ### Test steps: <!-- omit in toc --> 
-- IpIp_P2MP_Tunnel_Decap_Test_With_valid_dstip_valid_srcip
-1. check tunnel term with dest as 10.10.10.1,src as 10.1.2.100, term type as P2MP.
-2. Generate ingress encap packet as decribed by Testing Data Packet.
-3. Send encap packets with the same term src ip from lag2.
-4. Generate expected decap packets as decribed by Testing Data Packet.
-5. Recieve decap packets from port1, compare it with expected decap packets.
+- IpIp_P2MP_Tunnel_Decap_Test_With_diff_dstip_diff_srcip
+1. Generate ingress encap packet with outer dcsp as 18, inner dscp as 10, outer src ip as 10.1.2.10.
+2. Send encap packets from lag2.
+3. Generate expected decap packets with dscp field as 10.
+4. Recieve decap packets from port1, compare it with expected decap packets.
 
 - IpIp_P2MP_Tunnel_Decap_Test_With_term_dstip_diff_term_srcip
-1. Send encap packet with different term src ip from lag2.
-2. Recieve decap packets from port1, compare it with expected decap packets.
+1. Generate ingress encap packet with outer dcsp as 18, inner dscp as 10, outer src ip as 10.1.4.100.
+2. Send encap packet  from lag2.
+3. Generate expected decap packets with dscp field as 18.
+4. Recieve decap packets from port1, compare it with expected decap packets.
 
 - IpIp_P2MP_Tunnel_Decap_Test_With_diff_dstip_diff_srcip
-1.  Send encap packet with different term src ip and different term dst ip from lag2.
-2.  Verify packet drop on lag2
+1. 1. Generate ingress encap packet with outer src ip as 10.1.4.100,dst as 10.10.10.100
+2.  Send encap packet from lag2.
+3.  Verify packet drop on lag2
 
 ## Test Group4: IP IN IP Tunnel + ECMP Encap 
 ### Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4
