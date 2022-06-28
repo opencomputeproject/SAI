@@ -19,7 +19,6 @@
 #
 
 
-from bm.sai_adapter.test.ptf_tests.tests.switch import sai_thrift_create_lag_member
 from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
@@ -39,7 +38,7 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
     if is_create_lag:
         lag1 = lag_configer.create_lag([17, 18])
         lags.update({lag1.lag_id: lag1})
-        ip_addr1 = '10.1.1.100'
+        ip_addr1 = '10.10.10.0'
         mac_addr1 = '02:04:02:01:01:01'
         lag_configer.create_route_and_neighbor_entry_for_lag(
             lag_id=lag1.lag_id, 
@@ -62,9 +61,9 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
     for key in lags:
         test_obj.lags.update({key: lags[key]})
     
-    lag_configer.set_lag_hash_algorithm(test_obj)
-    lag_configer.set_lag_hash_attribute(test_obj)
-    lag_configer.set_lag_hash_seed(test_obj)
+    lag_configer.set_lag_hash_algorithm()
+    lag_configer.set_lag_hash_attribute()
+    lag_configer.set_lag_hash_seed()
 
 
 class LagConfiger(object):
@@ -127,9 +126,9 @@ class LagConfiger(object):
         Args:
             algo (int): hash algorithm id
         """
-        sai_thrift_set_switch_attribute(self.client, lag_default_hash_algorithm=algo)
+        sai_thrift_set_switch_attribute(self.client, lag_default_hash_algorithm=True)
 
-    def set_lag_hash_attribute(self, hash_fields_list=None):
+    def set_lag_hash_attribute(self):
         """
         Set lag hash attributes.
 
@@ -139,12 +138,11 @@ class LagConfiger(object):
         attr_list = sai_thrift_get_switch_attribute(self.client, lag_hash=True)
         lag_hash_id = attr_list['SAI_SWITCH_ATTR_LAG_HASH']
 
-        if hash_fields_list is None:
-            hash_fields_list = [SAI_NATIVE_HASH_FIELD_SRC_IP,
-                                SAI_NATIVE_HASH_FIELD_DST_IP,
-                                SAI_NATIVE_HASH_FIELD_IP_PROTOCOL,
-                                SAI_NATIVE_HASH_FIELD_L4_DST_PORT,
-                                SAI_NATIVE_HASH_FIELD_L4_SRC_PORT]
+        hash_fields_list = [SAI_NATIVE_HASH_FIELD_SRC_IP,
+                            SAI_NATIVE_HASH_FIELD_DST_IP,
+                            SAI_NATIVE_HASH_FIELD_IP_PROTOCOL,
+                            SAI_NATIVE_HASH_FIELD_L4_DST_PORT,
+                            SAI_NATIVE_HASH_FIELD_L4_SRC_PORT]
 
         hash_attr_list = sai_thrift_s32_list_t(count=len(hash_fields_list), int32list=hash_fields_list)
         sai_thrift_set_hash_attribute(self.client, lag_hash_id, native_hash_field_list=hash_attr_list)
@@ -169,7 +167,7 @@ class LagConfiger(object):
         sai_thrift_create_neighbor_entry(self.client, nbr_entry_v4, dst_mac_address=mac_addr)
 
         nhop = sai_thrift_create_next_hop(self.client, ip=sai_ipaddress(ip_addr), router_interface_id=rif_id1, type=SAI_NEXT_HOP_TYPE_IP)
-        route1 = sai_thrift_route_entry(vr_id=vr_id, destination=sai_ipprefix(ip_addr+'/24'))
+        route1 = sai_thrift_route_entry_t(vr_id=vr_id, destination=sai_ipprefix(ip_addr+'/24'))
         sai_thrift_create_route_entry(self.client, route1, next_hop_id=nhop)
 
     def remove_lag_member(self, lag_member):
