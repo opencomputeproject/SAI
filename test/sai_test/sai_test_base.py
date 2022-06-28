@@ -41,6 +41,8 @@ from config.vlan_configer import t0_vlan_config_helper
 from config.vlan_configer import VlanConfiger
 from config.fdb_configer import t0_fdb_config_helper
 from config.fdb_configer import FdbConfiger
+from config.lag_configer import t0_lag_config_helper
+from config.lag_configer import LagConfiger
 
 THRIFT_PORT = 9092
 is_configured = False
