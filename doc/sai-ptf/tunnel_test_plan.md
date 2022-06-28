@@ -280,7 +280,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
     ------------------------------------------------------------------
     ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
     ------------------------------------------------------------------
-    Map type: VNI to Virtual router
+
 ### Testing Data Packet
 ```Python
         egress_decap_pkt = simple_udp_packet(eth_dst=01:01:00:99:01:01,
@@ -318,14 +318,28 @@ For the test configuration, please refer to Tunnel configuration section of the 
                                           vxlan_vni=1000,
                                           inner_frame=inner_pkt)
 
-        invalid_term_srcip_ingress_vxlan_pkt = simple_vxlanv6_packet(
-                                  eth_dst=ROUTER_MAC,
-                                  ipv6_dst=self.4001:0E98:03EE::0D26,
-                                  ipv6_src=test_src_ip,
-                                  ipv6_hlim=64,
-                                  with_udp_chksum=False,
-                                  vxlan_vni=1000,
-                                  inner_frame=inner_pkt)
+            egress_l2_pkt = simple_udp_packet(eth_dst=01:01:00:99:01:01,
+                                       dl_vlan_enable=True,
+                                       vlan_vid=10,
+                                       ip_dst=192.168.1.2,
+                                       ip_src=192.168.30.101,
+                                       ip_id=108,
+                                       ip_ttl=64)
+           l2_inner_pkt = simple_udp_packet(eth_dst=01:01:00:99:01:01,
+                                             ip_dst=192.168.1.2,
+                                             ip_src=192.168.30.101,
+                                             ip_id=108,
+                                             ip_ttl=64)
+	  l2_vxlan_pkt = simple_vxlan_packet(eth_dst=ROUTER_MAC,
+                                               ip_dst=10.10.10.2,
+                                               ip_src=10.1.3.100,
+                                               ip_id=0,
+                                               ip_ttl=64,
+                                               ip_flags=0x2,
+                                               udp_sport=11638,
+                                               with_udp_chksum=False,
+                                               vxlan_vni=1000,
+                                               inner_frame=l2_inner_pkt)				     
 ```
 ### Test steps: <!-- omit in toc --> 
 - Vxlan_Tunnel_Decap_Test_Underlay_Ipv4
@@ -335,10 +349,10 @@ For the test configuration, please refer to Tunnel configuration section of the 
 3. Generate expected decap packet as decribed by Testing Data Packet.
 4. Recieve decap packet from port2, compare it with expected decap packet.
 
-- Vxlan_Tunnel_Decap_Test_Invalid_Term_SrcIp:
-1. Generate invalid_term_srcip_ingress_vxlan_pkt as decribed by Testing Data Packet
+- Vxlan_Tunnel_Decap_Test_L2:
+1. Generate l2 packet as decribed by Testing Data Packet
 2. Send encap packet from lag3.
-3. Verify packet drop on port2.
+3. Recieve decap packet from port2, compare it with expected decap packet.
 
 
 ## Test Group6: Vxlan Tunnel Encap 
