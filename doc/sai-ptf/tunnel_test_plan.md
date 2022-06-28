@@ -265,7 +265,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 	
 ### Case1:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv4
 ### Case2:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv6
-### case3:  Vxlan_Tunnel_Decap_Test_Invalid_Term_SrcIp
+### case3:  Vxlan_Tunnel_Decap_Test_L2
 
 ### Testing Objective <!-- omit in toc --> 
 
