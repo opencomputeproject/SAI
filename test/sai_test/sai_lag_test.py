@@ -21,7 +21,7 @@
 from sai_test_base import T0TestBase
 from sai_utils import *
 
-class Lag_Load_Balance_Test(T0TestBase):
+class LagLoadBalanceTest(T0TestBase):
     """
     Verify the load-balance of l3
     """
@@ -64,7 +64,7 @@ class Lag_Load_Balance_Test(T0TestBase):
         
         send_packet(self, 21, pkt1)
         verify_packet_any_port(self, exp_pkt1, [17, 18])
-        send_packet(self, 21, pkt)
+        send_packet(self, 21, pkt2)
         verify_packet_any_port(self, exp_pkt2, [17, 18])
 
     def runTest(self):
