@@ -231,7 +231,93 @@ For the test configuration, please refer to Tunnel configuration section of the 
 2.  Send encap packet from lag2.
 3.  Verify packet drop on port1.
 
-## Test Group4: IP IN IP Tunnel + ECMP Encap 
+
+## Test Group4: IP IN IP Tunnel Decap +SVI
+	
+### Case1:  IpIp_Tunnel_Decap_SVI_Ipv4inIpv4
+### Case2:  IpIp_Tunnel_Decap_SVI_Ipv6inIpv6
+### Case3:  IpIp_Tunnel_Decap_SVI_Ipv6inIpv4
+### Case4:  IpIp_Tunnel_Decap_SVI_Ipv4inIpv6
+### Case5:  IpIp_Tunnel_Decap_SVI_Flood_Test
+### Testing Objective <!-- omit in toc --> 
+
+    We will send encapsulated packet from lag2 and expect a decapsulated packet on port1. 
+    -----------------------------------------------------------------
+    Egress side[port1]           |          ingress side[lag2]
+    ------------------------------------------------------------------
+    ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
+    ------------------------------------------------------------------
+    ipv6's falls in fc02::   |   ipv6's falls in fc00:1::
+    ------------------------------------------------------------------
+                            
+			    |  tunnel table      |
+   ingress encap pkt->lag2->|term dst: 10.10.10.1|-> tunnel -> inner pkt -> SVI:VLAN10 -lookup fdb--->Port1
+                            |term src: 10.1.2.100|                         
+### Testing Data Packet
+
+#### IPV4 IN IPV4 Packet <!-- omit in toc --> 
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+
+#### IPV6 IN IPV6 Packet <!-- omit in toc --> 
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=fc00:1::2:100,dst=4001:0E98:03EE::0D25)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+
+#### IPV6 IN IPV4 Packet <!-- omit in toc --> 
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+
+#### IPV4 IN IPV6 Packet <!-- omit in toc --> 
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=fc00:1::2:100,dst=4001:0E98:03EE::0D25)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+
+### Test steps: <!-- omit in toc --> 
+1. Generate ingress encap packet as decribed by Testing Data Packet
+2. Send encap packet from lag2.
+3. Generate expected decap packet as decribed by Testing Data Packet.
+4. Recieve decap packet from port1, compare it with expected decap packet.
+- IpIp_Tunnel_Decap_SVI_Flood_Test
+1. Remove vlan10 fdb entry.
+2. Generate ingress encap packet as decribed by Testing Data Packet
+3. Send encap packet from lag2.
+4. Check packet drops on port1.
+
+## Test Group4: IP IN IP Tunnel Decap Loop Test
+	
+### Case1:  IpIp_Tunnel_Decap_With_Loop
+### Case2:  IpIp_Tunnel_Decap_Without_Loop
+### Testing Objective <!-- omit in toc --> 
+
+  We add a route entry whoes dst ip is inner dst ip and next hop is tunnel. Then we will send encapsulated packet from lag2 and expectpkt drop on port1. 
+    -----------------------------------------------------------------
+    Egress side[port1]           |          ingress side[lag2]
+    ------------------------------------------------------------------
+    ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
+    ------------------------------------------------------------------
+                            
+			    |  tunnel table      |
+   ingress encap pkt->lag2->|term dst: 10.10.10.1|-> tunnel -> inner pkt ->look up route--->Drop
+                            |term src: 10.1.2.100|                         
+### Testing Data Packet
+
+#### IPV4 IN IPV4 Packet <!-- omit in toc --> 
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+
+### Test steps: <!-- omit in toc --> 
+- IpIp_Tunnel_Decap_With_Loop
+1. Add route entry
+1. Generate ingress encap packet as decribed by Testing Data Packet.
+2. Send encap packet from lag2.
+3. Generate expected decap packet as decribed by Testing Data Packet.
+4. Check packet drops on port1.
+- IpIp_Tunnel_Decap_Without_Loop
+1. Remove router entry.
+2. Generate ingress encap packet as decribed by Testing Data Packet
+3. Send encap packet from lag2.
+4. Recieve decap packet from port1, compare it with expected decap packet.
+
+## Test Group5: IP IN IP Tunnel + ECMP Encap 
 ### Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4
 ### Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv6
 
