@@ -54,7 +54,7 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
             lag_id=lag2.lag_id, 
             ip_addr=ip_addr2, 
             mac_addr=mac_addr2, 
-            port_id=21)
+            port_id=22)
 
     if not hasattr(test_obj, 'lags'):
         test_obj.lags = {}
@@ -95,6 +95,7 @@ class LagConfiger(object):
         lag = Lag()
         lag_id = sai_thrift_create_lag(self.client)
         lag_members = self.create_lag_member(lag_id, lag_port_idxs)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
         lag.lag_id = lag_id
         lag.lag_members = lag_members
         return lag
@@ -116,6 +117,7 @@ class LagConfiger(object):
             lag_member = sai_thrift_create_lag_member(self.client, 
                                                       lag_id=lag_id, 
                                                       port_id=self.test_obj.port_list[port_index])
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
             lag_members.append(lag_member)
         return lag_members
     
@@ -126,7 +128,7 @@ class LagConfiger(object):
         Args:
             algo (int): hash algorithm id
         """
-        sai_thrift_set_switch_attribute(self.client, lag_default_hash_algorithm=True)
+        sai_thrift_set_switch_attribute(self.client, lag_default_hash_algorithm=algo)
 
     def set_lag_hash_attribute(self):
         """
