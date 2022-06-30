@@ -206,6 +206,24 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_ADMIN_STATE,
 
     /**
+     * @brief Action set_eni_attrs parameter VM_UNDERLAY_DIP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_ENI_ATTR_VM_UNDERLAY_DIP,
+
+    /**
+     * @brief Action set_eni_attrs parameter VM_VNI
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ENI_ATTR_VM_VNI,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,
