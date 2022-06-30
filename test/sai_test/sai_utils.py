@@ -22,9 +22,11 @@
 Thrift SAI interface basic utils.
 """
 
+import os
 import time
 import struct
 import socket
+import json
 
 from functools import wraps
 
@@ -33,14 +35,7 @@ from ptf.testutils import *
 
 from sai_thrift.sai_adapter import *
 from constant import *
-from config.port_configer import t0_port_config_helper
-from config.port_configer import PortConfiger
-from config.switch_configer import t0_switch_config_helper
-from config.switch_configer import SwitchConfiger
-from config.vlan_configer import t0_vlan_config_helper
-from config.vlan_configer import VlanConfiger
-from config.fdb_configer import t0_fdb_config_helper
-from config.fdb_configer import FdbConfiger
+
 
 
 def sai_ipprefix(prefix_str):
@@ -99,3 +94,18 @@ def num_to_dotted_quad(address, ipv4=True):
             result = result + sign
         i += 1
     return result[:-1]
+
+
+class ConfigDBOpertion():
+    def __init__(self):
+
+        path =os.path.join( os.path.dirname(__file__),"resources/config_db.json")  #REPLACE
+        self.config_json = None
+        with open(path,mode='r') as f:
+            self.config_json = json.load(f)
+    
+    def get_port_config(self):
+        port_conf = self.config_json.get("PORT")
+        key_0 = list(port_conf.keys())[0]
+        #print(key_0)
+        return self.config_json.get("PORT").get(key_0)

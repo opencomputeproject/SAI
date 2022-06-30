@@ -94,6 +94,8 @@ class PortConfiger(object):
         """
         self.test_obj = test_obj
         self.client = test_obj.client
+        config_driver = ConfigDBOpertion()
+        self.config = config_driver.get_port_config()
 
     def create_bridge_ports(self, bridge_id, port_list):
         """
@@ -356,7 +358,8 @@ class PortConfiger(object):
         print("Set port...")
         for i, port in enumerate(port_list):
             sai_thrift_set_port_attribute(
-                self.client, port_oid=port, mtu=PORT_MTU, admin_state=True, fec_mode=SAI_PORT_FEC_MODE_RS)
+                self.client, port_oid=port, mtu=self.get_mtu(), admin_state=True,
+                fec_mode=self.get_fec_mode())
 
     def turn_up_and_check_ports(self, port_list):
         '''
@@ -381,14 +384,27 @@ class PortConfiger(object):
                     sai_thrift_set_port_attribute(
                         self.client, 
                         port_oid=port_id, 
-                        mtu=PORT_MTU, 
-                        admin_state=True, 
-                        fec_mode=SAI_PORT_FEC_MODE_RS)
+                        mtu=self.get_mtu(), 
+                        admin_state=True,
+                        fec_mode=self.get_fec_mode())
             if all_ports_are_up:
                 print("Retry {} times turn up port.".format(num_of_tries))
                 break
         if not all_ports_are_up:
             print("Not all the ports are up after {} rounds of retries.".format(retries))
+    
+        
+    def get_fec_mode(self):
+        fec_mode = self.config.get('fec')
+        fec_change = {
+            None : SAI_PORT_FEC_MODE_NONE,
+            'rs' : SAI_PORT_FEC_MODE_RS,
+            'fc' : SAI_PORT_FEC_MODE_FC,
+        }
+        return fec_change[fec_mode]
+    
+    def get_mtu(self):
+        return int(self.config.get('mtu'))
 
 
 class PortConfig(object):
