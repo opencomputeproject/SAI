@@ -37,58 +37,58 @@
     - [Case3:  IpIp_Tunnel_encap_lpm_Ipv4inIpv4](#case3-ipip_tunnel_encap_lpm_ipv4inipv4)
     - [Case4:  IpIp_Tunnel_encap_lpm_Ipv6inIpv6](#case4-ipip_tunnel_encap_lpm_ipv6inipv6)
     - [Testing Data Packet](#testing-data-packet-5)
-  - [Test Group1: IP IN IP Tunnel Decap + LPM](#test-group1-ip-in-ip-tunnel-decap--lpm)
+  - [Test Group7: IP IN IP Tunnel Decap + LPM](#test-group7-ip-in-ip-tunnel-decap--lpm)
     - [Case1:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv4](#case1-ipip_tunnel_decap_lpm_ipv4inipv4)
     - [Case2:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv4](#case2-ipip_tunnel_decap_lpm_ipv4inipv4)
     - [Case3:  IpIp_Tunnel_Decap_Lpm_Ipv6inIpv4](#case3-ipip_tunnel_decap_lpm_ipv6inipv4)
     - [Case4:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv6](#case4-ipip_tunnel_decap_lpm_ipv4inipv6)
     - [Testing Data Packet](#testing-data-packet-6)
       - [IPV4 IN IPV4 Packet](#ipv4-in-ipv4-packet)
-  - [Test Group7: IP IN IP Tunnel + ECMP Encap](#test-group7-ip-in-ip-tunnel--ecmp-encap)
+  - [Test Group8: IP IN IP Tunnel + ECMP Encap](#test-group8-ip-in-ip-tunnel--ecmp-encap)
     - [Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4](#case1-ipip_tunnel_encap_ecmp_ipv4inipv4)
     - [Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv6](#case2-ipip_tunnel_encap_ecmp_ipv6inipv6)
     - [Testing Data Packet](#testing-data-packet-7)
-  - [Test Group8: Vxlan Tunnel Decap](#test-group8-vxlan-tunnel-decap)
+  - [Test Group9: Vxlan Tunnel Decap](#test-group9-vxlan-tunnel-decap)
     - [Case1:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv4](#case1-vxlan_tunnel_decap_test_underlay_ipv4)
     - [Case2:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv6](#case2-vxlan_tunnel_decap_test_underlay_ipv6)
     - [case3:  Vxlan_Tunnel_Decap_Test_L2](#case3-vxlan_tunnel_decap_test_l2)
     - [Testing Data Packet](#testing-data-packet-8)
-  - [Test Group9: Vxlan P2MP Tunnel Decap](#test-group9-vxlan-p2mp-tunnel-decap)
+  - [Test Group10: Vxlan P2MP Tunnel Decap](#test-group10-vxlan-p2mp-tunnel-decap)
     - [Case1:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_term_srcip](#case1-vxlan_p2mp_tunnel_decap_test_with_term_dst_ip_term_srcip)
     - [Case2:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_diff_term_srcip](#case2-vxlan_p2mp_tunnel_decap_test_with_term_dst_ip_diff_term_srcip)
     - [Case3:  Vxlan_P2MP_Tunnel_Decap_Test_With_diff_dst_ip_diff_srcip](#case3-vxlan_p2mp_tunnel_decap_test_with_diff_dst_ip_diff_srcip)
     - [Test data packet](#test-data-packet)
-  - [Test Group10: IP IN IP ENCAP TTL](#test-group10-ip-in-ip-encap-ttl)
+  - [Test Group11: IP IN IP ENCAP TTL](#test-group11-ip-in-ip-encap-ttl)
     - [Case1: encap_ttl_set_pipe_mode_v4](#case1-encap_ttl_set_pipe_mode_v4)
     - [Case2: encap_ttl_set_pipe_mode_v6](#case2-encap_ttl_set_pipe_mode_v6)
     - [Case3: encap_ttl_set_uniform_mode_v4](#case3-encap_ttl_set_uniform_mode_v4)
     - [Case4: encap_ttl_set_uniform_mode_v6](#case4-encap_ttl_set_uniform_mode_v6)
     - [Testing Data Packet](#testing-data-packet-9)
-  - [Test Group11: IP In IP Decap TTL](#test-group11-ip-in-ip-decap-ttl)
+  - [Test Group12: IP In IP Decap TTL](#test-group12-ip-in-ip-decap-ttl)
     - [Case1: decap_ttl_set_pipe_mode_v4](#case1-decap_ttl_set_pipe_mode_v4)
     - [Case2: decap_ttl_set_pipe_mode_v6](#case2-decap_ttl_set_pipe_mode_v6)
     - [Case3: decap_ttl_set_uniform_mode_v4](#case3-decap_ttl_set_uniform_mode_v4)
     - [Case4: decap_ttl_set_uniform_mode_v6](#case4-decap_ttl_set_uniform_mode_v6)
     - [Testing Data Packet](#testing-data-packet-10)
-  - [Test Group12: IP IN IP ENCAP DSCP](#test-group12-ip-in-ip-encap-dscp)
+  - [Test Group13: IP IN IP ENCAP DSCP](#test-group13-ip-in-ip-encap-dscp)
     - [Case1: encap_dscp_set_pipe_mode_v4](#case1-encap_dscp_set_pipe_mode_v4)
     - [Case2: encap_dscp_set_pipe_mode_v6](#case2-encap_dscp_set_pipe_mode_v6)
     - [Case3: encap_dscp_set_uniform_mode_v4](#case3-encap_dscp_set_uniform_mode_v4)
     - [Case4: encap_dscp_set_uniform_mode_v6](#case4-encap_dscp_set_uniform_mode_v6)
     - [Testing Data Packet](#testing-data-packet-11)
-  - [Test Group13: IP In IP Decap DSCP](#test-group13-ip-in-ip-decap-dscp)
+  - [Test Group14: IP In IP Decap DSCP](#test-group14-ip-in-ip-decap-dscp)
     - [Case1: decap_dscp_set_pipe_mode_v4](#case1-decap_dscp_set_pipe_mode_v4)
     - [Case2: decap_dscp_set_pipe_mode_v6](#case2-decap_dscp_set_pipe_mode_v6)
     - [Case3: decap_dscp_set_uniform_mode_v4](#case3-decap_dscp_set_uniform_mode_v4)
     - [Case4: decap_dscp_set_uniform_mode_v6](#case4-decap_dscp_set_uniform_mode_v6)
     - [Testing Data Packet](#testing-data-packet-12)
-  - [Test Group14: IP IN IP ENCAP DSCP REMAP](#test-group14-ip-in-ip-encap-dscp-remap)
+  - [Test Group15: IP IN IP ENCAP DSCP REMAP](#test-group15-ip-in-ip-encap-dscp-remap)
     - [Case1: encap_dscp_remap_pipe_mode_v4](#case1-encap_dscp_remap_pipe_mode_v4)
     - [Case2: encap_dscp_remap_pipe_mode_v6](#case2-encap_dscp_remap_pipe_mode_v6)
     - [Case3: encap_dscp_remap_uniform_mode_v4](#case3-encap_dscp_remap_uniform_mode_v4)
     - [Case4: encap_dscp_remap_uniform_mode_v6](#case4-encap_dscp_remap_uniform_mode_v6)
     - [Testing Data Packet](#testing-data-packet-13)
-  - [Test Group15: IP In IP Decap DSCP REMAP](#test-group15-ip-in-ip-decap-dscp-remap)
+  - [Test Group16: IP In IP Decap DSCP REMAP](#test-group16-ip-in-ip-decap-dscp-remap)
     - [Case1: decap_dscp_remap_pipe_mode_v4](#case1-decap_dscp_remap_pipe_mode_v4)
     - [Case2: decap_dscp_remap_pipe_mode_v6](#case2-decap_dscp_remap_pipe_mode_v6)
     - [Case3: decap_dscp_remap_uniform_mode_v4](#case3-decap_dscp_remap_uniform_mode_v4)
@@ -377,7 +377,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 5. Send decap packets from port1.
 6. Recieve encap packet from lag4, compare it with expected encap packet.
 
-## Test Group1: IP IN IP Tunnel Decap + LPM
+## Test Group7: IP IN IP Tunnel Decap + LPM
 	
 ### Case1:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv4
 ### Case2:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv4
@@ -424,7 +424,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 7. Send encap packet from lag2.
 8. Recieve decap packet from port2, compare it with expected decap packet.
  
-## Test Group7: IP IN IP Tunnel + ECMP Encap 
+## Test Group8: IP IN IP Tunnel + ECMP Encap 
 ### Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4
 ### Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv6
 
@@ -454,7 +454,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 4. Check if packets are received on lag2 and lag4 equally.
 
 
-## Test Group8: Vxlan Tunnel Decap 
+## Test Group9: Vxlan Tunnel Decap 
 	
 ### Case1:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv4
 ### Case2:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv6
@@ -547,7 +547,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 2. Send encap packet from lag3.
 3. Recieve decap packet from port2, compare it with expected decap packet.
 
-## Test Group9: Vxlan P2MP Tunnel Decap 
+## Test Group10: Vxlan P2MP Tunnel Decap 
 ### Case1:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_term_srcip
 
 ### Case2:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_diff_term_srcip
@@ -653,7 +653,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 2.  Send encap packet from lag3.
 3.  Verify packet drop on port2.
    
-## Test Group10: IP IN IP ENCAP TTL 
+## Test Group11: IP IN IP ENCAP TTL 
 	
 ### Case1: encap_ttl_set_pipe_mode_v4
 ### Case2: encap_ttl_set_pipe_mode_v6
@@ -708,7 +708,7 @@ This verifies the TTL field is preserved end-to-end by copying into the outer he
 4. Create expected ipinip packet with ip_ttl field for outer ip header as 63,  inner ip_ttl as 63.
 5. Recieve ipinip packet from lag2 port, compare it with expected ipinip packet.
    
-## Test Group11: IP In IP Decap TTL 
+## Test Group12: IP In IP Decap TTL 
 	
 ### Case1: decap_ttl_set_pipe_mode_v4
 ### Case2: decap_ttl_set_pipe_mode_v6
@@ -760,7 +760,7 @@ This verifies the TTL field is preserved end-to-end by copying into the outer he
 4. Create expected recieved packet with ip_ttl field as 63.
 5. Recieve ipinip packet from port1, compare it with expected packet.
 
-## Test Group12: IP IN IP ENCAP DSCP 
+## Test Group13: IP IN IP ENCAP DSCP 
 	
 ### Case1: encap_dscp_set_pipe_mode_v4
 ### Case2: encap_dscp_set_pipe_mode_v6
@@ -816,7 +816,7 @@ This verifies the dscp field is preserved end-to-end by copying into the outer h
 4. Create expected ipinip packet with dscp field in outer ip header as 18, inner dscp as 18.
 5. Recieve ipinip packet from lag2 . Compare it with expected ipinip packet.
    
-## Test Group13: IP In IP Decap DSCP
+## Test Group14: IP In IP Decap DSCP
 	
 ### Case1: decap_dscp_set_pipe_mode_v4
 ### Case2: decap_dscp_set_pipe_mode_v6
@@ -870,7 +870,7 @@ This verifies thedscp field is preserved end-to-end by copying into the outer he
 4. Generate expect packet with dscp field as 10.
 5. Recieve decap packet from port2. Compare it with expected ip packet.
 
-## Test Group14: IP IN IP ENCAP DSCP REMAP
+## Test Group15: IP IN IP ENCAP DSCP REMAP
 	
 ### Case1: encap_dscp_remap_pipe_mode_v4
 ### Case2: encap_dscp_remap_pipe_mode_v6
@@ -931,7 +931,7 @@ This verifies the DSCP field is preserved end-to-end by copying into the outer h
 6. Recieve ipinip packet from lag3 port. Compare it with expected ipinip packet.
 7. Remove  dscp_to_tc_map and tc_to_dscp_map.
 
-## Test Group15: IP In IP Decap DSCP REMAP
+## Test Group16: IP In IP Decap DSCP REMAP
 	
 ### Case1: decap_dscp_remap_pipe_mode_v4
 ### Case2: decap_dscp_remap_pipe_mode_v6
