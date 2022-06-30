@@ -318,7 +318,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 3. Send encap packet from lag2.
 4. Recieve decap packet from port1, compare it with expected decap packet.
 
-## Test Group5: IP IN IP Tunnel + LPM
+## Test Group6: IP IN IP Tunnel + LPM
 ### Case1:  IpIp_Tunnel_encap_lpm_Ipv4inIpv4
 ### Case2:  IpIp_Tunnel_encap_lpm_Ipv6inIpv6
 ### Case3:  IpIp_Tunnel_encap_lpm_Ipv4inIpv4
@@ -360,7 +360,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 5. Send decap packets from port1.
 6. Recieve encap packet from lag4, compare it with expected encap packet.
 
-## Test Group5: IP IN IP Tunnel + ECMP Encap 
+## Test Group7: IP IN IP Tunnel + ECMP Encap 
 ### Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4
 ### Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv6
 
@@ -390,7 +390,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 4. Check if packets are received on lag2 and lag4 equally.
 
 
-## Test Group6: Vxlan Tunnel Decap 
+## Test Group8: Vxlan Tunnel Decap 
 	
 ### Case1:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv4
 ### Case2:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv6
@@ -483,7 +483,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 2. Send encap packet from lag3.
 3. Recieve decap packet from port2, compare it with expected decap packet.
 
-## Test Group7: Vxlan P2MP Tunnel Decap 
+## Test Group9: Vxlan P2MP Tunnel Decap 
 ### Case1:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_term_srcip
 
 ### Case2:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_diff_term_srcip
@@ -589,7 +589,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 2.  Send encap packet from lag3.
 3.  Verify packet drop on port2.
    
-## Test Group8: IP IN IP ENCAP TTL 
+## Test Group10: IP IN IP ENCAP TTL 
 	
 ### Case1: encap_ttl_set_pipe_mode_v4
 ### Case2: encap_ttl_set_pipe_mode_v6
@@ -644,7 +644,7 @@ This verifies the TTL field is preserved end-to-end by copying into the outer he
 4. Create expected ipinip packet with ip_ttl field for outer ip header as 63,  inner ip_ttl as 63.
 5. Recieve ipinip packet from lag2 port, compare it with expected ipinip packet.
    
-## Test Group9: IP In IP Decap TTL 
+## Test Group11: IP In IP Decap TTL 
 	
 ### Case1: decap_ttl_set_pipe_mode_v4
 ### Case2: decap_ttl_set_pipe_mode_v6
@@ -696,7 +696,7 @@ This verifies the TTL field is preserved end-to-end by copying into the outer he
 4. Create expected recieved packet with ip_ttl field as 63.
 5. Recieve ipinip packet from port1, compare it with expected packet.
 
-## Test Group10: IP IN IP ENCAP DSCP 
+## Test Group12: IP IN IP ENCAP DSCP 
 	
 ### Case1: encap_dscp_set_pipe_mode_v4
 ### Case2: encap_dscp_set_pipe_mode_v6
@@ -752,7 +752,7 @@ This verifies the dscp field is preserved end-to-end by copying into the outer h
 4. Create expected ipinip packet with dscp field in outer ip header as 18, inner dscp as 18.
 5. Recieve ipinip packet from lag2 . Compare it with expected ipinip packet.
    
-## Test Group11: IP In IP Decap DSCP
+## Test Group13: IP In IP Decap DSCP
 	
 ### Case1: decap_dscp_set_pipe_mode_v4
 ### Case2: decap_dscp_set_pipe_mode_v6
@@ -806,7 +806,7 @@ This verifies thedscp field is preserved end-to-end by copying into the outer he
 4. Generate expect packet with dscp field as 10.
 5. Recieve decap packet from port2. Compare it with expected ip packet.
 
-## Test Group12: IP IN IP ENCAP DSCP REMAP
+## Test Group14: IP IN IP ENCAP DSCP REMAP
 	
 ### Case1: encap_dscp_remap_pipe_mode_v4
 ### Case2: encap_dscp_remap_pipe_mode_v6
@@ -867,7 +867,7 @@ This verifies the DSCP field is preserved end-to-end by copying into the outer h
 6. Recieve ipinip packet from lag3 port. Compare it with expected ipinip packet.
 7. Remove  dscp_to_tc_map and tc_to_dscp_map.
 
-## Test Group13: IP In IP Decap DSCP REMAP
+## Test Group15: IP In IP Decap DSCP REMAP
 	
 ### Case1: decap_dscp_remap_pipe_mode_v4
 ### Case2: decap_dscp_remap_pipe_mode_v6
