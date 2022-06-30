@@ -296,10 +296,11 @@ For the test configuration, please refer to Tunnel configuration section of the 
     ------------------------------------------------------------------
     ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
     ------------------------------------------------------------------
-                            
-			    |  tunnel table      |
+ ```                          
+                            |  tunnel table      |
    ingress encap pkt->lag2->|term dst: 10.10.10.1|-> tunnel -> inner pkt ->look up route--->Drop
                             |term src: 10.1.2.100|                         
+```
 ### Testing Data Packet
 
 #### IPV4 IN IPV4 Packet <!-- omit in toc --> 
