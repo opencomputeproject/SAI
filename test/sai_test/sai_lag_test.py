@@ -73,3 +73,48 @@ class LagLoadBalanceTest(T0TestBase):
             self.load_balance_on_src_ip()
         finally:
             pass
+
+class LoadbalanceOnSrcPortTest(T0TestBase):
+    """
+    Test load balance of l3 by source port.
+    """
+    def setUp(self):
+        T0TestBase.setUp(self)
+
+    def runTest(self):
+        try:
+            print("Lag l3 load balancing based on src port")
+            eth_src = '00:22:22:22:22:22'
+            eth_dst = '00:77:66:55:44:00'
+            ip_src = '192.168.0.1'
+            ip_dst = '10.10.10.1'
+
+            max_itrs = 150
+            begin_port = 2000
+            rcv_count = [0, 0]
+            for i in range(0, max_itrs):
+                src_port = begin_port + i
+                pkt = simple_tcp_packet(eth_dst=eth_dst,
+                                        eth_src=eth_src,
+                                        ip_dst=ip_dst,
+                                        ip_src=ip_src,
+                                        tcp_sport=src_port,
+                                        ip_id=105,
+                                        ip_ttl=64)
+                exp_pkt = simple_tcp_packet(eth_dst='02:04:02:01:01:01',
+                                        eth_src=eth_dst,
+                                        ip_dst=ip_dst,
+                                        ip_src=ip_src,
+                                        tcp_sport=src_port,
+                                        ip_id=105,
+                                        ip_ttl=64)                                                                
+                send_packet(self, 21, pkt)
+                rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
+                print('src_port={}, rcv_port={}'.format(src_port, rcv_idx))
+                rcv_count[rcv_idx%17] += 1
+
+                print(rcv_count)
+                for i in range(0, 2):
+                    self.assertTrue((rcv_count[i] >= (max_itrs * 0.8)), "Not all paths are equally balanced")
+            finally:
+                pass
