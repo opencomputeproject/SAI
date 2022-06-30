@@ -116,5 +116,5 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
                 print(rcv_count)
                 for i in range(0, 2):
                     self.assertTrue((rcv_count[i] >= (max_itrs * 0.8)), "Not all paths are equally balanced")
-            finally:
-                pass
+        finally:
+            pass
