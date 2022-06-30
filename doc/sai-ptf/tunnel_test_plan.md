@@ -5,7 +5,7 @@
 - [Test Execution](#test-execution)
   - [Test Group1: IP IN IP Tunnel Decap](#test-group1-ip-in-ip-tunnel-decap)
     - [Case1:  IpIp_Tunnel_Decap_Test_Ipv4inIpv4](#case1-ipip_tunnel_decap_test_ipv4inipv4)
-    - [Case2:  IpIp_Tunnel_Decap_Test_Ipv4inIpv4](#case2-ipip_tunnel_decap_test_ipv4inipv4)
+    - [Case2:  IpIp_Tunnel_Decap_Test_Ipv6inIpv6](#case2-ipip_tunnel_decap_test_ipv6inipv6)
     - [Case3:  IpIp_Tunnel_Decap_Test_Ipv6inIpv4](#case3-ipip_tunnel_decap_test_ipv6inipv4)
     - [Case4:  IpIp_Tunnel_Decap_Test_Ipv4inIpv6](#case4-ipip_tunnel_decap_test_ipv4inipv6)
     - [Testing Data Packet](#testing-data-packet)
@@ -31,21 +31,28 @@
     - [Case1:  IpIp_Tunnel_Decap_With_Loop](#case1-ipip_tunnel_decap_with_loop)
     - [Case2:  IpIp_Tunnel_Decap_Without_Loop](#case2-ipip_tunnel_decap_without_loop)
     - [Testing Data Packet](#testing-data-packet-4)
-  - [Test Group6: IP IN IP Tunnel + LPM](#test-group6-ip-in-ip-tunnel--lpm)
+  - [Test Group6: IP IN IP TunneL Encap + LPM](#test-group6-ip-in-ip-tunnel-encap--lpm)
     - [Case1:  IpIp_Tunnel_encap_lpm_Ipv4inIpv4](#case1-ipip_tunnel_encap_lpm_ipv4inipv4)
     - [Case2:  IpIp_Tunnel_encap_lpm_Ipv6inIpv6](#case2-ipip_tunnel_encap_lpm_ipv6inipv6)
     - [Case3:  IpIp_Tunnel_encap_lpm_Ipv4inIpv4](#case3-ipip_tunnel_encap_lpm_ipv4inipv4)
     - [Case4:  IpIp_Tunnel_encap_lpm_Ipv6inIpv6](#case4-ipip_tunnel_encap_lpm_ipv6inipv6)
     - [Testing Data Packet](#testing-data-packet-5)
+  - [Test Group1: IP IN IP Tunnel Decap + LPM](#test-group1-ip-in-ip-tunnel-decap--lpm)
+    - [Case1:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv4](#case1-ipip_tunnel_decap_lpm_ipv4inipv4)
+    - [Case2:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv4](#case2-ipip_tunnel_decap_lpm_ipv4inipv4)
+    - [Case3:  IpIp_Tunnel_Decap_Lpm_Ipv6inIpv4](#case3-ipip_tunnel_decap_lpm_ipv6inipv4)
+    - [Case4:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv6](#case4-ipip_tunnel_decap_lpm_ipv4inipv6)
+    - [Testing Data Packet](#testing-data-packet-6)
+      - [IPV4 IN IPV4 Packet](#ipv4-in-ipv4-packet)
   - [Test Group7: IP IN IP Tunnel + ECMP Encap](#test-group7-ip-in-ip-tunnel--ecmp-encap)
     - [Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4](#case1-ipip_tunnel_encap_ecmp_ipv4inipv4)
     - [Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv6](#case2-ipip_tunnel_encap_ecmp_ipv6inipv6)
-    - [Testing Data Packet](#testing-data-packet-6)
+    - [Testing Data Packet](#testing-data-packet-7)
   - [Test Group8: Vxlan Tunnel Decap](#test-group8-vxlan-tunnel-decap)
     - [Case1:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv4](#case1-vxlan_tunnel_decap_test_underlay_ipv4)
     - [Case2:  Vxlan_Tunnel_Decap_Test_Underlay_Ipv6](#case2-vxlan_tunnel_decap_test_underlay_ipv6)
     - [case3:  Vxlan_Tunnel_Decap_Test_L2](#case3-vxlan_tunnel_decap_test_l2)
-    - [Testing Data Packet](#testing-data-packet-7)
+    - [Testing Data Packet](#testing-data-packet-8)
   - [Test Group9: Vxlan P2MP Tunnel Decap](#test-group9-vxlan-p2mp-tunnel-decap)
     - [Case1:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_term_srcip](#case1-vxlan_p2mp_tunnel_decap_test_with_term_dst_ip_term_srcip)
     - [Case2:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_diff_term_srcip](#case2-vxlan_p2mp_tunnel_decap_test_with_term_dst_ip_diff_term_srcip)
@@ -56,37 +63,37 @@
     - [Case2: encap_ttl_set_pipe_mode_v6](#case2-encap_ttl_set_pipe_mode_v6)
     - [Case3: encap_ttl_set_uniform_mode_v4](#case3-encap_ttl_set_uniform_mode_v4)
     - [Case4: encap_ttl_set_uniform_mode_v6](#case4-encap_ttl_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-8)
+    - [Testing Data Packet](#testing-data-packet-9)
   - [Test Group11: IP In IP Decap TTL](#test-group11-ip-in-ip-decap-ttl)
     - [Case1: decap_ttl_set_pipe_mode_v4](#case1-decap_ttl_set_pipe_mode_v4)
     - [Case2: decap_ttl_set_pipe_mode_v6](#case2-decap_ttl_set_pipe_mode_v6)
     - [Case3: decap_ttl_set_uniform_mode_v4](#case3-decap_ttl_set_uniform_mode_v4)
     - [Case4: decap_ttl_set_uniform_mode_v6](#case4-decap_ttl_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-9)
+    - [Testing Data Packet](#testing-data-packet-10)
   - [Test Group12: IP IN IP ENCAP DSCP](#test-group12-ip-in-ip-encap-dscp)
     - [Case1: encap_dscp_set_pipe_mode_v4](#case1-encap_dscp_set_pipe_mode_v4)
     - [Case2: encap_dscp_set_pipe_mode_v6](#case2-encap_dscp_set_pipe_mode_v6)
     - [Case3: encap_dscp_set_uniform_mode_v4](#case3-encap_dscp_set_uniform_mode_v4)
     - [Case4: encap_dscp_set_uniform_mode_v6](#case4-encap_dscp_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-10)
+    - [Testing Data Packet](#testing-data-packet-11)
   - [Test Group13: IP In IP Decap DSCP](#test-group13-ip-in-ip-decap-dscp)
     - [Case1: decap_dscp_set_pipe_mode_v4](#case1-decap_dscp_set_pipe_mode_v4)
     - [Case2: decap_dscp_set_pipe_mode_v6](#case2-decap_dscp_set_pipe_mode_v6)
     - [Case3: decap_dscp_set_uniform_mode_v4](#case3-decap_dscp_set_uniform_mode_v4)
     - [Case4: decap_dscp_set_uniform_mode_v6](#case4-decap_dscp_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-11)
+    - [Testing Data Packet](#testing-data-packet-12)
   - [Test Group14: IP IN IP ENCAP DSCP REMAP](#test-group14-ip-in-ip-encap-dscp-remap)
     - [Case1: encap_dscp_remap_pipe_mode_v4](#case1-encap_dscp_remap_pipe_mode_v4)
     - [Case2: encap_dscp_remap_pipe_mode_v6](#case2-encap_dscp_remap_pipe_mode_v6)
     - [Case3: encap_dscp_remap_uniform_mode_v4](#case3-encap_dscp_remap_uniform_mode_v4)
     - [Case4: encap_dscp_remap_uniform_mode_v6](#case4-encap_dscp_remap_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-12)
+    - [Testing Data Packet](#testing-data-packet-13)
   - [Test Group15: IP In IP Decap DSCP REMAP](#test-group15-ip-in-ip-decap-dscp-remap)
     - [Case1: decap_dscp_remap_pipe_mode_v4](#case1-decap_dscp_remap_pipe_mode_v4)
     - [Case2: decap_dscp_remap_pipe_mode_v6](#case2-decap_dscp_remap_pipe_mode_v6)
     - [Case3: decap_dscp_remap_uniform_mode_v4](#case3-decap_dscp_remap_uniform_mode_v4)
     - [Case4: decap_dscp_remap_uniform_mode_v6](#case4-decap_dscp_remap_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-13)
+    - [Testing Data Packet](#testing-data-packet-14)
 # Overriew
 The purpose of this test plan is to test the Tunnel function from SAI.
 
@@ -103,7 +110,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 ## Test Group1: IP IN IP Tunnel Decap 
 	
 ### Case1:  IpIp_Tunnel_Decap_Test_Ipv4inIpv4
-### Case2:  IpIp_Tunnel_Decap_Test_Ipv4inIpv4
+### Case2:  IpIp_Tunnel_Decap_Test_Ipv6inIpv6
 ### Case3:  IpIp_Tunnel_Decap_Test_Ipv6inIpv4
 ### Case4:  IpIp_Tunnel_Decap_Test_Ipv4inIpv6
 ### Testing Objective <!-- omit in toc --> 
@@ -301,7 +308,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 ### Case2:  IpIp_Tunnel_Decap_Without_Loop
 ### Testing Objective <!-- omit in toc --> 
 
-  We add a route entry whoes dst ip is inner dst ip and next hop is tunnel. Then we will send encapsulated packet from lag2 and expectpkt drop on port1. 
+  We add a route entry whoes dst ip is inner dst ip and next hop is tunnel. Then we will send encapsulated packet from lag2 and expect pkt drop on port1. 
 
  ```                          
                             |  tunnel table      |
@@ -328,7 +335,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 3. Send encap packet from lag2.
 4. Recieve decap packet from port1, compare it with expected decap packet.
 
-## Test Group6: IP IN IP Tunnel + LPM
+## Test Group6: IP IN IP TunneL Encap + LPM
 ### Case1:  IpIp_Tunnel_encap_lpm_Ipv4inIpv4
 ### Case2:  IpIp_Tunnel_encap_lpm_Ipv6inIpv6
 ### Case3:  IpIp_Tunnel_encap_lpm_Ipv4inIpv4
@@ -370,6 +377,53 @@ For the test configuration, please refer to Tunnel configuration section of the 
 5. Send decap packets from port1.
 6. Recieve encap packet from lag4, compare it with expected encap packet.
 
+## Test Group1: IP IN IP Tunnel Decap + LPM
+	
+### Case1:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv4
+### Case2:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv4
+### Case3:  IpIp_Tunnel_Decap_Lpm_Ipv6inIpv4
+### Case4:  IpIp_Tunnel_Decap_Lpm_Ipv4inIpv6
+### Testing Objective <!-- omit in toc --> 
+
+    Tunnel Term Source is 10.1.2.100
+    Tunnel Term Dest is 10.10.10.1
+    Tunnel Term Source is fc00:1::2:100
+    Tunnel Term Dest is 4001:0E98:03EE::0D25
+
+    We will send encapsulated packet from lag2 and expect a decapsulated packet on port1/PORT2
+ ```                          
+             |  tunnel table      |                         |  Route table |
+  pkt->lag2->|term dst: 10.10.10.1|-> tunnel -> inner pkt ->|192.168.1.253/26, port1|
+             |term src: 10.1.2.100|                         |192.168.1.253/32, port2|
+```
+### Testing Data Packet
+
+#### IPV4 IN IPV4 Packet <!-- it in toc --> 
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=192.168.20.1,dst=192.168.1.253)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.253)/TCP()
+
+#### IPV6 IN IPV6 Packet <!-- omit in toc --> 
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=fc00:1::2:100,dst=4001:0E98:03EE::0D25)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+
+#### IPV6 IN IPV4 Packet <!-- omit in toc --> 
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+
+#### IPV4 IN IPV6 Packet <!-- omit in toc --> 
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=fc00:1::2:100,dst=4001:0E98:03EE::0D25)/IP(src=192.168.20.1,dst=192.168.1.253)/TCP()
+- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.253)/TCP()
+
+### Test steps: <!-- omit in toc --> 
+1. Generate ingress encap packet as decribed by Testing Data Packet.
+2. Create route (dst ip = 192.168.1.253/26, next hop port=port1).
+3. Send encap packet from lag2.
+4. Generate expected decap packet as decribed by Testing Data Packet.
+5. Recieve decap packet from port1, compare it with expected decap packet.
+6. Create route (dst ip = 192.168.1.253/32, next hop port=port2).
+7. Send encap packet from lag2.
+8. Recieve decap packet from port2, compare it with expected decap packet.
+ 
 ## Test Group7: IP IN IP Tunnel + ECMP Encap 
 ### Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4
 ### Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv6
