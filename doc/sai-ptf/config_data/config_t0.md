@@ -12,6 +12,7 @@
   - [2.2 Route Interfaces](#22-route-interfaces)
   - [2.3 Route Configuration](#23-route-configuration)
   - [2.4 Neighbor Configuration](#24-neighbor-configuration)
+  - [2.5 Default route entry and interface](#25-default-route-entry-and-interface)
 - [3 LAG configuration](#3-lag-configuration)
   - [3.1 LAG Hash Rule](#31-lag-hash-rule)
 - [4. Tunnel Configuration](#4-tunnel-configuration)
@@ -112,7 +113,7 @@ Host interface IP
 |port0|10.0.0.100|
 
 ## 2.1 VLAN Interfaces
-|VLAN ID | VLAN Interface IP v4| VLAN Interface IP v4
+|VLAN ID | VLAN Interface IP v4| VLAN Interface IP v6
 |-|-|-|
 |10|192.168.1.100|fc02::1:100|
 |20|192.168.2.100|fc02::2:100|
@@ -149,16 +150,28 @@ Host interface IP
 
 |IPv4|IPv6|Port|No_host_route|dest_mac|
 |-|-|-|-|-|
-|192.168.1.0|fc02::1::|SVI:VLAN10|No|00:01:01:99:01:a0|
-|192.168.1.255||SVI:VLAN10|No|ff:ff:ff:ff:ff:ff|
-|192.168.2.0|fc02::2::|SVI:VLAN20|No|00:01:01:99:02:a0|
-|192.168.2.255||SVI:VLAN20|No|ff:ff:ff:ff:ff:ff|
+|192.168.1.0/24|fc02::1::/112|SVI:VLAN10|No|00:01:01:99:01:a0|
+|192.168.1.255/32||SVI:VLAN10|No|ff:ff:ff:ff:ff:ff|
+|192.168.2.0/24|fc02::2::/112|SVI:VLAN20|No|00:01:01:99:02:a0|
+|192.168.2.255/32||SVI:VLAN20|No|ff:ff:ff:ff:ff:ff|
 |10.1.1.100|fc00:1::1:100|LAG:lag1|No|00:01:01:01:01:a0|
 |10.1.2.100|fc00:1::2:100|LAG:lag2|No|00:01:01:01:02:a0|
 |10.1.3.100|fc00:1::3:100|LAG:lag3|No|00:01:01:01:03:a0|
 |10.1.4.100|fc00:1::4:100|LAG:lag4|No|00:01:01:01:04:a0|
 |192.168.1.1 ~ 192.168.1.8 |fc02::1:1 - fc02::1:8|Port1-8 | Yes|00:01:01:99:01:01 - 00:01:01:99:01:08|
 |192.168.2.9 ~ 192.168.2.16| fc02::2:9 - fc02::2:16|Port9-16| Yes|00:01:01:99:02:09 - 00:01:01:99:02:16|
+
+## 2.5 Default route entry and interface
+
+Default Route Interface
+|Virtual Router|interface type|
+|-|-|
+|default_virtual_router|LOOPBACK|
+
+Default route
+|Virtual Router|IPv4|IPv6|Action|
+|-|-|-|-|
+|default_virtual_router|0.0.0.0/0|::/0|Drop|
 
 
 # 3 LAG configuration
