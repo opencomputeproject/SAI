@@ -249,10 +249,12 @@ For the test configuration, please refer to Tunnel configuration section of the 
     ------------------------------------------------------------------
     ipv6's falls in fc02::   |   ipv6's falls in fc00:1::
     ------------------------------------------------------------------
-                            
-			    |  tunnel table      |
+ ```                        
+                            |  tunnel table      |
    ingress encap pkt->lag2->|term dst: 10.10.10.1|-> tunnel -> inner pkt -> SVI:VLAN10 -lookup fdb--->Port1
                             |term src: 10.1.2.100|                         
+```
+
 ### Testing Data Packet
 
 #### IPV4 IN IPV4 Packet <!-- omit in toc --> 
