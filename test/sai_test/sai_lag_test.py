@@ -107,14 +107,14 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
                                         ip_src=ip_src,
                                         tcp_sport=src_port,
                                         ip_id=105,
-                                        ip_ttl=64)                                                                
+                                        ip_ttl=63)                                                            
                 send_packet(self, 21, pkt)
                 rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
                 print('src_port={}, rcv_port={}'.format(src_port, rcv_idx))
                 rcv_count[rcv_idx%17] += 1
 
-                print(rcv_count)
-                for i in range(0, 2):
-                    self.assertTrue((rcv_count[i] >= (max_itrs * 0.8)), "Not all paths are equally balanced")
+            print(rcv_count)
+            for i in range(0, 2):
+                self.assertTrue((rcv_count[i] >= ((max_itrs/2) * 0.8)), "Not all paths are equally balanced")
         finally:
             pass
