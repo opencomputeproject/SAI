@@ -258,28 +258,29 @@ For the test configuration, please refer to Tunnel configuration section of the 
 ### Testing Data Packet
 
 #### IPV4 IN IPV4 Packet <!-- omit in toc --> 
-- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
-- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=192.168.20.1,dst=192.168.1.253)/TCP()
+- expected decap packet = Ether(dst=00:01:01:99:01:a0,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.253)/TCP()
 
 #### IPV6 IN IPV6 Packet <!-- omit in toc --> 
 - ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=fc00:1::2:100,dst=4001:0E98:03EE::0D25)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
-- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+- expected decap packet = Ether(dst=00:01:01:99:01:a0,src=ROUTER_MAC)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
 
 #### IPV6 IN IPV4 Packet <!-- omit in toc --> 
 - ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
 - expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
 
 #### IPV4 IN IPV6 Packet <!-- omit in toc --> 
-- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=fc00:1::2:100,dst=4001:0E98:03EE::0D25)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
-- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=fc00:1::2:100,dst=4001:0E98:03EE::0D25)/IP(src=192.168.20.1,dst=192.168.1.253)/TCP()
+- expected decap packet = Ether(dst=00:01:01:99:01:a0,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.253)/TCP()
 
 ### Test steps: <!-- omit in toc --> 
+1. Create fdb entry (dstmac=00:01:01:99:01:a0, port=port1).
 1. Generate ingress encap packet as decribed by Testing Data Packet
 2. Send encap packet from lag2.
 3. Generate expected decap packet as decribed by Testing Data Packet.
 4. Recieve decap packet from port1, compare it with expected decap packet.
 - IpIp_Tunnel_Decap_SVI_Flood_Test
-1. Remove vlan10 fdb entry.
+1. Remove vlan10 fdb entry (dstmac=00:01:01:99:01:a0, port=port1);.
 2. Generate ingress encap packet as decribed by Testing Data Packet
 3. Send encap packet from lag2.
 4. Check packet drops on port1.
