@@ -185,3 +185,37 @@ class DisableEgressTest(T0TestBase):
                     verify_packet(self, exp_pkt, 17)
         finally:
             pass
+
+class IndifferenceIngressPortTest(T0TestBase):
+    def setUp(self):
+        T0TestBase.setUp(self)
+
+    def runTest(self):
+        try:
+            eth_src = '00:22:22:22:22:22'
+            eth_dst = '00:77:66:55:44:00'
+            ip_src = '192.168.0.1'
+            ip_dst = '10.10.10.0'
+
+            pkt = simple_tcp_packet(eth_dst=eth_dst,
+                                    eth_src=eth_src,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    ip_id=105,
+                                    ip_ttl=64)
+            exp_pkt = simple_tcp_packet(eth_dst='02:04:02:01:01:01',
+                                    eth_src=eth_dst,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+            exp_port = 0
+            for i in range(1, 17):
+                send_packet(self, i, pkt)
+                if exp_port == 0:
+                    exp_port, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
+                else:
+                    verify_packet(self, exp_pkt, exp_port)
+        finally:
+            pass
