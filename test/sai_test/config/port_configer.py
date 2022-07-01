@@ -395,6 +395,9 @@ class PortConfiger(object):
     
         
     def get_fec_mode(self):
+        '''
+        get fec mode from config_db.json
+        '''
         fec_mode = self.config.get('fec')
         fec_change = {
             None : SAI_PORT_FEC_MODE_NONE,
@@ -404,6 +407,9 @@ class PortConfiger(object):
         return fec_change[fec_mode]
     
     def get_mtu(self):
+        '''
+        get mtu from config_db.json
+        '''
         return int(self.config.get('mtu'))
 
 

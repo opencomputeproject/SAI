@@ -97,15 +97,20 @@ def num_to_dotted_quad(address, ipv4=True):
 
 
 class ConfigDBOpertion():
+    '''
+    read config from config_db.json
+    '''
     def __init__(self):
-
         path =os.path.join( os.path.dirname(__file__),"resources/config_db.json")  #REPLACE
         self.config_json = None
         with open(path,mode='r') as f:
             self.config_json = json.load(f)
     
     def get_port_config(self):
-        port_conf = self.config_json.get("PORT")
+        '''
+        RETURN:
+            dict of port config
+        '''
+        port_conf = self.config_json.get('PORT')
         key_0 = list(port_conf.keys())[0]
-        #print(key_0)
-        return self.config_json.get("PORT").get(key_0)
+        return self.config_json.get('PORT').get(key_0)
