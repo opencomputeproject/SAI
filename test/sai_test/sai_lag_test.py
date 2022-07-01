@@ -118,3 +118,70 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
                 self.assertTrue((rcv_count[i] >= ((max_itrs/2) * 0.8)), "Not all paths are equally balanced")
         finally:
             pass
+
+class DisableEgressTest(T0TestBase):
+    def setUp(self):
+        T0TestBase.setUp(self)
+
+    def runTest(self):
+        try:
+            print("Lag disable egress lag member test")
+
+            eth_src = '00:22:22:22:22:22'
+            eth_dst = '00:77:66:55:44:00'
+            ip_src = '192.168.0.1'
+            ip_dst = '10.10.10.1'
+
+            pkts_num = 10
+            begin_port = 2000
+            exp_drop = []
+            for i in range(0, pkts_num):
+                src_port = begin_port + i
+                pkt = simple_tcp_packet(eth_dst=eth_dst,
+                                        eth_src=eth_src,
+                                        ip_dst=ip_dst,
+                                        ip_src=ip_src,
+                                        tcp_sport=src_port,
+                                        ip_id=105,
+                                        ip_ttl=64)
+                exp_pkt = simple_tcp_packet(eth_dst='02:04:02:01:01:01',
+                                        eth_src=eth_dst,
+                                        ip_dst=ip_dst,
+                                        ip_src=ip_src,
+                                        tcp_sport=src_port,
+                                        ip_id=105,
+                                        ip_ttl=63)
+                send_packet(self, 21, pkt)
+                rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
+                if rcv_idx == 18:
+                    exp_drop.append(src_port)
+                
+            # disable egress of lag member: port18
+            print("disable port18 egress")
+            status = sai_thrift_set_lag_member_attribute(self.client, self.lag1.lag_members[1], egress_disable=True, ingress_disable=True)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+            for i in range(0, pkts_num):
+                src_port = begin_port + i
+                pkt = simple_tcp_packet(eth_dst=eth_dst,
+                                        eth_src=eth_src,
+                                        ip_dst=ip_dst,
+                                        ip_src=ip_src,
+                                        tcp_sport=src_port,
+                                        ip_id=105,
+                                        ip_ttl=64)
+                exp_pkt = simple_tcp_packet(eth_dst='02:04:02:01:01:01',
+                                        eth_src=eth_dst,
+                                        ip_dst=ip_dst,
+                                        ip_src=ip_src,
+                                        tcp_sport=src_port,
+                                        ip_id=105,
+                                        ip_ttl=63)
+                send_packet(self, 21, pkt)
+                if src_port in exp_drop:
+                    # should drop
+                    verify_no_packet(self, exp_pkt, 18)
+                else:
+                    verify_packet(self, exp_pkt, 17)
+        finally:
+            pass

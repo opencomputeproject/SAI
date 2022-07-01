@@ -29,15 +29,14 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
     set the configuration in test directly.
 
     set the following test_obj attributes:
-        dict: lags - {lag id: lag object}
+        lag object
     
     """
     lag_configer = LagConfiger(test_obj)
-    lags = {}
 
     if is_create_lag:
         lag1 = lag_configer.create_lag([17, 18])
-        lags.update({lag1.lag_id: lag1})
+        test_obj.lag1 = lag1
         ip_addr1 = '10.10.10.0'
         mac_addr1 = '02:04:02:01:01:01'
         lag_configer.create_route_and_neighbor_entry_for_lag(
@@ -47,7 +46,7 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
             port_id=21)
         
         lag2 = lag_configer.create_lag([19, 20])
-        lags.update({lag2.lag_id: lag2})
+        test_obj.lag2 = lag2
         ip_addr2 = '10.1.2.100'
         mac_addr2 = '02:04:02:01:02:01'
         lag_configer.create_route_and_neighbor_entry_for_lag(
@@ -56,11 +55,6 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
             mac_addr=mac_addr2, 
             port_id=22)
 
-    if not hasattr(test_obj, 'lags'):
-        test_obj.lags = {}
-    for key in lags:
-        test_obj.lags.update({key: lags[key]})
-    
     lag_configer.set_lag_hash_algorithm()
     lag_configer.setup_lag_v4_hash()
     # lag_configer.set_lag_hash_attribute()
