@@ -57,7 +57,6 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
 
     lag_configer.set_lag_hash_algorithm()
     lag_configer.setup_lag_v4_hash()
-    # lag_configer.set_lag_hash_attribute()
     lag_configer.set_lag_hash_seed()
 
 
@@ -125,46 +124,26 @@ class LagConfiger(object):
         """
         sai_thrift_set_switch_attribute(self.client, lag_default_hash_algorithm=algo)
 
-    def setup_lag_v4_hash(self, hash_fields_list=None):
+    def setup_lag_v4_hash(self, hash_fields_list=None, lag_hash_ipv4=None):
         if hash_fields_list is None:
             hash_fields_list = [SAI_NATIVE_HASH_FIELD_SRC_IP,
                                 SAI_NATIVE_HASH_FIELD_DST_IP,
                                 SAI_NATIVE_HASH_FIELD_IP_PROTOCOL,
                                 SAI_NATIVE_HASH_FIELD_L4_DST_PORT,
                                 SAI_NATIVE_HASH_FIELD_L4_SRC_PORT]
-        attr_list = sai_thrift_get_switch_attribute(self.client, lag_hash_ipv4=True)
-        lag_hash_ipv4 = attr_list['SAI_SWITCH_ATTR_LAG_HASH_IPV4']
 
-        if lag_hash_ipv4 == 0:
+        if lag_hash_ipv4 is None:
             # create new hash
             s32list = sai_thrift_s32_list_t(count=len(hash_fields_list), int32list=hash_fields_list)
             lag_hash_ipv4 = sai_thrift_create_hash(self.client, native_hash_field_list=s32list)
             self.test_obj.assertTrue(lag_hash_ipv4 != 0, "Failed to create IPv4 lag hash")
-            sai_thrift_set_switch_attribute(self.client, lag_hash_ipv4=lag_hash_ipv4)
+            status = sai_thrift_set_switch_attribute(self.client, lag_hash_ipv4=lag_hash_ipv4)
+            self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
         else:
             # update existing hash
             s32list = sai_thrift_s32_list_t(count=len(hash_fields_list), int32list=hash_fields_list)
             status = sai_thrift_set_hash_attribute(self.client, lag_hash_ipv4, native_hash_field_list=s32list)
             self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
-
-    def set_lag_hash_attribute(self):
-        """
-        Set lag hash attributes.
-
-        Args:
-            hash_fields_list: hash fields list
-        """
-        attr_list = sai_thrift_get_switch_attribute(self.client, lag_hash=True)
-        lag_hash_id = attr_list['SAI_SWITCH_ATTR_LAG_HASH']
-
-        hash_fields_list = [SAI_NATIVE_HASH_FIELD_SRC_IP,
-                            SAI_NATIVE_HASH_FIELD_DST_IP,
-                            SAI_NATIVE_HASH_FIELD_IP_PROTOCOL,
-                            SAI_NATIVE_HASH_FIELD_L4_DST_PORT,
-                            SAI_NATIVE_HASH_FIELD_L4_SRC_PORT]
-
-        hash_attr_list = sai_thrift_s32_list_t(count=len(hash_fields_list), int32list=hash_fields_list)
-        sai_thrift_set_hash_attribute(self.client, lag_hash_id, native_hash_field_list=hash_attr_list)
 
     def set_lag_hash_seed(self, seed=400):
         """
@@ -173,7 +152,8 @@ class LagConfiger(object):
         Args:
             seed: hash seed value
         """
-        sai_thrift_set_switch_attribute(self.client, lag_default_hash_seed=seed)
+        status = sai_thrift_set_switch_attribute(self.client, lag_default_hash_seed=seed)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
     def create_route_and_neighbor_entry_for_lag(self, lag_id, ip_addr, mac_addr, port_id):
         vr_id = sai_thrift_create_virtual_router(self.client)
