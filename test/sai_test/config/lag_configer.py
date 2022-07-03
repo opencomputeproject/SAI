@@ -35,25 +35,8 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
     lag_configer = LagConfiger(test_obj)
 
     if is_create_lag:
-        lag1 = lag_configer.create_lag([17, 18])
-        test_obj.lag1 = lag1
-        ip_addr1 = '10.10.10.0'
-        mac_addr1 = '02:04:02:01:01:01'
-        lag_configer.create_route_and_neighbor_entry_for_lag(
-            lag_id=lag1.lag_id, 
-            ip_addr=ip_addr1, 
-            mac_addr=mac_addr1, 
-            port_id=21)
-        
-        lag2 = lag_configer.create_lag([19, 20])
-        test_obj.lag2 = lag2
-        ip_addr2 = '10.1.2.100'
-        mac_addr2 = '02:04:02:01:02:01'
-        lag_configer.create_route_and_neighbor_entry_for_lag(
-            lag_id=lag2.lag_id, 
-            ip_addr=ip_addr2, 
-            mac_addr=mac_addr2, 
-            port_id=22)
+        test_obj.lag1 = lag_configer.create_lag([17, 18])
+        test_obj.lag2 = lag_configer.create_lag([19, 20])
 
     lag_configer.set_lag_hash_algorithm()
     lag_configer.setup_lag_v4_hash()
