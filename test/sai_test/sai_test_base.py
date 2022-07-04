@@ -185,6 +185,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.active_ports_no - number of active ports
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
+        self.lagX objects for all lag
+        self.default_virtual_router_id
     """
 
     def setUp(self,
