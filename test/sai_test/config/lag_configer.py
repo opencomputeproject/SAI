@@ -38,9 +38,11 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
         test_obj.lag1 = lag_configer.create_lag([17, 18])
         test_obj.lag2 = lag_configer.create_lag([19, 20])
 
+    """
     lag_configer.set_lag_hash_algorithm()
     lag_configer.setup_lag_v4_hash()
     lag_configer.set_lag_hash_seed()
+    """
 
 
 class LagConfiger(object):
@@ -137,20 +139,6 @@ class LagConfiger(object):
         """
         status = sai_thrift_set_switch_attribute(self.client, lag_default_hash_seed=seed)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
-
-    def create_route_and_neighbor_entry_for_lag(self, lag_id, ip_addr, mac_addr, port_id):
-        vr_id = sai_thrift_create_virtual_router(self.client)
-        port2 = self.test_obj.port_list[port_id]
-
-        rif_id1 = sai_thrift_create_router_interface(self.client, virtual_router_id=vr_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=lag_id)
-        rif_id2 = sai_thrift_create_router_interface(self.client, virtual_router_id=vr_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=port2)
-        
-        nbr_entry_v4 = sai_thrift_neighbor_entry_t(rif_id=rif_id1, ip_address=sai_ipaddress(ip_addr))
-        sai_thrift_create_neighbor_entry(self.client, nbr_entry_v4, dst_mac_address=mac_addr)
-
-        nhop = sai_thrift_create_next_hop(self.client, ip=sai_ipaddress(ip_addr), router_interface_id=rif_id1, type=SAI_NEXT_HOP_TYPE_IP)
-        route1 = sai_thrift_route_entry_t(vr_id=vr_id, destination=sai_ipprefix(ip_addr+'/24'))
-        sai_thrift_create_route_entry(self.client, route1, next_hop_id=nhop)
 
     def remove_lag_member(self, lag_member):
         sai_thrift_remove_lag_member(self, lag_member)
