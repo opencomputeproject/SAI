@@ -591,14 +591,6 @@ typedef enum _sai_hostif_trap_attr_t
     SAI_HOSTIF_TRAP_ATTR_COUNTER_ID,
 
     /**
-     * @brief Hostif trap object stage
-     *
-     * @type sai_object_stage_t
-     * @flags READ_ONLY
-     */
-    SAI_HOSTIF_TRAP_ATTR_OBJECT_STAGE,
-
-    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_TRAP_ATTR_END,
