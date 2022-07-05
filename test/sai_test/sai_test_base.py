@@ -43,6 +43,8 @@ from config.vlan_configer import t0_vlan_tear_down_helper
 from config.vlan_configer import VlanConfiger
 from config.fdb_configer import t0_fdb_config_helper
 from config.fdb_configer import t0_fdb_tear_down_helper
+from config.vlan_configer import VlanConfiger
+from config.fdb_configer import t0_fdb_config_helper
 from config.fdb_configer import FdbConfiger
 
 THRIFT_PORT = 9092
