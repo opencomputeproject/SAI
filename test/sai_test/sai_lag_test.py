@@ -33,7 +33,7 @@ class LagConfigTest(T0TestBase):
         T0TestBase.setUp(self)
 
     def load_balance_on_src_ip(self):
-        sai_thrift_create_router_interface(self.client, virtual_router_id=self.default_virtual_router_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=self.port_list[21])
+        sai_thrift_create_router_interface(self.client, virtual_router_id=self.default_vrf, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=self.port_list[21])
         router_mac = '00:77:66:55:44:00'
         ip_src1 = '192.168.0.1'
         ip_src2 = '192.168.0.2'
@@ -84,7 +84,7 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
     def runTest(self):
         try:
             print("Lag l3 load balancing test based on src port")
-            sai_thrift_create_router_interface(self.client, virtual_router_id=self.default_virtual_router_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=self.port_list[21])
+            sai_thrift_create_router_interface(self.client, virtual_router_id=self.default_vrf, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=self.port_list[21])
             eth_src = '00:22:22:22:22:22'
             eth_dst = '00:77:66:55:44:00'
             ip_src = '192.168.0.1'
@@ -131,7 +131,7 @@ class DisableEgressTest(T0TestBase):
     def runTest(self):
         try:
             print("Lag disable egress lag member test")
-            sai_thrift_create_router_interface(self.client, virtual_router_id=self.default_virtual_router_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=self.port_list[21])
+            sai_thrift_create_router_interface(self.client, virtual_router_id=self.default_vrf, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=self.port_list[21])
             eth_src = '00:22:22:22:22:22'
             eth_dst = '00:77:66:55:44:00'
             ip_src = '192.168.0.1'
@@ -202,7 +202,7 @@ class IndifferenceIngressPortTest(T0TestBase):
 
     def runTest(self):
         try:
-            sai_thrift_create_router_interface(self.client, virtual_router_id=self.default_virtual_router_id, type=SAI_ROUTER_INTERFACE_TYPE_VLAN, vlan_id=10)
+            sai_thrift_create_router_interface(self.client, virtual_router_id=self.default_vrf, type=SAI_ROUTER_INTERFACE_TYPE_VLAN, vlan_id=10)
             eth_src = '00:22:22:22:22:22'
             eth_dst = '00:77:66:55:44:00'
             ip_src = '192.168.0.1'
