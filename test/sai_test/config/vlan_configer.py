@@ -56,6 +56,26 @@ def t0_vlan_config_helper(test_obj, is_reset_default_vlan=True, is_create_vlan=T
         test_obj.vlans.update({key: vlans[key]})
     test_obj.default_vlan_id = default_vlan_id
 
+def t0_vlan_tear_down_helper(test_obj):
+    '''
+    Args:
+        test_obj: test object
+    remove vlan
+    '''
+    configer = VlanConfiger(test_obj)
+    #remove default vlan
+    default_vlan_id = configer.get_default_vlan()
+    members = configer.get_vlan_member(default_vlan_id)
+    configer.remove_vlan_members(members)
+   # configer.remove_vlan(default_vlan_id)
+
+    for _, vlan in test_obj.vlans.items():
+        members = configer.get_vlan_member(vlan.vlan_oid)
+        configer.remove_vlan_members(members)
+        configer.remove_vlan(vlan.vlan_oid)
+    test_obj.vlans.clear()
+
+
 
 class VlanConfiger(object):
     """
