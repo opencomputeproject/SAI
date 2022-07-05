@@ -34,12 +34,15 @@ import sai_thrift.sai_adapter as adapter
 from sai_thrift.sai_adapter import *
 from sai_utils import *
 from config.port_configer import t0_port_config_helper
+from config.port_configer import t0_port_tear_down_helper
 from config.port_configer import PortConfiger
 from config.switch_configer import t0_switch_config_helper
 from config.switch_configer import SwitchConfiger
 from config.vlan_configer import t0_vlan_config_helper
+from config.vlan_configer import t0_vlan_tear_down_helper
 from config.vlan_configer import VlanConfiger
 from config.fdb_configer import t0_fdb_config_helper
+from config.fdb_configer import t0_fdb_tear_down_helper
 from config.fdb_configer import FdbConfiger
 
 THRIFT_PORT = 9092
@@ -233,3 +236,12 @@ class T0TestBase(ThriftInterfaceDataPlane):
             int: sai call result
         """
         return adapter.status
+    
+    def tearDown(self):
+        '''
+        tear down
+        '''
+        t0_fdb_tear_down_helper(self)
+        t0_vlan_tear_down_helper(self)
+        t0_port_tear_down_helper(self)
+        super().tearDown()
