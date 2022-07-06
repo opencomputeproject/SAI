@@ -46,7 +46,7 @@ class SaiSanityTest(T0TestBase):
 
     def tearDown(self):
         """
-        Test the basic tearDown proecss
+        Test the basic tearDown process
         """
         pass
 

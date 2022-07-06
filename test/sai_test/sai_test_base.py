@@ -41,6 +41,10 @@ from config.vlan_configer import t0_vlan_config_helper
 from config.vlan_configer import VlanConfiger
 from config.fdb_configer import t0_fdb_config_helper
 from config.fdb_configer import FdbConfiger
+from config.lag_configer import t0_lag_config_helper
+from config.lag_configer import LagConfiger
+from config.route_configer import t0_route_config_helper
+from config.route_configer import RouteConfiger
 
 THRIFT_PORT = 9092
 is_configured = False
@@ -176,11 +180,17 @@ class T0TestBase(ThriftInterfaceDataPlane):
     Set the following class attributes:
         self.default_vlan_id
         self.default_vrf
+        self.lookback_intf
+        self.default_ipv4_route_entry
+        self.default_ipv6_route_entry
+        self.local_10v6_route_entry
+        self.local_128v6_route_entry
         self.default_1q_bridge
         self.cpu_port_hdl
         self.active_ports_no - number of active ports
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
+        self.lagX objects for all lag
     """
 
     def setUp(self,
@@ -190,12 +200,17 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_reset_default_vlan=True,
               is_create_vlan=True,
               is_create_fdb=True,
+              is_create_route=True,
+              is_create_lag=True,
+              is_create_route_for_lag=True,
               wait_sec=5):
         super(T0TestBase, self).setUp()
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
         self.fdb_configer = FdbConfiger(self)
         self.vlan_configer = VlanConfiger(self)
+        self.route_configer = RouteConfiger(self)
+        self.lag_configer = LagConfiger(self)
 
         if force_config or not is_configured:
             t0_switch_config_helper(self)
@@ -210,6 +225,14 @@ class T0TestBase(ThriftInterfaceDataPlane):
             t0_fdb_config_helper(
                 test_obj=self,
                 is_create_fdb=is_create_fdb)
+            t0_lag_config_helper(
+                test_obj=self,
+                is_create_lag=is_create_lag)
+            t0_route_config_helper(
+                test_obj=self,
+                is_create_route=is_create_route,
+                is_create_route_for_lag=is_create_route_for_lag)
+
         print("Waiting for switch to get ready before test, {} seconds ...".format(
             wait_sec))
         time.sleep(wait_sec)
