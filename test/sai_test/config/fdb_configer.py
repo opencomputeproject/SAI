@@ -63,6 +63,12 @@ def t0_fdb_config_helper(test_obj, is_create_fdb=True):
     # Todo dynamic use the vlan_member_port_map to add data to fdb
     test_obj.local_server_mac_list = local_server_mac_list
 
+def t0_fdb_tear_down_helper(test_obj):
+    '''
+    Args:
+        test_obj: test object
+    '''
+    sai_thrift_flush_fdb_entries(test_obj.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
 class FdbConfiger(object):
     """
