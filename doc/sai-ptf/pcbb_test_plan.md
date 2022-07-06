@@ -42,10 +42,10 @@
 ### Case12: encap_ecn_congestion_v6_in_v4
 
 ### Testing Objective <!-- omit in toc --> 
-This verifies in tunnel dscp remap if DSCP field is remapped for outer header on encapsulation and DSCP field of inner header remains the same on decapsulation when using DSCP pipe mode.
-This verifies the DSCP field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation, combining with qos map.
+This verifies in tunnel dscp remap if DSCP field is remapped for the outer header on encapsulation and DSCP field of the inner header remains the same on decapsulation when using DSCP pipe mode.
+This verifies the DSCP field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation, combining with QoS map.
 
-    We will send decapsulated packet from port1 and expect a encapsulated packet on any lag1-4 member
+    We will send a decapsulated packet from port1 and expect an encapsulated packet on any lag1-4 member
     -----------------------------------------------------------------
     Ingress side[port1]           |          Egress side[lag1] [lag2] [lag3] [lag4]
     ------------------------------------------------------------------
@@ -109,61 +109,61 @@ ECN_CGN_TABLE:
 - encap_dscp_remap:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)  
+2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
 3. Generate 1000 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 4. Send input packet from port1.
-5. Create expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-6. Recieve ipinip packet from any lag1-4 member port. Compare it with expected ipinip packet.
+5. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
+6. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
 
 - encap_dscp_priority:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)  
+2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
 3. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
 4. Generate 1000 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 5. Send input packet from port1.
-6. Create expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-7. Recieve ipinip packet from any lag1-4 member port. Compare it with expected ipinip packet.
-8. For each packet received port check the corrosponding priority_group packets stats
+6. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
+7. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
+8. For each packet received port check the corresponding priority_group packets stats
 
 - encap_dscp_queue:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)  
+2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
 3. According to DSCP_MAP_TABLE check the corrosponding queue's packets stats on the possible ports(use sai_thrift_get_queue_stats with "SAI_QUEUE_STAT_PACKETS")
 4. Generate 1000 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 5. Send input packet from port1.
-6. Create expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-7. Recieve ipinip packet from any lag1-4 member port. Compare it with expected ipinip packet.
-8. For each packet received port check the corrosponding queue packets stats
+6. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
+7. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
+8. For each packet received port check the corresponding queue packets stats
 
 - encap_pfc_pause:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)
-3. Set all the dest port with lossless buffer pool profile
+3. Set all the dest ports with lossless buffer pool profile
 4. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
 5. Check the corrosponding priority_group buffer state(SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES)
 6. Generate N packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 7. Disable ports (set port SAI_PORT_ATTR_PKT_TX_ENABLE)
 8. Send N packets from port1 to fill the shared buffer 
 9. verify PFC pause frames are generated on expected priority(``DST:01:80:c2:00:00:01``). 
-10. After fill up the buffer, send packets check the PG dropcounters to verify the counter increased as expected (SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS)
+10. After filling up the buffer, send packets to check the PG drop counters to verify the counter increased as expected (SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS)
 
 - encap_ecn_no_congestion:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)
+2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)
 3. Generate 100 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
 4. Send input packet from port1.
 5. Create expected ipinip packet with ``Inner_ECN`` ``Outer_ECN`` ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-6. Recieve ipinip packet from any lag1-4 member port. Compare it with expected ipinip packet.
+6. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
 
 - encap_ecn_congestion:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)
-3. Set all the dest port with lossless buffer pool profile
+2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)
+3. Set all the dest ports with lossless buffer pool profile
 4. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
 5. Check the corrosponding priority_group buffer state(SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES)
 6. Generate N packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
@@ -171,7 +171,7 @@ ECN_CGN_TABLE:
 8. Send N packets from port1 to fill the shared buffer 
 9. verify PFC pause frames are generated on expected priority(``DST:01:80:c2:00:00:01``)
 10. Enable ports (set port SAI_PORT_ATTR_PKT_TX_ENABLE)
-11. Recieve ipinip packet from any lag1-4 member port. Compare it with expected ipinip packet.
+11. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
 
 
 ## Test Group2: Decapsulation
@@ -190,10 +190,10 @@ ECN_CGN_TABLE:
 ### Case12: decap_ecn_congestion_v6_in_v4
 
 ### Testing Objective <!-- omit in toc --> 
-This verifies if DSCP field is user-defined for outer header on encapsulation and DSCP field of inner header remains the same on decapsulation when using DSCP pipe mode.
-This verifies the DSCP field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation, combining with qos map.
+This verifies if DSCP field is user-defined for the outer header on encapsulation and DSCP field of the inner header remains the same on decapsulation when using DSCP pipe mode.
+This verifies the DSCP field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation, combining with the QoS map.
 
-    We will send decapsulated packet from LAG1 and expect a decapsulated packet on port1
+    We will send a decapsulated packet from LAG1 and expect a decapsulated packet on port1
     -----------------------------------------------------------------
     Egress side[port1]           |          Ingress side[lag1]
     ------------------------------------------------------------------
@@ -253,46 +253,46 @@ ECN_CGN_TABLE:
 - decap_dscp_remap:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)  
+2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
 3. Generate 1000 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 4. Send input packet from lag1.
-5. Create expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-6. Recieve ipinip packet from port1. Compare it with expected ipinip packet.
+5. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
+6. Recieve ipinip packet from port1. Compare it with the expected ipinip packet.
 
 - decap_dscp_priority:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)  
+2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
 3. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
 4. Generate 1000 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 5. Send input packet from lag1.
-6. Create expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-7. Recieve ipinip packet from port1. Compare it with expected ipinip packet.
-8. For received port check the corrosponding priority_group packets stats
+6. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
+7. Recieve ipinip packet from port1. Compare it with the expected ipinip packet.
+8. For received port check the corresponding priority_group packets stats
 
 - decap_dscp_queue:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)  
+2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
 3. According to DSCP_MAP_TABLE check the corrosponding queue's packets stats on the possible ports(use sai_thrift_get_queue_stats with "SAI_QUEUE_STAT_PACKETS")
 4. Generate 1000 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 5. Send input packet from lag1.
-6. Create expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-7. Recieve ipinip packet from port1. Compare it with expected ipinip packet.
-8. For received port check the corrosponding queue packets stats
+6. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
+7. Recieve ipinip packet from port1. Compare it with the expected ipinip packet.
+8. For received port check the corresponding queue packets stats
 
 - decap_pfc_pause:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)
-3. Set all the dest port with lossless buffer pool profile
+3. Set all the dest ports with lossless buffer pool profile
 4. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
 5. Check the corrosponding priority_group buffer state(SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES)
 6. Generate N packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 7. Disable ports (set port SAI_PORT_ATTR_PKT_TX_ENABLE)
 8. Send N packets from lag1 to fill the shared buffer
 9. verify PFC pause frames are generated on expected priority(``DST:01:80:c2:00:00:01``). 
-10. After fill up the buffer, send packets check the PG dropcounters to verify the counter increased as expected (SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS)
+10. After filling up the buffer, send packets to check the PG drop counters to verify the counter increased as expected (SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS)
 
 - decap_ecn_no_congestion:
 
@@ -301,12 +301,12 @@ ECN_CGN_TABLE:
 3. Generate 100 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
 4. Send input packet from lag1.
 5. Create expected ipinip packet with ``Inner_ECN`` ``Outer_ECN`` ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-6. Recieve ipinip packet from port1. Compare it with expected ipinip packet.
+6. Recieve ipinip packet from port1. Compare it with the expected ipinip packet.
 
 - decap_ecn_congestion:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)
+2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)
 3. Set all the dest port with lossless buffer pool profile
 4. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
 5. Check the corrosponding priority_group buffer state(SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES)
@@ -315,6 +315,6 @@ ECN_CGN_TABLE:
 8. Send N packets from lag1 to fill the shared buffer 
 9. verify PFC pause frames are generated on expected priority(``DST:01:80:c2:00:00:01``)
 10. Enable ports (set port SAI_PORT_ATTR_PKT_TX_ENABLE)
-11. Recieve ipinip packet from port1. Compare it with expected ipinip packet.
+11. Recieve ipinip packet from port1. Compare it with the expected ipinip packet.
 
 
