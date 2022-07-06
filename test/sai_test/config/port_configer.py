@@ -42,7 +42,6 @@ def t0_port_config_helper(test_obj, is_recreate_bridge=True, is_create_hostIf=Tr
 
     """
     configer = PortConfiger(test_obj)
-
     dev_port_list = configer.get_local_mapped_ports()
     portConfigs = configer.parse_port_config(
         test_obj.test_params['port_config_ini'])
@@ -79,6 +78,15 @@ def t0_port_config_helper(test_obj, is_recreate_bridge=True, is_create_hostIf=Tr
     test_obj.default_1q_bridge_id = default_1q_bridge_id
     test_obj.bridge_port_list = bridge_port_list
 
+def t0_port_tear_down_helper(test_obj):
+    '''
+    Args:
+        test_obj: test object
+    '''
+    configer = PortConfiger(test_obj)
+    default_1q_bridge_id = configer.get_default_1q_bridge()
+    configer.remove_bridge_port(default_1q_bridge_id)
+    configer.remove_host_inf(test_obj.host_intf_table_id,test_obj.hostif_list)
 
 class PortConfiger(object):
     """
@@ -348,6 +356,22 @@ class PortConfiger(object):
             sai_thrift_remove_bridge_port(self.client, port)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
+    
+    def remove_host_inf(self,host_intf_table_id,hostif_list):
+        """
+        Remove host interface.
+         Steps:
+         2. remove host interface
+         1. remove host table entry
+        Args:
+            host_intf_table_id
+            hostif_list 
+        """
+
+        for _, hostif in enumerate(hostif_list):
+            sai_thrift_remove_hostif(self.client,hostif)
+        sai_thrift_remove_hostif_table_entry(self.client,host_intf_table_id)
+    
     def turn_on_port_admin_state(self, port_list):
         """
         Turn on port admin state
@@ -356,7 +380,7 @@ class PortConfiger(object):
             post_list: post list
         """
         print("Set port...")
-        for i, port in enumerate(port_list):
+        for _, port in enumerate(port_list):
             sai_thrift_set_port_attribute(
                 self.client, port_oid=port, mtu=self.get_mtu(), admin_state=True,
                 fec_mode=self.get_fec_mode())
