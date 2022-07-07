@@ -154,17 +154,19 @@ ECN_CGN_TABLE:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)
-3. Generate 100 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
-4. Send input packet from port1.
-5. Create expected ipinip packet with ``Inner_ECN`` ``Outer_ECN`` ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-6. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
+3. Make sure set PCBB ECN configurations
+4. Generate 100 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
+5. Send input packet from port1.
+6. Create expected ipinip packet with ``Inner_ECN`` ``Outer_ECN`` ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
+7. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
 
 - encap_ecn_congestion:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)
-3. Set all the dest ports with lossless buffer pool profile
-4. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
+3. Make sure set PCBB ECN configurations
+4. Set all the dest ports with lossless buffer pool profile
+5. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
 5. Check the corrosponding priority_group buffer state(SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES)
 6. Generate N packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
 7. Disable ports (set port SAI_PORT_ATTR_PKT_TX_ENABLE)
@@ -298,8 +300,9 @@ ECN_CGN_TABLE:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map and priority map as basic [config](./config_data/config_t0.md)
-3. Generate 100 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
-4. Send input packet from lag1.
+3. Make sure set PCBB ECN configurations
+4. Generate 100 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
+5. Send input packet from lag1.
 5. Create expected ipinip packet with ``Inner_ECN`` ``Outer_ECN`` ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
 6. Recieve ipinip packet from port1. Compare it with the expected ipinip packet.
 
@@ -307,8 +310,9 @@ ECN_CGN_TABLE:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)
-3. Set all the dest port with lossless buffer pool profile
-4. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
+3. Make sure set PCBB ECN configurations
+4. Set all the dest port with lossless buffer pool profile
+5. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
 5. Check the corrosponding priority_group buffer state(SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES, SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES)
 6. Generate N packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
 7. Disable ports (set port SAI_PORT_ATTR_PKT_TX_ENABLE)
