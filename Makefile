@@ -31,6 +31,9 @@ endif
 # Passed to genrpc.pl via "make saithrift-build":
 GEN_SAIRPC_OPTS?=
 
+# Passed to meta/Makefile via "make saithrift-build, can specify add'l libraries along with libsai
+SAIRPC_EXTRA_LIBS?=
+
 .PHONY: test doc clean
 
 doc:
