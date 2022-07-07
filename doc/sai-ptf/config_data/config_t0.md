@@ -16,6 +16,11 @@
 - [3 LAG configuration](#3-lag-configuration)
   - [3.1 LAG Hash Rule](#31-lag-hash-rule)
 - [4. Tunnel Configuration](#4-tunnel-configuration)
+- [5. Tunnel QoS remapping (pcbb)](#5-tunnel-qos-remapping-pcbb)
+  - [Port TC MAP](#port-tc-map)
+  - [Tunnel TC MAP](#tunnel-tc-map)
+  - [PCBB DSCP Config](#pcbb-dscp-config)
+  - [PCBB IP_in_IP Tunnel Config](#pcbb-ip_in_ip-tunnel-config)
 # Overriew
 This document describes the sample configuration data.
 
@@ -256,3 +261,46 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
      |-|-|-|
      |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|10.1.3.101| 03:03:03:01:03:01|
 
+# 5. Tunnel QoS remapping (pcbb)
+## Port TC MAP 
+|TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|DSCP (Source)|
+|-|-|-|-|-|
+|0||0|0|8|
+|1||0|1|0|
+|2||2|2|2|
+|3||3|3|3|
+|4||4|4|4|
+|5||0|5|46|
+|6||6|6|6|
+|7||7|7|48|
+|8||0|1|33|
+
+**p.s. For DSCP (Source), there should be a DSCP to TC map for them.**
+
+## Tunnel TC MAP 
+|TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|DSCP (Source)|
+|-|-|-|-|-|
+|0|8|0|0|8|
+|1|0|0|1|0|
+|2|0|0|1|1|
+|3|2|2|2|3|
+|4|6|6|6|4|
+|5|46|0|5|46|
+|6|0|0|1||
+|7|48|0|7|48|
+|8|33|0|1|33|
+
+**p.s. For DSCP (Source), there should be a DSCP to TC map for them.**
+
+## PCBB DSCP Config
+|Port|MAP GROUP|MAPs|
+|-|-|-|
+|Port1-8|PORT|DSCP_TO_TC_MAP; TC_TO_QUEUE; TC_TO_PRIORITY_GROUP|
+|Tunnel_IP_IP|TUNNEL|DSCP_TO_TC_MAP; TC_TO_PRIORITY_GROUP_MAP; TC_TO_QUEUE_MAP; TC_TO_DSCP_MAP(TC_AND_COLOR_TO_DSCP_MAP)|
+
+**For port map, please refer the table [Port TC MAP], for tunnel map, please refer the table [Tunnel TC MAP].**
+
+## PCBB IP_in_IP Tunnel Config
+|Tunnel|ECN MODE|DSCP MODE|
+|-|-|-|
+|IP_IN_IP|SAI_TUNNEL_ATTR_DECAP_ECN_MODE=SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER; SAI_TUNNEL_ATTR_ENCAP_ECN_MODE=SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD|SAI_TUNNEL_ATTR_DECAP_DSCP_MODE=SAI_TUNNEL_DSCP_MODE_PIPE_MODEL; SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE=SAI_TUNNEL_DSCP_MODE_PIPE_MODEL;|
