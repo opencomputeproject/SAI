@@ -1492,7 +1492,7 @@ typedef enum _sai_object_stage_t
     SAI_OBJECT_STAGE_BOTH,
 
     /** Ingress stage */
-    SAI_OBJECT_STAGE_INGERSS,
+    SAI_OBJECT_STAGE_INGRESS,
 
     /** Egress stage */
     SAI_OBJECT_STAGE_EGRESS

@@ -151,3 +151,15 @@ SAI_ATTR_STAGE_INGRESS as the attr_stage value.
         &trap_id,
         2,
         trap_attrs);
+
+
+Error Handling
+--------------
+New error codepoint SAI_STATUS_MISMATCH is introduced. SAI adapter must 
+return this error status if there is a mismatch between trap group, trap 
+and policer pool.
+- If trap group and trap type is of different stage e.g. trap group is of 
+  SAI_OBJECT_STAGE_INGRESS and trap capability is SAI_ATTR_STAGE_EGRESS
+- If trap group and policer pool is of different stage
+
+

@@ -111,7 +111,7 @@ typedef enum _sai_attr_stage_t
     SAI_ATTR_STAGE_BOTH,
 
     /** Ingress stage */
-    SAI_ATTR_STAGE_INGERSS,
+    SAI_ATTR_STAGE_INGRESS,
 
     /** Egress stage */
     SAI_ATTR_STAGE_EGRESS
