@@ -102,6 +102,22 @@ typedef struct _sai_object_key_t
 
 } sai_object_key_t;
 
+typedef enum _sai_attr_stage_t
+{
+    /** Not applicable */
+    SAI_ATTR_STAGE_NA,
+
+    /** Common stage */
+    SAI_ATTR_STAGE_BOTH,
+
+    /** Ingress stage */
+    SAI_ATTR_STAGE_INGRESS,
+
+    /** Egress stage */
+    SAI_ATTR_STAGE_EGRESS
+
+} sai_attr_stage_t;
+
 /**
  * @brief Structure for attribute capabilities per operation
  */
@@ -121,6 +137,12 @@ typedef struct _sai_attr_capability_t
      * @brief Get is implemented
      */
     bool get_implemented;
+
+    /**
+     * @brief Attribute stage if applicable
+     */
+    sai_attr_stage_t attr_stage;
+
 } sai_attr_capability_t;
 
 /**
