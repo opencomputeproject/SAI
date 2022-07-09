@@ -91,7 +91,7 @@ $(ODIR)/sai_rpc_server.o: ../../meta/sai_rpc_frontend.cpp
 	$(CXX) $(CPPFLAGS) -c $^ -o $@ $(CPPFLAGS) -I./gen-cpp -I../../meta -I../../inc -I../../experimental
 
 $(ODIR)/saiserver.o: src/saiserver.cpp $(CPP_SOURCES) directories
-	$(CXX) $(CPPFLAGS) -c src/saiserver.cpp  -o $@ $(CPPFLAGS) $(CDEFS) -I./gen-cpp -I../../inc
+	$(CXX) $(CPPFLAGS) -c src/saiserver.cpp  -o $@ $(CPPFLAGS) $(CDEFS) -I./gen-cpp -I../../inc -I../../experimental
 
 $(ODIR)/librpcserver.a: $(ODIR)/sai_rpc.o $(ODIR)/sai_types.o $(ODIR)/sai_rpc_server.o
 	ar rcs $(ODIR)/librpcserver.a $^
