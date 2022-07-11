@@ -263,6 +263,48 @@ typedef enum _sai_buffer_pool_threshold_mode_t
 } sai_buffer_pool_threshold_mode_t;
 
 /**
+ * @brief Enum defining buffer pool family attributes.
+ */
+typedef enum _sai_buffer_pool_family_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_BUFFER_POOL_FAMILY_ATTR_START,
+
+    /**
+     * @brief Shared buffer size in bytes
+     *
+     * This is derived from subtracting all reversed buffers of queue/port
+     * from the total pool size.
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_BUFFER_POOL_FAMILY_ATTR_SHARED_SIZE = SAI_BUFFER_POOL_FAMILY_ATTR_START,
+
+    /**
+     * @brief Buffer pool size in bytes
+     *
+     * @type sai_uint64_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     */
+    SAI_BUFFER_POOL_FAMILY_ATTR_SIZE,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_BUFFER_POOL_FAMILY_ATTR_END,
+
+    /** Custom range base value */
+    SAI_BUFFER_POOL_FAMILY_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_BUFFER_POOL_FAMILY_ATTR_CUSTOM_RANGE_END
+
+} sai_buffer_pool_family_attr_t;
+
+/**
  * @brief Enum defining buffer pool attributes.
  */
 typedef enum _sai_buffer_pool_attr_t
@@ -346,6 +388,17 @@ typedef enum _sai_buffer_pool_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_BUFFER_POOL_ATTR_WRED_PROFILE_ID,
+
+    /**
+     * @brief Attach buffer pool family ID to buffer pool
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL_FAMILY
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_BUFFER_POOL_ATTR_BUFFER_POOL_FAMILY_ID,
 
     /**
      * @brief End of attributes
@@ -733,6 +786,58 @@ typedef sai_status_t (*sai_get_buffer_profile_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Create buffer pool family
+ *
+ * @param[out] buffer_pool_family_id Buffer profile id
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_buffer_pool_family_fn)(
+        _Out_ sai_object_id_t *buffer_pool_family_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove buffer pool family
+ *
+ * @param[in] buffer_pool_family_id Buffer pool family id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_buffer_pool_family_fn)(
+        _In_ sai_object_id_t buffer_pool_family_id);
+
+/**
+ * @brief Set buffer pool family attribute
+ *
+ * @param[in] buffer_pool_family_id Buffer pool family id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_buffer_pool_family_attribute_fn)(
+        _In_ sai_object_id_t buffer_pool_family_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get buffer pool family attributes
+ *
+ * @param[in] buffer_pool_family_id Buffer pool family id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_buffer_pool_family_attribute_fn)(
+        _In_ sai_object_id_t buffer_pool_family_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief Buffer methods table retrieved with sai_api_query()
  */
 typedef struct _sai_buffer_api_t
@@ -755,6 +860,10 @@ typedef struct _sai_buffer_api_t
     sai_remove_buffer_profile_fn                    remove_buffer_profile;
     sai_set_buffer_profile_attribute_fn             set_buffer_profile_attribute;
     sai_get_buffer_profile_attribute_fn             get_buffer_profile_attribute;
+    sai_create_buffer_pool_family_fn                create_buffer_pool_family;
+    sai_remove_buffer_pool_family_fn                remove_buffer_pool_family;
+    sai_set_buffer_pool_family_attribute_fn         set_buffer_pool_family_attribute;
+    sai_get_buffer_pool_family_attribute_fn         get_buffer_pool_family_attribute;
 } sai_buffer_api_t;
 
 /**
