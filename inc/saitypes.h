@@ -1486,6 +1486,19 @@ typedef struct _sai_stat_capability_list_t
 
 } sai_stat_capability_list_t;
 
+typedef enum _sai_object_stage_t
+{
+    /** Common stage */
+    SAI_OBJECT_STAGE_BOTH,
+
+    /** Ingress stage */
+    SAI_OBJECT_STAGE_INGRESS,
+
+    /** Egress stage */
+    SAI_OBJECT_STAGE_EGRESS
+
+} sai_object_stage_t;
+
 /**
  * @}
  */
