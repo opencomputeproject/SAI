@@ -2105,6 +2105,38 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SUPPORTED_LINK_TRAINING_MODE,
 
     /**
+     * @brief List of port's PMD lanes rx signal detect
+     *
+     * @type sai_port_bool_current_and_changed_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_SIGNAL_DETECT,
+
+    /**
+     * @brief List of port's PMD lanes rx lock status
+     *
+     * @type sai_port_bool_current_and_changed_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_LOCK_STATUS,
+
+    /**
+     * @brief Port's PCS RX Link Status
+     *
+     * @type sai_bool_current_and_changed_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PCS_RX_LINK_STATUS,
+
+    /**
+     * @brief List of port's FEC lanes alignment marker lock
+     *
+     * @type sai_port_bool_current_and_changed_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FEC_ALIGNMENT_LOCK,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,

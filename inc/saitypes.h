@@ -441,6 +441,27 @@ typedef struct _sai_prbs_rx_state_t
     uint32_t error_count;
 } sai_prbs_rx_state_t;
 
+typedef struct _sai_bool_current_and_changed_status_t
+{
+    /** Current status at the time of read */
+    bool current_status;
+
+    /** Indicates that the status changed at least once since the last read */
+    bool changed;
+} sai_bool_current_and_changed_status_t;
+
+typedef struct _sai_port_lane_bool_current_and_changed_status_t
+{
+    uint32_t lane;
+    sai_bool_current_and_changed_status_t value;
+} sai_port_lane_bool_current_and_changed_status_t;
+
+typedef struct _sai_port_bool_current_and_changed_status_list_t
+{
+    uint32_t count;
+    sai_port_lane_bool_current_and_changed_status_t *list;
+} sai_port_bool_current_and_changed_status_list_t;
+
 /**
  * @brief Field match mask
  *
@@ -1308,6 +1329,12 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST */
     sai_port_err_status_list_t porterror;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_BOOL_CURRENT_AND_CHANGED_STATUS_LIST */
+    sai_port_bool_current_and_changed_status_list_t portboolcurrentandchangedstatuslist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_BOOL_CURRENT_AND_CHANGED_STATUS */
+    sai_bool_current_and_changed_status_t boolcurrentandchangedstatus;
 } sai_attribute_value_t;
 
 /**
