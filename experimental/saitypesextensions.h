@@ -66,8 +66,6 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_PA_VALIDATION_ENTRY,
 
-    SAI_OBJECT_TYPE_DASH_HA_SESSION,
-
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
