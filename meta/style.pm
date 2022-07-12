@@ -276,6 +276,8 @@ sub CheckFunctionsParams
         next if $fname eq "sai_switch_register_read_fn";
         next if $fname eq "sai_switch_mdio_write_fn";
         next if $fname eq "sai_switch_mdio_read_fn";
+        next if $fname eq "sai_switch_mdio_cl22_write_fn";
+        next if $fname eq "sai_switch_mdio_cl22_read_fn";
 
         my @paramsFlags = lc($comment) =~ /\@param\[(\w+)]/gis;
         my @fnparamsFlags = lc($fn) =~ /_(\w+)_.+?(?:\.\.\.|\w+)\s*[,\)]/gis;
