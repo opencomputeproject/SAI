@@ -448,6 +448,8 @@ sub CheckFunctionNaming
     send_hostif_packet
     switch_mdio_read
     switch_mdio_write
+    switch_mdio_cl22_read
+    switch_mdio_cl22_write
     switch_register_read
     switch_register_write);
 
