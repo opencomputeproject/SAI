@@ -5,7 +5,7 @@ The Switch Abstraction Interface(SAI) defines the APIs to provide a vendor-indep
 This document explains the new SAI features as well as the enhancements and the bug fixes on existing features. 
 
 
-### PFC Deadlock SAI attribute additions
+### PFC Deadlock SAI attribute 
 
 This attribute represents the queue internal hardware PFC deadlock state. It is an aggregation of all HW state used to determine if a queue is in PFC deadlock. This attribute should only be queried as part of the PFC deadlock and recovery detection processing. This attribute returns an enum indicating that the queue is not PFC paused, is PFC pause or is PFC paused but not for the whole polling interval time.  This is different from the SAI_QUEUE_ATTR_PAUSE_STATUS which only provides an instantaneous status of PFC on a queue. 
 
