@@ -21,6 +21,8 @@
   - [Tunnel TC MAP](#tunnel-tc-map)
   - [PCBB DSCP Config](#pcbb-dscp-config)
   - [PCBB IP_in_IP Tunnel Config](#pcbb-ip_in_ip-tunnel-config)
+- [6. Buffer](#6-buffer)
+  - [Lossless Queue and Priority](#lossless-queue-and-priority)
 # Overriew
 This document describes the sample configuration data.
 
@@ -304,3 +306,19 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |Tunnel|ECN MODE|DSCP MODE|
 |-|-|-|
 |IP_IN_IP|SAI_TUNNEL_ATTR_DECAP_ECN_MODE=SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER; SAI_TUNNEL_ATTR_ENCAP_ECN_MODE=SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD|SAI_TUNNEL_ATTR_DECAP_DSCP_MODE=SAI_TUNNEL_DSCP_MODE_PIPE_MODEL; SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE=SAI_TUNNEL_DSCP_MODE_PIPE_MODEL;|
+
+# 6. Buffer
+**For the buffer configurations, they are different from different platform, please get the data from the config_db.json**
+
+The SAI objects need to config includes:
+- BUFFER_POOL: THRESHOLD_MODE, SIZE, TYPE
+- BUFFER_PROFILE: POOL, RESERVED_BUFFER_SIZE, THRESHOLD_MODE, SHARED_DYNAMIC_TH, XOFF_TH, XON_TH, XON_OFFSET_TH
+- QUEUE(BUFFER_QUEUE)
+- INGRESS_PRIORITY_GROUP(BUFFER_PG)
+
+## Lossless Queue and Priority
+|Port|Queue Number| Priority Number| Attribute|
+|-|-|-|-|
+|0-32|3,4|3,4|PRIORITY_FLOW_CONTROL / SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_TX|
+
+**The attribute for lossless Queue and Priority might be different, please check the attribute for some certain platform.**
