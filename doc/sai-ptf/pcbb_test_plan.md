@@ -197,7 +197,7 @@ ECN_CGN_TABLE:
 - encap_global_dscp_remap:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, switch bind to the ``Port DSCP MAP`` instead and tunnel binding to the DSCP map as basic [config](./config_data/config_t0.md)  
+2. Make sure tunnel DSCP in PIPE mode, config port with ``Port DSCP MAP`` and switch_dscp_to_tc with dscp map in ``Tunnel TC MAP`` as basic [config](./config_data/config_t0.md)  
 3. Generate packet, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 4. Send input packet from port1.
 5. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
@@ -363,7 +363,7 @@ ECN_CGN_TABLE:
 - decap_global_dscp_remap:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, switch bind to the ``Port DSCP MAP`` instead and tunnel binding to the DSCP map as basic [config](./config_data/config_t0.md)  
+2. Make sure tunnel DSCP in PIPE mode, config port with ``Port DSCP MAP`` and switch_dscp_to_tc with dscp map in ``Tunnel TC MAP`` as basic [config](./config_data/config_t0.md)  
 3. Generate packet, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 4. Send input ipinip packet from port1.
 5. Create the expected decap packet with ``Inner dscp`` according to ``DSCP_MAP_TABLE``. 
