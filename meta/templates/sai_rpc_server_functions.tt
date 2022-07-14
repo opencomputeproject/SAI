@@ -28,6 +28,16 @@
 [% END -%]
 [%- END -%]
 
+[%- BLOCK check_sai_function -%]
+[% name = function.name; UNLESS methods.$name %]
+[% END -%]
+if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
+        std::cerr << "NULL ptr: [% api %]_api->[% name = function.name; GET methods.$name %]" << std::endl;
+        [%- PROCESS throw_null_api_exception %]
+    }
+
+[%- END -%]
+
 [%- ######################################################################## -%]
 
 [%- ######################################################################## -%]
@@ -124,6 +134,14 @@
     [%- indentation = indentation || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
 [% indent %]sai_thrift_exception e;
 [% indent %]e.status = [% status_variable %];
+[% indent %]throw e;
+[%- END -%]
+
+[%- BLOCK throw_null_api_exception -%]
+    [%- indentation = indentation || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
+    
+[% indent %]sai_thrift_exception e;
+[% indent %]e.status = SAI_STATUS_NOT_IMPLEMENTED;
 [% indent %]throw e;
 [%- END -%]
 
@@ -344,6 +362,9 @@
         [%- PROCESS sai_api_query -%]
 
         [%- PROCESS preprocess_arguments %]
+
+        [%- # Ensure function ptr not NULL -%]
+    [% name = function.name; UNLESS methods.$name %]//[% END %][% PROCESS check_sai_function -%]
 
         [%- # Now just call the function -%]
     [% name = function.name; UNLESS methods.$name %]//[% END %]status = [% PROCESS call_sai_function -%]
