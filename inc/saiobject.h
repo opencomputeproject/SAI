@@ -96,9 +96,6 @@ typedef union _sai_object_key_entry_t
     /** @validonly object_type == SAI_OBJECT_TYPE_VIP_ENTRY */
     sai_vip_entry_t vip_entry;
 
-    /** @validonly object_type == SAI_OBJECT_TYPE_INBOUND_ENI_TO_VM_ENTRY */
-    sai_inbound_eni_to_vm_entry_t inbound_eni_to_vm_entry;
-
     /** @validonly object_type == SAI_OBJECT_TYPE_INBOUND_ROUTING_ENTRY */
     sai_inbound_routing_entry_t inbound_routing_entry;
 
