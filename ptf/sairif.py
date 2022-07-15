@@ -27,7 +27,6 @@ from ptf.thriftutils import *
 
 from sai_base_test import *
 
-
 @group("draft")
 class L3InterfaceTest(SaiHelper):
     """
@@ -114,8 +113,6 @@ class L3InterfaceTest(SaiHelper):
         self.ipv6DisableTest()
         self.macUpdateTest()
         self.ipv4FibTest()
-        self.ipv4FibLPMTest()
-        self.ipv4MtuTest()
         self.ipv4IngressAclTest()
         self.ipv4EgressAclTest()
         self.ipv4FibLagTest()
@@ -384,240 +381,6 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_gre_pkt, self.dev_port10)
         self.port11_rif_counter_in += 1
         self.port10_rif_counter_out += 1
-
-    def ipv4FibLPMTest(self):
-        """
-        Verifies basic forwarding for IPv4 LPM routes
-        """
-        print("\nipv4FibLPMTest()")
-
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst='11.11.11.1',
-                                ip_src='192.168.0.1',
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst='11.11.11.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=63)
-
-        print("Sending packet port %d -> port %d (192.168.0.1 -> "
-              "11.11.11.0/24) LPM" % (self.dev_port11, self.dev_port10))
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-    def ipv4MtuTest(self):
-        """
-        Verifies if IPv4 packet is forwarded, dropped and punted to CPU
-        depending on the MTU with and without a trap for regular L3 port
-        """
-        print("\nipv4MtuTest()")
-
-        # set MTU to 200 for port 10 and lag 1
-        mtu_port10_rif = sai_thrift_get_router_interface_attribute(
-            self.client, self.port10_rif, mtu=True)
-        mtu_lag1_rif = sai_thrift_get_router_interface_attribute(
-            self.client, self.lag1_rif, mtu=True)
-
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.port10_rif, mtu=200)
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.lag1_rif, mtu=200)
-
-        try:
-            print("Max MTU is 200, send pkt size 199, send to port/lag")
-            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src='00:22:22:22:22:22',
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=64,
-                                    pktlen=199 + 14)
-            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                        eth_src=ROUTER_MAC,
-                                        ip_dst='10.10.10.1',
-                                        ip_src='192.168.0.1',
-                                        ip_id=105,
-                                        ip_ttl=63,
-                                        pktlen=199 + 14)
-
-            print("Sending packet port %d -> port %d (192.168.0.1 -> "
-                  "10.10.10.1)" % (self.dev_port11, self.dev_port10))
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d -> lag 1 (192.168.0.1 -> "
-                  "12.10.10.1)" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet_any_port(
-                self, exp_pkt, [self.dev_port4, self.dev_port5,
-                                self.dev_port6])
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            print("Max MTU is 200, send pkt size 200, send to port/lag")
-            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src='00:22:22:22:22:22',
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=64,
-                                    pktlen=200 + 14)
-            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                        eth_src=ROUTER_MAC,
-                                        ip_dst='10.10.10.1',
-                                        ip_src='192.168.0.1',
-                                        ip_id=105,
-                                        ip_ttl=63,
-                                        pktlen=200 + 14)
-
-            print("Sending packet port %d -> port %d (192.168.0.1 -> "
-                  "10.10.10.1)" % (self.dev_port11, self.dev_port10))
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d -> lag 1 (192.168.0.1 -> "
-                  "12.10.10.1)" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet_any_port(
-                self, exp_pkt, [self.dev_port4, self.dev_port5,
-                                self.dev_port6])
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            print("Max MTU is 200, send pkt size 201, dropped")
-            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src='00:22:22:22:22:22',
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=64,
-                                    pktlen=201 + 14)
-            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                        eth_src=ROUTER_MAC,
-                                        ip_dst='10.10.10.1',
-                                        ip_src='192.168.0.1',
-                                        ip_id=105,
-                                        ip_ttl=63,
-                                        pktlen=201 + 14)
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            print("Changing MTU to 201, send pkt size 201, send to port/lag")
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port10_rif, mtu=201)
-            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src='00:22:22:22:22:22',
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=64,
-                                    pktlen=201 + 14)
-            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                        eth_src=ROUTER_MAC,
-                                        ip_dst='10.10.10.1',
-                                        ip_src='192.168.0.1',
-                                        ip_id=105,
-                                        ip_ttl=63,
-                                        pktlen=201 + 14)
-
-            print("Sending packet port %d -> port %d (192.168.0.1 -> "
-                  "10.10.10.1)" % (self.dev_port11, self.dev_port10))
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.lag1_rif, mtu=201)
-
-            print("Sending packet port %d -> lag 1 (192.168.0.1 -> "
-                  "12.10.10.1)" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet_any_port(
-                self, exp_pkt, [self.dev_port4, self.dev_port5,
-                                self.dev_port6])
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            print("Max MTU is 201, send pkt size 202, dropped")
-            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src='00:22:22:22:22:22',
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=64,
-                                    pktlen=202 + 14)
-            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                        eth_src=ROUTER_MAC,
-                                        ip_dst='10.10.10.1',
-                                        ip_src='192.168.0.1',
-                                        ip_id=105,
-                                        ip_ttl=63,
-                                        pktlen=202 + 14)
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['IP'].dst = '12.10.10.1'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-        finally:
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port10_rif, mtu=mtu_port10_rif['mtu'])
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
 
     def ipv4IngressAclTest(self):
         """
@@ -2176,6 +1939,404 @@ class L3InterfaceTest(SaiHelper):
                 if rif is not None:
                     sai_thrift_remove_router_interface(self.client, rif)
 
+@group("draft")
+class L3InterfaceTestBaseLpm(SaiHelperSimplified):
+    """
+    Configuration
+    +----------+-----------+
+    | port0    | port0_rif |
+    +----------+-----------+
+    | port1    | port1_rif |
+    +----------+-----------+
+    """
+    def setUp(self):
+        super(L3InterfaceTestBaseLpm, self).setUp()
+        dmac1 = '00:11:22:33:44:55'
+
+        self.create_routing_interfaces(ports=[0, 1])
+        self.port1_rif_counter_in = 0
+        self.port0_rif_counter_out = 0
+
+        self.nhop1 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port0_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry1, dst_mac_address=dmac1)
+
+        self.route_entry0 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry0, next_hop_id=self.nhop1)
+
+        self.route_entry0_lpm = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('11.11.11.0/24'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry0_lpm, next_hop_id=self.nhop1)
+
+    def runTest(self):
+        self.ipv4FibLPMTest()
+
+    def ipv4FibLPMTest(self):
+        """
+        Verifies basic forwarding for IPv4 LPM routes
+        """
+        print("\nipv4FibLPMTest()")
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='11.11.11.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='11.11.11.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        print("Sending packet port %d -> port %d (192.168.0.1 -> "
+              "11.11.11.0/24) LPM" % (self.dev_port1, self.dev_port0))
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+
+    def rifStatsTest(self):
+        """
+        Verifies Ingress and Egress RIF stats for unicast packets
+        """
+        print("\nrifStatsTest()")
+
+        time.sleep(4)
+        port0_rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, self.port0_rif)
+        port1_rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, self.port1_rif)
+
+        self.assertTrue(self.port0_rif_counter_out == port0_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
+        self.assertTrue(self.port1_rif_counter_in == port1_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
+
+    def tearDown(self):
+        self.destroy_routing_interfaces()
+
+        sai_thrift_remove_route_entry(self.client, self.route_entry0)
+        sai_thrift_remove_route_entry(self.client, self.route_entry0_lpm)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+        
+        super(L3InterfaceTestBaseLpm, self).tearDown()
+
+@group("draft")
+class L3InterfaceTestMtu(SaiHelperSimplified):
+    """
+    Configuration
+    +----------+-----------+
+    | port0    |           |
+    +----------+-----------+
+    | port1    |           |
+    +----------+-----------+
+    | lag1     | port2     |
+    |          | port3     |
+    |          | port4     |
+    +----------+-----------+
+    """
+    def setUp(self):
+        super(L3InterfaceTestMtu, self).setUp()
+        dmac1 = '00:11:22:33:44:55'
+        dmac3 = '00:33:22:33:44:55'
+
+        self.port1_rif_counter_in = 0
+        self.port0_rif_counter_out = 0
+        self.lag1_rif_counter_out = 0
+
+        self.create_routing_interfaces(ports=[0, 1])
+        self.create_lag_with_members(lag_index=1, ports=[2, 3, 4])
+        self.create_routing_interfaces(lags=[1])
+
+        self.nhop1 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port0_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry1, dst_mac_address=dmac1)
+
+        self.neighbor_entry3 = sai_thrift_neighbor_entry_t(
+            rif_id=self.lag1_rif, ip_address=sai_ipaddress('12.10.10.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry3, dst_mac_address=dmac3)
+        self.nhop3 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('12.10.10.2'),
+            router_interface_id=self.lag1_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        self.route_entry0 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry0, next_hop_id=self.nhop1)
+
+        self.route_lag0 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('12.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_lag0, next_hop_id=self.nhop3)
+
+    def runTest(self):
+        self.ipv4MtuTest()
+        self.rifStatsTest()
+
+    def ipv4MtuTest(self):
+        """
+        Verifies if IPv4 packet is forwarded, dropped and punted to CPU
+        depending on the MTU with and without a trap for regular L3 port
+        """
+        print("\nipv4MtuTest()")
+
+        # set MTU to 200 for port 0 and lag 1
+        mtu_port0_rif = sai_thrift_get_router_interface_attribute(
+            self.client, self.port0_rif, mtu=True)
+        mtu_lag1_rif = sai_thrift_get_router_interface_attribute(
+            self.client, self.lag1_rif, mtu=True)
+
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.port0_rif, mtu=200)
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.lag1_rif, mtu=200)
+
+        try:
+            print("Max MTU is 200, send pkt size 199, send to port/lag")
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:22',
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=64,
+                                    pktlen=199 + 14)
+            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst='10.10.10.1',
+                                        ip_src='192.168.0.1',
+                                        ip_id=105,
+                                        ip_ttl=63,
+                                        pktlen=199 + 14)
+
+            print("Sending packet port %d -> port %d (192.168.0.1 -> "
+                  "10.10.10.1)" % (self.dev_port1, self.dev_port0))
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d -> lag 1 (192.168.0.1 -> "
+                  "12.10.10.1)" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet_any_port(
+                self, exp_pkt, [self.dev_port2, self.dev_port3,
+                                self.dev_port4])
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            print("Max MTU is 200, send pkt size 200, send to port/lag")
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:22',
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=64,
+                                    pktlen=200 + 14)
+            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst='10.10.10.1',
+                                        ip_src='192.168.0.1',
+                                        ip_id=105,
+                                        ip_ttl=63,
+                                        pktlen=200 + 14)
+
+            print("Sending packet port %d -> port %d (192.168.0.1 -> "
+                  "10.10.10.1)" % (self.dev_port1, self.dev_port0))
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d -> lag 1 (192.168.0.1 -> "
+                  "12.10.10.1)" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet_any_port(
+                self, exp_pkt, [self.dev_port2, self.dev_port3,
+                                self.dev_port4])
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            print("Max MTU is 200, send pkt size 201, dropped")
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:22',
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=64,
+                                    pktlen=201 + 14)
+            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst='10.10.10.1',
+                                        ip_src='192.168.0.1',
+                                        ip_id=105,
+                                        ip_ttl=63,
+                                        pktlen=201 + 14)
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            print("Changing MTU to 201, send pkt size 201, send to port/lag")
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port0_rif, mtu=201)
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:22',
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=64,
+                                    pktlen=201 + 14)
+            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst='10.10.10.1',
+                                        ip_src='192.168.0.1',
+                                        ip_id=105,
+                                        ip_ttl=63,
+                                        pktlen=201 + 14)
+
+            print("Sending packet port %d -> port %d (192.168.0.1 -> "
+                  "10.10.10.1)" % (self.dev_port1, self.dev_port0))
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.lag1_rif, mtu=201)
+
+            print("Sending packet port %d -> lag 1 (192.168.0.1 -> "
+                  "12.10.10.1)" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet_any_port(
+                self, exp_pkt, [self.dev_port2, self.dev_port3,
+                                self.dev_port4])
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            print("Max MTU is 201, send pkt size 202, dropped")
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:22',
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=64,
+                                    pktlen=202 + 14)
+            exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst='10.10.10.1',
+                                        ip_src='192.168.0.1',
+                                        ip_id=105,
+                                        ip_ttl=63,
+                                        pktlen=202 + 14)
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['IP'].dst = '12.10.10.1'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+        finally:
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port0_rif, mtu=mtu_port0_rif['mtu'])
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
+
+    def rifStatsTest(self):
+        """
+        Verifies Ingress and Egress RIF stats for unicast packets
+        """
+        print("\nrifStatsTest()")
+
+        time.sleep(4)
+        port0_rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, self.port0_rif)
+        port1_rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, self.port1_rif)
+        lag1_rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, self.lag1_rif)
+
+        self.assertTrue(self.port0_rif_counter_out == port0_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
+        self.assertTrue(self.port1_rif_counter_in == port1_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
+        self.assertTrue(self.lag1_rif_counter_out == lag1_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
+
+    def tearDown(self):
+
+        sai_thrift_remove_route_entry(self.client, self.route_entry0)
+        sai_thrift_remove_route_entry(self.client, self.route_lag0)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop3)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
+
+        self.destroy_routing_interfaces()
+        self.destroy_lags_with_members()
+
+        super(L3InterfaceTestMtu, self).tearDown()
 
 @group("draft")
 class L3SubPortTest(SaiHelper):
