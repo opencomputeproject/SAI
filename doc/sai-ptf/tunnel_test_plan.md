@@ -35,13 +35,9 @@
     - [Case2:  IpIp_Tunnel_Decap_Lpm_Ipv6inIpv4](#case2-ipip_tunnel_decap_lpm_ipv6inipv4)
     - [Testing Data Packet](#testing-data-packet-6)
       - [IPV4 IN IPV4 Packet](#ipv4-in-ipv4-packet)
-  - [Test Group8: IP IN IP Tunnel + ECMP Encap](#test-group8-ip-in-ip-tunnel--ecmp-encap)
+  - [Test Group8: IP IN IP Tunnel Underly ECMP Encap](#test-group8-ip-in-ip-tunnel-underly-ecmp-encap)
     - [Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4](#case1-ipip_tunnel_encap_ecmp_ipv4inipv4)
-    - [Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv6](#case2-ipip_tunnel_encap_ecmp_ipv6inipv6)
-    - [Testing Data Packet](#testing-data-packet-7)
-  - [Test Group9: Vxlan Tunnel Decap](#test-group9-vxlan-tunnel-decap)
-    - [case1:  Vxlan_Tunnel_Decap_Test_L2](#case1-vxlan_tunnel_decap_test_l2)
-    - [Testing Data Packet](#testing-data-packet-8)
+    - [Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv4](#case2-ipip_tunnel_encap_ecmp_ipv6inipv4)
   - [Test Group10: Vxlan P2MP Tunnel Decap](#test-group10-vxlan-p2mp-tunnel-decap)
     - [Case1:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_term_srcip](#case1-vxlan_p2mp_tunnel_decap_test_with_term_dst_ip_term_srcip)
     - [Case2:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_diff_term_srcip](#case2-vxlan_p2mp_tunnel_decap_test_with_term_dst_ip_diff_term_srcip)
@@ -52,25 +48,25 @@
     - [Case2: encap_ttl_set_pipe_mode_v6](#case2-encap_ttl_set_pipe_mode_v6)
     - [Case3: encap_ttl_set_uniform_mode_v4](#case3-encap_ttl_set_uniform_mode_v4)
     - [Case4: encap_ttl_set_uniform_mode_v6](#case4-encap_ttl_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-9)
+    - [Testing Data Packet](#testing-data-packet-7)
   - [Test Group12: IP In IP Decap TTL](#test-group12-ip-in-ip-decap-ttl)
     - [Case1: decap_ttl_set_pipe_mode_v4](#case1-decap_ttl_set_pipe_mode_v4)
     - [Case2: decap_ttl_set_pipe_mode_v6](#case2-decap_ttl_set_pipe_mode_v6)
     - [Case3: decap_ttl_set_uniform_mode_v4](#case3-decap_ttl_set_uniform_mode_v4)
     - [Case4: decap_ttl_set_uniform_mode_v6](#case4-decap_ttl_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-10)
+    - [Testing Data Packet](#testing-data-packet-8)
   - [Test Group13: IP IN IP ENCAP DSCP](#test-group13-ip-in-ip-encap-dscp)
     - [Case1: encap_dscp_set_pipe_mode_v4](#case1-encap_dscp_set_pipe_mode_v4)
     - [Case2: encap_dscp_set_pipe_mode_v6](#case2-encap_dscp_set_pipe_mode_v6)
     - [Case3: encap_dscp_set_uniform_mode_v4](#case3-encap_dscp_set_uniform_mode_v4)
     - [Case4: encap_dscp_set_uniform_mode_v6](#case4-encap_dscp_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-11)
+    - [Testing Data Packet](#testing-data-packet-9)
   - [Test Group14: IP In IP Decap DSCP](#test-group14-ip-in-ip-decap-dscp)
     - [Case1: decap_dscp_set_pipe_mode_v4](#case1-decap_dscp_set_pipe_mode_v4)
     - [Case2: decap_dscp_set_pipe_mode_v6](#case2-decap_dscp_set_pipe_mode_v6)
     - [Case3: decap_dscp_set_uniform_mode_v4](#case3-decap_dscp_set_uniform_mode_v4)
     - [Case4: decap_dscp_set_uniform_mode_v6](#case4-decap_dscp_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-12)
+    - [Testing Data Packet](#testing-data-packet-10)
 # Overriew
 The purpose of this test plan is to test the Tunnel function from SAI.
 
@@ -112,23 +108,16 @@ For the test configuration, please refer to Tunnel configuration section of the 
 ### Testing Data Packet
 
 #### IPV4 IN IPV4 Packet <!-- omit in toc --> 
-- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
+- ingress ipinip packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
 - expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
-
-#### IPV6 IN IPV6 Packet <!-- omit in toc --> 
-- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=fc00:1::2:100,dst=4001:0E98:03EE::0D25)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
-- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
 
 #### IPV6 IN IPV4 Packet <!-- omit in toc --> 
-- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
+- ingress ipinip packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
 - expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=2001:0000:25DE::CADE,dst=fc02::1:1)/TCP()
 
-#### IPV4 IN IPV6 Packet <!-- omit in toc --> 
-- ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=fc00:1::2:100,dst=4001:0E98:03EE::0D25)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
-- expected decap packet = Ether(dst=01:01:00:99:01:01,src=ROUTER_MAC)/IP(src=192.168.20.1,dst=192.168.1.1)/TCP()
 
 ### Test steps: <!-- omit in toc --> 
-1. Generate ingress encap packet as decribed by Testing Data Packet
+1. Generate ingress ipinip packet as decribed by Testing Data Packet
 2. Send encap packet from lag2.
 3. Generate expected decap packet as decribed by Testing Data Packet.
 4. Recieve decap packet from port1, compare it with expected decap packet.
@@ -146,7 +135,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
     ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
     ------------------------------------------------------------------
  
-    We will send normal packet from port1 and expect a encap packet on lag2.
+    We will send normal packet from port1 and verify that packet goes into tunnel via matching route entry(192.168.20.0/24,tunnel), getting a ininip packet, recievinfg a encap packet on lag2 by matching route entry(10.1.2.100/32,lag2) .
 
  ```                        
                             |  route table         |                           |  route table      |
@@ -158,16 +147,16 @@ For the test configuration, please refer to Tunnel configuration section of the 
 ### Testing Data Packet
 #### IPV4 IN IPV4 Packet <!-- omit in toc --> 
 - expected egress encap packet=Ether(src=ROUTER_MAC,dst= 00:01:01:01:02:a0)/IP(dst=10.1.2.100,src=10.10.10.1)/IP(dst=192.168.20.1,src=192.168.1.1)/TCP()
-- ingress decap packet = Ether(dst=ROUTER_MAC)/IP(dst=192.168.20.1,src=192.168.1.1)/TCP()
+- ingress normal packet = Ether(dst=ROUTER_MAC)/IP(dst=192.168.20.1,src=192.168.1.1)/TCP()
 
 
 #### IPV6 IN IPV4 Packet <!-- omit in toc --> 
 - expected egress encap packet=Ether(src=ROUTER_MAC,dst= 00:01:01:01:02:a0/IP(dst=10.1.2.100,src=10.10.10.1)/IP(dst=2001:0000:25DE::CADE,src=fc02::1:1)/TCP()
-- ingres decap packet = Ether(dst=ROUTER_MAC)/IP(dst=2001:0000:25DE::CADE,src=fc02::1:1)/TCP()
+- ingres normal packet = Ether(dst=ROUTER_MAC)/IP(dst=2001:0000:25DE::CADE,src=fc02::1:1)/TCP()
 
 ### Test steps: <!-- omit in toc --> 
 1. Generate ingress normal packet as decribed by Testing Data Packet
-2. Send decap packet from port1.
+2. Send  normal packet from port1.
 3. Generate expected encap packet as decribed by Testing Data Packet.
 4. Recieve encap packet from lag2, compare it with expected encap packet.
 
@@ -195,7 +184,6 @@ For the test configuration, please refer to Tunnel configuration section of the 
                      |     dst=10.10.10.1    | p2mp       | uniform
     -------------------------------------------------------------
 
-     Case1:  IpIp_P2MP_Tunnel_Decap_Test_With_term_dstip_term_srcip
      We sending ipinip packet with src ip=10.1.2.100 and dst=10.10.10.1 from lag2, expect getting a inner packet  via matching tunnel term  entry(src=10.1.2.100,dst=10.10.10.1,p2p) when both p2mp type term entry and p2p term entry exit in table, recieving the inner packet on port2 by matching route entry (192.168.1.1/32, port1).
      Then send another ipinip packet with src ip=10.1.4.100,dst=10.10.10.1, we expect it will match p2mp type term entry .
      Then send another ipinip packet with src ip=10.1.4.100,dst=10.10.10.100, we expect packet will drops.
@@ -307,7 +295,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 3. Send encap packet from lag2.
 4. Generate expected decap packet as decribed by Testing Data Packet.
 5. Check packet drops on port1.
-- IpIp_Tunnel_Decap_With_Loop
+- IpIp_Tunnel_Decap_With_Loop_with_normal_route
 1. Add router entry (192.168.253.253/32, next hop port =port1).
 2. Send ipinip packet from lag2.
 3. Check packet drops on port1.
@@ -384,31 +372,39 @@ For the test configuration, please refer to Tunnel configuration section of the 
 7. Send encap packet from lag2.
 8. Recieve decap packet from port2, compare it with expected decap packet.
  
-## Test Group8: IP IN IP Tunnel + ECMP Encap 
+## Test Group8: IP IN IP Tunnel Underly ECMP Encap 
 ### Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4
-### Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv6
+### Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv4
 
 ### Testing Objective <!-- omit in toc --> 
 
-    We will send decapsulated packets from port1 and expect  encapsulated packets on lag2 and lag4 equally.
+
     -----------------------------------------------------------------
     Ingress side[port1]           |          Egress side[lag2] [lag4]
     ------------------------------------------------------------------
     ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
     ------------------------------------------------------------------
-    ipv6's falls in fc02::  |   ipv6's falls in fc00:1::
-    ------------------------------------------------------------------
+    We will send norml packets with differnnt dst ip,src tcp port and dport from port1 and expect  encapsulated packets on lag2 and lag4 equally.  packet goes into tunnel via matching route entry(192.168.70.0/24,tunnel), getting encapsulated ininip packets, recieving ipinip packets on lag2 and lag4 equally by matching ecmp nexthop group(10.1.60.0/24,nexhop group:lag2,lag4) .
+
+ ```                        
+                            |  route table         |                           |  route table       |
+  ingress encap pkt->port1->|192.168.70.0/24,tunnel|-> tunnel -> ipinip pkt -> |dst ip: 10.1.60.0/24|
+                                                                               |nexhop group:lag2, lag4|
+  ->lag2   
+      
 
 ### Testing Data Packet
-#### IPV4 IN IPV4 Packet <!-- omit in toc --> 
+#### IPV4 inIPV4 Packet <!-- omit in toc --> 
 
-- ingress decap packet = Ether(dst=00:01:01:01:02:a0,src=ROUTER_MAC)/IP(dst=192.168.70.1~100,src=192.168.1.1)/TCP(sport, dport)
+- ingress normal packet = Ether(dst=00:01:01:01:02:a0,src=ROUTER_MAC)/IP(dst=192.168.70.1~100,src=192.168.1.1)/TCP(sport, dport)
+- expected egress encap packet=Ether(src=ROUTER_MAC,dst= 00:01:01:01:(02|04):a0)/IP(dst=10.1.60.100,src=10.10.10.1)/IP(dst=192.168.70.1~100,src=192.168.1.1)/TCP()
 
-#### IPV6 IN IPV6 Packet <!-- omit in toc --> 
-- ingres decap packet = Ether(dst=00:01:01:01:02:a0,src=ROUTER_MAC)/IP(fc02::20:1,src=fc02::1:1)/TCP()
+#### IPV6  Packet <!-- omit in toc --> 
+- ingres normal packet = Ether(dst=00:01:01:01:02:a0,src=ROUTER_MAC)/IP(dst=fc02::20:1-100,src=fc02::1:1)/TCP()
+- expected egress encap packet=Ether(src=ROUTER_MAC,dst= 00:01:01:01:(02|04):a0)/IP(dst=10.1.60.100,src=10.10.10.1)/IP(dst=fc02::20:1-100,src=fc02::1:1)/TCP()
 
 ### Test steps: <!-- omit in toc --> 
-1. Generate ingress decap packets with dst ip as 192.168.70.1-100, tcp sport as 16666-16765, dst tcp port 36666~36765.
+1. Generate ingress normal packets with dst ip as 192.168.70.1-100, tcp sport as 16666-16765, dst tcp port 36666~36765.
 2. Initalize hash seed as 444.
 3. Send decap packets from port1.
 4. Check if packets are received on lag2 and lag4 equally.
