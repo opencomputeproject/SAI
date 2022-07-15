@@ -2,19 +2,16 @@
 - [Test Group1: Encapsulation](#test-group1-encapsulation)
   - [Case1: encap_dscp_remap_v4_in_v4](#case1-encap_dscp_remap_v4_in_v4)
   - [Case2: encap_dscp_remap_v6_in_v4](#case2-encap_dscp_remap_v6_in_v4)
-  - [Case3: encap_dscp_priority_v4_in_v4](#case3-encap_dscp_priority_v4_in_v4)
-  - [Case4: encap_dscp_priority_v6_in_v4](#case4-encap_dscp_priority_v6_in_v4)
-  - [Case5: encap_dscp_queue_v4_in_v4](#case5-encap_dscp_queue_v4_in_v4)
-  - [Case6: encap_dscp_queue_v6_in_v4](#case6-encap_dscp_queue_v6_in_v4)
-  - [Case7: encap_pfc_pause_v4_in_v4](#case7-encap_pfc_pause_v4_in_v4)
-  - [Case8: encap_pfc_pause_v6_in_v4](#case8-encap_pfc_pause_v6_in_v4)
-  - [Case9: encap_ecn_no_congestion_v4_in_v4](#case9-encap_ecn_no_congestion_v4_in_v4)
-  - [Case10: encap_ecn_no_congestion_v6_in_v4](#case10-encap_ecn_no_congestion_v6_in_v4)
-  - [Case11: encap_ecn_congestion_v4_in_v4](#case11-encap_ecn_congestion_v4_in_v4)
-  - [Case12: encap_ecn_congestion_v6_in_v4](#case12-encap_ecn_congestion_v6_in_v4)
-  - [Case13: encap_global_dscp_remap_v4_in_v4](#case13-encap_global_dscp_remap_v4_in_v4)
-  - [Case14: encap_global_dscp_remap_v6_in_v4](#case14-encap_global_dscp_remap_v6_in_v4)
-  - [Case14: encap_global_dscp_remap_v6_in_v4](#case14-encap_global_dscp_remap_v6_in_v4-1)
+  - [Case3: encap_dscp_queue_v4_in_v4](#case3-encap_dscp_queue_v4_in_v4)
+  - [Case4: encap_dscp_queue_v6_in_v4](#case4-encap_dscp_queue_v6_in_v4)
+  - [Case5: encap_pfc_pause_v4_in_v4](#case5-encap_pfc_pause_v4_in_v4)
+  - [Case6: encap_pfc_pause_v6_in_v4](#case6-encap_pfc_pause_v6_in_v4)
+  - [Case7: encap_ecn_no_congestion_v4_in_v4](#case7-encap_ecn_no_congestion_v4_in_v4)
+  - [Case9: encap_ecn_no_congestion_v6_in_v4](#case9-encap_ecn_no_congestion_v6_in_v4)
+  - [Case10: encap_ecn_congestion_v4_in_v4](#case10-encap_ecn_congestion_v4_in_v4)
+  - [Case11: encap_ecn_congestion_v6_in_v4](#case11-encap_ecn_congestion_v6_in_v4)
+  - [Case12: encap_global_dscp_remap_v4_in_v4](#case12-encap_global_dscp_remap_v4_in_v4)
+  - [Case13: encap_global_dscp_remap_v6_in_v4](#case13-encap_global_dscp_remap_v6_in_v4)
 - [Test Group2: Decapsulation](#test-group2-decapsulation)
   - [Case1: decap_dscp_remap_v4_in_v4](#case1-decap_dscp_remap_v4_in_v4)
   - [Case2: decap_dscp_remap_v6_in_v4](#case2-decap_dscp_remap_v6_in_v4)
@@ -28,37 +25,32 @@
   - [Case10: decap_ecn_no_congestion_v6_in_v4](#case10-decap_ecn_no_congestion_v6_in_v4)
   - [Case11: decap_ecn_congestion_v4_in_v4](#case11-decap_ecn_congestion_v4_in_v4)
   - [Case12: decap_ecn_congestion_v6_in_v4](#case12-decap_ecn_congestion_v6_in_v4)
-  - [Case13: decap_global_dscp_remap_v4_in_v4](#case13-decap_global_dscp_remap_v4_in_v4)
-  - [Case14: decap_global_dscp_remap_v6_in_v4](#case14-decap_global_dscp_remap_v6_in_v4)
+  - [Case13: decap_global_dscp_to_tc_map_v4_in_v4](#case13-decap_global_dscp_to_tc_map_v4_in_v4)
+  - [Case14: decap_global_dscp_to_tc_map_v6_in_v4](#case14-decap_global_dscp_to_tc_map_v6_in_v4)
 
 ## Test Group1: Encapsulation
 
 ### Case1: encap_dscp_remap_v4_in_v4
 ### Case2: encap_dscp_remap_v6_in_v4
-### Case3: encap_dscp_priority_v4_in_v4
-### Case4: encap_dscp_priority_v6_in_v4
-### Case5: encap_dscp_queue_v4_in_v4
-### Case6: encap_dscp_queue_v6_in_v4
-### Case7: encap_pfc_pause_v4_in_v4
-### Case8: encap_pfc_pause_v6_in_v4
-### Case9: encap_ecn_no_congestion_v4_in_v4
-### Case10: encap_ecn_no_congestion_v6_in_v4
-### Case11: encap_ecn_congestion_v4_in_v4
-### Case12: encap_ecn_congestion_v6_in_v4
-### Case13: encap_global_dscp_remap_v4_in_v4
-### Case14: encap_global_dscp_remap_v6_in_v4
+### Case3: encap_dscp_queue_v4_in_v4
+### Case4: encap_dscp_queue_v6_in_v4
+### Case5: encap_pfc_pause_v4_in_v4
+### Case6: encap_pfc_pause_v6_in_v4
+### Case7: encap_ecn_no_congestion_v4_in_v4
+### Case9: encap_ecn_no_congestion_v6_in_v4
+### Case10: encap_ecn_congestion_v4_in_v4
+### Case11: encap_ecn_congestion_v6_in_v4
+### Case12: encap_global_dscp_remap_v4_in_v4
+### Case13: encap_global_dscp_remap_v6_in_v4
 
 ### Testing Objective <!-- omit in toc --> 
 - encap_dscp_remap: This verifies on encapsulation, the DSCP field is preserved end-to-end in inner header and the outer header is mapped to the expect encap value base on the DSCP map.
-- encap_dscp_priority: This verifies on encapsulation, the DSCP field is preserved end-to-end in inner header and the outer header is mapped to the expect encap value base on the priority map.
-- encap_dscp_queue: This verifies on encapsulation, the DSCP field is preserved end-to-end in inner header and the outer header is mapped to the expect encap value base on the queue map.
-- encap_pfc_pause: This verifies the pfc frame generated as expected in encap.
-- encap_ecn_no_congestion: This verifies the ecn generated as expected in encap when no congestion happens.
-- encap_ecn_congestion: This verifies the ecn generated as expected in encap when congestion happens.
+- encap_dscp_queue: This verifies on encapsulation, the DSCP field is preserved end-to-end in inner header and the outer header is mapped to the expect encap value base on the queue map ``DSCP_MAP_TABLE``.
+- encap_pfc_pause: This verifies if the buffer is filled up, the pfc frame generated as expected in encap.
+- encap_ecn_no_congestion: This verifies the ecn generated as expected in encap when no congestion happens, like ``ECN_NON_CGN_TABLE``.
+- encap_ecn_congestion: This verifies the ecn generated as expected in encap when congestion happens, as the ``ECN_CGN_TABLE``
 - encap_global_dscp_remap: This verifies on encapsulation, the DSCP field is preserved end-to-end in inner header and the outer header is mapped to the expect encap value base on the switch global DSCP map.
-### Case14: encap_global_dscp_remap_v6_in_v4
-This verifies in tunnel dscp remap if DSCP field is remapped for the outer header on encapsulation and DSCP field of the inner header remains the same on decapsulation when using DSCP pipe mode.
-This verifies the DSCP field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation, combining with QoS map.
+
 
     We will send a decapsulated packet from port1 and expect an encapsulated packet on any lag1-4 member
     -----------------------------------------------------------------
@@ -115,14 +107,13 @@ ECN_CGN_TABLE:
 |4|1|6|3|4|3|
 
 
-- PIPE MODE Packet:
 #### IPV4 IN IPV4 Packet <!-- omit in toc --> 
-- expected egress encap packet=Ether(dst=ROUTER_MAC)/IP(dst=10.1.2.100,src=10.10.10.1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``OUTER_ECN``)/IP(dst=192.168.60.1,src=192.168.1.1, ip_dscp=``DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
+- expected egress encap packet=Ether(dst=ROUTER_MAC)/IP(dst=``ACTIVE_TOR_IP``,src=`STAND_BY_TOR_IP``,ip_dscp=``EXP_DSCP COL``, ip_ecn=``OUTER_ECN``)/IP(dst=192.168.60.1,src=192.168.1.1, ip_dscp=``DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
 - ingress packet = Ether(dst=00:01:01:01:02:a0,src=ROUTER_MAC)/IP(dst=192.168.60.1,src=192.168.1.1, ip_dscp=``DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
 
 #### IPV6 IN IPV4 Packet <!-- omit in toc --> 
-- expected egress encap packet=Ether(dst=ROUTER_MAC)/IP(dst=10.1.2.100,src=10.10.10.1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``OUTER_ECN``)/IP(fc02::60:1,src=fc02::1:1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
-- ingress packet = Ether(dst=00:01:01:01:02:a0,src=ROUTER_MAC)/IP(dst=192.168.60.1,src=fc02::1:1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
+- expected egress encap packet=Ether(dst=ROUTER_MAC)/IP(dst=``ACTIVE_TOR_IP``,src=`STAND_BY_TOR_IP``,ip_dscp=``EXP_DSCP COL``, ip_ecn=``OUTER_ECN``)/IP(fc02::60:1,src=fc02::1:1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
+- ingress packet = Ether(dst=00:01:01:01:02:a0,src=ROUTER_MAC)/IP(dst=``REMOTE_SERVER_IPv6``,src=fc02::1:1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
 
 
 ### Test steps: <!-- omit in toc --> 
@@ -134,17 +125,6 @@ ECN_CGN_TABLE:
 4. Send input packet from port1.
 5. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
 6. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
-
-- encap_dscp_priority:
-
-1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
-3. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
-4. Generate 1000 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
-5. Send input packet from port1.
-6. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-7. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
-8. For each packet received port check the corresponding priority_group packets stats (SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES)
 
 - encap_dscp_queue:
 
@@ -194,7 +174,7 @@ ECN_CGN_TABLE:
 10. Enable ports (set port SAI_PORT_ATTR_PKT_TX_ENABLE)
 11. Recieve decap packet from port1. Compare it with the expected packet for the ECN and DSCP values.
 
-- encap_global_dscp_remap:
+- encap_global_dscp_to_tc_map:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, config port with ``Port DSCP MAP`` and switch_dscp_to_tc with dscp map in ``Tunnel TC MAP`` as basic [config](./config_data/config_t0.md)  
@@ -218,8 +198,8 @@ ECN_CGN_TABLE:
 ### Case10: decap_ecn_no_congestion_v6_in_v4
 ### Case11: decap_ecn_congestion_v4_in_v4
 ### Case12: decap_ecn_congestion_v6_in_v4
-### Case13: decap_global_dscp_remap_v4_in_v4
-### Case14: decap_global_dscp_remap_v6_in_v4
+### Case13: decap_global_dscp_to_tc_map_v4_in_v4
+### Case14: decap_global_dscp_to_tc_map_v6_in_v4
 
 
 ### Testing Objective <!-- omit in toc --> 
@@ -229,7 +209,7 @@ ECN_CGN_TABLE:
 - decap_pfc_pause: This verifies the pfc frame generated as expected in decap.
 - decap_ecn_no_congestion: This verifies the ecn generated as expected in decap when no congestion happens.
 - decap_ecn_congestion: This verifies the ecn generated as expected in decap when congestion happens.
-- decap_global_dscp_remap: This verifies on decapsulation, the DSCP inner field is preserved end-to-end and mapping to the expect dscp value base on the DSCP map.
+- decap_global_dscp_to_tc_map: This verifies on decapsulation, the DSCP inner field is preserved end-to-end and mapping to the expect dscp value base on the DSCP map.
 
 
     We will send a decapsulated packet from LAG1 and expect a decapsulated packet on port1
@@ -284,12 +264,12 @@ ECN_CGN_TABLE:
 - PIPE MODE Packet:
 #### IPV4 IN IPV4 Packet <!-- omit in toc --> 
 - expected egress packet = Ether(dst=00:01:01:99:01:01,src=ROUTER_MAC)/IP(dst=192.168.1.1,src=192.168.60.1, ip_dscp=``DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
-- Ingress encap packet=Ether(dst=ROUTER_MAC)/IP(dst=10.10.10.1,src=10.1.2.100,ip_dscp=``EXP_DSCP COL``, ip_ecn=``OUTER_ECN``)/IP(src=192.168.60.1,dst=192.168.1.1, ip_dscp=``DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
+- Ingress encap packet=Ether(dst=ROUTER_MAC)/IP(dst=`STAND_BY_TOR_IP``,src=``ACTIVE_TOR_IP``,ip_dscp=``EXP_DSCP COL``, ip_ecn=``OUTER_ECN``)/IP(src=192.168.60.1,dst=192.168.1.1, ip_dscp=``DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
 
 
 #### IPV6 IN IPV4 Packet <!-- omit in toc --> 
 - Expected egress packet = Ether(dst=00:01:01:99:01:01,src=ROUTER_MAC)/IP(src=fc02::60:1,dst=fc02::1:1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
-- Ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=10.1.2.100,dst=10.10.10.1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``OUTER_ECN``)/IP(src=fc02::60:1,dst=fc02::1:1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
+- Ingress encap packet=Ether(dst=ROUTER_MAC)/IP(src=``ACTIVE_TOR_IP``,dst=`STAND_BY_TOR_IP``,ip_dscp=``EXP_DSCP COL``, ip_ecn=``OUTER_ECN``)/IP(src=fc02::60:1,dst=fc02::1:1,ip_dscp=``EXP_DSCP COL``, ip_ecn=``INNER_ECN``)/TCP()
 
 
 ### Test steps: <!-- omit in toc --> 
@@ -360,7 +340,7 @@ ECN_CGN_TABLE:
 8.  Enable ports (set port SAI_PORT_ATTR_PKT_TX_ENABLE)
 9.  Recieve decap packet from port1. Compare it with the expected packet for the ECN and DSCP values.
 
-- decap_global_dscp_remap:
+- decap_global_dscp_to_tc_map:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, config port with ``Port DSCP MAP`` and switch_dscp_to_tc with dscp map in ``Tunnel TC MAP`` as basic [config](./config_data/config_t0.md)  
