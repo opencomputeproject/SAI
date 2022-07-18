@@ -2148,7 +2148,6 @@ typedef enum _sai_port_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @condition SAI_PORT_ATTR_TYPE == SAI_PORT_TYPE_FABRIC
      */
     SAI_PORT_ATTR_FABRIC_ISOLATE,
 
