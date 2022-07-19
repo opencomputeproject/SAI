@@ -393,10 +393,11 @@ typedef enum _sai_buffer_pool_attr_t
      * @brief Attach buffer pool family ID to buffer pool
      *
      * @type sai_object_id_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_BUFFER_POOL_FAMILY
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_BUFFER_POOL_ATTR_TYPE == SAI_BUFFER_POOL_TYPE_INGRESS or SAI_BUFFER_POOL_ATTR_TYPE == SAI_BUFFER_POOL_TYPE_EGRESS
      */
     SAI_BUFFER_POOL_ATTR_BUFFER_POOL_FAMILY_ID,
 
