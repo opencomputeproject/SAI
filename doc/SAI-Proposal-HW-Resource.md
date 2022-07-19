@@ -29,10 +29,22 @@ New data type sai_object_stage_t is introduced. This data type specifies if a re
 
 ## Capability Query
 ----------------
-Capability query API is enhanced with a query for attribute stage.NOS can query the attribute for a given HW support
+New  query API is introduced for an attribute's stage. NOS can query the stage of an object's attribute for a given HW support. One of the following stage is returned as part the API
+- SAI_ATTR_STAGE_NA: Stage is not applicable
 - SAI_ATTR_STAGE_BOTH: Attribute is common to ingress and egress stage
 - SAI_ATTR_STAGE_INGRESS: Attribute is applicable only to ingress stage
 - SAI_ATTR_STAGE_EGRESS: Attribute is applicabe only to egress stage
+
+Length of the returned array "stage" is attr_count. Caller must provide the buffer for array "stage".
+ 
+```
+sai_status_t sai_query_object_stage(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list,
+        _Out_ sai_object_stage_t *stage);
+```
 
 ## HOSTIF Trap Group
 -----------------
