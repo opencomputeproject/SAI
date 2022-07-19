@@ -245,6 +245,10 @@ class T0TestBase(ThriftInterfaceDataPlane):
             wait_sec))
         time.sleep(wait_sec)
 
+    def restore_fdb_config(self):
+        t0_fdb_tear_down_helper(self)
+        t0_fdb_config_helper(test_obj=self)
+
     def shell(self):
         '''
         Method use to start a sai shell in a thread.
