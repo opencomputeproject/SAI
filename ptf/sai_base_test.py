@@ -961,16 +961,28 @@ def get_platform():
     """
     Get the platform token.
 
-    If not any platform specified from the environment variable [PLATFORM], then the default platform will be 'common'.
-    If specified any one, it will try to concert it from standard name to a shorten name (case insentitive). \r
+    If environment variable [PLATFORM] doesn't exist, then the default platform will be 'common'.
+    If environment variable [PLATFORM] exist but platform name is unknown raise ValueError.
+    If environment variable [PLATFORM] exist but platform name is unspecified,
+    then the default platform will be 'common'.
+    If specified any one, it will try to concert it from standard name to a shortened name (case insensitive). \r
     \ti.e. Broadcom -> brcm
     """
-    pl_low = PLATFORM.lower()
     pl = 'common'
-    if pl_low in platform_map.keys():
-        pl = platform_map[pl_low]
-    elif pl_low in platform_map.values():
-        pl = pl_low
+
+    if 'PLATFORM' in os.environ:
+        pl_low = PLATFORM.lower()
+        if pl_low in platform_map.keys():
+            pl = platform_map[pl_low]
+        elif pl_low in platform_map.values():
+            pl = pl_low
+        elif PLATFORM == '':
+            print("Platform not set. The common platform was selected")
+        else:
+            raise ValueError("Undefined platform: {}.".format(pl_low))
+    else:
+        print("Platform not set. The common platform was selected")
+
     return pl
 
 
