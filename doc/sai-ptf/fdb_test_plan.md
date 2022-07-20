@@ -16,6 +16,7 @@
   - [Test Group2: FDB age](#test-group2-fdb-age)
     - [Case1: test_port_age](#case1-test_port_age)
     - [Case2: test_aging_after_move](#case2-test_aging_after_move)
+    - [Case3: test_mac_moving_after_aging](#case3-test_mac_moving_after_aging)
   - [Test Group3: FDB flush](#test-group3-fdb-flush)
     - [Case1: test_flush_vlan_static](#case1-test_flush_vlan_static)
     - [Case2: test_flush_vlan_dynamic](#case2-test_flush_vlan_dynamic)
@@ -25,7 +26,7 @@
     - [Case6: test_flush_all_dynamic](#case6-test_flush_all_dynamic)
     - [Case7: test_flush_all](#case7-test_flush_all)
   - [Test Group4: MAC move](#test-group4-mac-move)
-    - [Case1:  test_disable_move_drop](#case1--test_disable_move_drop)
+    - [Case1: test_disable_move_drop](#case1-test_disable_move_drop)
     - [Case2: test_dynamic_mac_move](#case2-test_dynamic_mac_move)
     - [Case3: test_static_mac_move](#case3-test_static_mac_move)
 
@@ -67,10 +68,14 @@ In this FDB test, the example packet structure is below.
 ### Case8: test_no_learn_multicast_src
 
 ### Testing Objective <!-- omit in toc --> 
-Verify if MAC addresses are not learned on the port when VLAN port or bridge port learning is disabled.
-Verify if MAC addresses are not learned on the port when the port is not a bridge port.
-Verify newly added VLAN members can learn.
-
+- test_vlan_port_learn_disable: Verify if MAC addresses are not learned on the port when VLAN port is disabled.
+- test_bg_port_learn_disable: Verify if MAC addresses are not learned on the port whenbridge port learning is disabled.
+- test_non_bgPort_no_learn: Verify if MAC addresses are not learned on the port when the port is not a bridge port.
+- test_new_vlan_member_learn: Verify newly added VLAN members can learn.
+- test_remove_vlan_member_no_learn: Verify no MAC addresses are learned on the removed vlan member.
+- test_no_learn_invalidate_vlan: Verify no MAC addresses are learned on invalidate vlan member.
+- test_no_learn_broadcast_src: Verify broadcast mac address is learned.
+- test_no_learn_multicast_src: Verify multicast mac address is learned.
 
 ### Test steps: <!-- omit in toc --> 
 
@@ -126,9 +131,11 @@ Verify newly added VLAN members can learn.
 ## Test Group2: FDB age
 ### Case1: test_port_age
 ### Case2: test_aging_after_move
+### Case3: test_mac_moving_after_aging
 ### Testing Objective <!-- omit in toc -->
-Verifying if the dynamic FDB entry associated with the port is removed after the aging interval.
-Verifying the aging time refreshed if dynamic FDB entry associated with one port and then moved to another port (not the initial learning time)
+- test_port_age: Verifying if the dynamic FDB entry associated with the port is removed after the aging interval.
+- test_aging_after_move: Verifying the aging time refreshed if dynamic FDB entry associated with one port and then moved to another port (not the initial learning time)
+- test_mac_moving_after_aging: Verifying the mac can be learnt if the mac aging reached.
 
 
 ### Test steps: <!-- omit in toc --> 
@@ -159,6 +166,19 @@ Verifying the aging time refreshed if dynamic FDB entry associated with one port
 9. Wait for the ``aging`` time
 10. Send packet on port3
 11. Verify flooding packet to VLAN10 ports, except port1
+
+- test_mac_moving_after_aging
+
+1. Set FDB aging time=10
+2. Create Packet with SMAC=``MacX`` DMAC=``Port1 MAC`` 
+3. Send packet on port2
+4. verify only receive a packet on port1
+5. Create a packet with DMAC=``MacX``
+6. Send packet on port1
+7. Verify only receive a packet on port2
+8. Wait for the ``aging`` time
+9. Send packet on port3
+10. Verify only receive a packet on port2
 
 ## Test Group3: FDB flush
 ### Case1: test_flush_vlan_static
@@ -200,12 +220,13 @@ Verify flushing of static/dynamic entries on VLAN/Port/All.
 
 
 ## Test Group4: MAC move
-### Case1:  test_disable_move_drop
+### Case1: test_disable_move_drop
 ### Case2: test_dynamic_mac_move
 ### Case3: test_static_mac_move
 ### Testing Objective <!-- omit in toc --> 
-Verify if disable MAC move, drop packet with known SMAC, the SMAC was learned previously on other port.
-Verify when enabling MAC move, if after receiving a packet with known SMAC, but from another port that on which, it was learned previously, next packets with such DMACs are forwarded to the new port.
+- test_disable_move_drop: Verify if disable MAC move, drop packet with known SMAC if the SMAC was already learnt on other port.
+- test_dynamic_mac_move: Verify when enabling MAC move, previous learnt mac(SMAC) on a port can be learnt on other port
+- test_static_mac_move: Verify when enabling MAC move, previous installed mac(static SMAC) on a port can be set to other port
 
 ### Test steps: <!-- omit in toc --> 
 - test_disable_move_drop
