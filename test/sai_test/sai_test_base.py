@@ -33,6 +33,9 @@ from sai_thrift import sai_rpc
 import sai_thrift.sai_adapter as adapter
 from sai_thrift.sai_adapter import *
 from sai_utils import *
+
+import time
+
 from config.port_configer import t0_port_config_helper
 from config.port_configer import t0_port_tear_down_helper
 from config.port_configer import PortConfiger
@@ -242,6 +245,10 @@ class T0TestBase(ThriftInterfaceDataPlane):
             wait_sec))
         time.sleep(wait_sec)
 
+    def restore_fdb_config(self):
+        t0_fdb_tear_down_helper(self)
+        t0_fdb_config_helper(test_obj=self)
+
     def shell(self):
         '''
         Method use to start a sai shell in a thread.
@@ -261,6 +268,18 @@ class T0TestBase(ThriftInterfaceDataPlane):
             int: sai call result
         """
         return adapter.status
+
+    @staticmethod
+    def saiWaitFdbAge(timeout):
+        """
+        Wait for fdb entry to ageout
+
+        Args:
+            timeout (int): Timeout value in seconds
+        """
+        print("Waiting for fdb entry to age")
+        aging_interval_buffer = 10
+        time.sleep(timeout + aging_interval_buffer)
     
     def tearDown(self):
         '''
