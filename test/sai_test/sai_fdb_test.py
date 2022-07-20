@@ -239,7 +239,7 @@ Skip test for broadcom, non bridge port still can learn.
 
 class NonBridgePortNoLearnTest(T0TestBase):
     """
-    Verify if MAC addresses are not learned on the port when bridge port was removed from that port
+    Verify if MAC addresses are not learned on the non-bridge port
     """
 
     def setUp(self):
@@ -267,10 +267,10 @@ class NonBridgePortNoLearnTest(T0TestBase):
         3. Create a packet with SMAC ``MacX``
         4. send packet from port1
         5. Verify the packet flood to other VLAN10 ports
-        6. Create a packet with DMAC ``MacX``
-        7. send the packet on port2
-        8. Verify the packet flood to other VLAN10 ports, including port1
-        9. check FDB entries, no new entry
+        6. check FDB entries, no new entry
+        7. Create a packet with DMAC ``MacX``
+        8. send the packet on port2
+        9. Verify the packet flood to other VLAN10 ports, including port1
         """
         print("NonBridgePortNoLearnTest")
         unknown_mac1 = "00:01:01:99:99:99"
@@ -496,7 +496,7 @@ class InvalidateVlanmemberNoLearnTest(T0TestBase):
 
 class BroadcastNoLearnTest(T0TestBase):
     """
-    Verify no MAC addresses are learned on the removed vlan member
+    Verify broadcast mac address is learned.
     """
 
     def setUp(self):
@@ -543,7 +543,7 @@ class BroadcastNoLearnTest(T0TestBase):
 
 class MulticastNoLearnTest(T0TestBase):
     """
-    Verify no MAC addresses are learned on the removed vlan member
+    Verify multicast mac address is learned.
     """
 
     def setUp(self):
@@ -885,7 +885,7 @@ SKIP: Static flush Not support by broadcom
 
 class FdbFlushVlanStaticTest(T0TestBase):
     '''
-    Verify flushing of static MAC entries by VLAN
+    Verify flushing of static MAC entries on VLAN
     '''
 
     def setUp(self):
@@ -933,7 +933,7 @@ SKIP: Static flush Not support by broadcom
 
 class FdbFlushPortStaticTest(T0TestBase):
     '''
-    Verify flushing of static MAC entries by Port
+    Verify flushing of static MAC entries on Port
     '''
 
     def setUp(self):
@@ -979,7 +979,7 @@ SKIP: Static flush Not support by broadcom
 
 class FdbFlushAllStaticTest(T0TestBase):
     '''
-    Verify flushing of static MAC entries by all
+    Verify flushing all of the static MAC entries.
     '''
 
     def setUp(self):
@@ -1020,7 +1020,7 @@ class FdbFlushAllStaticTest(T0TestBase):
 
 class FdbFlushVlanDynamicTest(T0TestBase):
     '''
-    Verify flushing of dynamic MAC entries by VLAN
+    Verify flushing of dynamic MAC entries on VLAN
     '''
 
     def setUp(self):
@@ -1092,7 +1092,7 @@ class FdbFlushVlanDynamicTest(T0TestBase):
 
 class FdbFlushPortDynamicTest(T0TestBase):
     '''
-    Verify flushing of dynamic MAC entries by VLAN
+    Verify flushing of dynamic MAC entries on Port.
     '''
 
     def setUp(self):
@@ -1166,7 +1166,7 @@ class FdbFlushPortDynamicTest(T0TestBase):
 
 class FdbFlushAllDynamicTest(T0TestBase):
     '''
-    Verify flushing of dynamic MAC entries by VLAN
+    Verify flushing all of the dynamic MAC entries.
     '''
 
     def setUp(self):
@@ -1245,7 +1245,7 @@ SKIP: static not support
 
 class FdbFlushAllTest(T0TestBase):
     '''
-    Verify flushing MAC entries by all
+    Verify flushing all  MAC entries.
     '''
 
     def setUp(self):
@@ -1319,7 +1319,7 @@ class FdbFlushAllTest(T0TestBase):
 
 class FdbDisableMacMoveDropTest(T0TestBase):
     '''
-    Verify if disable MAC move, drop packet with known
+    Verify if disable MAC move, drop packet with known SMAC if the SMAC was already learnt on other port.
     '''
 
     def setUp(self):
@@ -1365,7 +1365,7 @@ class FdbDisableMacMoveDropTest(T0TestBase):
 
 class FdbDynamicMacMoveTest(T0TestBase):
     '''
-    Verify if disable MAC move, drop packet with known
+    Verify when enabling MAC move, previous learnt mac(SMAC) on a port can be learnt on other port
     '''
 
     def setUp(self):
@@ -1428,7 +1428,7 @@ class FdbDynamicMacMoveTest(T0TestBase):
 
 class FdbStaticMacMoveTest(T0TestBase):
     '''
-    Verify if static MAC move functional
+    Verify when enabling MAC move, previous installed mac(static SMAC) on a port can be set to other port
     '''
 
     def setUp(self):
