@@ -100,6 +100,7 @@ class FdbConfiger(object):
                            type=SAI_FDB_ENTRY_TYPE_STATIC,
                            vlan_oid=None,
                            packet_action=SAI_PACKET_ACTION_FORWARD,
+                           allow_mac_move=True,
                            wait_sec=2):
         """
         Create FDB entries.
@@ -125,7 +126,8 @@ class FdbConfiger(object):
                 fdb_entry,
                 type=type,
                 bridge_port_id=port_oids[index],
-                packet_action=packet_action)
+                packet_action=packet_action,
+                allow_mac_move=allow_mac_move)
             fdb_list.append(fdb_entry)
         print("Waiting for FDB to get refreshed, {} seconds ...".format(
             wait_sec))
