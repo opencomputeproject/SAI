@@ -1337,10 +1337,6 @@ class FdbDisableMacMoveDropTest(T0TestBase):
                                              allow_mac_move=False)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        self.pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[2],
-                                     eth_src=self.local_server_mac_list[1],
-                                     pktlen=100)
-
     def runTest(self):
         """
         1. Disable mac move for ``Port1 MAC`` on Port1
@@ -1350,6 +1346,9 @@ class FdbDisableMacMoveDropTest(T0TestBase):
         5. Send packet in step2 on port3
         6. Verify the packet gets dropped
         """
+        self.pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[2],
+                                     eth_src=self.local_server_mac_list[1],
+                                     pktlen=100)
         send_packet(self, 1, self.pkt)
         verify_packet(self, self.pkt, self.dev_port_list[2])
 
@@ -1386,10 +1385,6 @@ class FdbDynamicMacMoveTest(T0TestBase):
                                              bridge_port_id=self.bridge_port_list[2])
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        self.pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[2],
-                                     eth_src=self.local_server_mac_list[1],
-                                     pktlen=100)
-
     def runTest(self):
         """
         1. Flush All MAC
@@ -1402,6 +1397,9 @@ class FdbDynamicMacMoveTest(T0TestBase):
         8. Send packet in step2 on port3
         9. Verify packet received on port2
         """
+        self.pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[2],
+                                     eth_src=self.local_server_mac_list[1],
+                                     pktlen=100)
         send_packet(self, 1, self.pkt)
 
         # inititally add moving MAC to FDB
@@ -1460,10 +1458,6 @@ class FdbStaticMacMoveTest(T0TestBase):
                                              allow_mac_move=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        self.pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[2],
-                                     eth_src=self.local_server_mac_list[1],
-                                     pktlen=100)
-
     def runTest(self):
         """
         1. Flush All MAC
@@ -1477,6 +1471,9 @@ class FdbStaticMacMoveTest(T0TestBase):
         9. Send packet in step2 on port3
         10. Verify packet received on port2
         """
+        self.pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[2],
+                                     eth_src=self.local_server_mac_list[1],
+                                     pktlen=100)
         send_packet(self, 1, self.pkt)
         verify_packet(self, self.pkt, self.dev_port_list[2])
 
