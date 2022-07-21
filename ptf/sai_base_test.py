@@ -871,9 +871,9 @@ class SaiHelper(SaiHelperUtilsMixin, SaiHelperBase):
         sai_thrift_set_port_attribute(self.client, self.port0, port_vlan_id=0)
 
         self.destroy_routing_interfaces()
+        self.destroy_vlans_with_members()
         self.destroy_bridge_ports()
         self.destroy_lags_with_members()
-        self.destroy_vlans_with_members()
 
         super(SaiHelper, self).tearDown()
 

@@ -109,12 +109,7 @@ class L3InterfaceTest(SaiHelper):
             self.client, self.route_lag1, next_hop_id=self.nhop3)
 
     def runTest(self):
-        self.ipv4DisableTest()
         self.ipv6DisableTest()
-        self.macUpdateTest()
-        self.ipv4FibTest()
-        self.ipv4IngressAclTest()
-        self.ipv4EgressAclTest()
         self.ipv4FibLagTest()
         self.ipv6FibTest()
         self.ipv6FibLpmTest()
@@ -123,11 +118,7 @@ class L3InterfaceTest(SaiHelper):
         self.rifSharedMtuTest()
         self.mcastDisableTest()
         self.rifStatsTest()
-        self.loopbackRifTest()
-        self.negativeRifTest()
         self.duplicatePortRifCreationTest()
-        self.rifMyIPTest()
-        self.rifCreateOrUpdateRmacTest()
 
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.route_entry0)
@@ -146,58 +137,8 @@ class L3InterfaceTest(SaiHelper):
 
         super(L3InterfaceTest, self).tearDown()
 
-    def ipv4DisableTest(self):
-        """
-        Verifies if IPv4 packets are dropped when admin_v4_state is false
-        """
-        print("\nipv4DisableTest()")
-
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst='10.10.10.1',
-                                ip_src='192.168.0.1',
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=63)
-
-        print("Sending packet on port %d, forward" % self.dev_port11)
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-        print("Disable IPv4 on ingress RIF")
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.port11_rif, admin_v4_state=False)
-        time.sleep(3)
-
-        initial_stats = sai_thrift_get_port_stats(self.client, self.port11)
-        if_in_discards_pre = initial_stats['SAI_PORT_STAT_IF_IN_DISCARDS']
-
-        print("Sending packet on port %d, discard" % self.dev_port11)
-        send_packet(self, self.dev_port11, pkt)
-        verify_no_other_packets(self, timeout=3)
-        stats = sai_thrift_get_port_stats(self.client, self.port11)
-        if_in_discards = stats['SAI_PORT_STAT_IF_IN_DISCARDS']
-        self.assertTrue(if_in_discards_pre + 1 == if_in_discards)
-        self.port11_rif_counter_in += 1
-
-        print("Enable IPv4 on ingress RIF")
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.port11_rif, admin_v4_state=True)
-
-        print("Sending packet on port %d, forward" % self.dev_port11)
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
     def ipv6DisableTest(self):
+        # TODO: should be moved in separate class and adapted for DASH support
         """
         Verifies if IPv6 packets are dropped when admin_v6_state is False
         """
@@ -246,362 +187,8 @@ class L3InterfaceTest(SaiHelper):
         self.port11_rif_counter_in += 1
         self.port10_rif_counter_out += 1
 
-    def macUpdateTest(self):
-        """
-        Verifies if packet is forwarded correctly after MAC address updated
-        and if packet is dropped for old MAC address after update
-        """
-        print("\nmacUpdateTest()")
-
-        new_router_mac = "00:77:66:55:44:44"
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst='10.10.10.1',
-                                ip_src='192.168.0.1',
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=63)
-        pkt1 = simple_tcp_packet(eth_dst=new_router_mac,
-                                 eth_src='00:22:22:22:22:22',
-                                 ip_dst='10.10.10.1',
-                                 ip_src='192.168.0.1',
-                                 ip_id=105,
-                                 ip_ttl=64)
-        exp_pkt1 = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst='10.10.10.1',
-                                     ip_src='192.168.0.1',
-                                     ip_id=105,
-                                     ip_ttl=63)
-
-        print("Sending packet on port %d with mac %s, forward"
-              % (self.dev_port11, ROUTER_MAC))
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-        print("Updating src_mac_address to %s" % (new_router_mac))
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.port11_rif, src_mac_address=new_router_mac)
-        attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.port11_rif, src_mac_address=True)
-        self.assertEqual(attrs["src_mac_address"], new_router_mac)
-        # still forwarded since rmac is same as switch default rmac
-        print("Sending packet on port %d with mac %s, forwarded"
-              % (self.dev_port11, ROUTER_MAC))
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-        print("Sending packet on port %d with mac %s, forward"
-              % (self.dev_port11, new_router_mac))
-        send_packet(self, self.dev_port11, pkt1)
-        verify_packet(self, exp_pkt1, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-        print("Reverting src_mac_address to %s" % (ROUTER_MAC))
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.port11_rif, src_mac_address=ROUTER_MAC)
-        attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.port11_rif, src_mac_address=True)
-        self.assertEqual(attrs["src_mac_address"], ROUTER_MAC)
-        print("Sending packet on port %d with mac %s, dropped"
-              % (self.dev_port11, new_router_mac))
-        send_packet(self, self.dev_port11, pkt1)
-        verify_no_other_packets(self, timeout=1)
-        self.port11_rif_counter_in += 1
-
-        print("Sending packet on port %d with mac %s, forward"
-              % (self.dev_port11, ROUTER_MAC))
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-    def ipv4FibTest(self):
-        """
-        Verifies basic forwarding for IPv4 host
-        """
-        print("\nipv4FibTest()")
-
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst='10.10.10.1',
-                                ip_src='192.168.0.1',
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=63)
-        gre_pkt = ipv4_erspan_pkt(eth_dst=ROUTER_MAC,
-                                  eth_src='00:22:22:22:22:22',
-                                  ip_dst='10.10.10.1',
-                                  ip_src='192.168.0.1',
-                                  ip_id=0,
-                                  ip_ttl=64,
-                                  ip_flags=0x0,
-                                  version=2,  # ERSPAN_III
-                                  mirror_id=1,
-                                  sgt_other=4,
-                                  inner_frame=pkt)
-        exp_gre_pkt = ipv4_erspan_pkt(eth_dst='00:11:22:33:44:55',
-                                      eth_src=ROUTER_MAC,
-                                      ip_dst='10.10.10.1',
-                                      ip_src='192.168.0.1',
-                                      ip_id=0,
-                                      ip_ttl=63,
-                                      ip_flags=0x0,
-                                      version=2,  # ERSPAN_III
-                                      mirror_id=1,
-                                      sgt_other=4,
-                                      inner_frame=pkt)
-
-        print("Sending packet port %d -> port %d (192.168.0.1 -> "
-              "10.10.10.1)" % (self.dev_port11, self.dev_port10))
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-        print("Sending gre encapsulated packet port %d -> port %d "
-              "(192.168.0.1 -> 10.10.10.1)"
-              % (self.dev_port11, self.dev_port10))
-        send_packet(self, self.dev_port11, gre_pkt)
-        verify_packet(self, exp_gre_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-    def ipv4IngressAclTest(self):
-        """
-        Verifies Ingress ACL table and group bind to RIF
-        """
-        print("\nipv4IngressAclTest()")
-
-        stage = SAI_ACL_STAGE_INGRESS
-        bind_points = [SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE]
-        action_types = [SAI_ACL_ACTION_TYPE_PACKET_ACTION]
-        action_drop = SAI_PACKET_ACTION_DROP
-        dst_ip = '10.10.10.1'
-        dst_ip_mask = '255.255.255.0'
-
-        acl_bind_point_type_list = sai_thrift_s32_list_t(
-            count=len(bind_points), int32list=bind_points)
-        acl_action_type_list = sai_thrift_s32_list_t(
-            count=len(action_types), int32list=action_types)
-        acl_table = sai_thrift_create_acl_table(
-            self.client,
-            acl_stage=stage,
-            acl_bind_point_type_list=acl_bind_point_type_list,
-            acl_action_type_list=acl_action_type_list,
-            field_dst_ip=True)
-
-        packet_action = sai_thrift_acl_action_data_t(
-            parameter=sai_thrift_acl_action_parameter_t(s32=action_drop))
-        ip_addr = sai_thrift_acl_field_data_t(
-            data=sai_thrift_acl_field_data_data_t(ip4=dst_ip),
-            mask=sai_thrift_acl_field_data_mask_t(ip4=dst_ip_mask))
-
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst='10.10.10.1',
-                                ip_src='192.168.0.1',
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=63)
-        try:
-            acl_entry = sai_thrift_create_acl_entry(
-                self.client,
-                table_id=acl_table,
-                action_packet_action=packet_action,
-                field_dst_ip=ip_addr)
-
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port11_rif, ingress_acl=acl_table)
-            print("Sending packet on port %d, drop" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port11_rif, ingress_acl=0)
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            acl_table_group = sai_thrift_create_acl_table_group(
-                self.client,
-                acl_stage=stage,
-                acl_bind_point_type_list=acl_bind_point_type_list,
-                type=SAI_ACL_TABLE_GROUP_TYPE_PARALLEL)
-            acl_group_member = sai_thrift_create_acl_table_group_member(
-                self.client,
-                acl_table_group_id=acl_table_group,
-                acl_table_id=acl_table)
-
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port11_rif, ingress_acl=acl_table_group)
-            print("Sending packet on port %d, drop" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port11_rif, ingress_acl=0)
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-        finally:
-            sai_thrift_remove_acl_table_group_member(
-                self.client, acl_group_member)
-            sai_thrift_remove_acl_table_group(self.client, acl_table_group)
-            sai_thrift_remove_acl_entry(self.client, acl_entry)
-            sai_thrift_remove_acl_table(self.client, acl_table)
-
-    def ipv4EgressAclTest(self):
-        """
-        Verifies Egress ACL table and group bind to RIF
-        """
-        print("\nipv4EgressAclTest()")
-
-        stage = SAI_ACL_STAGE_EGRESS
-        bind_points = [SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE]
-        action_types = [SAI_ACL_ACTION_TYPE_PACKET_ACTION]
-        action_drop = SAI_PACKET_ACTION_DROP
-        dst_ip = '10.10.10.1'
-        dst_ip_mask = '255.255.255.0'
-
-        acl_bind_point_type_list = sai_thrift_s32_list_t(
-            count=len(bind_points), int32list=bind_points)
-        acl_action_type_list = sai_thrift_s32_list_t(
-            count=len(action_types), int32list=action_types)
-        acl_table = sai_thrift_create_acl_table(
-            self.client,
-            acl_stage=stage,
-            acl_bind_point_type_list=acl_bind_point_type_list,
-            acl_action_type_list=acl_action_type_list,
-            field_dst_ip=True)
-
-        packet_action = sai_thrift_acl_action_data_t(
-            parameter=sai_thrift_acl_action_parameter_t(s32=action_drop))
-        ip_addr = sai_thrift_acl_field_data_t(
-            data=sai_thrift_acl_field_data_data_t(ip4=dst_ip),
-            mask=sai_thrift_acl_field_data_mask_t(ip4=dst_ip_mask))
-
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst='10.10.10.1',
-                                ip_src='192.168.0.1',
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst='10.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=63)
-
-        try:
-            acl_entry = sai_thrift_create_acl_entry(
-                self.client,
-                table_id=acl_table,
-                action_packet_action=packet_action,
-                field_dst_ip=ip_addr)
-
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port10_rif, egress_acl=acl_table)
-            print("Sending packet on port %d, drop" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port10_rif, egress_acl=0)
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            acl_table_group = sai_thrift_create_acl_table_group(
-                self.client,
-                acl_stage=stage,
-                acl_bind_point_type_list=acl_bind_point_type_list,
-                type=SAI_ACL_TABLE_GROUP_TYPE_PARALLEL)
-            acl_group_member = sai_thrift_create_acl_table_group_member(
-                self.client,
-                acl_table_group_id=acl_table_group,
-                acl_table_id=acl_table)
-
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port10_rif, egress_acl=acl_table_group)
-            print("Sending packet on port %d, drop" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port10_rif, egress_acl=0)
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-        finally:
-            sai_thrift_remove_acl_table_group_member(
-                self.client, acl_group_member)
-            sai_thrift_remove_acl_table_group(self.client, acl_table_group)
-            sai_thrift_remove_acl_entry(self.client, acl_entry)
-            sai_thrift_remove_acl_table(self.client, acl_table)
-
     def ipv4FibLagTest(self):
+        # TODO: should be moved in separate class and adapted for DASH support
         """
         Verifies basic  forwarding on RIF using LAG and with new lag member
         and if packet is dropped on ingress port after being removed from LAG
@@ -744,6 +331,7 @@ class L3InterfaceTest(SaiHelper):
         verify_no_other_packets(self, timeout=1)
 
     def ipv6FibTest(self):
+        # TODO: should be moved in separate class and adapted for DASH support
         """
         Verifies basic forwarding for IPv6 host
         """
@@ -771,6 +359,7 @@ class L3InterfaceTest(SaiHelper):
         self.port10_rif_counter_out += 1
 
     def ipv6FibLpmTest(self):
+        # TODO: should be moved in separate class and adapted for DASH support
         """
         Verifies basic forwarding for IPv6 LPM route
         """
@@ -795,6 +384,7 @@ class L3InterfaceTest(SaiHelper):
         self.port10_rif_counter_out += 1
 
     def ipv6MtuTest(self):
+        # TODO: should be moved in separate class and adapted for DASH support
         """
         Verifies if IPv6 packet is forwarded, dropped and punted to CPU
         depending on the MTU with and without a trap for regular L3 port
@@ -1008,6 +598,7 @@ class L3InterfaceTest(SaiHelper):
                 self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
 
     def ipv6FibLagTest(self):
+        # TODO: should be moved in separate class and adapted for DASH support
         """
         Verifies basic IPv6 forwarding on RIF using LAG, with new lag member
         and if packet is dropped on ingress port after being removed from LAG
@@ -1538,80 +1129,6 @@ class L3InterfaceTest(SaiHelper):
         self.assertTrue(self.lag1_rif_counter_out == lag1_rif_stats[
             'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
 
-    def loopbackRifTest(self):
-        """
-        Verifies multiple loopback RIF on same VRF is allowed
-        """
-        print("\nloopbackRifTest()")
-
-        lbk_rif1 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
-            virtual_router_id=self.default_vrf)
-        self.assertTrue(lbk_rif1 != 0)
-
-        lbk_rif2 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
-            virtual_router_id=self.default_vrf)
-        self.assertTrue(lbk_rif2 != 0)
-
-        self.assertTrue(lbk_rif1 != lbk_rif2)
-
-        sai_thrift_remove_router_interface(self.client, lbk_rif1)
-        sai_thrift_remove_router_interface(self.client, lbk_rif2)
-
-    def negativeRifTest(self):
-        """
-        Verifies if creating fails when RIF type is port and port_id is 0,
-        if getting, removal and setting of non existent RIF fails
-        and if creating fails with invalid vrf_id
-        """
-        print("\nnegativeRifTest()")
-
-        port24_rif = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.port24,
-            admin_v4_state=True)
-
-        self.assertTrue(sai_thrift_remove_router_interface(
-            self.client, port24_rif) == 0)
-        self.assertTrue(sai_thrift_remove_router_interface(
-            self.client, port24_rif) != 0)
-
-        # Non existing RIF
-        rif_attr = sai_thrift_get_router_interface_attribute(
-            self.client, router_interface_oid=port24_rif, mtu=True)
-        self.assertEqual(self.status(), SAI_STATUS_ITEM_NOT_FOUND)
-        self.assertEqual(rif_attr, None)
-
-        self.assertNotEqual(
-            sai_thrift_set_router_interface_attribute(
-                self.client, router_interface_oid=port24_rif, mtu=200),
-            SAI_STATUS_SUCCESS)
-
-        rif_attr = sai_thrift_get_router_interface_attribute(
-            self.client, router_interface_oid=port24_rif, mtu=True)
-        self.assertEqual(self.status(), SAI_STATUS_ITEM_NOT_FOUND)
-        self.assertEqual(rif_attr, None)
-
-        # Incorrect RIF attributes
-        invalid_port = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=-1)
-        self.assertTrue(invalid_port == 0)
-
-        invalid_vrf = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-            virtual_router_id=-1,
-            port_id=self.port1)
-        self.assertTrue(invalid_vrf == 0)
-
     def duplicatePortRifCreationTest(self):
         """
         Verifies if duplicate L3 RIF creation fails
@@ -1645,6 +1162,284 @@ class L3InterfaceTest(SaiHelper):
                 sai_thrift_remove_router_interface(self.client, dupl_port_rif)
             if dupl_lag_rif:
                 sai_thrift_remove_router_interface(self.client, dupl_lag_rif)
+
+
+@group("draft")
+class L3InterfaceSimplifiedTest(SaiHelperSimplified):
+    """
+    Configuration
+    +----------+-----------+
+    | port0    | port0_rif |
+    +----------+-----------+
+    | port1    | port1_rif |
+    +----------+-----------+
+    """
+    def setUp(self):
+        super(L3InterfaceSimplifiedTest, self).setUp()
+
+        dmac1 = '00:11:22:33:44:55'
+
+        self.create_routing_interfaces(ports=[0, 1])
+        self.port1_rif_counter_in = 0
+        self.port0_rif_counter_out = 0
+
+        self.nhop1 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port0_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry1, dst_mac_address=dmac1)
+
+        self.route_entry0 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry0, next_hop_id=self.nhop1)
+
+        self.route_entry0_lpm = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('11.11.11.0/24'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry0_lpm, next_hop_id=self.nhop1)
+
+    def runTest(self):
+        self.macUpdateTest()
+        self.ipv4FibLPMTest()
+        self.ipv4FibTest()
+        self.ipv4DisableTest()
+        self.rifStatsTest()
+        self.rifMyIPTest()
+
+    def macUpdateTest(self):
+        """
+        Verifies if packet is forwarded correctly after MAC address updated
+        and if packet is dropped for old MAC address after update
+        """
+        print("\nMacUpdateTest()")
+
+        new_router_mac = "00:77:66:55:44:44"
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='11.11.11.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='11.11.11.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63)
+        pkt1 = simple_tcp_packet(eth_dst=new_router_mac,
+                                 eth_src='00:22:22:22:22:22',
+                                 ip_dst='11.11.11.1',
+                                 ip_src='192.168.0.1',
+                                 ip_id=105,
+                                 ip_ttl=64)
+        exp_pkt1 = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                     eth_src=ROUTER_MAC,
+                                     ip_dst='11.11.11.1',
+                                     ip_src='192.168.0.1',
+                                     ip_id=105,
+                                     ip_ttl=63)
+
+        print("Sending packet on port %d with mac %s, forward"
+              % (self.dev_port1, ROUTER_MAC))
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+        print("Updating src_mac_address to %s" % (new_router_mac))
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.port1_rif, src_mac_address=new_router_mac)
+        attrs = sai_thrift_get_router_interface_attribute(
+            self.client, self.port1_rif, src_mac_address=True)
+        self.assertEqual(attrs["src_mac_address"], new_router_mac)
+        # still forwarded since rmac is same as switch default rmac
+        print("Sending packet on port %d with mac %s, forwarded"
+              % (self.dev_port1, ROUTER_MAC))
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+        print("Sending packet on port %d with mac %s, forward"
+              % (self.dev_port1, new_router_mac))
+        send_packet(self, self.dev_port1, pkt1)
+        verify_packet(self, exp_pkt1, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+        print("Reverting src_mac_address to %s" % (ROUTER_MAC))
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.port1_rif, src_mac_address=ROUTER_MAC)
+        attrs = sai_thrift_get_router_interface_attribute(
+            self.client, self.port1_rif, src_mac_address=True)
+        self.assertEqual(attrs["src_mac_address"], ROUTER_MAC)
+        print("Sending packet on port %d with mac %s, dropped"
+              % (self.dev_port1, new_router_mac))
+        send_packet(self, self.dev_port1, pkt1)
+        verify_no_other_packets(self, timeout=1)
+        self.port1_rif_counter_in += 1
+
+        print("Sending packet on port %d with mac %s, forward"
+              % (self.dev_port1, ROUTER_MAC))
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+    def ipv4FibLPMTest(self):
+        """
+        Verifies basic forwarding for IPv4 LPM routes
+        """
+        print("\nipv4FibLPMTest()")
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='11.11.11.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='11.11.11.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        print("Sending packet port %d -> port %d (192.168.0.1 -> "
+              "11.11.11.0/24) LPM" % (self.dev_port1, self.dev_port0))
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+    def ipv4FibTest(self):
+        """
+        Verifies basic forwarding for IPv4 host
+        """
+        print("\nipv4FibTest()")
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='11.11.11.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='11.11.11.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63)
+        gre_pkt = ipv4_erspan_pkt(eth_dst=ROUTER_MAC,
+                                  eth_src='00:22:22:22:22:22',
+                                  ip_dst='11.11.11.1',
+                                  ip_src='192.168.0.1',
+                                  ip_id=0,
+                                  ip_ttl=64,
+                                  ip_flags=0x0,
+                                  version=2,  # ERSPAN_III
+                                  mirror_id=1,
+                                  sgt_other=4,
+                                  inner_frame=pkt)
+        exp_gre_pkt = ipv4_erspan_pkt(eth_dst='00:11:22:33:44:55',
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst='11.11.11.1',
+                                      ip_src='192.168.0.1',
+                                      ip_id=0,
+                                      ip_ttl=63,
+                                      ip_flags=0x0,
+                                      version=2,  # ERSPAN_III
+                                      mirror_id=1,
+                                      sgt_other=4,
+                                      inner_frame=pkt)
+
+        print("Sending packet port %d -> port %d (192.168.0.1 -> "
+              "11.11.11.1)" % (self.dev_port1, self.dev_port0))
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+        print("Sending gre encapsulated packet port %d -> port %d "
+              "(192.168.0.1 -> 11.11.11.1)"
+              % (self.dev_port1, self.dev_port0))
+        send_packet(self, self.dev_port1, gre_pkt)
+        verify_packet(self, exp_gre_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+    def ipv4DisableTest(self):
+        """
+        Verifies if IPv4 packets are dropped when admin_v4_state is false
+        """
+        print("\nipv4DisableTest()")
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        print("Sending packet on port %d, forward" % self.dev_port1)
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+        print("Disable IPv4 on ingress RIF")
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.port1_rif, admin_v4_state=False)
+        time.sleep(3)
+
+        initial_stats = sai_thrift_get_port_stats(self.client, self.port1)
+        if_in_discards_pre = initial_stats['SAI_PORT_STAT_IF_IN_DISCARDS']
+
+        print("Sending packet on port %d, discard" % self.dev_port1)
+        send_packet(self, self.dev_port1, pkt)
+        verify_no_other_packets(self, timeout=3)
+        stats = sai_thrift_get_port_stats(self.client, self.port1)
+        if_in_discards = stats['SAI_PORT_STAT_IF_IN_DISCARDS']
+        self.assertTrue(if_in_discards_pre + 1 == if_in_discards)
+        self.port1_rif_counter_in += 1
+
+        print("Enable IPv4 on ingress RIF")
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.port1_rif, admin_v4_state=True)
+
+        print("Sending packet on port %d, forward" % self.dev_port1)
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+    def rifStatsTest(self):
+        """
+        Verifies Ingress and Egress RIF stats for unicast packets
+        """
+        print("\nrifStatsTest()")
+
+        time.sleep(4)
+        port0_rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, self.port0_rif)
+        port1_rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, self.port1_rif)
+
+        self.assertTrue(self.port0_rif_counter_out == port0_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
+        self.assertTrue(self.port1_rif_counter_in == port1_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
 
     def rifMyIPTest(self):
         """
@@ -1683,7 +1478,7 @@ class L3InterfaceTest(SaiHelper):
             pre_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue4)
             print("Sending MYIP packet")
-            send_packet(self, self.dev_port11, pkt)
+            send_packet(self, self.dev_port1, pkt)
             time.sleep(4)
             post_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue4)
@@ -1697,6 +1492,390 @@ class L3InterfaceTest(SaiHelper):
             sai_thrift_remove_hostif_trap_group(self.client, myip_trap_group)
             sai_thrift_remove_route_entry(self.client, ip2me_route)
 
+    def tearDown(self):
+        sai_thrift_remove_route_entry(self.client, self.route_entry0)
+        sai_thrift_remove_route_entry(self.client, self.route_entry0_lpm)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+
+        self.destroy_routing_interfaces()
+
+        super(L3InterfaceSimplifiedTest, self).tearDown()
+
+
+@group("draft")
+class L3InterfaceAclTest(SaiHelperSimplified):
+    """
+    Configuration
+    +----------+-----------+
+    | port0    | port0_rif |
+    +----------+-----------+
+    | port1    | port1_rif |
+    +----------+-----------+
+    """
+    def setUp(self):
+        super(L3InterfaceAclTest, self).setUp()
+
+        dmac1 = '00:11:22:33:44:55'
+
+        self.create_routing_interfaces(ports=[0, 1])
+        self.port1_rif_counter_in = 0
+        self.port0_rif_counter_out = 0
+
+        self.nhop1 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port0_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry1, dst_mac_address=dmac1)
+
+        self.route_entry0 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry0, next_hop_id=self.nhop1)
+
+    def runTest(self):
+        self.ipv4IngressAclTest()
+        self.ipv4EgressAclTest()
+        self.rifStatsTest()
+
+    def tearDown(self):
+        sai_thrift_remove_route_entry(self.client, self.route_entry0)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+
+        self.destroy_routing_interfaces()
+
+        super(L3InterfaceAclTest, self).tearDown()
+
+    def ipv4IngressAclTest(self):
+        """
+        Verifies Ingress ACL table and group bind to RIF
+        """
+        print("\nipv4IngressAclTest()")
+
+        stage = SAI_ACL_STAGE_INGRESS
+        bind_points = [SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE]
+        action_types = [SAI_ACL_ACTION_TYPE_PACKET_ACTION]
+        action_drop = SAI_PACKET_ACTION_DROP
+        dst_ip = '10.10.10.1'
+        dst_ip_mask = '255.255.255.0'
+
+        acl_bind_point_type_list = sai_thrift_s32_list_t(
+            count=len(bind_points), int32list=bind_points)
+        acl_action_type_list = sai_thrift_s32_list_t(
+            count=len(action_types), int32list=action_types)
+        acl_table = sai_thrift_create_acl_table(
+            self.client,
+            acl_stage=stage,
+            acl_bind_point_type_list=acl_bind_point_type_list,
+            acl_action_type_list=acl_action_type_list,
+            field_dst_ip=True)
+
+        packet_action = sai_thrift_acl_action_data_t(
+            parameter=sai_thrift_acl_action_parameter_t(s32=action_drop))
+        ip_addr = sai_thrift_acl_field_data_t(
+            data=sai_thrift_acl_field_data_data_t(ip4=dst_ip),
+            mask=sai_thrift_acl_field_data_mask_t(ip4=dst_ip_mask))
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63)
+        try:
+            acl_entry = sai_thrift_create_acl_entry(
+                self.client,
+                table_id=acl_table,
+                action_packet_action=packet_action,
+                field_dst_ip=ip_addr)
+
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port1_rif, ingress_acl=acl_table)
+            print("Sending packet on port %d, drop" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port1_rif, ingress_acl=0)
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            acl_table_group = sai_thrift_create_acl_table_group(
+                self.client,
+                acl_stage=stage,
+                acl_bind_point_type_list=acl_bind_point_type_list,
+                type=SAI_ACL_TABLE_GROUP_TYPE_PARALLEL)
+            acl_group_member = sai_thrift_create_acl_table_group_member(
+                self.client,
+                acl_table_group_id=acl_table_group,
+                acl_table_id=acl_table)
+
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port1_rif, ingress_acl=acl_table_group)
+            print("Sending packet on port %d, drop" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port1_rif, ingress_acl=0)
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+        finally:
+            sai_thrift_remove_acl_table_group_member(
+                self.client, acl_group_member)
+            sai_thrift_remove_acl_table_group(self.client, acl_table_group)
+            sai_thrift_remove_acl_entry(self.client, acl_entry)
+            sai_thrift_remove_acl_table(self.client, acl_table)
+
+    def ipv4EgressAclTest(self):
+        # TODO: test requires additional verification
+        """
+        Verifies Egress ACL table and group bind to RIF
+        """
+        print("\nipv4EgressAclTest()")
+
+        stage = SAI_ACL_STAGE_EGRESS
+        bind_points = [SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE]
+        action_types = [SAI_ACL_ACTION_TYPE_PACKET_ACTION]
+        action_drop = SAI_PACKET_ACTION_DROP
+        dst_ip = '10.10.10.1'
+        dst_ip_mask = '255.255.255.0'
+
+        acl_bind_point_type_list = sai_thrift_s32_list_t(
+            count=len(bind_points), int32list=bind_points)
+        acl_action_type_list = sai_thrift_s32_list_t(
+            count=len(action_types), int32list=action_types)
+        acl_table = sai_thrift_create_acl_table(
+            self.client,
+            acl_stage=stage,
+            acl_bind_point_type_list=acl_bind_point_type_list,
+            acl_action_type_list=acl_action_type_list,
+            field_dst_ip=True)
+
+        packet_action = sai_thrift_acl_action_data_t(
+            parameter=sai_thrift_acl_action_parameter_t(s32=action_drop))
+        ip_addr = sai_thrift_acl_field_data_t(
+            data=sai_thrift_acl_field_data_data_t(ip4=dst_ip),
+            mask=sai_thrift_acl_field_data_mask_t(ip4=dst_ip_mask))
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        try:
+            acl_entry = sai_thrift_create_acl_entry(
+                self.client,
+                table_id=acl_table,
+                action_packet_action=packet_action,
+                field_dst_ip=ip_addr)
+
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port0_rif, egress_acl=acl_table)
+            print("Sending packet on port %d, drop" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port0_rif, egress_acl=0)
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            acl_table_group = sai_thrift_create_acl_table_group(
+                self.client,
+                acl_stage=stage,
+                acl_bind_point_type_list=acl_bind_point_type_list,
+                type=SAI_ACL_TABLE_GROUP_TYPE_PARALLEL)
+            acl_group_member = sai_thrift_create_acl_table_group_member(
+                self.client,
+                acl_table_group_id=acl_table_group,
+                acl_table_id=acl_table)
+
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port0_rif, egress_acl=acl_table_group)
+            print("Sending packet on port %d, drop" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port0_rif, egress_acl=0)
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+        finally:
+            sai_thrift_remove_acl_table_group_member(
+                self.client, acl_group_member)
+            sai_thrift_remove_acl_table_group(self.client, acl_table_group)
+            sai_thrift_remove_acl_entry(self.client, acl_entry)
+            sai_thrift_remove_acl_table(self.client, acl_table)
+
+    def rifStatsTest(self):
+        """
+        Verifies Ingress and Egress RIF stats for unicast packets
+        """
+        print("\nrifStatsTest()")
+
+        time.sleep(4)
+        port0_rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, self.port0_rif)
+        port1_rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, self.port1_rif)
+
+        self.assertTrue(self.port0_rif_counter_out == port0_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
+        self.assertTrue(self.port1_rif_counter_in == port1_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
+
+
+@group("draft")
+class L3InterfaceCreateTest(SaiHelperSimplified):
+    """
+    Empty configuration
+    No additional setup needed
+    """
+    def runTest(self):
+        self.negativeRifTest()
+        self.loopbackRifTest()
+        self.rifCreateOrUpdateRmacTest()
+
+    def negativeRifTest(self):
+        """
+        Verifies if creating fails when RIF type is port and port_id is 0,
+        if getting, removal and setting of non existent RIF fails
+        and if creating fails with invalid vrf_id
+        """
+        print("\nNegativeRifTest()")
+
+        port0_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port0,
+            admin_v4_state=True)
+
+        self.assertTrue(sai_thrift_remove_router_interface(
+            self.client, port0_rif) == 0)
+        self.assertTrue(sai_thrift_remove_router_interface(
+            self.client, port0_rif) != 0)
+
+        # Non existing RIF
+        rif_attr = sai_thrift_get_router_interface_attribute(
+            self.client, router_interface_oid=port0_rif, mtu=True)
+        self.assertEqual(self.status(), SAI_STATUS_ITEM_NOT_FOUND)
+        self.assertEqual(rif_attr, None)
+
+        self.assertNotEqual(
+            sai_thrift_set_router_interface_attribute(
+                self.client, router_interface_oid=port0_rif, mtu=200),
+            SAI_STATUS_SUCCESS)
+
+        rif_attr = sai_thrift_get_router_interface_attribute(
+            self.client, router_interface_oid=port0_rif, mtu=True)
+        self.assertEqual(self.status(), SAI_STATUS_ITEM_NOT_FOUND)
+        self.assertEqual(rif_attr, None)
+
+        # Incorrect RIF attributes
+        invalid_port = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=-1)
+        self.assertTrue(invalid_port == 0)
+
+        invalid_vrf = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+            virtual_router_id=-1,
+            port_id=self.port1)
+        self.assertTrue(invalid_vrf == 0)
+
+    def loopbackRifTest(self):
+        """
+        Verifies multiple loopback RIF on same VRF is allowed
+        """
+        print("\nLoopbackRifTest()")
+
+        lbk_rif1 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
+            virtual_router_id=self.default_vrf)
+        self.assertTrue(lbk_rif1 != 0)
+
+        lbk_rif2 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
+            virtual_router_id=self.default_vrf)
+        self.assertTrue(lbk_rif2 != 0)
+
+        self.assertTrue(lbk_rif1 != lbk_rif2)
+
+        sai_thrift_remove_router_interface(self.client, lbk_rif1)
+        sai_thrift_remove_router_interface(self.client, lbk_rif2)
+
     def rifCreateOrUpdateRmacTest(self):
         """
         Verifies RIF can be created or updated with custom rmac
@@ -1707,22 +1886,22 @@ class L3InterfaceTest(SaiHelper):
         iport_nbor = e1_port_nbor = e2_port_nbor = None
         iport_nbor_nhop = e1_port_nbor_nhop = e2_port_nbor_nhop = None
 
-        iport = self.port24
-        dev_iport = self.dev_port24
+        iport = self.port0
+        dev_iport = self.dev_port0
 
         iport_nbor_mac = '00:11:ab:ab:ab:ab'
         iport_ipv4_nbor = '10.1.1.2'
         iport_ipv4 = '10.1.1.1'
 
-        e1_port = self.port25
-        dev_e1_port = self.dev_port25
+        e1_port = self.port1
+        dev_e1_port = self.dev_port1
 
         e1_port_nbor_mac = '00:11:ac:ac:ac:ac'
         e1_port_ipv4 = '10.2.2.1'
         e1_port_ipv4_nbor = '10.2.2.2'
 
-        e2_port = self.port26
-        dev_e2_port = self.dev_port26
+        e2_port = self.port2
+        dev_e2_port = self.dev_port2
         e2_mac = '00:11:dd:dd:dd:dd'
         e2_new_mac = '00:11:ee:ee:ee:ee'
 
@@ -1939,101 +2118,9 @@ class L3InterfaceTest(SaiHelper):
                 if rif is not None:
                     sai_thrift_remove_router_interface(self.client, rif)
 
-@group("draft")
-class L3InterfaceTestBaseLpm(SaiHelperSimplified):
-    """
-    Configuration
-    +----------+-----------+
-    | port0    | port0_rif |
-    +----------+-----------+
-    | port1    | port1_rif |
-    +----------+-----------+
-    """
-    def setUp(self):
-        super(L3InterfaceTestBaseLpm, self).setUp()
-        dmac1 = '00:11:22:33:44:55'
-
-        self.create_routing_interfaces(ports=[0, 1])
-        self.port1_rif_counter_in = 0
-        self.port0_rif_counter_out = 0
-
-        self.nhop1 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port0_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
-            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.2'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry1, dst_mac_address=dmac1)
-
-        self.route_entry0 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry0, next_hop_id=self.nhop1)
-
-        self.route_entry0_lpm = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('11.11.11.0/24'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry0_lpm, next_hop_id=self.nhop1)
-
-    def runTest(self):
-        self.ipv4FibLPMTest()
-
-    def ipv4FibLPMTest(self):
-        """
-        Verifies basic forwarding for IPv4 LPM routes
-        """
-        print("\nipv4FibLPMTest()")
-
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst='11.11.11.1',
-                                ip_src='192.168.0.1',
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst='11.11.11.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=63)
-
-        print("Sending packet port %d -> port %d (192.168.0.1 -> "
-              "11.11.11.0/24) LPM" % (self.dev_port1, self.dev_port0))
-        send_packet(self, self.dev_port1, pkt)
-        verify_packet(self, exp_pkt, self.dev_port0)
-
-    def rifStatsTest(self):
-        """
-        Verifies Ingress and Egress RIF stats for unicast packets
-        """
-        print("\nrifStatsTest()")
-
-        time.sleep(4)
-        port0_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port0_rif)
-        port1_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port1_rif)
-
-        self.assertTrue(self.port0_rif_counter_out == port0_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.port1_rif_counter_in == port1_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-
-    def tearDown(self):
-        self.destroy_routing_interfaces()
-
-        sai_thrift_remove_route_entry(self.client, self.route_entry0)
-        sai_thrift_remove_route_entry(self.client, self.route_entry0_lpm)
-
-        sai_thrift_remove_next_hop(self.client, self.nhop1)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
-        
-        super(L3InterfaceTestBaseLpm, self).tearDown()
 
 @group("draft")
-class L3InterfaceTestMtu(SaiHelperSimplified):
+class L3InterfaceMtuTest(SaiHelperSimplified):
     """
     Configuration
     +----------+-----------+
@@ -2047,7 +2134,7 @@ class L3InterfaceTestMtu(SaiHelperSimplified):
     +----------+-----------+
     """
     def setUp(self):
-        super(L3InterfaceTestMtu, self).setUp()
+        super(L3InterfaceMtuTest, self).setUp()
         dmac1 = '00:11:22:33:44:55'
         dmac3 = '00:33:22:33:44:55'
 
@@ -2336,7 +2423,7 @@ class L3InterfaceTestMtu(SaiHelperSimplified):
         self.destroy_routing_interfaces()
         self.destroy_lags_with_members()
 
-        super(L3InterfaceTestMtu, self).tearDown()
+        super(L3InterfaceMtuTest, self).tearDown()
 
 @group("draft")
 class L3SubPortTest(SaiHelper):
