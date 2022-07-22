@@ -26,25 +26,41 @@ from sai_base_test import *
 
 
 @group("draft")
-class L3NexthopTest(SaiHelper):
-    '''
-        Basic L3 nexthop tests.
-    '''
+class L3NexthopTest(SaiHelperSimplified):
+    """
+    Basic L3 nexthop tests.
+    Configuration
+    +----------+-----------+
+    | port0    | port0_rif |
+    +----------+-----------+
+    | port1    | port1_rif |
+    +----------+-----------+
+    """
+    def setUp(self):
+        super(L3NexthopTest, self).setUp()
+
+        self.create_routing_interfaces(ports=[0, 1])
+
     def runTest(self):
         self.removeNexthopTest()
         self.cpuNexthopTest()
 
+    def tearDown(self):
+        self.destroy_routing_interfaces()
+
+        super(L3NexthopTest, self).tearDown()
+
     def removeNexthopTest(self):
-        '''
+        """
             Test verifies correct nexthop removal.
-        '''
+        """
         print("RemoveNexthopTest")
         nhop = sai_thrift_create_next_hop(self.client,
                                           ip=sai_ipaddress('10.10.10.10'),
-                                          router_interface_id=self.port10_rif,
+                                          router_interface_id=self.port0_rif,
                                           type=SAI_NEXT_HOP_TYPE_IP)
         neighbor_entry = sai_thrift_neighbor_entry_t(
-            rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.10'))
+            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.10'))
         sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
                                          dst_mac_address='00:99:99:99:99:99')
 
@@ -73,15 +89,15 @@ class L3NexthopTest(SaiHelper):
                 ip_src='192.168.0.1',
                 ip_id=105,
                 ip_ttl=63)
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
 
             sai_thrift_remove_next_hop(self.client, nhop)
             pre_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue0)
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
+            print("Sending packet on port %d, forward" % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
             time.sleep(4)
             post_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue0)
@@ -172,20 +188,20 @@ class L3NexthopTest(SaiHelper):
                 self.client, self.cpu_queue4)
 
             print("Sending packet on port %d, forward to CPU, host ipv4" %
-                  self.dev_port10)
-            send_packet(self, self.dev_port10, pkt1)
+                  self.dev_port0)
+            send_packet(self, self.dev_port0, pkt1)
 
             print("Sending packet on port %d, forward to CPU, lpm ipv4" %
-                  self.dev_port10)
-            send_packet(self, self.dev_port10, pkt2)
+                  self.dev_port0)
+            send_packet(self, self.dev_port0, pkt2)
 
             print("Sending packet on port %d, forward to CPU, host ipv6" %
-                  self.dev_port10)
-            send_packet(self, self.dev_port10, pkt3)
+                  self.dev_port0)
+            send_packet(self, self.dev_port0, pkt3)
 
             print("Sending packet on port %d, forward to CPU, lpm ipv6" %
-                  self.dev_port10)
-            send_packet(self, self.dev_port10, pkt4)
+                  self.dev_port0)
+            send_packet(self, self.dev_port0, pkt4)
 
             time.sleep(4)
             post_stats = sai_thrift_get_queue_stats(
