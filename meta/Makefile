@@ -86,6 +86,10 @@ all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.s
 	./saiserializetest >/dev/null
 	./saisanitycheck
 
+apitest: saimetadatatest.c
+	$(CC) -o apitest saimetadatatest.c -DAPI_IMPLEMENTED_TEST -lsai $(CFLAGS) $(OBJ)
+	./apitest
+
 toolsversions:
 	@make -v | grep -i make
 	@$(CC) --version | grep gcc
