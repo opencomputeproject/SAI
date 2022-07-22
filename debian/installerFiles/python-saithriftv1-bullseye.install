@@ -1,0 +1,2 @@
+#compatiable with bullseye python 3.9 environment
+debian/usr/local/lib/python3.9/site-packages/* /usr/lib/python3/dist-packages/
