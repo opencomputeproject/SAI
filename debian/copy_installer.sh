@@ -1,14 +1,14 @@
 if [[ x"$1" =~ x"v2" ]]
 then
-   echo "Copy python-saithriftv2.install as python-saithrift.install"
-   cp ./debian/installerFiles/python-saithriftv2.install ./debian/python-saithrift.install
+   echo "Copy python3-saithrift.install as python-saithrift.install"
+   cp ./debian/installerFiles/python3-saithrift.install ./debian/python-saithrift.install
 else
-   if test -n "lsb_release -a | grep bullseye"
+   if [ $(lsb_release -sr) -ge 11 ]
    then
-      echo "Copy python-saithriftv1-bullseye.install as python-saithrift.install"
-      cp ./debian/installerFiles/python-saithriftv1-bullseye.install ./debian/python-saithrift.install
+      echo "Copy python3-saithrift.install as python-saithrift.install after Ver.11 releases"
+      cp ./debian/installerFiles/python3-saithrift.install ./debian/python-saithrift.install
    else
-      echo "Copy python-saithriftv1.install as python-saithrift.install"
-      cp ./debian/installerFiles/python-saithriftv1.install ./debian/python-saithrift.install
+      echo "Copy python2.7-saithrift.install as python-saithrift.install"
+      cp ./debian/installerFiles/python2.7-saithrift.install ./debian/python-saithrift.install
    fi   
 fi
