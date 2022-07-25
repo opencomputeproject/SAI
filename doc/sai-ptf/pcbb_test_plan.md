@@ -53,13 +53,12 @@
 
 
     We will send a decapsulated packet from port1 and expect an encapsulated packet on any lag1-4 member
-    -----------------------------------------------------------------
-    Ingress side[port1]           |          Egress side[lag1] [lag2] [lag3] [lag4]
-    ------------------------------------------------------------------
-    ipv4's falls in 192.168.60.0     |        ipv4's falls in 10.1.0.0
-    ------------------------------------------------------------------
-    ipv6's falls in fc02::60:0  |   ipv6's falls in fc00:1::
-    ------------------------------------------------------------------
+
+
+  | Ingress side[port1]      |     Egress side[lag1] [lag2] [lag3] [lag4] |
+  |--------------------------|----------------------------------------
+  | ipv4's falls in 192.168.60.0     |     ipv4's falls in 10.1.0.0 |
+  | ipv6's falls in fc02::60:0  |   ipv6's falls in fc00:1:: |
 
 ### Testing Data Packet <!-- omit in toc --> 
 
@@ -213,14 +212,11 @@ ECN_CGN_TABLE:
 
 
     We will send a decapsulated packet from LAG1 and expect a decapsulated packet on port1
-    -----------------------------------------------------------------
-    Egress side[port1]           |          Ingress side[lag1]
-    ------------------------------------------------------------------
-    ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
-    ------------------------------------------------------------------
-    ipv6's falls in fc02::1:0  |   ipv6's falls in fc00:1::
-    ------------------------------------------------------------------
 
+  Egress side[port1]           |          Ingress side[lag1]
+  -----------------------------|-------------------------------------
+  ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
+  ipv6's falls in fc02::1:0  |   ipv6's falls in fc00:1::
 ### Testing Data Packet <!-- omit in toc --> 
 
 This test should cover the data in the table below
