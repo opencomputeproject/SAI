@@ -1004,6 +1004,127 @@ typedef struct _sai_port_eye_values_list_t
 } sai_port_eye_values_list_t;
 
 /**
+ * @brief Defines a lane with its list of CTLE values.
+ *
+ * Caller must allocate the buffer for the list member and set the count
+ * member to the size of the allocated objects in the list member.
+ *
+ * If the size is large enough to accommodate the list of objects, the
+ * callee must fill the list member and set the count member to the actual
+ * number of objects filled. If the size is not large enough, the callee
+ * must set the count member to the actual number of objects filled in the
+ * list member and return #SAI_STATUS_BUFFER_OVERFLOW. Once the caller
+ * gets such a return code, it may use the returned count member to
+ * re-allocate the list and retry.
+ */
+typedef struct _sai_port_lane_ctle_values_t
+{
+    uint32_t lane;
+    sai_u32_list_t ctle;
+
+} sai_port_lane_ctle_values_t;
+
+/**
+ * @brief Defines a port's lanes CTLE values list
+ *
+ * In get_port_attribute function call, the count member defines the number
+ * of objects which will be returned to the caller in the list member. The
+ * caller must allocate the buffer for the list member and set the count
+ * member to the size of the allocated objects in the list member.
+ *
+ * If the size is large enough to accommodate the list of objects, the
+ * callee must fill the list member and set the count member to the actual
+ * number of objects filled. If the size is not large enough, the callee
+ * must set the count member to the actual number of objects filled in the
+ * list member and return #SAI_STATUS_BUFFER_OVERFLOW. Once the caller
+ * gets such a return code, it may use the returned count member to
+ * re-allocate the list and retry.
+ */
+typedef struct _sai_port_ctle_values_list_t
+{
+    uint32_t count;
+    sai_port_lane_ctle_values_t *list;
+
+} sai_port_ctle_values_list_t;
+
+/**
+ * @brief Defines a lane with its list of FFE values.
+ *
+ * Caller must allocate the buffer for the list member and set the count
+ * member to the size of the allocated objects in the list member.
+ *
+ * If the size is large enough to accommodate the list of objects, the
+ * callee must fill the list member and set the count member to the actual
+ * number of objects filled. If the size is not large enough, the callee
+ * must set the count member to the actual number of objects filled in the
+ * list member and return #SAI_STATUS_BUFFER_OVERFLOW. Once the caller
+ * gets such a return code, it may use the returned count member to
+ * re-allocate the list and retry.
+ */
+typedef struct _sai_port_lane_ffe_values_t
+{
+    uint32_t lane;
+    sai_s32_list_t ffe;
+
+} sai_port_lane_ffe_values_t;
+
+/**
+ * @brief Defines a port's lanes FFE values list
+ *
+ * In get_port_attribute function call, the count member defines the number
+ * of objects which will be returned to the caller in the list member. The
+ * caller must allocate the buffer for the list member and set the count
+ * member to the size of the allocated objects in the list member.
+ *
+ * If the size is large enough to accommodate the list of objects, the
+ * callee must fill the list member and set the count member to the actual
+ * number of objects filled. If the size is not large enough, the callee
+ * must set the count member to the actual number of objects filled in the
+ * list member and return #SAI_STATUS_BUFFER_OVERFLOW. Once the caller
+ * gets such a return code, it may use the returned count member to
+ * re-allocate the list and retry.
+ */
+typedef struct _sai_port_ffe_values_list_t
+{
+    uint32_t count;
+    sai_port_lane_ffe_values_t *list;
+
+} sai_port_ffe_values_list_t;
+
+/**
+ * @brief Defines a lane with the DFE value.
+ */
+typedef struct _sai_port_lane_dfe_value_t
+{
+    uint32_t lane;
+    int32_t dfe;
+
+} sai_port_lane_dfe_value_t;
+
+/**
+ * @brief Defines a port's DFE values list
+ *
+ * In get_port_attribute function call, the count member defines the number
+ * of objects which will be returned to the caller in the list member. The
+ * caller must allocate the buffer for the list member and set the count
+ * member to the size of the allocated objects in the list member.
+ *
+ * If the size is large enough to accommodate the list of objects, the
+ * callee must fill the list member and set the count member to the actual
+ * number of objects filled. If the size is not large enough, the callee
+ * must set the count member to the actual number of objects filled in the
+ * list member and return #SAI_STATUS_BUFFER_OVERFLOW. Once the caller
+ * gets such a return code, it may use the returned count member to
+ * re-allocate the list and retry.
+ */
+typedef struct _sai_port_dfe_values_list_t
+{
+    uint32_t count;
+    sai_port_lane_dfe_value_t *list;
+
+} sai_port_dfe_values_list_t;
+
+/**
  * @brief Enum defining MPLS out segment type
  */
 typedef enum _sai_outseg_type_t
@@ -1308,6 +1429,15 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST */
     sai_port_err_status_list_t porterror;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_CTLE_VALUES_LIST */
+    sai_port_ctle_values_list_t portctlevalues;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_FFE_VALUES_LIST */
+    sai_port_ffe_values_list_t portffevalues;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_DFE_VALUES_LIST */
+    sai_port_dfe_values_list_t portdfevalues;
 } sai_attribute_value_t;
 
 /**
