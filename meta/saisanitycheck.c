@@ -5347,6 +5347,10 @@ void check_all_enums()
 
         check_single_enum(emd);
     }
+
+    check_single_enum(&sai_metadata_enum_sai_global_api_type_t);
+    check_single_enum(&sai_metadata_enum_sai_switch_notification_type_t);
+    check_single_enum(&sai_metadata_enum_sai_switch_pointer_type_t);
 }
 
 void check_sai_version()

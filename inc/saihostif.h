@@ -413,6 +413,18 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_P4RT = 0x0000400b,
 
+    /**
+     * @brief NTPCLIENT traffic (UDP/TCP src port == 123)
+     * to local router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_NTPCLIENT = 0x0000400c,
+
+    /**
+     * @brief NTPSERVER traffic (UDP/TCP dst port == 123)
+     * to local router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_NTPSERVER = 0x0000400d,
+
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
 

@@ -131,7 +131,10 @@ typedef enum _sai_packet_action_t
     SAI_PACKET_ACTION_DENY,
 
     /** This is a combination of SAI packet action COPY_CANCEL and FORWARD */
-    SAI_PACKET_ACTION_TRANSIT
+    SAI_PACKET_ACTION_TRANSIT,
+
+    /** Do not drop the packet. */
+    SAI_PACKET_ACTION_DONOTDROP
 
 } sai_packet_action_t;
 
@@ -2755,6 +2758,23 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_NAT_EVENT_NOTIFY,
+
+    /**
+     * @brief Number of ECMP members supported across the all nexthop groups by switch
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_ECMP_MEMBER_COUNT,
+
+    /**
+     * @brief Number of ECMP Members configured. SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT takes precedence over SAI_KEY_NUM_ECMP_GROUPS string. Default value is same as SAI_SWITCH_ATTR_ECMP_MEMBERS.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 64
+     */
+    SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT,
 
     /**
      * @brief End of attributes

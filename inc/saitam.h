@@ -1259,6 +1259,16 @@ typedef enum _sai_tam_report_attr_t
     SAI_TAM_REPORT_ATTR_ENTERPRISE_NUMBER,
 
     /**
+     * @brief Template report interval in minutes
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 15
+     * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
+     */
+    SAI_TAM_REPORT_ATTR_TEMPLATE_REPORT_INTERVAL,
+
+    /**
      * @brief End of Attributes
      */
     SAI_TAM_REPORT_ATTR_END,

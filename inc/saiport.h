@@ -2097,6 +2097,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PFC_TC_DLR_INTERVAL,
 
     /**
+     * @brief Query link-training support
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_LINK_TRAINING_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3492,6 +3500,10 @@ typedef struct _sai_port_api_t
     sai_remove_port_serdes_fn              remove_port_serdes;
     sai_set_port_serdes_attribute_fn       set_port_serdes_attribute;
     sai_get_port_serdes_attribute_fn       get_port_serdes_attribute;
+    sai_bulk_object_create_fn              create_ports;
+    sai_bulk_object_remove_fn              remove_ports;
+    sai_bulk_object_set_attribute_fn       set_ports_attribute;
+    sai_bulk_object_get_attribute_fn       get_ports_attribute;
 } sai_port_api_t;
 
 /**
