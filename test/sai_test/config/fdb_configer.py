@@ -38,13 +38,13 @@ def t0_fdb_config_helper(test_obj, is_create_fdb=True):
     local_server_mac_list = []
     mac_list_temp = []
 
-    mac_list_temp = configer.generate_mac_address_list(
+    mac_list_temp = generate_mac_address_list(
         FDB_SERVER_NUM, 0, range(0, 1))
     local_server_mac_list.extend(mac_list_temp)
-    mac_list_temp = configer.generate_mac_address_list(
+    mac_list_temp = generate_mac_address_list(
         FDB_SERVER_NUM, 1, range(1, 9))
     local_server_mac_list.extend(mac_list_temp)
-    mac_list_temp = configer.generate_mac_address_list(
+    mac_list_temp = generate_mac_address_list(
         FDB_SERVER_NUM, 2, range(9, 17))
     local_server_mac_list.extend(mac_list_temp)
     if is_create_fdb:
@@ -133,23 +133,3 @@ class FdbConfiger(object):
             wait_sec))
         time.sleep(wait_sec)
         return fdb_list
-
-    def generate_mac_address_list(self, role, group, indexes):
-        """
-        Generate mac addresses.
-
-        Args:
-            role: Role which is represented by the mac address(base on test plan config)
-            group: group number for the mac address(base on test plan config)
-            indexes: mac indexes
-
-        Returns:
-            default_1q_bridge_id
-        """
-        print("Generate MAC ...")
-        mac_list = []
-        for index in indexes:
-            mac = FDB_MAC_PREFIX + ':' + role + ':' + \
-                '{:02d}'.format(group) + ':' + '{:02d}'.format(index)
-            mac_list.append(mac)
-        return mac_list
