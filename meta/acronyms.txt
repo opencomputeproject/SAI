@@ -6,6 +6,7 @@ AN - Auto Negotiation
 API - Application Program Interface
 ARP - Address Resolution Protocol
 ASIC - Application Specific Integrated Circuit
+BER - Bit Error Rate
 BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
@@ -73,6 +74,7 @@ L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
 LDP - Label Distribution Protocol
+LPI - Locality-specific Peripheral Interrupts
 LPM - Longest Prefix Match
 LSP - Label Switched Path
 MAC - Medium Access Control
