@@ -28,6 +28,9 @@ else
 SAITHRIFT_PATH=test/saithrift
 endif
 
+# Passed to genrpc.pl via "make saithrift-build":
+GEN_SAIRPC_OPTS?=
+
 .PHONY: test doc clean
 
 doc:
@@ -37,7 +40,7 @@ test:
 	make -C test
 
 saithrift-build:
-	make -C $(SAITHRIFT_PATH)
+	GEN_SAIRPC_OPTS=$(GEN_SAIRPC_OPTS) make -C $(SAITHRIFT_PATH)
 
 saithrift-install: saithrift-build
 	make -C $(SAITHRIFT_PATH) install

@@ -13,5 +13,9 @@ Parser also forces headers to be well formated when adding new code.
 To test your changes just type:
 
 ```sh
-make
+[GEN_SAIRPC_OPTS=<option flags>] make
+```
+e.g. 
+```
+GEN_SAIRPC_OPTS="-ve" make
 ```
