@@ -396,26 +396,33 @@ class PortConfiger(object):
 
         # For brcm devices, need to init and setup the ports at once after start the switch.
         retries = 10
-        for num_of_tries in range(retries):
-            all_ports_are_up = True
-            time.sleep(1)
-            for port_id in port_list:
-                port_attr = sai_thrift_get_port_attribute(self.client, port_id, oper_status=True)
-                if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
-                    all_ports_are_up = False
+        down_port_list = []
+        port_index = 0
+        for port_id in port_list:
+            port_attr = sai_thrift_get_port_attribute(self.client, port_id, oper_status=True)
+            print("Turn up port {}".format(port_index))
+            port_up = True
+            if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
+                port_up = False
+                for num_of_tries in range(retries):
+                    port_attr = sai_thrift_get_port_attribute(self.client, port_id, oper_status=True)
+                    if port_attr['oper_status'] == SAI_PORT_OPER_STATUS_UP:
+                        port_up = True
+                        break
                     time.sleep(3)
-                    print("port {} is down, status: {}. Reset Admin State.".format(port_id, port_attr['oper_status']))
+                    print("port {} id {} is not up, status: {}. Retry. Reset Admin State.".format(port_index, port_id, port_attr['oper_status']))
                     sai_thrift_set_port_attribute(
                         self.client, 
                         port_oid=port_id, 
                         mtu=self.get_mtu(), 
                         admin_state=True,
                         fec_mode=self.get_fec_mode())
-            if all_ports_are_up:
-                print("Retry {} times turn up port.".format(num_of_tries))
-                break
-        if not all_ports_are_up:
-            print("Not all the ports are up after {} rounds of retries.".format(retries))
+            if not port_up:
+                down_port_list.append(port_index)
+            port_index = port_index + 1
+        if down_port_list:
+            print("Ports {} are  down after retries.".format(down_port_list))
+            
     
         
     def get_fec_mode(self):
