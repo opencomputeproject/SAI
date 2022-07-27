@@ -199,6 +199,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
         self.lagX objects for all lag
+        self.local_server_mac_list for all the local server mac
     """
 
     def setUp(self,
@@ -213,6 +214,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_route_for_lag=True,
               wait_sec=5):
         super(T0TestBase, self).setUp()
+        self.create_server_mac_list()
+
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
         self.fdb_configer = FdbConfiger(self)
@@ -258,6 +261,26 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 self.client, switch_shell_enable=True)
         thread = Thread(target=start_shell)
         thread.start()
+
+    def create_server_mac_list(self):
+        """
+        Create server mac list.
+
+        Add those following attribute to this class:
+        self.local_server_mac_list for all the local server mac
+        """
+        local_server_mac_list = []
+        mac_list_temp = []
+        mac_list_temp = generate_mac_address_list(
+            FDB_SERVER_NUM, 0, range(0, 1))
+        local_server_mac_list.extend(mac_list_temp)
+        mac_list_temp = generate_mac_address_list(
+            FDB_SERVER_NUM, 1, range(1, 9))
+        local_server_mac_list.extend(mac_list_temp)
+        mac_list_temp = generate_mac_address_list(
+            FDB_SERVER_NUM, 2, range(9, 17))
+        local_server_mac_list.extend(mac_list_temp)
+        self.local_server_mac_list = local_server_mac_list
 
     @staticmethod
     def status():
