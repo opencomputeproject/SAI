@@ -102,22 +102,6 @@ typedef struct _sai_object_key_t
 
 } sai_object_key_t;
 
-typedef enum _sai_attr_stage_t
-{
-    /** Not applicable */
-    SAI_ATTR_STAGE_NA,
-
-    /** Common stage */
-    SAI_ATTR_STAGE_BOTH,
-
-    /** Ingress stage */
-    SAI_ATTR_STAGE_INGRESS,
-
-    /** Egress stage */
-    SAI_ATTR_STAGE_EGRESS
-
-} sai_attr_stage_t;
-
 /**
  * @brief Structure for attribute capabilities per operation
  */

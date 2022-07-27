@@ -30,10 +30,9 @@ New data type sai_object_stage_t is introduced. This data type specifies if a re
 ## Capability Query
 ----------------
 New  query API is introduced for an attribute's stage. NOS can query the stage of an object's attribute for a given HW support. One of the following stage is returned as part the API
-- SAI_ATTR_STAGE_NA: Stage is not applicable
-- SAI_ATTR_STAGE_BOTH: Attribute is common to ingress and egress stage
-- SAI_ATTR_STAGE_INGRESS: Attribute is applicable only to ingress stage
-- SAI_ATTR_STAGE_EGRESS: Attribute is applicabe only to egress stage
+- SAI_OBJECT_STAGE_BOTH: Attribute is common to ingress and egress stage
+- SAI_OBJECT_STAGE_INGRESS: Attribute is applicable only to ingress stage
+- SAI_OBJECT_STAGE_EGRESS: Attribute is applicabe only to egress stage
 
 Length of the returned array "stage" is attr_count. Caller must provide the buffer for array "stage".
  
@@ -86,13 +85,27 @@ or
 New workflow will identify if a given trap is applicable to ingress/egress/both. This will be done based on the enhanced capability query API.
 ```
 1. Query the HW capability for a given trap
-    sai_status_t sai_query_attribute_capability(
+    sai_attribute_t trap_attra[2];
+    trap_attra[0].id = 
+        SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
+    trap_attrs[0].value.s32 = 
+        SAI_HOSTIF_TRAP_TYPE_DNAT_MISS;
+    
+    trap_attrs[2].id = 
+        SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
+    trap_attrs[2].value.s32 = 
+        SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN;  
+    
+    sai_status_t sai_query_object_stage(
         switch_id,
         SAI_OBJECT_TYPE_HOSTIF_TRAP,
-        SAI_HOSTIF_TRAP_TYPE_DNAT_MISS,
-        attr_capability);
+        2,
+        trap_attrs,
+        stage);
 
-    SAI adapter will fill attr_capability->attr_stage with appropriate HW pipeline stage where this trap is handled. Lets say give HW supports this attribute in ingress pipeline and will return SAI_ATTR_STAGE_INGRESS as the attr_stage value.
+    SAI adapter will fill buffer stage with appropriate HW pipeline stage where this trap is handled. As an example, a given HW implementation MAY return buffer stage filled as following.
+    stage[0] = SAI_OBJECT_STAGE_INGRESS
+    stage[1] = SAI_OBJECT_STAGE_INGRESS
 
 2. Create a policer pool for ingress stage
     sai_object_id_t ingress_policer_id;
@@ -139,29 +152,32 @@ New workflow will identify if a given trap is applicable to ingress/egress/both.
 
 4. Create hostif trap for ingress stage
     sai_object_id_t trap_id;
-    sai_attribute_t trap_attrs[2];
+    sai_attribute_t trap_attrs[3];
 
     trap_attrs[0].id =
         (sai_attr_id_t) SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
     trap_attrs[0].value =
         SAI_HOSTIF_TRAP_TYPE_DNAT_MISS;
-
+        
     trap_attrs[1].id =
+        (sai_attr_id_t) SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
+    trap_attrs[1].value =
+        SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN;
+        
+    trap_attrs[2].id =
         (sai_attr_id_t)SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP;
-    trap_attrs[1].value.oid =
+    trap_attrs[2].value.oid =
         trap_group_id;
 
     sai_hostif_trap_api->create_hostif_trap(
         &trap_id,
-        2,
+        3,
         trap_attrs);
 ```
 
 ### Error Handling
 --------------
-New error codepoint SAI_STATUS_MISMATCH is introduced. SAI adapter must 
-return this error status if there is a mismatch between trap group, trap 
-and policer pool.
+New error codepoint SAI_STATUS_STAGE_MISMATCH is introduced. SAI adapter must return this error status if there is a mismatch between trap group, trap and policer pool.
 - If trap group and trap type is of different stage e.g. trap group is of 
-  SAI_OBJECT_STAGE_INGRESS and trap capability is SAI_ATTR_STAGE_EGRESS
+  SAI_OBJECT_STAGE_INGRESS and trap capability is SAI_OBJECT_STAGE_EGRESS
 - If trap group and policer pool is of different stage
