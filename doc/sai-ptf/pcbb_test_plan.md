@@ -10,11 +10,9 @@
   - [Case9: encap_ecn_no_congestion_v6_in_v4](#case9-encap_ecn_no_congestion_v6_in_v4)
   - [Case10: encap_ecn_congestion_v4_in_v4](#case10-encap_ecn_congestion_v4_in_v4)
   - [Case11: encap_ecn_congestion_v6_in_v4](#case11-encap_ecn_congestion_v6_in_v4)
-  - [Case12: encap_global_dscp_remap_v4_in_v4](#case12-encap_global_dscp_remap_v4_in_v4)
-  - [Case13: encap_global_dscp_remap_v6_in_v4](#case13-encap_global_dscp_remap_v6_in_v4)
 - [Test Group2: Decapsulation](#test-group2-decapsulation)
-  - [Case1: decap_dscp_remap_v4_in_v4](#case1-decap_dscp_remap_v4_in_v4)
-  - [Case2: decap_dscp_remap_v6_in_v4](#case2-decap_dscp_remap_v6_in_v4)
+  - [Case1: decap_inner_dscp_preserve_v4_in_v4](#case1-decap_inner_dscp_preserve_v4_in_v4)
+  - [Case2: decap_inner_dscp_preserve_v6_in_v4](#case2-decap_inner_dscp_preserve_v6_in_v4)
   - [Case3: decap_dscp_priority_v4_in_v4](#case3-decap_dscp_priority_v4_in_v4)
   - [Case4: decap_dscp_priority_v6_in_v4](#case4-decap_dscp_priority_v6_in_v4)
   - [Case5: decap_dscp_queue_v4_in_v4](#case5-decap_dscp_queue_v4_in_v4)
@@ -40,8 +38,6 @@
 ### Case9: encap_ecn_no_congestion_v6_in_v4
 ### Case10: encap_ecn_congestion_v4_in_v4
 ### Case11: encap_ecn_congestion_v6_in_v4
-### Case12: encap_global_dscp_remap_v4_in_v4
-### Case13: encap_global_dscp_remap_v6_in_v4
 
 ### Testing Objective <!-- omit in toc --> 
 - encap_dscp_remap: This verifies on encapsulation, the DSCP field is preserved end-to-end in inner header and the outer header is mapped to the expect encap value base on the DSCP map.
@@ -49,7 +45,6 @@
 - encap_pfc_pause: This verifies if the buffer is filled up, the pfc frame generated as expected in encap.
 - encap_ecn_no_congestion: This verifies the ecn generated as expected in encap when no congestion happens, like ``ECN_NON_CGN_TABLE``.
 - encap_ecn_congestion: This verifies the ecn generated as expected in encap when congestion happens, as the ``ECN_CGN_TABLE``
-- encap_global_dscp_remap: This verifies on encapsulation, the DSCP field is preserved end-to-end in inner header and the outer header is mapped to the expect encap value base on the switch global DSCP map.
 
 
     We will send a decapsulated packet from port1 and expect an encapsulated packet on any lag1-4 member
@@ -62,7 +57,7 @@
 
 ### Testing Data Packet <!-- omit in toc --> 
 
-This test should cover the data in the table below
+This test should cover all the data in the table below (traverse all data)
 
 DSCP_MAP_TABLE
 |DSCP|TC to verify| Expected DSCP after encap(outer)|Outgoing Queue(Tunnel)|Priority(Port)|
@@ -130,11 +125,10 @@ ECN_CGN_TABLE:
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
 3. According to DSCP_MAP_TABLE check the corrosponding queue's packets stats on the possible ports(use sai_thrift_get_queue_stats with "SAI_QUEUE_STAT_PACKETS")
-4. Generate 1000 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
+4. Generate packet, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 5. Send input packet from port1.
 6. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-7. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
-8. For each packet received port check the corresponding queue packets stats
+7. For each packet received port check the corresponding queue packets stats
 
 - encap_pfc_pause:
 
@@ -148,13 +142,14 @@ ECN_CGN_TABLE:
 8. Recording the counters on the receiving and transmit ports
 9. Send the packets again
 10. Verify PFC drop happened(Receive port counters are larger than transmit port counters).
+11. Check the packet counter on QoS queue, verify the PFC pause frame gets generated on expected queue(SAI_QUEUE_STAT_PACKETS)
 
 - encap_ecn_no_congestion:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)
 3. Make sure set PCBB ECN configurations
-4. Generate 100 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
+4. Generate packet, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly, according to DSCP_MAP_TABLE set the ``ip_ecn``
 5. Send input packet from port1.
 6. Create expected ipinip packet with ``Inner_ECN`` ``Outer_ECN`` ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
 7. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
@@ -173,20 +168,11 @@ ECN_CGN_TABLE:
 10. Enable ports (set port SAI_PORT_ATTR_PKT_TX_ENABLE)
 11. Recieve decap packet from port1. Compare it with the expected packet for the ECN and DSCP values.
 
-- encap_global_dscp_to_tc_map:
-
-1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, config port with ``Port DSCP MAP`` and switch_dscp_to_tc with dscp map in ``Tunnel TC MAP`` as basic [config](./config_data/config_t0.md)  
-3. Generate packet, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
-4. Send input packet from port1.
-5. Create the expected ipinip packet with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE``. 
-6. Recieve ipinip packet from any lag1-4 member port. Compare it with the expected ipinip packet.
-
 
 ## Test Group2: Decapsulation
 
-### Case1: decap_dscp_remap_v4_in_v4
-### Case2: decap_dscp_remap_v6_in_v4
+### Case1: decap_inner_dscp_preserve_v4_in_v4
+### Case2: decap_inner_dscp_preserve_v6_in_v4
 ### Case3: decap_dscp_priority_v4_in_v4
 ### Case4: decap_dscp_priority_v6_in_v4
 ### Case5: decap_dscp_queue_v4_in_v4
@@ -202,7 +188,7 @@ ECN_CGN_TABLE:
 
 
 ### Testing Objective <!-- omit in toc --> 
-- decap_dscp_remap: This verifies on decapsulation, the DSCP inner field is preserved end-to-end and mapping to the expect dscp value base on the DSCP map.
+- decap_inner_dscp_preserve: This verifies on decapsulation, the DSCP inner field is preserved end-to-end and mapping to the expect dscp value base on the DSCP map.
 - decap_dscp_priority:  This verifies on decapsulation, the DSCP inner field is preserved end-to-end and mapping to the expect priority value base on the DSCP map.
 - decap_dscp_queue:  This verifies on decapsulation, the DSCP inner field is preserved end-to-end and mapping to the expect queue value base on the DSCP map.
 - decap_pfc_pause: This verifies the pfc frame generated as expected in decap.
@@ -219,7 +205,7 @@ ECN_CGN_TABLE:
   ipv6's falls in fc02::1:0  |   ipv6's falls in fc00:1::
 ### Testing Data Packet <!-- omit in toc --> 
 
-This test should cover the data in the table below
+This test should cover all the data in the table below (traverse all data)
 
 DSCP_MAP_TABLE
 |DSCP(Base on Inner)|TC to verify| Outgoing Queue(Port)|Priority(Tunnel)|
@@ -269,7 +255,7 @@ ECN_CGN_TABLE:
 
 
 ### Test steps: <!-- omit in toc --> 
-- decap_dscp_remap:
+- decap_inner_dscp_preserve:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
@@ -283,11 +269,11 @@ ECN_CGN_TABLE:
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
 2. Make sure tunnel DSCP in PIPE mode, port and tunnel binding to the DSCP map, queue map, and priority map as basic [config](./config_data/config_t0.md)  
 3. According to DSCP_MAP_TABLE check the corrosponding priority_group packets stats on the possible ports(use sai_thrift_get_ingress_priority_group_stats with "SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS")
-4. Generate 1000 packets, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
+4. Generate packet, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 5. Send input ipinip packet from lag1 with ``Inner DSCP`` and ``Outer dscp`` according to ``DSCP_MAP_TABLE`` (only inner take effect).
 6. Create the expected decap packet with ``Inner dscp`` according to ``DSCP_MAP_TABLE``. 
 7. Recieve decapped packet from port1. Compare it with the expected decap packet.
-8. For received port check the corresponding priority_group packets stats (SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES)
+8. For received port check the corresponding priority_group packets stats (SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS)
 
 - decap_dscp_queue:
 
@@ -312,6 +298,7 @@ ECN_CGN_TABLE:
 8. Recording the counters on the receiving and transmit ports
 9. Send the packets again
 10. Verify PFC drop happened(Receive port counters are larger than transmit port counters).
+11. Check the packet counter on QoS queue, verify the PFC pause frame gets generated on expected queue(SAI_QUEUE_STAT_PACKETS)
 
 - decap_ecn_no_congestion:
 
@@ -339,7 +326,7 @@ ECN_CGN_TABLE:
 - decap_global_dscp_to_tc_map:
 
 1. Make sure LAGs and NextHop groups set as basic [config](./config_data/config_t0.md) 
-2. Make sure tunnel DSCP in PIPE mode, config port with ``Port DSCP MAP`` and switch_dscp_to_tc with dscp map in ``Tunnel TC MAP`` as basic [config](./config_data/config_t0.md)  
+2. Make sure tunnel DSCP in PIPE mode, config port with ``Port DSCP MAP`` and switch_dscp_to_tc with dscp map in ``Tunnel TC MAP`` as basic [config](./config_data/config_t0.md) (Test switch_dscp_to_tc, don't config on ``Tunnel TC MAP`` on tunnel for this case, tunnel qos configuration will override the global dscp_to_to_map).
 3. Generate packet, take one row from the ``DSCP_MAP_TABLE``, set the ``ip_dscp`` accordingly
 4. Send input ipinip packet from port1.
 5. Create the expected decap packet with ``Inner dscp`` according to ``DSCP_MAP_TABLE``. 
