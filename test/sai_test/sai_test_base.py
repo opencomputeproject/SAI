@@ -55,7 +55,6 @@ from config.route_configer import t0_route_config_helper
 from config.route_configer import RouteConfiger
 
 THRIFT_PORT = 9092
-is_configured = False
 
 
 class ThriftInterface(BaseTest):
@@ -74,6 +73,7 @@ class ThriftInterface(BaseTest):
         self.test_reboot_stage = None
 
         self.test_params = test_params_get()
+        self.loadCommonConfigured()
         self.loadTestRebootMode()
         self.loadPortMap()
         self.createRpcClient()
@@ -95,7 +95,6 @@ class ThriftInterface(BaseTest):
         self.test_reboot_mode - reboot mode
         self.test_reboot_stage - reboot stage, can be [setup|starting|post]
         """
-
         if "test_reboot_mode" in self.test_params:
             self.test_reboot_mode = self.test_params['test_reboot_mode']
             if "test_reboot_stage" in self.test_params:
@@ -140,6 +139,19 @@ class ThriftInterface(BaseTest):
                     self.interface_to_front_mapping[iface_front_pair[0]] =  \
                         iface_front_pair[1].strip()
         self.port_map_loaded = True
+
+    def loadCommonConfigured(self):
+        '''
+        if common_configured = true:
+                set up common config
+        else:
+                skip commmon config
+        '''
+        if "common_configured" in self.test_params:
+            self.common_configured = True if self.test_params['common_configured'] == 'true' else False
+        else:
+            self.common_configured = False
+        print("common_configured is: {}".format(self.common_configured))
 
     def createRpcClient(self):
         """
@@ -215,6 +227,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
               wait_sec=5):
         super(T0TestBase, self).setUp()
         self.create_server_mac_list()
+        self.create_server_ip_list()
+        self.create_other_mac_ip()
 
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
@@ -223,7 +237,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.route_configer = RouteConfiger(self)
         self.lag_configer = LagConfiger(self)
 
-        if force_config or not is_configured:
+        if force_config or not self.common_configured:
             t0_switch_config_helper(self)
             t0_port_config_helper(
                 test_obj=self,
@@ -281,6 +295,33 @@ class T0TestBase(ThriftInterfaceDataPlane):
             FDB_SERVER_NUM, 2, range(9, 17))
         local_server_mac_list.extend(mac_list_temp)
         self.local_server_mac_list = local_server_mac_list
+
+    def create_server_ip_list(self):
+        """
+        Create server ip list.
+
+        Add those following attribute to this class:
+        self.local_server_ip_list for all the local server mac
+        """
+        local_server_ip_list = []
+        ip_list_temp = generate_ip_address_list(
+                SERVER_IP_PREFIX, 0, range(0, 1))
+        local_server_ip_list.extend(ip_list_temp)
+        ip_list_temp = generate_ip_address_list(
+                SERVER_IP_PREFIX, 1, range(1, 9))
+        local_server_ip_list.extend(ip_list_temp)
+        ip_list_temp = generate_ip_address_list(
+                SERVER_IP_PREFIX, 2, range(1, 9))
+        local_server_ip_list.extend(ip_list_temp)
+        self.local_server_ip_list = local_server_ip_list
+    
+    def create_other_mac_ip(self):
+        #LAG
+        self.lag1_ip = '10.1.1.100'
+        self.lag2_ip = '10.1.2.100'
+        self.router_mac = '00:77:66:55:44:00'
+        self.lag1_nb_mac = '00:01:01:01:01:a0'
+        self.lag2_nb_mac = '00:01:01:01:02:a0'
 
     @staticmethod
     def status():
