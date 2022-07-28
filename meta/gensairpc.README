@@ -25,10 +25,14 @@ USAGE
 
 DEPENDENCIES
     Ubuntu packages:
-
-      libtemplate-perl
-      libconst-fast-perl
-      libmoosex-aliases-perl
-      libnamespace-autoclean-perl
-      libgetopt-long-descriptive-perl
-
+  ```
+    [sudo] apt-get install -y \
+      libtemplate-perl \
+      libconst-fast-perl \
+      libmoosex-aliases-perl \
+      libnamespace-autoclean-perl \
+      libgetopt-long-descriptive-perl \
+      doxygen \
+      graphviz \
+      aspell-en
+```

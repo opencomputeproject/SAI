@@ -33,6 +33,9 @@ from sai_thrift import sai_rpc
 import sai_thrift.sai_adapter as adapter
 from sai_thrift.sai_adapter import *
 from sai_utils import *
+
+import time
+
 from config.port_configer import t0_port_config_helper
 from config.port_configer import t0_port_tear_down_helper
 from config.port_configer import PortConfiger
@@ -46,9 +49,12 @@ from config.fdb_configer import t0_fdb_tear_down_helper
 from config.vlan_configer import VlanConfiger
 from config.fdb_configer import t0_fdb_config_helper
 from config.fdb_configer import FdbConfiger
+from config.lag_configer import t0_lag_config_helper
+from config.lag_configer import LagConfiger
+from config.route_configer import t0_route_config_helper
+from config.route_configer import RouteConfiger
 
 THRIFT_PORT = 9092
-is_configured = False
 
 
 class ThriftInterface(BaseTest):
@@ -67,6 +73,7 @@ class ThriftInterface(BaseTest):
         self.test_reboot_stage = None
 
         self.test_params = test_params_get()
+        self.loadCommonConfigured()
         self.loadTestRebootMode()
         self.loadPortMap()
         self.createRpcClient()
@@ -88,7 +95,7 @@ class ThriftInterface(BaseTest):
         self.test_reboot_mode - reboot mode
         self.test_reboot_stage - reboot stage, can be [setup|starting|post]
         """
-
+        print(self.test_params)
         if "test_reboot_mode" in self.test_params:
             self.test_reboot_mode = self.test_params['test_reboot_mode']
             if "test_reboot_stage" in self.test_params:
@@ -133,6 +140,19 @@ class ThriftInterface(BaseTest):
                     self.interface_to_front_mapping[iface_front_pair[0]] =  \
                         iface_front_pair[1].strip()
         self.port_map_loaded = True
+
+    def loadCommonConfigured(self):
+        '''
+        if common_configured = true:
+                set up common config
+        else:
+                skip commmon config
+        '''
+        if "common_configured" in self.test_params:
+            self.common_configured = True if self.test_params['common_configured'] == 'true' else False
+        else:
+            self.common_configured = False
+        print("common_configured is: {}".format(self.common_configured))
 
     def createRpcClient(self):
         """
@@ -181,11 +201,18 @@ class T0TestBase(ThriftInterfaceDataPlane):
     Set the following class attributes:
         self.default_vlan_id
         self.default_vrf
+        self.lookback_intf
+        self.default_ipv4_route_entry
+        self.default_ipv6_route_entry
+        self.local_10v6_route_entry
+        self.local_128v6_route_entry
         self.default_1q_bridge
         self.cpu_port_hdl
         self.active_ports_no - number of active ports
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
+        self.lagX objects for all lag
+        self.local_server_mac_list for all the local server mac
     """
 
     def setUp(self,
@@ -195,14 +222,23 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_reset_default_vlan=True,
               is_create_vlan=True,
               is_create_fdb=True,
+              is_create_route=True,
+              is_create_lag=True,
+              is_create_route_for_lag=True,
               wait_sec=5):
         super(T0TestBase, self).setUp()
+        self.create_server_mac_list()
+        self.create_server_ip_list()
+        self.create_other_mac_ip()
+
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
         self.fdb_configer = FdbConfiger(self)
         self.vlan_configer = VlanConfiger(self)
+        self.route_configer = RouteConfiger(self)
+        self.lag_configer = LagConfiger(self)
 
-        if force_config or not is_configured:
+        if force_config or not self.common_configured:
             t0_switch_config_helper(self)
             t0_port_config_helper(
                 test_obj=self,
@@ -215,9 +251,21 @@ class T0TestBase(ThriftInterfaceDataPlane):
             t0_fdb_config_helper(
                 test_obj=self,
                 is_create_fdb=is_create_fdb)
+            t0_lag_config_helper(
+                test_obj=self,
+                is_create_lag=is_create_lag)
+            t0_route_config_helper(
+                test_obj=self,
+                is_create_route=is_create_route,
+                is_create_route_for_lag=is_create_route_for_lag)
+
         print("Waiting for switch to get ready before test, {} seconds ...".format(
             wait_sec))
         time.sleep(wait_sec)
+
+    def restore_fdb_config(self):
+        t0_fdb_tear_down_helper(self)
+        t0_fdb_config_helper(test_obj=self)
 
     def shell(self):
         '''
@@ -229,6 +277,53 @@ class T0TestBase(ThriftInterfaceDataPlane):
         thread = Thread(target=start_shell)
         thread.start()
 
+    def create_server_mac_list(self):
+        """
+        Create server mac list.
+
+        Add those following attribute to this class:
+        self.local_server_mac_list for all the local server mac
+        """
+        local_server_mac_list = []
+        mac_list_temp = []
+        mac_list_temp = generate_mac_address_list(
+            FDB_SERVER_NUM, 0, range(0, 1))
+        local_server_mac_list.extend(mac_list_temp)
+        mac_list_temp = generate_mac_address_list(
+            FDB_SERVER_NUM, 1, range(1, 9))
+        local_server_mac_list.extend(mac_list_temp)
+        mac_list_temp = generate_mac_address_list(
+            FDB_SERVER_NUM, 2, range(9, 17))
+        local_server_mac_list.extend(mac_list_temp)
+        self.local_server_mac_list = local_server_mac_list
+
+    def create_server_ip_list(self):
+        """
+        Create server ip list.
+
+        Add those following attribute to this class:
+        self.local_server_ip_list for all the local server mac
+        """
+        local_server_ip_list = []
+        ip_list_temp = generate_ip_address_list(
+                SERVER_IP_PREFIX, 0, range(0, 1))
+        local_server_ip_list.extend(ip_list_temp)
+        ip_list_temp = generate_ip_address_list(
+                SERVER_IP_PREFIX, 1, range(1, 9))
+        local_server_ip_list.extend(ip_list_temp)
+        ip_list_temp = generate_ip_address_list(
+                SERVER_IP_PREFIX, 2, range(1, 9))
+        local_server_ip_list.extend(ip_list_temp)
+        self.local_server_ip_list = local_server_ip_list
+    
+    def create_other_mac_ip(self):
+        #LAG
+        self.lag1_ip = '10.1.1.100'
+        self.lag2_ip = '10.1.2.100'
+        self.router_mac = '00:77:66:55:44:00'
+        self.lag1_nb_mac = '00:01:01:01:01:a0'
+        self.lag2_nb_mac = '00:01:01:01:02:a0'
+
     @staticmethod
     def status():
         """
@@ -238,6 +333,18 @@ class T0TestBase(ThriftInterfaceDataPlane):
             int: sai call result
         """
         return adapter.status
+
+    @staticmethod
+    def saiWaitFdbAge(timeout):
+        """
+        Wait for fdb entry to ageout
+
+        Args:
+            timeout (int): Timeout value in seconds
+        """
+        print("Waiting for fdb entry to age")
+        aging_interval_buffer = 10
+        time.sleep(timeout + aging_interval_buffer)
     
     def tearDown(self):
         '''

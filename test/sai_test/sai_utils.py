@@ -114,3 +114,65 @@ class ConfigDBOpertion():
         port_conf = self.config_json.get('PORT')
         key_0 = list(port_conf.keys())[0]
         return self.config_json.get('PORT').get(key_0)
+
+
+def sai_ipaddress(addr_str):
+    """
+    Set SAI IP address, assign appropriate type and return
+    sai_thrift_ip_address_t object
+
+    Args:
+        addr_str (str): IP address string
+
+    Returns:
+        sai_thrift_ip_address_t: object containing IP address family and number
+    """
+
+    if '.' in addr_str:
+        family = SAI_IP_ADDR_FAMILY_IPV4
+        addr = sai_thrift_ip_addr_t(ip4=addr_str)
+    if ':' in addr_str:
+        family = SAI_IP_ADDR_FAMILY_IPV6
+        addr = sai_thrift_ip_addr_t(ip6=addr_str)
+    ip_addr = sai_thrift_ip_address_t(addr_family=family, addr=addr)
+
+    return ip_addr
+
+
+def generate_mac_address_list(role, group, indexes):
+    """
+    Generate mac addresses.
+
+    Args:
+        role: Role which is represented by the mac address(base on test plan config)
+        group: group number for the mac address(base on test plan config)
+        indexes: mac indexes
+
+    Returns:
+        default_1q_bridge_id
+    """
+    print("Generate MAC ...")
+    mac_list = []
+    for index in indexes:
+        mac = FDB_MAC_PREFIX + ':' + role + ':' + \
+            '{:02d}'.format(group) + ':' + '{:02d}'.format(index)
+        mac_list.append(mac)
+    return mac_list
+
+def generate_ip_address_list(role, group, indexes):
+    """
+    Generate ip addresses.
+
+    Args:
+        role: Role which is represented by the ip address(base on test plan config)
+        group: group number for the ip address(base on test plan config)
+        indexes: ip indexes
+
+    Returns:
+        default_1q_bridge_id
+    """
+    print("Generate IP ...")
+    ip_list = []
+    for index in indexes:
+        ip_list.append(role.format(group,index))
+    return ip_list
