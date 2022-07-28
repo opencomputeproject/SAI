@@ -267,16 +267,14 @@ For the test configuration, please refer to Tunnel configuration section of the 
 ## Test Group5: IP IN IP Tunnel Decap Loop Test
 	
 ### Case1:  IpIp_Tunnel_Decap_With_Loop
-### Case2:  IpIp_Tunnel_Decap_With_Loop_with_normal_route
-### Case2:  IpIp_Tunnel_Decap_Without_Loop
+
 ### Testing Objective <!-- omit in toc --> 
 
-  We will send ipinip packet from lag2 and verify getting inner packet by matching tunnel term table entry, drop the inner packet on port1 as a result of  matching route entry (192.168.253.253/32,tunnel). Add route entry (192.168.253.253/32,port1), verify packet still drops on port1.
-  After remove route entry (192.168.253.253/32,tunnel), recieve packet on port1.
+  We will send ipinip packet from lag2 and verify getting inner packet by matching tunnel term table entry, drop the inner packet on port1 as a result of  matching route entry (192.168.1.253/32,tunnel).
  
  ```                          
                              |  tunnel table      |                |  route table      |
-   ingress ipinip pkt->lag2->|term dst: 10.10.10.1| -> inner pkt ->|192.168.253.253/32,tunnel|
+   ingress ipinip pkt->lag2->|term dst: 10.10.10.1| -> inner pkt ->|192.168.1.253/32,tunnel|
                              |term src: 10.1.2.100|                         
    -->Drop                                            
 ```
@@ -289,20 +287,12 @@ For the test configuration, please refer to Tunnel configuration section of the 
 
 ### Test steps: <!-- omit in toc --> 
 - IpIp_Tunnel_Decap_With_Loop
-1. Add route entry (192.168.253.253/32, next hop =tunnel), set tunnel SAI_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION as drop
+1. Add route entry (192.168.1.253/32, next hop =tunnel), set tunnel SAI_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION as drop
 2. Generate ingress ipinip packet as decribed by Testing Data Packet.
 3. Send encap packet from lag2.
 4. Generate expected decap packet as decribed by Testing Data Packet.
 5. Check packet drops on port1.
-- IpIp_Tunnel_Decap_With_Loop_with_normal_route
-1. Add router entry (192.168.253.253/32, next hop port =port1).
-2. Send ipinip packet from lag2.
-3. Check packet drops on port1.
-- IpIp_Tunnel_Decap_Without_PACKET_ACTION
-1.  set tunnel SAI_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION as drop.
-2. Generate ingress ipinp packet as decribed by Testing Data Packet
-3. Send ipinip packet from lag2.
-4. Recieve decap packet from port1, compare it with expected decap packet.
+
 
 ## Test Group6: IP IN IP TunneL Encap + LPM
 ### Case1:  IpIp_Tunnel_encap_lpm_Ipv4inIpv4
@@ -414,7 +404,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 	
 
 ### case1:  Vxlan_Tunnel_Decap_Test_L2
-
+### case2:  Vxlan_Tunnel_Decap_Test_L2_Diff_Vlan
 ### Testing Objective <!-- omit in toc --> 
 
     Tunnel Term Source is 10.1.3.100
@@ -442,12 +432,13 @@ For the test configuration, please refer to Tunnel configuration section of the 
                                        ip_src=192.168.30.101,
                                        ip_id=108,
                                        ip_ttl=64)
+				       
            l2_inner_pkt = simple_udp_packet(eth_dst=01:01:00:99:01:01,
                                              ip_dst=192.168.1.2,
                                              ip_src=192.168.30.101,
                                              ip_id=108,
                                              ip_ttl=64)
-	         l2_vxlan_pkt = simple_vxlan_packet(eth_dst=ROUTER_MAC,
+	   l2_vxlan_pkt_vni1000 = simple_vxlan_packet(eth_dst=ROUTER_MAC,
                                                ip_dst=10.10.10.2,
                                                ip_src=10.1.3.100,
                                                ip_id=0,
@@ -456,7 +447,24 @@ For the test configuration, please refer to Tunnel configuration section of the 
                                                udp_sport=11638,
                                                with_udp_chksum=False,
                                                vxlan_vni=1000,
-                                               inner_frame=l2_inner_pkt)				     
+                                               inner_frame=l2_inner_pkt)
+	   egress_l2_pkt_vni2000 = simple_udp_packet(eth_dst=01:01:00:99:01:01,
+                                       dl_vlan_enable=True,
+                                       vlan_vid=20,
+                                       ip_dst=192.168.1.2,
+                                       ip_src=192.168.30.101,
+                                       ip_id=108,
+                                       ip_ttl=64)
+	  l2_vxlan_pkt_vni2000 = simple_vxlan_packet(eth_dst=ROUTER_MAC,
+                                               ip_dst=10.10.10.2,
+                                               ip_src=10.1.3.100,
+                                               ip_id=0,
+                                               ip_ttl=64,
+                                               ip_flags=0x2,
+                                               udp_sport=11638,
+                                               with_udp_chksum=False,
+                                               vxlan_vni=2000,
+                                               inner_frame=l2_inner_pkt)
 ```
 ### Test steps: <!-- omit in toc --> 
 
