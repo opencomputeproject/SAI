@@ -38,35 +38,34 @@
   - [Test Group8: IP IN IP Tunnel Underly ECMP Encap](#test-group8-ip-in-ip-tunnel-underly-ecmp-encap)
     - [Case1:  IpIp_Tunnel_encap_ecmp_Ipv4inIpv4](#case1-ipip_tunnel_encap_ecmp_ipv4inipv4)
     - [Case2:  IpIp_Tunnel_encap_ecmp_Ipv6inIpv4](#case2-ipip_tunnel_encap_ecmp_ipv6inipv4)
-  - [Test Group10: Vxlan P2MP Tunnel Decap](#test-group10-vxlan-p2mp-tunnel-decap)
-    - [Case1:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_term_srcip](#case1-vxlan_p2mp_tunnel_decap_test_with_term_dst_ip_term_srcip)
-    - [Case2:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_diff_term_srcip](#case2-vxlan_p2mp_tunnel_decap_test_with_term_dst_ip_diff_term_srcip)
-    - [Case3:  Vxlan_P2MP_Tunnel_Decap_Test_With_diff_dst_ip_diff_srcip](#case3-vxlan_p2mp_tunnel_decap_test_with_diff_dst_ip_diff_srcip)
-    - [Test data packet](#test-data-packet)
+    - [Testing Data Packet](#testing-data-packet-7)
+  - [Test Group9: Vxlan Tunnel Decap](#test-group9-vxlan-tunnel-decap)
+    - [case1:  Vxlan_Tunnel_Decap_Test_L2](#case1-vxlan_tunnel_decap_test_l2)
+    - [Testing Data Packet](#testing-data-packet-8)
   - [Test Group11: IP IN IP ENCAP TTL](#test-group11-ip-in-ip-encap-ttl)
     - [Case1: encap_ttl_set_pipe_mode_v4](#case1-encap_ttl_set_pipe_mode_v4)
     - [Case2: encap_ttl_set_pipe_mode_v6](#case2-encap_ttl_set_pipe_mode_v6)
     - [Case3: encap_ttl_set_uniform_mode_v4](#case3-encap_ttl_set_uniform_mode_v4)
     - [Case4: encap_ttl_set_uniform_mode_v6](#case4-encap_ttl_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-7)
+    - [Testing Data Packet](#testing-data-packet-9)
   - [Test Group12: IP In IP Decap TTL](#test-group12-ip-in-ip-decap-ttl)
     - [Case1: decap_ttl_set_pipe_mode_v4](#case1-decap_ttl_set_pipe_mode_v4)
     - [Case2: decap_ttl_set_pipe_mode_v6](#case2-decap_ttl_set_pipe_mode_v6)
     - [Case3: decap_ttl_set_uniform_mode_v4](#case3-decap_ttl_set_uniform_mode_v4)
     - [Case4: decap_ttl_set_uniform_mode_v6](#case4-decap_ttl_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-8)
+    - [Testing Data Packet](#testing-data-packet-10)
   - [Test Group13: IP IN IP ENCAP DSCP](#test-group13-ip-in-ip-encap-dscp)
     - [Case1: encap_dscp_set_pipe_mode_v4](#case1-encap_dscp_set_pipe_mode_v4)
     - [Case2: encap_dscp_set_pipe_mode_v6](#case2-encap_dscp_set_pipe_mode_v6)
     - [Case3: encap_dscp_set_uniform_mode_v4](#case3-encap_dscp_set_uniform_mode_v4)
     - [Case4: encap_dscp_set_uniform_mode_v6](#case4-encap_dscp_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-9)
+    - [Testing Data Packet](#testing-data-packet-11)
   - [Test Group14: IP In IP Decap DSCP](#test-group14-ip-in-ip-decap-dscp)
     - [Case1: decap_dscp_set_pipe_mode_v4](#case1-decap_dscp_set_pipe_mode_v4)
     - [Case2: decap_dscp_set_pipe_mode_v6](#case2-decap_dscp_set_pipe_mode_v6)
     - [Case3: decap_dscp_set_uniform_mode_v4](#case3-decap_dscp_set_uniform_mode_v4)
     - [Case4: decap_dscp_set_uniform_mode_v6](#case4-decap_dscp_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-10)
+    - [Testing Data Packet](#testing-data-packet-12)
 # Overriew
 The purpose of this test plan is to test the Tunnel function from SAI.
 
@@ -299,8 +298,8 @@ For the test configuration, please refer to Tunnel configuration section of the 
 1. Add router entry (192.168.253.253/32, next hop port =port1).
 2. Send ipinip packet from lag2.
 3. Check packet drops on port1.
-- IpIp_Tunnel_Decap_Without_Loop
-1. Remove router entry (192.168.253.253/32, next hop port =tunnel).
+- IpIp_Tunnel_Decap_Without_PACKET_ACTION
+1.  set tunnel SAI_TUNNEL_ATTR_LOOPBACK_PACKET_ACTION as drop.
 2. Generate ingress ipinp packet as decribed by Testing Data Packet
 3. Send ipinip packet from lag2.
 4. Recieve decap packet from port1, compare it with expected decap packet.
@@ -390,8 +389,9 @@ For the test configuration, please refer to Tunnel configuration section of the 
                             |  route table         |                           |  route table       |
   ingress encap pkt->port1->|192.168.70.0/24,tunnel|-> tunnel -> ipinip pkt -> |dst ip: 10.1.60.0/24|
                                                                                |nexhop group:lag2, lag4|
-  ->lag2   
-      
+  ->lag2 
+    
+  ```  
 
 ### Testing Data Packet
 #### IPV4 inIPV4 Packet <!-- omit in toc --> 
@@ -465,112 +465,6 @@ For the test configuration, please refer to Tunnel configuration section of the 
 2. Send encap packet from lag3.
 3. Recieve decap packet from port2, compare it with expected decap packet.
 
-## Test Group10: Vxlan P2MP Tunnel Decap 
-### Case1:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_term_srcip
-
-### Case2:  Vxlan_P2MP_Tunnel_Decap_Test_With_term_dst_ip_diff_term_srcip
-### Case3:  Vxlan_P2MP_Tunnel_Decap_Test_With_diff_dst_ip_diff_srcip
-
-### Testing Objective <!-- omit in toc --> 
-
-    We will send encapsulated packet from lag3, then expect decapsulated packet on port2
-    -----------------------------------------------------------------
-    Egress side[port2]           |          ingress side[lag3]
-    ------------------------------------------------------------------
-    ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
-    ------------------------------------------------------------------
-    ipv6's falls in fc02::   |   ipv6's falls in fc00:1::
-    -------------------------------------------------------------
-    
-    tunnel term table:
-    --------------------------------------------------------------
-     src ip  |   dst ip |  term type | tunnel dscp mode
-    ------------------------------------------------------------------
-        10.1.3.100   |     dst=10.10.10.2    | p2p        | pipe
-    ------------------------------------------------------------------
-                    |     dst=10.10.10.2    | p2mp       | uniform
-    -------------------------------------------------------------
-    
-### Test data packet
-```Python
-        
-        inner_pkt = simple_udp_packet(eth_src=ROUTER_MAC,
-                                      eth_dst=self.inner_vxlan_dmac,
-                                      ip_scr=192.168.30.1,
-                                      ip_dst=192.168.1.2,
-                                      ip_id=108,
-				      ip_dscp=10
-                                      ip_ttl=64)
-         ingress_encap_vxlan_pkt= simple_vxlan_packet(
-                                        eth_dst=ROUTER_MAC,
-                                        ip_src=10.1.3.100,
-                                        ip_dst=10.10.10.2,
-                                        ip_id=0,
-					ip_dscp=18,
-                                        ip_ttl=64,
-                                        ip_flags=0x2,
-                                        udp_sport=11638,
-                                        with_udp_chksum=False,
-                                        vxlan_vni=1000,
-                                        inner_frame=inner_pkt)
-					
-        expected_egress_decap_pkt = simple_udp_packet(
-                                eth_dst=ROUTER_MAC,
-                                ip_src=192.168.30.1,
-                                ip_dst=192.168.1.2,
-                                ip_id=108,
-				ip_dscp=10,
-                                ip_ttl=63)
-				
-        ingress_encap_vxlan_pkt_diif_src_ip= simple_vxlan_packet(
-                                        eth_dst=ROUTER_MAC,
-                                        ip_src=10.1.4.200,
-                                        ip_dst=10.10.10.2,
-                                        ip_id=0,
-					ip_dscp=18
-                                        ip_ttl=64,
-                                        ip_flags=0x2,
-                                        udp_sport=11638,
-                                        with_udp_chksum=False,
-                                        vxlan_vni=1000,
-                                        inner_frame=inner_pkt)
-        expected_egress_decap_pkt_diif_src_ip = simple_udp_packet(
-                                eth_dst=ROUTER_MAC,
-                                ip_src=192.168.30.1,
-                                ip_dst=192.168.1.2,
-                                ip_id=108,
-				ip_dscp=18,
-                                ip_ttl=63)
-       ingress_encap_vxlan_pkt_diff_src_ip_diff_dst_ip = simple_vxlan_packet(
-                                        eth_dst=ROUTER_MAC,
-                                        ip_src=10.1.4.200,
-                                        ip_dst=10.1.100.100,
-                                        ip_id=0,
-                                        ip_ttl=64,
-                                        ip_flags=0x2,
-                                        udp_sport=11638,
-                                        with_udp_chksum=False,
-                                        vxlan_vni=1000,
-                                        inner_frame=inner_pkt)
-```
-### Test steps: <!-- omit in toc --> 
-- Vxlan_P2MP_Tunnel_Decap_Test_With_diff_dstip_diff_srcip
-1. Generate ingress encap packet with outer dcsp as 18, inner dscp as 10, outer src ip as 10.1.3.100.
-2. Send encap packets from lag3.
-3. Generate expected decap packets with dscp field as 10.
-4. Recieve decap packets from port2, compare it with expected decap packets.
-
-- Vxlan_P2MP_Tunnel_Decap_Test_With_term_dstip_diff_term_srcip
-1. Generate ingress encap packet with outer dcsp as 18, inner dscp as 10, outer src ip as 10.1.4.200.
-2. Send encap packet  from lag3.
-3. Generate expected decap packets with dscp field as 18.
-4. Recieve decap packets from port2, compare it with expected decap packets.
-
-- IpIp_P2MP_Tunnel_Decap_Test_With_diff_dstip_diff_srcip
-1. 1. Generate ingress encap packet with outer src ip as 10.1.4.200,dst as 10.10.10.100
-2.  Send encap packet from lag3.
-3.  Verify packet drop on port2.
-   
 ## Test Group11: IP IN IP ENCAP TTL 
 	
 ### Case1: encap_ttl_set_pipe_mode_v4
