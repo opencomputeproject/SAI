@@ -403,8 +403,8 @@ For the test configuration, please refer to Tunnel configuration section of the 
 ## Test Group9: Vxlan Tunnel Decap 
 	
 
-### case1:  Vxlan_Tunnel_Decap_Test_L2
-### case2:  Vxlan_Tunnel_Decap_Test_L2_Diff_Vlan
+### case1:  Vxlan_Tunnel_Decap_Test_L2_vlan10
+### case2:  Vxlan_Tunnel_Decap_Test_L2_vlan20
 ### Testing Objective <!-- omit in toc --> 
 
     Tunnel Term Source is 10.1.3.100
@@ -416,16 +416,16 @@ For the test configuration, please refer to Tunnel configuration section of the 
     ipv4's falls in 192.168.1.0     |        ipv4's falls in 10.1.0.0
     ------------------------------------------------------------------
 
-  The test group mainly verify that sending l2 vxlan packet from lag3and getting a decapsulated packet  by matching tunnel term table entry, recieving the inner packet on port2 by matching fdb entry (01:01:00:99:01:01, port2).
+  The test group mainly verify that sending l2 vxlan packet from lag3 and getting a decapsulated packet  by matching tunnel term table entry, recieving the inner packet on port2\8 by matching fdb entry with respect to vlan id.
  ```                          
-             |  tunnel table      |                    |  fdb table |
-  pkt->lag3->|term dst: 10.10.10.2|-> - -> inner pkt ->|01:01:00:99:01:01, port2|
-             |term src: 10.1.3.100|                   
+             |  tunnel table      |  |vni to vlanid map|                |  fdb table |
+  pkt->lag3->|term dst: 10.10.10.2|->|vni:1000, vlan:10| -> inner pkt ->|vlan10: 01:01:00:99:01:01, port2|
+             |term src: 10.1.3.100|  |vni:2000, vlan:20|                |vlan20: 00:01:01:99:02:09, port8|
 ```
 ### Testing Data Packet
 ```Python
  
-           egress_l2_pkt = simple_udp_packet(eth_dst=01:01:00:99:01:01,
+           egress_l2_pkt_vni1000 = simple_udp_packet(eth_dst=01:01:00:99:01:01,
                                        dl_vlan_enable=True,
                                        vlan_vid=10,
                                        ip_dst=192.168.1.2,
@@ -433,7 +433,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
                                        ip_id=108,
                                        ip_ttl=64)
 				       
-           l2_inner_pkt = simple_udp_packet(eth_dst=01:01:00:99:01:01,
+           l2_inner_pkt_vni1000 = simple_udp_packet(eth_dst=01:01:00:99:01:01,
                                              ip_dst=192.168.1.2,
                                              ip_src=192.168.30.101,
                                              ip_id=108,
@@ -448,10 +448,10 @@ For the test configuration, please refer to Tunnel configuration section of the 
                                                with_udp_chksum=False,
                                                vxlan_vni=1000,
                                                inner_frame=l2_inner_pkt)
-	   egress_l2_pkt_vni2000 = simple_udp_packet(eth_dst=01:01:00:99:01:01,
+	   egress_l2_pkt_vni2000 = simple_udp_packet(eth_dst=00:01:01:99:02:09
                                        dl_vlan_enable=True,
                                        vlan_vid=20,
-                                       ip_dst=192.168.1.2,
+                                       ip_dst=192.168.2.9,
                                        ip_src=192.168.30.101,
                                        ip_id=108,
                                        ip_ttl=64)
@@ -468,10 +468,14 @@ For the test configuration, please refer to Tunnel configuration section of the 
 ```
 ### Test steps: <!-- omit in toc --> 
 
-- Vxlan_Tunnel_Decap_Test_L2:
-1. Generate l2 packet as decribed by Testing Data Packet
-2. Send encap packet from lag3.
+- Vxlan_Tunnel_Decap_Test_L2_vlan10:
+1. Generate l2 vxlan packet with vni =1000 as decribed by Testing Data Packet
+2. Send vxlan l2 packet from lag3.
 3. Recieve decap packet from port2, compare it with expected decap packet.
+- Vxlan_Tunnel_Decap_Test_L2_vlan20:
+1. Generate l2 vxlan packet with vni =2000 as decribed by Testing Data Packet
+2. Send vxlan l2 packet from lag3.
+3. Recieve decap packet from port8, compare it with expected decap packet.
 
 ## Test Group11: IP IN IP ENCAP TTL 
 	
