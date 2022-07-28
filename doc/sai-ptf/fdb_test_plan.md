@@ -73,7 +73,7 @@ In this FDB test, the example packet structure is below.
 - test_non_bgPort_no_learn: Verify if MAC addresses are not learned on the port when the port is not a bridge port.
 - test_new_vlan_member_learn: Verify newly added VLAN members can learn.
 - test_remove_vlan_member_no_learn: Verify no MAC addresses are learned on the removed vlan member.
-- test_no_learn_invalidate_vlan: Verify no MAC addresses are learned on invalidate vlan member.
+- test_no_learn_invalidate_vlan: Verify no MAC addresses are learned on invalidate vlan ID.
 - test_no_learn_broadcast_src: Verify broadcast mac address is learned.
 - test_no_learn_multicast_src: Verify multicast mac address is learned.
 
@@ -135,7 +135,7 @@ In this FDB test, the example packet structure is below.
 ### Testing Objective <!-- omit in toc -->
 - test_port_age: Verifying if the dynamic FDB entry associated with the port is removed after the aging interval.
 - test_aging_after_move: Verifying the aging time refreshed if dynamic FDB entry associated with one port and then moved to another port (not the initial learning time)
-- test_mac_moving_after_aging: Verifying the mac can be learnt if the mac aging reached.
+- test_mac_moving_after_aging: Verifying the mac can be learnt again after the mac aging reached.
 
 
 ### Test steps: <!-- omit in toc --> 
