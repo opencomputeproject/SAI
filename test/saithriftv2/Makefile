@@ -8,13 +8,12 @@ METADIR := $(PREDIR)$(PREDIR)meta/
 
 SAI_PREFIX = /usr
 SAI_HEADER_DIR ?= $(SAI_PREFIX)/include/sai
-SAI_EXT_HEADER_DIR ?= $(SAI_PREFIX)/include/experimental
 SAI_LIBRARY_DIR ?= $(SAI_PREFIX)/lib
 SAI_HEADERS = $(SAI_HEADER_DIR)/sai*.h
 
 LIBS = -lthrift -lpthread
 LDFLAGS = -L$(SAI_LIBRARY_DIR) -Wl,-rpath=$(SAI_LIBRARY_DIR)
-CPPFLAGS = -I$(SAI_HEADER_DIR) -I$(SAI_EXT_HEADER_DIR) -I. -std=c++11
+CPPFLAGS = -I$(SAI_HEADER_DIR) -I. -std=c++11
 
 CPPFLAGS += -O0 -ggdb
 
@@ -83,7 +82,7 @@ $(PY_SOURCES):  $(METADIR)sai.thrift
 	$(THRIFT) -o ./ --gen py -r $^
 
 $(SAI_PY_HEADERS): $(SAI_HEADERS)
-	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR)  -I$(SAI_EXT_HEADER_DIR) --include /usr/include/linux/limits.h $^ -o $@
+	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR) --include /usr/include/linux/limits.h $^ -o $@
 
 $(ODIR)/%.o: gen-cpp/%.cpp meta
 	$(CXX) $(CPPFLAGS) -c $< -o $@  -I../../meta
