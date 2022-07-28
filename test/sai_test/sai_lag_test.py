@@ -455,6 +455,11 @@ class DisableIngressTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
+        self.route_configer.create_route_and_neighbor_entry_for_port(ip_addr=self.local_server_ip_list[1], 
+            mac_addr=self.local_server_mac_list[1],
+            port_id=self.port_list[1],
+            virtual_router_id=self.default_vrf)
+
 
     def runTest(self):
         """

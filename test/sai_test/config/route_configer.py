@@ -34,17 +34,10 @@ def t0_route_config_helper(test_obj, is_create_route=True, is_create_route_for_l
             port_id=test_obj.lag1.lag_id,
             virtual_router_id=test_obj.default_vrf)
 
-
         route_configer.create_route_and_neighbor_entry_for_port(ip_addr=test_obj.lag2_ip,
             mac_addr=test_obj.lag2_nb_mac,
             port_id=test_obj.lag2.lag_id,
             virtual_router_id=test_obj.default_vrf)
-
-        route_configer.create_route_and_neighbor_entry_for_port(ip_addr=test_obj.local_server_ip_list[1], 
-            mac_addr=test_obj.local_server_mac_list[1],
-            port_id=test_obj.port_list[1],
-            virtual_router_id=test_obj.default_vrf)
-
 
 class RouteConfiger(object):
     """
