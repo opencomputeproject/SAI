@@ -278,7 +278,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
 
     def create_server_mac_list(self):
         """
-        Create server mac list.
+        Create servers(0-17) mac list.
 
         Add those following attribute to this class:
         self.local_server_mac_list for all the local server mac
@@ -298,7 +298,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
 
     def create_server_ip_list(self):
         """
-        Create server ip list.
+        Create servers(1-17) ip list.
 
         Add those following attribute to this class:
         self.local_server_ip_list for all the local server mac
