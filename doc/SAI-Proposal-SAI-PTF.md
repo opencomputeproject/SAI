@@ -5,7 +5,8 @@
 | Authors     | Intel           |
 | Status      | In review       |
 | Type        | Standards track |
-| Created     | 04/14/2022      |
+| Created     | 10/13/2021      |
+| Updated     | 06/07/2022      |
 | SAI-Version | 1.9             |
 
 ## Overview
