@@ -47,6 +47,21 @@ typedef enum _sai_inbound_routing_entry_action_t
 } sai_inbound_routing_entry_action_t;
 
 /**
+ * @brief Attribute data for #SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION
+ */
+typedef enum _sai_outbound_routing_entry_action_t
+{
+    SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET,
+
+    SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT,
+
+    SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_DIRECT,
+
+    SAI_OUTBOUND_ROUTING_ENTRY_ACTION_DROP,
+
+} sai_outbound_routing_entry_action_t;
+
+/**
  * @brief Attribute data for #SAI_PA_VALIDATION_ENTRY_ATTR_ACTION
  */
 typedef enum _sai_pa_validation_entry_action_t
@@ -285,13 +300,33 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_START,
 
     /**
-     * @brief Action route_vnet parameter DEST_VNET_VNI
+     * @brief Action
+     *
+     * @type sai_outbound_routing_entry_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET
+     */
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION = SAI_OUTBOUND_ROUTING_ENTRY_ATTR_START,
+
+    /**
+     * @brief Action route_vnet, route_vnet_direct parameter DEST_VNET_VNI
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
+     * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT
      */
-    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DEST_VNET_VNI = SAI_OUTBOUND_ROUTING_ENTRY_ATTR_START,
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DEST_VNET_VNI,
+
+    /**
+     * @brief Action route_vnet_direct parameter OVERLAY_IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT
+     */
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_OVERLAY_IP,
 
     /**
      * @brief Attach a counter
