@@ -263,7 +263,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 1. Remove vlan10 fdb entry (dstmac=00:01:01:99:01:a0, port=port1);.
 2. Generate ingress ipinip packet as decribed by Testing Data Packet
 3. Send encap packet from lag2.
-4. Check packet drops on port1.
+4. Check packet drops or flood on port1.
 
 ## Test Group5: IP IN IP Tunnel Decap Loop Test
 	
