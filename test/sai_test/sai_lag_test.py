@@ -292,7 +292,7 @@ class LoadbalanceOnDesIPTest(T0TestBase):
 Skip test for broadcom, can't load balance on protocal such as tcp and udp
 Item: 15023123
 """
-#@skip
+@skip
 class LoadbalanceOnProtocalTest(T0TestBase):
     """
     Test load balance of l3 by destinstion IP.
