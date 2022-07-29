@@ -22,6 +22,7 @@
   - [PCBB DSCP Config](#pcbb-dscp-config)
   - [PCBB IP_in_IP Tunnel Config](#pcbb-ip_in_ip-tunnel-config)
 - [6. Buffer](#6-buffer)
+- [7. QoS](#7-qos)
   - [Lossless Queue and Priority](#lossless-queue-and-priority)
 # Overriew
 This document describes the sample configuration data.
@@ -316,9 +317,10 @@ The SAI objects need to config includes:
 - QUEUE(BUFFER_QUEUE)
 - INGRESS_PRIORITY_GROUP(BUFFER_PG)
 
+# 7. QoS
 ## Lossless Queue and Priority
 |Port|Queue Number| Priority Number| Attribute|
 |-|-|-|-|
 |0-32|3,4|3,4|PRIORITY_FLOW_CONTROL / SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_TX|
 
-**The attribute for lossless Queue and Priority might be different, please check the attribute for some certain platform.**
+**The property PRIORITY_FLOW_CONTROL or SAI_PORT_ATTR_PRIORITY_FLOW_CONTROL_TX depend on port's property pfc_asym.**
