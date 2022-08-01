@@ -21,28 +21,23 @@
 
 from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from constant import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 def t0_route_config_helper(test_obj, is_create_route=True, is_create_route_for_lag=True):
     route_configer = RouteConfiger(test_obj)
-
     if is_create_route:
         route_configer.create_default_route()
 
     if is_create_route_for_lag:
-        ip_addr1 = '10.10.10.0'
-        mac_addr1 = '02:04:02:01:01:01'
-        route_configer.create_route_and_neighbor_entry_for_port(ip_addr=ip_addr1, 
-            mac_addr=mac_addr1, 
-            port_id=test_obj.lag1.lag_id, 
+        route_configer.create_route_and_neighbor_entry_for_port(ip_addr=test_obj.lag1_ip,
+            mac_addr=test_obj.lag1_nb_mac,
+            port_id=test_obj.lag1.lag_id,
             virtual_router_id=test_obj.default_vrf)
 
-        ip_addr2 = '10.1.2.100'
-        mac_addr2 = '02:04:02:01:02:01'
-        route_configer.create_route_and_neighbor_entry_for_port(ip_addr=ip_addr1, 
-            mac_addr=mac_addr2, 
-            port_id=test_obj.lag2.lag_id, 
+        route_configer.create_route_and_neighbor_entry_for_port(ip_addr=test_obj.lag2_ip,
+            mac_addr=test_obj.lag2_nb_mac,
+            port_id=test_obj.lag2.lag_id,
             virtual_router_id=test_obj.default_vrf)
-
 
 class RouteConfiger(object):
     """

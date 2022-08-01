@@ -40,3 +40,7 @@ THRIFT_PORT = 9092
 
 FDB_SERVER_NUM = '99'
 """Stand for the server in the fdb"""
+
+SERVER_IP_PREFIX = '192.168.{}.{}'
+T0_IP_PREFIX = '10.0.{}.{}'
+T1_IP_PREFIX = '10.1.{}.{}'
