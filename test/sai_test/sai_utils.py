@@ -158,3 +158,21 @@ def generate_mac_address_list(role, group, indexes):
             '{:02d}'.format(group) + ':' + '{:02d}'.format(index)
         mac_list.append(mac)
     return mac_list
+
+def generate_ip_address_list(role, group, indexes):
+    """
+    Generate ip addresses.
+
+    Args:
+        role: Role which is represented by the ip address(base on test plan config)
+        group: group number for the ip address(base on test plan config)
+        indexes: ip indexes
+
+    Returns:
+        default_1q_bridge_id
+    """
+    print("Generate IP ...")
+    ip_list = []
+    for index in indexes:
+        ip_list.append(role.format(group,index))
+    return ip_list
