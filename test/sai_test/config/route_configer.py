@@ -23,21 +23,24 @@ from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from constant import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
-def t0_route_config_helper(test_obj, is_create_route=True, is_create_route_for_lag=True):
+def t0_route_config_helper(test_obj, is_create_default_route=True, is_create_route_for_lag=True):
     route_configer = RouteConfiger(test_obj)
-    if is_create_route:
+    if is_create_default_route:
         route_configer.create_default_route()
+        test_obj.port1_rif = route_configer.create_router_interface_for_port(port_id=test_obj.port_list[1])
 
     if is_create_route_for_lag:
-        route_configer.create_route_and_neighbor_entry_for_port(ip_addr=test_obj.lag1_ip,
-            mac_addr=test_obj.lag1_nb_mac,
-            port_id=test_obj.lag1.lag_id,
-            virtual_router_id=test_obj.default_vrf)
+        # config neighbor and route for lag1
+        test_obj.lag1_rif = route_configer.create_router_interface_for_port(port_id=test_obj.lag1.lag_id)
+        test_obj.lag1_nbr = route_configer.create_neighbor_for_rif(rif_id=test_obj.lag1_rif, ip_addr=test_obj.lag1_nhop_ip, mac_addr=test_obj.lag1_nb_mac)
+        test_obj.lag1_nhop = route_configer.create_next_hop_for_rif(ip_addr=test_obj.lag1_nhop_ip, rif=test_obj.lag1_rif)
+        test_obj.lag1_route = route_configer.create_route_entry(dst_ip=test_obj.lag1_route_dst+'/24', next_hop=test_obj.lag1_nhop)
 
-        route_configer.create_route_and_neighbor_entry_for_port(ip_addr=test_obj.lag2_ip,
-            mac_addr=test_obj.lag2_nb_mac,
-            port_id=test_obj.lag2.lag_id,
-            virtual_router_id=test_obj.default_vrf)
+        # config neighbor and route for lag2
+        test_obj.lag2_rif = route_configer.create_router_interface_for_port(port_id=test_obj.lag2.lag_id)
+        test_obj.lag2_nbr = route_configer.create_neighbor_for_rif(rif_id=test_obj.lag2_rif, ip_addr=test_obj.lag2_nhop_ip, mac_addr=test_obj.lag2_nb_mac)
+        test_obj.lag2_nhop = route_configer.create_next_hop_for_rif(ip_addr=test_obj.lag2_nhop_ip, rif=test_obj.lag2_rif)
+        test_obj.lag2_route = route_configer.create_route_entry(dst_ip=test_obj.lag2_route_dst+'/24', next_hop=test_obj.lag2_nhop)   
 
 class RouteConfiger(object):
     """
@@ -131,3 +134,35 @@ class RouteConfiger(object):
         nhop = sai_thrift_create_next_hop(self.client, ip=sai_ipaddress(ip_addr), router_interface_id=rif_id1, type=SAI_NEXT_HOP_TYPE_IP)
         route1 =sai_thrift_route_entry_t(vr_id=virtual_router_id, destination=sai_ipprefix(ip_addr+'/24'))
         sai_thrift_create_route_entry(self.client, route1, next_hop_id=nhop)
+    
+    def create_router_interface_for_port(self, port_id, virtual_router_id=None):
+        if virtual_router_id is None:
+            virtual_router_id = self.test_obj.default_vrf
+
+        rif_id1 = sai_thrift_create_router_interface(self.client, virtual_router_id=virtual_router_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=port_id)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        return rif_id1
+    
+    def create_next_hop_for_rif(self, ip_addr, rif):
+        nhop = sai_thrift_create_next_hop(self.client, ip=sai_ipaddress(ip_addr), router_interface_id=rif, type=SAI_NEXT_HOP_TYPE_IP)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        return nhop
+
+    def create_neighbor_for_rif(self, rif_id, ip_addr, mac_addr):
+        nbr_entry_v4 = sai_thrift_neighbor_entry_t(rif_id=rif_id, ip_address=sai_ipaddress(ip_addr))
+        status = sai_thrift_create_neighbor_entry(self.client, nbr_entry_v4, dst_mac_address=mac_addr)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        return nbr_entry_v4
+
+    def create_route_entry(self, dst_ip, next_hop, virtual_router_id=None):
+        if virtual_router_id is None:
+            virtual_router_id = self.test_obj.default_vrf
+
+        route1 = sai_thrift_route_entry_t(vr_id=virtual_router_id, destination=sai_ipprefix(dst_ip))
+        status = sai_thrift_create_route_entry(self.client, route_entry=route1, next_hop_id=next_hop)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        return route1

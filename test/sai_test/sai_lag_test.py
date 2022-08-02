@@ -34,31 +34,27 @@ class LagConfigTest(T0TestBase):
         T0TestBase.setUp(self)
 
     def load_balance_on_src_ip(self):
-        sai_thrift_create_router_interface(self.client,
-                                           virtual_router_id=self.default_vrf,
-                                           type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                           port_id=self.port_list[1])
-        ip_dst = self.lag1_ip
-        pkt1 = simple_tcp_packet(eth_dst=self.router_mac,
+        ip_dst = self.lag1_route_dst
+        pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                  eth_src=self.local_server_mac_list[1],
                                  ip_dst=ip_dst,
                                  ip_src=self.local_server_ip_list[1],
                                  ip_id=105,
                                  ip_ttl=64)
-        pkt2 = simple_tcp_packet(eth_dst=self.router_mac,
+        pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                  eth_src=self.local_server_mac_list[2],
                                  ip_dst=ip_dst,
                                  ip_src=self.local_server_ip_list[2],
                                  ip_id=105,
                                  ip_ttl=64)
         exp_pkt1 = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                     eth_src=self.router_mac,
+                                     eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
                                      ip_src=self.local_server_ip_list[1],
                                      ip_id=105,
                                      ip_ttl=63)
         exp_pkt2 = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                     eth_src=self.router_mac,
+                                     eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
                                      ip_src=self.local_server_ip_list[2],
                                      ip_id=105,
@@ -88,32 +84,27 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets by updating src port
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
             print("Lag l3 load balancing test based on src port")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
             max_itrs = 150
             begin_port = 2000
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -143,32 +134,28 @@ class LoadbalanceOnDesPortTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating des port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets by updating des port
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
             print("Lag l3 load balancing test based on des port")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             max_itrs = 150
             begin_port = 2000
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
                 des_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_dport=des_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_dport=des_port,
                                             ip_id=105,
@@ -198,30 +185,26 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src ip
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets by updating src ip
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
             print("Lag l3 load balancing test based on src IP")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             max_itrs = 150
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
                 ip_src = '192.168.0.{}'.format(i)
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=ip_src,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=ip_src,
                                             ip_id=105,
                                             ip_ttl=63)                                                
@@ -249,29 +232,25 @@ class LoadbalanceOnDesIPTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating des ip
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets by updating des ip
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
             print("Lag l3 load balancing test based on des IP")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             max_itrs = 150
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
-                ip_dst = '10.1.1.{}'.format(i)
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                ip_dst = '192.168.11.{}'.format(i)
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
                                         ip_dst=ip_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
+                                            eth_src=ROUTER_MAC,
                                             ip_dst=ip_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             ip_id=105,
@@ -289,13 +268,13 @@ class LoadbalanceOnDesIPTest(T0TestBase):
 
 
 """
-Skip test for broadcom, can't load balance on protocal such as tcp and udp
+Skip test for broadcom, can't load balance on protocol such as tcp and udp
 Item: 15023123
 """
 @skip
-class LoadbalanceOnProtocalTest(T0TestBase):
+class LoadbalanceOnProtocolTest(T0TestBase):
     """
-    Test load balance of l3 by destinstion IP.
+    Test load balance of l3 by protocol.
     """
     def setUp(self):
         """
@@ -305,44 +284,40 @@ class LoadbalanceOnProtocalTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets with tcp and icmp
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets with tcp and icmp
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
-            print("Lag l3 load balancing test based on protocal")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+            print("Lag l3 load balancing test based on protocol")
+
             max_itrs = 150
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
                 if i % 2 == 0:
-                    pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                    pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                             eth_src=self.local_server_mac_list[1],
-                                            ip_dst=self.lag1_ip,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             ip_id=105,
                                             ip_ttl=64)
                     exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                                eth_src=self.router_mac,
-                                                ip_dst=self.lag1_ip,
+                                                eth_src=ROUTER_MAC,
+                                                ip_dst=self.lag1_route_dst,
                                                 ip_src=self.local_server_ip_list[1],
                                                 ip_id=105,
                                                 ip_ttl=63)
                 else:
                     print("icmp")
-                    pkt = simple_icmp_packet(eth_dst=self.router_mac,
+                    pkt = simple_icmp_packet(eth_dst=ROUTER_MAC,
                                              eth_src=self.local_server_mac_list[1],
-                                             ip_dst=self.lag1_ip,
+                                             ip_dst=self.lag1_route_dst,
                                              ip_src=self.local_server_ip_list[1],
                                              ip_id=105,
                                              ip_ttl=64)
                     exp_pkt = simple_icmp_packet(eth_dst=self.lag1_nb_mac,
-                                                eth_src=self.router_mac,
-                                                ip_dst=self.lag1_ip,
+                                                eth_src=ROUTER_MAC,
+                                                ip_dst=self.lag1_route_dst,
                                                 ip_src=self.local_server_ip_list[1],
                                                 ip_id=105,
                                                 ip_ttl=63)                                                
@@ -370,36 +345,32 @@ class DisableEgressTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src_port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
-        5. Disable port18 egress
-        6. Generate different packets by updating src_port
-        7. send these packets on port 1
-        8. Check if packets are received on port 17.
+        1. Generate different packets by updating src_port
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
+        4. Disable port18 egress
+        5. Generate different packets by updating src_port
+        6. send these packets on port1
+        7. Check if packets are received on port17
         """
         try:
             print("Lag disable egress lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             pkts_num = 10
             begin_port = 2000
             exp_drop = []
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -418,16 +389,16 @@ class DisableEgressTest(T0TestBase):
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -463,14 +434,13 @@ class DisableIngressTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src_port
-        3. send these packets on port 18
-        4. Check if packets are received on port 1
-        5. Disable port18 igress
-        6. Generate different packets by updating src_port
-        7. send these packets on port 18
-        8. Check if packets are received on port 1
+        1. Generate different packets by updating src_port
+        2. send these packets on port 18
+        3. Check if packets are received on port1
+        4. Disable port18 ingress
+        5. Generate same different packets in step 1 by updating src_port
+        6. send these packets on port 18
+        7. Check if packets are received on port1
         """
         try:
             print("Lag disable ingress lag member test")
@@ -482,17 +452,17 @@ class DisableIngressTest(T0TestBase):
             begin_port = 2000
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.lag1_nb_mac,
                                         ip_dst=self.local_server_ip_list[1],
-                                        ip_src=self.lag1_ip,
+                                        ip_src=self.lag1_route_dst,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.local_server_mac_list[1],
-                                            eth_src=self.router_mac,
+                                            eth_src=ROUTER_MAC,
                                             ip_dst=self.local_server_ip_list[1],
-                                            ip_src=self.lag1_ip,
+                                            ip_src=self.lag1_route_dst,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -505,17 +475,17 @@ class DisableIngressTest(T0TestBase):
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.lag1_nb_mac,
                                         ip_dst=self.local_server_ip_list[1],
-                                        ip_src=self.lag1_ip,
+                                        ip_src=self.lag1_route_dst,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.local_server_mac_list[1],
-                                            eth_src=self.router_mac,
+                                            eth_src=ROUTER_MAC,
                                             ip_dst=self.local_server_ip_list[1],
-                                            ip_src=self.lag1_ip,
+                                            ip_src=self.lag1_route_dst,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -527,7 +497,7 @@ class DisableIngressTest(T0TestBase):
 
 class RemoveLagMemberTest(T0TestBase):
     """
-    When  remove lag member, we expect traffic drop on the removed lag member.
+    When remove lag member, we expect traffic drop on the removed lag member.
     """
     def setUp(self):
         """
@@ -537,36 +507,31 @@ class RemoveLagMemberTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src_port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
-        5. remove port18 in lag1 
-        6. Generate different packets by updating src_port
-        7. send these packets on port 1
-        8. Check if packets are't received on port 18.
+        1. Generate different packets by updating src_port
+        2. Send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
+        4. Remove port18 in lag1 
+        5. Generate same different packets in step 1 by updating src_port
+        6. Send these packets on port1
+        7. Check if packets aren't received on port18
         """
         try:
             print("Lag remove lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
 
             pkts_num = 10
             begin_port = 2000
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -579,16 +544,16 @@ class RemoveLagMemberTest(T0TestBase):
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -615,36 +580,32 @@ class AddLagMemberTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src_port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
-        5. add port21 as lag1 member
-        6. Generate different packets by updating src_port
-        7. send these packets on port 1
-        8. Check if packets are received on lag1(port 17,18,21).
+        1. Generate different packets by updating src_port
+        2. Send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
+        4. Add port21 as lag1 member
+        5. Generate same different packets in step 1 by updating src_port
+        6. Send these packets on port1
+        7. Check if packets are received on lag1(port 17,18,21)
         """
         try:
             print("Lag add lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             pkts_num = 10
             begin_port = 2000
             rcv_count = [0, 0, 0]
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -652,22 +613,23 @@ class AddLagMemberTest(T0TestBase):
                 send_packet(self, 1, pkt)
                 verify_packet_any_port(self, exp_pkt, [17, 18])
             print("add port21 into lag1")
-            sai_thrift_create_lag_member(self.client,
+            new_lag_member = sai_thrift_create_lag_member(self.client,
                                         lag_id=self.lag1.lag_id,
                                         port_id=self.port_list[21])
+            self.lag1.lag_members.append(new_lag_member)
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -679,6 +641,7 @@ class AddLagMemberTest(T0TestBase):
                 self.assertGreater(cnt, 0, "each member in lag1 should receive pkt")
             status = sai_thrift_remove_lag_member(self.client, self.lag1.lag_members[2])
             self.assertEqual(status, SAI_STATUS_SUCCESS)
+            self.lag1.lag_members.remove(new_lag_member)
         finally:
             pass
 
@@ -698,15 +661,15 @@ class IndifferenceIngressPortTest(T0TestBase):
                                                virtual_router_id=self.default_vrf,
                                                type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
                                                vlan_id=10)
-            pkt = simple_tcp_packet(eth_dst=self.router_mac,
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src=self.local_server_mac_list[1],
-                                    ip_dst=self.lag1_ip,
+                                    ip_dst=self.lag1_route_dst,
                                     ip_src=self.local_server_ip_list[1],
                                     ip_id=105,
                                     ip_ttl=64)
             exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                        eth_src=self.router_mac,
-                                        ip_dst=self.lag1_ip,
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         ip_id=105,
                                         ip_ttl=63)
