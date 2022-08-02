@@ -221,7 +221,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_reset_default_vlan=True,
               is_create_vlan=True,
               is_create_fdb=True,
-              is_create_route=True,
+              is_create_default_route=True,
               is_create_lag=True,
               is_create_route_for_lag=True,
               wait_sec=5):
@@ -255,7 +255,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_create_lag=is_create_lag)
             t0_route_config_helper(
                 test_obj=self,
-                is_create_route=is_create_route,
+                is_create_default_route=is_create_default_route,
                 is_create_route_for_lag=is_create_route_for_lag)
 
         print("Waiting for switch to get ready before test, {} seconds ...".format(
@@ -317,9 +317,10 @@ class T0TestBase(ThriftInterfaceDataPlane):
     
     def create_other_mac_ip(self):
         #LAG
-        self.lag1_ip = '10.1.1.100'
-        self.lag2_ip = '10.1.2.100'
-        self.router_mac = '00:77:66:55:44:00'
+        self.lag1_route_dst = '192.168.11.0'
+        self.lag2_route_dst = '192.168.12.0'
+        self.lag1_nhop_ip = '10.1.1.100'
+        self.lag2_nhop_ip = '10.1.2.100'
         self.lag1_nb_mac = '00:01:01:01:01:a0'
         self.lag2_nb_mac = '00:01:01:01:02:a0'
 
