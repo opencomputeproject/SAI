@@ -34,10 +34,6 @@ class LagConfigTest(T0TestBase):
         T0TestBase.setUp(self)
 
     def load_balance_on_src_ip(self):
-        sai_thrift_create_router_interface(self.client,
-                                           virtual_router_id=self.default_vrf,
-                                           type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                           port_id=self.port_list[1])
         ip_dst = self.lag1_route_dst
         pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                  eth_src=self.local_server_mac_list[1],
@@ -88,17 +84,12 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets by updating src port
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
             print("Lag l3 load balancing test based on src port")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
             max_itrs = 150
             begin_port = 2000
             rcv_count = [0, 0]
@@ -143,17 +134,13 @@ class LoadbalanceOnDesPortTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating des port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets by updating des port
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
             print("Lag l3 load balancing test based on des port")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             max_itrs = 150
             begin_port = 2000
             rcv_count = [0, 0]
@@ -198,17 +185,13 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src ip
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets by updating src ip
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
             print("Lag l3 load balancing test based on src IP")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             max_itrs = 150
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
@@ -249,17 +232,13 @@ class LoadbalanceOnDesIPTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating des ip
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets by updating des ip
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
             print("Lag l3 load balancing test based on des IP")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             max_itrs = 150
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
@@ -305,17 +284,13 @@ class LoadbalanceOnProtocolTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets with tcp and icmp
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
+        1. Generate different packets with tcp and icmp
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
         """
         try:
             print("Lag l3 load balancing test based on protocol")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             max_itrs = 150
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
@@ -370,21 +345,17 @@ class DisableEgressTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src_port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
-        5. Disable port18 egress
-        6. Generate different packets by updating src_port
-        7. send these packets on port 1
-        8. Check if packets are received on port 17.
+        1. Generate different packets by updating src_port
+        2. send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
+        4. Disable port18 egress
+        5. Generate different packets by updating src_port
+        6. send these packets on port1
+        7. Check if packets are received on port17
         """
         try:
             print("Lag disable egress lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             pkts_num = 10
             begin_port = 2000
             exp_drop = []
@@ -463,14 +434,13 @@ class DisableIngressTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src_port
-        3. send these packets on port 18
-        4. Check if packets are received on port 1
-        5. Disable port18 igress
-        6. Generate different packets by updating src_port
-        7. send these packets on port 18
-        8. Check if packets are received on port 1
+        1. Generate different packets by updating src_port
+        2. send these packets on port 18
+        3. Check if packets are received on port1
+        4. Disable port18 ingress
+        5. Generate same different packets in step 1 by updating src_port
+        6. send these packets on port 18
+        7. Check if packets are received on port1
         """
         try:
             print("Lag disable ingress lag member test")
@@ -527,7 +497,7 @@ class DisableIngressTest(T0TestBase):
 
 class RemoveLagMemberTest(T0TestBase):
     """
-    When  remove lag member, we expect traffic drop on the removed lag member.
+    When remove lag member, we expect traffic drop on the removed lag member.
     """
     def setUp(self):
         """
@@ -537,21 +507,16 @@ class RemoveLagMemberTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src_port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
-        5. remove port18 in lag1 
-        6. Generate different packets by updating src_port
-        7. send these packets on port 1
-        8. Check if packets are't received on port 18.
+        1. Generate different packets by updating src_port
+        2. Send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
+        4. Remove port18 in lag1 
+        5. Generate same different packets in step 1 by updating src_port
+        6. Send these packets on port1
+        7. Check if packets aren't received on port18
         """
         try:
             print("Lag remove lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
 
             pkts_num = 10
             begin_port = 2000
@@ -615,21 +580,17 @@ class AddLagMemberTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Create router interface
-        2. Generate different packets by updating src_port
-        3. send these packets on port 1
-        4. Check if packets are received on ports of lag1 equally.
-        5. add port21 as lag1 member
-        6. Generate different packets by updating src_port
-        7. send these packets on port 1
-        8. Check if packets are received on lag1(port 17,18,21).
+        1. Generate different packets by updating src_port
+        2. Send these packets on port1
+        3. Check if packets are received on ports of lag1 equally
+        4. Add port21 as lag1 member
+        5. Generate same different packets in step 1 by updating src_port
+        6. Send these packets on port1
+        7. Check if packets are received on lag1(port 17,18,21)
         """
         try:
             print("Lag add lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.port_list[1])
+
             pkts_num = 10
             begin_port = 2000
             rcv_count = [0, 0, 0]

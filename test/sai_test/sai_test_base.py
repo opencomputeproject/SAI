@@ -221,7 +221,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_reset_default_vlan=True,
               is_create_vlan=True,
               is_create_fdb=True,
-              is_create_route=True,
+              is_create_default_route=True,
               is_create_lag=True,
               is_create_route_for_lag=True,
               wait_sec=5):
@@ -255,7 +255,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_create_lag=is_create_lag)
             t0_route_config_helper(
                 test_obj=self,
-                is_create_route=is_create_route,
+                is_create_default_route=is_create_default_route,
                 is_create_route_for_lag=is_create_route_for_lag)
 
         print("Waiting for switch to get ready before test, {} seconds ...".format(

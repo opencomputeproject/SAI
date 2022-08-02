@@ -23,10 +23,11 @@ from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from constant import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
-def t0_route_config_helper(test_obj, is_create_route=True, is_create_route_for_lag=True):
+def t0_route_config_helper(test_obj, is_create_default_route=True, is_create_route_for_lag=True):
     route_configer = RouteConfiger(test_obj)
-    if is_create_route:
+    if is_create_default_route:
         route_configer.create_default_route()
+        test_obj.port1_rif = route_configer.create_router_interface_for_port(port_id=test_obj.port_list[1])
 
     if is_create_route_for_lag:
         # config neighbor and route for lag1
