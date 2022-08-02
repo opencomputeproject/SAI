@@ -76,13 +76,11 @@ Skip test for broadcom, learn_disable, report error code -196608, no error log.
 Item: 15000933
 """
 
-
-@skip
 class VlanLearnDisableTest(T0TestBase):
     """
     Verify if MAC addresses are not learned on the port when bridge port learning is disabled
     """
-
+    @skip("skip for broadcom")
     def setUp(self):
         """
         Test the basic setup process
@@ -239,13 +237,11 @@ class BridgePortLearnDisableTest(T0TestBase):
 Skip test for broadcom, non bridge port still can learn.
 """
 
-
-@skip
 class NonBridgePortNoLearnTest(T0TestBase):
     """
     Verify if MAC addresses are not learned on the non-bridge port
     """
-
+    @skip("Skip test for broadcom, non bridge port still can learn.")
     def setUp(self):
         """
         Test the basic setup process
@@ -888,13 +884,11 @@ class FdbMacMovingAfterAgingTest(T0TestBase):
 SKIP: Static flush Not support by broadcom
 """
 
-
-@skip
 class FdbFlushVlanStaticTest(T0TestBase):
     '''
     Verify flushing of static MAC entries on VLAN
     '''
-
+    @skip("Static flush Not support by broadcom")
     def setUp(self):
         """
         Test the basic setup process
@@ -937,13 +931,11 @@ class FdbFlushVlanStaticTest(T0TestBase):
 SKIP: Static flush Not support by broadcom
 """
 
-
-@skip
 class FdbFlushPortStaticTest(T0TestBase):
     '''
     Verify flushing of static MAC entries on Port
     '''
-
+    @skip("Static flush Not support by broadcom")
     def setUp(self):
         """
         Test the basic setup process
@@ -984,13 +976,12 @@ class FdbFlushPortStaticTest(T0TestBase):
 SKIP: Static flush Not support by broadcom
 """
 
-
-@skip
 class FdbFlushAllStaticTest(T0TestBase):
     '''
     Verify flushing all of the static MAC entries.
     '''
-
+    
+    @skip("Static flush Not support by broadcom")
     def setUp(self):
         """
         Test the basic setup process
@@ -1253,13 +1244,11 @@ class FdbFlushAllDynamicTest(T0TestBase):
 SKIP: static not support
 """
 
-
-@skip
 class FdbFlushAllTest(T0TestBase):
     '''
     Verify flushing all  MAC entries.
     '''
-
+    @skip("static not support")
     def setUp(self):
         """
         Test the basic setup process
