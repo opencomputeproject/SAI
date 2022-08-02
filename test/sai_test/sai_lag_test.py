@@ -38,27 +38,27 @@ class LagConfigTest(T0TestBase):
                                            virtual_router_id=self.default_vrf,
                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
                                            port_id=self.port_list[1])
-        ip_dst = self.lag1_ip
-        pkt1 = simple_tcp_packet(eth_dst=self.router_mac,
+        ip_dst = self.lag1_route_dst
+        pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                  eth_src=self.local_server_mac_list[1],
                                  ip_dst=ip_dst,
                                  ip_src=self.local_server_ip_list[1],
                                  ip_id=105,
                                  ip_ttl=64)
-        pkt2 = simple_tcp_packet(eth_dst=self.router_mac,
+        pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                  eth_src=self.local_server_mac_list[2],
                                  ip_dst=ip_dst,
                                  ip_src=self.local_server_ip_list[2],
                                  ip_id=105,
                                  ip_ttl=64)
         exp_pkt1 = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                     eth_src=self.router_mac,
+                                     eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
                                      ip_src=self.local_server_ip_list[1],
                                      ip_id=105,
                                      ip_ttl=63)
         exp_pkt2 = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                     eth_src=self.router_mac,
+                                     eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
                                      ip_src=self.local_server_ip_list[2],
                                      ip_id=105,
@@ -104,16 +104,16 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -159,16 +159,16 @@ class LoadbalanceOnDesPortTest(T0TestBase):
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
                 des_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_dport=des_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_dport=des_port,
                                             ip_id=105,
@@ -213,15 +213,15 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
                 ip_src = '192.168.0.{}'.format(i)
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=ip_src,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=ip_src,
                                             ip_id=105,
                                             ip_ttl=63)                                                
@@ -263,15 +263,15 @@ class LoadbalanceOnDesIPTest(T0TestBase):
             max_itrs = 150
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
-                ip_dst = '10.1.1.{}'.format(i)
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                ip_dst = '192.168.11.{}'.format(i)
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
                                         ip_dst=ip_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
+                                            eth_src=ROUTER_MAC,
                                             ip_dst=ip_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             ip_id=105,
@@ -289,13 +289,13 @@ class LoadbalanceOnDesIPTest(T0TestBase):
 
 
 """
-Skip test for broadcom, can't load balance on protocal such as tcp and udp
+Skip test for broadcom, can't load balance on protocol such as tcp and udp
 Item: 15023123
 """
 @skip
-class LoadbalanceOnProtocalTest(T0TestBase):
+class LoadbalanceOnProtocolTest(T0TestBase):
     """
-    Test load balance of l3 by destinstion IP.
+    Test load balance of l3 by protocol.
     """
     def setUp(self):
         """
@@ -311,7 +311,7 @@ class LoadbalanceOnProtocalTest(T0TestBase):
         4. Check if packets are received on ports of lag1 equally.
         """
         try:
-            print("Lag l3 load balancing test based on protocal")
+            print("Lag l3 load balancing test based on protocol")
             sai_thrift_create_router_interface(self.client,
                                                virtual_router_id=self.default_vrf,
                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
@@ -320,29 +320,29 @@ class LoadbalanceOnProtocalTest(T0TestBase):
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
                 if i % 2 == 0:
-                    pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                    pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                             eth_src=self.local_server_mac_list[1],
-                                            ip_dst=self.lag1_ip,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             ip_id=105,
                                             ip_ttl=64)
                     exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                                eth_src=self.router_mac,
-                                                ip_dst=self.lag1_ip,
+                                                eth_src=ROUTER_MAC,
+                                                ip_dst=self.lag1_route_dst,
                                                 ip_src=self.local_server_ip_list[1],
                                                 ip_id=105,
                                                 ip_ttl=63)
                 else:
                     print("icmp")
-                    pkt = simple_icmp_packet(eth_dst=self.router_mac,
+                    pkt = simple_icmp_packet(eth_dst=ROUTER_MAC,
                                              eth_src=self.local_server_mac_list[1],
-                                             ip_dst=self.lag1_ip,
+                                             ip_dst=self.lag1_route_dst,
                                              ip_src=self.local_server_ip_list[1],
                                              ip_id=105,
                                              ip_ttl=64)
                     exp_pkt = simple_icmp_packet(eth_dst=self.lag1_nb_mac,
-                                                eth_src=self.router_mac,
-                                                ip_dst=self.lag1_ip,
+                                                eth_src=ROUTER_MAC,
+                                                ip_dst=self.lag1_route_dst,
                                                 ip_src=self.local_server_ip_list[1],
                                                 ip_id=105,
                                                 ip_ttl=63)                                                
@@ -390,16 +390,16 @@ class DisableEgressTest(T0TestBase):
             exp_drop = []
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -418,16 +418,16 @@ class DisableEgressTest(T0TestBase):
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -482,17 +482,17 @@ class DisableIngressTest(T0TestBase):
             begin_port = 2000
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.lag1_nb_mac,
                                         ip_dst=self.local_server_ip_list[1],
-                                        ip_src=self.lag1_ip,
+                                        ip_src=self.lag1_route_dst,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.local_server_mac_list[1],
-                                            eth_src=self.router_mac,
+                                            eth_src=ROUTER_MAC,
                                             ip_dst=self.local_server_ip_list[1],
-                                            ip_src=self.lag1_ip,
+                                            ip_src=self.lag1_route_dst,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -505,17 +505,17 @@ class DisableIngressTest(T0TestBase):
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.lag1_nb_mac,
                                         ip_dst=self.local_server_ip_list[1],
-                                        ip_src=self.lag1_ip,
+                                        ip_src=self.lag1_route_dst,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.local_server_mac_list[1],
-                                            eth_src=self.router_mac,
+                                            eth_src=ROUTER_MAC,
                                             ip_dst=self.local_server_ip_list[1],
-                                            ip_src=self.lag1_ip,
+                                            ip_src=self.lag1_route_dst,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -557,16 +557,16 @@ class RemoveLagMemberTest(T0TestBase):
             begin_port = 2000
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -579,16 +579,16 @@ class RemoveLagMemberTest(T0TestBase):
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -635,16 +635,16 @@ class AddLagMemberTest(T0TestBase):
             rcv_count = [0, 0, 0]
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -652,22 +652,23 @@ class AddLagMemberTest(T0TestBase):
                 send_packet(self, 1, pkt)
                 verify_packet_any_port(self, exp_pkt, [17, 18])
             print("add port21 into lag1")
-            sai_thrift_create_lag_member(self.client,
+            new_lag_member = sai_thrift_create_lag_member(self.client,
                                         lag_id=self.lag1.lag_id,
                                         port_id=self.port_list[21])
+            self.lag1.lag_members.append(new_lag_member)
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
-                pkt = simple_tcp_packet(eth_dst=self.router_mac,
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.local_server_mac_list[1],
-                                        ip_dst=self.lag1_ip,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                            eth_src=self.router_mac,
-                                            ip_dst=self.lag1_ip,
+                                            eth_src=ROUTER_MAC,
+                                            ip_dst=self.lag1_route_dst,
                                             ip_src=self.local_server_ip_list[1],
                                             tcp_sport=src_port,
                                             ip_id=105,
@@ -679,6 +680,7 @@ class AddLagMemberTest(T0TestBase):
                 self.assertGreater(cnt, 0, "each member in lag1 should receive pkt")
             status = sai_thrift_remove_lag_member(self.client, self.lag1.lag_members[2])
             self.assertEqual(status, SAI_STATUS_SUCCESS)
+            self.lag1.lag_members.remove(new_lag_member)
         finally:
             pass
 
@@ -698,15 +700,15 @@ class IndifferenceIngressPortTest(T0TestBase):
                                                virtual_router_id=self.default_vrf,
                                                type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
                                                vlan_id=10)
-            pkt = simple_tcp_packet(eth_dst=self.router_mac,
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src=self.local_server_mac_list[1],
-                                    ip_dst=self.lag1_ip,
+                                    ip_dst=self.lag1_route_dst,
                                     ip_src=self.local_server_ip_list[1],
                                     ip_id=105,
                                     ip_ttl=64)
             exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
-                                        eth_src=self.router_mac,
-                                        ip_dst=self.lag1_ip,
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst=self.lag1_route_dst,
                                         ip_src=self.local_server_ip_list[1],
                                         ip_id=105,
                                         ip_ttl=63)

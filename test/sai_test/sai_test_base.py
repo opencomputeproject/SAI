@@ -317,9 +317,10 @@ class T0TestBase(ThriftInterfaceDataPlane):
     
     def create_other_mac_ip(self):
         #LAG
-        self.lag1_ip = '10.1.1.100'
-        self.lag2_ip = '10.1.2.100'
-        self.router_mac = '00:77:66:55:44:00'
+        self.lag1_route_dst = '192.168.11.0'
+        self.lag2_route_dst = '192.168.12.0'
+        self.lag1_nhop_ip = '10.1.1.100'
+        self.lag2_nhop_ip = '10.1.2.100'
         self.lag1_nb_mac = '00:01:01:01:01:a0'
         self.lag2_nb_mac = '00:01:01:01:02:a0'
 
