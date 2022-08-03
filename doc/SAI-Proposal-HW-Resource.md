@@ -152,7 +152,7 @@ New workflow will identify if a given trap is applicable to ingress/egress/both.
 
 4. Create hostif trap for ingress stage
     sai_object_id_t trap_id;
-    sai_attribute_t trap_attrs[3];
+    sai_attribute_t trap_attrs[2];
 
     trap_attrs[0].id =
         (sai_attr_id_t) SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
@@ -160,18 +160,13 @@ New workflow will identify if a given trap is applicable to ingress/egress/both.
         SAI_HOSTIF_TRAP_TYPE_DNAT_MISS;
         
     trap_attrs[1].id =
-        (sai_attr_id_t) SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
-    trap_attrs[1].value =
-        SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN;
-        
-    trap_attrs[2].id =
         (sai_attr_id_t)SAI_HOSTIF_TRAP_ATTR_TRAP_GROUP;
-    trap_attrs[2].value.oid =
+    trap_attrs[1].value.oid =
         trap_group_id;
 
     sai_hostif_trap_api->create_hostif_trap(
         &trap_id,
-        3,
+        2,
         trap_attrs);
 ```
 
