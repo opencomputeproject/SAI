@@ -281,7 +281,7 @@ sub generate_server_template_from_skeleton {
 
                 # Define global variable before "class"
                 print {$server_template}
-"\nextern sai_object_id_t switch_id;\nsai_object_id_t switch_id;\n\n\n";
+"\nextern sai_object_id_t switch_id;\nsai_object_id_t switch_id;\nextern sai_object_id_t gSwitchId;\n\n\n";
 
                 # Define helper functions
                 print {$server_template} "[% PROCESS helper_functions %]\n\n\n";
