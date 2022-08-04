@@ -22,9 +22,10 @@ class Dut():
     """
     dut config
     """
+
     def __init__(self):
 
-        #router
+        # router
         self.default_vrf = None
         self.default_ipv6_route_entry = None
         self.default_ipv4_route_entry = None
@@ -32,27 +33,27 @@ class Dut():
         self.local_10v6_route_entry = None
         self.local_128v6_route_entry = None
 
-        #vlan
+        # vlan
         self.default_vlan_id = None
         self.vlans = {}
 
-        #switch
+        # switch
         self.switch_id = None
 
-        #fdb
+        # fdb
         self.default_vlan_fdb_list = None
         self.vlan_10_fdb_list = None
         self.vlan_20_fdb_list = None
 
-        #port
+        # port
         self.bridge_port_list = None
         self.default_1q_bridge_id = None
         self.default_trap_group = None
         self.host_intf_table_id = None
         self.portConfigs = None
         self.port_list = None
-        self.port_to_hostif_map= None
+        self.port_to_hostif_map = None
 
-        #lag
+        # lag
         self.lag1 = None
         self.lag2 = None
