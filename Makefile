@@ -43,11 +43,7 @@ test:
 	make -C test
 
 saithrift-build:
-<<<<<<< HEAD
 	SAIRPC_EXTRA_LIBS="$(SAIRPC_EXTRA_LIBS)" GEN_SAIRPC_OPTS=$(GEN_SAIRPC_OPTS) make -C $(SAITHRIFT_PATH)
-=======
-	GEN_SAIRPC_OPTS=$(GEN_SAIRPC_OPTS) make -C $(SAITHRIFT_PATH)
->>>>>>> Add GEN_SAIRPC_OPTS to pass flags to gensairpc.pl from top-level Make… (#1514)
 
 saithrift-install: saithrift-build
 	make -C $(SAITHRIFT_PATH) install
