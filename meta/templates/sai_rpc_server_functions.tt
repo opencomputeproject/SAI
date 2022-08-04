@@ -64,6 +64,12 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
     if (switch_id != NULL) {
         return switch_id;
     }
+
+    //check if the switch created in syncd
+    if (gSwitchId != NULL) {
+      switch_id = gSwitchId;
+      return switch_id;
+    }
    
 [%- END -%]
 
