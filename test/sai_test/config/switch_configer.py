@@ -32,7 +32,7 @@ def t0_switch_config_helper(test_obj):
 
     """
     configer = SwitchConfiger(test_obj)
-    test_obj.switch_id = configer.start_switch()
+    test_obj.dut.switch_id = configer.start_switch()
 
 
 class SwitchConfiger(object):

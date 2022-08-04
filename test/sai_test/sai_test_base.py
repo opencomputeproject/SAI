@@ -53,6 +53,9 @@ from config.lag_configer import t0_lag_config_helper
 from config.lag_configer import LagConfiger
 from config.route_configer import t0_route_config_helper
 from config.route_configer import RouteConfiger
+from config.dut import Dut
+from config.device import Device
+from config.device import DeviceType
 
 THRIFT_PORT = 9092
 
@@ -214,6 +217,18 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.local_server_mac_list for all the local server mac
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dut = Dut()
+        self.num_group_each_type = 20
+        self.num_device_each_group = 99
+        
+        self.servers,self.t0s,self.t1s =  [],[],[]
+        self.create_device()
+        self.lag1_neighbor = self.t1s[1][0]
+        self.lag2_neighbor = self.t1s[2][0]
+
+
     def setUp(self,
               force_config=False,
               is_create_hostIf=True,
@@ -226,9 +241,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_route_for_lag=True,
               wait_sec=5):
         super(T0TestBase, self).setUp()
-        self.create_server_mac_list()
-        self.create_server_ip_list()
-        self.create_other_mac_ip()
 
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
@@ -276,53 +288,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
         thread = Thread(target=start_shell)
         thread.start()
 
-    def create_server_mac_list(self):
-        """
-        Create servers(0-17) mac list.
-
-        Add those following attribute to this class:
-        self.local_server_mac_list for all the local server mac
-        """
-        local_server_mac_list = []
-        mac_list_temp = []
-        mac_list_temp = generate_mac_address_list(
-            FDB_SERVER_NUM, 0, range(0, 1))
-        local_server_mac_list.extend(mac_list_temp)
-        mac_list_temp = generate_mac_address_list(
-            FDB_SERVER_NUM, 1, range(1, 9))
-        local_server_mac_list.extend(mac_list_temp)
-        mac_list_temp = generate_mac_address_list(
-            FDB_SERVER_NUM, 2, range(9, 17))
-        local_server_mac_list.extend(mac_list_temp)
-        self.local_server_mac_list = local_server_mac_list
-
-    def create_server_ip_list(self):
-        """
-        Create servers(1-17) ip list.
-
-        Add those following attribute to this class:
-        self.local_server_ip_list for all the local server mac
-        """
-        local_server_ip_list = []
-        ip_list_temp = generate_ip_address_list(
-                SERVER_IP_PREFIX, 0, range(0, 1))
-        local_server_ip_list.extend(ip_list_temp)
-        ip_list_temp = generate_ip_address_list(
-                SERVER_IP_PREFIX, 1, range(1, 9))
-        local_server_ip_list.extend(ip_list_temp)
-        ip_list_temp = generate_ip_address_list(
-                SERVER_IP_PREFIX, 2, range(1, 9))
-        local_server_ip_list.extend(ip_list_temp)
-        self.local_server_ip_list = local_server_ip_list
-    
-    def create_other_mac_ip(self):
-        #LAG
-        self.lag1_route_dst = '192.168.11.0'
-        self.lag2_route_dst = '192.168.12.0'
-        self.lag1_nhop_ip = '10.1.1.100'
-        self.lag2_nhop_ip = '10.1.2.100'
-        self.lag1_nb_mac = '00:01:01:01:01:a0'
-        self.lag2_nb_mac = '00:01:01:01:02:a0'
 
     @staticmethod
     def status():
@@ -346,6 +311,12 @@ class T0TestBase(ThriftInterfaceDataPlane):
         aging_interval_buffer = 10
         time.sleep(timeout + aging_interval_buffer)
     
+    def create_device(self):
+        for group in range(self.num_group_each_type):
+            self.servers.append([Device(DeviceType.server,index,group) for index in range(1,self.num_device_each_group+1)])
+            self.t0s.append([Device(DeviceType.t0,index,group) for index in range(1,self.num_device_each_group+1)])
+            self.t1s.append([Device(DeviceType.t1,index,group) for index in range(1,self.num_device_each_group+1)])
+
     def tearDown(self):
         '''
         tear down

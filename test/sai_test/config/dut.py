@@ -18,31 +18,41 @@
 #
 #
 
-#IPv4
-DEFAULT_IP_V4_PREFIX = '0.0.0.0/0'
-DEFAULT_IP_V6_PREFIX = '0000:0000:0000:0000:0000:0000:0000:0000'
-FDB_MAC_PREFIX = '00:01:01'
+class Dut():
+    """
+    dut config
+    """
+    def __init__(self):
 
-LOCAL_IP_128V6_PREFIX = 'fe80::f68e:38ff:fe16:bc75/128'
-LOCAL_IP_10V6_PREFIX = 'fe80::/10'
+        #router
+        self.default_vrf = None
+        self.default_ipv6_route_entry = None
+        self.default_ipv4_route_entry = None
+        self.loopback_intf = None
+        self.local_10v6_route_entry = None
+        self.local_128v6_route_entry = None
 
-#MAC
-ROUTER_MAC = '00:77:66:55:44:00'
-"""Route mac address"""
-BROADCAST_MAC = "ff:ff:ff:ff:ff:ff"
-"""broadcast mac address"""
-MULTICAST_MAC = "01:00:5e:11:22:33"
-"""multicast mac address"""
+        #vlan
+        self.default_vlan_id = None
+        self.vlans = {}
 
-#Others
-PORT_MTU = 9122
-THRIFT_PORT = 9092
+        #switch
+        self.switch_id = None
 
-FDB_SERVER_NUM = '99'
-"""Stand for the server in the fdb"""
-FDB_T1_NUM = '01'
-FDB_T0_NUM = '00'
+        #fdb
+        self.default_vlan_fdb_list = None
+        self.vlan_10_fdb_list = None
+        self.vlan_20_fdb_list = None
 
-SERVER_IPV4_PREFIX = '192.168.{}.{}'
-T0_IPV4_PREFIX = '10.0.{}.{}'
-T1_IPV4_PREFIX = '10.1.{}.{}'
+        #port
+        self.bridge_port_list = None
+        self.default_1q_bridge_id = None
+        self.default_trap_group = None
+        self.host_intf_table_id = None
+        self.portConfigs = None
+        self.port_list = None
+        self.port_to_hostif_map= None
+
+        #lag
+        self.lag1 = None
+        self.lag2 = None

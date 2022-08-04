@@ -35,8 +35,9 @@ def t0_lag_config_helper(test_obj, is_create_lag=True):
     lag_configer = LagConfiger(test_obj)
 
     if is_create_lag:
-        test_obj.lag1 = lag_configer.create_lag([17, 18])
-        test_obj.lag2 = lag_configer.create_lag([19, 20])
+        test_obj.dut.lag1 = lag_configer.create_lag([17, 18])
+        test_obj.dut.lag2 = lag_configer.create_lag([19, 20])
+        
 
     """
     lag_configer.set_lag_hash_algorithm()
@@ -95,7 +96,7 @@ class LagConfiger(object):
         for port_index in lag_port_idxs:
             lag_member = sai_thrift_create_lag_member(self.client, 
                                                       lag_id=lag_id, 
-                                                      port_id=self.test_obj.port_list[port_index])
+                                                      port_id=self.test_obj.dut.port_list[port_index])
             self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
             lag_members.append(lag_member)
         return lag_members
