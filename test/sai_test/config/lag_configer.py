@@ -40,10 +40,11 @@ def t0_lag_config_helper(test_obj: 'T0TestBase', is_create_lag=True):
     lag_configer = LagConfiger(test_obj)
 
     if is_create_lag:
-        test_obj.dut.lag_list.append(lag_configer.create_lag([17, 18]))
-        test_obj.dut.lag_list.append(lag_configer.create_lag([19, 20]))
-        test_obj.dut.lag_list.append(lag_configer.create_lag([21, 22]))
-        test_obj.dut.lag_list.append(lag_configer.create_lag([23, 24]))
+        test_obj.dut.lag1 = lag_configer.create_lag([17, 18])
+        test_obj.dut.lag2 = lag_configer.create_lag([19, 20])
+        test_obj.lag1_neighbor = test_obj.t1s[1][0]
+        test_obj.lag2_neighbor = test_obj.t1s[2][0]
+        
 
     """
     lag_configer.set_lag_hash_algorithm()
@@ -98,11 +99,10 @@ class LagConfiger(object):
 
         lag_members = []
         for port_index in lag_port_idxs:
-            lag_member = sai_thrift_create_lag_member(self.client,
-                                                      lag_id=lag.oid,
-                                                      port_id=self.test_obj.dut.port_obj_list[port_index].oid)
-            self.test_obj.assertEqual(
-                self.test_obj.status(), SAI_STATUS_SUCCESS)
+            lag_member = sai_thrift_create_lag_member(self.client, 
+                                                      lag_id=lag_id, 
+                                                      port_id=self.test_obj.dut.port_list[port_index])
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
             lag_members.append(lag_member)
             lag.lag_members.append(lag_member)
             lag.member_port_indexs.append(port_index)

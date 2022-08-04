@@ -74,11 +74,21 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
         test_obj.dut.def_bridge_port_list \
             = configer.load_default_active_1q_bridge_ports()
 
-    configer.get_cpu_port_queue()
+    if is_create_hostIf:
+        host_intf_table_id, hostif_list = configer.create_host_intf(
+            ports_config=portConfigs, trap_group=default_trap_group, port_list=port_list)
+        # Todo try to get the host interface if not create the hostif (need to check if already created or not)
+        port_to_hostif_map = configer.generate_port_to_hostif_map(
+            port_list, hostif_list)
+        test_obj.dut.host_intf_table_id = host_intf_table_id
+        test_obj.dut.hostif_list = hostif_list
+
+    test_obj.dut.dev_port_list = dev_port_list
+    test_obj.dut.portConfigs = portConfigs
     test_obj.dut.default_trap_group = default_trap_group
 
 
-def t0_port_tear_down_helper(test_obj: 'T0TestBase'):
+def t0_port_tear_down_helper(test_obj):
     '''
     Args:
         test_obj: test object
@@ -516,14 +526,14 @@ class PortConfiger(object):
 
         for index, port in enumerate(test_port_list):
             port_attr = sai_thrift_get_port_attribute(
-                self.client, port.oid, oper_status=True)
-            print("Turn up port {}".format(index))
+                self.client, port_id, oper_status=True)
+            print("Turn up port {}".format(port_index))
             port_up = True
             if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
                 port_up = False
                 for num_of_tries in range(retries):
                     port_attr = sai_thrift_get_port_attribute(
-                        self.client, port.oid, oper_status=True)
+                        self.client, port_id, oper_status=True)
                     if port_attr['oper_status'] == SAI_PORT_OPER_STATUS_UP:
                         port_up = True
                         break

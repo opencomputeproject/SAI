@@ -309,14 +309,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
     """
 
     def __init__(self, *args, **kwargs):
-        """
-        Init the T0 Test Object.
-        Set the following class attributes:
-            dut: Dut object in test.
-            servers: Simulating the server Objects in Test.
-            t1_list: Simulating the T1 objects in test
-
-        """
         super().__init__(*args, **kwargs)
         self.dut = Dut()
         """
@@ -537,56 +529,13 @@ class T0TestBase(ThriftInterfaceDataPlane):
         time.sleep(timeout + aging_interval_buffer)
 
     def create_device(self):
-        """
-        Init the device data.
-
-        Server in format 192.168.[group_id].[nums_index]
-        T1 in format 10.1.[[group_id].[nums_index]]
-        group_id: group id for the server
-        nums_index: index number among nums, start from 0
-        """
-
-        for srv_grp_idx in self.server_groups:
-            self.servers[srv_grp_idx] = [Device(DeviceType.server, index, srv_grp_idx)
-                                         for index in range(0, self.num_device_each_group)]
-        for t1_grp_idx in self.t1_groups:
-            self.t1_list[t1_grp_idx] = [Device(DeviceType.t1, index, t1_grp_idx)
-                                        for index in range(0, self.num_device_each_group)]
-
-    def create_vlan_interface(self, vlan: Vlan, reuse=True):
-        """
-        Create vlan route interface.
-
-        Attrs:
-            Vlan: vlan for the route interface
-        """
-        self.route_configer.create_router_interface(vlan, reuse)
-
-    def create_lag_interface(self, lag: Lag, reuse=True):
-        """
-        Create lag route interface.
-
-        Attrs:
-            Lag: lag for the route interface
-        """
-        self.route_configer.create_router_interface(lag, reuse)
-
-    def get_dev_port_index(self, port_index):
-        """
-        port_index: port index
-        return dev port index from port index
-        """
-        return self.dut.port_obj_list[port_index].dev_port_index
-
-    def get_dev_port_indexes(self, port_indexes:List):
-        """
-        port_indexes: port index list
-        return dev port indexes from port indexes
-        """
-        dev_port_indexes = []
-        for port_index in port_indexes:
-            dev_port_indexes.append(self.dut.port_obj_list[port_index].dev_port_index)
-        return dev_port_indexes
+        for group in range(self.num_group_each_type):
+            self.servers.append([Device(DeviceType.server, index, group)
+                                for index in range(1, self.num_device_each_group+1)])
+            self.t0s.append([Device(DeviceType.t0, index, group)
+                            for index in range(1, self.num_device_each_group+1)])
+            self.t1s.append([Device(DeviceType.t1, index, group)
+                            for index in range(1, self.num_device_each_group+1)])
 
     def create_tunnel_route(self, tunnel: Tunnel, vm_ip, vm_ipv6):
         """
