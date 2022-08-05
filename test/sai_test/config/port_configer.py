@@ -70,6 +70,7 @@ def t0_port_config_helper(test_obj, is_recreate_bridge=True, is_create_hostIf=Tr
         test_obj.host_intf_table_id = host_intf_table_id
         test_obj.hostif_list = hostif_list
 
+    configer.get_cpu_port_queue()
     test_obj.dev_port_list = dev_port_list
     test_obj.portConfigs = portConfigs
     test_obj.default_trap_group = default_trap_group
@@ -448,6 +449,30 @@ class PortConfiger(object):
             int: mtu number
         '''
         return int(self.config.get('mtu'))
+
+    def get_cpu_port_queue(self):
+
+        attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
+        self.test_obj.cpu_port = attr['cpu_port']
+
+        attr = sai_thrift_get_port_attribute(self.client,
+                                             self.test_obj.cpu_port,
+                                             qos_number_of_queues=True)
+        num_queues = attr['qos_number_of_queues']
+        q_list = sai_thrift_object_list_t(count=num_queues)
+        attr = sai_thrift_get_port_attribute(self.client,
+                                             self.test_obj.cpu_port,
+                                             qos_queue_list=q_list)
+        for queue in range(0, num_queues):
+            queue_id = attr['qos_queue_list'].idlist[queue]
+            setattr(self.test_obj, 'cpu_queue%s' % queue, queue_id)
+            q_attr = sai_thrift_get_queue_attribute(
+                self.client,
+                queue_id,
+                port=True,
+                index=True,
+                parent_scheduler_node=True)
+            self.test_obj.assertEqual(queue, q_attr['index'])
 
 
 class PortConfig(object):
