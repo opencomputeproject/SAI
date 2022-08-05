@@ -15,7 +15,7 @@ class NoHostRouteTest(T0TestBase):
         T0TestBase.setUp(self)
           
         self.dev_port1 = self.dev_port_list[1]
-        self.ipv4_addr = "01.1.1.10"
+        self.ipv4_addr = "10.1.1.10"
         self.mac_addr  = "00:10:10:10:10:10"
         self.nbr_entry_v4 = sai_thrift_neighbor_entry_t(
                 rif_id=self.lag1_rif,
@@ -30,8 +30,9 @@ class NoHostRouteTest(T0TestBase):
     
     def noHostRouteNeighborTest(self):
         '''
-        Verifies if IPv4 host route is not created according to
-        SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE attribute value
+        Add a neighbor for IP 10.1.1.10 on the LAG1 Route interface and a new MACX
+        Send packet on port5 with DMAC: SWITCH_MAC DIP:10.1.1.10
+        verify packet received on one of LAG1 member
         '''
         print("\nnoHostRouteNeighborTest()")
 
@@ -57,7 +58,7 @@ class NoHostRouteTest(T0TestBase):
 
 class NoHostRouteTestV6(T0TestBase):
     """
-    Verifies if IPv4 host route is not created according to
+    Verifies if IPv6 host route is not created according to
     SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE attribute value
     """
 
@@ -83,8 +84,9 @@ class NoHostRouteTestV6(T0TestBase):
     
     def noHostRouteNeighborTestV6(self):
         '''
-        Verifies if IPv4 host route is not created according to
-        SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE attribute value
+        Add a neighbor for IP 2001:0db8::1:10 on the LAG1 Route interface and a new MACX
+        Send packet on port5 with DMAC: SWITCH_MAC DIP:2001:0db8::1:10
+        verify packet received on one of LAG1 member
         '''
         print("\nnoHostRouteNeighborTestv6()")
 
@@ -135,8 +137,9 @@ class AddHostRouteTest(T0TestBase):
 
     def addHostRouteNeighborTest(self):
         '''
-        Verifies if IPv4 host route is created according to
-        SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE attribute value
+        Add a neighbor for IP 10.1.1.10 on the LAG1 Route interface, set NO_HOST_ROUTE=True
+        Send packet with on port5 with DMAC: SWITCH_MAC DIP:10.1.1.10
+        Verify no packet was received on any port
         '''
         print("\naddHostRouteIpv4NeighborTest()")
 
@@ -166,7 +169,7 @@ class AddHostRouteTest(T0TestBase):
 
 class AddHostRouteTestV6(T0TestBase):
     """
-    Verifies if IPv4 host route is created according to
+    Verifies if IPv6 host route is created according to
     SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE attribute value
     """
 
@@ -191,8 +194,9 @@ class AddHostRouteTestV6(T0TestBase):
 
     def addHostRouteNeighborTestV6(self):
         '''
-        Verifies if IPv4 host route is created according to
-        SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE attribute value
+        Add a neighbor for IP 2001:0db8::1:10 on the LAG1 Route interface, set NO_HOST_ROUTE=True
+        Send packet with on port5 with DMAC: SWITCH_MAC DIP:2001:0db8::1:10
+        Verify no packet was received on any port
         '''
         print("\naddHostRouteNeighborTestV6()")
 
