@@ -34,66 +34,79 @@
  */
 
 /**
- * @brief Attribute data for #SAI_DASH_ACL_ATTR_ACTION
+ * @brief Attribute data for #SAI_DASH_ACL_RULE_ATTR_ACTION
  */
-typedef enum _sai_dash_acl_action_t
+typedef enum _sai_dash_acl_rule_action_t
 {
-    SAI_DASH_ACL_ACTION_PERMIT,
+    SAI_DASH_ACL_RULE_ACTION_PERMIT,
 
-    SAI_DASH_ACL_ACTION_PERMIT_AND_CONTINUE,
+    SAI_DASH_ACL_RULE_ACTION_PERMIT_AND_CONTINUE,
 
-    SAI_DASH_ACL_ACTION_DENY,
+    SAI_DASH_ACL_RULE_ACTION_DENY,
 
-    SAI_DASH_ACL_ACTION_DENY_AND_CONTINUE,
+    SAI_DASH_ACL_RULE_ACTION_DENY_AND_CONTINUE,
 
-} sai_dash_acl_action_t;
+} sai_dash_acl_rule_action_t;
 
 /**
- * @brief Attribute data for #SAI_DASH_ACL_ATTR_STAGE
+ * @brief Attribute ID for dash_acl_dash_acl_group
  */
-typedef enum _sai_dash_acl_stage_t
-{
-    SAI_DASH_ACL_STAGE_INBOUND_ACL_STAGE1,
-
-    SAI_DASH_ACL_STAGE_INBOUND_ACL_STAGE2,
-
-    SAI_DASH_ACL_STAGE_INBOUND_ACL_STAGE3,
-
-    SAI_DASH_ACL_STAGE_OUTBOUND_ACL_STAGE1,
-
-    SAI_DASH_ACL_STAGE_OUTBOUND_ACL_STAGE2,
-
-    SAI_DASH_ACL_STAGE_OUTBOUND_ACL_STAGE3,
-
-} sai_dash_acl_stage_t;
-
-/**
- * @brief Attribute ID for dash_acl_dash_acl
- */
-typedef enum _sai_dash_acl_attr_t
+typedef enum _sai_dash_acl_group_attr_t
 {
     /**
      * @brief Start of attributes
      */
-    SAI_DASH_ACL_ATTR_START,
+    SAI_DASH_ACL_GROUP_ATTR_START,
+
+    /**
+     * @brief Action set_acl_group_attrs parameter IP_ADDR_FAMILY
+     *
+     * @type sai_ip_addr_family_t
+     * @flags CREATE_AND_SET
+     * @default SAI_IP_ADDR_FAMILY_IPV4
+     */
+    SAI_DASH_ACL_GROUP_ATTR_IP_ADDR_FAMILY = SAI_DASH_ACL_GROUP_ATTR_START,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_DASH_ACL_GROUP_ATTR_END,
+
+    /** Custom range base value */
+    SAI_DASH_ACL_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_DASH_ACL_GROUP_ATTR_CUSTOM_RANGE_END,
+
+} sai_dash_acl_group_attr_t;
+
+/**
+ * @brief Attribute ID for dash_acl_dash_acl_rule
+ */
+typedef enum _sai_dash_acl_rule_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_DASH_ACL_RULE_ATTR_START,
 
     /**
      * @brief Action
      *
-     * @type sai_dash_acl_action_t
+     * @type sai_dash_acl_rule_action_t
      * @flags CREATE_AND_SET
-     * @default SAI_DASH_ACL_ACTION_PERMIT
+     * @default SAI_DASH_ACL_RULE_ACTION_PERMIT
      */
-    SAI_DASH_ACL_ATTR_ACTION = SAI_DASH_ACL_ATTR_START,
+    SAI_DASH_ACL_RULE_ATTR_ACTION = SAI_DASH_ACL_RULE_ATTR_START,
 
     /**
-     * @brief Exact matched key eni_id
+     * @brief Exact matched key dash_acl_group_id
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_ENI
+     * @objects SAI_OBJECT_TYPE_DASH_ACL_GROUP
      */
-    SAI_DASH_ACL_ATTR_ENI_ID,
+    SAI_DASH_ACL_RULE_ATTR_DASH_ACL_GROUP_ID,
 
     /**
      * @brief List matched key dip
@@ -101,7 +114,7 @@ typedef enum _sai_dash_acl_attr_t
      * @type sai_ip_address_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_DASH_ACL_ATTR_DIP,
+    SAI_DASH_ACL_RULE_ATTR_DIP,
 
     /**
      * @brief List matched key sip
@@ -109,7 +122,7 @@ typedef enum _sai_dash_acl_attr_t
      * @type sai_ip_address_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_DASH_ACL_ATTR_SIP,
+    SAI_DASH_ACL_RULE_ATTR_SIP,
 
     /**
      * @brief List matched key protocol
@@ -117,7 +130,7 @@ typedef enum _sai_dash_acl_attr_t
      * @type sai_u8_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_DASH_ACL_ATTR_PROTOCOL,
+    SAI_DASH_ACL_RULE_ATTR_PROTOCOL,
 
     /**
      * @brief Range_list matched key src_port
@@ -125,7 +138,7 @@ typedef enum _sai_dash_acl_attr_t
      * @type sai_u16_range_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_DASH_ACL_ATTR_SRC_PORT,
+    SAI_DASH_ACL_RULE_ATTR_SRC_PORT,
 
     /**
      * @brief Range_list matched key dst_port
@@ -133,16 +146,7 @@ typedef enum _sai_dash_acl_attr_t
      * @type sai_u16_range_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_DASH_ACL_ATTR_DST_PORT,
-
-    /**
-     * @brief Stage
-     *
-     * @type sai_dash_acl_stage_t
-     * @flags CREATE_AND_SET
-     * @default SAI_DASH_ACL_STAGE_INBOUND_ACL_STAGE1
-     */
-    SAI_DASH_ACL_ATTR_STAGE,
+    SAI_DASH_ACL_RULE_ATTR_DST_PORT,
 
     /**
      * @brief Attach a counter
@@ -155,7 +159,7 @@ typedef enum _sai_dash_acl_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_DASH_ACL_ATTR_COUNTER_ID,
+    SAI_DASH_ACL_RULE_ATTR_COUNTER_ID,
 
     /**
      * @brief Rule priority in table
@@ -163,81 +167,140 @@ typedef enum _sai_dash_acl_attr_t
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
-    SAI_DASH_ACL_ATTR_PRIORITY,
+    SAI_DASH_ACL_RULE_ATTR_PRIORITY,
 
     /**
      * @brief End of attributes
      */
-    SAI_DASH_ACL_ATTR_END,
+    SAI_DASH_ACL_RULE_ATTR_END,
 
     /** Custom range base value */
-    SAI_DASH_ACL_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_DASH_ACL_RULE_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_DASH_ACL_ATTR_CUSTOM_RANGE_END,
+    SAI_DASH_ACL_RULE_ATTR_CUSTOM_RANGE_END,
 
-} sai_dash_acl_attr_t;
+} sai_dash_acl_rule_attr_t;
 
 /**
- * @brief Create dash_acl_dash_acl
+ * @brief Create dash_acl_dash_acl_group
  *
- * @param[out] dash_acl_id Entry id
+ * @param[out] dash_acl_group_id Entry id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_create_dash_acl_fn)(
-        _Out_ sai_object_id_t *dash_acl_id,
+typedef sai_status_t (*sai_create_dash_acl_group_fn)(
+        _Out_ sai_object_id_t *dash_acl_group_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_acl_dash_acl
+ * @brief Remove dash_acl_dash_acl_group
  *
- * @param[in] dash_acl_id Entry id
+ * @param[in] dash_acl_group_id Entry id
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_remove_dash_acl_fn)(
-        _In_ sai_object_id_t dash_acl_id);
+typedef sai_status_t (*sai_remove_dash_acl_group_fn)(
+        _In_ sai_object_id_t dash_acl_group_id);
 
 /**
- * @brief Set attribute for dash_acl_dash_acl
+ * @brief Set attribute for dash_acl_dash_acl_group
  *
- * @param[in] dash_acl_id Entry id
+ * @param[in] dash_acl_group_id Entry id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_set_dash_acl_attribute_fn)(
-        _In_ sai_object_id_t dash_acl_id,
+typedef sai_status_t (*sai_set_dash_acl_group_attribute_fn)(
+        _In_ sai_object_id_t dash_acl_group_id,
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_acl_dash_acl
+ * @brief Get attribute for dash_acl_dash_acl_group
  *
- * @param[in] dash_acl_id Entry id
+ * @param[in] dash_acl_group_id Entry id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_get_dash_acl_attribute_fn)(
-        _In_ sai_object_id_t dash_acl_id,
+typedef sai_status_t (*sai_get_dash_acl_group_attribute_fn)(
+        _In_ sai_object_id_t dash_acl_group_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Create dash_acl_dash_acl_rule
+ *
+ * @param[out] dash_acl_rule_id Entry id
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_create_dash_acl_rule_fn)(
+        _Out_ sai_object_id_t *dash_acl_rule_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove dash_acl_dash_acl_rule
+ *
+ * @param[in] dash_acl_rule_id Entry id
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_dash_acl_rule_fn)(
+        _In_ sai_object_id_t dash_acl_rule_id);
+
+/**
+ * @brief Set attribute for dash_acl_dash_acl_rule
+ *
+ * @param[in] dash_acl_rule_id Entry id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_set_dash_acl_rule_attribute_fn)(
+        _In_ sai_object_id_t dash_acl_rule_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get attribute for dash_acl_dash_acl_rule
+ *
+ * @param[in] dash_acl_rule_id Entry id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_get_dash_acl_rule_attribute_fn)(
+        _In_ sai_object_id_t dash_acl_rule_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 typedef struct _sai_dash_acl_api_t
 {
-    sai_create_dash_acl_fn           create_dash_acl;
-    sai_remove_dash_acl_fn           remove_dash_acl;
-    sai_set_dash_acl_attribute_fn    set_dash_acl_attribute;
-    sai_get_dash_acl_attribute_fn    get_dash_acl_attribute;
-    sai_bulk_object_create_fn        create_dash_acls;
-    sai_bulk_object_remove_fn        remove_dash_acls;
+    sai_create_dash_acl_group_fn           create_dash_acl_group;
+    sai_remove_dash_acl_group_fn           remove_dash_acl_group;
+    sai_set_dash_acl_group_attribute_fn    set_dash_acl_group_attribute;
+    sai_get_dash_acl_group_attribute_fn    get_dash_acl_group_attribute;
+    sai_bulk_object_create_fn              create_dash_acl_groups;
+    sai_bulk_object_remove_fn              remove_dash_acl_groups;
+
+    sai_create_dash_acl_rule_fn            create_dash_acl_rule;
+    sai_remove_dash_acl_rule_fn            remove_dash_acl_rule;
+    sai_set_dash_acl_rule_attribute_fn     set_dash_acl_rule_attribute;
+    sai_get_dash_acl_rule_attribute_fn     get_dash_acl_rule_attribute;
+    sai_bulk_object_create_fn              create_dash_acl_rules;
+    sai_bulk_object_remove_fn              remove_dash_acl_rules;
 
 } sai_dash_acl_api_t;
 
