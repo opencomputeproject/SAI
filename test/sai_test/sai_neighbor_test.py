@@ -1,6 +1,7 @@
 from sai_test_base import T0TestBase
 from sai_utils import *
 
+
 class NoHostRouteTest(T0TestBase):
     """
     Verifies if IPv4 host route is not created according to
@@ -419,25 +420,20 @@ class NhopDiffPrefixRemoveLonger(T0TestBase):
         Delete new created nhop with ipprefix length 24
         Delete new created nhop with ipprefix length 16
         '''
-        self.nbr_entry_16 = sai_thrift_neighbor_entry_t(
+        self.nbr_entry_v4 = sai_thrift_neighbor_entry_t(
                 rif_id=self.lag1_rif,
-                ip_address=sai_ipprefix(self.ipv4_addr + '/16'))
+                ip_address=sai_ipaddress(self.ipv4_addr))
         status = sai_thrift_create_neighbor_entry(
                 self.client,
-                self.nbr_entry_16,
-                dst_mac_address=self.mac_addr1)
+                self.nbr_entry_v4,
+                dst_mac_address=self.mac_addr1,
+                no_host_route=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+        
         self.subnet_nhop_16 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(self.ipv4_addr +'/16'), router_interface_id=self.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         
-        self.nbr_entry_24 = sai_thrift_neighbor_entry_t(
-                rif_id=self.lag1_rif,
-                ip_address=sai_ipprefix(self.ipv4_addr + '/24'))
-        status = sai_thrift_create_neighbor_entry(
-                self.client,
-                self.nbr_entry_24,
-                dst_mac_address=self.mac_addr2)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+
         self.subnet_nhop_24 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(self.ipv4_addr +'/24'), router_interface_id=self.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
       
@@ -455,7 +451,7 @@ class NhopDiffPrefixRemoveLonger(T0TestBase):
             pass
     
     def tearDown(self):
-        sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_16)
+        sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
         super().tearDown()
 
 class NhopDiffPrefixRemoveLongerV6(T0TestBase):
@@ -481,17 +477,6 @@ class NhopDiffPrefixRemoveLongerV6(T0TestBase):
         Delete new created nhop with ipprefix length 128
         Delete new created nhop with ipprefix length 64
         '''
-        self.nbr_entry_64 = sai_thrift_neighbor_entry_t(
-                rif_id=self.lag1_rif,
-                ip_address=sai_ipprefix(self.ipv6_addr + '/64'))
-        status = sai_thrift_create_neighbor_entry(
-                self.client,
-                self.nbr_entry_64,
-                dst_mac_address=self.mac_addr1)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
-        self.subnet_nhop_64 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(self.ipv6_addr +'/64'), router_interface_id=self.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        
         self.nbr_entry_128 = sai_thrift_neighbor_entry_t(
                 rif_id=self.lag1_rif,
                 ip_address=sai_ipprefix(self.ipv6_addr + '/128'))
@@ -500,6 +485,10 @@ class NhopDiffPrefixRemoveLongerV6(T0TestBase):
                 self.nbr_entry_128,
                 dst_mac_address=self.mac_addr2)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        self.subnet_nhop_64 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(self.ipv6_addr +'/64'), router_interface_id=self.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        
         self.subnet_nhop_128 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(self.ipv6_addr +'/128'), router_interface_id=self.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
       
@@ -517,7 +506,7 @@ class NhopDiffPrefixRemoveLongerV6(T0TestBase):
             pass
     
     def tearDown(self):
-        sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_64)
+        sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_128)
         super().tearDown()
 
 class NhopDiffPrefixRemoveShorter(T0TestBase):
@@ -588,7 +577,6 @@ class NhopDiffPrefixRemoveShorterV6(T0TestBase):
         Test the basic setup process.
         """
         T0TestBase.setUp(self)
-          
         self.dev_port1 = self.dev_port_list[1]
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr1  = "00:10:10:10:10:10"
