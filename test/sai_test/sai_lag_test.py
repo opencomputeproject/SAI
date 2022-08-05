@@ -224,7 +224,8 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
-                print('ip_src={}, rcv_port={}'.format(self.servers[1][i].ipv4, rcv_idx))
+                print('ip_src={}, rcv_port={}'.format(
+                    self.servers[1][i].ipv4, rcv_idx))
                 rcv_count[rcv_idx] += 1
 
             print(rcv_count)
@@ -659,8 +660,8 @@ class AddLagMemberTest(T0TestBase):
                 verify_packet_any_port(self, exp_pkt, [17, 18])
             print("add port21 into lag1")
             new_lag_member = sai_thrift_create_lag_member(self.client,
-                                            lag_id=self.dut.lag1.lag_id,
-                                            port_id=self.dut.port_list[21])
+                                                          lag_id=self.dut.lag1.lag_id,
+                                                          port_id=self.dut.port_list[21])
             self.dut.lag1.lag_members.append(new_lag_member)
             for i in range(0, pkts_num):
                 src_port = begin_port + i
@@ -683,10 +684,12 @@ class AddLagMemberTest(T0TestBase):
                     self, exp_pkt, [17, 18, 21])
                 rcv_count[rcv_idx] += 1
             for cnt in rcv_count:
-                self.assertGreater(cnt, 0, "each member in lag1 should receive pkt")
-            status = sai_thrift_remove_lag_member(self.client, self.dut.lag1.lag_members[2])
+                self.assertGreater(
+                    cnt, 0, "each member in lag1 should receive pkt")
+            status = sai_thrift_remove_lag_member(
+                self.client, self.dut.lag1.lag_members[2])
             self.assertEqual(status, SAI_STATUS_SUCCESS)
-            self.lag1.lag_members.remove(new_lag_member)
+            self.dut.lag1.lag_members.remove(new_lag_member)
         finally:
             pass
 

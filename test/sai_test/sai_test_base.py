@@ -222,12 +222,10 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.dut = Dut()
         self.num_group_each_type = 20
         self.num_device_each_group = 99
-        
-        self.servers,self.t0s,self.t1s =  [],[],[]
+        #2D list [group_id][device_id]
+        self.servers, self.t0s, self.t1s = [], [], []
         self.create_device()
-        self.lag1_neighbor = self.t1s[1][0]
-        self.lag2_neighbor = self.t1s[2][0]
-
+        
 
     def setUp(self,
               force_config=False,
@@ -288,7 +286,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
         thread = Thread(target=start_shell)
         thread.start()
 
-
     @staticmethod
     def status():
         """
@@ -310,12 +307,15 @@ class T0TestBase(ThriftInterfaceDataPlane):
         print("Waiting for fdb entry to age")
         aging_interval_buffer = 10
         time.sleep(timeout + aging_interval_buffer)
-    
+
     def create_device(self):
         for group in range(self.num_group_each_type):
-            self.servers.append([Device(DeviceType.server,index,group) for index in range(1,self.num_device_each_group+1)])
-            self.t0s.append([Device(DeviceType.t0,index,group) for index in range(1,self.num_device_each_group+1)])
-            self.t1s.append([Device(DeviceType.t1,index,group) for index in range(1,self.num_device_each_group+1)])
+            self.servers.append([Device(DeviceType.server, index, group)
+                                for index in range(1, self.num_device_each_group+1)])
+            self.t0s.append([Device(DeviceType.t0, index, group)
+                            for index in range(1, self.num_device_each_group+1)])
+            self.t1s.append([Device(DeviceType.t1, index, group)
+                            for index in range(1, self.num_device_each_group+1)])
 
     def tearDown(self):
         '''
