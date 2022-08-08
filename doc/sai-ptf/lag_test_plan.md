@@ -12,7 +12,7 @@
     - [Case5: test_loadbalance_on_protocol_v4](#case5-test_loadbalance_on_protocol_v4)
     - [Case6: test_loadbalance_on_source_port_v6](#case6-test_loadbalance_on_source_port_v6)
     - [Case7: test_loadbalance_on_destinstion_port_v6](#case7-test_loadbalance_on_destinstion_port_v6)
-    - [Case8: test_loadbalance_on_source_ip_v7](#case8-test_loadbalance_on_source_ip_v7)
+    - [Case8: test_loadbalance_on_source_ip_v6](#case8-test_loadbalance_on_source_ip_v6)
     - [Case9: test_loadbalance_on_destinstion_ip_v6](#case9-test_loadbalance_on_destinstion_ip_v6)
     - [Case10: test_loadbalance_on_protocol_v6](#case10-test_loadbalance_on_protocol_v6)
   - [Test Group2: Disable Egress/Ingress](#test-group2-disable-egressingress)
@@ -91,7 +91,7 @@ These cases will cover five scenarios: src/dst IP, src/dst port, and protocol. c
 ### Case5: test_loadbalance_on_protocol_v4
 ### Case6: test_loadbalance_on_source_port_v6
 ### Case7: test_loadbalance_on_destinstion_port_v6
-### Case8: test_loadbalance_on_source_ip_v7
+### Case8: test_loadbalance_on_source_ip_v6
 ### Case9: test_loadbalance_on_destinstion_ip_v6
 ### Case10: test_loadbalance_on_protocol_v6
 
