@@ -47,20 +47,20 @@ class IngressMacUpdateTest(T0TestBase):
         print("\nmacUpdateTest()")
 
         new_router_mac = "00:77:66:55:44:44"
-        ip_dst = self.lag1_route_dst
+        ip_dst = self.servers[11][0].ipv4
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                 eth_src=self.local_server_mac_list[1],
+                                 eth_src=self.servers[1][0].mac,
                                  ip_dst=ip_dst,
-                                 ip_src=self.local_server_ip_list[1],
+                                 ip_src=self.servers[1][0].ipv4,
                                  ip_id=105,
                                  ip_ttl=64)
 
 
-        exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
+        exp_pkt = simple_tcp_packet(eth_dst=self.lag1_neighbor.mac,
                                      eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
-                                     ip_src=self.local_server_ip_list[1],
+                                     ip_src=self.servers[1][0].ipv4,
                                      ip_id=105,
                                      ip_ttl=63)
 
@@ -101,7 +101,7 @@ class IngressDisableTestV4(T0TestBase):
         """
 
         T0TestBase.setUp(self)
-        self.port1 = self.port_list[1]
+        self.port1 = self.dut.port_list[1]
 
     def test_ingress_disable_ipv4(self):
         """
@@ -116,20 +116,20 @@ class IngressDisableTestV4(T0TestBase):
 
         print("\ntest_ingress_disable_ipv4()")
    
-        ip_dst = self.lag1_route_dst
+        ip_dst = self.servers[11][0].ipv4
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                 eth_src=self.local_server_mac_list[1],
+                                 eth_src=self.servers[1][0].mac,
                                  ip_dst=ip_dst,
-                                 ip_src=self.local_server_ip_list[1],
+                                 ip_src=self.servers[1][0].ipv4,
                                  ip_id=105,
                                  ip_ttl=64)
 
 
-        exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
+        exp_pkt = simple_tcp_packet(eth_dst=self.lag1_neighbor.mac,
                                      eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
-                                     ip_src=self.local_server_ip_list[1],
+                                     ip_src=self.servers[1][0].ipv4,
                                      ip_id=105,
                                      ip_ttl=63)
 
@@ -192,20 +192,20 @@ class IngressMtuTestV4(T0TestBase):
 
         try:   
             print("Max MTU is 200, send pkt size 200, send to port/lag")
-            ip_dst = self.lag1_route_dst
+            ip_dst = self.servers[11][0].ipv4
 
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=self.local_server_mac_list[1],
+                                    eth_src=self.servers[1][0].mac,
                                     ip_dst=ip_dst,
-                                    ip_src=self.local_server_ip_list[1],
+                                    ip_src=self.servers[1][0].ipv4,
                                     ip_id=105,
                                     ip_ttl=64,
                                     pktlen=200 + 14)
 
-            exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
+            exp_pkt = simple_tcp_packet(eth_dst=self.lag1_neighbor.mac,
                                         eth_src=ROUTER_MAC,
                                         ip_dst=ip_dst,
-                                        ip_src=self.local_server_ip_list[1],
+                                        ip_src=self.servers[1][0].ipv4,
                                         ip_id=105,
                                         ip_ttl=63,
                                         pktlen=200 + 14)
@@ -215,17 +215,17 @@ class IngressMtuTestV4(T0TestBase):
 
             print("Max MTU is 200, send pkt size 201, dropped")          
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=self.local_server_mac_list[1],
+                                    eth_src=self.servers[1][0].mac,
                                     ip_dst=ip_dst,
-                                    ip_src=self.local_server_ip_list[1],
+                                    ip_src=self.servers[1][0].ipv4,
                                     ip_id=105,
                                     ip_ttl=64,
                                     pktlen=201 + 14)
 
-            exp_pkt = simple_tcp_packet(eth_dst=self.lag1_nb_mac,
+            exp_pkt = simple_tcp_packet(eth_dst=self.lag1_neighbor.mac,
                                         eth_src=ROUTER_MAC,
                                         ip_dst=ip_dst,
-                                        ip_src=self.local_server_ip_list[1],
+                                        ip_src=self.servers[1][0].ipv4,
                                         ip_id=105,
                                         ip_ttl=63,
                                         pktlen=201 + 14)
