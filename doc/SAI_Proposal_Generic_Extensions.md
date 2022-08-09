@@ -1,7 +1,7 @@
-SAI Generic Extensions API Proposal
+SAI Generic Programmable Extensions API Proposal
 ===================================
 
-Title       | SAI Generic Extensions Proposal
+Title       | SAI Generic Programmable Extensions Proposal
 ------------|--------------------------------
 Authors     | Intel.
 Status      | Draft
@@ -41,6 +41,8 @@ SAI Generic extensions introduce a new SAI object SAI_OBJECT_TYPE_GENERIC_PROGRA
 - Support ability to add user features
 - Support device-specific capabilities
 - Rapid application prototyping
+
+SAI already supports extensions in a static manner via the experimental directory. They allow implementations to statically update SAI with new object types and attributes. This proposal allows for a more dynamic definition of new SAI objects and attributes. While it would not completely eliminate modifying SAI for more complex cases, this proposal will allow for new functionality without major SAI changes.
 
 The purpose of this document is to introduce these new entities and how they can be leveraged to extend data plane functionality.
 1. sai_json_t - New SAI datatype 
@@ -118,6 +120,19 @@ typedef enum _sai_generic_programmable_entry_attr_t
      * @default empty
      */
     SAI_GENERIC_PROGRAMMABLE_ATTR_ENTRY,
+
+    /**
+     * @brief Attach a counter
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_GENERIC_PROGRAMMABLE_ATTR_COUNTER_ID,
 
     /**
      * @brief End of attributes
@@ -205,11 +220,7 @@ While there are multiple mechanisms to extend these, one recommendation is as be
 2. Reference counting. The OID on its own can just be a sequentially incrementing integer and does not hold any context. The additional metadata provides the context to allow an application to perform operations like reference counting, object references, etc.
 
 ## Counters ##
-Counters in SAI use 2 patterns.
-- Counters are retrieved using the objects OID and call the associated get_stats() API. sai_get_vlan_stats_fn for SAI_OBJECT_TYPE_VLAN is an example.
-- Counters are retrieved by attaching an explicit counter object to an attribute of the object counters are associated with. SAI_ACL_ENTRY_ATTR_ACTION_COUNTER is used to attach a SAI_OBJECT_TYPE_ACL_COUNTER object. The stats are then obtained by calling sai_get_acl_counter_attribute_fn.
-
-TBD: Use one of the above patterns to retrieve counters based on feedback
+Counters are retrieved by attaching an explicit counter object to an attribute of the object counters are associated with.
 
 ## CRM ##
 Table availability and other characteristics can be queried similarly to how the rest of the SAI objects work. sai_object_type_get_availability() allows passing sai_json_t type with the object_name encoded in the attribute list.
