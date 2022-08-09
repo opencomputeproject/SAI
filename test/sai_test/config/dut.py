@@ -49,6 +49,7 @@ class Dut():
         self.bridge_port_list = None
         self.default_1q_bridge_id = None
         self.default_trap_group = None
+        self.dev_port_list = None
         self.host_intf_table_id = None
         self.portConfigs = None
         self.port_list = None
