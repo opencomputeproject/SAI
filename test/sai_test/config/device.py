@@ -45,22 +45,32 @@ class Device():
         self.ip_num = ip_num
         if self.type == DeviceType.server:
             self.ip_prefix = SERVER_IPV4_PREFIX
+            self.ip_prefix_v6 = SERVER_IPV6_PREFIX
             self.fdb_device_num = FDB_SERVER_NUM
         elif self.type == DeviceType.t1:
             self.ip_prefix = T1_IPV4_PREFIX
+            self.ip_prefix_v6 = T1_IPV6_PREFIX
             self.fdb_device_num = FDB_T1_NUM
         elif self.type == DeviceType.t0:
             self.ip_prefix = T0_IPV4_PREFIX
+            self.ip_prefix_v6 = T0_IPV6_PREFIX
             self.fdb_device_num = FDB_T0_NUM
 
         self.mac = self._generate_mac_address()
         self.ipv4 = self._generate_ipv4_address()
+        self.ipv6 = self._generate_ipv6_address()
 
     def _generate_ipv4_address(self):
         """
-        Generate ip address.
+        Generate ipv4 address.
         """
         return self.ip_prefix.format(self.group_id,self.id)
+    
+    def _generate_ipv6_address(self):
+        """
+        Generate ipv6 address.
+        """
+        return self.ip_prefix_v6.format(self.group_id,self.id)
 
     
     def _generate_mac_address(self):

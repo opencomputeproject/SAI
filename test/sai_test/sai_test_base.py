@@ -237,6 +237,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_default_route=True,
               is_create_lag=True,
               is_create_route_for_lag=True,
+              is_ipv4=True,
               wait_sec=5):
         super(T0TestBase, self).setUp()
 
@@ -266,7 +267,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
             t0_route_config_helper(
                 test_obj=self,
                 is_create_default_route=is_create_default_route,
-                is_create_route_for_lag=is_create_route_for_lag)
+                is_create_route_for_lag=is_create_route_for_lag,
+                is_ipv4=is_ipv4)
 
         print("Waiting for switch to get ready before test, {} seconds ...".format(
             wait_sec))
