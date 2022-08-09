@@ -56,6 +56,7 @@ from config.route_configer import RouteConfiger
 from config.dut import Dut
 from config.device import Device
 from config.device import DeviceType
+from typing import List
 
 THRIFT_PORT = 9092
 
@@ -222,10 +223,11 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.dut = Dut()
         self.num_group_each_type = 20
         self.num_device_each_group = 99
-        #2D list [group_id][device_id]
-        self.servers, self.t0s, self.t1s = [], [], []
+        # 2D list [group_id][device_id]
+        self.servers: List[List[Device]] = [[]]
+        self.t0s: List[List[Device]] = [[]]
+        self.t1s: List[List[Device]] = [[]]
         self.create_device()
-        
 
     def setUp(self,
               force_config=False,

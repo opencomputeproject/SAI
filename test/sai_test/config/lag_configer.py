@@ -21,9 +21,12 @@
 
 from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
-def t0_lag_config_helper(test_obj, is_create_lag=True):
+def t0_lag_config_helper(test_obj: 'T0TestBase', is_create_lag=True):
     """
     Make lag configurations base on the configuration in the test plan.
     set the configuration in test directly.
@@ -53,7 +56,7 @@ class LagConfiger(object):
     Class use to make all the Lag configurations.
     """
 
-    def __init__(self, test_obj) -> None:
+    def __init__(self, test_obj:'T0TestBase') -> None:
         """
         Init Lag configrer.
         

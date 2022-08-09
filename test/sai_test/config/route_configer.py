@@ -22,9 +22,12 @@
 from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from constant import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
-def t0_route_config_helper(test_obj, is_create_default_route=True, is_create_route_for_lag=True):
+def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True, is_create_route_for_lag=True):
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
         route_configer.create_default_route()
@@ -56,7 +59,7 @@ class RouteConfiger(object):
     Class use to make all the route configurations.
     """
 
-    def __init__(self, test_obj) -> None:
+    def __init__(self, test_obj:'T0TestBase') -> None:
         """
         Init Route configer.
 
