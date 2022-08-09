@@ -53,6 +53,7 @@ class Dut():
         self.portConfigs = None
         self.port_list = None
         self.port_to_hostif_map = None
+        self.dev_port_list = None
 
         # lag
         self.lag1 = None
