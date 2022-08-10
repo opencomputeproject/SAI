@@ -75,7 +75,7 @@ class FdbConfiger(object):
     Class use to make all the fdb configurations.
     """
 
-    def __init__(self, test_obj) -> None:
+    def __init__(self, test_obj:'T0TestBase') -> None:
         """
         Init the Port configer.
 

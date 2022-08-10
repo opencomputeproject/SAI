@@ -84,7 +84,7 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
     test_obj.dut.bridge_port_list = bridge_port_list
 
 
-def t0_port_tear_down_helper(test_obj):
+def t0_port_tear_down_helper(test_obj: 'T0TestBase'):
     '''
     Args:
         test_obj: test object
@@ -101,7 +101,7 @@ class PortConfiger(object):
     Class use to make all the basic configurations.
     """
 
-    def __init__(self, test_obj) -> None:
+    def __init__(self, test_obj: 'T0TestBase') -> None:
         """
         Init the Port configer.
 
