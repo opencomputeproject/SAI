@@ -1,4 +1,5 @@
 
+from statistics import mode
 from sai_test_base import T0TestBase
 from multiprocessing import Process
 from sai_thrift.sai_headers import *
@@ -34,14 +35,14 @@ class BufferStatistics(T0TestBase):
             self.pkts.append(self.pkt)
 
         self.ingr_pool = sai_thrift_create_buffer_pool(
-            self.client, type=SAI_BUFFER_POOL_TYPE_INGRESS, size=self.buf_size)
+            self.client, type=SAI_BUFFER_POOL_TYPE_INGRESS, size=self.buf_size, threshold_mode=SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC)
         self.assertGreater(self.ingr_pool, 0)
 
         self.buffer_profile = sai_thrift_create_buffer_profile(
             self.client, pool_id=self.ingr_pool,
-            reserved_buffer_size=self.reserved_buf_size,
-            shared_static_th=self.reserved_buf_size,
-            threshold_mode=SAI_BUFFER_PROFILE_THRESHOLD_MODE_STATIC)
+            reserved_buffer_size=0,
+            threshold_mode=SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC,
+            shared_dynamic_th=3)
         self.assertGreater(self.buffer_profile, 0)
 
         sw_attrs = sai_thrift_get_switch_attribute(
@@ -140,7 +141,7 @@ class BufferStatistics(T0TestBase):
         print("Set all PGs as lossless")
         status = sai_thrift_set_port_attribute(
             self.client, self.dut.port_list[1],
-            priority_flow_control=-127)
+            priority_flow_control=127)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         # status = sai_thrift_set_port_attribute(
         #     self.client, self.dut.port_list[1],
@@ -175,7 +176,7 @@ class BufferStatistics(T0TestBase):
         print()
         print("Send {} pkts, pkt size: {} B".format(self.tx_cnt, self.pkt_len))
         for _ in range(self.tx_cnt):
-            send_packet(self, self.dut.dev_port_list[1], self.pkts[0])
+            send_packet(self, self.dut.dev_port_list[1], self.pkts[2])
         print()
 
     def sendVerify(self, expected_drops, verify_reserved_buffer_size):
@@ -198,16 +199,14 @@ class BufferStatistics(T0TestBase):
         traffic.start()
 
         while traffic.is_alive():
-            stats = sai_thrift_get_buffer_pool_stats(
-                self.client, self.ingr_pool)
+            stats = sai_thrift_get_buffer_pool_stats(self.client, self.ingr_pool)
 
             if (stats["SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_BYTES"]
                     > bp_curr_occupancy_bytes):
                 bp_curr_occupancy_bytes = stats["SAI_BUFFER_POOL_STAT_"
                                                 "CURR_OCCUPANCY_BYTES"]           
                 
-            stats = sai_thrift_get_ingress_priority_group_stats(
-                self.client, self.ipgs[0])
+            stats = sai_thrift_get_ingress_priority_group_stats(self.client, self.ipgs[0])
 
             if (stats["SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES"]
                     > ipg_curr_occupancy_bytes):
@@ -254,7 +253,7 @@ class BufferStatistics(T0TestBase):
         #pdb.set_trace()
 
         stats = sai_thrift_get_ingress_priority_group_stats(
-            self.client, self.ipgs[0])
+            self.client, self.ipgs[1])
         print("SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES "
               "(max measured)", ipg_curr_occupancy_bytes)
         print("SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_BYTES "
