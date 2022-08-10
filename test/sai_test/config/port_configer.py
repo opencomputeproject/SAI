@@ -22,9 +22,13 @@ from collections import OrderedDict
 from ptf import config
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from sai_thrift.sai_adapter import *
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
 
-def t0_port_config_helper(test_obj, is_recreate_bridge=True, is_create_hostIf=True):
+def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_create_hostIf=True):
     """
     Make t0 Port configurations base on the configuration in the test plan.
     Set the configuration in test directly.
@@ -77,6 +81,7 @@ def t0_port_config_helper(test_obj, is_recreate_bridge=True, is_create_hostIf=Tr
     test_obj.dut.port_to_hostif_map = port_to_hostif_map
     test_obj.dut.default_1q_bridge_id = default_1q_bridge_id
     test_obj.dut.bridge_port_list = bridge_port_list
+
 
 def t0_port_tear_down_helper(test_obj):
     '''

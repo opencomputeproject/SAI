@@ -20,9 +20,12 @@
 
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from sai_thrift.sai_adapter import *
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
-def t0_fdb_config_helper(test_obj, is_create_fdb=True):
+def t0_fdb_config_helper(test_obj :'T0TestBase', is_create_fdb=True):
     """
     Make t0 FDB configurations base on the configuration in the test plan.
     Set the configuration in test directly.
@@ -54,7 +57,8 @@ def t0_fdb_config_helper(test_obj, is_create_fdb=True):
     # Todo dynamic use the vlan_member_port_map to add data to fdb
     
 
-def t0_fdb_tear_down_helper(test_obj):
+
+def t0_fdb_tear_down_helper(test_obj:'T0TestBase'):
     '''
     Args:
         test_obj: test object

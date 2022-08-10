@@ -32,6 +32,14 @@ class Dut():
         self.loopback_intf = None
         self.local_10v6_route_entry = None
         self.local_128v6_route_entry = None
+        self.lag1_rif = None
+        self.lag1_nbr = None
+        self.lag1_nhop = None
+        self.lag1_route = None
+        self.lag2_rif = None
+        self.lag2_nbr = None
+        self.lag2_nhop = None
+        self.lag2_route = None
 
         # vlan
         self.default_vlan_id = None
