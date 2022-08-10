@@ -29,7 +29,7 @@ def t0_route_config_helper(test_obj, is_create_default_route=True, is_create_rou
     if is_create_default_route:
         route_configer.create_default_route()
         test_obj.port0_rif = route_configer.create_router_interface_for_port(
-            port_id=test_obj.dut.port_list[1])
+            port_id=test_obj.dut.port_list[0])
 
     if is_create_route_for_lag:
         # config neighbor and route for lag1
