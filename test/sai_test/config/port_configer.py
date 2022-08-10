@@ -74,6 +74,7 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
         test_obj.dut.host_intf_table_id = host_intf_table_id
         test_obj.dut.hostif_list = hostif_list
 
+    configer.get_cpu_port_queue()
     test_obj.dut.dev_port_list = dev_port_list
     test_obj.dut.portConfigs = portConfigs
     test_obj.dut.default_trap_group = default_trap_group
