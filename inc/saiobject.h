@@ -102,9 +102,6 @@ typedef union _sai_object_key_entry_t
     /** @validonly object_type == SAI_OBJECT_TYPE_OUTBOUND_CA_TO_PA_ENTRY */
     sai_outbound_ca_to_pa_entry_t outbound_ca_to_pa_entry;
 
-    /** @validonly object_type == SAI_OBJECT_TYPE_OUTBOUND_ENI_TO_VNI_ENTRY */
-    sai_outbound_eni_to_vni_entry_t outbound_eni_to_vni_entry;
-
     /** @validonly object_type == SAI_OBJECT_TYPE_OUTBOUND_ROUTING_ENTRY */
     sai_outbound_routing_entry_t outbound_routing_entry;
 
