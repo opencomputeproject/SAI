@@ -50,7 +50,7 @@ class L2PortForwardingTest(T0TestBase):
                 print("L2 Forwarding from {} to port: {}".format(
                     self.dut.dev_port_list[1],
                     self.dut.dev_port_list[index]))
-                pkt = simple_udp_packet(eth_dst=self.local_server_mac_list[index],
+                pkt = simple_udp_packet(eth_dst=self.servers[1][index-1].mac,
                                         eth_src=self.servers[1][0].mac,
                                         vlan_vid=10,
                                         ip_id=101,
@@ -419,7 +419,7 @@ class RemoveVlanmemberLearnTest(T0TestBase):
         """
         print("RemoveVlanmemberLearnTest")
         unknown_mac1 = "00:01:01:99:99:99"
-        self.pkt1 = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        self.pkt1 = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                       eth_src=unknown_mac1,
                                       vlan_vid=10)
         self.pkt2 = simple_udp_packet(eth_dst=unknown_mac1,
