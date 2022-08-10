@@ -27,31 +27,50 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
-def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True, is_create_route_for_lag=True):
+
+def t0_route_config_helper(test_obj, is_create_default_route=True, is_create_route_for_lag=True, is_ipv4=True):
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
         route_configer.create_default_route()
+        test_obj.port0_rif = route_configer.create_router_interface_for_port(
+            port_id=test_obj.dut.port_list[0])
 
     if is_create_route_for_lag:
         # config neighbor and route for lag1
         test_obj.dut.lag1_rif = route_configer.create_router_interface_for_port(
             port_id=test_obj.dut.lag1.lag_id)
-        test_obj.dut.lag1_nbr = route_configer.create_neighbor_for_rif(
-            rif_id=test_obj.dut.lag1_rif, ip_addr=test_obj.lag1_neighbor.ipv4, mac_addr=test_obj.lag1_neighbor.mac)
-        test_obj.dut.lag1_nhop = route_configer.create_next_hop_for_rif(
-            ip_addr=test_obj.lag1_neighbor.ipv4, rif=test_obj.dut.lag1_rif)
-        test_obj.dut.lag1_route = route_configer.create_route_entry(
-            dst_ip=test_obj.servers[11][0].ipv4+'/24', next_hop=test_obj.dut.lag1_nhop)
+        if is_ipv4:
+            test_obj.dut.lag1_nbr = route_configer.create_neighbor_for_rif(
+                rif_id=test_obj.dut.lag1_rif, ip_addr=test_obj.lag1_neighbor.ipv4, mac_addr=test_obj.lag1_neighbor.mac)
+            test_obj.dut.lag1_nhop = route_configer.create_next_hop_for_rif(
+                ip_addr=test_obj.lag1_neighbor.ipv4, rif=test_obj.dut.lag1_rif)
+            test_obj.dut.lag1_route = route_configer.create_route_entry(
+                dst_ip=test_obj.servers[11][0].ipv4+'/24', next_hop=test_obj.dut.lag1_nhop)
+        else:
+            test_obj.dut.lag1_nbr = route_configer.create_neighbor_for_rif(
+                rif_id=test_obj.dut.lag1_rif, ip_addr=test_obj.lag1_neighbor.ipv6, mac_addr=test_obj.lag1_neighbor.mac)
+            test_obj.dut.lag1_nhop = route_configer.create_next_hop_for_rif(
+                ip_addr=test_obj.lag1_neighbor.ipv6, rif=test_obj.dut.lag1_rif)
+            test_obj.dut.lag1_route = route_configer.create_route_entry(
+                dst_ip=test_obj.servers[11][0].ipv6+'/112', next_hop=test_obj.dut.lag1_nhop)
 
         # config neighbor and route for lag2
         test_obj.dut.lag2_rif = route_configer.create_router_interface_for_port(
             port_id=test_obj.dut.lag2.lag_id)
-        test_obj.dut.lag2_nbr = route_configer.create_neighbor_for_rif(
-            rif_id=test_obj.dut.lag2_rif, ip_addr=test_obj.lag2_neighbor.ipv4, mac_addr=test_obj.lag2_neighbor.mac)
-        test_obj.dut.lag2_nhop = route_configer.create_next_hop_for_rif(
-            ip_addr=test_obj.lag2_neighbor.ipv4, rif=test_obj.dut.lag2_rif)
-        test_obj.dut.lag2_route = route_configer.create_route_entry(
-            dst_ip=test_obj.servers[12][0].ipv4+'/24', next_hop=test_obj.dut.lag2_nhop)
+        if is_ipv4:
+            test_obj.dut.lag2_nbr = route_configer.create_neighbor_for_rif(
+                rif_id=test_obj.dut.lag2_rif, ip_addr=test_obj.lag2_neighbor.ipv4, mac_addr=test_obj.lag2_neighbor.mac)
+            test_obj.dut.lag2_nhop = route_configer.create_next_hop_for_rif(
+                ip_addr=test_obj.lag2_neighbor.ipv4, rif=test_obj.dut.lag2_rif)
+            test_obj.dut.lag2_route = route_configer.create_route_entry(
+                dst_ip=test_obj.servers[12][0].ipv4+'/24', next_hop=test_obj.dut.lag2_nhop)
+        else:
+            test_obj.dut.lag2_nbr = route_configer.create_neighbor_for_rif(
+                rif_id=test_obj.dut.lag2_rif, ip_addr=test_obj.lag2_neighbor.ipv6, mac_addr=test_obj.lag2_neighbor.mac)
+            test_obj.dut.lag2_nhop = route_configer.create_next_hop_for_rif(
+                ip_addr=test_obj.lag2_neighbor.ipv6, rif=test_obj.dut.lag2_rif)
+            test_obj.dut.lag2_route = route_configer.create_route_entry(
+                dst_ip=test_obj.servers[12][0].ipv6+'/112', next_hop=test_obj.dut.lag2_nhop)
 
 
 class RouteConfiger(object):

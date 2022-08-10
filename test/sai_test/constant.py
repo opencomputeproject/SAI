@@ -46,3 +46,7 @@ FDB_T0_NUM = '00'
 SERVER_IPV4_PREFIX = '192.168.{}.{}'
 T0_IPV4_PREFIX = '10.0.{}.{}'
 T1_IPV4_PREFIX = '10.1.{}.{}'
+
+SERVER_IPV6_PREFIX = 'fc02::{}:{}'
+T0_IPV6_PREFIX = 'fc00:0::{}:{}'
+T1_IPV6_PREFIX = 'fc00:1::{}:{}'
