@@ -33,11 +33,18 @@ class BufferStatistics(T0TestBase):
             self.pkt = simple_udp_packet(eth_dst=ROUTER_MAC, eth_src=self.servers[1][0].mac,  ip_dst=self.servers[11][0].ipv4, ip_src=self.servers[1][0].ipv4, ip_id=105, ip_ttl=64,
                 pktlen=self.pkt_len - 4, ip_dscp=i)  # account for 4B FCS
             self.pkts.append(self.pkt)
+        #|c|SAI_OBJECT_TYPE_BUFFER_POOL:oid:0x180000000009f2|SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE=SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC|SAI_BUFFER_POOL_ATTR_SIZE=32689152|SAI_BUFFER_POOL_ATTR_TYPE=SAI_BUFFER_POOL_TYPE_INGRESS|SAI_BUFFER_POOL_ATTR_XOFF_SIZE=2058240
+
 
         self.ingr_pool = sai_thrift_create_buffer_pool(
             self.client, type=SAI_BUFFER_POOL_TYPE_INGRESS, size=self.buf_size, threshold_mode=SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC, xoff_size=2058240)
         self.assertGreater(self.ingr_pool, 0)
+        #|c|SAI_OBJECT_TYPE_BUFFER_POOL:oid:0x180000000009f1|SAI_BUFFER_POOL_ATTR_THRESHOLD_MODE=SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC|SAI_BUFFER_POOL_ATTR_SIZE=24192256|SAI_BUFFER_POOL_ATTR_TYPE=SAI_BUFFER_POOL_TYPE_EGRESS
+        self.egr_pool = sai_thrift_create_buffer_pool(
+            self.client, type=SAI_BUFFER_POOL_TYPE_EGRESS, size=24192256, threshold_mode=SAI_BUFFER_POOL_THRESHOLD_MODE_DYNAMIC, xoff_size=2058240)
+        self.assertGreater(self.ingr_pool, 0)
 
+        #|c|SAI_OBJECT_TYPE_BUFFER_PROFILE:oid:0x190000000009f6|SAI_BUFFER_PROFILE_ATTR_POOL_ID=oid:0x180000000009f2|SAI_BUFFER_PROFILE_ATTR_XON_TH=4608|SAI_BUFFER_PROFILE_ATTR_XON_OFFSET_TH=4608|SAI_BUFFER_PROFILE_ATTR_XOFF_TH=60416|SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE=4608|SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE=SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC|SAI_BUFFER_PROFILE_ATTR_SHARED_DYNAMIC_TH=-3
         self.buffer_profile = sai_thrift_create_buffer_profile(
             self.client, pool_id=self.ingr_pool,
             xon_th=4608,
@@ -46,6 +53,12 @@ class BufferStatistics(T0TestBase):
             reserved_buffer_size=4608,
             threshold_mode=SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC,
             shared_dynamic_th=-3)
+        #|c|SAI_OBJECT_TYPE_BUFFER_PROFILE:oid:0x190000000009f4|SAI_BUFFER_PROFILE_ATTR_THRESHOLD_MODE=SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC|SAI_BUFFER_PROFILE_ATTR_SHARED_DYNAMIC_TH=-1|SAI_BUFFER_PROFILE_ATTR_POOL_ID=oid:0x180000000009f1|SAI_BUFFER_PROFILE_ATTR_RESERVED_BUFFER_SIZE=1792
+        self.ebuffer_profile = sai_thrift_create_buffer_profile(
+            self.client, pool_id=self.egr_pool,
+            reserved_buffer_size=1792,
+            threshold_mode=SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC,
+            shared_dynamic_th=-1)
         self.assertGreater(self.buffer_profile, 0)
 
         sw_attrs = sai_thrift_get_switch_attribute(
@@ -61,6 +74,11 @@ class BufferStatistics(T0TestBase):
         self.ipg_list = ipg_list['ingress_priority_group_list'].idlist
         self.ipgs = []
 
+        q_list = sai_thrift_object_list_t(count=100)
+        q_list = sai_thrift_get_port_attribute(self.client, port_oid=self.dut.port_list[18], qos_queue_list=q_list)
+        self.q_list = q_list['qos_queue_list'].idlist
+        self.qs = []
+
         index=0
         for ipg in self.ipg_list:
             # self.ipg = sai_thrift_create_ingress_priority_group(
@@ -72,6 +90,18 @@ class BufferStatistics(T0TestBase):
             self.assertEqual(status, SAI_STATUS_SUCCESS)
             print("Assign profile for PG index:{} oid:{}".format(index, ipg))
             self.ipgs.append(ipg)
+            index = index + 1
+
+        for q in self.q_list:
+            # self.ipg = sai_thrift_create_ingress_priority_group(
+            #     self.client, port=self.dut.port_list[1], index=self.ipg_idx,
+            #     buffer_profile=self.buffer_profile)
+            
+            self.assertGreater(q, 0)
+            status = sai_thrift_set_queue_attribute(self.client, queue_oid=q, buffer_profile_id=self.ebuffer_profile)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            print("Assign profile for Queue index:{} oid:{}".format(index, q))
+            self.qs.append(q)
             index = index + 1
 
         # Configure QoS maps.
@@ -278,6 +308,13 @@ class BufferStatistics(T0TestBase):
             stats = sai_thrift_get_ingress_priority_group_stats(self.client, ipg)
             for key in stats:
                 print("pg index: {} key:{} value:{} ".format(index, key, stats[key]))
+            index = index + 1
+
+        index = 0
+        for q in self.qs:
+            stats = sai_thrift_get_queue_stats(self.client, q)
+            for key in stats:
+                print("Queue index: {} key:{} value:{} ".format(index, key, stats[key]))
             index = index + 1
 
         # pdb.set_trace()
