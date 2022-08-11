@@ -136,9 +136,11 @@ typedef struct _sai_outbound_ca_to_pa_entry_t
     sai_object_id_t switch_id;
 
     /**
-     * @brief Exact matched key dest_vni
+     * @brief Exact matched key dst_vnet_id
+     *
+     * @objects SAI_OBJECT_TYPE_VNET
      */
-    sai_uint32_t dest_vni;
+    sai_object_id_t dst_vnet_id;
 
     /**
      * @brief Exact matched key dip
@@ -176,13 +178,13 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DMAC,
 
     /**
-     * @brief Action set_tunnel_mapping parameter USE_DST_VNI
+     * @brief Action set_tunnel_mapping parameter USE_DST_VNET_VNI
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_USE_DST_VNI,
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_USE_DST_VNET_VNI,
 
     /**
      * @brief Attach a counter
@@ -209,59 +211,6 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_CUSTOM_RANGE_END,
 
 } sai_outbound_ca_to_pa_entry_attr_t;
-
-/**
- * @brief Entry for outbound_eni_to_vni_entry
- */
-typedef struct _sai_outbound_eni_to_vni_entry_t
-{
-    /**
-     * @brief Switch ID
-     *
-     * @objects SAI_OBJECT_TYPE_SWITCH
-     */
-    sai_object_id_t switch_id;
-
-    /**
-     * @brief Exact matched key eni_id
-     *
-     * @objects SAI_OBJECT_TYPE_ENI
-     */
-    sai_object_id_t eni_id;
-
-} sai_outbound_eni_to_vni_entry_t;
-
-/**
- * @brief Attribute ID for dash_vnet_outbound_eni_to_vni_entry
- */
-typedef enum _sai_outbound_eni_to_vni_entry_attr_t
-{
-    /**
-     * @brief Start of attributes
-     */
-    SAI_OUTBOUND_ENI_TO_VNI_ENTRY_ATTR_START,
-
-    /**
-     * @brief Action set_vni parameter VNI
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_OUTBOUND_ENI_TO_VNI_ENTRY_ATTR_VNI = SAI_OUTBOUND_ENI_TO_VNI_ENTRY_ATTR_START,
-
-    /**
-     * @brief End of attributes
-     */
-    SAI_OUTBOUND_ENI_TO_VNI_ENTRY_ATTR_END,
-
-    /** Custom range base value */
-    SAI_OUTBOUND_ENI_TO_VNI_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_OUTBOUND_ENI_TO_VNI_ENTRY_ATTR_CUSTOM_RANGE_END,
-
-} sai_outbound_eni_to_vni_entry_attr_t;
 
 /**
  * @brief Entry for outbound_routing_entry
@@ -309,14 +258,16 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION = SAI_OUTBOUND_ROUTING_ENTRY_ATTR_START,
 
     /**
-     * @brief Action route_vnet, route_vnet_direct parameter DEST_VNET_VNI
+     * @brief Action route_vnet, route_vnet_direct parameter DST_VNET_ID
      *
-     * @type sai_uint32_t
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @objects SAI_OBJECT_TYPE_VNET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT
      */
-    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DEST_VNET_VNI,
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DST_VNET_ID,
 
     /**
      * @brief Action route_vnet_direct parameter OVERLAY_IP
@@ -353,6 +304,38 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_CUSTOM_RANGE_END,
 
 } sai_outbound_routing_entry_attr_t;
+
+/**
+ * @brief Attribute ID for dash_vnet_vnet
+ */
+typedef enum _sai_vnet_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_VNET_ATTR_START,
+
+    /**
+     * @brief Action set_vnet_attrs parameter VNI
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_VNET_ATTR_VNI = SAI_VNET_ATTR_START,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_VNET_ATTR_END,
+
+    /** Custom range base value */
+    SAI_VNET_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_VNET_ATTR_CUSTOM_RANGE_END,
+
+} sai_vnet_attr_t;
 
 /**
  * @brief Entry for pa_validation_entry
@@ -608,101 +591,6 @@ typedef sai_status_t (*sai_bulk_remove_outbound_ca_to_pa_entry_fn)(
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Create dash_vnet_outbound_eni_to_vni_entry
- *
- * @param[in] outbound_eni_to_vni_entry Entry
- * @param[in] attr_count Number of attributes
- * @param[in] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
- */
-typedef sai_status_t (*sai_create_outbound_eni_to_vni_entry_fn)(
-        _In_ const sai_outbound_eni_to_vni_entry_t *outbound_eni_to_vni_entry,
-        _In_ uint32_t attr_count,
-        _In_ const sai_attribute_t *attr_list);
-
-/**
- * @brief Remove dash_vnet_outbound_eni_to_vni_entry
- *
- * @param[in] outbound_eni_to_vni_entry Entry
- *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
- */
-typedef sai_status_t (*sai_remove_outbound_eni_to_vni_entry_fn)(
-        _In_ const sai_outbound_eni_to_vni_entry_t *outbound_eni_to_vni_entry);
-
-/**
- * @brief Set attribute for dash_vnet_outbound_eni_to_vni_entry
- *
- * @param[in] outbound_eni_to_vni_entry Entry
- * @param[in] attr Attribute
- *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
- */
-typedef sai_status_t (*sai_set_outbound_eni_to_vni_entry_attribute_fn)(
-        _In_ const sai_outbound_eni_to_vni_entry_t *outbound_eni_to_vni_entry,
-        _In_ const sai_attribute_t *attr);
-
-/**
- * @brief Get attribute for dash_vnet_outbound_eni_to_vni_entry
- *
- * @param[in] outbound_eni_to_vni_entry Entry
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
- */
-typedef sai_status_t (*sai_get_outbound_eni_to_vni_entry_attribute_fn)(
-        _In_ const sai_outbound_eni_to_vni_entry_t *outbound_eni_to_vni_entry,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief Bulk create dash_vnet_outbound_eni_to_vni_entry
- *
- * @param[in] object_count Number of objects to create
- * @param[in] outbound_eni_to_vni_entry List of object to create
- * @param[in] attr_count List of attr_count. Caller passes the number
- *    of attribute for each object to create.
- * @param[in] attr_list List of attributes for every object.
- * @param[in] mode Bulk operation error handling mode.
- * @param[out] object_statuses List of status for every object. Caller needs to
- * allocate the buffer
- *
- * @return #SAI_STATUS_SUCCESS on success when all objects are created or
- * #SAI_STATUS_FAILURE when any of the objects fails to create. When there is
- * failure, Caller is expected to go through the list of returned statuses to
- * find out which fails and which succeeds.
- */
-typedef sai_status_t (*sai_bulk_create_outbound_eni_to_vni_entry_fn)(
-        _In_ uint32_t object_count,
-        _In_ const sai_outbound_eni_to_vni_entry_t *outbound_eni_to_vni_entry,
-        _In_ const uint32_t *attr_count,
-        _In_ const sai_attribute_t **attr_list,
-        _In_ sai_bulk_op_error_mode_t mode,
-        _Out_ sai_status_t *object_statuses);
-
-/**
- * @brief Bulk remove dash_vnet_outbound_eni_to_vni_entry
- *
- * @param[in] object_count Number of objects to remove
- * @param[in] outbound_eni_to_vni_entry List of objects to remove
- * @param[in] mode Bulk operation error handling mode.
- * @param[out] object_statuses List of status for every object. Caller needs to
- * allocate the buffer
- *
- * @return #SAI_STATUS_SUCCESS on success when all objects are removed or
- * #SAI_STATUS_FAILURE when any of the objects fails to remove. When there is
- * failure, Caller is expected to go through the list of returned statuses to
- * find out which fails and which succeeds.
- */
-typedef sai_status_t (*sai_bulk_remove_outbound_eni_to_vni_entry_fn)(
-        _In_ uint32_t object_count,
-        _In_ const sai_outbound_eni_to_vni_entry_t *outbound_eni_to_vni_entry,
-        _In_ sai_bulk_op_error_mode_t mode,
-        _Out_ sai_status_t *object_statuses);
-
-/**
  * @brief Create dash_vnet_outbound_routing_entry
  *
  * @param[in] outbound_routing_entry Entry
@@ -796,6 +684,58 @@ typedef sai_status_t (*sai_bulk_remove_outbound_routing_entry_fn)(
         _In_ const sai_outbound_routing_entry_t *outbound_routing_entry,
         _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
+
+/**
+ * @brief Create dash_vnet_vnet
+ *
+ * @param[out] vnet_id Entry id
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_create_vnet_fn)(
+        _Out_ sai_object_id_t *vnet_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove dash_vnet_vnet
+ *
+ * @param[in] vnet_id Entry id
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_vnet_fn)(
+        _In_ sai_object_id_t vnet_id);
+
+/**
+ * @brief Set attribute for dash_vnet_vnet
+ *
+ * @param[in] vnet_id Entry id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_set_vnet_attribute_fn)(
+        _In_ sai_object_id_t vnet_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get attribute for dash_vnet_vnet
+ *
+ * @param[in] vnet_id Entry id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_get_vnet_attribute_fn)(
+        _In_ sai_object_id_t vnet_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
 
 /**
  * @brief Create dash_vnet_pa_validation_entry
@@ -894,40 +834,40 @@ typedef sai_status_t (*sai_bulk_remove_pa_validation_entry_fn)(
 
 typedef struct _sai_dash_vnet_api_t
 {
-    sai_create_inbound_routing_entry_fn               create_inbound_routing_entry;
-    sai_remove_inbound_routing_entry_fn               remove_inbound_routing_entry;
-    sai_set_inbound_routing_entry_attribute_fn        set_inbound_routing_entry_attribute;
-    sai_get_inbound_routing_entry_attribute_fn        get_inbound_routing_entry_attribute;
-    sai_bulk_create_inbound_routing_entry_fn          create_inbound_routing_entries;
-    sai_bulk_remove_inbound_routing_entry_fn          remove_inbound_routing_entries;
+    sai_create_inbound_routing_entry_fn             create_inbound_routing_entry;
+    sai_remove_inbound_routing_entry_fn             remove_inbound_routing_entry;
+    sai_set_inbound_routing_entry_attribute_fn      set_inbound_routing_entry_attribute;
+    sai_get_inbound_routing_entry_attribute_fn      get_inbound_routing_entry_attribute;
+    sai_bulk_create_inbound_routing_entry_fn        create_inbound_routing_entries;
+    sai_bulk_remove_inbound_routing_entry_fn        remove_inbound_routing_entries;
 
-    sai_create_outbound_ca_to_pa_entry_fn             create_outbound_ca_to_pa_entry;
-    sai_remove_outbound_ca_to_pa_entry_fn             remove_outbound_ca_to_pa_entry;
-    sai_set_outbound_ca_to_pa_entry_attribute_fn      set_outbound_ca_to_pa_entry_attribute;
-    sai_get_outbound_ca_to_pa_entry_attribute_fn      get_outbound_ca_to_pa_entry_attribute;
-    sai_bulk_create_outbound_ca_to_pa_entry_fn        create_outbound_ca_to_pa_entries;
-    sai_bulk_remove_outbound_ca_to_pa_entry_fn        remove_outbound_ca_to_pa_entries;
+    sai_create_outbound_ca_to_pa_entry_fn           create_outbound_ca_to_pa_entry;
+    sai_remove_outbound_ca_to_pa_entry_fn           remove_outbound_ca_to_pa_entry;
+    sai_set_outbound_ca_to_pa_entry_attribute_fn    set_outbound_ca_to_pa_entry_attribute;
+    sai_get_outbound_ca_to_pa_entry_attribute_fn    get_outbound_ca_to_pa_entry_attribute;
+    sai_bulk_create_outbound_ca_to_pa_entry_fn      create_outbound_ca_to_pa_entries;
+    sai_bulk_remove_outbound_ca_to_pa_entry_fn      remove_outbound_ca_to_pa_entries;
 
-    sai_create_outbound_eni_to_vni_entry_fn           create_outbound_eni_to_vni_entry;
-    sai_remove_outbound_eni_to_vni_entry_fn           remove_outbound_eni_to_vni_entry;
-    sai_set_outbound_eni_to_vni_entry_attribute_fn    set_outbound_eni_to_vni_entry_attribute;
-    sai_get_outbound_eni_to_vni_entry_attribute_fn    get_outbound_eni_to_vni_entry_attribute;
-    sai_bulk_create_outbound_eni_to_vni_entry_fn      create_outbound_eni_to_vni_entries;
-    sai_bulk_remove_outbound_eni_to_vni_entry_fn      remove_outbound_eni_to_vni_entries;
+    sai_create_outbound_routing_entry_fn            create_outbound_routing_entry;
+    sai_remove_outbound_routing_entry_fn            remove_outbound_routing_entry;
+    sai_set_outbound_routing_entry_attribute_fn     set_outbound_routing_entry_attribute;
+    sai_get_outbound_routing_entry_attribute_fn     get_outbound_routing_entry_attribute;
+    sai_bulk_create_outbound_routing_entry_fn       create_outbound_routing_entries;
+    sai_bulk_remove_outbound_routing_entry_fn       remove_outbound_routing_entries;
 
-    sai_create_outbound_routing_entry_fn              create_outbound_routing_entry;
-    sai_remove_outbound_routing_entry_fn              remove_outbound_routing_entry;
-    sai_set_outbound_routing_entry_attribute_fn       set_outbound_routing_entry_attribute;
-    sai_get_outbound_routing_entry_attribute_fn       get_outbound_routing_entry_attribute;
-    sai_bulk_create_outbound_routing_entry_fn         create_outbound_routing_entries;
-    sai_bulk_remove_outbound_routing_entry_fn         remove_outbound_routing_entries;
+    sai_create_vnet_fn                              create_vnet;
+    sai_remove_vnet_fn                              remove_vnet;
+    sai_set_vnet_attribute_fn                       set_vnet_attribute;
+    sai_get_vnet_attribute_fn                       get_vnet_attribute;
+    sai_bulk_object_create_fn                       create_vnets;
+    sai_bulk_object_remove_fn                       remove_vnets;
 
-    sai_create_pa_validation_entry_fn                 create_pa_validation_entry;
-    sai_remove_pa_validation_entry_fn                 remove_pa_validation_entry;
-    sai_set_pa_validation_entry_attribute_fn          set_pa_validation_entry_attribute;
-    sai_get_pa_validation_entry_attribute_fn          get_pa_validation_entry_attribute;
-    sai_bulk_create_pa_validation_entry_fn            create_pa_validation_entries;
-    sai_bulk_remove_pa_validation_entry_fn            remove_pa_validation_entries;
+    sai_create_pa_validation_entry_fn               create_pa_validation_entry;
+    sai_remove_pa_validation_entry_fn               remove_pa_validation_entry;
+    sai_set_pa_validation_entry_attribute_fn        set_pa_validation_entry_attribute;
+    sai_get_pa_validation_entry_attribute_fn        get_pa_validation_entry_attribute;
+    sai_bulk_create_pa_validation_entry_fn          create_pa_validation_entries;
+    sai_bulk_remove_pa_validation_entry_fn          remove_pa_validation_entries;
 
 } sai_dash_vnet_api_t;
 
