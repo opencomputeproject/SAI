@@ -23,6 +23,7 @@ from ptf import config
 from ptf.testutils import *
 from ptf.thriftutils import *
 import time
+import pdb
 
 
 class SaiSanityTest(T0TestBase):
