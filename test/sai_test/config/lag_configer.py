@@ -40,8 +40,6 @@ def t0_lag_config_helper(test_obj: 'T0TestBase', is_create_lag=True):
     if is_create_lag:
         test_obj.dut.lag1 = lag_configer.create_lag([17, 18])
         test_obj.dut.lag2 = lag_configer.create_lag([19, 20])
-        test_obj.lag1_neighbor = test_obj.t1s[1][0]
-        test_obj.lag2_neighbor = test_obj.t1s[2][0]
         
 
     """

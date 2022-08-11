@@ -225,8 +225,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.num_device_each_group = 99
         # 2D list [group_id][device_id]
         self.servers: List[List[Device]] = [[]]
-        self.t0s: List[List[Device]] = [[]]
-        self.t1s: List[List[Device]] = [[]]
+        self.t0_list: List[List[Device]] = [[]]
+        self.t1_list: List[List[Device]] = [[]]
         self.create_device()
 
     def setUp(self,
@@ -316,9 +316,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
         for group in range(self.num_group_each_type):
             self.servers.append([Device(DeviceType.server, index, group)
                                 for index in range(1, self.num_device_each_group+1)])
-            self.t0s.append([Device(DeviceType.t0, index, group)
+            self.t0_list.append([Device(DeviceType.t0, index, group)
                             for index in range(1, self.num_device_each_group+1)])
-            self.t1s.append([Device(DeviceType.t1, index, group)
+            self.t1_list.append([Device(DeviceType.t1, index, group)
                             for index in range(1, self.num_device_each_group+1)])
 
     def tearDown(self):
