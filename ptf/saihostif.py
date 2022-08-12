@@ -28,7 +28,6 @@ class HostifCreationTest(SaiHelper):
     and different host interface object types
     '''
     def runTest(self):
-        # TODO: The following test cases should be adapted for DASH
         self.lagNetdevHostifCreationTest()
         self.vlanSviNetdevHostifCreationTest()
 
@@ -938,7 +937,6 @@ class HostifTrapActionTest(SaiHelper):
 
 @group("draft")
 class HostifTxTest(SaiHelper):
-    # TODO: test should be moved and adapted for DASH support
     '''
     Verify hostif TX
     '''
