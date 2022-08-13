@@ -25,43 +25,12 @@ from sai_base_test import *
 
 
 @group("draft")
-class L3RouteTest(SaiHelper):
-    '''
-    Route test class
-    '''
+class L3RouteSviTest(SaiHelper):
+    """
+    Route SVI test class
+    """
     def runTest(self):
-        self.emptyECMPGroupTest()
         self.sviNeighborTest()
-
-    def emptyECMPGroupTest(self):
-        '''
-        Verify drop on empty ECMP group.
-        '''
-        print("emptyECMPGroupTest")
-
-        nhop_group = sai_thrift_create_next_hop_group(
-            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
-
-        route_entry = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
-        sai_thrift_create_route_entry(self.client, route_entry,
-                                      next_hop_id=nhop_group)
-
-        pkt = simple_tcp_packet(
-            eth_dst=ROUTER_MAC,
-            eth_src='00:22:22:22:22:22',
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=64)
-        try:
-            print("Sending packet on port %d, drop" % self.dev_port10)
-            send_packet(self, self.dev_port10, pkt)
-            verify_no_other_packets(self, timeout=3)
-
-        finally:
-            sai_thrift_remove_route_entry(self.client, route_entry)
-            sai_thrift_remove_next_hop_group(self.client, nhop_group)
 
     def sviNeighborTest(self):
         '''
@@ -226,8 +195,9 @@ class L3RouteTest(SaiHelper):
             sai_thrift_remove_bridge_port(self.client, port24_bp)
 
 @group("draft")
-class L3RouteSimplifiedTest(SaiHelperSimplified):
+class L3RouteTest(SaiHelperSimplified):
     """
+    Route test class
     Configuration
     +----------+-----------+
     | port0    | port0_rif |
@@ -236,7 +206,7 @@ class L3RouteSimplifiedTest(SaiHelperSimplified):
     +----------+-----------+
     """
     def setUp(self):
-        super(L3RouteSimplifiedTest, self).setUp()
+        super(L3RouteTest, self).setUp()
 
         self.create_routing_interfaces(ports=[0, 1])
 
@@ -244,6 +214,7 @@ class L3RouteSimplifiedTest(SaiHelperSimplified):
         self.routeIngressRifTest()
         self.cpuForwardTest()
         self.dropRouteTest()
+        self.emptyECMPGroupTest()
         self.multipleRoutesTest()
         self.routeNbrColisionTest()
         self.routeUpdateTest()
@@ -251,7 +222,7 @@ class L3RouteSimplifiedTest(SaiHelperSimplified):
     def tearDown(self):
         self.destroy_routing_interfaces()
 
-        super(L3RouteSimplifiedTest, self).tearDown()
+        super(L3RouteTest, self).tearDown()
 
     def routeIngressRifTest(self):
         '''
@@ -724,12 +695,42 @@ class L3RouteSimplifiedTest(SaiHelperSimplified):
             sai_thrift_remove_next_hop(self.client, nhop1)
             sai_thrift_remove_next_hop(self.client, nhop2)
 
+    def emptyECMPGroupTest(self):
+        '''
+        Verify drop on empty ECMP group.
+        '''
+        print("emptyECMPGroupTest")
+
+        nhop_group = sai_thrift_create_next_hop_group(
+            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+
+        route_entry = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(self.client, route_entry,
+                                      next_hop_id=nhop_group)
+
+        pkt = simple_tcp_packet(
+            eth_dst=ROUTER_MAC,
+            eth_src='00:22:22:22:22:22',
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=64)
+        try:
+            print("Sending packet on port %d, drop" % self.dev_port0)
+            send_packet(self, self.dev_port0, pkt)
+            verify_no_other_packets(self, timeout=3)
+
+        finally:
+            sai_thrift_remove_route_entry(self.client, route_entry)
+            sai_thrift_remove_next_hop_group(self.client, nhop_group)
+
 
 @group("draft")
 class L3DirBcastRouteTest(SaiHelper):
-    '''
+    """
     Verifies direct broadcast routing
-    '''
+    """
     def setUp(self):
         super(L3DirBcastRouteTest, self).setUp()
 
