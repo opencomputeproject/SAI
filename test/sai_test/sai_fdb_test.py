@@ -57,7 +57,7 @@ class L2PortForwardingTest(T0TestBase):
                                         ip_ttl=64)
 
                 send_packet(self, self.dut.dev_port_list[1], pkt)
-                verify_packet(self, pkt, self.dut.dev_port_list[index])
+                verify_packet(self, pkt, self.servers[1][index-1].l2_egress_port_idx)
                 verify_no_other_packets(self)
         finally:
             pass
@@ -372,7 +372,7 @@ class NewVlanmemberLearnTest(T0TestBase):
         saved_fdb_entry = attr["available_fdb_entry"]
 
         send_packet(self, 24, self.pkt1)
-        verify_packet(self, self.pkt1, self.dut.dev_port_list[1])
+        verify_packet(self, self.pkt1, self.servers[1][0].l2_egress_port_idx)
         verify_no_other_packets(self)
 
         send_packet(self, 1, self.pkt2)
@@ -644,7 +644,7 @@ class FdbAgingTest(T0TestBase):
                                     vlan_vid=10,
                                     pktlen=104)
         send_packet(self, 2, tag_pkt)
-        verify_packets(self, pkt, [self.dut.dev_port_list[1]])
+        verify_packets(self, pkt, [self.servers[1][0].l2_egress_port_idx])
         verify_no_other_packets(self)
         time.sleep(1)
 
@@ -1361,7 +1361,7 @@ class FdbDisableMacMoveDropTest(T0TestBase):
                                      eth_src=self.servers[1][0].mac,
                                      pktlen=100)
         send_packet(self, 1, self.pkt)
-        verify_packet(self, self.pkt, self.dut.dev_port_list[2])
+        verify_packet(self, self.pkt, self.servers[1][1].l2_egress_port_idx)
 
         send_packet(self, 3, self.pkt)
         verify_no_other_packets(self)
@@ -1405,7 +1405,7 @@ class FdbDynamicMacMoveTest(T0TestBase):
                                      eth_src=self.servers[1][0].mac,
                                      pktlen=100)
         send_packet(self, 1, self.pkt)
-        verify_packet(self, self.pkt, self.dut.dev_port_list[2])
+        verify_packet(self, self.pkt, self.servers[1][1].l2_egress_port_idx)
         # inititally add moving MAC to FDB
         self.moving_fdb_entry = sai_thrift_fdb_entry_t(
             switch_id=self.dut.switch_id,
@@ -1485,7 +1485,7 @@ class FdbStaticMacMoveTest(T0TestBase):
                                      eth_src=self.servers[1][0].mac,
                                      pktlen=100)
         send_packet(self, 1, self.pkt)
-        verify_packet(self, self.pkt, self.dut.dev_port_list[2])
+        verify_packet(self, self.pkt, self.servers[1][1].l2_egress_port_idx)
 
         # inititally add moving MAC to FDB
         self.moving_fdb_entry = sai_thrift_fdb_entry_t(

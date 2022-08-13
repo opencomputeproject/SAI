@@ -35,14 +35,67 @@ class Device():
         server2: IP 192.168.2.1~150
         .....
 
-        Add those following attribute to this class:
-        self.local_server_ip_list for all the local server mac
+        class attributes:
+            type: device type, T1, Server
+            id: device id, equals to index
+            group_id: device group id
+            ip_num: numbers of ips
+            mac: mac address
+            ipv4: ip v4
+            ipv6: ip v6
+            l2_egress_port_idx
+            l2_egress_port_id
+            l3_egress_port_idx
+            l3_egress_port_id
+            route_id
+            next_hop_id
+            neighbor_id
+            fdb_entry
     """
     def __init__(self,device_type,id,group_id=None,ip_num=150):
+        """
+        Init the Device object, different device type  have different attributes
+
+        Set the following class attributes:
+            type: device type, T1, Server
+            id: device id, equals to index
+            group_id: device group id
+            ip_num: numbers of ips
+            mac: mac address
+            ipv4: ip v4
+            ipv6: ip v6
+            route_id
+            next_hop_id
+            neighbor_id
+            fdb_entry
+        
+        Server:
+            self.ip_prefix: SERVER_IPV4_PREFIX
+            self.ip_prefix_v6: SERVER_IPV6_PREFIX
+            self.fdb_device_num: FDB_SERVER_NUM
+
+        T1:
+            self.ip_prefix: T1_IPV4_PREFIX
+            self.ip_prefix_v6: T1_IPV6_PREFIX
+            self.fdb_device_num: FDB_T1_NUM
+
+        """
         self.type = device_type
+        """
+        device type, T1, Server
+        """
         self.id = id
+        """
+        device id, equals to index
+        """
         self.group_id = group_id
+        """
+        device group id
+        """
         self.ip_num = ip_num
+        """
+        numbers of ips
+        """
         if self.type == DeviceType.server:
             self.ip_prefix = SERVER_IPV4_PREFIX
             self.ip_prefix_v6 = SERVER_IPV6_PREFIX
@@ -51,14 +104,27 @@ class Device():
             self.ip_prefix = T1_IPV4_PREFIX
             self.ip_prefix_v6 = T1_IPV6_PREFIX
             self.fdb_device_num = FDB_T1_NUM
-        elif self.type == DeviceType.t0:
-            self.ip_prefix = T0_IPV4_PREFIX
-            self.ip_prefix_v6 = T0_IPV6_PREFIX
-            self.fdb_device_num = FDB_T0_NUM
 
         self.mac = self._generate_mac_address()
+        """
+        mac address
+        """
         self.ipv4 = self._generate_ipv4_address()
+        """
+        ip v4
+        """
         self.ipv6 = self._generate_ipv6_address()
+        """
+        ip v6
+        """
+        self.l2_egress_port_idx = None
+        self.l2_egress_port_id = None
+        self.l3_egress_port_idx = None
+        self.l3_egress_port_id = None
+        self.route_id = None
+        self.next_hop_id = None
+        self.neighbor_id = None
+        self.fdb_entry = None
 
     def _generate_ipv4_address(self):
         """

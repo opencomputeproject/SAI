@@ -580,9 +580,8 @@ class RemoveLagMemberTest(T0TestBase):
                 send_packet(self, 1, pkt)
                 verify_packet_any_port(self, exp_pkt, [17, 18])
 
-            status = sai_thrift_remove_lag_member(
-                self.client, self.dut.lag1.lag_members[1])
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            self.lag_configer.remove_lag_member_by_port_idx(
+                lag_obj=self.dut.lag1, port_idx=18)
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
@@ -602,10 +601,8 @@ class RemoveLagMemberTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 verify_no_packet(self, exp_pkt, 18)
-            sai_thrift_create_lag_member(self.client,
-                                         lag_id=self.dut.lag1.lag_id,
-                                         port_id=self.dut.port_list[18])
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            self.lag_configer.create_lag_member(lag_obj=self.dut.lag1,
+                                                lag_port_idxs=range(18, 19))
         finally:
             pass
 
@@ -659,10 +656,8 @@ class AddLagMemberTest(T0TestBase):
                 send_packet(self, 1, pkt)
                 verify_packet_any_port(self, exp_pkt, [17, 18])
             print("add port21 into lag1")
-            new_lag_member = sai_thrift_create_lag_member(self.client,
-                                                          lag_id=self.dut.lag1.lag_id,
-                                                          port_id=self.dut.port_list[21])
-            self.dut.lag1.lag_members.append(new_lag_member)
+            self.lag_configer.create_lag_member(lag_obj=self.dut.lag1,
+                                                lag_port_idxs=range(21, 22))
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -686,10 +681,7 @@ class AddLagMemberTest(T0TestBase):
             for cnt in rcv_count:
                 self.assertGreater(
                     cnt, 0, "each member in lag1 should receive pkt")
-            status = sai_thrift_remove_lag_member(
-                self.client, self.dut.lag1.lag_members[2])
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
-            self.dut.lag1.lag_members.remove(new_lag_member)
+            self.lag_configer.remove_lag_member_by_port_idx(lag_obj=self.dut.lag1, port_idx=21)
         finally:
             pass
 

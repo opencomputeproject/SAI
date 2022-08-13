@@ -20,10 +20,56 @@
 
 class Dut():
     """
-    dut config
+    Dut config, represent the dut object in the test structure.
+    Class attributes:
+            default_vrf 
+            default_ipv6_route_entry 
+            default_ipv4_route_entry 
+            loopback_intf 
+            local_10v6_route_entry 
+            local_128v6_route_entry 
+            lag1_rif 
+            lag1_nbr 
+            lag1_nhop 
+            lag1_route 
+            lag2_rif 
+            lag2_nbr 
+            lag2_nhop 
+            lag2_route 
+
+            # vlan
+            default_vlan_id 
+            vlans
+
+            # switch
+            switch_id 
+
+            # fdb
+            default_vlan_fdb_list 
+            vlan_10_fdb_list 
+            vlan_20_fdb_list 
+
+            # port
+            bridge_port_list 
+            default_1q_bridge_id 
+            default_trap_group 
+            dev_port_list 
+            host_intf_table_id 
+            portConfigs 
+            port_list 
+            port_to_hostif_map 
+            hostif_list 
+            port0_rif 
+
+            # lag
+            lag1 
+            lag2 
     """
 
     def __init__(self):
+        """
+        Init all of the class attributes
+        """
 
         # router
         self.default_vrf = None

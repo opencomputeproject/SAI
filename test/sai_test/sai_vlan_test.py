@@ -182,7 +182,7 @@ class TaggedFrameFilteringTest(T0TestBase):
         self.fdb_configer.create_fdb_entries(
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
-            port_oids=[1, 1],
+            port_idxs=[1, 1],
             vlan_oid=self.dut.vlans[10].vlan_oid)
 
     def runTest(self):
@@ -218,7 +218,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
         self.fdb_configer.create_fdb_entries(
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
-            port_oids=[1, 1],
+            port_idxs=[1, 1],
             vlan_oid=self.dut.vlans[10].vlan_oid)
 
     def runTest(self):

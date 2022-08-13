@@ -64,17 +64,85 @@ THRIFT_PORT = 9092
 class ThriftInterface(BaseTest):
     """
     Get and format a port map, retrieve test params, and create an RPC client
+    
+    Have the following class attributes:
+        port_map_loaded: If the Port map loaded when Test init
+        transport: Thrift socket object
+        test_reboot_mode: reboot mode, which will be read from system env
+        test_reboot_stage: reboot stage, which will be read from system env
+        test_params: All the values passed via test-params if present
+        interface_to_front_mapping: Config from port_map_file for the interface (local) to front(PTF) mapping 
+        common_configured: represent if the common_configured in test-params has been loaded
+        protocol: Thrift protocol object
+        client: RPC client which used in Thrift
     """
 
-    def setUp(self):
-        super(ThriftInterface, self).setUp()
+    def __init__(self, *args, **kwargs):
+        """
+        Init ThriftInterface.
 
-        self.interface_to_front_mapping = {}
+        Set the following class attributes:
+            port_map_loaded: If the Port map loaded when Test init
+            transport: Thrift socket object
+            test_reboot_mode: reboot mode, which will be read from system env
+            test_reboot_stage: reboot stage, which will be read from system env
+            test_params: All the values passed via test-params if present
+            interface_to_front_mapping: Config from port_map_file for the interface (local) to front(PTF) mapping 
+            common_configured: represent if the common_configured in test-params has been loaded
+            protocol: Thrift protocol object
+            client: RPC client which used in Thrift
+        """
+        super().__init__(*args, **kwargs)
         self.port_map_loaded = False
+        """
+        If the Port map loaded when Test init
+        """
 
         self.transport = None
+        """
+        Thrift socket object
+        """
+
         self.test_reboot_mode = None
+        """
+        reboot mode, which will be read from system env
+        """
         self.test_reboot_stage = None
+        """
+        reboot stage, which will be read from system env
+        """
+
+        self.interface_to_front_mapping = {}
+        """
+        Config from port_map_file for the interface (local) to front(PTF) mapping 
+        """
+
+        self.test_params = None
+        """
+        All the values passed via test-params if present
+        """
+
+        self.common_configured = None
+        """
+        Represent if the common_configured in test-params has been loaded
+        """
+
+        self.protocol = None
+        """
+        Thrift protocol object
+        """
+
+        self.client = None
+        """
+        RPC client which used in Thrift
+        """
+
+
+    def setUp(self):
+        """
+        Set up the test env.
+        """
+        super(ThriftInterface, self).setUp()      
 
         self.test_params = test_params_get()
         self.loadCommonConfigured()
@@ -83,6 +151,9 @@ class ThriftInterface(BaseTest):
         self.createRpcClient()
 
     def tearDown(self):
+        """
+        Clean up all the test env
+        """
         self.transport.close()
 
         super(ThriftInterface, self).tearDown()
@@ -95,9 +166,9 @@ class ThriftInterface(BaseTest):
         Tests in different stage might be different.
 
         Set the following class attributes:
-        self.test_reboot_loaded - if the reboot mode already loaded
-        self.test_reboot_mode - reboot mode
-        self.test_reboot_stage - reboot stage, can be [setup|starting|post]
+            test_reboot_loaded - if the reboot mode already loaded
+            test_reboot_mode - reboot mode
+            test_reboot_stage - reboot stage, can be [setup|starting|post]
         """
         if "test_reboot_mode" in self.test_params:
             self.test_reboot_mode = self.test_params['test_reboot_mode']
@@ -179,9 +250,29 @@ class ThriftInterface(BaseTest):
 class ThriftInterfaceDataPlane(ThriftInterface):
     """
     Sets up the thrift interface and dataplane
+
+    class attributes:
+        dataplane: Represent the dataplane used in test, pcap to manipulate the data
     """
 
+    def __init__(self, *args, **kwargs):
+        """
+        Init ThriftInterfaceDataPlane
+
+        Set the following class attributes:
+            dataplane: Represent the dataplane used in test, pcap to manipulate the data
+        """
+        super().__init__(*args, **kwargs)
+        self.dataplane = None
+        """
+        Represent the dataplane used in test, pcap to manipulate the data
+        """
+
+
     def setUp(self):
+        """
+        Setup the ThriftInterfaceDataPlane.
+        """
         super(ThriftInterfaceDataPlane, self).setUp()
 
         self.dataplane = ptf.dataplane_instance
@@ -192,6 +283,9 @@ class ThriftInterfaceDataPlane(ThriftInterface):
                 self.dataplane.start_pcap(filename)
 
     def tearDown(self):
+        """
+        Clean up ThriftInterfaceDataPlane.
+        """
         if config['log_dir'] is not None:
             self.dataplane.stop_pcap()
         super(ThriftInterfaceDataPlane, self).tearDown()
@@ -201,33 +295,45 @@ class T0TestBase(ThriftInterfaceDataPlane):
     """
     SAI test helper base class without initial switch ports setup
 
-    Set the following class attributes:
-        self.default_vlan_id
-        self.default_vrf
-        self.lookback_intf
-        self.default_ipv4_route_entry
-        self.default_ipv6_route_entry
-        self.local_10v6_route_entry
-        self.local_128v6_route_entry
-        self.default_1q_bridge
-        self.cpu_port_hdl
-        self.active_ports_no - number of active ports
-        self.port_list - list of all active port objects
-        self.portX objects for all active ports (where X is a port number)
-        self.lagX objects for all lag
-        self.local_server_mac_list for all the local server mac
+    class attributes:
+        dut: Dut object in test.
+        servers: Simulating the server Objects in Test.
+        t1_list: Simulating the T1 objects in test
+
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Init the T0 Test Object.
+        Set the following class attributes:
+            dut: Dut object in test.
+            servers: Simulating the server Objects in Test.
+            t1_list: Simulating the T1 objects in test
+
+        """
         super().__init__(*args, **kwargs)
         self.dut = Dut()
+        """
+        Represent the DUT in test.
+        """
         self.num_group_each_type = 20
+        """
+        Group numbers in each device type(t1, server)
+        """
         self.num_device_each_group = 99
+        """
+        Device numbers in each group
+        """
         # 2D list [group_id][device_id]
         self.servers: List[List[Device]] = [[]]
-        self.t0_list: List[List[Device]] = [[]]
+        """
+        Simulating the server Objects in Test.
+        """
         self.t1_list: List[List[Device]] = [[]]
-        self.create_device()
+        """
+        Simulating the T1 objects in test
+        """
+        
 
     def setUp(self,
               force_config=False,
@@ -242,6 +348,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_ipv4=True,
               wait_sec=5):
         super(T0TestBase, self).setUp()
+
+        self.create_device()
 
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
@@ -277,6 +385,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
         time.sleep(wait_sec)
 
     def restore_fdb_config(self):
+        """
+        Restore the FDB configurations.
+        """
         t0_fdb_tear_down_helper(self)
         t0_fdb_config_helper(test_obj=self)
 
@@ -313,11 +424,18 @@ class T0TestBase(ThriftInterfaceDataPlane):
         time.sleep(timeout + aging_interval_buffer)
 
     def create_device(self):
+        """
+        Init the device data.
+
+        Server in format 192.168.[group_id].[nums_index]
+        T1 in format 10.1.[[group_id].[nums_index]]
+        group_id: group id for the server
+        nums_index: index number among nums, start from 1
+        """
+
         for group in range(self.num_group_each_type):
             self.servers.append([Device(DeviceType.server, index, group)
                                 for index in range(1, self.num_device_each_group+1)])
-            self.t0_list.append([Device(DeviceType.t0, index, group)
-                            for index in range(1, self.num_device_each_group+1)])
             self.t1_list.append([Device(DeviceType.t1, index, group)
                             for index in range(1, self.num_device_each_group+1)])
 

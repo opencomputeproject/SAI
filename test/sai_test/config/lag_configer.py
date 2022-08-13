@@ -77,31 +77,34 @@ class LagConfiger(object):
 
         lag = Lag()
         lag_id = sai_thrift_create_lag(self.client)
-        lag_members = self.create_lag_member(lag_id, lag_port_idxs)
-        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
         lag.lag_id = lag_id
-        lag.lag_members = lag_members
+        lag_members = self.create_lag_member(lag, lag_port_idxs)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)       
+
         return lag
     
-    def create_lag_member(self, lag_id, lag_port_idxs):
+    def create_lag_member(self, lag_obj, lag_port_idxs):
         """
         Create lag members for a lag.
 
         Args:
-            lag: lag object
+            lag_obj: lag object
             lag_port_idxs: lag member port indexs
 
         Returns:
             lag_members: list of lag_member
         """
+        lag:Lag = lag_obj
 
         lag_members = []
         for port_index in lag_port_idxs:
             lag_member = sai_thrift_create_lag_member(self.client, 
-                                                      lag_id=lag_id, 
+                                                      lag_id=lag.lag_id, 
                                                       port_id=self.test_obj.dut.port_list[port_index])
             self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
             lag_members.append(lag_member)
+            lag.lag_members.append(lag_member)
+            lag.member_port_indexs.append(port_index)
         return lag_members
     
     def set_lag_hash_algorithm(self, algo=SAI_HASH_ALGORITHM_CRC):
@@ -114,6 +117,16 @@ class LagConfiger(object):
         sai_thrift_set_switch_attribute(self.client, lag_default_hash_algorithm=algo)
 
     def setup_lag_v4_hash(self, hash_fields_list=None, lag_hash_ipv4=None):
+        """
+        Setup lag v4 hash.
+
+        SAI_NATIVE_HASH_FIELD_SRC_IP
+        SAI_NATIVE_HASH_FIELD_DST_IP
+        SAI_NATIVE_HASH_FIELD_IP_PROTOCOL
+        SAI_NATIVE_HASH_FIELD_L4_DST_PORT
+        SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
+
+        """
         if hash_fields_list is None:
             hash_fields_list = [SAI_NATIVE_HASH_FIELD_SRC_IP,
                                 SAI_NATIVE_HASH_FIELD_DST_IP,
@@ -134,6 +147,7 @@ class LagConfiger(object):
             status = sai_thrift_set_hash_attribute(self.client, lag_hash_ipv4, native_hash_field_list=s32list)
             self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
+
     def set_lag_hash_seed(self, seed=400):
         """
         Set lag hash seed.
@@ -144,15 +158,32 @@ class LagConfiger(object):
         status = sai_thrift_set_switch_attribute(self.client, lag_default_hash_seed=seed)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
-    def remove_lag_member(self, lag_member):
-        sai_thrift_remove_lag_member(self, lag_member)
 
-    def remove_all_lag_members(self, lag_members):
-        for lag_member in lag_members:
-            sai_thrift_remove_lag_member(self.client, lag_member)
-    
+    def remove_lag_member_by_port_idx(self, lag_obj, port_idx):
+        """
+        Remove lag member by port index.
+
+        This method will remove the lag member and port index from lag object.
+
+        Args:
+            lag_obj: Lag object.
+            port_idx: port index.
+        """
+        lag:Lag = lag_obj
+        index = lag.member_port_indexs.index(port_idx)
+        sai_thrift_remove_lag_member(self.client, lag.lag_members[index])
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+        lag.lag_members.remove(lag.lag_members[index])
+        lag.member_port_indexs.remove(port_idx)
+
+
     def remove_lag(self, lag_id):
+        """
+        Remove lag.
+        """
         sai_thrift_remove_lag(self.client, lag_id)
+
+    
 
 class Lag(object):
     """
@@ -160,7 +191,9 @@ class Lag(object):
     Attrs:
         lag_id: lag id
         lag_members: lag members
+        member_port_indexs: lag port member indexes
     """
-    def __init__(self, lag_id=None, lag_members=None):
-        self.lag_id = lag_id
-        self.lag_members = lag_members
+    def __init__(self):
+        self.lag_id = None
+        self.lag_members = []
+        self.member_port_indexs = []
