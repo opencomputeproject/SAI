@@ -50,19 +50,18 @@ class IngressMacUpdateTest(T0TestBase):
         ip_dst = self.servers[11][0].ipv4
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                 eth_src=self.servers[1][0].mac,
-                                 ip_dst=ip_dst,
-                                 ip_src=self.servers[1][0].ipv4,
-                                 ip_id=105,
-                                 ip_ttl=64)
-
+                                eth_src=self.servers[1][0].mac,
+                                ip_dst=ip_dst,
+                                ip_src=self.servers[1][0].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
 
         exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst=ip_dst,
-                                     ip_src=self.servers[1][0].ipv4,
-                                     ip_id=105,
-                                     ip_ttl=63)
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst=ip_dst,
+                                    ip_src=self.servers[1][0].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
 
         send_packet(self, 1, pkt)
         verify_packet_any_port(self, exp_pkt, [17, 18])
@@ -74,13 +73,13 @@ class IngressMacUpdateTest(T0TestBase):
         attrs = sai_thrift_get_router_interface_attribute(
             self.client, self.dut.port0_rif, src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], new_router_mac)
-    
+
         send_packet(self, 1, pkt)
         verify_no_other_packets(self, timeout=3)
-        
+
     def runTest(self):
         self.test_ingress_mac_update()
- 
+
     def tearDown(self):
         sai_thrift_set_router_interface_attribute(
             self.client, self.dut.port0_rif, src_mac_address=ROUTER_MAC)
@@ -117,17 +116,16 @@ class IngressMacUpdateTestV6(T0TestBase):
         ip_dst = self.servers[11][0].ipv6
 
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                 eth_src=self.servers[1][0].mac,
-                                 ipv6_dst=ip_dst,
-                                 ipv6_src=self.servers[1][0].ipv6,
-                                 ipv6_hlim=64)
-
+                                  eth_src=self.servers[1][0].mac,
+                                  ipv6_dst=ip_dst,
+                                  ipv6_src=self.servers[1][0].ipv6,
+                                  ipv6_hlim=64)
 
         exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][0].mac,
-                                     eth_src=ROUTER_MAC,
-                                     ipv6_dst=ip_dst,
-                                     ipv6_src=self.servers[1][0].ipv6,
-                                     ipv6_hlim=63)
+                                      eth_src=ROUTER_MAC,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=self.servers[1][0].ipv6,
+                                      ipv6_hlim=63)
 
         send_packet(self, 1, pkt)
         verify_packet_any_port(self, exp_pkt, [17, 18])
@@ -139,13 +137,13 @@ class IngressMacUpdateTestV6(T0TestBase):
         attrs = sai_thrift_get_router_interface_attribute(
             self.client, self.dut.port0_rif, src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], new_router_mac)
-    
+
         send_packet(self, 1, pkt)
         verify_no_other_packets(self, timeout=3)
-        
+
     def runTest(self):
         self.test_ingress_mac_update()
- 
+
     def tearDown(self):
         sai_thrift_set_router_interface_attribute(
             self.client, self.dut.port0_rif, src_mac_address=ROUTER_MAC)
@@ -160,7 +158,7 @@ class IngressDisableTestV4(T0TestBase):
     """
     Verify turn off the admin state for RIF v4 
     """
-      
+
     def setUp(self):
         """
         Test the basic setup process.
@@ -181,23 +179,22 @@ class IngressDisableTestV4(T0TestBase):
         """
 
         print("\ntest_ingress_disable_ipv4()")
-   
+
         ip_dst = self.servers[11][0].ipv4
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                 eth_src=self.servers[1][0].mac,
-                                 ip_dst=ip_dst,
-                                 ip_src=self.servers[1][0].ipv4,
-                                 ip_id=105,
-                                 ip_ttl=64)
-
+                                eth_src=self.servers[1][0].mac,
+                                ip_dst=ip_dst,
+                                ip_src=self.servers[1][0].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
 
         exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst=ip_dst,
-                                     ip_src=self.servers[1][0].ipv4,
-                                     ip_id=105,
-                                     ip_ttl=63)
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst=ip_dst,
+                                    ip_src=self.servers[1][0].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
 
         send_packet(self, 1, pkt)
         verify_packet_any_port(self, exp_pkt, [17, 18])
@@ -208,7 +205,6 @@ class IngressDisableTestV4(T0TestBase):
         time.sleep(3)
         send_packet(self, 1, pkt)
         verify_no_other_packets(self, timeout=3)
-    
 
         print("Enable IPv4 on ingress RIF")
         sai_thrift_set_router_interface_attribute(
@@ -219,7 +215,7 @@ class IngressDisableTestV4(T0TestBase):
 
     def runTest(self):
         self.test_ingress_disable_ipv4()
- 
+
     def tearDown(self):
         super().tearDown()
 
@@ -228,7 +224,7 @@ class IngressDisableTestV6(T0TestBase):
     """
     Verify turn off the admin state for RIF v6
     """
-      
+
     def setUp(self):
         """
         Test the basic setup process.
@@ -249,21 +245,20 @@ class IngressDisableTestV6(T0TestBase):
         """
 
         print("\ntest_ingress_disable_ipv6()")
-   
+
         ip_dst = self.servers[11][0].ipv6
 
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                 eth_src=self.servers[1][0].mac,
-                                 ipv6_dst=ip_dst,
-                                 ipv6_src=self.servers[1][0].ipv6,
-                                 ipv6_hlim=64)
-
+                                  eth_src=self.servers[1][0].mac,
+                                  ipv6_dst=ip_dst,
+                                  ipv6_src=self.servers[1][0].ipv6,
+                                  ipv6_hlim=64)
 
         exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][0].mac,
-                                     eth_src=ROUTER_MAC,
-                                     ipv6_dst=ip_dst,
-                                     ipv6_src=self.servers[1][0].ipv6,
-                                     ipv6_hlim=63)
+                                      eth_src=ROUTER_MAC,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=self.servers[1][0].ipv6,
+                                      ipv6_hlim=63)
 
         send_packet(self, 1, pkt)
         verify_packet_any_port(self, exp_pkt, [17, 18])
@@ -274,7 +269,6 @@ class IngressDisableTestV6(T0TestBase):
         time.sleep(3)
         send_packet(self, 1, pkt)
         verify_no_other_packets(self, timeout=3)
-    
 
         print("Enable IPv4 on ingress RIF")
         sai_thrift_set_router_interface_attribute(
@@ -285,7 +279,7 @@ class IngressDisableTestV6(T0TestBase):
 
     def runTest(self):
         self.test_ingress_disable_ipv6()
- 
+
     def tearDown(self):
         super().tearDown()
 
@@ -294,7 +288,7 @@ class IngressMtuTestV4(T0TestBase):
     """
     Verify the packet will be dropped if the packet length exceeds the MTU value
     """
-      
+
     def setUp(self):
         """
         Test the basic setup process.
@@ -322,7 +316,7 @@ class IngressMtuTestV4(T0TestBase):
         sai_thrift_set_router_interface_attribute(
             self.client, self.dut.port0_rif, mtu=200)
 
-        try:   
+        try:
             print("Max MTU is 200, send pkt size 200, send to port/lag")
             ip_dst = self.servers[11][0].ipv4
 
@@ -345,7 +339,7 @@ class IngressMtuTestV4(T0TestBase):
             send_packet(self, 1, pkt)
             verify_packet_any_port(self, exp_pkt, [17, 18])
 
-            print("Max MTU is 200, send pkt size 201, dropped")          
+            print("Max MTU is 200, send pkt size 201, dropped")
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src=self.servers[1][0].mac,
                                     ip_dst=ip_dst,
@@ -365,7 +359,6 @@ class IngressMtuTestV4(T0TestBase):
             send_packet(self, 1, pkt)
             verify_no_other_packets(self)
 
-    
         finally:
             sai_thrift_set_router_interface_attribute(
                 self.client, self.dut.port0_rif, mtu=mtu_port10_rif['mtu'])
@@ -381,7 +374,7 @@ class IngressMtuTestV6(T0TestBase):
     """
     Verify the packet will be dropped if the packet length exceeds the MTU value
     """
-      
+
     def setUp(self):
         """
         Test the basic setup process.
@@ -409,46 +402,45 @@ class IngressMtuTestV6(T0TestBase):
         sai_thrift_set_router_interface_attribute(
             self.client, self.dut.port0_rif, mtu=200)
 
-        try:   
+        try:
             print("Max MTU is 200, send pkt size 200, send to port/lag")
             ip_dst = self.servers[11][0].ipv6
 
             pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=self.servers[1][0].mac,
-                                    ipv6_dst=ip_dst,
-                                    ipv6_src=self.servers[1][0].ipv6,
-                                    ipv6_hlim=64,
-                                    pktlen=200 + 14)
+                                      eth_src=self.servers[1][0].mac,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=self.servers[1][0].ipv6,
+                                      ipv6_hlim=64,
+                                      pktlen=200 + 14)
 
             exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][0].mac,
-                                        eth_src=ROUTER_MAC,
-                                        ipv6_dst=ip_dst,
-                                        ipv6_src=self.servers[1][0].ipv6,
-                                        ipv6_hlim=63,
-                                        pktlen=200 + 14)
+                                          eth_src=ROUTER_MAC,
+                                          ipv6_dst=ip_dst,
+                                          ipv6_src=self.servers[1][0].ipv6,
+                                          ipv6_hlim=63,
+                                          pktlen=200 + 14)
 
             send_packet(self, 1, pkt)
             verify_packet_any_port(self, exp_pkt, [17, 18])
 
-            print("Max MTU is 200, send pkt size 201, dropped")          
+            print("Max MTU is 200, send pkt size 201, dropped")
             pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=self.servers[1][0].mac,
-                                    ipv6_dst=ip_dst,
-                                    ipv6_src=self.servers[1][0].ipv6,
-                                    ipv6_hlim=64,
-                                    pktlen=201 + 14)
+                                      eth_src=self.servers[1][0].mac,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=self.servers[1][0].ipv6,
+                                      ipv6_hlim=64,
+                                      pktlen=201 + 14)
 
             exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][0].mac,
-                                        eth_src=ROUTER_MAC,
-                                        ipv6_dst=ip_dst,
-                                        ipv6_src=self.servers[1][0].ipv6,
-                                        ipv6_hlim=63,
-                                        pktlen=201 + 14)
+                                          eth_src=ROUTER_MAC,
+                                          ipv6_dst=ip_dst,
+                                          ipv6_src=self.servers[1][0].ipv6,
+                                          ipv6_hlim=63,
+                                          pktlen=201 + 14)
 
             send_packet(self, 1, pkt)
             verify_no_other_packets(self)
 
-    
         finally:
             sai_thrift_set_router_interface_attribute(
                 self.client, self.dut.port0_rif, mtu=mtu_port10_rif['mtu'])

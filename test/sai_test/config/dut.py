@@ -18,6 +18,11 @@
 #
 #
 
+from typing import Dict, List
+from config.vlan import Vlan
+from config.lag import Lag
+
+
 class Dut():
     """
     Dut config, represent the dut object in the test structure.
@@ -89,28 +94,43 @@ class Dut():
 
         # vlan
         self.default_vlan_id = None
-        self.vlans = {}
+        self.vlans: Dict[int, Vlan] = {}
+        """
+        Vlan object list, key: int, Value: Vlan object
+        """
 
         # switch
         self.switch_id = None
 
         # fdb
-        self.default_vlan_fdb_list = None
-        self.vlan_10_fdb_list = None
-        self.vlan_20_fdb_list = None
+        self.default_vlan_fdb_list: List = None
+        self.vlan_10_fdb_list: List = None
+        self.vlan_20_fdb_list: List = None
 
         # port
-        self.bridge_port_list = None
+        self.bridge_port_list: List = None
+        """
+        bridge port id list
+        """
         self.default_1q_bridge_id = None
         self.default_trap_group = None
-        self.dev_port_list = None
+        self.dev_port_list: List = None
+        """
+        Local device port index list, 0, 1, ...
+        """
         self.host_intf_table_id = None
         self.portConfigs = None
-        self.port_list = None
+        self.port_list: List = None
+        """
+        Port object list
+        """
         self.port_to_hostif_map = None
         self.hostif_list = None
+        """
+        Host interface list
+        """
         self.port0_rif = None
 
         # lag
-        self.lag1 = None
-        self.lag2 = None
+        self.lag1: Lag = None
+        self.lag2: Lag = None

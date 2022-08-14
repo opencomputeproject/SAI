@@ -21,6 +21,7 @@
 from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from typing import TYPE_CHECKING
+from config.vlan import Vlan
 
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
@@ -200,19 +201,3 @@ class VlanConfiger(object):
             sai_thrift_remove_vlan_member(self.client, vlan_member)
             self.test_obj.assertEqual(
                 self.test_obj.status(), SAI_STATUS_SUCCESS)
-
-
-class Vlan(object):
-    """
-    Represent the vlan object
-
-    Attrs:
-        vlan_id: vlan id
-        vlan_oid: vlan ojbect id
-        vlan_moids: vlan member object ids
-    """
-
-    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids=None):
-        self.vlan_id = vlan_id
-        self.vlan_oid = vlan_oid
-        self.vlan_mport_oids = vlan_moids

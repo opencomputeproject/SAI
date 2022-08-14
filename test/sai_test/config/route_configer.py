@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
 
-def t0_route_config_helper(test_obj:'T0TestBase', is_create_default_route=True, is_create_route_for_lag=True, is_ipv4=True):
+def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True, is_create_route_for_lag=True, is_ipv4=True):
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
         route_configer.create_default_route()
@@ -78,7 +78,7 @@ class RouteConfiger(object):
     Class use to make all the route configurations.
     """
 
-    def __init__(self, test_obj:'T0TestBase') -> None:
+    def __init__(self, test_obj: 'T0TestBase') -> None:
         """
         Init Route configer.
 

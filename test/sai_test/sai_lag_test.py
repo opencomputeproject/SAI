@@ -681,7 +681,8 @@ class AddLagMemberTest(T0TestBase):
             for cnt in rcv_count:
                 self.assertGreater(
                     cnt, 0, "each member in lag1 should receive pkt")
-            self.lag_configer.remove_lag_member_by_port_idx(lag_obj=self.dut.lag1, port_idx=21)
+            self.lag_configer.remove_lag_member_by_port_idx(
+                lag_obj=self.dut.lag1, port_idx=21)
         finally:
             pass
 

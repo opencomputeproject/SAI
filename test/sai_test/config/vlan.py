@@ -18,35 +18,28 @@
 #
 #
 
-# IPv4
-DEFAULT_IP_V4_PREFIX = '0.0.0.0/0'
-DEFAULT_IP_V6_PREFIX = '0000:0000:0000:0000:0000:0000:0000:0000'
-FDB_MAC_PREFIX = '00:01:01'
+from typing import List
 
-LOCAL_IP_128V6_PREFIX = 'fe80::f68e:38ff:fe16:bc75/128'
-LOCAL_IP_10V6_PREFIX = 'fe80::/10'
 
-# MAC
-ROUTER_MAC = '00:77:66:55:44:00'
-"""Route mac address"""
-BROADCAST_MAC = "ff:ff:ff:ff:ff:ff"
-"""broadcast mac address"""
-MULTICAST_MAC = "01:00:5e:11:22:33"
-"""multicast mac address"""
+class Vlan(object):
+    """
+    Represent the vlan object
 
-# Others
-PORT_MTU = 9122
-THRIFT_PORT = 9092
+    Attrs:
+        vlan_id: vlan id
+        vlan_oid: vlan ojbect id
+        vlan_moids: vlan member object ids
+    """
 
-FDB_SERVER_NUM = '99'
-"""Stand for the server in the fdb"""
-FDB_T1_NUM = '01'
-FDB_T0_NUM = '00'
+    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids: List = []):
+        """
+        Init Vlan object.
 
-SERVER_IPV4_PREFIX = '192.168.{}.{}'
-T0_IPV4_PREFIX = '10.0.{}.{}'
-T1_IPV4_PREFIX = '10.1.{}.{}'
-
-SERVER_IPV6_PREFIX = 'fc02::{}:{}'
-T0_IPV6_PREFIX = 'fc00:0::{}:{}'
-T1_IPV6_PREFIX = 'fc00:1::{}:{}'
+        Init following attrs:
+            vlan_id
+            vlan_oid
+            vlan_mport_oids
+        """
+        self.vlan_id = vlan_id
+        self.vlan_oid = vlan_oid
+        self.vlan_mport_oids: List = vlan_moids

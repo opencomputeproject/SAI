@@ -21,15 +21,17 @@
 from enum import Enum
 from constant import *
 
+
 class DeviceType(Enum):
     server = 'server'
     t0 = 't0'
     t1 = 't1'
 
+
 class Device():
     """
         Create servers(0-17) ip list.
-        
+
         server0: IP 192.168.0.1~150
         server1: IP 192.168.1.1~150
         server2: IP 192.168.2.1~150
@@ -43,16 +45,18 @@ class Device():
             mac: mac address
             ipv4: ip v4
             ipv6: ip v6
-            l2_egress_port_idx
-            l2_egress_port_id
-            l3_egress_port_idx
-            l3_egress_port_id
+            l2_egress_port_idx: L2 destination port index, defined in fdb configer
+            l2_egress_port_id: L2 destination port object id, defined in fdb configer
+            l3_egress_port_idx: L3 destination port index, defined in route configer
+            l3_egress_port_id: L3 destination port object id, defined in route configer
+            l3_egress_lag_obj: L3 destination port object, defined in route configer
             route_id
             next_hop_id
             neighbor_id
             fdb_entry
     """
-    def __init__(self,device_type,id,group_id=None,ip_num=150):
+
+    def __init__(self, device_type, id, group_id=None, ip_num=150):
         """
         Init the Device object, different device type  have different attributes
 
@@ -64,11 +68,16 @@ class Device():
             mac: mac address
             ipv4: ip v4
             ipv6: ip v6
+            l2_egress_port_idx
+            l2_egress_port_id
+            l3_egress_port_idx
+            l3_egress_port_id
+            l3_egress_lag_obj
             route_id
             next_hop_id
             neighbor_id
             fdb_entry
-        
+
         Server:
             self.ip_prefix: SERVER_IPV4_PREFIX
             self.ip_prefix_v6: SERVER_IPV6_PREFIX
@@ -117,10 +126,31 @@ class Device():
         """
         ip v6
         """
+
+        # L2 forwarding info
         self.l2_egress_port_idx = None
+        """
+        L2 destination port index, defined in fdb configer
+        """
         self.l2_egress_port_id = None
+        """
+        L2 destination port object id, defined in fdb configer
+        """
+
+        # L3 route info
         self.l3_egress_port_idx = None
+        """
+        L3 destination port index, defined in route configer
+        """
         self.l3_egress_port_id = None
+        """
+        L3 destination port object id, defined in route configer
+        """
+        self.l3_egress_lag_obj = None
+        """
+        L3 destination port object, defined in route configer
+        """
+
         self.route_id = None
         self.next_hop_id = None
         self.neighbor_id = None
@@ -130,15 +160,14 @@ class Device():
         """
         Generate ipv4 address.
         """
-        return self.ip_prefix.format(self.group_id,self.id)
-    
+        return self.ip_prefix.format(self.group_id, self.id)
+
     def _generate_ipv6_address(self):
         """
         Generate ipv6 address.
         """
-        return self.ip_prefix_v6.format(self.group_id,self.id)
+        return self.ip_prefix_v6.format(self.group_id, self.id)
 
-    
     def _generate_mac_address(self):
         """
         Generate mac address.

@@ -26,7 +26,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
-def t0_fdb_config_helper(test_obj :'T0TestBase', is_create_fdb=True):
+
+def t0_fdb_config_helper(test_obj: 'T0TestBase', is_create_fdb=True):
     """
     Make t0 FDB configurations base on the configuration in the test plan.
     Set the configuration in test directly.
@@ -43,23 +44,22 @@ def t0_fdb_config_helper(test_obj :'T0TestBase', is_create_fdb=True):
         test_obj.dut.default_vlan_fdb_list = configer.create_fdb_entries(
             switch_id=test_obj.dut.switch_id,
             server_list=test_obj.servers[0][0:1],
-            port_idxs=range(0,1),
+            port_idxs=range(0, 1),
             vlan_oid=test_obj.dut.default_vlan_id)
         test_obj.dut.vlan_10_fdb_list = configer.create_fdb_entries(
             switch_id=test_obj.dut.switch_id,
             server_list=test_obj.servers[1][0:8],
-            port_idxs= range(1,9),
+            port_idxs=range(1, 9),
             vlan_oid=test_obj.dut.vlans[10].vlan_oid)
         test_obj.dut.vlan_20_fdb_list = configer.create_fdb_entries(
             switch_id=test_obj.dut.switch_id,
             server_list=test_obj.servers[2][0:8],
-            port_idxs=range(9,17),
+            port_idxs=range(9, 17),
             vlan_oid=test_obj.dut.vlans[20].vlan_oid)
     # Todo dynamic use the vlan_member_port_map to add data to fdb
-    
 
 
-def t0_fdb_tear_down_helper(test_obj:'T0TestBase'):
+def t0_fdb_tear_down_helper(test_obj: 'T0TestBase'):
     '''
     Args:
         test_obj: test object
@@ -71,12 +71,13 @@ def t0_fdb_tear_down_helper(test_obj:'T0TestBase'):
     for e in test_obj.dut.vlan_20_fdb_list:
         sai_thrift_remove_fdb_entry(test_obj.client, e)
 
+
 class FdbConfiger(object):
     """
     Class use to make all the fdb configurations.
     """
 
-    def __init__(self, test_obj:'T0TestBase') -> None:
+    def __init__(self, test_obj: 'T0TestBase') -> None:
         """
         Init the Port configer.
 
@@ -110,7 +111,7 @@ class FdbConfiger(object):
         print("Add FDBs ...")
         fdb_list = []
         for index, server in enumerate(server_list):
-            srv:Device = server
+            srv: Device = server
             fdb_entry = sai_thrift_fdb_entry_t(
                 switch_id=switch_id,
                 mac_address=srv.mac,

@@ -57,6 +57,7 @@ from config.dut import Dut
 from config.device import Device
 from config.device import DeviceType
 from typing import List
+from typing import Dict
 
 THRIFT_PORT = 9092
 
@@ -64,7 +65,7 @@ THRIFT_PORT = 9092
 class ThriftInterface(BaseTest):
     """
     Get and format a port map, retrieve test params, and create an RPC client
-    
+
     Have the following class attributes:
         port_map_loaded: If the Port map loaded when Test init
         transport: Thrift socket object
@@ -137,12 +138,11 @@ class ThriftInterface(BaseTest):
         RPC client which used in Thrift
         """
 
-
     def setUp(self):
         """
         Set up the test env.
         """
-        super(ThriftInterface, self).setUp()      
+        super(ThriftInterface, self).setUp()
 
         self.test_params = test_params_get()
         self.loadCommonConfigured()
@@ -268,7 +268,6 @@ class ThriftInterfaceDataPlane(ThriftInterface):
         Represent the dataplane used in test, pcap to manipulate the data
         """
 
-
     def setUp(self):
         """
         Setup the ThriftInterfaceDataPlane.
@@ -293,7 +292,7 @@ class ThriftInterfaceDataPlane(ThriftInterface):
 
 class T0TestBase(ThriftInterfaceDataPlane):
     """
-    SAI test helper base class without initial switch ports setup
+    SAI test helper base class
 
     class attributes:
         dut: Dut object in test.
@@ -316,24 +315,33 @@ class T0TestBase(ThriftInterfaceDataPlane):
         """
         Represent the DUT in test.
         """
-        self.num_group_each_type = 20
+        self.server_groups = [0, 1, 2, 11, 12]
         """
-        Group numbers in each device type(t1, server)
+        Group numbers for server
         """
+
+        self.t1_groups = [1, 2]
+        """
+        Group numbers for server
+        """
+
         self.num_device_each_group = 99
         """
         Device numbers in each group
         """
-        # 2D list [group_id][device_id]
-        self.servers: List[List[Device]] = [[]]
+        # Dict key: group id, Value: devices list
+        self.servers: Dict[int, List[Device]] = {}
         """
         Simulating the server Objects in Test.
+        Key: group id
+        Value: List, servers
         """
-        self.t1_list: List[List[Device]] = [[]]
+        self.t1_list: Dict[int, List[Device]] = {}
         """
         Simulating the T1 objects in test
+        Key: group id
+        Value: List, servers
         """
-        
 
     def setUp(self,
               force_config=False,
@@ -433,11 +441,12 @@ class T0TestBase(ThriftInterfaceDataPlane):
         nums_index: index number among nums, start from 1
         """
 
-        for group in range(self.num_group_each_type):
-            self.servers.append([Device(DeviceType.server, index, group)
-                                for index in range(1, self.num_device_each_group+1)])
-            self.t1_list.append([Device(DeviceType.t1, index, group)
-                            for index in range(1, self.num_device_each_group+1)])
+        for srv_grp_idx in self.server_groups:
+            self.servers[srv_grp_idx] = [Device(DeviceType.server, index, srv_grp_idx)
+                                         for index in range(1, self.num_device_each_group+1)]
+        for t1_grp_idx in self.t1_groups:
+            self.t1_list[t1_grp_idx] = [Device(DeviceType.t1, index, t1_grp_idx)
+                                        for index in range(1, self.num_device_each_group+1)]
 
     def tearDown(self):
         '''

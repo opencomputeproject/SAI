@@ -57,7 +57,8 @@ class L2PortForwardingTest(T0TestBase):
                                         ip_ttl=64)
 
                 send_packet(self, self.dut.dev_port_list[1], pkt)
-                verify_packet(self, pkt, self.servers[1][index-1].l2_egress_port_idx)
+                verify_packet(
+                    self, pkt, self.servers[1][index-1].l2_egress_port_idx)
                 verify_no_other_packets(self)
         finally:
             pass
@@ -446,8 +447,8 @@ class RemoveVlanmemberLearnTest(T0TestBase):
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.dut.vlans[10].vlan_mport_oids[1] = sai_thrift_create_vlan_member(self.client,
-                                                                          vlan_id=self.dut.vlans[10].vlan_oid,
-                                                                          bridge_port_id=self.dut.bridge_port_list[1])
+                                                                              vlan_id=self.dut.vlans[10].vlan_oid,
+                                                                              bridge_port_id=self.dut.bridge_port_list[1])
 
 
 class InvalidateVlanmemberNoLearnTest(T0TestBase):

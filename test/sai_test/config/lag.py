@@ -18,35 +18,27 @@
 #
 #
 
-# IPv4
-DEFAULT_IP_V4_PREFIX = '0.0.0.0/0'
-DEFAULT_IP_V6_PREFIX = '0000:0000:0000:0000:0000:0000:0000:0000'
-FDB_MAC_PREFIX = '00:01:01'
+from typing import List
 
-LOCAL_IP_128V6_PREFIX = 'fe80::f68e:38ff:fe16:bc75/128'
-LOCAL_IP_10V6_PREFIX = 'fe80::/10'
 
-# MAC
-ROUTER_MAC = '00:77:66:55:44:00'
-"""Route mac address"""
-BROADCAST_MAC = "ff:ff:ff:ff:ff:ff"
-"""broadcast mac address"""
-MULTICAST_MAC = "01:00:5e:11:22:33"
-"""multicast mac address"""
+class Lag(object):
+    """
+    Represent the lag object.
+    Attrs:
+        lag_id: lag id
+        lag_members: lag members
+        member_port_indexs: lag port member indexes
+    """
 
-# Others
-PORT_MTU = 9122
-THRIFT_PORT = 9092
+    def __init__(self, lag_id=None, lag_members: List = [], member_port_indexs: List = []):
+        """
+        Init Lag Object
+        Init following attrs:
+            lag_id
+            lag_members
+            member_port_indexs
 
-FDB_SERVER_NUM = '99'
-"""Stand for the server in the fdb"""
-FDB_T1_NUM = '01'
-FDB_T0_NUM = '00'
-
-SERVER_IPV4_PREFIX = '192.168.{}.{}'
-T0_IPV4_PREFIX = '10.0.{}.{}'
-T1_IPV4_PREFIX = '10.1.{}.{}'
-
-SERVER_IPV6_PREFIX = 'fc02::{}:{}'
-T0_IPV6_PREFIX = 'fc00:0::{}:{}'
-T1_IPV6_PREFIX = 'fc00:1::{}:{}'
+        """
+        self.lag_id = None
+        self.lag_members: List = lag_members
+        self.member_port_indexs: List = member_port_indexs
