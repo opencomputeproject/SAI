@@ -76,10 +76,10 @@ class Device():
             l3_egress_port_idx
             l3_egress_port_id
             l3_egress_lag_obj
-            routev4_id
-            nexthoproutev4_id
+            routev4
+            nexthoproutev4
             nexthopv6
-            nexthoproutev6_id
+            nexthoproutev6
             neighborv6_id
             local_neighborv6_id            
             neighborv4_id
@@ -165,9 +165,9 @@ class Device():
         Ecmp object.
         """
 
-        self.routev4_id = None
+        self.routev4 = None
         self.nexthopv4: Nexthop = None
-        self.routev6_id = None
+        self.routev6 = None
         self.nexthopv6: Nexthop = None
 
         self.neighborv4_id = None

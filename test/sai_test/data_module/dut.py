@@ -33,6 +33,9 @@ class Dut():
             default_ipv4_route_entry 
             loopback_intf 
             local_10v6_route_entry 
+            local_128v6_route_entry
+            routev4_list
+            routev6_list 
             local_128v6_route_entry 
             lag1_rif 
             lag1_nbr 
@@ -106,6 +109,8 @@ class Dut():
         self.lag2_nbr = None
         self.lag2_nhop = None
         self.lag2_route = None
+        self.routev4_list: List = []
+        self.routev6_list: List = [] 
 
         # vlan
         self.default_vlan_id = None
