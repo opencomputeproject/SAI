@@ -41,6 +41,26 @@ def t0_route_config_helper(test_obj, is_create_default_route=True, is_create_rou
         test_obj.lag2_nbr = route_configer.create_neighbor_for_rif(rif_id=test_obj.lag2_rif, ip_addr=test_obj.lag2_nhop_ip, mac_addr=test_obj.lag2_nb_mac)
         test_obj.lag2_nhop = route_configer.create_next_hop_for_rif(ip_addr=test_obj.lag2_nhop_ip, rif=test_obj.lag2_rif)
         test_obj.lag2_route = route_configer.create_route_entry(dst_ip=test_obj.lag2_route_dst+'/24', next_hop=test_obj.lag2_nhop)   
+        
+        #create ecmp nexthop group
+        test_obj.nhop_group1 = sai_thrift_create_next_hop_group(
+            test_obj.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        test_obj.nh_group_member1 = sai_thrift_create_next_hop_group_member(
+            test_obj.client,
+            next_hop_group_id=test_obj.nhop_group1,
+            next_hop_id=test_obj.lag1_nhop)
+        test_obj.nh_group_member2 = sai_thrift_create_next_hop_group_member(
+            test_obj.client,
+            next_hop_group_id=test_obj.nhop_group1,
+            next_hop_id=test_obj.lag2_nhop)
+        # create route entries
+        test_obj.ecmp_route0 = sai_thrift_route_entry_t(
+            switch_id=test_obj.switch_id,
+            destination=sai_ipprefix('192.168.60.0/24'),
+            vr_id=test_obj.default_vrf)
+        status = sai_thrift_create_route_entry(
+            test_obj.client, test_obj.ecmp_route0, next_hop_id=test_obj.nhop_group1)
+        test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
 class RouteConfiger(object):
     """
