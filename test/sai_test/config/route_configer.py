@@ -155,24 +155,6 @@ class RouteConfiger(object):
             packet_action=SAI_PACKET_ACTION_FORWARD)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
-    def create_route_and_neighbor_entry_for_port(self, ip_addr, mac_addr, port_id, virtual_router_id=None):
-        if virtual_router_id is None:
-            virtual_router_id = self.test_obj.dut.default_vrf
-
-        rif_id1 = sai_thrift_create_router_interface(
-            self.client, virtual_router_id=virtual_router_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=port_id)
-
-        nbr_entry_v4 = sai_thrift_neighbor_entry_t(
-            rif_id=rif_id1, ip_address=sai_ipaddress(ip_addr))
-        sai_thrift_create_neighbor_entry(
-            self.client, nbr_entry_v4, dst_mac_address=mac_addr)
-
-        nhop = sai_thrift_create_next_hop(self.client, ip=sai_ipaddress(
-            ip_addr), router_interface_id=rif_id1, type=SAI_NEXT_HOP_TYPE_IP)
-        route1 = sai_thrift_route_entry_t(
-            vr_id=virtual_router_id, destination=sai_ipprefix(ip_addr+'/24'))
-        sai_thrift_create_route_entry(self.client, route1, next_hop_id=nhop)
-
     def create_router_interface_for_port(self, port_id, virtual_router_id=None):
         if virtual_router_id is None:
             virtual_router_id = self.test_obj.dut.default_vrf
