@@ -19,12 +19,15 @@
 #
 
 from typing import Dict, List
-from data_module.vlan import Vlan
-from data_module.lag import Lag
-from data_module.ecmp import Ecmp
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from data_module.vlan import Vlan
+    from data_module.lag import Lag
+    from data_module.ecmp import Ecmp
 
 
-class Dut():
+
+class Dut(object):
     """
     Dut config, represent the dut object in the test structure.
     Class attributes:
@@ -37,7 +40,7 @@ class Dut():
             routev4_list
             routev6_list 
             local_128v6_route_entry 
-            lag1_rif 
+            #lag1_rif 
             lag1_nbr 
             lag1_nhop 
             lag1_route 
@@ -101,7 +104,7 @@ class Dut():
         self.loopback_intf = None
         self.local_10v6_route_entry = None
         self.local_128v6_route_entry = None
-        self.lag1_rif = None
+        #self.lag1_rif = None
         self.lag1_nbr = None
         self.lag1_nhop = None
         self.lag1_route = None

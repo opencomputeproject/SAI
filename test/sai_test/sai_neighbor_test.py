@@ -18,7 +18,7 @@ class NoHostRouteTest(T0TestBase):
         self.ipv4_addr = "10.1.1.10"
         self.mac_addr = "00:10:10:10:10:10"
         self.nbr_entry_v4 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipaddress(self.ipv4_addr))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -72,7 +72,7 @@ class NoHostRouteTestV6(T0TestBase):
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr = "00:10:10:10:10:10"
         self.nbr_entry_v6 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipaddress(self.ipv6_addr))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -126,7 +126,7 @@ class AddHostRouteTest(T0TestBase):
         self.ipv4_addr = "10.1.1.10"
         self.mac_addr = "00:10:10:10:10:10"
         self.nbr_entry_v4 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipaddress(self.ipv4_addr))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -184,7 +184,7 @@ class AddHostRouteTestV6(T0TestBase):
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr = "00:10:10:10:10:10"
         self.nbr_entry_v6 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipaddress(self.ipv6_addr))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -243,7 +243,7 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
         self.mac_addr = "00:10:10:10:10:10"
 
         self.nbr_entry_v4 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipaddress(self.ipv4_addr))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -254,7 +254,7 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
         self.net_route = sai_thrift_route_entry_t(
             vr_id=self.dut.default_vrf, destination=sai_ipprefix(self.ipv4_addr+'/32'))
         sai_thrift_create_route_entry(
-            self.client, self.net_route, next_hop_id=self.dut.lag1_rif)
+            self.client, self.net_route, next_hop_id=self.dut.lag1.rif)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
     def RemoveAddNeighborTestV4(self):
@@ -336,7 +336,7 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
         self.mac_addr = "00:10:10:10:10:10"
 
         self.nbr_entry_v6 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipaddress(self.ipv6_addr))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -347,7 +347,7 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
         self.net_route = sai_thrift_route_entry_t(
             vr_id=self.dut.default_vrf, destination=sai_ipprefix(self.ipv6_addr+'/128'))
         sai_thrift_create_route_entry(
-            self.client, self.net_route, next_hop_id=self.dut.lag1_rif)
+            self.client, self.net_route, next_hop_id=self.dut.lag1.rif)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
     def RemoveAddNeighborTestV6(self):
@@ -435,7 +435,7 @@ class NhopDiffPrefixRemoveLonger(T0TestBase):
         Delete new created nhop with ipprefix length 16
         '''
         self.nbr_entry_v4 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipaddress(self.ipv4_addr))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -445,11 +445,11 @@ class NhopDiffPrefixRemoveLonger(T0TestBase):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.subnet_nhop_16 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
-            self.ipv4_addr + '/16'), router_interface_id=self.dut.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
+            self.ipv4_addr + '/16'), router_interface_id=self.dut.lag1.rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.subnet_nhop_24 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
-            self.ipv4_addr + '/24'), router_interface_id=self.dut.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
+            self.ipv4_addr + '/24'), router_interface_id=self.dut.lag1.rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         sai_thrift_remove_next_hop(self.client, self.subnet_nhop_24)
@@ -493,7 +493,7 @@ class NhopDiffPrefixRemoveLongerV6(T0TestBase):
         Delete new created nhop with ipprefix length 64
         '''
         self.nbr_entry_128 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipprefix(self.ipv6_addr + '/128'))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -502,11 +502,11 @@ class NhopDiffPrefixRemoveLongerV6(T0TestBase):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.subnet_nhop_64 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
-            self.ipv6_addr + '/64'), router_interface_id=self.dut.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
+            self.ipv6_addr + '/64'), router_interface_id=self.dut.lag1.rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.subnet_nhop_128 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
-            self.ipv6_addr + '/128'), router_interface_id=self.dut.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
+            self.ipv6_addr + '/128'), router_interface_id=self.dut.lag1.rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         sai_thrift_remove_next_hop(self.client, self.subnet_nhop_128)
@@ -551,7 +551,7 @@ class NhopDiffPrefixRemoveShorter(T0TestBase):
         '''
 
         self.nbr_entry = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipaddress(self.ipv4_addr))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -561,11 +561,11 @@ class NhopDiffPrefixRemoveShorter(T0TestBase):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.subnet_nhop_24 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
-            self.ipv4_addr + '/24'), router_interface_id=self.dut.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
+            self.ipv4_addr + '/24'), router_interface_id=self.dut.lag1.rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.subnet_nhop_16 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
-            self.ipv4_addr + '/16'), router_interface_id=self.dut.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
+            self.ipv4_addr + '/16'), router_interface_id=self.dut.lag1.rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         sai_thrift_remove_next_hop(self.client, self.subnet_nhop_16)
@@ -609,7 +609,7 @@ class NhopDiffPrefixRemoveShorterV6(T0TestBase):
         '''
 
         self.nbr_entry_128 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag1_rif,
+            rif_id=self.dut.lag1.rif,
             ip_address=sai_ipprefix(self.ipv6_addr + '/128'))
         status = sai_thrift_create_neighbor_entry(
             self.client,
@@ -618,11 +618,11 @@ class NhopDiffPrefixRemoveShorterV6(T0TestBase):
             no_host_route=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         self.subnet_nhop_128 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
-            self.ipv6_addr + '/128'), router_interface_id=self.dut.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
+            self.ipv6_addr + '/128'), router_interface_id=self.dut.lag1.rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.subnet_nhop_64 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
-            self.ipv6_addr + '/64'), router_interface_id=self.dut.lag1_rif, type=SAI_NEXT_HOP_TYPE_IP)
+            self.ipv6_addr + '/64'), router_interface_id=self.dut.lag1.rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         sai_thrift_remove_next_hop(self.client, self.subnet_nhop_64)

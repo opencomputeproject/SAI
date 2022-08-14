@@ -20,9 +20,9 @@
 
 from typing import List
 from typing import TYPE_CHECKING
-from data_module.nexthop import Nexthop
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
+    from data_module.nexthop import Nexthop
 
 
 class Lag(object):
@@ -37,7 +37,7 @@ class Lag(object):
         nexthopv6: lag related nexthop
     """
 
-    def __init__(self, lag_id=None, lag_members: List = [], member_port_indexs: List = [], rif=None, nexthopv4:Nexthop=None, nexthopv6:Nexthop=None):
+    def __init__(self, lag_id=None, lag_members: List = [], member_port_indexs: List = [], rif=None, nexthopv4:'Nexthop'=None, nexthopv6:'Nexthop'=None):
         """
         Init Lag Object
         Init following attrs:

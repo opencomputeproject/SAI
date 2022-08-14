@@ -19,11 +19,9 @@
 #
 
 from typing import List
-from data_module.lag import Lag
-from data_module.nexthop import Nexthop
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sai_test_base import T0TestBase
+    from data_module.nexthop import Nexthop
 
 
 class Ecmp(object):
@@ -35,7 +33,7 @@ class Ecmp(object):
         member_port_indexs: ecmp port member indexes
     """
 
-    def __init__(self, ecmp_id=None, ecmp_members: List[Nexthop] = [], member_port_indexs: List = []):
+    def __init__(self, ecmp_id=None, ecmp_members: List['Nexthop'] = [], member_port_indexs: List = []):
         """
         Init ecmp Object
         Init following attrs:

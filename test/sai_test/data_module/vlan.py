@@ -20,9 +20,10 @@
 
 from typing import List
 from typing import TYPE_CHECKING
-from data_module.nexthop import Nexthop
+
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
+    from data_module.nexthop import Nexthop
 
 
 class Vlan(object):
@@ -39,7 +40,7 @@ class Vlan(object):
 
     """
 
-    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids: List = [], rif=None, nexthopv4:Nexthop=None, nexthopv6:Nexthop=None):
+    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids: List = [], rif=None, nexthopv4:'Nexthop'=None, nexthopv6:'Nexthop'=None):
         """
         Init Vlan object.
 
@@ -54,7 +55,7 @@ class Vlan(object):
         self.vlan_id = vlan_id
         self.vlan_oid = vlan_oid
         self.vlan_mport_oids: List = vlan_moids
-        self.rif = None
+        self.rif = rif
         self.nexthopv4 = nexthopv4
         self.nexthopv6 = nexthopv6
 

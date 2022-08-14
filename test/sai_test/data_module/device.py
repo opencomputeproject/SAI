@@ -20,8 +20,10 @@
 
 from enum import Enum
 from constant import *
-from data_module.nexthop import Nexthop
-from data_module.ecmp import Ecmp
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from data_module.nexthop import Nexthop
+    from data_module.ecmp import Ecmp
 
 
 class DeviceType(Enum):
@@ -30,7 +32,7 @@ class DeviceType(Enum):
     t1 = 't1'
 
 
-class Device():
+class Device(object):
     """
         Create servers(0-17) ip list.
 
