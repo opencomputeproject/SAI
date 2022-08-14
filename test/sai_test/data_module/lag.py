@@ -19,6 +19,10 @@
 #
 
 from typing import List
+from typing import TYPE_CHECKING
+from data_module.nexthop import Nexthop
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
 
 class Lag(object):
@@ -28,19 +32,34 @@ class Lag(object):
         lag_id: lag id
         lag_members: lag members
         member_port_indexs: lag port member indexes
-        lag_rif: lag related route interface
+        rif: lag related route interface
+        nexthopv4: lag related nexthop
+        nexthopv6: lag related nexthop
     """
 
-    def __init__(self, lag_id=None, lag_members: List = [], member_port_indexs: List = []):
+    def __init__(self, lag_id=None, lag_members: List = [], member_port_indexs: List = [], rif=None, nexthopv4:Nexthop=None, nexthopv6:Nexthop=None):
         """
         Init Lag Object
         Init following attrs:
             lag_id
             lag_members
             member_port_indexs
-            lag_rif
+            rif
+            nexthopv4
+            nexthopv6
         """
-        self.lag_id = None
+        self.lag_id = lag_id
         self.lag_members: List = lag_members
         self.member_port_indexs: List = member_port_indexs
-        self.lag_rif = None
+        self.rif = rif
+        self.nexthopv4 = nexthopv4
+        self.nexthopv6 = nexthopv6
+
+    def create_lag_interface(self, test_object: 'T0TestBase'):
+        """
+        Create vlan interface for this vlan object
+
+        Attrs:
+            test_object: test object contains the method for creating the interface
+        """        
+        self.rif = test_object.create_lag_interface(self)        

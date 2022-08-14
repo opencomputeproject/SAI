@@ -21,6 +21,9 @@
 from typing import List
 from data_module.lag import Lag
 from data_module.nexthop import Nexthop
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
 
 class Ecmp(object):

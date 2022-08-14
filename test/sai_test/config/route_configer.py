@@ -29,6 +29,8 @@ from data_module.vlan import Vlan
 from data_module.lag import Lag
 from typing import Dict, List
 
+from data_module.nexthop import Nexthop
+
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
@@ -139,19 +141,122 @@ class RouteConfiger(object):
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
 
-    def create_route_path_local_host(self, src_dev: Device, port_idx, dest_dev: Device):
+    def create_route_path_in_direct_by_vlan(self, dest_device: Device, vlan: Vlan, virtual_router_id=None):
         """
         Create local route, those route are direct route.
 
+        Set Device attribtue: local_neighborv4_id, local_neighborv6_id
+        Set Dut attribute: neighborv4_list, neighborv6_list
+
         Attrs:
-            src_dev: Simulating the soruce device that this dut direct connect to.
+            dest_device: Simulating the soruce device that this dut direct connect to.
             port_idx: The index of the port which will be used as the egress port.
-            dest_dev: Simulating the destinated device that the packet will be forwarded to.
+
+        return neighborv4, neighborv6
         """
-        pass
+        rif = self.create_router_interface_by_vlan(vlan, virtual_router_id)
+        v4, v6 = self.create_route_path_in_direct_by_rif(dest_device, rif)
+        return v4, v6
+
+    
+    def create_route_path_in_direct_by_lag(self, dest_device: Device, lag: Lag, virtual_router_id=None):
+        """
+        Create local route, those route are direct route.
+
+        Set Device attribtue: local_neighborv4_id, local_neighborv6_id
+        Set Dut attribute: neighborv4_list, neighborv6_list
+
+        Attrs:
+            dest_device: Simulating the soruce device that this dut direct connect to.
+            port_idx: The index of the port which will be used as the egress port.
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        return neighborv4, neighborv6
+        """
+        rif = self.create_router_interface_by_lag(lag, virtual_router_id)
+        v4, v6 = self.create_route_path_in_direct_by_rif(dest_device, rif)
+        return v4, v6
+    
+    def create_route_path_in_direct_by_port_idx(self, dest_device: Device, port_idx, virtual_router_id=None):
+        """
+        Create local route, those route are direct route.
+
+        Set Device attribtue: local_neighborv4_id, local_neighborv6_id
+        Set Dut attribute: neighborv4_list, neighborv6_list
+
+        Attrs:
+            dest_device: Simulating the soruce device that this dut direct connect to.
+            port_idx: The index of the port which will be used as the egress port.
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        return neighborv4, neighborv6
+        """
+        rif = self.create_router_interface_by_port_idx(port_idx, virtual_router_id)
+        v4, v6 = self.create_route_path_in_direct_by_rif(dest_device, rif)
+        return v4, v6
+
+    def create_route_path_in_direct_by_bridge_port_idx(self, dest_device: Device, bridge_port_idx, virtual_router_id=None):
+        """
+        Create local route, those route are direct route.
+
+        Set Device attribtue: local_neighborv4_id, local_neighborv6_id
+        Set Dut attribute: neighborv4_list, neighborv6_list
+
+        Attrs:
+            dest_device: Simulating the soruce device that this dut direct connect to.
+            bridge_port_idx: The index of the port which will be used as the egress port.
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        return neighborv4, neighborv6
+        """
+        rif = self.create_router_interface_by_bridge_port_idx(bridge_port_idx, virtual_router_id)
+        v4, v6 = self.create_route_path_in_direct_by_rif(dest_device, rif)
+        return v4, v6
+
+    def create_route_path_in_direct_by_rif(self, dest_device: Device, rif):
+        """
+        Create local route, those route are direct route.
+
+        Set Device attribtue: local_neighborv4_id, local_neighborv6_id
+        Set Dut attribute: neighborv4_list, neighborv6_list
+
+        Attrs:
+            dest_device: Simulating the soruce device that this dut direct connect to.
+            port_idx: The index of the port which will be used as the egress port.
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        return neighborv4, neighborv6
+        """
+        nbr_entry_v4 = sai_thrift_neighbor_entry_t(
+            rif_id=rif,
+            ip_address=sai_ipaddress(dest_device.ipv4))
+        status = sai_thrift_create_neighbor_entry(
+            self.client,
+            nbr_entry_v4,
+            dst_mac_address=dest_device.mac,
+            no_host_route=True)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        nbr_entry_v6 = sai_thrift_neighbor_entry_t(
+            rif_id=rif,
+            ip_address=sai_ipaddress(dest_device.ipv6))
+        status = sai_thrift_create_neighbor_entry(
+            self.client,
+            nbr_entry_v6,
+            dst_mac_address=dest_device.mac,
+            no_host_route=True)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        dest_device.local_neighborv4_id = nbr_entry_v4
+        dest_device.local_neighborv6_id = nbr_entry_v6
+
+        self.test_obj.dut.neighborv4_list = nbr_entry_v4
+        self.test_obj.dut.neighborv6_list = nbr_entry_v6
+
+        return nbr_entry_v4, nbr_entry_v6
 
 
-    def create_route_path_on_port_by_route_prefix(self, src_dev: Device, prefix, port_idx, dest_dev: Device):
+    def create_route_path_on_port_by_route_prefix(self, dest_device: Device, prefix, port_idx, nexthop_device: Device):
         """
         Create a complete route path from a src device to a dest device, via port by route ip prfix.
 
@@ -164,33 +269,236 @@ class RouteConfiger(object):
         pass
 
 
-    def create_vlan_interface(self, vlan: Vlan):
+    def create_router_interface_by_vlan(self, vlan: Vlan, virtual_router_id=None):
         """
         Create vlan intreface.
+        It will check if the vlan already created a route interface
 
-        Set vlan attribute vlan_rif
+        Set vlan attribute rif
 
         Attrs:
             vlan: vlan object that this vlan interface mapping
+            virtual_router_id: virtual route id, if not defined, will use default route
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        return vlan interface id
+        """        
+        if not vlan.rif:
+            virtual_router_id = self.choice_virtual_route(virtual_router_id)
+            rif = sai_thrift_create_router_interface(self.client,
+                                           virtual_router_id=virtual_router_id,
+                                           type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
+                                           port_id=vlan.vlan_id)
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+            vlan.rif = rif
+        return vlan.rif
+
+
+    def create_router_interface_by_lag(self, lag: Lag, virtual_router_id=None):
         """
-        pass
+        Create lag intreface.
+        It will check if the lag already created a route interface
 
-
-    def create_lag_interface(self, lag: Lag):
-        """
-        Create vlan intreface.
-
-        Set vlan attribute vlan_rif
+        Set lag attribute lag_id
 
         Attrs:
-            vlan: vlan object that this vlan interface mapping
-        """
-        pass
+            lag: Lag object that this lag interface mapping
+            virtual_router_id: virtual route id, if not defined, will use default route
+            virtual_router_id: virtual route id, if not defined, will use default route
+        
+        return rif
+        """        
+        if not lag.rif:
+            virtual_router_id = self.choice_virtual_route(virtual_router_id)
+            rif = sai_thrift_create_router_interface(self.client,
+                                           virtual_router_id=virtual_router_id,
+                                           type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                           port_id=lag.lag_id)
+            lag.rif = rif
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+        return rif
 
+
+    def create_router_interface_by_port_idx(self, port_idx, virtual_router_id=None):
+        """
+        Create route interface by port index for a port.
+        It will check if the port already created a route interface
+
+        Set dut attribute port_rif_list
+
+        Attrs:
+            port_idx: port index
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        return: route interface
+        """        
+        if not self.test_obj.dut.port_rif_list[port_idx]:
+            virtual_router_id = self.choice_virtual_route(virtual_router_id)
+            port_id = self.test_obj.dut.port_list[port_idx]
+            rif_id = sai_thrift_create_router_interface(
+                self.client, virtual_router_id=virtual_router_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=port_id)
+            self.test_obj.dut.port_rif_list[port_idx] = rif_id
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        return self.test_obj.dut.port_rif_list[port_idx]
+
+    def create_router_interface_by_bridge_port_idx(self, bridge_port_idx, virtual_router_id=None):
+        """
+        Create route interface by bridge port index for a port.
+        It will check if the bridge port already created a route interface
+
+        Set dut attribute bridge_port_rif_list
+
+        Attrs:
+            bridge_port_idx: bridge port index
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        return: route interface
+        """
+        if not self.test_obj.dut.bridge_port_rif_list[bridge_port_idx]:
+            virtual_router_id = self.choice_virtual_route(virtual_router_id)
+            bridge_port_id = self.test_obj.dut.port_list[bridge_port_idx]
+            rif_id = sai_thrift_create_router_interface(
+                self.client, virtual_router_id=virtual_router_id, type=SAI_ROUTER_INTERFACE_TYPE_BRIDGE, port_id=bridge_port_id)
+            self.test_obj.dut.bridge_port_rif_list[bridge_port_idx] = rif_id
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        return self.test_obj.dut.bridge_port_rif_list[bridge_port_idx]
+
+
+    def create_nexthop_by_vlan(self, vlan: Vlan, nexthop_device:Device, virtual_router_id=None):
+        """
+        Create nexthop by vlan.
+
+        Set dut attribute: nexthopv4_list, nexthopv6_list, port_nhop_v4_list, port_nhop_v6_list
+        Set vlan attribute: nexthopv4, nexthopv6
+        Set device attribute: nexthopv4, nexthopv6
+
+        Attrs:
+            port_idx: bridge port index
+            nexthop_device: use this device to get the ipaddress, ipprefix_v4 and ipprefix_v6
+            virtual_router_id: virtual route id, if not defined, will use default route
+        
+        return nexthop id
+        """
+        rif = self.create_router_interface_by_vlan(vlan, virtual_router_id)
+        v4, v6 = self.create_nexthop_by_rif(rif, nexthop_device, virtual_router_id)
+        vlan.nexthopv4 = v4
+        vlan.nexthopv6 = v6
+        
+        return v4, v6
+
+
+    def create_nexthop_by_lag(self, lag: Lag, nexthop_device:Device, virtual_router_id=None):
+        """
+        Create nexthop by lag.
+
+        Set dut attribute: nexthopv4_list, nexthopv6_list, port_nhop_v4_list, port_nhop_v6_list
+        Set lag attribute: nexthopv4, nexthopv6
+        Set device attribute: nexthopv4, nexthopv6
+
+        Attrs:
+            port_idx: bridge port index
+            nexthop_device: use this device to get the ipaddress, ipprefix_v4 and ipprefix_v6
+            virtual_router_id: virtual route id, if not defined, will use default route
+        
+        return nexthop id
+        """
+        rif = self.create_router_interface_by_lag(lag, virtual_router_id)
+        v4, v6 = self.create_nexthop_by_rif(rif, nexthop_device, virtual_router_id)
+        lag.nexthopv4 = v4
+        lag.nexthopv6 = v6
+        return v4, v6
+
+
+    def create_nexthop_by_port_idx(self, port_idx, nexthop_device:Device, ipprefix_v4=None, ipprefix_v6=None, virtual_router_id=None):
+        """
+        Create nexthop by port index for a port.
+
+        Set dut attribute: nexthopv4_list, nexthopv6_list, port_nhop_v4_list, port_nhop_v6_list
+        Set device attribute: nexthopv4, nexthopv6
+
+        Attrs:
+            port_idx: bridge port index
+            nexthop_device: use this device to get the ipaddress, ipprefix_v4 and ipprefix_v6
+            virtual_router_id: virtual route id, if not defined, will use default route
+        
+        return nexthop id
+        """
+        rif = self.create_router_interface_by_port_idx(port_idx, virtual_router_id)
+        v4, v6 = self.create_nexthop_by_rif(rif, nexthop_device, virtual_router_id)
+        self.test_obj.dut.port_nhop_v4_list.append(v4)
+        self.test_obj.dut.port_nhop_v6_list.append(v6)
+        return v4, v6
+
+    def create_nexthop_by_bridge_port_idx(self, bridge_port_idx, nexthop_device:Device, ipprefix_v4=None, ipprefix_v6=None, virtual_router_id=None):
+        """
+        Create nexthop by bridge port index for a port.
+
+        Set dut attribute: nexthopv4_list, nexthopv6_list, bridge_port_nhop_v4_list, bridge_port_nhop_v6_list
+        Set device attribute: nexthopv4, nexthopv6
+
+        Attrs:
+            bridge_port_idx: bridge port index
+            nexthop_device: use this device to get the ipaddress, ipprefix_v4 and ipprefix_v6
+            virtual_router_id: virtual route id, if not defined, will use default route
+        
+        return nexthop id
+        """
+        rif = self.create_router_interface_by_bridge_port_idx(bridge_port_idx, virtual_router_id)
+        v4, v6 = self.create_nexthop_by_rif(rif, nexthop_device, virtual_router_id)
+        self.test_obj.dut.bridge_port_nhop_v4_list.append(v4)
+        self.test_obj.dut.bridge_port_nhop_v6_list.append(v6)
+        return v4, v6
+
+
+    def create_nexthop_by_rif(self, rif, nexthop_device:Device, virtual_router_id=None):
+        """
+        Create nexthop by bridge port index for a port.
+
+        Set dut attribute: nexthopv4_list, nexthopv6_list
+        Set device attribute: nexthopv4, nexthopv6
+
+        Attrs:
+            rif: route interface id
+            nexthop_device: use this device to get the ipaddress, ipprefix_v4 and ipprefix_v6
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        return nexthop_v4 and nexthop_v6 id
+        """
+        virtual_router_id = self.choice_virtual_route(virtual_router_id)
+        if nexthop_device.ip_prefix:
+            nhopv4 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
+            nexthop_device.ipv4 + '/' + nexthop_device.ip_prefix), router_interface_id=rif, type=SAI_NEXT_HOP_TYPE_IP)
+        else:
+            nhopv4 = sai_thrift_create_next_hop(self.client, ip=sai_ipaddress(
+            nexthop_device.ipv4), router_interface_id=rif, type=SAI_NEXT_HOP_TYPE_IP)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        if nexthop_device.ip_prefix_v6:
+            nhopv6 = sai_thrift_create_next_hop(self.client, ip=sai_ipprefix(
+            nexthop_device.ipv6 + '/' + nexthop_device.ip_prefix_v6), router_interface_id=rif, type=SAI_NEXT_HOP_TYPE_IP)
+        else:
+            nhopv6 = sai_thrift_create_next_hop(self.client, ip=sai_ipaddress(
+            nexthop_device.ipv6), router_interface_id=rif, type=SAI_NEXT_HOP_TYPE_IP)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        self.test_obj.dut.nexthopv4_list.append(nhopv4)
+        self.test_obj.dut.nexthopv6_list.append(nhopv6)
+        nexthop_device.nexthopv4 = nhopv4
+        nexthop_device.nexthopv6 = nhopv6
+
+        return nhopv4, nhopv6
     
     def create_ecmp_by_lags(self, lags: List[Lag]):
         """
         Create ecmp(next hop group) by lags, each lag will be binding to a nexthop
+        """
+        pass
+
+    def create_ecmp_by_nexthops(self, nhops: List[Nexthop]):
+        """
+        Create ecmp(next hop group) by Nexthop, each lag will be binding to a nexthop
         """
         pass
 
@@ -240,15 +548,6 @@ class RouteConfiger(object):
             vr_id=virtual_router_id, destination=sai_ipprefix(ip_addr+'/24'))
         sai_thrift_create_route_entry(self.client, route1, next_hop_id=nhop)
 
-    def create_router_interface_for_port(self, port_id, virtual_router_id=None):
-        if virtual_router_id is None:
-            virtual_router_id = self.test_obj.dut.default_vrf
-
-        rif_id1 = sai_thrift_create_router_interface(
-            self.client, virtual_router_id=virtual_router_id, type=SAI_ROUTER_INTERFACE_TYPE_PORT, port_id=port_id)
-        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-
-        return rif_id1
 
     def create_next_hop_for_rif(self, ip_addr, rif):
         nhop = sai_thrift_create_next_hop(self.client, ip=sai_ipaddress(
@@ -267,8 +566,7 @@ class RouteConfiger(object):
         return nbr_entry_v4
 
     def create_route_entry(self, dst_ip, next_hop, virtual_router_id=None):
-        if virtual_router_id is None:
-            virtual_router_id = self.test_obj.dut.default_vrf
+        virtual_router_id = self.choice_virtual_route(virtual_router_id)
 
         route1 = sai_thrift_route_entry_t(
             vr_id=virtual_router_id, destination=sai_ipprefix(dst_ip))
@@ -277,3 +575,17 @@ class RouteConfiger(object):
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
         return route1
+
+    def choice_virtual_route(self, virtual_router_id=None):
+        """
+        Depends on if virtual_router_id is None, return the default virtual or deinded vr.
+        
+        Attrs
+            virtual_router_id: defined vr
+        """
+
+        if virtual_router_id is None:
+            return self.test_obj.dut.default_vrf
+        
+        return virtual_router_id
+

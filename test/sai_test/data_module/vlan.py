@@ -19,6 +19,10 @@
 #
 
 from typing import List
+from typing import TYPE_CHECKING
+from data_module.nexthop import Nexthop
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
 
 class Vlan(object):
@@ -29,10 +33,13 @@ class Vlan(object):
         vlan_id: vlan id
         vlan_oid: vlan ojbect id
         vlan_moids: vlan member object ids
-        vlan_rif: vlan related route interface id
+        rif: vlan related route interface
+        nexthopv4: vlan related nexthop
+        nexthopv6: vlan related nexthop
+
     """
 
-    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids: List = []):
+    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids: List = [], rif=None, nexthopv4:Nexthop=None, nexthopv6:Nexthop=None):
         """
         Init Vlan object.
 
@@ -40,9 +47,23 @@ class Vlan(object):
             vlan_id
             vlan_oid
             vlan_mport_oids
-            vlan_rif
+            rif
+            nexthopv4
+            nexthopv6
         """
         self.vlan_id = vlan_id
         self.vlan_oid = vlan_oid
         self.vlan_mport_oids: List = vlan_moids
-        self.vlan_rif = None
+        self.rif = None
+        self.nexthopv4 = nexthopv4
+        self.nexthopv6 = nexthopv6
+
+    def create_vlan_interface(self, test_object: 'T0TestBase'):
+        """
+        Create vlan interface for this vlan object
+
+        Attrs:
+            test_object: test object contains the method for creating the interface
+        """
+
+        self.rif = test_object.create_vlan_interface(self)

@@ -54,6 +54,8 @@ from config.lag_configer import LagConfiger
 from config.route_configer import t0_route_config_helper
 from config.route_configer import RouteConfiger
 from data_module.dut import Dut
+from data_module.vlan import Vlan
+from data_module.lag import Lag
 from data_module.device import Device
 from data_module.device import DeviceType
 from typing import List
@@ -363,6 +365,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
 
         # init port rif list
         self.dut.port_rif_list = [None] * len(self.dut.dev_port_list)
+        # init bridge port rif list
+        self.dut.bridge_port_rif_list = [None] * len(self.dut.bridge_port_list)
         self.switch_configer = SwitchConfiger(self)
         self.fdb_configer = FdbConfiger(self)
         self.vlan_configer = VlanConfiger(self)
@@ -450,6 +454,24 @@ class T0TestBase(ThriftInterfaceDataPlane):
         for t1_grp_idx in self.t1_groups:
             self.t1_list[t1_grp_idx] = [Device(DeviceType.t1, index, t1_grp_idx)
                                         for index in range(1, self.num_device_each_group+1)]
+
+    def create_vlan_interface(self, vlan: Vlan):
+        """
+        Create vlan route interface.
+
+        Attrs:
+            Vlan: vlan for the route interface
+        """
+        self.route_configer.create_router_interface_by_vlan(vlan)
+
+    def create_lag_interface(self, lag: Lag):
+        """
+        Create lag route interface.
+
+        Attrs:
+            Lag: lag for the route interface
+        """
+        self.route_configer.create_router_interface_by_lag(lag)
 
     def tearDown(self):
         '''

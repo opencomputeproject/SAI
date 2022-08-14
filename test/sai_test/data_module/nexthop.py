@@ -18,13 +18,19 @@
 #
 #
 
+from sai_thrift.sai_adapter import *
 from enum import Enum
 from typing import List
 from data_module.lag import Lag
+from data_module.device import Device
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
 
 class PortType(Enum):
     port = 'port'
+    bridge_port = 'bridge'
     vlan = 'vlan'
     lag = 'lag'
     tunnel = 'tunnel'
@@ -34,29 +40,35 @@ class Nexthop(object):
     Represent the Nexthopobject.
     Attrs:
         nexthop_id: Nexthop id
+        dest_device: dest device
+        rif_id: router interface id
         port_idx: related port idx (optional, need to check if None)
         lag: related lag (optional, need to check if None)
         tunnel_idx: related tunnel idx (optional, need to check if None)
     """
 
-    def __init__(self, nexthop_id=None, port_idx=None, lag:Lag=None, tunnel_idx=None):
+    def __init__(self, nexthop_id=None, dest_device:Device=None, rif_id=None, port_idx=None, lag:Lag=None, tunnel_idx=None):
         """
         Init Nexthop Object
         Init following attrs:
             nexthop_id
+            dest_device
+            rif_id
             port_idx
             lag
             tunnel_idx
         """
-        self.nexthop_id = None
+        self.nexthop_id = nexthop_id
         """
         Nexthop id
         """
+        self.dest_device = dest_device
         self.port_idx = port_idx
         """
         related port idx (optional, need to check if None)
         """
-        self.lag = port_idx
+        self.rif_id = rif_id
+        self.lag = lag
         """
         related lag (optional, need to check if None)
         """

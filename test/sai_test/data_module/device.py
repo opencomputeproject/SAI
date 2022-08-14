@@ -76,19 +76,24 @@ class Device():
             l3_egress_port_idx
             l3_egress_port_id
             l3_egress_lag_obj
-            route_id
-            nexthop
-            neighbor_id
+            routev4_id
+            nexthoproutev4_id
+            nexthopv6
+            nexthoproutev6_id
+            neighborv6_id
+            local_neighborv6_id            
+            neighborv4_id
+            local_neighborv4_id
             fdb_entry
 
         Server:
-            self.ip_prefix: SERVER_IPV4_PREFIX
-            self.ip_prefix_v6: SERVER_IPV6_PREFIX
+            self.ip_pattern: SERVER_IPV4_PATTERN
+            self.ip_pattern_v6: SERVER_IPV6_PATTERN
             self.fdb_device_num: FDB_SERVER_NUM
 
         T1:
-            self.ip_prefix: T1_IPV4_PREFIX
-            self.ip_prefix_v6: T1_IPV6_PREFIX
+            self.ip_pattern: T1_IPV4_PATTERN
+            self.ip_pattern_v6: T1_IPV6_PATTERN
             self.fdb_device_num: FDB_T1_NUM
 
         """
@@ -108,13 +113,15 @@ class Device():
         """
         numbers of ips
         """
+        self.ip_prefix = None
+        self.ip_prefix_v6 = None
         if self.type == DeviceType.server:
-            self.ip_prefix = SERVER_IPV4_PREFIX
-            self.ip_prefix_v6 = SERVER_IPV6_PREFIX
+            self.ip_pattern = SERVER_IPV4_PATTERN
+            self.ip_pattern_v6 = SERVER_IPV6_PATTERN
             self.fdb_device_num = FDB_SERVER_NUM
         elif self.type == DeviceType.t1:
-            self.ip_prefix = T1_IPV4_PREFIX
-            self.ip_prefix_v6 = T1_IPV6_PREFIX
+            self.ip_pattern = T1_IPV4_PATTERN
+            self.ip_pattern_v6 = T1_IPV6_PATTERN
             self.fdb_device_num = FDB_T1_NUM
 
         self.mac = self._generate_mac_address()
@@ -158,22 +165,40 @@ class Device():
         Ecmp object.
         """
 
-        self.route_id = None
-        self.nexthop: Nexthop = None
-        self.neighbor_id = None
+        self.routev4_id = None
+        self.nexthopv4: Nexthop = None
+        self.routev6_id = None
+        self.nexthopv6: Nexthop = None
+
+        self.neighborv4_id = None
+        """
+        No host neighbor
+        """
+        self.local_neighborv4_id = None
+        """
+        Host, direct neighbor
+        """
+        self.neighborv6_id = None
+        """
+        No host neighbor
+        """
+        self.local_neighborv6_id = None
+        """
+        Host, direct neighbor
+        """
         self.fdb_entry = None
 
     def _generate_ipv4_address(self):
         """
         Generate ipv4 address.
         """
-        return self.ip_prefix.format(self.group_id, self.id)
+        return self.ip_pattern.format(self.group_id, self.id)
 
     def _generate_ipv6_address(self):
         """
         Generate ipv6 address.
         """
-        return self.ip_prefix_v6.format(self.group_id, self.id)
+        return self.ip_pattern_v6.format(self.group_id, self.id)
 
     def _generate_mac_address(self):
         """
