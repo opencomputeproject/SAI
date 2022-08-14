@@ -34,10 +34,10 @@ class LagConfigTest(T0TestBase):
         T0TestBase.setUp(self)
 
     def load_balance_on_src_ip(self):
-        sai_thrift_create_router_interface(self.client,
-                                           virtual_router_id=self.dut.default_vrf,
-                                           type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                           port_id=self.dut.port_list[1])
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
         ip_dst = self.servers[11][0].ipv4
         pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                  eth_src=self.servers[1][0].mac,
@@ -73,6 +73,11 @@ class LagConfigTest(T0TestBase):
             self.load_balance_on_src_ip()
         finally:
             pass
+    
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
 
 
 class LoadbalanceOnSrcPortTest(T0TestBase):
@@ -94,10 +99,10 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on src port")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.dut.port_list[1])
+            self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_list[1])
             max_itrs = 150
             begin_port = 2000
             rcv_count = [0, 0]
@@ -128,6 +133,11 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
         finally:
             pass
 
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
+
 
 class LoadbalanceOnDesPortTest(T0TestBase):
     """
@@ -148,10 +158,10 @@ class LoadbalanceOnDesPortTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on des port")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.dut.port_list[1])
+            self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_list[1])
             max_itrs = 150
             begin_port = 2000
             rcv_count = [0, 0]
@@ -183,6 +193,11 @@ class LoadbalanceOnDesPortTest(T0TestBase):
         finally:
             pass
 
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
+
 
 class LoadbalanceOnSrcIPTest(T0TestBase):
     """
@@ -203,10 +218,10 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on src IP")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.dut.port_list[1])
+            self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_list[1])
             max_itrs = 99
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
@@ -235,6 +250,11 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
         finally:
             pass
 
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
+
 
 class LoadbalanceOnDesIPTest(T0TestBase):
     """
@@ -255,10 +275,10 @@ class LoadbalanceOnDesIPTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on des IP")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.dut.port_list[1])
+            self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_list[1])
             max_itrs = 150
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
@@ -287,6 +307,11 @@ class LoadbalanceOnDesIPTest(T0TestBase):
         finally:
             pass
 
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
+
 
 """
 Skip test for broadcom, can't load balance on protocol such as tcp and udp
@@ -314,10 +339,10 @@ class LoadbalanceOnProtocolTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on protocal")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.dut.port_list[1])
+            self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_list[1])
             max_itrs = 150
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
@@ -361,6 +386,11 @@ class LoadbalanceOnProtocolTest(T0TestBase):
         finally:
             pass
 
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
+
 
 class DisableEgressTest(T0TestBase):
     """
@@ -385,10 +415,10 @@ class DisableEgressTest(T0TestBase):
         """
         try:
             print("Lag disable egress lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.dut.port_list[1])
+            self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_list[1])
             pkts_num = 10
             begin_port = 2000
             exp_drop = []
@@ -443,13 +473,16 @@ class DisableEgressTest(T0TestBase):
         finally:
             pass
 
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
+
 
 """
 Skip test for broadcom, can't disable ingress of lag member
 Item: 14988584
 """
-
-
 @skip
 class DisableIngressTest(T0TestBase):
 
@@ -476,10 +509,10 @@ class DisableIngressTest(T0TestBase):
         """
         try:
             print("Lag disable ingress lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.dut.lag1.lag_id)
+            self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.lag1.lag_id)
             pkts_num = 10
             begin_port = 2000
             for i in range(0, pkts_num):
@@ -527,6 +560,11 @@ class DisableIngressTest(T0TestBase):
         finally:
             pass
 
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
+
 
 class RemoveLagMemberTest(T0TestBase):
     """
@@ -551,10 +589,10 @@ class RemoveLagMemberTest(T0TestBase):
         """
         try:
             print("Lag remove lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.dut.port_list[1])
+            self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_list[1])
 
             pkts_num = 10
             begin_port = 2000
@@ -602,9 +640,14 @@ class RemoveLagMemberTest(T0TestBase):
             sai_thrift_create_lag_member(self.client,
                                          lag_id=self.dut.lag1.lag_id,
                                          port_id=self.dut.port_list[18])
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         finally:
             pass
+
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
 
 
 class AddLagMemberTest(T0TestBase):
@@ -630,10 +673,10 @@ class AddLagMemberTest(T0TestBase):
         """
         try:
             print("Lag add lag member test")
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                               port_id=self.dut.port_list[1])
+            self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_list[1])
             pkts_num = 10
             begin_port = 2000
             rcv_count = [0, 0, 0]
@@ -690,6 +733,11 @@ class AddLagMemberTest(T0TestBase):
         finally:
             pass
 
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
+
 
 class IndifferenceIngressPortTest(T0TestBase):
     """
@@ -703,10 +751,10 @@ class IndifferenceIngressPortTest(T0TestBase):
 
     def runTest(self):
         try:
-            sai_thrift_create_router_interface(self.client,
-                                               virtual_router_id=self.dut.default_vrf,
-                                               type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
-                                               vlan_id=10)
+            self.vlan10_rif = sai_thrift_create_router_interface(self.client,
+                                                                 virtual_router_id=self.dut.default_vrf,
+                                                                 type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
+                                                                 vlan_id=10)
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src=self.servers[1][0].mac,
                                     ip_dst=self.servers[11][0].ipv4,
@@ -731,3 +779,8 @@ class IndifferenceIngressPortTest(T0TestBase):
                     verify_packet(self, exp_pkt, exp_port_list[exp_port_idx])
         finally:
             pass
+
+    def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.vlan10_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        super().tearDown()
