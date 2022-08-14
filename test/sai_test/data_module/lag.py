@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from data_module.nexthop import Nexthop
 
 
-class Lag(object):
+class Lag():
     """
     Represent the lag object.
     Attrs:
@@ -37,7 +37,7 @@ class Lag(object):
         nexthopv6: lag related nexthop
     """
 
-    def __init__(self, lag_id=None, lag_members: List = [], member_port_indexs: List = [], rif=None, nexthopv4:'Nexthop'=None, nexthopv6:'Nexthop'=None):
+    def __init__(self, lag_id=None, lag_members: List = [], member_port_indexs: List = [], rif=None, nexthopv4: 'Nexthop' = None, nexthopv6: 'Nexthop' = None):
         """
         Init Lag Object
         Init following attrs:
@@ -61,5 +61,5 @@ class Lag(object):
 
         Attrs:
             test_object: test object contains the method for creating the interface
-        """        
-        self.rif = test_object.create_lag_interface(self)        
+        """
+        self.rif = test_object.create_lag_interface(self)

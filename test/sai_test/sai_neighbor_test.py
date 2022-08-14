@@ -154,7 +154,7 @@ class AddHostRouteTest(T0TestBase):
 
         print("Sending IPv4 packet when host route exists")
         send_packet(self, self.dev_port1, pkt)
-        verify_packet_any_port(self, exp_pkt, [17, 18])
+        verify_packet_any_port(self, exp_pkt, self.dut.lag1.member_port_indexs)
         print("Packet forwarded")
 
     def runTest(self):
@@ -212,7 +212,8 @@ class AddHostRouteTestV6(T0TestBase):
 
         print("Sending IPv4 packet when host route exists")
         send_packet(self, self.dev_port1, pkt_v6)
-        verify_packet_any_port(self, exp_pkt_v6, [17, 18])
+        verify_packet_any_port(
+            self, exp_pkt_v6, self.dut.lag1.member_port_indexs)
         print("Packet forwarded")
 
     def runTest(self):
@@ -286,7 +287,7 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
                                     ip_ttl=63)
 
         send_packet(self, self.dev_port1, pkt)
-        verify_packet_any_port(self, exp_pkt, [17, 18])
+        verify_packet_any_port(self, exp_pkt, self.dut.lag1.member_port_indexs)
 
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
@@ -306,7 +307,7 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
             dst_mac_address=self.mac_addr)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         send_packet(self, self.dev_port1, pkt)
-        verify_packet_any_port(self, exp_pkt, [17, 18])
+        verify_packet_any_port(self, exp_pkt, self.dut.lag1.member_port_indexs)
 
     def runTest(self):
         try:
@@ -377,7 +378,8 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
                                      ipv6_dst=self.ipv6_addr,
                                      ipv6_hlim=64)
         send_packet(self, self.dev_port1, pkt_v6)
-        verify_packet_any_port(self, exp_pkt_v6, [17, 18])
+        verify_packet_any_port(
+            self, exp_pkt_v6, self.dut.lag1.member_port_indexs)
 
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v6)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
@@ -397,7 +399,8 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
             dst_mac_address=self.mac_addr)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         send_packet(self, self.dev_port1, pkt_v6)
-        verify_packet_any_port(self, exp_pkt_v6, [17, 18])
+        verify_packet_any_port(
+            self, exp_pkt_v6, self.dut.lag1.member_port_indexs)
 
     def runTest(self):
         try:

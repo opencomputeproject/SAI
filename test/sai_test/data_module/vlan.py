@@ -40,7 +40,7 @@ class Vlan(object):
 
     """
 
-    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids: List = [], rif=None, nexthopv4:'Nexthop'=None, nexthopv6:'Nexthop'=None):
+    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids: List = [], rif=None, nexthopv4: 'Nexthop' = None, nexthopv6: 'Nexthop' = None):
         """
         Init Vlan object.
 

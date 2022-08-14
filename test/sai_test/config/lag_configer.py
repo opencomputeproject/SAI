@@ -75,13 +75,10 @@ class LagConfiger(object):
         Returns:
             Lag: lag object
         """
-
-        lag = Lag()
+        lag: Lag = Lag(None, [], [])
         lag_id = sai_thrift_create_lag(self.client)
         lag.lag_id = lag_id
-        lag_members = self.create_lag_member(lag, lag_port_idxs)
-        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-
+        self.create_lag_member(lag, lag_port_idxs)
         return lag
 
     def create_lag_member(self, lag_obj, lag_port_idxs):

@@ -64,9 +64,11 @@ class LagConfigTest(T0TestBase):
                                      ip_id=105,
                                      ip_ttl=63)
         send_packet(self, 1, pkt1)
-        verify_packet_any_port(self, exp_pkt1, [17, 18])
+        verify_packet_any_port(
+            self, exp_pkt1, self.dut.lag1.member_port_indexs)
         send_packet(self, 1, pkt2)
-        verify_packet_any_port(self, exp_pkt2, [17, 18])
+        verify_packet_any_port(
+            self, exp_pkt2, self.dut.lag1.member_port_indexs)
 
     def runTest(self):
         try:
@@ -123,7 +125,8 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
                                             ip_id=105,
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
-                rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
+                rcv_idx, _ = verify_packet_any_port(
+                    self, exp_pkt, self.dut.lag1.member_port_indexs)
                 print('src_port={}, rcv_port={}'.format(src_port, rcv_idx))
                 rcv_count[rcv_idx] += 1
             print(rcv_count)
@@ -182,7 +185,8 @@ class LoadbalanceOnDesPortTest(T0TestBase):
                                             ip_id=105,
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
-                rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
+                rcv_idx, _ = verify_packet_any_port(
+                    self, exp_pkt, self.dut.lag1.member_port_indexs)
                 print('des_port={}, rcv_port={}'.format(des_port, rcv_idx))
                 rcv_count[rcv_idx] += 1
 
@@ -238,7 +242,8 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
                                             ip_id=105,
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
-                rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
+                rcv_idx, _ = verify_packet_any_port(
+                    self, exp_pkt, self.dut.lag1.member_port_indexs)
                 print('ip_src={}, rcv_port={}'.format(
                     self.servers[1][i].ipv4, rcv_idx))
                 rcv_count[rcv_idx] += 1
@@ -295,7 +300,8 @@ class LoadbalanceOnDesIPTest(T0TestBase):
                                             ip_id=105,
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
-                rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
+                rcv_idx, _ = verify_packet_any_port(
+                    self, exp_pkt, self.dut.lag1.member_port_indexs)
                 print('des_src={}, rcv_port={}'.format(
                     self.servers[1][0].ipv4, rcv_idx))
                 rcv_count[rcv_idx] += 1
@@ -374,7 +380,8 @@ class LoadbalanceOnProtocolTest(T0TestBase):
                                                  ip_id=105,
                                                  ip_ttl=63)
                 send_packet(self, 1, pkt)
-                rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
+                rcv_idx, _ = verify_packet_any_port(
+                    self, exp_pkt, self.dut.lag1.member_port_indexs)
                 print('des_src={}, rcv_port={}'.format(
                     self.servers[1][0].ipv4, rcv_idx))
                 rcv_count[rcv_idx] += 1
@@ -439,7 +446,8 @@ class DisableEgressTest(T0TestBase):
                                             ip_id=105,
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
-                rcv_idx, _ = verify_packet_any_port(self, exp_pkt, [17, 18])
+                rcv_idx, _ = verify_packet_any_port(
+                    self, exp_pkt, self.dut.lag1.member_port_indexs)
                 if rcv_idx == 18:
                     exp_drop.append(src_port)
 
@@ -614,7 +622,8 @@ class RemoveLagMemberTest(T0TestBase):
                                             ip_id=105,
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
-                verify_packet_any_port(self, exp_pkt, [17, 18])
+                verify_packet_any_port(
+                    self, exp_pkt, self.dut.lag1.member_port_indexs)
 
             self.lag_configer.remove_lag_member_by_port_idx(
                 lag_obj=self.dut.lag1, port_idx=18)
@@ -695,7 +704,8 @@ class AddLagMemberTest(T0TestBase):
                                             ip_id=105,
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
-                verify_packet_any_port(self, exp_pkt, [17, 18])
+                verify_packet_any_port(
+                    self, exp_pkt, self.dut.lag1.member_port_indexs)
             print("add port21 into lag1")
             self.lag_configer.create_lag_member(lag_obj=self.dut.lag1,
                                                 lag_port_idxs=range(21, 22))
@@ -717,7 +727,7 @@ class AddLagMemberTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
-                    self, exp_pkt, [17, 18, 21])
+                    self, exp_pkt, self.dut.lag1.member_port_indexs)
                 rcv_count[rcv_idx] += 1
             for cnt in rcv_count:
                 self.assertGreater(
@@ -763,7 +773,7 @@ class IndifferenceIngressPortTest(T0TestBase):
                                         ip_ttl=63)
 
             exp_port_idx = -1
-            exp_port_list = [17, 18]
+            exp_port_list = self.dut.lag1.member_port_indexs
             for i in range(1, 9):
                 send_packet(self, i, pkt)
                 if exp_port_idx == -1:

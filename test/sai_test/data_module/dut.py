@@ -26,7 +26,6 @@ if TYPE_CHECKING:
     from data_module.ecmp import Ecmp
 
 
-
 class Dut(object):
     """
     Dut config, represent the dut object in the test structure.
@@ -40,14 +39,6 @@ class Dut(object):
             routev4_list
             routev6_list 
             local_128v6_route_entry 
-            #lag1_rif 
-            lag1_nbr 
-            lag1_nhop 
-            lag1_route 
-            lag2_rif 
-            lag2_nbr 
-            lag2_nhop 
-            lag2_route 
 
             # vlan
             default_vlan_id 
@@ -104,16 +95,8 @@ class Dut(object):
         self.loopback_intf = None
         self.local_10v6_route_entry = None
         self.local_128v6_route_entry = None
-        #self.lag1_rif = None
-        self.lag1_nbr = None
-        self.lag1_nhop = None
-        self.lag1_route = None
-        self.lag2_rif = None
-        self.lag2_nbr = None
-        self.lag2_nhop = None
-        self.lag2_route = None
         self.routev4_list: List = []
-        self.routev6_list: List = [] 
+        self.routev6_list: List = []
 
         # vlan
         self.default_vlan_id = None
@@ -152,12 +135,12 @@ class Dut(object):
         """
         Host interface list
         """
-        self.port_rif_list:List = []
+        self.port_rif_list: List = []
         """
         Port rif list. Size of the rif equals to the ports size, value will be None if not mapping to a rif
         """
 
-        self.bridge_port_rif_list:List = []
+        self.bridge_port_rif_list: List = []
         """
         Bridge Port rif list. Size of the rif equals to the bridge ports size, value will be None if not mapping to a rif
         """
@@ -181,20 +164,20 @@ class Dut(object):
         """
         nexthop list, contains nexthop objects
         """
-        self.port_nhop_v4_list:List = []
+        self.port_nhop_v4_list: List = []
         """
         Port nhop list. Size of the nhop equals to the ports size, value will be None if not mapping to a nhop
         """
-        self.port_nhop_v6_list:List = []
+        self.port_nhop_v6_list: List = []
         """
         Port nhop list. Size of the nhop equals to the ports size, value will be None if not mapping to a nhop
         """
 
-        self.bridge_port_nhop_v4_list:List = []
+        self.bridge_port_nhop_v4_list: List = []
         """
         Bridge Port nhop list. Size of the nhop equals to the bridge ports size, value will be None if not mapping to a nhop
         """
-        self.bridge_port_nhop_v6_list:List = []
+        self.bridge_port_nhop_v6_list: List = []
         """
         Bridge Port nhop list. Size of the nhop equals to the bridge ports size, value will be None if not mapping to a nhop
         """

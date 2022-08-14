@@ -32,19 +32,19 @@ class Nexthop(object):
     Represent the Nexthopobject.
     Attrs:
         nexthop_id: Nexthop id
-        dest_device: dest device
+        nexthop_device: nexthop_device
         rif_id: router interface id
         port_idx: related port idx (optional, need to check if None)
         lag: related lag (optional, need to check if None)
         tunnel_idx: related tunnel idx (optional, need to check if None)
     """
 
-    def __init__(self, nexthop_id=None, dest_device:'Device'=None, rif_id=None, port_idx=None, lag=None, tunnel_idx=None):
+    def __init__(self, nexthop_id=None, nexthop_device: 'Device' = None, rif_id=None, port_idx=None, lag=None, tunnel_idx=None):
         """
         Init Nexthop Object
         Init following attrs:
             nexthop_id
-            dest_device
+            nexthop_device
             rif_id
             port_idx
             lag
@@ -54,7 +54,7 @@ class Nexthop(object):
         """
         Nexthop id
         """
-        self.dest_device = dest_device
+        self.nexthop_device = nexthop_device
         self.port_idx = port_idx
         """
         related port idx (optional, need to check if None)
@@ -68,6 +68,7 @@ class Nexthop(object):
         """
         related tunnel idx (optional, need to check if None)
         """
+
 
 class PortType(Enum):
     port = 'port'
