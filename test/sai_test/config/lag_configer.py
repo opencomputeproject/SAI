@@ -22,7 +22,7 @@
 from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from typing import TYPE_CHECKING
-from config.lag import Lag
+from data_module.lag import Lag
 
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase

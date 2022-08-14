@@ -20,7 +20,7 @@
 
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from sai_thrift.sai_adapter import *
-from config.device import Device
+from data_module.device import Device
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

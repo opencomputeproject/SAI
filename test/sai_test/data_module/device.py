@@ -20,6 +20,8 @@
 
 from enum import Enum
 from constant import *
+from data_module.nexthop import Nexthop
+from data_module.ecmp import Ecmp
 
 
 class DeviceType(Enum):
@@ -51,7 +53,8 @@ class Device():
             l3_egress_port_id: L3 destination port object id, defined in route configer
             l3_egress_lag_obj: L3 destination port object, defined in route configer
             route_id
-            next_hop_id
+            nexthop
+            ecmp_egress: ecmp object for egress
             neighbor_id
             fdb_entry
     """
@@ -74,7 +77,7 @@ class Device():
             l3_egress_port_id
             l3_egress_lag_obj
             route_id
-            next_hop_id
+            nexthop
             neighbor_id
             fdb_entry
 
@@ -150,9 +153,13 @@ class Device():
         """
         L3 destination port object, defined in route configer
         """
+        self.ecmp_egress: Ecmp = None
+        """
+        Ecmp object.
+        """
 
         self.route_id = None
-        self.next_hop_id = None
+        self.nexthop: Nexthop = None
         self.neighbor_id = None
         self.fdb_entry = None
 

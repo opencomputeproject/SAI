@@ -28,6 +28,7 @@ class Lag(object):
         lag_id: lag id
         lag_members: lag members
         member_port_indexs: lag port member indexes
+        lag_rif: lag related route interface
     """
 
     def __init__(self, lag_id=None, lag_members: List = [], member_port_indexs: List = []):
@@ -37,8 +38,9 @@ class Lag(object):
             lag_id
             lag_members
             member_port_indexs
-
+            lag_rif
         """
         self.lag_id = None
         self.lag_members: List = lag_members
         self.member_port_indexs: List = member_port_indexs
+        self.lag_rif = None

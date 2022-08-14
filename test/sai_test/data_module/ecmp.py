@@ -19,27 +19,37 @@
 #
 
 from typing import List
+from data_module.lag import Lag
+from data_module.nexthop import Nexthop
 
 
-class Vlan(object):
+class Ecmp(object):
     """
-    Represent the vlan object
-
+    Represent the ecmp(next hop group) object.
     Attrs:
-        vlan_id: vlan id
-        vlan_oid: vlan ojbect id
-        vlan_moids: vlan member object ids
+        ecmp_id: ecmp id(nexthop group id)
+        ecmp_members: ecmp members(next hops)
+        member_port_indexs: ecmp port member indexes
     """
 
-    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids: List = []):
+    def __init__(self, ecmp_id=None, ecmp_members: List[Nexthop] = [], member_port_indexs: List = []):
         """
-        Init Vlan object.
-
+        Init ecmp Object
         Init following attrs:
-            vlan_id
-            vlan_oid
-            vlan_mport_oids
+            ecmp_id
+            ecmp_members
+            member_port_indexs
+            lags
         """
-        self.vlan_id = vlan_id
-        self.vlan_oid = vlan_oid
-        self.vlan_mport_oids: List = vlan_moids
+        self.ecmp_id = None
+        """
+        ecmp id (nexthop group id)
+        """
+        self.ecmp_members: List[Nexthop] = ecmp_members
+        """
+        ecmp members(next hop ids)
+        """
+        self.member_port_indexs: List = member_port_indexs
+        """
+        ecmp port member indexes
+        """

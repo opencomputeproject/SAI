@@ -53,9 +53,9 @@ from config.lag_configer import t0_lag_config_helper
 from config.lag_configer import LagConfiger
 from config.route_configer import t0_route_config_helper
 from config.route_configer import RouteConfiger
-from config.dut import Dut
-from config.device import Device
-from config.device import DeviceType
+from data_module.dut import Dut
+from data_module.device import Device
+from data_module.device import DeviceType
 from typing import List
 from typing import Dict
 
@@ -360,6 +360,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.create_device()
 
         self.port_configer = PortConfiger(self)
+
+        # init port rif list
+        self.dut.port_rif_list = [None] * len(self.dut.dev_port_list)
         self.switch_configer = SwitchConfiger(self)
         self.fdb_configer = FdbConfiger(self)
         self.vlan_configer = VlanConfiger(self)

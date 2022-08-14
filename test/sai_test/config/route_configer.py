@@ -24,6 +24,11 @@ from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-im
 from constant import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from typing import TYPE_CHECKING
 
+from data_module.device import Device
+from data_module.vlan import Vlan
+from data_module.lag import Lag
+from typing import Dict, List
+
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
@@ -32,7 +37,7 @@ def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True,
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
         route_configer.create_default_route()
-        test_obj.dut.port0_rif = route_configer.create_router_interface_for_port(
+        test_obj.dut.port_rif_list[0] = route_configer.create_router_interface_for_port(
             port_id=test_obj.dut.port_list[0])
 
     if is_create_route_for_lag:
@@ -132,6 +137,68 @@ class RouteConfiger(object):
             route_entry=entry,
             packet_action=SAI_PACKET_ACTION_DROP)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+
+    def create_route_path_local_host(self, src_dev: Device, port_idx, dest_dev: Device):
+        """
+        Create local route, those route are direct route.
+
+        Attrs:
+            src_dev: Simulating the soruce device that this dut direct connect to.
+            port_idx: The index of the port which will be used as the egress port.
+            dest_dev: Simulating the destinated device that the packet will be forwarded to.
+        """
+        pass
+
+
+    def create_route_path_on_port_by_route_prefix(self, src_dev: Device, prefix, port_idx, dest_dev: Device):
+        """
+        Create a complete route path from a src device to a dest device, via port by route ip prfix.
+
+        Attrs:
+            src_dev: Simulating the soruce device that this dut direct connect to.
+            prefix: prefix for the route entry
+            port_idx: The index of the port which will be used as the egress port.
+            dest_dev: Simulating the destinated device that the packet will be forwarded to.
+        """
+        pass
+
+
+    def create_vlan_interface(self, vlan: Vlan):
+        """
+        Create vlan intreface.
+
+        Set vlan attribute vlan_rif
+
+        Attrs:
+            vlan: vlan object that this vlan interface mapping
+        """
+        pass
+
+
+    def create_lag_interface(self, lag: Lag):
+        """
+        Create vlan intreface.
+
+        Set vlan attribute vlan_rif
+
+        Attrs:
+            vlan: vlan object that this vlan interface mapping
+        """
+        pass
+
+    
+    def create_ecmp_by_lags(self, lags: List[Lag]):
+        """
+        Create ecmp(next hop group) by lags, each lag will be binding to a nexthop
+        """
+        pass
+
+    def create_ecmp_by_ports(self, port_idx: List):
+        """
+        Create ecmp(next hop group) by ports.
+        """
+        pass
 
     def create_local_v6_route(self):
         """

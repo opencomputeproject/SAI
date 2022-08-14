@@ -19,8 +19,9 @@
 #
 
 from typing import Dict, List
-from config.vlan import Vlan
-from config.lag import Lag
+from data_module.vlan import Vlan
+from data_module.lag import Lag
+from data_module.ecmp import Ecmp
 
 
 class Dut():
@@ -64,11 +65,17 @@ class Dut():
             port_list 
             port_to_hostif_map 
             hostif_list 
-            port0_rif 
+            port_rif_list 
 
             # lag
             lag1 
-            lag2 
+            lag2
+
+            #L3
+            nexthop_list: next hop id list            
+
+            # ecmp
+            ecmp_list:  Ecmp list, contains ecmp objects
     """
 
     def __init__(self):
@@ -129,8 +136,17 @@ class Dut():
         """
         Host interface list
         """
-        self.port0_rif = None
+        self.port_rif_list:List = []
+        """
+        Port rif list. Size of the rif equals to the ports size, value will be None if not mapping to a rif
+        """
 
         # lag
         self.lag1: Lag = None
         self.lag2: Lag = None
+
+        # ecmp
+        self.ecmp_list:  list[Ecmp] = []
+        """
+        Ecmp list, contains ecmp objects
+        """
