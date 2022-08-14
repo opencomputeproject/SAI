@@ -279,7 +279,7 @@ class LoadbalanceOnDesIPTest(T0TestBase):
                                                                 virtual_router_id=self.dut.default_vrf,
                                                                 type=SAI_ROUTER_INTERFACE_TYPE_PORT,
                                                                 port_id=self.dut.port_list[1])
-            max_itrs = 150
+            max_itrs = 99
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
