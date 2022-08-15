@@ -755,7 +755,7 @@ class IndifferenceIngressPortTest(T0TestBase):
 
     def runTest(self):
         try:
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
+            self.vlan10_rif = sai_thrift_create_router_interface(self.client,
                                                                 virtual_router_id=self.dut.default_vrf,
                                                                 type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
                                                                 vlan_id=10)
@@ -785,6 +785,6 @@ class IndifferenceIngressPortTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        sai_thrift_remove_router_interface(self.client, self.vlan10_rif)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()

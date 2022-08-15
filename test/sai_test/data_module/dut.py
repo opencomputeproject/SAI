@@ -38,7 +38,6 @@ class Dut(object):
             local_128v6_route_entry
             routev4_list
             routev6_list 
-            local_128v6_route_entry 
 
             # vlan
             default_vlan_id 

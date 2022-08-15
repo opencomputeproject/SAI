@@ -177,7 +177,7 @@ class LagConfiger(object):
         lag: Lag = lag_obj
         index = lag.member_port_indexs.index(port_idx)
         sai_thrift_remove_lag_member(self.client, lag.lag_members[index])
-        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
         lag.lag_members.remove(lag.lag_members[index])
         lag.member_port_indexs.remove(port_idx)
 
