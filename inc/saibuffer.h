@@ -275,7 +275,7 @@ typedef enum _sai_buffer_pool_family_attr_t
     /**
      * @brief Shared buffer size in bytes
      *
-     * This is derived from subtracting all reversed buffers of queue/port
+     * This is derived from subtracting all reserved buffers of queue/port
      * from the total pool size.
      *
      * @type sai_uint64_t
@@ -391,6 +391,8 @@ typedef enum _sai_buffer_pool_attr_t
 
     /**
      * @brief Attach buffer pool family ID to buffer pool
+     * sai_query_attribute_enum_values_capability must be used to
+     * to get the HW behavior
      *
      * @type sai_object_id_t
      * @flags CREATE_ONLY
