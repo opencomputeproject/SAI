@@ -91,9 +91,9 @@ New workflow will identify if a given trap is applicable to ingress/egress/both.
     trap_attrs[0].value.s32 = 
         SAI_HOSTIF_TRAP_TYPE_DNAT_MISS;
     
-    trap_attrs[2].id = 
+    trap_attrs[1].id = 
         SAI_HOSTIF_TRAP_ATTR_TRAP_TYPE;
-    trap_attrs[2].value.s32 = 
+    trap_attrs[1].value.s32 = 
         SAI_HOSTIF_TRAP_TYPE_NAT_HAIRPIN;  
     
     sai_status_t sai_query_object_stage(
