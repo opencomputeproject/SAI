@@ -44,7 +44,7 @@ class SwitchConfiger(object):
     Class use to make all the Switch configurations.
     """
 
-    def __init__(self, test_obj:'T0TestBase') -> None:
+    def __init__(self, test_obj: 'T0TestBase') -> None:
         """
         Init the Switch configer.
 
