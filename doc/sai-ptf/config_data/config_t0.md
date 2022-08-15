@@ -11,6 +11,8 @@
   - [2.1 VLAN Interfaces](#21-vlan-interfaces)
   - [2.2 Route Interfaces](#22-route-interfaces)
   - [2.3 Route Configuration](#23-route-configuration)
+    - [Common Route configuration](#common-route-configuration)
+    - [Ecmp route configuration](#ecmp-route-configuration)
   - [2.4 Neighbor Configuration](#24-neighbor-configuration)
   - [2.5 Default route entry and interface](#25-default-route-entry-and-interface)
 - [3 LAG configuration](#3-lag-configuration)
@@ -66,11 +68,8 @@ Remote Server: ROLE=192, NUM=168, Group_ID(10-19)
 - Example
    ```
    T0: 10.0.0.0
-   T0 ECMP: 10.0.50.0
    T1: 10.1.0.0
-   T1 ECMP: 10.1.50.0
    Server: 192.168.0.0
-   Server ECMP: 192.168.50.0
    Server Remote:192.168.10.0
    ```
 
@@ -93,20 +92,17 @@ Server: ROLE=fc02
 T1: ROLE=fc00, NUM=1
 T0: ROLE=fc00, NUM=0
 
-Local Server: GROUP_ID (0 - 9)
-Remote Server: Group_ID(10-19) 
+Local Server: ROLE=fc02, NUM=0, GROUP_ID (0 - 9)
+Remote Server: ROLE=fc02, NUM=0, Group_ID(10-19) 
 
-- ROLE_NUM
+- Example
    ```
    T0: fc00:0::
    T0 ECMP: fc00:0:50::
    T1: fc00:1::
-   T1 ECMP: fc00:1:50::
    Server: fc02::
-   Server ECMP: fc02:50::
    Server Remote:fc02:10::
    ```
-
 
 
 # 1. L2 Configurations
@@ -121,6 +117,7 @@ The MAC Table for VLAN L2 forwarding as below
 |mac1-8  |00:01:01:99:01:91 - 00:01:01:99:01:98|Port1-8|10|Ethernet4-Ethernet32|
 |mac9-16 |00:01:01:99:02:09 - 00:01:01:99:02:16|Port9-16|20|Ethernet36-Ethernet64|
 |mac9-16 |00:01:01:99:02:91 - 00:01:01:99:02:98|Port9-16|20|Ethernet36-Ethernet64|
+|mac1-8  |00:01:01:99:03:91 - 00:01:01:99:03:98|Port1-8|30|Ethernet4-Ethernet32|
 
 ## 1.2 VLAN configuration
 
@@ -143,12 +140,6 @@ Host interface IP
 |10|192.168.1.100|fc02::1:100|
 |20|192.168.2.100|fc02::2:100|
 |30|192.168.3.100|fc02::3:100|
-|40|192.168.4.100|fc02::4:100|
-|50|192.168.5.100|fc02::5:100|
-|60|192.168.6.100|fc02::6:100|
-|70|192.168.7.100|fc02::7:100|
-|80|192.168.8.100|fc02::8:100|
-|90|192.168.9.100|fc02::9:100|
 
 ## 2.2 Route Interfaces
 |Port|Type|
@@ -157,24 +148,36 @@ Host interface IP
 |Lag1-4|Lag|
 |VLAN10|VLAN|
 |VLAN20|VLAN|
+|VLAN30|VLAN|
 
 
 
 ## 2.3 Route Configuration
 
-|Dest IPv4|Dest IPv6| Next Hop/Group | Next hop IPv4 | Next hop IPv6 | next hop port|
+### Common Route configuration
+
+|Dest IPv4|Dest IPv6| Next Hop/Group/RIF | Next hop IPv4 | Next hop IPv6 | next hop port|
 |-|-|-|-|-|-|
 |192.168.1.0/24|fc02::1::/112|Next Hop|192.168.1.0/24|fc02::1::/112|VLAN10|
-|192.168.2.0/24|fc02::2::/112|Next Hop|192.168.2.0/24|fc02::2::/112|VLAN20|
-|192.168.11.0/24|fc02::11:0/112|Next Hop|10.1.1.100/31|fc02::1:100/127|LAG1|
-|192.168.12.0/24|fc02::12:0/112|Next Hop|10.1.2.100/31|fc02::2:100/127|LAG2|
-|192.168.13.0/24|fc02::13:0/112|Next Hop|10.1.3.100/31|fc02::3:100/127|LAG3|
-|192.168.14.0/24|fc02::14:0/112|Next Hop|10.1.4.100/31|fc02::4:100/127|LAG4|
-|192.168.60.0/24|fc02::60:0/112|Next Hop Group|10.1.1.100/31; 10.1.2.100/31; 10.1.3.100/31; 10.1.4.100/31|fc00:1::1:100/127; fc00:1::2:100/127; fc00:1::3:100/127; fc00:1:4:100/127|LAG1-4|
-|192.168.20.0/24|fc02::20:0/112|Next Hop|10.1.2.100/31|fc00:1::2:100/127|Tunnel|
-|192.168.30.0/24|fc02::30:0/112|Next Hop|10.1.3.100/31|fc00:1::3:100/127|Tunnel|
-|192.168.40.0/24|fc02::40:0/112|Next Hop|10.1.4.100/31|fc00:1::4:100/127|Tunnel|
-|192.168.70.0/24|fc02::70:0/112|Next Hop Group|10.1.2.100/31;10.1.4.100/31|fc00:1::2:100/127; fc00:1::4:100/127|Tunnel|
+|192.168.2.0/24|fc02::2::/112|VLAN RIF(Nhop is Rif)|192.168.2.0/24|fc02::2::/112|VLAN20|
+|192.168.11.0/24|fc02::11:0/112|Next Hop|10.1.1.100|fc02::1:100|LAG1|
+|192.168.21.0/24|fc02::21:0/112|Next Hop|10.1.1.100|fc02::1:100|LAG1|
+|192.168.12.0/24|fc02::12:0/112|Next Hop|10.1.2.100|fc02::2:100|LAG2|
+|192.168.13.0/24|fc02::13:0/112|Next Hop|10.1.3.100|fc02::3:100|LAG3|
+|192.168.14.0/24|fc02::14:0/112|Next Hop|10.1.4.100|fc02::4:100|LAG4|
+|192.168.15.0/24|fc02::15:0/112|LAG RIF(Nhop is Rif)|10.1.5.100|fc02::5:100|LAG4|
+|192.168.20.0/24|fc02::20:0/112|Next Hop|10.1.2.100|fc00:1::2:100|Tunnel|
+|192.168.30.0/24|fc02::30:0/112|Next Hop|10.1.3.100|fc00:1::3:100|Tunnel|
+|192.168.40.0/24|fc02::40:0/112|Next Hop|10.1.4.100|fc00:1::4:100|Tunnel|
+|192.168.70.0/24|fc02::70:0/112|Next Hop Group|10.1.2.100;10.1.4.100|fc00:1::2:100; fc00:1::4:100|Tunnel|
+
+### Ecmp route configuration
+
+**P.S. If this ecmp configuration cannot con-exist with [Common Route configuration], please make ecmp configuration seperately.
+|Dest IPv4|Dest IPv6| Next Hop/Group/RIF | Next hop IPv4 | Next hop IPv6 | next hop port|
+|-|-|-|-|-|-|
+|192.168.60.0/24|fc02::60:0/112|Next Hop Group|10.1.1.100; 10.1.2.100; 10.1.3.100; 10.1.4.100|fc00:1::1:100; fc00:1::2:100; fc00:1::3:100; fc00:1:4:100|LAG1-4|
+|192.168.61.0/24|fc02::60:0/112|Next Hop Group|10.1.1.101; 10.1.2.101; 10.1.3.101; 10.1.4.101|fc00:1::1:101; fc00:1::2:101; fc00:1::3:101; fc00:1:4:101|LAG1-4|
 
 ## 2.4 Neighbor Configuration
 
@@ -186,10 +189,12 @@ Host interface IP
 |10.1.2.100|fc00:1::2:100|LAG:lag2|No|00:01:01:01:02:a0|
 |10.1.3.100|fc00:1::3:100|LAG:lag3|Yes|00:01:01:01:03:a0|
 |10.1.4.100|fc00:1::4:100|LAG:lag4|Yes|00:01:01:01:04:a0|
-|192.168.1.1 ~ 192.168.1.8 |fc02::1:1 - fc02::1:8|VLAN10 | Yes|00:01:01:99:01:1 - 00:01:01:99:01:8|
-|192.168.2.9 ~ 192.168.2.16 |fc02::2:9 - fc02::2:16|VLAN20 | Yes|00:01:01:99:02:9 - 00:01:01:99:02:16|
-|192.168.1.91 ~ 192.168.1.98 |fc02::1:91 - fc02::1:98|VLAN10 | Yes|00:01:01:99:01:91 - 00:01:01:99:01:98|
-|192.168.2.91 ~ 192.168.2.98 |fc02::2:91 - fc02::2:98|VLAN20 | Yes|00:01:01:99:02:91 - 00:01:01:99:02:98|
+|10.1.5.100|fc00:1::5:100|LAG:lag4|Yes|00:01:01:01:05:a0|
+|192.168.1.1 ~ 192.168.1.8 |fc02::1:1 - fc02::1:8|RIF:VLAN10 | Yes|00:01:01:99:01:1 - 00:01:01:99:01:8|
+|192.168.2.9 ~ 192.168.2.16 |fc02::2:9 - fc02::2:16|RIF:VLAN20 | Yes|00:01:01:99:02:9 - 00:01:01:99:02:16|
+|192.168.1.91 ~ 192.168.1.98 |fc02::1:91 - fc02::1:98|RIF:VLAN10 | Yes|00:01:01:99:01:91 - 00:01:01:99:01:98|
+|192.168.2.91 ~ 192.168.2.98 |fc02::2:91 - fc02::2:98|RIF:VLAN20 | Yes|00:01:01:99:02:98 - 00:01:01:99:02:98|
+|192.168.3.91 ~ 192.168.3.98 |fc02::3:91 - fc02::3:98|RIF:VLAN30 | No|00:01:01:99:03:91 - 00:01:01:99:03:98|
 
 ## 2.5 Default route entry and interface
 
