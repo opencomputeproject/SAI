@@ -99,7 +99,7 @@ class IngressMacUpdateTestV6(T0TestBase):
         """
         Test the basic setup process.
         """
-        T0TestBase.setUp(self, is_ipv4=False)
+        T0TestBase.setUp(self)
 
     def test_ingress_mac_update(self):
         """
@@ -230,7 +230,7 @@ class IngressDisableTestV6(T0TestBase):
         Test the basic setup process.
         """
 
-        T0TestBase.setUp(self, is_ipv4=False)
+        T0TestBase.setUp(self)
         self.port1 = self.dut.port_list[1]
 
     def test_ingress_disable_ipv6(self):
@@ -381,7 +381,7 @@ class IngressMtuTestV6(T0TestBase):
         Test the basic setup process.
         """
 
-        T0TestBase.setUp(self, is_ipv4=False)
+        T0TestBase.setUp(self)
 
     def test_ingress_mtu_v6(self):
         """
