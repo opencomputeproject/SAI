@@ -321,8 +321,10 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.lag2_route_dst = '192.168.12.0'
         self.lag1_nhop_ip = '10.1.1.100'
         self.lag2_nhop_ip = '10.1.2.100'
+        self.lag3_nhop_ip = '10.1.3.100'
         self.lag1_nb_mac = '00:01:01:01:01:a0'
         self.lag2_nb_mac = '00:01:01:01:02:a0'
+        self.lag3_nb_mac = '00:01:01:01:03:a0'
 
     @staticmethod
     def status():

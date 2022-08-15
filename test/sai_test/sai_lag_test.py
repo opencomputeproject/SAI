@@ -20,7 +20,7 @@
 from unittest import skip
 from sai_test_base import T0TestBase
 from sai_utils import *
-
+import pdb
 
 class LagConfigTest(T0TestBase):
     """
@@ -32,7 +32,7 @@ class LagConfigTest(T0TestBase):
         Test the basic setup process.
         """
         T0TestBase.setUp(self)
-
+        pdb.set_trace()
     def load_balance_on_src_ip(self):
         ip_dst = self.lag1_route_dst
         pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
