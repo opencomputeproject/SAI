@@ -464,15 +464,18 @@ class RouteConfiger(object):
             no_host_route=no_host)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        nbr_entry_v6 = sai_thrift_neighbor_entry_t(
-            rif_id=rif,
-            ip_address=sai_ipaddress(nexthop_device.ipv6))
-        status = sai_thrift_create_neighbor_entry(
-            self.client,
-            nbr_entry_v6,
-            dst_mac_address=nexthop_device.mac,
-            no_host_route=no_host)
-        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+        if nexthop_device.ipv6:
+            nbr_entry_v6 = sai_thrift_neighbor_entry_t(
+                rif_id=rif,
+                ip_address=sai_ipaddress(nexthop_device.ipv6))
+            status = sai_thrift_create_neighbor_entry(
+                self.client,
+                nbr_entry_v6,
+                dst_mac_address=nexthop_device.mac,
+                no_host_route=no_host)
+            self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+        else:
+            nbr_entry_v6 = None
 
         if no_host:
             nexthop_device.neighborv4_id = nbr_entry_v4
@@ -482,7 +485,8 @@ class RouteConfiger(object):
             nexthop_device.local_neighborv6_id = nbr_entry_v6
 
         self.test_obj.dut.neighborv4_list.append(nbr_entry_v4)
-        self.test_obj.dut.neighborv6_list.append(nbr_entry_v6)
+        if nbr_entry_v6:
+            self.test_obj.dut.neighborv6_list.append(nbr_entry_v6)
         return nbr_entry_v4, nbr_entry_v6
 
     def create_router_interface_by_vlan(self, vlan: Vlan, virtual_router=None):
