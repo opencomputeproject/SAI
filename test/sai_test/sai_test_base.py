@@ -58,6 +58,7 @@ from data_module.vlan import Vlan
 from data_module.lag import Lag
 from data_module.device import Device
 from data_module.device import DeviceType
+from data_module.persist import PersistHelper
 from typing import List
 from typing import Dict
 
@@ -228,7 +229,7 @@ class ThriftInterface(BaseTest):
             self.common_configured = True if self.test_params['common_configured'] == 'true' else False
         else:
             self.common_configured = False
-        print("common_configured is: {}".format(self.common_configured))
+        print("\ncommon_configured is: {}".format(self.common_configured))
 
     def createRpcClient(self):
         """
@@ -344,6 +345,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         Key: group id
         Value: List, servers
         """
+        self.persist_helper = PersistHelper()
 
     def setUp(self,
               force_config=False,
@@ -377,7 +379,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
             # init port rif list
             self.dut.port_rif_list = [None] * len(self.dut.dev_port_list)
             # init bridge port rif list
-            self.dut.bridge_port_rif_list = [None] * len(self.dut.bridge_port_list)
+            self.dut.bridge_port_rif_list = [
+                None] * len(self.dut.bridge_port_list)
             t0_vlan_config_helper(
                 test_obj=self,
                 is_reset_default_vlan=is_reset_default_vlan,
@@ -393,9 +396,13 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_create_default_route=is_create_default_route,
                 is_create_route_for_lag=is_create_route_for_lag)
 
-        print("Waiting for switch to get ready before test, {} seconds ...".format(
-            wait_sec))
-        time.sleep(wait_sec)
+            print("Waiting for switch to get ready before test, {} seconds ...".format(
+                wait_sec))
+            time.sleep(wait_sec)
+            self.persist_helper.persist_dut(self.dut)
+        else:
+            print("swith keeps running, read config from storage")
+            self.dut = self.persist_helper.read_dut()
 
     def restore_fdb_config(self):
         """
