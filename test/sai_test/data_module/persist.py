@@ -46,8 +46,3 @@ class PersistHelper:
         '''
         with open(os.path.join(self.dir, 'dut'), 'rb') as input_obj:
             return pickle.load(input_obj)
-
-if __name__== '__main__':
-    d = Dut()
-    p = PersistHelper()
-    p.persist_dut(d)
