@@ -207,4 +207,4 @@ class Device(object):
         Generate mac address.
         """
         return FDB_MAC_PREFIX + ':' + self.fdb_device_num + ':' + \
-            '{:02d}'.format(self.group_id) + ':' + '{:02d}'.format(self.id)
+            '{:02x}'.format(self.group_id) + ':' + '{:02x}'.format(self.id)
