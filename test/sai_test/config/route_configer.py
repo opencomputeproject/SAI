@@ -291,8 +291,9 @@ class RouteConfiger(object):
             net_routev4 = sai_thrift_route_entry_t(
                 vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
         else:
+            # destination cannot use sai_ipaddress
             net_routev4 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipaddress(dest_device.ipv4))
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev4, next_hop_id=rif)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -301,8 +302,9 @@ class RouteConfiger(object):
             net_routev6 = sai_thrift_route_entry_t(
                 vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
         else:
+            # destination cannot use sai_ipaddress
             net_routev6 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipaddress(dest_device.ipv6))
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev6, next_hop_id=rif)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -333,8 +335,9 @@ class RouteConfiger(object):
             net_routev4 = sai_thrift_route_entry_t(
                 vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
         else:
+            # destination cannot use sai_ipaddress
             net_routev4 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipaddress(dest_device.ipv4))
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev4, next_hop_id=nexthopv4.nexthop_id)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -343,8 +346,9 @@ class RouteConfiger(object):
             net_routev6 = sai_thrift_route_entry_t(
                 vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
         else:
+            # destination cannot use sai_ipaddress
             net_routev6 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipaddress(dest_device.ipv6))
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev6, next_hop_id=nexthopv6.nexthop_id)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
