@@ -481,8 +481,8 @@ class RouteConfiger(object):
             nexthop_device.local_neighborv4_id = nbr_entry_v4
             nexthop_device.local_neighborv6_id = nbr_entry_v6
 
-        self.test_obj.dut.neighborv4_list = nbr_entry_v4
-        self.test_obj.dut.neighborv6_list = nbr_entry_v6
+        self.test_obj.dut.neighborv4_list.append(nbr_entry_v4)
+        self.test_obj.dut.neighborv6_list.append(nbr_entry_v6)
         return nbr_entry_v4, nbr_entry_v6
 
     def create_router_interface_by_vlan(self, vlan: Vlan, virtual_router=None):
