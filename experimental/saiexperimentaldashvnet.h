@@ -85,9 +85,31 @@ typedef struct _sai_inbound_routing_entry_t
     sai_object_id_t switch_id;
 
     /**
+     * @brief Exact matched key eni_id
+     *
+     * @objects SAI_OBJECT_TYPE_ENI
+     */
+    sai_object_id_t eni_id;
+
+    /**
      * @brief Exact matched key VNI
      */
     sai_uint32_t vni;
+
+    /**
+     * @brief Ternary matched key sip
+     */
+    sai_ip_address_t sip;
+
+    /**
+     * @brief Ternary key sip mask
+     */
+    sai_ip_address_t sip_mask;
+
+    /**
+     * @brief Rule priority in table
+     */
+    sai_uint32_t priority;
 
 } sai_inbound_routing_entry_t;
 
@@ -109,6 +131,18 @@ typedef enum _sai_inbound_routing_entry_attr_t
      * @default SAI_INBOUND_ROUTING_ENTRY_ACTION_VXLAN_DECAP
      */
     SAI_INBOUND_ROUTING_ENTRY_ATTR_ACTION = SAI_INBOUND_ROUTING_ENTRY_ATTR_START,
+
+    /**
+     * @brief Action vxlan_decap_pa_validate parameter SRC_VNET_ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_VNET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_INBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_INBOUND_ROUTING_ENTRY_ACTION_VXLAN_DECAP_PA_VALIDATE
+     */
+    SAI_INBOUND_ROUTING_ENTRY_ATTR_SRC_VNET_ID,
 
     /**
      * @brief End of attributes
@@ -350,21 +384,16 @@ typedef struct _sai_pa_validation_entry_t
     sai_object_id_t switch_id;
 
     /**
-     * @brief Exact matched key eni_id
+     * @brief Exact matched key vnet_id
      *
-     * @objects SAI_OBJECT_TYPE_ENI
+     * @objects SAI_OBJECT_TYPE_VNET
      */
-    sai_object_id_t eni_id;
+    sai_object_id_t vnet_id;
 
     /**
      * @brief Exact matched key sip
      */
     sai_ip_address_t sip;
-
-    /**
-     * @brief Exact matched key VNI
-     */
-    sai_uint32_t vni;
 
 } sai_pa_validation_entry_t;
 
