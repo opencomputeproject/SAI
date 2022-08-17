@@ -370,6 +370,8 @@ class UntaggedMacLearningTest(T0TestBase):
     def tearDown(self):
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
+        sleep(2)
+        super().tearDown()
 
 
 class TaggedMacLearningTest(T0TestBase):
@@ -533,7 +535,7 @@ class DisableMacLearningTaggedTest(T0TestBase):
         self.assertEqual(attr["available_fdb_entry"] - current_fdb_entry, 0)
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class DisableMacLearningUntaggedTest(T0TestBase):

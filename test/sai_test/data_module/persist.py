@@ -19,7 +19,10 @@
 #
 import pickle
 import os
+from typing import Dict
+from typing import List
 from data_module.dut import Dut
+from data_module.device import Device
 
 
 class PersistHelper:
@@ -38,9 +41,26 @@ class PersistHelper:
         Args:
             dut: Dut instance,including all dut configure
         '''
-
         with open(os.path.join(self.dir, 'dut'), 'wb') as output:
             pickle.dump(dut, output, pickle.HIGHEST_PROTOCOL)
+
+    def persist_server_list(self, server_list: Dict[int, List[Device]]):
+        '''
+        persist server list
+        Args:
+            server_list: server(type: device) list
+        '''
+        with open(os.path.join(self.dir, 'server_list'), 'wb') as output:
+            pickle.dump(server_list, output, pickle.HIGHEST_PROTOCOL)
+
+    def persist_t1_list(self, t1_list: Dict[int, List[Device]]):
+        '''
+        persist t1 list
+        Args:
+            t1_list: server(type: device) list
+        '''
+        with open(os.path.join(self.dir, 't1_list'), 'wb') as output:
+            pickle.dump(t1_list, output, pickle.HIGHEST_PROTOCOL)
 
     def read_dut(self) -> Dut:
         '''
@@ -49,4 +69,22 @@ class PersistHelper:
             dut: Dut instance, init by reading from file
         '''
         with open(os.path.join(self.dir, 'dut'), 'rb') as input_obj:
+            return pickle.load(input_obj)
+
+    def read_server_list(self) -> Dict[int, List[Device]]:
+        '''
+        read server list
+        Return:
+            server_list: init server list by reading from file
+        '''
+        with open(os.path.join(self.dir, 'server_list'), 'rb') as input_obj:
+            return pickle.load(input_obj)
+
+    def read_t1_list(self) -> Dict[int, List[Device]]:
+        '''
+        read dut
+        Return:
+            t1_list: init t1 list by reading from file
+        '''
+        with open(os.path.join(self.dir, 't1_list'), 'rb') as input_obj:
             return pickle.load(input_obj)

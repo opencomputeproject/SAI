@@ -360,8 +360,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
               wait_sec=5):
         super(T0TestBase, self).setUp()
 
-        self.create_device()
-
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
         self.fdb_configer = FdbConfiger(self)
@@ -370,6 +368,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.lag_configer = LagConfiger(self)
 
         if force_config or not self.common_configured:
+            self.create_device()
             t0_switch_config_helper(self)
             t0_port_config_helper(
                 test_obj=self,
@@ -394,14 +393,18 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 test_obj=self,
                 is_create_default_route=is_create_default_route,
                 is_create_route_for_lag=is_create_route_for_lag)
-
+            print("common config done.persist it")
+            self.persist_helper.persist_dut(self.dut)
+            self.persist_helper.persist_server_list(self.servers)
+            self.persist_helper.persist_t1_list(self.t1_list)
             print("Waiting for switch to get ready before test, {} seconds ...".format(
                 wait_sec))
             time.sleep(wait_sec)
-            self.persist_helper.persist_dut(self.dut)
         else:
             print("switch keeps running, read config from storage")
             self.dut = self.persist_helper.read_dut()
+            self.t1_list = self.persist_helper.read_t1_list()
+            self.servers = self.persist_helper.read_server_list()
 
     def restore_fdb_config(self):
         """
