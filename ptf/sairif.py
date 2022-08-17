@@ -79,22 +79,12 @@ class L3InterfaceTest(SaiHelper):
         sai_thrift_create_route_entry(
             self.client, self.route_entry0, next_hop_id=self.nhop1)
 
-        self.route_entry0_lpm = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('11.11.11.0/24'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry0_lpm, next_hop_id=self.nhop1)
-
         self.route_entry1 = sai_thrift_route_entry_t(
             vr_id=self.default_vrf,
             destination=sai_ipprefix(
                 '1234:5678:9abc:def0:4422:1133:5577:99aa/128'))
         sai_thrift_create_route_entry(
             self.client, self.route_entry1, next_hop_id=self.nhop1)
-
-        self.route_entry1_lpm = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('4000::0/65'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry1_lpm, next_hop_id=self.nhop1)
 
         self.route_lag0 = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('12.10.10.1/32'))
@@ -109,11 +99,7 @@ class L3InterfaceTest(SaiHelper):
             self.client, self.route_lag1, next_hop_id=self.nhop3)
 
     def runTest(self):
-        self.ipv6DisableTest()
         self.ipv4FibLagTest()
-        self.ipv6FibTest()
-        self.ipv6FibLpmTest()
-        self.ipv6MtuTest()
         self.ipv6FibLagTest()
         self.rifSharedMtuTest()
         self.mcastDisableTest()
@@ -122,9 +108,7 @@ class L3InterfaceTest(SaiHelper):
 
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.route_entry0)
-        sai_thrift_remove_route_entry(self.client, self.route_entry0_lpm)
         sai_thrift_remove_route_entry(self.client, self.route_entry1)
-        sai_thrift_remove_route_entry(self.client, self.route_entry1_lpm)
 
         sai_thrift_remove_route_entry(self.client, self.route_lag0)
         sai_thrift_remove_route_entry(self.client, self.route_lag1)
@@ -137,58 +121,7 @@ class L3InterfaceTest(SaiHelper):
 
         super(L3InterfaceTest, self).tearDown()
 
-    def ipv6DisableTest(self):
-        # TODO: should be moved in separate class and adapted for DASH support
-        """
-        Verifies if IPv6 packets are dropped when admin_v6_state is False
-        """
-        print("\nipv6DisableTest()")
-
-        pkt = simple_tcpv6_packet(
-            eth_dst=ROUTER_MAC,
-            eth_src='00:22:22:22:22:22',
-            ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-            ipv6_src='2000::1',
-            ipv6_hlim=64)
-        exp_pkt = simple_tcpv6_packet(
-            eth_dst='00:11:22:33:44:55',
-            eth_src=ROUTER_MAC,
-            ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-            ipv6_src='2000::1',
-            ipv6_hlim=63)
-
-        print("Sending packet on port %d, forward" % self.dev_port11)
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-        print("Disable IPv6 on ingress RIF")
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.port11_rif, admin_v6_state=False)
-        initial_stats = sai_thrift_get_port_stats(self.client, self.port11)
-        if_in_discards_pre = initial_stats['SAI_PORT_STAT_IF_IN_DISCARDS']
-
-        print("Sending packet on port %d, discard" % self.dev_port11)
-        send_packet(self, self.dev_port11, pkt)
-        verify_no_other_packets(self, timeout=1)
-        stats = sai_thrift_get_port_stats(self.client, self.port11)
-        if_in_discards = stats['SAI_PORT_STAT_IF_IN_DISCARDS']
-        self.assertTrue(if_in_discards_pre + 1 == if_in_discards)
-        self.port11_rif_counter_in += 1
-
-        print("Enable IPv6 on ingress RIF")
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.port11_rif, admin_v6_state=True)
-
-        print("Sending packet on port %d, forward" % self.dev_port11)
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
     def ipv4FibLagTest(self):
-        # TODO: should be moved in separate class and adapted for DASH support
         """
         Verifies basic  forwarding on RIF using LAG and with new lag member
         and if packet is dropped on ingress port after being removed from LAG
@@ -330,275 +263,7 @@ class L3InterfaceTest(SaiHelper):
         send_packet(self, self.dev_port24, pkt_lag)
         verify_no_other_packets(self, timeout=1)
 
-    def ipv6FibTest(self):
-        # TODO: should be moved in separate class and adapted for DASH support
-        """
-        Verifies basic forwarding for IPv6 host
-        """
-        print("\nipv6FibTest()")
-
-        pkt = simple_tcpv6_packet(
-            eth_dst=ROUTER_MAC,
-            eth_src='00:22:22:22:22:22',
-            ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-            ipv6_src='2000::1',
-            ipv6_hlim=64)
-        exp_pkt = simple_tcpv6_packet(
-            eth_dst='00:11:22:33:44:55',
-            eth_src=ROUTER_MAC,
-            ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-            ipv6_src='2000::1',
-            ipv6_hlim=63)
-
-        print("Sending packet port %d -> port %d (2000::1 -> "
-              "1234:5678:9abc:def0:4422:1133:5577:99aa)"
-              % (self.dev_port11, self.dev_port10))
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-    def ipv6FibLpmTest(self):
-        # TODO: should be moved in separate class and adapted for DASH support
-        """
-        Verifies basic forwarding for IPv6 LPM route
-        """
-        print("\nipv6FibLpmTest()")
-
-        pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                  eth_src='00:22:22:22:22:22',
-                                  ipv6_dst='4000::1',
-                                  ipv6_src='2000::1',
-                                  ipv6_hlim=64)
-        exp_pkt = simple_tcpv6_packet(eth_dst='00:11:22:33:44:55',
-                                      eth_src=ROUTER_MAC,
-                                      ipv6_dst='4000::1',
-                                      ipv6_src='2000::1',
-                                      ipv6_hlim=63)
-
-        print("Sending packet port %d -> port %d (2000::1 -> 4000::1) "
-              "LPM entry 4000::0/65" % (self.dev_port11, self.dev_port10))
-        send_packet(self, self.dev_port11, pkt)
-        verify_packet(self, exp_pkt, self.dev_port10)
-        self.port11_rif_counter_in += 1
-        self.port10_rif_counter_out += 1
-
-    def ipv6MtuTest(self):
-        # TODO: should be moved in separate class and adapted for DASH support
-        """
-        Verifies if IPv6 packet is forwarded, dropped and punted to CPU
-        depending on the MTU with and without a trap for regular L3 port
-        """
-        print("\nipv6MtuTest()")
-
-        mtu_port10_rif = sai_thrift_get_router_interface_attribute(
-            self.client, self.port10_rif, mtu=True)
-        mtu_lag1_rif = sai_thrift_get_router_interface_attribute(
-            self.client, self.lag1_rif, mtu=True)
-
-        # set MTU to 200 for port 10 and lag 1
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.port10_rif, mtu=200)
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.lag1_rif, mtu=200)
-
-        try:
-            print("Max MTU is 200, send pkt size 199, send to port/lag")
-            pkt = simple_tcpv6_packet(
-                eth_dst=ROUTER_MAC,
-                eth_src='00:22:22:22:22:22',
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=64,
-                pktlen=199 + 14 + 40)
-            exp_pkt = simple_tcpv6_packet(
-                eth_dst='00:11:22:33:44:55',
-                eth_src=ROUTER_MAC,
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=63,
-                pktlen=199 + 14 + 40)
-
-            print("Sending packet port %d -> port %d "
-                  "(2000::1 -> 1234:5678:9abc:def0:4422:1133:5577:99aa')"
-                  % (self.dev_port11, self.dev_port10))
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d -> lag 1 (2000::1 -> "
-                  "1234:5678:9abc:def0:1122:3344:5566:7788)"
-                  % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet_any_port(
-                self, exp_pkt, [self.dev_port4, self.dev_port5,
-                                self.dev_port6])
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            print("Max MTU is 200, send pkt size 200, send to port/lag")
-            pkt = simple_tcpv6_packet(
-                eth_dst=ROUTER_MAC,
-                eth_src='00:22:22:22:22:22',
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=64,
-                pktlen=200 + 14 + 40)
-            exp_pkt = simple_tcpv6_packet(
-                eth_dst='00:11:22:33:44:55',
-                eth_src=ROUTER_MAC,
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=63,
-                pktlen=200 + 14 + 40)
-
-            print("Sending packet port %d -> port %d "
-                  "(2000::1 -> 1234:5678:9abc:def0:4422:1133:5577:99aa')"
-                  % (self.dev_port11, self.dev_port10))
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d -> lag 1 (2000::1 -> "
-                  "1234:5678:9abc:def0:1122:3344:5566:7788)"
-                  % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet_any_port(
-                self, exp_pkt, [self.dev_port4, self.dev_port5,
-                                self.dev_port6])
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            print("Max MTU is 200, send pkt size 201, dropped")
-            pkt = simple_tcpv6_packet(
-                eth_dst=ROUTER_MAC,
-                eth_src='00:22:22:22:22:22',
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=64,
-                pktlen=201 + 14 + 40)
-            exp_pkt = simple_tcpv6_packet(
-                eth_dst='00:11:22:33:44:55',
-                eth_src=ROUTER_MAC,
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=63,
-                pktlen=201 + 14 + 40)
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            print("Changing MTU to 201, send pkt size 201, send to port/lag")
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port10_rif, mtu=201)
-            pkt = simple_tcpv6_packet(
-                eth_dst=ROUTER_MAC,
-                eth_src='00:22:22:22:22:22',
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=64,
-                pktlen=201 + 14 + 40)
-            exp_pkt = simple_tcpv6_packet(
-                eth_dst='00:11:22:33:44:55',
-                eth_src=ROUTER_MAC,
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=63,
-                pktlen=201 + 14 + 40)
-            print("Sending packet port %d -> port %d "
-                  "(2000::1 -> 1234:5678:9abc:def0:4422:1133:5577:99aa')"
-                  % (self.dev_port11, self.dev_port10))
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet(self, exp_pkt, self.dev_port10)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.lag1_rif, mtu=201)
-
-            print("Sending packet port %d -> lag 1 (2000::1 ->"
-                  "1234:5678:9abc:def0:1122:3344:5566:7788)"
-                  % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet_any_port(
-                self, exp_pkt, [self.dev_port4, self.dev_port5,
-                                self.dev_port6])
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-            print("Max MTU is 201, send pkt size 202, dropped")
-            pkt = simple_tcpv6_packet(
-                eth_dst=ROUTER_MAC,
-                eth_src='00:22:22:22:22:22',
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=64,
-                pktlen=202 + 14 + 40)
-            exp_pkt = simple_tcpv6_packet(
-                eth_dst='00:11:22:33:44:55',
-                eth_src=ROUTER_MAC,
-                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
-                ipv6_src='2000::1',
-                ipv6_hlim=63,
-                pktlen=202 + 14 + 40)
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.port10_rif_counter_out += 1
-
-            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
-            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
-
-            print("Sending packet port %d" % self.dev_port11, " dropped")
-            send_packet(self, self.dev_port11, pkt)
-            verify_no_other_packets(self, timeout=1)
-            self.port11_rif_counter_in += 1
-            self.lag1_rif_counter_out += 1
-
-        finally:
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.port10_rif, mtu=mtu_port10_rif['mtu'])
-            sai_thrift_set_router_interface_attribute(
-                self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
-
     def ipv6FibLagTest(self):
-        # TODO: should be moved in separate class and adapted for DASH support
         """
         Verifies basic IPv6 forwarding on RIF using LAG, with new lag member
         and if packet is dropped on ingress port after being removed from LAG
@@ -1203,11 +868,26 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         sai_thrift_create_route_entry(
             self.client, self.route_entry0_lpm, next_hop_id=self.nhop1)
 
+        self.route_entry1 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:99aa/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry1, next_hop_id=self.nhop1)
+
+        self.route_entry1_lpm = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('4000::0/65'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry1_lpm, next_hop_id=self.nhop1)
+
     def runTest(self):
         self.macUpdateTest()
         self.ipv4FibLPMTest()
         self.ipv4FibTest()
         self.ipv4DisableTest()
+        self.ipv6FibLpmTest()
+        self.ipv6FibTest()
+        self.ipv6DisableTest()
         self.rifStatsTest()
         self.rifMyIPTest()
 
@@ -1492,9 +1172,112 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
             sai_thrift_remove_hostif_trap_group(self.client, myip_trap_group)
             sai_thrift_remove_route_entry(self.client, ip2me_route)
 
+    def ipv6DisableTest(self):
+        """
+        Verifies if IPv6 packets are dropped when admin_v6_state is False
+        """
+        print("\nipv6DisableTest()")
+
+        pkt = simple_tcpv6_packet(
+            eth_dst=ROUTER_MAC,
+            eth_src='00:22:22:22:22:22',
+            ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+            ipv6_src='2000::1',
+            ipv6_hlim=64)
+        exp_pkt = simple_tcpv6_packet(
+            eth_dst='00:11:22:33:44:55',
+            eth_src=ROUTER_MAC,
+            ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+            ipv6_src='2000::1',
+            ipv6_hlim=63)
+
+        print("Sending packet on port %d, forward" % self.dev_port1)
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+        print("Disable IPv6 on ingress RIF")
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.port1_rif, admin_v6_state=False)
+        initial_stats = sai_thrift_get_port_stats(self.client, self.port1)
+        if_in_discards_pre = initial_stats['SAI_PORT_STAT_IF_IN_DISCARDS']
+
+        print("Sending packet on port %d, discard" % self.dev_port1)
+        send_packet(self, self.dev_port1, pkt)
+        verify_no_other_packets(self, timeout=1)
+        stats = sai_thrift_get_port_stats(self.client, self.port1)
+        if_in_discards = stats['SAI_PORT_STAT_IF_IN_DISCARDS']
+        self.assertTrue(if_in_discards_pre + 1 == if_in_discards)
+        self.port1_rif_counter_in += 1
+
+        print("Enable IPv6 on ingress RIF")
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.port1_rif, admin_v6_state=True)
+
+        print("Sending packet on port %d, forward" % self.dev_port1)
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+    def ipv6FibTest(self):
+        """
+        Verifies basic forwarding for IPv6 host
+        """
+        print("\nipv6FibTest()")
+
+        pkt = simple_tcpv6_packet(
+            eth_dst=ROUTER_MAC,
+            eth_src='00:22:22:22:22:22',
+            ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+            ipv6_src='2000::1',
+            ipv6_hlim=64)
+        exp_pkt = simple_tcpv6_packet(
+            eth_dst='00:11:22:33:44:55',
+            eth_src=ROUTER_MAC,
+            ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+            ipv6_src='2000::1',
+            ipv6_hlim=63)
+
+        print("Sending packet port %d -> port %d (2000::1 -> "
+              "1234:5678:9abc:def0:4422:1133:5577:99aa)"
+              % (self.dev_port1, self.dev_port0))
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
+    def ipv6FibLpmTest(self):
+        """
+        Verifies basic forwarding for IPv6 LPM route
+        """
+        print("\nipv6FibLpmTest()")
+
+        pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                  eth_src='00:22:22:22:22:22',
+                                  ipv6_dst='4000::1',
+                                  ipv6_src='2000::1',
+                                  ipv6_hlim=64)
+        exp_pkt = simple_tcpv6_packet(eth_dst='00:11:22:33:44:55',
+                                      eth_src=ROUTER_MAC,
+                                      ipv6_dst='4000::1',
+                                      ipv6_src='2000::1',
+                                      ipv6_hlim=63)
+
+        print("Sending packet port %d -> port %d (2000::1 -> 4000::1) "
+              "LPM entry 4000::0/65" % (self.dev_port1, self.dev_port0))
+        send_packet(self, self.dev_port1, pkt)
+        verify_packet(self, exp_pkt, self.dev_port0)
+        self.port1_rif_counter_in += 1
+        self.port0_rif_counter_out += 1
+
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.route_entry0)
         sai_thrift_remove_route_entry(self.client, self.route_entry0_lpm)
+
+        sai_thrift_remove_route_entry(self.client, self.route_entry1)
+        sai_thrift_remove_route_entry(self.client, self.route_entry1_lpm)
 
         sai_thrift_remove_next_hop(self.client, self.nhop1)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
@@ -2176,8 +1959,23 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
         sai_thrift_create_route_entry(
             self.client, self.route_lag0, next_hop_id=self.nhop3)
 
+        self.route_entry1 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:99aa/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry1, next_hop_id=self.nhop1)
+
+        self.route_lag1 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:1122:3344:5566:7788/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_lag1, next_hop_id=self.nhop3)
+
     def runTest(self):
         self.ipv4MtuTest()
+        self.ipv6MtuTest()
         self.rifStatsTest()
 
     def ipv4MtuTest(self):
@@ -2388,6 +2186,219 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             sai_thrift_set_router_interface_attribute(
                 self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
 
+    def ipv6MtuTest(self):
+        """
+        Verifies if IPv6 packet is forwarded, dropped and punted to CPU
+        depending on the MTU with and without a trap for regular L3 port
+        """
+        print("\nipv6MtuTest()")
+
+        mtu_port0_rif = sai_thrift_get_router_interface_attribute(
+            self.client, self.port0_rif, mtu=True)
+        mtu_lag1_rif = sai_thrift_get_router_interface_attribute(
+            self.client, self.lag1_rif, mtu=True)
+
+        # set MTU to 200 for port 0 and lag 1
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.port0_rif, mtu=200)
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.lag1_rif, mtu=200)
+
+        try:
+            print("Max MTU is 200, send pkt size 199, send to port/lag")
+            pkt = simple_tcpv6_packet(
+                eth_dst=ROUTER_MAC,
+                eth_src='00:22:22:22:22:22',
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=64,
+                pktlen=199 + 14 + 40)
+            exp_pkt = simple_tcpv6_packet(
+                eth_dst='00:11:22:33:44:55',
+                eth_src=ROUTER_MAC,
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=63,
+                pktlen=199 + 14 + 40)
+
+            print("Sending packet port %d -> port %d "
+                  "(2000::1 -> 1234:5678:9abc:def0:4422:1133:5577:99aa')"
+                  % (self.dev_port1, self.dev_port0))
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d -> lag 1 (2000::1 -> "
+                  "1234:5678:9abc:def0:1122:3344:5566:7788)"
+                  % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet_any_port(
+                self, exp_pkt, [self.dev_port2, self.dev_port3,
+                                self.dev_port4])
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            print("Max MTU is 200, send pkt size 200, send to port/lag")
+            pkt = simple_tcpv6_packet(
+                eth_dst=ROUTER_MAC,
+                eth_src='00:22:22:22:22:22',
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=64,
+                pktlen=200 + 14 + 40)
+            exp_pkt = simple_tcpv6_packet(
+                eth_dst='00:11:22:33:44:55',
+                eth_src=ROUTER_MAC,
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=63,
+                pktlen=200 + 14 + 40)
+
+            print("Sending packet port %d -> port %d "
+                  "(2000::1 -> 1234:5678:9abc:def0:4422:1133:5577:99aa')"
+                  % (self.dev_port1, self.dev_port0))
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d -> lag 1 (2000::1 -> "
+                  "1234:5678:9abc:def0:1122:3344:5566:7788)"
+                  % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet_any_port(
+                self, exp_pkt, [self.dev_port2, self.dev_port3,
+                                self.dev_port4])
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            print("Max MTU is 200, send pkt size 201, dropped")
+            pkt = simple_tcpv6_packet(
+                eth_dst=ROUTER_MAC,
+                eth_src='00:22:22:22:22:22',
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=64,
+                pktlen=201 + 14 + 40)
+            exp_pkt = simple_tcpv6_packet(
+                eth_dst='00:11:22:33:44:55',
+                eth_src=ROUTER_MAC,
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=63,
+                pktlen=201 + 14 + 40)
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            print("Changing MTU to 201, send pkt size 201, send to port/lag")
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port0_rif, mtu=201)
+            pkt = simple_tcpv6_packet(
+                eth_dst=ROUTER_MAC,
+                eth_src='00:22:22:22:22:22',
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=64,
+                pktlen=201 + 14 + 40)
+            exp_pkt = simple_tcpv6_packet(
+                eth_dst='00:11:22:33:44:55',
+                eth_src=ROUTER_MAC,
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=63,
+                pktlen=201 + 14 + 40)
+            print("Sending packet port %d -> port %d "
+                  "(2000::1 -> 1234:5678:9abc:def0:4422:1133:5577:99aa')"
+                  % (self.dev_port1, self.dev_port0))
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet(self, exp_pkt, self.dev_port0)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.lag1_rif, mtu=201)
+
+            print("Sending packet port %d -> lag 1 (2000::1 ->"
+                  "1234:5678:9abc:def0:1122:3344:5566:7788)"
+                  % self.dev_port1)
+            send_packet(self, self.dev_port1, pkt)
+            verify_packet_any_port(
+                self, exp_pkt, [self.dev_port2, self.dev_port3,
+                                self.dev_port4])
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+            print("Max MTU is 201, send pkt size 202, dropped")
+            pkt = simple_tcpv6_packet(
+                eth_dst=ROUTER_MAC,
+                eth_src='00:22:22:22:22:22',
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=64,
+                pktlen=202 + 14 + 40)
+            exp_pkt = simple_tcpv6_packet(
+                eth_dst='00:11:22:33:44:55',
+                eth_src=ROUTER_MAC,
+                ipv6_dst='1234:5678:9abc:def0:4422:1133:5577:99aa',
+                ipv6_src='2000::1',
+                ipv6_hlim=63,
+                pktlen=202 + 14 + 40)
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.port0_rif_counter_out += 1
+
+            pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
+            exp_pkt['Ethernet'].dst = '00:33:22:33:44:55'
+
+            print("Sending packet port %d" % self.dev_port1, " dropped")
+            send_packet(self, self.dev_port1, pkt)
+            verify_no_other_packets(self, timeout=1)
+            self.port1_rif_counter_in += 1
+            self.lag1_rif_counter_out += 1
+
+        finally:
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.port0_rif, mtu=mtu_port0_rif['mtu'])
+            sai_thrift_set_router_interface_attribute(
+                self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
+
     def rifStatsTest(self):
         """
         Verifies Ingress and Egress RIF stats for unicast packets
@@ -2414,6 +2425,9 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
         sai_thrift_remove_route_entry(self.client, self.route_entry0)
         sai_thrift_remove_route_entry(self.client, self.route_lag0)
 
+        sai_thrift_remove_route_entry(self.client, self.route_entry1)
+        sai_thrift_remove_route_entry(self.client, self.route_lag1)
+
         sai_thrift_remove_next_hop(self.client, self.nhop1)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
 
@@ -2421,6 +2435,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
 
         self.destroy_routing_interfaces()
+        self.destroy_bridge_ports()
         self.destroy_lags_with_members()
 
         super(L3InterfaceMtuTest, self).tearDown()
@@ -2872,7 +2887,6 @@ class L3SubPortTest(SaiHelper):
         self.subPortV4MtuTest()
         self.subPortV6MtuTest()
         self.subPortIngressAclTest()
-        self.ipv4EgressAclTest()
         self.subPortEgressAclTest()
         self.subPortECMPTest()
         self.subPortMyIPTest()
