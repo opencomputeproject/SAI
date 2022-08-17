@@ -363,7 +363,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.create_device()
 
         self.port_configer = PortConfiger(self)
-
         self.switch_configer = SwitchConfiger(self)
         self.fdb_configer = FdbConfiger(self)
         self.vlan_configer = VlanConfiger(self)
@@ -401,7 +400,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
             time.sleep(wait_sec)
             self.persist_helper.persist_dut(self.dut)
         else:
-            print("swith keeps running, read config from storage")
+            print("switch keeps running, read config from storage")
             self.dut = self.persist_helper.read_dut()
 
     def restore_fdb_config(self):
@@ -481,8 +480,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
     def tearDown(self):
         '''
         tear down
+        todo:
+            if we change the common configure in ths case,
+            we need persist dut again 
         '''
-        t0_fdb_tear_down_helper(self)
-        t0_vlan_tear_down_helper(self)
-        t0_port_tear_down_helper(self)
         super().tearDown()

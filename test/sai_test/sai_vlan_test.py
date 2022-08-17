@@ -79,7 +79,7 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
             pass
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class UntagAccessToAccessTest(T0TestBase):
@@ -122,7 +122,7 @@ class UntagAccessToAccessTest(T0TestBase):
             pass
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class MismatchDropTest(T0TestBase):
@@ -165,7 +165,7 @@ class MismatchDropTest(T0TestBase):
             pass
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class TaggedFrameFilteringTest(T0TestBase):
@@ -200,7 +200,7 @@ class TaggedFrameFilteringTest(T0TestBase):
             pass
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class UnTaggedFrameFilteringTest(T0TestBase):
@@ -235,7 +235,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
             pass
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class TaggedVlanFloodingTest(T0TestBase):
@@ -264,7 +264,7 @@ class TaggedVlanFloodingTest(T0TestBase):
             pass
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class UnTaggedVlanFloodingTest(T0TestBase):
@@ -293,7 +293,7 @@ class UnTaggedVlanFloodingTest(T0TestBase):
             pass
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class BroadcastTest(T0TestBase):
@@ -330,7 +330,7 @@ class BroadcastTest(T0TestBase):
             pass
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class UntaggedMacLearningTest(T0TestBase):
@@ -410,6 +410,7 @@ class TaggedMacLearningTest(T0TestBase):
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         sleep(2)
+        super().tearDown()
 
 
 class VlanMemberListTest(T0TestBase):
@@ -477,7 +478,7 @@ class VlanMemberListTest(T0TestBase):
                 self.dut.vlans[20].vlan_mport_oids[i - 8], mbr_list[i])
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class VlanMemberInvalidTest(T0TestBase):
@@ -499,7 +500,7 @@ class VlanMemberInvalidTest(T0TestBase):
         self.assertEqual(incorrect_member, 0)
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class DisableMacLearningTaggedTest(T0TestBase):
@@ -564,7 +565,7 @@ class DisableMacLearningUntaggedTest(T0TestBase):
         self.assertEqual(attr["available_fdb_entry"] - current_fdb_entry, 0)
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class ArpRequestFloodingTest(T0TestBase):
@@ -588,7 +589,7 @@ class ArpRequestFloodingTest(T0TestBase):
             self, [self.arp_request], [self.dut.dev_port_list[2:9]])
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class ArpRequestLearningTest(T0TestBase):
@@ -707,7 +708,7 @@ class TaggedVlanStatusTest(T0TestBase):
         # self.assertEqual(out_bytes, 0, 'vlan OUT bytes counter is not 0')
 
     def tearDown(self):
-        pass
+        super().tearDown()
 
 
 class UntaggedVlanStatusTest(T0TestBase):
@@ -795,4 +796,4 @@ class UntaggedVlanStatusTest(T0TestBase):
         # self.assertEqual(out_bytes, 0, 'vlan OUT bytes counter is not 0')
 
     def tearDown(self):
-        pass
+        super().tearDown()

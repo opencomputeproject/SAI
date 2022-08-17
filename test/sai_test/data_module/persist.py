@@ -24,7 +24,7 @@ from data_module.dut import Dut
 
 class PersistHelper:
     '''
-        store and restore data model
+    store and restore data model
     '''
 
     def __init__(self) -> None:
@@ -35,14 +35,18 @@ class PersistHelper:
     def persist_dut(self, dut: Dut):
         '''
         persist dut intance
+        Args:
+            dut: Dut instance,including all dut configure
         '''
 
         with open(os.path.join(self.dir, 'dut'), 'wb') as output:
             pickle.dump(dut, output, pickle.HIGHEST_PROTOCOL)
 
-    def read_dut(self):
+    def read_dut(self) -> Dut:
         '''
         read dut
+        Return:
+            dut: Dut instance, init by reading from file
         '''
         with open(os.path.join(self.dir, 'dut'), 'rb') as input_obj:
             return pickle.load(input_obj)
