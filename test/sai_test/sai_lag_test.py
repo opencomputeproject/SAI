@@ -38,29 +38,29 @@ class LagConfigTest(T0TestBase):
                                                             virtual_router_id=self.dut.default_vrf,
                                                             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
                                                             port_id=self.dut.port_list[1])
-        ip_dst = self.servers[11][0].ipv4
+        ip_dst = self.servers[11][1].ipv4
         pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                 eth_src=self.servers[1][0].mac,
+                                 eth_src=self.servers[1][1].mac,
                                  ip_dst=ip_dst,
-                                 ip_src=self.servers[1][0].ipv4,
+                                 ip_src=self.servers[1][1].ipv4,
                                  ip_id=105,
                                  ip_ttl=64)
         pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                 eth_src=self.servers[2][0].mac,
+                                 eth_src=self.servers[2][1].mac,
                                  ip_dst=ip_dst,
-                                 ip_src=self.servers[2][0].ipv4,
+                                 ip_src=self.servers[2][1].ipv4,
                                  ip_id=105,
                                  ip_ttl=64)
         exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                      eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
-                                     ip_src=self.servers[1][0].ipv4,
+                                     ip_src=self.servers[1][1].ipv4,
                                      ip_id=105,
                                      ip_ttl=63)
         exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                      eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
-                                     ip_src=self.servers[2][0].ipv4,
+                                     ip_src=self.servers[2][1].ipv4,
                                      ip_id=105,
                                      ip_ttl=63)
         send_packet(self, 1, pkt1)
@@ -111,16 +111,16 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
             for i in range(0, max_itrs):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[1][0].mac,
-                                        ip_dst=self.servers[11][0].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        eth_src=self.servers[1][1].mac,
+                                        ip_dst=self.servers[11][1].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[11][0].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            ip_dst=self.servers[11][1].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -171,16 +171,16 @@ class LoadbalanceOnDesPortTest(T0TestBase):
             for i in range(0, max_itrs):
                 des_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[1][0].mac,
-                                        ip_dst=self.servers[11][0].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        eth_src=self.servers[1][1].mac,
+                                        ip_dst=self.servers[11][1].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         tcp_dport=des_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[11][0].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            ip_dst=self.servers[11][1].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             tcp_dport=des_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -228,16 +228,16 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
                                                                 port_id=self.dut.port_list[1])
             max_itrs = 99
             rcv_count = [0, 0]
-            for i in range(0, max_itrs):
+            for i in range(1, max_itrs):
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.servers[1][i].mac,
-                                        ip_dst=self.servers[11][0].ipv4,
+                                        ip_dst=self.servers[11][1].ipv4,
                                         ip_src=self.servers[1][i].ipv4,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[11][0].ipv4,
+                                            ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][i].ipv4,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -286,24 +286,24 @@ class LoadbalanceOnDesIPTest(T0TestBase):
                                                                 port_id=self.dut.port_list[1])
             max_itrs = 99
             rcv_count = [0, 0]
-            for i in range(0, max_itrs):
+            for i in range(1, max_itrs):
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[1][0].mac,
+                                        eth_src=self.servers[1][1].mac,
                                         ip_dst=self.servers[11][i].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][i].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             ip_id=105,
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
                     self, exp_pkt, self.dut.lag1.member_port_indexs)
                 print('des_src={}, rcv_port={}'.format(
-                    self.servers[1][0].ipv4, rcv_idx))
+                    self.servers[1][1].ipv4, rcv_idx))
                 rcv_count[rcv_idx] += 1
 
             print(rcv_count)
@@ -354,36 +354,36 @@ class LoadbalanceOnProtocolTest(T0TestBase):
             for i in range(0, max_itrs):
                 if i % 2 == 0:
                     pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                            eth_src=self.servers[1][0].mac,
-                                            ip_dst=self.servers[11][0].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            eth_src=self.servers[1][1].mac,
+                                            ip_dst=self.servers[11][1].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             ip_id=105,
                                             ip_ttl=64)
                     exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                                 eth_src=ROUTER_MAC,
-                                                ip_dst=self.servers[11][0].ipv4,
-                                                ip_src=self.servers[1][0].ipv4,
+                                                ip_dst=self.servers[11][1].ipv4,
+                                                ip_src=self.servers[1][1].ipv4,
                                                 ip_id=105,
                                                 ip_ttl=63)
                 else:
                     print("icmp")
                     pkt = simple_icmp_packet(eth_dst=ROUTER_MAC,
-                                             eth_src=self.servers[1][0].mac,
-                                             ip_dst=self.servers[11][0].ipv4,
-                                             ip_src=self.servers[1][0].ipv4,
+                                             eth_src=self.servers[1][1].mac,
+                                             ip_dst=self.servers[11][1].ipv4,
+                                             ip_src=self.servers[1][1].ipv4,
                                              ip_id=105,
                                              ip_ttl=64)
                     exp_pkt = simple_icmp_packet(eth_dst=self.t1_list[1][0].mac,
                                                  eth_src=ROUTER_MAC,
-                                                 ip_dst=self.servers[11][0].ipv4,
-                                                 ip_src=self.servers[1][0].ipv4,
+                                                 ip_dst=self.servers[11][1].ipv4,
+                                                 ip_src=self.servers[1][1].ipv4,
                                                  ip_id=105,
                                                  ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
                     self, exp_pkt, self.dut.lag1.member_port_indexs)
                 print('des_src={}, rcv_port={}'.format(
-                    self.servers[1][0].ipv4, rcv_idx))
+                    self.servers[1][1].ipv4, rcv_idx))
                 rcv_count[rcv_idx] += 1
 
             print(rcv_count)
@@ -432,16 +432,16 @@ class DisableEgressTest(T0TestBase):
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[1][0].mac,
-                                        ip_dst=self.servers[11][0].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        eth_src=self.servers[1][1].mac,
+                                        ip_dst=self.servers[11][1].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[11][0].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            ip_dst=self.servers[11][1].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -461,16 +461,16 @@ class DisableEgressTest(T0TestBase):
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[1][0].mac,
-                                        ip_dst=self.servers[11][0].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        eth_src=self.servers[1][1].mac,
+                                        ip_dst=self.servers[11][1].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[11][0].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            ip_dst=self.servers[11][1].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -528,15 +528,15 @@ class DisableIngressTest(T0TestBase):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.t1_list[1][0].mac,
-                                        ip_dst=self.servers[1][0].ipv4,
-                                        ip_src=self.servers[11][0].ipv4,
+                                        ip_dst=self.servers[1][1].ipv4,
+                                        ip_src=self.servers[11][1].ipv4,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[1][0].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[1][1].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[1][0].ipv4,
-                                            ip_src=self.servers[11][0].ipv4,
+                                            ip_dst=self.servers[1][1].ipv4,
+                                            ip_src=self.servers[11][1].ipv4,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -552,15 +552,15 @@ class DisableIngressTest(T0TestBase):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         eth_src=self.t1_list[1][0].mac,
-                                        ip_dst=self.servers[1][0].ipv4,
-                                        ip_src=self.servers[11][0].ipv4,
+                                        ip_dst=self.servers[1][1].ipv4,
+                                        ip_src=self.servers[11][1].ipv4,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[1][0].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[1][1].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[1][0].ipv4,
-                                            ip_src=self.servers[11][0].ipv4,
+                                            ip_dst=self.servers[1][1].ipv4,
+                                            ip_src=self.servers[11][1].ipv4,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -608,16 +608,16 @@ class RemoveLagMemberTest(T0TestBase):
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[1][0].mac,
-                                        ip_dst=self.servers[11][0].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        eth_src=self.servers[1][1].mac,
+                                        ip_dst=self.servers[11][1].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[11][0].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            ip_dst=self.servers[11][1].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -631,16 +631,16 @@ class RemoveLagMemberTest(T0TestBase):
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[1][0].mac,
-                                        ip_dst=self.servers[11][0].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        eth_src=self.servers[1][1].mac,
+                                        ip_dst=self.servers[11][1].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[11][0].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            ip_dst=self.servers[11][1].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -690,16 +690,16 @@ class AddLagMemberTest(T0TestBase):
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[1][0].mac,
-                                        ip_dst=self.servers[11][0].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        eth_src=self.servers[1][1].mac,
+                                        ip_dst=self.servers[11][1].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[11][0].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            ip_dst=self.servers[11][1].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -712,16 +712,16 @@ class AddLagMemberTest(T0TestBase):
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[1][0].mac,
-                                        ip_dst=self.servers[11][0].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        eth_src=self.servers[1][1].mac,
+                                        ip_dst=self.servers[11][1].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                             eth_src=ROUTER_MAC,
-                                            ip_dst=self.servers[11][0].ipv4,
-                                            ip_src=self.servers[1][0].ipv4,
+                                            ip_dst=self.servers[11][1].ipv4,
+                                            ip_src=self.servers[1][1].ipv4,
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
@@ -760,15 +760,15 @@ class IndifferenceIngressPortTest(T0TestBase):
                                                                 type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
                                                                 vlan_id=10)
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=self.servers[1][0].mac,
-                                    ip_dst=self.servers[11][0].ipv4,
-                                    ip_src=self.servers[1][0].ipv4,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=self.servers[11][1].ipv4,
+                                    ip_src=self.servers[1][1].ipv4,
                                     ip_id=105,
                                     ip_ttl=64)
             exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
                                         eth_src=ROUTER_MAC,
-                                        ip_dst=self.servers[11][0].ipv4,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        ip_dst=self.servers[11][1].ipv4,
+                                        ip_src=self.servers[1][1].ipv4,
                                         ip_id=105,
                                         ip_ttl=63)
 

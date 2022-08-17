@@ -36,9 +36,9 @@ class Device(object):
     """
         Create servers(0-17) ip list.
 
-        server0: IP 192.168.0.1~150
-        server1: IP 192.168.1.1~150
-        server2: IP 192.168.2.1~150
+        server0: IP 192.168.0.0~150
+        server1: IP 192.168.1.0~150
+        server2: IP 192.168.2.0~150
         .....
 
         class attributes:

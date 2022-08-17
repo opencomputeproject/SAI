@@ -443,15 +443,15 @@ class T0TestBase(ThriftInterfaceDataPlane):
         Server in format 192.168.[group_id].[nums_index]
         T1 in format 10.1.[[group_id].[nums_index]]
         group_id: group id for the server
-        nums_index: index number among nums, start from 1
+        nums_index: index number among nums, start from 0
         """
 
         for srv_grp_idx in self.server_groups:
             self.servers[srv_grp_idx] = [Device(DeviceType.server, index, srv_grp_idx)
-                                         for index in range(1, self.num_device_each_group+1)]
+                                         for index in range(0, self.num_device_each_group)]
         for t1_grp_idx in self.t1_groups:
             self.t1_list[t1_grp_idx] = [Device(DeviceType.t1, index, t1_grp_idx)
-                                        for index in range(1, self.num_device_each_group+1)]
+                                        for index in range(0, self.num_device_each_group)]
 
     def create_vlan_interface(self, vlan: Vlan):
         """

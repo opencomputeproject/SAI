@@ -52,8 +52,8 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
                     10,
                     self.dut.dev_port_list[1],
                     self.dut.dev_port_list[index]))
-                pkt = simple_udp_packet(eth_dst=self.servers[1][index-1].mac,
-                                        eth_src=self.servers[1][0].mac,
+                pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
+                                        eth_src=self.servers[1][1].mac,
                                         vlan_vid=10,
                                         ip_id=101,
                                         ip_ttl=64)
@@ -67,8 +67,8 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
                     20,
                     self.dut.dev_port_list[9],
                     self.dut.dev_port_list[index]))
-                pkt = simple_udp_packet(eth_dst=self.servers[1][index-1].mac,
-                                        eth_src=self.servers[1][8].mac,
+                pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
+                                        eth_src=self.servers[1][9].mac,
                                         vlan_vid=20,
                                         ip_id=101,
                                         ip_ttl=64)
@@ -100,8 +100,8 @@ class UntagAccessToAccessTest(T0TestBase):
                 print("Sending untagged packet from vlan10 tagged port {} to vlan10 tagged port: {}".format(
                     self.dut.dev_port_list[1],
                     self.dut.dev_port_list[index]))
-                pkt = simple_udp_packet(eth_dst=self.servers[1][index-1].mac,
-                                        eth_src=self.servers[1][0].mac,
+                pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
+                                        eth_src=self.servers[1][1].mac,
                                         ip_id=101,
                                         ip_ttl=64)
                 send_packet(self, self.dut.dev_port_list[1], pkt)
@@ -111,8 +111,8 @@ class UntagAccessToAccessTest(T0TestBase):
                 print("Sending untagged packet from vlan20 tagged port {} to vlan20 tagged port: {}".format(
                     self.dut.dev_port_list[9],
                     self.dut.dev_port_list[index]))
-                pkt = simple_udp_packet(eth_dst=self.servers[1][index-1].mac,
-                                        eth_src=self.servers[1][8].mac,
+                pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
+                                        eth_src=self.servers[1][9].mac,
                                         ip_id=101,
                                         ip_ttl=64)
                 send_packet(self, self.dut.dev_port_list[9], pkt)
@@ -143,8 +143,8 @@ class MismatchDropTest(T0TestBase):
                 print("Sending vlan20 tagged packet from vlan20 tagged port {} to vlan10 tagged port: {}".format(
                     self.dut.dev_port_list[9],
                     self.dut.dev_port_list[index]))
-                pkt = simple_udp_packet(eth_dst=self.servers[1][index-1].mac,
-                                        eth_src=self.servers[1][8].mac,
+                pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
+                                        eth_src=self.servers[1][9].mac,
                                         vlan_vid=20,
                                         ip_id=101,
                                         ip_ttl=64)
@@ -154,8 +154,8 @@ class MismatchDropTest(T0TestBase):
                 print("Sending vlan10 tagged packet from {} to vlan20 tagged port: {}".format(
                     self.dut.dev_port_list[1],
                     self.dut.dev_port_list[index]))
-                pkt = simple_udp_packet(eth_dst=self.servers[1][index-1].mac,
-                                        eth_src=self.servers[1][0].mac,
+                pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
+                                        eth_src=self.servers[1][1].mac,
                                         vlan_vid=10,
                                         ip_id=101,
                                         ip_ttl=64)
@@ -177,7 +177,7 @@ class TaggedFrameFilteringTest(T0TestBase):
         super().setUp()
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
-        self.tmp_server_list = [self.servers[1][i] for i in [0, 4]]
+        self.tmp_server_list = [self.servers[1][i] for i in [1, 5]]
         self.mac_action = SAI_PACKET_ACTION_FORWARD
         self.fdb_configer.create_fdb_entries(
             switch_id=self.dut.switch_id,
@@ -190,7 +190,7 @@ class TaggedFrameFilteringTest(T0TestBase):
         try:
             for tmp_server in self.tmp_server_list:
                 pkt = simple_udp_packet(eth_dst=tmp_server.mac,
-                                        eth_src=self.servers[1][0].mac,
+                                        eth_src=self.servers[1][1].mac,
                                         vlan_vid=10,
                                         ip_id=101,
                                         ip_ttl=64)
@@ -213,7 +213,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
         super().setUp()
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
-        self.tmp_server_list = [self.servers[1][i] for i in [0, 4]]
+        self.tmp_server_list = [self.servers[1][i] for i in [1, 5]]
         self.mac_action = SAI_PACKET_ACTION_FORWARD
         self.fdb_configer.create_fdb_entries(
             switch_id=self.dut.switch_id,
@@ -226,7 +226,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
         try:
             for tmp_server in self.tmp_server_list:
                 pkt = simple_udp_packet(eth_dst=tmp_server.mac,
-                                        eth_src=self.servers[1][0].mac,
+                                        eth_src=self.servers[1][1].mac,
                                         ip_id=101,
                                         ip_ttl=64)
                 send_packet(self, self.dut.dev_port_list[1], pkt)
@@ -253,7 +253,7 @@ class TaggedVlanFloodingTest(T0TestBase):
         try:
             macX = 'EE:EE:EE:EE:EE:EE'
             pkt = simple_udp_packet(eth_dst=macX,
-                                    eth_src=self.servers[1][0].mac,
+                                    eth_src=self.servers[1][1].mac,
                                     vlan_vid=10,
                                     ip_id=101,
                                     ip_ttl=64)
@@ -283,7 +283,7 @@ class UnTaggedVlanFloodingTest(T0TestBase):
         try:
             macX = 'EE:EE:EE:EE:EE:EE'
             pkt = simple_udp_packet(eth_dst=macX,
-                                    eth_src=self.servers[1][0].mac,
+                                    eth_src=self.servers[1][1].mac,
                                     ip_id=101,
                                     ip_ttl=64)
             send_packet(self, self.dut.dev_port_list[1], pkt)
@@ -311,7 +311,7 @@ class BroadcastTest(T0TestBase):
             macX = 'FF:FF:FF:FF:FF:FF'
             # untag
             untagged_pkt = simple_udp_packet(eth_dst=macX,
-                                             eth_src=self.servers[1][0].mac,
+                                             eth_src=self.servers[1][1].mac,
                                              ip_id=101,
                                              ip_ttl=64)
             send_packet(self, self.dut.dev_port_list[1], untagged_pkt)
@@ -319,7 +319,7 @@ class BroadcastTest(T0TestBase):
             verify_packet_any_port(self, untagged_pkt, other_ports)
             # tag
             tagged_pkt = simple_udp_packet(eth_dst=macX,
-                                           eth_src=self.servers[1][0].mac,
+                                           eth_src=self.servers[1][1].mac,
                                            vlan_vid=10,
                                            ip_id=101,
                                            ip_ttl=64)
@@ -351,7 +351,7 @@ class UntaggedMacLearningTest(T0TestBase):
                 available_fdb_entry=True)['available_fdb_entry']
             macX = '00:01:01:99:01:99'
             # untag
-            untagged_pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
+            untagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
                                              eth_src=macX,
                                              ip_id=101,
                                              ip_ttl=64)
@@ -388,7 +388,7 @@ class TaggedMacLearningTest(T0TestBase):
                 self.client,
                 available_fdb_entry=True)['available_fdb_entry']
             macX = '00:01:01:99:01:99'
-            tagged_pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
+            tagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
                                            eth_src=macX,
                                            vlan_vid=10,
                                            ip_id=101,
@@ -517,8 +517,8 @@ class DisableMacLearningTaggedTest(T0TestBase):
             self.client, available_fdb_entry=True)
         current_fdb_entry = attr["available_fdb_entry"]
 
-        pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
-                                eth_src=self.servers[1][0].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
+                                eth_src=self.servers[1][1].mac,
                                 vlan_vid=10,
                                 ip_id=101,
                                 ip_ttl=64)
@@ -550,8 +550,8 @@ class DisableMacLearningUntaggedTest(T0TestBase):
             self.client, available_fdb_entry=True)
         current_fdb_entry = attr["available_fdb_entry"]
 
-        pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
-                                eth_src=self.servers[1][0].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
+                                eth_src=self.servers[1][1].mac,
                                 ip_id=101,
                                 ip_ttl=64)
         send_packet(self, self.dut.dev_port_list[1], pkt)
@@ -573,10 +573,10 @@ class ArpRequestFloodingTest(T0TestBase):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         ip2 = "192.168.0.2"
         self.arp_request = simple_arp_packet(
-            eth_dst=self.servers[1][1].mac,
+            eth_dst=self.servers[1][2].mac,
             arp_op=1,
             ip_tgt=ip2,
-            hw_tgt=self.servers[1][1].mac)
+            hw_tgt=self.servers[1][2].mac)
 
     def runTest(self):
         print("ArpRequestFloodingTest")
@@ -599,13 +599,13 @@ class ArpRequestLearningTest(T0TestBase):
         ip1 = "192.168.0.1"
         ip2 = "192.168.0.2"
         self.arp_response = simple_arp_packet(
-            eth_dst=self.servers[1][0].mac,
-            eth_src=self.servers[1][1].mac,
+            eth_dst=self.servers[1][1].mac,
+            eth_src=self.servers[1][2].mac,
             arp_op=2,
             ip_tgt=ip2,
             ip_snd=ip1,
-            hw_snd=self.servers[1][1].mac,
-            hw_tgt=self.servers[1][0].mac)
+            hw_snd=self.servers[1][2].mac,
+            hw_tgt=self.servers[1][1].mac)
 
     def runTest(self):
         print("ArpRequestLearningTest")
@@ -624,8 +624,8 @@ class TaggedVlanStatusTest(T0TestBase):
 
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
-        self.tagged_pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
-                                            eth_src=self.servers[1][0].mac,
+        self.tagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
+                                            eth_src=self.servers[1][1].mac,
                                             vlan_vid=10,
                                             ip_id=101,
                                             ip_ttl=64)
@@ -713,8 +713,8 @@ class UntaggedVlanStatusTest(T0TestBase):
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
-        self.untagged_pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
-                                              eth_src=self.servers[1][0].mac,
+        self.untagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
+                                              eth_src=self.servers[1][1].mac,
                                               ip_id=101,
                                               ip_ttl=64)
 
