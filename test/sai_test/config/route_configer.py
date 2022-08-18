@@ -35,29 +35,43 @@ if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
 
-def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True, is_create_route_for_lag=True):
+def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True, is_create_default_loopback_interface=False, is_create_route_for_lag=True):
+    """
+    Make t0 route configurations base on the configuration in the test plan.
+    Set the configuration in test directly.
+
+    Set the following test_obj attributes:
+        int: default_vrf
+        port_rif_list[0]
+        default_ipv6_route_entry
+        default_ipv4_route_entry
+        neighbor and route for lag
+    """
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
         route_configer.create_default_route()
         route_configer.create_router_interface_by_port_idx(port_idx=0)
 
+    if is_create_default_loopback_interface:
+        route_configer.create_default_loopback_interface()
+
     if is_create_route_for_lag:
         test_obj.servers[11][0].ip_prefix = '24'
         test_obj.servers[11][0].ip_prefix_v6 = '112'
         route_configer.create_neighbor_by_lag(
-            nexthop_device=test_obj.t1_list[1][0], lag=test_obj.dut.lag1)
+            nexthop_device=test_obj.t1_list[1][100], lag=test_obj.dut.lag1)
         route_configer.create_route_path_by_nexthop_from_lag(
             dest_device=test_obj.servers[11][0],
-            nexthop_device=test_obj.t1_list[1][0],
+            nexthop_device=test_obj.t1_list[1][100],
             lag=test_obj.dut.lag1)
 
         test_obj.servers[12][0].ip_prefix = '24'
         test_obj.servers[12][0].ip_prefix_v6 = '112'
         route_configer.create_neighbor_by_lag(
-            nexthop_device=test_obj.t1_list[2][0], lag=test_obj.dut.lag2)
+            nexthop_device=test_obj.t1_list[2][100], lag=test_obj.dut.lag2)
         route_configer.create_route_path_by_nexthop_from_lag(
             dest_device=test_obj.servers[12][0],
-            nexthop_device=test_obj.t1_list[2][0],
+            nexthop_device=test_obj.t1_list[2][100],
             lag=test_obj.dut.lag2)
 
 
@@ -77,20 +91,23 @@ class RouteConfiger(object):
         self.client = test_obj.client
 
     def create_default_route(self):
-        self.create_default_route_intf()
+        self.get_default_virtual_router()
         self.create_default_v4_v6_route_entry()
-        # self.create_local_v6_route()
 
-    def create_default_route_intf(self):
+    def get_default_virtual_router(self):
         """
-        Create default route interface on loop back interface.
+        Get default virtual_router_id
         """
-        print("Create loop back interface...")
+        print("Get default virtual router id...")
         attr = sai_thrift_get_switch_attribute(
             self.client, default_virtual_router_id=True)
         self.test_obj.assertNotEqual(attr['default_virtual_router_id'], 0)
         self.test_obj.dut.default_vrf = attr['default_virtual_router_id']
 
+    def create_default_loopback_interface(self):
+        """
+        Create loopback interface on default virtual router.
+        """
         self.test_obj.dut.loopback_intf = sai_thrift_create_router_interface(self.client,
                                                                              type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK, virtual_router_id=self.test_obj.dut.default_vrf)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)

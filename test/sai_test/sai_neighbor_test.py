@@ -14,6 +14,10 @@ class NoHostRouteTest(T0TestBase):
         """
         T0TestBase.setUp(self)
 
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
         self.dev_port1 = self.dut.dev_port_list[1]
         self.ipv4_addr = "10.1.1.10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -30,7 +34,7 @@ class NoHostRouteTest(T0TestBase):
     def noHostRouteNeighborTest(self):
         '''
         Add a neighbor for IP 10.1.1.10 on the LAG1 Route interface and a new MACX
-        Send packet on port5 with DMAC: SWITCH_MAC DIP:10.1.1.10
+        Send packet on port1 with DMAC: SWITCH_MAC DIP:10.1.1.10
         verify packet received on one of LAG1 member
         '''
         print("\nnoHostRouteNeighborTest()")
@@ -53,6 +57,8 @@ class NoHostRouteTest(T0TestBase):
 
     def tearDown(self):
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -68,6 +74,10 @@ class NoHostRouteTestV6(T0TestBase):
         """
         T0TestBase.setUp(self)
 
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
         self.dev_port1 = self.dut.dev_port_list[1]
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -107,6 +117,8 @@ class NoHostRouteTestV6(T0TestBase):
 
     def tearDown(self):
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v6)
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -122,6 +134,10 @@ class AddHostRouteTest(T0TestBase):
         """
         T0TestBase.setUp(self)
 
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
         self.dev_port1 = self.dut.dev_port_list[1]
         self.ipv4_addr = "10.1.1.10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -165,6 +181,8 @@ class AddHostRouteTest(T0TestBase):
 
     def tearDown(self):
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -180,6 +198,10 @@ class AddHostRouteTestV6(T0TestBase):
         """
         T0TestBase.setUp(self)
 
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
         self.dev_port1 = self.dut.dev_port_list[1]
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -224,6 +246,8 @@ class AddHostRouteTestV6(T0TestBase):
 
     def tearDown(self):
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v6)
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -239,6 +263,10 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
         """
         T0TestBase.setUp(self)
 
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
         self.dev_port1 = self.dut.dev_port_list[1]
         self.ipv4_addr = "10.1.1.10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -250,7 +278,7 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
             self.client,
             self.nbr_entry_v4,
             dst_mac_address=self.mac_addr)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.net_route = sai_thrift_route_entry_t(
             vr_id=self.dut.default_vrf, destination=sai_ipprefix(self.ipv4_addr+'/32'))
@@ -318,6 +346,8 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.net_route)
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -332,6 +362,10 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
         """
         T0TestBase.setUp(self)
 
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
         self.dev_port1 = self.dut.dev_port_list[1]
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -343,7 +377,7 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
             self.client,
             self.nbr_entry_v6,
             dst_mac_address=self.mac_addr)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.net_route = sai_thrift_route_entry_t(
             vr_id=self.dut.default_vrf, destination=sai_ipprefix(self.ipv6_addr+'/128'))
@@ -411,6 +445,8 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.net_route)
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v6)
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -425,7 +461,6 @@ class NhopDiffPrefixRemoveLonger(T0TestBase):
         """
         T0TestBase.setUp(self)
 
-        self.dev_port1 = self.dut.dev_port_list[1]
         self.ipv4_addr = "10.1.1.10"
         self.mac_addr1 = "00:10:10:10:10:10"
         self.mac_addr2 = "00:20:20:20:20:20"
@@ -483,7 +518,6 @@ class NhopDiffPrefixRemoveLongerV6(T0TestBase):
         """
         T0TestBase.setUp(self)
 
-        self.dev_port1 = self.dut.dev_port_list[1]
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr1 = "00:10:10:10:10:10"
         self.mac_addr2 = "00:20:20:20:20:20"
@@ -540,7 +574,6 @@ class NhopDiffPrefixRemoveShorter(T0TestBase):
         """
         T0TestBase.setUp(self)
 
-        self.dev_port1 = self.dut.dev_port_list[1]
         self.ipv4_addr = "10.1.1.10"
         self.mac_addr1 = "00:10:10:10:10:10"
         self.mac_addr2 = "00:20:20:20:20:20"
@@ -598,7 +631,7 @@ class NhopDiffPrefixRemoveShorterV6(T0TestBase):
         Test the basic setup process.
         """
         T0TestBase.setUp(self)
-        self.dev_port1 = self.dut.dev_port_list[1]
+
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr1 = "00:10:10:10:10:10"
         self.mac_addr2 = "00:20:20:20:20:20"

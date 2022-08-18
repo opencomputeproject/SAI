@@ -34,18 +34,10 @@ class DeviceType(Enum):
 
 class Device(object):
     """
-        Create servers(0-17) ip list.
-
-        server0: IP 192.168.0.1~150
-        server1: IP 192.168.1.1~150
-        server2: IP 192.168.2.1~150
-        .....
-
         class attributes:
             type: device type, T1, Server
             id: device id, equals to index
             group_id: device group id
-            ip_num: numbers of ips
             mac: mac address
             ipv4: ip v4
             ipv6: ip v6
@@ -61,7 +53,7 @@ class Device(object):
             fdb_entry
     """
 
-    def __init__(self, device_type, id, group_id=None, ip_num=150):
+    def __init__(self, device_type, id, group_id=None):
         """
         Init the Device object, different device type  have different attributes
 
@@ -69,7 +61,6 @@ class Device(object):
             type: device type, T1, Server
             id: device id, equals to index
             group_id: device group id
-            ip_num: numbers of ips
             mac: mac address
             ipv4: ip v4
             ipv6: ip v6
@@ -111,10 +102,7 @@ class Device(object):
         """
         device group id
         """
-        self.ip_num = ip_num
-        """
-        numbers of ips
-        """
+
         self.ip_prefix = None
         self.ip_prefix_v6 = None
         if self.type == DeviceType.server:
