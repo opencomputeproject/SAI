@@ -20,9 +20,14 @@
 
 from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from typing import TYPE_CHECKING
+from data_module.vlan import Vlan
+
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
 
-def t0_vlan_config_helper(test_obj, is_reset_default_vlan=True, is_create_vlan=True):
+def t0_vlan_config_helper(test_obj: 'T0TestBase', is_reset_default_vlan=True, is_create_vlan=True):
     """
     Make t0 Vlan configurations base on the configuration in the test plan.
     Set the configuration in test directly.
@@ -51,30 +56,30 @@ def t0_vlan_config_helper(test_obj, is_reset_default_vlan=True, is_create_vlan=T
     # todo check and get vlan when skip create vlan
 
     if not hasattr(test_obj, 'vlans'):
-        test_obj.vlans = {}
+        test_obj.dut.vlans = {}
     for key in vlans:
-        test_obj.vlans.update({key: vlans[key]})
-    test_obj.default_vlan_id = default_vlan_id
+        test_obj.dut.vlans.update({key: vlans[key]})
+    test_obj.dut.default_vlan_id = default_vlan_id
 
-def t0_vlan_tear_down_helper(test_obj):
+
+def t0_vlan_tear_down_helper(test_obj: 'T0TestBase'):
     '''
     Args:
         test_obj: test object
     remove vlan
     '''
     configer = VlanConfiger(test_obj)
-    #remove default vlan
+    # remove default vlan
     default_vlan_id = configer.get_default_vlan()
     members = configer.get_vlan_member(default_vlan_id)
     configer.remove_vlan_members(members)
    # configer.remove_vlan(default_vlan_id)
 
-    for _, vlan in test_obj.vlans.items():
+    for _, vlan in test_obj.dut.vlans.items():
         members = configer.get_vlan_member(vlan.vlan_oid)
         configer.remove_vlan_members(members)
         configer.remove_vlan(vlan.vlan_oid)
-    test_obj.vlans.clear()
-
+    test_obj.dut.vlans.clear()
 
 
 class VlanConfiger(object):
@@ -82,7 +87,7 @@ class VlanConfiger(object):
     Class use to make all the vlan configurations.
     """
 
-    def __init__(self, test_obj) -> None:
+    def __init__(self, test_obj: 'T0TestBase') -> None:
         """
         Init the Vlan configer.
 
@@ -106,7 +111,7 @@ class VlanConfiger(object):
             Vlan: vlan object
         """
 
-        vlan = Vlan()
+        vlan = Vlan(None, None, [], None, None, None)
         print("Create vlan {} and it memmber port at {} ...".format(
             vlan_id, vlan_port_idxs))
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id=vlan_id)
@@ -136,11 +141,12 @@ class VlanConfiger(object):
         for port_index in vlan_ports:
             vlan_member = sai_thrift_create_vlan_member(self.client,
                                                         vlan_id=vlan_oid,
-                                                        bridge_port_id=self.test_obj.bridge_port_list[port_index],
+                                                        bridge_port_id=self.test_obj.dut.bridge_port_list[
+                                                            port_index],
                                                         vlan_tagging_mode=vlan_tagging_mode)
             vlan_members.append(vlan_member)
             sai_thrift_set_port_attribute(
-                self.client, self.test_obj.port_list[port_index], port_vlan_id=vlan_id)
+                self.client, self.test_obj.dut.port_list[port_index], port_vlan_id=vlan_id)
         return vlan_members
 
     def get_default_vlan(self):
@@ -195,19 +201,3 @@ class VlanConfiger(object):
             sai_thrift_remove_vlan_member(self.client, vlan_member)
             self.test_obj.assertEqual(
                 self.test_obj.status(), SAI_STATUS_SUCCESS)
-
-
-class Vlan(object):
-    """
-    Represent the vlan object
-
-    Attrs:
-        vlan_id: vlan id
-        vlan_oid: vlan ojbect id
-        vlan_moids: vlan member object ids
-    """
-
-    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids=None):
-        self.vlan_id = vlan_id
-        self.vlan_oid = vlan_oid
-        self.vlan_mport_oids = vlan_moids

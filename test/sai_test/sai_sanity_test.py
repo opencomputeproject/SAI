@@ -65,6 +65,6 @@ class SaiSanityTest(T0TestBase):
             print("Sanity test, check all the ports be flooded.")
             send_packet(self, 1, pkt)
             verify_each_packet_on_multiple_port_lists(
-                self, [pkt], [self.dev_port_list[2:]])
+                self, [pkt], [self.dut.dev_port_list[2:]])
         finally:
             pass

@@ -37,7 +37,6 @@ from sai_thrift.sai_adapter import *
 from constant import *
 
 
-
 def sai_ipprefix(prefix_str):
     """
     Set IP address prefix and mask and return ip_prefix object
@@ -100,12 +99,14 @@ class ConfigDBOpertion():
     '''
     read config from config_db.json
     '''
+
     def __init__(self):
-        path =os.path.join( os.path.dirname(__file__),"resources/config_db.json")  #REPLACE
+        path = os.path.join(os.path.dirname(__file__),
+                            "resources/config_db.json")  # REPLACE
         self.config_json = None
-        with open(path,mode='r') as f:
+        with open(path, mode='r') as f:
             self.config_json = json.load(f)
-    
+
     def get_port_config(self):
         '''
         RETURN:
@@ -159,6 +160,7 @@ def generate_mac_address_list(role, group, indexes):
         mac_list.append(mac)
     return mac_list
 
+
 def generate_ip_address_list(role, group, indexes):
     """
     Generate ip addresses.
@@ -174,5 +176,5 @@ def generate_ip_address_list(role, group, indexes):
     print("Generate IP ...")
     ip_list = []
     for index in indexes:
-        ip_list.append(role.format(group,index))
+        ip_list.append(role.format(group, index))
     return ip_list
