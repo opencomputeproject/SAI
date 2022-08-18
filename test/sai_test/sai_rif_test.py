@@ -49,6 +49,11 @@ class IngressMacUpdateTest(T0TestBase):
         new_router_mac = "00:77:66:55:44:44"
         ip_dst = self.servers[11][1].ipv4
 
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
+
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                 eth_src=self.servers[0][1].mac,
                                 ip_dst=ip_dst,
@@ -87,6 +92,8 @@ class IngressMacUpdateTest(T0TestBase):
         attrs = sai_thrift_get_router_interface_attribute(
             self.client, self.dut.port_rif_list[0], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], ROUTER_MAC)
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -114,6 +121,11 @@ class IngressMacUpdateTestV6(T0TestBase):
 
         new_router_mac = "00:10:10:10:10:10"
         ip_dst = self.servers[11][1].ipv6
+
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
 
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
                                   eth_src=self.servers[0][1].mac,
@@ -151,6 +163,8 @@ class IngressMacUpdateTestV6(T0TestBase):
         attrs = sai_thrift_get_router_interface_attribute(
             self.client, self.dut.port_rif_list[0], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], ROUTER_MAC)
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -181,6 +195,11 @@ class IngressDisableTestV4(T0TestBase):
         print("\ntest_ingress_disable_ipv4()")
 
         ip_dst = self.servers[11][1].ipv4
+
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                 eth_src=self.servers[0][1].mac,
@@ -217,6 +236,8 @@ class IngressDisableTestV4(T0TestBase):
         self.test_ingress_disable_ipv4()
 
     def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -247,6 +268,11 @@ class IngressDisableTestV6(T0TestBase):
         print("\ntest_ingress_disable_ipv6()")
 
         ip_dst = self.servers[11][1].ipv6
+
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
 
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
                                   eth_src=self.servers[0][1].mac,
@@ -281,6 +307,8 @@ class IngressDisableTestV6(T0TestBase):
         self.test_ingress_disable_ipv6()
 
     def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -308,6 +336,11 @@ class IngressMtuTestV4(T0TestBase):
         Verify no packet was received on any LAG1 member
         """
         print("\ntest_ingress_mtu_v4()")
+
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
 
         # set MTU to 200 for port1
         mtu_port10_rif = sai_thrift_get_router_interface_attribute(
@@ -368,6 +401,8 @@ class IngressMtuTestV4(T0TestBase):
         self.test_ingress_mtu()
 
     def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -395,6 +430,11 @@ class IngressMtuTestV6(T0TestBase):
         Verify no packet was received on any LAG1 member
         """
         print("\ntest_ingress_mtu_v6()")
+
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=self.dut.default_vrf,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=self.dut.port_list[1])
 
         # set MTU to 200 for port1
         mtu_port10_rif = sai_thrift_get_router_interface_attribute(
@@ -451,4 +491,6 @@ class IngressMtuTestV6(T0TestBase):
         self.test_ingress_mtu_v6()
 
     def tearDown(self):
+        sai_thrift_remove_router_interface(self.client, self.port1_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()

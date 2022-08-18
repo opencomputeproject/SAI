@@ -35,11 +35,14 @@ if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
 
-def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True, is_create_route_for_lag=True):
+def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True, is_create_default_loopback_interface=False, is_create_route_for_lag=True):
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
         route_configer.create_default_route()
         route_configer.create_router_interface_by_port_idx(port_idx=0)
+
+    if is_create_default_loopback_interface:
+        route_configer.create_default_loopback_interface()
 
     if is_create_route_for_lag:
         test_obj.servers[11][0].ip_prefix = '24'
@@ -79,7 +82,6 @@ class RouteConfiger(object):
     def create_default_route(self):
         self.create_default_route_intf()
         self.create_default_v4_v6_route_entry()
-        # self.create_local_v6_route()
 
     def create_default_route_intf(self):
         """
@@ -91,6 +93,7 @@ class RouteConfiger(object):
         self.test_obj.assertNotEqual(attr['default_virtual_router_id'], 0)
         self.test_obj.dut.default_vrf = attr['default_virtual_router_id']
 
+    def create_default_loopback_interface(self):
         self.test_obj.dut.loopback_intf = sai_thrift_create_router_interface(self.client,
                                                                              type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK, virtual_router_id=self.test_obj.dut.default_vrf)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
