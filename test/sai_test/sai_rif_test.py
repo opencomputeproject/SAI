@@ -37,7 +37,7 @@ class IngressMacUpdateTest(T0TestBase):
 
     def test_ingress_mac_update(self):
         """
-        Generate Packets, with SIP:192.168.0.1 DIP:10.1.1.101 DMAC:SWITCH_MAC
+        Generate Packets, with SIP:192.168.0.1 DIP:192.168.11.1 DMAC:SWITCH_MAC
         Send packet on Port1
         Verify packet received on one of the LAG1's member
         Set RIF mac to MacX, the RIF related to Port1
@@ -47,16 +47,16 @@ class IngressMacUpdateTest(T0TestBase):
         print("\nmacUpdateTest()")
 
         new_router_mac = "00:77:66:55:44:44"
-        ip_dst = self.servers[11][0].ipv4
+        ip_dst = self.servers[11][1].ipv4
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src=self.servers[1][0].mac,
+                                eth_src=self.servers[0][1].mac,
                                 ip_dst=ip_dst,
-                                ip_src=self.servers[1][0].ipv4,
+                                ip_src=self.servers[0][1].ipv4,
                                 ip_id=105,
                                 ip_ttl=64)
 
-        exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
+        exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
                                     eth_src=ROUTER_MAC,
                                     ip_dst=ip_dst,
                                     ip_src=self.servers[1][0].ipv4,
@@ -103,7 +103,7 @@ class IngressMacUpdateTestV6(T0TestBase):
 
     def test_ingress_mac_update(self):
         """
-        Generate Packets, with SIP fc02::1:1 DIP:fc02::1:11 DMAC:SWITCH_MAC
+        Generate Packets, with SIP fc02::0:1 DIP:fc02::11:1 DMAC:SWITCH_MAC
         Send packet on Port1
         Verify packet received on one of the LAG1's member
         Set RIF mac to MacX, the RIF related to Port1
@@ -113,18 +113,18 @@ class IngressMacUpdateTestV6(T0TestBase):
         print("\nmacUpdateTest()")
 
         new_router_mac = "00:10:10:10:10:10"
-        ip_dst = self.servers[11][0].ipv6
+        ip_dst = self.servers[11][1].ipv6
 
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                  eth_src=self.servers[1][0].mac,
+                                  eth_src=self.servers[0][1].mac,
                                   ipv6_dst=ip_dst,
-                                  ipv6_src=self.servers[1][0].ipv6,
+                                  ipv6_src=self.servers[0][1].ipv6,
                                   ipv6_hlim=64)
 
-        exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][0].mac,
+        exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
                                       eth_src=ROUTER_MAC,
                                       ipv6_dst=ip_dst,
-                                      ipv6_src=self.servers[1][0].ipv6,
+                                      ipv6_src=self.servers[0][1].ipv6,
                                       ipv6_hlim=63)
 
         send_packet(self, 1, pkt)
@@ -169,7 +169,7 @@ class IngressDisableTestV4(T0TestBase):
 
     def test_ingress_disable_ipv4(self):
         """
-        Generate Packets, with SIP:192.168.0.1 DIP:10.1.1.101 DMAC:SWITCH_MAC
+        Generate Packets, with SIP:192.168.0.1 DIP:192.168.11.1 DMAC:SWITCH_MAC
         Send packet on Port1
         Verify packet received on one of the LAG1's member
         Set RIF mac to MacX, the RIF related to Port1
@@ -180,19 +180,19 @@ class IngressDisableTestV4(T0TestBase):
 
         print("\ntest_ingress_disable_ipv4()")
 
-        ip_dst = self.servers[11][0].ipv4
+        ip_dst = self.servers[11][1].ipv4
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src=self.servers[1][0].mac,
+                                eth_src=self.servers[0][1].mac,
                                 ip_dst=ip_dst,
-                                ip_src=self.servers[1][0].ipv4,
+                                ip_src=self.servers[0][1].ipv4,
                                 ip_id=105,
                                 ip_ttl=64)
 
-        exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
+        exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
                                     eth_src=ROUTER_MAC,
                                     ip_dst=ip_dst,
-                                    ip_src=self.servers[1][0].ipv4,
+                                    ip_src=self.servers[0][1].ipv4,
                                     ip_id=105,
                                     ip_ttl=63)
 
@@ -246,18 +246,18 @@ class IngressDisableTestV6(T0TestBase):
 
         print("\ntest_ingress_disable_ipv6()")
 
-        ip_dst = self.servers[11][0].ipv6
+        ip_dst = self.servers[11][1].ipv6
 
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                  eth_src=self.servers[1][0].mac,
+                                  eth_src=self.servers[0][1].mac,
                                   ipv6_dst=ip_dst,
-                                  ipv6_src=self.servers[1][0].ipv6,
+                                  ipv6_src=self.servers[0][1].ipv6,
                                   ipv6_hlim=64)
 
-        exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][0].mac,
+        exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
                                       eth_src=ROUTER_MAC,
                                       ipv6_dst=ip_dst,
-                                      ipv6_src=self.servers[1][0].ipv6,
+                                      ipv6_src=self.servers[0][1].ipv6,
                                       ipv6_hlim=63)
 
         send_packet(self, 1, pkt)
@@ -318,20 +318,20 @@ class IngressMtuTestV4(T0TestBase):
 
         try:
             print("Max MTU is 200, send pkt size 200, send to port/lag")
-            ip_dst = self.servers[11][0].ipv4
+            ip_dst = self.servers[11][1].ipv4
 
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=self.servers[1][0].mac,
+                                    eth_src=self.servers[0][1].mac,
                                     ip_dst=ip_dst,
-                                    ip_src=self.servers[1][0].ipv4,
+                                    ip_src=self.servers[0][1].ipv4,
                                     ip_id=105,
                                     ip_ttl=64,
                                     pktlen=200 + 14)
 
-            exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
+            exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
                                         eth_src=ROUTER_MAC,
                                         ip_dst=ip_dst,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        ip_src=self.servers[0][1].ipv4,
                                         ip_id=105,
                                         ip_ttl=63,
                                         pktlen=200 + 14)
@@ -342,17 +342,17 @@ class IngressMtuTestV4(T0TestBase):
 
             print("Max MTU is 200, send pkt size 201, dropped")
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=self.servers[1][0].mac,
+                                    eth_src=self.servers[0][1].mac,
                                     ip_dst=ip_dst,
-                                    ip_src=self.servers[1][0].ipv4,
+                                    ip_src=self.servers[0][1].ipv4,
                                     ip_id=105,
                                     ip_ttl=64,
                                     pktlen=201 + 14)
 
-            exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][0].mac,
+            exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
                                         eth_src=ROUTER_MAC,
                                         ip_dst=ip_dst,
-                                        ip_src=self.servers[1][0].ipv4,
+                                        ip_src=self.servers[0][1].ipv4,
                                         ip_id=105,
                                         ip_ttl=63,
                                         pktlen=201 + 14)
@@ -405,19 +405,19 @@ class IngressMtuTestV6(T0TestBase):
 
         try:
             print("Max MTU is 200, send pkt size 200, send to port/lag")
-            ip_dst = self.servers[11][0].ipv6
+            ip_dst = self.servers[11][1].ipv6
 
             pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                      eth_src=self.servers[1][0].mac,
+                                      eth_src=self.servers[0][1].mac,
                                       ipv6_dst=ip_dst,
-                                      ipv6_src=self.servers[1][0].ipv6,
+                                      ipv6_src=self.servers[0][1].ipv6,
                                       ipv6_hlim=64,
                                       pktlen=200 + 14)
 
-            exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][0].mac,
+            exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
                                           eth_src=ROUTER_MAC,
                                           ipv6_dst=ip_dst,
-                                          ipv6_src=self.servers[1][0].ipv6,
+                                          ipv6_src=self.servers[0][1].ipv6,
                                           ipv6_hlim=63,
                                           pktlen=200 + 14)
 
@@ -427,16 +427,16 @@ class IngressMtuTestV6(T0TestBase):
 
             print("Max MTU is 200, send pkt size 201, dropped")
             pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                      eth_src=self.servers[1][0].mac,
+                                      eth_src=self.servers[0][1].mac,
                                       ipv6_dst=ip_dst,
-                                      ipv6_src=self.servers[1][0].ipv6,
+                                      ipv6_src=self.servers[0][1].ipv6,
                                       ipv6_hlim=64,
                                       pktlen=201 + 14)
 
-            exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][0].mac,
+            exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
                                           eth_src=ROUTER_MAC,
                                           ipv6_dst=ip_dst,
-                                          ipv6_src=self.servers[1][0].ipv6,
+                                          ipv6_src=self.servers[0][1].ipv6,
                                           ipv6_hlim=63,
                                           pktlen=201 + 14)
 

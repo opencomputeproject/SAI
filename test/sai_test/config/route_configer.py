@@ -45,19 +45,19 @@ def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True,
         test_obj.servers[11][0].ip_prefix = '24'
         test_obj.servers[11][0].ip_prefix_v6 = '112'
         route_configer.create_neighbor_by_lag(
-            nexthop_device=test_obj.t1_list[1][0], lag=test_obj.dut.lag1)
+            nexthop_device=test_obj.t1_list[1][100], lag=test_obj.dut.lag1)
         route_configer.create_route_path_by_nexthop_from_lag(
             dest_device=test_obj.servers[11][0],
-            nexthop_device=test_obj.t1_list[1][0],
+            nexthop_device=test_obj.t1_list[1][100],
             lag=test_obj.dut.lag1)
 
         test_obj.servers[12][0].ip_prefix = '24'
         test_obj.servers[12][0].ip_prefix_v6 = '112'
         route_configer.create_neighbor_by_lag(
-            nexthop_device=test_obj.t1_list[2][0], lag=test_obj.dut.lag2)
+            nexthop_device=test_obj.t1_list[2][100], lag=test_obj.dut.lag2)
         route_configer.create_route_path_by_nexthop_from_lag(
             dest_device=test_obj.servers[12][0],
-            nexthop_device=test_obj.t1_list[2][0],
+            nexthop_device=test_obj.t1_list[2][100],
             lag=test_obj.dut.lag2)
 
 
