@@ -36,6 +36,17 @@ if TYPE_CHECKING:
 
 
 def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True, is_create_default_loopback_interface=False, is_create_route_for_lag=True):
+    """
+    Make t0 route configurations base on the configuration in the test plan.
+    Set the configuration in test directly.
+
+    Set the following test_obj attributes:
+        int: default_vrf
+        port_rif_list[0]
+        default_ipv6_route_entry
+        default_ipv4_route_entry
+        neighbor and route for lag
+    """
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
         route_configer.create_default_route()
