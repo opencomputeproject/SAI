@@ -64,7 +64,7 @@ class IngressMacUpdateTest(T0TestBase):
         exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
                                     eth_src=ROUTER_MAC,
                                     ip_dst=ip_dst,
-                                    ip_src=self.servers[1][0].ipv4,
+                                    ip_src=self.servers[0][1].ipv4,
                                     ip_id=105,
                                     ip_ttl=63)
 
