@@ -37,9 +37,15 @@
 #include <saisrv6.h>
 
 /* new experimental object type includes */
+#include <saiexperimentaldashvip.h>
+#include <saiexperimentaldashpavalidation.h>
 #include <saiexperimentaldashvnet.h>
+#include <saiexperimentaldashoutboundrouting.h>
+#include <saiexperimentaldashoutboundcatopa.h>
+#include <saiexperimentaldashinboundrouting.h>
+#include <saiexperimentaldasheni.h>
+#include <saiexperimentaldashdirectionlookup.h>
 #include <saiexperimentaldashacl.h>
-#include <saiexperimentaldash.h>
 #include <saiexperimentalbmtor.h>
 
 /**
@@ -93,9 +99,6 @@ typedef union _sai_object_key_entry_t
     /** @validonly object_type == SAI_OBJECT_TYPE_ENI_ETHER_ADDRESS_MAP_ENTRY */
     sai_eni_ether_address_map_entry_t eni_ether_address_map_entry;
 
-    /** @validonly object_type == SAI_OBJECT_TYPE_VIP_ENTRY */
-    sai_vip_entry_t vip_entry;
-
     /** @validonly object_type == SAI_OBJECT_TYPE_INBOUND_ROUTING_ENTRY */
     sai_inbound_routing_entry_t inbound_routing_entry;
 
@@ -107,6 +110,9 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_PA_VALIDATION_ENTRY */
     sai_pa_validation_entry_t pa_validation_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_VIP_ENTRY */
+    sai_vip_entry_t vip_entry;
 
     /* Add new experimental entries above this line */
 

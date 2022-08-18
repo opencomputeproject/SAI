@@ -52,8 +52,6 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_ENI,
 
-    SAI_OBJECT_TYPE_VIP_ENTRY,
-
     SAI_OBJECT_TYPE_INBOUND_ROUTING_ENTRY,
 
     SAI_OBJECT_TYPE_OUTBOUND_CA_TO_PA_ENTRY,
@@ -63,6 +61,8 @@ typedef enum _sai_object_type_extensions_t
     SAI_OBJECT_TYPE_VNET,
 
     SAI_OBJECT_TYPE_PA_VALIDATION_ENTRY,
+
+    SAI_OBJECT_TYPE_VIP_ENTRY,
 
     /* Add new experimental object types above this line */
 

@@ -32,8 +32,14 @@
 #include "saiswitchextensions.h"
 
 /* new experimental object type includes */
+#include "saiexperimentaldashvip.h"
+#include "saiexperimentaldashpavalidation.h"
 #include "saiexperimentaldashvnet.h"
-#include "saiexperimentaldash.h"
+#include "saiexperimentaldashoutboundrouting.h"
+#include "saiexperimentaldashoutboundcatopa.h"
+#include "saiexperimentaldashinboundrouting.h"
+#include "saiexperimentaldasheni.h"
+#include "saiexperimentaldashdirectionlookup.h"
 #include "saiexperimentaldashacl.h"
 #include "saiexperimentalbmtor.h"
 
@@ -50,9 +56,21 @@ typedef enum _sai_api_extensions_t
 
     SAI_API_DASH_ACL,
 
-    SAI_API_DASH,
+    SAI_API_DASH_DIRECTION_LOOKUP,
+
+    SAI_API_DASH_ENI,
+
+    SAI_API_DASH_INBOUND_ROUTING,
+
+    SAI_API_DASH_OUTBOUND_CA_TO_PA,
+
+    SAI_API_DASH_OUTBOUND_ROUTING,
 
     SAI_API_DASH_VNET,
+
+    SAI_API_DASH_PA_VALIDATION,
+
+    SAI_API_DASH_VIP,
 
     /* Add new experimental APIs above this line */
 
