@@ -80,20 +80,23 @@ class RouteConfiger(object):
         self.client = test_obj.client
 
     def create_default_route(self):
-        self.create_default_route_intf()
+        self.get_default_virtual_router()
         self.create_default_v4_v6_route_entry()
 
-    def create_default_route_intf(self):
+    def get_default_virtual_router(self):
         """
-        Create default route interface on loop back interface.
+        Get default virtual_router_id
         """
-        print("Create loop back interface...")
+        print("Get default virtual router id...")
         attr = sai_thrift_get_switch_attribute(
             self.client, default_virtual_router_id=True)
         self.test_obj.assertNotEqual(attr['default_virtual_router_id'], 0)
         self.test_obj.dut.default_vrf = attr['default_virtual_router_id']
 
     def create_default_loopback_interface(self):
+        """
+        Create loopback interface on default virtual router.
+        """
         self.test_obj.dut.loopback_intf = sai_thrift_create_router_interface(self.client,
                                                                              type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK, virtual_router_id=self.test_obj.dut.default_vrf)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
