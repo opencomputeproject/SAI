@@ -50,15 +50,15 @@ class L2PortForwardingTest(T0TestBase):
                 print("L2 Forwarding from {} to port: {}".format(
                     self.dut.dev_port_list[1],
                     self.dut.dev_port_list[index]))
-                pkt = simple_udp_packet(eth_dst=self.servers[1][index-1].mac,
-                                        eth_src=self.servers[1][0].mac,
+                pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
+                                        eth_src=self.servers[1][1].mac,
                                         vlan_vid=10,
                                         ip_id=101,
                                         ip_ttl=64)
 
                 send_packet(self, self.dut.dev_port_list[1], pkt)
                 verify_packet(
-                    self, pkt, self.servers[1][index-1].l2_egress_port_idx)
+                    self, pkt, self.servers[1][index].l2_egress_port_idx)
                 verify_no_other_packets(self)
         finally:
             pass
@@ -364,16 +364,16 @@ class NewVlanmemberLearnTest(T0TestBase):
         """
         print("NewVlanmemberLearnTest")
         unknown_mac1 = "00:01:01:99:99:99"
-        self.pkt1 = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        self.pkt1 = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                       eth_src=unknown_mac1)
         self.pkt2 = simple_udp_packet(eth_dst=unknown_mac1,
-                                      eth_src=self.servers[1][0].mac)
+                                      eth_src=self.servers[1][1].mac)
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
         saved_fdb_entry = attr["available_fdb_entry"]
 
         send_packet(self, 24, self.pkt1)
-        verify_packet(self, self.pkt1, self.servers[1][0].l2_egress_port_idx)
+        verify_packet(self, self.pkt1, self.servers[1][1].l2_egress_port_idx)
         verify_no_other_packets(self)
 
         send_packet(self, 1, self.pkt2)
@@ -420,11 +420,11 @@ class RemoveVlanmemberLearnTest(T0TestBase):
         """
         print("RemoveVlanmemberLearnTest")
         unknown_mac1 = "00:01:01:99:99:99"
-        self.pkt1 = simple_udp_packet(eth_dst=self.servers[1][1].mac,
+        self.pkt1 = simple_udp_packet(eth_dst=self.servers[1][2].mac,
                                       eth_src=unknown_mac1,
                                       vlan_vid=10)
         self.pkt2 = simple_udp_packet(eth_dst=unknown_mac1,
-                                      eth_src=self.servers[1][0].mac,
+                                      eth_src=self.servers[1][1].mac,
                                       vlan_vid=10)
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
@@ -475,11 +475,11 @@ class InvalidateVlanmemberNoLearnTest(T0TestBase):
         """
         print("InvalidateVlanmemberNoLearnTest")
         unknown_mac1 = "00:01:01:99:99:99"
-        self.pkt1 = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        self.pkt1 = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                       eth_src=unknown_mac1,
                                       vlan_vid=11)
         self.pkt2 = simple_udp_packet(eth_dst=unknown_mac1,
-                                      eth_src=self.servers[1][0].mac,
+                                      eth_src=self.servers[1][1].mac,
                                       vlan_vid=11)
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
@@ -636,25 +636,25 @@ class FdbAgingTest(T0TestBase):
         """
         print("FdbAgingTest")
         unknown_mac1 = "00:01:01:99:99:99"
-        pkt = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                 eth_src=unknown_mac1,
                                 pktlen=100)
-        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                     eth_src=unknown_mac1,
                                     dl_vlan_enable=True,
                                     vlan_vid=10,
                                     pktlen=104)
         send_packet(self, 2, tag_pkt)
-        verify_packets(self, pkt, [self.servers[1][0].l2_egress_port_idx])
+        verify_packets(self, pkt, [self.servers[1][1].l2_egress_port_idx])
         verify_no_other_packets(self)
         time.sleep(1)
 
         print("Verifying if MAC address was learned")
         pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                eth_src=self.servers[1][0].mac,
+                                eth_src=self.servers[1][1].mac,
                                 pktlen=100)
         tag_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                    eth_src=self.servers[1][0].mac,
+                                    eth_src=self.servers[1][1].mac,
                                     dl_vlan_enable=True,
                                     vlan_vid=10,
                                     pktlen=104)
@@ -722,19 +722,19 @@ class FdbAgingAfterMoveTest(T0TestBase):
         """
         print("FdbAgingAfterMoveTest")
         unknown_mac1 = "00:01:01:99:99:99"
-        pkt = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                 eth_src=unknown_mac1,
                                 pktlen=100)
-        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                     eth_src=unknown_mac1,
                                     dl_vlan_enable=True,
                                     vlan_vid=10,
                                     pktlen=104)
         chk_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                    eth_src=self.servers[1][0].mac,
+                                    eth_src=self.servers[1][1].mac,
                                     pktlen=100)
         chk_tag_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                        eth_src=self.servers[1][0].mac,
+                                        eth_src=self.servers[1][1].mac,
                                         dl_vlan_enable=True,
                                         vlan_vid=10,
                                         pktlen=104)
@@ -828,19 +828,19 @@ class FdbMacMovingAfterAgingTest(T0TestBase):
         """
         print("FdbMacMovingAfterAgingTest")
         unknown_mac1 = "00:01:01:99:99:99"
-        pkt = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                 eth_src=unknown_mac1,
                                 pktlen=100)
-        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                     eth_src=unknown_mac1,
                                     dl_vlan_enable=True,
                                     vlan_vid=10,
                                     pktlen=104)
         chk_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                    eth_src=self.servers[1][0].mac,
+                                    eth_src=self.servers[1][1].mac,
                                     pktlen=100)
         chk_tag_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                        eth_src=self.servers[1][0].mac,
+                                        eth_src=self.servers[1][1].mac,
                                         dl_vlan_enable=True,
                                         vlan_vid=10,
                                         pktlen=104)
@@ -912,14 +912,14 @@ class FdbFlushVlanStaticTest(T0TestBase):
         4. Send packets :  ``Port9`` DMAC=``Port10 MAC``
         5. Verify flush happens in a certain domain, unicast to the corresponding port.
         """
-        pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
                                 pktlen=100)
         send_packet(self, 1, pkt)
         verify_each_packet_on_multiple_port_lists(
             self, [pkt], [self.dut.dev_port_list[2:9]])
         print("\tVerified the flooding happend")
         time.sleep(1)
-        pkt = simple_udp_packet(eth_dst=self.servers[1][9].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][10].mac,
                                 pktlen=100)
         send_packet(self, 9, pkt)
         verify_each_packet_on_multiple_port_lists(
@@ -960,14 +960,14 @@ class FdbFlushPortStaticTest(T0TestBase):
         4. Send packets  ``Port10`` DMAC=``Port9 MAC``
         5. Verify flush happens in a certain domain, unicast to the corresponding port.
         """
-        pkt = simple_udp_packet(eth_dst=self.servers[1][0].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
                                 pktlen=100)
         send_packet(self, 2, pkt)
         verify_each_packet_on_multiple_port_lists(
             self, [pkt], [self.dut.dev_port_list[2:9]])
         print("\tVerified the flooding happend")
         time.sleep(1)
-        pkt = simple_udp_packet(eth_dst=self.servers[1][8].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][9].mac,
                                 pktlen=100)
         send_packet(self, 10, pkt)
         verify_each_packet_on_multiple_port_lists(
@@ -1007,14 +1007,14 @@ class FdbFlushAllStaticTest(T0TestBase):
         4. Send packets :  ``Port9`` DMAC=``Port10 MAC``
         5. Verify flush happens in a certain domain, unicast to the corresponding port.
         """
-        pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
                                 pktlen=100)
         send_packet(self, 1, pkt)
         verify_each_packet_on_multiple_port_lists(
             self, [pkt], [self.dut.dev_port_list[2:9]])
         print("\tVerified the flooding happend")
         time.sleep(1)
-        pkt = simple_udp_packet(eth_dst=self.servers[1][9].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][10].mac,
                                 pktlen=100)
         send_packet(self, 9, pkt)
         verify_each_packet_on_multiple_port_lists(
@@ -1125,19 +1125,19 @@ class FdbFlushPortDynamicTest(T0TestBase):
         9. verify flooding happen
         """
         unknown_mac1 = "00:01:01:99:99:99"
-        pkt = simple_udp_packet(eth_dst=self.servers[1][9].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][10].mac,
                                 eth_src=unknown_mac1,
                                 pktlen=100)
-        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][9].mac,
+        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][10].mac,
                                     eth_src=unknown_mac1,
                                     dl_vlan_enable=True,
                                     vlan_vid=20,
                                     pktlen=104)
         chk_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                    eth_src=self.servers[1][9].mac,
+                                    eth_src=self.servers[1][10].mac,
                                     pktlen=100)
         chk_tag_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                        eth_src=self.servers[1][9].mac,
+                                        eth_src=self.servers[1][10].mac,
                                         dl_vlan_enable=True,
                                         vlan_vid=20,
                                         pktlen=104)
@@ -1199,19 +1199,19 @@ class FdbFlushAllDynamicTest(T0TestBase):
         9. verify flooding happen
         """
         unknown_mac1 = "00:01:01:99:99:99"
-        pkt = simple_udp_packet(eth_dst=self.servers[1][9].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][10].mac,
                                 eth_src=unknown_mac1,
                                 pktlen=100)
-        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][9].mac,
+        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][10].mac,
                                     eth_src=unknown_mac1,
                                     dl_vlan_enable=True,
                                     vlan_vid=20,
                                     pktlen=104)
         chk_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                    eth_src=self.servers[1][9].mac,
+                                    eth_src=self.servers[1][10].mac,
                                     pktlen=100)
         chk_tag_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                        eth_src=self.servers[1][9].mac,
+                                        eth_src=self.servers[1][10].mac,
                                         dl_vlan_enable=True,
                                         vlan_vid=20,
                                         pktlen=104)
@@ -1279,19 +1279,19 @@ class FdbFlushAllTest(T0TestBase):
         9. verify flooding happen
         """
         unknown_mac1 = "00:01:01:99:99:99"
-        pkt = simple_udp_packet(eth_dst=self.servers[1][9].mac,
+        pkt = simple_udp_packet(eth_dst=self.servers[1][10].mac,
                                 eth_src=unknown_mac1,
                                 pktlen=100)
-        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][9].mac,
+        tag_pkt = simple_udp_packet(eth_dst=self.servers[1][10].mac,
                                     eth_src=unknown_mac1,
                                     dl_vlan_enable=True,
                                     vlan_vid=20,
                                     pktlen=104)
         chk_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                    eth_src=self.servers[1][9].mac,
+                                    eth_src=self.servers[1][10].mac,
                                     pktlen=100)
         chk_tag_pkt = simple_udp_packet(eth_dst=unknown_mac1,
-                                        eth_src=self.servers[1][9].mac,
+                                        eth_src=self.servers[1][10].mac,
                                         dl_vlan_enable=True,
                                         vlan_vid=20,
                                         pktlen=104)
@@ -1340,7 +1340,7 @@ class FdbDisableMacMoveDropTest(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         self.fdb_entry = sai_thrift_fdb_entry_t(switch_id=self.dut.switch_id,
-                                                mac_address=self.servers[1][0].mac,
+                                                mac_address=self.servers[1][1].mac,
                                                 bv_id=self.dut.vlans[10].vlan_oid)
         status = sai_thrift_create_fdb_entry(self.client,
                                              self.fdb_entry,
@@ -1358,11 +1358,11 @@ class FdbDisableMacMoveDropTest(T0TestBase):
         5. Send packet in step2 on port3
         6. Verify the packet gets dropped
         """
-        self.pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
-                                     eth_src=self.servers[1][0].mac,
+        self.pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
+                                     eth_src=self.servers[1][1].mac,
                                      pktlen=100)
         send_packet(self, 1, self.pkt)
-        verify_packet(self, self.pkt, self.servers[1][1].l2_egress_port_idx)
+        verify_packet(self, self.pkt, self.servers[1][2].l2_egress_port_idx)
 
         send_packet(self, 3, self.pkt)
         verify_no_other_packets(self)
@@ -1402,15 +1402,15 @@ class FdbDynamicMacMoveTest(T0TestBase):
         8. Send packet in step2 on port3
         9. Verify packet received on port2
         """
-        self.pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
-                                     eth_src=self.servers[1][0].mac,
+        self.pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
+                                     eth_src=self.servers[1][1].mac,
                                      pktlen=100)
         send_packet(self, 1, self.pkt)
-        verify_packet(self, self.pkt, self.servers[1][1].l2_egress_port_idx)
+        verify_packet(self, self.pkt, self.servers[1][2].l2_egress_port_idx)
         # inititally add moving MAC to FDB
         self.moving_fdb_entry = sai_thrift_fdb_entry_t(
             switch_id=self.dut.switch_id,
-            mac_address=self.servers[1][0].mac)
+            mac_address=self.servers[1][1].mac)
         status = sai_thrift_create_fdb_entry(
             self.client,
             self.moving_fdb_entry,
@@ -1451,7 +1451,7 @@ class FdbStaticMacMoveTest(T0TestBase):
             self.client,
             entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.fdb_entry1 = sai_thrift_fdb_entry_t(switch_id=self.dut.switch_id,
-                                                 mac_address=self.servers[1][1].mac,
+                                                 mac_address=self.servers[1][2].mac,
                                                  bv_id=self.dut.vlans[10].vlan_oid)
         status = sai_thrift_create_fdb_entry(self.client,
                                              self.fdb_entry1,
@@ -1460,7 +1460,7 @@ class FdbStaticMacMoveTest(T0TestBase):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.fdb_entry2 = sai_thrift_fdb_entry_t(switch_id=self.dut.switch_id,
-                                                 mac_address=self.servers[1][0].mac,
+                                                 mac_address=self.servers[1][1].mac,
                                                  bv_id=self.dut.vlans[10].vlan_oid)
         status = sai_thrift_create_fdb_entry(self.client,
                                              self.fdb_entry2,
@@ -1482,16 +1482,16 @@ class FdbStaticMacMoveTest(T0TestBase):
         9. Send packet in step2 on port3
         10. Verify packet received on port2
         """
-        self.pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
-                                     eth_src=self.servers[1][0].mac,
+        self.pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
+                                     eth_src=self.servers[1][1].mac,
                                      pktlen=100)
         send_packet(self, 1, self.pkt)
-        verify_packet(self, self.pkt, self.servers[1][1].l2_egress_port_idx)
+        verify_packet(self, self.pkt, self.servers[1][2].l2_egress_port_idx)
 
         # inititally add moving MAC to FDB
         self.moving_fdb_entry = sai_thrift_fdb_entry_t(
             switch_id=self.dut.switch_id,
-            mac_address=self.servers[1][0].mac)
+            mac_address=self.servers[1][1].mac)
         status = sai_thrift_create_fdb_entry(
             self.client,
             self.moving_fdb_entry,
