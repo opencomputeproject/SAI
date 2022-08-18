@@ -121,6 +121,7 @@ typedef struct _sai_attr_capability_t
      * @brief Get is implemented
      */
     bool get_implemented;
+
 } sai_attr_capability_t;
 
 /**
@@ -305,6 +306,24 @@ sai_status_t sai_bulk_object_clear_stats(
         _In_ const sai_stat_id_t *counter_ids,
         _In_ sai_stats_mode_t mode,
         _Inout_ sai_status_t *object_statuses);
+
+/**
+ * @brief Query the HW stage of an attribute for the specified object type
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[in] attr_count Count of attributes
+ * @param[in] attr_list List of attributes
+ * @param[out] stage HW stage of the attributes. Length of the array should be attr_count. Caller must allocate the buffer.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+sai_status_t sai_query_object_stage(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list,
+        _Out_ sai_object_stage_t *stage);
 
 /**
  * @}
