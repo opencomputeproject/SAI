@@ -1,6 +1,6 @@
 # SAI LAG Test plan
 - [SAI LAG Test plan](#sai-lag-test-plan)
-- [Overriew](#overriew)
+- [Overview](#overview)
 - [Test Configuration](#test-configuration)
 - [Test Execution](#test-execution)
   - [Test Data/Packet](#test-datapacket)

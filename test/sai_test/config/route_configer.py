@@ -74,6 +74,16 @@ def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True,
             nexthop_device=test_obj.t1_list[2][100],
             lag=test_obj.dut.lag2)
 
+        test_obj.servers[13][0].ip_prefix = '24'
+        test_obj.servers[13][0].ip_prefix_v6 = '112'
+        route_configer.create_neighbor_by_lag(
+            nexthop_device=test_obj.t1_list[3][100], lag=test_obj.dut.lag3)
+        route_configer.create_route_path_by_nexthop_from_lag(
+            dest_device=test_obj.servers[13][0],
+            nexthop_device=test_obj.t1_list[3][100],
+            lag=test_obj.dut.lag3)
+
+        route_configer.create_nexthop_group_by_nexthops()
 
 class RouteConfiger(object):
     """
@@ -738,6 +748,31 @@ class RouteConfiger(object):
         nexthop_device.nexthopv6 = nhopv6
 
         return nhopv4, nhopv6
+
+    def create_nexthop_group_by_nexthops(self):
+        """
+        Create nexthop group by nexthops.
+        """
+        self.test_obj.nhop_group1 = sai_thrift_create_next_hop_group(
+            self.test_obj.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+
+        self.test_obj.nh_group_member1 = sai_thrift_create_next_hop_group_member(
+            self.test_obj.client,
+            next_hop_group_id=self.test_obj.nhop_group1,
+            next_hop_id=self.test_obj.dut.lag2.nexthopv4.nexthop_id)
+
+        self.test_obj.nh_group_member1 = sai_thrift_create_next_hop_group_member(
+            self.test_obj.client,
+            next_hop_group_id=self.test_obj.nhop_group1,
+            next_hop_id=self.test_obj.dut.lag3.nexthopv4.nexthop_id)
+
+        self.test_obj.ecmp_route0 = sai_thrift_route_entry_t(
+            switch_id=self.test_obj.dut.switch_id,
+            destination=sai_ipprefix('192.168.60.0/24'),
+            vr_id=self.test_obj.dut.default_vrf)
+        status = sai_thrift_create_route_entry(
+            self.test_obj.client, self.test_obj.ecmp_route0, next_hop_id=self.test_obj.nhop_group1)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
     def create_ecmp_by_lags(self, lags: List[Lag]):
         """

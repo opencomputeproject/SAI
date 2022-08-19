@@ -147,6 +147,7 @@ class Dut(object):
         # lag
         self.lag1: Lag = None
         self.lag2: Lag = None
+        self.lag3: Lag = None
 
         # ecmp
         self.ecmp_list: List[Ecmp] = []
