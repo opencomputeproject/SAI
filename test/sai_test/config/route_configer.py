@@ -83,7 +83,7 @@ def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True,
             nexthop_device=test_obj.t1_list[3][100],
             lag=test_obj.dut.lag3)
 
-        route_configer.create_nexthop_group_by_nexthops()
+        route_configer.create_nexthop_group_by_nexthops(dest_device=test_obj.servers[60][0])
 
 class RouteConfiger(object):
     """
@@ -749,7 +749,7 @@ class RouteConfiger(object):
 
         return nhopv4, nhopv6
 
-    def create_nexthop_group_by_nexthops(self):
+    def create_nexthop_group_by_nexthops(self, dest_device: Device):
         """
         Create nexthop group by nexthops.
         """
@@ -768,7 +768,7 @@ class RouteConfiger(object):
 
         self.test_obj.ecmp_route0 = sai_thrift_route_entry_t(
             switch_id=self.test_obj.dut.switch_id,
-            destination=sai_ipprefix('192.168.60.0/24'),
+            destination=sai_ipprefix(dest_device.ipv4+'/24'),
             vr_id=self.test_obj.dut.default_vrf)
         status = sai_thrift_create_route_entry(
             self.test_obj.client, self.test_obj.ecmp_route0, next_hop_id=self.test_obj.nhop_group1)
