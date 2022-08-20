@@ -324,13 +324,11 @@ Skip test for broadcom, can't load balance on protocol such as tcp and udp
 Item: 15023123
 """
 
-
-@skip
 class LoadbalanceOnProtocolTest(T0TestBase):
     """
     Test load balance of l3 by protocol.
     """
-
+    @skip("skip for broadcom")
     def setUp(self):
         """
         Test the basic setup process
@@ -344,7 +342,7 @@ class LoadbalanceOnProtocolTest(T0TestBase):
         3. Check if packets are received on ports of lag1 equally
         """
         try:
-            print("Lag l3 load balancing test based on protocal")
+            print("Lag l3 load balancing test based on protocol")
             self.port1_rif = sai_thrift_create_router_interface(self.client,
                                                                 virtual_router_id=self.dut.default_vrf,
                                                                 type=SAI_ROUTER_INTERFACE_TYPE_PORT,
@@ -491,15 +489,11 @@ class DisableEgressTest(T0TestBase):
 Skip test for broadcom, can't disable ingress of lag member
 Item: 14988584
 """
-
-
-@skip
 class DisableIngressTest(T0TestBase):
-
     """
     When disable ingress on a lag member, we expect traffic drop on the disabled lag member.
     """
-
+    @skip("skip test for broadcom")
     def setUp(self):
         """
         Test the basic setup process
