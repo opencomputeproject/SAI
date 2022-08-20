@@ -24,8 +24,10 @@ from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-im
 from sai_thrift.sai_adapter import *
 from typing import TYPE_CHECKING
 
+from typing import Dict, List
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
+    from data_module.port import Port
 
 
 def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_create_hostIf=True):
@@ -46,6 +48,7 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
 
     """
     configer = PortConfiger(test_obj)
+    port_list = configer.get_port_list()
     dev_port_list = configer.get_local_mapped_ports()
     portConfigs = configer.parse_port_config(
         test_obj.test_params['port_config_ini'])
@@ -53,17 +56,15 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
     attr = sai_thrift_get_switch_attribute(
         configer.client, default_trap_group=True)
     default_trap_group = attr['default_trap_group']
-
-    port_list = configer.get_port_list()
-    configer.turn_on_port_admin_state(port_list)
-    configer.turn_up_and_check_ports(port_list)
+    configer.turn_on_port_admin_state(test_obj.dut.port_obj_list)
+    configer.turn_up_and_check_ports(test_obj.dut.port_obj_list)
     default_1q_bridge_id = configer.get_default_1q_bridge()
     bridge_port_list = configer.get_bridge_port_list(default_1q_bridge_id)
 
     if is_recreate_bridge:
         configer.remove_bridge_port(default_1q_bridge_id)
         bridge_port_list = configer.create_bridge_ports(
-            default_1q_bridge_id, port_list)
+            default_1q_bridge_id, test_obj.dut.port_obj_list)
 
     if is_create_hostIf:
         host_intf_table_id, hostif_list = configer.create_host_intf(
@@ -113,7 +114,7 @@ class PortConfiger(object):
         config_driver = ConfigDBOpertion()
         self.config = config_driver.get_port_config()
 
-    def create_bridge_ports(self, bridge_id, port_list):
+    def create_bridge_ports(self, bridge_id, port_list: List[Port]):
         """
         Create bridge ports base on port_list.
 
@@ -126,17 +127,18 @@ class PortConfiger(object):
         """
         print("Create bridge ports...")
         bp_list = []
-        for index in range(0, len(port_list)):
+        for index, item in enumerate(port_list):
             port_bp = sai_thrift_create_bridge_port(
                 self.client,
                 bridge_id=bridge_id,
-                port_id=port_list[index],
+                port_id=item,
                 type=SAI_BRIDGE_PORT_TYPE_PORT,
                 admin_state=True)
             bp_list.append(port_bp)
+            item.bridge_port_oid = port_bp
         return bp_list
 
-    def create_host_intf(self, ports_config, port_list, trap_group=None):
+    def create_host_intf(self, port_list:List[Port], trap_group=None):
         """
         Create host interface.
 
@@ -163,16 +165,17 @@ class PortConfiger(object):
             trap_group=trap_group, trap_priority=0)
 
         hostif_list = []
-        for i, _ in enumerate(port_list):
+        for index, item in enumerate(port_list):
             try:
                 hostif = sai_thrift_create_hostif(
                     self.client,
                     type=SAI_HOSTIF_TYPE_NETDEV,
-                    obj_id=port_list[i],
-                    name=ports_config[i].name)
+                    obj_id=item.oid,
+                    name=item.port_config.name)
                 sai_thrift_set_hostif_attribute(
                     self.client, hostif_oid=hostif, oper_status=False)
                 hostif_list.append(hostif)
+                item.host_itf = hostif
             except BaseException as e:
                 print("Cannot create hostif, error : {}".format(e))
         return host_intf_table_id, hostif_list
@@ -248,6 +251,8 @@ class PortConfiger(object):
         bridge_port_list = sai_thrift_object_list_t(count=100)
         bp_list = sai_thrift_get_bridge_attribute(
             self.client, bridge_id, port_list=bridge_port_list)
+        for index, item in enumerate(bp_list['port_list'].idlist):
+            self.test_obj.dut.port_obj_list[index].bridge_port_oid = item
         return bp_list['port_list'].idlist
 
     def get_default_1q_bridge(self):
@@ -267,11 +272,17 @@ class PortConfiger(object):
         Get device port numbers from ptf config.
         Those port number should map to the remote DUT port base on the configuration file.
 
+        Following the sequence of the parameters: --interface '0-16@eth0' --interface '0-18@eth1'
+        item[0]=16, item[1]=18
+
         Returns:
             list: port numbers
         """
         dev_port_list = []
-        for _, port, _ in config['interfaces']:
+        for index, item in enumerate(config['interfaces']):
+            device, port, eth = item
+            self.test_obj.dut.port_obj_list[index].dev_port_index = port
+            self.test_obj.dut.port_obj_list[index].dev_port_eth = eth
             dev_port_list.append(port)
         return dev_port_list
 
@@ -285,6 +296,9 @@ class PortConfiger(object):
         port_list = sai_thrift_object_list_t(count=100)
         p_list = sai_thrift_get_switch_attribute(
             self.client, port_list=port_list)
+        for index, item in enumerate(p_list['port_list'].idlist):
+            port: Port = Port(oid=item, index=index, rif_list=[], nexthopv4_list=[], nexthopv6_list=[])
+            self.test_obj.dut.port_obj_list.append(port)
         return p_list['port_list'].idlist
 
     def parse_port_config(self, port_config_file):
@@ -342,6 +356,7 @@ class PortConfiger(object):
                     portConfig.speed = int(data['speed'])
                     portConfig.name = name
                     portConfigs[index] = portConfig
+                    self.test_obj.dut.port_obj_list[index].port_config = portConfig
                     index = index + 1
             return portConfigs
         except Exception as e:
@@ -360,9 +375,11 @@ class PortConfiger(object):
         bp_list = sai_thrift_get_bridge_attribute(
             self.client, bridge_id, port_list=bridge_port_list)
         bp_ports = bp_list['port_list'].idlist
-        for port in bp_ports:
+        for index, port in enumerate(bp_ports):
             sai_thrift_remove_bridge_port(self.client, port)
+            self.test_obj.dut.port_obj_list[index].bridge_port_oid=None
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+        
 
     def remove_host_inf(self, host_intf_table_id, hostif_list):
         """
@@ -379,7 +396,7 @@ class PortConfiger(object):
             sai_thrift_remove_hostif(self.client, hostif)
         sai_thrift_remove_hostif_table_entry(self.client, host_intf_table_id)
 
-    def turn_on_port_admin_state(self, port_list):
+    def turn_on_port_admin_state(self, port_list: List['Port']):
         """
         Turn on port admin state
 
@@ -389,10 +406,10 @@ class PortConfiger(object):
         print("Set port...")
         for _, port in enumerate(port_list):
             sai_thrift_set_port_attribute(
-                self.client, port_oid=port, mtu=self.get_mtu(), admin_state=True,
+                self.client, port_oid=port.oid, mtu=self.get_mtu(), admin_state=True,
                 fec_mode=self.get_fec_mode())
 
-    def turn_up_and_check_ports(self, port_list):
+    def turn_up_and_check_ports(self, port_list: List['Port']):
         '''
         Method to turn up the ports.
         In case some device not init the port after start the switch.
@@ -404,32 +421,30 @@ class PortConfiger(object):
         # For brcm devices, need to init and setup the ports at once after start the switch.
         retries = 10
         down_port_list = []
-        port_index = 0
-        for port_id in port_list:
+        for index, port in enumerate(port_list):
             port_attr = sai_thrift_get_port_attribute(
-                self.client, port_id, oper_status=True)
-            print("Turn up port {}".format(port_index))
+                self.client, port.oid, oper_status=True)
+            print("Turn up port {}".format(index))
             port_up = True
             if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
                 port_up = False
                 for num_of_tries in range(retries):
                     port_attr = sai_thrift_get_port_attribute(
-                        self.client, port_id, oper_status=True)
+                        self.client, port.oid, oper_status=True)
                     if port_attr['oper_status'] == SAI_PORT_OPER_STATUS_UP:
                         port_up = True
                         break
                     time.sleep(3)
-                    print("port {} id {} is not up, status: {}. Retry. Reset Admin State.".format(
-                        port_index, port_id, port_attr['oper_status']))
+                    print("port {} , local index {} id {} is not up, status: {}. Retry. Reset Admin State.".format(
+                        index, port.port_index, port.oid, port_attr['oper_status']))
                     sai_thrift_set_port_attribute(
                         self.client,
-                        port_oid=port_id,
+                        port_oid=port.oid,
                         mtu=self.get_mtu(),
                         admin_state=True,
                         fec_mode=self.get_fec_mode())
             if not port_up:
-                down_port_list.append(port_index)
-            port_index = port_index + 1
+                down_port_list.append(index)
         if down_port_list:
             print("Ports {} are  down after retries.".format(down_port_list))
 

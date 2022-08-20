@@ -375,11 +375,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 test_obj=self,
                 is_create_hostIf=is_create_hostIf,
                 is_recreate_bridge=is_recreate_bridge)
-            # init port rif list
-            self.dut.port_rif_list = [None] * len(self.dut.dev_port_list)
-            # init bridge port rif list
-            self.dut.bridge_port_rif_list = [
-                None] * len(self.dut.bridge_port_list)
             t0_vlan_config_helper(
                 test_obj=self,
                 is_reset_default_vlan=is_reset_default_vlan,

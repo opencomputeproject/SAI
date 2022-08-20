@@ -52,7 +52,7 @@ def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True,
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
         route_configer.create_default_route()
-        route_configer.create_router_interface(port_idx=0)
+        route_configer.create_router_interface_by_port_idx(port_idx=0)
 
     if is_create_default_loopback_interface:
         route_configer.create_default_loopback_interface()
@@ -287,6 +287,25 @@ class RouteConfiger(object):
             self.test_obj.dut.neighborv6_list.append(nbr_entry_v6)
         return nbr_entry_v4, nbr_entry_v6
 
+    def create_router_interface_by_port_idx(self, port_idx, virtual_router=None, reuse=True, is_bridge=False):
+        """
+        Create route interface by port index for a port.
+        It will check if the port already created on a route interface. If 'reuse',
+        it will return the last one created for this port, if not 'reuse', it will create a new one,
+        and store it with this port and dut object.
+        
+        Attrs:
+            port_idx: port index
+            virtual_router_id: virtual route id, if not defined, will use default route
+            reuse: reuse the existing rif which is binding to the port
+            is_bridge: is a bridge port, only used for port
+        return: route interface
+        """
+        if not self.test_obj.dut.port_rif_list[port_idx]:
+            vr_id = self.choice_virtual_route(virtual_router)
+            port = self.test_obj.dut.port_obj_list[port_idx]
+            self.create_router_interface(port, virtual_router=vr_id, reuse=reuse, is_bridge=is_bridge)
+        return self.test_obj.dut.port_obj_list[port_idx].rif_list[-1]
 
     def create_router_interface(self, netItf: route_item, virtual_router=None, reuse=True, is_bridge=False):
         """
@@ -301,7 +320,6 @@ class RouteConfiger(object):
 
         Attrs:
             netItf: route_item object that this interface mapping
-            virtual_router_id: virtual route id, if not defined, will use default route
             virtual_router_id: virtual route id, if not defined, will use default route
             reuse: reuse the existing rif which is binding to the net interfaces
             is_bridge: is a bridge port, only used for port

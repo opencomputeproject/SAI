@@ -18,12 +18,13 @@
 #
 #
 
-from typing import List
+from typing import List, Dict
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
 from data_module.routable_item import route_item
+
 
 class Port(route_item):
     """
@@ -39,19 +40,30 @@ class Port(route_item):
         nexthopv6: related nexthop list
     """
 
-    def __init__(self, port_index=None, dev_port_index = None, port_oid = None, bridge_port_oid = None, rif_list:List=[], nexthopv4_list:List['Nexthop'] = [], nexthopv6_list:List['Nexthop'] = []):
+    def __init__(
+            self,
+            oid=None,
+            port_index=None,
+            dev_port_index=None,
+            dev_port_eth=None,
+            bridge_port_oid=None,
+            rif_list: List = [],
+            nexthopv4_list: List['Nexthop'] = [],
+            nexthopv6_list: List['Nexthop'] = []):
         """
         Init Port Object
         Init following attrs:
+            oid: port object id        
             port_index: port index
             dev_port_index: device port, local device port index
-            port_oid: port object id
+            dev_port_eth: local device port eth name
             bridge_port_oid: bridge port object id
             rif
             nexthopv4
             nexthopv6
         """
-        super().__init__(rif_list=rif_list, nexthopv4_list=nexthopv4_list, nexthopv6_list=nexthopv6_list)
+        super().__init__(oid=oid, rif_list=rif_list, nexthopv4_list=nexthopv4_list,
+                         nexthopv6_list=nexthopv6_list)
         self.port_index = port_index
         """
         port index
@@ -60,12 +72,16 @@ class Port(route_item):
         """
         device port, local device port index
         """
-        self.port_oid = port_oid
+        self.dev_port_eth = dev_port_eth
         """
-        port object id
+        local device port eth name
         """
         self.bridge_port_oid = bridge_port_oid
         """
         bridge port object id
         """
-
+        self.port_config:Dict = {}
+        self.host_itf = None
+        """
+        Port binded host interface
+        """
