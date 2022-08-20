@@ -30,6 +30,7 @@ from data_module.lag import Lag
 from typing import Dict, List
 
 from data_module.nexthop import Nexthop
+from data_module.ecmp import Ecmp
 
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
@@ -83,7 +84,15 @@ def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True,
             nexthop_device=test_obj.t1_list[3][100],
             lag=test_obj.dut.lag3)
 
-        route_configer.create_nexthop_group_by_nexthops(dest_device=test_obj.servers[60][0])
+        # route_configer.create_nexthop_group_by_nexthops(dest_device=test_obj.servers[60][0])
+
+        test_obj.servers[60][0].ip_prefix = '24'
+        test_obj.servers[60][0].ip_prefix_v6 = '112'
+        route_configer.create_nexthop_group_by_lags(
+            lag_list=[test_obj.dut.lag2, test_obj.dut.lag3],
+            nexthop_device_list=[test_obj.t1_list[2][100], test_obj.t1_list[3][100]],
+            dest_device=test_obj.servers[60][0]
+            )
 
 class RouteConfiger(object):
     """
@@ -773,6 +782,68 @@ class RouteConfiger(object):
         status = sai_thrift_create_route_entry(
             self.test_obj.client, self.test_obj.ecmp_route0, next_hop_id=self.test_obj.nhop_group1)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+
+    def create_nexthop_group_by_nexthops2(self, nexthopv4_member_list: List[Nexthop], nexthopv6_member_list: List[Nexthop], dest_device: Device):
+        nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+
+        next_hop_groupv4: Ecmp = Ecmp(nhop_groupv4_id, nexthopv4_member_list, [19, 20, 21, 22])
+        next_hop_groupv6: Ecmp = Ecmp(nhop_groupv6_id, nexthopv6_member_list, [19, 20, 21, 22])
+
+        self.test_obj.dut.ecmpv4_list.append(next_hop_groupv4)
+        self.test_obj.dut.ecmpv6_list.append(next_hop_groupv6)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.create_route_path_by_nhop_group(dest_device, next_hop_groupv4, next_hop_groupv6)
+        return next_hop_groupv4, next_hop_groupv6
+
+    def create_route_path_by_nhop_group(
+            self, dest_device: Device, nexthop_groupv4: Ecmp, nexthop_groupv6: Ecmp, virtual_router=None):
+        vr_id = self.choice_virtual_route(virtual_router)
+        if dest_device.ip_prefix:
+            net_routev4 = sai_thrift_route_entry_t(
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
+        else:
+            # destination cannot use sai_ipaddress
+            net_routev4 = sai_thrift_route_entry_t(
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
+        status = sai_thrift_create_route_entry(
+            self.client, net_routev4, next_hop_id=nexthop_groupv4.ecmp_id)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        if dest_device.ip_prefix_v6:
+            net_routev6 = sai_thrift_route_entry_t(
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
+        else:
+            # destination cannot use sai_ipaddress
+            net_routev6 = sai_thrift_route_entry_t(
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
+        status = sai_thrift_create_route_entry(
+            self.client, net_routev6, next_hop_id=nexthop_groupv6.ecmp_id)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        dest_device.routev4 = net_routev4
+        dest_device.routev6 = net_routev6
+        self.test_obj.dut.routev4_list.append(net_routev4)
+        self.test_obj.dut.routev6_list.append(net_routev6)
+
+        return net_routev4, net_routev6
+
+    def create_nexthop_group_by_lags(
+            self, lag_list: List[Lag], nexthop_device_list: List[Device], dest_device: Device, virtual_router=None):
+        v4_list, v6_list = [], []
+        for lag, nexthop_device in zip(lag_list, nexthop_device_list):
+            rif = self.create_router_interface_by_lag(lag, virtual_router)
+            v4, v6 = self.create_nexthop_by_rif(rif, nexthop_device)
+            v4.rif_id = rif
+            v6.rif_id = rif
+            v4.lag = lag
+            v6.lag = lag
+            lag.nexthopv4 = v4
+            lag.nexthopv6 = v6
+            v4_list.append(v4)
+            v6_list.append(v6)
+        self.create_nexthop_group_by_nexthops2(v4_list, v6_list, dest_device)
+        return v4, v6
 
     def create_ecmp_by_lags(self, lags: List[Lag]):
         """

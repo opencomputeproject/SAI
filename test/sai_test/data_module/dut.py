@@ -150,7 +150,8 @@ class Dut(object):
         self.lag3: Lag = None
 
         # ecmp
-        self.ecmp_list: List[Ecmp] = []
+        self.ecmpv4_list: List[Ecmp] = []
+        self.ecmpv6_list: List[Ecmp] = []
         """
         Ecmp list, contains ecmp objects
         """

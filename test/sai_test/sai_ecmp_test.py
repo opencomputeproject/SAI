@@ -58,7 +58,8 @@ class EcmpLagTestV4(T0TestBase):
                                         ip_ttl=63)   
 
                     send_packet(self, 1, pkt)
-                    rcv_idx= verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [19, 20, 21, 22])
+                    print(self.dut.ecmpv4_list[0].member_port_indexs)
+                    rcv_idx= verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], self.dut.ecmpv4_list[0].member_port_indexs)
                     rcv_count[rcv_idx] += 1
 
             print(rcv_count)
@@ -131,7 +132,7 @@ class EcmpHashFieldSrcIPTestV4(T0TestBase):
                                         ip_ttl=63)   
 
                     send_packet(self, 1, pkt)
-                    rcv_idx= verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [19, 20, 21, 22])
+                    rcv_idx= verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], self.dut.ecmpv4_list[0].member_port_indexs)
                     rcv_count[rcv_idx] += 1
 
             print(rcv_count)
@@ -208,7 +209,7 @@ class EcmpHashFieldDstPortTestV4(T0TestBase):
                                         ip_ttl=63)   
 
                     send_packet(self, 1, pkt)
-                    rcv_idx= verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [19, 20, 21, 22])
+                    rcv_idx= verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], self.dut.ecmpv4_list[0].member_port_indexs)
                     rcv_count[rcv_idx] += 1
 
             print(rcv_count)
@@ -284,7 +285,8 @@ class EcmpHashFieldUDPTestV4(T0TestBase):
                                         ip_ttl=63)   
 
                     send_packet(self, 1, pkt)
-                    rcv_idx= verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], [19, 20, 21, 22])
+                    print(self.dut.ecmpv4_list[0].member_port_indexs)
+                    rcv_idx= verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2], self.dut.ecmpv4_list[0].member_port_indexs)
                     rcv_count[rcv_idx] += 1
 
             print(rcv_count)
