@@ -76,8 +76,8 @@ class LagConfiger(object):
             Lag: lag object
         """
         lag: Lag = Lag(None, [], [])
-        lag_id = sai_thrift_create_lag(self.client)
-        lag.lag_id = lag_id
+        lag_oid = sai_thrift_create_lag(self.client)
+        lag.oid = lag_oid
         self.create_lag_member(lag, lag_port_idxs)
         return lag
 
@@ -97,7 +97,7 @@ class LagConfiger(object):
         lag_members = []
         for port_index in lag_port_idxs:
             lag_member = sai_thrift_create_lag_member(self.client,
-                                                      lag_id=lag.lag_id,
+                                                      lag_oid=lag.oid,
                                                       port_id=self.test_obj.dut.port_list[port_index])
             self.test_obj.assertEqual(
                 self.test_obj.status(), SAI_STATUS_SUCCESS)
@@ -181,8 +181,8 @@ class LagConfiger(object):
         lag.lag_members.remove(lag.lag_members[index])
         lag.member_port_indexs.remove(port_idx)
 
-    def remove_lag(self, lag_id):
+    def remove_lag(self, lag_oid):
         """
         Remove lag.
         """
-        sai_thrift_remove_lag(self.client, lag_id)
+        sai_thrift_remove_lag(self.client, lag_oid)

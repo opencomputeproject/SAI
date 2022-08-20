@@ -515,7 +515,7 @@ class DisableIngressTest(T0TestBase):
             self.port1_rif = sai_thrift_create_router_interface(self.client,
                                                                 virtual_router_id=self.dut.default_vrf,
                                                                 type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.lag1.lag_id)
+                                                                port_id=self.dut.lag1.oid)
             pkts_num = 10
             begin_port = 2000
             for i in range(0, pkts_num):

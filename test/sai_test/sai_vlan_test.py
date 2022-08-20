@@ -183,7 +183,7 @@ class TaggedFrameFilteringTest(T0TestBase):
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
             port_idxs=[1, 1],
-            vlan_oid=self.dut.vlans[10].vlan_oid)
+            vlan_oid=self.dut.vlans[10].oid)
 
     def runTest(self):
         print("\nTaggedFrameFilteringTest")
@@ -219,7 +219,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
             port_idxs=[1, 1],
-            vlan_oid=self.dut.vlans[10].vlan_oid)
+            vlan_oid=self.dut.vlans[10].oid)
 
     def runTest(self):
         print("\nUnTaggedFrameFilteringTest")
@@ -427,9 +427,9 @@ class VlanMemberListTest(T0TestBase):
         print("VlanMemberListTest")
         mbr_list = []
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[10].vlan_oid))
+            self.dut.vlans[10].oid))
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[20].vlan_oid))
+            self.dut.vlans[20].oid))
         self.assertEqual(len(mbr_list), 16)
 
         for i in range(0, 8):
@@ -442,15 +442,15 @@ class VlanMemberListTest(T0TestBase):
         # Adding vlan members and veryfing vlan member list
         new_vlan_member = sai_thrift_create_vlan_member(
             self.client,
-            vlan_id=self.dut.vlans[10].vlan_oid,
+            vlan_id=self.dut.vlans[10].oid,
             bridge_port_id=self.dut.bridge_port_list[17],
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
         mbr_list = []
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[10].vlan_oid))
+            self.dut.vlans[10].oid))
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[20].vlan_oid))
+            self.dut.vlans[20].oid))
         self.assertEqual(len(mbr_list), 17)
 
         # Adding vlan members and veryfing vlan member list
@@ -467,9 +467,9 @@ class VlanMemberListTest(T0TestBase):
 
         mbr_list = []
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[10].vlan_oid))
+            self.dut.vlans[10].oid))
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[20].vlan_oid))
+            self.dut.vlans[20].oid))
         self.assertEqual(len(mbr_list), 16)
 
         for i in range(0, 8):
@@ -514,7 +514,7 @@ class DisableMacLearningTaggedTest(T0TestBase):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         print("DisableMacLearningTaggedTest")
         sai_thrift_set_vlan_attribute(
-            self.client, self.dut.vlans[10].vlan_oid, learn_disable=True)
+            self.client, self.dut.vlans[10].oid, learn_disable=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         print("MAC Learning disabled on VLAN")
 
@@ -547,7 +547,7 @@ class DisableMacLearningUntaggedTest(T0TestBase):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         print("DisableMacLearningUntaggedTest")
         sai_thrift_set_vlan_attribute(
-            self.client, self.dut.vlans[10].vlan_oid, learn_disable=True)
+            self.client, self.dut.vlans[10].oid, learn_disable=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         print("MAC Learning disabled on VLAN")
 
@@ -641,7 +641,7 @@ class TaggedVlanStatusTest(T0TestBase):
     def runTest(self):
         print("TaggedVlanStatusTest")
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
 
         in_bytes_pre = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes_pre = stats["SAI_VLAN_STAT_OUT_OCTETS"]
@@ -655,7 +655,7 @@ class TaggedVlanStatusTest(T0TestBase):
         verify_packet(self, self.tagged_pkt, self.dut.dev_port_list[2])
 
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -687,11 +687,11 @@ class TaggedVlanStatusTest(T0TestBase):
         verify_packet(self, self.tagged_pkt, self.dut.dev_port_list[2])
 
         # Clear bytes and packets counter
-        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].vlan_oid)
+        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].oid)
 
         # Check counters
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -743,7 +743,7 @@ class UntaggedVlanStatusTest(T0TestBase):
 
         time.sleep(1)
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -775,11 +775,11 @@ class UntaggedVlanStatusTest(T0TestBase):
         verify_packet(self, self.untagged_pkt, self.dut.dev_port_list[2])
 
         # Clear bytes and packets counter
-        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].vlan_oid)
+        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].oid)
         # Check counters
 
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]

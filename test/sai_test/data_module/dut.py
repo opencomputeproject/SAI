@@ -61,7 +61,8 @@ class Dut(object):
             port_to_hostif_map 
             hostif_list 
             port_rif_list 
-            bridge_rif_list            
+            bridge_rif_list
+            rif_list       
 
             # lag
             lag1 
@@ -141,6 +142,10 @@ class Dut(object):
         self.bridge_port_rif_list: List = []
         """
         Bridge Port rif list. Size of the rif equals to the bridge ports size, value will be None if not mapping to a rif
+        """
+        self.rif_list: List = []
+        """
+        Rif list. save the rif object id.
         """
 
         # lag

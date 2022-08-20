@@ -25,45 +25,47 @@ if TYPE_CHECKING:
     from data_module.nexthop import Nexthop
 from data_module.routable_item import route_item
 
-class Lag(route_item):
+class Port(route_item):
     """
-    Represent the lag object.
-    Attrs:        
-        lag_members: lag members
-        member_port_indexs: lag port member indexes
+    Represent the port object.
+    Attrs:
+        port_index: port index
+        dev_port_index: device port, local device port index
+        port_oid: port object id
+        bridge_port_oid: bridge port object id
     Attrs from super:
-        oid: object id
-        rif: lag related route interface
+        rif: port related route interface
         nexthopv4: related nexthop list
         nexthopv6: related nexthop list
     """
 
-    def __init__(self, oid=None, lag_members: List = [], member_port_indexs: List = [], rif_list:List=[], nexthopv4_list:List['Nexthop'] = [], nexthopv6_list:List['Nexthop'] = []):
+    def __init__(self, port_index=None, dev_port_index = None, port_oid = None, bridge_port_oid = None, rif_list:List=[], nexthopv4_list:List['Nexthop'] = [], nexthopv6_list:List['Nexthop'] = []):
         """
-        Init Lag Object
+        Init Port Object
         Init following attrs:
-            oid
-            lag_members
-            member_port_indexs
+            port_index: port index
+            dev_port_index: device port, local device port index
+            port_oid: port object id
+            bridge_port_oid: bridge port object id
             rif
             nexthopv4
             nexthopv6
         """
-        super().__init__(oid=oid, rif_list=rif_list, nexthopv4_list=nexthopv4_list, nexthopv6_list=nexthopv6_list)
-        self.lag_members: List = lag_members
+        super().__init__(rif_list=rif_list, nexthopv4_list=nexthopv4_list, nexthopv6_list=nexthopv6_list)
+        self.port_index = port_index
         """
-        lag members
+        port index
         """
-        self.member_port_indexs: List = member_port_indexs
+        self.dev_port_index = dev_port_index
         """
-        lag port member indexes
+        device port, local device port index
+        """
+        self.port_oid = port_oid
+        """
+        port object id
+        """
+        self.bridge_port_oid = bridge_port_oid
+        """
+        bridge port object id
         """
 
-    def create_lag_interface(self, test_object: 'T0TestBase', reuse=True):
-        """
-        Create vlan interface for this vlan object
-
-        Attrs:
-            test_object: test object contains the method for creating the interface
-        """
-        test_object.create_lag_interface(self, reuse)

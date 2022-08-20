@@ -19,39 +19,26 @@
 #
 
 from typing import List
-from data_module.routable_item import route_item
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
 
 
-class Ecmp(object):
+class data_item():
     """
-    Represent the ecmp(next hop group) object.
+    Represent the basic data object.
     Attrs:
-        ecmp_id: ecmp id(nexthop group id)
-        ecmp_members: ecmp members(next hops)
-        member_port_indexs: ecmp port member indexes
+        oid: object id
     """
 
-    def __init__(self, ecmp_id=None, ecmp_members: List['Nexthop'] = [], member_port_indexs: List = []):
+    def __init__(self, oid = None):
         """
-        Init ecmp Object
+        Init data item Object
         Init following attrs:
-            ecmp_id
-            ecmp_members
-            member_port_indexs
-            lags
+            oid: object id
         """
-        self.ecmp_id = None
+        self.oid = oid
         """
-        ecmp id (nexthop group id)
-        """
-        self.ecmp_members: List[Nexthop] = ecmp_members
-        """
-        ecmp members(next hop ids)
-        """
-        self.member_port_indexs: List = member_port_indexs
-        """
-        ecmp port member indexes
+        object id
         """

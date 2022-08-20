@@ -464,23 +464,23 @@ class T0TestBase(ThriftInterfaceDataPlane):
             self.t1_list[t1_grp_idx] = [Device(DeviceType.t1, index, t1_grp_idx)
                                         for index in range(0, self.num_device_each_group)]
 
-    def create_vlan_interface(self, vlan: Vlan):
+    def create_vlan_interface(self, vlan: Vlan, reuse=True):
         """
         Create vlan route interface.
 
         Attrs:
             Vlan: vlan for the route interface
         """
-        self.route_configer.create_router_interface_by_vlan(vlan)
+        self.route_configer.create_router_interface(vlan, reuse)
 
-    def create_lag_interface(self, lag: Lag):
+    def create_lag_interface(self, lag: Lag, reuse=True):
         """
         Create lag route interface.
 
         Attrs:
             Lag: lag for the route interface
         """
-        self.route_configer.create_router_interface_by_lag(lag)
+        self.route_configer.create_router_interface(lag, reuse)
 
     def tearDown(self):
         '''

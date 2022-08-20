@@ -50,12 +50,12 @@ def t0_fdb_config_helper(test_obj: 'T0TestBase', is_create_fdb=True):
             switch_id=test_obj.dut.switch_id,
             server_list=test_obj.servers[1][1:9],
             port_idxs=range(1, 9),
-            vlan_oid=test_obj.dut.vlans[10].vlan_oid)
+            vlan_oid=test_obj.dut.vlans[10].oid)
         test_obj.dut.vlan_20_fdb_list = configer.create_fdb_entries(
             switch_id=test_obj.dut.switch_id,
             server_list=test_obj.servers[2][1:9],
             port_idxs=range(9, 17),
-            vlan_oid=test_obj.dut.vlans[20].vlan_oid)
+            vlan_oid=test_obj.dut.vlans[20].oid)
     # Todo dynamic use the vlan_member_port_map to add data to fdb
 
 

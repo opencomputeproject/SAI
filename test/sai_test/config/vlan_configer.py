@@ -76,9 +76,9 @@ def t0_vlan_tear_down_helper(test_obj: 'T0TestBase'):
    # configer.remove_vlan(default_vlan_id)
 
     for _, vlan in test_obj.dut.vlans.items():
-        members = configer.get_vlan_member(vlan.vlan_oid)
+        members = configer.get_vlan_member(vlan.oid)
         configer.remove_vlan_members(members)
-        configer.remove_vlan(vlan.vlan_oid)
+        configer.remove_vlan(vlan.oid)
     test_obj.dut.vlans.clear()
 
 
@@ -119,7 +119,7 @@ class VlanConfiger(object):
             vlan_oid, vlan_port_idxs, vlan_tagging_mode)
         vlan.vlan_id = vlan_id
         vlan.vlan_mport_oids = members
-        vlan.vlan_oid = vlan_oid
+        vlan.oid = vlan_oid
         return vlan
 
     def create_vlan_member(self, vlan_oid, vlan_ports, vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED):

@@ -90,7 +90,7 @@ class VlanLearnDisableTest(T0TestBase):
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         status = sai_thrift_set_vlan_attribute(
-            self.client, self.dut.vlans[10].vlan_oid, learn_disable=True)
+            self.client, self.dut.vlans[10].oid, learn_disable=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         status = sai_thrift_set_switch_attribute(
             self.client,
@@ -142,7 +142,7 @@ class VlanLearnDisableTest(T0TestBase):
 
         # restore initial VLAN Learning state
         sai_thrift_set_vlan_attribute(
-            self.client, self.dut.vlans[10].vlan_oid, learn_disable=False)
+            self.client, self.dut.vlans[10].oid, learn_disable=False)
 
 
 class BridgePortLearnDisableTest(T0TestBase):
@@ -340,7 +340,7 @@ class NewVlanmemberLearnTest(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         self.new_vlan10_member = sai_thrift_create_vlan_member(self.client,
-                                                               vlan_id=self.dut.vlans[10].vlan_oid,
+                                                               vlan_id=self.dut.vlans[10].oid,
                                                                bridge_port_id=self.dut.bridge_port_list[24])
 
         sai_thrift_set_port_attribute(
@@ -443,7 +443,7 @@ class RemoveVlanmemberLearnTest(T0TestBase):
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.dut.vlans[10].vlan_mport_oids[1] = sai_thrift_create_vlan_member(self.client,
-                                                                              vlan_id=self.dut.vlans[10].vlan_oid,
+                                                                              vlan_id=self.dut.vlans[10].oid,
                                                                               bridge_port_id=self.dut.bridge_port_list[1])
 
 
@@ -1072,7 +1072,7 @@ class FdbFlushVlanDynamicTest(T0TestBase):
         verify_packets(self, chk_pkt, [self.dut.dev_port_list[9]])
 
         status = sai_thrift_flush_fdb_entries(
-            self.client, bv_id=self.dut.vlans[20].vlan_oid, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
+            self.client, bv_id=self.dut.vlans[20].oid, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
@@ -1330,7 +1330,7 @@ class FdbDisableMacMoveDropTest(T0TestBase):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         self.fdb_entry = sai_thrift_fdb_entry_t(switch_id=self.dut.switch_id,
                                                 mac_address=self.servers[1][1].mac,
-                                                bv_id=self.dut.vlans[10].vlan_oid)
+                                                bv_id=self.dut.vlans[10].oid)
         status = sai_thrift_create_fdb_entry(self.client,
                                              self.fdb_entry,
                                              type=SAI_FDB_ENTRY_TYPE_DYNAMIC,
@@ -1441,7 +1441,7 @@ class FdbStaticMacMoveTest(T0TestBase):
             entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.fdb_entry1 = sai_thrift_fdb_entry_t(switch_id=self.dut.switch_id,
                                                  mac_address=self.servers[1][2].mac,
-                                                 bv_id=self.dut.vlans[10].vlan_oid)
+                                                 bv_id=self.dut.vlans[10].oid)
         status = sai_thrift_create_fdb_entry(self.client,
                                              self.fdb_entry1,
                                              type=SAI_FDB_ENTRY_TYPE_STATIC,
@@ -1450,7 +1450,7 @@ class FdbStaticMacMoveTest(T0TestBase):
 
         self.fdb_entry2 = sai_thrift_fdb_entry_t(switch_id=self.dut.switch_id,
                                                  mac_address=self.servers[1][1].mac,
-                                                 bv_id=self.dut.vlans[10].vlan_oid)
+                                                 bv_id=self.dut.vlans[10].oid)
         status = sai_thrift_create_fdb_entry(self.client,
                                              self.fdb_entry2,
                                              type=SAI_FDB_ENTRY_TYPE_DYNAMIC,
