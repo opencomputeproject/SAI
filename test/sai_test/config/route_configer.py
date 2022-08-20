@@ -301,11 +301,8 @@ class RouteConfiger(object):
             is_bridge: is a bridge port, only used for port
         return: route interface
         """
-        if not self.test_obj.dut.port_rif_list[port_idx]:
-            vr_id = self.choice_virtual_route(virtual_router)
-            port = self.test_obj.dut.port_obj_list[port_idx]
-            self.create_router_interface(port, virtual_router=vr_id, reuse=reuse, is_bridge=is_bridge)
-        return self.test_obj.dut.port_obj_list[port_idx].rif_list[-1]
+        net_intf = self.test_obj.dut.port_obj_list[port_idx]            
+        return self.create_router_interface(netItf=net_intf, virtual_router=virtual_router, reuse=reuse, is_bridge=is_bridge)
 
     def create_router_interface(self, netItf: route_item, virtual_router=None, reuse=True, is_bridge=False):
         """
@@ -332,27 +329,29 @@ class RouteConfiger(object):
                                                         virtual_router_id=vr_id,
                                                         type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK)
             else:
+                #Checks
                 if is_bridge:
-                    if not isinstance(netItf, Vlan):
-                        raise ValueError('is bridge attribute can only be True when net interface is a Port!')
-                import pdb
-                pdb.set_trace()
+                    if not isinstance(netItf, Port):
+                        raise ValueError('is_bridge attribute can only be True when net interface is a Port!')
                 if isinstance(netItf, Vlan):
                     rif = sai_thrift_create_router_interface(self.client,
                                                             virtual_router_id=vr_id,
                                                             type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
                                                             vlan_id=netItf.oid)
-                if isinstance(netItf, Port):
-                    #Set the defaule rif type
-                    rif_type = SAI_ROUTER_INTERFACE_TYPE_PORT
+                else: #include port, vlan and lag
                     if is_bridge:
-                        rif_type = SAI_ROUTER_INTERFACE_TYPE_BRIDGE
-                    rif = sai_thrift_create_router_interface(self.client,
+                        rif = sai_thrift_create_router_interface(self.client,
                                                             virtual_router_id=vr_id,
-                                                            type=rif_type,
-                                                            vlan_id=netItf.oid)
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_BRIDGE,
+                                                            bridge_id=netItf.oid)
+                    else:
+                        rif = sai_thrift_create_router_interface(self.client,
+                                                            virtual_router_id=vr_id,
+                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                            port_id=netItf.oid)
+                    
             self.test_obj.assertEqual(
-                self.test_obj.status(), SAI_STATUS_SUCCESS)     
+                self.test_obj.status(), SAI_STATUS_SUCCESS)
             netItf.rif_list.append(rif)
             self.test_obj.dut.rif_list.append(rif)
         return netItf.rif_list[-1]
@@ -387,8 +386,8 @@ class RouteConfiger(object):
             nhopv6_id = sai_thrift_create_next_hop(self.client, ip=sai_ipaddress(
                 nexthop_device.ipv6), router_interface_id=rif, type=SAI_NEXT_HOP_TYPE_IP)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-        nhopv4: Nexthop = Nexthop(oid=nhopv4_id, nexthop_device=nexthop_device, rif=rif)
-        nhopv6: Nexthop = Nexthop(oid=nhopv6_id, nexthop_device=nexthop_device, rif=rif)
+        nhopv4: Nexthop = Nexthop(oid=nhopv4_id, nexthop_device=nexthop_device, rif_id=rif)
+        nhopv6: Nexthop = Nexthop(oid=nhopv6_id, nexthop_device=nexthop_device, rif_id=rif)
         self.test_obj.dut.nexthopv4_list.append(nhopv4)
         self.test_obj.dut.nexthopv6_list.append(nhopv6)
         nexthop_device.nexthopv4 = nhopv4

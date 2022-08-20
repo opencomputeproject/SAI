@@ -66,10 +66,13 @@ def t0_fdb_tear_down_helper(test_obj: 'T0TestBase'):
     '''
     for e in test_obj.dut.default_vlan_fdb_list:
         sai_thrift_remove_fdb_entry(test_obj.client, e)
+        test_obj.dut.default_vlan_fdb_list.remove(e)
     for e in test_obj.dut.vlan_10_fdb_list:
         sai_thrift_remove_fdb_entry(test_obj.client, e)
+        test_obj.dut.vlan_10_fdb_list.remove(e)
     for e in test_obj.dut.vlan_20_fdb_list:
         sai_thrift_remove_fdb_entry(test_obj.client, e)
+        test_obj.dut.vlan_20_fdb_list.remove(e)
 
 
 class FdbConfiger(object):
@@ -117,16 +120,17 @@ class FdbConfiger(object):
                 mac_address=srv.mac,
                 bv_id=vlan_oid)
             port_index = port_idxs[index]
-            sai_thrift_create_fdb_entry(
+            status = sai_thrift_create_fdb_entry(
                 self.client,
                 fdb_entry,
                 type=type,
-                bridge_port_id=self.test_obj.dut.bridge_port_list[port_index],
+                bridge_port_id=self.test_obj.dut.port_obj_list[port_index].bridge_port_oid,
                 packet_action=packet_action,
                 allow_mac_move=allow_mac_move)
+            self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
             fdb_list.append(fdb_entry)
             srv.l2_egress_port_idx = port_index
-            srv.l2_egress_port_id = self.test_obj.dut.bridge_port_list[port_index]
+            srv.l2_egress_port_id = self.test_obj.dut.port_obj_list[port_index].bridge_port_oid
             srv.fdb_entry = fdb_entry
         print("Waiting for FDB to get refreshed, {} seconds ...".format(
             wait_sec))

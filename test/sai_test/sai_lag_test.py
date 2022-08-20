@@ -32,12 +32,13 @@ class LagConfigTest(T0TestBase):
         Test the basic setup process.
         """
         T0TestBase.setUp(self)
-
-    def load_balance_on_src_ip(self):
         self.port1_rif = sai_thrift_create_router_interface(self.client,
                                                             virtual_router_id=self.dut.default_vrf,
                                                             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                            port_id=self.dut.port_list[1])
+                                                            port_id=self.dut.port_obj_list[1].oid)
+
+    def load_balance_on_src_ip(self):
+        
         ip_dst = self.servers[11][1].ipv4
         pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                  eth_src=self.servers[1][1].mac,
@@ -92,6 +93,10 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -101,10 +106,7 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on src port")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             begin_port = 2000
             rcv_count = [0, 0]
@@ -152,6 +154,10 @@ class LoadbalanceOnDesPortTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -161,10 +167,7 @@ class LoadbalanceOnDesPortTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on des port")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             begin_port = 2000
             rcv_count = [0, 0]
@@ -213,6 +216,10 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -222,10 +229,7 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on src IP")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             rcv_count = [0, 0]
             for i in range(1, max_itrs):
@@ -271,6 +275,10 @@ class LoadbalanceOnDesIPTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -280,10 +288,7 @@ class LoadbalanceOnDesIPTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on des IP")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             rcv_count = [0, 0]
             for i in range(1, max_itrs):
@@ -334,6 +339,10 @@ class LoadbalanceOnProtocolTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -343,10 +352,7 @@ class LoadbalanceOnProtocolTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on protocol")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
@@ -407,6 +413,10 @@ class DisableEgressTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -420,10 +430,7 @@ class DisableEgressTest(T0TestBase):
         """
         try:
             print("Lag disable egress lag member test")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             pkts_num = 10
             begin_port = 2000
             exp_drop = []
@@ -499,6 +506,10 @@ class DisableIngressTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.lag1.oid)
 
     def runTest(self):
         """
@@ -512,10 +523,7 @@ class DisableIngressTest(T0TestBase):
         """
         try:
             print("Lag disable ingress lag member test")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.lag1.oid)
+            
             pkts_num = 10
             begin_port = 2000
             for i in range(0, pkts_num):
@@ -579,6 +587,10 @@ class RemoveLagMemberTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -592,10 +604,7 @@ class RemoveLagMemberTest(T0TestBase):
         """
         try:
             print("Lag remove lag member test")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
 
             pkts_num = 10
             begin_port = 2000
@@ -661,6 +670,10 @@ class AddLagMemberTest(T0TestBase):
         set up configurations
         """
         T0TestBase.setUp(self)
+        self.port1_rif = sai_thrift_create_router_interface(self.client,
+                                                                virtual_router_id=self.dut.default_vrf,
+                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -674,10 +687,7 @@ class AddLagMemberTest(T0TestBase):
         """
         try:
             print("Lag add lag member test")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             pkts_num = 10
             begin_port = 2000
             rcv_count = [0, 0, 0]
@@ -746,13 +756,14 @@ class IndifferenceIngressPortTest(T0TestBase):
 
     def setUp(self):
         T0TestBase.setUp(self)
-
-    def runTest(self):
-        try:
-            self.vlan10_rif = sai_thrift_create_router_interface(self.client,
+        self.vlan10_rif = sai_thrift_create_router_interface(self.client,
                                                                 virtual_router_id=self.dut.default_vrf,
                                                                 type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
                                                                 vlan_id=10)
+
+    def runTest(self):
+        try:
+            
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src=self.servers[1][1].mac,
                                     ip_dst=self.servers[11][1].ipv4,

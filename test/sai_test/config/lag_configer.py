@@ -97,8 +97,8 @@ class LagConfiger(object):
         lag_members = []
         for port_index in lag_port_idxs:
             lag_member = sai_thrift_create_lag_member(self.client,
-                                                      lag_oid=lag.oid,
-                                                      port_id=self.test_obj.dut.port_list[port_index])
+                                                      lag_id=lag.oid,
+                                                      port_id=self.test_obj.dut.port_obj_list[port_index].oid)
             self.test_obj.assertEqual(
                 self.test_obj.status(), SAI_STATUS_SUCCESS)
             lag_members.append(lag_member)

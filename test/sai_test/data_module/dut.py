@@ -53,14 +53,10 @@ class Dut(object):
             vlan_20_fdb_list 
 
             # port
-            bridge_port_list 
             default_1q_bridge_id 
             default_trap_group 
-            dev_port_list 
             host_intf_table_id 
-            portConfigs 
-            port_list 
-            port_to_hostif_map 
+            port_list
             hostif_list 
             port_rif_list
             rif_list       
@@ -110,24 +106,16 @@ class Dut(object):
         self.vlan_20_fdb_list: List = None
 
         # port
-        self.bridge_port_list: List = None
-        """
-        bridge port id list
-        """
         self.default_1q_bridge_id = None
         self.default_trap_group = None
-        self.dev_port_list: List = None
         """
         Local device port index list, 0, 1, ...
         """
         self.host_intf_table_id = None
-        self.portConfigs = None
-        self.port_list: List = None
-        self.port_obj_list: List[Port] = []
+        self.port_obj_list: List['Port'] = []
         """
         Port object list
         """
-        self.port_to_hostif_map = None
         self.hostif_list = None
         """
         Host interface list

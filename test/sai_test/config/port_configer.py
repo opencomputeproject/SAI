@@ -23,11 +23,11 @@ from ptf import config
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from sai_thrift.sai_adapter import *
 from typing import TYPE_CHECKING
+from data_module.port import Port
 
 from typing import Dict, List
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
-    from data_module.port import Port
 
 
 def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_create_hostIf=True):
@@ -36,12 +36,8 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
     Set the configuration in test directly.
 
     Set the following test_obj attributes:
-        list: dev_port_list
-        dict: portConfigs - index:PortConfig
         int: default_trap_group
-        list: bridge_port_list
         list: port_list
-        dict: port_to_hostif_map - port_oid:hostIf_oid
         int: default_1q_bridge_id        
         int: host_intf_table_id
         list: hostif_list
@@ -49,9 +45,8 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
     """
     configer = PortConfiger(test_obj)
     port_list = configer.get_port_list()
-    dev_port_list = configer.get_local_mapped_ports()
-    portConfigs = configer.parse_port_config(
-        test_obj.test_params['port_config_ini'])
+    configer.get_local_mapped_ports()
+    configer.parse_port_config(test_obj.test_params['port_config_ini'])
 
     attr = sai_thrift_get_switch_attribute(
         configer.client, default_trap_group=True)
@@ -59,30 +54,21 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
     configer.turn_on_port_admin_state(test_obj.dut.port_obj_list)
     configer.turn_up_and_check_ports(test_obj.dut.port_obj_list)
     default_1q_bridge_id = configer.get_default_1q_bridge()
-    bridge_port_list = configer.get_bridge_port_list(default_1q_bridge_id)
+    configer.get_bridge_port_list(default_1q_bridge_id)
 
     if is_recreate_bridge:
         configer.remove_bridge_port(default_1q_bridge_id)
-        bridge_port_list = configer.create_bridge_ports(
-            default_1q_bridge_id, test_obj.dut.port_obj_list)
+        configer.create_bridge_ports(default_1q_bridge_id, test_obj.dut.port_obj_list)
 
     if is_create_hostIf:
         host_intf_table_id, hostif_list = configer.create_host_intf(
-            ports_config=portConfigs, trap_group=default_trap_group, port_list=port_list)
-        # Todo try to get the host interface if not create the hostif (need to check if already created or not)
-        port_to_hostif_map = configer.generate_port_to_hostif_map(
-            port_list, hostif_list)
+            port_list=test_obj.dut.port_obj_list, trap_group=default_trap_group)
         test_obj.dut.host_intf_table_id = host_intf_table_id
         test_obj.dut.hostif_list = hostif_list
 
     configer.get_cpu_port_queue()
-    test_obj.dut.dev_port_list = dev_port_list
-    test_obj.dut.portConfigs = portConfigs
     test_obj.dut.default_trap_group = default_trap_group
-    test_obj.dut.port_list = port_list
-    test_obj.dut.port_to_hostif_map = port_to_hostif_map
     test_obj.dut.default_1q_bridge_id = default_1q_bridge_id
-    test_obj.dut.bridge_port_list = bridge_port_list
 
 
 def t0_port_tear_down_helper(test_obj: 'T0TestBase'):
@@ -114,7 +100,7 @@ class PortConfiger(object):
         config_driver = ConfigDBOpertion()
         self.config = config_driver.get_port_config()
 
-    def create_bridge_ports(self, bridge_id, port_list: List[Port]):
+    def create_bridge_ports(self, bridge_id, port_list: List['Port']):
         """
         Create bridge ports base on port_list.
 
@@ -131,14 +117,14 @@ class PortConfiger(object):
             port_bp = sai_thrift_create_bridge_port(
                 self.client,
                 bridge_id=bridge_id,
-                port_id=item,
+                port_id=item.oid,
                 type=SAI_BRIDGE_PORT_TYPE_PORT,
                 admin_state=True)
             bp_list.append(port_bp)
             item.bridge_port_oid = port_bp
         return bp_list
 
-    def create_host_intf(self, port_list:List[Port], trap_group=None):
+    def create_host_intf(self, port_list: List['Port'], trap_group=None):
         """
         Create host interface.
 
@@ -163,8 +149,7 @@ class PortConfiger(object):
         sai_thrift_create_hostif_trap(
             self.client, trap_type=SAI_HOSTIF_TRAP_TYPE_TTL_ERROR, packet_action=SAI_PACKET_ACTION_TRAP,
             trap_group=trap_group, trap_priority=0)
-
-        hostif_list = []
+        hostif_list = [None]*len(port_list)
         for index, item in enumerate(port_list):
             try:
                 hostif = sai_thrift_create_hostif(
@@ -174,27 +159,11 @@ class PortConfiger(object):
                     name=item.port_config.name)
                 sai_thrift_set_hostif_attribute(
                     self.client, hostif_oid=hostif, oper_status=False)
-                hostif_list.append(hostif)
+                hostif_list[index] = hostif
                 item.host_itf = hostif
             except BaseException as e:
                 print("Cannot create hostif, error : {}".format(e))
         return host_intf_table_id, hostif_list
-
-    def generate_port_to_hostif_map(self, port_list, hostif_list):
-        """
-        Generate the port to hostif map, base on the port list sequence
-
-        Args:
-            port_list: port obj id list
-            hostif_list: host interface obj list
-
-        Returns:
-            dict: port_to_hostif_map - port_oid:hostif_oid
-        """
-        port_to_hostif_map = {}
-        for i, port in enumerate(port_list):
-            port_to_hostif_map[port] = hostif_list[i]
-        return port_to_hostif_map
 
     def get_bridge_port_all_attribute(self, bridge_port_id):
         '''
@@ -297,7 +266,7 @@ class PortConfiger(object):
         p_list = sai_thrift_get_switch_attribute(
             self.client, port_list=port_list)
         for index, item in enumerate(p_list['port_list'].idlist):
-            port: Port = Port(oid=item, index=index, rif_list=[], nexthopv4_list=[], nexthopv6_list=[])
+            port: Port = Port(oid=item, port_index=index, rif_list=[], nexthopv4_list=[], nexthopv6_list=[])
             self.test_obj.dut.port_obj_list.append(port)
         return p_list['port_list'].idlist
 
@@ -377,9 +346,8 @@ class PortConfiger(object):
         bp_ports = bp_list['port_list'].idlist
         for index, port in enumerate(bp_ports):
             sai_thrift_remove_bridge_port(self.client, port)
-            self.test_obj.dut.port_obj_list[index].bridge_port_oid=None
+            self.test_obj.dut.port_obj_list[index].bridge_port_oid = None
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-        
 
     def remove_host_inf(self, host_intf_table_id, hostif_list):
         """
