@@ -368,6 +368,9 @@ class UntaggedMacLearningTest(T0TestBase):
             pass
 
     def tearDown(self):
+        sai_thrift_flush_fdb_entries(
+            self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
+        sleep(2)
         super().tearDown()
 
 
@@ -406,6 +409,9 @@ class TaggedMacLearningTest(T0TestBase):
             pass
 
     def tearDown(self):
+        sai_thrift_flush_fdb_entries(
+            self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
+        sleep(2)
         super().tearDown()
 
 
@@ -614,7 +620,9 @@ class ArpRequestLearningTest(T0TestBase):
         verify_no_other_packets(self)
 
     def tearDown(self):
-        super().tearDown()
+        sai_thrift_flush_fdb_entries(
+            self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
+        sleep(2)
 
 
 class TaggedVlanStatusTest(T0TestBase):
