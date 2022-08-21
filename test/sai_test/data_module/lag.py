@@ -33,7 +33,7 @@ class Lag(route_item):
         member_port_indexs: lag port member indexes
     Attrs from super:
         oid: object id
-        rif: lag related route interface
+        rif_list: lag related route interface
         nexthopv4: related nexthop list
         nexthopv6: related nexthop list
     """

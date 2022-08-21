@@ -59,7 +59,7 @@ class IngressMacUpdateTest(T0TestBase):
                                 ip_id=105,
                                 ip_ttl=64)
 
-        exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+        exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
                                     eth_src=ROUTER_MAC,
                                     ip_dst=ip_dst,
                                     ip_src=self.servers[0][1].ipv4,
@@ -67,7 +67,7 @@ class IngressMacUpdateTest(T0TestBase):
                                     ip_ttl=63)
 
         send_packet(self, 1, pkt)
-        verify_packet_any_port(self, exp_pkt, self.dut.lag1.member_port_indexs)
+        verify_packet_any_port(self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
         print("Updating src_mac_address to %s" % (new_router_mac))
         sai_thrift_set_router_interface_attribute(
@@ -129,14 +129,14 @@ class IngressMacUpdateTestV6(T0TestBase):
                                   ipv6_src=self.servers[0][1].ipv6,
                                   ipv6_hlim=64)
 
-        exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+        exp_pkt = simple_tcpv6_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
                                       eth_src=ROUTER_MAC,
                                       ipv6_dst=ip_dst,
                                       ipv6_src=self.servers[0][1].ipv6,
                                       ipv6_hlim=63)
 
         send_packet(self, 1, pkt)
-        verify_packet_any_port(self, exp_pkt, self.dut.lag1.member_port_indexs)
+        verify_packet_any_port(self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
         print("Updating src_mac_address to %s" % (new_router_mac))
         sai_thrift_set_router_interface_attribute(
@@ -202,7 +202,7 @@ class IngressDisableTestV4(T0TestBase):
                                 ip_id=105,
                                 ip_ttl=64)
 
-        exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+        exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
                                     eth_src=ROUTER_MAC,
                                     ip_dst=ip_dst,
                                     ip_src=self.servers[0][1].ipv4,
@@ -210,7 +210,7 @@ class IngressDisableTestV4(T0TestBase):
                                     ip_ttl=63)
 
         send_packet(self, 1, pkt)
-        verify_packet_any_port(self, exp_pkt, self.dut.lag1.member_port_indexs)
+        verify_packet_any_port(self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
         print("Disable IPv4 on ingress RIF")
         sai_thrift_set_router_interface_attribute(
@@ -224,7 +224,7 @@ class IngressDisableTestV4(T0TestBase):
             self.client, self.dut.port_obj_list[0].rif_list[-1], admin_v4_state=True)
         time.sleep(3)
         send_packet(self, 1, pkt)
-        verify_packet_any_port(self, exp_pkt, self.dut.lag1.member_port_indexs)
+        verify_packet_any_port(self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
     def runTest(self):
         self.test_ingress_disable_ipv4()
@@ -273,14 +273,14 @@ class IngressDisableTestV6(T0TestBase):
                                   ipv6_src=self.servers[0][1].ipv6,
                                   ipv6_hlim=64)
 
-        exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+        exp_pkt = simple_tcpv6_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
                                       eth_src=ROUTER_MAC,
                                       ipv6_dst=ip_dst,
                                       ipv6_src=self.servers[0][1].ipv6,
                                       ipv6_hlim=63)
 
         send_packet(self, 1, pkt)
-        verify_packet_any_port(self, exp_pkt, self.dut.lag1.member_port_indexs)
+        verify_packet_any_port(self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
         print("Disable IPv4 on ingress RIF")
         sai_thrift_set_router_interface_attribute(
@@ -294,7 +294,7 @@ class IngressDisableTestV6(T0TestBase):
             self.client, self.dut.port_obj_list[0].rif_list[-1], admin_v6_state=True)
         time.sleep(3)
         send_packet(self, 1, pkt)
-        verify_packet_any_port(self, exp_pkt, self.dut.lag1.member_port_indexs)
+        verify_packet_any_port(self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
     def runTest(self):
         self.test_ingress_disable_ipv6()
@@ -351,7 +351,7 @@ class IngressMtuTestV4(T0TestBase):
                                 ip_ttl=64,
                                 pktlen=200 + 14)
 
-        exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+        exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
                                     eth_src=ROUTER_MAC,
                                     ip_dst=ip_dst,
                                     ip_src=self.servers[0][1].ipv4,
@@ -361,7 +361,7 @@ class IngressMtuTestV4(T0TestBase):
 
         send_packet(self, 1, pkt)
         verify_packet_any_port(
-            self, exp_pkt, self.dut.lag1.member_port_indexs)
+            self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
         print("Max MTU is 200, send pkt size 201, dropped")
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -372,7 +372,7 @@ class IngressMtuTestV4(T0TestBase):
                                 ip_ttl=64,
                                 pktlen=201 + 14)
 
-        exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+        exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
                                     eth_src=ROUTER_MAC,
                                     ip_dst=ip_dst,
                                     ip_src=self.servers[0][1].ipv4,
@@ -441,7 +441,7 @@ class IngressMtuTestV6(T0TestBase):
                                       ipv6_hlim=64,
                                       pktlen=200 + 14)
 
-            exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+            exp_pkt = simple_tcpv6_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
                                           eth_src=ROUTER_MAC,
                                           ipv6_dst=ip_dst,
                                           ipv6_src=self.servers[0][1].ipv6,
@@ -450,7 +450,7 @@ class IngressMtuTestV6(T0TestBase):
 
             send_packet(self, 1, pkt)
             verify_packet_any_port(
-                self, exp_pkt, self.dut.lag1.member_port_indexs)
+                self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
             print("Max MTU is 200, send pkt size 201, dropped")
             pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
@@ -460,7 +460,7 @@ class IngressMtuTestV6(T0TestBase):
                                       ipv6_hlim=64,
                                       pktlen=201 + 14)
 
-            exp_pkt = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+            exp_pkt = simple_tcpv6_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
                                           eth_src=ROUTER_MAC,
                                           ipv6_dst=ip_dst,
                                           ipv6_src=self.servers[0][1].ipv6,

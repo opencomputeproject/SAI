@@ -443,15 +443,15 @@ class PortConfiger(object):
     def get_cpu_port_queue(self):
 
         attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
-        self.test_obj.cpu_port = attr['cpu_port']
+        self.test_obj.dut.cpu_port = attr['cpu_port']
 
         attr = sai_thrift_get_port_attribute(self.client,
-                                             self.test_obj.cpu_port,
+                                             self.test_obj.dut.cpu_port,
                                              qos_number_of_queues=True)
         num_queues = attr['qos_number_of_queues']
         q_list = sai_thrift_object_list_t(count=num_queues)
         attr = sai_thrift_get_port_attribute(self.client,
-                                             self.test_obj.cpu_port,
+                                             self.test_obj.dut.cpu_port,
                                              qos_queue_list=q_list)
         for queue in range(0, num_queues):
             queue_id = attr['qos_queue_list'].idlist[queue]

@@ -40,8 +40,8 @@ def t0_lag_config_helper(test_obj: 'T0TestBase', is_create_lag=True):
     lag_configer = LagConfiger(test_obj)
 
     if is_create_lag:
-        test_obj.dut.lag1 = lag_configer.create_lag([17, 18])
-        test_obj.dut.lag2 = lag_configer.create_lag([19, 20])
+        test_obj.dut.lag_list.append(lag_configer.create_lag([17, 18]))
+        test_obj.dut.lag_list.append(lag_configer.create_lag([19, 20]))
 
     """
     lag_configer.set_lag_hash_algorithm()

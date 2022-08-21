@@ -41,17 +41,17 @@ def t0_fdb_config_helper(test_obj: 'T0TestBase', is_create_fdb=True):
     configer = FdbConfiger(test_obj)
 
     if is_create_fdb:
-        test_obj.dut.default_vlan_fdb_list = configer.create_fdb_entries(
+        configer.create_fdb_entries(
             switch_id=test_obj.dut.switch_id,
             server_list=test_obj.servers[0][0:1],
             port_idxs=range(0, 1),
             vlan_oid=test_obj.dut.default_vlan_id)
-        test_obj.dut.vlan_10_fdb_list = configer.create_fdb_entries(
+        configer.create_fdb_entries(
             switch_id=test_obj.dut.switch_id,
             server_list=test_obj.servers[1][1:9],
             port_idxs=range(1, 9),
             vlan_oid=test_obj.dut.vlans[10].oid)
-        test_obj.dut.vlan_20_fdb_list = configer.create_fdb_entries(
+        configer.create_fdb_entries(
             switch_id=test_obj.dut.switch_id,
             server_list=test_obj.servers[2][1:9],
             port_idxs=range(9, 17),
@@ -64,15 +64,9 @@ def t0_fdb_tear_down_helper(test_obj: 'T0TestBase'):
     Args:
         test_obj: test object
     '''
-    for e in test_obj.dut.default_vlan_fdb_list:
-        sai_thrift_remove_fdb_entry(test_obj.client, e)
-        test_obj.dut.default_vlan_fdb_list.remove(e)
-    for e in test_obj.dut.vlan_10_fdb_list:
-        sai_thrift_remove_fdb_entry(test_obj.client, e)
-        test_obj.dut.vlan_10_fdb_list.remove(e)
-    for e in test_obj.dut.vlan_20_fdb_list:
-        sai_thrift_remove_fdb_entry(test_obj.client, e)
-        test_obj.dut.vlan_20_fdb_list.remove(e)
+    for item in test_obj.dut.fdb_entry_list:
+        sai_thrift_remove_fdb_entry(test_obj.client, item)
+        test_obj.dut.fdb_entry_list.remove(item)
 
 
 class FdbConfiger(object):
@@ -130,8 +124,7 @@ class FdbConfiger(object):
             self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
             fdb_list.append(fdb_entry)
             srv.l2_egress_port_idx = port_index
-            srv.l2_egress_port_id = self.test_obj.dut.port_obj_list[port_index].bridge_port_oid
-            srv.fdb_entry = fdb_entry
+            self.test_obj.dut.fdb_entry_list.append(fdb_entry)
         print("Waiting for FDB to get refreshed, {} seconds ...".format(
             wait_sec))
         time.sleep(wait_sec)

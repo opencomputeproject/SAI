@@ -41,3 +41,6 @@ class route_item(data_item):
         """
         super().__init__(oid=oid)
         self.rif_list = rif_list
+        self.nexthopv4_list = nexthopv4_list
+        self.nexthopv6_list = nexthopv6_list
+        self.neighbor_mac_list = []

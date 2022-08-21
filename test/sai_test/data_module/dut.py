@@ -58,7 +58,6 @@ class Dut(object):
             host_intf_table_id 
             port_list
             hostif_list 
-            port_rif_list
             rif_list       
 
             # lag
@@ -80,6 +79,8 @@ class Dut(object):
         Init all of the class attributes
         """
 
+        self.cpu_port = None
+
         # router
         self.default_vrf = None
         self.default_ipv6_route_entry = None
@@ -89,6 +90,17 @@ class Dut(object):
         self.local_128v6_route_entry = None
         self.routev4_list: List = []
         self.routev6_list: List = []
+        # nexthop
+        self.nexthopv4_list: List[Nexthop] = []
+        """
+        nexthop list, contains nexthop objects
+        """
+        self.nexthopv6_list: List[Nexthop] = []
+        """
+        nexthop list, contains nexthop objects
+        """
+        self.neighborv4_list = []
+        self.neighborv6_list = []
 
         # vlan
         self.default_vlan_id = None
@@ -101,9 +113,10 @@ class Dut(object):
         self.switch_id = None
 
         # fdb
-        self.default_vlan_fdb_list: List = None
-        self.vlan_10_fdb_list: List = None
-        self.vlan_20_fdb_list: List = None
+        self.fdb_entry_list: List = []
+        """
+        FDB entry list
+        """
 
         # port
         self.default_1q_bridge_id = None
@@ -120,34 +133,16 @@ class Dut(object):
         """
         Host interface list
         """
-        self.port_rif_list: List = []
-        """
-        Port rif list. Size of the rif equals to the ports size, value will be None if not mapping to a rif
-        """
         self.rif_list: List = []
         """
         Rif list. save the rif object id.
         """
 
         # lag
-        self.lag1: Lag = None
-        self.lag2: Lag = None
+        self.lag_list: List[Lag] = []
 
         # ecmp
         self.ecmp_list: List[Ecmp] = []
         """
         Ecmp list, contains ecmp objects
         """
-
-        # nexthop
-        self.nexthopv4_list: List[Nexthop] = []
-        """
-        nexthop list, contains nexthop objects
-        """
-        self.nexthopv6_list: List[Nexthop] = []
-        """
-        nexthop list, contains nexthop objects
-        """
-
-        self.neighborv4_list = []
-        self.neighborv6_list = []

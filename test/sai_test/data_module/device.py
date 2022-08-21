@@ -24,6 +24,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from data_module.nexthop import Nexthop
     from data_module.ecmp import Ecmp
+    from data_module.lag import Lag
 
 
 class DeviceType(Enum):
@@ -42,13 +43,10 @@ class Device(object):
             ipv4: ip v4
             ipv6: ip v6
             l2_egress_port_idx: L2 destination port index, defined in fdb configer
-            l2_egress_port_id: L2 destination port object id, defined in fdb configer
-            l3_egress_port_idx: L3 destination port index, defined in route configer
-            l3_egress_port_id: L3 destination port object id, defined in route configer
-            l3_egress_lag_obj: L3 destination port object, defined in route configer
+            l3_port_idx: L3 destination port index, defined in route configer
+            l3_lag_obj: L3 destination port object, defined in route configer
             route_id
             nexthop
-            ecmp_egress: ecmp object for egress
             neighbor_id
             fdb_entry
     """
@@ -65,19 +63,9 @@ class Device(object):
             ipv4: ip v4
             ipv6: ip v6
             l2_egress_port_idx
-            l2_egress_port_id
-            l3_egress_port_idx
-            l3_egress_port_id
-            l3_egress_lag_obj
-            routev4
-            nexthoproutev4
-            nexthopv6
-            nexthoproutev6
-            neighborv6_id
-            local_neighborv6_id            
-            neighborv4_id
-            local_neighborv4_id
-            fdb_entry
+            l3_port_idx
+            l3_lag_obj
+            ecmp
 
         Server:
             self.ip_pattern: SERVER_IPV4_PATTERN
@@ -132,51 +120,21 @@ class Device(object):
         """
         L2 destination port index, defined in fdb configer
         """
-        self.l2_egress_port_id = None
-        """
-        L2 destination port object id, defined in fdb configer
-        """
 
         # L3 route info
-        self.l3_egress_port_idx = None
+        self.l3_port_idx = None
         """
         L3 destination port index, defined in route configer
         """
-        self.l3_egress_port_id = None
+        self.l3_lag_obj: Lag = None
         """
-        L3 destination port object id, defined in route configer
+        L3 destination lag object, defined in route configer
         """
-        self.l3_egress_lag_obj = None
+        self.ecmp : Ecmp = None
         """
-        L3 destination port object, defined in route configer
-        """
-        self.ecmp_egress: Ecmp = None
-        """
-        Ecmp object.
+        L3 destination ecmp object, defined in route configer
         """
 
-        self.routev4 = None
-        self.nexthopv4: Nexthop = None
-        self.routev6 = None
-        self.nexthopv6: Nexthop = None
-
-        self.neighborv4_id = None
-        """
-        No host neighbor
-        """
-        self.local_neighborv4_id = None
-        """
-        Host, direct neighbor
-        """
-        self.neighborv6_id = None
-        """
-        No host neighbor
-        """
-        self.local_neighborv6_id = None
-        """
-        Host, direct neighbor
-        """
-        self.fdb_entry = None
 
     def _generate_ipv4_address(self):
         """
